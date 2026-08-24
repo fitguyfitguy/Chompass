@@ -1737,8 +1737,8 @@
     <string name="settings_fasting_tracking">Vastentimer</string>
     <string name="settings_fasting_goal">Doellengte</string>
     <string name="settings_fasting_goal_summary_none">Geen doel</string>
-    <string name="settings_fasting_goal_summary">%1$d u</string>
-    <string name="settings_fasting_goal_wheel_help">Wanneer je het doel bereikt, verschijnt een eenmalige melding. 0 = geen doel.</string>
+    <string name="settings_fasting_goal_summary">%1$d u vasten</string>
+    <string name="settings_fasting_goal_wheel_help">Kies een populair protocol of stel je eigen vasten- en eetvenster in. 0 = geen doel.</string>
     <string name="settings_fasting_section_notification">Melding</string>
     <string name="settings_fasting_notification">Doel bereikt</string>
     <string name="fasting_local_only_note">De vastentimer blijft op dit apparaat: hij wordt nooit gesynchroniseerd, geëxporteerd of toegevoegd aan gedeelde maaltijden. De doel-berichtmelding is het enige wat Chompass hierover plaatst.</string>
@@ -1748,7 +1748,7 @@
     <string name="notif_channel_fasting">Vasten</string>
     <string name="notif_channel_fasting_desc">Eenmalig bericht wanneer een vastendoel is bereikt.</string>
     <string name="notif_fasting_goal_title">Vastendoel bereikt</string>
-    <string name="notif_fasting_goal_text">Je vasten van %1$d u is voltooid — je kunt nu eten.</string>
+    <string name="notif_fasting_goal_text">Je vasten is voltooid — je kunt nu eten.</string>
     <string name="fasting_preset_detail">%1$d u vasten · %2$d u eetvenster</string>
     <string name="fasting_window_opens_in">Eetvenster gaat open over %1$s</string>
     <string name="settings_fasting_section_reminders">Herinneringen</string>
@@ -1758,4 +1758,19 @@
     <string name="notif_fasting_start_title">Start je vasten</string>
     <string name="notif_fasting_start_text">Start nu je vasten.</string>
     <string name="notif_fasting_start_text_goal">Start nu je vasten van %1$d u.</string>
+    <string name="fasting_fast_starts_in">Vasten start over %1$s</string>
+    <string name="fasting_eating_progress">%1$s van %2$d u eten</string>
+    <string name="settings_fasting_eat_window">Eetvenster</string>
+    <string name="settings_fasting_goal_summary_both">%1$d u vasten · %2$d u eten</string>
+    <string name="settings_fasting_end_reminder">Einde-vasten-herinnering</string>
+    <string name="settings_fasting_reminder_lead_end">Voor het einde van het vasten</string>
+    <string name="settings_fasting_reminder_lead_start">Voor het begin van het vasten</string>
+    <string name="settings_fasting_reminder_lead_unit">min</string>
+    <string name="settings_fasting_reminder_lead_summary">%1$d min van tevoren</string>
+    <string name="settings_fasting_reminder_lead_now">Precies op de grens</string>
+    <string name="settings_fasting_reminder_help">Voorlooptijden gelden per cyclus: de startherinnering klinkt voordat je eetvenster sluit, de einde-herinnering voordat je doel wordt bereikt. 0 = precies op de grens.</string>
+    <string name="notif_fasting_end_soon_title">Vasten eindigt binnenkort</string>
+    <string name="notif_fasting_end_soon_text">Je vasten eindigt over %1$d min — je eetvenster gaat dan open.</string>
+    <string name="notif_fasting_start_soon_title">Vasten begint binnenkort</string>
+    <string name="notif_fasting_start_soon_text">Je eetvenster sluit over %1$d min — start dan je vasten.</string>
 </resources>

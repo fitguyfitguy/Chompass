@@ -1737,8 +1737,8 @@
     <string name="settings_fasting_tracking">Timer de jejum</string>
     <string name="settings_fasting_goal">Duração da meta</string>
     <string name="settings_fasting_goal_summary_none">Sem meta</string>
-    <string name="settings_fasting_goal_summary">%1$d h</string>
-    <string name="settings_fasting_goal_wheel_help">Uma notificação única é enviada ao atingir a meta. 0 = sem meta.</string>
+    <string name="settings_fasting_goal_summary">%1$d h de jejum</string>
+    <string name="settings_fasting_goal_wheel_help">Escolha um protocolo popular ou defina suas próprias janelas de jejum e refeições. 0 = sem meta.</string>
     <string name="settings_fasting_section_notification">Notificação</string>
     <string name="settings_fasting_notification">Meta atingida</string>
     <string name="fasting_local_only_note">O timer de jejum fica neste dispositivo: nunca é sincronizado, exportado nem incluído em refeições compartilhadas. A notificação de meta atingida é a única coisa que o Chompass publica sobre ele.</string>
@@ -1748,7 +1748,7 @@
     <string name="notif_channel_fasting">Jejum</string>
     <string name="notif_channel_fasting_desc">Aviso único quando uma meta de jejum é atingida.</string>
     <string name="notif_fasting_goal_title">Meta de jejum atingida</string>
-    <string name="notif_fasting_goal_text">Seu jejum de %1$d h terminou — você já pode comer.</string>
+    <string name="notif_fasting_goal_text">Seu jejum terminou: você já pode comer.</string>
     <string name="fasting_preset_detail">%1$d h de jejum · %2$d h de janela de refeições</string>
     <string name="fasting_window_opens_in">A janela de refeições abre em %1$s</string>
     <string name="settings_fasting_section_reminders">Lembretes</string>
@@ -1758,4 +1758,19 @@
     <string name="notif_fasting_start_title">Inicie seu jejum</string>
     <string name="notif_fasting_start_text">Inicie seu jejum agora.</string>
     <string name="notif_fasting_start_text_goal">Inicie agora seu jejum de %1$d h.</string>
+    <string name="fasting_fast_starts_in">O jejum começa em %1$s</string>
+    <string name="fasting_eating_progress">%1$s de %2$d h de refeições</string>
+    <string name="settings_fasting_eat_window">Janela de refeições</string>
+    <string name="settings_fasting_goal_summary_both">%1$d h de jejum · %2$d h de refeições</string>
+    <string name="settings_fasting_end_reminder">Lembrete de fim de jejum</string>
+    <string name="settings_fasting_reminder_lead_end">Antes do fim do jejum</string>
+    <string name="settings_fasting_reminder_lead_start">Antes do início do jejum</string>
+    <string name="settings_fasting_reminder_lead_unit">min</string>
+    <string name="settings_fasting_reminder_lead_summary">%1$d min antes</string>
+    <string name="settings_fasting_reminder_lead_now">No limite</string>
+    <string name="settings_fasting_reminder_help">Os avisos são por ciclo: o de início toca antes do fechamento da janela de refeições e o de fim antes de atingir a meta. 0 = exatamente no limite.</string>
+    <string name="notif_fasting_end_soon_title">O jejum termina em breve</string>
+    <string name="notif_fasting_end_soon_text">Seu jejum termina em %1$d min — sua janela de refeições abre então.</string>
+    <string name="notif_fasting_start_soon_title">O jejum começa em breve</string>
+    <string name="notif_fasting_start_soon_text">Sua janela de refeições fecha em %1$d min — comece seu jejum então.</string>
 </resources>

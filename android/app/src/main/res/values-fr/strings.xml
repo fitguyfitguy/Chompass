@@ -1744,8 +1744,8 @@
     <string name="settings_fasting_tracking">Minuteur de jeûne</string>
     <string name="settings_fasting_goal">Durée objectif</string>
     <string name="settings_fasting_goal_summary_none">Aucun objectif</string>
-    <string name="settings_fasting_goal_summary">%1$d h</string>
-    <string name="settings_fasting_goal_wheel_help">Une notification unique est envoyée lorsque l\'objectif est atteint. 0 = aucun objectif.</string>
+    <string name="settings_fasting_goal_summary">%1$d h de jeûne</string>
+    <string name="settings_fasting_goal_wheel_help">Choisissez un protocole populaire ou réglez vos propres fenêtres de jeûne et de repas. 0 = aucun objectif.</string>
     <string name="settings_fasting_section_notification">Notifications</string>
     <string name="settings_fasting_notification">Objectif atteint</string>
     <string name="fasting_local_only_note">Le minuteur de jeûne reste sur cet appareil : il n\'est jamais synchronisé, exporté ni inclus dans les repas partagés. La notification d\'objectif atteint est la seule chose que Chompass publie à son sujet.</string>
@@ -1755,7 +1755,7 @@
     <string name="notif_channel_fasting">Jeûne</string>
     <string name="notif_channel_fasting_desc">Avis unique lorsqu\'un objectif de jeûne est atteint.</string>
     <string name="notif_fasting_goal_title">Objectif de jeûne atteint</string>
-    <string name="notif_fasting_goal_text">Votre jeûne de %1$d h est terminé : vous pouvez rompre votre jeûne maintenant.</string>
+    <string name="notif_fasting_goal_text">Votre jeûne est terminé : vous pouvez manger maintenant.</string>
     <string name="fasting_preset_detail">%1$d h de jeûne · %2$d h de fenêtre de repas</string>
     <string name="fasting_window_opens_in">La fenêtre de repas s\'ouvre dans %1$s</string>
     <string name="settings_fasting_section_reminders">Rappels</string>
@@ -1765,4 +1765,19 @@
     <string name="notif_fasting_start_title">Démarrez votre jeûne</string>
     <string name="notif_fasting_start_text">Démarrez votre jeûne maintenant.</string>
     <string name="notif_fasting_start_text_goal">Démarrez maintenant votre jeûne de %1$d h.</string>
+    <string name="fasting_fast_starts_in">Le jeûne commence dans %1$s</string>
+    <string name="fasting_eating_progress">%1$s sur %2$d h de repas</string>
+    <string name="settings_fasting_eat_window">Fenêtre de repas</string>
+    <string name="settings_fasting_goal_summary_both">%1$d h de jeûne · %2$d h de repas</string>
+    <string name="settings_fasting_end_reminder">Rappel de fin de jeûne</string>
+    <string name="settings_fasting_reminder_lead_end">Avant la fin du jeûne</string>
+    <string name="settings_fasting_reminder_lead_start">Avant le début du jeûne</string>
+    <string name="settings_fasting_reminder_lead_unit">min</string>
+    <string name="settings_fasting_reminder_lead_summary">%1$d min avant</string>
+    <string name="settings_fasting_reminder_lead_now">À la limite</string>
+    <string name="settings_fasting_reminder_help">Les délais sont par cycle : le rappel de début sonne avant la fermeture de la fenêtre de repas, celui de fin avant l\'atteinte de l\'objectif. 0 = exactement à la limite.</string>
+    <string name="notif_fasting_end_soon_title">Jeûne bientôt terminé</string>
+    <string name="notif_fasting_end_soon_text">Votre jeûne se termine dans %1$d min — votre fenêtre de repas s\'ouvre alors.</string>
+    <string name="notif_fasting_start_soon_title">Jeûne bientôt commencé</string>
+    <string name="notif_fasting_start_soon_text">Votre fenêtre de repas se ferme dans %1$d min — démarrez votre jeûne alors.</string>
 </resources>

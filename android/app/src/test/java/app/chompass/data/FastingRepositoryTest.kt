@@ -2,6 +2,8 @@ package app.chompass.data
 
 import android.app.Application
 import app.chompass.models.FastingGoalPreset
+import app.chompass.models.FastingPhase
+import app.chompass.models.phase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -37,8 +39,9 @@ class FastingRepositoryTest {
         prefs.setFastingGoalHours(0)
         prefs.setFastingGoalNotificationEnabled(true)
         prefs.setFastingStartReminderEnabled(false)
-        prefs.setFastingStartReminderHour(DEFAULT_FASTING_START_REMINDER_HOUR)
-        prefs.setFastingStartReminderMinute(DEFAULT_FASTING_START_REMINDER_MINUTE)
+        prefs.setFastingStartReminderLeadMinutes(DEFAULT_FASTING_START_REMINDER_LEAD_MINUTES)
+        prefs.setFastingEndReminderLeadMinutes(DEFAULT_FASTING_END_REMINDER_LEAD_MINUTES)
+        prefs.setFastingEatHours(0)
     }
 
     private fun repo(
@@ -208,11 +211,33 @@ class FastingRepositoryTest {
     }
 
     @Test
-    fun `start reminder defaults are off at 20 00`() = runBlocking {
+    fun `start reminder defaults are off with a 15 min lead`() = runBlocking {
         val prefs = PreferencesStore(RuntimeEnvironment.getApplication())
         assertFalse(prefs.fastingStartReminderEnabled.first())
-        assertEquals(DEFAULT_FASTING_START_REMINDER_HOUR, prefs.fastingStartReminderHour.first())
-        assertEquals(DEFAULT_FASTING_START_REMINDER_MINUTE, prefs.fastingStartReminderMinute.first())
+        assertEquals(15, prefs.fastingStartReminderLeadMinutes.first())
+        assertEquals(15, prefs.fastingEndReminderLeadMinutes.first())
+        assertEquals(0, prefs.fastingEatHours.first())
+    }
+
+    @Test
+    fun `eating window ends at stop plus eat hours and phases derive from it`() = runBlocking {
+        val prefs = PreferencesStore(RuntimeEnvironment.getApplication())
+        val r = repo(prefs)
+        r.start(1_000L)
+        r.stop(9 * 3_600_000L + 1_000L) // stopped at t=9h
+
+        val s = prefs.fastingSession.first()
+        // No eat hours → no eating phase.
+        assertEquals(null, s.eatingWindowEndsAtMillis(0, nowMillis = 10_000L))
+        assertEquals(FastingPhase.IDLE, s.phase(0, nowMillis = 10_000L))
+
+        // Eat window 8 h from the stop.
+        val windowEnds = s.eatingWindowEndsAtMillis(8, nowMillis = 10_000L)
+        assertEquals((9 * 3_600_000L + 1_000L) + 8 * 3_600_000L, windowEnds)
+        assertEquals(FastingPhase.EATING, s.phase(8, nowMillis = 10_000L))
+        // After the window closes the phase lapses to idle.
+        assertEquals(null, s.eatingWindowEndsAtMillis(8, nowMillis = (17 * 3_600_000L) + 2_000L))
+        assertEquals(FastingPhase.IDLE, s.phase(8, nowMillis = (17 * 3_600_000L) + 2_000L))
     }
 
     @Test

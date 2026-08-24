@@ -44,7 +44,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import app.chompass.R
+import app.chompass.data.MAX_FASTING_EAT_HOURS
 import app.chompass.data.MAX_FASTING_GOAL_HOURS
+import app.chompass.data.MAX_FASTING_REMINDER_LEAD_MINUTES
 import app.chompass.models.FastingGoalPreset
 import app.chompass.models.CalorieSafety
 import app.chompass.models.OptionalNutrientGoals
@@ -60,19 +62,13 @@ import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.components.UnitToggle
-import app.chompass.ui.components.WheelPicker
 import app.chompass.ui.components.isDarkTheme
-import androidx.compose.ui.platform.LocalContext
 import app.chompass.ui.theme.AppColors
 import java.time.Instant
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
-import app.chompass.ui.util.clockTimePattern
 import java.time.LocalDate
-import java.time.LocalTime
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 import androidx.compose.material3.Icon
 import app.chompass.models.UnitFormat
 
@@ -366,23 +362,36 @@ internal fun CaffeineLimitSheet(current: Int, onSave: (Int) -> Unit) {
     Spacer(Modifier.height(8.dp))
 }
 
-/** Fasting goal length in hours (0 = no goal); mirrors the nicotine limit wheel. */
+/** Fasting goal + eating window (hours each, 0 = none); presets + two wheels. */
 @Composable
-internal fun FastingGoalSheet(current: Int, onSave: (Int) -> Unit) {
-    var goal by remember(current) { mutableIntStateOf(current.coerceIn(0, MAX_FASTING_GOAL_HOURS)) }
+internal fun FastingGoalSheet(
+    fastHours: Int,
+    eatHours: Int,
+    onSave: (fast: Int, eat: Int) -> Unit,
+) {
+    var fast by remember(fastHours) { mutableIntStateOf(fastHours.coerceIn(0, MAX_FASTING_GOAL_HOURS)) }
+    // Default the eating window to a 24 h cycle when the user only set a fast
+    // length — they can still override it freely afterwards.
+    var eat by remember(fastHours, eatHours) {
+        mutableIntStateOf(if (eatHours > 0) eatHours else (24 - fastHours).coerceIn(0, MAX_FASTING_EAT_HOURS))
+    }
     Text(stringResource(R.string.settings_fasting_goal), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(12.dp))
     // Popular-protocol quick picks (12:12 … 23:1). Ratio labels are
     // language-neutral; the detail line below explains the selected one.
     FlowRow(
+        Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         FastingGoalPreset.Popular.forEach { preset ->
-            val selected = goal == preset.fastHours
+            val selected = fast == preset.fastHours && eat == preset.eatHours
             FilterChip(
                 selected = selected,
-                onClick = { goal = preset.fastHours },
+                onClick = {
+                    fast = preset.fastHours
+                    eat = preset.eatHours
+                },
                 label = { Text(preset.label) },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -391,24 +400,39 @@ internal fun FastingGoalSheet(current: Int, onSave: (Int) -> Unit) {
         }
     }
     Spacer(Modifier.height(12.dp))
-    val selectedPreset = FastingGoalPreset.Popular.firstOrNull { it.fastHours == goal }
-    if (selectedPreset != null && goal > 0) {
+    val selectedPreset = FastingGoalPreset.Popular.firstOrNull { it.fastHours == fast && it.eatHours == eat }
+    if (selectedPreset != null && fast > 0) {
         Text(
-            stringResource(
-                R.string.fasting_preset_detail,
-                selectedPreset.fastHours,
-                selectedPreset.eatHours,
-            ),
+            stringResource(R.string.fasting_preset_detail, selectedPreset.fastHours, selectedPreset.eatHours),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
         Spacer(Modifier.height(8.dp))
     }
+    Text(
+        stringResource(R.string.fasting),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+    )
     NumericWheelPicker(
-        value = goal,
-        onValueChange = { goal = it },
+        value = fast,
+        onValueChange = { fast = it },
         min = 0,
         max = MAX_FASTING_GOAL_HOURS,
+        unit = stringResource(R.string.fasting_goal_unit_h),
+        step = 1,
+    )
+    Spacer(Modifier.height(8.dp))
+    Text(
+        stringResource(R.string.settings_fasting_eat_window),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+    )
+    NumericWheelPicker(
+        value = eat,
+        onValueChange = { eat = it },
+        min = 0,
+        max = MAX_FASTING_EAT_HOURS,
         unit = stringResource(R.string.fasting_goal_unit_h),
         step = 1,
     )
@@ -419,41 +443,36 @@ internal fun FastingGoalSheet(current: Int, onSave: (Int) -> Unit) {
         color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
     )
     Spacer(Modifier.height(16.dp))
-    GradientSaveButton { onSave(goal) }
+    GradientSaveButton { onSave(fast, eat) }
     Spacer(Modifier.height(8.dp))
 }
 
-/** Daily start-fast nudge time; mirrors [DailySummaryTimeSheet]. */
+/** Reminder lead minutes (0–120, step 5); reused for start and break-fast nudges. */
 @Composable
-internal fun FastingStartTimeSheet(
-    hour: Int,
-    minute: Int,
-    onSave: (hour: Int, minute: Int) -> Unit,
+internal fun FastingReminderLeadSheet(
+    title: String,
+    current: Int,
+    onSave: (Int) -> Unit,
 ) {
-    val currentMinutes = (hour.coerceIn(0, 23) * 60 + minute.coerceIn(0, 59))
-    val options = remember(currentMinutes) {
-        val grid = (0 until 24 * 60 step 15).toList()
-        if (currentMinutes in grid) grid else (grid + currentMinutes).sorted()
-    }
-    var selectedMinutes by remember(currentMinutes) { mutableIntStateOf(currentMinutes) }
-    val context = LocalContext.current
-    val formatter = remember(context) {
-        DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault())
-    }
+    var lead by remember(current) { mutableIntStateOf(current.coerceIn(0, MAX_FASTING_REMINDER_LEAD_MINUTES)) }
+    Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+    Spacer(Modifier.height(20.dp))
+    NumericWheelPicker(
+        value = lead,
+        onValueChange = { lead = it },
+        min = 0,
+        max = MAX_FASTING_REMINDER_LEAD_MINUTES,
+        unit = stringResource(R.string.settings_fasting_reminder_lead_unit),
+        step = 5,
+    )
+    Spacer(Modifier.height(8.dp))
     Text(
-        stringResource(R.string.settings_fasting_start_reminder_time),
-        style = MaterialTheme.typography.titleLarge,
-        fontWeight = FontWeight.Bold,
+        stringResource(R.string.settings_fasting_reminder_help),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
     )
     Spacer(Modifier.height(16.dp))
-    WheelPicker(
-        items = options,
-        selected = selectedMinutes,
-        onSelect = { selectedMinutes = it },
-        label = { LocalTime.of(it / 60, it % 60).format(formatter) },
-    )
-    Spacer(Modifier.height(16.dp))
-    GradientSaveButton { onSave(selectedMinutes / 60, selectedMinutes % 60) }
+    GradientSaveButton { onSave(lead) }
     Spacer(Modifier.height(8.dp))
 }
 

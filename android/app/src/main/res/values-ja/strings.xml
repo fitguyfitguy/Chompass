@@ -1737,8 +1737,8 @@
     <string name="settings_fasting_tracking">ファスティングタイマー</string>
     <string name="settings_fasting_goal">目標時間</string>
     <string name="settings_fasting_goal_summary_none">目標なし</string>
-    <string name="settings_fasting_goal_summary">%1$d 時間</string>
-    <string name="settings_fasting_goal_wheel_help">目標に到達すると通知が1回送信されます。0 = 目標なし。</string>
+    <string name="settings_fasting_goal_summary">%1$d 時間ファスティング</string>
+    <string name="settings_fasting_goal_wheel_help">一般的なプロトコルを選ぶか、自分でファスティングと食事の時間を設定できます。0 = 目標なし。</string>
     <string name="settings_fasting_section_notification">通知</string>
     <string name="settings_fasting_notification">目標達成</string>
     <string name="fasting_local_only_note">ファスティングタイマーはこの端末にのみ保存されます。同期・書き出し・共有メニューへの組み込みは一切行われません。Chompassが送信するのは目標達成通知のみです。</string>
@@ -1748,7 +1748,7 @@
     <string name="notif_channel_fasting">ファスティング</string>
     <string name="notif_channel_fasting_desc">ファスティング目標達成時の1回限りの通知。</string>
     <string name="notif_fasting_goal_title">ファスティング目標達成</string>
-    <string name="notif_fasting_goal_text">%1$d 時間のファスティングが完了しました。そろそろ食事を始められます。</string>
+    <string name="notif_fasting_goal_text">ファスティングが完了しました。もう食べられます。</string>
     <string name="fasting_preset_detail">ファスティング %1$d 時間 · 食事時間 %2$d 時間</string>
     <string name="fasting_window_opens_in">食事時間まで %1$s</string>
     <string name="settings_fasting_section_reminders">リマインダー</string>
@@ -1758,4 +1758,19 @@
     <string name="notif_fasting_start_title">ファスティングを開始</string>
     <string name="notif_fasting_start_text">今すぐファスティングを開始しましょう。</string>
     <string name="notif_fasting_start_text_goal">今すぐ %1$d 時間のファスティングを開始しましょう。</string>
+    <string name="fasting_fast_starts_in">ファスティングまで %1$s</string>
+    <string name="fasting_eating_progress">食事 %2$d 時間のうち %1$s</string>
+    <string name="settings_fasting_eat_window">食事時間</string>
+    <string name="settings_fasting_goal_summary_both">%1$d 時間ファスティング · %2$d 時間食事</string>
+    <string name="settings_fasting_end_reminder">終了リマインダー</string>
+    <string name="settings_fasting_reminder_lead_end">ファスティング終了前</string>
+    <string name="settings_fasting_reminder_lead_start">ファスティング開始前</string>
+    <string name="settings_fasting_reminder_lead_unit">分</string>
+    <string name="settings_fasting_reminder_lead_summary">%1$d 分前</string>
+    <string name="settings_fasting_reminder_lead_now">ちょうど境界で</string>
+    <string name="settings_fasting_reminder_help">リード時間はサイクルごとです。開始通知は食事時間の終了前に、終了通知は目標達成の前に送られます。0 = ちょうど境界で。</string>
+    <string name="notif_fasting_end_soon_title">ファスティングまもなく終了</string>
+    <string name="notif_fasting_end_soon_text">%1$d 分後にファスティングが終了します。食事時間が始まります。</string>
+    <string name="notif_fasting_start_soon_title">ファスティングまもなく開始</string>
+    <string name="notif_fasting_start_soon_text">%1$d 分後に食事時間が終了します。ファスティングを始めましょう。</string>
 </resources>

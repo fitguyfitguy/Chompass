@@ -1737,8 +1737,8 @@
     <string name="settings_fasting_tracking">Timer digiuno</string>
     <string name="settings_fasting_goal">Durata obiettivo</string>
     <string name="settings_fasting_goal_summary_none">Nessun obiettivo</string>
-    <string name="settings_fasting_goal_summary">%1$d h</string>
-    <string name="settings_fasting_goal_wheel_help">Una notifica una tantum viene inviata al raggiungimento dell\'obiettivo. 0 = nessun obiettivo.</string>
+    <string name="settings_fasting_goal_summary">%1$d h di digiuno</string>
+    <string name="settings_fasting_goal_wheel_help">Scegli un protocollo popolare o imposta le tue finestre di digiuno e pasti. 0 = nessun obiettivo.</string>
     <string name="settings_fasting_section_notification">Notifica</string>
     <string name="settings_fasting_notification">Obiettivo raggiunto</string>
     <string name="fasting_local_only_note">Il timer del digiuno resta su questo dispositivo: non viene mai sincronizzato, esportato o incluso nei pasti condivisi. La notifica di obiettivo raggiunto è l\'unica cosa che Chompass pubblica al riguardo.</string>
@@ -1748,7 +1748,7 @@
     <string name="notif_channel_fasting">Digiuno</string>
     <string name="notif_channel_fasting_desc">Avviso una tantum quando un obiettivo di digiuno viene raggiunto.</string>
     <string name="notif_fasting_goal_title">Obiettivo digiuno raggiunto</string>
-    <string name="notif_fasting_goal_text">Il tuo digiuno di %1$d h è completo: ora puoi mangiare.</string>
+    <string name="notif_fasting_goal_text">Il tuo digiuno è completo: ora puoi mangiare.</string>
     <string name="fasting_preset_detail">%1$d h di digiuno · %2$d h di finestra dei pasti</string>
     <string name="fasting_window_opens_in">La finestra dei pasti si apre tra %1$s</string>
     <string name="settings_fasting_section_reminders">Promemoria</string>
@@ -1758,4 +1758,19 @@
     <string name="notif_fasting_start_title">Inizia il tuo digiuno</string>
     <string name="notif_fasting_start_text">Inizia subito il tuo digiuno.</string>
     <string name="notif_fasting_start_text_goal">Inizia subito il tuo digiuno di %1$d h.</string>
+    <string name="fasting_fast_starts_in">Il digiuno inizia tra %1$s</string>
+    <string name="fasting_eating_progress">%1$s di %2$d h di pasti</string>
+    <string name="settings_fasting_eat_window">Finestra dei pasti</string>
+    <string name="settings_fasting_goal_summary_both">%1$d h di digiuno · %2$d h di pasti</string>
+    <string name="settings_fasting_end_reminder">Promemoria fine digiuno</string>
+    <string name="settings_fasting_reminder_lead_end">Prima della fine del digiuno</string>
+    <string name="settings_fasting_reminder_lead_start">Prima dell\'inizio del digiuno</string>
+    <string name="settings_fasting_reminder_lead_unit">min</string>
+    <string name="settings_fasting_reminder_lead_summary">%1$d min prima</string>
+    <string name="settings_fasting_reminder_lead_now">Al limite</string>
+    <string name="settings_fasting_reminder_help">Gli anticipi sono per ciclo: il promemoria di inizio suona prima della chiusura della finestra dei pasti, quello di fine prima dell\'obiettivo. 0 = esattamente al limite.</string>
+    <string name="notif_fasting_end_soon_title">Il digiuno finisce presto</string>
+    <string name="notif_fasting_end_soon_text">Il tuo digiuno finisce tra %1$d min: la tua finestra dei pasti si apre allora.</string>
+    <string name="notif_fasting_start_soon_title">Il digiuno inizia presto</string>
+    <string name="notif_fasting_start_soon_text">La tua finestra dei pasti si chiude tra %1$d min: inizia il digiuno allora.</string>
 </resources>

@@ -28,37 +28,68 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.models.FastingPhase
 import app.chompass.models.FastingSession
 
 /**
- * Home progress row for the optional intermittent-fasting timer
- * (docs/local/PLAN_FASTING_TRACKER.md). Shows the elapsed time against the
- * optional goal with Start / Stop / Cancel. Local-only: nothing is synced or
- * exported. Placement: directly below the nicotine row in HomeScreen.
+ * Fasting cycle bar on Home (docs/local/PLAN_FASTING_TRACKER.md §5). Tells the
+ * user how long until they can eat (fasting phase) or until the next fast
+ * starts (eating phase), with Start / Stop / Cancel. Local-only: nothing is
+ * synced or exported. Placement: directly below the calorie hero.
  */
 @Composable
 fun FastingProgressRow(
-    active: Boolean,
-    elapsedMillis: Long,
-    goalHours: Int,
+    phase: FastingPhase,
+    fastHours: Int,
+    eatHours: Int,
+    fastElapsedMillis: Long,
+    eatElapsedMillis: Long,
     goalReached: Boolean,
     onStart: () -> Unit,
     onStop: () -> Unit,
     onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val hasGoal = goalHours > 0
-    val goalMillis = goalHours * FastingSession.MILLIS_PER_HOUR
-    val progress = if (hasGoal) (elapsedMillis.toFloat() / goalMillis).coerceIn(0f, 1f) else 0f
-    val statusLabel = when {
-        !active -> stringResource(R.string.fasting_idle)
-        goalReached -> stringResource(R.string.fasting_goal_reached)
-        hasGoal -> stringResource(
-            R.string.fasting_goal_progress,
-            fastingDurationLabel(elapsedMillis),
-            goalHours,
-        )
-        else -> fastingDurationLabel(elapsedMillis)
+    val hasGoal = fastHours > 0
+    val fastWindowMillis = fastHours * FastingSession.MILLIS_PER_HOUR
+    val eatWindowMillis = eatHours * FastingSession.MILLIS_PER_HOUR
+
+    val statusLabel: String
+    val progress: Float
+    val countdownHint: String?
+    when (phase) {
+        FastingPhase.FASTING -> {
+            statusLabel = if (goalReached) {
+                stringResource(R.string.fasting_goal_reached)
+            } else if (hasGoal) {
+                stringResource(R.string.fasting_goal_progress, fastingDurationLabel(fastElapsedMillis), fastHours)
+            } else {
+                fastingDurationLabel(fastElapsedMillis)
+            }
+            progress = if (hasGoal) (fastElapsedMillis.toFloat() / fastWindowMillis).coerceIn(0f, 1f) else 0f
+            countdownHint = if (hasGoal && !goalReached) {
+                stringResource(R.string.fasting_window_opens_in, fastingDurationLabel(fastWindowMillis - fastElapsedMillis))
+            } else {
+                null
+            }
+        }
+        FastingPhase.EATING -> {
+            statusLabel = stringResource(
+                R.string.fasting_eating_progress,
+                fastingDurationLabel(eatElapsedMillis),
+                eatHours,
+            )
+            progress = (eatElapsedMillis.toFloat() / eatWindowMillis).coerceIn(0f, 1f)
+            countdownHint = stringResource(
+                R.string.fasting_fast_starts_in,
+                fastingDurationLabel((eatWindowMillis - eatElapsedMillis).coerceAtLeast(0L)),
+            )
+        }
+        FastingPhase.IDLE -> {
+            statusLabel = stringResource(R.string.fasting_idle)
+            progress = 0f
+            countdownHint = null
+        }
     }
 
     Column(
@@ -85,7 +116,7 @@ fun FastingProgressRow(
                 fontSize = 12.sp,
             )
         }
-        if (hasGoal && active) {
+        if ((phase == FastingPhase.FASTING && hasGoal) || phase == FastingPhase.EATING) {
             LinearProgressIndicator(
                 progress = { progress },
                 modifier = Modifier
@@ -95,19 +126,16 @@ fun FastingProgressRow(
                 color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
             )
-            if (!goalReached) {
+            if (countdownHint != null) {
                 Text(
-                    stringResource(
-                        R.string.fasting_window_opens_in,
-                        fastingDurationLabel(goalMillis - elapsedMillis),
-                    ),
+                    countdownHint,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
                     fontSize = 11.sp,
                 )
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (active) {
+            if (phase == FastingPhase.FASTING) {
                 Button(
                     onClick = onStop,
                     colors = ButtonDefaults.buttonColors(
@@ -143,24 +171,33 @@ fun FastingProgressRow(
  */
 @Composable
 fun FastingHubControl(
-    active: Boolean,
-    elapsedMillis: Long,
-    goalHours: Int,
+    phase: FastingPhase,
+    fastHours: Int,
+    eatHours: Int,
+    fastElapsedMillis: Long,
+    eatElapsedMillis: Long,
     goalReached: Boolean,
     onStart: () -> Unit,
     onStop: () -> Unit,
     onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val status = when {
-        !active -> stringResource(R.string.fasting_idle)
-        goalReached -> stringResource(R.string.fasting_goal_reached)
-        goalHours > 0 -> stringResource(
-            R.string.fasting_goal_progress,
-            fastingDurationLabel(elapsedMillis),
-            goalHours,
+    val fastWindowMillis = fastHours * FastingSession.MILLIS_PER_HOUR
+    val eatWindowMillis = eatHours * FastingSession.MILLIS_PER_HOUR
+    val status = when (phase) {
+        FastingPhase.FASTING ->
+            if (goalReached) {
+                stringResource(R.string.fasting_goal_reached)
+            } else if (fastHours > 0) {
+                stringResource(R.string.fasting_goal_progress, fastingDurationLabel(fastElapsedMillis), fastHours)
+            } else {
+                fastingDurationLabel(fastElapsedMillis)
+            }
+        FastingPhase.EATING -> stringResource(
+            R.string.fasting_fast_starts_in,
+            fastingDurationLabel((eatWindowMillis - eatElapsedMillis).coerceAtLeast(0L)),
         )
-        else -> fastingDurationLabel(elapsedMillis)
+        FastingPhase.IDLE -> stringResource(R.string.fasting_idle)
     }
     Column(modifier) {
         SheetSectionHeader(stringResource(R.string.add_food_fasting_section))
@@ -172,49 +209,49 @@ fun FastingHubControl(
                 .padding(start = 12.dp, end = 8.dp, top = 10.dp, bottom = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-        Icon(
-            Icons.Outlined.Schedule,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.height(18.dp),
-        )
-        Spacer(Modifier.padding(start = 8.dp))
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(
-                stringResource(R.string.fasting),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp,
+            Icon(
+                Icons.Outlined.Schedule,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.height(18.dp),
             )
-            Text(
-                status,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
-                fontSize = 12.sp,
-            )
-        }
-        if (active) {
-            Button(
-                onClick = onStop,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                ),
-                contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
-            ) {
-                Text(stringResource(R.string.fasting_stop), fontSize = 13.sp)
+            Spacer(Modifier.padding(start = 8.dp))
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    stringResource(R.string.fasting),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
+                )
+                Text(
+                    status,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+                    fontSize = 12.sp,
+                )
             }
-            TextButton(onClick = onCancel) {
-                Text(stringResource(R.string.fasting_cancel), fontSize = 12.sp)
+            if (phase == FastingPhase.FASTING) {
+                Button(
+                    onClick = onStop,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                    ),
+                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
+                ) {
+                    Text(stringResource(R.string.fasting_stop), fontSize = 13.sp)
+                }
+                TextButton(onClick = onCancel) {
+                    Text(stringResource(R.string.fasting_cancel), fontSize = 12.sp)
+                }
+            } else {
+                Button(
+                    onClick = onStart,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                    ),
+                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
+                ) {
+                    Text(stringResource(R.string.fasting_start), fontSize = 13.sp)
+                }
             }
-        } else {
-            Button(
-                onClick = onStart,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                ),
-                contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
-            ) {
-                Text(stringResource(R.string.fasting_start), fontSize = 13.sp)
-            }
-        }
         }
     }
 }

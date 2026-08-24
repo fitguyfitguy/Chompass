@@ -505,6 +505,21 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                             )
                         }
                     }
+                    if (ui.fastingEnabled) {
+                        Spacer(Modifier.height(12.dp))
+                        FastingProgressRow(
+                            phase = ui.fastingPhase,
+                            fastHours = ui.fastingGoalHours,
+                            eatHours = ui.fastingEatHours,
+                            fastElapsedMillis = ui.fastingElapsedMillis,
+                            eatElapsedMillis = ui.fastingEatingElapsedMillis,
+                            goalReached = ui.fastingGoalReached,
+                            onStart = vm::startFast,
+                            onStop = vm::stopFast,
+                            onCancel = vm::cancelFast,
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                        )
+                    }
                     if (ui.waterTrackingEnabled) {
                         Spacer(Modifier.height(12.dp))
                         val nextDrinkLabel = ui.waterNextPlan?.let { plan ->
@@ -551,19 +566,6 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                             currentMg = ui.caffeineTodayMg,
                             limit = ui.caffeineDailyLimitMg,
                             onClick = { showCaffeineHistory = true },
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                        )
-                    }
-                    if (ui.fastingEnabled) {
-                        Spacer(Modifier.height(12.dp))
-                        FastingProgressRow(
-                            active = ui.fastingActive,
-                            elapsedMillis = ui.fastingElapsedMillis,
-                            goalHours = ui.fastingGoalHours,
-                            goalReached = ui.fastingGoalReached,
-                            onStart = vm::startFast,
-                            onStop = vm::stopFast,
-                            onCancel = vm::cancelFast,
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )
                     }
@@ -892,9 +894,11 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             onCaffeine = { kind -> vm.addCaffeine(kind) },
             onCaffeineCustom = { showCaffeineCustom = true },
             fastingEnabled = ui.fastingEnabled,
-            fastingActive = ui.fastingActive,
+            fastingPhase = ui.fastingPhase,
             fastingElapsedMillis = ui.fastingElapsedMillis,
+            fastingEatingElapsedMillis = ui.fastingEatingElapsedMillis,
             fastingGoalHours = ui.fastingGoalHours,
+            fastingEatHours = ui.fastingEatHours,
             fastingGoalReached = ui.fastingGoalReached,
             onStartFast = vm::startFast,
             onStopFast = vm::stopFast,

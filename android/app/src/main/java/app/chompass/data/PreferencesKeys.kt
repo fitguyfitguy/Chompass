@@ -85,15 +85,19 @@ internal object Keys {
         // Session state is three scalars (state is a pure function of them).
         val FASTING_ENABLED = booleanPreferencesKey("fastingEnabled")
         val FASTING_GOAL_HOURS = intPreferencesKey("fastingGoalHours")
+        /** Eating-window length in hours (0 = not configured); completes the fast → eat cycle. */
+        val FASTING_EAT_HOURS = intPreferencesKey("fastingEatHours")
         val FASTING_GOAL_NOTIFICATION_ENABLED = booleanPreferencesKey("fastingGoalNotificationEnabled")
+        /** Lead minutes for the break-fast nudge: fires this long before the fast ends. */
+        val FASTING_END_REMINDER_LEAD_MINUTES = intPreferencesKey("fastingEndReminderLeadMinutes")
+        /** Lead minutes for the start nudge: fires this long before the eating window closes. */
+        val FASTING_START_REMINDER_LEAD_MINUTES = intPreferencesKey("fastingStartReminderLeadMinutes")
+        /** Off by default; anchors to the open eating window when set. */
+        val FASTING_START_REMINDER_ENABLED = booleanPreferencesKey("fastingStartReminderEnabled")
         val FASTING_STARTED_AT = longPreferencesKey("fastingStartedAt")
         val FASTING_LAST_ENDED_AT = longPreferencesKey("fastingLastEndedAt")
         val FASTING_LAST_FAST_STARTED_AT = longPreferencesKey("fastingLastFastStartedAt")
         val FASTING_GOAL_REACHED_NOTIFIED = booleanPreferencesKey("fastingGoalReachedNotified")
-        /** Optional daily nudge to start the next fast (off by default, like every reminder). */
-        val FASTING_START_REMINDER_ENABLED = booleanPreferencesKey("fastingStartReminderEnabled")
-        val FASTING_START_REMINDER_HOUR = intPreferencesKey("fastingStartReminderHour")
-        val FASTING_START_REMINDER_MINUTE = intPreferencesKey("fastingStartReminderMinute")
         val LAST_NOTIFIED_UPDATE_VERSION = stringPreferencesKey("lastNotifiedUpdateVersion")
         val HEALTH_CONNECT_ENABLED = booleanPreferencesKey("healthConnectEnabled")
         val HEALTH_TYPES_VERSION = intPreferencesKey("healthTypesVersion")

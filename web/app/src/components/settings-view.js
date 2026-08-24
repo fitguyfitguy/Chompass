@@ -769,12 +769,16 @@ export class SettingsView extends HTMLElement {
         <div class="field">
           <label for="fastingGoalHours">Fasting goal (hours, 0 = none)</label>
           <input id="fastingGoalHours" name="fastingGoalHours" type="number" min="0" max="48" value="${p.fastingGoalHours ?? 0}" />
-          <p class="nutrient-picker__hint">Quick picks:</p>
+        </div>
+        <div class="field">
+          <label for="fastingEatHours">Eating window (hours, 0 = off)</label>
+          <input id="fastingEatHours" name="fastingEatHours" type="number" min="0" max="24" value="${p.fastingEatHours ?? 0}" />
+          <p class="nutrient-picker__hint">Quick picks (fast : eat):</p>
           <div class="fasting-presets">
             ${[12, 14, 16, 18, 20, 23]
               .map(
                 (h) =>
-                  `<button type="button" class="chip${p.fastingGoalHours === h ? " chip--active" : ""}" data-fasting-preset="${h}">${h === 23 ? "23:1" : `${h}:${24 - h}`}</button>`,
+                  `<button type="button" class="chip${p.fastingGoalHours === h && (p.fastingEatHours ?? 0) === 24 - h ? " chip--active" : ""}" data-fasting-preset="${h}">${h === 23 ? "23:1" : `${h}:${24 - h}`}</button>`,
               )
               .join("")}
           </div>
@@ -843,7 +847,8 @@ export class SettingsView extends HTMLElement {
         caffeineDailyLimitMg: Math.min(1000, Math.max(0, Number(fd.get("caffeineDailyLimitMg") ?? 400))),
         showNotes: fd.get("showNotes") === "true",
         showFasting: fd.get("showFasting") === "true",
-        fastingGoalHours: Math.min(48, Math.max(0, Number(fd.get("fastingGoalHours") || 0))),        calorieGaugeMode: /** @type {any} */ (fd.get("calorieGaugeMode")),
+        fastingGoalHours: Math.min(48, Math.max(0, Number(fd.get("fastingGoalHours") || 0))),
+        fastingEatHours: Math.min(24, Math.max(0, Number(fd.get("fastingEatHours") || 0))),        calorieGaugeMode: /** @type {any} */ (fd.get("calorieGaugeMode")),
         adaptiveGoals: fd.get("adaptiveGoals") === "true",
         homeNutrientCardCount: cardCount,
         homeTopNutrients: normalizeHomeTopNutrients(tubeRaw, cardCount),
@@ -851,12 +856,14 @@ export class SettingsView extends HTMLElement {
       });
       location.hash = SETTINGS_PARENT.home;
     });
-    // Popular-protocol quick picks set the goal input (saved with the form).
+    // Popular-protocol quick picks set both inputs (fast + eat; saved with the form).
     this.querySelectorAll("[data-fasting-preset]").forEach((btn) => {
       btn.addEventListener("click", () => {
-        const hours = Number(btn.getAttribute("data-fasting-preset"));
-        const input = /** @type {HTMLInputElement|null} */ (this.querySelector("#fastingGoalHours"));
-        if (input) input.value = String(hours);
+        const fast = Number(btn.getAttribute("data-fasting-preset"));
+        const fastInput = /** @type {HTMLInputElement|null} */ (this.querySelector("#fastingGoalHours"));
+        const eatInput = /** @type {HTMLInputElement|null} */ (this.querySelector("#fastingEatHours"));
+        if (fastInput) fastInput.value = String(fast);
+        if (eatInput) eatInput.value = String(24 - fast);
         this.querySelectorAll("[data-fasting-preset]").forEach((b) =>
           b.classList.toggle("chip--active", b === btn),
         );

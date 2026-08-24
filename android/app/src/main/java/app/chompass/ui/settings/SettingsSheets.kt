@@ -609,17 +609,27 @@ internal fun SettingsSheets(
                     },
                 )
                 SettingsSheet.FASTING_GOAL -> FastingGoalSheet(
-                    current = ui.fastingGoalHours,
-                    onSave = {
-                        vm.setFastingGoalHours(it)
+                    fastHours = ui.fastingGoalHours,
+                    eatHours = ui.fastingEatHours,
+                    onSave = { fast, eat ->
+                        vm.setFastingGoalHours(fast)
+                        vm.setFastingEatHours(eat)
                         onDismiss()
                     },
                 )
-                SettingsSheet.FASTING_START_TIME -> FastingStartTimeSheet(
-                    hour = ui.fastingStartReminderHour,
-                    minute = ui.fastingStartReminderMinute,
-                    onSave = { hour, minute ->
-                        vm.setFastingStartReminderTime(hour, minute)
+                SettingsSheet.FASTING_END_LEAD -> FastingReminderLeadSheet(
+                    title = stringResource(R.string.settings_fasting_end_reminder),
+                    current = ui.fastingEndReminderLeadMinutes,
+                    onSave = {
+                        vm.setFastingEndReminderLeadMinutes(it)
+                        onDismiss()
+                    },
+                )
+                SettingsSheet.FASTING_START_LEAD -> FastingReminderLeadSheet(
+                    title = stringResource(R.string.settings_fasting_start_reminder),
+                    current = ui.fastingStartReminderLeadMinutes,
+                    onSave = {
+                        vm.setFastingStartReminderLeadMinutes(it)
                         onDismiss()
                     },
                 )

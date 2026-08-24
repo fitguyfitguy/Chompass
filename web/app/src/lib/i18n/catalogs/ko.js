@@ -80,6 +80,8 @@ export const ko = Object.freeze({
   "diary.fasting_goal_reached": "목표 달성",
   "diary.fasting_goal_hint": "{elapsed} · 목표 {goal}시간",
   "diary.fasting_window_opens_in": "식사 시간까지 {remaining}",
+  "diary.fasting_eating_progress": "식사 {eat}시간 중 {elapsed}",
+  "diary.fasting_fast_starts_in": "단식 시작까지 {remaining}",
   "diary.note_title": "하루 메모",
   "diary.note_empty": "이 날짜에 메모 추가",
   "diary.note_save": "저장",

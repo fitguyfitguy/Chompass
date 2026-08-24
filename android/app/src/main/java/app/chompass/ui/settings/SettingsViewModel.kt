@@ -33,6 +33,7 @@ import app.chompass.services.ai.RecalcSheetData
 import app.chompass.services.FastingGoalPlanner
 import app.chompass.services.FastingReminderPlanner
 import app.chompass.services.LauncherShortcuts
+import app.chompass.services.PerfLog
 import app.chompass.data.SettingsPrefsHydration
 import app.chompass.data.loadLastGoalChangeSheet
 import app.chompass.data.saveLastGoalChangeSheet
@@ -102,10 +103,11 @@ data class SettingsUiState(
     val caffeineQuickKinds: List<CaffeineKind> = CaffeineKind.DefaultQuickKinds,
     val fastingEnabled: Boolean = false,
     val fastingGoalHours: Int = 0,
+    val fastingEatHours: Int = 0,
     val fastingGoalNotificationEnabled: Boolean = true,
+    val fastingEndReminderLeadMinutes: Int = 15,
     val fastingStartReminderEnabled: Boolean = false,
-    val fastingStartReminderHour: Int = 20,
-    val fastingStartReminderMinute: Int = 0,
+    val fastingStartReminderLeadMinutes: Int = 15,
     val waterReminderEnabled: Boolean = false,
     val waterDynamicEnabled: Boolean = false,
     val waterBaseSource: String = WaterGoalCalculator.BASE_SOURCE_WEIGHT,
@@ -258,33 +260,35 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             // off-main so the first Settings frame is never held up; only the
             // final state writes touch the main thread.
             val early = withContext(Dispatchers.IO) {
-                val snap = container.prefs.readSettingsHydration()
-                val provider = snap.selectedAI
-                val model = provider.supportedModelOrDefault(snap.selectedModelRaw)
-                val vision = snap.visionModelRaw
-                    ?.takeIf { it.isNotBlank() }
-                    ?.let { provider.supportedModelOrDefault(it) }
-                    .orEmpty()
-                val onDeviceAvailable = snap.onDeviceFeatureVisible &&
-                    OnDeviceCapability.isSupported(container.appContext)
-                val onDeviceModels = if (provider == AIProvider.ON_DEVICE && onDeviceAvailable) {
-                    supportedOnDeviceModels()
-                } else {
-                    emptyList()
-                }
-                val effectiveModel = if (model !in onDeviceModels && onDeviceModels.isNotEmpty()) {
-                    onDeviceModels.first()
-                } else {
-                    model
-                }
-                EarlyHydration(
-                    snap = snap,
-                    provider = provider,
-                    effectiveModel = effectiveModel,
-                    vision = vision,
-                    onDeviceAvailable = onDeviceAvailable,
-                    onDeviceModels = onDeviceModels,
-                )
+                PerfLog.measure("settingsInit", "early", block = {
+                    val snap = container.prefs.readSettingsHydration()
+                    val provider = snap.selectedAI
+                    val model = provider.supportedModelOrDefault(snap.selectedModelRaw)
+                    val vision = snap.visionModelRaw
+                        ?.takeIf { it.isNotBlank() }
+                        ?.let { provider.supportedModelOrDefault(it) }
+                        .orEmpty()
+                    val onDeviceAvailable = snap.onDeviceFeatureVisible &&
+                        OnDeviceCapability.isSupported(container.appContext)
+                    val onDeviceModels = if (provider == AIProvider.ON_DEVICE && onDeviceAvailable) {
+                        supportedOnDeviceModels()
+                    } else {
+                        emptyList()
+                    }
+                    val effectiveModel = if (model !in onDeviceModels && onDeviceModels.isNotEmpty()) {
+                        onDeviceModels.first()
+                    } else {
+                        model
+                    }
+                    EarlyHydration(
+                        snap = snap,
+                        provider = provider,
+                        effectiveModel = effectiveModel,
+                        vision = vision,
+                        onDeviceAvailable = onDeviceAvailable,
+                        onDeviceModels = onDeviceModels,
+                    )
+                })
             }
             // Paint AI selection before Health Connect / weather so a slow
             // hydrate cannot flash Gemini and hide On-Device.
@@ -297,13 +301,38 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     aiFeaturesEnabled = early.snap.aiFeaturesEnabled,
                 )
             }
+            // Device walk #3 (2026-08-24): Goals & Nutrition rendered empty
+            // cards ("only descriptions and related topics") until the
+            // wholesale hydrate below finished, and on a cold start that chain
+            // (Health Connect IPC, KeyStore, weather, bucket reads) could lag
+            // long enough to look broken. Paint the Goals-relevant fields from
+            // the already-decoded snapshot first; the wholesale state below
+            // supersedes it with the same values.
+            runCatching {
+                val snap = early.snap
+                val profile = container.profileRepository.current()
+                lastRecalcSignature = snap.lastRecalcGoalSignature ?: profile?.goalInputSignature
+                _ui.update {
+                    it.copy(
+                        profile = profile,
+                        weightUnit = snap.weightUnit,
+                        optionalNutrientGoals = snap.optionalNutrientGoals,
+                        goalsNeedRecalc = needsRecalc(profile),
+                    )
+                }
+            }
             val (state, sheet) = withContext(Dispatchers.IO) {
                 val snap = early.snap
                 val provider = early.provider
                 val speech = snap.selectedSpeech
                 val weather = container.weatherRepository.state.first()
-                val hc = reconcileHealthConnectState()
-                val profile = container.profileRepository.current()
+                // Fragile, non-essential calls are guarded so a single failure
+                // (Health Connect binder, KeyStore) can never kill the hydrate
+                // and leave the settings UI stuck on defaults.
+                val hc = PerfLog.measure("settingsInit", "healthConnect", block = {
+                    runCatching { reconcileHealthConnectState() }.getOrDefault(false)
+                })
+                val profile = PerfLog.measure("settingsInit", "profile", block = { container.profileRepository.current() })
                 val energyGoals = snap.healthEnergyGoalsEnabled && hc
                 var backgroundSync = snap.healthBackgroundSyncEnabled && hc
                 if (backgroundSync &&
@@ -313,11 +342,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     HealthSyncWorker.cancel(container.appContext)
                     backgroundSync = false
                 }
-                val masked = maskKey(container.keyStore.apiKey(provider))
-                val speechMasked = maskKey(container.keyStore.speechApiKey(speech))
+                val masked = runCatching { maskKey(container.keyStore.apiKey(provider)) }.getOrDefault("")
+                val speechMasked = runCatching { maskKey(container.keyStore.speechApiKey(speech)) }.getOrDefault("")
                 val fbProvider = snap.fallbackProvider
                 val fbModel = fbProvider.supportedFallbackModelOrDefault(snap.fallbackModelRaw)
-                val fbMasked = maskKey(container.keyStore.fallbackApiKey(fbProvider))
+                val fbMasked = runCatching { maskKey(container.keyStore.fallbackApiKey(fbProvider)) }.getOrDefault("")
                 lastRecalcSignature = snap.lastRecalcGoalSignature ?: profile?.goalInputSignature
                 if (snap.lastRecalcGoalSignature == null && profile != null) {
                     container.prefs.setLastRecalcGoalSignature(profile.goalInputSignature)
@@ -355,10 +384,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     caffeineQuickKinds = snap.caffeineQuickKinds,
                     fastingEnabled = snap.fastingEnabled,
                     fastingGoalHours = snap.fastingGoalHours,
+                    fastingEatHours = snap.fastingEatHours,
                     fastingGoalNotificationEnabled = snap.fastingGoalNotificationEnabled,
+                    fastingEndReminderLeadMinutes = snap.fastingEndReminderLeadMinutes,
                     fastingStartReminderEnabled = snap.fastingStartReminderEnabled,
-                    fastingStartReminderHour = snap.fastingStartReminderHour,
-                    fastingStartReminderMinute = snap.fastingStartReminderMinute,
+                    fastingStartReminderLeadMinutes = snap.fastingStartReminderLeadMinutes,
                     waterReminderEnabled = snap.waterReminderEnabled,
                     waterDynamicEnabled = snap.waterDynamicEnabled,
                     waterBaseSource = snap.waterBaseSource,
@@ -422,7 +452,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 // goal-change explanation (AI Recalculate or Adaptive) for the on-demand
                 // details row. DataStore is cached, so this second read is cheap and
                 // race-free (same coroutine).
-                val sheet = container.prefs.loadLastGoalChangeSheet()
+                val sheet = runCatching { container.prefs.loadLastGoalChangeSheet() }.getOrNull()
                 state to sheet
             }
             _ui.value = state
@@ -1165,12 +1195,29 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         { copy(fastingGoalHours = v) },
     )
 
+    fun setFastingEatHours(v: Int) = updateUiPref(
+        {
+            container.prefs.setFastingEatHours(v)
+            // The eating window anchors the start nudge; re-arm it.
+            FastingReminderPlanner.rearmStartReminder(container)
+        },
+        { copy(fastingEatHours = v) },
+    )
+
     fun setFastingGoalNotificationEnabled(v: Boolean) = updateUiPref(
         {
             container.prefs.setFastingGoalNotificationEnabled(v)
             FastingGoalPlanner.rearm(container)
         },
         { copy(fastingGoalNotificationEnabled = v) },
+    )
+
+    fun setFastingEndReminderLeadMinutes(v: Int) = updateUiPref(
+        {
+            container.prefs.setFastingEndReminderLeadMinutes(v)
+            FastingGoalPlanner.rearm(container)
+        },
+        { copy(fastingEndReminderLeadMinutes = v) },
     )
 
     fun setFastingStartReminderEnabled(v: Boolean) = updateUiPref(
@@ -1181,13 +1228,12 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         { copy(fastingStartReminderEnabled = v) },
     )
 
-    fun setFastingStartReminderTime(hour: Int, minute: Int) = updateUiPref(
+    fun setFastingStartReminderLeadMinutes(v: Int) = updateUiPref(
         {
-            container.prefs.setFastingStartReminderHour(hour)
-            container.prefs.setFastingStartReminderMinute(minute)
+            container.prefs.setFastingStartReminderLeadMinutes(v)
             FastingReminderPlanner.rearmStartReminder(container)
         },
-        { copy(fastingStartReminderHour = hour, fastingStartReminderMinute = minute) },
+        { copy(fastingStartReminderLeadMinutes = v) },
     )
 
     fun setNicotineQuickKinds(kinds: List<NicotineKind>) {

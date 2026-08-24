@@ -80,6 +80,8 @@ export const ja = Object.freeze({
   "diary.fasting_goal_reached": "目標達成",
   "diary.fasting_goal_hint": "{elapsed} · 目標 {goal} 時間",
   "diary.fasting_window_opens_in": "食事時間まで {remaining}",
+  "diary.fasting_eating_progress": "食事 {eat} 時間中 {elapsed}",
+  "diary.fasting_fast_starts_in": "ファスティングまで {remaining}",
   "diary.note_title": "その日のメモ",
   "diary.note_empty": "この日のメモを追加",
   "diary.note_save": "保存",

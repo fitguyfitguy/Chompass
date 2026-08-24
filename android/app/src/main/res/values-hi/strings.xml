@@ -1737,8 +1737,8 @@
     <string name="settings_fasting_tracking">उपवास टाइमर</string>
     <string name="settings_fasting_goal">लक्ष्य अवधि</string>
     <string name="settings_fasting_goal_summary_none">कोई लक्ष्य नहीं</string>
-    <string name="settings_fasting_goal_summary">%1$d घंटे</string>
-    <string name="settings_fasting_goal_wheel_help">लक्ष्य पूरा होने पर एक बार सूचना मिलती है। 0 = कोई लक्ष्य नहीं।</string>
+    <string name="settings_fasting_goal_summary">%1$d घंटे उपवास</string>
+    <string name="settings_fasting_goal_wheel_help">कोई लोकप्रिय तरीका चुनें या अपनी उपवास और खाने की विंडो खुद सेट करें। 0 = कोई लक्ष्य नहीं।</string>
     <string name="settings_fasting_section_notification">सूचना</string>
     <string name="settings_fasting_notification">लक्ष्य प्राप्त हुआ</string>
     <string name="fasting_local_only_note">उपवास टाइमर इसी डिवाइस पर रहता है — इसे कभी सिंक, निर्यात या साझा भोजन में शामिल नहीं किया जाता। लक्ष्य-प्राप्ति सूचना ही Chompass इसके बारे में भेजता है।</string>
@@ -1748,7 +1748,7 @@
     <string name="notif_channel_fasting">उपवास</string>
     <string name="notif_channel_fasting_desc">उपवास लक्ष्य पूरा होने पर एक बार का नोट।</string>
     <string name="notif_fasting_goal_title">उपवास लक्ष्य प्राप्त हुआ</string>
-    <string name="notif_fasting_goal_text">आपका %1$d घंटे का उपवास पूरा हुआ — अब आप उपवास तोड़ सकते हैं।</string>
+    <string name="notif_fasting_goal_text">आपका उपवास पूरा हुआ — अब आप खा सकते हैं।</string>
     <string name="fasting_preset_detail">%1$d घंटे उपवास · %2$d घंटे खाने की विंडो</string>
     <string name="fasting_window_opens_in">खाने की विंडो %1$s में खुलेगी</string>
     <string name="settings_fasting_section_reminders">अनुस्मारक</string>
@@ -1758,4 +1758,19 @@
     <string name="notif_fasting_start_title">अपना उपवास शुरू करें</string>
     <string name="notif_fasting_start_text">अभी अपना उपवास शुरू करें।</string>
     <string name="notif_fasting_start_text_goal">अभी अपना %1$d घंटे का उपवास शुरू करें।</string>
+    <string name="fasting_fast_starts_in">उपवास %1$s में शुरू होगा</string>
+    <string name="fasting_eating_progress">खाने के %2$d घंटों में से %1$s</string>
+    <string name="settings_fasting_eat_window">खाने की विंडो</string>
+    <string name="settings_fasting_goal_summary_both">%1$d घंटे उपवास · %2$d घंटे खाना</string>
+    <string name="settings_fasting_end_reminder">उपवास समाप्ति अनुस्मारक</string>
+    <string name="settings_fasting_reminder_lead_end">उपवास समाप्त होने से पहले</string>
+    <string name="settings_fasting_reminder_lead_start">उपवास शुरू होने से पहले</string>
+    <string name="settings_fasting_reminder_lead_unit">मिनट</string>
+    <string name="settings_fasting_reminder_lead_summary">%1$d मिनट पहले</string>
+    <string name="settings_fasting_reminder_lead_now">सीमा पर</string>
+    <string name="settings_fasting_reminder_help">समय हर चक्र के लिए है: शुरुआत अनुस्मारक खाने की विंडो बंद होने से पहले, समाप्ति अनुस्मारक लक्ष्य पूरा होने से पहले। 0 = बिल्कुल सीमा पर।</string>
+    <string name="notif_fasting_end_soon_title">उपवास जल्द समाप्त होगा</string>
+    <string name="notif_fasting_end_soon_text">आपका उपवास %1$d मिनट में समाप्त होगा — तब खाने की विंडो खुलेगी।</string>
+    <string name="notif_fasting_start_soon_title">उपवास जल्द शुरू होगा</string>
+    <string name="notif_fasting_start_soon_text">आपकी खाने की विंडो %1$d मिनट में बंद होगी — तब उपवास शुरू करें।</string>
 </resources>

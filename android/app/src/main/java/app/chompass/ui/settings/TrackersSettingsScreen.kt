@@ -90,10 +90,14 @@ fun TrackersSettingsScreen(
             SettingRow(
                 stringResource(R.string.settings_fasting_title),
                 if (ui.fastingEnabled) {
-                    if (ui.fastingGoalHours > 0) {
-                        stringResource(R.string.settings_fasting_goal_summary, ui.fastingGoalHours)
-                    } else {
-                        stringResource(R.string.settings_on)
+                    when {
+                        ui.fastingGoalHours <= 0 -> stringResource(R.string.settings_off)
+                        ui.fastingEatHours > 0 -> stringResource(
+                            R.string.settings_fasting_goal_summary_both,
+                            ui.fastingGoalHours,
+                            ui.fastingEatHours,
+                        )
+                        else -> stringResource(R.string.settings_fasting_goal_summary, ui.fastingGoalHours)
                     }
                 } else {
                     stringResource(R.string.settings_off)

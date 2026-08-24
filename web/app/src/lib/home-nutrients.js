@@ -123,6 +123,7 @@ export const ANDROID_PREF_DEFAULTS = {
   waterGoalMl: 2000,
   showFasting: false,
   fastingGoalHours: 0,
+  fastingEatHours: 0,
   aiFallbackEnabled: true,
   fallbackAiProvider: "gemini",
   fallbackAiModel: "gemini-3.5-flash-lite",

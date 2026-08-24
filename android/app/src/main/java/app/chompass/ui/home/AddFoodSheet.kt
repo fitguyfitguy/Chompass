@@ -69,6 +69,7 @@ import app.chompass.R
 import app.chompass.data.QuickRelogRows
 import app.chompass.models.FoodEntry
 import app.chompass.models.CaffeineKind
+import app.chompass.models.FastingPhase
 import app.chompass.models.NicotineKind
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.components.ChompassBottomSheet
@@ -117,9 +118,11 @@ fun AddFoodSheet(
     onCaffeine: (CaffeineKind) -> Unit = {},
     onCaffeineCustom: () -> Unit = {},
     fastingEnabled: Boolean = false,
-    fastingActive: Boolean = false,
+    fastingPhase: FastingPhase = FastingPhase.IDLE,
     fastingElapsedMillis: Long = 0L,
+    fastingEatingElapsedMillis: Long = 0L,
     fastingGoalHours: Int = 0,
+    fastingEatHours: Int = 0,
     fastingGoalReached: Boolean = false,
     onStartFast: () -> Unit = {},
     onStopFast: () -> Unit = {},
@@ -159,9 +162,11 @@ fun AddFoodSheet(
             onCaffeine = { kind -> onDismiss(); onCaffeine(kind) },
             onCaffeineCustom = { onDismiss(); onCaffeineCustom() },
             fastingEnabled = fastingEnabled,
-            fastingActive = fastingActive,
+            fastingPhase = fastingPhase,
             fastingElapsedMillis = fastingElapsedMillis,
+            fastingEatingElapsedMillis = fastingEatingElapsedMillis,
             fastingGoalHours = fastingGoalHours,
+            fastingEatHours = fastingEatHours,
             fastingGoalReached = fastingGoalReached,
             onStartFast = { onDismiss(); onStartFast() },
             onStopFast = { onDismiss(); onStopFast() },
@@ -208,9 +213,11 @@ internal fun AddFoodSheetContent(
     onCaffeine: (CaffeineKind) -> Unit = {},
     onCaffeineCustom: () -> Unit = {},
     fastingEnabled: Boolean = false,
-    fastingActive: Boolean = false,
+    fastingPhase: FastingPhase = FastingPhase.IDLE,
     fastingElapsedMillis: Long = 0L,
+    fastingEatingElapsedMillis: Long = 0L,
     fastingGoalHours: Int = 0,
+    fastingEatHours: Int = 0,
     fastingGoalReached: Boolean = false,
     onStartFast: () -> Unit = {},
     onStopFast: () -> Unit = {},
@@ -463,9 +470,11 @@ internal fun AddFoodSheetContent(
         if (fastingEnabled) {
             Spacer(Modifier.height(12.dp))
             FastingHubControl(
-                active = fastingActive,
-                elapsedMillis = fastingElapsedMillis,
-                goalHours = fastingGoalHours,
+                phase = fastingPhase,
+                fastHours = fastingGoalHours,
+                eatHours = fastingEatHours,
+                fastElapsedMillis = fastingElapsedMillis,
+                eatElapsedMillis = fastingEatingElapsedMillis,
                 goalReached = fastingGoalReached,
                 onStart = onStartFast,
                 onStop = onStopFast,

@@ -1813,8 +1813,8 @@
     <string name="settings_fasting_tracking">Таймер поста</string>
     <string name="settings_fasting_goal">Целевая длительность</string>
     <string name="settings_fasting_goal_summary_none">Без цели</string>
-    <string name="settings_fasting_goal_summary">%1$d ч</string>
-    <string name="settings_fasting_goal_wheel_help">При достижении цели отправляется одно уведомление. 0 = без цели.</string>
+    <string name="settings_fasting_goal_summary">%1$d ч поста</string>
+    <string name="settings_fasting_goal_wheel_help">Выберите популярный протокол или задайте свои окна поста и приёма пищи. 0 = без цели.</string>
     <string name="settings_fasting_section_notification">Уведомление</string>
     <string name="settings_fasting_notification">Цель достигнута</string>
     <string name="fasting_local_only_note">Таймер поста остаётся на этом устройстве — он никогда не синхронизируется, не экспортируется и не включается в общие приёмы пищи. Уведомление о достижении цели — единственное, что Chompass публикует о нём.</string>
@@ -1824,7 +1824,7 @@
     <string name="notif_channel_fasting">Пост</string>
     <string name="notif_channel_fasting_desc">Одноразовое уведомление о достижении цели поста.</string>
     <string name="notif_fasting_goal_title">Цель поста достигнута</string>
-    <string name="notif_fasting_goal_text">Ваш %1$d-часовой пост завершён — теперь можно прервать пост.</string>
+    <string name="notif_fasting_goal_text">Ваш пост завершён — теперь можно есть.</string>
     <string name="fasting_preset_detail">%1$d ч поста · %2$d ч окна приёма пищи</string>
     <string name="fasting_window_opens_in">Окно приёма пищи откроется через %1$s</string>
     <string name="settings_fasting_section_reminders">Напоминания</string>
@@ -1834,4 +1834,19 @@
     <string name="notif_fasting_start_title">Начните пост</string>
     <string name="notif_fasting_start_text">Начните пост прямо сейчас.</string>
     <string name="notif_fasting_start_text_goal">Начните сейчас свой %1$d-часовой пост.</string>
+    <string name="fasting_fast_starts_in">Пост начнётся через %1$s</string>
+    <string name="fasting_eating_progress">%1$s из %2$d ч приёма пищи</string>
+    <string name="settings_fasting_eat_window">Окно приёма пищи</string>
+    <string name="settings_fasting_goal_summary_both">%1$d ч поста · %2$d ч приёма пищи</string>
+    <string name="settings_fasting_end_reminder">Напоминание о конце поста</string>
+    <string name="settings_fasting_reminder_lead_end">Перед концом поста</string>
+    <string name="settings_fasting_reminder_lead_start">Перед началом поста</string>
+    <string name="settings_fasting_reminder_lead_unit">мин</string>
+    <string name="settings_fasting_reminder_lead_summary">за %1$d мин</string>
+    <string name="settings_fasting_reminder_lead_now">Ровно на границе</string>
+    <string name="settings_fasting_reminder_help">Заблаговременность — по циклу: напоминание о начале срабатывает перед закрытием окна приёма пищи, о конце — перед достижением цели. 0 = ровно на границе.</string>
+    <string name="notif_fasting_end_soon_title">Пост скоро закончится</string>
+    <string name="notif_fasting_end_soon_text">Ваш пост закончится через %1$d мин — тогда откроется окно приёма пищи.</string>
+    <string name="notif_fasting_start_soon_title">Пост скоро начнётся</string>
+    <string name="notif_fasting_start_soon_text">Ваше окно приёма пищи закроется через %1$d мин — начните пост тогда.</string>
 </resources>

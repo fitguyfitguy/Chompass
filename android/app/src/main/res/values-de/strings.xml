@@ -3149,8 +3149,8 @@ für dich ein</string>
     <string name="settings_fasting_tracking">Fasten-Timer</string>
     <string name="settings_fasting_goal">Ziellänge</string>
     <string name="settings_fasting_goal_summary_none">Kein Ziel</string>
-    <string name="settings_fasting_goal_summary">%1$d h</string>
-    <string name="settings_fasting_goal_wheel_help">Beim Erreichen des Ziels erscheint eine einmalige Benachrichtigung. 0 = kein Ziel.</string>
+    <string name="settings_fasting_goal_summary">%1$d h fasten</string>
+    <string name="settings_fasting_goal_wheel_help">Wähle einen gängigen Protokoll oder stell dein eigenes Fasten- und Essensfenster ein. 0 = kein Ziel.</string>
     <string name="settings_fasting_section_notification">Benachrichtigung</string>
     <string name="settings_fasting_notification">Ziel erreicht</string>
     <string name="fasting_local_only_note">Der Fasten-Timer bleibt auf diesem Gerät — er wird nie synchronisiert, exportiert oder in geteilte Mahlzeiten aufgenommen. Die Ziel-Benachrichtigung ist das Einzige, was Chompass darüber sendet.</string>
@@ -3160,7 +3160,7 @@ für dich ein</string>
     <string name="notif_channel_fasting">Fasten</string>
     <string name="notif_channel_fasting_desc">Einmalige Mitteilung, wenn ein Fastenziel erreicht ist.</string>
     <string name="notif_fasting_goal_title">Fastenziel erreicht</string>
-    <string name="notif_fasting_goal_text">Dein %1$d-stündiges Fasten ist abgeschlossen — du kannst jetzt deine Fastenpause beenden.</string>
+    <string name="notif_fasting_goal_text">Dein Fasten ist abgeschlossen — du kannst jetzt essen.</string>
     <string name="fasting_preset_detail">%1$d h Fasten · %2$d h Essensfenster</string>
     <string name="fasting_window_opens_in">Essensfenster öffnet in %1$s</string>
     <string name="settings_fasting_section_reminders">Erinnerungen</string>
@@ -3170,4 +3170,19 @@ für dich ein</string>
     <string name="notif_fasting_start_title">Starte dein Fasten</string>
     <string name="notif_fasting_start_text">Starte jetzt dein Fasten.</string>
     <string name="notif_fasting_start_text_goal">Starte jetzt dein %1$d-stündiges Fasten.</string>
+    <string name="fasting_fast_starts_in">Fasten startet in %1$s</string>
+    <string name="fasting_eating_progress">%1$s von %2$d h Essen</string>
+    <string name="settings_fasting_eat_window">Essensfenster</string>
+    <string name="settings_fasting_goal_summary_both">%1$d h fasten · %2$d h essen</string>
+    <string name="settings_fasting_end_reminder">Fastenende-Erinnerung</string>
+    <string name="settings_fasting_reminder_lead_end">Vor dem Fastenende</string>
+    <string name="settings_fasting_reminder_lead_start">Vor dem Fastenbeginn</string>
+    <string name="settings_fasting_reminder_lead_unit">Min</string>
+    <string name="settings_fasting_reminder_lead_summary">%1$d Min vorher</string>
+    <string name="settings_fasting_reminder_lead_now">Genau an der Grenze</string>
+    <string name="settings_fasting_reminder_help">Vorlaufzeiten pro Zyklus: Die Start-Erinnerung erscheint vor dem Schließen des Essensfensters, die Fastenende-Erinnerung vor dem Erreichen des Ziels. 0 = genau an der Grenze.</string>
+    <string name="notif_fasting_end_soon_title">Fasten endet bald</string>
+    <string name="notif_fasting_end_soon_text">Dein Fasten endet in %1$d Min — dann öffnet sich dein Essensfenster.</string>
+    <string name="notif_fasting_start_soon_title">Fasten startet bald</string>
+    <string name="notif_fasting_start_soon_text">Dein Essensfenster schließt in %1$d Min — starte dann dein Fasten.</string>
 </resources>

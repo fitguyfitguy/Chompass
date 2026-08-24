@@ -1664,8 +1664,8 @@ LBM = вага × (1 − %жиру)</string>
     <string name="settings_fasting_tracking">Таймер посту</string>
     <string name="settings_fasting_goal">Цільова тривалість</string>
     <string name="settings_fasting_goal_summary_none">Без цілі</string>
-    <string name="settings_fasting_goal_summary">%1$d год</string>
-    <string name="settings_fasting_goal_wheel_help">Після досягнення цілі надсилається одне сповіщення. 0 = без цілі.</string>
+    <string name="settings_fasting_goal_summary">%1$d год посту</string>
+    <string name="settings_fasting_goal_wheel_help">Виберіть популярний протокол або налаштуйте власні вікна посту й прийому їжі. 0 = без цілі.</string>
     <string name="settings_fasting_section_notification">Сповіщення</string>
     <string name="settings_fasting_notification">Мета досягнута</string>
     <string name="fasting_local_only_note">Таймер посту залишається на цьому пристрої — він ніколи не синхронізується, не експортується та не додається до спільних прийомів їжі. Єдине, що Chompass публікує про нього, — сповіщення про досягнення цілі.</string>
@@ -1675,7 +1675,7 @@ LBM = вага × (1 − %жиру)</string>
     <string name="notif_channel_fasting">Пост</string>
     <string name="notif_channel_fasting_desc">Одноразове сповіщення про досягнення цілі посту.</string>
     <string name="notif_fasting_goal_title">Ціль посту досягнута</string>
-    <string name="notif_fasting_goal_text">Ваш %1$d-годинний пост завершено — тепер можна перервати пост.</string>
+    <string name="notif_fasting_goal_text">Ваш пост завершено — тепер можна їсти.</string>
     <string name="fasting_preset_detail">%1$d год посту · %2$d год вікна прийому їжі</string>
     <string name="fasting_window_opens_in">Вікно прийому їжі відкриється через %1$s</string>
     <string name="settings_fasting_section_reminders">Нагадування</string>
@@ -1685,4 +1685,19 @@ LBM = вага × (1 − %жиру)</string>
     <string name="notif_fasting_start_title">Почніть пост</string>
     <string name="notif_fasting_start_text">Почніть пост зараз.</string>
     <string name="notif_fasting_start_text_goal">Почніть зараз свій %1$d-годинний пост.</string>
+    <string name="fasting_fast_starts_in">Пост почнеться через %1$s</string>
+    <string name="fasting_eating_progress">%1$s із %2$d год прийому їжі</string>
+    <string name="settings_fasting_eat_window">Вікно прийому їжі</string>
+    <string name="settings_fasting_goal_summary_both">%1$d год посту · %2$d год прийому їжі</string>
+    <string name="settings_fasting_end_reminder">Нагадування про кінець посту</string>
+    <string name="settings_fasting_reminder_lead_end">Перед кінцем посту</string>
+    <string name="settings_fasting_reminder_lead_start">Перед початком посту</string>
+    <string name="settings_fasting_reminder_lead_unit">хв</string>
+    <string name="settings_fasting_reminder_lead_summary">за %1$d хв</string>
+    <string name="settings_fasting_reminder_lead_now">Рівно на межі</string>
+    <string name="settings_fasting_reminder_help">Завчасність — за циклом: нагадування про початок спрацьовує перед закриттям вікна прийому їжі, про кінець — перед досягненням цілі. 0 = рівно на межі.</string>
+    <string name="notif_fasting_end_soon_title">Пост незабаром завершиться</string>
+    <string name="notif_fasting_end_soon_text">Ваш пост завершиться через %1$d хв — тоді відкриється вікно прийому їжі.</string>
+    <string name="notif_fasting_start_soon_title">Пост незабаром почнеться</string>
+    <string name="notif_fasting_start_soon_text">Ваше вікно прийому їжі закриється через %1$d хв — почніть пост тоді.</string>
 </resources>
