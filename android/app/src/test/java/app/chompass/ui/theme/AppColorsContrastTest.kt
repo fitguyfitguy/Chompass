@@ -14,7 +14,6 @@ import org.junit.Test
  * near-white Material You primary — the foreground must flip to dark instead.
  */
 class AppColorsContrastTest {
-
     @After
     fun tearDown() {
         AppColors.setThemeColor(AppThemeColor.SYSTEM)
