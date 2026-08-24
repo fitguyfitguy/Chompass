@@ -703,6 +703,7 @@
     <string name="settings_section_fallback">Резервный провайдер</string>
     <string name="settings_enable_fallback">Включить резерв</string>
     <string name="settings_fallback_footer">Если основной провайдер недоступен (перегрузка, лимит запросов, сетевая ошибка), приложение автоматически повторит запрос через этот резервный. Можно выбрать того же провайдера, что и основной, просто укажи другую модель.</string>
+    <string name="settings_fallback_on_device_switch_notice">Переключение между локальными моделями медленное: резервная модель загружается с нуля, до минуты или дольше. Использовать одну модель обычно быстрее.</string>
     <string name="widget_all_metrics_label">Chompass Сегодня</string>
     <string name="widget_all_metrics_description">Смотри калории, белки, углеводы и жиры за сегодня в одном виджете.</string>
     <string name="settings_needs_health_connect">Требуется Health Connect</string>

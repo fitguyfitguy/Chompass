@@ -1067,6 +1067,7 @@
     <string name="settings_section_fallback">Dostawca zapasowy</string>
     <string name="settings_enable_fallback">Włącz fallback</string>
     <string name="settings_fallback_footer">Jeśli główny dostawca zawiedzie (przeciążenie, limit zapytań, błąd sieci), aplikacja automatycznie ponawia z tym fallbackiem. Dozwolony jest ten sam dostawca co główny. Wybierz tylko inny model.</string>
+    <string name="settings_fallback_on_device_switch_notice">Zmiana modelu na urządzeniu jest wolna: model zapasowy ładuje się od początku, do minuty lub dłużej. Używanie jednego modelu jest zwykle szybsze.</string>
 
     <string name="settings_health_connect">Health Connect</string>
     <string name="settings_manage_health_access">Zarządzaj dostępem Health Connect</string>

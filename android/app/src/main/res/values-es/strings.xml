@@ -610,6 +610,7 @@
     <string name="settings_section_fallback">Proveedor de respaldo</string>
     <string name="settings_enable_fallback">Activar respaldo</string>
     <string name="settings_fallback_footer">Si tu proveedor principal falla (sobrecarga, límite de tasa, error de red), la app reintenta automáticamente con este respaldo. Se permite el mismo proveedor que el principal, solo elige un modelo diferente.</string>
+    <string name="settings_fallback_on_device_switch_notice">Cambiar de modelo en el dispositivo es lento: el modelo de respaldo se carga desde cero, hasta un minuto o más. Mantener un solo modelo suele ser más rápido.</string>
     <string name="widget_all_metrics_label">Chompass Hoy</string>
     <string name="widget_all_metrics_description">Mira las calorías, proteínas, carbohidratos y grasas de hoy en un widget.</string>
     <string name="settings_needs_health_connect">Requiere Health Connect</string>

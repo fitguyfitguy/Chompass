@@ -607,6 +607,7 @@
     <string name="settings_section_fallback">Furnizor de rezervă</string>
     <string name="settings_enable_fallback">Activează rezerva</string>
     <string name="settings_fallback_footer">Dacă furnizorul principal eșuează (suprasolicitare, limită de rată, eroare de rețea), aplicația reîncearcă automat cu această rezervă. Este permis același furnizor ca cel principal, doar alege un model diferit.</string>
+    <string name="settings_fallback_on_device_switch_notice">Schimbarea modelului local este lentă: modelul de rezervă se încarcă de la zero, până la un minut sau mai mult. A păstra un singur model este de obicei mai rapid.</string>
     <string name="widget_all_metrics_label">Chompass Astăzi</string>
     <string name="widget_all_metrics_description">Vezi caloriile, proteinele, carbohidrații și grăsimile de azi într-un singur widget.</string>
     <string name="settings_needs_health_connect">Necesită Health Connect</string>

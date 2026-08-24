@@ -618,6 +618,7 @@
     <string name="settings_section_fallback">备用提供商</string>
     <string name="settings_enable_fallback">启用备用</string>
     <string name="settings_fallback_footer">如果主提供商失败（过载、速率限制、网络错误），应用会自动使用此备用提供商重试。允许与主提供商相同，只需选择不同的模型即可。</string>
+    <string name="settings_fallback_on_device_switch_notice">切换端侧模型较慢：备用模型需要从零加载，最多一分钟或更久。通常只保留一个模型会更快。</string>
     <string name="widget_all_metrics_label">Chompass 今天</string>
     <string name="widget_all_metrics_description">在一个小部件中查看今天的卡路里、蛋白质、碳水和脂肪。</string>
     <string name="settings_needs_health_connect">需要 Health Connect</string>
