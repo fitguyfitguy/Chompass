@@ -27,6 +27,9 @@ object FastingAutoPlanner {
     ): Long? {
         val prefs = container.prefs
         if (!prefs.fastingEnabled.first() || !prefs.fastingAutoWindows.first()) return null
+        // The cycle is only safe once a goal length is set: without it the
+        // auto-started fast could never end (and auto fasts show no buttons).
+        if (prefs.fastingGoalHours.first() <= 0) return null
         val session = container.fastingRepository.current()
         if (session.isFasting) return null
         return nextFastingStartMillis(
@@ -77,12 +80,13 @@ object FastingAutoPlanner {
         val prefs = container.prefs
         if (!prefs.fastingEnabled.first() || !prefs.fastingAutoWindows.first()) return
         val goal = prefs.fastingGoalHours.first()
+        if (goal <= 0) return
         val repo = container.fastingRepository
         val now = System.currentTimeMillis()
         val s = repo.current()
         if (s.isFasting) {
             val started = s.startedAtMillis ?: return
-            if (goal > 0 && s.elapsedMillis(now) >= goal * FastingSession.MILLIS_PER_HOUR) {
+            if (s.elapsedMillis(now) >= goal * FastingSession.MILLIS_PER_HOUR) {
                 repo.stop(atGoalMillis = started + goal * FastingSession.MILLIS_PER_HOUR)
             }
         } else {

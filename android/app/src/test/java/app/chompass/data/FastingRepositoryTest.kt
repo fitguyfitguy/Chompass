@@ -40,7 +40,6 @@ class FastingRepositoryTest {
         prefs.setFastingEnabled(false)
         prefs.setFastingGoalHours(0)
         prefs.setFastingGoalNotificationEnabled(true)
-        prefs.setFastingAutoWindows(false)
         prefs.setFastingStartReminderEnabled(false)
         prefs.setFastingStartReminderLeadMinutes(DEFAULT_FASTING_START_REMINDER_LEAD_MINUTES)
         prefs.setFastingEndReminderLeadMinutes(DEFAULT_FASTING_END_REMINDER_LEAD_MINUTES)
@@ -133,9 +132,11 @@ class FastingRepositoryTest {
     }
 
     @Test
-    fun `auto defaults are off and require an eating window`() = runBlocking {
+    fun `auto windows default to on and auto-started flag defaults off`() = runBlocking {
         val prefs = PreferencesStore(RuntimeEnvironment.getApplication())
-        assertFalse(prefs.fastingAutoWindows.first())
+        // Auto is the fasting default; the cycle only acts once a goal is set
+        // (guarded in the planners), so the raw pref default is true.
+        assertTrue(prefs.fastingAutoWindows.first())
         assertFalse(prefs.fastingSession.first().autoStarted)
     }
 

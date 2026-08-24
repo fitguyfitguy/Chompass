@@ -162,10 +162,12 @@ fun FastingProgressRow(
                 )
             }
         }
-        // Auto-started fasts are self-driving: no manual buttons at all.
-        if (!(phase == FastingPhase.FASTING && autoStarted)) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (phase == FastingPhase.FASTING) {
+        // Auto mode is self-driving: no Start while idle/eating, no Stop on an
+        // auto-started fast. A fast the user started manually (launcher) still
+        // shows Stop so it can be ended.
+        if (phase == FastingPhase.FASTING) {
+            if (!autoStarted) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Button(
                         onClick = onStop,
                         colors = ButtonDefaults.buttonColors(
@@ -175,16 +177,18 @@ fun FastingProgressRow(
                     ) {
                         Text(stringResource(R.string.fasting_stop), fontSize = 13.sp)
                     }
-                } else {
-                    Button(
-                        onClick = onStart,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                        ),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
-                    ) {
-                        Text(stringResource(R.string.fasting_start), fontSize = 13.sp)
-                    }
+                }
+            }
+        } else if (!autoMode) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(
+                    onClick = onStart,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                    ),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
+                ) {
+                    Text(stringResource(R.string.fasting_start), fontSize = 13.sp)
                 }
             }
         }
@@ -271,8 +275,11 @@ fun FastingHubControl(
                     fontSize = 12.sp,
                 )
             }
-            if (!(phase == FastingPhase.FASTING && autoStarted)) {
-                if (phase == FastingPhase.FASTING) {
+            // Auto mode is self-driving: Start only in manual mode; Stop only
+            // for a fast the user started manually (launcher), never an
+            // auto-started one.
+            if (phase == FastingPhase.FASTING) {
+                if (!autoStarted) {
                     Button(
                         onClick = onStop,
                         colors = ButtonDefaults.buttonColors(
@@ -282,16 +289,16 @@ fun FastingHubControl(
                     ) {
                         Text(stringResource(R.string.fasting_stop), fontSize = 13.sp)
                     }
-                } else {
-                    Button(
-                        onClick = onStart,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                        ),
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
-                    ) {
-                        Text(stringResource(R.string.fasting_start), fontSize = 13.sp)
-                    }
+                }
+            } else if (!autoMode) {
+                Button(
+                    onClick = onStart,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                    ),
+                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
+                ) {
+                    Text(stringResource(R.string.fasting_start), fontSize = 13.sp)
                 }
             }
         }

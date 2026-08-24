@@ -68,6 +68,7 @@ function fastingCard(p) {
   const goal = p.fastingGoalHours ?? 0;
   const eat = p.fastingEatHours ?? 0;
   const auto = p.fastingAutoWindows === true;
+  const autoEffective = auto && goal > 0;
   const now = Date.now();
   const fasting = p.fastingStartedAt != null;
   const windowEnds = !fasting && eat > 0 && p.fastingLastEndedAt != null ? p.fastingLastEndedAt + eat * 3_600_000 : null;
@@ -102,6 +103,7 @@ function fastingCard(p) {
     ? Math.min(100, ((fasting ? elapsed / goalMillis : eatElapsed / Math.max(1, nextFastStart - now + eatElapsed)) * 100))
     : 0;
   const autoManaged = fasting && p.fastingAutoStarted === true;
+  const showButtons = !autoEffective || (fasting && !p.fastingAutoStarted);
   let hint = "";
   if (fasting && goal > 0 && !reached) {
     hint = `<div class="water-row__hint">${t("diary.fasting_window_opens_in", { remaining: fmtFastDuration(Math.max(0, goalMillis - elapsed)) })}</div>`;
@@ -117,7 +119,7 @@ function fastingCard(p) {
         <div class="water-row__meta"><strong>${t("diary.fasting")}${autoManaged ? ` <span class="fasting-auto-tag">${t("diary.fasting_auto")}</span>` : ""}</strong><br/><span class="water-row__meta-sub">${status}</span></div>
         <div class="water-presets">
           ${
-            !autoManaged
+            showButtons
               ? fasting
                 ? `<button type="button" class="chip" data-fasting-stop>${t("diary.fasting_stop")}</button>`
                 : `<button type="button" class="chip" data-fasting-start>${t("diary.fasting_start")}</button>`
@@ -1937,6 +1939,8 @@ export class DiaryView extends HTMLElement {
     const p = await prefs.load();
     if (p.showFasting !== true || p.fastingAutoWindows !== true) return false;
     const goal = p.fastingGoalHours ?? 0;
+    // The cycle needs a goal length: without it an auto fast could never end.
+    if (goal <= 0) return false;
     const now = Date.now();
     if (p.fastingStartedAt != null) {
       if (goal > 0 && now - p.fastingStartedAt >= goal * 3_600_000) {

@@ -482,7 +482,7 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   showFasting: false,
   fastingGoalHours: 0,
   fastingEatHours: 0,
-  fastingAutoWindows: false,
+  fastingAutoWindows: true,
   fastingStartHour: 20,
   fastingStartMinute: 0,
   fastingAutoStarted: false,

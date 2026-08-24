@@ -555,7 +555,7 @@
     <string name="settings_fasting_section_reminders">Reminders</string>
     <string name="settings_fasting_start_reminder">Start reminder</string>
     <string name="settings_fasting_auto_windows">Auto fast windows</string>
-    <string name="settings_fasting_auto_windows_help">When on, your fast starts automatically the moment your eating window closes and ends when it reaches the goal. You can still start one manually. Auto-started fasts show no buttons on Home.</string>
+    <string name="settings_fasting_auto_windows_help">Your fast starts automatically at the fast start time and ends when it reaches the goal. No buttons on Home — the cycle runs itself. Use the launcher long-press to start or stop it manually.</string>
     <string name="settings_fasting_start_time">Fast start time</string>
     <string name="settings_fasting_start_time_help">Auto fast windows start your fast at this time each day. The start reminder fires the lead time before it.</string>
     <string name="settings_fasting_reminder_lead_end">Before the fast ends</string>

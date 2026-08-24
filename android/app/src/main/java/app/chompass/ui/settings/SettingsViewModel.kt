@@ -107,7 +107,7 @@ data class SettingsUiState(
     val fastingEatHours: Int = 0,
     val fastingGoalNotificationEnabled: Boolean = true,
     val fastingEndReminderLeadMinutes: Int = 15,
-    val fastingAutoWindows: Boolean = false,
+    val fastingAutoWindows: Boolean = true,
     val fastingStartHour: Int = 20,
     val fastingStartMinute: Int = 0,
     val fastingStartReminderEnabled: Boolean = false,
