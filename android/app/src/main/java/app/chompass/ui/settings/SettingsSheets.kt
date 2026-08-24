@@ -617,6 +617,14 @@ internal fun SettingsSheets(
                         onDismiss()
                     },
                 )
+                SettingsSheet.FASTING_START_TIME -> FastingStartTimeSheet(
+                    hour = ui.fastingStartHour,
+                    minute = ui.fastingStartMinute,
+                    onSave = { hour, minute ->
+                        vm.setFastingStartTime(hour, minute)
+                        onDismiss()
+                    },
+                )
                 SettingsSheet.FASTING_END_LEAD -> FastingReminderLeadSheet(
                     title = stringResource(R.string.settings_fasting_end_reminder),
                     current = ui.fastingEndReminderLeadMinutes,

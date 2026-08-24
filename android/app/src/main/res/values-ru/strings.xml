@@ -1852,4 +1852,10 @@
     <string name="fasting_auto_tag">Авто</string>
     <string name="settings_fasting_auto_windows">Автоматические окна поста</string>
     <string name="settings_fasting_auto_windows_help">Когда включено, пост начинается автоматически, как только окно приёма пищи закрывается, и заканчивается при достижении цели. Можно начать и вручную. Автоматические посты не показывают кнопки на главном экране.</string>
+    <string name="fasting_fast_starts_at">Пост начнётся в %1$s · через %2$s</string>
+    <string name="fasting_next_fast_at">Следующий пост в %1$s</string>
+    <string name="settings_fasting_start_time">Время начала поста</string>
+    <string name="settings_fasting_start_time_help">Автоматические окна поста начинают пост ежедневно в это время. Напоминание о начале срабатывает за установленное время до этого.</string>
+    <string name="notif_fasting_start_soon_auto_title">Пост скоро начнётся</string>
+    <string name="notif_fasting_start_soon_auto">Ваш пост начнётся через %1$d мин — делать ничего не нужно.</string>
 </resources>

@@ -1777,4 +1777,10 @@ bilirsən?</string>
     <string name="fasting_auto_tag">Avto</string>
     <string name="settings_fasting_auto_windows">Avtomatik oruc pəncərələri</string>
     <string name="settings_fasting_auto_windows_help">Açıq olduqda oruc yemək pəncərəsi bağlanan kimi avtomatik başlayır və hədəfə çatanda bitir. Yenə də əl ilə başlaya bilərsiniz. Avtomatik orucda Ana ekranda düymələr görünmür.</string>
+    <string name="fasting_fast_starts_at">Oruc %1$s başlayır · %2$s sonra</string>
+    <string name="fasting_next_fast_at">Növbəti oruc %1$s</string>
+    <string name="settings_fasting_start_time">Oruc başlama vaxtı</string>
+    <string name="settings_fasting_start_time_help">Avtomatik oruc pəncərələri orucu hər gün bu vaxtda başladır. Başlama xatırlatması bundan əvvəl müəyyən edilmiş müddət qədər çalır.</string>
+    <string name="notif_fasting_start_soon_auto_title">Oruc tezliklə başlayır</string>
+    <string name="notif_fasting_start_soon_auto">Orucunuz %1$d dəq sonra başlayır — heç nə etmək lazım deyil.</string>
 </resources>

@@ -83,6 +83,8 @@ export const ar = Object.freeze({
   "diary.fasting_window_opens_in": "تفتح نافذة الأكل خلال {remaining}",
   "diary.fasting_eating_progress": "{elapsed} من {eat} ساعة أكل",
   "diary.fasting_fast_starts_in": "يبدأ الصيام خلال {remaining}",
+  "diary.fasting_fast_starts_at": "يبدأ الصيام في {time} · خلال {remaining}",
+  "diary.fasting_next_fast_at": "الصيام القادم في {time}",
   "diary.note_title": "ملاحظة اليوم",
   "diary.note_empty": "أضف ملاحظة لهذا اليوم",
   "diary.note_save": "حفظ",

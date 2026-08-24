@@ -83,6 +83,8 @@ export const fr = Object.freeze({
   "diary.fasting_window_opens_in": "La fenêtre de repas s'ouvre dans {remaining}",
   "diary.fasting_eating_progress": "{elapsed} sur {eat} h de repas",
   "diary.fasting_fast_starts_in": "Le jeûne commence dans {remaining}",
+  "diary.fasting_fast_starts_at": "Le jeûne commence à {time} · dans {remaining}",
+  "diary.fasting_next_fast_at": "Prochain jeûne à {time}",
   "diary.note_title": "Note du jour",
   "diary.note_empty": "Ajouter une note pour ce jour",
   "diary.note_save": "Enregistrer",

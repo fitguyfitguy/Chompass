@@ -83,6 +83,8 @@ export const ko = Object.freeze({
   "diary.fasting_window_opens_in": "식사 시간까지 {remaining}",
   "diary.fasting_eating_progress": "식사 {eat}시간 중 {elapsed}",
   "diary.fasting_fast_starts_in": "단식 시작까지 {remaining}",
+  "diary.fasting_fast_starts_at": "단식 {time} 시작 · {remaining} 후",
+  "diary.fasting_next_fast_at": "다음 단식 {time}",
   "diary.note_title": "하루 메모",
   "diary.note_empty": "이 날짜에 메모 추가",
   "diary.note_save": "저장",

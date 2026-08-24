@@ -93,6 +93,8 @@ export const tr = Object.freeze({
   "diary.fasting_window_opens_in": "Yemek penceresi {remaining} sonra açılır",
   "diary.fasting_eating_progress": "{eat} saat yemek penceresinin {elapsed}",
   "diary.fasting_fast_starts_in": "Oruç {remaining} sonra başlar",
+  "diary.fasting_fast_starts_at": "Oruç {time} başlar · {remaining} sonra",
+  "diary.fasting_next_fast_at": "Sonraki oruç {time}",
   "diary.note_title": "Gün notu",
   "diary.note_empty": "Bu gün için bir not ekleyin",
   "diary.note_save": "Kaydet",

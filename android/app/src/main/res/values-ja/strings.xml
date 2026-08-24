@@ -1776,4 +1776,10 @@
     <string name="fasting_auto_tag">自動</string>
     <string name="settings_fasting_auto_windows">ファスティング時間を自動化</string>
     <string name="settings_fasting_auto_windows_help">オンにすると、食事時間が終わると自動的にファスティングが始まり、目標に達すると終了します。手動で始めることもできます。自動開始のファスティングではホームにボタンは表示されません。</string>
+    <string name="fasting_fast_starts_at">ファスティング %1$s 開始 · 残り %2$s</string>
+    <string name="fasting_next_fast_at">次回のファスティングは %1$s</string>
+    <string name="settings_fasting_start_time">ファスティング開始時刻</string>
+    <string name="settings_fasting_start_time_help">自動ファスティングは毎日この時刻に開始します。開始リマインダーはその前に設定した時間だけ早く送信されます。</string>
+    <string name="notif_fasting_start_soon_auto_title">ファスティングまもなく開始</string>
+    <string name="notif_fasting_start_soon_auto">%1$d 分後にファスティングが始まります。操作は不要です。</string>
 </resources>

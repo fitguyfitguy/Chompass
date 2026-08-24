@@ -1776,4 +1776,10 @@
     <string name="fasting_auto_tag">Automat</string>
     <string name="settings_fasting_auto_windows">Ferestre de post automate</string>
     <string name="settings_fasting_auto_windows_help">Când este activ, postul începe automat când fereastra de mese se închide și se termină la atingerea țintei. Poți începe și manual. Posturile automate nu afișează butoane pe ecranul principal.</string>
+    <string name="fasting_fast_starts_at">Postul începe la %1$s · în %2$s</string>
+    <string name="fasting_next_fast_at">Următorul post la %1$s</string>
+    <string name="settings_fasting_start_time">Ora începerii postului</string>
+    <string name="settings_fasting_start_time_help">Ferestrele de post automate încep postul în fiecare zi la această oră. Mementoul de începere sună cu timpul setat înainte.</string>
+    <string name="notif_fasting_start_soon_auto_title">Postul începe în curând</string>
+    <string name="notif_fasting_start_soon_auto">Postul tău începe în %1$d min — nu trebuie să faci nimic.</string>
 </resources>

@@ -62,13 +62,19 @@ import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.components.UnitToggle
+import app.chompass.ui.components.WheelPicker
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.util.clockTimePattern
+import androidx.compose.ui.platform.LocalContext
 import java.time.Instant
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import androidx.compose.material3.Icon
 import app.chompass.models.UnitFormat
 
@@ -444,6 +450,40 @@ internal fun FastingGoalSheet(
     )
     Spacer(Modifier.height(16.dp))
     GradientSaveButton { onSave(fast, eat) }
+    Spacer(Modifier.height(8.dp))
+}
+
+/** Daily fast-start clock time; mirrors [DailySummaryTimeSheet]. */
+@Composable
+internal fun FastingStartTimeSheet(
+    hour: Int,
+    minute: Int,
+    onSave: (hour: Int, minute: Int) -> Unit,
+) {
+    val currentMinutes = (hour.coerceIn(0, 23) * 60 + minute.coerceIn(0, 59))
+    val options = remember(currentMinutes) {
+        val grid = (0 until 24 * 60 step 15).toList()
+        if (currentMinutes in grid) grid else (grid + currentMinutes).sorted()
+    }
+    var selectedMinutes by remember(currentMinutes) { mutableIntStateOf(currentMinutes) }
+    val context = LocalContext.current
+    val formatter = remember(context) {
+        DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault())
+    }
+    Text(
+        stringResource(R.string.settings_fasting_start_time),
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.Bold,
+    )
+    Spacer(Modifier.height(16.dp))
+    WheelPicker(
+        items = options,
+        selected = selectedMinutes,
+        onSelect = { selectedMinutes = it },
+        label = { LocalTime.of(it / 60, it % 60).format(formatter) },
+    )
+    Spacer(Modifier.height(16.dp))
+    GradientSaveButton { onSave(selectedMinutes / 60, selectedMinutes % 60) }
     Spacer(Modifier.height(8.dp))
 }
 

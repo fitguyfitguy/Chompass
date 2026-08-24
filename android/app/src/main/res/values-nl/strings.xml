@@ -1776,4 +1776,10 @@
     <string name="fasting_auto_tag">Automatisch</string>
     <string name="settings_fasting_auto_windows">Automatische vastenvensters</string>
     <string name="settings_fasting_auto_windows_help">Wanneer aan, start je vasten automatisch zodra je eetvenster sluit en eindigt het bij het bereiken van het doel. Je kunt ook handmatig starten. Automatisch vasten toont geen knoppen op Home.</string>
+    <string name="fasting_fast_starts_at">Vasten start om %1$s · over %2$s</string>
+    <string name="fasting_next_fast_at">Volgend vasten om %1$s</string>
+    <string name="settings_fasting_start_time">Starttijd van het vasten</string>
+    <string name="settings_fasting_start_time_help">Automatische vastenvensters starten je vasten dagelijks op deze tijd. De startherinnering klinkt de ingestelde voorlooptijd eerder.</string>
+    <string name="notif_fasting_start_soon_auto_title">Vasten begint binnenkort</string>
+    <string name="notif_fasting_start_soon_auto">Je vasten begint over %1$d min — niets te doen.</string>
 </resources>

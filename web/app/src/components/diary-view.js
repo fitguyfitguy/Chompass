@@ -67,14 +67,19 @@ const HOME_DATE_KEY = "chompass-home-date";
 function fastingCard(p) {
   const goal = p.fastingGoalHours ?? 0;
   const eat = p.fastingEatHours ?? 0;
+  const auto = p.fastingAutoWindows === true;
   const now = Date.now();
   const fasting = p.fastingStartedAt != null;
   const windowEnds = !fasting && eat > 0 && p.fastingLastEndedAt != null ? p.fastingLastEndedAt + eat * 3_600_000 : null;
-  const eating = !fasting && windowEnds != null && windowEnds > now;
+  const nextT = !fasting && auto ? nextFastStartMillis(p.fastingStartHour ?? 20, p.fastingStartMinute ?? 0, now) : null;
+  const nextFastStart = auto ? nextT : windowEnds;
+  const eating = !fasting && nextFastStart != null && nextFastStart > now;
   const elapsed = fasting ? Math.max(0, now - p.fastingStartedAt) : 0;
   const eatElapsed = eating ? Math.max(0, now - p.fastingLastEndedAt) : 0;
   const goalMillis = goal * 3_600_000;
   const reached = fasting && goal > 0 && elapsed >= goalMillis;
+  const timeStr = (ms) =>
+    new Date(ms).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   let status;
   if (fasting) {
     status = reached
@@ -83,20 +88,29 @@ function fastingCard(p) {
         ? t("diary.fasting_goal_hint", { elapsed: fmtFastDuration(elapsed), goal })
         : fmtFastDuration(elapsed);
   } else if (eating) {
-    status = t("diary.fasting_eating_progress", { elapsed: fmtFastDuration(eatElapsed), eat });
+    const remaining = fmtFastDuration(Math.max(0, nextFastStart - now));
+    status = auto
+      ? t("diary.fasting_fast_starts_at", { time: timeStr(nextFastStart), remaining })
+      : t("diary.fasting_fast_starts_in", { remaining });
   } else {
-    status = t("diary.fasting_idle");
+    status = auto && nextT != null
+      ? t("diary.fasting_next_fast_at", { time: timeStr(nextT) })
+      : t("diary.fasting_idle");
   }
   const showBar = (fasting && goal > 0) || eating;
   const pct = showBar
-    ? Math.min(100, ((fasting ? elapsed / goalMillis : eatElapsed / (eat * 3_600_000)) * 100))
+    ? Math.min(100, ((fasting ? elapsed / goalMillis : eatElapsed / Math.max(1, nextFastStart - now + eatElapsed)) * 100))
     : 0;
   const autoManaged = fasting && p.fastingAutoStarted === true;
   let hint = "";
   if (fasting && goal > 0 && !reached) {
     hint = `<div class="water-row__hint">${t("diary.fasting_window_opens_in", { remaining: fmtFastDuration(Math.max(0, goalMillis - elapsed)) })}</div>`;
   } else if (eating) {
-    hint = `<div class="water-row__hint">${t("diary.fasting_fast_starts_in", { remaining: fmtFastDuration(Math.max(0, windowEnds - now)) })}</div>`;
+    hint = `<div class="water-row__hint">${
+      auto
+        ? t("diary.fasting_fast_starts_at", { time: timeStr(nextFastStart), remaining: fmtFastDuration(Math.max(0, nextFastStart - now)) })
+        : t("diary.fasting_fast_starts_in", { remaining: fmtFastDuration(Math.max(0, nextFastStart - now)) })
+    }</div>`;
   }
   return `<div class="card card--glass water-row fasting-row">
       <div class="water-row__top">
@@ -119,6 +133,14 @@ function fastingCard(p) {
           : ""
       }
     </div>`;
+}
+
+/** Next occurrence of the daily fast-start clock time after now (PWA mirror of nextFastingStartMillis). */
+function nextFastStartMillis(hour, minute, nowMillis) {
+  const today = new Date(nowMillis);
+  today.setHours(hour, minute, 0, 0);
+  const todayMs = today.getTime();
+  return nowMillis <= todayMs ? todayMs : todayMs + 24 * 60 * 60_000;
 }
 
 /** "14h 20m" / "45m" / "2h" — elapsed label shared by the fasting card. */
@@ -480,7 +502,7 @@ export class DiaryView extends HTMLElement {
     // drive auto-cycle transitions (PWA has no background alarms).
     this._fastingTick = setInterval(async () => {
       const p = this._appPrefs;
-      const active = p?.showFasting === true && (p?.fastingStartedAt != null || p?.fastingEatHours > 0);
+      const active = p?.showFasting === true && (p?.fastingStartedAt != null || p?.fastingEatHours > 0 || p?.fastingAutoWindows === true);
       if (!active) return;
       await this.fastingHeal();
       this.render();
@@ -1915,7 +1937,6 @@ export class DiaryView extends HTMLElement {
     const p = await prefs.load();
     if (p.showFasting !== true || p.fastingAutoWindows !== true) return false;
     const goal = p.fastingGoalHours ?? 0;
-    const eat = p.fastingEatHours ?? 0;
     const now = Date.now();
     if (p.fastingStartedAt != null) {
       if (goal > 0 && now - p.fastingStartedAt >= goal * 3_600_000) {
@@ -1928,8 +1949,18 @@ export class DiaryView extends HTMLElement {
         });
         return true;
       }
-    } else if (eat > 0 && p.fastingLastEndedAt != null && now >= p.fastingLastEndedAt + eat * 3_600_000) {
-      await prefs.save({ fastingStartedAt: now, fastingGoalNotified: false, fastingAutoStarted: true });
+      return false;
+    }
+    // Schedule catch-up (mirrors Android heal): the auto-start was missed
+    // when the last stop happened before the most recent start time and no
+    // fast is running; start at the scheduled instant to stay on the clock.
+    const hour = p.fastingStartHour ?? 20;
+    const minute = p.fastingStartMinute ?? 0;
+    const todayT = nextFastStartMillis(hour, minute, now);
+    const scheduled = now >= todayT ? todayT : todayT - 24 * 60 * 60_000;
+    const lastEnded = p.fastingLastEndedAt;
+    if (lastEnded != null && lastEnded < scheduled && now >= scheduled) {
+      await prefs.save({ fastingStartedAt: scheduled, fastingGoalNotified: false, fastingAutoStarted: true });
       return true;
     }
     return false;

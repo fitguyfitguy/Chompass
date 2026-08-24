@@ -108,6 +108,8 @@ data class SettingsUiState(
     val fastingGoalNotificationEnabled: Boolean = true,
     val fastingEndReminderLeadMinutes: Int = 15,
     val fastingAutoWindows: Boolean = false,
+    val fastingStartHour: Int = 20,
+    val fastingStartMinute: Int = 0,
     val fastingStartReminderEnabled: Boolean = false,
     val fastingStartReminderLeadMinutes: Int = 15,
     val waterReminderEnabled: Boolean = false,
@@ -390,6 +392,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     fastingGoalNotificationEnabled = snap.fastingGoalNotificationEnabled,
                     fastingEndReminderLeadMinutes = snap.fastingEndReminderLeadMinutes,
                     fastingAutoWindows = snap.fastingAutoWindows,
+                    fastingStartHour = snap.fastingStartHour,
+                    fastingStartMinute = snap.fastingStartMinute,
                     fastingStartReminderEnabled = snap.fastingStartReminderEnabled,
                     fastingStartReminderLeadMinutes = snap.fastingStartReminderLeadMinutes,
                     waterReminderEnabled = snap.waterReminderEnabled,
@@ -1239,6 +1243,16 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             FastingReminderPlanner.rearmStartReminder(container)
         },
         { copy(fastingAutoWindows = v) },
+    )
+
+    fun setFastingStartTime(hour: Int, minute: Int) = updateUiPref(
+        {
+            container.prefs.setFastingStartHour(hour)
+            container.prefs.setFastingStartMinute(minute)
+            FastingAutoPlanner.rearm(container)
+            FastingReminderPlanner.rearmStartReminder(container)
+        },
+        { copy(fastingStartHour = hour, fastingStartMinute = minute) },
     )
 
     fun setFastingStartReminderLeadMinutes(v: Int) = updateUiPref(

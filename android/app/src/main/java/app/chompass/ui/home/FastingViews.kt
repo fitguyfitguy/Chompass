@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.FastingPhase
 import app.chompass.models.FastingSession
+import app.chompass.ui.util.clockTimePattern
 
 /**
  * Fasting cycle bar on Home (docs/local/PLAN_FASTING_TRACKER.md §5). Tells the
@@ -43,8 +44,11 @@ fun FastingProgressRow(
     eatHours: Int,
     fastElapsedMillis: Long,
     eatElapsedMillis: Long,
+    nextFastStartMillis: Long?,
+    nowMillis: Long,
     goalReached: Boolean,
     autoStarted: Boolean,
+    autoMode: Boolean,
     onStart: () -> Unit,
     onStop: () -> Unit,
     modifier: Modifier = Modifier,
@@ -52,6 +56,7 @@ fun FastingProgressRow(
     val hasGoal = fastHours > 0
     val fastWindowMillis = fastHours * FastingSession.MILLIS_PER_HOUR
     val eatWindowMillis = eatHours * FastingSession.MILLIS_PER_HOUR
+    val clockFormatter = rememberClockFormatter()
 
     val statusLabel: String
     val progress: Float
@@ -73,19 +78,34 @@ fun FastingProgressRow(
             }
         }
         FastingPhase.EATING -> {
+            val remaining = (nextFastStartMillis ?: (nowMillis + eatWindowMillis)).let { (it - nowMillis).coerceAtLeast(0L) }
             statusLabel = stringResource(
                 R.string.fasting_eating_progress,
                 fastingDurationLabel(eatElapsedMillis),
                 eatHours,
             )
-            progress = (eatElapsedMillis.toFloat() / eatWindowMillis).coerceIn(0f, 1f)
-            countdownHint = stringResource(
-                R.string.fasting_fast_starts_in,
-                fastingDurationLabel((eatWindowMillis - eatElapsedMillis).coerceAtLeast(0L)),
-            )
+            val denom = if (autoMode && nextFastStartMillis != null) {
+                (nextFastStartMillis - (nowMillis - eatElapsedMillis)).coerceAtLeast(1L)
+            } else {
+                eatWindowMillis
+            }
+            progress = (eatElapsedMillis.toFloat() / denom).coerceIn(0f, 1f)
+            countdownHint = if (autoMode && nextFastStartMillis != null) {
+                stringResource(
+                    R.string.fasting_fast_starts_at,
+                    clockFormatter.format(java.time.Instant.ofEpochMilli(nextFastStartMillis)),
+                    fastingDurationLabel(remaining),
+                )
+            } else {
+                stringResource(R.string.fasting_fast_starts_in, fastingDurationLabel(remaining))
+            }
         }
         FastingPhase.IDLE -> {
-            statusLabel = stringResource(R.string.fasting_idle)
+            statusLabel = if (autoMode && nextFastStartMillis != null) {
+                stringResource(R.string.fasting_next_fast_at, clockFormatter.format(java.time.Instant.ofEpochMilli(nextFastStartMillis)))
+            } else {
+                stringResource(R.string.fasting_idle)
+            }
             progress = 0f
             countdownHint = null
         }
@@ -184,14 +204,17 @@ fun FastingHubControl(
     eatHours: Int,
     fastElapsedMillis: Long,
     eatElapsedMillis: Long,
+    nextFastStartMillis: Long?,
+    nowMillis: Long,
     goalReached: Boolean,
     autoStarted: Boolean,
+    autoMode: Boolean,
     onStart: () -> Unit,
     onStop: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val fastWindowMillis = fastHours * FastingSession.MILLIS_PER_HOUR
-    val eatWindowMillis = eatHours * FastingSession.MILLIS_PER_HOUR
+    val clockFormatter = rememberClockFormatter()
     val status = when (phase) {
         FastingPhase.FASTING ->
             if (goalReached) {
@@ -201,11 +224,23 @@ fun FastingHubControl(
             } else {
                 fastingDurationLabel(fastElapsedMillis)
             }
-        FastingPhase.EATING -> stringResource(
-            R.string.fasting_fast_starts_in,
-            fastingDurationLabel((eatWindowMillis - eatElapsedMillis).coerceAtLeast(0L)),
-        )
-        FastingPhase.IDLE -> stringResource(R.string.fasting_idle)
+        FastingPhase.EATING -> {
+            val remaining = (nextFastStartMillis ?: nowMillis).let { (it - nowMillis).coerceAtLeast(0L) }
+            if (autoMode && nextFastStartMillis != null) {
+                stringResource(
+                    R.string.fasting_fast_starts_at,
+                    clockFormatter.format(java.time.Instant.ofEpochMilli(nextFastStartMillis)),
+                    fastingDurationLabel(remaining),
+                )
+            } else {
+                stringResource(R.string.fasting_fast_starts_in, fastingDurationLabel(remaining))
+            }
+        }
+        FastingPhase.IDLE -> if (autoMode && nextFastStartMillis != null) {
+            stringResource(R.string.fasting_next_fast_at, clockFormatter.format(java.time.Instant.ofEpochMilli(nextFastStartMillis)))
+        } else {
+            stringResource(R.string.fasting_idle)
+        }
     }
     Column(modifier) {
         SheetSectionHeader(stringResource(R.string.add_food_fasting_section))
@@ -273,5 +308,17 @@ private fun fastingDurationLabel(millis: Long): String {
         hours > 0L && minutes > 0L -> stringResource(R.string.fasting_duration_h_m, hours, minutes)
         hours > 0L -> stringResource(R.string.fasting_duration_h, hours)
         else -> stringResource(R.string.fasting_duration_m, minutes)
+    }
+}
+
+/** Local clock format ("20:00" / "8:00 PM") for the next-fast-start labels. */
+@Composable
+private fun rememberClockFormatter(): java.time.format.DateTimeFormatter {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    return androidx.compose.runtime.remember(context) {
+        java.time.format.DateTimeFormatter.ofPattern(
+            clockTimePattern(context),
+            java.util.Locale.getDefault(),
+        )
     }
 }

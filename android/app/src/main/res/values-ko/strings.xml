@@ -1776,4 +1776,10 @@
     <string name="fasting_auto_tag">자동</string>
     <string name="settings_fasting_auto_windows">자동 단식 시간</string>
     <string name="settings_fasting_auto_windows_help">켜면 식사 시간이 끝나는 즉시 단식이 자동으로 시작되고 목표에 도달하면 종료됩니다. 직접 시작할 수도 있습니다. 자동 시작된 단식은 홈에 버튼이 표시되지 않습니다.</string>
+    <string name="fasting_fast_starts_at">단식 %1$s 시작 · %2$s 후</string>
+    <string name="fasting_next_fast_at">다음 단식 %1$s</string>
+    <string name="settings_fasting_start_time">단식 시작 시간</string>
+    <string name="settings_fasting_start_time_help">자동 단식은 매일 이 시간에 시작됩니다. 시작 알림은 설정한 시간만큼 먼저 울립니다.</string>
+    <string name="notif_fasting_start_soon_auto_title">단식 곧 시작</string>
+    <string name="notif_fasting_start_soon_auto">%1$d분 후 단식이 시작됩니다. 할 일이 없습니다.</string>
 </resources>

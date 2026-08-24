@@ -3188,4 +3188,10 @@ für dich ein</string>
     <string name="fasting_auto_tag">Automatisch</string>
     <string name="settings_fasting_auto_windows">Automatische Fastenfenster</string>
     <string name="settings_fasting_auto_windows_help">Wenn aktiv, startet dein Fasten automatisch, sobald dein Essensfenster schließt, und endet beim Erreichen des Ziels. Du kannst weiterhin manuell starten. Automatisch gestartete Fasten zeigen auf Home keine Buttons.</string>
+    <string name="fasting_fast_starts_at">Fasten startet um %1$s · in %2$s</string>
+    <string name="fasting_next_fast_at">Nächstes Fasten um %1$s</string>
+    <string name="settings_fasting_start_time">Fasten-Startzeit</string>
+    <string name="settings_fasting_start_time_help">Automatische Fastenfenster starten dein Fasten täglich zu dieser Zeit. Die Start-Erinnerung ertönt die eingestellte Vorlaufzeit davor.</string>
+    <string name="notif_fasting_start_soon_auto_title">Fasten startet bald</string>
+    <string name="notif_fasting_start_soon_auto">Dein Fasten startet in %1$d Min — du musst nichts tun.</string>
 </resources>

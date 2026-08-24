@@ -45,6 +45,8 @@ class FastingRepositoryTest {
         prefs.setFastingStartReminderLeadMinutes(DEFAULT_FASTING_START_REMINDER_LEAD_MINUTES)
         prefs.setFastingEndReminderLeadMinutes(DEFAULT_FASTING_END_REMINDER_LEAD_MINUTES)
         prefs.setFastingEatHours(0)
+        prefs.setFastingStartHour(DEFAULT_FASTING_START_HOUR)
+        prefs.setFastingStartMinute(DEFAULT_FASTING_START_MINUTE)
     }
 
     private fun repo(
