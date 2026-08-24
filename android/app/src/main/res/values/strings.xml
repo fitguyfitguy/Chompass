@@ -482,6 +482,38 @@
     <string name="settings_nicotine_quick_kinds_help">Kinds shown as +1 chips on the Add food sheet.</string>
     <string name="settings_nicotine_limit_wheel_help">Scroll to set a daily count limit from 0 (no limit) to 100.</string>
     <string name="settings_nicotine_privacy_note">Nicotine logs stay on this device and in your WebDAV sync only. They are never included in shared meals and never sent to an AI provider.</string>
+    <!-- Optional caffeine tracker (device-pass revision of the caffeine plan). -->
+    <string name="caffeine">Caffeine</string>
+    <string name="caffeine_kind_coffee">Coffee</string>
+    <string name="caffeine_kind_tea">Tea</string>
+    <string name="caffeine_kind_energy">Energy drink</string>
+    <string name="caffeine_kind_other">Other</string>
+    <string name="caffeine_progress">%1$s / %2$d mg</string>
+    <string name="caffeine_total_today">%1$s mg</string>
+    <string name="caffeine_log_title">Log caffeine</string>
+    <string name="caffeine_mg">Caffeine (mg)</string>
+    <string name="caffeine_mg_value">%1$s mg</string>
+    <string name="caffeine_add">Add caffeine</string>
+    <string name="caffeine_history_title">Caffeine history</string>
+    <string name="caffeine_history_total">%1$s · %2$s mg</string>
+    <string name="caffeine_no_entries">No caffeine logged for this day yet.</string>
+    <string name="caffeine_edit_title">Edit caffeine</string>
+    <string name="cd_delete_caffeine">Delete caffeine entry</string>
+    <string name="cd_log_caffeine">Log caffeine</string>
+    <string name="caffeine_quick_plus_one">+1 %1$s</string>
+    <string name="caffeine_custom_short">Custom</string>
+    <string name="add_food_caffeine_section">Caffeine</string>
+    <string name="caffeine_daily_limit">Daily limit</string>
+    <string name="caffeine_daily_limit_summary">%1$d mg</string>
+    <string name="caffeine_no_limit">No limit</string>
+    <string name="settings_caffeine_title">Caffeine</string>
+    <string name="settings_caffeine_intro">Log coffee, tea and energy drinks, see today\'s total (including caffeine from food entries) against a daily mg limit you set, and edit or delete any entry from a per-day history.</string>
+    <string name="settings_caffeine_section_tracking">Tracking</string>
+    <string name="settings_caffeine_tracking">Caffeine tracking</string>
+    <string name="settings_caffeine_section_quick">Quick log</string>
+    <string name="settings_caffeine_quick_kinds_help">Kinds shown as +1 chips on the Add food sheet.</string>
+    <string name="settings_caffeine_limit_wheel_help">Scroll to set a daily caffeine limit from 0 (no limit) to 1000 mg.</string>
+    <string name="settings_caffeine_privacy_note">Caffeine logs stay on this device and in your WebDAV sync only. They are never included in shared meals and never sent to an AI provider.</string>
     <!-- Optional daily notes (docs/local/PLAN_DAILY_NOTES.md); default off. -->
     <string name="settings_notes_title">Daily notes</string>
     <string name="settings_notes_intro">Write a private note for any day — a journal, a log, or a reminder. Notes sync and export with your diary.</string>
@@ -901,7 +933,7 @@
     <string name="settings_group_goals_summary">Diet, macros, adaptive goals</string>
     <string name="settings_group_food_summary">Logging, serving sizes, photo analysis</string>
     <string name="settings_group_app_summary">Appearance, theme, home &amp; progress, language</string>
-    <string name="settings_group_trackers_summary">Water, nicotine, fasting, reminders</string>
+    <string name="settings_group_trackers_summary">Water, nicotine, caffeine, fasting, reminders</string>
     <string name="settings_group_ai_summary">Providers, models, speech-to-text</string>
     <string name="settings_group_data_summary">Health Connect, export, backup</string>
 

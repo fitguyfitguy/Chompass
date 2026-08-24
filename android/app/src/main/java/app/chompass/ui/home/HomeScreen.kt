@@ -77,6 +77,7 @@ import app.chompass.R
 import app.chompass.data.QuickRelogRows
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
+import app.chompass.models.CaffeineEntry
 import app.chompass.models.NicotineEntry
 import app.chompass.models.WaterAmountFormat
 import app.chompass.models.WaterEntry
@@ -158,6 +159,9 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     var showNicotineCustom by rememberSaveable { mutableStateOf(false) }
     var showNicotineHistory by rememberSaveable { mutableStateOf(false) }
     var editingNicotineEntry by remember { mutableStateOf<NicotineEntry?>(null) }
+    var showCaffeineCustom by rememberSaveable { mutableStateOf(false) }
+    var showCaffeineHistory by rememberSaveable { mutableStateOf(false) }
+    var editingCaffeineEntry by remember { mutableStateOf<CaffeineEntry?>(null) }
     var showManualActive by rememberSaveable { mutableStateOf(false) }
     var showGroundedEntry by rememberSaveable { mutableStateOf(false) }
     var showFoodSearch by rememberSaveable { mutableStateOf(false) }
@@ -541,6 +545,15 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )
                     }
+                    if (ui.caffeineTrackingEnabled) {
+                        Spacer(Modifier.height(12.dp))
+                        CaffeineProgressRow(
+                            currentMg = ui.caffeineTodayMg,
+                            limit = ui.caffeineDailyLimitMg,
+                            onClick = { showCaffeineHistory = true },
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                        )
+                    }
                     if (ui.fastingEnabled) {
                         Spacer(Modifier.height(12.dp))
                         FastingProgressRow(
@@ -874,6 +887,10 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             nicotineQuickKinds = ui.nicotineQuickKinds,
             onNicotine = { kind -> vm.addNicotine(kind) },
             onNicotineCustom = { showNicotineCustom = true },
+            caffeineTrackingEnabled = ui.caffeineTrackingEnabled,
+            caffeineQuickKinds = ui.caffeineQuickKinds,
+            onCaffeine = { kind -> vm.addCaffeine(kind) },
+            onCaffeineCustom = { showCaffeineCustom = true },
             fastingEnabled = ui.fastingEnabled,
             fastingActive = ui.fastingActive,
             fastingElapsedMillis = ui.fastingElapsedMillis,
@@ -996,6 +1013,31 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             entry = entry,
             onDismiss = { editingNicotineEntry = null },
             onSave = { kind, count, mg -> vm.updateNicotine(entry.id, kind, count, mg) },
+        )
+    }
+
+    if (showCaffeineCustom) {
+        CaffeineCustomSheet(
+            onDismiss = { showCaffeineCustom = false },
+            onAdd = { kind, mg -> vm.addCaffeine(kind, mg) },
+        )
+    }
+
+    if (showCaffeineHistory) {
+        CaffeineHistorySheet(
+            day = ui.date,
+            entries = ui.caffeineTodayEntries,
+            onDismiss = { showCaffeineHistory = false },
+            onEdit = { editingCaffeineEntry = it },
+            onDelete = { vm.deleteCaffeine(it.id) },
+        )
+    }
+
+    editingCaffeineEntry?.let { entry ->
+        CaffeineEditSheet(
+            entry = entry,
+            onDismiss = { editingCaffeineEntry = null },
+            onSave = { kind, mg -> vm.updateCaffeine(entry.id, kind, mg) },
         )
     }
 

@@ -67,6 +67,7 @@ import kotlin.math.roundToInt
 import app.chompass.R
 import app.chompass.data.QuickRelogRows
 import app.chompass.models.FoodEntry
+import app.chompass.models.CaffeineKind
 import app.chompass.models.NicotineKind
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.components.ChompassBottomSheet
@@ -109,6 +110,10 @@ fun AddFoodSheet(
     nicotineQuickKinds: List<NicotineKind> = NicotineKind.DefaultQuickKinds,
     onNicotine: (NicotineKind) -> Unit = {},
     onNicotineCustom: () -> Unit = {},
+    caffeineTrackingEnabled: Boolean = false,
+    caffeineQuickKinds: List<CaffeineKind> = CaffeineKind.DefaultQuickKinds,
+    onCaffeine: (CaffeineKind) -> Unit = {},
+    onCaffeineCustom: () -> Unit = {},
     fastingEnabled: Boolean = false,
     fastingActive: Boolean = false,
     fastingElapsedMillis: Long = 0L,
@@ -147,6 +152,10 @@ fun AddFoodSheet(
             nicotineQuickKinds = nicotineQuickKinds,
             onNicotine = { kind -> onDismiss(); onNicotine(kind) },
             onNicotineCustom = { onDismiss(); onNicotineCustom() },
+            caffeineTrackingEnabled = caffeineTrackingEnabled,
+            caffeineQuickKinds = caffeineQuickKinds,
+            onCaffeine = { kind -> onDismiss(); onCaffeine(kind) },
+            onCaffeineCustom = { onDismiss(); onCaffeineCustom() },
             fastingEnabled = fastingEnabled,
             fastingActive = fastingActive,
             fastingElapsedMillis = fastingElapsedMillis,
@@ -192,6 +201,10 @@ internal fun AddFoodSheetContent(
     nicotineQuickKinds: List<NicotineKind> = NicotineKind.DefaultQuickKinds,
     onNicotine: (NicotineKind) -> Unit = {},
     onNicotineCustom: () -> Unit = {},
+    caffeineTrackingEnabled: Boolean = false,
+    caffeineQuickKinds: List<CaffeineKind> = CaffeineKind.DefaultQuickKinds,
+    onCaffeine: (CaffeineKind) -> Unit = {},
+    onCaffeineCustom: () -> Unit = {},
     fastingEnabled: Boolean = false,
     fastingActive: Boolean = false,
     fastingElapsedMillis: Long = 0L,
@@ -427,6 +440,14 @@ internal fun AddFoodSheetContent(
                 quickKinds = nicotineQuickKinds,
                 onNicotine = onNicotine,
                 onNicotineCustom = onNicotineCustom,
+            )
+        }
+        if (caffeineTrackingEnabled) {
+            Spacer(Modifier.height(12.dp))
+            AddFoodCaffeineQuickRow(
+                quickKinds = caffeineQuickKinds,
+                onCaffeine = onCaffeine,
+                onCaffeineCustom = onCaffeineCustom,
             )
         }
         if (fastingEnabled) {
@@ -672,6 +693,54 @@ private fun AddFoodNicotineQuickRow(
             Icon(
                 Icons.Filled.DriveFileRenameOutline,
                 contentDescription = stringResource(R.string.nicotine_custom_short),
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                modifier = Modifier.size(18.dp),
+            )
+        }
+    }
+}
+
+/** Caffeine quick-log row (optional tracker): one chip per quick kind (+1
+ * with the kind's default mg) and a Custom button opening
+ * [CaffeineCustomSheet]. Mirrors the nicotine row.
+ */
+@Composable
+private fun AddFoodCaffeineQuickRow(
+    quickKinds: List<CaffeineKind>,
+    onCaffeine: (CaffeineKind) -> Unit,
+    onCaffeineCustom: () -> Unit,
+) {
+    val kinds = remember(quickKinds) { quickKinds.distinct().ifEmpty { CaffeineKind.DefaultQuickKinds } }
+
+    SheetSectionHeader(stringResource(R.string.add_food_caffeine_section))
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.55f))
+            .padding(horizontal = 10.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        kinds.forEach { kind ->
+            AssistChip(
+                onClick = { onCaffeine(kind) },
+                label = {
+                    Text(stringResource(R.string.caffeine_quick_plus_one, stringResource(kind.labelRes)))
+                },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                ),
+            )
+        }
+        Spacer(Modifier.weight(1f))
+        TextButton(
+            onClick = onCaffeineCustom,
+            contentPadding = PaddingValues(horizontal = 4.dp),
+        ) {
+            Icon(
+                Icons.Filled.DriveFileRenameOutline,
+                contentDescription = stringResource(R.string.caffeine_custom_short),
                 tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 modifier = Modifier.size(18.dp),
             )

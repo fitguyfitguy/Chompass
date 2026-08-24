@@ -16,6 +16,7 @@ import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.KetoCarbMode
+import app.chompass.models.CaffeineKind
 import app.chompass.models.NicotineKind
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.ProteinTargetMode
@@ -95,6 +96,9 @@ data class SettingsUiState(
     val nicotineDailyLimit: Int = 0,
     val nicotineQuickKinds: List<NicotineKind> = NicotineKind.DefaultQuickKinds,
     val dailyNotesEnabled: Boolean = false,
+    val caffeineTrackingEnabled: Boolean = false,
+    val caffeineDailyLimitMg: Int = 400,
+    val caffeineQuickKinds: List<CaffeineKind> = CaffeineKind.DefaultQuickKinds,
     val fastingEnabled: Boolean = false,
     val fastingGoalHours: Int = 0,
     val fastingGoalNotificationEnabled: Boolean = true,
@@ -342,6 +346,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     nicotineDailyLimit = snap.nicotineDailyLimit,
                     nicotineQuickKinds = snap.nicotineQuickKinds,
                     dailyNotesEnabled = snap.dailyNotesEnabled,
+                    caffeineTrackingEnabled = snap.caffeineTrackingEnabled,
+                    caffeineDailyLimitMg = snap.caffeineDailyLimitMg,
+                    caffeineQuickKinds = snap.caffeineQuickKinds,
                     fastingEnabled = snap.fastingEnabled,
                     fastingGoalHours = snap.fastingGoalHours,
                     fastingGoalNotificationEnabled = snap.fastingGoalNotificationEnabled,
@@ -1109,6 +1116,24 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         { container.prefs.setDailyNotesEnabled(v) },
         { copy(dailyNotesEnabled = v) },
     )
+
+    fun setCaffeineTrackingEnabled(v: Boolean) = updateUiPref(
+        { container.prefs.setCaffeineTrackingEnabled(v) },
+        { copy(caffeineTrackingEnabled = v) },
+    )
+
+    fun setCaffeineDailyLimitMg(v: Int) = updateUiPref(
+        { container.prefs.setCaffeineDailyLimitMg(v) },
+        { copy(caffeineDailyLimitMg = v) },
+    )
+
+    fun setCaffeineQuickKinds(kinds: List<CaffeineKind>) {
+        val validated = CaffeineKind.quickKindsFromStorage(CaffeineKind.quickKindsToStorage(kinds))
+        updateUiPref(
+            { container.prefs.setCaffeineQuickKinds(validated) },
+            { copy(caffeineQuickKinds = validated) },
+        )
+    }
 
     fun setFastingEnabled(v: Boolean) = updateUiPref(
         {

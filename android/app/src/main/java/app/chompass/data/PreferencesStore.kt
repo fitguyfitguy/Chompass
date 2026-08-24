@@ -13,6 +13,8 @@ import app.chompass.models.HeuristicServingUnitSettings
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.FastingSession
 import app.chompass.models.ManualActiveEntry
+import app.chompass.models.CaffeineEntry
+import app.chompass.models.CaffeineKind
 import app.chompass.models.NicotineEntry
 import app.chompass.models.NicotineKind
 import app.chompass.models.OptionalNutrientGoals
@@ -76,6 +78,15 @@ class PreferencesStore(private val appContext: Context) {
             serializer = NicotineEntry.serializer(),
             idOf = { it.id },
             order = compareBy(NicotineEntry::date),
+        )
+    }
+    internal val caffeineBucketStore by lazy {
+        JsonBucketStore(
+            root = File(appContext.filesDir, "chompass-buckets/caffeine"),
+            json = json,
+            serializer = CaffeineEntry.serializer(),
+            idOf = { it.id },
+            order = compareBy(CaffeineEntry::date),
         )
     }
     internal val weightBucketStore by lazy {
@@ -239,6 +250,19 @@ class PreferencesStore(private val appContext: Context) {
         upsertsByMonth: Map<YearMonth, List<NicotineEntry>> = emptyMap(),
         removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),
     ) = applyNicotineBucketChangesImpl(upsertsByMonth, removalIdsByMonth)
+    val caffeineTrackingEnabled: Flow<Boolean> get() = caffeineTrackingEnabledImpl
+    suspend fun setCaffeineTrackingEnabled(v: Boolean) = setCaffeineTrackingEnabledImpl(v)
+    val caffeineDailyLimitMg: Flow<Int> get() = caffeineDailyLimitMgImpl
+    suspend fun setCaffeineDailyLimitMg(v: Int) = setCaffeineDailyLimitMgImpl(v)
+    val caffeineQuickKinds: Flow<List<CaffeineKind>> get() = caffeineQuickKindsImpl
+    suspend fun setCaffeineQuickKinds(kinds: List<CaffeineKind>) = setCaffeineQuickKindsImpl(kinds)
+    val caffeineEntries: Flow<List<CaffeineEntry>> get() = caffeineEntriesImpl
+    suspend fun setCaffeineEntries(entries: List<CaffeineEntry>) = setCaffeineEntriesImpl(entries)
+    /** Month-scoped caffeine write (one bucket file). */
+    suspend fun applyCaffeineBucketChanges(
+        upsertsByMonth: Map<YearMonth, List<CaffeineEntry>> = emptyMap(),
+        removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),
+    ) = applyCaffeineBucketChangesImpl(upsertsByMonth, removalIdsByMonth)
     val manualActiveEntries: Flow<List<ManualActiveEntry>> get() = manualActiveEntriesImpl
     suspend fun setManualActiveEntries(entries: List<ManualActiveEntry>) = setManualActiveEntriesImpl(entries)
     // Optional intermittent-fasting timer (docs/local/PLAN_FASTING_TRACKER.md); local-only.

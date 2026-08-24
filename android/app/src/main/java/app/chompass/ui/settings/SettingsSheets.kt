@@ -601,6 +601,13 @@ internal fun SettingsSheets(
                         onDismiss()
                     },
                 )
+                SettingsSheet.CAFFEINE_LIMIT -> CaffeineLimitSheet(
+                    current = ui.caffeineDailyLimitMg,
+                    onSave = {
+                        vm.setCaffeineDailyLimitMg(it)
+                        onDismiss()
+                    },
+                )
                 SettingsSheet.FASTING_GOAL -> FastingGoalSheet(
                     current = ui.fastingGoalHours,
                     onSave = {
