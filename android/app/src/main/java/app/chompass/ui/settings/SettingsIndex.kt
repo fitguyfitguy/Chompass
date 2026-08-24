@@ -75,6 +75,34 @@ internal fun settingsSearchMatches(
         entry.keywords.any { settingsSearchFold(it).contains(folded) }
 }
 
+/**
+ * Pre-folded search entry: label + keywords normalized once per locale so the
+ * results list folds the query only, not every index entry, on each keystroke
+ * (F perf pass, device walk 2026-08-24). [settingsSearchMatchesFolded] is the
+ * per-keystroke matcher over it.
+ */
+internal class FoldedSettingsEntry(
+    val entry: SettingsIndexEntry,
+    val label: String,
+    val labelFold: String,
+    val keywordFolds: List<String>,
+)
+
+internal fun foldSettingsEntry(entry: SettingsIndexEntry, label: String): FoldedSettingsEntry =
+    FoldedSettingsEntry(
+        entry = entry,
+        label = label,
+        labelFold = settingsSearchFold(label),
+        keywordFolds = entry.keywords.map { settingsSearchFold(it) },
+    )
+
+internal fun settingsSearchMatchesFolded(folded: FoldedSettingsEntry, query: String): Boolean {
+    val foldedQuery = settingsSearchFold(query)
+    if (foldedQuery.isBlank()) return false
+    return folded.labelFold.contains(foldedQuery) ||
+        folded.keywordFolds.any { it.contains(foldedQuery) }
+}
+
 internal val SETTINGS_INDEX: List<SettingsIndexEntry> = listOf(
     // — Personal Info —
     SettingsIndexEntry(R.string.settings_section_personal, R.string.settings_units,
