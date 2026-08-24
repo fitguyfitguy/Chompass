@@ -98,6 +98,10 @@ internal object Keys {
         val FASTING_LAST_ENDED_AT = longPreferencesKey("fastingLastEndedAt")
         val FASTING_LAST_FAST_STARTED_AT = longPreferencesKey("fastingLastFastStartedAt")
         val FASTING_GOAL_REACHED_NOTIFIED = booleanPreferencesKey("fastingGoalReachedNotified")
+        /** The running fast was started by the auto-cycle (no manual buttons shown). */
+        val FASTING_AUTO_STARTED = booleanPreferencesKey("fastingAutoStarted")
+        /** Auto-cycle: fast starts when the eating window closes, ends at the goal. */
+        val FASTING_AUTO_WINDOWS = booleanPreferencesKey("fastingAutoWindows")
         val LAST_NOTIFIED_UPDATE_VERSION = stringPreferencesKey("lastNotifiedUpdateVersion")
         val HEALTH_CONNECT_ENABLED = booleanPreferencesKey("healthConnectEnabled")
         val HEALTH_TYPES_VERSION = intPreferencesKey("healthTypesVersion")

@@ -1794,4 +1794,7 @@
     <string name="notif_fasting_end_soon_text">Orucunuz %1$d dk sonra bitiyor — yemek pencereniz o zaman açılır.</string>
     <string name="notif_fasting_start_soon_title">Oruç yakında başlıyor</string>
     <string name="notif_fasting_start_soon_text">Yemek pencereniz %1$d dk sonra kapanıyor — o zaman orucunuza başlayın.</string>
+    <string name="fasting_auto_tag">Otomatik</string>
+    <string name="settings_fasting_auto_windows">Otomatik oruç pencereleri</string>
+    <string name="settings_fasting_auto_windows_help">Açıkken, yemek pencereniz kapandığı anda orucunuz otomatik başlar ve hedefe ulaşınca biter. Yine de elle başlatabilirsiniz. Otomatik oruçlarda Ana ekranda düğme görünmez.</string>
 </resources>

@@ -1779,4 +1779,7 @@
     <string name="notif_fasting_end_soon_text">ينتهي صيامك خلال %1$d دقيقة — ستفتح نافذة الأكل حينها.</string>
     <string name="notif_fasting_start_soon_title">يبدأ الصيام قريبًا</string>
     <string name="notif_fasting_start_soon_text">تُغلق نافذة الأكل خلال %1$d دقيقة — ابدأ صيامك حينها.</string>
+    <string name="fasting_auto_tag">تلقائي</string>
+    <string name="settings_fasting_auto_windows">نوافذ صيام تلقائية</string>
+    <string name="settings_fasting_auto_windows_help">عند التشغيل، يبدأ صيامك تلقائيًا لحظة إغلاق نافذة الأكل وينتهي عند بلوغ الهدف. يمكنك أيضًا البدء يدويًا. الصيام التلقائي لا يعرض أزرارًا في الشاشة الرئيسية.</string>
 </resources>

@@ -30,6 +30,7 @@ import app.chompass.models.WaterGoalCalculator
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WeightEntry
 import app.chompass.services.ai.RecalcSheetData
+import app.chompass.services.FastingAutoPlanner
 import app.chompass.services.FastingGoalPlanner
 import app.chompass.services.FastingReminderPlanner
 import app.chompass.services.LauncherShortcuts
@@ -106,6 +107,7 @@ data class SettingsUiState(
     val fastingEatHours: Int = 0,
     val fastingGoalNotificationEnabled: Boolean = true,
     val fastingEndReminderLeadMinutes: Int = 15,
+    val fastingAutoWindows: Boolean = false,
     val fastingStartReminderEnabled: Boolean = false,
     val fastingStartReminderLeadMinutes: Int = 15,
     val waterReminderEnabled: Boolean = false,
@@ -387,6 +389,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     fastingEatHours = snap.fastingEatHours,
                     fastingGoalNotificationEnabled = snap.fastingGoalNotificationEnabled,
                     fastingEndReminderLeadMinutes = snap.fastingEndReminderLeadMinutes,
+                    fastingAutoWindows = snap.fastingAutoWindows,
                     fastingStartReminderEnabled = snap.fastingStartReminderEnabled,
                     fastingStartReminderLeadMinutes = snap.fastingStartReminderLeadMinutes,
                     waterReminderEnabled = snap.waterReminderEnabled,
@@ -1226,6 +1229,16 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             FastingReminderPlanner.rearmStartReminder(container)
         },
         { copy(fastingStartReminderEnabled = v) },
+    )
+
+    fun setFastingAutoWindows(v: Boolean) = updateUiPref(
+        {
+            container.prefs.setFastingAutoWindows(v)
+            FastingAutoPlanner.rearm(container)
+            FastingAutoPlanner.heal(container)
+            FastingReminderPlanner.rearmStartReminder(container)
+        },
+        { copy(fastingAutoWindows = v) },
     )
 
     fun setFastingStartReminderLeadMinutes(v: Int) = updateUiPref(

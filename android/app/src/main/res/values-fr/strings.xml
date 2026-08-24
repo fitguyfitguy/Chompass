@@ -1780,4 +1780,7 @@
     <string name="notif_fasting_end_soon_text">Votre jeûne se termine dans %1$d min — votre fenêtre de repas s\'ouvre alors.</string>
     <string name="notif_fasting_start_soon_title">Jeûne bientôt commencé</string>
     <string name="notif_fasting_start_soon_text">Votre fenêtre de repas se ferme dans %1$d min — démarrez votre jeûne alors.</string>
+    <string name="fasting_auto_tag">Automatique</string>
+    <string name="settings_fasting_auto_windows">Fenêtres de jeûne automatiques</string>
+    <string name="settings_fasting_auto_windows_help">Lorsqu\'il est activé, votre jeûne démarre seul dès que votre fenêtre de repas se ferme et se termine à l\'atteinte de l\'objectif. Vous pouvez aussi démarrer manuellement. Les jeûnes automatiques n\'affichent aucun bouton sur l\'accueil.</string>
 </resources>

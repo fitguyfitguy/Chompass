@@ -524,6 +524,7 @@
     <string name="fasting">Fasting</string>
     <string name="fasting_idle">No active fast</string>
     <string name="fasting_goal_reached">Goal reached</string>
+    <string name="fasting_auto_tag">Auto</string>
     <string name="fasting_goal_progress">%1$s · goal %2$d h</string>
     <string name="fasting_duration_h_m">%1$d h %2$d m</string>
     <string name="fasting_duration_h">%1$d h</string>
@@ -551,6 +552,8 @@
     <string name="settings_fasting_end_reminder">Break-fast reminder</string>
     <string name="settings_fasting_section_reminders">Reminders</string>
     <string name="settings_fasting_start_reminder">Start reminder</string>
+    <string name="settings_fasting_auto_windows">Auto fast windows</string>
+    <string name="settings_fasting_auto_windows_help">When on, your fast starts automatically the moment your eating window closes and ends when it reaches the goal. You can still start one manually. Auto-started fasts show no buttons on Home.</string>
     <string name="settings_fasting_reminder_lead_end">Before the fast ends</string>
     <string name="settings_fasting_reminder_lead_start">Before the fast starts</string>
     <string name="settings_fasting_reminder_lead_unit">min</string>
@@ -977,7 +980,424 @@
     <string name="settings_danger_zone">Danger zone</string>
     <string name="settings_danger_zone_caption">These actions permanently delete data and cannot be undone.</string>
     <string name="settings_search_hint">Search settings</string>
-    <string name="settings_search_empty">No settings match. Try "water", "units" or "reminders".</string>
+    <string name="settings_search_empty">No settings match. Try "kg", "kcal" or "ml".</string>
+
+    <!-- Settings hub search vocabulary (SettingsIndex.kt). English defaults;
+         each locale may add a translated array (auto-fallback to English when
+         absent). Not UI copy, so check_android_strings.py does not count them
+         against the missing-strings budget. -->
+    <string-array name="settings_search_kw_units">
+        <item>metric</item>
+        <item>imperial</item>
+        <item>cm</item>
+        <item>ft</item>
+        <item>kg</item>
+        <item>lbs</item>
+        <item>measurement system</item>
+    </string-array>
+    <string-array name="settings_search_kw_gender">
+        <item>sex</item>
+    </string-array>
+    <string-array name="settings_search_kw_birthday">
+        <item>birthday</item>
+        <item>age</item>
+        <item>dob</item>
+        <item>born</item>
+    </string-array>
+    <string-array name="settings_search_kw_height">
+        <item>height</item>
+        <item>tall</item>
+        <item>cm</item>
+        <item>ft</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight">
+        <item>weight</item>
+        <item>current</item>
+        <item>kg</item>
+        <item>lbs</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_fat">
+        <item>body fat</item>
+        <item>bf</item>
+        <item>percent</item>
+    </string-array>
+    <string-array name="settings_search_kw_use_body_fat_bmr">
+        <item>bmr</item>
+        <item>katch</item>
+        <item>mcardle</item>
+        <item>metabolism</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_body_fat">
+        <item>bf goal</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_measurements">
+        <item>waist</item>
+        <item>tape</item>
+        <item>circumference</item>
+        <item>hips</item>
+        <item>chest</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight_goal">
+        <item>lose</item>
+        <item>gain</item>
+        <item>maintain</item>
+        <item>target</item>
+    </string-array>
+    <string-array name="settings_search_kw_diet_mode">
+        <item>diet</item>
+        <item>keto</item>
+        <item>vegan</item>
+        <item>vegetarian</item>
+        <item>carnivore</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_carb_mode">
+        <item>net</item>
+        <item>total</item>
+        <item>keto</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_net_carbs">
+        <item>keto</item>
+        <item>grams</item>
+    </string-array>
+    <string-array name="settings_search_kw_activity_level">
+        <item>activity</item>
+        <item>sedentary</item>
+        <item>exercise</item>
+    </string-array>
+    <string-array name="settings_search_kw_weekly_change">
+        <item>rate</item>
+        <item>speed</item>
+        <item>per week</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_weight">
+        <item>target</item>
+    </string-array>
+    <string-array name="settings_search_kw_adaptive_goals">
+        <item>weekly</item>
+        <item>auto</item>
+        <item>nudge</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy_goals">
+        <item>burn</item>
+        <item>health connect</item>
+        <item>measured</item>
+    </string-array>
+    <string-array name="settings_search_kw_calories">
+        <item>calories</item>
+        <item>kcal</item>
+        <item>calorie goal</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_protein">
+        <item>macro</item>
+        <item>protein</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_carbs">
+        <item>macro</item>
+        <item>carbs</item>
+        <item>carbohydrates</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_fat">
+        <item>macro</item>
+        <item>fat</item>
+        <item>lipid</item>
+    </string-array>
+    <string-array name="settings_search_kw_other_nutrient_goals">
+        <item>fiber</item>
+        <item>sodium</item>
+        <item>micronutrients</item>
+        <item>vitamins</item>
+    </string-array>
+    <string-array name="settings_search_kw_recalculate_goals">
+        <item>recalculate</item>
+        <item>recalc</item>
+        <item>refresh</item>
+        <item>update targets</item>
+    </string-array>
+    <string-array name="settings_search_kw_calc_methods">
+        <item>formula</item>
+        <item>bmr</item>
+        <item>tdee</item>
+        <item>mifflin</item>
+        <item>katch</item>
+        <item>audit</item>
+    </string-array>
+    <string-array name="settings_search_kw_default_to_grams">
+        <item>grams</item>
+        <item>units</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_log_sort">
+        <item>order</item>
+        <item>sorting</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_times">
+        <item>meal</item>
+        <item>breakfast</item>
+        <item>lunch</item>
+        <item>dinner</item>
+        <item>schedule</item>
+    </string-array>
+    <string-array name="settings_search_kw_photo_note_prompt">
+        <item>photo</item>
+        <item>ask</item>
+        <item>note</item>
+        <item>describe</item>
+    </string-array>
+    <string-array name="settings_search_kw_portion_clarify">
+        <item>portion</item>
+        <item>serving</item>
+        <item>grams</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_constituents">
+        <item>ingredients</item>
+        <item>components</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_mode">
+        <item>serving</item>
+        <item>unit</item>
+        <item>detection</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_heuristics">
+        <item>serving</item>
+        <item>rules</item>
+        <item>detection</item>
+    </string-array>
+    <string-array name="settings_search_kw_home_display">
+        <item>home</item>
+        <item>cards</item>
+        <item>nutrients</item>
+        <item>gauge</item>
+    </string-array>
+    <string-array name="settings_search_kw_appearance">
+        <item>dark</item>
+        <item>light</item>
+        <item>oled</item>
+        <item>night</item>
+        <item>theme mode</item>
+    </string-array>
+    <string-array name="settings_search_kw_theme_color">
+        <item>theme</item>
+        <item>accent</item>
+        <item>colour</item>
+        <item>color</item>
+        <item>teal</item>
+        <item>blue</item>
+    </string-array>
+    <string-array name="settings_search_kw_language">
+        <item>language</item>
+        <item>locale</item>
+        <item>translation</item>
+        <item>deutsch</item>
+        <item>espanol</item>
+    </string-array>
+    <string-array name="settings_search_kw_fixed_launcher_icon">
+        <item>launcher</item>
+        <item>app icon</item>
+        <item>teal</item>
+    </string-array>
+    <string-array name="settings_search_kw_customize_progress">
+        <item>progress</item>
+        <item>range</item>
+        <item>charts</item>
+        <item>plots</item>
+        <item>trend</item>
+        <item>default</item>
+    </string-array>
+    <string-array name="settings_search_kw_week_starts">
+        <item>calendar</item>
+        <item>monday</item>
+        <item>sunday</item>
+        <item>week</item>
+    </string-array>
+    <string-array name="settings_search_kw_water">
+        <item>hydration</item>
+        <item>goal</item>
+        <item>drink</item>
+        <item>ml</item>
+        <item>presets</item>
+    </string-array>
+    <string-array name="settings_search_kw_nicotine">
+        <item>cigarettes</item>
+        <item>vape</item>
+        <item>pouch</item>
+        <item>smoking</item>
+        <item>limit</item>
+    </string-array>
+    <string-array name="settings_search_kw_caffeine">
+        <item>coffee</item>
+        <item>tea</item>
+        <item>energy drink</item>
+        <item>limit</item>
+        <item>caffeine</item>
+    </string-array>
+    <string-array name="settings_search_kw_notes">
+        <item>journal</item>
+        <item>note</item>
+        <item>diary</item>
+        <item>daily notes</item>
+    </string-array>
+    <string-array name="settings_search_kw_fasting">
+        <item>fasting</item>
+        <item>intermittent</item>
+        <item>timer</item>
+        <item>goal</item>
+        <item>fast</item>
+    </string-array>
+    <string-array name="settings_search_kw_notifications">
+        <item>reminders</item>
+        <item>streak</item>
+        <item>summary</item>
+        <item>weight reminder</item>
+        <item>battery</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_features_master">
+        <item>ai</item>
+        <item>on</item>
+        <item>off</item>
+        <item>privacy</item>
+    </string-array>
+    <string-array name="settings_search_kw_show_coach_tab">
+        <item>coach</item>
+        <item>tab</item>
+        <item>hide</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_provider">
+        <item>gemini</item>
+        <item>openai</item>
+        <item>anthropic</item>
+        <item>claude</item>
+        <item>ollama</item>
+        <item>gpt</item>
+        <item>local</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_model">
+        <item>model</item>
+        <item>version</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_vision_model">
+        <item>vision</item>
+        <item>image</item>
+        <item>multimodal</item>
+    </string-array>
+    <string-array name="settings_search_kw_api_key">
+        <item>api key</item>
+        <item>secret</item>
+        <item>token</item>
+        <item>gemini</item>
+        <item>openai</item>
+    </string-array>
+    <string-array name="settings_search_kw_base_url">
+        <item>endpoint</item>
+        <item>url</item>
+        <item>ollama</item>
+        <item>local</item>
+        <item>server</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_allow_insecure_http">
+        <item>http</item>
+        <item>cleartext</item>
+        <item>local</item>
+    </string-array>
+    <string-array name="settings_search_kw_on_device_model">
+        <item>on-device</item>
+        <item>gemma</item>
+        <item>download</item>
+        <item>local</item>
+        <item>offline</item>
+    </string-array>
+    <string-array name="settings_search_kw_max_tokens">
+        <item>tokens</item>
+        <item>length</item>
+        <item>cap</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_read_timeout">
+        <item>timeout</item>
+        <item>seconds</item>
+        <item>network</item>
+    </string-array>
+    <string-array name="settings_search_kw_gemini_google_search">
+        <item>grounding</item>
+        <item>google</item>
+        <item>web</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_custom_instructions">
+        <item>context</item>
+        <item>prompt</item>
+        <item>coach</item>
+        <item>personality</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_fallback">
+        <item>fallback</item>
+        <item>backup</item>
+        <item>secondary</item>
+        <item>retry</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_speech">
+        <item>speech</item>
+        <item>voice</item>
+        <item>dictation</item>
+        <item>speech to text</item>
+        <item>microphone</item>
+        <item>stt</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_connect">
+        <item>sync</item>
+        <item>steps</item>
+        <item>sleep</item>
+        <item>permissions</item>
+        <item>google fit</item>
+        <item>samsung</item>
+    </string-array>
+    <string-array name="settings_search_kw_manage_health_access">
+        <item>permissions</item>
+        <item>health connect</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_background_sync">
+        <item>background</item>
+        <item>automatic</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_diary">
+        <item>export</item>
+        <item>json</item>
+        <item>backup</item>
+        <item>file</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_body_metrics">
+        <item>export</item>
+        <item>weight</item>
+        <item>body fat</item>
+        <item>file</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_diary">
+        <item>import</item>
+        <item>restore</item>
+        <item>json</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_body_metrics">
+        <item>import</item>
+        <item>restore</item>
+        <item>weight</item>
+        <item>csv</item>
+    </string-array>
+    <string-array name="settings_search_kw_sync">
+        <item>webdav</item>
+        <item>backup</item>
+        <item>cloud</item>
+        <item>auto sync</item>
+        <item>server</item>
+    </string-array>
+    <string-array name="settings_search_kw_clear_food_log">
+        <item>delete</item>
+        <item>erase</item>
+        <item>wipe</item>
+        <item>food</item>
+    </string-array>
+    <string-array name="settings_search_kw_delete_all_data">
+        <item>delete</item>
+        <item>erase</item>
+        <item>wipe</item>
+        <item>reset</item>
+        <item>factory</item>
+    </string-array>
     <string name="settings_suggestions">Suggestions</string>
     <string name="settings_suggestions_dismiss">Dismiss</string>
     <string name="settings_suggestion_water_reminders">Set a drinking-window reminder plan so you stay on track</string>

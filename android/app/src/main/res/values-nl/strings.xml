@@ -1773,4 +1773,7 @@
     <string name="notif_fasting_end_soon_text">Je vasten eindigt over %1$d min — je eetvenster gaat dan open.</string>
     <string name="notif_fasting_start_soon_title">Vasten begint binnenkort</string>
     <string name="notif_fasting_start_soon_text">Je eetvenster sluit over %1$d min — start dan je vasten.</string>
+    <string name="fasting_auto_tag">Automatisch</string>
+    <string name="settings_fasting_auto_windows">Automatische vastenvensters</string>
+    <string name="settings_fasting_auto_windows_help">Wanneer aan, start je vasten automatisch zodra je eetvenster sluit en eindigt het bij het bereiken van het doel. Je kunt ook handmatig starten. Automatisch vasten toont geen knoppen op Home.</string>
 </resources>

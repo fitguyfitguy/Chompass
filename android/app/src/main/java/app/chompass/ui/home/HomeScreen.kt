@@ -514,9 +514,9 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                             fastElapsedMillis = ui.fastingElapsedMillis,
                             eatElapsedMillis = ui.fastingEatingElapsedMillis,
                             goalReached = ui.fastingGoalReached,
+                            autoStarted = ui.fastingAutoStarted,
                             onStart = vm::startFast,
                             onStop = vm::stopFast,
-                            onCancel = vm::cancelFast,
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )
                     }
@@ -900,9 +900,9 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             fastingGoalHours = ui.fastingGoalHours,
             fastingEatHours = ui.fastingEatHours,
             fastingGoalReached = ui.fastingGoalReached,
+            fastingAutoStarted = ui.fastingAutoStarted,
             onStartFast = vm::startFast,
             onStopFast = vm::stopFast,
-            onCancelFast = vm::cancelFast,
             onRelogRecent = { vm.relogMeal(it) },
             onReviewRecent = { vm.reviewSavedMeal(it) },
             onDismiss = {

@@ -18,7 +18,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,9 +44,9 @@ fun FastingProgressRow(
     fastElapsedMillis: Long,
     eatElapsedMillis: Long,
     goalReached: Boolean,
+    autoStarted: Boolean,
     onStart: () -> Unit,
     onStop: () -> Unit,
-    onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val hasGoal = fastHours > 0
@@ -109,6 +108,15 @@ fun FastingProgressRow(
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 14.sp,
             )
+            if (autoStarted) {
+                Spacer(Modifier.padding(start = 6.dp))
+                Text(
+                    stringResource(R.string.fasting_auto_tag),
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium,
+                )
+            }
             Spacer(Modifier.weight(1f))
             Text(
                 statusLabel,
@@ -134,29 +142,29 @@ fun FastingProgressRow(
                 )
             }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (phase == FastingPhase.FASTING) {
-                Button(
-                    onClick = onStop,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                    ),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
-                ) {
-                    Text(stringResource(R.string.fasting_stop), fontSize = 13.sp)
-                }
-                TextButton(onClick = onCancel) {
-                    Text(stringResource(R.string.fasting_cancel), fontSize = 13.sp)
-                }
-            } else {
-                Button(
-                    onClick = onStart,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                    ),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
-                ) {
-                    Text(stringResource(R.string.fasting_start), fontSize = 13.sp)
+        // Auto-started fasts are self-driving: no manual buttons at all.
+        if (!(phase == FastingPhase.FASTING && autoStarted)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (phase == FastingPhase.FASTING) {
+                    Button(
+                        onClick = onStop,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                        ),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
+                    ) {
+                        Text(stringResource(R.string.fasting_stop), fontSize = 13.sp)
+                    }
+                } else {
+                    Button(
+                        onClick = onStart,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                        ),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
+                    ) {
+                        Text(stringResource(R.string.fasting_start), fontSize = 13.sp)
+                    }
                 }
             }
         }
@@ -177,9 +185,9 @@ fun FastingHubControl(
     fastElapsedMillis: Long,
     eatElapsedMillis: Long,
     goalReached: Boolean,
+    autoStarted: Boolean,
     onStart: () -> Unit,
     onStop: () -> Unit,
-    onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val fastWindowMillis = fastHours * FastingSession.MILLIS_PER_HOUR
@@ -228,28 +236,27 @@ fun FastingHubControl(
                     fontSize = 12.sp,
                 )
             }
-            if (phase == FastingPhase.FASTING) {
-                Button(
-                    onClick = onStop,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                    ),
-                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
-                ) {
-                    Text(stringResource(R.string.fasting_stop), fontSize = 13.sp)
-                }
-                TextButton(onClick = onCancel) {
-                    Text(stringResource(R.string.fasting_cancel), fontSize = 12.sp)
-                }
-            } else {
-                Button(
-                    onClick = onStart,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                    ),
-                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
-                ) {
-                    Text(stringResource(R.string.fasting_start), fontSize = 13.sp)
+            if (!(phase == FastingPhase.FASTING && autoStarted)) {
+                if (phase == FastingPhase.FASTING) {
+                    Button(
+                        onClick = onStop,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                        ),
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
+                    ) {
+                        Text(stringResource(R.string.fasting_stop), fontSize = 13.sp)
+                    }
+                } else {
+                    Button(
+                        onClick = onStart,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                        ),
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
+                    ) {
+                        Text(stringResource(R.string.fasting_start), fontSize = 13.sp)
+                    }
                 }
             }
         }

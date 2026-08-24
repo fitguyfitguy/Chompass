@@ -1773,4 +1773,7 @@
     <string name="notif_fasting_end_soon_text">%1$d 分後にファスティングが終了します。食事時間が始まります。</string>
     <string name="notif_fasting_start_soon_title">ファスティングまもなく開始</string>
     <string name="notif_fasting_start_soon_text">%1$d 分後に食事時間が終了します。ファスティングを始めましょう。</string>
+    <string name="fasting_auto_tag">自動</string>
+    <string name="settings_fasting_auto_windows">ファスティング時間を自動化</string>
+    <string name="settings_fasting_auto_windows_help">オンにすると、食事時間が終わると自動的にファスティングが始まり、目標に達すると終了します。手動で始めることもできます。自動開始のファスティングではホームにボタンは表示されません。</string>
 </resources>

@@ -23,6 +23,7 @@ import app.chompass.models.CurrentMealSchedule
 import app.chompass.models.UserProfile
 import app.chompass.services.AdaptiveGoalResult
 import app.chompass.services.AdaptiveGoalsService
+import app.chompass.services.FastingAutoPlanner
 import app.chompass.services.FastingGoalPlanner
 import app.chompass.services.FastingReminderPlanner
 import app.chompass.services.FoodImageStore
@@ -157,6 +158,11 @@ class ChompassApp : Application() {
             FastingGoalPlanner.rearm(container)
             // Optional daily start-fast nudge (off by default) — same arm-or-cancel.
             FastingReminderPlanner.rearmStartReminder(container)
+            // Auto-cycle transition alarms (off by default).
+            FastingAutoPlanner.rearm(container)
+            // Catch up any auto transition whose boundary passed while the app
+            // was closed (missed alarm) so the cycle stays on schedule.
+            FastingAutoPlanner.heal(container)
             // Re-publish launcher shortcuts with the real fasting pref (the
             // onCreate publish ran before DataStore was readable).
             LauncherShortcuts.publish(this@ChompassApp, container.prefs.fastingEnabled.first())
@@ -218,7 +224,12 @@ class AppContainer(app: ChompassApp) {
         // armed fire time always matches the running fast + goal (start → arm,
         // stop/cancel → cancel). `app.container` is lateinit but always
         // assigned before any session change can happen.
-        onSessionChanged = { FastingGoalPlanner.rearm(app.container) }
+        onSessionChanged = {
+            FastingGoalPlanner.rearm(app.container)
+            FastingReminderPlanner.rearmStartReminder(app.container)
+            FastingAutoPlanner.rearm(app.container)
+            FastingAutoPlanner.heal(app.container)
+        }
     }
 
     // Weather input for the dynamic water goal (issue #3 Phase 5): shared

@@ -82,20 +82,32 @@ fun FastingSettingsScreen(
                         icon = Icons.Outlined.Schedule,
                     ) { sheet = SettingsSheet.FASTING_END_LEAD }
                 }
-                HorizontalDivider()
-                ToggleRow(
-                    stringResource(R.string.settings_fasting_start_reminder),
-                    ui.fastingStartReminderEnabled,
-                    icon = Icons.Outlined.Notifications,
-                    onChange = vm::setFastingStartReminderEnabled,
-                )
-                if (ui.fastingStartReminderEnabled && ui.fastingEatHours > 0) {
+                if (ui.fastingEatHours > 0) {
                     HorizontalDivider()
-                    SettingRow(
-                        stringResource(R.string.settings_fasting_reminder_lead_start),
-                        reminderLeadSummary(ui.fastingStartReminderLeadMinutes),
+                    ToggleRow(
+                        stringResource(R.string.settings_fasting_auto_windows),
+                        ui.fastingAutoWindows,
                         icon = Icons.Outlined.Schedule,
-                    ) { sheet = SettingsSheet.FASTING_START_LEAD }
+                        onChange = vm::setFastingAutoWindows,
+                    )
+                    SettingFootnote(stringResource(R.string.settings_fasting_auto_windows_help))
+                }
+                if (!ui.fastingAutoWindows && ui.fastingEatHours > 0) {
+                    HorizontalDivider()
+                    ToggleRow(
+                        stringResource(R.string.settings_fasting_start_reminder),
+                        ui.fastingStartReminderEnabled,
+                        icon = Icons.Outlined.Notifications,
+                        onChange = vm::setFastingStartReminderEnabled,
+                    )
+                    if (ui.fastingStartReminderEnabled) {
+                        HorizontalDivider()
+                        SettingRow(
+                            stringResource(R.string.settings_fasting_reminder_lead_start),
+                            reminderLeadSummary(ui.fastingStartReminderLeadMinutes),
+                            icon = Icons.Outlined.Schedule,
+                        ) { sheet = SettingsSheet.FASTING_START_LEAD }
+                    }
                 }
                 SettingFootnote(stringResource(R.string.settings_fasting_reminder_help))
             }

@@ -1773,4 +1773,7 @@
     <string name="notif_fasting_end_soon_text">Seu jejum termina em %1$d min — sua janela de refeições abre então.</string>
     <string name="notif_fasting_start_soon_title">O jejum começa em breve</string>
     <string name="notif_fasting_start_soon_text">Sua janela de refeições fecha em %1$d min — comece seu jejum então.</string>
+    <string name="fasting_auto_tag">Automático</string>
+    <string name="settings_fasting_auto_windows">Janelas de jejum automáticas</string>
+    <string name="settings_fasting_auto_windows_help">Quando ativado, seu jejum começa sozinho quando a janela de refeições fecha e termina ao atingir a meta. Você também pode iniciar manualmente. Jejuns automáticos não mostram botões na tela inicial.</string>
 </resources>

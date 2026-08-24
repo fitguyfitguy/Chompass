@@ -79,6 +79,7 @@ export const ro = Object.freeze({
   "diary.fasting_stop": "Oprește postul",
   "diary.fasting_goal_reached": "Obiectiv atins",
   "diary.fasting_goal_hint": "{elapsed} · obiectiv {goal} h",
+  "diary.fasting_auto": "Automat",
   "diary.fasting_window_opens_in": "Fereastra de mese se deschide în {remaining}",
   "diary.fasting_eating_progress": "{elapsed} din {eat} h de mese",
   "diary.fasting_fast_starts_in": "Postul începe în {remaining}",

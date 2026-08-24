@@ -1773,4 +1773,7 @@
     <string name="notif_fasting_end_soon_text">Postul tău se termină în %1$d min — fereastra de mese se deschide atunci.</string>
     <string name="notif_fasting_start_soon_title">Postul începe în curând</string>
     <string name="notif_fasting_start_soon_text">Fereastra ta de mese se închide în %1$d min — începe postul atunci.</string>
+    <string name="fasting_auto_tag">Automat</string>
+    <string name="settings_fasting_auto_windows">Ferestre de post automate</string>
+    <string name="settings_fasting_auto_windows_help">Când este activ, postul începe automat când fereastra de mese se închide și se termină la atingerea țintei. Poți începe și manual. Posturile automate nu afișează butoane pe ecranul principal.</string>
 </resources>

@@ -229,21 +229,21 @@ internal fun SettingsSearchField(
 /** Offline index match against [query]; each result shows its group as context. */
 @Composable
 private fun SettingsSearchResults(query: String, nav: NavHostController) {
-    // F perf (device walk 2026-08-24): fold the whole index once per locale;
-    // per-keystroke matching then only folds the query and scans. Before, every
-    // recomposition re-ran stringResource + NFD normalization for every entry.
+    // F perf (device walk 2026-08-24): fold the whole index once per locale
+    // ([resolveSettingsIndex]); per-keystroke matching then folds the query
+    // exactly once and scans, instead of re-folding labels/keywords and the
+    // query for every entry on every recomposition.
     val configuration = LocalConfiguration.current
     val locale = configuration.locales[0]
     val context = LocalContext.current
-    val foldedIndex = remember(locale, context) {
-        SETTINGS_INDEX.map { entry ->
-            foldSettingsEntry(entry, context.getString(entry.labelRes))
-        }
-    }
-    val matched = buildList {
-        for (folded in foldedIndex) {
-            if (settingsSearchMatchesFolded(folded, query)) {
-                add(folded.entry to folded.label)
+    val foldedIndex = remember(locale, context) { resolveSettingsIndex(context) }
+    val foldedQuery = settingsSearchFold(query)
+    val matched = remember(query, foldedIndex) {
+        buildList {
+            for (folded in foldedIndex) {
+                if (settingsSearchMatchesFolded(folded, foldedQuery)) {
+                    add(folded.entry to folded.label)
+                }
             }
         }
     }

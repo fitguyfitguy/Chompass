@@ -79,6 +79,7 @@ export const ru = Object.freeze({
   "diary.fasting_stop": "Завершить пост",
   "diary.fasting_goal_reached": "Цель достигнута",
   "diary.fasting_goal_hint": "{elapsed} · цель {goal} ч",
+  "diary.fasting_auto": "Авто",
   "diary.fasting_window_opens_in": "Окно приёма пищи откроется через {remaining}",
   "diary.fasting_eating_progress": "{elapsed} из {eat} ч приёма пищи",
   "diary.fasting_fast_starts_in": "Пост начнётся через {remaining}",

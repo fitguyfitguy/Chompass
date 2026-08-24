@@ -79,6 +79,7 @@ export const ar = Object.freeze({
   "diary.fasting_stop": "إنهاء الصيام",
   "diary.fasting_goal_reached": "تم بلوغ الهدف",
   "diary.fasting_goal_hint": "{elapsed} · الهدف {goal} ساعة",
+  "diary.fasting_auto": "تلقائي",
   "diary.fasting_window_opens_in": "تفتح نافذة الأكل خلال {remaining}",
   "diary.fasting_eating_progress": "{elapsed} من {eat} ساعة أكل",
   "diary.fasting_fast_starts_in": "يبدأ الصيام خلال {remaining}",

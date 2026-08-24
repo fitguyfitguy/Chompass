@@ -784,6 +784,14 @@ export class SettingsView extends HTMLElement {
           </div>
         </div>
         <div class="field">
+          <label for="fastingAutoWindows">Auto fast windows</label>
+          <select id="fastingAutoWindows" name="fastingAutoWindows">
+            <option value="false" ${p.fastingAutoWindows !== true ? "selected" : ""}>Off</option>
+            <option value="true" ${p.fastingAutoWindows === true ? "selected" : ""}>On</option>
+          </select>
+          <p class="nutrient-picker__hint">When on, your fast starts automatically when the eating window closes and ends at the goal, with no buttons on Home. Works while this page is open.</p>
+        </div>
+        <div class="field">
           <label for="calorieGaugeMode">Calorie gauge</label>
           <select id="calorieGaugeMode" name="calorieGaugeMode">
             <option value="static" ${p.calorieGaugeMode !== "add_active" ? "selected" : ""}>Static (full target)</option>
@@ -848,7 +856,8 @@ export class SettingsView extends HTMLElement {
         showNotes: fd.get("showNotes") === "true",
         showFasting: fd.get("showFasting") === "true",
         fastingGoalHours: Math.min(48, Math.max(0, Number(fd.get("fastingGoalHours") || 0))),
-        fastingEatHours: Math.min(24, Math.max(0, Number(fd.get("fastingEatHours") || 0))),        calorieGaugeMode: /** @type {any} */ (fd.get("calorieGaugeMode")),
+        fastingEatHours: Math.min(24, Math.max(0, Number(fd.get("fastingEatHours") || 0))),
+        fastingAutoWindows: fd.get("fastingAutoWindows") === "true",        calorieGaugeMode: /** @type {any} */ (fd.get("calorieGaugeMode")),
         adaptiveGoals: fd.get("adaptiveGoals") === "true",
         homeNutrientCardCount: cardCount,
         homeTopNutrients: normalizeHomeTopNutrients(tubeRaw, cardCount),

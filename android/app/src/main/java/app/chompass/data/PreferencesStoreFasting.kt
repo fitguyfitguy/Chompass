@@ -36,28 +36,31 @@ internal val PreferencesStore.fastingGoalNotificationEnabledImpl: Flow<Boolean>
 internal suspend fun PreferencesStore.setFastingGoalNotificationEnabledImpl(v: Boolean) =
     setBoolPref(Keys.FASTING_GOAL_NOTIFICATION_ENABLED, v)
 
-/** Session state as a pure function of the three scalar fields. */
+/** Session state as a pure function of the scalar fields. */
 internal val PreferencesStore.fastingSessionImpl: Flow<FastingSession>
     get() = combine(
         longPref(Keys.FASTING_STARTED_AT, 0L),
         longPref(Keys.FASTING_LAST_ENDED_AT, 0L),
         longPref(Keys.FASTING_LAST_FAST_STARTED_AT, 0L),
         boolPref(Keys.FASTING_GOAL_REACHED_NOTIFIED, false),
-    ) { started, ended, lastStarted, notified ->
+        boolPref(Keys.FASTING_AUTO_STARTED, false),
+    ) { started, ended, lastStarted, notified, auto ->
         FastingSession(
             startedAtMillis = started.takeIf { it > 0L },
             lastEndedAtMillis = ended.takeIf { it > 0L },
             lastFastStartedAtMillis = lastStarted.takeIf { it > 0L },
             goalReachedNotified = notified,
+            autoStarted = auto,
         )
     }
 
-/** Writes all four session scalars in one DataStore edit (single-file atomic). */
+/** Writes the session scalars in one DataStore edit (single-file atomic). */
 internal suspend fun PreferencesStore.setFastingSessionFieldsImpl(
     startedAtMillis: Long?,
-    lastEndedAtMillis: Long?,
-    lastFastStartedAtMillis: Long?,
-    goalReachedNotified: Boolean,
+    lastEndedAtMillis: Long? = null,
+    lastFastStartedAtMillis: Long? = null,
+    goalReachedNotified: Boolean = false,
+    autoStarted: Boolean = false,
 ) {
     dataStore.edit { prefs ->
         fun putOrRemoveLong(key: Preferences.Key<Long>, v: Long?) {
@@ -67,8 +70,15 @@ internal suspend fun PreferencesStore.setFastingSessionFieldsImpl(
         putOrRemoveLong(Keys.FASTING_LAST_ENDED_AT, lastEndedAtMillis)
         putOrRemoveLong(Keys.FASTING_LAST_FAST_STARTED_AT, lastFastStartedAtMillis)
         prefs[Keys.FASTING_GOAL_REACHED_NOTIFIED] = goalReachedNotified
+        prefs[Keys.FASTING_AUTO_STARTED] = autoStarted
     }
 }
+
+/** Auto-cycle toggle (off by default); needs an eating window to anchor to. */
+internal val PreferencesStore.fastingAutoWindowsImpl: Flow<Boolean>
+    get() = boolPref(Keys.FASTING_AUTO_WINDOWS, false)
+internal suspend fun PreferencesStore.setFastingAutoWindowsImpl(v: Boolean) =
+    setBoolPref(Keys.FASTING_AUTO_WINDOWS, v)
 
 /** Default lead (minutes before the window closes) for the start-fast nudge. */
 const val DEFAULT_FASTING_START_REMINDER_LEAD_MINUTES = 15

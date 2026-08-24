@@ -426,6 +426,8 @@ export const profile = {
  * @property {boolean} [showFasting] Optional local-only intermittent-fasting timer (off by default)
  * @property {number} [fastingGoalHours] Goal fast length in hours; 0 = no goal
  * @property {number} [fastingEatHours] Eating-window length in hours; 0 = not configured
+ * @property {boolean} [fastingAutoWindows] Auto-cycle: fast starts when the eating window closes, ends at the goal
+ * @property {boolean} [fastingAutoStarted] The running fast was started by the auto-cycle (no manual buttons)
  * @property {number|null} [fastingStartedAt] Epoch millis the running fast started; null = idle
  * @property {number|null} [fastingLastEndedAt] Epoch millis the last completed fast ended
  * @property {number|null} [fastingLastFastStartedAt] Epoch millis the last completed fast started
@@ -478,6 +480,8 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   showFasting: false,
   fastingGoalHours: 0,
   fastingEatHours: 0,
+  fastingAutoWindows: false,
+  fastingAutoStarted: false,
   fastingStartedAt: null,
   fastingLastEndedAt: null,
   fastingLastFastStartedAt: null,
