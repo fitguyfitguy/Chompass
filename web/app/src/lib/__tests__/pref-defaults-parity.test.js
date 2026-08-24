@@ -57,6 +57,13 @@ describe("pref defaults (parity fixture)", () => {
     assert.equal(DEFAULT_PREFS.progressDefaultRangeId, fixture.progressDefaultRangeId);
   });
 
+  it("legacy caffeineDailyLimitMg is a migration-only alias, never written again", () => {
+    // WS5: the tracker limit now lives in optionalNutrientGoals.caffeineMg;
+    // DEFAULT_PREFS dropping the old key means save() never rewrites it.
+    assert.equal("caffeineDailyLimitMg" in DEFAULT_PREFS, false);
+    assert.equal(DEFAULT_PREFS.optionalNutrientGoals.caffeineMg, fixture.optionalNutrientGoals.caffeine);
+  });
+
   it("optional nutrient goals match fixture", () => {
     const g = fixture.optionalNutrientGoals;
     assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.sugarG, g.sugar);

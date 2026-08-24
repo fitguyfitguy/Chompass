@@ -758,7 +758,7 @@ export class SettingsView extends HTMLElement {
         </div>
         <div class="field">
           <label for="caffeineDailyLimitMg">Caffeine daily limit (mg, 0 = none)</label>
-          <input id="caffeineDailyLimitMg" name="caffeineDailyLimitMg" type="number" min="0" max="1000" value="${p.caffeineDailyLimitMg ?? 400}" />
+          <input id="caffeineDailyLimitMg" name="caffeineDailyLimitMg" type="number" min="0" max="1000" value="${p.optionalNutrientGoals?.caffeineMg ?? 400}" />
         </div>
         <div class="field">
           <label for="showNotes">Daily notes</label>
@@ -867,7 +867,10 @@ export class SettingsView extends HTMLElement {
         showNicotine: fd.get("showNicotine") === "true",
         nicotineDailyLimit: Math.max(0, Number(fd.get("nicotineDailyLimit") || 0)),
         showCaffeine: fd.get("showCaffeine") === "true",
-        caffeineDailyLimitMg: Math.min(1000, Math.max(0, Number(fd.get("caffeineDailyLimitMg") ?? 400))),
+        optionalNutrientGoals: {
+          ...(p.optionalNutrientGoals ?? {}),
+          caffeineMg: Math.min(1000, Math.max(0, Number(fd.get("caffeineDailyLimitMg") ?? 400))),
+        },
         showNotes: fd.get("showNotes") === "true",
         showFasting: fd.get("showFasting") === "true",
         fastingGoalHours: Math.min(48, Math.max(0, Number(fd.get("fastingGoalHours") || 0))),

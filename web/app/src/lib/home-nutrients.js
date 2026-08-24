@@ -76,6 +76,22 @@ export const DEFAULT_OPTIONAL_NUTRIENT_GOALS = /** @type {Required<OptionalNutri
 });
 
 /**
+ * WS5: the legacy tracker daily-limit pref (caffeineDailyLimitMg) was an
+ * alias of the optional caffeine goal. A customized legacy value wins once
+ * over the still-default goal, so one-time migrations on both platforms copy
+ * it into [goals] and then drop the legacy key. Pure: no storage here.
+ * @param {Partial<OptionalNutrientGoals>|undefined} goals
+ * @param {number|undefined|null} legacyDailyLimitMg
+ */
+export function migrateLegacyCaffeineLimit(goals, legacyDailyLimitMg) {
+  if (legacyDailyLimitMg == null) return goals;
+  if (legacyDailyLimitMg === DEFAULT_OPTIONAL_NUTRIENT_GOALS.caffeineMg) return goals;
+  const current = goals?.caffeineMg ?? DEFAULT_OPTIONAL_NUTRIENT_GOALS.caffeineMg;
+  if (current !== DEFAULT_OPTIONAL_NUTRIENT_GOALS.caffeineMg) return goals;
+  return { ...(goals || {}), caffeineMg: legacyDailyLimitMg };
+}
+
+/**
  * Upper clamp for custom goal values — mirrors Android
  * OptionalNutrient.maxCustomGoal (Vit D keeps the 10,000 IU / 250 mcg
  * target reachable).

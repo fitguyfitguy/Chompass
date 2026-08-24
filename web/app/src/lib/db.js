@@ -6,6 +6,7 @@ import {
   DEFAULT_FOOD_CHIPS,
   DEFAULT_NUTRIENT_CARD_COUNT,
   ANDROID_PREF_DEFAULTS,
+  migrateLegacyCaffeineLimit,
 } from "./home-nutrients.js";
 
 // Marketing hero (web/app/demo.html) runs the real app shell against a throwaway
@@ -396,7 +397,7 @@ export const profile = {
  * @property {boolean} [showNicotine]
  * @property {number} [nicotineDailyLimit]
  * @property {boolean} [showCaffeine]
- * @property {number} [caffeineDailyLimitMg]
+ * @property {number} [caffeineDailyLimitMg] Legacy alias of `optionalNutrientGoals.caffeineMg` (pre-WS5); migrated once and never written again
  * @property {boolean} [showNotes]
  * @property {boolean} [coachTabEnabled] Hide the coach tab (Android parity; default true)
  * @property {boolean} [aiFeaturesEnabled] Master AI-features switch; off = no data to any LLM provider (default true)
@@ -452,7 +453,6 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   showNicotine: ANDROID_PREF_DEFAULTS.showNicotine,
   nicotineDailyLimit: ANDROID_PREF_DEFAULTS.nicotineDailyLimit,
   showCaffeine: ANDROID_PREF_DEFAULTS.showCaffeine,
-  caffeineDailyLimitMg: ANDROID_PREF_DEFAULTS.caffeineDailyLimitMg,
   showNotes: ANDROID_PREF_DEFAULTS.showNotes,
   coachTabEnabled: true,
   aiFeaturesEnabled: true,
@@ -506,6 +506,19 @@ export const prefs = {
       ...DEFAULT_OPTIONAL_NUTRIENT_GOALS,
       ...(rest.optionalNutrientGoals || {}),
     };
+    // WS5 one-time migration: the tracker's legacy daily-limit pref
+    // (caffeineDailyLimitMg) was an alias of optionalNutrientGoals.caffeineMg
+    // and the two could disagree. A customized legacy value wins once over the
+    // still-default goal, then the key is dropped and never written again —
+    // the Goals & Nutrition caffeine goal is the single daily-max knob.
+    const migrated = migrateLegacyCaffeineLimit(merged.optionalNutrientGoals, rest.caffeineDailyLimitMg);
+    if (migrated !== merged.optionalNutrientGoals) {
+      merged.optionalNutrientGoals = migrated;
+      const clean = { ...merged };
+      delete clean.caffeineDailyLimitMg;
+      await (await store("prefs")).put({ id: PREFS_ID, ...clean });
+    }
+    delete merged.caffeineDailyLimitMg;
     return merged;
   },
   /** @param {Partial<AppPrefs>} patch */

@@ -567,7 +567,7 @@ export class DiaryView extends HTMLElement {
     const caffeineMg =
       caffeineLogs.reduce((s, c) => s + (Number(c.mg) || 0), 0) +
       entries.reduce((s, e) => s + (e.caffeineMg ?? 0), 0);
-    const caffeineLimit = appPrefs.caffeineDailyLimitMg ?? 400;
+    const caffeineLimit = appPrefs.optionalNutrientGoals?.caffeineMg ?? 400;
     const caffeinePct = caffeineLimit > 0 ? Math.min(100, (caffeineMg / caffeineLimit) * 100) : 0;
     const showCaffeine = appPrefs.showCaffeine === true;
     const showNotes = appPrefs.showNotes === true;

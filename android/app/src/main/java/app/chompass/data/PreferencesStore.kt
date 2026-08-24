@@ -252,8 +252,7 @@ class PreferencesStore(private val appContext: Context) {
     ) = applyNicotineBucketChangesImpl(upsertsByMonth, removalIdsByMonth)
     val caffeineTrackingEnabled: Flow<Boolean> get() = caffeineTrackingEnabledImpl
     suspend fun setCaffeineTrackingEnabled(v: Boolean) = setCaffeineTrackingEnabledImpl(v)
-    val caffeineDailyLimitMg: Flow<Int> get() = caffeineDailyLimitMgImpl
-    suspend fun setCaffeineDailyLimitMg(v: Int) = setCaffeineDailyLimitMgImpl(v)
+    suspend fun migrateCaffeineDailyLimitIfNeeded() = migrateCaffeineDailyLimitIfNeededImpl()
     val caffeineQuickKinds: Flow<List<CaffeineKind>> get() = caffeineQuickKindsImpl
     suspend fun setCaffeineQuickKinds(kinds: List<CaffeineKind>) = setCaffeineQuickKindsImpl(kinds)
     val caffeineEntries: Flow<List<CaffeineEntry>> get() = caffeineEntriesImpl

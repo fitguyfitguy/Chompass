@@ -165,7 +165,6 @@ class TestDataSeeder(private val container: AppContainer) {
             container.prefs.setNicotineDailyLimit(10)
             container.prefs.setNicotineEntries(SampleDataGenerators.nicotineEntries())
             container.prefs.setCaffeineTrackingEnabled(true)
-            container.prefs.setCaffeineDailyLimitMg(400)
             container.prefs.setCaffeineEntries(SampleDataGenerators.caffeineEntries())
             container.prefs.setDailyNotesEnabled(true)
             container.chatRepository.replaceAll(SampleDataGenerators.sampleChat())

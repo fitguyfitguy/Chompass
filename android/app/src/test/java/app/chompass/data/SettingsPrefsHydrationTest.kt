@@ -1,11 +1,13 @@
 package app.chompass.data
 
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.preferencesOf
 import app.chompass.models.AIProvider
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.SpeechProvider
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -46,5 +48,34 @@ class SettingsPrefsHydrationTest {
         assertEquals("system", snap.appearanceMode)
         assertEquals("", snap.appLanguage)
         assertFalse(snap.fixedLauncherIcon)
+    }
+
+    // WS5: the legacy tracker limit (caffeineDailyLimitMg) is an alias of the
+    // optional caffeine goal. The read-side merge mirrors
+    // PreferencesStore.migrateCaffeineDailyLimitIfNeeded().
+
+    @Test
+    fun legacyCaffeineLimit_customized_migratesIntoDefaultGoal() {
+        val snap = preferencesOf(Keys.CAFFEINE_DAILY_LIMIT_MG to 300).toSettingsHydration(json)
+        assertEquals(300, snap.optionalNutrientGoals.caffeine)
+    }
+
+    @Test
+    fun legacyCaffeineLimit_ignoredWhenGoalAlreadyCustomized() {
+        val prefs = preferencesOf(
+            Keys.CAFFEINE_DAILY_LIMIT_MG to 300,
+            Keys.OPTIONAL_NUTRIENT_GOALS to json.encodeToString(
+                OptionalNutrientGoals.serializer(),
+                OptionalNutrientGoals.Default.copy(caffeine = 500),
+            ),
+        )
+        val snap = prefs.toSettingsHydration(json)
+        assertEquals(500, snap.optionalNutrientGoals.caffeine)
+    }
+
+    @Test
+    fun legacyCaffeineLimit_default_leavesDefaultGoal() {
+        val snap = preferencesOf(Keys.CAFFEINE_DAILY_LIMIT_MG to 400).toSettingsHydration(json)
+        assertEquals(OptionalNutrientGoals.Default, snap.optionalNutrientGoals)
     }
 }
