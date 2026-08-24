@@ -171,6 +171,17 @@
       "text": "Solid day: lunch felt light, energy stayed up all afternoon."
     }
   ],
+  "nicotine_entries": [
+    {
+      "id": "44444444-4444-4444-8444-444444444444",
+      "updated_at": "2026-07-24T10:00:00Z",
+      "deleted_at": null,
+      "date": "2026-07-24",
+      "kind": "cigarette",
+      "count": 1,
+      "mg": null
+    }
+  ],
   "recipes": [],
   "profile": {
     "updated_at": "2026-07-01T00:00:00Z",

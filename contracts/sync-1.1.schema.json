@@ -41,6 +41,10 @@
       "type": "array",
       "items": { "$ref": "#/$defs/waterRecord" }
     },
+    "nicotine_entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/nicotineRecord" }
+    },
     "recipes": {
       "type": "array",
       "items": { "$ref": "#/$defs/recipeRecord" }
@@ -208,6 +212,20 @@
           "properties": {
             "date": { "type": "string" },
             "amount_ml": { "type": "number" }
+          }
+        }
+      ]
+    },
+    "nicotineRecord": {
+      "allOf": [
+        { "$ref": "#/$defs/syncMeta" },
+        {
+          "type": "object",
+          "properties": {
+            "date": { "type": "string" },
+            "kind": { "type": "string" },
+            "count": { "type": "number" },
+            "mg": { "type": ["number", "null"] }
           }
         }
       ]

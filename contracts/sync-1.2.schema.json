@@ -45,6 +45,10 @@
       "type": "array",
       "items": { "$ref": "#/$defs/dailyNoteRecord" }
     },
+    "nicotine_entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/nicotineRecord" }
+    },
     "recipes": {
       "type": "array",
       "items": { "$ref": "#/$defs/recipeRecord" }
@@ -225,6 +229,21 @@
           "properties": {
             "date": { "type": "string" },
             "text": { "type": "string" }
+          }
+        }
+      ]
+    },
+    "nicotineRecord": {
+      "allOf": [
+        { "$ref": "#/$defs/syncMeta" },
+        {
+          "type": "object",
+          "required": ["date", "kind", "count"],
+          "properties": {
+            "date": { "type": "string" },
+            "kind": { "type": "string" },
+            "count": { "type": "number" },
+            "mg": { "type": ["number", "null"] }
           }
         }
       ]

@@ -23,6 +23,14 @@ class PrefDefaultsParityTest {
 
         assertFalse(f.getBoolean("showWater"))
         assertEquals(2000, f.getInt("waterGoalMl"))
+        // Optional nicotine tracker: off by default, no imposed daily limit,
+        // quick chips = cigarette / vape / pouch (docs/local/PLAN_NICOTINE_TRACKER.md).
+        assertFalse(f.getBoolean("showNicotine"))
+        assertEquals(0, f.getInt("nicotineDailyLimit"))
+        assertEquals(
+            f.getJSONArray("nicotineQuickKinds").toStringList(),
+            app.chompass.models.NicotineKind.DefaultQuickKinds.map { it.storageKey },
+        )
         assertTrue(f.getBoolean("aiFallbackEnabled"))
         assertEquals("gemini", f.getString("fallbackAiProvider"))
         assertEquals(

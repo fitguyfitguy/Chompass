@@ -50,6 +50,7 @@ import app.chompass.ui.settings.PersonalSettingsScreen
 import app.chompass.ui.settings.SettingsScreen
 import app.chompass.ui.settings.SyncSettingsScreen
 import app.chompass.ui.settings.WaterSettingsScreen
+import app.chompass.ui.settings.NicotineSettingsScreen
 
 /**
  * Increments each time the app is opened: 1 on cold launch, then +1 on every
@@ -287,6 +288,20 @@ fun ChompassNavHost(
                     }),
                 ) { entry ->
                     WaterSettingsScreen(
+                        container = container,
+                        nav = nav,
+                        onBack = { nav.popBackStack() },
+                        from = entry.arguments?.getString("from") ?: "app",
+                    )
+                }
+                composable(
+                    route = ChompassRoutes.SETTINGS_NICOTINE,
+                    arguments = listOf(navArgument("from") {
+                        type = NavType.StringType
+                        defaultValue = "app"
+                    }),
+                ) { entry ->
+                    NicotineSettingsScreen(
                         container = container,
                         nav = nav,
                         onBack = { nav.popBackStack() },

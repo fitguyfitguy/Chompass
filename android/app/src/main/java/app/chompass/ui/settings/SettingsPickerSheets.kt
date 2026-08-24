@@ -300,6 +300,31 @@ internal fun WaterGoalSheet(current: Int, onSave: (Int) -> Unit) {
     Spacer(Modifier.height(8.dp))
 }
 
+/** Daily nicotine count limit (0 = no limit); mirrors the water goal wheel. */
+@Composable
+internal fun NicotineLimitSheet(current: Int, onSave: (Int) -> Unit) {
+    var limit by remember(current) { mutableIntStateOf(current.coerceIn(0, 100)) }
+    Text(stringResource(R.string.nicotine_daily_limit), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+    Spacer(Modifier.height(20.dp))
+    NumericWheelPicker(
+        value = limit,
+        onValueChange = { limit = it },
+        min = 0,
+        max = 100,
+        unit = stringResource(R.string.nicotine_count_unit),
+        step = 1,
+    )
+    Spacer(Modifier.height(8.dp))
+    Text(
+        stringResource(R.string.settings_nicotine_limit_wheel_help),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+    )
+    Spacer(Modifier.height(16.dp))
+    GradientSaveButton { onSave(limit) }
+    Spacer(Modifier.height(8.dp))
+}
+
 internal fun formatWaterQuickPresetsSummary(presetsMl: List<Int>, useMetric: Boolean): String =
     presetsMl.joinToString(" · ") { ml ->
         if (useMetric) {

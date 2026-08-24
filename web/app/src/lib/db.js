@@ -15,7 +15,7 @@ const DB_NAME =
   typeof window !== "undefined" && /** @type {any} */ (window).CHOMPASS_DEMO
     ? "chompass-pwa-demo"
     : "chompass-pwa";
-const DB_VERSION = 4;
+const DB_VERSION = 5;
 
 /** @type {Promise<IDBDatabase>|null} */
 let dbPromise = null;
@@ -43,6 +43,13 @@ function openChompassDb() {
       if (!db.objectStoreNames.contains("dailyNotes")) {
         db.createObjectStore("dailyNotes", { keyPath: "id" }).createIndex("date", "date");
       }
+      if (!db.objectStoreNames.contains("nicotine")) db.createObjectStore("nicotine", { keyPath: "id" }).createIndex("date", "date");
+    }
+    // Nicotine tracker landed after daily notes on the same DB version 4 (both
+    // used v4 in their feature branches); devices already on v4 would skip the
+    // upgrade block, so the nicotine store gets its own version bump.
+    if (oldVersion < 5) {
+      if (!db.objectStoreNames.contains("nicotine")) db.createObjectStore("nicotine", { keyPath: "id" }).createIndex("date", "date");
     }
   });
 }
@@ -260,6 +267,30 @@ export const water = {
   },
 };
 
+export const nicotine = {
+  /** @param {import("./chompass-core/models.js").NicotineEntry} entry */
+  async put(entry) {
+    const result = await (await store("nicotine")).put(entry);
+    await touchRevision(entry.id, "nicotine");
+    return result;
+  },
+  async delete(id) {
+    const result = await (await store("nicotine")).delete(id);
+    await tombstoneRevision(id, "nicotine");
+    return result;
+  },
+  /** @param {string} date */
+  async byDate(date) {
+    return (await store("nicotine")).getAllFromIndex("date", date);
+  },
+  async all() {
+    return (await store("nicotine")).getAll();
+  },
+  async clear() {
+    return (await store("nicotine")).clear();
+  },
+};
+
 export const dailyNotes = {
   /** @param {import('./chompass-core/models.js').DailyNote} note */
   async put(note) {
@@ -334,6 +365,8 @@ export const profile = {
  * @property {"kg"|"lb"} [weightUnit]
  * @property {"cm"|"in"} [heightUnit]
  * @property {boolean} [showWater]
+ * @property {boolean} [showNicotine]
+ * @property {number} [nicotineDailyLimit]
  * @property {boolean} [coachTabEnabled] Hide the coach tab (Android parity; default true)
  * @property {boolean} [aiFeaturesEnabled] Master AI-features switch; off = no data to any LLM provider (default true)
  * @property {"static"|"add_active"} [calorieGaugeMode]
@@ -374,6 +407,8 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   weightUnit: "kg",
   heightUnit: "cm",
   showWater: ANDROID_PREF_DEFAULTS.showWater,
+  showNicotine: ANDROID_PREF_DEFAULTS.showNicotine,
+  nicotineDailyLimit: ANDROID_PREF_DEFAULTS.nicotineDailyLimit,
   coachTabEnabled: true,
   aiFeaturesEnabled: true,
   calorieGaugeMode: "static",
@@ -474,6 +509,7 @@ export async function clearAllUserData() {
     bodyFat.clear(),
     measurements.clear(),
     water.clear(),
+    nicotine.clear(),
     profile.clear(),
     chat.clear(),
     keys.clear(),
