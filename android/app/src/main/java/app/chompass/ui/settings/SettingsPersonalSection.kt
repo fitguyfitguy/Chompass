@@ -28,6 +28,18 @@ internal fun SettingsPersonalSection(
     onToggleUseBodyFatInBmr: (Boolean) -> Unit = {},
 ) {
     SectionCard(title = stringResource(R.string.settings_section_personal)) {
+                // Units live here, not inside the Height/Weight sheets: a single
+                // Metric/Imperial switch (mirrors onboarding) that moves cm/in and
+                // kg/lbs together. The in-sheet unit toggles remain as quick overrides.
+                SettingRow(
+                    stringResource(R.string.settings_units),
+                    stringResource(
+                        if (ui.heightMetric && ui.weightMetric) R.string.onboarding_metric
+                        else R.string.onboarding_imperial
+                    ),
+                    icon = Icons.Outlined.Straighten,
+                ) { onOpenSheet(SettingsSheet.UNITS) }
+                HorizontalDivider()
                 profile?.let { p ->
                     SettingRow(stringResource(R.string.settings_gender), stringResource(p.gender.displayNameRes), icon = Icons.Outlined.Person, inlineMenu = true) { onOpenSheet(SettingsSheet.GENDER) }
                     HorizontalDivider()
