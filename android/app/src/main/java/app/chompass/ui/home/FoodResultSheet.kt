@@ -205,7 +205,14 @@ fun FoodResultSheet(
     } else {
         effectiveAnalysis.selectedServingUnit
     }
-    var selectedServingUnitId by remember(effectiveAnalysis, servingUnitOptions, preferGramsByDefault) {
+    // Keys intentionally exclude servingUnitOptions (Codeberg #59): the state
+    // is mutated per serving edit, and re-deriving the selection here would
+    // clobber the id the serving card just committed (e.g. pin an edited
+    // grams unit back to "g", keeping the gram-append branch active and
+    // accumulating typed prefixes as wheel entries). Entry switches still
+    // re-run via effectiveAnalysis; analysis-unit arrival is handled by the
+    // guarded LaunchedEffect below.
+    var selectedServingUnitId by remember(effectiveAnalysis, preferGramsByDefault) {
         mutableStateOf(ServingUnitOption.initialUnitId(initialServingUnit, servingUnitOptions))
     }
     var servingGrams by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.servingSizeGrams ?: 100.0) }
