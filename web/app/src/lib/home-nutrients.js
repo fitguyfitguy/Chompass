@@ -44,6 +44,7 @@ export const HOME_TOP_NUTRIENTS = /** @type {NutrientDef[]} */ ([
   { key: "vitaminKMcg", label: "Vit K", unit: "mcg", tubeCss: "vit-k" },
   { key: "folateMcg", label: "Folate", unit: "mcg", tubeCss: "folate" },
   { key: "omega3G", label: "Omega-3", unit: "g", tubeCss: "omega" },
+  { key: "caffeineMg", label: "Caffeine", unit: "mg", tubeCss: "caffeine" },
 ]);
 
 /** Food-row chip options (Android FoodLogMacroChip). */
@@ -71,6 +72,7 @@ export const DEFAULT_OPTIONAL_NUTRIENT_GOALS = /** @type {Required<OptionalNutri
   vitaminKMcg: 120,
   folateMcg: 400,
   omega3G: 2,
+  caffeineMg: 400,
 });
 
 /**
@@ -99,6 +101,7 @@ export const MAX_CUSTOM_GOAL_BY_KEY = /** @type {Record<string, number>} */ ({
   vitaminKMcg: 1000,
   folateMcg: 2000,
   omega3G: 50,
+  caffeineMg: 2000,
 });
 
 export const DEFAULT_HOME_TOP = ["proteinG", "carbsG", "fatG", "fiberG"];
@@ -144,6 +147,7 @@ export const NUTRITION_DETAIL_MICROS = /** @type {NutrientDef[]} */ ([
   { key: "vitaminKMcg", label: "Vitamin K", unit: "mcg", tubeCss: "vit-k" },
   { key: "folateMcg", label: "Folate", unit: "mcg", tubeCss: "folate" },
   { key: "omega3G", label: "Omega-3", unit: "g", tubeCss: "omega" },
+  { key: "caffeineMg", label: "Caffeine", unit: "mg", tubeCss: "caffeine" },
 ]);
 
 /** @param {string} key */
@@ -367,4 +371,5 @@ export const ALL_MICRO_KEYS = [
   "vitaminKMcg",
   "folateMcg",
   "omega3G",
+  "caffeineMg",
 ];

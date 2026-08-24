@@ -1121,6 +1121,7 @@
     <string name="nutrient_potassium_format">Potasio: %1$smg</string>
     <string name="nutrient_sat_fat_format">Grasa sat.: %1$sg</string>
     <string name="nutrient_short_b12">B12</string>
+    <string name="nutrient_short_caffeine">Cafeína</string>
     <string name="nutrient_short_omega">Omega</string>
     <string name="nutrient_short_sat_fat">Grasa sat.</string>
     <string name="nutrient_short_vit_a">Vit. A</string>
@@ -1135,6 +1136,7 @@
     <string name="nutrition_label_folate">Folato</string>
     <string name="nutrition_label_iron">Hierro</string>
     <string name="nutrition_label_magnesium">Magnesio</string>
+    <string name="nutrition_label_caffeine">Cafeína</string>
     <string name="nutrition_label_omega3">Omega-3</string>
     <string name="nutrition_label_trans_fat">Grasas trans</string>
     <string name="nutrition_label_vitamin_a">Vitamina A</string>

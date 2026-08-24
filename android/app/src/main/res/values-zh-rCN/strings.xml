@@ -1070,6 +1070,7 @@
     <string name="nutrient_fiber_format">膳食纤维：%1$sg</string>
     <string name="nutrient_potassium_format">钾：%1$smg</string>
     <string name="nutrient_sat_fat_format">饱和脂肪：%1$sg</string>
+    <string name="nutrient_short_caffeine">咖啡因</string>
     <string name="nutrient_short_omega">欧米伽</string>
     <string name="nutrient_short_sat_fat">饱和脂肪</string>
     <string name="nutrient_short_vit_a">维A</string>
@@ -1083,6 +1084,7 @@
     <string name="nutrition_label_folate">叶酸</string>
     <string name="nutrition_label_iron">铁</string>
     <string name="nutrition_label_magnesium">镁</string>
+    <string name="nutrition_label_caffeine">咖啡因</string>
     <string name="nutrition_label_omega3">欧米伽-3</string>
     <string name="nutrition_label_trans_fat">反式脂肪</string>
     <string name="nutrition_label_vitamin_a">维生素 A</string>

@@ -1021,6 +1021,7 @@
     <string name="nutrition_label_folate">Фолат</string>
     <string name="nutrition_label_iron">Залізо</string>
     <string name="nutrition_label_magnesium">Магній</string>
+    <string name="nutrition_label_caffeine">Кофеїн</string>
     <string name="nutrition_label_omega3">Омега-3</string>
     <string name="nutrition_label_protein">Білок</string>
     <string name="nutrition_label_trans_fat">Трансжири</string>
@@ -1646,5 +1647,6 @@ LBM = вага × (1 − %жиру)</string>
         <item quantity="many">Додати %1$d спільних страв</item>
         <item quantity="other">Додати %1$d спільних страв</item>
     </plurals>
+    <string name="nutrient_short_caffeine">Кофеїн</string>
     <string name="nutrient_short_omega">Омега</string>
 </resources>

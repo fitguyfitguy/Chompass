@@ -1044,6 +1044,7 @@
     <string name="nutrient_fiber_format">Vezels: %1$sg</string>
     <string name="nutrient_potassium_format">Kalium: %1$smg</string>
     <string name="nutrient_sat_fat_format">Verzadigd vet: %1$sg</string>
+    <string name="nutrient_short_caffeine">Cafeïne</string>
     <string name="nutrient_short_omega">Omega</string>
     <string name="nutrient_short_sat_fat">Verz. vet</string>
     <string name="nutrient_short_vit_a">Vit. A</string>
@@ -1057,6 +1058,7 @@
     <string name="nutrition_label_folate">Folaat</string>
     <string name="nutrition_label_iron">IJzer</string>
     <string name="nutrition_label_magnesium">Magnesium</string>
+    <string name="nutrition_label_caffeine">Cafeïne</string>
     <string name="nutrition_label_omega3">Omega-3</string>
     <string name="nutrition_label_trans_fat">Transvet</string>
     <string name="nutrition_label_vitamin_a">Vitamine A</string>

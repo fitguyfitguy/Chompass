@@ -1513,6 +1513,7 @@
     <string name="nutrition_label_vitamin_e">Witamina E</string>
     <string name="nutrition_label_vitamin_k">Witamina K</string>
     <string name="nutrition_label_folate">Kwas foliowy</string>
+    <string name="nutrition_label_caffeine">Kofeina</string>
     <string name="nutrition_label_omega3">Omega-3</string>
     <string name="nutrition_section_home_cards">Karty ekranu głównego</string>
     <string name="home_nutrients_pick_four">Wybierz dokładnie cztery składniki odżywcze do wiersza podsumowania na ekranie głównym.</string>
@@ -1738,6 +1739,7 @@
     <string name="nutrient_short_b12">B12</string>
     <string name="nutrient_short_vit_e">Wit. E</string>
     <string name="nutrient_short_vit_k">Wit. K</string>
+    <string name="nutrient_short_caffeine">Kofeina</string>
     <string name="nutrient_short_omega">Omega</string>
     <string name="sort_standard">Śniadanie → Obiad → Kolacja (najnowsze na końcu)</string>
     <string name="sort_latest_first">Najnowsze posiłki pierwsze</string>

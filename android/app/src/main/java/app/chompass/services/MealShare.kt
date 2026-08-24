@@ -97,6 +97,7 @@ object MealShare {
         put("vitaminA", e.vitaminA); put("vitaminC", e.vitaminC); put("vitaminD", e.vitaminD)
         put("vitaminB12", e.vitaminB12); put("vitaminE", e.vitaminE); put("vitaminK", e.vitaminK)
         put("folate", e.folate); put("omega3", e.omega3)
+        put("caffeine", e.caffeine)
         put("servingSizeGrams", e.servingSizeGrams)
         if (e.servingUnitOptions.isNotEmpty()) {
             d.put("servingUnitOptions", servingUnitsJson(e.servingUnitOptions))
@@ -250,6 +251,7 @@ object MealShare {
             vitaminE = InputSanitizer.micro(dbl("vitaminE")),
             vitaminK = InputSanitizer.micro(dbl("vitaminK")),
             folate = InputSanitizer.micro(dbl("folate")), omega3 = InputSanitizer.micro(dbl("omega3")),
+            caffeine = InputSanitizer.micro(dbl("caffeine")),
             servingSizeGrams = InputSanitizer.servingGrams(dbl("servingSizeGrams")),
             servingUnitOptions = parseServingUnits(d.optJSONArray("servingUnitOptions")),
             selectedServingUnit = if (d.has("selectedServingUnit")) {

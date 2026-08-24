@@ -48,7 +48,7 @@ data class PartialFoodAnalysis(
                 analysis.sodium, analysis.potassium, analysis.transFat, analysis.calcium,
                 analysis.iron, analysis.magnesium, analysis.zinc, analysis.vitaminA,
                 analysis.vitaminC, analysis.vitaminD, analysis.vitaminB12, analysis.vitaminE,
-                analysis.vitaminK, analysis.folate, analysis.omega3,
+                analysis.vitaminK, analysis.folate, analysis.omega3, analysis.caffeine,
             )
             return PartialFoodAnalysis(
                 name = analysis.name,

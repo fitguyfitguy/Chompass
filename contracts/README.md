@@ -23,6 +23,7 @@ Day-level journaling (Codeberg #58a):
 |--------------|---------|
 | `days[].note` (diary) | Optional free-text note for the day (`null` when absent) |
 | `daily_notes[]` (sync) | One record per day: `{id, updated_at, deleted_at?, date, text}`. Id is deterministic from the date (day count since 1970-01-01 in the low 48 bits), so merges collapse to last-write-wins per day |
+| `caffeine_mg` (diary/sync items) | Optional caffeine in mg on each food item (Codeberg #55); `caffeine` in meal-share |
 
 ## New in diary 1.2 / sync 1.1 / meal-share v2
 

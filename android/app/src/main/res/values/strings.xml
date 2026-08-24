@@ -1513,6 +1513,7 @@
     <string name="nutrition_label_vitamin_k">Vitamin K</string>
     <string name="nutrition_label_folate">Folate</string>
     <string name="nutrition_label_omega3">Omega-3</string>
+    <string name="nutrition_label_caffeine">Caffeine</string>
     <string name="nutrition_section_home_cards">Home Cards</string>
     <string name="home_nutrients_pick_four">Pick exactly four nutrients for the Home summary row.</string>
     <string name="error_analysis_failed">Analysis failed</string>
@@ -1736,6 +1737,7 @@
     <string name="nutrient_short_vit_e">Vit E</string>
     <string name="nutrient_short_vit_k">Vit K</string>
     <string name="nutrient_short_omega">Omega</string>
+    <string name="nutrient_short_caffeine">Caffeine</string>
     <string name="sort_standard">Breakfast → Lunch → Dinner (latest last)</string>
     <string name="sort_latest_first">Latest Meals First</string>
     <string name="home_selected_count">%1$d selected</string>

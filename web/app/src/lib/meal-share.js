@@ -33,6 +33,7 @@ const SHARE_TO_ENTRY = {
   vitaminK: "vitaminKMcg",
   folate: "folateMcg",
   omega3: "omega3G",
+  caffeine: "caffeineMg",
 };
 
 const ENTRY_TO_SHARE = Object.fromEntries(Object.entries(SHARE_TO_ENTRY).map(([a, b]) => [b, a]));
