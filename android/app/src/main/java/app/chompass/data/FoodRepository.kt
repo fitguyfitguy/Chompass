@@ -235,6 +235,13 @@ class FoodRepository(
     suspend fun updateEntry(original: FoodEntry, updated: FoodEntry) {
         val oldMonth = original.month()
         val newMonth = updated.month()
+        // Codeberg #56 repro instrumentation (TEMP, debug-only).
+        PerfLog.event(
+            "op=editEntry phase=updateEntry id=${updated.id.toString().take(8)} " +
+                "meal=${original.mealType.name}->${updated.mealType.name} " +
+                "ts=${original.timestamp.epochSecond}->${updated.timestamp.epochSecond} " +
+                "month=$oldMonth->$newMonth",
+        )
         if (oldMonth == newMonth) {
             prefs.applyFoodEntryBucketChanges(upsertsByMonth = mapOf(newMonth to listOf(updated)))
         } else {
@@ -243,6 +250,7 @@ class FoodRepository(
                 removalIdsByMonth = mapOf(oldMonth to setOf(updated.id)),
             )
         }
+        PerfLog.event("op=editEntry phase=updateEntryDone id=${updated.id.toString().take(8)}")
         sync?.touch(updated.id, "food")
         if (shouldSyncHealth()) {
             health?.updateNutrition(updated)

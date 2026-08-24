@@ -941,6 +941,17 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         uiAckWaiter?.complete(ms)
                         uiAckWaiter = null
                     }
+                    // Codeberg #56 repro instrumentation (TEMP, debug-only): log
+                    // every home-list emission with ids+meals so logcat can tell a
+                    // state drop (entry missing here) from a render drop (present
+                    // here, not on screen) when compared against
+                    // op=homeList phase=renderGroups.
+                    val listView = next.todayEntries.joinToString(",") { e ->
+                        "${e.id.toString().take(8)}:${e.mealType.name}:${e.timestamp.epochSecond}"
+                    }
+                    PerfLog.event(
+                        "op=homeList phase=emission date=${next.date} sort=${next.foodLogSortOrder} n=${next.todayEntries.size} entries=[$listView]",
+                    )
                 }
             }
             .launchIn(viewModelScope)

@@ -348,6 +348,15 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     val mealGroups = remember(ui.todayEntries, ui.foodLogSortOrder) {
         foodLogMealGroups(ui.todayEntries, ui.foodLogSortOrder)
     }
+    // Codeberg #56 repro instrumentation (TEMP, debug-only): log the rendered
+    // meal-group view (ids per section) to separate a state drop from a render
+    // drop when comparing against op=homeList phase=emission in logcat.
+    LaunchedEffect(mealGroups) {
+        val groupsView = mealGroups.joinToString("|") { g ->
+            "${g.id}:${g.entries.size}[${g.entries.joinToString(",") { it.id.toString().take(8) }}]"
+        }
+        PerfLog.event("op=homeList phase=renderGroups n=${mealGroups.size} groups=[$groupsView]")
+    }
     var selectedEntryIds by remember(ui.date) { mutableStateOf<Set<UUID>>(emptySet()) }
     val selectedEntries = remember(ui.todayEntries, selectedEntryIds) {
         ui.todayEntries.filter { it.id in selectedEntryIds }
