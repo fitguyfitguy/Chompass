@@ -15,7 +15,7 @@ const DB_NAME =
   typeof window !== "undefined" && /** @type {any} */ (window).CHOMPASS_DEMO
     ? "chompass-pwa-demo"
     : "chompass-pwa";
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 /** @type {Promise<IDBDatabase>|null} */
 let dbPromise = null;
@@ -38,6 +38,11 @@ function openChompassDb() {
     if (oldVersion < 3) {
       if (!db.objectStoreNames.contains("favorites")) db.createObjectStore("favorites", { keyPath: "id" });
       if (!db.objectStoreNames.contains("recipes")) db.createObjectStore("recipes", { keyPath: "id" });
+    }
+    if (oldVersion < 4) {
+      if (!db.objectStoreNames.contains("dailyNotes")) {
+        db.createObjectStore("dailyNotes", { keyPath: "id" }).createIndex("date", "date");
+      }
     }
   });
 }
@@ -252,6 +257,30 @@ export const water = {
   },
   async clear() {
     return (await store("water")).clear();
+  },
+};
+
+export const dailyNotes = {
+  /** @param {import('./chompass-core/models.js').DailyNote} note */
+  async put(note) {
+    const result = await (await store("dailyNotes")).put(note);
+    await touchRevision(note.id, "daily_note");
+    return result;
+  },
+  async delete(id) {
+    const result = await (await store("dailyNotes")).delete(id);
+    await tombstoneRevision(id, "daily_note");
+    return result;
+  },
+  /** @param {string} date */
+  async byDate(date) {
+    return (await store("dailyNotes")).getAllFromIndex("date", date);
+  },
+  async all() {
+    return (await store("dailyNotes")).getAll();
+  },
+  async clear() {
+    return (await store("dailyNotes")).clear();
   },
 };
 

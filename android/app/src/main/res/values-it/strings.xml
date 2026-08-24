@@ -959,6 +959,11 @@
     <string name="home_take_second_shot">Scatta la seconda foto</string>
     <string name="home_water_next">Prossima %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">Prossima %1$s · domani %2$s</string>
+    <string name="home_note_empty">Aggiungi una nota per questo giorno</string>
+    <string name="note_edit_title">Nota del giorno</string>
+    <string name="note_placeholder">Pensieri, progressi, osservazioni…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="import_add_to_log">Aggiungi al registro</string>
     <string name="import_add_to_log_many_format">Aggiungi %1$d al registro · %2$d kcal</string>
     <string name="import_body_metrics_empty">Questo file non contiene voci di peso o dati corporei da importare.</string>

@@ -1028,6 +1028,11 @@
     <string name="home_take_second_shot">Prenez la deuxième photo</string>
     <string name="home_water_next">Prochain %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">Prochain %1$s · demain %2$s</string>
+    <string name="home_note_empty">Ajouter une note pour ce jour</string>
+    <string name="note_edit_title">Note du jour</string>
+    <string name="note_placeholder">Réflexions, progrès, observations…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="import_add_to_log">Ajouter au journal</string>
     <string name="import_add_to_log_many_format">Ajouter %1$d au journal · %2$d kcal</string>
     <plurals name="import_add_meals_title">

@@ -5,10 +5,10 @@
  * DiaryExporter.kt and DiaryImporter.kt.
  */
 
-export const DIARY_FORMAT_VERSION = "1.2";
+export const DIARY_FORMAT_VERSION = "1.3";
 
 /** Versions accepted on import. New exports always stamp [DIARY_FORMAT_VERSION]. */
-export const DIARY_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2"]);
+export const DIARY_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2", "1.3"]);
 
 /** Micronutrient wire-key <-> model-field pairs, in ItemDto declaration order. */
 const MICRO_FIELDS = [
@@ -237,15 +237,21 @@ const MEAL_TYPES = ["breakfast", "lunch", "dinner", "snack"];
  * export document shape.
  * @param {{entries: import('./models.js').FoodEntry[], targets: Record<string, {calories:number, proteinG:number, carbsG:number, fatG:number}>, dateRange: {start: string, end: string}}} input
  */
-export function exportDiary({ entries, targets, dateRange }) {
+/**
+ * @param {{ entries: import('./models.js').FoodEntry[], targets?: Record<string, {calories: number, proteinG: number, carbsG: number, fatG: number}>, dateRange: {start: string, end: string}, notes?: Array<{date: string, text: string}> }} arg
+ */
+export function exportDiary({ entries, targets = {}, dateRange, notes = [] }) {
   const byDate = new Map();
   for (const e of entries) {
     if (!byDate.has(e.date)) byDate.set(e.date, []);
     byDate.get(e.date).push(e);
   }
+  const noteByDate = new Map(notes.map((n) => [n.date, n.text]));
+  // Union of food days and note-only days (journal days, Codeberg #58a).
+  const allDates = [...new Set([...byDate.keys(), ...noteByDate.keys()])].sort();
 
-  const days = [...byDate.keys()].sort().map((date) => {
-    const dayEntries = byDate.get(date);
+  const days = allDates.map((date) => {
+    const dayEntries = byDate.get(date) ?? [];
     const totals = dayEntries.reduce(
       (acc, e) => {
         acc.calories += e.calories;
@@ -280,7 +286,7 @@ export function exportDiary({ entries, targets, dateRange }) {
       items: dayEntries.filter((e) => e.mealType === type).map(itemToWire),
     }));
 
-    return { date, totals, targets: targetWire, remaining, meals };
+    return { date, totals, targets: targetWire, remaining, meals, note: noteByDate.get(date) ?? null };
   });
 
   return {
@@ -304,7 +310,7 @@ export function importDiary(doc, idGen = () => crypto.randomUUID()) {
   const app = exp.app.trim().toLowerCase();
   if (app !== "chompass" && app !== "nofud" && app !== "fud ai") throw new UnsupportedFormatError(`unrecognized app "${exp.app}"`);
   if (!DIARY_IMPORT_VERSIONS.has(exp.format_version)) {
-    throw new UnsupportedFormatError(`unsupported format_version "${exp.format_version}" (need 1.0, 1.1, or 1.2)`);
+    throw new UnsupportedFormatError(`unsupported format_version "${exp.format_version}" (need 1.0, 1.1, 1.2, or 1.3)`);
   }
 
   /** @type {import('./models.js').FoodEntry[]} */
