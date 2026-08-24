@@ -20,33 +20,59 @@ import app.chompass.R
 object LauncherShortcuts {
     const val EXTRA_SHORTCUT = "shortcut_entry"
 
-    fun publish(context: Context) {
-        val shortcuts = listOf(
-            shortcut(
-                context,
-                id = "camera",
-                labelRes = R.string.shortcut_camera_short,
-                longLabelRes = R.string.shortcut_camera_long,
-                iconRes = R.drawable.ic_shortcut_camera,
-                action = ShortcutEntryAction.CAMERA,
-            ),
-            shortcut(
-                context,
-                id = "voice",
-                labelRes = R.string.shortcut_voice_short,
-                longLabelRes = R.string.shortcut_voice_long,
-                iconRes = R.drawable.ic_shortcut_voice,
-                action = ShortcutEntryAction.VOICE,
-            ),
-            shortcut(
-                context,
-                id = "barcode",
-                labelRes = R.string.shortcut_barcode_short,
-                longLabelRes = R.string.shortcut_barcode_long,
-                iconRes = R.drawable.ic_shortcut_barcode,
-                action = ShortcutEntryAction.BARCODE,
-            ),
-        )
+    /**
+     * Publishes the Home entry shortcuts (Camera, Voice, Barcode) plus, when
+     * [fastingEnabled], the #182 fasting toggle. Callers pass the current pref:
+     * ChompassApp publishes with the default at onCreate and re-publishes with
+     * the real value from deferred startup; the Settings toggle re-publishes on
+     * change. `setDynamicShortcuts` replaces the whole set, so the entry
+     * shortcuts are always included unconditionally.
+     */
+    fun publish(context: Context, fastingEnabled: Boolean = false) {
+        val shortcuts = buildList {
+            add(
+                shortcut(
+                    context,
+                    id = "camera",
+                    labelRes = R.string.shortcut_camera_short,
+                    longLabelRes = R.string.shortcut_camera_long,
+                    iconRes = R.drawable.ic_shortcut_camera,
+                    action = ShortcutEntryAction.CAMERA,
+                )
+            )
+            add(
+                shortcut(
+                    context,
+                    id = "voice",
+                    labelRes = R.string.shortcut_voice_short,
+                    longLabelRes = R.string.shortcut_voice_long,
+                    iconRes = R.drawable.ic_shortcut_voice,
+                    action = ShortcutEntryAction.VOICE,
+                )
+            )
+            add(
+                shortcut(
+                    context,
+                    id = "barcode",
+                    labelRes = R.string.shortcut_barcode_short,
+                    longLabelRes = R.string.shortcut_barcode_long,
+                    iconRes = R.drawable.ic_shortcut_barcode,
+                    action = ShortcutEntryAction.BARCODE,
+                )
+            )
+            if (fastingEnabled) {
+                add(
+                    shortcut(
+                        context,
+                        id = "fasting",
+                        labelRes = R.string.shortcut_fasting_short,
+                        longLabelRes = R.string.shortcut_fasting_long,
+                        iconRes = R.drawable.ic_shortcut_fasting,
+                        action = ShortcutEntryAction.FASTING,
+                    )
+                )
+            }
+        }
         ShortcutManagerCompat.setDynamicShortcuts(context, shortcuts)
     }
 

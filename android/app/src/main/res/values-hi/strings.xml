@@ -1720,4 +1720,33 @@
     </plurals>
     <string name="settings_custom_url_placeholder">https://aapka-endpoint.com/v1</string>
     <string name="speech_key_placeholder_deepgram">टोकन आपकी-डीपग्राम-कुंजी</string>
+    <string name="fasting">उपवास</string>
+    <string name="fasting_idle">कोई सक्रिय उपवास नहीं</string>
+    <string name="fasting_goal_reached">लक्ष्य प्राप्त हुआ</string>
+    <string name="fasting_goal_progress">%1$s · लक्ष्य %2$d घंटे</string>
+    <string name="fasting_duration_h_m">%1$d घं %2$d मि</string>
+    <string name="fasting_duration_h">%1$d घं</string>
+    <string name="fasting_duration_m">%1$d मि</string>
+    <string name="fasting_start">उपवास शुरू करें</string>
+    <string name="fasting_stop">उपवास समाप्त करें</string>
+    <string name="fasting_cancel">रद्द करें</string>
+    <string name="add_food_fasting_section">उपवास</string>
+    <string name="settings_fasting_title">उपवास</string>
+    <string name="settings_fasting_intro">स्थानीय टाइमर से आंतरायिक उपवास विंडो ट्रैक करें: कभी भी शुरू करें, रोकें या रद्द करें, वैकल्पिक लक्ष्य अवधि के साथ। टाइमर इसी डिवाइस पर रहता है और कभी सिंक या निर्यात नहीं होता।</string>
+    <string name="settings_fasting_section_tracking">ट्रैकिंग</string>
+    <string name="settings_fasting_tracking">उपवास टाइमर</string>
+    <string name="settings_fasting_goal">लक्ष्य अवधि</string>
+    <string name="settings_fasting_goal_summary_none">कोई लक्ष्य नहीं</string>
+    <string name="settings_fasting_goal_summary">%1$d घंटे</string>
+    <string name="settings_fasting_goal_wheel_help">लक्ष्य पूरा होने पर एक बार सूचना मिलती है। 0 = कोई लक्ष्य नहीं।</string>
+    <string name="settings_fasting_section_notification">सूचना</string>
+    <string name="settings_fasting_notification">लक्ष्य प्राप्त हुआ</string>
+    <string name="fasting_local_only_note">उपवास टाइमर इसी डिवाइस पर रहता है — इसे कभी सिंक, निर्यात या साझा भोजन में शामिल नहीं किया जाता। लक्ष्य-प्राप्ति सूचना ही Chompass इसके बारे में भेजता है।</string>
+    <string name="shortcut_fasting_short">उपवास</string>
+    <string name="shortcut_fasting_long">उपवास शुरू या रोकें</string>
+    <string name="fasting_goal_unit_h">घं</string>
+    <string name="notif_channel_fasting">उपवास</string>
+    <string name="notif_channel_fasting_desc">उपवास लक्ष्य पूरा होने पर एक बार का नोट।</string>
+    <string name="notif_fasting_goal_title">उपवास लक्ष्य प्राप्त हुआ</string>
+    <string name="notif_fasting_goal_text">आपका %1$d घंटे का उपवास पूरा हुआ — अब आप उपवास तोड़ सकते हैं।</string>
 </resources>

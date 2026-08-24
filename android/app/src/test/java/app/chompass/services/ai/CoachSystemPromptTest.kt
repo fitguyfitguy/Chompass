@@ -61,4 +61,41 @@ class CoachSystemPromptTest {
         assertTrue(prompt.contains("across 9 logged days"))
         assertTrue(prompt.contains("get_calorie_totals"))
     }
+
+    @Test
+    fun fastingBlock_whenProvided_sitsInTheVolatileTail() {
+        val fasting = "## Fasting (intermittent fasting tracker - user-optional, local-only)\n" +
+            "- Active fast: started 2026-08-24T08:00:00, elapsed 14h 20m, goal 16h"
+        val prompt = buildSystemPrompt(
+            profile = profile(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            foods = emptyList(),
+            heightMetric = true,
+            weightMetric = true,
+            fastingContext = fasting,
+        )
+        // The block must sit below the cache marker (volatile tail), never in
+        // the stable prefix Anthropic caches between turns.
+        assertTrue(prompt.contains(fasting))
+        val volatileStart = prompt.indexOf("## Current date")
+        assertTrue(volatileStart > 0)
+        assertTrue(prompt.indexOf(fasting) > volatileStart)
+        assertTrue(prompt.indexOf(fasting) < prompt.indexOf("## Data available"))
+    }
+
+    @Test
+    fun fastingBlock_null_omitsTheSection() {
+        val prompt = buildSystemPrompt(
+            profile = profile(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            foods = emptyList(),
+            heightMetric = true,
+            weightMetric = true,
+            fastingContext = null,
+        )
+        assertFalse(prompt.contains("## Fasting"))
+        assertFalse(prompt.contains("intermittent fasting"))
+    }
 }

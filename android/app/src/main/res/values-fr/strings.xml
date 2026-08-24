@@ -1727,4 +1727,33 @@
     <string name="widget_water_description">Voyez votre progression d\'eau du jour en un coup d\'œil.</string>
     <string name="widget_water_disabled">Activez le suivi de l\'eau dans Chompass</string>
     <string name="widget_water_label">Chompass Eau</string>
+    <string name="fasting">Jeûne</string>
+    <string name="fasting_idle">Aucun jeûne en cours</string>
+    <string name="fasting_goal_reached">Objectif atteint</string>
+    <string name="fasting_goal_progress">%1$s · objectif %2$d h</string>
+    <string name="fasting_duration_h_m">%1$d h %2$d min</string>
+    <string name="fasting_duration_h">%1$d h</string>
+    <string name="fasting_duration_m">%1$d min</string>
+    <string name="fasting_start">Démarrer le jeûne</string>
+    <string name="fasting_stop">Arrêter le jeûne</string>
+    <string name="fasting_cancel">Annuler</string>
+    <string name="add_food_fasting_section">Jeûne</string>
+    <string name="settings_fasting_title">Jeûne</string>
+    <string name="settings_fasting_intro">Suivez vos fenêtres de jeûne intermittent avec un minuteur local : démarrez, arrêtez ou annulez à tout moment, avec une durée objectif facultative. Le minuteur reste sur cet appareil et n\'est jamais synchronisé ni exporté.</string>
+    <string name="settings_fasting_section_tracking">Suivi</string>
+    <string name="settings_fasting_tracking">Minuteur de jeûne</string>
+    <string name="settings_fasting_goal">Durée objectif</string>
+    <string name="settings_fasting_goal_summary_none">Aucun objectif</string>
+    <string name="settings_fasting_goal_summary">%1$d h</string>
+    <string name="settings_fasting_goal_wheel_help">Une notification unique est envoyée lorsque l\'objectif est atteint. 0 = aucun objectif.</string>
+    <string name="settings_fasting_section_notification">Notifications</string>
+    <string name="settings_fasting_notification">Objectif atteint</string>
+    <string name="fasting_local_only_note">Le minuteur de jeûne reste sur cet appareil : il n\'est jamais synchronisé, exporté ni inclus dans les repas partagés. La notification d\'objectif atteint est la seule chose que Chompass publie à son sujet.</string>
+    <string name="shortcut_fasting_short">Jeûne</string>
+    <string name="shortcut_fasting_long">Démarrer ou arrêter le jeûne</string>
+    <string name="fasting_goal_unit_h">h</string>
+    <string name="notif_channel_fasting">Jeûne</string>
+    <string name="notif_channel_fasting_desc">Avis unique lorsqu\'un objectif de jeûne est atteint.</string>
+    <string name="notif_fasting_goal_title">Objectif de jeûne atteint</string>
+    <string name="notif_fasting_goal_text">Votre jeûne de %1$d h est terminé : vous pouvez rompre votre jeûne maintenant.</string>
 </resources>

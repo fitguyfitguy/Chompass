@@ -454,6 +454,7 @@
     <string name="nicotine_log_title">Log nicotine</string>
     <string name="nicotine_count">Count</string>
     <string name="nicotine_count_unit">count</string>
+    <string name="fasting_goal_unit_h">h</string>
     <string name="nicotine_count_with_mg">%1$d · %2$s mg</string>
     <string name="nicotine_mg_optional">Nicotine (mg, optional)</string>
     <string name="nicotine_add">Add nicotine</string>
@@ -477,6 +478,31 @@
     <string name="settings_nicotine_quick_kinds_help">Kinds shown as +1 chips on the Add food sheet.</string>
     <string name="settings_nicotine_limit_wheel_help">Scroll to set a daily count limit from 0 (no limit) to 100.</string>
     <string name="settings_nicotine_privacy_note">Nicotine logs stay on this device and in your WebDAV sync only. They are never included in shared meals and never sent to an AI provider.</string>
+    <!-- Optional intermittent-fasting timer (docs/local/PLAN_FASTING_TRACKER.md); local-only. -->
+    <string name="fasting">Fasting</string>
+    <string name="fasting_idle">No active fast</string>
+    <string name="fasting_goal_reached">Goal reached</string>
+    <string name="fasting_goal_progress">%1$s · goal %2$d h</string>
+    <string name="fasting_duration_h_m">%1$d h %2$d m</string>
+    <string name="fasting_duration_h">%1$d h</string>
+    <string name="fasting_duration_m">%1$d m</string>
+    <string name="fasting_start">Start fast</string>
+    <string name="fasting_stop">Stop fast</string>
+    <string name="fasting_cancel">Cancel</string>
+    <string name="add_food_fasting_section">Fasting</string>
+    <string name="settings_fasting_title">Fasting</string>
+    <string name="settings_fasting_intro">Track intermittent fasting windows with a local-only timer: start, stop or cancel anytime, with an optional goal length. The timer stays on this device and is never synced or exported.</string>
+    <string name="settings_fasting_section_tracking">Tracking</string>
+    <string name="settings_fasting_tracking">Fasting timer</string>
+    <string name="settings_fasting_goal">Goal length</string>
+    <string name="settings_fasting_goal_summary_none">No goal</string>
+    <string name="settings_fasting_goal_summary">%1$d h</string>
+    <string name="settings_fasting_goal_wheel_help">A one-time notification fires when you reach the goal. 0 = no goal.</string>
+    <string name="settings_fasting_section_notification">Notification</string>
+    <string name="settings_fasting_notification">Goal reached</string>
+    <string name="fasting_local_only_note">The fasting timer stays on this device — it is never synced, exported, or included in shared meals. The goal-reached notification is the only thing Chompass posts about it.</string>
+    <string name="shortcut_fasting_short">Fast</string>
+    <string name="shortcut_fasting_long">Start or stop fasting</string>
     <string name="home_food_removed">Food removed</string>
     <string name="action_undo">Undo</string>
     <string name="add_food_photo_source_title">Add a photo</string>
@@ -865,7 +891,7 @@
     <string name="settings_group_goals_summary">Diet, macros, adaptive goals</string>
     <string name="settings_group_food_summary">Logging, serving sizes, photo analysis</string>
     <string name="settings_group_app_summary">Appearance, theme, home &amp; progress, language</string>
-    <string name="settings_group_trackers_summary">Water, nicotine, reminders</string>
+    <string name="settings_group_trackers_summary">Water, nicotine, fasting, reminders</string>
     <string name="settings_group_ai_summary">Providers, models, speech-to-text</string>
     <string name="settings_group_data_summary">Health Connect, export, backup</string>
 
@@ -1691,6 +1717,10 @@
     <string name="notif_water_text">Have some water and log it in Chompass.</string>
     <string name="notif_water_text_qty">Drink %1$s and log it in Chompass.</string>
     <string name="notif_water_text_next_qty">Drink %1$s · next in ~%2$d min</string>
+    <string name="notif_channel_fasting">Fasting</string>
+    <string name="notif_channel_fasting_desc">One-time note when a fasting goal is reached.</string>
+    <string name="notif_fasting_goal_title">Fasting goal reached</string>
+    <string name="notif_fasting_goal_text">Your %1$d h fast is complete — you can break your fast now.</string>
     <string name="notif_update_title">Update available</string>
     <string name="notif_update_text">A new version of Chompass is ready. Tap to update.</string>
     <string name="settings_calc_intro">Your daily calorie and macro targets start from the formulas below. They are never set below your estimated resting calories or 1,200 kcal. When you tap Recalculate Goals, or automatically about once a week if Adaptive Goals is on, Chompass can refine them using your logs and your AI provider, but not below that floor.</string>

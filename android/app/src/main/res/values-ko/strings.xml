@@ -1720,4 +1720,33 @@
     <string name="about_made_by">Chompass, 제작 fitguy</string>
     <string name="settings_custom_url_placeholder">https://dangsin-ui-endpoint.com/v1</string>
     <string name="speech_key_placeholder_deepgram">토큰 당신의-deepgram-키</string>
+    <string name="fasting">단식</string>
+    <string name="fasting_idle">진행 중인 단식 없음</string>
+    <string name="fasting_goal_reached">목표 달성</string>
+    <string name="fasting_goal_progress">%1$s · 목표 %2$d시간</string>
+    <string name="fasting_duration_h_m">%1$d시간 %2$d분</string>
+    <string name="fasting_duration_h">%1$d시간</string>
+    <string name="fasting_duration_m">%1$d분</string>
+    <string name="fasting_start">단식 시작</string>
+    <string name="fasting_stop">단식 종료</string>
+    <string name="fasting_cancel">취소</string>
+    <string name="add_food_fasting_section">단식</string>
+    <string name="settings_fasting_title">단식</string>
+    <string name="settings_fasting_intro">로컬 타이머로 간헐적 단식 시간을 기록하세요. 언제든 시작, 중지 또는 취소할 수 있고 목표 시간도 선택 사항입니다. 타이머는 이 기기에만 남으며 동기화되거나 내보내지지 않습니다.</string>
+    <string name="settings_fasting_section_tracking">기록</string>
+    <string name="settings_fasting_tracking">단식 타이머</string>
+    <string name="settings_fasting_goal">목표 시간</string>
+    <string name="settings_fasting_goal_summary_none">목표 없음</string>
+    <string name="settings_fasting_goal_summary">%1$d시간</string>
+    <string name="settings_fasting_goal_wheel_help">목표에 도달하면 알림이 한 번 발송됩니다. 0 = 목표 없음.</string>
+    <string name="settings_fasting_section_notification">알림</string>
+    <string name="settings_fasting_notification">목표 달성</string>
+    <string name="fasting_local_only_note">단식 타이머는 이 기기에만 남습니다. 동기화, 내보내기 또는 공유 식사에 포함되지 않으며, Chompass가 이에 대해 게시하는 것은 목표 달성 알림뿐입니다.</string>
+    <string name="shortcut_fasting_short">단식</string>
+    <string name="shortcut_fasting_long">단식 시작 또는 종료</string>
+    <string name="fasting_goal_unit_h">시간</string>
+    <string name="notif_channel_fasting">단식</string>
+    <string name="notif_channel_fasting_desc">단식 목표 달성 시 1회 알림.</string>
+    <string name="notif_fasting_goal_title">단식 목표 달성</string>
+    <string name="notif_fasting_goal_text">%1$d시간 단식이 완료되었습니다. 이제 식사를 시작할 수 있습니다.</string>
 </resources>

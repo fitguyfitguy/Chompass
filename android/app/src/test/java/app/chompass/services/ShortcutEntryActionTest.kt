@@ -19,6 +19,10 @@ class ShortcutEntryActionTest {
             ShortcutEntryAction.BARCODE,
             ShortcutEntryAction.fromAction("app.chompass.action.SHORTCUT_BARCODE"),
         )
+        assertEquals(
+            ShortcutEntryAction.FASTING,
+            ShortcutEntryAction.fromAction("app.chompass.action.SHORTCUT_FASTING"),
+        )
         assertNull(ShortcutEntryAction.fromAction(IntentMain))
         assertNull(ShortcutEntryAction.fromAction(null))
     }
@@ -32,6 +36,8 @@ class ShortcutEntryActionTest {
         assertEquals(ShortcutEntryAction.VOICE, ShortcutEntryAction.fromIntentExtra("MIC"))
         assertEquals(ShortcutEntryAction.BARCODE, ShortcutEntryAction.fromIntentExtra("barcode"))
         assertEquals(ShortcutEntryAction.BARCODE, ShortcutEntryAction.fromIntentExtra("scan"))
+        assertEquals(ShortcutEntryAction.FASTING, ShortcutEntryAction.fromIntentExtra("fasting"))
+        assertEquals(ShortcutEntryAction.FASTING, ShortcutEntryAction.fromIntentExtra("FAST"))
         assertNull(ShortcutEntryAction.fromIntentExtra("settings"))
         assertNull(ShortcutEntryAction.fromIntentExtra(null))
     }

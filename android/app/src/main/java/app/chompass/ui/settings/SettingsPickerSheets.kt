@@ -41,6 +41,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import app.chompass.R
+import app.chompass.data.MAX_FASTING_GOAL_HOURS
 import app.chompass.models.CalorieSafety
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.LocaleFormat
@@ -327,6 +328,31 @@ internal fun NicotineLimitSheet(current: Int, onSave: (Int) -> Unit) {
     )
     Spacer(Modifier.height(16.dp))
     GradientSaveButton { onSave(limit) }
+    Spacer(Modifier.height(8.dp))
+}
+
+/** Fasting goal length in hours (0 = no goal); mirrors the nicotine limit wheel. */
+@Composable
+internal fun FastingGoalSheet(current: Int, onSave: (Int) -> Unit) {
+    var goal by remember(current) { mutableIntStateOf(current.coerceIn(0, MAX_FASTING_GOAL_HOURS)) }
+    Text(stringResource(R.string.settings_fasting_goal), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+    Spacer(Modifier.height(20.dp))
+    NumericWheelPicker(
+        value = goal,
+        onValueChange = { goal = it },
+        min = 0,
+        max = MAX_FASTING_GOAL_HOURS,
+        unit = stringResource(R.string.fasting_goal_unit_h),
+        step = 1,
+    )
+    Spacer(Modifier.height(8.dp))
+    Text(
+        stringResource(R.string.settings_fasting_goal_wheel_help),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+    )
+    Spacer(Modifier.height(16.dp))
+    GradientSaveButton { onSave(goal) }
     Spacer(Modifier.height(8.dp))
 }
 

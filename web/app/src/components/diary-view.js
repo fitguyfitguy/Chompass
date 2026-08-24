@@ -60,6 +60,54 @@ const WATER_PRESETS = [250, 500, 750];
 const NICOTINE_QUICK_KINDS = ["cigarette", "vape", "pouch"];
 const HOME_DATE_KEY = "chompass-home-date";
 
+/** Local-only fasting timer card (docs/local/PLAN_FASTING_TRACKER.md mirror). */
+function fastingCard(p) {
+  const active = p.fastingStartedAt != null;
+  const now = Date.now();
+  const elapsed = active ? Math.max(0, now - p.fastingStartedAt) : 0;
+  const goal = p.fastingGoalHours ?? 0;
+  const goalMillis = goal * 3_600_000;
+  const reached = active && goal > 0 && elapsed >= goalMillis;
+  const status = active
+    ? reached
+      ? t("diary.fasting_goal_reached")
+      : goal > 0
+        ? t("diary.fasting_goal_hint", { elapsed: fmtFastDuration(elapsed), goal })
+        : fmtFastDuration(elapsed)
+    : t("diary.fasting_idle");
+  const pct = active && goal > 0 ? Math.min(100, (elapsed / goalMillis) * 100) : 0;
+  return `<div class="card card--glass water-row fasting-row">
+      <div class="water-row__top">
+        <div class="water-row__meta"><strong>${t("diary.fasting")}</strong><br/><span class="water-row__meta-sub">${status}</span></div>
+        <div class="water-presets">
+          ${
+            active
+              ? `<button type="button" class="chip" data-fasting-stop>${t("diary.fasting_stop")}</button>
+                 <button type="button" class="chip chip--ghost" data-fasting-cancel>${t("action.cancel")}</button>`
+              : `<button type="button" class="chip" data-fasting-start>${t("diary.fasting_start")}</button>`
+          }
+        </div>
+      </div>
+      ${
+        active && goal > 0
+          ? `<div class="water-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${goal}" aria-valuenow="${(elapsed / 3_600_000).toFixed(1)}" aria-label="${t("diary.fasting")}">
+              <span data-width="${pct.toFixed(1)}%"></span>
+            </div>`
+          : ""
+      }
+    </div>`;
+}
+
+/** "14h 20m" / "45m" / "2h" — elapsed label shared by the fasting card. */
+function fmtFastDuration(millis) {
+  const totalMinutes = Math.max(0, Math.floor(millis / 60_000));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (hours > 0 && minutes > 0) return `${hours}h ${minutes}m`;
+  if (hours > 0) return `${hours}h`;
+  return `${minutes}m`;
+}
+
 /** Lazy-load the photo AI flow (camera + AI stack) only when used — the demo
  *  hero never opens the real camera, so the whole photo-ai-flow →
  *  camera-capture → food-analyze chain stays out of its bundle. */
@@ -404,9 +452,16 @@ export class DiaryView extends HTMLElement {
 
   connectedCallback() {
     this.render();
+    // Local-only fasting timer (mirrors the Android tracker): roll the elapsed
+    // label over each minute while a fast is running (re-render is cheap).
+    this._fastingTick = setInterval(() => {
+      const p = this._appPrefs;
+      if (p?.showFasting === true && p?.fastingStartedAt != null) this.render();
+    }, 60_000);
   }
 
   disconnectedCallback() {
+    clearInterval(this._fastingTick);
     this._sheet?.close();
     this._sheet = null;
   }
@@ -468,6 +523,7 @@ export class DiaryView extends HTMLElement {
     const nicotineLimit = appPrefs.nicotineDailyLimit ?? 0;
     const nicotinePct = nicotineLimit > 0 ? Math.min(100, (nicotineCount / nicotineLimit) * 100) : 0;
     const showNicotine = appPrefs.showNicotine === true;
+    const showFasting = appPrefs.showFasting === true;
     // #38 (Android parity): in ADD_ACTIVE the ring target can sit above the
     // stored base (manual kcal stacked on the estimate); scale the macro
     // goals to the ring so cards and gauge never disagree. Typical days
@@ -646,6 +702,8 @@ export class DiaryView extends HTMLElement {
           : ""
       }
 
+      ${showFasting ? fastingCard(appPrefs) : ""}
+
       ${progressiveChip ? `<div class="progressive-meal-bar">${progressiveChip}</div>` : ""}
 
       ${
@@ -676,6 +734,7 @@ export class DiaryView extends HTMLElement {
 
     this._gaugeInfo = gaugeInfo;
     this._gaugeGoal = calorieTarget;
+    this._appPrefs = appPrefs;
     this.bindInteractions(entries, appPrefs, macroTargets, optionalGoals, waterLogs, nicotineLogs);
     this.animateFills();
     requestAnimationFrame(() => this.scrollWeekPagerTo(selectedWeekIndex));
@@ -733,6 +792,9 @@ export class DiaryView extends HTMLElement {
     });
     this.querySelector("[data-nicotine-custom]")?.addEventListener("click", () => this.customNicotine());
     this.querySelector("[data-nicotine-undo]")?.addEventListener("click", () => this.undoLastNicotine(nicotineLogs));
+    this.querySelector("[data-fasting-start]")?.addEventListener("click", () => this.fastingStart());
+    this.querySelector("[data-fasting-stop]")?.addEventListener("click", () => this.fastingStop());
+    this.querySelector("[data-fasting-cancel]")?.addEventListener("click", () => this.fastingCancel());
     this.querySelectorAll("[data-nutrition-detail]").forEach((el) => {
       el.addEventListener("click", () => {
         this.openNutritionDetail(entries, targets, optionalGoals);
@@ -1749,6 +1811,37 @@ export class DiaryView extends HTMLElement {
 
   async addWater(amountMl) {
     await water.put({ id: crypto.randomUUID(), date: this.date, amountMl });
+    this.render();
+  }
+
+  // -- Intermittent fasting timer (local-only, mirrors the Android tracker) --
+
+  /** Starts a new fast (no-op when one is already running). */
+  async fastingStart() {
+    const p = await prefs.load();
+    if (p.fastingStartedAt != null) return;
+    await prefs.save({ fastingStartedAt: Date.now(), fastingGoalNotified: false });
+    this.render();
+  }
+
+  /** Ends the running fast, recording it as the last completed fast. */
+  async fastingStop() {
+    const p = await prefs.load();
+    if (p.fastingStartedAt == null) return;
+    await prefs.save({
+      fastingStartedAt: null,
+      fastingLastEndedAt: Date.now(),
+      fastingLastFastStartedAt: p.fastingStartedAt,
+      fastingGoalNotified: false,
+    });
+    this.render();
+  }
+
+  /** Abandons the running fast without recording it. */
+  async fastingCancel() {
+    const p = await prefs.load();
+    if (p.fastingStartedAt == null) return;
+    await prefs.save({ fastingStartedAt: null, fastingGoalNotified: false });
     this.render();
   }
 

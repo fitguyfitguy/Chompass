@@ -29,6 +29,8 @@ import app.chompass.models.WaterGoalCalculator
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WeightEntry
 import app.chompass.services.ai.RecalcSheetData
+import app.chompass.services.FastingGoalPlanner
+import app.chompass.services.LauncherShortcuts
 import app.chompass.data.SettingsPrefsHydration
 import app.chompass.data.loadLastGoalChangeSheet
 import app.chompass.data.saveLastGoalChangeSheet
@@ -92,6 +94,9 @@ data class SettingsUiState(
     val nicotineTrackingEnabled: Boolean = false,
     val nicotineDailyLimit: Int = 0,
     val nicotineQuickKinds: List<NicotineKind> = NicotineKind.DefaultQuickKinds,
+    val fastingEnabled: Boolean = false,
+    val fastingGoalHours: Int = 0,
+    val fastingGoalNotificationEnabled: Boolean = true,
     val waterReminderEnabled: Boolean = false,
     val waterDynamicEnabled: Boolean = false,
     val waterBaseSource: String = WaterGoalCalculator.BASE_SOURCE_WEIGHT,
@@ -335,6 +340,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     nicotineTrackingEnabled = snap.nicotineTrackingEnabled,
                     nicotineDailyLimit = snap.nicotineDailyLimit,
                     nicotineQuickKinds = snap.nicotineQuickKinds,
+                    fastingEnabled = snap.fastingEnabled,
+                    fastingGoalHours = snap.fastingGoalHours,
+                    fastingGoalNotificationEnabled = snap.fastingGoalNotificationEnabled,
                     waterReminderEnabled = snap.waterReminderEnabled,
                     waterDynamicEnabled = snap.waterDynamicEnabled,
                     waterBaseSource = snap.waterBaseSource,
@@ -1093,6 +1101,37 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setNicotineDailyLimit(v: Int) = updateUiPref(
         { container.prefs.setNicotineDailyLimit(v) },
         { copy(nicotineDailyLimit = v) },
+    )
+
+    fun setFastingEnabled(v: Boolean) = updateUiPref(
+        {
+            container.prefs.setFastingEnabled(v)
+            if (!v) {
+                // Tearing the tracker down cancels the goal alarm; the running
+                // session (if any) is left intact so re-enabling resumes it.
+                container.notifications.cancelFastingGoal()
+            }
+            // The #182 launcher quick action only exists while enabled.
+            LauncherShortcuts.publish(container.appContext)
+        },
+        { copy(fastingEnabled = v) },
+    )
+
+    fun setFastingGoalHours(v: Int) = updateUiPref(
+        {
+            container.prefs.setFastingGoalHours(v)
+            // Goal change re-arms (or cancels) the one-shot goal alarm.
+            FastingGoalPlanner.rearm(container)
+        },
+        { copy(fastingGoalHours = v) },
+    )
+
+    fun setFastingGoalNotificationEnabled(v: Boolean) = updateUiPref(
+        {
+            container.prefs.setFastingGoalNotificationEnabled(v)
+            FastingGoalPlanner.rearm(container)
+        },
+        { copy(fastingGoalNotificationEnabled = v) },
     )
 
     fun setNicotineQuickKinds(kinds: List<NicotineKind>) {

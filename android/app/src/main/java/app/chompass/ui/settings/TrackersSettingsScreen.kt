@@ -3,6 +3,7 @@ package app.chompass.ui.settings
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FilterAlt
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -59,6 +60,20 @@ fun TrackersSettingsScreen(
                 },
                 icon = Icons.Outlined.FilterAlt,
             ) { nav.navigate(ChompassRoutes.nicotineRoute("trackers")) }
+            HorizontalDivider()
+            SettingRow(
+                stringResource(R.string.settings_fasting_title),
+                if (ui.fastingEnabled) {
+                    if (ui.fastingGoalHours > 0) {
+                        stringResource(R.string.settings_fasting_goal_summary, ui.fastingGoalHours)
+                    } else {
+                        stringResource(R.string.settings_on)
+                    }
+                } else {
+                    stringResource(R.string.settings_off)
+                },
+                icon = Icons.Outlined.Schedule,
+            ) { nav.navigate(ChompassRoutes.fastingRoute("trackers")) }
             HorizontalDivider()
             SettingRow(
                 stringResource(R.string.settings_notifications),

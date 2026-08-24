@@ -1720,4 +1720,33 @@
         <item quantity="other">Adaugă %1$d mese partajate</item>
     </plurals>
     <string name="onboarding_metric">Metrice</string>
+    <string name="fasting">Post</string>
+    <string name="fasting_idle">Niciun post activ</string>
+    <string name="fasting_goal_reached">Obiectiv atins</string>
+    <string name="fasting_goal_progress">%1$s · obiectiv %2$d h</string>
+    <string name="fasting_duration_h_m">%1$d h %2$d min</string>
+    <string name="fasting_duration_h">%1$d h</string>
+    <string name="fasting_duration_m">%1$d min</string>
+    <string name="fasting_start">Începe postul</string>
+    <string name="fasting_stop">Oprește postul</string>
+    <string name="fasting_cancel">Anulează</string>
+    <string name="add_food_fasting_section">Post</string>
+    <string name="settings_fasting_title">Post</string>
+    <string name="settings_fasting_intro">Urmărește ferestrele de post intermitent cu un cronometru local: începe, oprește sau anulează oricând, cu o durată-țintă opțională. Cronometrul rămâne pe acest dispozitiv și nu este niciodată sincronizat sau exportat.</string>
+    <string name="settings_fasting_section_tracking">Urmărire</string>
+    <string name="settings_fasting_tracking">Cronometru post</string>
+    <string name="settings_fasting_goal">Durata țintei</string>
+    <string name="settings_fasting_goal_summary_none">Fără țintă</string>
+    <string name="settings_fasting_goal_summary">%1$d h</string>
+    <string name="settings_fasting_goal_wheel_help">O notificare unică este trimisă când atingi ținta. 0 = fără țintă.</string>
+    <string name="settings_fasting_section_notification">Notificare</string>
+    <string name="settings_fasting_notification">Obiectiv atins</string>
+    <string name="fasting_local_only_note">Cronometrul de post rămâne pe acest dispozitiv — nu este niciodată sincronizat, exportat sau inclus în mesele partajate. Notificarea de atingere a țintei este singurul lucru pe care Chompass îl publică despre el.</string>
+    <string name="shortcut_fasting_short">Post</string>
+    <string name="shortcut_fasting_long">Începe sau oprește postul</string>
+    <string name="fasting_goal_unit_h">h</string>
+    <string name="notif_channel_fasting">Post</string>
+    <string name="notif_channel_fasting_desc">Notă unică atunci când o țintă de post este atinsă.</string>
+    <string name="notif_fasting_goal_title">Ținta de post atinsă</string>
+    <string name="notif_fasting_goal_text">Postul tău de %1$d h s-a încheiat — poți mânca acum.</string>
 </resources>

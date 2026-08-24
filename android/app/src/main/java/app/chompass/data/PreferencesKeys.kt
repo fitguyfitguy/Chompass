@@ -75,6 +75,15 @@ internal object Keys {
         val NICOTINE_DAILY_LIMIT = intPreferencesKey("nicotineDailyLimit")
         val NICOTINE_QUICK_KINDS = stringPreferencesKey("nicotineQuickKinds")
         val MANUAL_ACTIVE_ENTRIES = stringPreferencesKey("manualActiveEntries")
+        // Optional intermittent-fasting timer (docs/local/PLAN_FASTING_TRACKER.md).
+        // Session state is three scalars (state is a pure function of them).
+        val FASTING_ENABLED = booleanPreferencesKey("fastingEnabled")
+        val FASTING_GOAL_HOURS = intPreferencesKey("fastingGoalHours")
+        val FASTING_GOAL_NOTIFICATION_ENABLED = booleanPreferencesKey("fastingGoalNotificationEnabled")
+        val FASTING_STARTED_AT = longPreferencesKey("fastingStartedAt")
+        val FASTING_LAST_ENDED_AT = longPreferencesKey("fastingLastEndedAt")
+        val FASTING_LAST_FAST_STARTED_AT = longPreferencesKey("fastingLastFastStartedAt")
+        val FASTING_GOAL_REACHED_NOTIFIED = booleanPreferencesKey("fastingGoalReachedNotified")
         val LAST_NOTIFIED_UPDATE_VERSION = stringPreferencesKey("lastNotifiedUpdateVersion")
         val HEALTH_CONNECT_ENABLED = booleanPreferencesKey("healthConnectEnabled")
         val HEALTH_TYPES_VERSION = intPreferencesKey("healthTypesVersion")

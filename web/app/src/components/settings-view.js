@@ -739,6 +739,18 @@ export class SettingsView extends HTMLElement {
           <input id="nicotineDailyLimit" name="nicotineDailyLimit" type="number" min="0" value="${p.nicotineDailyLimit ?? 0}" />
         </div>
         <div class="field">
+          <label for="showFasting">Fasting timer</label>
+          <select id="showFasting" name="showFasting">
+            <option value="false" ${p.showFasting !== true ? "selected" : ""}>Off</option>
+            <option value="true" ${p.showFasting === true ? "selected" : ""}>On</option>
+          </select>
+          <p class="nutrient-picker__hint">Start, stop or cancel a local-only intermittent-fasting timer from the diary. Stays on this device; never synced, exported or sent to an AI provider.</p>
+        </div>
+        <div class="field">
+          <label for="fastingGoalHours">Fasting goal (hours, 0 = none)</label>
+          <input id="fastingGoalHours" name="fastingGoalHours" type="number" min="0" max="48" value="${p.fastingGoalHours ?? 0}" />
+        </div>
+        <div class="field">
           <label for="calorieGaugeMode">Calorie gauge</label>
           <select id="calorieGaugeMode" name="calorieGaugeMode">
             <option value="static" ${p.calorieGaugeMode !== "add_active" ? "selected" : ""}>Static (full target)</option>
@@ -798,6 +810,8 @@ export class SettingsView extends HTMLElement {
         waterGoalMl: Number(fd.get("waterGoalMl") || 2000),
         showNicotine: fd.get("showNicotine") === "true",
         nicotineDailyLimit: Math.max(0, Number(fd.get("nicotineDailyLimit") || 0)),
+        showFasting: fd.get("showFasting") === "true",
+        fastingGoalHours: Math.min(48, Math.max(0, Number(fd.get("fastingGoalHours") || 0))),
         calorieGaugeMode: /** @type {any} */ (fd.get("calorieGaugeMode")),
         adaptiveGoals: fd.get("adaptiveGoals") === "true",
         homeNutrientCardCount: cardCount,

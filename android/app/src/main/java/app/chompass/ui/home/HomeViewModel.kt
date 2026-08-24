@@ -202,6 +202,15 @@ data class HomeUiState(
     val nicotineTodayCount: Int = 0,
     /** Individual logs for the selected day, newest first (drives the history sheet). */
     val nicotineTodayEntries: List<NicotineEntry> = emptyList(),
+    /** Optional intermittent-fasting timer (docs/local/PLAN_FASTING_TRACKER.md); local-only. */
+    val fastingEnabled: Boolean = false,
+    val fastingGoalHours: Int = 0,
+    val fastingActive: Boolean = false,
+    /** Elapsed millis of the running fast; ticked each minute by the VM. */
+    val fastingElapsedMillis: Long = 0L,
+    val fastingGoalReached: Boolean = false,
+    val fastingLastEndedAtMillis: Long? = null,
+    val fastingLastFastStartedAtMillis: Long? = null,
     /** In-progress weigh-as-you-go meal (photo-per-ingredient). Null when idle. */
     val progressiveMeal: ProgressiveMealDraft? = null,
     /** HomeScreen consumes this once to reopen the camera after Add next ingredient. */
@@ -403,6 +412,13 @@ data class HomeUiState(
             nicotineQuickKinds == other.nicotineQuickKinds &&
             nicotineTodayCount == other.nicotineTodayCount &&
             nicotineTodayEntries == other.nicotineTodayEntries &&
+            fastingEnabled == other.fastingEnabled &&
+            fastingGoalHours == other.fastingGoalHours &&
+            fastingActive == other.fastingActive &&
+            fastingElapsedMillis == other.fastingElapsedMillis &&
+            fastingGoalReached == other.fastingGoalReached &&
+            fastingLastEndedAtMillis == other.fastingLastEndedAtMillis &&
+            fastingLastFastStartedAtMillis == other.fastingLastFastStartedAtMillis &&
             progressiveMeal == other.progressiveMeal &&
             resumeProgressiveCapture == other.resumeProgressiveCapture &&
             showProgressiveMealSheet == other.showProgressiveMealSheet &&
@@ -465,6 +481,13 @@ data class HomeUiState(
         result = 31 * result + nicotineQuickKinds.hashCode()
         result = 31 * result + nicotineTodayCount
         result = 31 * result + nicotineTodayEntries.hashCode()
+        result = 31 * result + fastingEnabled.hashCode()
+        result = 31 * result + fastingGoalHours
+        result = 31 * result + fastingActive.hashCode()
+        result = 31 * result + fastingElapsedMillis.hashCode()
+        result = 31 * result + fastingGoalReached.hashCode()
+        result = 31 * result + (fastingLastEndedAtMillis?.hashCode() ?: 0)
+        result = 31 * result + (fastingLastFastStartedAtMillis?.hashCode() ?: 0)
         result = 31 * result + (progressiveMeal?.hashCode() ?: 0)
         result = 31 * result + resumeProgressiveCapture.hashCode()
         result = 31 * result + showProgressiveMealSheet.hashCode()
@@ -1019,6 +1042,20 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             }
             .launchIn(viewModelScope)
 
+        container.prefs.fastingEnabled
+            .onEach { enabled -> _ui.update { it.copy(fastingEnabled = enabled) } }
+            .launchIn(viewModelScope)
+
+        container.prefs.fastingGoalHours
+            .onEach { goal -> _ui.update { it.copy(fastingGoalHours = goal) } }
+            .launchIn(viewModelScope)
+
+        // Session changes (start/stop/cancel) re-derive the display state; the
+        // minute ticker below keeps the elapsed label rolling without any write.
+        container.fastingRepository.session
+            .onEach { refreshFastingTick(it) }
+            .launchIn(viewModelScope)
+
         combine(container.waterRepository.entries, _selectedDate) { entries, day ->
             val zone = ZoneId.systemDefault()
             val dayEntries = entries.filter { it.date.atZone(zone).toLocalDate() == day }
@@ -1063,11 +1100,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         // A fired reminder (or simply time passing) changes the next fire
         // without any pref/entry emission — roll the caption over each minute
         // (one in-memory DataStore read, same cost as the reminder chain's own
-        // fire-time recompute).
+        // fire-time recompute). Also ticks the fasting elapsed label.
         viewModelScope.launch {
             while (true) {
                 delay(60_000)
                 refreshWaterPlan()
+                refreshFastingTick()
             }
         }
 
@@ -1132,6 +1170,49 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             container.nicotineRepository.add(
                 NicotineEntry.forNow(kind = kind, count = count, mg = mg),
             )
+        }
+    }
+
+    // -- Intermittent fasting timer (local-only) -------------------------
+
+    fun startFast() {
+        viewModelScope.launch { container.fastingRepository.start() }
+    }
+
+    fun stopFast() {
+        viewModelScope.launch { container.fastingRepository.stop() }
+    }
+
+    fun cancelFast() {
+        viewModelScope.launch { container.fastingRepository.cancel() }
+    }
+
+    /** Launcher quick action (#182): start when idle, stop when fasting. */
+    fun toggleFast() {
+        viewModelScope.launch {
+            val s = container.fastingRepository.current()
+            if (s.isFasting) container.fastingRepository.stop() else container.fastingRepository.start()
+        }
+    }
+
+    /**
+     * Re-derives the fasting display fields (elapsed, goal reached, last fast)
+     * from the session + goal; called on session change and each minute.
+     */
+    private fun refreshFastingTick(session: app.chompass.models.FastingSession? = null) {
+        viewModelScope.launch {
+            val s = session ?: container.fastingRepository.current()
+            val now = System.currentTimeMillis()
+            val goal = container.prefs.fastingGoalHours.first()
+            _ui.update {
+                it.copy(
+                    fastingActive = s.isFasting,
+                    fastingElapsedMillis = s.elapsedMillis(now),
+                    fastingGoalReached = s.goalReached(goal, now),
+                    fastingLastEndedAtMillis = s.lastEndedAtMillis,
+                    fastingLastFastStartedAtMillis = s.lastFastStartedAtMillis,
+                )
+            }
         }
     }
 

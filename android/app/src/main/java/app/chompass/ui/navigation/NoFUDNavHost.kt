@@ -52,6 +52,7 @@ import app.chompass.ui.settings.SyncSettingsScreen
 import app.chompass.ui.settings.TrackersSettingsScreen
 import app.chompass.ui.settings.WaterSettingsScreen
 import app.chompass.ui.settings.NicotineSettingsScreen
+import app.chompass.ui.settings.FastingSettingsScreen
 
 /**
  * Increments each time the app is opened: 1 on cold launch, then +1 on every
@@ -317,6 +318,20 @@ fun ChompassNavHost(
                     }),
                 ) { entry ->
                     NicotineSettingsScreen(
+                        container = container,
+                        nav = nav,
+                        onBack = { nav.popBackStack() },
+                        from = entry.arguments?.getString("from") ?: "app",
+                    )
+                }
+                composable(
+                    route = ChompassRoutes.SETTINGS_FASTING,
+                    arguments = listOf(navArgument("from") {
+                        type = NavType.StringType
+                        defaultValue = "app"
+                    }),
+                ) { entry ->
+                    FastingSettingsScreen(
                         container = container,
                         nav = nav,
                         onBack = { nav.popBackStack() },

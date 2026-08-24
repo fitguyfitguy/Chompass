@@ -19,6 +19,7 @@ import app.chompass.models.WeightEntry
 import app.chompass.services.InputSanitizer
 import app.chompass.services.WeightAnalysisService
 import app.chompass.services.WeightForecast
+import app.chompass.data.FastingRepository
 import kotlinx.coroutines.flow.first
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -53,6 +54,10 @@ class ChatService(
     /** Test seam: supplies provider API keys without a real encrypted KeyStore
      *  (Robolectric has no AndroidKeyStore — same pattern as FoodAnalysisService). */
     private val keyLookup: ((AIProvider) -> String?)? = null,
+    /** Optional local-only fasting timer (docs/local/PLAN_FASTING_TRACKER.md):
+     *  when set and fasting is enabled, the coach prompt carries a fasting
+     *  snapshot so "should I eat now?" answers differ at hour 2 vs hour 15. */
+    private val fastingRepository: FastingRepository? = null,
 ) {
     init {
         require(keyStore != null || keyLookup != null) {
@@ -84,7 +89,7 @@ class ChatService(
         // Codeberg #20 phase 2: the master AI-features switch gates the coach
         // BEFORE the system prompt (profile + diary) is even assembled.
         if (!prefs.aiFeaturesEnabled.first()) throw AiError.Disabled
-        val baseSystemPrompt = buildSystemPrompt(profile, weights, bodyFats, measurements, foods, heightMetric, weightMetric)
+        val baseSystemPrompt = buildSystemPrompt(profile, weights, bodyFats, measurements, foods, heightMetric, weightMetric, fastingContext = buildFastingContext())
         val userContext = prefs.userContext.first()
         val systemPrompt = if (userContext.isNotBlank()) {
             "$baseSystemPrompt\n\n## User-provided context (user preferences / DATA)\n" +
@@ -513,6 +518,39 @@ class ChatService(
     @Suppress("unused")
     private fun Instant.toLocalDateInZone() = this.atZone(ZoneId.systemDefault()).toLocalDate()
 
+    /**
+     * Builds the coach fasting snapshot block (or null when fasting is off and
+     * there is no recorded fast). The block lives in the volatile prompt tail, so
+     * the elapsed time is re-derived on every coach turn. Rules line binds Coach
+     * to the same no-claims behavior as the rest of the prompt: fasting is a
+     * scheduling tool, never medical advice, and no zone claims.
+     */
+    private suspend fun buildFastingContext(): String? {
+        val repo = fastingRepository ?: return null
+        if (!prefs.fastingEnabled.first()) return null
+        val goalHours = prefs.fastingGoalHours.first()
+        val session = repo.current()
+        val zone = ZoneId.systemDefault()
+        val fmt = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+        return buildString {
+            appendLine("## Fasting (intermittent fasting tracker - user-optional, local-only)")
+            val started = session.startedAtMillis
+            if (started != null) {
+                appendLine("- Active fast: started " +
+                    Instant.ofEpochMilli(started).atZone(zone).format(fmt) +
+                    ", elapsed " + promptDuration(session.elapsedMillis()) +
+                    ", goal ${goalHours}h")
+            } else if (session.lastEndedAtMillis != null) {
+                appendLine("- No active fast; last fast ended " +
+                    Instant.ofEpochMilli(session.lastEndedAtMillis).atZone(zone).format(fmt) +
+                    ", lasted " + promptDuration(session.lastFastDurationMillis()))
+            } else {
+                return null
+            }
+            appendLine("- When the user asks about eating timing, weigh elapsed time against the goal. Never claim autophagy, fat-burning zones, or health effects of fasting duration; fasting is a scheduling tool, not medical advice. Suggest a clinician for fasting-related health questions.")
+        }.trim()
+    }
+
     @Suppress("unused")
     private val dateFmt: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d").withZone(ZoneId.systemDefault())
 
@@ -531,7 +569,9 @@ internal fun buildSystemPrompt(
     measurements: List<BodyMeasurement> = emptyList(),
     foods: List<FoodEntry>,
     heightMetric: Boolean,
-    weightMetric: Boolean
+    weightMetric: Boolean,
+    /** Optional fasting snapshot block (below the cache marker); null = no block. */
+    fastingContext: String? = null,
 ): String {
     val forecast: WeightForecast = WeightAnalysisService.compute(weights, foods, profile)
     val zone = ZoneId.systemDefault()
@@ -629,6 +669,12 @@ internal fun buildSystemPrompt(
         lines.add("- Not enough data yet (need ≥2 days food + ≥2 weights). Encourage the user to log more.")
     }
     lines.add("")
+    fastingContext?.let {
+        // Deliberately in the per-day volatile tail (below the Anthropic cache
+        // marker): the elapsed time legitimately changes between turns.
+        lines.add(it)
+        lines.add("")
+    }
     lines.add("## Data available")
     lines.add("- ${weights.size} weight entries, ${bodyFats.size} body-fat readings, ${foods.size} food entries logged total. Use get_data_summary to see exact date ranges.")
     measurements.maxByOrNull { it.date }?.promptSummary(profile.gender, profile.heightCm)?.let { summary ->
@@ -638,6 +684,19 @@ internal fun buildSystemPrompt(
         lines.add("A shrinking waist alongside steady or rising weight is recomposition (fat down, muscle up). Read it that way instead of calling a flat scale a plateau. Treat the US-Navy body-fat figure as an estimate.")
     }
     return lines.joinToString("\n")
+}
+
+// MARK: - Fasting context (local-only timer, docs/local/PLAN_FASTING_TRACKER.md)
+
+private fun promptDuration(millis: Long): String {
+    val totalMinutes = (millis / 60_000L).coerceAtLeast(0L)
+    val hours = totalMinutes / 60
+    val minutes = totalMinutes % 60
+    return when {
+        hours > 0L && minutes > 0L -> "${hours}h ${minutes}m"
+        hours > 0L -> "${hours}h"
+        else -> "${minutes}m"
+    }
 }
 
 // MARK: - Anthropic prompt caching

@@ -11,6 +11,7 @@ import app.chompass.models.DailyNote
 import app.chompass.models.FoodEntry
 import app.chompass.models.HeuristicServingUnitSettings
 import app.chompass.models.HomeDisplayPreferences
+import app.chompass.models.FastingSession
 import app.chompass.models.ManualActiveEntry
 import app.chompass.models.NicotineEntry
 import app.chompass.models.NicotineKind
@@ -237,6 +238,21 @@ class PreferencesStore(private val appContext: Context) {
     ) = applyNicotineBucketChangesImpl(upsertsByMonth, removalIdsByMonth)
     val manualActiveEntries: Flow<List<ManualActiveEntry>> get() = manualActiveEntriesImpl
     suspend fun setManualActiveEntries(entries: List<ManualActiveEntry>) = setManualActiveEntriesImpl(entries)
+    // Optional intermittent-fasting timer (docs/local/PLAN_FASTING_TRACKER.md); local-only.
+    val fastingEnabled: Flow<Boolean> get() = fastingEnabledImpl
+    suspend fun setFastingEnabled(v: Boolean) = setFastingEnabledImpl(v)
+    val fastingGoalHours: Flow<Int> get() = fastingGoalHoursImpl
+    suspend fun setFastingGoalHours(v: Int) = setFastingGoalHoursImpl(v)
+    val fastingGoalNotificationEnabled: Flow<Boolean> get() = fastingGoalNotificationEnabledImpl
+    suspend fun setFastingGoalNotificationEnabled(v: Boolean) = setFastingGoalNotificationEnabledImpl(v)
+    /** Session state (started/last-ended + goal latch) as a pure function of scalars. */
+    val fastingSession: Flow<FastingSession> get() = fastingSessionImpl
+    suspend fun setFastingSessionFields(
+        startedAtMillis: Long?,
+        lastEndedAtMillis: Long? = null,
+        lastFastStartedAtMillis: Long? = null,
+        goalReachedNotified: Boolean = false,
+    ) = setFastingSessionFieldsImpl(startedAtMillis, lastEndedAtMillis, lastFastStartedAtMillis, goalReachedNotified)
     val lastNotifiedUpdateVersion: Flow<String?> get() = lastNotifiedUpdateVersionImpl
     suspend fun setLastNotifiedUpdateVersion(v: String) = setLastNotifiedUpdateVersionImpl(v)
     val healthConnectEnabled: Flow<Boolean> get() = healthConnectEnabledImpl

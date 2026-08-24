@@ -1720,4 +1720,33 @@
     <string name="about_made_by">Chompass，作者 fitguy</string>
     <string name="settings_custom_url_placeholder">https://ni-de-endpoint.com/v1</string>
     <string name="speech_key_placeholder_deepgram">令牌 你的-deepgram-密钥</string>
+    <string name="fasting">间歇性禁食</string>
+    <string name="fasting_idle">无进行中的禁食</string>
+    <string name="fasting_goal_reached">已达目标</string>
+    <string name="fasting_goal_progress">%1$s · 目标 %2$d 小时</string>
+    <string name="fasting_duration_h_m">%1$d 小时 %2$d 分</string>
+    <string name="fasting_duration_h">%1$d 小时</string>
+    <string name="fasting_duration_m">%1$d 分</string>
+    <string name="fasting_start">开始禁食</string>
+    <string name="fasting_stop">结束禁食</string>
+    <string name="fasting_cancel">取消</string>
+    <string name="add_food_fasting_section">间歇性禁食</string>
+    <string name="settings_fasting_title">间歇性禁食</string>
+    <string name="settings_fasting_intro">使用本地计时器跟踪间歇性禁食时段：可随时开始、停止或取消，并可设置可选的目标时长。计时器仅保存在此设备上，绝不会同步或导出。</string>
+    <string name="settings_fasting_section_tracking">跟踪</string>
+    <string name="settings_fasting_tracking">禁食计时器</string>
+    <string name="settings_fasting_goal">目标时长</string>
+    <string name="settings_fasting_goal_summary_none">无目标</string>
+    <string name="settings_fasting_goal_summary">%1$d 小时</string>
+    <string name="settings_fasting_goal_wheel_help">达到目标时会发送一次通知。0 = 无目标。</string>
+    <string name="settings_fasting_section_notification">通知</string>
+    <string name="settings_fasting_notification">已达目标</string>
+    <string name="fasting_local_only_note">禁食计时器仅保存在此设备上，绝不会同步、导出或包含在共享餐食中。Chompass 只会针对它发布达到目标的提醒。</string>
+    <string name="shortcut_fasting_short">禁食</string>
+    <string name="shortcut_fasting_long">开始或结束禁食</string>
+    <string name="fasting_goal_unit_h">小时</string>
+    <string name="notif_channel_fasting">间歇性禁食</string>
+    <string name="notif_channel_fasting_desc">达到禁食目标时的一次性提醒。</string>
+    <string name="notif_fasting_goal_title">禁食目标达成</string>
+    <string name="notif_fasting_goal_text">您的 %1$d 小时禁食已完成，现在可以进食了。</string>
 </resources>

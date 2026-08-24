@@ -8,7 +8,9 @@ package app.chompass.services
 enum class ShortcutEntryAction(val action: String) {
     CAMERA("app.chompass.action.SHORTCUT_CAMERA"),
     VOICE("app.chompass.action.SHORTCUT_VOICE"),
-    BARCODE("app.chompass.action.SHORTCUT_BARCODE");
+    BARCODE("app.chompass.action.SHORTCUT_BARCODE"),
+    /** #182: launcher long-press toggle for the fasting timer (no destination UI). */
+    FASTING("app.chompass.action.SHORTCUT_FASTING");
 
     companion object {
         fun fromAction(action: String?): ShortcutEntryAction? =
@@ -18,6 +20,7 @@ enum class ShortcutEntryAction(val action: String) {
             "camera", "photo", "camera_note" -> CAMERA
             "voice", "mic" -> VOICE
             "barcode", "scan" -> BARCODE
+            "fasting", "fast" -> FASTING
             else -> null
         }
     }

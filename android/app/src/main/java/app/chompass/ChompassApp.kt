@@ -5,6 +5,7 @@ import app.chompass.data.AnalysisQueueStore
 import app.chompass.data.BodyFatRepository
 import app.chompass.data.BodyMeasurementRepository
 import app.chompass.data.ChatRepository
+import app.chompass.data.FastingRepository
 import app.chompass.data.FoodRepository
 import app.chompass.data.KeyStore
 import app.chompass.data.ManualActiveRepository
@@ -21,6 +22,7 @@ import app.chompass.models.CurrentMealSchedule
 import app.chompass.models.UserProfile
 import app.chompass.services.AdaptiveGoalResult
 import app.chompass.services.AdaptiveGoalsService
+import app.chompass.services.FastingGoalPlanner
 import app.chompass.services.FoodImageStore
 import app.chompass.services.FoodPhotoSession
 import app.chompass.services.LauncherShortcuts
@@ -148,6 +150,12 @@ class ChompassApp : Application() {
                     container.notifications.cancelWaterReminder()
                 }
             }
+            // Fasting goal alarm: cheap idempotent re-arm from the same session
+            // fields (reboots drop alarms; app start re-arms like the water chain).
+            FastingGoalPlanner.rearm(container)
+            // Re-publish launcher shortcuts with the real fasting pref (the
+            // onCreate publish ran before DataStore was readable).
+            LauncherShortcuts.publish(this@ChompassApp, container.prefs.fastingEnabled.first())
         }
     }
 
@@ -200,6 +208,13 @@ class AppContainer(app: ChompassApp) {
     val manualActiveRepository = ManualActiveRepository(prefs)
     val nicotineRepository = NicotineRepository(prefs, syncRepository)
     val notesRepository = NotesRepository(prefs, syncRepository)
+    val fastingRepository = FastingRepository(prefs).apply {
+        // Re-arm the one-shot goal alarm after every session change so the
+        // armed fire time always matches the running fast + goal (start → arm,
+        // stop/cancel → cancel). `app.container` is lateinit but always
+        // assigned before any session change can happen.
+        onSessionChanged = { FastingGoalPlanner.rearm(app.container) }
+    }
 
     // Weather input for the dynamic water goal (issue #3 Phase 5): shared
     // weather-app broadcast cache + Open-Meteo city forecast, with the manual
@@ -249,7 +264,7 @@ class AppContainer(app: ChompassApp) {
             usdaIndex = usdaFoodIndex,
         )
     }
-    val chatService = ChatService(prefs, keyStore, foodAnalysis)
+    val chatService = ChatService(prefs, keyStore, foodAnalysis, fastingRepository = fastingRepository)
     val speechService = SpeechService(prefs, keyStore)
 
     val widgetSnapshotWriter = WidgetSnapshotWriter(app, prefs, foodRepository, profileRepository, homeActivityReader, waterRepository, weatherRepository)

@@ -1727,4 +1727,33 @@
     <string name="widget_water_description">Consulta el progreso de agua de hoy de un vistazo.</string>
     <string name="widget_water_disabled">Activa el seguimiento de agua en Chompass</string>
     <string name="widget_water_label">Chompass Agua</string>
+    <string name="fasting">Ayuno</string>
+    <string name="fasting_idle">Sin ayuno activo</string>
+    <string name="fasting_goal_reached">Objetivo alcanzado</string>
+    <string name="fasting_goal_progress">%1$s · objetivo %2$d h</string>
+    <string name="fasting_duration_h_m">%1$d h %2$d min</string>
+    <string name="fasting_duration_h">%1$d h</string>
+    <string name="fasting_duration_m">%1$d min</string>
+    <string name="fasting_start">Iniciar ayuno</string>
+    <string name="fasting_stop">Terminar ayuno</string>
+    <string name="fasting_cancel">Cancelar</string>
+    <string name="add_food_fasting_section">Ayuno</string>
+    <string name="settings_fasting_title">Ayuno</string>
+    <string name="settings_fasting_intro">Sigue ventanas de ayuno intermitente con un temporizador local: inicia, detén o cancela cuando quieras, con una duración objetivo opcional. El temporizador se queda en este dispositivo y nunca se sincroniza ni se exporta.</string>
+    <string name="settings_fasting_section_tracking">Seguimiento</string>
+    <string name="settings_fasting_tracking">Temporizador de ayuno</string>
+    <string name="settings_fasting_goal">Duración objetivo</string>
+    <string name="settings_fasting_goal_summary_none">Sin objetivo</string>
+    <string name="settings_fasting_goal_summary">%1$d h</string>
+    <string name="settings_fasting_goal_wheel_help">Se envía una notificación única al alcanzar el objetivo. 0 = sin objetivo.</string>
+    <string name="settings_fasting_section_notification">Notificación</string>
+    <string name="settings_fasting_notification">Objetivo alcanzado</string>
+    <string name="fasting_local_only_note">El temporizador de ayuno se queda en este dispositivo: nunca se sincroniza, exporta ni incluye en comidas compartidas. La notificación de objetivo alcanzado es lo único que Chompass publica al respecto.</string>
+    <string name="shortcut_fasting_short">Ayuno</string>
+    <string name="shortcut_fasting_long">Iniciar o detener el ayuno</string>
+    <string name="fasting_goal_unit_h">h</string>
+    <string name="notif_channel_fasting">Ayuno</string>
+    <string name="notif_channel_fasting_desc">Aviso único cuando se alcanza un objetivo de ayuno.</string>
+    <string name="notif_fasting_goal_title">Objetivo de ayuno alcanzado</string>
+    <string name="notif_fasting_goal_text">Tu ayuno de %1$d h ha terminado: ya puedes comer.</string>
 </resources>

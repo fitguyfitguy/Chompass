@@ -109,6 +109,14 @@ fun AddFoodSheet(
     nicotineQuickKinds: List<NicotineKind> = NicotineKind.DefaultQuickKinds,
     onNicotine: (NicotineKind) -> Unit = {},
     onNicotineCustom: () -> Unit = {},
+    fastingEnabled: Boolean = false,
+    fastingActive: Boolean = false,
+    fastingElapsedMillis: Long = 0L,
+    fastingGoalHours: Int = 0,
+    fastingGoalReached: Boolean = false,
+    onStartFast: () -> Unit = {},
+    onStopFast: () -> Unit = {},
+    onCancelFast: () -> Unit = {},
     relogRows: QuickRelogRows = QuickRelogRows.Empty,
     relogLoading: Boolean = false,
     onRelogRecent: (FoodEntry) -> Unit = {},
@@ -139,6 +147,14 @@ fun AddFoodSheet(
             nicotineQuickKinds = nicotineQuickKinds,
             onNicotine = { kind -> onDismiss(); onNicotine(kind) },
             onNicotineCustom = { onDismiss(); onNicotineCustom() },
+            fastingEnabled = fastingEnabled,
+            fastingActive = fastingActive,
+            fastingElapsedMillis = fastingElapsedMillis,
+            fastingGoalHours = fastingGoalHours,
+            fastingGoalReached = fastingGoalReached,
+            onStartFast = { onDismiss(); onStartFast() },
+            onStopFast = { onDismiss(); onStopFast() },
+            onCancelFast = { onDismiss(); onCancelFast() },
             relogRows = relogRows,
             relogLoading = relogLoading,
             onRelogRecent = { entry -> onDismiss(); onRelogRecent(entry) },
@@ -176,6 +192,14 @@ internal fun AddFoodSheetContent(
     nicotineQuickKinds: List<NicotineKind> = NicotineKind.DefaultQuickKinds,
     onNicotine: (NicotineKind) -> Unit = {},
     onNicotineCustom: () -> Unit = {},
+    fastingEnabled: Boolean = false,
+    fastingActive: Boolean = false,
+    fastingElapsedMillis: Long = 0L,
+    fastingGoalHours: Int = 0,
+    fastingGoalReached: Boolean = false,
+    onStartFast: () -> Unit = {},
+    onStopFast: () -> Unit = {},
+    onCancelFast: () -> Unit = {},
     relogRows: QuickRelogRows = QuickRelogRows.Empty,
     relogLoading: Boolean = false,
     onRelogRecent: (FoodEntry) -> Unit = {},
@@ -395,6 +419,18 @@ internal fun AddFoodSheetContent(
                 useMetric = waterUseMetric,
                 onWater = onWater,
                 onWaterCustom = onWaterCustom,
+            )
+        }
+        if (fastingEnabled) {
+            Spacer(Modifier.height(12.dp))
+            FastingHubControl(
+                active = fastingActive,
+                elapsedMillis = fastingElapsedMillis,
+                goalHours = fastingGoalHours,
+                goalReached = fastingGoalReached,
+                onStart = onStartFast,
+                onStop = onStopFast,
+                onCancel = onCancelFast,
             )
         }
     }
