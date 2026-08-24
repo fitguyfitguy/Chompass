@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun
@@ -71,6 +72,7 @@ import app.chompass.models.CaffeineKind
 import app.chompass.models.NicotineKind
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.blockSheetDragAtScrollEdges
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
@@ -218,10 +220,18 @@ internal fun AddFoodSheetContent(
     onRelogRecent: (FoodEntry) -> Unit = {},
     onReviewRecent: (FoodEntry) -> Unit = {},
 ) {
+    val scrollState = rememberScrollState()
     Column(
         Modifier
             .fillMaxWidth()
             .navigationBarsPadding()
+            .verticalScroll(rememberScrollState())
+            // Device pass #2 (2026-08-24): the content outgrew the sheet on
+            // shorter screens (water + nicotine + caffeine + fasting rows), so
+            // the bottom rows were clipped below the sheet edge. Scrolling the
+            // column keeps every row reachable; like TextInputSheet, block
+            // drag-from-content dismissal (handle/scrim still dismiss).
+            .blockSheetDragAtScrollEdges(scrollState)
             .padding(horizontal = 20.dp)
             .padding(top = 4.dp, bottom = 20.dp)
     ) {
@@ -668,6 +678,7 @@ private fun AddFoodNicotineQuickRow(
     Row(
         Modifier
             .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.55f))
             .padding(horizontal = 10.dp, vertical = 6.dp),
@@ -678,14 +689,16 @@ private fun AddFoodNicotineQuickRow(
             AssistChip(
                 onClick = { onNicotine(kind) },
                 label = {
-                    Text(stringResource(R.string.nicotine_quick_plus_one, stringResource(kind.labelRes)))
+                    Text(
+                        stringResource(R.string.nicotine_quick_plus_one, stringResource(kind.labelRes)),
+                        maxLines = 1,
+                    )
                 },
                 colors = AssistChipDefaults.assistChipColors(
                     containerColor = MaterialTheme.colorScheme.warning.copy(alpha = 0.12f),
                 ),
             )
         }
-        Spacer(Modifier.weight(1f))
         TextButton(
             onClick = onNicotineCustom,
             contentPadding = PaddingValues(horizontal = 4.dp),
@@ -716,6 +729,7 @@ private fun AddFoodCaffeineQuickRow(
     Row(
         Modifier
             .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.55f))
             .padding(horizontal = 10.dp, vertical = 6.dp),
@@ -726,14 +740,16 @@ private fun AddFoodCaffeineQuickRow(
             AssistChip(
                 onClick = { onCaffeine(kind) },
                 label = {
-                    Text(stringResource(R.string.caffeine_quick_plus_one, stringResource(kind.labelRes)))
+                    Text(
+                        stringResource(R.string.caffeine_quick_plus_one, stringResource(kind.labelRes)),
+                        maxLines = 1,
+                    )
                 },
                 colors = AssistChipDefaults.assistChipColors(
                     containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
                 ),
             )
         }
-        Spacer(Modifier.weight(1f))
         TextButton(
             onClick = onCaffeineCustom,
             contentPadding = PaddingValues(horizontal = 4.dp),

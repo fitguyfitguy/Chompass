@@ -73,7 +73,7 @@ class SettingsIndexTest {
             "diet", "keto", "calories", "protein", "carbs", "fat", "fiber",
             "recalculate", "formula", "serving", "grams", "meal", "photo",
             "dark", "theme", "language", "week", "progress", "water", "nicotine",
-            "reminders", "speech", "voice", "api key", "model", "fallback",
+            "caffeine", "journal", "reminders", "speech", "voice", "api key", "model", "fallback",
             "health connect", "export", "import", "backup", "webdav", "delete",
         )
         for (q in queries) {
