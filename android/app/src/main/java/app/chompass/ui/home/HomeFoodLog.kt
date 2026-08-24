@@ -271,7 +271,16 @@ private fun latestMealRuns(entries: List<FoodEntry>): List<FoodLogMealGroup> {
         val meal = currentMeal ?: return
         if (currentEntries.isEmpty()) return
         groups += FoodLogMealGroup(
-            id = "latest-${groups.size}-${meal.name}-${currentEntries.first().id}",
+            // Stable identity: anchored on the run's meal and newest entry id
+            // (Codeberg #56). The old scheme embedded the run index
+            // (`groups.size`), so ANY add/edit/delete renamed every run after
+            // the change point and the LazyColumn tore down and re-parented
+            // headers/rows on every meal-type edit — the exact reshuffle that
+            // could drop a card from the composition on a slow device.
+            // Unaffected runs now keep their key; a single entry moving between
+            // meals only renames the source run (if it loses its newest entry)
+            // and the destination run (if the moved entry becomes its newest).
+            id = "latest-${meal.name}-${currentEntries.first().id}",
             meal = meal,
             entries = currentEntries.toList()
         )
