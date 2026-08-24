@@ -488,7 +488,7 @@ internal fun CameraPairTransitionOverlay() {
                     Icon(
                         Icons.Filled.AddAPhoto,
                         contentDescription = null,
-                        tint = Color.White,
+                        tint = AppColors.onCalorieGradient,
                         modifier = Modifier.size(30.dp)
                     )
                 }

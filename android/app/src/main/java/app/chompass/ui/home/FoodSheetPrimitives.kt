@@ -191,7 +191,7 @@ internal fun SheetStickyPrimaryBar(
             ) {
                 Text(
                     primaryLabel,
-                    color = Color.White,
+                    color = AppColors.onCalorieGradient,
                     fontSize = 17.sp,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -232,7 +232,7 @@ private fun SheetToolbarPill(
     ) {
         Text(
             label,
-            color = if (bold) Color.White else AppColors.Calorie,
+            color = if (bold) AppColors.onCalorieGradient else AppColors.Calorie,
             fontSize = if (compact) 15.sp else 16.sp,
             fontWeight = if (bold) FontWeight.SemiBold else FontWeight.Medium
         )
