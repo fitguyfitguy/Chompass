@@ -7,6 +7,12 @@ import kotlinx.coroutines.flow.flow
 import java.time.YearMonth
 import java.util.UUID
 
+/** Home note-card visibility (optional daily notes; default off). */
+internal val PreferencesStore.dailyNotesEnabledImpl: Flow<Boolean>
+    get() = boolPref(Keys.DAILY_NOTES_ENABLED, false)
+internal suspend fun PreferencesStore.setDailyNotesEnabledImpl(v: Boolean) =
+    setBoolPref(Keys.DAILY_NOTES_ENABLED, v)
+
 internal val PreferencesStore.noteEntriesImpl: Flow<List<DailyNote>>
     get() = flow {
         emitAll(noteBucketStore.allFlow())

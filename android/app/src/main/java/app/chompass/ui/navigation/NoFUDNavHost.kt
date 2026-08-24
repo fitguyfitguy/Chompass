@@ -52,6 +52,7 @@ import app.chompass.ui.settings.SyncSettingsScreen
 import app.chompass.ui.settings.TrackersSettingsScreen
 import app.chompass.ui.settings.WaterSettingsScreen
 import app.chompass.ui.settings.NicotineSettingsScreen
+import app.chompass.ui.settings.NotesSettingsScreen
 import app.chompass.ui.settings.FastingSettingsScreen
 
 /**
@@ -318,6 +319,20 @@ fun ChompassNavHost(
                     }),
                 ) { entry ->
                     NicotineSettingsScreen(
+                        container = container,
+                        nav = nav,
+                        onBack = { nav.popBackStack() },
+                        from = entry.arguments?.getString("from") ?: "app",
+                    )
+                }
+                composable(
+                    route = ChompassRoutes.SETTINGS_NOTES,
+                    arguments = listOf(navArgument("from") {
+                        type = NavType.StringType
+                        defaultValue = "app"
+                    }),
+                ) { entry ->
+                    NotesSettingsScreen(
                         container = container,
                         nav = nav,
                         onBack = { nav.popBackStack() },

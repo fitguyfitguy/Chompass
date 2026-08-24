@@ -94,6 +94,7 @@ data class SettingsUiState(
     val nicotineTrackingEnabled: Boolean = false,
     val nicotineDailyLimit: Int = 0,
     val nicotineQuickKinds: List<NicotineKind> = NicotineKind.DefaultQuickKinds,
+    val dailyNotesEnabled: Boolean = false,
     val fastingEnabled: Boolean = false,
     val fastingGoalHours: Int = 0,
     val fastingGoalNotificationEnabled: Boolean = true,
@@ -340,6 +341,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     nicotineTrackingEnabled = snap.nicotineTrackingEnabled,
                     nicotineDailyLimit = snap.nicotineDailyLimit,
                     nicotineQuickKinds = snap.nicotineQuickKinds,
+                    dailyNotesEnabled = snap.dailyNotesEnabled,
                     fastingEnabled = snap.fastingEnabled,
                     fastingGoalHours = snap.fastingGoalHours,
                     fastingGoalNotificationEnabled = snap.fastingGoalNotificationEnabled,
@@ -1101,6 +1103,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setNicotineDailyLimit(v: Int) = updateUiPref(
         { container.prefs.setNicotineDailyLimit(v) },
         { copy(nicotineDailyLimit = v) },
+    )
+
+    fun setDailyNotesEnabled(v: Boolean) = updateUiPref(
+        { container.prefs.setDailyNotesEnabled(v) },
+        { copy(dailyNotesEnabled = v) },
     )
 
     fun setFastingEnabled(v: Boolean) = updateUiPref(

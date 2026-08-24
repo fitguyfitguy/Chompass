@@ -35,6 +35,10 @@
     <string name="action_logging">Logging...</string>
     <string name="action_what_if">What if?</string>
     <string name="action_analyze">Analyze</string>
+    <string name="prompt_history_title">Prompt history</string>
+    <string name="prompt_history_button">Prompt history</string>
+    <string name="prompt_history_use">Use this prompt</string>
+    <string name="prompt_history_empty">No saved prompts yet — prompts from the analysis queue and failed analyses appear here.</string>
     <string name="action_discard">Discard</string>
     <string name="action_reset">Reset</string>
     <string name="action_keep_going">Keep Going</string>
@@ -478,6 +482,12 @@
     <string name="settings_nicotine_quick_kinds_help">Kinds shown as +1 chips on the Add food sheet.</string>
     <string name="settings_nicotine_limit_wheel_help">Scroll to set a daily count limit from 0 (no limit) to 100.</string>
     <string name="settings_nicotine_privacy_note">Nicotine logs stay on this device and in your WebDAV sync only. They are never included in shared meals and never sent to an AI provider.</string>
+    <!-- Optional daily notes (docs/local/PLAN_DAILY_NOTES.md); default off. -->
+    <string name="settings_notes_title">Daily notes</string>
+    <string name="settings_notes_intro">Write a private note for any day — a journal, a log, or a reminder. Notes sync and export with your diary.</string>
+    <string name="settings_notes_section_tracking">Tracking</string>
+    <string name="settings_notes_tracking">Daily notes</string>
+    <string name="settings_notes_privacy_note">Your notes stay private: they only leave this device in your WebDAV sync and diary export, and are never sent to an AI provider.</string>
     <!-- Optional intermittent-fasting timer (docs/local/PLAN_FASTING_TRACKER.md); local-only. -->
     <string name="fasting">Fasting</string>
     <string name="fasting_idle">No active fast</string>

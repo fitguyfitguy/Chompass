@@ -21,6 +21,7 @@ object ChompassRoutes {
     const val SETTINGS_WATER = "settings/water?from={from}"
     const val SETTINGS_NICOTINE = "settings/nicotine?from={from}"
     const val SETTINGS_FASTING = "settings/fasting?from={from}"
+    const val SETTINGS_NOTES = "settings/notes?from={from}"
     const val SETTINGS_NOTIFICATIONS = "settings/notifications?from={from}"
     const val SETTINGS_SYNC = "settings/sync?from={from}"
 
@@ -28,6 +29,7 @@ object ChompassRoutes {
     fun waterRoute(from: String) = "settings/water?from=$from"
     fun nicotineRoute(from: String) = "settings/nicotine?from=$from"
     fun fastingRoute(from: String) = "settings/fasting?from=$from"
+    fun notesRoute(from: String) = "settings/notes?from=$from"
     fun notificationsRoute(from: String) = "settings/notifications?from=$from"
     fun syncRoute(from: String) = "settings/sync?from=$from"
 
