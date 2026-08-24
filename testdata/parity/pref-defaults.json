@@ -11,6 +11,7 @@
   "showNotes": false,
   "showFasting": false,
   "fastingGoalHours": 0,
+  "fastingEatHours": 0,
   "coachTabEnabled": true,
   "aiFeaturesEnabled": true,
   "waterGoalMl": 2000,

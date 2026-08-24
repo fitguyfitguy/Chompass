@@ -65,26 +65,44 @@ const HOME_DATE_KEY = "chompass-home-date";
 
 /** Local-only fasting timer card (docs/local/PLAN_FASTING_TRACKER.md mirror). */
 function fastingCard(p) {
-  const active = p.fastingStartedAt != null;
-  const now = Date.now();
-  const elapsed = active ? Math.max(0, now - p.fastingStartedAt) : 0;
   const goal = p.fastingGoalHours ?? 0;
+  const eat = p.fastingEatHours ?? 0;
+  const now = Date.now();
+  const fasting = p.fastingStartedAt != null;
+  const windowEnds = !fasting && eat > 0 && p.fastingLastEndedAt != null ? p.fastingLastEndedAt + eat * 3_600_000 : null;
+  const eating = !fasting && windowEnds != null && windowEnds > now;
+  const elapsed = fasting ? Math.max(0, now - p.fastingStartedAt) : 0;
+  const eatElapsed = eating ? Math.max(0, now - p.fastingLastEndedAt) : 0;
   const goalMillis = goal * 3_600_000;
-  const reached = active && goal > 0 && elapsed >= goalMillis;
-  const status = active
-    ? reached
+  const reached = fasting && goal > 0 && elapsed >= goalMillis;
+  let status;
+  if (fasting) {
+    status = reached
       ? t("diary.fasting_goal_reached")
       : goal > 0
         ? t("diary.fasting_goal_hint", { elapsed: fmtFastDuration(elapsed), goal })
-        : fmtFastDuration(elapsed)
-    : t("diary.fasting_idle");
-  const pct = active && goal > 0 ? Math.min(100, (elapsed / goalMillis) * 100) : 0;
+        : fmtFastDuration(elapsed);
+  } else if (eating) {
+    status = t("diary.fasting_eating_progress", { elapsed: fmtFastDuration(eatElapsed), eat });
+  } else {
+    status = t("diary.fasting_idle");
+  }
+  const showBar = (fasting && goal > 0) || eating;
+  const pct = showBar
+    ? Math.min(100, ((fasting ? elapsed / goalMillis : eatElapsed / (eat * 3_600_000)) * 100))
+    : 0;
+  let hint = "";
+  if (fasting && goal > 0 && !reached) {
+    hint = `<div class="water-row__hint">${t("diary.fasting_window_opens_in", { remaining: fmtFastDuration(Math.max(0, goalMillis - elapsed)) })}</div>`;
+  } else if (eating) {
+    hint = `<div class="water-row__hint">${t("diary.fasting_fast_starts_in", { remaining: fmtFastDuration(Math.max(0, windowEnds - now)) })}</div>`;
+  }
   return `<div class="card card--glass water-row fasting-row">
       <div class="water-row__top">
         <div class="water-row__meta"><strong>${t("diary.fasting")}</strong><br/><span class="water-row__meta-sub">${status}</span></div>
         <div class="water-presets">
           ${
-            active
+            fasting
               ? `<button type="button" class="chip" data-fasting-stop>${t("diary.fasting_stop")}</button>
                  <button type="button" class="chip chip--ghost" data-fasting-cancel>${t("action.cancel")}</button>`
               : `<button type="button" class="chip" data-fasting-start>${t("diary.fasting_start")}</button>`
@@ -92,14 +110,10 @@ function fastingCard(p) {
         </div>
       </div>
       ${
-        active && goal > 0
-          ? `<div class="water-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${goal}" aria-valuenow="${(elapsed / 3_600_000).toFixed(1)}" aria-label="${t("diary.fasting")}">
+        showBar
+          ? `<div class="water-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${fasting ? goal : eat}" aria-valuenow="${(fasting ? elapsed / 3_600_000 : eatElapsed / 3_600_000).toFixed(1)}" aria-label="${t("diary.fasting")}">
               <span data-width="${pct.toFixed(1)}%"></span>
-            </div>${
-              !reached
-                ? `<div class="water-row__hint">${t("diary.fasting_window_opens_in", { remaining: fmtFastDuration(Math.max(0, goalMillis - elapsed)) })}</div>`
-                : ""
-            }`
+            </div>${hint}`
           : ""
       }
     </div>`;

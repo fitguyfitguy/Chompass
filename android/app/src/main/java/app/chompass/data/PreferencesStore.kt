@@ -270,6 +270,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setFastingEnabled(v: Boolean) = setFastingEnabledImpl(v)
     val fastingGoalHours: Flow<Int> get() = fastingGoalHoursImpl
     suspend fun setFastingGoalHours(v: Int) = setFastingGoalHoursImpl(v)
+    val fastingEatHours: Flow<Int> get() = fastingEatHoursImpl
+    suspend fun setFastingEatHours(v: Int) = setFastingEatHoursImpl(v)
     val fastingGoalNotificationEnabled: Flow<Boolean> get() = fastingGoalNotificationEnabledImpl
     suspend fun setFastingGoalNotificationEnabled(v: Boolean) = setFastingGoalNotificationEnabledImpl(v)
     /** Session state (started/last-ended + goal latch) as a pure function of scalars. */
@@ -282,10 +284,10 @@ class PreferencesStore(private val appContext: Context) {
     ) = setFastingSessionFieldsImpl(startedAtMillis, lastEndedAtMillis, lastFastStartedAtMillis, goalReachedNotified)
     val fastingStartReminderEnabled: Flow<Boolean> get() = fastingStartReminderEnabledImpl
     suspend fun setFastingStartReminderEnabled(v: Boolean) = setFastingStartReminderEnabledImpl(v)
-    val fastingStartReminderHour: Flow<Int> get() = fastingStartReminderHourImpl
-    suspend fun setFastingStartReminderHour(v: Int) = setFastingStartReminderHourImpl(v)
-    val fastingStartReminderMinute: Flow<Int> get() = fastingStartReminderMinuteImpl
-    suspend fun setFastingStartReminderMinute(v: Int) = setFastingStartReminderMinuteImpl(v)
+    val fastingStartReminderLeadMinutes: Flow<Int> get() = fastingStartReminderLeadMinutesImpl
+    suspend fun setFastingStartReminderLeadMinutes(v: Int) = setFastingStartReminderLeadMinutesImpl(v)
+    val fastingEndReminderLeadMinutes: Flow<Int> get() = fastingEndReminderLeadMinutesImpl
+    suspend fun setFastingEndReminderLeadMinutes(v: Int) = setFastingEndReminderLeadMinutesImpl(v)
     val lastNotifiedUpdateVersion: Flow<String?> get() = lastNotifiedUpdateVersionImpl
     suspend fun setLastNotifiedUpdateVersion(v: String) = setLastNotifiedUpdateVersionImpl(v)
     val healthConnectEnabled: Flow<Boolean> get() = healthConnectEnabledImpl

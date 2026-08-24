@@ -1738,8 +1738,8 @@ bilirsən?</string>
     <string name="settings_fasting_tracking">Oruc taymeri</string>
     <string name="settings_fasting_goal">Hədəf müddəti</string>
     <string name="settings_fasting_goal_summary_none">Hədəf yoxdur</string>
-    <string name="settings_fasting_goal_summary">%1$d saat</string>
-    <string name="settings_fasting_goal_wheel_help">Hədəfə çatanda bir dəfəlik bildiriş gəlir. 0 = hədəf yoxdur.</string>
+    <string name="settings_fasting_goal_summary">%1$d saat oruc</string>
+    <string name="settings_fasting_goal_wheel_help">Məşhur protokoldan seçin və ya öz oruc və yemək pəncərələrinizi təyin edin. 0 = hədəf yoxdur.</string>
     <string name="settings_fasting_section_notification">Bildiriş</string>
     <string name="settings_fasting_notification">Hədəfə çatma</string>
     <string name="fasting_local_only_note">Oruc taymeri bu cihazda qalır — sinxronlaşdırılmır, ixrac edilmir və paylaşılan yeməklərə daxil edilmir. Chompass bu barədə yalnız hədəf bildirişini göndərir.</string>
@@ -1749,7 +1749,7 @@ bilirsən?</string>
     <string name="notif_channel_fasting">Oruc</string>
     <string name="notif_channel_fasting_desc">Oruc hədəfinə çatanda birdəfəlik qeyd.</string>
     <string name="notif_fasting_goal_title">Oruc hədəfinə çatdı</string>
-    <string name="notif_fasting_goal_text">%1$d saatlıq orucunuz tamamlandı — indi yemək yeyə bilərsiniz.</string>
+    <string name="notif_fasting_goal_text">Orucunuz tamamlandı — indi yeyə bilərsiniz.</string>
     <string name="fasting_preset_detail">%1$d saat oruc · %2$d saat yemək pəncərəsi</string>
     <string name="fasting_window_opens_in">Yemək pəncərəsi %1$s sonra açılır</string>
     <string name="settings_fasting_section_reminders">Xatırlatmalar</string>
@@ -1759,4 +1759,19 @@ bilirsən?</string>
     <string name="notif_fasting_start_title">Oruca başla</string>
     <string name="notif_fasting_start_text">İndi oruca başla.</string>
     <string name="notif_fasting_start_text_goal">%1$d saatlıq orucuna indi başla.</string>
+    <string name="fasting_fast_starts_in">Oruc %1$s sonra başlayır</string>
+    <string name="fasting_eating_progress">%2$d saat yeməkdən %1$s</string>
+    <string name="settings_fasting_eat_window">Yemək pəncərəsi</string>
+    <string name="settings_fasting_goal_summary_both">%1$d saat oruc · %2$d saat yemək</string>
+    <string name="settings_fasting_end_reminder">Orucu bitirmə xatırlatması</string>
+    <string name="settings_fasting_reminder_lead_end">Oruc bitməzdən əvvəl</string>
+    <string name="settings_fasting_reminder_lead_start">Oruc başlamazdan əvvəl</string>
+    <string name="settings_fasting_reminder_lead_unit">dəq</string>
+    <string name="settings_fasting_reminder_lead_summary">%1$d dəq əvvəl</string>
+    <string name="settings_fasting_reminder_lead_now">Sərhəddə</string>
+    <string name="settings_fasting_reminder_help">Vaxtlar hər dövrə üçündür: başlama xatırlatması yemək pəncərəsi bağlanmazdan əvvəl, bitirmə xatırlatması hədəfə çatmazdan əvvəl. 0 = tam sərhəddə.</string>
+    <string name="notif_fasting_end_soon_title">Oruc tezliklə bitir</string>
+    <string name="notif_fasting_end_soon_text">Orucunuz %1$d dəq sonra bitir — yemək pəncərəsi o zaman açılır.</string>
+    <string name="notif_fasting_start_soon_title">Oruc tezliklə başlayır</string>
+    <string name="notif_fasting_start_soon_text">Yemək pəncərəsi %1$d dəq sonra bağlanır — o zaman oruca başlayın.</string>
 </resources>

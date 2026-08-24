@@ -1737,8 +1737,8 @@
     <string name="settings_fasting_tracking">Cronometru post</string>
     <string name="settings_fasting_goal">Durata țintei</string>
     <string name="settings_fasting_goal_summary_none">Fără țintă</string>
-    <string name="settings_fasting_goal_summary">%1$d h</string>
-    <string name="settings_fasting_goal_wheel_help">O notificare unică este trimisă când atingi ținta. 0 = fără țintă.</string>
+    <string name="settings_fasting_goal_summary">%1$d h de post</string>
+    <string name="settings_fasting_goal_wheel_help">Alege un protocol popular sau setează propriile ferestre de post și de mese. 0 = fără țintă.</string>
     <string name="settings_fasting_section_notification">Notificare</string>
     <string name="settings_fasting_notification">Obiectiv atins</string>
     <string name="fasting_local_only_note">Cronometrul de post rămâne pe acest dispozitiv — nu este niciodată sincronizat, exportat sau inclus în mesele partajate. Notificarea de atingere a țintei este singurul lucru pe care Chompass îl publică despre el.</string>
@@ -1748,7 +1748,7 @@
     <string name="notif_channel_fasting">Post</string>
     <string name="notif_channel_fasting_desc">Notă unică atunci când o țintă de post este atinsă.</string>
     <string name="notif_fasting_goal_title">Ținta de post atinsă</string>
-    <string name="notif_fasting_goal_text">Postul tău de %1$d h s-a încheiat — poți mânca acum.</string>
+    <string name="notif_fasting_goal_text">Postul tău s-a încheiat — poți mânca acum.</string>
     <string name="fasting_preset_detail">%1$d h de post · %2$d h de fereastră de mese</string>
     <string name="fasting_window_opens_in">Fereastra de mese se deschide în %1$s</string>
     <string name="settings_fasting_section_reminders">Memento-uri</string>
@@ -1758,4 +1758,19 @@
     <string name="notif_fasting_start_title">Începe postul</string>
     <string name="notif_fasting_start_text">Începe postul acum.</string>
     <string name="notif_fasting_start_text_goal">Începe acum postul tău de %1$d h.</string>
+    <string name="fasting_fast_starts_in">Postul începe în %1$s</string>
+    <string name="fasting_eating_progress">%1$s din %2$d h de mese</string>
+    <string name="settings_fasting_eat_window">Fereastra de mese</string>
+    <string name="settings_fasting_goal_summary_both">%1$d h de post · %2$d h de mese</string>
+    <string name="settings_fasting_end_reminder">Memento de sfârșit de post</string>
+    <string name="settings_fasting_reminder_lead_end">Înainte de sfârșitul postului</string>
+    <string name="settings_fasting_reminder_lead_start">Înainte de începerea postului</string>
+    <string name="settings_fasting_reminder_lead_unit">min</string>
+    <string name="settings_fasting_reminder_lead_summary">%1$d min înainte</string>
+    <string name="settings_fasting_reminder_lead_now">Exact la limită</string>
+    <string name="settings_fasting_reminder_help">Anticipările sunt per ciclu: mementoul de început sună înainte de închiderea ferestrei de mese, cel de sfârșit înainte de atingerea țintei. 0 = exact la limită.</string>
+    <string name="notif_fasting_end_soon_title">Postul se termină în curând</string>
+    <string name="notif_fasting_end_soon_text">Postul tău se termină în %1$d min — fereastra de mese se deschide atunci.</string>
+    <string name="notif_fasting_start_soon_title">Postul începe în curând</string>
+    <string name="notif_fasting_start_soon_text">Fereastra ta de mese se închide în %1$d min — începe postul atunci.</string>
 </resources>

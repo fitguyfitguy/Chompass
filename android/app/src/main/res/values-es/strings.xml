@@ -1744,8 +1744,8 @@
     <string name="settings_fasting_tracking">Temporizador de ayuno</string>
     <string name="settings_fasting_goal">Duración objetivo</string>
     <string name="settings_fasting_goal_summary_none">Sin objetivo</string>
-    <string name="settings_fasting_goal_summary">%1$d h</string>
-    <string name="settings_fasting_goal_wheel_help">Se envía una notificación única al alcanzar el objetivo. 0 = sin objetivo.</string>
+    <string name="settings_fasting_goal_summary">%1$d h de ayuno</string>
+    <string name="settings_fasting_goal_wheel_help">Elige un protocolo popular o configura tus propias ventanas de ayuno y comida. 0 = sin objetivo.</string>
     <string name="settings_fasting_section_notification">Notificación</string>
     <string name="settings_fasting_notification">Objetivo alcanzado</string>
     <string name="fasting_local_only_note">El temporizador de ayuno se queda en este dispositivo: nunca se sincroniza, exporta ni incluye en comidas compartidas. La notificación de objetivo alcanzado es lo único que Chompass publica al respecto.</string>
@@ -1755,7 +1755,7 @@
     <string name="notif_channel_fasting">Ayuno</string>
     <string name="notif_channel_fasting_desc">Aviso único cuando se alcanza un objetivo de ayuno.</string>
     <string name="notif_fasting_goal_title">Objetivo de ayuno alcanzado</string>
-    <string name="notif_fasting_goal_text">Tu ayuno de %1$d h ha terminado: ya puedes comer.</string>
+    <string name="notif_fasting_goal_text">Tu ayuno ha terminado: ya puedes comer.</string>
     <string name="fasting_preset_detail">%1$d h de ayuno · %2$d h de ventana de comida</string>
     <string name="fasting_window_opens_in">La ventana de comida abre en %1$s</string>
     <string name="settings_fasting_section_reminders">Recordatorios</string>
@@ -1765,4 +1765,19 @@
     <string name="notif_fasting_start_title">Empieza tu ayuno</string>
     <string name="notif_fasting_start_text">Empieza tu ayuno ahora.</string>
     <string name="notif_fasting_start_text_goal">Empieza ahora tu ayuno de %1$d h.</string>
+    <string name="fasting_fast_starts_in">El ayuno empieza en %1$s</string>
+    <string name="fasting_eating_progress">%1$s de %2$d h de comida</string>
+    <string name="settings_fasting_eat_window">Ventana de comida</string>
+    <string name="settings_fasting_goal_summary_both">%1$d h de ayuno · %2$d h de comida</string>
+    <string name="settings_fasting_end_reminder">Recordatorio de fin de ayuno</string>
+    <string name="settings_fasting_reminder_lead_end">Antes de que termine el ayuno</string>
+    <string name="settings_fasting_reminder_lead_start">Antes de que empiece el ayuno</string>
+    <string name="settings_fasting_reminder_lead_unit">min</string>
+    <string name="settings_fasting_reminder_lead_summary">%1$d min antes</string>
+    <string name="settings_fasting_reminder_lead_now">En el límite</string>
+    <string name="settings_fasting_reminder_help">Los tiempos de aviso son por ciclo: el de inicio suena antes de cerrar la ventana de comida y el de fin antes de alcanzar el objetivo. 0 = justo en el límite.</string>
+    <string name="notif_fasting_end_soon_title">El ayuno termina pronto</string>
+    <string name="notif_fasting_end_soon_text">Tu ayuno termina en %1$d min: entonces se abre tu ventana de comida.</string>
+    <string name="notif_fasting_start_soon_title">El ayuno empieza pronto</string>
+    <string name="notif_fasting_start_soon_text">Tu ventana de comida se cierra en %1$d min: empieza tu ayuno entonces.</string>
 </resources>

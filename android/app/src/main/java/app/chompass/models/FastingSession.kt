@@ -42,6 +42,18 @@ data class FastingSession(
         return (target - nowMillis).coerceAtLeast(0L)
     }
 
+    /**
+     * When the last completed fast stopped, its eating window (if [eatHours]
+     * > 0) runs until that stop time + [eatHours]. Null when there is no
+     * eating window configured or no fast was ever stopped.
+     */
+    fun eatingWindowEndsAtMillis(eatHours: Int, nowMillis: Long = System.currentTimeMillis()): Long? {
+        if (eatHours <= 0) return null
+        val ended = lastEndedAtMillis ?: return null
+        val end = ended + eatHours * MILLIS_PER_HOUR
+        return if (end > nowMillis) end else null
+    }
+
     /** Duration of the last completed fast; 0 when none recorded yet. */
     fun lastFastDurationMillis(): Long {
         val started = lastFastStartedAtMillis ?: return 0L
@@ -53,6 +65,25 @@ data class FastingSession(
         const val MILLIS_PER_HOUR = 3_600_000L
     }
 }
+
+/**
+ * Where the user is in the fast → eat cycle. A pure function of the session
+ * + the configured windows (docs/local/PLAN_FASTING_TRACKER.md §3):
+ *  - [FASTING]: a fast is running (startedAt set); the goal counts down.
+ *  - [EATING]: the last fast was stopped and its eating window ([eatHours])
+ *    has not closed yet; the next fast starts when it does.
+ *  - [IDLE]: nothing running and no open eating window (never started, or the
+ *    eating window lapsed without a new fast).
+ */
+enum class FastingPhase { IDLE, FASTING, EATING }
+
+/** Derives the current phase; [eatHours] = 0 disables the eating phase. */
+fun FastingSession.phase(eatHours: Int, nowMillis: Long = System.currentTimeMillis()): FastingPhase =
+    when {
+        isFasting -> FastingPhase.FASTING
+        eatingWindowEndsAtMillis(eatHours, nowMillis) != null -> FastingPhase.EATING
+        else -> FastingPhase.IDLE
+    }
 
 /**
  * Popular intermittent-fasting protocols as goal presets (fast:hours label is

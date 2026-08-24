@@ -23,6 +23,7 @@ import app.chompass.models.ManualActiveEntry
 import app.chompass.models.MealType
 import app.chompass.models.CaffeineEntry
 import app.chompass.models.CaffeineKind
+import app.chompass.models.FastingPhase
 import app.chompass.models.NicotineEntry
 import app.chompass.models.NicotineKind
 import app.chompass.models.OptionalNutrientGoals
@@ -217,9 +218,12 @@ data class HomeUiState(
     /** Optional intermittent-fasting timer (docs/local/PLAN_FASTING_TRACKER.md); local-only. */
     val fastingEnabled: Boolean = false,
     val fastingGoalHours: Int = 0,
-    val fastingActive: Boolean = false,
+    val fastingEatHours: Int = 0,
+    val fastingPhase: FastingPhase = FastingPhase.IDLE,
     /** Elapsed millis of the running fast; ticked each minute by the VM. */
     val fastingElapsedMillis: Long = 0L,
+    /** Elapsed millis inside the open eating window; ticked each minute. */
+    val fastingEatingElapsedMillis: Long = 0L,
     val fastingGoalReached: Boolean = false,
     val fastingLastEndedAtMillis: Long? = null,
     val fastingLastFastStartedAtMillis: Long? = null,
@@ -432,8 +436,10 @@ data class HomeUiState(
             caffeineTodayEntries == other.caffeineTodayEntries &&
             fastingEnabled == other.fastingEnabled &&
             fastingGoalHours == other.fastingGoalHours &&
-            fastingActive == other.fastingActive &&
+            fastingEatHours == other.fastingEatHours &&
+            fastingPhase == other.fastingPhase &&
             fastingElapsedMillis == other.fastingElapsedMillis &&
+            fastingEatingElapsedMillis == other.fastingEatingElapsedMillis &&
             fastingGoalReached == other.fastingGoalReached &&
             fastingLastEndedAtMillis == other.fastingLastEndedAtMillis &&
             fastingLastFastStartedAtMillis == other.fastingLastFastStartedAtMillis &&
@@ -507,8 +513,10 @@ data class HomeUiState(
         result = 31 * result + caffeineTodayEntries.hashCode()
         result = 31 * result + fastingEnabled.hashCode()
         result = 31 * result + fastingGoalHours
-        result = 31 * result + fastingActive.hashCode()
+        result = 31 * result + fastingEatHours
+        result = 31 * result + fastingPhase.hashCode()
         result = 31 * result + fastingElapsedMillis.hashCode()
+        result = 31 * result + fastingEatingElapsedMillis.hashCode()
         result = 31 * result + fastingGoalReached.hashCode()
         result = 31 * result + (fastingLastEndedAtMillis?.hashCode() ?: 0)
         result = 31 * result + (fastingLastFastStartedAtMillis?.hashCode() ?: 0)
@@ -1108,6 +1116,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             .onEach { goal -> _ui.update { it.copy(fastingGoalHours = goal) } }
             .launchIn(viewModelScope)
 
+        container.prefs.fastingEatHours
+            .onEach { eat -> _ui.update { it.copy(fastingEatHours = eat) } }
+            .launchIn(viewModelScope)
+
         // Session changes (start/stop/cancel) re-derive the display state; the
         // minute ticker below keeps the elapsed label rolling without any write.
         container.fastingRepository.session
@@ -1270,18 +1282,30 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /**
-     * Re-derives the fasting display fields (elapsed, goal reached, last fast)
-     * from the session + goal; called on session change and each minute.
+     * Re-derives the fasting cycle display fields (phase, elapsed, goal
+     * reached) from the session + windows; called on session change and each
+     * minute.
      */
     private fun refreshFastingTick(session: app.chompass.models.FastingSession? = null) {
         viewModelScope.launch {
             val s = session ?: container.fastingRepository.current()
             val now = System.currentTimeMillis()
             val goal = container.prefs.fastingGoalHours.first()
+            val eat = container.prefs.fastingEatHours.first()
+            val windowEnds = s.eatingWindowEndsAtMillis(eat, now)
             _ui.update {
                 it.copy(
-                    fastingActive = s.isFasting,
+                    fastingPhase = when {
+                        s.isFasting -> FastingPhase.FASTING
+                        windowEnds != null -> FastingPhase.EATING
+                        else -> FastingPhase.IDLE
+                    },
                     fastingElapsedMillis = s.elapsedMillis(now),
+                    fastingEatingElapsedMillis = if (windowEnds != null) {
+                        (now - (s.lastEndedAtMillis ?: now)).coerceAtLeast(0L)
+                    } else {
+                        0L
+                    },
                     fastingGoalReached = s.goalReached(goal, now),
                     fastingLastEndedAtMillis = s.lastEndedAtMillis,
                     fastingLastFastStartedAtMillis = s.lastFastStartedAtMillis,

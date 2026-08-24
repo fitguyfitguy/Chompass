@@ -1762,8 +1762,8 @@
     <string name="settings_fasting_tracking">Timer postu</string>
     <string name="settings_fasting_goal">Długość celu</string>
     <string name="settings_fasting_goal_summary_none">Brak celu</string>
-    <string name="settings_fasting_goal_summary">%1$d h</string>
-    <string name="settings_fasting_goal_wheel_help">Po osiągnięciu celu wysyłane jest jednorazowe powiadomienie. 0 = brak celu.</string>
+    <string name="settings_fasting_goal_summary">%1$d h postu</string>
+    <string name="settings_fasting_goal_wheel_help">Wybierz popularny protokół lub ustaw własne okna postu i jedzenia. 0 = brak celu.</string>
     <string name="settings_fasting_section_notification">Powiadomienie</string>
     <string name="settings_fasting_notification">Osiągnięto cel</string>
     <string name="fasting_local_only_note">Timer postu pozostaje na tym urządzeniu — nigdy nie jest synchronizowany, eksportowany ani dołączany do udostępnianych posiłków. Jedyną rzeczą, którą Chompass o nim publikuje, jest powiadomienie o osiągnięciu celu.</string>
@@ -1773,7 +1773,7 @@
     <string name="notif_channel_fasting">Post</string>
     <string name="notif_channel_fasting_desc">Jednorazowa wiadomość po osiągnięciu celu postu.</string>
     <string name="notif_fasting_goal_title">Osiągnięto cel postu</string>
-    <string name="notif_fasting_goal_text">Twój %1$d-godzinny post zakończony — możesz teraz przerwać post.</string>
+    <string name="notif_fasting_goal_text">Twój post zakończony — możesz teraz jeść.</string>
     <string name="fasting_preset_detail">%1$d h postu · %2$d h okna jedzenia</string>
     <string name="fasting_window_opens_in">Okno jedzenia otwiera się za %1$s</string>
     <string name="settings_fasting_section_reminders">Przypomnienia</string>
@@ -1783,4 +1783,19 @@
     <string name="notif_fasting_start_title">Rozpocznij post</string>
     <string name="notif_fasting_start_text">Rozpocznij post teraz.</string>
     <string name="notif_fasting_start_text_goal">Rozpocznij teraz swój %1$d-godzinny post.</string>
+    <string name="fasting_fast_starts_in">Post zaczyna się za %1$s</string>
+    <string name="fasting_eating_progress">%1$s z %2$d h jedzenia</string>
+    <string name="settings_fasting_eat_window">Okno jedzenia</string>
+    <string name="settings_fasting_goal_summary_both">%1$d h postu · %2$d h jedzenia</string>
+    <string name="settings_fasting_end_reminder">Przypomnienie o zakończeniu postu</string>
+    <string name="settings_fasting_reminder_lead_end">Przed końcem postu</string>
+    <string name="settings_fasting_reminder_lead_start">Przed rozpoczęciem postu</string>
+    <string name="settings_fasting_reminder_lead_unit">min</string>
+    <string name="settings_fasting_reminder_lead_summary">%1$d min wcześniej</string>
+    <string name="settings_fasting_reminder_lead_now">Dokładnie na granicy</string>
+    <string name="settings_fasting_reminder_help">Czasy wyprzedzenia są per cykl: przypomnienie o rozpoczęciu pojawia się przed zamknięciem okna jedzenia, o zakończeniu — przed osiągnięciem celu. 0 = dokładnie na granicy.</string>
+    <string name="notif_fasting_end_soon_title">Post wkrótce się kończy</string>
+    <string name="notif_fasting_end_soon_text">Twój post kończy się za %1$d min — wtedy otwiera się okno jedzenia.</string>
+    <string name="notif_fasting_start_soon_title">Post wkrótce się zacznie</string>
+    <string name="notif_fasting_start_soon_text">Twoje okno jedzenia zamyka się za %1$d min — rozpocznij wtedy post.</string>
 </resources>

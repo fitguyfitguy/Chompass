@@ -254,17 +254,28 @@ class NotificationService(private val context: Context) {
     fun cancelWaterReminder() = cancel(REQUEST_WATER)
 
     /**
-     * Arms the one-shot fasting-goal alarm to fire at [fireAtMillis]
-     * (started + goal hours). The receiver re-checks the session at fire time
-     * and latches the notification, so a fast stopped before the goal never
-     * notifies. Same computed-future-time shape as [scheduleWaterReminderAt].
+     * Arms the break-fast nudge to fire at [fireAtMillis] (goal time − lead).
+     * The receiver re-checks the session at fire time and latches the
+     * notification, so a fast stopped before the fire never notifies. Copy is
+     * lead-aware: >0 minutes before the goal says "ends soon", 0 says
+     * "complete". Same computed-future-time shape as [scheduleWaterReminderAt].
      */
-    fun scheduleFastingGoalAt(fireAtMillis: Long, goalHours: Int) {
+    fun scheduleFastingGoalAt(fireAtMillis: Long, leadMinutes: Int) {
+        val text = if (leadMinutes > 0) {
+            context.getString(R.string.notif_fasting_end_soon_text, leadMinutes)
+        } else {
+            context.getString(R.string.notif_fasting_goal_text)
+        }
+        val title = if (leadMinutes > 0) {
+            context.getString(R.string.notif_fasting_end_soon_title)
+        } else {
+            context.getString(R.string.notif_fasting_goal_title)
+        }
         val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, ReminderReceiver::class.java).apply {
             putExtra(EXTRA_CHANNEL, CHANNEL_FASTING)
-            putExtra(EXTRA_TITLE, context.getString(R.string.notif_fasting_goal_title))
-            putExtra(EXTRA_TEXT, context.getString(R.string.notif_fasting_goal_text, goalHours))
+            putExtra(EXTRA_TITLE, title)
+            putExtra(EXTRA_TEXT, text)
             putExtra(EXTRA_REQUEST, REQUEST_FASTING_GOAL)
         }
         val pi = PendingIntent.getBroadcast(
@@ -277,20 +288,26 @@ class NotificationService(private val context: Context) {
     fun cancelFastingGoal() = cancel(REQUEST_FASTING_GOAL)
 
     /**
-     * Arms the daily start-fast nudge at [hour]:[minute] (fixed time, like the
-     * streak reminder). The receiver skips it when a fast is already running.
-     * [goalHours] is baked into the text ("Start your 16 h fast now"; 0 = generic).
+     * Arms the start-fast nudge to fire at [fireAtMillis] (eating-window end −
+     * lead). The receiver skips it when a fast is already running. Copy is
+     * lead-aware: >0 minutes before the window closes says "starts soon",
+     * 0 says "start now".
      */
-    fun scheduleFastingStartReminder(hour: Int, minute: Int, goalHours: Int) {
-        val text = if (goalHours > 0) {
-            context.getString(R.string.notif_fasting_start_text_goal, goalHours)
+    fun scheduleFastingStartReminderAt(fireAtMillis: Long, leadMinutes: Int) {
+        val text = if (leadMinutes > 0) {
+            context.getString(R.string.notif_fasting_start_soon_text, leadMinutes)
         } else {
             context.getString(R.string.notif_fasting_start_text)
+        }
+        val title = if (leadMinutes > 0) {
+            context.getString(R.string.notif_fasting_start_soon_title)
+        } else {
+            context.getString(R.string.notif_fasting_start_title)
         }
         val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, ReminderReceiver::class.java).apply {
             putExtra(EXTRA_CHANNEL, CHANNEL_FASTING)
-            putExtra(EXTRA_TITLE, context.getString(R.string.notif_fasting_start_title))
+            putExtra(EXTRA_TITLE, title)
             putExtra(EXTRA_TEXT, text)
             putExtra(EXTRA_REQUEST, REQUEST_FASTING_START)
         }
@@ -298,15 +315,7 @@ class NotificationService(private val context: Context) {
             context, REQUEST_FASTING_START, intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
-        val now = Calendar.getInstance()
-        val fire = (now.clone() as Calendar).apply {
-            set(Calendar.HOUR_OF_DAY, hour)
-            set(Calendar.MINUTE, minute)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-            if (before(now)) add(Calendar.DAY_OF_MONTH, 1)
-        }
-        am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, fire.timeInMillis, pi)
+        am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, fireAtMillis, pi)
     }
 
     fun cancelFastingStartReminder() = cancel(REQUEST_FASTING_START)

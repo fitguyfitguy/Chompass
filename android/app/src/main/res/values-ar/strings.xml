@@ -1743,8 +1743,8 @@
     <string name="settings_fasting_tracking">مؤقّت الصيام</string>
     <string name="settings_fasting_goal">مدة الهدف</string>
     <string name="settings_fasting_goal_summary_none">بلا هدف</string>
-    <string name="settings_fasting_goal_summary">%1$d ساعة</string>
-    <string name="settings_fasting_goal_wheel_help">يُرسَل إشعار واحد عند بلوغ الهدف. 0 = بلا هدف.</string>
+    <string name="settings_fasting_goal_summary">%1$d ساعة صيام</string>
+    <string name="settings_fasting_goal_wheel_help">اختر بروتوكولًا شائعًا أو اضبط نوافذ الصيام والأكل بنفسك. 0 = بلا هدف.</string>
     <string name="settings_fasting_section_notification">الإشعارات</string>
     <string name="settings_fasting_notification">بلوغ الهدف</string>
     <string name="fasting_local_only_note">يبقى مؤقّت الصيام على هذا الجهاز — لا تتم مزامنته أو تصديره أو تضمينه في الوجبات المشتركة. إشعار بلوغ الهدف هو الشيء الوحيد الذي ينشره Chompass عنه.</string>
@@ -1754,7 +1754,7 @@
     <string name="notif_channel_fasting">صيام</string>
     <string name="notif_channel_fasting_desc">ملاحظة لمرة واحدة عند بلوغ هدف الصيام.</string>
     <string name="notif_fasting_goal_title">تم بلوغ هدف الصيام</string>
-    <string name="notif_fasting_goal_text">اكتمل صيامك البالغ %1$d ساعة — يمكنك الإفطار الآن.</string>
+    <string name="notif_fasting_goal_text">اكتمل صيامك — يمكنك الأكل الآن.</string>
     <string name="fasting_preset_detail">%1$d ساعة صيام · %2$d ساعة نافذة أكل</string>
     <string name="fasting_window_opens_in">تفتح نافذة الأكل خلال %1$s</string>
     <string name="settings_fasting_section_reminders">التذكيرات</string>
@@ -1764,4 +1764,19 @@
     <string name="notif_fasting_start_title">ابدأ صيامك</string>
     <string name="notif_fasting_start_text">ابدأ صيامك الآن.</string>
     <string name="notif_fasting_start_text_goal">ابدأ صيامك البالغ %1$d ساعة الآن.</string>
+    <string name="fasting_fast_starts_in">يبدأ الصيام خلال %1$s</string>
+    <string name="fasting_eating_progress">%1$s من %2$d ساعات أكل</string>
+    <string name="settings_fasting_eat_window">نافذة الأكل</string>
+    <string name="settings_fasting_goal_summary_both">%1$d ساعة صيام · %2$d ساعة أكل</string>
+    <string name="settings_fasting_end_reminder">تذكير إنهاء الصيام</string>
+    <string name="settings_fasting_reminder_lead_end">قبل انتهاء الصيام</string>
+    <string name="settings_fasting_reminder_lead_start">قبل بدء الصيام</string>
+    <string name="settings_fasting_reminder_lead_unit">دقيقة</string>
+    <string name="settings_fasting_reminder_lead_summary">قبل %1$d دقيقة</string>
+    <string name="settings_fasting_reminder_lead_now">عند الحد</string>
+    <string name="settings_fasting_reminder_help">المدد قبل كل دورة: تذكير البدء قبل إغلاق نافذة الأكل، وتذكير الإفطار قبل بلوغ الهدف. 0 = عند الحد تمامًا.</string>
+    <string name="notif_fasting_end_soon_title">ينتهي الصيام قريبًا</string>
+    <string name="notif_fasting_end_soon_text">ينتهي صيامك خلال %1$d دقيقة — ستفتح نافذة الأكل حينها.</string>
+    <string name="notif_fasting_start_soon_title">يبدأ الصيام قريبًا</string>
+    <string name="notif_fasting_start_soon_text">تُغلق نافذة الأكل خلال %1$d دقيقة — ابدأ صيامك حينها.</string>
 </resources>

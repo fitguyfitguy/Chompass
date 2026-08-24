@@ -1737,8 +1737,8 @@
     <string name="settings_fasting_tracking">단식 타이머</string>
     <string name="settings_fasting_goal">목표 시간</string>
     <string name="settings_fasting_goal_summary_none">목표 없음</string>
-    <string name="settings_fasting_goal_summary">%1$d시간</string>
-    <string name="settings_fasting_goal_wheel_help">목표에 도달하면 알림이 한 번 발송됩니다. 0 = 목표 없음.</string>
+    <string name="settings_fasting_goal_summary">단식 %1$d시간</string>
+    <string name="settings_fasting_goal_wheel_help">인기 프로토콜을 선택하거나 나만의 단식·식사 시간을 설정하세요. 0 = 목표 없음.</string>
     <string name="settings_fasting_section_notification">알림</string>
     <string name="settings_fasting_notification">목표 달성</string>
     <string name="fasting_local_only_note">단식 타이머는 이 기기에만 남습니다. 동기화, 내보내기 또는 공유 식사에 포함되지 않으며, Chompass가 이에 대해 게시하는 것은 목표 달성 알림뿐입니다.</string>
@@ -1748,7 +1748,7 @@
     <string name="notif_channel_fasting">단식</string>
     <string name="notif_channel_fasting_desc">단식 목표 달성 시 1회 알림.</string>
     <string name="notif_fasting_goal_title">단식 목표 달성</string>
-    <string name="notif_fasting_goal_text">%1$d시간 단식이 완료되었습니다. 이제 식사를 시작할 수 있습니다.</string>
+    <string name="notif_fasting_goal_text">단식이 완료되었습니다. 이제 식사를 시작할 수 있습니다.</string>
     <string name="fasting_preset_detail">단식 %1$d시간 · 식사 시간 %2$d시간</string>
     <string name="fasting_window_opens_in">식사 시간까지 %1$s</string>
     <string name="settings_fasting_section_reminders">알림</string>
@@ -1758,4 +1758,19 @@
     <string name="notif_fasting_start_title">단식 시작</string>
     <string name="notif_fasting_start_text">지금 단식을 시작하세요.</string>
     <string name="notif_fasting_start_text_goal">지금 %1$d시간 단식을 시작하세요.</string>
+    <string name="fasting_fast_starts_in">단식 시작까지 %1$s</string>
+    <string name="fasting_eating_progress">식사 %2$d시간 중 %1$s</string>
+    <string name="settings_fasting_eat_window">식사 시간</string>
+    <string name="settings_fasting_goal_summary_both">단식 %1$d시간 · 식사 %2$d시간</string>
+    <string name="settings_fasting_end_reminder">단식 종료 알림</string>
+    <string name="settings_fasting_reminder_lead_end">단식 종료 전</string>
+    <string name="settings_fasting_reminder_lead_start">단식 시작 전</string>
+    <string name="settings_fasting_reminder_lead_unit">분</string>
+    <string name="settings_fasting_reminder_lead_summary">%1$d분 전</string>
+    <string name="settings_fasting_reminder_lead_now">경계 시점</string>
+    <string name="settings_fasting_reminder_help">리드 시간은 주기별입니다. 시작 알림은 식사 시간이 끝나기 전, 종료 알림은 목표 도달 전에 울립니다. 0 = 경계에서 정확히.</string>
+    <string name="notif_fasting_end_soon_title">단식 곧 종료</string>
+    <string name="notif_fasting_end_soon_text">%1$d분 후 단식이 종료됩니다. 식사 시간이 열립니다.</string>
+    <string name="notif_fasting_start_soon_title">단식 곧 시작</string>
+    <string name="notif_fasting_start_soon_text">%1$d분 후 식사 시간이 종료됩니다. 단식을 시작하세요.</string>
 </resources>

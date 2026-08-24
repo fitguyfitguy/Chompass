@@ -1737,8 +1737,8 @@
     <string name="settings_fasting_tracking">禁食计时器</string>
     <string name="settings_fasting_goal">目标时长</string>
     <string name="settings_fasting_goal_summary_none">无目标</string>
-    <string name="settings_fasting_goal_summary">%1$d 小时</string>
-    <string name="settings_fasting_goal_wheel_help">达到目标时会发送一次通知。0 = 无目标。</string>
+    <string name="settings_fasting_goal_summary">禁食 %1$d 小时</string>
+    <string name="settings_fasting_goal_wheel_help">选择常见方案或自行设置禁食和进食时间。0 = 无目标。</string>
     <string name="settings_fasting_section_notification">通知</string>
     <string name="settings_fasting_notification">已达目标</string>
     <string name="fasting_local_only_note">禁食计时器仅保存在此设备上，绝不会同步、导出或包含在共享餐食中。Chompass 只会针对它发布达到目标的提醒。</string>
@@ -1748,7 +1748,7 @@
     <string name="notif_channel_fasting">间歇性禁食</string>
     <string name="notif_channel_fasting_desc">达到禁食目标时的一次性提醒。</string>
     <string name="notif_fasting_goal_title">禁食目标达成</string>
-    <string name="notif_fasting_goal_text">您的 %1$d 小时禁食已完成，现在可以进食了。</string>
+    <string name="notif_fasting_goal_text">您的禁食已完成，现在可以进食了。</string>
     <string name="fasting_preset_detail">禁食 %1$d 小时 · 进食 %2$d 小时</string>
     <string name="fasting_window_opens_in">进食窗口将在 %1$s 后开启</string>
     <string name="settings_fasting_section_reminders">提醒</string>
@@ -1758,4 +1758,19 @@
     <string name="notif_fasting_start_title">开始禁食</string>
     <string name="notif_fasting_start_text">现在开始禁食。</string>
     <string name="notif_fasting_start_text_goal">现在开始 %1$d 小时禁食。</string>
+    <string name="fasting_fast_starts_in">禁食将在 %1$s 后开始</string>
+    <string name="fasting_eating_progress">进食 %2$d 小时中的 %1$s</string>
+    <string name="settings_fasting_eat_window">进食窗口</string>
+    <string name="settings_fasting_goal_summary_both">禁食 %1$d 小时 · 进食 %2$d 小时</string>
+    <string name="settings_fasting_end_reminder">结束禁食提醒</string>
+    <string name="settings_fasting_reminder_lead_end">禁食结束前</string>
+    <string name="settings_fasting_reminder_lead_start">禁食开始前</string>
+    <string name="settings_fasting_reminder_lead_unit">分钟</string>
+    <string name="settings_fasting_reminder_lead_summary">提前 %1$d 分钟</string>
+    <string name="settings_fasting_reminder_lead_now">正好在边界</string>
+    <string name="settings_fasting_reminder_help">提前量按周期计算：开始提醒在进食窗口关闭前响起，结束提醒在达到目标前响起。0 = 正好在边界。</string>
+    <string name="notif_fasting_end_soon_title">禁食即将结束</string>
+    <string name="notif_fasting_end_soon_text">您的禁食将在 %1$d 分钟后结束，届时进食窗口开启。</string>
+    <string name="notif_fasting_start_soon_title">禁食即将开始</string>
+    <string name="notif_fasting_start_soon_text">您的进食窗口将在 %1$d 分钟后关闭，届时请开始禁食。</string>
 </resources>

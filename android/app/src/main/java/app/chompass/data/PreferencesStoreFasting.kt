@@ -8,6 +8,10 @@ import kotlinx.coroutines.flow.combine
 
 /** Maximum selectable fasting goal in hours (wheel upper bound). */
 const val MAX_FASTING_GOAL_HOURS = 48
+/** Maximum selectable eating-window length in hours. */
+const val MAX_FASTING_EAT_HOURS = 24
+/** Maximum reminder lead in minutes (wheels step by 5). */
+const val MAX_FASTING_REMINDER_LEAD_MINUTES = 120
 
 internal val PreferencesStore.fastingEnabledImpl: Flow<Boolean>
     get() = boolPref(Keys.FASTING_ENABLED, false)
@@ -19,6 +23,12 @@ internal val PreferencesStore.fastingGoalHoursImpl: Flow<Int>
     get() = intPref(Keys.FASTING_GOAL_HOURS, 0)
 internal suspend fun PreferencesStore.setFastingGoalHoursImpl(v: Int) =
     setIntPref(Keys.FASTING_GOAL_HOURS, v.coerceIn(0, MAX_FASTING_GOAL_HOURS))
+
+/** Eating-window length in hours (completes the fast → eat cycle); 0 = not set. */
+internal val PreferencesStore.fastingEatHoursImpl: Flow<Int>
+    get() = intPref(Keys.FASTING_EAT_HOURS, 0)
+internal suspend fun PreferencesStore.setFastingEatHoursImpl(v: Int) =
+    setIntPref(Keys.FASTING_EAT_HOURS, v.coerceIn(0, MAX_FASTING_EAT_HOURS))
 
 /** Goal-reached notification; only meaningful when the goal > 0. */
 internal val PreferencesStore.fastingGoalNotificationEnabledImpl: Flow<Boolean>
@@ -60,21 +70,23 @@ internal suspend fun PreferencesStore.setFastingSessionFieldsImpl(
     }
 }
 
-/** Default start-reminder time: 20:00 (typical after-dinner fast start). */
-const val DEFAULT_FASTING_START_REMINDER_HOUR = 20
-const val DEFAULT_FASTING_START_REMINDER_MINUTE = 0
+/** Default lead (minutes before the window closes) for the start-fast nudge. */
+const val DEFAULT_FASTING_START_REMINDER_LEAD_MINUTES = 15
+/** Default lead (minutes before the fast ends) for the break-fast nudge. */
+const val DEFAULT_FASTING_END_REMINDER_LEAD_MINUTES = 15
 
+/** 0 = off; the nudge fires this many minutes before the eating window closes. */
 internal val PreferencesStore.fastingStartReminderEnabledImpl: Flow<Boolean>
     get() = boolPref(Keys.FASTING_START_REMINDER_ENABLED, false)
 internal suspend fun PreferencesStore.setFastingStartReminderEnabledImpl(v: Boolean) =
     setBoolPref(Keys.FASTING_START_REMINDER_ENABLED, v)
 
-internal val PreferencesStore.fastingStartReminderHourImpl: Flow<Int>
-    get() = intPref(Keys.FASTING_START_REMINDER_HOUR, DEFAULT_FASTING_START_REMINDER_HOUR)
-internal suspend fun PreferencesStore.setFastingStartReminderHourImpl(v: Int) =
-    setIntPref(Keys.FASTING_START_REMINDER_HOUR, v.coerceIn(0, 23))
+internal val PreferencesStore.fastingStartReminderLeadMinutesImpl: Flow<Int>
+    get() = intPref(Keys.FASTING_START_REMINDER_LEAD_MINUTES, DEFAULT_FASTING_START_REMINDER_LEAD_MINUTES)
+internal suspend fun PreferencesStore.setFastingStartReminderLeadMinutesImpl(v: Int) =
+    setIntPref(Keys.FASTING_START_REMINDER_LEAD_MINUTES, v.coerceIn(0, MAX_FASTING_REMINDER_LEAD_MINUTES))
 
-internal val PreferencesStore.fastingStartReminderMinuteImpl: Flow<Int>
-    get() = intPref(Keys.FASTING_START_REMINDER_MINUTE, DEFAULT_FASTING_START_REMINDER_MINUTE)
-internal suspend fun PreferencesStore.setFastingStartReminderMinuteImpl(v: Int) =
-    setIntPref(Keys.FASTING_START_REMINDER_MINUTE, v.coerceIn(0, 59))
+internal val PreferencesStore.fastingEndReminderLeadMinutesImpl: Flow<Int>
+    get() = intPref(Keys.FASTING_END_REMINDER_LEAD_MINUTES, DEFAULT_FASTING_END_REMINDER_LEAD_MINUTES)
+internal suspend fun PreferencesStore.setFastingEndReminderLeadMinutesImpl(v: Int) =
+    setIntPref(Keys.FASTING_END_REMINDER_LEAD_MINUTES, v.coerceIn(0, MAX_FASTING_REMINDER_LEAD_MINUTES))
