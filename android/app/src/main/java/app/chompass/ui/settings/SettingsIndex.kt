@@ -1,5 +1,7 @@
 package app.chompass.ui.settings
 
+import android.content.Context
+import androidx.annotation.ArrayRes
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
@@ -45,220 +47,243 @@ import java.util.Locale
 
 /**
  * Static, offline index of every settings row for hub search (F1). Each entry
- * maps a setting label + guessable synonyms to the route that owns it. Labels
- * are string resources so they match whatever locale the app is in; keywords
- * are English (search vocabulary, not UI copy). Conditional rows (keto, on-device)
- * are included with their owning screen so search still finds them.
+ * maps a setting label + guessable synonyms to the route that owns it.
+ *
+ * Labels and groups are string resources, so they match whatever locale the
+ * app is in, and the localized group label is itself searchable. Keywords live
+ * in per-entry string-array resources with English defaults in
+ * values/strings.xml: a locale can add native search vocabulary, and any
+ * locale without an array silently falls back to English — the same resource
+ * fallback model as the rest of the strings. Conditional rows (keto,
+ * on-device) are included with their owning screen so search still finds them.
  */
 internal data class SettingsIndexEntry(
     @StringRes val groupRes: Int,
     @StringRes val labelRes: Int,
-    val keywords: List<String>,
+    @ArrayRes val keywordsRes: Int,
     val route: String,
     val icon: ImageVector,
 )
 
-/** Normalize for matching: lowercase + strip diacritics (Größe -> grosse). */
+private val DIACRITIC_REGEX = Regex("\\p{M}")
+
+/**
+ * Normalize for matching: lowercase + strip diacritics (Größe -> grosse).
+ * Case folding is [Locale.ROOT]-stable: Turkish lowercases I -> ı, which would
+ * otherwise break "Imperial" / "API" lookups for Turkish users.
+ */
 internal fun settingsSearchFold(text: String): String =
     Normalizer.normalize(text, Normalizer.Form.NFD)
-        .replace(Regex("\\p{M}"), "")
-        .lowercase(Locale.getDefault())
+        .replace(DIACRITIC_REGEX, "")
+        .lowercase(Locale.ROOT)
         // ß has no NFD decomposition; map it so "grosse" finds "Größe".
         .replace("ß", "ss")
 
-internal fun settingsSearchMatches(
-    entry: SettingsIndexEntry,
-    label: String,
-    query: String,
-): Boolean {
-    val folded = settingsSearchFold(query)
-    if (folded.isBlank()) return false
-    return settingsSearchFold(label).contains(folded) ||
-        entry.keywords.any { settingsSearchFold(it).contains(folded) }
-}
-
 /**
- * Pre-folded search entry: label + keywords normalized once per locale so the
- * results list folds the query only, not every index entry, on each keystroke
- * (F perf pass, device walk 2026-08-24). [settingsSearchMatchesFolded] is the
- * per-keystroke matcher over it.
+ * Pre-folded search entry: label + group + keywords normalized once per locale
+ * so the results list folds the query only, not every index entry, on each
+ * keystroke (F perf pass, device walk 2026-08-24). [settingsSearchMatchesFolded]
+ * is the per-keystroke matcher over it.
  */
 internal class FoldedSettingsEntry(
     val entry: SettingsIndexEntry,
     val label: String,
     val labelFold: String,
+    val groupFold: String,
     val keywordFolds: List<String>,
 )
 
-internal fun foldSettingsEntry(entry: SettingsIndexEntry, label: String): FoldedSettingsEntry =
+internal fun foldSettingsEntry(
+    entry: SettingsIndexEntry,
+    label: String,
+    group: String,
+    keywords: List<String>,
+): FoldedSettingsEntry =
     FoldedSettingsEntry(
         entry = entry,
         label = label,
         labelFold = settingsSearchFold(label),
-        keywordFolds = entry.keywords.map { settingsSearchFold(it) },
+        groupFold = settingsSearchFold(group),
+        keywordFolds = keywords.map { settingsSearchFold(it) },
     )
 
-internal fun settingsSearchMatchesFolded(folded: FoldedSettingsEntry, query: String): Boolean {
-    val foldedQuery = settingsSearchFold(query)
+/**
+ * Per-keystroke matcher over a pre-folded entry; [foldedQuery] must already be
+ * folded by the caller (the results list folds the query once per keystroke,
+ * not once per entry).
+ */
+internal fun settingsSearchMatchesFolded(folded: FoldedSettingsEntry, foldedQuery: String): Boolean {
     if (foldedQuery.isBlank()) return false
     return folded.labelFold.contains(foldedQuery) ||
+        folded.groupFold.contains(foldedQuery) ||
         folded.keywordFolds.any { it.contains(foldedQuery) }
 }
 
 internal val SETTINGS_INDEX: List<SettingsIndexEntry> = listOf(
     // — Personal Info —
     SettingsIndexEntry(R.string.settings_section_personal, R.string.settings_units,
-        listOf("metric", "imperial", "cm", "ft", "kg", "lbs", "measurement system"), ChompassRoutes.SETTINGS_PERSONAL, Icons.Outlined.Straighten),
+        R.array.settings_search_kw_units, ChompassRoutes.SETTINGS_PERSONAL, Icons.Outlined.Straighten),
     SettingsIndexEntry(R.string.settings_section_personal, R.string.settings_gender,
-        listOf("sex"), ChompassRoutes.SETTINGS_PERSONAL, Icons.Outlined.Person),
+        R.array.settings_search_kw_gender, ChompassRoutes.SETTINGS_PERSONAL, Icons.Outlined.Person),
     SettingsIndexEntry(R.string.settings_section_personal, R.string.settings_birthday,
-        listOf("birthday", "age", "dob", "born"), ChompassRoutes.SETTINGS_PERSONAL, Icons.Outlined.Person),
+        R.array.settings_search_kw_birthday, ChompassRoutes.SETTINGS_PERSONAL, Icons.Outlined.Person),
     SettingsIndexEntry(R.string.settings_section_personal, R.string.settings_height,
-        listOf("height", "tall", "cm", "ft"), ChompassRoutes.SETTINGS_PERSONAL, Icons.Outlined.Straighten),
+        R.array.settings_search_kw_height, ChompassRoutes.SETTINGS_PERSONAL, Icons.Outlined.Straighten),
     SettingsIndexEntry(R.string.settings_section_personal, R.string.settings_weight,
-        listOf("weight", "current", "kg", "lbs"), ChompassRoutes.SETTINGS_PERSONAL, Icons.Outlined.MonitorWeight),
+        R.array.settings_search_kw_weight, ChompassRoutes.SETTINGS_PERSONAL, Icons.Outlined.MonitorWeight),
     SettingsIndexEntry(R.string.settings_section_personal, R.string.settings_body_fat,
-        listOf("body fat", "bf", "percent"), ChompassRoutes.SETTINGS_PERSONAL, Icons.Outlined.Percent),
+        R.array.settings_search_kw_body_fat, ChompassRoutes.SETTINGS_PERSONAL, Icons.Outlined.Percent),
     SettingsIndexEntry(R.string.settings_section_personal, R.string.settings_use_body_fat_bmr,
-        listOf("bmr", "katch", "mcardle", "metabolism"), ChompassRoutes.SETTINGS_PERSONAL, Icons.Outlined.Percent),
+        R.array.settings_search_kw_use_body_fat_bmr, ChompassRoutes.SETTINGS_PERSONAL, Icons.Outlined.Percent),
     SettingsIndexEntry(R.string.settings_section_personal, R.string.settings_goal_body_fat,
-        listOf("bf goal"), ChompassRoutes.SETTINGS_PERSONAL, Icons.Outlined.TrackChanges),
+        R.array.settings_search_kw_goal_body_fat, ChompassRoutes.SETTINGS_PERSONAL, Icons.Outlined.TrackChanges),
     SettingsIndexEntry(R.string.settings_section_personal, R.string.body_measurements_title,
-        listOf("waist", "tape", "circumference", "hips", "chest"), ChompassRoutes.BODY_MEASUREMENTS, Icons.Outlined.Straighten),
+        R.array.settings_search_kw_body_measurements, ChompassRoutes.BODY_MEASUREMENTS, Icons.Outlined.Straighten),
 
     // — Goals & Nutrition —
     SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_weight_goal,
-        listOf("lose", "gain", "maintain", "target"), ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Equalizer),
+        R.array.settings_search_kw_weight_goal, ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Equalizer),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_diet_mode,
-        listOf("diet", "keto", "vegan", "vegetarian", "carnivore"), ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Restaurant),
+        R.array.settings_search_kw_diet_mode, ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Restaurant),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_keto_carb_mode,
-        listOf("net", "total", "keto"), ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Tune),
+        R.array.settings_search_kw_keto_carb_mode, ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Tune),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_keto_net_carbs,
-        listOf("keto", "grams"), ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Restaurant),
+        R.array.settings_search_kw_keto_net_carbs, ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Restaurant),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_activity_level,
-        listOf("activity", "sedentary", "exercise"), ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Speed),
+        R.array.settings_search_kw_activity_level, ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Speed),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_weekly_change,
-        listOf("rate", "speed", "per week"), ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Speed),
+        R.array.settings_search_kw_weekly_change, ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Speed),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_goal_weight,
-        listOf("target"), ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Equalizer),
+        R.array.settings_search_kw_goal_weight, ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Equalizer),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_adaptive_goals,
-        listOf("weekly", "auto", "nudge"), ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.TrackChanges),
+        R.array.settings_search_kw_adaptive_goals, ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.TrackChanges),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_energy_goals,
-        listOf("burn", "health connect", "measured"), ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.LocalFireDepartment),
+        R.array.settings_search_kw_energy_goals, ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.LocalFireDepartment),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_calories,
-        listOf("calories", "kcal", "calorie goal"), ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.LocalFireDepartment),
+        R.array.settings_search_kw_calories, ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.LocalFireDepartment),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.macro_protein,
-        listOf("macro", "protein"), ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.LocalFireDepartment),
+        R.array.settings_search_kw_macro_protein, ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.LocalFireDepartment),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.macro_carbs,
-        listOf("macro", "carbs", "carbohydrates"), ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.LocalFireDepartment),
+        R.array.settings_search_kw_macro_carbs, ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.LocalFireDepartment),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.macro_fat,
-        listOf("macro", "fat", "lipid"), ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.LocalFireDepartment),
+        R.array.settings_search_kw_macro_fat, ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.LocalFireDepartment),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_other_nutrient_goals,
-        listOf("fiber", "sodium", "micronutrients", "vitamins"), ChompassRoutes.OPTIONAL_NUTRIENT_GOALS, Icons.Outlined.LocalFireDepartment),
+        R.array.settings_search_kw_other_nutrient_goals, ChompassRoutes.OPTIONAL_NUTRIENT_GOALS, Icons.Outlined.LocalFireDepartment),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_recalculate_goals,
-        listOf("recalculate", "recalc", "refresh", "update targets"), ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Refresh),
+        R.array.settings_search_kw_recalculate_goals, ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Refresh),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_calc_methods,
-        listOf("formula", "bmr", "tdee", "mifflin", "katch", "audit"), ChompassRoutes.CALCULATION_METHODS, Icons.Outlined.Calculate),
+        R.array.settings_search_kw_calc_methods, ChompassRoutes.CALCULATION_METHODS, Icons.Outlined.Calculate),
 
     // — Food & Entry —
     SettingsIndexEntry(R.string.settings_group_food, R.string.settings_default_to_grams,
-        listOf("grams", "units"), ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.LocalDining),
+        R.array.settings_search_kw_default_to_grams, ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.LocalDining),
     SettingsIndexEntry(R.string.settings_group_food, R.string.settings_food_log_sort,
-        listOf("order", "sorting"), ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.LocalDining),
+        R.array.settings_search_kw_food_log_sort, ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.LocalDining),
     SettingsIndexEntry(R.string.settings_group_food, R.string.settings_meal_times,
-        listOf("meal", "breakfast", "lunch", "dinner", "schedule"), ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.LocalDining),
+        R.array.settings_search_kw_meal_times, ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.LocalDining),
     SettingsIndexEntry(R.string.settings_group_food, R.string.settings_photo_note_prompt,
-        listOf("photo", "ask", "note", "describe"), ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.LocalDining),
+        R.array.settings_search_kw_photo_note_prompt, ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.LocalDining),
     SettingsIndexEntry(R.string.settings_group_food, R.string.settings_portion_clarify,
-        listOf("portion", "serving", "grams"), ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.LocalDining),
+        R.array.settings_search_kw_portion_clarify, ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.LocalDining),
     SettingsIndexEntry(R.string.settings_group_food, R.string.settings_meal_constituents,
-        listOf("ingredients", "components"), ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.Restaurant),
+        R.array.settings_search_kw_meal_constituents, ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.Restaurant),
     SettingsIndexEntry(R.string.settings_group_food, R.string.settings_serving_unit_mode,
-        listOf("serving", "unit", "detection"), ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.Tune),
+        R.array.settings_search_kw_serving_unit_mode, ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.Tune),
     SettingsIndexEntry(R.string.settings_group_food, R.string.settings_serving_unit_heuristics,
-        listOf("serving", "rules", "detection"), ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.Tune),
+        R.array.settings_search_kw_serving_unit_heuristics, ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.Tune),
 
     // — Display —
     SettingsIndexEntry(R.string.settings_group_app_display, R.string.settings_home_display,
-        listOf("home", "cards", "nutrients", "gauge"), ChompassRoutes.HOME_DISPLAY, Icons.Outlined.Dashboard),
+        R.array.settings_search_kw_home_display, ChompassRoutes.HOME_DISPLAY, Icons.Outlined.Dashboard),
     SettingsIndexEntry(R.string.settings_group_app_display, R.string.settings_appearance,
-        listOf("dark", "light", "oled", "night", "theme mode"), ChompassRoutes.SETTINGS_APP, Icons.Outlined.Brightness6),
+        R.array.settings_search_kw_appearance, ChompassRoutes.SETTINGS_APP, Icons.Outlined.Brightness6),
     SettingsIndexEntry(R.string.settings_group_app_display, R.string.settings_theme_color,
-        listOf("theme", "accent", "colour", "color", "teal", "blue"), ChompassRoutes.SETTINGS_APP, Icons.Outlined.Palette),
+        R.array.settings_search_kw_theme_color, ChompassRoutes.SETTINGS_APP, Icons.Outlined.Palette),
     SettingsIndexEntry(R.string.settings_group_app_display, R.string.settings_language_title,
-        listOf("language", "locale", "translation", "deutsch", "espanol"), ChompassRoutes.SETTINGS_APP, Icons.Outlined.Language),
+        R.array.settings_search_kw_language, ChompassRoutes.SETTINGS_APP, Icons.Outlined.Language),
     SettingsIndexEntry(R.string.settings_group_app_display, R.string.settings_fixed_launcher_icon,
-        listOf("launcher", "app icon", "teal"), ChompassRoutes.SETTINGS_APP, Icons.Outlined.Star),
+        R.array.settings_search_kw_fixed_launcher_icon, ChompassRoutes.SETTINGS_APP, Icons.Outlined.Star),
     SettingsIndexEntry(R.string.settings_group_app_display, R.string.settings_customize_progress,
-        listOf("progress", "range", "charts", "plots", "trend", "default"), ChompassRoutes.CUSTOMIZE_PROGRESS, Icons.AutoMirrored.Outlined.ShowChart),
+        R.array.settings_search_kw_customize_progress, ChompassRoutes.CUSTOMIZE_PROGRESS, Icons.AutoMirrored.Outlined.ShowChart),
     SettingsIndexEntry(R.string.settings_group_app_display, R.string.settings_week_starts,
-        listOf("calendar", "monday", "sunday", "week"), ChompassRoutes.CUSTOMIZE_PROGRESS, Icons.Outlined.CalendarToday),
+        R.array.settings_search_kw_week_starts, ChompassRoutes.CUSTOMIZE_PROGRESS, Icons.Outlined.CalendarToday),
 
     // — Trackers & Reminders —
     SettingsIndexEntry(R.string.settings_group_trackers, R.string.settings_water_title,
-        listOf("hydration", "goal", "drink", "ml", "presets"), ChompassRoutes.waterRoute("search"), Icons.Outlined.WaterDrop),
+        R.array.settings_search_kw_water, ChompassRoutes.waterRoute("search"), Icons.Outlined.WaterDrop),
     SettingsIndexEntry(R.string.settings_group_trackers, R.string.settings_nicotine_title,
-        listOf("cigarettes", "vape", "pouch", "smoking", "limit"), ChompassRoutes.nicotineRoute("search"), Icons.Outlined.FilterAlt),
+        R.array.settings_search_kw_nicotine, ChompassRoutes.nicotineRoute("search"), Icons.Outlined.FilterAlt),
     SettingsIndexEntry(R.string.settings_group_trackers, R.string.settings_caffeine_title,
-        listOf("coffee", "tea", "energy drink", "limit", "caffeine"), ChompassRoutes.caffeineRoute("search"), Icons.Outlined.LocalCafe),
+        R.array.settings_search_kw_caffeine, ChompassRoutes.caffeineRoute("search"), Icons.Outlined.LocalCafe),
     SettingsIndexEntry(R.string.settings_group_trackers, R.string.settings_notes_title,
-        listOf("journal", "note", "diary", "daily notes"), ChompassRoutes.notesRoute("search"), Icons.Outlined.Notes),
+        R.array.settings_search_kw_notes, ChompassRoutes.notesRoute("search"), Icons.Outlined.Notes),
     SettingsIndexEntry(R.string.settings_group_trackers, R.string.settings_fasting_title,
-        listOf("fasting", "intermittent", "timer", "goal", "fast"), ChompassRoutes.fastingRoute("search"), Icons.Outlined.Schedule),
+        R.array.settings_search_kw_fasting, ChompassRoutes.fastingRoute("search"), Icons.Outlined.Schedule),
     SettingsIndexEntry(R.string.settings_group_trackers, R.string.settings_notifications,
-        listOf("reminders", "streak", "summary", "weight reminder", "battery"), ChompassRoutes.notificationsRoute("search"), Icons.Outlined.Notifications),
+        R.array.settings_search_kw_notifications, ChompassRoutes.notificationsRoute("search"), Icons.Outlined.Notifications),
 
     // — AI & Speech —
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_ai_features_master,
-        listOf("ai", "on", "off", "privacy"), ChompassRoutes.SETTINGS_AI, Icons.Outlined.SmartToy),
+        R.array.settings_search_kw_ai_features_master, ChompassRoutes.SETTINGS_AI, Icons.Outlined.SmartToy),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_show_coach_tab,
-        listOf("coach", "tab", "hide"), ChompassRoutes.SETTINGS_AI, Icons.Outlined.Forum),
+        R.array.settings_search_kw_show_coach_tab, ChompassRoutes.SETTINGS_AI, Icons.Outlined.Forum),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_ai_provider,
-        listOf("gemini", "openai", "anthropic", "claude", "ollama", "gpt", "local"), ChompassRoutes.SETTINGS_AI, Icons.Outlined.SmartToy),
+        R.array.settings_search_kw_ai_provider, ChompassRoutes.SETTINGS_AI, Icons.Outlined.SmartToy),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_ai_model,
-        listOf("model", "version"), ChompassRoutes.SETTINGS_AI, Icons.Outlined.Tune),
+        R.array.settings_search_kw_ai_model, ChompassRoutes.SETTINGS_AI, Icons.Outlined.Tune),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_ai_vision_model,
-        listOf("vision", "image", "multimodal"), ChompassRoutes.SETTINGS_AI, Icons.Outlined.Tune),
+        R.array.settings_search_kw_ai_vision_model, ChompassRoutes.SETTINGS_AI, Icons.Outlined.Tune),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_api_key,
-        listOf("api key", "secret", "token", "gemini", "openai"), ChompassRoutes.SETTINGS_AI, Icons.Outlined.Key),
+        R.array.settings_search_kw_api_key, ChompassRoutes.SETTINGS_AI, Icons.Outlined.Key),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_base_url,
-        listOf("endpoint", "url", "ollama", "local", "server"), ChompassRoutes.SETTINGS_AI, Icons.Outlined.Link),
+        R.array.settings_search_kw_base_url, ChompassRoutes.SETTINGS_AI, Icons.Outlined.Link),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_ai_allow_insecure_http,
-        listOf("http", "cleartext", "local"), ChompassRoutes.SETTINGS_AI, Icons.Outlined.Link),
+        R.array.settings_search_kw_ai_allow_insecure_http, ChompassRoutes.SETTINGS_AI, Icons.Outlined.Link),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_on_device_model,
-        listOf("on-device", "gemma", "download", "local", "offline"), ChompassRoutes.SETTINGS_AI, Icons.Outlined.SmartToy),
+        R.array.settings_search_kw_on_device_model, ChompassRoutes.SETTINGS_AI, Icons.Outlined.SmartToy),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_max_tokens,
-        listOf("tokens", "length", "cap"), ChompassRoutes.SETTINGS_AI, Icons.Outlined.Numbers),
+        R.array.settings_search_kw_max_tokens, ChompassRoutes.SETTINGS_AI, Icons.Outlined.Numbers),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_ai_read_timeout,
-        listOf("timeout", "seconds", "network"), ChompassRoutes.SETTINGS_AI, Icons.Outlined.Speed),
+        R.array.settings_search_kw_ai_read_timeout, ChompassRoutes.SETTINGS_AI, Icons.Outlined.Speed),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_gemini_google_search,
-        listOf("grounding", "google", "web"), ChompassRoutes.SETTINGS_AI, Icons.Outlined.Search),
+        R.array.settings_search_kw_gemini_google_search, ChompassRoutes.SETTINGS_AI, Icons.Outlined.Search),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_section_custom_instructions,
-        listOf("context", "prompt", "coach", "personality"), ChompassRoutes.SETTINGS_AI, Icons.Outlined.SmartToy),
+        R.array.settings_search_kw_section_custom_instructions, ChompassRoutes.SETTINGS_AI, Icons.Outlined.SmartToy),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_section_fallback,
-        listOf("fallback", "backup", "secondary", "retry"), ChompassRoutes.SETTINGS_AI, Icons.Outlined.SmartToy),
+        R.array.settings_search_kw_section_fallback, ChompassRoutes.SETTINGS_AI, Icons.Outlined.SmartToy),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_section_speech,
-        listOf("speech", "voice", "dictation", "speech to text", "microphone", "stt"), ChompassRoutes.SETTINGS_AI, Icons.Outlined.SmartToy),
+        R.array.settings_search_kw_section_speech, ChompassRoutes.SETTINGS_AI, Icons.Outlined.SmartToy),
 
     // — Health & Data —
     SettingsIndexEntry(R.string.settings_section_health, R.string.settings_health_connect,
-        listOf("sync", "steps", "sleep", "permissions", "google fit", "samsung"), ChompassRoutes.SETTINGS_DATA, Icons.Outlined.Favorite),
+        R.array.settings_search_kw_health_connect, ChompassRoutes.SETTINGS_DATA, Icons.Outlined.Favorite),
     SettingsIndexEntry(R.string.settings_section_health, R.string.settings_manage_health_access,
-        listOf("permissions", "health connect"), ChompassRoutes.SETTINGS_DATA, Icons.Outlined.Favorite),
+        R.array.settings_search_kw_manage_health_access, ChompassRoutes.SETTINGS_DATA, Icons.Outlined.Favorite),
     SettingsIndexEntry(R.string.settings_section_health, R.string.settings_health_background_sync,
-        listOf("background", "automatic"), ChompassRoutes.SETTINGS_DATA, Icons.Outlined.Favorite),
+        R.array.settings_search_kw_health_background_sync, ChompassRoutes.SETTINGS_DATA, Icons.Outlined.Favorite),
     SettingsIndexEntry(R.string.settings_section_health, R.string.export_diary_title,
-        listOf("export", "json", "backup", "file"), ChompassRoutes.SETTINGS_DATA, Icons.Outlined.Sync),
+        R.array.settings_search_kw_export_diary, ChompassRoutes.SETTINGS_DATA, Icons.Outlined.Sync),
     SettingsIndexEntry(R.string.settings_section_health, R.string.export_body_metrics_title,
-        listOf("export", "weight", "body fat", "file"), ChompassRoutes.SETTINGS_DATA, Icons.Outlined.MonitorWeight),
+        R.array.settings_search_kw_export_body_metrics, ChompassRoutes.SETTINGS_DATA, Icons.Outlined.MonitorWeight),
     SettingsIndexEntry(R.string.settings_section_health, R.string.import_diary_title,
-        listOf("import", "restore", "json"), ChompassRoutes.SETTINGS_DATA, Icons.Outlined.Sync),
+        R.array.settings_search_kw_import_diary, ChompassRoutes.SETTINGS_DATA, Icons.Outlined.Sync),
     SettingsIndexEntry(R.string.settings_section_health, R.string.import_body_metrics_title,
-        listOf("import", "restore", "weight", "csv"), ChompassRoutes.SETTINGS_DATA, Icons.Outlined.MonitorWeight),
+        R.array.settings_search_kw_import_body_metrics, ChompassRoutes.SETTINGS_DATA, Icons.Outlined.MonitorWeight),
     SettingsIndexEntry(R.string.settings_section_health, R.string.settings_sync_section,
-        listOf("webdav", "backup", "cloud", "auto sync", "server"), ChompassRoutes.syncRoute("search"), Icons.Outlined.Sync),
+        R.array.settings_search_kw_sync, ChompassRoutes.syncRoute("search"), Icons.Outlined.Sync),
     SettingsIndexEntry(R.string.settings_danger_zone, R.string.settings_clear_food_log,
-        listOf("delete", "erase", "wipe", "food"), ChompassRoutes.SETTINGS_DATA, Icons.Outlined.DeleteForever),
+        R.array.settings_search_kw_clear_food_log, ChompassRoutes.SETTINGS_DATA, Icons.Outlined.DeleteForever),
     SettingsIndexEntry(R.string.settings_danger_zone, R.string.settings_delete_all_data,
-        listOf("delete", "erase", "wipe", "reset", "factory"), ChompassRoutes.SETTINGS_DATA, Icons.Outlined.DeleteForever),
+        R.array.settings_search_kw_delete_all_data, ChompassRoutes.SETTINGS_DATA, Icons.Outlined.DeleteForever),
 )
+
+/** Resolve one index entry into its localized foldable form. */
+internal fun resolveSettingsIndex(context: Context): List<FoldedSettingsEntry> =
+    SETTINGS_INDEX.map { entry ->
+        foldSettingsEntry(
+            entry = entry,
+            label = context.getString(entry.labelRes),
+            group = context.getString(entry.groupRes),
+            keywords = context.resources.getStringArray(entry.keywordsRes).toList(),
+        )
+    }
