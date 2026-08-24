@@ -159,7 +159,7 @@ internal fun BodyMetricToggle(selected: BodyMetric, onSelect: (BodyMetric) -> Un
                     label,
                     fontSize = 14.sp,
                     fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
-                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    color = if (isSelected) AppColors.onCalorieGradient else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
             }
         }

@@ -99,7 +99,7 @@ internal fun NotificationsStep(enabled: Boolean, onToggle: (Boolean) -> Unit) {
         ) {
             Text(
                 if (enabled) stringResource(R.string.onboarding_notifications_enabled) else stringResource(R.string.onboarding_notifications_allow),
-                color = Color.White,
+                color = AppColors.onCalorieGradient,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )

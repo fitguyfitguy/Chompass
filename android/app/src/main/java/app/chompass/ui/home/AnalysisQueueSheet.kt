@@ -294,7 +294,7 @@ private fun QueueTabs(selected: QueueTab, onSelect: (QueueTab) -> Unit) {
                         QueueTab.QUEUE -> stringResource(R.string.analysis_queue_tab_queue)
                         QueueTab.HISTORY -> stringResource(R.string.analysis_queue_tab_history)
                     },
-                    color = if (isSel) Color.White else MaterialTheme.colorScheme.onSurface,
+                    color = if (isSel) AppColors.onCalorieGradient else MaterialTheme.colorScheme.onSurface,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium
                 )

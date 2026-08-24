@@ -419,7 +419,7 @@ private fun SegmentedTabs(selected: SavedTab, onSelect: (SavedTab) -> Unit) {
                         SavedTab.FAVORITES -> stringResource(R.string.saved_meals_tab_favorites)
                         SavedTab.RECIPES -> stringResource(R.string.saved_meals_tab_recipes)
                     },
-                    color = if (isSel) Color.White else MaterialTheme.colorScheme.onSurface,
+                    color = if (isSel) AppColors.onCalorieGradient else MaterialTheme.colorScheme.onSurface,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium
                 )
