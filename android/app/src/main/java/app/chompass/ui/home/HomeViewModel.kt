@@ -185,6 +185,8 @@ data class HomeUiState(
     val waterTodayMl: Int = 0,
     /** Individual sips for the selected day, newest first (drives the history sheet). */
     val waterTodayEntries: List<WaterEntry> = emptyList(),
+    /** Free-text note for the selected day (Codeberg #58a); null when the day has none. */
+    val dailyNote: String? = null,
     /** True when the goal shown comes from the dynamic calculator (issue #3). */
     val waterGoalDynamic: Boolean = false,
     /**
@@ -393,6 +395,7 @@ data class HomeUiState(
             waterQuickPresetsMl == other.waterQuickPresetsMl &&
             waterTodayMl == other.waterTodayMl &&
             waterTodayEntries == other.waterTodayEntries &&
+            dailyNote == other.dailyNote &&
             waterGoalDynamic == other.waterGoalDynamic &&
             waterNextPlan == other.waterNextPlan &&
             nicotineTrackingEnabled == other.nicotineTrackingEnabled &&
@@ -454,6 +457,7 @@ data class HomeUiState(
         result = 31 * result + waterQuickPresetsMl.hashCode()
         result = 31 * result + waterTodayMl
         result = 31 * result + waterTodayEntries.hashCode()
+        result = 31 * result + (dailyNote?.hashCode() ?: 0)
         result = 31 * result + waterGoalDynamic.hashCode()
         result = 31 * result + (waterNextPlan?.hashCode() ?: 0)
         result = 31 * result + nicotineTrackingEnabled.hashCode()
@@ -1034,6 +1038,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             }
             .launchIn(viewModelScope)
 
+        combine(container.notesRepository.notes, _selectedDate) { notes, day ->
+            notes.firstOrNull { it.date == day }?.text
+        }
+            .onEach { note -> _ui.update { it.copy(dailyNote = note) } }
+            .launchIn(viewModelScope)
+
         combine(
             combine(
                 container.prefs.waterTrackingEnabled,
@@ -1102,6 +1112,18 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     /** Removes an individual sip (history sheet delete). */
     fun deleteWater(id: UUID) {
         viewModelScope.launch { container.waterRepository.delete(id) }
+    }
+
+    /** Saves (or, when blank, clears) the note for the selected day. */
+    fun setDailyNote(text: String) {
+        val day = _selectedDate.value
+        viewModelScope.launch { container.notesRepository.setNote(day, text) }
+    }
+
+    /** Clears the note for the selected day. */
+    fun clearDailyNote() {
+        val day = _selectedDate.value
+        viewModelScope.launch { container.notesRepository.deleteNote(day) }
     }
 
     fun addNicotine(kind: NicotineKind, count: Int = 1, mg: Double? = null) {

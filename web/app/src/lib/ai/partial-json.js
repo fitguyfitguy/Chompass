@@ -29,6 +29,7 @@ const MICRO_KEYS = [
   "vitaminDMcg",
   "cholesterolMg",
   "omega3G",
+  "caffeineMg",
 ];
 
 export class FoodPartialJsonAssembler {

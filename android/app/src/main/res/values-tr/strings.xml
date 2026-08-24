@@ -436,6 +436,11 @@
     <string name="water_progress_fl_oz">%1$d / %2$d fl oz</string>
     <string name="home_water_next">Sonraki %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">Sonraki %1$s · yarın %2$s</string>
+    <string name="home_note_empty">Bu gün için bir not ekleyin</string>
+    <string name="note_edit_title">Gün notu</string>
+    <string name="note_placeholder">Düşünceler, ilerleme, gözlemler…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="home_food_removed">Yiyecek silindi</string>
     <string name="action_undo">Geri al</string>
     <string name="add_food_photo_source_title">Fotoğraf ekle</string>
@@ -1506,6 +1511,7 @@
     <string name="nutrition_label_vitamin_e">E Vitamini</string>
     <string name="nutrition_label_vitamin_k">K Vitamini</string>
     <string name="nutrition_label_folate">Folat</string>
+    <string name="nutrition_label_caffeine">Kafein</string>
     <string name="nutrition_label_omega3">Omega-3</string>
     <string name="nutrition_section_home_cards">Ana Ekran Kartları</string>
     <string name="home_nutrients_pick_four">Ana ekran özet satırı için tam olarak dört besin seç.</string>
@@ -1729,6 +1735,7 @@
     <string name="nutrient_short_b12">B12</string>
     <string name="nutrient_short_vit_e">E Vit.</string>
     <string name="nutrient_short_vit_k">K Vit.</string>
+    <string name="nutrient_short_caffeine">Kafein</string>
     <string name="nutrient_short_omega">Omega</string>
     <string name="sort_standard">Kahvaltı → Öğle → Akşam (en yeniler sonda)</string>
     <string name="sort_latest_first">Önce En Yeni Öğünler</string>

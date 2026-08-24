@@ -85,6 +85,7 @@ class PrefDefaultsParityTest {
         assertEquals(goals.getInt("vitaminK"), d.vitaminK)
         assertEquals(goals.getInt("folate"), d.folate)
         assertEquals(goals.getInt("omega3"), d.omega3)
+        assertEquals(goals.getInt("caffeine"), d.caffeine)
     }
 
     private fun org.json.JSONArray.toStringList(): List<String> =

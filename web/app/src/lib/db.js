@@ -15,7 +15,7 @@ const DB_NAME =
   typeof window !== "undefined" && /** @type {any} */ (window).CHOMPASS_DEMO
     ? "chompass-pwa-demo"
     : "chompass-pwa";
-const DB_VERSION = 4;
+const DB_VERSION = 5;
 
 /** @type {Promise<IDBDatabase>|null} */
 let dbPromise = null;
@@ -40,6 +40,15 @@ function openChompassDb() {
       if (!db.objectStoreNames.contains("recipes")) db.createObjectStore("recipes", { keyPath: "id" });
     }
     if (oldVersion < 4) {
+      if (!db.objectStoreNames.contains("dailyNotes")) {
+        db.createObjectStore("dailyNotes", { keyPath: "id" }).createIndex("date", "date");
+      }
+      if (!db.objectStoreNames.contains("nicotine")) db.createObjectStore("nicotine", { keyPath: "id" }).createIndex("date", "date");
+    }
+    // Nicotine tracker landed after daily notes on the same DB version 4 (both
+    // used v4 in their feature branches); devices already on v4 would skip the
+    // upgrade block, so the nicotine store gets its own version bump.
+    if (oldVersion < 5) {
       if (!db.objectStoreNames.contains("nicotine")) db.createObjectStore("nicotine", { keyPath: "id" }).createIndex("date", "date");
     }
   });
@@ -282,6 +291,30 @@ export const nicotine = {
   },
 };
 
+export const dailyNotes = {
+  /** @param {import('./chompass-core/models.js').DailyNote} note */
+  async put(note) {
+    const result = await (await store("dailyNotes")).put(note);
+    await touchRevision(note.id, "daily_note");
+    return result;
+  },
+  async delete(id) {
+    const result = await (await store("dailyNotes")).delete(id);
+    await tombstoneRevision(id, "daily_note");
+    return result;
+  },
+  /** @param {string} date */
+  async byDate(date) {
+    return (await store("dailyNotes")).getAllFromIndex("date", date);
+  },
+  async all() {
+    return (await store("dailyNotes")).getAll();
+  },
+  async clear() {
+    return (await store("dailyNotes")).clear();
+  },
+};
+
 const PROFILE_ID = "singleton";
 const PREFS_ID = "singleton";
 const CHAT_ID = "singleton";
@@ -322,6 +355,7 @@ export const profile = {
  * @property {number|null} [vitaminKMcg]
  * @property {number|null} [folateMcg]
  * @property {number|null} [omega3G]
+ * @property {number|null} [caffeineMg]
  */
 
 /** @typedef {Object} AppPrefs

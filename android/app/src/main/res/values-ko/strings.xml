@@ -995,6 +995,11 @@
     <string name="home_take_second_shot">두 번째 사진을 찍으세요</string>
     <string name="home_water_next">다음 %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">다음 %1$s · 내일 %2$s</string>
+    <string name="home_note_empty">이 날짜에 메모 추가</string>
+    <string name="note_edit_title">하루 메모</string>
+    <string name="note_placeholder">생각, 진행 상황, 관찰…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="import_add_to_log">기록에 추가</string>
     <string name="import_add_to_log_many_format">%1$d개 기록에 추가 · %2$d kcal</string>
     <string name="import_body_metrics_empty">이 파일에는 가져올 체중 또는 신체 데이터 기록이 없어요.</string>
@@ -1063,6 +1068,7 @@
     <string name="nutrient_fiber_format">식이섬유: %1$sg</string>
     <string name="nutrient_potassium_format">칼륨: %1$smg</string>
     <string name="nutrient_sat_fat_format">포화지방: %1$sg</string>
+    <string name="nutrient_short_caffeine">카페인</string>
     <string name="nutrient_short_omega">오메가</string>
     <string name="nutrient_short_sat_fat">포화지방</string>
     <string name="nutrient_short_vit_a">비타A</string>
@@ -1076,6 +1082,7 @@
     <string name="nutrition_label_folate">엽산</string>
     <string name="nutrition_label_iron">철</string>
     <string name="nutrition_label_magnesium">마그네슘</string>
+    <string name="nutrition_label_caffeine">카페인</string>
     <string name="nutrition_label_omega3">오메가-3</string>
     <string name="nutrition_label_trans_fat">트랜스지방</string>
     <string name="nutrition_label_vitamin_a">비타민 A</string>

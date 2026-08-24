@@ -144,6 +144,7 @@ const LIST_KEYS = [
   "body_fat",
   "measurements",
   "water",
+  "daily_notes",
   "nicotine_entries",
   "recipes",
 ];
@@ -163,7 +164,7 @@ export function mergeSyncDocuments(local, remote) {
       ...(remote.export ?? local.export ?? {}),
       app: "Chompass",
       kind: "sync",
-      format_version: "1.1",
+      format_version: "1.2",
     },
   };
   for (const key of LIST_KEYS) {

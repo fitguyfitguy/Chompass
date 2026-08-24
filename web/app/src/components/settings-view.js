@@ -5,6 +5,7 @@ import {
   weights,
   bodyFat,
   measurements,
+  dailyNotes,
   prefs,
   clearAllUserData,
 } from "../lib/db.js";
@@ -1426,13 +1427,17 @@ export class SettingsView extends HTMLElement {
     const dates = entries.map((e) => e.date).sort();
     const dateRange = { start: dates[0] ?? "", end: dates[dates.length - 1] ?? "" };
     const targets = prof ? dailyTargets(prof) : null;
+    const allNotes = await dailyNotes.all();
+    const notes = allNotes
+      .filter((n) => n.date >= dateRange.start && n.date <= dateRange.end)
+      .map((n) => ({ date: n.date, text: n.text }));
     if (format === "csv") {
       await downloadText(exportDiaryCsv(entries), `Chompass-Food-Diary-${dateRange.start}_to_${dateRange.end}.csv`, "text/csv");
       return;
     }
     if (format === "md") {
       await downloadText(
-        exportDiaryMarkdown(entries, dateRange, targets),
+        exportDiaryMarkdown(entries, dateRange, targets, notes),
         `Chompass-Food-Diary-${dateRange.start}_to_${dateRange.end}.md`,
         "text/markdown"
       );
@@ -1443,7 +1448,7 @@ export class SettingsView extends HTMLElement {
     if (targets) {
       for (const e of entries) targetsByDay[e.date] = targets;
     }
-    const doc = exportDiary({ entries, targets: targetsByDay, dateRange });
+    const doc = exportDiary({ entries, targets: targetsByDay, dateRange, notes });
     await downloadJson(doc, `Chompass-Food-Diary-${dateRange.start}_to_${dateRange.end}.json`);
   }
 

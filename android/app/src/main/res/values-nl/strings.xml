@@ -968,6 +968,11 @@
     <string name="home_take_second_shot">Maak de tweede foto</string>
     <string name="home_water_next">Volgende %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">Volgende %1$s · morgen %2$s</string>
+    <string name="home_note_empty">Voeg een notitie toe voor deze dag</string>
+    <string name="note_edit_title">Dagnotitie</string>
+    <string name="note_placeholder">Gedachten, voortgang, observaties…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="import_add_to_log">Toevoegen aan logboek</string>
     <string name="import_add_to_log_many_format">%1$d toevoegen aan logboek · %2$d kcal</string>
     <string name="import_body_metrics_empty">Dit bestand bevat geen gewichts- of lichaamsgegevens om te importeren.</string>
@@ -1039,6 +1044,7 @@
     <string name="nutrient_fiber_format">Vezels: %1$sg</string>
     <string name="nutrient_potassium_format">Kalium: %1$smg</string>
     <string name="nutrient_sat_fat_format">Verzadigd vet: %1$sg</string>
+    <string name="nutrient_short_caffeine">Cafeïne</string>
     <string name="nutrient_short_omega">Omega</string>
     <string name="nutrient_short_sat_fat">Verz. vet</string>
     <string name="nutrient_short_vit_a">Vit. A</string>
@@ -1052,6 +1058,7 @@
     <string name="nutrition_label_folate">Folaat</string>
     <string name="nutrition_label_iron">IJzer</string>
     <string name="nutrition_label_magnesium">Magnesium</string>
+    <string name="nutrition_label_caffeine">Cafeïne</string>
     <string name="nutrition_label_omega3">Omega-3</string>
     <string name="nutrition_label_trans_fat">Transvet</string>
     <string name="nutrition_label_vitamin_a">Vitamine A</string>

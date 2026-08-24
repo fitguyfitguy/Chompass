@@ -997,6 +997,11 @@
     <string name="home_take_second_shot">拍摄第二张照片</string>
     <string name="home_water_next">下次 %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">下次 %1$s · 明天 %2$s</string>
+    <string name="home_note_empty">为这一天添加笔记</string>
+    <string name="note_edit_title">每日笔记</string>
+    <string name="note_placeholder">想法、进展、观察…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="import_add_to_log">添加到记录</string>
     <string name="import_add_to_log_many_format">将 %1$d 添加到记录 · %2$d 千卡</string>
     <string name="import_body_metrics_empty">此文件没有可导入的体重或身体数据条目。</string>
@@ -1065,6 +1070,7 @@
     <string name="nutrient_fiber_format">膳食纤维：%1$sg</string>
     <string name="nutrient_potassium_format">钾：%1$smg</string>
     <string name="nutrient_sat_fat_format">饱和脂肪：%1$sg</string>
+    <string name="nutrient_short_caffeine">咖啡因</string>
     <string name="nutrient_short_omega">欧米伽</string>
     <string name="nutrient_short_sat_fat">饱和脂肪</string>
     <string name="nutrient_short_vit_a">维A</string>
@@ -1078,6 +1084,7 @@
     <string name="nutrition_label_folate">叶酸</string>
     <string name="nutrition_label_iron">铁</string>
     <string name="nutrition_label_magnesium">镁</string>
+    <string name="nutrition_label_caffeine">咖啡因</string>
     <string name="nutrition_label_omega3">欧米伽-3</string>
     <string name="nutrition_label_trans_fat">反式脂肪</string>
     <string name="nutrition_label_vitamin_a">维生素 A</string>

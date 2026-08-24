@@ -996,6 +996,11 @@
     <string name="home_take_second_shot">التقط الصورة الثانية</string>
     <string name="home_water_next">التالي %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">التالي %1$s · غدًا %2$s</string>
+    <string name="home_note_empty">أضف ملاحظة لهذا اليوم</string>
+    <string name="note_edit_title">ملاحظة اليوم</string>
+    <string name="note_placeholder">أفكار، تقدم، ملاحظات…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="import_add_to_log">إضافة إلى السجل</string>
     <string name="import_add_to_log_many_format">إضافة %1$d إلى السجل · %2$d سعرة</string>
     <string name="import_body_metrics_empty">لا يحتوي هذا الملف على سجلات وزن أو بيانات جسم للاستيراد.</string>
@@ -1064,6 +1069,7 @@
     <string name="nutrient_fiber_format">الألياف: %1$s غ</string>
     <string name="nutrient_potassium_format">البوتاسيوم: %1$s ملغ</string>
     <string name="nutrient_sat_fat_format">الدهون المشبعة: %1$s غ</string>
+    <string name="nutrient_short_caffeine">كافيين</string>
     <string name="nutrient_short_omega">أوميغا</string>
     <string name="nutrient_short_sat_fat">دهون مشبعة</string>
     <string name="nutrient_short_vit_a">فيتامين أ</string>
@@ -1077,6 +1083,7 @@
     <string name="nutrition_label_folate">الفولات</string>
     <string name="nutrition_label_iron">الحديد</string>
     <string name="nutrition_label_magnesium">المغنيسيوم</string>
+    <string name="nutrition_label_caffeine">كافيين</string>
     <string name="nutrition_label_omega3">أوميغا-3</string>
     <string name="nutrition_label_trans_fat">الدهون المتحولة</string>
     <string name="nutrition_label_vitamin_a">فيتامين أ</string>

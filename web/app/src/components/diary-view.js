@@ -1,6 +1,7 @@
 // @ts-check
-import { foodEntries, profile as profileStore, water, nicotine, prefs } from "../lib/db.js";
+import { foodEntries, profile as profileStore, water, dailyNotes, nicotine, prefs } from "../lib/db.js";
 import { dailyTargets, estimatedDailyActiveCalories } from "../lib/chompass-core/formulas.js";
+import { dailyNoteIdFor } from "../lib/chompass-core/models.js";
 import { openSheet } from "../lib/ui/sheet.js";
 import { openConfirm, openInfo, openInput } from "../lib/ui/dialog.js";
 import {
@@ -417,13 +418,15 @@ export class DiaryView extends HTMLElement {
   }
 
   async render() {
-    const [entries, prof, waterLogs, appPrefs, manualKcal] = await Promise.all([
+    const [entries, prof, waterLogs, appPrefs, manualKcal, noteLogs] = await Promise.all([
       foodEntries.byDate(this.date),
       profileStore.load(),
       water.byDate(this.date),
       prefs.load(),
       manualActiveKcalForDate(this.date),
+      dailyNotes.byDate(this.date),
     ]);
+    const note = noteLogs[0] ?? null;
     const nicotineLogs = await nicotine.byDate(this.date);
 
     const totals = entries.reduce(
@@ -646,6 +649,21 @@ export class DiaryView extends HTMLElement {
       ${progressiveChip ? `<div class="progressive-meal-bar">${progressiveChip}</div>` : ""}
 
       ${
+        this._noteEditing || note
+          ? `<div class="card card--glass note-row">
+              <div class="note-row__top">
+                <strong>${t("diary.note_title")}</strong>
+              </div>
+              <textarea class="note-row__input" data-note-input maxlength="1000" rows="3" placeholder="${t("diary.note_empty")}">${note ? escapeHtml(note.text) : ""}</textarea>
+              <div class="note-row__actions">
+                ${note ? `<button type="button" class="chip chip--ghost" data-note-clear>${t("diary.note_clear")}</button>` : ""}
+                <button type="button" class="chip" data-note-save>${t("diary.note_save")}</button>
+              </div>
+            </div>`
+          : `<button type="button" class="note-row__empty" data-note-empty>✎ ${t("diary.note_empty")}</button>`
+      }
+
+      ${
         entries.length === 0
           ? `<p class="empty-state">${t("diary.empty")}</p>`
           : MEAL_ORDER.filter((m) => entries.some((e) => e.mealType === m))
@@ -704,6 +722,12 @@ export class DiaryView extends HTMLElement {
     });
     this.querySelector("[data-water-custom]")?.addEventListener("click", () => this.customWater());
     this.querySelector("[data-water-undo]")?.addEventListener("click", () => this.undoLastWater(waterLogs));
+    this.querySelector("[data-note-empty]")?.addEventListener("click", () => {
+      this._noteEditing = true;
+      this.render();
+    });
+    this.querySelector("[data-note-save]")?.addEventListener("click", () => this.saveDailyNote());
+    this.querySelector("[data-note-clear]")?.addEventListener("click", () => this.clearDailyNote());
     this.querySelectorAll("[data-nicotine]").forEach((el) => {
       el.addEventListener("click", () => this.addNicotine(String(el.getAttribute("data-nicotine"))));
     });
@@ -1639,6 +1663,31 @@ export class DiaryView extends HTMLElement {
     const last = waterLogs[waterLogs.length - 1];
     await water.delete(last.id);
     this.showToast(`Removed ${last.amountMl} ml`);
+    this.render();
+  }
+
+  /**
+   * Day note (Codeberg #58a): save the textarea for the selected day. A blank
+   * note clears the day (mirrors Android NotesRepository.setNote). The id is
+   * deterministic from the date so merges collapse to last-write-wins.
+   */
+  async saveDailyNote() {
+    const input = /** @type {HTMLTextAreaElement|null} */ (this.querySelector("[data-note-input]"));
+    const text = (input?.value ?? "").trim();
+    const id = dailyNoteIdFor(this.date);
+    if (!text) {
+      await dailyNotes.delete(id);
+    } else {
+      await dailyNotes.put({ id, date: this.date, text: text.slice(0, 1000) });
+    }
+    this._noteEditing = false;
+    this.render();
+  }
+
+  /** Removes the selected day's note. */
+  async clearDailyNote() {
+    await dailyNotes.delete(dailyNoteIdFor(this.date));
+    this._noteEditing = false;
     this.render();
   }
 

@@ -62,6 +62,7 @@ class OptionalNutrientEstimateTest {
         // Fields the model did not return fall back to defaults, never zero.
         assertEquals(OptionalNutrientGoals.Default.addedSugar, goals.addedSugar)
         assertEquals(OptionalNutrientGoals.Default.calcium, goals.calcium)
+        assertEquals(OptionalNutrientGoals.Default.caffeine, goals.caffeine)
     }
 
     @Test

@@ -7,6 +7,7 @@ import app.chompass.models.BodyFatEntry
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.ChatMessage
 import app.chompass.models.DailyFoodTotals
+import app.chompass.models.DailyNote
 import app.chompass.models.FoodEntry
 import app.chompass.models.HeuristicServingUnitSettings
 import app.chompass.models.HomeDisplayPreferences
@@ -56,6 +57,15 @@ class PreferencesStore(private val appContext: Context) {
             serializer = WaterEntry.serializer(),
             idOf = { it.id },
             order = compareBy(WaterEntry::date),
+        )
+    }
+    internal val noteBucketStore by lazy {
+        JsonBucketStore(
+            root = File(appContext.filesDir, "chompass-buckets/notes"),
+            json = json,
+            serializer = DailyNote.serializer(),
+            idOf = { it.id },
+            order = compareBy(DailyNote::date),
         )
     }
     internal val nicotineBucketStore by lazy {
@@ -205,6 +215,13 @@ class PreferencesStore(private val appContext: Context) {
         upsertsByMonth: Map<YearMonth, List<WaterEntry>> = emptyMap(),
         removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),
     ) = applyWaterBucketChangesImpl(upsertsByMonth, removalIdsByMonth)
+    val noteEntries: Flow<List<DailyNote>> get() = noteEntriesImpl
+    suspend fun setNoteEntries(entries: List<DailyNote>) = setNoteEntriesImpl(entries)
+    /** Month-scoped daily-note write (one bucket file) — the note path. */
+    suspend fun applyNoteBucketChanges(
+        upsertsByMonth: Map<YearMonth, List<DailyNote>> = emptyMap(),
+        removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),
+    ) = applyNoteBucketChangesImpl(upsertsByMonth, removalIdsByMonth)
     val nicotineTrackingEnabled: Flow<Boolean> get() = nicotineTrackingEnabledImpl
     suspend fun setNicotineTrackingEnabled(v: Boolean) = setNicotineTrackingEnabledImpl(v)
     val nicotineDailyLimit: Flow<Int> get() = nicotineDailyLimitImpl

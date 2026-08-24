@@ -985,6 +985,11 @@
     <string name="home_take_second_shot">Tire a segunda foto</string>
     <string name="home_water_next">Próxima %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">Próxima %1$s · amanhã %2$s</string>
+    <string name="home_note_empty">Adicionar uma nota para este dia</string>
+    <string name="note_edit_title">Nota do dia</string>
+    <string name="note_placeholder">Pensamentos, progresso, observações…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="import_add_to_log">Adicionar ao diário</string>
     <string name="import_add_to_log_many_format">Adicionar %1$d ao diário · %2$d kcal</string>
     <string name="import_body_metrics_empty">Este arquivo não tem registros de peso ou dados corporais para importar.</string>
@@ -1054,6 +1059,7 @@
     <string name="nutrient_fiber_format">Fibras: %1$sg</string>
     <string name="nutrient_potassium_format">Potássio: %1$smg</string>
     <string name="nutrient_sat_fat_format">Gord. saturadas: %1$sg</string>
+    <string name="nutrient_short_caffeine">Cafeína</string>
     <string name="nutrient_short_omega">Ômega</string>
     <string name="nutrient_short_sat_fat">Gord. sat.</string>
     <string name="nutrient_short_vit_a">Vit. A</string>
@@ -1067,6 +1073,7 @@
     <string name="nutrition_label_folate">Folato</string>
     <string name="nutrition_label_iron">Ferro</string>
     <string name="nutrition_label_magnesium">Magnésio</string>
+    <string name="nutrition_label_caffeine">Cafeína</string>
     <string name="nutrition_label_omega3">Ômega-3</string>
     <string name="nutrition_label_trans_fat">Gordura trans</string>
     <string name="nutrition_label_vitamin_a">Vitamina A</string>

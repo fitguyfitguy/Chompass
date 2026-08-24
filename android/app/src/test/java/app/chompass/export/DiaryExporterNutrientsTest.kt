@@ -22,6 +22,7 @@ class DiaryExporterNutrientsTest {
             fiber = 1.2,
             sodium = 50.0,
             vitaminD = 10.5,
+            caffeine = 95.0,
         )
         val result = DiaryExporter.build(
             entries = listOf(entry),
@@ -33,9 +34,10 @@ class DiaryExporterNutrientsTest {
         ) ?: error("expected export")
 
         val content = result.second
-        assertTrue(content.contains("\"format_version\": \"1.2\""))
+        assertTrue(content.contains("\"format_version\": \"1.3\""))
         assertTrue(content.contains("\"fiber_g\": 1.2"))
         assertTrue(content.contains("\"sodium_mg\": 50"))
         assertTrue(content.contains("\"vitamin_d_mcg\": 10.5"))
+        assertTrue(content.contains("\"caffeine_mg\": 95"))
     }
 }
