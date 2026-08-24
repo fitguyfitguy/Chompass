@@ -240,6 +240,48 @@ test("daily notes merge collapses same-day to last-write-wins and stamps 1.2", (
   assert.ok(merged2.daily_notes[0].deleted_at);
 });
 
+test("merge local 1.2 with remote 1.1 keeps daily_notes tombstones", () => {
+  const id = "00000000-0000-0000-0000-0000000050b2";
+  const local = {
+    export: { app: "Chompass", kind: "sync", format_version: "1.2" },
+    food_entries: [],
+    favorites: [],
+    weights: [],
+    body_fat: [],
+    measurements: [],
+    water: [],
+    daily_notes: [
+      { id, updated_at: "2026-07-24T18:00:00Z", deleted_at: "2026-07-24T18:00:00Z" },
+    ],
+    nicotine_entries: [],
+    caffeine_entries: [],
+    recipes: [],
+    profile: null,
+    prefs: null,
+  };
+  // Remote written by Chompass ≤ 3.23.0: the classic seven arrays only.
+  const remote11 = {
+    export: { app: "Chompass", kind: "sync", format_version: "1.1" },
+    food_entries: [],
+    favorites: [],
+    weights: [],
+    body_fat: [],
+    measurements: [],
+    water: [],
+    recipes: [],
+    profile: null,
+    prefs: null,
+  };
+  const merged = mergeSyncDocuments(local, remote11);
+  assert.equal(merged.export.format_version, "1.2");
+  // The local tombstone survives; the absent remote arrays come back empty.
+  assert.deepEqual(merged.daily_notes, [
+    { id, updated_at: "2026-07-24T18:00:00Z", deleted_at: "2026-07-24T18:00:00Z" },
+  ]);
+  assert.deepEqual(merged.nicotine_entries, []);
+  assert.deepEqual(merged.caffeine_entries, []);
+});
+
 test("exportSyncDocument emits daily_notes array", () => {
   const doc = exportSyncDocument({
     dailyNotes: [{ id: "00000000-0000-0000-0000-0000000050b2", date: "2026-07-24", text: "x" }],

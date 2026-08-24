@@ -95,6 +95,49 @@ test("caffeine-less legacy docs still parse (optional array)", () => {
   assert.deepEqual(doc.caffeine_entries, []);
 });
 
+test("1.1-shaped doc parses with daily_notes defaulted", () => {
+  // Pre-1.2 remotes (Chompass ≤ 3.23.0) carry only the classic seven arrays.
+  const v11 = structuredClone(sample);
+  v11.export.format_version = "1.1";
+  delete v11.daily_notes;
+  delete v11.nicotine_entries;
+  delete v11.caffeine_entries;
+  const doc = parseSyncDocument(v11);
+  assert.deepEqual(doc.daily_notes, []);
+  assert.deepEqual(doc.nicotine_entries, []);
+  assert.deepEqual(doc.caffeine_entries, []);
+  assert.equal(doc.food_entries.length, 2);
+});
+
+test("1.0-shaped doc parses with daily_notes defaulted", () => {
+  const v10 = structuredClone(sample);
+  v10.export.format_version = "1.0";
+  delete v10.daily_notes;
+  delete v10.nicotine_entries;
+  delete v10.caffeine_entries;
+  // 1.0 predates serving-unit wire fields too.
+  delete v10.food_entries[0].serving_unit_options;
+  delete v10.food_entries[0].selected_serving_unit;
+  delete v10.food_entries[0].selected_serving_quantity;
+  delete v10.food_entries[0].constituents;
+  const doc = parseSyncDocument(v10);
+  assert.deepEqual(doc.daily_notes, []);
+  assert.deepEqual(doc.nicotine_entries, []);
+  assert.deepEqual(doc.caffeine_entries, []);
+});
+
+test("1.2 doc missing only the optional arrays defaults each to []", () => {
+  const v12 = structuredClone(sample);
+  delete v12.daily_notes;
+  delete v12.nicotine_entries;
+  delete v12.caffeine_entries;
+  const doc = parseSyncDocument(v12);
+  assert.deepEqual(doc.daily_notes, []);
+  assert.deepEqual(doc.nicotine_entries, []);
+  assert.deepEqual(doc.caffeine_entries, []);
+  assert.equal(doc.export.format_version, "1.2");
+});
+
 test("exportSyncDocument round-trips caffeine entries", () => {
   const doc = exportSyncDocument({
     caffeine: [
