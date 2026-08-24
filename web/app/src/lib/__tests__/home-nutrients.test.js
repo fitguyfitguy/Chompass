@@ -16,6 +16,7 @@ import {
   formatFoodChips,
   formatFoodPills,
   ALL_MICRO_KEYS,
+  migrateLegacyCaffeineLimit,
 } from "../home-nutrients.js";
 import { mapProduct } from "../off-client.js";
 
@@ -31,6 +32,24 @@ test("androidAlignedDefaultConstants", () => {
   assert.equal(ANDROID_PREF_DEFAULTS.aiFallbackEnabled, true);
   assert.equal(ANDROID_PREF_DEFAULTS.fallbackAiProvider, "gemini");
   assert.equal(ANDROID_PREF_DEFAULTS.fallbackAiModel, "gemini-3.5-flash-lite");
+});
+
+test("migrateLegacyCaffeineLimit copies a customized legacy tracker limit into the default goal", () => {
+  const migrated = migrateLegacyCaffeineLimit(DEFAULT_OPTIONAL_NUTRIENT_GOALS, 300);
+  assert.equal(migrated.caffeineMg, 300);
+  assert.equal(migrated.fiberG, 30); // rest untouched
+});
+
+test("migrateLegacyCaffeineLimit leaves a default legacy value alone", () => {
+  assert.equal(migrateLegacyCaffeineLimit(DEFAULT_OPTIONAL_NUTRIENT_GOALS, 400), DEFAULT_OPTIONAL_NUTRIENT_GOALS);
+  assert.equal(migrateLegacyCaffeineLimit(DEFAULT_OPTIONAL_NUTRIENT_GOALS, null), DEFAULT_OPTIONAL_NUTRIENT_GOALS);
+});
+
+test("migrateLegacyCaffeineLimit never overwrites a customized goal", () => {
+  const goals = { ...DEFAULT_OPTIONAL_NUTRIENT_GOALS, caffeineMg: 500 };
+  assert.equal(migrateLegacyCaffeineLimit(goals, 300), goals);
+  // The tracker card reads the goal (single knob), so a goal of 0 = no limit.
+  assert.equal(goals.caffeineMg, 500);
 });
 
 test("normalizeHomeTopNutrients_padsAndTruncates", () => {

@@ -562,7 +562,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                         Spacer(Modifier.height(12.dp))
                         CaffeineProgressRow(
                             currentMg = ui.caffeineTodayMg,
-                            limit = ui.caffeineDailyLimitMg,
+                            limit = ui.optionalNutrientGoals.caffeine,
                             onClick = { showCaffeineHistory = true },
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )

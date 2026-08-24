@@ -2,8 +2,12 @@ package app.chompass.data
 
 import app.chompass.models.CaffeineEntry
 import app.chompass.models.CaffeineKind
+import app.chompass.models.OptionalNutrient
+import app.chompass.models.OptionalNutrientGoals
+import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.encodeToString
 import java.time.YearMonth
 import java.time.ZoneId
 import java.util.UUID
@@ -14,11 +18,27 @@ internal val PreferencesStore.caffeineTrackingEnabledImpl: Flow<Boolean>
 internal suspend fun PreferencesStore.setCaffeineTrackingEnabledImpl(v: Boolean) =
     setBoolPref(Keys.CAFFEINE_TRACKING_ENABLED, v)
 
-/** Daily mg limit (the caffeine analogue of the nicotine count limit). 0 = no limit. */
-internal val PreferencesStore.caffeineDailyLimitMgImpl: Flow<Int>
-    get() = intPref(Keys.CAFFEINE_DAILY_LIMIT_MG, 400)
-internal suspend fun PreferencesStore.setCaffeineDailyLimitMgImpl(v: Int) =
-    setIntPref(Keys.CAFFEINE_DAILY_LIMIT_MG, v.coerceAtLeast(0))
+/**
+ * WS5 one-time migration: the legacy tracker daily-limit pref
+ * (caffeineDailyLimitMg) was an alias of optionalNutrientGoals.caffeine, and
+ * the two could disagree. A customized legacy value wins once over the
+ * still-default goal (400); then the legacy key is dropped and never written
+ * again — the Goals & Nutrition caffeine goal is the single daily-max knob.
+ * The read-side merge lives in SettingsPrefsHydration.toSettingsHydration.
+ */
+internal suspend fun PreferencesStore.migrateCaffeineDailyLimitIfNeededImpl() {
+    dataStore.edit { prefs ->
+        val legacy = prefs[Keys.CAFFEINE_DAILY_LIMIT_MG] ?: return@edit
+        prefs.remove(Keys.CAFFEINE_DAILY_LIMIT_MG)
+        if (legacy == OptionalNutrient.CAFFEINE.defaultGoal) return@edit
+        val goals = prefs[Keys.OPTIONAL_NUTRIENT_GOALS]?.let {
+            runCatching { json.decodeFromString(OptionalNutrientGoals.serializer(), it) }.getOrNull()
+        } ?: OptionalNutrientGoals.Default
+        if (goals.caffeine != OptionalNutrient.CAFFEINE.defaultGoal) return@edit
+        prefs[Keys.OPTIONAL_NUTRIENT_GOALS] =
+            json.encodeToString(OptionalNutrientGoals.serializer(), goals.copy(caffeine = legacy))
+    }
+}
 
 /** Quick-log chips on the Add Food hub (mirrors nicotine quick kinds). */
 internal val PreferencesStore.caffeineQuickKindsImpl: Flow<List<CaffeineKind>>

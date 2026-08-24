@@ -602,9 +602,9 @@ internal fun SettingsSheets(
                     },
                 )
                 SettingsSheet.CAFFEINE_LIMIT -> CaffeineLimitSheet(
-                    current = ui.caffeineDailyLimitMg,
+                    current = ui.optionalNutrientGoals.caffeine,
                     onSave = {
-                        vm.setCaffeineDailyLimitMg(it)
+                        vm.setOptionalNutrientGoals(ui.optionalNutrientGoals.withValue(OptionalNutrient.CAFFEINE, it))
                         onDismiss()
                     },
                 )

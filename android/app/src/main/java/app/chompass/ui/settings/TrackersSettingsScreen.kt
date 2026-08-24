@@ -66,8 +66,8 @@ fun TrackersSettingsScreen(
             SettingRow(
                 stringResource(R.string.settings_caffeine_title),
                 if (ui.caffeineTrackingEnabled) {
-                    if (ui.caffeineDailyLimitMg > 0) {
-                        stringResource(R.string.caffeine_daily_limit_summary, ui.caffeineDailyLimitMg)
+                    if (ui.optionalNutrientGoals.caffeine > 0) {
+                        stringResource(R.string.caffeine_daily_limit_summary, ui.optionalNutrientGoals.caffeine)
                     } else {
                         stringResource(R.string.caffeine_no_limit)
                     }

@@ -26,6 +26,7 @@ import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.CaffeineKind
+import app.chompass.models.OptionalNutrient
 import app.chompass.ui.theme.AppTextOpacity
 
 /**
@@ -66,8 +67,8 @@ fun CaffeineSettingsScreen(
             HorizontalDivider()
             SettingRow(
                 stringResource(R.string.caffeine_daily_limit),
-                if (ui.caffeineDailyLimitMg > 0) {
-                    stringResource(R.string.caffeine_daily_limit_summary, ui.caffeineDailyLimitMg)
+                if (ui.optionalNutrientGoals.caffeine > 0) {
+                    stringResource(R.string.caffeine_daily_limit_summary, ui.optionalNutrientGoals.caffeine)
                 } else {
                     stringResource(R.string.caffeine_no_limit)
                 },
@@ -119,9 +120,9 @@ fun CaffeineSettingsScreen(
 
     when (sheet) {
         SettingsSheet.CAFFEINE_LIMIT -> CaffeineLimitSheet(
-            current = ui.caffeineDailyLimitMg,
+            current = ui.optionalNutrientGoals.caffeine,
             onSave = {
-                vm.setCaffeineDailyLimitMg(it)
+                vm.setOptionalNutrientGoals(ui.optionalNutrientGoals.withValue(OptionalNutrient.CAFFEINE, it))
                 sheet = null
             },
         )

@@ -211,7 +211,6 @@ data class HomeUiState(
     val dailyNotesEnabled: Boolean = false,
     /** Optional caffeine tracker (device-pass revision); default off. */
     val caffeineTrackingEnabled: Boolean = false,
-    val caffeineDailyLimitMg: Int = 400,
     val caffeineQuickKinds: List<CaffeineKind> = CaffeineKind.DefaultQuickKinds,
     /** Selected-day caffeine total: tracker logs + food-entry caffeine, mg. */
     val caffeineTodayMg: Double = 0.0,
@@ -439,7 +438,6 @@ data class HomeUiState(
             nicotineTodayEntries == other.nicotineTodayEntries &&
             dailyNotesEnabled == other.dailyNotesEnabled &&
             caffeineTrackingEnabled == other.caffeineTrackingEnabled &&
-            caffeineDailyLimitMg == other.caffeineDailyLimitMg &&
             caffeineQuickKinds == other.caffeineQuickKinds &&
             caffeineTodayMg == other.caffeineTodayMg &&
             caffeineTodayEntries == other.caffeineTodayEntries &&
@@ -520,7 +518,6 @@ data class HomeUiState(
         result = 31 * result + nicotineTodayEntries.hashCode()
         result = 31 * result + dailyNotesEnabled.hashCode()
         result = 31 * result + caffeineTrackingEnabled.hashCode()
-        result = 31 * result + caffeineDailyLimitMg
         result = 31 * result + caffeineQuickKinds.hashCode()
         result = 31 * result + caffeineTodayMg.hashCode()
         result = 31 * result + caffeineTodayEntries.hashCode()
@@ -1097,10 +1094,6 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
         container.prefs.caffeineTrackingEnabled
             .onEach { enabled -> _ui.update { it.copy(caffeineTrackingEnabled = enabled) } }
-            .launchIn(viewModelScope)
-
-        container.prefs.caffeineDailyLimitMg
-            .onEach { limit -> _ui.update { it.copy(caffeineDailyLimitMg = limit) } }
             .launchIn(viewModelScope)
 
         container.prefs.caffeineQuickKinds

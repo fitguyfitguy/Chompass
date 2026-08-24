@@ -83,6 +83,7 @@ class ChompassApp : Application() {
         container.notifications.createChannels()
         LauncherShortcuts.publish(this)
         appScope.launch { container.prefs.migrateHomeDisplayLayoutIfNeeded() }
+        appScope.launch { container.prefs.migrateCaffeineDailyLimitIfNeeded() }
         container.prefs.mealSchedule
             .onEach { CurrentMealSchedule.value = it }
             .launchIn(appScope)
