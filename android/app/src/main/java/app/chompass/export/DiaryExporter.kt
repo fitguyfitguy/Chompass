@@ -2,6 +2,7 @@ package app.chompass.export
 
 import app.chompass.R
 
+import app.chompass.models.DailyNote
 import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
@@ -71,6 +72,7 @@ object DiaryExporter {
         format: DiaryFormat,
         profile: UserProfile?,
         mealDisplay: (MealType) -> String,
+        notes: List<DailyNote> = emptyList(),
     ): Pair<String, String>? {
         val lo = if (start.isAfter(end)) end else start
         val hi = if (start.isAfter(end)) start else end
@@ -82,7 +84,12 @@ object DiaryExporter {
             }
             .groupBy { it.timestamp.atZone(zone).toLocalDate() }
             .toSortedMap()
-        if (byDay.isEmpty()) return null
+        val noteByDay: Map<LocalDate, DailyNote> = notes
+            .filter { !it.date.isBefore(lo) && !it.date.isAfter(hi) }
+            .associateBy { it.date }
+        // A day with a note but no food still exports (journal days) — except
+        // CSV, which is entry-row-only and has no place for a day-level note.
+        if (byDay.isEmpty() && (format == DiaryFormat.CSV || noteByDay.isEmpty())) return null
 
         val targets = Targets(
             calories = profile?.effectiveCalories ?: 0,
@@ -92,8 +99,8 @@ object DiaryExporter {
         )
 
         val content = when (format) {
-            DiaryFormat.JSON -> json(byDay, lo, hi, targets)
-            DiaryFormat.MARKDOWN -> markdown(byDay, lo, hi, targets, mealDisplay)
+            DiaryFormat.JSON -> json(byDay, noteByDay, lo, hi, targets)
+            DiaryFormat.MARKDOWN -> markdown(byDay, noteByDay, lo, hi, targets, mealDisplay)
             DiaryFormat.CSV -> csv(byDay)
         }
         val name = "Fud-Food-Diary-${dayFmt.format(lo)}_to_${dayFmt.format(hi)}.${format.ext}"
@@ -288,15 +295,24 @@ object DiaryExporter {
         val components: List<GroundingComponentDto>? = null,
     )
     @Serializable private data class MealDto(val type: String, val items: List<ItemDto>)
-    @Serializable private data class DayDto(val date: String, val totals: Macro, val targets: Macro, val remaining: Macro, val meals: List<MealDto>)
+    @Serializable private data class DayDto(
+        val date: String, val totals: Macro, val targets: Macro, val remaining: Macro,
+        val meals: List<MealDto>, val note: String? = null,
+    )
     @Serializable private data class RangeDto(val start: String, val end: String)
     @Serializable private data class MetaDto(val app: String, val format_version: String, val date_range: RangeDto)
     @Serializable private data class Doc(val export: MetaDto, val days: List<DayDto>)
 
     private val jsonPretty = Json { prettyPrint = true; encodeDefaults = true }
 
-    private fun json(byDay: Map<LocalDate, List<FoodEntry>>, lo: LocalDate, hi: LocalDate, t: Targets): String {
-        val days = byDay.map { (date, dayEntries) ->
+    private fun json(
+        byDay: Map<LocalDate, List<FoodEntry>>,
+        noteByDay: Map<LocalDate, DailyNote>,
+        lo: LocalDate, hi: LocalDate, t: Targets,
+    ): String {
+        // Union of days: food days plus note-only days (journal entries).
+        val days = (byDay.keys + noteByDay.keys).sorted().map { date ->
+            val dayEntries = byDay[date].orEmpty()
             val tot = totals(dayEntries)
             val mealDtos = meals(dayEntries).map { (mt, items) ->
                 MealDto(
@@ -315,10 +331,11 @@ object DiaryExporter {
                     r1(max(0.0, t.fat - tot[3])),
                 ),
                 meals = mealDtos,
+                note = noteByDay[date]?.text,
             )
         }
         val doc = Doc(
-            export = MetaDto("Chompass", "1.2", RangeDto(dayFmt.format(lo), dayFmt.format(hi))),
+            export = MetaDto("Chompass", "1.3", RangeDto(dayFmt.format(lo), dayFmt.format(hi))),
             days = days,
         )
         return jsonPretty.encodeToString(Doc.serializer(), doc)
@@ -328,6 +345,7 @@ object DiaryExporter {
 
     private fun markdown(
         byDay: Map<LocalDate, List<FoodEntry>>,
+        noteByDay: Map<LocalDate, DailyNote>,
         lo: LocalDate, hi: LocalDate, t: Targets,
         mealDisplay: (MealType) -> String,
     ): String {
@@ -356,6 +374,15 @@ object DiaryExporter {
                     sb.append("| ").append(cells.joinToString(" | ")).append(" |\n")
                 }
             }
+        }
+        // Note-only days (journal entries) and day notes on food days:
+        // Markdown has a natural place for a day-level note.
+        val allDays = (byDay.keys + noteByDay.keys).sorted()
+        for (date in allDays) {
+            val note = noteByDay[date]?.text ?: continue
+            sb.append("\n## ${dayFmt.format(date)}\n")
+            if (byDay[date].isNullOrEmpty()) sb.append("No food logged.\n")
+            sb.append("\n> ${note.replace("\n", "\n> ")}\n")
         }
         return sb.toString()
     }

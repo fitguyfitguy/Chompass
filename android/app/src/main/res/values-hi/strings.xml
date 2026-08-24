@@ -996,6 +996,11 @@
     <string name="home_take_second_shot">दूसरी फोटो लें</string>
     <string name="home_water_next">अगला %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">अगला %1$s · कल %2$s</string>
+    <string name="home_note_empty">इस दिन के लिए एक नोट जोड़ें</string>
+    <string name="note_edit_title">दिन का नोट</string>
+    <string name="note_placeholder">विचार, प्रगति, अवलोकन…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="import_add_to_log">लॉग में जोड़ें</string>
     <string name="import_add_to_log_many_format">%1$d लॉग में जोड़ें · %2$d kcal</string>
     <string name="import_body_metrics_empty">इस फ़ाइल में आयात करने के लिए कोई वज़न या शरीर डेटा प्रविष्टि नहीं है।</string>

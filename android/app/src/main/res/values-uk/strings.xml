@@ -933,6 +933,11 @@
     <string name="home_take_second_shot">Зроби другий знімок</string>
     <string name="home_water_next">Далі %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">Далі %1$s · завтра %2$s</string>
+    <string name="home_note_empty">Додати нотатку за цей день</string>
+    <string name="note_edit_title">Нотатка дня</string>
+    <string name="note_placeholder">Думки, прогрес, спостереження…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="import_add_to_log">Додати до журналу</string>
     <string name="import_add_to_log_many_format">Додати %1$d до журналу · %2$d ккал</string>
     <string name="import_body_metrics_empty">У цьому файлі немає записів ваги чи даних тіла для імпорту.</string>

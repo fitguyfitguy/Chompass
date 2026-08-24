@@ -14,6 +14,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.BodyMeasurement
+import app.chompass.models.DailyNote
 import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodGroundingProvenance
@@ -33,14 +34,15 @@ import java.time.ZoneOffset
 import java.util.UUID
 
 /**
- * Sync-1.1 document parse/build. Mirrors web/.../sync-format.js.
- * Photos and API keys are intentionally excluded. Imports also accept 1.0.
+ * Sync-1.2 document parse/build. Mirrors web/.../sync-format.js.
+ * 1.2 adds the day-granular `daily_notes` array (Codeberg #58a). Photos and
+ * API keys are intentionally excluded. Imports also accept 1.0/1.1.
  */
 object SyncDocument {
     const val APP_NAME = "Chompass"
     const val KIND = "sync"
-    const val FORMAT_VERSION = "1.1"
-    private val SUPPORTED_IMPORT_VERSIONS = setOf("1.0", "1.1")
+    const val FORMAT_VERSION = "1.2"
+    private val SUPPORTED_IMPORT_VERSIONS = setOf("1.0", "1.1", "1.2")
 
     private val json = Json {
         ignoreUnknownKeys = true
@@ -59,6 +61,7 @@ object SyncDocument {
         val bodyFats: List<BodyFatWire>,
         val measurements: List<MeasurementWire>,
         val water: List<WaterWire>,
+        val dailyNotes: List<DailyNoteWire>,
         val recipes: List<RecipeWire>,
         val profile: SingletonEnvelope?,
         val prefs: SingletonEnvelope?,
@@ -100,6 +103,13 @@ object SyncDocument {
         val entry: WaterEntry?,
     )
 
+    data class DailyNoteWire(
+        val id: String,
+        val updatedAt: String,
+        val deletedAt: String?,
+        val entry: DailyNote?,
+    )
+
     data class RecipeWire(
         val id: String,
         val updatedAt: String,
@@ -138,6 +148,7 @@ object SyncDocument {
                     bodyFats = arr("body_fat").mapNotNull { parseBodyFatWire(it) },
                     measurements = arr("measurements").mapNotNull { parseMeasurementWire(it) },
                     water = arr("water").mapNotNull { parseWaterWire(it) },
+                    dailyNotes = arr("daily_notes").mapNotNull { parseDailyNoteWire(it) },
                     recipes = arr("recipes").mapNotNull { parseRecipeWire(it) },
                     profile = parseSingleton(root["profile"]),
                     prefs = parseSingleton(root["prefs"]),
@@ -156,6 +167,7 @@ object SyncDocument {
         bodyFats: List<BodyFatEntry>,
         measurements: List<BodyMeasurement>,
         water: List<WaterEntry>,
+        dailyNotes: List<DailyNote> = emptyList(),
         recipes: List<Recipe>,
         revisions: Map<String, Revision> = emptyMap(),
         profile: SingletonEnvelope? = null,
@@ -253,6 +265,24 @@ object SyncDocument {
                         )
                     }
                     appendTombstones(revisions, "water", water.map { it.id.toString() }.toSet())
+                },
+            )
+            put(
+                "daily_notes",
+                buildJsonArray {
+                    for (n in dailyNotes) {
+                        val meta = metaFor(n.id.toString(), revisions, "${n.date}T00:00:00Z")
+                        add(
+                            buildJsonObject {
+                                put("id", n.id.toString())
+                                put("updated_at", meta.updatedAt)
+                                putNullable("deleted_at", meta.deletedAt)
+                                put("date", n.date.toString())
+                                put("text", n.text)
+                            },
+                        )
+                    }
+                    appendTombstones(revisions, "daily_note", dailyNotes.map { it.id.toString() }.toSet())
                 },
             )
             put(
@@ -386,7 +416,7 @@ object SyncDocument {
                 },
             )
             for (key in listOf(
-                "food_entries", "favorites", "body_fat", "measurements", "water", "recipes",
+                "food_entries", "favorites", "body_fat", "measurements", "water", "daily_notes", "recipes",
             )) {
                 put(key, mergeList(key))
             }
@@ -696,6 +726,24 @@ object SyncDocument {
             milliliters = o["amount_ml"]?.asInt() ?: 0,
         )
         return WaterWire(id, updatedAt, null, entry)
+    }
+
+    private fun parseDailyNoteWire(el: JsonElement): DailyNoteWire? {
+        val o = el.asObjectOrNull() ?: return null
+        val id = o["id"]?.asString()?.takeIf { it.isNotBlank() } ?: return null
+        val updatedAt = o["updated_at"]?.asString() ?: return null
+        val deletedAt = o["deleted_at"]?.asString()
+        if (!deletedAt.isNullOrBlank()) return DailyNoteWire(id, updatedAt, deletedAt, null)
+        val date = o["date"]?.asString()?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
+            ?: return DailyNoteWire(id, updatedAt, null, null)
+        val text = o["text"]?.asString()?.trim().orEmpty()
+        if (text.isEmpty()) return DailyNoteWire(id, updatedAt, null, null)
+        val entry = DailyNote(
+            id = runCatching { UUID.fromString(id) }.getOrElse { DailyNote.idFor(date) },
+            date = date,
+            text = text.take(DailyNote.MAX_TEXT_LENGTH),
+        )
+        return DailyNoteWire(id, updatedAt, null, entry)
     }
 
     private fun parseRecipeWire(el: JsonElement): RecipeWire? {

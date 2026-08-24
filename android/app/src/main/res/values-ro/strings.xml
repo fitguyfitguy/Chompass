@@ -988,6 +988,11 @@
     <string name="home_take_second_shot">Fă a doua fotografie</string>
     <string name="home_water_next">Următoarea %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">Următoarea %1$s · mâine %2$s</string>
+    <string name="home_note_empty">Adaugă o notă pentru această zi</string>
+    <string name="note_edit_title">Nota zilei</string>
+    <string name="note_placeholder">Gânduri, progres, observații…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="import_add_to_log">Adaugă la jurnal</string>
     <string name="import_add_to_log_many_format">Adaugă %1$d la jurnal · %2$d kcal</string>
     <string name="import_body_metrics_empty">Acest fișier nu are înregistrări de greutate sau date corporale de importat.</string>
