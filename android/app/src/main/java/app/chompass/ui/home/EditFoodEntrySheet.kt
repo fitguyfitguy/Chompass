@@ -153,7 +153,7 @@ fun EditFoodEntrySheet(
     } else {
         currentBaseEntry.selectedServingUnit
     }
-    var selectedServingUnitId by remember(currentBaseEntry, servingUnitOptions, preferGramsByDefault) {
+    var selectedServingUnitId by remember(currentBaseEntry, preferGramsByDefault) {
         mutableStateOf(ServingUnitOption.initialUnitId(initialServingUnit, servingUnitOptions))
     }
     var servingGrams by remember(currentBaseEntry, entryBaseServing) { mutableStateOf(entryBaseServing) }

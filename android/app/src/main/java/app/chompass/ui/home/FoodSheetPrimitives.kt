@@ -371,7 +371,14 @@ internal fun ServingQuantityCard(
             )
         )
     }
-    val pushServingEdit = {
+    // Commit-only (Codeberg #59): the name and grams fields are drafts; the
+    // unit options are only mutated when the checkmark commits, never per
+    // keystroke. Committing on every keystroke fed each typed prefix ("s",
+    // "sp", "spi", ...) into the unit wheel as a separate entry because a
+    // unit's id follows its name. Returns true when the edit was applied so
+    // the caller can close the editor, or false to keep it open on rejection
+    // (empty name on the grams path, non-positive grams).
+    val pushServingEdit: () -> Boolean = {
         val grams = ServingUnitOption.parseQuantity(servingGramsDraft)
         if (grams != null) {
             ServingUnitOption.servingEdit(
@@ -382,7 +389,10 @@ internal fun ServingQuantityCard(
                 grams = grams,
             )?.let { result ->
                 onUnitOptionsChange?.invoke(result.options, result.updated.id)
-            }
+                true
+            } ?: false
+        } else {
+            false
         }
     }
 
@@ -520,10 +530,7 @@ internal fun ServingQuantityCard(
                     )
                     BasicTextField(
                         value = servingNameDraft,
-                        onValueChange = {
-                            servingNameDraft = it
-                            pushServingEdit()
-                        },
+                        onValueChange = { servingNameDraft = it },
                         singleLine = true,
                         textStyle = TextStyle(
                             color = MaterialTheme.colorScheme.onSurface,
@@ -544,7 +551,6 @@ internal fun ServingQuantityCard(
                         value = servingGramsDraft,
                         onValueChange = {
                             servingGramsDraft = it.filter { c -> c.isDigit() || c == '.' || c == ',' }
-                            pushServingEdit()
                         },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -571,7 +577,7 @@ internal fun ServingQuantityCard(
                             .clip(CircleShape)
                             .clickable {
                                 dismissKeyboard()
-                                editingServing = false
+                                if (pushServingEdit()) editingServing = false
                             }
                     )
                 }
