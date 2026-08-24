@@ -6,6 +6,8 @@ import app.chompass.models.ChatMessage
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.MealType
+import app.chompass.models.CaffeineEntry
+import app.chompass.models.CaffeineKind
 import app.chompass.models.NicotineEntry
 import app.chompass.models.NicotineKind
 import app.chompass.models.Recipe
@@ -367,6 +369,40 @@ internal object SampleDataGenerators {
                         kind = kinds.random(rng),
                         count = 1,
                         mg = if (rng.nextInt(5) == 0) rng.nextDouble(3.0, 12.0) else null,
+                    )
+                )
+            }
+        }
+        return out
+    }
+
+    /** A few weeks of caffeine logs (coffee morning, tea afternoon) for seeding. */
+    fun caffeineEntries(
+        totalDays: Int = 30,
+        today: LocalDate = LocalDate.now(),
+    ): List<CaffeineEntry> {
+        val zone = ZoneId.systemDefault()
+        val rng = Random(seed = 0xC0FFE)
+        val out = mutableListOf<CaffeineEntry>()
+        for (daysAgo in (totalDays - 1) downTo 0) {
+            val day = today.minusDays(daysAgo.toLong())
+            // Morning coffee + afternoon tea/energy, like a normal day.
+            val morning = day.atTime(7 + rng.nextInt(0, 3), rng.nextInt(0, 60)).atZone(zone).toInstant()
+            out.add(
+                CaffeineEntry(
+                    date = morning,
+                    kind = CaffeineKind.COFFEE,
+                    mg = CaffeineKind.COFFEE.defaultMg ?: 95.0,
+                )
+            )
+            if (rng.nextInt(10) < 7) {
+                val kind = if (rng.nextInt(10) < 7) CaffeineKind.TEA else CaffeineKind.ENERGY
+                val afternoon = day.atTime(13 + rng.nextInt(0, 4), rng.nextInt(0, 60)).atZone(zone).toInstant()
+                out.add(
+                    CaffeineEntry(
+                        date = afternoon,
+                        kind = kind,
+                        mg = kind.defaultMg ?: 28.0,
                     )
                 )
             }

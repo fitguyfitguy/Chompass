@@ -76,6 +76,10 @@ internal object Keys {
         val NICOTINE_QUICK_KINDS = stringPreferencesKey("nicotineQuickKinds")
         // Optional daily notes (docs/local/PLAN_DAILY_NOTES.md); default off.
         val DAILY_NOTES_ENABLED = booleanPreferencesKey("dailyNotesEnabled")
+        // Optional caffeine tracker (device-pass revision); default off.
+        val CAFFEINE_TRACKING_ENABLED = booleanPreferencesKey("caffeineTrackingEnabled")
+        val CAFFEINE_DAILY_LIMIT_MG = intPreferencesKey("caffeineDailyLimitMg")
+        val CAFFEINE_QUICK_KINDS = stringPreferencesKey("caffeineQuickKinds")
         val MANUAL_ACTIVE_ENTRIES = stringPreferencesKey("manualActiveEntries")
         // Optional intermittent-fasting timer (docs/local/PLAN_FASTING_TRACKER.md).
         // Session state is three scalars (state is a pure function of them).

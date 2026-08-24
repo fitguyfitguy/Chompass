@@ -8,6 +8,7 @@ import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.MealSchedule
+import app.chompass.models.CaffeineKind
 import app.chompass.models.NicotineKind
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.ServingUnitInferenceMode
@@ -43,6 +44,9 @@ internal data class SettingsPrefsHydration(
     val nicotineDailyLimit: Int,
     val nicotineQuickKinds: List<NicotineKind>,
     val dailyNotesEnabled: Boolean,
+    val caffeineTrackingEnabled: Boolean,
+    val caffeineDailyLimitMg: Int,
+    val caffeineQuickKinds: List<CaffeineKind>,
     val fastingEnabled: Boolean,
     val fastingGoalHours: Int,
     val fastingGoalNotificationEnabled: Boolean,
@@ -130,6 +134,9 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
         nicotineDailyLimit = this[Keys.NICOTINE_DAILY_LIMIT] ?: 0,
         nicotineQuickKinds = NicotineKind.quickKindsFromStorage(this[Keys.NICOTINE_QUICK_KINDS]),
         dailyNotesEnabled = this[Keys.DAILY_NOTES_ENABLED] ?: false,
+        caffeineTrackingEnabled = this[Keys.CAFFEINE_TRACKING_ENABLED] ?: false,
+        caffeineDailyLimitMg = this[Keys.CAFFEINE_DAILY_LIMIT_MG] ?: 400,
+        caffeineQuickKinds = CaffeineKind.quickKindsFromStorage(this[Keys.CAFFEINE_QUICK_KINDS]),
         fastingEnabled = this[Keys.FASTING_ENABLED] ?: false,
         fastingGoalHours = (this[Keys.FASTING_GOAL_HOURS] ?: 0).coerceIn(0, MAX_FASTING_GOAL_HOURS),
         fastingGoalNotificationEnabled = this[Keys.FASTING_GOAL_NOTIFICATION_ENABLED] ?: true,

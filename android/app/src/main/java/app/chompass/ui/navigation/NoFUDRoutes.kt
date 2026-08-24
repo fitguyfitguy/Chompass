@@ -20,6 +20,7 @@ object ChompassRoutes {
     const val SETTINGS_FOOD = "settings/food"
     const val SETTINGS_WATER = "settings/water?from={from}"
     const val SETTINGS_NICOTINE = "settings/nicotine?from={from}"
+    const val SETTINGS_CAFFEINE = "settings/caffeine?from={from}"
     const val SETTINGS_FASTING = "settings/fasting?from={from}"
     const val SETTINGS_NOTES = "settings/notes?from={from}"
     const val SETTINGS_NOTIFICATIONS = "settings/notifications?from={from}"
@@ -27,7 +28,8 @@ object ChompassRoutes {
 
     /** Cross-link route builders; `from` drives the sub-screen's back label. */
     fun waterRoute(from: String) = "settings/water?from=$from"
-    fun nicotineRoute(from: String) = "settings/nicotine?from=$from"
+        fun nicotineRoute(from: String) = "settings/nicotine?from=$from"
+    fun caffeineRoute(from: String) = "settings/caffeine?from=$from"
     fun fastingRoute(from: String) = "settings/fasting?from=$from"
     fun notesRoute(from: String) = "settings/notes?from=$from"
     fun notificationsRoute(from: String) = "settings/notifications?from=$from"

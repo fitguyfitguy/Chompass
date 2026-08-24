@@ -9,6 +9,7 @@ import app.chompass.data.FastingRepository
 import app.chompass.data.FoodRepository
 import app.chompass.data.KeyStore
 import app.chompass.data.ManualActiveRepository
+import app.chompass.data.CaffeineRepository
 import app.chompass.data.NicotineRepository
 import app.chompass.data.NotesRepository
 import app.chompass.data.PreferencesStore
@@ -207,6 +208,7 @@ class AppContainer(app: ChompassApp) {
     }
     val manualActiveRepository = ManualActiveRepository(prefs)
     val nicotineRepository = NicotineRepository(prefs, syncRepository)
+    val caffeineRepository = CaffeineRepository(prefs, syncRepository)
     val notesRepository = NotesRepository(prefs, syncRepository)
     val fastingRepository = FastingRepository(prefs).apply {
         // Re-arm the one-shot goal alarm after every session change so the

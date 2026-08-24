@@ -21,6 +21,8 @@ import app.chompass.models.ResolvedActiveBurn
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.ManualActiveEntry
 import app.chompass.models.MealType
+import app.chompass.models.CaffeineEntry
+import app.chompass.models.CaffeineKind
 import app.chompass.models.NicotineEntry
 import app.chompass.models.NicotineKind
 import app.chompass.models.OptionalNutrientGoals
@@ -204,6 +206,14 @@ data class HomeUiState(
     val nicotineTodayEntries: List<NicotineEntry> = emptyList(),
     /** Optional daily notes (docs/local/PLAN_DAILY_NOTES.md); default off. */
     val dailyNotesEnabled: Boolean = false,
+    /** Optional caffeine tracker (device-pass revision); default off. */
+    val caffeineTrackingEnabled: Boolean = false,
+    val caffeineDailyLimitMg: Int = 400,
+    val caffeineQuickKinds: List<CaffeineKind> = CaffeineKind.DefaultQuickKinds,
+    /** Selected-day caffeine total: tracker logs + food-entry caffeine, mg. */
+    val caffeineTodayMg: Double = 0.0,
+    /** Tracker logs for the selected day, newest first (history sheet). */
+    val caffeineTodayEntries: List<CaffeineEntry> = emptyList(),
     /** Optional intermittent-fasting timer (docs/local/PLAN_FASTING_TRACKER.md); local-only. */
     val fastingEnabled: Boolean = false,
     val fastingGoalHours: Int = 0,
@@ -415,6 +425,11 @@ data class HomeUiState(
             nicotineTodayCount == other.nicotineTodayCount &&
             nicotineTodayEntries == other.nicotineTodayEntries &&
             dailyNotesEnabled == other.dailyNotesEnabled &&
+            caffeineTrackingEnabled == other.caffeineTrackingEnabled &&
+            caffeineDailyLimitMg == other.caffeineDailyLimitMg &&
+            caffeineQuickKinds == other.caffeineQuickKinds &&
+            caffeineTodayMg == other.caffeineTodayMg &&
+            caffeineTodayEntries == other.caffeineTodayEntries &&
             fastingEnabled == other.fastingEnabled &&
             fastingGoalHours == other.fastingGoalHours &&
             fastingActive == other.fastingActive &&
@@ -485,6 +500,11 @@ data class HomeUiState(
         result = 31 * result + nicotineTodayCount
         result = 31 * result + nicotineTodayEntries.hashCode()
         result = 31 * result + dailyNotesEnabled.hashCode()
+        result = 31 * result + caffeineTrackingEnabled.hashCode()
+        result = 31 * result + caffeineDailyLimitMg
+        result = 31 * result + caffeineQuickKinds.hashCode()
+        result = 31 * result + caffeineTodayMg.hashCode()
+        result = 31 * result + caffeineTodayEntries.hashCode()
         result = 31 * result + fastingEnabled.hashCode()
         result = 31 * result + fastingGoalHours
         result = 31 * result + fastingActive.hashCode()
@@ -1050,6 +1070,36 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             }
             .launchIn(viewModelScope)
 
+        container.prefs.caffeineTrackingEnabled
+            .onEach { enabled -> _ui.update { it.copy(caffeineTrackingEnabled = enabled) } }
+            .launchIn(viewModelScope)
+
+        container.prefs.caffeineDailyLimitMg
+            .onEach { limit -> _ui.update { it.copy(caffeineDailyLimitMg = limit) } }
+            .launchIn(viewModelScope)
+
+        container.prefs.caffeineQuickKinds
+            .onEach { kinds -> _ui.update { it.copy(caffeineQuickKinds = kinds) } }
+            .launchIn(viewModelScope)
+
+        // Hero total = tracker logs + food-entry caffeine for the selected day
+        // (one "today's caffeine" number; the limit applies to both sources).
+        combine(
+            container.caffeineRepository.entries,
+            _selectedDate.flatMapLatest { day -> container.foodRepository.entriesForDate(day) },
+            _selectedDate,
+        ) { entries, foodEntries, day ->
+            val zone = ZoneId.systemDefault()
+            val dayEntries = entries.filter { it.date.atZone(zone).toLocalDate() == day }
+            val trackedMg = dayEntries.sumOf { it.mg }
+            val foodMg = foodEntries.sumOf { it.caffeine ?: 0.0 }
+            (trackedMg + foodMg) to dayEntries
+        }
+            .onEach { (total, dayEntries) ->
+                _ui.update { it.copy(caffeineTodayMg = total, caffeineTodayEntries = dayEntries) }
+            }
+            .launchIn(viewModelScope)
+
         container.prefs.fastingEnabled
             .onEach { enabled -> _ui.update { it.copy(fastingEnabled = enabled) } }
             .launchIn(viewModelScope)
@@ -1179,6 +1229,22 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 NicotineEntry.forNow(kind = kind, count = count, mg = mg),
             )
         }
+    }
+
+    fun addCaffeine(kind: CaffeineKind, mg: Double? = null) {
+        val effective = mg ?: kind.defaultMg
+        if (effective == null || effective <= 0) return
+        viewModelScope.launch {
+            container.caffeineRepository.add(CaffeineEntry.forNow(kind = kind, mg = mg))
+        }
+    }
+
+    fun updateCaffeine(id: UUID, kind: CaffeineKind, mg: Double) {
+        viewModelScope.launch { container.caffeineRepository.update(id, kind, mg) }
+    }
+
+    fun deleteCaffeine(id: UUID) {
+        viewModelScope.launch { container.caffeineRepository.delete(id) }
     }
 
     // -- Intermittent fasting timer (local-only) -------------------------

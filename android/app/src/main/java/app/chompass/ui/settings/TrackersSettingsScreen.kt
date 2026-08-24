@@ -2,6 +2,7 @@ package app.chompass.ui.settings
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FilterAlt
+import androidx.compose.material.icons.outlined.LocalCafe
 import androidx.compose.material.icons.outlined.Notes
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Schedule
@@ -61,6 +62,20 @@ fun TrackersSettingsScreen(
                 },
                 icon = Icons.Outlined.FilterAlt,
             ) { nav.navigate(ChompassRoutes.nicotineRoute("trackers")) }
+            HorizontalDivider()
+            SettingRow(
+                stringResource(R.string.settings_caffeine_title),
+                if (ui.caffeineTrackingEnabled) {
+                    if (ui.caffeineDailyLimitMg > 0) {
+                        stringResource(R.string.caffeine_daily_limit_summary, ui.caffeineDailyLimitMg)
+                    } else {
+                        stringResource(R.string.caffeine_no_limit)
+                    }
+                } else {
+                    stringResource(R.string.settings_off)
+                },
+                icon = Icons.Outlined.LocalCafe,
+            ) { nav.navigate(ChompassRoutes.caffeineRoute("trackers")) }
             HorizontalDivider()
             SettingRow(
                 stringResource(R.string.settings_notes_title),

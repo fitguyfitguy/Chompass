@@ -331,6 +331,31 @@ internal fun NicotineLimitSheet(current: Int, onSave: (Int) -> Unit) {
     Spacer(Modifier.height(8.dp))
 }
 
+/** Daily caffeine mg limit (0 = no limit); mirrors the nicotine limit wheel. */
+@Composable
+internal fun CaffeineLimitSheet(current: Int, onSave: (Int) -> Unit) {
+    var limit by remember(current) { mutableIntStateOf(current.coerceIn(0, 1000)) }
+    Text(stringResource(R.string.caffeine_daily_limit), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+    Spacer(Modifier.height(20.dp))
+    NumericWheelPicker(
+        value = limit,
+        onValueChange = { limit = it },
+        min = 0,
+        max = 1000,
+        unit = stringResource(R.string.unit_mg),
+        step = 25,
+    )
+    Spacer(Modifier.height(8.dp))
+    Text(
+        stringResource(R.string.settings_caffeine_limit_wheel_help),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+    )
+    Spacer(Modifier.height(16.dp))
+    GradientSaveButton { onSave(limit) }
+    Spacer(Modifier.height(8.dp))
+}
+
 /** Fasting goal length in hours (0 = no goal); mirrors the nicotine limit wheel. */
 @Composable
 internal fun FastingGoalSheet(current: Int, onSave: (Int) -> Unit) {
