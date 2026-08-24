@@ -53,6 +53,13 @@ internal fun SettingsFallbackSection(ui: SettingsUiState, vm: SettingsViewModel,
                         ) { onOpenSheet(SettingsSheet.FALLBACK_BASE_URL) }
                     }
                     SettingFootnote(stringResource(R.string.settings_fallback_footer))
+                    // Codeberg #54: an on-device fallback is a different model,
+                    // and switching models cold-loads the engine (the resident
+                    // engine is per-model). Disclose the latency tradeoff where
+                    // the user decides the fallback slot.
+                    if (ui.fallbackProvider == AIProvider.ON_DEVICE) {
+                        SettingFootnote(stringResource(R.string.settings_fallback_on_device_switch_notice))
+                    }
                 }
     }
 }
