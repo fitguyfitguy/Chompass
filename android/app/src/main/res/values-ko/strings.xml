@@ -1753,11 +1753,8 @@
     <string name="fasting_window_opens_in">식사 시간까지 %1$s</string>
     <string name="settings_fasting_section_reminders">알림</string>
     <string name="settings_fasting_start_reminder">시작 알림</string>
-    <string name="settings_fasting_start_reminder_time">알림 시간</string>
-    <string name="settings_fasting_start_reminder_help">다음 단식 시작을 알리는 매일 알림입니다. 단식이 이미 진행 중이면 건너뜁니다.</string>
     <string name="notif_fasting_start_title">단식 시작</string>
     <string name="notif_fasting_start_text">지금 단식을 시작하세요.</string>
-    <string name="notif_fasting_start_text_goal">지금 %1$d시간 단식을 시작하세요.</string>
     <string name="fasting_fast_starts_in">단식 시작까지 %1$s</string>
     <string name="fasting_eating_progress">식사 %2$d시간 중 %1$s</string>
     <string name="settings_fasting_eat_window">식사 시간</string>
@@ -1775,7 +1772,7 @@
     <string name="notif_fasting_start_soon_text">%1$d분 후 식사 시간이 종료됩니다. 단식을 시작하세요.</string>
     <string name="fasting_auto_tag">자동</string>
     <string name="settings_fasting_auto_windows">자동 단식 시간</string>
-    <string name="settings_fasting_auto_windows_help">켜면 식사 시간이 끝나는 즉시 단식이 자동으로 시작되고 목표에 도달하면 종료됩니다. 직접 시작할 수도 있습니다. 자동 시작된 단식은 홈에 버튼이 표시되지 않습니다.</string>
+    <string name="settings_fasting_auto_windows_help">단식은 단식 시작 시간에 자동으로 시작되고 목표에 도달하면 종료됩니다. 홈에는 버튼이 없으며 주기가 스스로 진행됩니다. 수동으로 시작하거나 중지하려면 앱 아이콘을 길게 누르세요.</string>
     <string name="fasting_fast_starts_at">단식 %1$s 시작 · %2$s 후</string>
     <string name="fasting_next_fast_at">다음 단식 %1$s</string>
     <string name="settings_fasting_start_time">단식 시작 시간</string>

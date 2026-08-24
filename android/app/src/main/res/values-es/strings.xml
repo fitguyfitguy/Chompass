@@ -1760,11 +1760,8 @@
     <string name="fasting_window_opens_in">La ventana de comida abre en %1$s</string>
     <string name="settings_fasting_section_reminders">Recordatorios</string>
     <string name="settings_fasting_start_reminder">Recordatorio de inicio</string>
-    <string name="settings_fasting_start_reminder_time">Hora del recordatorio</string>
-    <string name="settings_fasting_start_reminder_help">Un aviso diario para empezar tu próximo ayuno. Se omite si ya hay un ayuno activo.</string>
     <string name="notif_fasting_start_title">Empieza tu ayuno</string>
     <string name="notif_fasting_start_text">Empieza tu ayuno ahora.</string>
-    <string name="notif_fasting_start_text_goal">Empieza ahora tu ayuno de %1$d h.</string>
     <string name="fasting_fast_starts_in">El ayuno empieza en %1$s</string>
     <string name="fasting_eating_progress">%1$s de %2$d h de comida</string>
     <string name="settings_fasting_eat_window">Ventana de comida</string>

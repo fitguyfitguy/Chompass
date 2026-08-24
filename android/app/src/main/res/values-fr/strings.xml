@@ -1760,11 +1760,8 @@
     <string name="fasting_window_opens_in">La fenêtre de repas s\'ouvre dans %1$s</string>
     <string name="settings_fasting_section_reminders">Rappels</string>
     <string name="settings_fasting_start_reminder">Rappel de début</string>
-    <string name="settings_fasting_start_reminder_time">Heure du rappel</string>
-    <string name="settings_fasting_start_reminder_help">Un rappel quotidien pour démarrer votre prochain jeûne. Ignoré si un jeûne est déjà en cours.</string>
     <string name="notif_fasting_start_title">Démarrez votre jeûne</string>
     <string name="notif_fasting_start_text">Démarrez votre jeûne maintenant.</string>
-    <string name="notif_fasting_start_text_goal">Démarrez maintenant votre jeûne de %1$d h.</string>
     <string name="fasting_fast_starts_in">Le jeûne commence dans %1$s</string>
     <string name="fasting_eating_progress">%1$s sur %2$d h de repas</string>
     <string name="settings_fasting_eat_window">Fenêtre de repas</string>
@@ -1782,7 +1779,7 @@
     <string name="notif_fasting_start_soon_text">Votre fenêtre de repas se ferme dans %1$d min — démarrez votre jeûne alors.</string>
     <string name="fasting_auto_tag">Automatique</string>
     <string name="settings_fasting_auto_windows">Fenêtres de jeûne automatiques</string>
-    <string name="settings_fasting_auto_windows_help">Lorsqu\'il est activé, votre jeûne démarre seul dès que votre fenêtre de repas se ferme et se termine à l\'atteinte de l\'objectif. Vous pouvez aussi démarrer manuellement. Les jeûnes automatiques n\'affichent aucun bouton sur l\'accueil.</string>
+    <string name="settings_fasting_auto_windows_help">Votre jeûne démarre automatiquement à l\'heure de début du jeûne et se termine à l\'atteinte de l\'objectif. Aucun bouton sur l\'accueil, le cycle se déroule seul. Utilisez l\'appui long sur l\'icône de l\'application pour le démarrer ou l\'arrêter manuellement.</string>
     <string name="fasting_fast_starts_at">Le jeûne commence à %1$s · dans %2$s</string>
     <string name="fasting_next_fast_at">Prochain jeûne à %1$s</string>
     <string name="settings_fasting_start_time">Heure de début du jeûne</string>

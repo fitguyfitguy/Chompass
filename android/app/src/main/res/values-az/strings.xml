@@ -1754,11 +1754,8 @@ bilirsən?</string>
     <string name="fasting_window_opens_in">Yemək pəncərəsi %1$s sonra açılır</string>
     <string name="settings_fasting_section_reminders">Xatırlatmalar</string>
     <string name="settings_fasting_start_reminder">Başlama xatırlatması</string>
-    <string name="settings_fasting_start_reminder_time">Xatırlatma vaxtı</string>
-    <string name="settings_fasting_start_reminder_help">Növbəti oruca başlamaq üçün gündəlik xatırlatma. Artıq aktiv oruc varsa keçilir.</string>
     <string name="notif_fasting_start_title">Oruca başla</string>
     <string name="notif_fasting_start_text">İndi oruca başla.</string>
-    <string name="notif_fasting_start_text_goal">%1$d saatlıq orucuna indi başla.</string>
     <string name="fasting_fast_starts_in">Oruc %1$s sonra başlayır</string>
     <string name="fasting_eating_progress">%2$d saat yeməkdən %1$s</string>
     <string name="settings_fasting_eat_window">Yemək pəncərəsi</string>
@@ -1776,7 +1773,7 @@ bilirsən?</string>
     <string name="notif_fasting_start_soon_text">Yemək pəncərəsi %1$d dəq sonra bağlanır — o zaman oruca başlayın.</string>
     <string name="fasting_auto_tag">Avto</string>
     <string name="settings_fasting_auto_windows">Avtomatik oruc pəncərələri</string>
-    <string name="settings_fasting_auto_windows_help">Açıq olduqda oruc yemək pəncərəsi bağlanan kimi avtomatik başlayır və hədəfə çatanda bitir. Yenə də əl ilə başlaya bilərsiniz. Avtomatik orucda Ana ekranda düymələr görünmür.</string>
+    <string name="settings_fasting_auto_windows_help">Orucunuz oruc başlama vaxtında avtomatik başlayır və hədəfə çatdıqda bitir. Ana ekranda düymələr yoxdur, dövr özü işləyir. Əl ilə başlatmaq və ya dayandırmaq üçün tətbiqin işarəsinə uzun basın.</string>
     <string name="fasting_fast_starts_at">Oruc %1$s başlayır · %2$s sonra</string>
     <string name="fasting_next_fast_at">Növbəti oruc %1$s</string>
     <string name="settings_fasting_start_time">Oruc başlama vaxtı</string>

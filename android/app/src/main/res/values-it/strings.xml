@@ -1753,11 +1753,8 @@
     <string name="fasting_window_opens_in">La finestra dei pasti si apre tra %1$s</string>
     <string name="settings_fasting_section_reminders">Promemoria</string>
     <string name="settings_fasting_start_reminder">Promemoria di inizio</string>
-    <string name="settings_fasting_start_reminder_time">Ora del promemoria</string>
-    <string name="settings_fasting_start_reminder_help">Un promemoria quotidiano per iniziare il prossimo digiuno. Saltato se un digiuno è già in corso.</string>
     <string name="notif_fasting_start_title">Inizia il tuo digiuno</string>
     <string name="notif_fasting_start_text">Inizia subito il tuo digiuno.</string>
-    <string name="notif_fasting_start_text_goal">Inizia subito il tuo digiuno di %1$d h.</string>
     <string name="fasting_fast_starts_in">Il digiuno inizia tra %1$s</string>
     <string name="fasting_eating_progress">%1$s di %2$d h di pasti</string>
     <string name="settings_fasting_eat_window">Finestra dei pasti</string>
@@ -1775,7 +1772,7 @@
     <string name="notif_fasting_start_soon_text">La tua finestra dei pasti si chiude tra %1$d min: inizia il digiuno allora.</string>
     <string name="fasting_auto_tag">Automatico</string>
     <string name="settings_fasting_auto_windows">Finestre di digiuno automatiche</string>
-    <string name="settings_fasting_auto_windows_help">Quando attivo, il tuo digiuno parte da solo quando si chiude la finestra dei pasti e termina al raggiungimento dell\'obiettivo. Puoi comunque iniziare manualmente. I digiuni automatici non mostrano pulsanti nella Home.</string>
+    <string name="settings_fasting_auto_windows_help">Il tuo digiuno parte da solo all\'ora di inizio del digiuno e termina al raggiungimento dell\'obiettivo. Nessun pulsante nella Home, il ciclo si svolge da solo. Usa la pressione prolungata sull\'icona dell\'app per avviarlo o fermarlo manualmente.</string>
     <string name="fasting_fast_starts_at">Il digiuno inizia alle %1$s · tra %2$s</string>
     <string name="fasting_next_fast_at">Prossimo digiuno alle %1$s</string>
     <string name="settings_fasting_start_time">Ora di inizio del digiuno</string>

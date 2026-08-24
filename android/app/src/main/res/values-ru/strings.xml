@@ -1829,11 +1829,8 @@
     <string name="fasting_window_opens_in">Окно приёма пищи откроется через %1$s</string>
     <string name="settings_fasting_section_reminders">Напоминания</string>
     <string name="settings_fasting_start_reminder">Напоминание о начале</string>
-    <string name="settings_fasting_start_reminder_time">Время напоминания</string>
-    <string name="settings_fasting_start_reminder_help">Ежедневное напоминание о начале следующего поста. Пропускается, если пост уже идёт.</string>
     <string name="notif_fasting_start_title">Начните пост</string>
     <string name="notif_fasting_start_text">Начните пост прямо сейчас.</string>
-    <string name="notif_fasting_start_text_goal">Начните сейчас свой %1$d-часовой пост.</string>
     <string name="fasting_fast_starts_in">Пост начнётся через %1$s</string>
     <string name="fasting_eating_progress">%1$s из %2$d ч приёма пищи</string>
     <string name="settings_fasting_eat_window">Окно приёма пищи</string>
@@ -1851,7 +1848,7 @@
     <string name="notif_fasting_start_soon_text">Ваше окно приёма пищи закроется через %1$d мин — начните пост тогда.</string>
     <string name="fasting_auto_tag">Авто</string>
     <string name="settings_fasting_auto_windows">Автоматические окна поста</string>
-    <string name="settings_fasting_auto_windows_help">Когда включено, пост начинается автоматически, как только окно приёма пищи закрывается, и заканчивается при достижении цели. Можно начать и вручную. Автоматические посты не показывают кнопки на главном экране.</string>
+    <string name="settings_fasting_auto_windows_help">Пост начинается автоматически в установленное время и заканчивается при достижении цели. На главном экране нет кнопок, цикл работает сам. Чтобы начать или остановить вручную, удерживайте значок приложения.</string>
     <string name="fasting_fast_starts_at">Пост начнётся в %1$s · через %2$s</string>
     <string name="fasting_next_fast_at">Следующий пост в %1$s</string>
     <string name="settings_fasting_start_time">Время начала поста</string>

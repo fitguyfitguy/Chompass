@@ -1778,11 +1778,8 @@
     <string name="fasting_window_opens_in">Okno jedzenia otwiera się za %1$s</string>
     <string name="settings_fasting_section_reminders">Przypomnienia</string>
     <string name="settings_fasting_start_reminder">Przypomnienie o rozpoczęciu</string>
-    <string name="settings_fasting_start_reminder_time">Godzina przypomnienia</string>
-    <string name="settings_fasting_start_reminder_help">Codzienne przypomnienie o rozpoczęciu następnego postu. Pomijane, gdy post już trwa.</string>
     <string name="notif_fasting_start_title">Rozpocznij post</string>
     <string name="notif_fasting_start_text">Rozpocznij post teraz.</string>
-    <string name="notif_fasting_start_text_goal">Rozpocznij teraz swój %1$d-godzinny post.</string>
     <string name="fasting_fast_starts_in">Post zaczyna się za %1$s</string>
     <string name="fasting_eating_progress">%1$s z %2$d h jedzenia</string>
     <string name="settings_fasting_eat_window">Okno jedzenia</string>
@@ -1800,7 +1797,7 @@
     <string name="notif_fasting_start_soon_text">Twoje okno jedzenia zamyka się za %1$d min — rozpocznij wtedy post.</string>
     <string name="fasting_auto_tag">Automatyczny</string>
     <string name="settings_fasting_auto_windows">Automatyczne okna postu</string>
-    <string name="settings_fasting_auto_windows_help">Po włączeniu post zaczyna się automatycznie w momencie zamknięcia okna jedzenia i kończy po osiągnięciu celu. Możesz też rozpocząć go ręcznie. Posty automatyczne nie pokazują przycisków na ekranie głównym.</string>
+    <string name="settings_fasting_auto_windows_help">Twój post zaczyna się automatycznie o godzinie rozpoczęcia postu i kończy po osiągnięciu celu. Na ekranie głównym nie ma przycisków, cykl działa sam. Aby rozpocząć lub zatrzymać ręcznie, przytrzymaj ikonę aplikacji.</string>
     <string name="fasting_fast_starts_at">Post zaczyna się o %1$s · za %2$s</string>
     <string name="fasting_next_fast_at">Następny post o %1$s</string>
     <string name="settings_fasting_start_time">Godzina rozpoczęcia postu</string>
