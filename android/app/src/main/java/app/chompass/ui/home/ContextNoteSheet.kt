@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -26,6 +27,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
@@ -302,6 +304,8 @@ fun MultiPhotoCaptureSheet(
     showDontAskAgain: Boolean = false,
     /** First N photo Analyzes: show the prominent accuracy tip card. */
     showAccuracyGuide: Boolean = false,
+    /** Codeberg #53: previously saved analysis prompts for quick reuse. */
+    recentPrompts: List<String> = emptyList(),
     onAddPhoto: () -> Unit,
     onRemove: (Int) -> Unit,
     onAnalyze: (note: String?, confirmedPortionGrams: Double?, dontAskAgain: Boolean) -> Unit,
@@ -315,6 +319,10 @@ fun MultiPhotoCaptureSheet(
     var tipExpanded by remember(requireNote) { mutableStateOf(requireNote) }
     var dontAskAgain by remember { mutableStateOf(false) }
     var pendingConfirm by remember { mutableStateOf(false) }
+    // Grey auto-fill (device walk 2026-08-24): a picked history prompt renders
+    // muted until the user edits it.
+    var autofilled by remember { mutableStateOf(false) }
+    var showHistory by remember { mutableStateOf(false) }
 
     fun commitAnalyze() {
         val trimmed = note.trim()
@@ -509,12 +517,51 @@ fun MultiPhotoCaptureSheet(
                         )
                         FudGlassTextField(
                             value = note,
-                            onValueChange = { note = it },
+                            onValueChange = {
+                                note = it
+                                autofilled = false
+                            },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .heightIn(min = 88.dp),
                             placeholder = stringResource(R.string.context_note_placeholder),
+                            textStyle = MaterialTheme.typography.bodyLarge.copy(
+                                color = if (autofilled) {
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                                } else {
+                                    MaterialTheme.colorScheme.onSurface
+                                },
+                            ),
                         )
+                        if (recentPrompts.isNotEmpty()) {
+                            TextButton(
+                                onClick = { showHistory = true },
+                                contentPadding = PaddingValues(horizontal = 4.dp),
+                            ) {
+                                Icon(
+                                    Icons.Filled.History,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                    modifier = Modifier.size(16.dp),
+                                )
+                                Spacer(Modifier.width(6.dp))
+                                Text(
+                                    stringResource(R.string.prompt_history_button),
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                )
+                            }
+                        }
+                        if (showHistory) {
+                            PromptHistorySheet(
+                                prompts = recentPrompts,
+                                onPick = { prompt ->
+                                    note = prompt
+                                    autofilled = true
+                                    showHistory = false
+                                },
+                                onDismiss = { showHistory = false },
+                            )
+                        }
                         Text(
                             stringResource(R.string.context_note_weight_section),
                             fontWeight = FontWeight.SemiBold,
