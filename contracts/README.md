@@ -5,13 +5,24 @@ Versioned JSON Schemas for cross-app interchange. Fixtures in
 
 | Schema | Format | Consumers |
 |--------|--------|-----------|
-| [`diary-1.2.schema.json`](diary-1.2.schema.json) | Diary export `format_version` **1.2** | `DiaryExporter` / `DiaryImporter`, `web/.../diary-format.js` |
+| [`diary-1.3.schema.json`](diary-1.3.schema.json) | Diary export `format_version` **1.3** | `DiaryExporter` / `DiaryImporter`, `web/.../diary-format.js` |
+| [`diary-1.2.schema.json`](diary-1.2.schema.json) | Diary export **1.2** (legacy; still accepted on import) | same |
 | [`diary-1.1.schema.json`](diary-1.1.schema.json) | Diary export **1.1** (legacy; still accepted on import) | same |
 | [`body-metrics-1.0.schema.json`](body-metrics-1.0.schema.json) | Body metrics `kind=body_metrics` **1.0** | `BodyMetricsExporter` / `BodyMetricsImporter`, `body-metrics-format.js` |
 | [`meal-share-v2.schema.json`](meal-share-v2.schema.json) | Meal share payload `v` **2** | `MealShare.kt`, `web/.../meal-share.js` |
 | [`meal-share-v1.schema.json`](meal-share-v1.schema.json) | Meal share `v` **1** (legacy; still accepted on import) | same |
-| [`sync-1.1.schema.json`](sync-1.1.schema.json) | User-hosted sync `kind=sync` **1.1** | `SyncDocument` / `SyncRepository`, `web/.../sync-format.js` |
+| [`sync-1.2.schema.json`](sync-1.2.schema.json) | User-hosted sync `kind=sync` **1.2** | `SyncDocument` / `SyncRepository`, `web/.../sync-format.js` |
+| [`sync-1.1.schema.json`](sync-1.1.schema.json) | Sync **1.1** (legacy; still accepted on import) | same |
 | [`sync-1.0.schema.json`](sync-1.0.schema.json) | Sync **1.0** (legacy; still accepted on import) | same |
+
+## New in diary 1.3 / sync 1.2
+
+Day-level journaling (Codeberg #58a):
+
+| Diary / sync | Purpose |
+|--------------|---------|
+| `days[].note` (diary) | Optional free-text note for the day (`null` when absent) |
+| `daily_notes[]` (sync) | One record per day: `{id, updated_at, deleted_at?, date, text}`. Id is deterministic from the date (day count since 1970-01-01 in the low 48 bits), so merges collapse to last-write-wins per day |
 
 ## New in diary 1.2 / sync 1.1 / meal-share v2
 
