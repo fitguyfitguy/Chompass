@@ -68,8 +68,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 import java.util.UUID
 import app.chompass.AppContainer
 import app.chompass.MainActivity
@@ -95,7 +93,7 @@ import app.chompass.ui.components.MacroCard
 import app.chompass.ui.components.StepsCard
 import app.chompass.ui.components.WeekEnergyStrip
 import app.chompass.ui.components.isDarkTheme
-import app.chompass.ui.util.clockTimePattern
+import app.chompass.ui.util.formatClockMillis
 import app.chompass.ui.navigation.BottomNavDockedControlPadding
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.AppRadii
@@ -109,9 +107,6 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     val vm: HomeViewModel = viewModel(factory = HomeViewModel.Factory(container))
     val ui by vm.ui.collectAsState()
     val ctx = LocalContext.current
-    val clockFormatter = remember(ctx) {
-        DateTimeFormatter.ofPattern(clockTimePattern(ctx), Locale.getDefault())
-    }
     val seedingSampleData by container.testDataSeeder.seeding.collectAsState()
     val weekStartDay by container.prefs.weekStartDay.collectAsState(initial = app.chompass.models.WeekStartDay.MONDAY)
     // Codeberg #20 phase 2: master AI-features switch — hides the AI entry tiles
@@ -536,7 +531,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                             }
                             val fireZone = Instant.ofEpochMilli(plan.nextFireMillis)
                                 .atZone(ZoneId.systemDefault())
-                            val time = fireZone.format(clockFormatter)
+                            val time = formatClockMillis(ctx, plan.nextFireMillis)
                             if (fireZone.toLocalDate().isAfter(LocalDate.now())) {
                                 stringResource(R.string.home_water_next_tomorrow, amount, time)
                             } else {

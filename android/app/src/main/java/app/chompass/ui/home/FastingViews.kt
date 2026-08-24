@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -29,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.FastingPhase
 import app.chompass.models.FastingSession
-import app.chompass.ui.util.clockTimePattern
+import app.chompass.ui.util.formatClockMillis
 
 /**
  * Fasting cycle bar on Home (docs/local/PLAN_FASTING_TRACKER.md §5). Tells the
@@ -56,7 +57,7 @@ fun FastingProgressRow(
     val hasGoal = fastHours > 0
     val fastWindowMillis = fastHours * FastingSession.MILLIS_PER_HOUR
     val eatWindowMillis = eatHours * FastingSession.MILLIS_PER_HOUR
-    val clockFormatter = rememberClockFormatter()
+    val context = LocalContext.current
 
     val statusLabel: String
     val progress: Float
@@ -93,7 +94,7 @@ fun FastingProgressRow(
             countdownHint = if (autoMode && nextFastStartMillis != null) {
                 stringResource(
                     R.string.fasting_fast_starts_at,
-                    clockFormatter.format(java.time.Instant.ofEpochMilli(nextFastStartMillis).atZone(java.time.ZoneId.systemDefault())),
+                    formatClockMillis(context, nextFastStartMillis),
                     fastingDurationLabel(remaining),
                 )
             } else {
@@ -102,7 +103,7 @@ fun FastingProgressRow(
         }
         FastingPhase.IDLE -> {
             statusLabel = if (autoMode && nextFastStartMillis != null) {
-                stringResource(R.string.fasting_next_fast_at, clockFormatter.format(java.time.Instant.ofEpochMilli(nextFastStartMillis).atZone(java.time.ZoneId.systemDefault())))
+                stringResource(R.string.fasting_next_fast_at, formatClockMillis(context, nextFastStartMillis))
             } else {
                 stringResource(R.string.fasting_idle)
             }
@@ -218,7 +219,7 @@ fun FastingHubControl(
     modifier: Modifier = Modifier,
 ) {
     val fastWindowMillis = fastHours * FastingSession.MILLIS_PER_HOUR
-    val clockFormatter = rememberClockFormatter()
+    val context = LocalContext.current
     val status = when (phase) {
         FastingPhase.FASTING ->
             if (goalReached) {
@@ -233,7 +234,7 @@ fun FastingHubControl(
             if (autoMode && nextFastStartMillis != null) {
                 stringResource(
                     R.string.fasting_fast_starts_at,
-                    clockFormatter.format(java.time.Instant.ofEpochMilli(nextFastStartMillis).atZone(java.time.ZoneId.systemDefault())),
+                    formatClockMillis(context, nextFastStartMillis),
                     fastingDurationLabel(remaining),
                 )
             } else {
@@ -241,7 +242,7 @@ fun FastingHubControl(
             }
         }
         FastingPhase.IDLE -> if (autoMode && nextFastStartMillis != null) {
-            stringResource(R.string.fasting_next_fast_at, clockFormatter.format(java.time.Instant.ofEpochMilli(nextFastStartMillis).atZone(java.time.ZoneId.systemDefault())))
+            stringResource(R.string.fasting_next_fast_at, formatClockMillis(context, nextFastStartMillis))
         } else {
             stringResource(R.string.fasting_idle)
         }
@@ -315,17 +316,5 @@ private fun fastingDurationLabel(millis: Long): String {
         hours > 0L && minutes > 0L -> stringResource(R.string.fasting_duration_h_m, hours, minutes)
         hours > 0L -> stringResource(R.string.fasting_duration_h, hours)
         else -> stringResource(R.string.fasting_duration_m, minutes)
-    }
-}
-
-/** Local clock format ("20:00" / "8:00 PM") for the next-fast-start labels. */
-@Composable
-private fun rememberClockFormatter(): java.time.format.DateTimeFormatter {
-    val context = androidx.compose.ui.platform.LocalContext.current
-    return androidx.compose.runtime.remember(context) {
-        java.time.format.DateTimeFormatter.ofPattern(
-            clockTimePattern(context),
-            java.util.Locale.getDefault(),
-        )
     }
 }
