@@ -283,3 +283,21 @@ Reminders group, search placeholder/empty state. Dead keys to delete:
   their cross-links already exist as in-card value rows, so a duplicate footer
   row would be noise.
 - **C2 footers**: only Goals got a footer; Water/Notifications already had one.
+
+## 10. Device pass (pending — maintainer, run from Windows PowerShell)
+
+No USB device is visible from WSL adb; the walk below is the remaining
+verification. Build first (`devenv shell bash -lc 'cd android && ./gradlew
+:app:assembleDebug'`), then install + walk from the Windows host:
+
+```powershell
+adb install --user 0 -r \\wsl$\<distro>\home\<user>\chompass\android\app\build\outputs\apk\debug\app-arm64-v8a-debug.apk
+adb shell am start -n app.chompass.debug/app.chompass.MainActivity
+# Walk: Settings tab → search "units" → Personal Info row → Units sheet toggles
+#   metric↔imperial and the Height/Weight sheets follow; Settings → Trackers &
+#   Reminders → each of Water / Nicotine / Reminders keeps a correct back label
+#   ("Trackers & Reminders"); Settings → Display (6 rows, no tracker links);
+#   Progress tab → Customize chip → Week Starts On + default range; back labels
+#   from Goals footer (Water, Calculation Methods).
+# Search coverage spot-checks: "keto", "webdav", "speech", "theme".
+```
