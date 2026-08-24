@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -157,9 +158,10 @@ fun CaffeineCustomSheet(
                 Spacer(Modifier.padding(horizontal = 31.dp))
             }
 
-            Row(
+            FlowRow(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 CaffeineKind.entries.forEach { option ->
                     FilterChip(
@@ -375,9 +377,10 @@ fun CaffeineEditSheet(
                 Spacer(Modifier.padding(horizontal = 31.dp))
             }
 
-            Row(
+            FlowRow(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 CaffeineKind.entries.forEach { option ->
                     FilterChip(
