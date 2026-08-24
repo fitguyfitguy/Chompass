@@ -557,6 +557,7 @@ main.view {
 .macro-tube--vit-k,
 .macro-tube--folate,
 .macro-tube--omega { --tube-color: #5a8a6a; }
+.macro-tube--caffeine { --tube-color: #8a5a3a; }
 
 /* Desktop horizontal calorie + macro rows (default hidden; shown ≥900px) */
 /* Desktop horizontal calorie + macro rows (default hidden; shown ≥900px) */

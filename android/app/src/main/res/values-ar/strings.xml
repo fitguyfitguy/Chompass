@@ -1064,6 +1064,7 @@
     <string name="nutrient_fiber_format">الألياف: %1$s غ</string>
     <string name="nutrient_potassium_format">البوتاسيوم: %1$s ملغ</string>
     <string name="nutrient_sat_fat_format">الدهون المشبعة: %1$s غ</string>
+    <string name="nutrient_short_caffeine">كافيين</string>
     <string name="nutrient_short_omega">أوميغا</string>
     <string name="nutrient_short_sat_fat">دهون مشبعة</string>
     <string name="nutrient_short_vit_a">فيتامين أ</string>
@@ -1077,6 +1078,7 @@
     <string name="nutrition_label_folate">الفولات</string>
     <string name="nutrition_label_iron">الحديد</string>
     <string name="nutrition_label_magnesium">المغنيسيوم</string>
+    <string name="nutrition_label_caffeine">كافيين</string>
     <string name="nutrition_label_omega3">أوميغا-3</string>
     <string name="nutrition_label_trans_fat">الدهون المتحولة</string>
     <string name="nutrition_label_vitamin_a">فيتامين أ</string>

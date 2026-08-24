@@ -23,6 +23,9 @@ test("imports the parity diary fixture without throwing", () => {
   assert.equal(lunch.constituents?.length, 3);
   assert.equal(lunch.constituents?.[0].selectedServingUnit, "piece");
   assert.equal(lunch.constituents?.[0].servingUnitOptions?.[0].gramsPerUnit, 110);
+  const breakfast = entries.find((e) => e.name === "Sample Breakfast Item 1");
+  assert.ok(breakfast);
+  assert.equal(breakfast.caffeineMg, 95);
   const dinner = entries.find((e) => e.name === "Sample Dinner Item 1");
   assert.deepEqual(dinner?.constituents, []);
   assert.equal(dinner?.selectedServingUnit, "cup");

@@ -1063,6 +1063,7 @@
     <string name="nutrient_fiber_format">食物繊維：%1$sg</string>
     <string name="nutrient_potassium_format">カリウム：%1$smg</string>
     <string name="nutrient_sat_fat_format">飽和脂肪酸：%1$sg</string>
+    <string name="nutrient_short_caffeine">カフェイン</string>
     <string name="nutrient_short_omega">オメガ</string>
     <string name="nutrient_short_sat_fat">飽和脂肪</string>
     <string name="nutrient_short_vit_a">ビタA</string>
@@ -1076,6 +1077,7 @@
     <string name="nutrition_label_folate">葉酸</string>
     <string name="nutrition_label_iron">鉄</string>
     <string name="nutrition_label_magnesium">マグネシウム</string>
+    <string name="nutrition_label_caffeine">カフェイン</string>
     <string name="nutrition_label_omega3">オメガ3</string>
     <string name="nutrition_label_trans_fat">トランス脂肪酸</string>
     <string name="nutrition_label_vitamin_a">ビタミンA</string>

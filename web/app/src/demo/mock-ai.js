@@ -69,6 +69,7 @@ const DEMO_ESTIMATE = Object.freeze({
   vitaminDMcg: 0,
   cholesterolMg: 70,
   omega3G: 0.1,
+  caffeineMg: 95,
 });
 
 /** Scripted "Grilled salmon plate" estimate for the plate-scan beat. */

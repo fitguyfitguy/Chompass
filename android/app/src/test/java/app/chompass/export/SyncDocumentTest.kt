@@ -162,4 +162,34 @@ class SyncDocumentTest {
         val parsed = (result as SyncDocument.ParseResult.Success).parsed
         assertEquals("🥣", parsed.foodEntries.single().entry?.emoji)
     }
+
+    @Test
+    fun buildRoundTripsCaffeine() {
+        // Caffeine rides the food wire as an optional mg field (caffeine plan 4.6).
+        val food = FoodEntry(
+            name = "Espresso",
+            calories = 5,
+            protein = 0.0,
+            carbs = 1.0,
+            fat = 0.0,
+            timestamp = Instant.parse("2026-08-15T08:00:00Z"),
+            source = FoodSource.MANUAL,
+            mealType = MealType.BREAKFAST,
+            caffeine = 95.0,
+        )
+        val json = SyncDocument.buildJson(
+            foodEntries = listOf(food),
+            favorites = emptyList(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            measurements = emptyList(),
+            water = emptyList(),
+            recipes = emptyList(),
+            zone = ZoneOffset.UTC,
+        )
+        val result = SyncDocument.parse(json, ZoneOffset.UTC)
+        assertTrue("expected Success but was $result", result is SyncDocument.ParseResult.Success)
+        val parsed = (result as SyncDocument.ParseResult.Success).parsed
+        assertEquals(95.0, parsed.foodEntries.single().entry?.caffeine)
+    }
 }

@@ -37,7 +37,8 @@ enum class MicronutrientField(
     VITAMIN_E(R.string.nutrition_label_vitamin_e, R.string.unit_mg, "vitamin_e", "vitamin_e_per_100g"),
     VITAMIN_K(R.string.nutrition_label_vitamin_k, R.string.unit_mcg, "vitamin_k", "vitamin_k_per_100g"),
     FOLATE(R.string.nutrition_label_folate, R.string.unit_mcg, "folate", "folate_per_100g"),
-    OMEGA3(R.string.nutrition_label_omega3, R.string.unit_g, "omega_3", "omega_3_per_100g");
+    OMEGA3(R.string.nutrition_label_omega3, R.string.unit_g, "omega_3", "omega_3_per_100g"),
+    CAFFEINE(R.string.nutrition_label_caffeine, R.string.unit_mg, "caffeine", "caffeine_per_100g");
 
     companion object {
         /** Expandable "More Nutrition" section (fiber stays in the primary macros card). */
@@ -69,6 +70,7 @@ data class MicronutrientValues(
     val vitaminK: Double? = null,
     val folate: Double? = null,
     val omega3: Double? = null,
+    val caffeine: Double? = null,
 ) : java.io.Serializable {
     operator fun get(field: MicronutrientField): Double? = when (field) {
         MicronutrientField.SUGAR -> sugar
@@ -93,6 +95,7 @@ data class MicronutrientValues(
         MicronutrientField.VITAMIN_K -> vitaminK
         MicronutrientField.FOLATE -> folate
         MicronutrientField.OMEGA3 -> omega3
+        MicronutrientField.CAFFEINE -> caffeine
     }
 
     fun with(field: MicronutrientField, value: Double?): MicronutrientValues = when (field) {
@@ -118,6 +121,7 @@ data class MicronutrientValues(
         MicronutrientField.VITAMIN_K -> copy(vitaminK = value)
         MicronutrientField.FOLATE -> copy(folate = value)
         MicronutrientField.OMEGA3 -> copy(omega3 = value)
+        MicronutrientField.CAFFEINE -> copy(caffeine = value)
     }
 
     /** Scale every present value (1-decimal rounding matches sheet preview). */
@@ -149,6 +153,7 @@ data class MicronutrientValues(
             vitaminK = s(vitaminK),
             folate = s(folate),
             omega3 = s(omega3),
+            caffeine = s(caffeine),
         )
     }
 
@@ -175,6 +180,7 @@ data class MicronutrientValues(
         vitaminK = vitaminK,
         folate = folate,
         omega3 = omega3,
+        caffeine = caffeine,
     )
 
     companion object {
@@ -201,6 +207,7 @@ data class MicronutrientValues(
             vitaminK = entry.vitaminK,
             folate = entry.folate,
             omega3 = entry.omega3,
+            caffeine = entry.caffeine,
         )
 
         fun fromJson(optDouble: (String) -> Double?) = MicronutrientValues(
@@ -226,6 +233,7 @@ data class MicronutrientValues(
             vitaminK = optDouble(MicronutrientField.VITAMIN_K.jsonKey),
             folate = optDouble(MicronutrientField.FOLATE.jsonKey),
             omega3 = optDouble(MicronutrientField.OMEGA3.jsonKey),
+            caffeine = optDouble(MicronutrientField.CAFFEINE.jsonKey),
         )
 
         fun fromLabelJson(optDouble: (String) -> Double?) = MicronutrientValues(
@@ -251,6 +259,7 @@ data class MicronutrientValues(
             vitaminK = optDouble(MicronutrientField.VITAMIN_K.jsonKeyPer100g),
             folate = optDouble(MicronutrientField.FOLATE.jsonKeyPer100g),
             omega3 = optDouble(MicronutrientField.OMEGA3.jsonKeyPer100g),
+            caffeine = optDouble(MicronutrientField.CAFFEINE.jsonKeyPer100g),
         )
     }
 }

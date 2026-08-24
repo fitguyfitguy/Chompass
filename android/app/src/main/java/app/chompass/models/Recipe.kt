@@ -43,6 +43,7 @@ data class RecipeIngredient(
     val baseVitaminK: Double? = null,
     val baseFolate: Double? = null,
     val baseOmega3: Double? = null,
+    val baseCaffeine: Double? = null,
 ) {
     val calories: Int get() = (baseCalories * quantityScale).roundToInt()
     val protein: Double get() = baseProtein * quantityScale
@@ -70,6 +71,7 @@ data class RecipeIngredient(
     val vitaminK: Double? get() = baseVitaminK?.times(quantityScale)
     val folate: Double? get() = baseFolate?.times(quantityScale)
     val omega3: Double? get() = baseOmega3?.times(quantityScale)
+    val caffeine: Double? get() = baseCaffeine?.times(quantityScale)
 
     /** Converts an already-resolved [FoodEntry] snapshot into a fresh ingredient at 1x scale. */
     companion object {
@@ -102,6 +104,7 @@ data class RecipeIngredient(
             baseVitaminK = entry.vitaminK,
             baseFolate = entry.folate,
             baseOmega3 = entry.omega3,
+            baseCaffeine = entry.caffeine,
         )
     }
 
@@ -138,6 +141,7 @@ data class RecipeIngredient(
         vitaminK = vitaminK,
         folate = folate,
         omega3 = omega3,
+        caffeine = caffeine,
         recipeLogId = recipeLogId,
     )
 }

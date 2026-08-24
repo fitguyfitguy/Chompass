@@ -38,6 +38,7 @@ fun MicronutrientValues.applyTo(analysis: FoodAnalysis): FoodAnalysis = analysis
     vitaminK = vitaminK,
     folate = folate,
     omega3 = omega3,
+    caffeine = caffeine,
 )
 
 fun FoodAnalysis.toMicronutrients() = MicronutrientValues(
@@ -63,6 +64,7 @@ fun FoodAnalysis.toMicronutrients() = MicronutrientValues(
     vitaminK = vitaminK,
     folate = folate,
     omega3 = omega3,
+    caffeine = caffeine,
 )
 
 /**
@@ -152,6 +154,7 @@ data class FoodAnalysis(
     val vitaminK: Double? = null,
     val folate: Double? = null,
     val omega3: Double? = null,
+    val caffeine: Double? = null,
     val servingUnitOptions: List<ServingUnitOption> = emptyList(),
     val selectedServingUnit: String? = null,
     val selectedServingQuantity: Double? = null,
@@ -226,6 +229,7 @@ data class NutritionLabelAnalysis(
     val vitaminKPer100g: Double? = null,
     val folatePer100g: Double? = null,
     val omega3Per100g: Double? = null,
+    val caffeinePer100g: Double? = null,
     val servingUnitOptions: List<ServingUnitOption> = emptyList()
 ) {
     fun scaled(toGrams: Double): FoodAnalysis {
@@ -254,6 +258,7 @@ data class NutritionLabelAnalysis(
             vitaminK = vitaminKPer100g,
             folate = folatePer100g,
             omega3 = omega3Per100g,
+            caffeine = caffeinePer100g,
         ).scaled(scale, round1 = true)
         return micros.applyTo(
             FoodAnalysis(
@@ -515,6 +520,7 @@ internal object FoodJsonParser {
             vitaminKPer100g = micros.vitaminK,
             folatePer100g = micros.folate,
             omega3Per100g = micros.omega3,
+            caffeinePer100g = micros.caffeine,
             servingUnitOptions = parseServingUnitOptions(json, servingSizeGrams)
         )
     }
@@ -557,7 +563,8 @@ internal object FoodJsonParser {
             vitaminE = optInt("vitamin_e", "vitaminE", "vitamin_e_mg", fallback = OptionalNutrientGoals.Default.vitaminE),
             vitaminK = optInt("vitamin_k", "vitaminK", "vitamin_k_mcg", fallback = OptionalNutrientGoals.Default.vitaminK),
             folate = optInt("folate", "folate_mcg", fallback = OptionalNutrientGoals.Default.folate),
-            omega3 = optInt("omega_3", "omega3", "omega_3_g", fallback = OptionalNutrientGoals.Default.omega3)
+            omega3 = optInt("omega_3", "omega3", "omega_3_g", fallback = OptionalNutrientGoals.Default.omega3),
+            caffeine = optInt("caffeine", "caffeine_mg", fallback = OptionalNutrientGoals.Default.caffeine)
         )
     }
 

@@ -163,6 +163,7 @@ internal class HealthConnectWriter(
                 vitaminE = entry.vitaminE?.let { Mass.milligrams(it) },
                 vitaminK = entry.vitaminK?.let { Mass.micrograms(it) },
                 folate = entry.folate?.let { Mass.micrograms(it) },
+                caffeine = entry.caffeine?.let { Mass.milligrams(it) },
                 metadata = Metadata.manualEntry(clientRecordId = tag(entry.id))
             )
             c.insertRecords(listOf(record))

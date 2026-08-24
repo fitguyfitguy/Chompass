@@ -459,6 +459,7 @@ object SyncDocument {
             putNullableNumber("vitamin_k_mcg", e.vitaminK)
             putNullableNumber("folate_mcg", e.folate)
             putNullableNumber("omega3_g", e.omega3)
+            putNullableNumber("caffeine_mg", e.caffeine)
             put(
                 "serving_unit_options",
                 buildJsonArray {
@@ -562,6 +563,7 @@ object SyncDocument {
             vitaminK = o["vitamin_k_mcg"]?.asDouble(),
             folate = o["folate_mcg"]?.asDouble(),
             omega3 = o["omega3_g"]?.asDouble(),
+            caffeine = o["caffeine_mg"]?.asDouble(),
             servingSizeGrams = o["quantity_g"]?.asDouble(),
             servingUnitOptions = parseServingUnitOptions(o["serving_unit_options"]?.asArrayOrNull()),
             selectedServingUnit = o["selected_serving_unit"]?.asString()?.takeIf { it.isNotBlank() },

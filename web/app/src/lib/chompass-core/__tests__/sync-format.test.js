@@ -28,6 +28,7 @@ test("parity sync-sample parses", () => {
   assert.equal(foods[1].name, "Black coffee");
   assert.deepEqual(foods[1].constituents, []);
   assert.equal(foods[1].selectedServingUnit, "cup");
+  assert.equal(foods[0].caffeineMg, 95);
 });
 
 test("exportSyncDocument round-trips food id", () => {
