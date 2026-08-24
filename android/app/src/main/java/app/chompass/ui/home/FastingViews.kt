@@ -95,6 +95,16 @@ fun FastingProgressRow(
                 color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
             )
+            if (!goalReached) {
+                Text(
+                    stringResource(
+                        R.string.fasting_window_opens_in,
+                        fastingDurationLabel(goalMillis - elapsedMillis),
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+                    fontSize = 11.sp,
+                )
+            }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             if (active) {

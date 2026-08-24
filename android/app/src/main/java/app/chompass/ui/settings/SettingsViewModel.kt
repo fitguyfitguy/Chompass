@@ -31,6 +31,7 @@ import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WeightEntry
 import app.chompass.services.ai.RecalcSheetData
 import app.chompass.services.FastingGoalPlanner
+import app.chompass.services.FastingReminderPlanner
 import app.chompass.services.LauncherShortcuts
 import app.chompass.data.SettingsPrefsHydration
 import app.chompass.data.loadLastGoalChangeSheet
@@ -102,6 +103,9 @@ data class SettingsUiState(
     val fastingEnabled: Boolean = false,
     val fastingGoalHours: Int = 0,
     val fastingGoalNotificationEnabled: Boolean = true,
+    val fastingStartReminderEnabled: Boolean = false,
+    val fastingStartReminderHour: Int = 20,
+    val fastingStartReminderMinute: Int = 0,
     val waterReminderEnabled: Boolean = false,
     val waterDynamicEnabled: Boolean = false,
     val waterBaseSource: String = WaterGoalCalculator.BASE_SOURCE_WEIGHT,
@@ -352,6 +356,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     fastingEnabled = snap.fastingEnabled,
                     fastingGoalHours = snap.fastingGoalHours,
                     fastingGoalNotificationEnabled = snap.fastingGoalNotificationEnabled,
+                    fastingStartReminderEnabled = snap.fastingStartReminderEnabled,
+                    fastingStartReminderHour = snap.fastingStartReminderHour,
+                    fastingStartReminderMinute = snap.fastingStartReminderMinute,
                     waterReminderEnabled = snap.waterReminderEnabled,
                     waterDynamicEnabled = snap.waterDynamicEnabled,
                     waterBaseSource = snap.waterBaseSource,
@@ -1164,6 +1171,23 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             FastingGoalPlanner.rearm(container)
         },
         { copy(fastingGoalNotificationEnabled = v) },
+    )
+
+    fun setFastingStartReminderEnabled(v: Boolean) = updateUiPref(
+        {
+            container.prefs.setFastingStartReminderEnabled(v)
+            FastingReminderPlanner.rearmStartReminder(container)
+        },
+        { copy(fastingStartReminderEnabled = v) },
+    )
+
+    fun setFastingStartReminderTime(hour: Int, minute: Int) = updateUiPref(
+        {
+            container.prefs.setFastingStartReminderHour(hour)
+            container.prefs.setFastingStartReminderMinute(minute)
+            FastingReminderPlanner.rearmStartReminder(container)
+        },
+        { copy(fastingStartReminderHour = hour, fastingStartReminderMinute = minute) },
     )
 
     fun setNicotineQuickKinds(kinds: List<NicotineKind>) {

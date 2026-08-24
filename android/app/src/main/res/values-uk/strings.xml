@@ -1676,4 +1676,13 @@ LBM = вага × (1 − %жиру)</string>
     <string name="notif_channel_fasting_desc">Одноразове сповіщення про досягнення цілі посту.</string>
     <string name="notif_fasting_goal_title">Ціль посту досягнута</string>
     <string name="notif_fasting_goal_text">Ваш %1$d-годинний пост завершено — тепер можна перервати пост.</string>
+    <string name="fasting_preset_detail">%1$d год посту · %2$d год вікна прийому їжі</string>
+    <string name="fasting_window_opens_in">Вікно прийому їжі відкриється через %1$s</string>
+    <string name="settings_fasting_section_reminders">Нагадування</string>
+    <string name="settings_fasting_start_reminder">Нагадування про початок</string>
+    <string name="settings_fasting_start_reminder_time">Час нагадування</string>
+    <string name="settings_fasting_start_reminder_help">Щоденне нагадування про початок наступного посту. Пропускається, якщо пост уже триває.</string>
+    <string name="notif_fasting_start_title">Почніть пост</string>
+    <string name="notif_fasting_start_text">Почніть пост зараз.</string>
+    <string name="notif_fasting_start_text_goal">Почніть зараз свій %1$d-годинний пост.</string>
 </resources>

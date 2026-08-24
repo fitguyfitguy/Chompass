@@ -1,6 +1,7 @@
 package app.chompass.data
 
 import android.app.Application
+import app.chompass.models.FastingGoalPreset
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -35,6 +36,9 @@ class FastingRepositoryTest {
         prefs.setFastingEnabled(false)
         prefs.setFastingGoalHours(0)
         prefs.setFastingGoalNotificationEnabled(true)
+        prefs.setFastingStartReminderEnabled(false)
+        prefs.setFastingStartReminderHour(DEFAULT_FASTING_START_REMINDER_HOUR)
+        prefs.setFastingStartReminderMinute(DEFAULT_FASTING_START_REMINDER_MINUTE)
     }
 
     private fun repo(
@@ -184,5 +188,41 @@ class FastingRepositoryTest {
         assertFalse(prefs.fastingEnabled.first())
         assertEquals(0, prefs.fastingGoalHours.first())
         assertTrue(prefs.fastingGoalNotificationEnabled.first())
+    }
+
+    @Test
+    fun `remaining until goal counts down and zeroes at the goal`() = runBlocking {
+        val prefs = PreferencesStore(RuntimeEnvironment.getApplication())
+        val r = repo(prefs)
+        r.start(1_000L)
+
+        val s = prefs.fastingSession.first()
+        assertEquals(16 * 3_600_000L, s.remainingUntilGoalMillis(16, nowMillis = 1_000L))
+        assertEquals(3_600_000L, s.remainingUntilGoalMillis(16, nowMillis = 1_000L + 15 * 3_600_000L))
+        assertEquals(0L, s.remainingUntilGoalMillis(16, nowMillis = 1_000L + 16 * 3_600_000L))
+        assertEquals(0L, s.remainingUntilGoalMillis(16, nowMillis = 1_000L + 20 * 3_600_000L))
+        // No goal / idle → 0.
+        assertEquals(0L, s.remainingUntilGoalMillis(0, nowMillis = 1_000L))
+        r.cancel()
+        assertEquals(0L, prefs.fastingSession.first().remainingUntilGoalMillis(16, nowMillis = 1_000L))
+    }
+
+    @Test
+    fun `start reminder defaults are off at 20 00`() = runBlocking {
+        val prefs = PreferencesStore(RuntimeEnvironment.getApplication())
+        assertFalse(prefs.fastingStartReminderEnabled.first())
+        assertEquals(DEFAULT_FASTING_START_REMINDER_HOUR, prefs.fastingStartReminderHour.first())
+        assertEquals(DEFAULT_FASTING_START_REMINDER_MINUTE, prefs.fastingStartReminderMinute.first())
+    }
+
+    @Test
+    fun `popular presets cover the mainstream protocols`() {
+        val hours = FastingGoalPreset.Popular.map { it.fastHours }
+        assertEquals(listOf(12, 14, 16, 18, 20, 23), hours)
+        // Fast + eating window always sums to a full day (the ratio meaning).
+        FastingGoalPreset.Popular.forEach { preset ->
+            assertEquals(24, preset.fastHours + preset.eatHours)
+        }
+        assertEquals("16:8", FastingGoalPreset.Popular.first { it.fastHours == 16 }.label)
     }
 }

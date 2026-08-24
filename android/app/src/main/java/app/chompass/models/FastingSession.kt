@@ -34,6 +34,14 @@ data class FastingSession(
     fun goalReached(goalHours: Int, nowMillis: Long = System.currentTimeMillis()): Boolean =
         goalHours > 0 && isFasting && elapsedMillis(nowMillis) >= goalHours * MILLIS_PER_HOUR
 
+    /** Remaining millis until the goal; 0 when idle, no goal, or already reached. */
+    fun remainingUntilGoalMillis(goalHours: Int, nowMillis: Long = System.currentTimeMillis()): Long {
+        if (goalHours <= 0) return 0L
+        val started = startedAtMillis ?: return 0L
+        val target = started + goalHours * MILLIS_PER_HOUR
+        return (target - nowMillis).coerceAtLeast(0L)
+    }
+
     /** Duration of the last completed fast; 0 when none recorded yet. */
     fun lastFastDurationMillis(): Long {
         val started = lastFastStartedAtMillis ?: return 0L
@@ -43,5 +51,32 @@ data class FastingSession(
 
     companion object {
         const val MILLIS_PER_HOUR = 3_600_000L
+    }
+}
+
+/**
+ * Popular intermittent-fasting protocols as goal presets (fast:hours label is
+ * language-neutral, so chips never need translation). "23:1" is the OMAD-style
+ * one-meal-a-day window. The wheel in the goal sheet still allows any custom
+ * hours; presets are quick picks that set the wheel.
+ */
+@Serializable
+data class FastingGoalPreset(
+    /** "16:8" — the fast:hours ratio, shown verbatim on the chip. */
+    val label: String,
+    /** Goal fast length in hours (what the timer counts toward). */
+    val fastHours: Int,
+    /** Complementary eating-window hours (label display only). */
+    val eatHours: Int,
+) {
+    companion object {
+        val Popular = listOf(
+            FastingGoalPreset(label = "12:12", fastHours = 12, eatHours = 12),
+            FastingGoalPreset(label = "14:10", fastHours = 14, eatHours = 10),
+            FastingGoalPreset(label = "16:8", fastHours = 16, eatHours = 8),
+            FastingGoalPreset(label = "18:6", fastHours = 18, eatHours = 6),
+            FastingGoalPreset(label = "20:4", fastHours = 20, eatHours = 4),
+            FastingGoalPreset(label = "23:1", fastHours = 23, eatHours = 1),
+        )
     }
 }

@@ -1749,4 +1749,13 @@
     <string name="notif_channel_fasting_desc">단식 목표 달성 시 1회 알림.</string>
     <string name="notif_fasting_goal_title">단식 목표 달성</string>
     <string name="notif_fasting_goal_text">%1$d시간 단식이 완료되었습니다. 이제 식사를 시작할 수 있습니다.</string>
+    <string name="fasting_preset_detail">단식 %1$d시간 · 식사 시간 %2$d시간</string>
+    <string name="fasting_window_opens_in">식사 시간까지 %1$s</string>
+    <string name="settings_fasting_section_reminders">알림</string>
+    <string name="settings_fasting_start_reminder">시작 알림</string>
+    <string name="settings_fasting_start_reminder_time">알림 시간</string>
+    <string name="settings_fasting_start_reminder_help">다음 단식 시작을 알리는 매일 알림입니다. 단식이 이미 진행 중이면 건너뜁니다.</string>
+    <string name="notif_fasting_start_title">단식 시작</string>
+    <string name="notif_fasting_start_text">지금 단식을 시작하세요.</string>
+    <string name="notif_fasting_start_text_goal">지금 %1$d시간 단식을 시작하세요.</string>
 </resources>

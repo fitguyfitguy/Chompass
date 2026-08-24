@@ -1749,4 +1749,13 @@
     <string name="notif_channel_fasting_desc">Notă unică atunci când o țintă de post este atinsă.</string>
     <string name="notif_fasting_goal_title">Ținta de post atinsă</string>
     <string name="notif_fasting_goal_text">Postul tău de %1$d h s-a încheiat — poți mânca acum.</string>
+    <string name="fasting_preset_detail">%1$d h de post · %2$d h de fereastră de mese</string>
+    <string name="fasting_window_opens_in">Fereastra de mese se deschide în %1$s</string>
+    <string name="settings_fasting_section_reminders">Memento-uri</string>
+    <string name="settings_fasting_start_reminder">Memento de începere</string>
+    <string name="settings_fasting_start_reminder_time">Ora mementoului</string>
+    <string name="settings_fasting_start_reminder_help">Un memento zilnic pentru a începe următorul post. Omis dacă un post este deja activ.</string>
+    <string name="notif_fasting_start_title">Începe postul</string>
+    <string name="notif_fasting_start_text">Începe postul acum.</string>
+    <string name="notif_fasting_start_text_goal">Începe acum postul tău de %1$d h.</string>
 </resources>

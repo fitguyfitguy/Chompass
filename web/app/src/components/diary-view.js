@@ -95,7 +95,11 @@ function fastingCard(p) {
         active && goal > 0
           ? `<div class="water-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${goal}" aria-valuenow="${(elapsed / 3_600_000).toFixed(1)}" aria-label="${t("diary.fasting")}">
               <span data-width="${pct.toFixed(1)}%"></span>
-            </div>`
+            </div>${
+              !reached
+                ? `<div class="water-row__hint">${t("diary.fasting_window_opens_in", { remaining: fmtFastDuration(Math.max(0, goalMillis - elapsed)) })}</div>`
+                : ""
+            }`
           : ""
       }
     </div>`;

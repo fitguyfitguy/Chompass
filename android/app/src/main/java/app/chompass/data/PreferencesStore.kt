@@ -280,6 +280,12 @@ class PreferencesStore(private val appContext: Context) {
         lastFastStartedAtMillis: Long? = null,
         goalReachedNotified: Boolean = false,
     ) = setFastingSessionFieldsImpl(startedAtMillis, lastEndedAtMillis, lastFastStartedAtMillis, goalReachedNotified)
+    val fastingStartReminderEnabled: Flow<Boolean> get() = fastingStartReminderEnabledImpl
+    suspend fun setFastingStartReminderEnabled(v: Boolean) = setFastingStartReminderEnabledImpl(v)
+    val fastingStartReminderHour: Flow<Int> get() = fastingStartReminderHourImpl
+    suspend fun setFastingStartReminderHour(v: Int) = setFastingStartReminderHourImpl(v)
+    val fastingStartReminderMinute: Flow<Int> get() = fastingStartReminderMinuteImpl
+    suspend fun setFastingStartReminderMinute(v: Int) = setFastingStartReminderMinuteImpl(v)
     val lastNotifiedUpdateVersion: Flow<String?> get() = lastNotifiedUpdateVersionImpl
     suspend fun setLastNotifiedUpdateVersion(v: String) = setLastNotifiedUpdateVersionImpl(v)
     val healthConnectEnabled: Flow<Boolean> get() = healthConnectEnabledImpl

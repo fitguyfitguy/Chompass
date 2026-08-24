@@ -1749,4 +1749,13 @@
     <string name="notif_channel_fasting_desc">Aviso único quando uma meta de jejum é atingida.</string>
     <string name="notif_fasting_goal_title">Meta de jejum atingida</string>
     <string name="notif_fasting_goal_text">Seu jejum de %1$d h terminou — você já pode comer.</string>
+    <string name="fasting_preset_detail">%1$d h de jejum · %2$d h de janela de refeições</string>
+    <string name="fasting_window_opens_in">A janela de refeições abre em %1$s</string>
+    <string name="settings_fasting_section_reminders">Lembretes</string>
+    <string name="settings_fasting_start_reminder">Lembrete de início</string>
+    <string name="settings_fasting_start_reminder_time">Hora do lembrete</string>
+    <string name="settings_fasting_start_reminder_help">Um lembrete diário para iniciar o próximo jejum. Ignorado quando já há um jejum ativo.</string>
+    <string name="notif_fasting_start_title">Inicie seu jejum</string>
+    <string name="notif_fasting_start_text">Inicie seu jejum agora.</string>
+    <string name="notif_fasting_start_text_goal">Inicie agora seu jejum de %1$d h.</string>
 </resources>

@@ -277,6 +277,41 @@ class NotificationService(private val context: Context) {
     fun cancelFastingGoal() = cancel(REQUEST_FASTING_GOAL)
 
     /**
+     * Arms the daily start-fast nudge at [hour]:[minute] (fixed time, like the
+     * streak reminder). The receiver skips it when a fast is already running.
+     * [goalHours] is baked into the text ("Start your 16 h fast now"; 0 = generic).
+     */
+    fun scheduleFastingStartReminder(hour: Int, minute: Int, goalHours: Int) {
+        val text = if (goalHours > 0) {
+            context.getString(R.string.notif_fasting_start_text_goal, goalHours)
+        } else {
+            context.getString(R.string.notif_fasting_start_text)
+        }
+        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, ReminderReceiver::class.java).apply {
+            putExtra(EXTRA_CHANNEL, CHANNEL_FASTING)
+            putExtra(EXTRA_TITLE, context.getString(R.string.notif_fasting_start_title))
+            putExtra(EXTRA_TEXT, text)
+            putExtra(EXTRA_REQUEST, REQUEST_FASTING_START)
+        }
+        val pi = PendingIntent.getBroadcast(
+            context, REQUEST_FASTING_START, intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        val now = Calendar.getInstance()
+        val fire = (now.clone() as Calendar).apply {
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+            if (before(now)) add(Calendar.DAY_OF_MONTH, 1)
+        }
+        am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, fire.timeInMillis, pi)
+    }
+
+    fun cancelFastingStartReminder() = cancel(REQUEST_FASTING_START)
+
+    /**
      * Arms a silent daily alarm for just after midnight that rewrites the
      * widget snapshot to "today" (issue #16). The receiver re-arms the chain;
      * ChompassApp re-arms on cold start (reboots drop alarms). No notification
@@ -375,7 +410,8 @@ class NotificationService(private val context: Context) {
         private const val REQUEST_BODY_FAT = 1004
         private const val REQUEST_APP_UPDATE = 1005
         private const val REQUEST_WATER = 1006
-        private const val REQUEST_FASTING_GOAL = 1009
+        internal const val REQUEST_FASTING_GOAL = 1009
+        internal const val REQUEST_FASTING_START = 1010
         private const val REQUEST_WIDGET_MIDNIGHT = 1007
         private const val REQUEST_GOAL = 1008
     }
@@ -415,9 +451,11 @@ class ReminderReceiver : BroadcastReceiver() {
                     val container = (context.applicationContext as? ChompassApp)?.container
                     if (container != null) {
                         WaterReminderPlanner.rearm(container)
-                        // Rebooting drops the one-shot fasting-goal alarm too;
-                        // re-arm it from the persisted session fields.
+                        // Rebooting drops the fasting alarms too; re-arm them
+                        // from the persisted session + prefs (goal is one-shot,
+                        // start nudge is daily — same computed class as water).
                         FastingGoalPlanner.rearm(container)
+                        FastingReminderPlanner.rearmStartReminder(container)
                     }
                 } finally {
                     pendingResult.finish()
@@ -469,7 +507,11 @@ class ReminderReceiver : BroadcastReceiver() {
                 // Fasting goal reached: post only while the fast is still running
                 // and this goal wasn't already notified; latch it in the same step
                 // so the one-shot alarm can never double-notify.
-                val fastingGoalReached = if (channel == NotificationService.CHANNEL_FASTING && container != null) {
+                val fastingGoalReached = if (
+                    channel == NotificationService.CHANNEL_FASTING &&
+                    request == NotificationService.REQUEST_FASTING_GOAL &&
+                    container != null
+                ) {
                     val session = container.fastingRepository.current()
                     if (session.isFasting && !session.goalReachedNotified) {
                         container.fastingRepository.markGoalReachedNotified()
@@ -477,6 +519,18 @@ class ReminderReceiver : BroadcastReceiver() {
                     } else {
                         false
                     }
+                } else {
+                    false
+                }
+
+                // Daily start-fast nudge: skip when a fast is already running
+                // (you started already) — never nag mid-fast.
+                val fastingStartNudge = if (
+                    channel == NotificationService.CHANNEL_FASTING &&
+                    request == NotificationService.REQUEST_FASTING_START &&
+                    container != null
+                ) {
+                    !container.fastingRepository.current().isFasting
                 } else {
                     false
                 }
@@ -494,8 +548,13 @@ class ReminderReceiver : BroadcastReceiver() {
                 } else if (channel == NotificationService.CHANNEL_DAILY && container != null) {
                     dailyCopy != null
                 } else if (channel == NotificationService.CHANNEL_FASTING) {
-                    // Nothing to post when the fast ended or was already notified.
-                    fastingGoalReached
+                    // Nothing to post when the fast ended / was already notified,
+                    // or (start nudge) when a fast is already running.
+                    when (request) {
+                        NotificationService.REQUEST_FASTING_GOAL -> fastingGoalReached
+                        NotificationService.REQUEST_FASTING_START -> fastingStartNudge
+                        else -> false
+                    }
                 } else {
                     true
                 }

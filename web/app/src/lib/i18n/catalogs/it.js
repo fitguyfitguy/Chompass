@@ -79,6 +79,7 @@ export const it = Object.freeze({
   "diary.fasting_stop": "Termina digiuno",
   "diary.fasting_goal_reached": "Obiettivo raggiunto",
   "diary.fasting_goal_hint": "{elapsed} · obiettivo {goal} h",
+  "diary.fasting_window_opens_in": "La finestra dei pasti si apre tra {remaining}",
   "diary.note_title": "Nota del giorno",
   "diary.note_empty": "Aggiungi una nota per questo giorno",
   "diary.note_save": "Salva",

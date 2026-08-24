@@ -3161,4 +3161,13 @@ für dich ein</string>
     <string name="notif_channel_fasting_desc">Einmalige Mitteilung, wenn ein Fastenziel erreicht ist.</string>
     <string name="notif_fasting_goal_title">Fastenziel erreicht</string>
     <string name="notif_fasting_goal_text">Dein %1$d-stündiges Fasten ist abgeschlossen — du kannst jetzt deine Fastenpause beenden.</string>
+    <string name="fasting_preset_detail">%1$d h Fasten · %2$d h Essensfenster</string>
+    <string name="fasting_window_opens_in">Essensfenster öffnet in %1$s</string>
+    <string name="settings_fasting_section_reminders">Erinnerungen</string>
+    <string name="settings_fasting_start_reminder">Start-Erinnerung</string>
+    <string name="settings_fasting_start_reminder_time">Erinnerungszeit</string>
+    <string name="settings_fasting_start_reminder_help">Eine tägliche Erinnerung, dein nächstes Fasten zu starten. Übersprungen, wenn bereits gefastet wird.</string>
+    <string name="notif_fasting_start_title">Starte dein Fasten</string>
+    <string name="notif_fasting_start_text">Starte jetzt dein Fasten.</string>
+    <string name="notif_fasting_start_text_goal">Starte jetzt dein %1$d-stündiges Fasten.</string>
 </resources>

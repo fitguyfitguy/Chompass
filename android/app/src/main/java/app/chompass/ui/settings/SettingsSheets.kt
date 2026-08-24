@@ -615,6 +615,14 @@ internal fun SettingsSheets(
                         onDismiss()
                     },
                 )
+                SettingsSheet.FASTING_START_TIME -> FastingStartTimeSheet(
+                    hour = ui.fastingStartReminderHour,
+                    minute = ui.fastingStartReminderMinute,
+                    onSave = { hour, minute ->
+                        vm.setFastingStartReminderTime(hour, minute)
+                        onDismiss()
+                    },
+                )
                 SettingsSheet.WATER_DYNAMIC_BASE -> ListSheet(
                     title = stringResource(R.string.settings_water_dynamic_base),
                     items = listOf(

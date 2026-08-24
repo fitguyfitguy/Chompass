@@ -1749,4 +1749,13 @@
     <string name="notif_channel_fasting_desc">ファスティング目標達成時の1回限りの通知。</string>
     <string name="notif_fasting_goal_title">ファスティング目標達成</string>
     <string name="notif_fasting_goal_text">%1$d 時間のファスティングが完了しました。そろそろ食事を始められます。</string>
+    <string name="fasting_preset_detail">ファスティング %1$d 時間 · 食事時間 %2$d 時間</string>
+    <string name="fasting_window_opens_in">食事時間まで %1$s</string>
+    <string name="settings_fasting_section_reminders">リマインダー</string>
+    <string name="settings_fasting_start_reminder">開始リマインダー</string>
+    <string name="settings_fasting_start_reminder_time">リマインダー時刻</string>
+    <string name="settings_fasting_start_reminder_help">次のファスティング開始を促す毎日の通知。すでに実行中ならスキップされます。</string>
+    <string name="notif_fasting_start_title">ファスティングを開始</string>
+    <string name="notif_fasting_start_text">今すぐファスティングを開始しましょう。</string>
+    <string name="notif_fasting_start_text_goal">今すぐ %1$d 時間のファスティングを開始しましょう。</string>
 </resources>

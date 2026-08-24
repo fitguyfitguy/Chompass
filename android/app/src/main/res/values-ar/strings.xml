@@ -1755,4 +1755,13 @@
     <string name="notif_channel_fasting_desc">ملاحظة لمرة واحدة عند بلوغ هدف الصيام.</string>
     <string name="notif_fasting_goal_title">تم بلوغ هدف الصيام</string>
     <string name="notif_fasting_goal_text">اكتمل صيامك البالغ %1$d ساعة — يمكنك الإفطار الآن.</string>
+    <string name="fasting_preset_detail">%1$d ساعة صيام · %2$d ساعة نافذة أكل</string>
+    <string name="fasting_window_opens_in">تفتح نافذة الأكل خلال %1$s</string>
+    <string name="settings_fasting_section_reminders">التذكيرات</string>
+    <string name="settings_fasting_start_reminder">تذكير البدء</string>
+    <string name="settings_fasting_start_reminder_time">وقت التذكير</string>
+    <string name="settings_fasting_start_reminder_help">تذكير يومي لبدء الصيام التالي. يُتخطّى إذا كان صيام نشط بالفعل.</string>
+    <string name="notif_fasting_start_title">ابدأ صيامك</string>
+    <string name="notif_fasting_start_text">ابدأ صيامك الآن.</string>
+    <string name="notif_fasting_start_text_goal">ابدأ صيامك البالغ %1$d ساعة الآن.</string>
 </resources>

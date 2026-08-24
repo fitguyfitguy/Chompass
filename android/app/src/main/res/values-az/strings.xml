@@ -1750,4 +1750,13 @@ bilirsən?</string>
     <string name="notif_channel_fasting_desc">Oruc hədəfinə çatanda birdəfəlik qeyd.</string>
     <string name="notif_fasting_goal_title">Oruc hədəfinə çatdı</string>
     <string name="notif_fasting_goal_text">%1$d saatlıq orucunuz tamamlandı — indi yemək yeyə bilərsiniz.</string>
+    <string name="fasting_preset_detail">%1$d saat oruc · %2$d saat yemək pəncərəsi</string>
+    <string name="fasting_window_opens_in">Yemək pəncərəsi %1$s sonra açılır</string>
+    <string name="settings_fasting_section_reminders">Xatırlatmalar</string>
+    <string name="settings_fasting_start_reminder">Başlama xatırlatması</string>
+    <string name="settings_fasting_start_reminder_time">Xatırlatma vaxtı</string>
+    <string name="settings_fasting_start_reminder_help">Növbəti oruca başlamaq üçün gündəlik xatırlatma. Artıq aktiv oruc varsa keçilir.</string>
+    <string name="notif_fasting_start_title">Oruca başla</string>
+    <string name="notif_fasting_start_text">İndi oruca başla.</string>
+    <string name="notif_fasting_start_text_goal">%1$d saatlıq orucuna indi başla.</string>
 </resources>

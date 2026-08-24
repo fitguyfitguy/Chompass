@@ -528,6 +528,8 @@
     <string name="fasting_duration_h_m">%1$d h %2$d m</string>
     <string name="fasting_duration_h">%1$d h</string>
     <string name="fasting_duration_m">%1$d m</string>
+    <string name="fasting_preset_detail">%1$d h fasting · %2$d h eating window</string>
+    <string name="fasting_window_opens_in">Eating window opens in %1$s</string>
     <string name="fasting_start">Start fast</string>
     <string name="fasting_stop">Stop fast</string>
     <string name="fasting_cancel">Cancel</string>
@@ -542,6 +544,10 @@
     <string name="settings_fasting_goal_wheel_help">A one-time notification fires when you reach the goal. 0 = no goal.</string>
     <string name="settings_fasting_section_notification">Notification</string>
     <string name="settings_fasting_notification">Goal reached</string>
+    <string name="settings_fasting_section_reminders">Reminders</string>
+    <string name="settings_fasting_start_reminder">Start reminder</string>
+    <string name="settings_fasting_start_reminder_time">Reminder time</string>
+    <string name="settings_fasting_start_reminder_help">A daily nudge to start your next fast. Skipped when a fast is already running.</string>
     <string name="fasting_local_only_note">The fasting timer stays on this device — it is never synced, exported, or included in shared meals. The goal-reached notification is the only thing Chompass posts about it.</string>
     <string name="shortcut_fasting_short">Fast</string>
     <string name="shortcut_fasting_long">Start or stop fasting</string>
@@ -1763,6 +1769,9 @@
     <string name="notif_channel_fasting_desc">One-time note when a fasting goal is reached.</string>
     <string name="notif_fasting_goal_title">Fasting goal reached</string>
     <string name="notif_fasting_goal_text">Your %1$d h fast is complete — you can break your fast now.</string>
+    <string name="notif_fasting_start_title">Start your fast</string>
+    <string name="notif_fasting_start_text">Start your fast now.</string>
+    <string name="notif_fasting_start_text_goal">Start your %1$d h fast now.</string>
     <string name="notif_update_title">Update available</string>
     <string name="notif_update_text">A new version of Chompass is ready. Tap to update.</string>
     <string name="settings_calc_intro">Your daily calorie and macro targets start from the formulas below. They are never set below your estimated resting calories or 1,200 kcal. When you tap Recalculate Goals, or automatically about once a week if Adaptive Goals is on, Chompass can refine them using your logs and your AI provider, but not below that floor.</string>

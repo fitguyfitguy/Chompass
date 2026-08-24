@@ -1756,4 +1756,13 @@
     <string name="notif_channel_fasting_desc">Avis unique lorsqu\'un objectif de jeûne est atteint.</string>
     <string name="notif_fasting_goal_title">Objectif de jeûne atteint</string>
     <string name="notif_fasting_goal_text">Votre jeûne de %1$d h est terminé : vous pouvez rompre votre jeûne maintenant.</string>
+    <string name="fasting_preset_detail">%1$d h de jeûne · %2$d h de fenêtre de repas</string>
+    <string name="fasting_window_opens_in">La fenêtre de repas s\'ouvre dans %1$s</string>
+    <string name="settings_fasting_section_reminders">Rappels</string>
+    <string name="settings_fasting_start_reminder">Rappel de début</string>
+    <string name="settings_fasting_start_reminder_time">Heure du rappel</string>
+    <string name="settings_fasting_start_reminder_help">Un rappel quotidien pour démarrer votre prochain jeûne. Ignoré si un jeûne est déjà en cours.</string>
+    <string name="notif_fasting_start_title">Démarrez votre jeûne</string>
+    <string name="notif_fasting_start_text">Démarrez votre jeûne maintenant.</string>
+    <string name="notif_fasting_start_text_goal">Démarrez maintenant votre jeûne de %1$d h.</string>
 </resources>
