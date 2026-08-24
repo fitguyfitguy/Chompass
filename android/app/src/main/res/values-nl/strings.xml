@@ -1586,6 +1586,12 @@
     <string name="voice_slide_to_cancel">‹ veeg om te annuleren</string>
     <string name="water">Water</string>
     <string name="water_add">Water toevoegen</string>
+    <string name="water_history_title">Watergeschiedenis</string>
+    <string name="water_history_total">%1$s · %2$s</string>
+    <string name="water_no_entries">Nog geen water gelogd voor deze dag.</string>
+    <string name="water_edit_title">Water bewerken</string>
+    <string name="cd_delete_water">Waterinvoer verwijderen</string>
+
     <string name="water_amount_fl_oz">%1$d fl oz</string>
     <string name="water_amount_ml">%1$d ml</string>
     <string name="water_custom_amount">Eigen hoeveelheid</string>
