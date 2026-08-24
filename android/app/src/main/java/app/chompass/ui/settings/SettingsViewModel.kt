@@ -16,6 +16,7 @@ import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.KetoCarbMode
+import app.chompass.models.NicotineKind
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.ProteinTargetMode
 import app.chompass.models.ServingUnitInferenceMode
@@ -88,6 +89,9 @@ data class SettingsUiState(
     val waterTrackingEnabled: Boolean = false,
     val waterDailyGoalMl: Int = 2_000,
     val waterQuickPresetsMl: List<Int> = WaterQuickPresets.DEFAULT_AMOUNTS_ML,
+    val nicotineTrackingEnabled: Boolean = false,
+    val nicotineDailyLimit: Int = 0,
+    val nicotineQuickKinds: List<NicotineKind> = NicotineKind.DefaultQuickKinds,
     val waterReminderEnabled: Boolean = false,
     val waterDynamicEnabled: Boolean = false,
     val waterBaseSource: String = WaterGoalCalculator.BASE_SOURCE_WEIGHT,
@@ -328,6 +332,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     waterTrackingEnabled = snap.waterTrackingEnabled,
                     waterDailyGoalMl = snap.waterDailyGoalMl,
                     waterQuickPresetsMl = snap.waterQuickPresetsMl,
+                    nicotineTrackingEnabled = snap.nicotineTrackingEnabled,
+                    nicotineDailyLimit = snap.nicotineDailyLimit,
+                    nicotineQuickKinds = snap.nicotineQuickKinds,
                     waterReminderEnabled = snap.waterReminderEnabled,
                     waterDynamicEnabled = snap.waterDynamicEnabled,
                     waterBaseSource = snap.waterBaseSource,
@@ -1077,6 +1084,24 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         },
         { copy(waterDailyGoalMl = v) },
     )
+
+    fun setNicotineTrackingEnabled(v: Boolean) = updateUiPref(
+        { container.prefs.setNicotineTrackingEnabled(v) },
+        { copy(nicotineTrackingEnabled = v) },
+    )
+
+    fun setNicotineDailyLimit(v: Int) = updateUiPref(
+        { container.prefs.setNicotineDailyLimit(v) },
+        { copy(nicotineDailyLimit = v) },
+    )
+
+    fun setNicotineQuickKinds(kinds: List<NicotineKind>) {
+        val validated = NicotineKind.quickKindsFromStorage(NicotineKind.quickKindsToStorage(kinds))
+        updateUiPref(
+            { container.prefs.setNicotineQuickKinds(validated) },
+            { copy(nicotineQuickKinds = validated) },
+        )
+    }
 
     fun setWaterQuickPresetsMl(amountsMl: List<Int>) {
         val validated = WaterQuickPresets(amountsMl).validatedOrDefault().amountsMl

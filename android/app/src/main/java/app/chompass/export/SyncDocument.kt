@@ -20,6 +20,8 @@ import app.chompass.models.FoodEntry
 import app.chompass.models.FoodGroundingProvenance
 import app.chompass.models.FoodSource
 import app.chompass.models.MealType
+import app.chompass.models.NicotineEntry
+import app.chompass.models.NicotineKind
 import app.chompass.models.NutrientSourceKind
 import app.chompass.models.Recipe
 import app.chompass.models.RecipeIngredient
@@ -62,6 +64,7 @@ object SyncDocument {
         val measurements: List<MeasurementWire>,
         val water: List<WaterWire>,
         val dailyNotes: List<DailyNoteWire>,
+        val nicotine: List<NicotineWire>,
         val recipes: List<RecipeWire>,
         val profile: SingletonEnvelope?,
         val prefs: SingletonEnvelope?,
@@ -110,6 +113,13 @@ object SyncDocument {
         val entry: DailyNote?,
     )
 
+    data class NicotineWire(
+        val id: String,
+        val updatedAt: String,
+        val deletedAt: String?,
+        val entry: NicotineEntry?,
+    )
+
     data class RecipeWire(
         val id: String,
         val updatedAt: String,
@@ -149,6 +159,7 @@ object SyncDocument {
                     measurements = arr("measurements").mapNotNull { parseMeasurementWire(it) },
                     water = arr("water").mapNotNull { parseWaterWire(it) },
                     dailyNotes = arr("daily_notes").mapNotNull { parseDailyNoteWire(it) },
+                    nicotine = arr("nicotine_entries").mapNotNull { parseNicotineWire(it) },
                     recipes = arr("recipes").mapNotNull { parseRecipeWire(it) },
                     profile = parseSingleton(root["profile"]),
                     prefs = parseSingleton(root["prefs"]),
@@ -168,6 +179,7 @@ object SyncDocument {
         measurements: List<BodyMeasurement>,
         water: List<WaterEntry>,
         dailyNotes: List<DailyNote> = emptyList(),
+        nicotine: List<NicotineEntry> = emptyList(),
         recipes: List<Recipe>,
         revisions: Map<String, Revision> = emptyMap(),
         profile: SingletonEnvelope? = null,
@@ -283,6 +295,27 @@ object SyncDocument {
                         )
                     }
                     appendTombstones(revisions, "daily_note", dailyNotes.map { it.id.toString() }.toSet())
+                },
+            )
+            put(
+                "nicotine_entries",
+                buildJsonArray {
+                    for (n in nicotine) {
+                        val day = n.date.atZone(zone).toLocalDate().toString()
+                        val meta = metaFor(n.id.toString(), revisions, "${day}T00:00:00Z")
+                        add(
+                            buildJsonObject {
+                                put("id", n.id.toString())
+                                put("updated_at", meta.updatedAt)
+                                putNullable("deleted_at", meta.deletedAt)
+                                put("date", day)
+                                put("kind", n.kind.storageKey)
+                                put("count", n.count)
+                                putNullableNumber("mg", n.mg)
+                            },
+                        )
+                    }
+                    appendTombstones(revisions, "nicotine", nicotine.map { it.id.toString() }.toSet())
                 },
             )
             put(
@@ -416,7 +449,7 @@ object SyncDocument {
                 },
             )
             for (key in listOf(
-                "food_entries", "favorites", "body_fat", "measurements", "water", "daily_notes", "recipes",
+                "food_entries", "favorites", "body_fat", "measurements", "water", "daily_notes", "nicotine_entries", "recipes",
             )) {
                 put(key, mergeList(key))
             }
@@ -744,6 +777,26 @@ object SyncDocument {
             text = text.take(DailyNote.MAX_TEXT_LENGTH),
         )
         return DailyNoteWire(id, updatedAt, null, entry)
+    }
+
+    private fun parseNicotineWire(el: JsonElement): NicotineWire? {
+        val o = el.asObjectOrNull() ?: return null
+        val id = o["id"]?.asString()?.takeIf { it.isNotBlank() } ?: return null
+        val updatedAt = o["updated_at"]?.asString() ?: return null
+        val deletedAt = o["deleted_at"]?.asString()
+        if (!deletedAt.isNullOrBlank()) return NicotineWire(id, updatedAt, deletedAt, null)
+        val dateRaw = o["date"]?.asString() ?: return NicotineWire(id, updatedAt, null, null)
+        val instant = parseInstant(dateRaw)
+            ?: runCatching { LocalDate.parse(dateRaw.take(10)).atStartOfDay().toInstant(ZoneOffset.UTC) }.getOrNull()
+            ?: return NicotineWire(id, updatedAt, null, null)
+        val entry = NicotineEntry(
+            id = runCatching { UUID.fromString(id) }.getOrElse { UUID.nameUUIDFromBytes(id.toByteArray()) },
+            date = instant,
+            kind = NicotineKind.fromStorage(o["kind"]?.asString()),
+            count = (o["count"]?.asInt() ?: 1).coerceAtLeast(1),
+            mg = o["mg"]?.takeIf { it !is JsonNull }?.asDouble(),
+        )
+        return NicotineWire(id, updatedAt, null, entry)
     }
 
     private fun parseRecipeWire(el: JsonElement): RecipeWire? {

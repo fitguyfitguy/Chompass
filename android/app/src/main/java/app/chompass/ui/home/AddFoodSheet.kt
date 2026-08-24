@@ -37,6 +37,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -65,11 +67,13 @@ import kotlin.math.roundToInt
 import app.chompass.R
 import app.chompass.data.QuickRelogRows
 import app.chompass.models.FoodEntry
+import app.chompass.models.NicotineKind
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
+import app.chompass.ui.theme.warning
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WaterAmountFormat
 
@@ -101,6 +105,10 @@ fun AddFoodSheet(
     waterUseMetric: Boolean = true,
     onWater: (Int) -> Unit = {},
     onWaterCustom: () -> Unit = {},
+    nicotineTrackingEnabled: Boolean = false,
+    nicotineQuickKinds: List<NicotineKind> = NicotineKind.DefaultQuickKinds,
+    onNicotine: (NicotineKind) -> Unit = {},
+    onNicotineCustom: () -> Unit = {},
     relogRows: QuickRelogRows = QuickRelogRows.Empty,
     relogLoading: Boolean = false,
     onRelogRecent: (FoodEntry) -> Unit = {},
@@ -127,6 +135,10 @@ fun AddFoodSheet(
             waterUseMetric = waterUseMetric,
             onWater = { ml -> onDismiss(); onWater(ml) },
             onWaterCustom = { onDismiss(); onWaterCustom() },
+            nicotineTrackingEnabled = nicotineTrackingEnabled,
+            nicotineQuickKinds = nicotineQuickKinds,
+            onNicotine = { kind -> onDismiss(); onNicotine(kind) },
+            onNicotineCustom = { onDismiss(); onNicotineCustom() },
             relogRows = relogRows,
             relogLoading = relogLoading,
             onRelogRecent = { entry -> onDismiss(); onRelogRecent(entry) },
@@ -160,6 +172,10 @@ internal fun AddFoodSheetContent(
     waterUseMetric: Boolean = true,
     onWater: (Int) -> Unit = {},
     onWaterCustom: () -> Unit = {},
+    nicotineTrackingEnabled: Boolean = false,
+    nicotineQuickKinds: List<NicotineKind> = NicotineKind.DefaultQuickKinds,
+    onNicotine: (NicotineKind) -> Unit = {},
+    onNicotineCustom: () -> Unit = {},
     relogRows: QuickRelogRows = QuickRelogRows.Empty,
     relogLoading: Boolean = false,
     onRelogRecent: (FoodEntry) -> Unit = {},
@@ -570,6 +586,54 @@ private fun waterAmountLabel(ml: Int, useMetric: Boolean): String =
     } else {
         stringResource(R.string.water_amount_fl_oz, WaterAmountFormat.flOzFromMl(ml))
     }
+
+/**
+ * Nicotine quick-log row (optional tracker): one chip per quick kind (+1) and
+ * a Custom button opening [NicotineCustomCountSheet]. Mirrors the water row.
+ */
+@Composable
+private fun AddFoodNicotineQuickRow(
+    quickKinds: List<NicotineKind>,
+    onNicotine: (NicotineKind) -> Unit,
+    onNicotineCustom: () -> Unit,
+) {
+    val kinds = remember(quickKinds) { quickKinds.distinct().ifEmpty { NicotineKind.DefaultQuickKinds } }
+
+    SheetSectionHeader(stringResource(R.string.add_food_nicotine_section))
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.55f))
+            .padding(horizontal = 10.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        kinds.forEach { kind ->
+            AssistChip(
+                onClick = { onNicotine(kind) },
+                label = {
+                    Text(stringResource(R.string.nicotine_quick_plus_one, stringResource(kind.labelRes)))
+                },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = MaterialTheme.colorScheme.warning.copy(alpha = 0.12f),
+                ),
+            )
+        }
+        Spacer(Modifier.weight(1f))
+        TextButton(
+            onClick = onNicotineCustom,
+            contentPadding = PaddingValues(horizontal = 4.dp),
+        ) {
+            Icon(
+                Icons.Filled.DriveFileRenameOutline,
+                contentDescription = stringResource(R.string.nicotine_custom_short),
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                modifier = Modifier.size(18.dp),
+            )
+        }
+    }
+}
 
 /** Home with a static add-food sheet overlay for release screenshots (no ModalBottomSheet). */
 @Composable

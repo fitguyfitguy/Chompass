@@ -21,6 +21,8 @@ import app.chompass.models.ResolvedActiveBurn
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.ManualActiveEntry
 import app.chompass.models.MealType
+import app.chompass.models.NicotineEntry
+import app.chompass.models.NicotineKind
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.PendingFoodAnalysisDraft
 import app.chompass.models.PendingFoodInputDraft
@@ -193,6 +195,13 @@ data class HomeUiState(
      * the reminder is off, the goal is met, or the window is degenerate.
      */
     val waterNextPlan: app.chompass.services.WaterReminderPlanner.Plan? = null,
+    /** Optional nicotine tracker (docs/local/PLAN_NICOTINE_TRACKER.md). */
+    val nicotineTrackingEnabled: Boolean = false,
+    val nicotineDailyLimit: Int = 0,
+    val nicotineQuickKinds: List<NicotineKind> = NicotineKind.DefaultQuickKinds,
+    val nicotineTodayCount: Int = 0,
+    /** Individual logs for the selected day, newest first (drives the history sheet). */
+    val nicotineTodayEntries: List<NicotineEntry> = emptyList(),
     /** In-progress weigh-as-you-go meal (photo-per-ingredient). Null when idle. */
     val progressiveMeal: ProgressiveMealDraft? = null,
     /** HomeScreen consumes this once to reopen the camera after Add next ingredient. */
@@ -389,6 +398,11 @@ data class HomeUiState(
             dailyNote == other.dailyNote &&
             waterGoalDynamic == other.waterGoalDynamic &&
             waterNextPlan == other.waterNextPlan &&
+            nicotineTrackingEnabled == other.nicotineTrackingEnabled &&
+            nicotineDailyLimit == other.nicotineDailyLimit &&
+            nicotineQuickKinds == other.nicotineQuickKinds &&
+            nicotineTodayCount == other.nicotineTodayCount &&
+            nicotineTodayEntries == other.nicotineTodayEntries &&
             progressiveMeal == other.progressiveMeal &&
             resumeProgressiveCapture == other.resumeProgressiveCapture &&
             showProgressiveMealSheet == other.showProgressiveMealSheet &&
@@ -446,6 +460,11 @@ data class HomeUiState(
         result = 31 * result + (dailyNote?.hashCode() ?: 0)
         result = 31 * result + waterGoalDynamic.hashCode()
         result = 31 * result + (waterNextPlan?.hashCode() ?: 0)
+        result = 31 * result + nicotineTrackingEnabled.hashCode()
+        result = 31 * result + nicotineDailyLimit
+        result = 31 * result + nicotineQuickKinds.hashCode()
+        result = 31 * result + nicotineTodayCount
+        result = 31 * result + nicotineTodayEntries.hashCode()
         result = 31 * result + (progressiveMeal?.hashCode() ?: 0)
         result = 31 * result + resumeProgressiveCapture.hashCode()
         result = 31 * result + showProgressiveMealSheet.hashCode()
@@ -978,6 +997,28 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             .onEach { presets -> _ui.update { it.copy(waterQuickPresetsMl = presets) } }
             .launchIn(viewModelScope)
 
+        container.prefs.nicotineTrackingEnabled
+            .onEach { enabled -> _ui.update { it.copy(nicotineTrackingEnabled = enabled) } }
+            .launchIn(viewModelScope)
+
+        container.prefs.nicotineDailyLimit
+            .onEach { limit -> _ui.update { it.copy(nicotineDailyLimit = limit) } }
+            .launchIn(viewModelScope)
+
+        container.prefs.nicotineQuickKinds
+            .onEach { kinds -> _ui.update { it.copy(nicotineQuickKinds = kinds) } }
+            .launchIn(viewModelScope)
+
+        combine(container.nicotineRepository.entries, _selectedDate) { entries, day ->
+            val zone = ZoneId.systemDefault()
+            val dayEntries = entries.filter { it.date.atZone(zone).toLocalDate() == day }
+            dayEntries.sumOf { it.count } to dayEntries
+        }
+            .onEach { (total, dayEntries) ->
+                _ui.update { it.copy(nicotineTodayCount = total, nicotineTodayEntries = dayEntries) }
+            }
+            .launchIn(viewModelScope)
+
         combine(container.waterRepository.entries, _selectedDate) { entries, day ->
             val zone = ZoneId.systemDefault()
             val dayEntries = entries.filter { it.date.atZone(zone).toLocalDate() == day }
@@ -1083,6 +1124,26 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     fun clearDailyNote() {
         val day = _selectedDate.value
         viewModelScope.launch { container.notesRepository.deleteNote(day) }
+    }
+
+    fun addNicotine(kind: NicotineKind, count: Int = 1, mg: Double? = null) {
+        if (count <= 0) return
+        viewModelScope.launch {
+            container.nicotineRepository.add(
+                NicotineEntry.forNow(kind = kind, count = count, mg = mg),
+            )
+        }
+    }
+
+    /** Edits an existing log's kind/count/mg in place (keeps its timestamp). */
+    fun updateNicotine(id: UUID, kind: NicotineKind, count: Int, mg: Double?) {
+        if (count <= 0) return
+        viewModelScope.launch { container.nicotineRepository.update(id, kind, count, mg) }
+    }
+
+    /** Removes an individual log (history sheet delete). */
+    fun deleteNicotine(id: UUID) {
+        viewModelScope.launch { container.nicotineRepository.delete(id) }
     }
 
     /**

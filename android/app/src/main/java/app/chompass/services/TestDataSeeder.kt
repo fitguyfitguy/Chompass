@@ -161,6 +161,9 @@ class TestDataSeeder(private val container: AppContainer) {
             container.prefs.setWaterFoodWaterEnabled(true)
             container.prefs.setWaterDailyGoalMl(2_500)
             container.prefs.setWaterEntries(SampleDataGenerators.waterEntries())
+            container.prefs.setNicotineTrackingEnabled(true)
+            container.prefs.setNicotineDailyLimit(10)
+            container.prefs.setNicotineEntries(SampleDataGenerators.nicotineEntries())
             container.chatRepository.replaceAll(SampleDataGenerators.sampleChat())
             container.prefs.setCoachTabEnabled(true)
 

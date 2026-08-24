@@ -8,6 +8,7 @@ import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.MealSchedule
+import app.chompass.models.NicotineKind
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.ServingUnitInferenceMode
 import app.chompass.models.SpeechLanguage
@@ -38,6 +39,9 @@ internal data class SettingsPrefsHydration(
     val waterTrackingEnabled: Boolean,
     val waterDailyGoalMl: Int,
     val waterQuickPresetsMl: List<Int>,
+    val nicotineTrackingEnabled: Boolean,
+    val nicotineDailyLimit: Int,
+    val nicotineQuickKinds: List<NicotineKind>,
     val waterReminderEnabled: Boolean,
     val waterDynamicEnabled: Boolean,
     val waterBaseSource: String,
@@ -118,6 +122,9 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
         waterTrackingEnabled = this[Keys.WATER_TRACKING_ENABLED] ?: false,
         waterDailyGoalMl = this[Keys.WATER_DAILY_GOAL_ML] ?: 2_000,
         waterQuickPresetsMl = WaterQuickPresets.fromStorage(this[Keys.WATER_QUICK_PRESETS_ML]).amountsMl,
+        nicotineTrackingEnabled = this[Keys.NICOTINE_TRACKING_ENABLED] ?: false,
+        nicotineDailyLimit = this[Keys.NICOTINE_DAILY_LIMIT] ?: 0,
+        nicotineQuickKinds = NicotineKind.quickKindsFromStorage(this[Keys.NICOTINE_QUICK_KINDS]),
         waterReminderEnabled = this[Keys.WATER_REMINDER_ENABLED] ?: false,
         waterDynamicEnabled = this[Keys.WATER_DYNAMIC_ENABLED] ?: false,
         waterBaseSource = this[Keys.WATER_BASE_SOURCE] ?: WaterGoalCalculator.BASE_SOURCE_WEIGHT,

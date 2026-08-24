@@ -178,6 +178,20 @@
  */
 
 /**
+/**
+ * @typedef {Object} NicotineEntry
+ * @property {string} id
+ * @property {string} date        ISO date "YYYY-MM-DD"
+ * @property {string} kind        cigarette | vape | pouch | gum | patch | other
+ * @property {number} count
+ * @property {number|null} [mg]   optional per-dose nicotine
+ */
+
+/**
+ * @typedef {"cigarette"|"vape"|"pouch"|"gum"|"patch"|"other"} NicotineKind
+ */
+
+/**
  * One per-day free-text note (Codeberg #58a). The id is deterministic from the
  * date (day count since 1970-01-01 in the low 48 bits), so both apps merge by
  * id and a note written for the same day on two devices collapses to
@@ -199,6 +213,7 @@ export function dailyNoteIdFor(date) {
   const masked = ((days % 0x1000000000000) + 0x1000000000000) % 0x1000000000000;
   return `00000000-0000-0000-0000-${masked.toString(16).padStart(12, "0")}`;
 }
+
 
 /**
  * @typedef {"male"|"female"|"other"} Sex

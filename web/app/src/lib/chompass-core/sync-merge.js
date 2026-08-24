@@ -145,6 +145,7 @@ const LIST_KEYS = [
   "measurements",
   "water",
   "daily_notes",
+  "nicotine_entries",
   "recipes",
 ];
 

@@ -267,6 +267,7 @@ export function foodEntryFromSyncWire(wire) {
  *   measurements?: import('./models.js').BodyMeasurement[],
  *   water?: import('./models.js').WaterEntry[],
  *   dailyNotes?: import('./models.js').DailyNote[],
+ *   nicotine?: import('./models.js').NicotineEntry[],
  *   recipes?: import('./models.js').Recipe[],
  *   profile?: { updatedAt: string, deletedAt?: string|null, payload: object }|null,
  *   prefs?: { updatedAt: string, deletedAt?: string|null, payload: object }|null,
@@ -367,6 +368,18 @@ export function exportSyncDocument(input) {
         text: n.text,
       };
     }),
+    nicotine_entries: (input.nicotine ?? []).map((n) => {
+      const meta = metaFor(n.id, `${n.date}T00:00:00Z`);
+      return {
+        id: n.id,
+        updated_at: meta.updated_at,
+        deleted_at: meta.deleted_at,
+        date: n.date,
+        kind: n.kind ?? "cigarette",
+        count: Math.max(1, Math.round(n.count ?? 1)),
+        mg: n.mg != null && n.mg > 0 ? round1(n.mg) : null,
+      };
+    }),
     recipes: (input.recipes ?? []).map((r) => {
       const meta = metaFor(r.id, r.createdAt);
       return {
@@ -423,6 +436,7 @@ export function appendTombstones(doc, revisions) {
     measure: "measurements",
     water: "water",
     daily_note: "daily_notes",
+    nicotine: "nicotine_entries",
     recipe: "recipes",
   };
   for (const [id, rev] of Object.entries(revisions)) {
@@ -464,6 +478,7 @@ export function parseSyncDocument(doc) {
   if (!SYNC_IMPORT_VERSIONS.has(exp.format_version)) {
     throw new UnsupportedSyncFormatError(`Unsupported format_version: ${exp.format_version}`);
   }
+  const OPTIONAL_ARRAYS = new Set(["nicotine_entries"]);
   for (const key of [
     "food_entries",
     "favorites",
@@ -472,10 +487,15 @@ export function parseSyncDocument(doc) {
     "measurements",
     "water",
     "daily_notes",
+    "nicotine_entries",
     "recipes",
   ]) {
     if (!Array.isArray(doc[key])) {
-      throw new UnsupportedSyncFormatError(`Missing array: ${key}`);
+      if (OPTIONAL_ARRAYS.has(key)) {
+        doc[key] = [];
+      } else {
+        throw new UnsupportedSyncFormatError(`Missing array: ${key}`);
+      }
     }
   }
   return doc;
@@ -561,6 +581,22 @@ export function liveDailyNotesFromSync(wires) {
       id: String(w.id),
       date: String(w.date).slice(0, 10),
       text: String(w.text ?? ""),
+    }));
+}
+
+/**
+ * @param {any[]} wires
+ * @returns {import('./models.js').NicotineEntry[]}
+ */
+export function liveNicotineFromSync(wires) {
+  return wires
+    .filter((w) => w && w.id && !w.deleted_at)
+    .map((w) => ({
+      id: String(w.id),
+      date: String(w.date).slice(0, 10),
+      kind: String(w.kind ?? "cigarette"),
+      count: Math.max(1, Number(w.count) || 1),
+      mg: w.mg != null ? Number(w.mg) : null,
     }));
 }
 

@@ -4,11 +4,16 @@ import app.chompass.models.DailyNote
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.MealType
+import app.chompass.models.NicotineEntry
+import app.chompass.models.NicotineKind
 import app.chompass.models.WaterEntry
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonArray
+import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.put
 import app.chompass.parity.ParityFixtures
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -193,6 +198,84 @@ class SyncDocumentTest {
         assertTrue("expected Success but was $result", result is SyncDocument.ParseResult.Success)
         val parsed = (result as SyncDocument.ParseResult.Success).parsed
         assertEquals(95.0, parsed.foodEntries.single().entry?.caffeine)
+    }
+
+    @Test
+    fun buildRoundTripsNicotineEntries() {
+        // Optional nicotine tracker rides its own sync array + revisions kind.
+        val nicotine = NicotineEntry(
+            date = Instant.parse("2026-08-15T10:00:00Z"),
+            kind = NicotineKind.POUCH,
+            count = 2,
+            mg = 6.5,
+        )
+        val json = SyncDocument.buildJson(
+            foodEntries = emptyList(),
+            favorites = emptyList(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            measurements = emptyList(),
+            water = emptyList(),
+            nicotine = listOf(nicotine),
+            recipes = emptyList(),
+            zone = ZoneOffset.UTC,
+        )
+        val result = SyncDocument.parse(json, ZoneOffset.UTC)
+        assertTrue("expected Success but was $result", result is SyncDocument.ParseResult.Success)
+        val parsed = (result as SyncDocument.ParseResult.Success).parsed
+        val wire = parsed.nicotine.single()
+        assertEquals(nicotine.id, wire.entry?.id)
+        assertEquals(NicotineKind.POUCH, wire.entry?.kind)
+        assertEquals(2, wire.entry?.count)
+        assertEquals(6.5, wire.entry?.mg)
+        // The wire key and kind are what the PWA mirrors.
+        val root = Json.parseToJsonElement(json).jsonObject
+        val wireArray = root["nicotine_entries"]!!.jsonArray
+        assertEquals(1, wireArray.size)
+        assertEquals("pouch", wireArray.single().jsonObject["kind"]!!.jsonPrimitive.content)
+        assertEquals("2026-08-15", wireArray.single().jsonObject["date"]!!.jsonPrimitive.content)
+    }
+
+    @Test
+    fun parseNicotineUnknownKindFallsBackToOther() {
+        // Old/new client interop: an unknown wire kind must not break the parse.
+        val json = SyncDocument.buildJson(
+            foodEntries = emptyList(),
+            favorites = emptyList(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            measurements = emptyList(),
+            water = emptyList(),
+            nicotine = emptyList(),
+            recipes = emptyList(),
+            zone = ZoneOffset.UTC,
+        )
+        val root = Json.parseToJsonElement(json).jsonObject
+        val withUnknownKind = buildJsonObject {
+            put("export", root["export"]!!)
+            put("food_entries", buildJsonArray {})
+            put("favorites", buildJsonArray {})
+            put("weights", buildJsonArray {})
+            put("body_fat", buildJsonArray {})
+            put("measurements", buildJsonArray {})
+            put("water", buildJsonArray {})
+            put("nicotine_entries", buildJsonArray {
+                add(buildJsonObject {
+                    put("id", "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee")
+                    put("updated_at", "2026-08-15T10:00:00Z")
+                    put("deleted_at", null)
+                    put("date", "2026-08-15")
+                    put("kind", "snus_future")
+                    put("count", 3)
+                })
+            })
+            put("recipes", buildJsonArray {})
+        }
+        val result = SyncDocument.parse(withUnknownKind.toString(), ZoneOffset.UTC)
+        assertTrue("expected Success but was $result", result is SyncDocument.ParseResult.Success)
+        val entry = (result as SyncDocument.ParseResult.Success).parsed.nicotine.single().entry
+        assertEquals(NicotineKind.OTHER, entry?.kind)
+        assertEquals(3, entry?.count)
     }
 
     @Test
