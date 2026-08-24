@@ -1945,12 +1945,16 @@ export class DiaryView extends HTMLElement {
     // Schedule catch-up (mirrors Android heal): the auto-start was missed
     // when the last stop happened before the most recent start time and no
     // fast is running; start at the scheduled instant to stay on the clock.
+    // A user who stopped eating *after* the start time is still in their
+    // eating phase and waits for the next one; a fresh user (no history) is
+    // opted into the self-driving cycle by enabling Auto fast windows, so the
+    // fast picks up from the scheduled start too.
     const hour = p.fastingStartHour ?? 20;
     const minute = p.fastingStartMinute ?? 0;
     const todayT = nextFastStartMillis(hour, minute, now);
     const scheduled = now >= todayT ? todayT : todayT - 24 * 60 * 60_000;
     const lastEnded = p.fastingLastEndedAt;
-    if (lastEnded != null && lastEnded < scheduled && now >= scheduled) {
+    if ((lastEnded == null || lastEnded < scheduled) && now >= scheduled) {
       await prefs.save({ fastingStartedAt: scheduled, fastingGoalNotified: false, fastingAutoStarted: true });
       return true;
     }
