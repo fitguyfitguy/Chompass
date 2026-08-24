@@ -491,7 +491,9 @@ export function parseSyncDocument(doc) {
   if (!SYNC_IMPORT_VERSIONS.has(exp.format_version)) {
     throw new UnsupportedSyncFormatError(`Unsupported format_version: ${exp.format_version}`);
   }
-  const OPTIONAL_ARRAYS = new Set(["nicotine_entries", "caffeine_entries"]);
+  // pre-1.2 remotes have no nicotine/caffeine/daily-notes arrays at all; each
+  // must default to [] (Android's parser is lenient the same way).
+  const OPTIONAL_ARRAYS = new Set(["nicotine_entries", "caffeine_entries", "daily_notes"]);
   for (const key of [
     "food_entries",
     "favorites",
