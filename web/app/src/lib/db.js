@@ -15,7 +15,7 @@ const DB_NAME =
   typeof window !== "undefined" && /** @type {any} */ (window).CHOMPASS_DEMO
     ? "chompass-pwa-demo"
     : "chompass-pwa";
-const DB_VERSION = 5;
+const DB_VERSION = 6;
 
 /** @type {Promise<IDBDatabase>|null} */
 let dbPromise = null;
@@ -50,6 +50,10 @@ function openChompassDb() {
     // upgrade block, so the nicotine store gets its own version bump.
     if (oldVersion < 5) {
       if (!db.objectStoreNames.contains("nicotine")) db.createObjectStore("nicotine", { keyPath: "id" }).createIndex("date", "date");
+    }
+    // Caffeine tracker (device-pass revision): own store, own version bump.
+    if (oldVersion < 6) {
+      if (!db.objectStoreNames.contains("caffeine")) db.createObjectStore("caffeine", { keyPath: "id" }).createIndex("date", "date");
     }
   });
 }
@@ -291,6 +295,30 @@ export const nicotine = {
   },
 };
 
+export const caffeine = {
+  /** @param {import("./chompass-core/models.js").CaffeineEntry} entry */
+  async put(entry) {
+    const result = await (await store("caffeine")).put(entry);
+    await touchRevision(entry.id, "caffeine");
+    return result;
+  },
+  async delete(id) {
+    const result = await (await store("caffeine")).delete(id);
+    await tombstoneRevision(id, "caffeine");
+    return result;
+  },
+  /** @param {string} date */
+  async byDate(date) {
+    return (await store("caffeine")).getAllFromIndex("date", date);
+  },
+  async all() {
+    return (await store("caffeine")).getAll();
+  },
+  async clear() {
+    return (await store("caffeine")).clear();
+  },
+};
+
 export const dailyNotes = {
   /** @param {import('./chompass-core/models.js').DailyNote} note */
   async put(note) {
@@ -367,6 +395,9 @@ export const profile = {
  * @property {boolean} [showWater]
  * @property {boolean} [showNicotine]
  * @property {number} [nicotineDailyLimit]
+ * @property {boolean} [showCaffeine]
+ * @property {number} [caffeineDailyLimitMg]
+ * @property {boolean} [showNotes]
  * @property {boolean} [coachTabEnabled] Hide the coach tab (Android parity; default true)
  * @property {boolean} [aiFeaturesEnabled] Master AI-features switch; off = no data to any LLM provider (default true)
  * @property {"static"|"add_active"} [calorieGaugeMode]
@@ -415,6 +446,9 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   showWater: ANDROID_PREF_DEFAULTS.showWater,
   showNicotine: ANDROID_PREF_DEFAULTS.showNicotine,
   nicotineDailyLimit: ANDROID_PREF_DEFAULTS.nicotineDailyLimit,
+  showCaffeine: ANDROID_PREF_DEFAULTS.showCaffeine,
+  caffeineDailyLimitMg: ANDROID_PREF_DEFAULTS.caffeineDailyLimitMg,
+  showNotes: ANDROID_PREF_DEFAULTS.showNotes,
   coachTabEnabled: true,
   aiFeaturesEnabled: true,
   calorieGaugeMode: "static",

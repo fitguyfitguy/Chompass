@@ -12,6 +12,7 @@ import {
   water,
   dailyNotes,
   nicotine,
+  caffeine,
   prefs,
   withRevisionHooksSuppressed,
 } from "./db.js";
@@ -26,6 +27,7 @@ import {
   liveWaterFromSync,
   liveDailyNotesFromSync,
   liveNicotineFromSync,
+  liveCaffeineFromSync,
   liveRecipesFromSync,
 } from "./chompass-core/sync-format.js";
 import { mergeSyncDocuments, partitionLiveAndDeleted } from "./chompass-core/sync-merge.js";
@@ -66,6 +68,7 @@ export async function buildLocalSyncDocument() {
     water: await water.all(),
     dailyNotes: await dailyNotes.all(),
     nicotine: await nicotine.all(),
+    caffeine: await caffeine.all(),
     recipes: await recipes.all(),
     revisions,
     generatedAt: new Date().toISOString(),
@@ -149,6 +152,13 @@ export async function applySyncDocument(doc) {
   }
   for (const id of nPart.deletedIds) await nicotine.delete(id);
   for (const entry of liveNicotineFromSync(nPart.live)) await nicotine.put(entry);
+
+  const cPart = partitionLiveAndDeleted(doc.caffeine_entries ?? []);
+  for (const row of doc.caffeine_entries ?? []) {
+    revisions[row.id] = { updatedAt: row.updated_at, deletedAt: row.deleted_at ?? null, kind: "caffeine" };
+  }
+  for (const id of cPart.deletedIds) await caffeine.delete(id);
+  for (const entry of liveCaffeineFromSync(cPart.live)) await caffeine.put(entry);
 
   const rPart = partitionLiveAndDeleted(doc.recipes ?? []);
   for (const row of doc.recipes ?? []) {

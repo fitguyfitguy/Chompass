@@ -192,6 +192,18 @@
  */
 
 /**
+ * @typedef {Object} CaffeineEntry
+ * @property {string} id
+ * @property {string} date        ISO date "YYYY-MM-DD"
+ * @property {string} kind        coffee | tea | energy | other
+ * @property {number} mg          per-dose caffeine
+ */
+
+/**
+ * @typedef {"coffee"|"tea"|"energy"|"other"} CaffeineKind
+ */
+
+/**
  * One per-day free-text note (Codeberg #58a). The id is deterministic from the
  * date (day count since 1970-01-01 in the low 48 bits), so both apps merge by
  * id and a note written for the same day on two devices collapses to
