@@ -39,6 +39,12 @@ class SettingsPrefsHydrationTest {
         assertFalse(snap.homeDisplay.showSteps)
         assertTrue(snap.portionClarifyEnabled)
         assertTrue(snap.mealConstituentsEnabled)
+        // Fasting ships ready: popular 16:8 windows + both reminders + auto cycle.
+        assertEquals(16, snap.fastingGoalHours)
+        assertEquals(8, snap.fastingEatHours)
+        assertTrue(snap.fastingAutoWindows)
+        assertTrue(snap.fastingGoalNotificationEnabled)
+        assertTrue(snap.fastingStartReminderEnabled)
     }
 
     @Test

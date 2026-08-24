@@ -218,8 +218,8 @@ data class HomeUiState(
     val caffeineTodayEntries: List<CaffeineEntry> = emptyList(),
     /** Optional intermittent-fasting timer (docs/local/PLAN_FASTING_TRACKER.md); local-only. */
     val fastingEnabled: Boolean = false,
-    val fastingGoalHours: Int = 0,
-    val fastingEatHours: Int = 0,
+    val fastingGoalHours: Int = 16,
+    val fastingEatHours: Int = 8,
     val fastingAutoWindows: Boolean = true,
     val fastingPhase: FastingPhase = FastingPhase.IDLE,
     /** Elapsed millis of the running fast; ticked each minute by the VM. */

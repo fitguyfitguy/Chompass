@@ -64,6 +64,15 @@ describe("pref defaults (parity fixture)", () => {
     assert.equal(DEFAULT_PREFS.optionalNutrientGoals.caffeineMg, fixture.optionalNutrientGoals.caffeine);
   });
 
+  it("fasting defaults match fixture (16:8, auto cycle armed)", () => {
+    assert.equal(ANDROID_PREF_DEFAULTS.fastingGoalHours, fixture.fastingGoalHours);
+    assert.equal(ANDROID_PREF_DEFAULTS.fastingEatHours, fixture.fastingEatHours);
+    assert.equal(ANDROID_PREF_DEFAULTS.fastingAutoWindows, fixture.fastingAutoWindows);
+    assert.equal(DEFAULT_PREFS.fastingGoalHours, fixture.fastingGoalHours);
+    assert.equal(DEFAULT_PREFS.fastingEatHours, fixture.fastingEatHours);
+    assert.equal(DEFAULT_PREFS.fastingAutoWindows, fixture.fastingAutoWindows);
+  });
+
   it("optional nutrient goals match fixture", () => {
     const g = fixture.optionalNutrientGoals;
     assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.sugarG, g.sugar);
