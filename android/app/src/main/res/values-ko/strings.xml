@@ -995,6 +995,11 @@
     <string name="home_take_second_shot">두 번째 사진을 찍으세요</string>
     <string name="home_water_next">다음 %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">다음 %1$s · 내일 %2$s</string>
+    <string name="home_note_empty">이 날짜에 메모 추가</string>
+    <string name="note_edit_title">하루 메모</string>
+    <string name="note_placeholder">생각, 진행 상황, 관찰…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="import_add_to_log">기록에 추가</string>
     <string name="import_add_to_log_many_format">%1$d개 기록에 추가 · %2$d kcal</string>
     <string name="import_body_metrics_empty">이 파일에는 가져올 체중 또는 신체 데이터 기록이 없어요.</string>

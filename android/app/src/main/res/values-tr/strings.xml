@@ -436,6 +436,11 @@
     <string name="water_progress_fl_oz">%1$d / %2$d fl oz</string>
     <string name="home_water_next">Sonraki %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">Sonraki %1$s · yarın %2$s</string>
+    <string name="home_note_empty">Bu gün için bir not ekleyin</string>
+    <string name="note_edit_title">Gün notu</string>
+    <string name="note_placeholder">Düşünceler, ilerleme, gözlemler…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="home_food_removed">Yiyecek silindi</string>
     <string name="action_undo">Geri al</string>
     <string name="add_food_photo_source_title">Fotoğraf ekle</string>
