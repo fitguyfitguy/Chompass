@@ -2,6 +2,7 @@ package app.chompass.ui.settings
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -38,6 +39,21 @@ class SettingsIndexTest {
         assertFalse(settingsSearchMatches(e, "Daily water goal", "keto"))
         assertFalse(settingsSearchMatches(e, "Daily water goal", " "))
         assertFalse(settingsSearchMatches(e, "Daily water goal", ""))
+    }
+
+    @Test
+    fun `folded matcher agrees with the per-entry matcher`() {
+        val label = "Daily water goal"
+        val e = entry(R.string.settings_water_goal, listOf("hydration", "ml"))
+        val folded = foldSettingsEntry(e, label)
+        val queries = listOf("water", "Wasser", "hydration", "ML", "goal", "keto", " ", "")
+        for (q in queries) {
+            assertEquals(
+                "folded vs per-entry mismatch for query '$q'",
+                settingsSearchMatches(e, label, q),
+                settingsSearchMatchesFolded(folded, q),
+            )
+        }
     }
 
     @Test

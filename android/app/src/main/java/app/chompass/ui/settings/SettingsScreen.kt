@@ -36,11 +36,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -226,11 +229,21 @@ internal fun SettingsSearchField(
 /** Offline index match against [query]; each result shows its group as context. */
 @Composable
 private fun SettingsSearchResults(query: String, nav: NavHostController) {
+    // F perf (device walk 2026-08-24): fold the whole index once per locale;
+    // per-keystroke matching then only folds the query and scans. Before, every
+    // recomposition re-ran stringResource + NFD normalization for every entry.
+    val configuration = LocalConfiguration.current
+    val locale = configuration.locales[0]
+    val context = LocalContext.current
+    val foldedIndex = remember(locale, context) {
+        SETTINGS_INDEX.map { entry ->
+            foldSettingsEntry(entry, context.getString(entry.labelRes))
+        }
+    }
     val matched = buildList {
-        for (entry in SETTINGS_INDEX) {
-            val label = stringResource(entry.labelRes)
-            if (settingsSearchMatches(entry, label, query)) {
-                add(entry to label)
+        for (folded in foldedIndex) {
+            if (settingsSearchMatchesFolded(folded, query)) {
+                add(folded.entry to folded.label)
             }
         }
     }
