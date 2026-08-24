@@ -9,14 +9,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.outlined.Equalizer
 import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Restaurant
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.SmartToy
 import androidx.compose.material.icons.outlined.TrackChanges
@@ -30,8 +35,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -41,6 +50,7 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.ui.about.AboutSettingsRows
 import app.chompass.ui.components.FudGlassSurface
+import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppColors
@@ -50,6 +60,7 @@ import app.chompass.ui.theme.AppTextOpacity
 fun SettingsScreen(container: AppContainer, nav: NavHostController) {
     val vm: SettingsViewModel = rememberSettingsViewModel(container, nav)
     val ui by vm.ui.collectAsState()
+    var query by rememberSaveable { mutableStateOf("") }
 
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
         Column(
@@ -67,76 +78,207 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                 color = MaterialTheme.colorScheme.onBackground,
             )
 
-            if (ui.suggestions.isNotEmpty()) {
-                SuggestionsCard(
-                    suggestions = ui.suggestions,
-                    onAction = { nav.navigate(it.targetRoute) },
-                    onDismiss = vm::dismissSuggestion,
-                )
-            }
+            SettingsSearchField(
+                query = query,
+                onQueryChange = { query = it },
+            )
 
-            FudGlassSurface(
-                modifier = Modifier.fillMaxWidth(),
-                cornerRadius = AppRadii.Container,
-                padding = 0.dp,
-                allowBlur = false,
+            if (query.isBlank()) {
+                if (ui.suggestions.isNotEmpty()) {
+                    SuggestionsCard(
+                        suggestions = ui.suggestions,
+                        onAction = { nav.navigate(it.targetRoute) },
+                        onDismiss = vm::dismissSuggestion,
+                    )
+                }
+
+                FudGlassSurface(
+                    modifier = Modifier.fillMaxWidth(),
+                    cornerRadius = AppRadii.Container,
+                    padding = 0.dp,
+                    allowBlur = false,
+                ) {
+                    Column(Modifier.padding(vertical = 4.dp)) {
+                        SettingsHubRow(
+                            label = stringResource(R.string.settings_section_personal),
+                            summary = stringResource(R.string.settings_group_personal_summary),
+                            icon = Icons.Outlined.Person,
+                            onClick = { nav.navigate(ChompassRoutes.SETTINGS_PERSONAL) },
+                        )
+                        HorizontalDivider()
+                        SettingsHubRow(
+                            label = stringResource(R.string.settings_section_goals),
+                            summary = stringResource(R.string.settings_group_goals_summary),
+                            icon = Icons.Outlined.Equalizer,
+                            onClick = { nav.navigate(ChompassRoutes.SETTINGS_GOALS) },
+                        )
+                        HorizontalDivider()
+                        SettingsHubRow(
+                            label = stringResource(R.string.settings_group_food),
+                            summary = stringResource(R.string.settings_group_food_summary),
+                            icon = Icons.Outlined.Restaurant,
+                            onClick = { nav.navigate(ChompassRoutes.SETTINGS_FOOD) },
+                        )
+                        HorizontalDivider()
+                        SettingsHubRow(
+                            label = stringResource(R.string.settings_group_app_display),
+                            summary = stringResource(R.string.settings_group_app_summary),
+                            icon = Icons.Outlined.Settings,
+                            onClick = { nav.navigate(ChompassRoutes.SETTINGS_APP) },
+                        )
+                        HorizontalDivider()
+                        SettingsHubRow(
+                            label = stringResource(R.string.settings_group_trackers),
+                            summary = stringResource(R.string.settings_group_trackers_summary),
+                            icon = Icons.Outlined.TrackChanges,
+                            onClick = { nav.navigate(ChompassRoutes.SETTINGS_TRACKERS) },
+                        )
+                        HorizontalDivider()
+                        SettingsHubRow(
+                            label = stringResource(R.string.settings_group_ai),
+                            summary = stringResource(R.string.settings_group_ai_summary),
+                            icon = Icons.Outlined.SmartToy,
+                            onClick = { nav.navigate(ChompassRoutes.SETTINGS_AI) },
+                        )
+                        HorizontalDivider()
+                        SettingsHubRow(
+                            label = stringResource(R.string.settings_group_data),
+                            summary = stringResource(R.string.settings_group_data_summary),
+                            icon = Icons.Outlined.FolderOpen,
+                            onClick = { nav.navigate(ChompassRoutes.SETTINGS_DATA) },
+                        )
+                    }
+                }
+
+                SectionCard(title = stringResource(R.string.nav_about)) {
+                    AboutSettingsRows(container)
+                }
+            } else {
+                SettingsSearchResults(query = query, nav = nav)
+            }
+            Spacer(Modifier.height(BottomNavScrollPadding))
+        }
+    }
+}
+
+/** Glass search field: magnifier, inline clear button, no label. */
+@Composable
+private fun SettingsSearchField(
+    query: String,
+    onQueryChange: (String) -> Unit,
+) {
+    FudGlassSurface(
+        modifier = Modifier.fillMaxWidth(),
+        cornerRadius = AppRadii.Container,
+        padding = 0.dp,
+        allowBlur = false,
+    ) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                Icons.Outlined.Search,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                modifier = Modifier.size(20.dp),
+            )
+            Spacer(Modifier.width(10.dp))
+            BasicTextField(
+                value = query,
+                onValueChange = onQueryChange,
+                modifier = Modifier.weight(1f),
+                singleLine = true,
+                textStyle = MaterialTheme.typography.bodyLarge.copy(
+                    color = MaterialTheme.colorScheme.onSurface,
+                ),
+                cursorBrush = SolidColor(AppColors.Calorie),
             ) {
-                Column(Modifier.padding(vertical = 4.dp)) {
-                    SettingsHubRow(
-                        label = stringResource(R.string.settings_section_personal),
-                        summary = stringResource(R.string.settings_group_personal_summary),
-                        icon = Icons.Outlined.Person,
-                        onClick = { nav.navigate(ChompassRoutes.SETTINGS_PERSONAL) },
+                if (query.isEmpty()) {
+                    Text(
+                        stringResource(R.string.settings_search_hint),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                     )
-                    HorizontalDivider()
-                    SettingsHubRow(
-                        label = stringResource(R.string.settings_section_goals),
-                        summary = stringResource(R.string.settings_group_goals_summary),
-                        icon = Icons.Outlined.Equalizer,
-                        onClick = { nav.navigate(ChompassRoutes.SETTINGS_GOALS) },
-                    )
-                    HorizontalDivider()
-                    SettingsHubRow(
-                        label = stringResource(R.string.settings_group_food),
-                        summary = stringResource(R.string.settings_group_food_summary),
-                        icon = Icons.Outlined.Restaurant,
-                        onClick = { nav.navigate(ChompassRoutes.SETTINGS_FOOD) },
-                    )
-                    HorizontalDivider()
-                    SettingsHubRow(
-                        label = stringResource(R.string.settings_group_app_display),
-                        summary = stringResource(R.string.settings_group_app_summary),
-                        icon = Icons.Outlined.Settings,
-                        onClick = { nav.navigate(ChompassRoutes.SETTINGS_APP) },
-                    )
-                    HorizontalDivider()
-                    SettingsHubRow(
-                        label = stringResource(R.string.settings_group_trackers),
-                        summary = stringResource(R.string.settings_group_trackers_summary),
-                        icon = Icons.Outlined.TrackChanges,
-                        onClick = { nav.navigate(ChompassRoutes.SETTINGS_TRACKERS) },
-                    )
-                    HorizontalDivider()
-                    SettingsHubRow(
-                        label = stringResource(R.string.settings_group_ai),
-                        summary = stringResource(R.string.settings_group_ai_summary),
-                        icon = Icons.Outlined.SmartToy,
-                        onClick = { nav.navigate(ChompassRoutes.SETTINGS_AI) },
-                    )
-                    HorizontalDivider()
-                    SettingsHubRow(
-                        label = stringResource(R.string.settings_group_data),
-                        summary = stringResource(R.string.settings_group_data_summary),
-                        icon = Icons.Outlined.FolderOpen,
-                        onClick = { nav.navigate(ChompassRoutes.SETTINGS_DATA) },
+                }
+                it()
+            }
+            if (query.isNotEmpty()) {
+                Spacer(Modifier.width(6.dp))
+                IconButton(
+                    onClick = { onQueryChange("") },
+                    modifier = Modifier.size(32.dp),
+                ) {
+                    Icon(
+                        Icons.Filled.Close,
+                        contentDescription = stringResource(R.string.settings_suggestions_dismiss),
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        modifier = Modifier.size(16.dp),
                     )
                 }
             }
+        }
+    }
+}
 
-            SectionCard(title = stringResource(R.string.nav_about)) {
-                AboutSettingsRows(container)
+/** Offline index match against [query]; each result shows its group as context. */
+@Composable
+private fun SettingsSearchResults(query: String, nav: NavHostController) {
+    val matched = buildList {
+        for (entry in SETTINGS_INDEX) {
+            val label = stringResource(entry.labelRes)
+            if (settingsSearchMatches(entry, label, query)) {
+                add(entry to label)
             }
-            Spacer(Modifier.height(BottomNavScrollPadding))
+        }
+    }
+    if (matched.isEmpty()) {
+        Text(
+            stringResource(R.string.settings_search_empty),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        )
+        return
+    }
+    FudGlassSurface(
+        modifier = Modifier.fillMaxWidth(),
+        cornerRadius = AppRadii.Container,
+        padding = 0.dp,
+        allowBlur = false,
+    ) {
+        Column(Modifier.padding(vertical = 4.dp)) {
+            matched.forEachIndexed { index, (entry, label) ->
+                if (index > 0) HorizontalDivider()
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable { nav.navigate(entry.route) }
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    FudIconBubble(icon = entry.icon, size = 28.dp, iconSize = 16.dp)
+                    Spacer(Modifier.width(14.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            label,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Medium,
+                        )
+                        Text(
+                            stringResource(entry.groupRes),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        )
+                    }
+                    Icon(
+                        Icons.Filled.ChevronRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
+                    )
+                }
+            }
         }
     }
 }

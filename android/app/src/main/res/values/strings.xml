@@ -893,6 +893,8 @@
     <string name="settings_goals_how_lock">Tap Locked on a target to keep that number. Recalculate and Adaptive Goals leave it untouched.</string>
     <string name="settings_danger_zone">Danger zone</string>
     <string name="settings_danger_zone_caption">These actions permanently delete data and cannot be undone.</string>
+    <string name="settings_search_hint">Search settings</string>
+    <string name="settings_search_empty">No settings match. Try "water", "units" or "reminders".</string>
     <string name="settings_suggestions">Suggestions</string>
     <string name="settings_suggestions_dismiss">Dismiss</string>
     <string name="settings_suggestion_water_reminders">Set a drinking-window reminder plan so you stay on track</string>
