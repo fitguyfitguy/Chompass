@@ -539,6 +539,7 @@ open class MainActivity : ComponentActivity() {
             if (actions.seedOverGoal) container.testDataSeeder.seedOverGoal()
             if (actions.restoreRealData) container.testDataSeeder.restore()
             if (actions.demoAi) container.prefs.setDebugDemoAnalysis(true)
+            if (actions.demoAiFail) container.prefs.setDebugDemoAnalysisFail(true)
             if (actions.clearPendingDraft) {
                 container.prefs.setPendingFoodAnalysisDraft(null)
                 container.prefs.setPendingFoodInputDraft(null)

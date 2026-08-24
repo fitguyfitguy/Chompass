@@ -45,8 +45,9 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
-import java.util.Locale
+import java.io.IOException
 import java.time.ZoneId
+import java.util.Locale
 import kotlin.math.abs
 import app.chompass.models.UnitFormat
 
@@ -1146,7 +1147,14 @@ class FoodAnalysisService(
         // (usage-video capture). Phases/partials/final parse all use the real
         // pipeline; only the provider reply is fake. Never active in release.
         if (BuildConfig.DEBUG && prefs?.debugDemoAnalysis?.first() == true && op in DemoFoodAnalysis.ENTRY_OPS) {
-            return DemoFoodAnalysis.run(onProgress)
+            val demoJson = DemoFoodAnalysis.run(onProgress)
+            // demo_ai_fail extra: replay the full scripted progress, then fail
+            // with a transport-style error so the real failure flow runs
+            // (error dialog Retry / Open queue + prompt+photos auto-save).
+            if (BuildConfig.DEBUG && prefs.debugDemoAnalysisFail.first()) {
+                throw IOException("demo failure (demo_ai_fail)")
+            }
+            return demoJson
         }
         // Time input/prompt assembly (includes the suspending userContext read) as
         // the "promptBuild" phase; the network round-trip itself is captured by the

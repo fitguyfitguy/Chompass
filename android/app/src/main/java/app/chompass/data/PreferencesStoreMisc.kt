@@ -63,6 +63,14 @@ internal suspend fun PreferencesStore.setDebugDemoAnalysisImpl(enabled: Boolean)
     dataStore.edit { it[Keys.DEBUG_DEMO_ANALYSIS] = enabled }
 }
 
+// -- Debug demo-analysis-fail flag (demo_ai_fail extra; failure-path capture) --
+internal val PreferencesStore.debugDemoAnalysisFailImpl: Flow<Boolean>
+    get() = dataStore.data.map { it[Keys.DEBUG_DEMO_ANALYSIS_FAIL] ?: false }
+
+internal suspend fun PreferencesStore.setDebugDemoAnalysisFailImpl(enabled: Boolean) {
+    dataStore.edit { it[Keys.DEBUG_DEMO_ANALYSIS_FAIL] = enabled }
+}
+
 // -- Settings Suggestions (hub nudge card) ---------------------------------
 internal val PreferencesStore.firstLaunchAtImpl: Flow<Long>
     get() = dataStore.data.map { it[Keys.FIRST_LAUNCH_AT] ?: 0L }

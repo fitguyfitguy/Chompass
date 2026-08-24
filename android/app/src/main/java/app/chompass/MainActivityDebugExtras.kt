@@ -46,6 +46,8 @@ internal data class DebugIntentActions(
     val restoreRealData: Boolean = false,
     /** Debug-only: replay a scripted food-analysis response (usage-video capture). */
     val demoAi: Boolean = false,
+    /** Debug-only: replay scripted progress, then fail (failure-path capture; needs demo_ai too). */
+    val demoAiFail: Boolean = false,
     /** Debug-only: drop any pending food-analysis draft so a fresh capture segment starts clean. */
     val clearPendingDraft: Boolean = false,
     val runEntryBenchmark: Boolean = false,
@@ -131,6 +133,7 @@ internal fun consumeDebugIntentExtras(
         seedOverGoal = intent.getBooleanExtra("seed_over_goal", false),
         restoreRealData = intent.getBooleanExtra("restore_real_data", false),
         demoAi = BuildConfig.DEBUG && intent.getBooleanExtra("demo_ai", false),
+        demoAiFail = BuildConfig.DEBUG && intent.getBooleanExtra("demo_ai_fail", false),
         clearPendingDraft = BuildConfig.DEBUG && intent.getBooleanExtra("clear_pending_draft", false),
         runEntryBenchmark = BuildConfig.DEBUG && intent.getBooleanExtra("run_entry_benchmark", false),
         entryBenchmarkCount = intent.getIntExtra("benchmark_count", 3),
@@ -186,6 +189,7 @@ internal fun consumeDebugIntentExtras(
     if (actions.seedOverGoal) intent.removeExtra("seed_over_goal")
     if (actions.restoreRealData) intent.removeExtra("restore_real_data")
     if (actions.demoAi) intent.removeExtra("demo_ai")
+    if (actions.demoAiFail) intent.removeExtra("demo_ai_fail")
     if (actions.clearPendingDraft) intent.removeExtra("clear_pending_draft")
     if (actions.runEntryBenchmark) {
         intent.removeExtra("run_entry_benchmark")

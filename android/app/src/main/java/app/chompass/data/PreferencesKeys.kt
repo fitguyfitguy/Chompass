@@ -74,6 +74,8 @@ internal object Keys {
         val NICOTINE_TRACKING_ENABLED = booleanPreferencesKey("nicotineTrackingEnabled")
         val NICOTINE_DAILY_LIMIT = intPreferencesKey("nicotineDailyLimit")
         val NICOTINE_QUICK_KINDS = stringPreferencesKey("nicotineQuickKinds")
+        // Optional daily notes (docs/local/PLAN_DAILY_NOTES.md); default off.
+        val DAILY_NOTES_ENABLED = booleanPreferencesKey("dailyNotesEnabled")
         val MANUAL_ACTIVE_ENTRIES = stringPreferencesKey("manualActiveEntries")
         // Optional intermittent-fasting timer (docs/local/PLAN_FASTING_TRACKER.md).
         // Session state is three scalars (state is a pure function of them).
@@ -195,6 +197,8 @@ internal object Keys {
         val DEBUG_SHOW_RESTING_SHADE = booleanPreferencesKey("debugShowRestingShade")
         /** Debug-only: replay a scripted food-analysis response (demo_ai intent extra; video capture). */
         val DEBUG_DEMO_ANALYSIS = booleanPreferencesKey("debugDemoAnalysis")
+        /** Debug-only: demo analysis replays progress, then fails (demo_ai_fail extra; failure-path capture). */
+        val DEBUG_DEMO_ANALYSIS_FAIL = booleanPreferencesKey("debugDemoAnalysisFail")
         val BARCODE_CACHE = stringPreferencesKey("barcodeLookupCache")
         val ON_DEVICE_MODEL_DOWNLOADED_VERSION = stringPreferencesKey("onDeviceModelDownloadedVersion")
         val ON_DEVICE_DOWNLOAD_OVER_WIFI_ONLY = booleanPreferencesKey("onDeviceDownloadOverWifiOnly")

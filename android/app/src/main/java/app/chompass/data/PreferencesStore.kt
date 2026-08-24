@@ -218,6 +218,9 @@ class PreferencesStore(private val appContext: Context) {
     ) = applyWaterBucketChangesImpl(upsertsByMonth, removalIdsByMonth)
     val noteEntries: Flow<List<DailyNote>> get() = noteEntriesImpl
     suspend fun setNoteEntries(entries: List<DailyNote>) = setNoteEntriesImpl(entries)
+    /** Home note-card visibility (optional daily notes; default off). */
+    val dailyNotesEnabled: Flow<Boolean> get() = dailyNotesEnabledImpl
+    suspend fun setDailyNotesEnabled(v: Boolean) = setDailyNotesEnabledImpl(v)
     /** Month-scoped daily-note write (one bucket file) — the note path. */
     suspend fun applyNoteBucketChanges(
         upsertsByMonth: Map<YearMonth, List<DailyNote>> = emptyMap(),
@@ -466,6 +469,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setDebugShowRestingShade(show: Boolean) = setDebugShowRestingShadeImpl(show)
     val debugDemoAnalysis: Flow<Boolean> get() = debugDemoAnalysisImpl
     suspend fun setDebugDemoAnalysis(enabled: Boolean) = setDebugDemoAnalysisImpl(enabled)
+    val debugDemoAnalysisFail: Flow<Boolean> get() = debugDemoAnalysisFailImpl
+    suspend fun setDebugDemoAnalysisFail(enabled: Boolean) = setDebugDemoAnalysisFailImpl(enabled)
     val syncRevisions: Flow<Map<String, SyncRevision>> get() = syncRevisionsImpl
     suspend fun setSyncRevisions(revisions: Map<String, SyncRevision>) = setSyncRevisionsImpl(revisions)
     val webDavUrl: Flow<String> get() = webDavUrlImpl
