@@ -202,6 +202,8 @@ data class HomeUiState(
     val nicotineTodayCount: Int = 0,
     /** Individual logs for the selected day, newest first (drives the history sheet). */
     val nicotineTodayEntries: List<NicotineEntry> = emptyList(),
+    /** Optional daily notes (docs/local/PLAN_DAILY_NOTES.md); default off. */
+    val dailyNotesEnabled: Boolean = false,
     /** Optional intermittent-fasting timer (docs/local/PLAN_FASTING_TRACKER.md); local-only. */
     val fastingEnabled: Boolean = false,
     val fastingGoalHours: Int = 0,
@@ -412,6 +414,7 @@ data class HomeUiState(
             nicotineQuickKinds == other.nicotineQuickKinds &&
             nicotineTodayCount == other.nicotineTodayCount &&
             nicotineTodayEntries == other.nicotineTodayEntries &&
+            dailyNotesEnabled == other.dailyNotesEnabled &&
             fastingEnabled == other.fastingEnabled &&
             fastingGoalHours == other.fastingGoalHours &&
             fastingActive == other.fastingActive &&
@@ -481,6 +484,7 @@ data class HomeUiState(
         result = 31 * result + nicotineQuickKinds.hashCode()
         result = 31 * result + nicotineTodayCount
         result = 31 * result + nicotineTodayEntries.hashCode()
+        result = 31 * result + dailyNotesEnabled.hashCode()
         result = 31 * result + fastingEnabled.hashCode()
         result = 31 * result + fastingGoalHours
         result = 31 * result + fastingActive.hashCode()
@@ -1022,6 +1026,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
         container.prefs.nicotineTrackingEnabled
             .onEach { enabled -> _ui.update { it.copy(nicotineTrackingEnabled = enabled) } }
+            .launchIn(viewModelScope)
+
+        container.prefs.dailyNotesEnabled
+            .onEach { enabled -> _ui.update { it.copy(dailyNotesEnabled = enabled) } }
             .launchIn(viewModelScope)
 
         container.prefs.nicotineDailyLimit

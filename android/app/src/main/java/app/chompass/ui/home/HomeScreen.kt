@@ -125,6 +125,17 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
+    // Codeberg #53 prompt history: distinct saved analysis prompts (queue
+    // entries, newest first), capped, for the note-input sheets' auto-fill.
+    val recentPrompts = remember(ui.queueEntries) {
+        ui.queueEntries
+            .asSequence()
+            .mapNotNull { it.note?.trim()?.takeIf(String::isNotEmpty) }
+            .distinct()
+            .take(10)
+            .toList()
+    }
+
     // Upstream #190: sheet-open flags are rememberSaveable so Activity recreation
     // (rotation, theme change) keeps the open dialog/sheet instead of dropping
     // the user back to the diary. Complex values (entries, recipes, recent list)
@@ -559,14 +570,17 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             // Food log
             item { Spacer(Modifier.height(8.dp)) }
             // Daily note (Codeberg #58a): day-scoped like the water card, so it
-            // follows the selected day (today or any past day).
-            item(key = "daily-note-${selectedDate}") {
-                DailyNoteCard(
-                    note = ui.dailyNote,
-                    onClick = { showDailyNoteEditor = true },
-                )
+            // follows the selected day (today or any past day). Only when the
+            // optional tracker is enabled (Settings → Trackers & Reminders).
+            if (ui.dailyNotesEnabled) {
+                item(key = "daily-note-${selectedDate}") {
+                    DailyNoteCard(
+                        note = ui.dailyNote,
+                        onClick = { showDailyNoteEditor = true },
+                    )
+                }
+                item { Spacer(Modifier.height(8.dp)) }
             }
-            item { Spacer(Modifier.height(8.dp)) }
             if (mealGroups.isEmpty()) {
                 item { SectionHeader(if (isToday) stringResource(R.string.home_todays_food) else stringResource(R.string.home_food_log)) }
                 item {
@@ -1005,6 +1019,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                 returnToAddFoodGrid()
             },
             isSubmitting = ui.isEntryAnalysisBusy,
+            recentPrompts = recentPrompts,
             onSubmit = {
                 if (!ui.isEntryAnalysisBusy) {
                     showText = false
@@ -1235,6 +1250,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             showDontAskAgain = !ui.skipPhotoNotePrompt &&
                 ui.photoNoteSkipCount >= HomeViewModel.PHOTO_NOTE_SKIP_OFFER_THRESHOLD,
             showAccuracyGuide = ui.photoAccuracyGuideCount < HomeViewModel.PHOTO_ACCURACY_GUIDE_COUNT,
+            recentPrompts = recentPrompts,
             onAddPhoto = {
                 if (stagedPhotoBytes.size < FoodPhotoSession.MAX_IMAGES) {
                     if (isImportingPhotos) {
