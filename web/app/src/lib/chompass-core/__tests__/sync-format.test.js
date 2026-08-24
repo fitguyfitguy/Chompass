@@ -6,6 +6,7 @@ import {
   exportSyncDocument,
   parseSyncDocument,
   liveFoodEntriesFromSync,
+  liveNicotineFromSync,
   appendTombstones,
   UnsupportedSyncFormatError,
 } from "../sync-format.js";
@@ -63,6 +64,32 @@ test("exportSyncDocument round-trips food id", () => {
   assert.equal(parsed.food_entries[0].selected_serving_unit, "piece");
   assert.equal(parsed.food_entries[0].serving_unit_options[0].grams_per_unit, 50);
   assert.deepEqual(parsed.food_entries[0].constituents, []);
+});
+
+test("exportSyncDocument round-trips nicotine entries", () => {
+  const doc = exportSyncDocument({
+    nicotine: [
+      { id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc", date: "2026-07-24", kind: "pouch", count: 2, mg: 6.5 },
+      { id: "dddddddd-dddd-4ddd-8ddd-dddddddddddd", date: "2026-07-24", kind: "cigarette", count: 1, mg: null },
+    ],
+    generatedAt: "2026-07-24T10:00:00.000Z",
+  });
+  const parsed = parseSyncDocument(doc);
+  assert.equal(parsed.nicotine_entries.length, 2);
+  assert.equal(parsed.nicotine_entries[0].kind, "pouch");
+  assert.equal(parsed.nicotine_entries[0].count, 2);
+  assert.equal(parsed.nicotine_entries[0].mg, 6.5);
+  assert.equal(parsed.nicotine_entries[1].mg, null);
+  const live = liveNicotineFromSync(parsed.nicotine_entries);
+  assert.equal(live[0].count, 2);
+  assert.equal(live[1].kind, "cigarette");
+});
+
+test("nicotine-less legacy docs still parse (optional array)", () => {
+  const legacy = structuredClone(sample);
+  delete legacy.nicotine_entries;
+  const doc = parseSyncDocument(legacy);
+  assert.deepEqual(doc.nicotine_entries, []);
 });
 
 test("accepts legacy sync format_version 1.0", () => {

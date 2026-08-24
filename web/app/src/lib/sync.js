@@ -10,6 +10,7 @@ import {
   bodyFat,
   measurements,
   water,
+  nicotine,
   prefs,
   withRevisionHooksSuppressed,
 } from "./db.js";
@@ -22,6 +23,7 @@ import {
   liveBodyFatFromSync,
   liveMeasurementsFromSync,
   liveWaterFromSync,
+  liveNicotineFromSync,
   liveRecipesFromSync,
 } from "./chompass-core/sync-format.js";
 import { mergeSyncDocuments, partitionLiveAndDeleted } from "./chompass-core/sync-merge.js";
@@ -60,6 +62,7 @@ export async function buildLocalSyncDocument() {
     bodyFat: await bodyFat.all(),
     measurements: await measurements.all(),
     water: await water.all(),
+    nicotine: await nicotine.all(),
     recipes: await recipes.all(),
     revisions,
     generatedAt: new Date().toISOString(),
@@ -129,6 +132,13 @@ export async function applySyncDocument(doc) {
   }
   for (const id of wPart.deletedIds) await water.delete(id);
   for (const entry of liveWaterFromSync(wPart.live)) await water.put(entry);
+
+  const nPart = partitionLiveAndDeleted(doc.nicotine_entries ?? []);
+  for (const row of doc.nicotine_entries ?? []) {
+    revisions[row.id] = { updatedAt: row.updated_at, deletedAt: row.deleted_at ?? null, kind: "nicotine" };
+  }
+  for (const id of nPart.deletedIds) await nicotine.delete(id);
+  for (const entry of liveNicotineFromSync(nPart.live)) await nicotine.put(entry);
 
   const rPart = partitionLiveAndDeleted(doc.recipes ?? []);
   for (const row of doc.recipes ?? []) {

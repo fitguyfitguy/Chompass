@@ -9,6 +9,7 @@ import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material.icons.outlined.Brightness6
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Dashboard
+import androidx.compose.material.icons.outlined.FilterAlt
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
@@ -150,6 +151,20 @@ internal fun SettingsAppSection(
                     },
                     icon = Icons.Outlined.WaterDrop,
                 ) { nav.navigate(ChompassRoutes.waterRoute("app")) }
+                HorizontalDivider()
+                SettingRow(
+                    stringResource(R.string.settings_nicotine_title),
+                    if (ui.nicotineTrackingEnabled) {
+                        if (ui.nicotineDailyLimit > 0) {
+                            stringResource(R.string.nicotine_daily_limit_summary, ui.nicotineDailyLimit)
+                        } else {
+                            stringResource(R.string.nicotine_no_limit)
+                        }
+                    } else {
+                        stringResource(R.string.settings_off)
+                    },
+                    icon = Icons.Outlined.FilterAlt,
+                ) { nav.navigate(ChompassRoutes.nicotineRoute("app")) }
                 HorizontalDivider()
                 SettingRow(
                     stringResource(R.string.settings_notifications),

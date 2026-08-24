@@ -6,6 +6,8 @@ import app.chompass.models.ChatMessage
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.MealType
+import app.chompass.models.NicotineEntry
+import app.chompass.models.NicotineKind
 import app.chompass.models.Recipe
 import app.chompass.models.RecipeIngredient
 import app.chompass.models.WaterEntry
@@ -339,6 +341,34 @@ internal object SampleDataGenerators {
                 val hour = hours[i % hours.size]
                 val ts = day.atTime(hour, rng.nextInt(0, 50)).atZone(zone).toInstant()
                 out.add(WaterEntry(date = ts, milliliters = cups.random(rng)))
+            }
+        }
+        return out
+    }
+
+    /** A few weeks of nicotine logs (cigarettes + occasional vape) for seeding. */
+    fun nicotineEntries(
+        totalDays: Int = 30,
+        today: LocalDate = LocalDate.now(),
+    ): List<NicotineEntry> {
+        val zone = ZoneId.systemDefault()
+        val rng = Random(seed = 0x51C0)
+        val kinds = NicotineKind.entries.filter { it != NicotineKind.OTHER }
+        val out = mutableListOf<NicotineEntry>()
+        for (daysAgo in (totalDays - 1) downTo 0) {
+            val day = today.minusDays(daysAgo.toLong())
+            val logs = rng.nextInt(3, 10)
+            repeat(logs) { i ->
+                val hour = 7 + rng.nextInt(0, 12)
+                val ts = day.atTime(hour, rng.nextInt(0, 60)).atZone(zone).toInstant()
+                out.add(
+                    NicotineEntry(
+                        date = ts,
+                        kind = kinds.random(rng),
+                        count = 1,
+                        mg = if (rng.nextInt(5) == 0) rng.nextDouble(3.0, 12.0) else null,
+                    )
+                )
             }
         }
         return out

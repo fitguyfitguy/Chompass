@@ -40,6 +40,7 @@ class SyncRepository(
             bodyFats = prefs.bodyFatEntries.first(),
             measurements = prefs.bodyMeasurements.first(),
             water = prefs.waterEntries.first(),
+            nicotine = prefs.nicotineEntries.first(),
             recipes = prefs.recipes.first(),
             revisions = revisions.mapValues { (_, rev) ->
                 SyncDocument.Revision(rev.updatedAt, rev.deletedAt, rev.kind)
@@ -213,6 +214,7 @@ class SyncRepository(
         prefs.bodyFatEntries.first().forEach { track(it.id, "bodyfat") }
         prefs.bodyMeasurements.first().forEach { track(it.id, "measure") }
         prefs.waterEntries.first().forEach { track(it.id, "water") }
+        prefs.nicotineEntries.first().forEach { track(it.id, "nicotine") }
         prefs.recipes.first().forEach { track(it.id, "recipe") }
         if (changed) prefs.setSyncRevisions(revisions)
     }
@@ -273,6 +275,12 @@ class SyncRepository(
             it.entry
         }
         prefs.setWaterEntries(liveWater)
+
+        val liveNicotine = doc.nicotine.mapNotNull {
+            track(it.id, it.updatedAt, it.deletedAt, "nicotine")
+            it.entry
+        }
+        prefs.setNicotineEntries(liveNicotine)
 
         val liveRecipes = doc.recipes.mapNotNull {
             track(it.id, it.updatedAt, it.deletedAt, "recipe")

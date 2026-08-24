@@ -177,6 +177,19 @@
  */
 
 /**
+ * @typedef {Object} NicotineEntry
+ * @property {string} id
+ * @property {string} date        ISO date "YYYY-MM-DD"
+ * @property {string} kind        cigarette | vape | pouch | gum | patch | other
+ * @property {number} count
+ * @property {number|null} [mg]   optional per-dose nicotine
+ */
+
+/**
+ * @typedef {"cigarette"|"vape"|"pouch"|"gum"|"patch"|"other"} NicotineKind
+ */
+
+/**
  * @typedef {"male"|"female"|"other"} Sex
  * @typedef {"sedentary"|"light"|"moderate"|"active"|"very_active"|"extra_active"} ActivityLevel
  * @typedef {"lose"|"maintain"|"gain"} Goal

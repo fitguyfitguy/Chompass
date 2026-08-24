@@ -726,6 +726,18 @@ export class SettingsView extends HTMLElement {
           <input id="waterGoalMl" name="waterGoalMl" type="number" min="0" value="${p.waterGoalMl ?? 2000}" />
         </div>
         <div class="field">
+          <label for="showNicotine">Nicotine tracking</label>
+          <select id="showNicotine" name="showNicotine">
+            <option value="false" ${p.showNicotine !== true ? "selected" : ""}>Off</option>
+            <option value="true" ${p.showNicotine === true ? "selected" : ""}>On</option>
+          </select>
+          <p class="nutrient-picker__hint">Log cigarettes, vapes and pouches from the diary. Stays on your device and in your WebDAV sync; never sent to an AI provider.</p>
+        </div>
+        <div class="field">
+          <label for="nicotineDailyLimit">Nicotine daily limit (0 = none)</label>
+          <input id="nicotineDailyLimit" name="nicotineDailyLimit" type="number" min="0" value="${p.nicotineDailyLimit ?? 0}" />
+        </div>
+        <div class="field">
           <label for="calorieGaugeMode">Calorie gauge</label>
           <select id="calorieGaugeMode" name="calorieGaugeMode">
             <option value="static" ${p.calorieGaugeMode !== "add_active" ? "selected" : ""}>Static (full target)</option>
@@ -783,6 +795,8 @@ export class SettingsView extends HTMLElement {
       await prefs.save({
         showWater: fd.get("showWater") === "true",
         waterGoalMl: Number(fd.get("waterGoalMl") || 2000),
+        showNicotine: fd.get("showNicotine") === "true",
+        nicotineDailyLimit: Math.max(0, Number(fd.get("nicotineDailyLimit") || 0)),
         calorieGaugeMode: /** @type {any} */ (fd.get("calorieGaugeMode")),
         adaptiveGoals: fd.get("adaptiveGoals") === "true",
         homeNutrientCardCount: cardCount,
