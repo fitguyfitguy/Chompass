@@ -33,14 +33,16 @@ fun AiSettingsScreen(
             nav = nav,
             onOpenSheet = { sheet = it },
         )
+        // Speech is its own concern (own provider/key/language); it sits right
+        // after the AI card so it is not buried below Fallback Provider.
+        SettingsSpeechSection(
+            ui = ui,
+            onOpenSheet = { sheet = it },
+        )
         SettingsCustomInstructionsSection(ui = ui, vm = vm)
         SettingsFallbackSection(
             ui = ui,
             vm = vm,
-            onOpenSheet = { sheet = it },
-        )
-        SettingsSpeechSection(
-            ui = ui,
             onOpenSheet = { sheet = it },
         )
     }

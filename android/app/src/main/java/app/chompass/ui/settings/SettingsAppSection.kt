@@ -4,14 +4,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material.icons.outlined.Brightness6
-import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Dashboard
-import androidx.compose.material.icons.outlined.FilterAlt
 import androidx.compose.material.icons.outlined.Language
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Star
-import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,9 +21,9 @@ import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.progress.TimeRange
 
 /**
- * App & Display settings: look & feel (appearance, theme color, home display),
- * calendar preferences, and links to the Water and Notifications sub-screens.
- * The heavy water/notification domains live in their own screens now.
+ * Display settings: look & feel (appearance, theme color, language, launcher
+ * icon) and what Home / Progress show. Trackers (water, nicotine, reminders)
+ * live in their own hub group now; Week Starts On moved to Customize Progress.
  */
 @Composable
 internal fun SettingsAppSection(
@@ -77,12 +73,6 @@ internal fun SettingsAppSection(
                 ) { vm.setFixedLauncherIcon(it) }
                 HorizontalDivider()
                 SettingRow(
-                    stringResource(R.string.settings_week_starts),
-                    stringResource(ui.weekStartDay.displayNameRes),
-                    icon = Icons.Outlined.CalendarToday
-                ) { onOpenSheet(SettingsSheet.WEEK_START) }
-                HorizontalDivider()
-                SettingRow(
                     stringResource(R.string.settings_customize_progress),
                     stringResource(
                         R.string.settings_customize_progress_summary,
@@ -95,35 +85,5 @@ internal fun SettingsAppSection(
                     ),
                     icon = Icons.AutoMirrored.Outlined.ShowChart
                 ) { nav.navigate(ChompassRoutes.CUSTOMIZE_PROGRESS) }
-                HorizontalDivider()
-                SettingRow(
-                    stringResource(R.string.settings_water_title),
-                    if (ui.waterTrackingEnabled) {
-                        stringResource(R.string.settings_water_goal_summary, ui.waterDailyGoalMl)
-                    } else {
-                        stringResource(R.string.settings_off)
-                    },
-                    icon = Icons.Outlined.WaterDrop,
-                ) { nav.navigate(ChompassRoutes.waterRoute("app")) }
-                HorizontalDivider()
-                SettingRow(
-                    stringResource(R.string.settings_nicotine_title),
-                    if (ui.nicotineTrackingEnabled) {
-                        if (ui.nicotineDailyLimit > 0) {
-                            stringResource(R.string.nicotine_daily_limit_summary, ui.nicotineDailyLimit)
-                        } else {
-                            stringResource(R.string.nicotine_no_limit)
-                        }
-                    } else {
-                        stringResource(R.string.settings_off)
-                    },
-                    icon = Icons.Outlined.FilterAlt,
-                ) { nav.navigate(ChompassRoutes.nicotineRoute("app")) }
-                HorizontalDivider()
-                SettingRow(
-                    stringResource(R.string.settings_notifications),
-                    if (ui.notificationsEnabled) stringResource(R.string.settings_on) else stringResource(R.string.settings_off),
-                    icon = Icons.Outlined.Notifications,
-                ) { nav.navigate(ChompassRoutes.notificationsRoute("app")) }
     }
 }

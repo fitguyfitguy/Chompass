@@ -142,8 +142,8 @@ fun NotificationsSettingsScreen(
                 RelatedLink(label = stringResource(R.string.settings_water_title)) {
                     nav.navigate(ChompassRoutes.waterRoute("notifications"))
                 },
-                RelatedLink(label = stringResource(R.string.settings_group_app_display)) {
-                    nav.navigate(ChompassRoutes.SETTINGS_APP)
+                RelatedLink(label = stringResource(R.string.settings_group_trackers)) {
+                    nav.navigate(ChompassRoutes.SETTINGS_TRACKERS)
                 },
             ),
         )

@@ -19,6 +19,7 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.SmartToy
+import androidx.compose.material.icons.outlined.TrackChanges
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -107,6 +108,13 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                         summary = stringResource(R.string.settings_group_app_summary),
                         icon = Icons.Outlined.Settings,
                         onClick = { nav.navigate(ChompassRoutes.SETTINGS_APP) },
+                    )
+                    HorizontalDivider()
+                    SettingsHubRow(
+                        label = stringResource(R.string.settings_group_trackers),
+                        summary = stringResource(R.string.settings_group_trackers_summary),
+                        icon = Icons.Outlined.TrackChanges,
+                        onClick = { nav.navigate(ChompassRoutes.SETTINGS_TRACKERS) },
                     )
                     HorizontalDivider()
                     SettingsHubRow(

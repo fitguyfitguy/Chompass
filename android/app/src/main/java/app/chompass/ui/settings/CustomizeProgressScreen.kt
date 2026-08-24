@@ -68,11 +68,20 @@ fun CustomizeProgressScreen(
             padding = 0.dp,
             allowBlur = false,
         ) {
-            SettingRow(
-                label = stringResource(R.string.settings_progress_default_range),
-                value = stringResource(TimeRange.fromStorageId(ui.progressDefaultRangeId).labelRes),
-                onClick = { sheet = SettingsSheet.PROGRESS_DEFAULT_RANGE },
-            )
+            Column {
+                // Moved here from Display: it is a calendar/progress preference.
+                SettingRow(
+                    label = stringResource(R.string.settings_week_starts),
+                    value = stringResource(ui.weekStartDay.displayNameRes),
+                    onClick = { sheet = SettingsSheet.WEEK_START },
+                )
+                HorizontalDivider()
+                SettingRow(
+                    label = stringResource(R.string.settings_progress_default_range),
+                    value = stringResource(TimeRange.fromStorageId(ui.progressDefaultRangeId).labelRes),
+                    onClick = { sheet = SettingsSheet.PROGRESS_DEFAULT_RANGE },
+                )
+            }
         }
 
         FudGlassSurface(
