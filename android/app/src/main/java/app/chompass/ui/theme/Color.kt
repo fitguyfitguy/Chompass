@@ -248,6 +248,16 @@ object AppColors {
     val CalorieGradient: Brush
         get() = Brush.linearGradient(listOf(CalorieStart, CalorieEnd))
 
+    /**
+     * Foreground for text/icons drawn on [CalorieGradient]: pure white on dark
+     * accents (the existing look), dark on light ones. Light wallpapers yield
+     * near-white Material You primaries (especially in dark mode, where the
+     * dynamic primary is tone 80), so white labels on the gradient would vanish
+     * (Codeberg #44).
+     */
+    val onCalorieGradient: Color
+        get() = if (CalorieEnd.luminance() > 0.5f) OnLight else Color.White
+
     // M3 neutral surfaces
     val AppBackgroundLight = Color(0xFFFEF7FF)
     val AppBackgroundDark = Color(0xFF1C1B1F)

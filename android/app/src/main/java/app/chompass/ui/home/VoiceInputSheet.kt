@@ -470,7 +470,7 @@ private fun MicButton(phase: VoicePhase, onToggle: () -> Unit) {
         Icon(
             imageVector = if (recording) Icons.Filled.Mic else Icons.Filled.MicNone,
             contentDescription = if (recording) stringResource(R.string.voice_stop) else stringResource(R.string.voice_record),
-            tint = Color.White,
+            tint = if (recording) Color.White else AppColors.onCalorieGradient,
             modifier = Modifier.size(32.dp)
         )
     }

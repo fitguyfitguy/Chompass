@@ -64,7 +64,7 @@ internal fun ExportPrimaryButton(onClick: () -> Unit) {
     ) {
         Text(
             stringResource(R.string.export_action),
-            color = Color.White,
+            color = AppColors.onCalorieGradient,
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
         )

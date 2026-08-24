@@ -219,7 +219,7 @@ private fun DayTile(
                 fontSize = 17.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = when {
-                    isSelected -> Color.White
+                    isSelected -> AppColors.onCalorieGradient
                     isToday -> AppColors.Calorie
                     else -> MaterialTheme.colorScheme.onSurface
                 }
