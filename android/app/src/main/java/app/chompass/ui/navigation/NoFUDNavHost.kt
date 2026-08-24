@@ -49,6 +49,7 @@ import app.chompass.ui.settings.OptionalNutrientGoalsScreen
 import app.chompass.ui.settings.PersonalSettingsScreen
 import app.chompass.ui.settings.SettingsScreen
 import app.chompass.ui.settings.SyncSettingsScreen
+import app.chompass.ui.settings.TrackersSettingsScreen
 import app.chompass.ui.settings.WaterSettingsScreen
 import app.chompass.ui.settings.NicotineSettingsScreen
 
@@ -223,7 +224,14 @@ fun ChompassNavHost(
                         },
                     )
                 }
-                composable(ChompassRoutes.PROGRESS) { ProgressScreen(container = container) }
+                composable(ChompassRoutes.PROGRESS) {
+                    ProgressScreen(
+                        container = container,
+                        onOpenCustomize = {
+                            nav.navigate(ChompassRoutes.CUSTOMIZE_PROGRESS)
+                        },
+                    )
+                }
                 composable(ChompassRoutes.COACH) {
                     if (showCoachTab) {
                         CoachScreen(container = container)
@@ -254,6 +262,13 @@ fun ChompassNavHost(
                 }
                 composable(ChompassRoutes.SETTINGS_APP) {
                     AppSettingsScreen(
+                        container = container,
+                        nav = nav,
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+                composable(ChompassRoutes.SETTINGS_TRACKERS) {
+                    TrackersSettingsScreen(
                         container = container,
                         nav = nav,
                         onBack = { nav.popBackStack() },

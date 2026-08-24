@@ -18,6 +18,7 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.SmartToy
+import androidx.compose.material.icons.outlined.TrackChanges
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -186,6 +187,13 @@ internal fun SettingsScreenPreviewContent(
                         label = stringResource(R.string.settings_group_app_display),
                         summary = stringResource(R.string.settings_group_app_summary),
                         icon = Icons.Outlined.Settings,
+                        onClick = {},
+                    )
+                    HorizontalDivider()
+                    SettingsHubRow(
+                        label = stringResource(R.string.settings_group_trackers),
+                        summary = stringResource(R.string.settings_group_trackers_summary),
+                        icon = Icons.Outlined.TrackChanges,
                         onClick = {},
                     )
                     HorizontalDivider()

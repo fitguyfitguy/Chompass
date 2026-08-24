@@ -110,6 +110,7 @@ internal fun settingsBackLabel(from: String): String = when (from) {
     "nicotine" -> stringResource(R.string.settings_nicotine_title)
     "notifications" -> stringResource(R.string.settings_notifications)
     "data" -> stringResource(R.string.settings_group_data)
+    "trackers" -> stringResource(R.string.settings_group_trackers)
     "ai" -> stringResource(R.string.settings_group_ai)
     "food" -> stringResource(R.string.settings_group_food)
     else -> stringResource(R.string.nav_settings)

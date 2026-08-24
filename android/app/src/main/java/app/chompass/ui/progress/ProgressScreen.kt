@@ -1,12 +1,22 @@
 package app.chompass.ui.progress
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -19,7 +29,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -33,6 +45,7 @@ import app.chompass.services.health.DailyActivity
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.navigation.BottomNavScrollPadding
+import app.chompass.ui.theme.AppColors
 
 /**
  * Verbatim port of ios/calorietracker/ContentView.swift > struct ProgressTabView,
@@ -83,7 +96,7 @@ enum class TimeRange(@StringRes val labelRes: Int, val days: Int, val storageId:
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProgressScreen(container: AppContainer) {
+fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = null) {
     val vm: ProgressViewModel = viewModel(factory = ProgressViewModel.Factory(container))
     val ui by vm.ui.collectAsState()
     val activity by vm.activity.collectAsState()
@@ -117,6 +130,38 @@ fun ProgressScreen(container: AppContainer) {
             ),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            item {
+                // F6: progress display settings (default range, week start, trend
+                // plots) were only reachable via Settings → Display → Customize
+                // progress; this gives the tab a one-tap entry to the same screen.
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                ) {
+                    Row(
+                        Modifier
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable(enabled = onOpenCustomize != null) { onOpenCustomize?.invoke() }
+                            .padding(horizontal = 10.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            Icons.Outlined.Tune,
+                            contentDescription = null,
+                            tint = AppColors.Calorie,
+                            modifier = Modifier.size(16.dp),
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text(
+                            stringResource(R.string.settings_customize_progress),
+                            color = AppColors.Calorie,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                }
+            }
+
             item { TimeRangePicker(selected = ui.timeRange, onSelect = vm::setTimeRange) }
 
             item {
