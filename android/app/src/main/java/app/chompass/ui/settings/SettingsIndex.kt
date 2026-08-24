@@ -16,11 +16,13 @@ import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.LocalCafe
 import androidx.compose.material.icons.outlined.LocalDining
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.MonitorWeight
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Numbers
+import androidx.compose.material.icons.outlined.Notes
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Percent
 import androidx.compose.material.icons.outlined.Person
@@ -197,6 +199,10 @@ internal val SETTINGS_INDEX: List<SettingsIndexEntry> = listOf(
         listOf("hydration", "goal", "drink", "ml", "presets"), ChompassRoutes.waterRoute("search"), Icons.Outlined.WaterDrop),
     SettingsIndexEntry(R.string.settings_group_trackers, R.string.settings_nicotine_title,
         listOf("cigarettes", "vape", "pouch", "smoking", "limit"), ChompassRoutes.nicotineRoute("search"), Icons.Outlined.FilterAlt),
+    SettingsIndexEntry(R.string.settings_group_trackers, R.string.settings_caffeine_title,
+        listOf("coffee", "tea", "energy drink", "limit", "caffeine"), ChompassRoutes.caffeineRoute("search"), Icons.Outlined.LocalCafe),
+    SettingsIndexEntry(R.string.settings_group_trackers, R.string.settings_notes_title,
+        listOf("journal", "note", "diary", "daily notes"), ChompassRoutes.notesRoute("search"), Icons.Outlined.Notes),
     SettingsIndexEntry(R.string.settings_group_trackers, R.string.settings_fasting_title,
         listOf("fasting", "intermittent", "timer", "goal", "fast"), ChompassRoutes.fastingRoute("search"), Icons.Outlined.Schedule),
     SettingsIndexEntry(R.string.settings_group_trackers, R.string.settings_notifications,
