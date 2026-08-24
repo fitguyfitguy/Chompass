@@ -146,6 +146,7 @@ const LIST_KEYS = [
   "water",
   "daily_notes",
   "nicotine_entries",
+  "caffeine_entries",
   "recipes",
 ];
 

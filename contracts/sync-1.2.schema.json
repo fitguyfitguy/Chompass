@@ -49,6 +49,10 @@
       "type": "array",
       "items": { "$ref": "#/$defs/nicotineRecord" }
     },
+    "caffeine_entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/caffeineRecord" }
+    },
     "recipes": {
       "type": "array",
       "items": { "$ref": "#/$defs/recipeRecord" }
@@ -244,6 +248,20 @@
             "kind": { "type": "string" },
             "count": { "type": "number" },
             "mg": { "type": ["number", "null"] }
+          }
+        }
+      ]
+    },
+    "caffeineRecord": {
+      "allOf": [
+        { "$ref": "#/$defs/syncMeta" },
+        {
+          "type": "object",
+          "required": ["date", "kind", "mg"],
+          "properties": {
+            "date": { "type": "string" },
+            "kind": { "type": "string" },
+            "mg": { "type": "number" }
           }
         }
       ]

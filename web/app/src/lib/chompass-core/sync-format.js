@@ -268,6 +268,7 @@ export function foodEntryFromSyncWire(wire) {
  *   water?: import('./models.js').WaterEntry[],
  *   dailyNotes?: import('./models.js').DailyNote[],
  *   nicotine?: import('./models.js').NicotineEntry[],
+ *   caffeine?: import('./models.js').CaffeineEntry[],
  *   recipes?: import('./models.js').Recipe[],
  *   profile?: { updatedAt: string, deletedAt?: string|null, payload: object }|null,
  *   prefs?: { updatedAt: string, deletedAt?: string|null, payload: object }|null,
@@ -380,6 +381,17 @@ export function exportSyncDocument(input) {
         mg: n.mg != null && n.mg > 0 ? round1(n.mg) : null,
       };
     }),
+    caffeine_entries: (input.caffeine ?? []).map((c) => {
+      const meta = metaFor(c.id, `${c.date}T00:00:00Z`);
+      return {
+        id: c.id,
+        updated_at: meta.updated_at,
+        deleted_at: meta.deleted_at,
+        date: c.date,
+        kind: c.kind ?? "coffee",
+        mg: Math.max(0, round1(c.mg ?? 0)),
+      };
+    }),
     recipes: (input.recipes ?? []).map((r) => {
       const meta = metaFor(r.id, r.createdAt);
       return {
@@ -437,6 +449,7 @@ export function appendTombstones(doc, revisions) {
     water: "water",
     daily_note: "daily_notes",
     nicotine: "nicotine_entries",
+    caffeine: "caffeine_entries",
     recipe: "recipes",
   };
   for (const [id, rev] of Object.entries(revisions)) {
@@ -478,7 +491,7 @@ export function parseSyncDocument(doc) {
   if (!SYNC_IMPORT_VERSIONS.has(exp.format_version)) {
     throw new UnsupportedSyncFormatError(`Unsupported format_version: ${exp.format_version}`);
   }
-  const OPTIONAL_ARRAYS = new Set(["nicotine_entries"]);
+  const OPTIONAL_ARRAYS = new Set(["nicotine_entries", "caffeine_entries"]);
   for (const key of [
     "food_entries",
     "favorites",
@@ -488,6 +501,7 @@ export function parseSyncDocument(doc) {
     "water",
     "daily_notes",
     "nicotine_entries",
+    "caffeine_entries",
     "recipes",
   ]) {
     if (!Array.isArray(doc[key])) {
@@ -597,6 +611,21 @@ export function liveNicotineFromSync(wires) {
       kind: String(w.kind ?? "cigarette"),
       count: Math.max(1, Number(w.count) || 1),
       mg: w.mg != null ? Number(w.mg) : null,
+    }));
+}
+
+/**
+ * @param {any[]} wires
+ * @returns {import('./models.js').CaffeineEntry[]}
+ */
+export function liveCaffeineFromSync(wires) {
+  return wires
+    .filter((w) => w && w.id && !w.deleted_at)
+    .map((w) => ({
+      id: String(w.id),
+      date: String(w.date).slice(0, 10),
+      kind: String(w.kind ?? "coffee"),
+      mg: Math.max(0, Number(w.mg) || 0),
     }));
 }
 

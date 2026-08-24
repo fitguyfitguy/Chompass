@@ -182,6 +182,16 @@
       "mg": null
     }
   ],
+  "caffeine_entries": [
+    {
+      "id": "55555555-5555-5555-8555-555555555555",
+      "updated_at": "2026-07-24T08:30:00Z",
+      "deleted_at": null,
+      "date": "2026-07-24",
+      "kind": "coffee",
+      "mg": 95
+    }
+  ],
   "recipes": [],
   "profile": {
     "updated_at": "2026-07-01T00:00:00Z",

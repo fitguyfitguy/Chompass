@@ -739,6 +739,26 @@ export class SettingsView extends HTMLElement {
           <input id="nicotineDailyLimit" name="nicotineDailyLimit" type="number" min="0" value="${p.nicotineDailyLimit ?? 0}" />
         </div>
         <div class="field">
+          <label for="showCaffeine">Caffeine tracking</label>
+          <select id="showCaffeine" name="showCaffeine">
+            <option value="false" ${p.showCaffeine !== true ? "selected" : ""}>Off</option>
+            <option value="true" ${p.showCaffeine === true ? "selected" : ""}>On</option>
+          </select>
+          <p class="nutrient-picker__hint">Log coffee, tea and energy drinks from the diary. The daily total includes caffeine from food entries. Stays on your device and in your WebDAV sync; never sent to an AI provider.</p>
+        </div>
+        <div class="field">
+          <label for="caffeineDailyLimitMg">Caffeine daily limit (mg, 0 = none)</label>
+          <input id="caffeineDailyLimitMg" name="caffeineDailyLimitMg" type="number" min="0" max="1000" value="${p.caffeineDailyLimitMg ?? 400}" />
+        </div>
+        <div class="field">
+          <label for="showNotes">Daily notes</label>
+          <select id="showNotes" name="showNotes">
+            <option value="false" ${p.showNotes !== true ? "selected" : ""}>Off</option>
+            <option value="true" ${p.showNotes === true ? "selected" : ""}>On</option>
+          </select>
+          <p class="nutrient-picker__hint">Show the per-day note card on the diary. Notes sync and export with your diary and are never sent to an AI provider.</p>
+        </div>
+        <div class="field">
           <label for="showFasting">Fasting timer</label>
           <select id="showFasting" name="showFasting">
             <option value="false" ${p.showFasting !== true ? "selected" : ""}>Off</option>
@@ -810,6 +830,9 @@ export class SettingsView extends HTMLElement {
         waterGoalMl: Number(fd.get("waterGoalMl") || 2000),
         showNicotine: fd.get("showNicotine") === "true",
         nicotineDailyLimit: Math.max(0, Number(fd.get("nicotineDailyLimit") || 0)),
+        showCaffeine: fd.get("showCaffeine") === "true",
+        caffeineDailyLimitMg: Math.min(1000, Math.max(0, Number(fd.get("caffeineDailyLimitMg") ?? 400))),
+        showNotes: fd.get("showNotes") === "true",
         showFasting: fd.get("showFasting") === "true",
         fastingGoalHours: Math.min(48, Math.max(0, Number(fd.get("fastingGoalHours") || 0))),
         calorieGaugeMode: /** @type {any} */ (fd.get("calorieGaugeMode")),

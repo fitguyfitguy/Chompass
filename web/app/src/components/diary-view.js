@@ -1,5 +1,5 @@
 // @ts-check
-import { foodEntries, profile as profileStore, water, dailyNotes, nicotine, prefs } from "../lib/db.js";
+import { foodEntries, profile as profileStore, water, dailyNotes, nicotine, caffeine, prefs } from "../lib/db.js";
 import { dailyTargets, estimatedDailyActiveCalories } from "../lib/chompass-core/formulas.js";
 import { dailyNoteIdFor } from "../lib/chompass-core/models.js";
 import { openSheet } from "../lib/ui/sheet.js";
@@ -58,6 +58,9 @@ const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack"];
 const WATER_PRESETS = [250, 500, 750];
 /** PWA quick chips mirror Android NicotineKind.DefaultQuickKinds. */
 const NICOTINE_QUICK_KINDS = ["cigarette", "vape", "pouch"];
+const CAFFEINE_QUICK_KINDS = ["coffee", "tea", "energy"];
+/** Default mg per quick chip, mirroring Android CaffeineKind.defaultMg. */
+const CAFFEINE_KIND_MG = { coffee: 95, tea: 28, energy: 80, other: 0 };
 const HOME_DATE_KEY = "chompass-home-date";
 
 /** Local-only fasting timer card (docs/local/PLAN_FASTING_TRACKER.md mirror). */
@@ -483,6 +486,7 @@ export class DiaryView extends HTMLElement {
     ]);
     const note = noteLogs[0] ?? null;
     const nicotineLogs = await nicotine.byDate(this.date);
+    const caffeineLogs = await caffeine.byDate(this.date);
 
     const totals = entries.reduce(
       (acc, e) => {
@@ -524,6 +528,14 @@ export class DiaryView extends HTMLElement {
     const nicotinePct = nicotineLimit > 0 ? Math.min(100, (nicotineCount / nicotineLimit) * 100) : 0;
     const showNicotine = appPrefs.showNicotine === true;
     const showFasting = appPrefs.showFasting === true;
+    // Caffeine hero total mirrors Android: tracker logs + food-entry caffeine.
+    const caffeineMg =
+      caffeineLogs.reduce((s, c) => s + (Number(c.mg) || 0), 0) +
+      entries.reduce((s, e) => s + (e.caffeineMg ?? 0), 0);
+    const caffeineLimit = appPrefs.caffeineDailyLimitMg ?? 400;
+    const caffeinePct = caffeineLimit > 0 ? Math.min(100, (caffeineMg / caffeineLimit) * 100) : 0;
+    const showCaffeine = appPrefs.showCaffeine === true;
+    const showNotes = appPrefs.showNotes === true;
     // #38 (Android parity): in ADD_ACTIVE the ring target can sit above the
     // stored base (manual kcal stacked on the estimate); scale the macro
     // goals to the ring so cards and gauge never disagree. Typical days
@@ -702,12 +714,38 @@ export class DiaryView extends HTMLElement {
           : ""
       }
 
+      ${
+        showCaffeine
+          ? `<div class="card card--glass water-row caffeine-row">
+              <div class="water-row__top">
+                <div class="water-row__meta">${
+                  caffeineLimit > 0
+                    ? `<strong>${caffeineMg}</strong> / ${caffeineLimit} mg caffeine`
+                    : `<strong>${caffeineMg}</strong> mg logged`
+                }</div>
+                <div class="water-presets">
+                  ${CAFFEINE_QUICK_KINDS.map((kind) => `<button type="button" class="chip" data-caffeine="${kind}">+1 ${kind}</button>`).join("")}
+                  <button type="button" class="chip" data-caffeine-custom>Custom</button>
+                  ${caffeineLogs.length ? `<button type="button" class="chip chip--ghost" data-caffeine-undo title="Remove last log">Undo</button>` : ""}
+                </div>
+              </div>
+              ${
+                caffeineLimit > 0
+                  ? `<div class="water-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${caffeineLimit}" aria-valuenow="${caffeineMg}" aria-label="Caffeine intake">
+                      <span data-width="${caffeinePct.toFixed(1)}%"></span>
+                    </div>`
+                  : ""
+              }
+            </div>`
+          : ""
+      }
+
       ${showFasting ? fastingCard(appPrefs) : ""}
 
       ${progressiveChip ? `<div class="progressive-meal-bar">${progressiveChip}</div>` : ""}
 
       ${
-        this._noteEditing || note
+        showNotes && (this._noteEditing || note)
           ? `<div class="card card--glass note-row">
               <div class="note-row__top">
                 <strong>${t("diary.note_title")}</strong>
@@ -735,7 +773,7 @@ export class DiaryView extends HTMLElement {
     this._gaugeInfo = gaugeInfo;
     this._gaugeGoal = calorieTarget;
     this._appPrefs = appPrefs;
-    this.bindInteractions(entries, appPrefs, macroTargets, optionalGoals, waterLogs, nicotineLogs);
+    this.bindInteractions(entries, appPrefs, macroTargets, optionalGoals, waterLogs, nicotineLogs, caffeineLogs);
     this.animateFills();
     requestAnimationFrame(() => this.scrollWeekPagerTo(selectedWeekIndex));
     this.afterHomeRender(appPrefs);
@@ -766,8 +804,10 @@ export class DiaryView extends HTMLElement {
    * @param {ReturnType<typeof dailyTargets>|null} targets
    * @param {import('../lib/db.js').OptionalNutrientGoals} optionalGoals
    * @param {{id: string, date: string, amountMl: number}[]} waterLogs
+   * @param {{id: string, date: string, kind: string, mg: number}[]} nicotineLogs
+   * @param {{id: string, date: string, kind: string, mg: number}[]} caffeineLogs
    */
-  bindInteractions(entries, appPrefs, targets, optionalGoals, waterLogs, nicotineLogs) {
+  bindInteractions(entries, appPrefs, targets, optionalGoals, waterLogs, nicotineLogs, caffeineLogs) {
     this.querySelectorAll("[data-date]").forEach((el) => {
       el.addEventListener("click", () => {
         const iso = el.getAttribute("data-date") || this.date;
@@ -792,6 +832,11 @@ export class DiaryView extends HTMLElement {
     });
     this.querySelector("[data-nicotine-custom]")?.addEventListener("click", () => this.customNicotine());
     this.querySelector("[data-nicotine-undo]")?.addEventListener("click", () => this.undoLastNicotine(nicotineLogs));
+    this.querySelectorAll("[data-caffeine]").forEach((el) => {
+      el.addEventListener("click", () => this.addCaffeine(String(el.getAttribute("data-caffeine"))));
+    });
+    this.querySelector("[data-caffeine-custom]")?.addEventListener("click", () => this.customCaffeine());
+    this.querySelector("[data-caffeine-undo]")?.addEventListener("click", () => this.undoLastCaffeine(caffeineLogs));
     this.querySelector("[data-fasting-start]")?.addEventListener("click", () => this.fastingStart());
     this.querySelector("[data-fasting-stop]")?.addEventListener("click", () => this.fastingStop());
     this.querySelector("[data-fasting-cancel]")?.addEventListener("click", () => this.fastingCancel());
@@ -1877,6 +1922,43 @@ export class DiaryView extends HTMLElement {
     const last = nicotineLogs[nicotineLogs.length - 1];
     await nicotine.delete(last.id);
     this.showToast(`Removed ${last.count ?? 1}`);
+    this.render();
+  }
+
+  /** @param {string} kind */
+  async addCaffeine(kind) {
+    const mg = CAFFEINE_KIND_MG[kind] ?? 0;
+    if (mg <= 0) return;
+    await caffeine.put({ id: crypto.randomUUID(), date: this.date, kind, mg });
+    this.render();
+  }
+
+  async customCaffeine() {
+    const raw = await openInput({
+      title: "Add caffeine",
+      label: "Caffeine (mg)",
+      value: "95",
+      unit: "mg",
+      inputMode: "numeric",
+      type: "number",
+      confirmLabel: "Add",
+    });
+    if (raw == null) return;
+    const mg = Number(raw);
+    if (mg > 0) {
+      await caffeine.put({ id: crypto.randomUUID(), date: this.date, kind: "coffee", mg });
+      this.render();
+    }
+  }
+
+  /**
+   * @param {{id: string, date: string, mg?: number}[]} caffeineLogs
+   */
+  async undoLastCaffeine(caffeineLogs) {
+    if (!caffeineLogs.length) return;
+    const last = caffeineLogs[caffeineLogs.length - 1];
+    await caffeine.delete(last.id);
+    this.showToast(`Removed ${last.mg ?? 0} mg`);
     this.render();
   }
 

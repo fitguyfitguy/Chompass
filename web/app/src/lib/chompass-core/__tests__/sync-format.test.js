@@ -8,6 +8,7 @@ import {
   liveFoodEntriesFromSync,
   liveDailyNotesFromSync,
   liveNicotineFromSync,
+  liveCaffeineFromSync,
   appendTombstones,
   UnsupportedSyncFormatError,
 } from "../sync-format.js";
@@ -87,11 +88,30 @@ test("exportSyncDocument round-trips nicotine entries", () => {
   assert.equal(live[1].kind, "cigarette");
 });
 
-test("nicotine-less legacy docs still parse (optional array)", () => {
+test("caffeine-less legacy docs still parse (optional array)", () => {
   const legacy = structuredClone(sample);
-  delete legacy.nicotine_entries;
+  delete legacy.caffeine_entries;
   const doc = parseSyncDocument(legacy);
-  assert.deepEqual(doc.nicotine_entries, []);
+  assert.deepEqual(doc.caffeine_entries, []);
+});
+
+test("exportSyncDocument round-trips caffeine entries", () => {
+  const doc = exportSyncDocument({
+    caffeine: [
+      { id: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee", date: "2026-07-24", kind: "coffee", mg: 95 },
+      { id: "ffffffff-ffff-4fff-8fff-ffffffffffff", date: "2026-07-24", kind: "tea", mg: 28.5 },
+    ],
+    generatedAt: "2026-07-24T10:00:00.000Z",
+  });
+  const parsed = parseSyncDocument(doc);
+  assert.equal(parsed.caffeine_entries.length, 2);
+  assert.equal(parsed.caffeine_entries[0].kind, "coffee");
+  assert.equal(parsed.caffeine_entries[0].mg, 95);
+  assert.equal(parsed.caffeine_entries[1].mg, 28.5);
+  const live = liveCaffeineFromSync(parsed.caffeine_entries);
+  assert.equal(live[0].kind, "coffee");
+  assert.equal(live[0].mg, 95);
+  assert.equal(live[1].mg, 28.5);
 });
 
 test("accepts legacy sync format_version 1.0", () => {
