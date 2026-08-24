@@ -79,6 +79,7 @@ export const pt_BR = Object.freeze({
   "diary.fasting_stop": "Encerrar jejum",
   "diary.fasting_goal_reached": "Meta atingida",
   "diary.fasting_goal_hint": "{elapsed} · meta {goal} h",
+  "diary.fasting_auto": "Automático",
   "diary.fasting_window_opens_in": "A janela de refeições abre em {remaining}",
   "diary.fasting_eating_progress": "{elapsed} de {eat} h de refeições",
   "diary.fasting_fast_starts_in": "O jejum começa em {remaining}",

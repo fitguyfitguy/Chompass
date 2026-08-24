@@ -124,6 +124,7 @@ export const ANDROID_PREF_DEFAULTS = {
   showFasting: false,
   fastingGoalHours: 0,
   fastingEatHours: 0,
+  fastingAutoWindows: false,
   aiFallbackEnabled: true,
   fallbackAiProvider: "gemini",
   fallbackAiModel: "gemini-3.5-flash-lite",

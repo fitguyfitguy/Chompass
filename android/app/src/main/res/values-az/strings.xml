@@ -1774,4 +1774,7 @@ bilirsən?</string>
     <string name="notif_fasting_end_soon_text">Orucunuz %1$d dəq sonra bitir — yemək pəncərəsi o zaman açılır.</string>
     <string name="notif_fasting_start_soon_title">Oruc tezliklə başlayır</string>
     <string name="notif_fasting_start_soon_text">Yemək pəncərəsi %1$d dəq sonra bağlanır — o zaman oruca başlayın.</string>
+    <string name="fasting_auto_tag">Avto</string>
+    <string name="settings_fasting_auto_windows">Avtomatik oruc pəncərələri</string>
+    <string name="settings_fasting_auto_windows_help">Açıq olduqda oruc yemək pəncərəsi bağlanan kimi avtomatik başlayır və hədəfə çatanda bitir. Yenə də əl ilə başlaya bilərsiniz. Avtomatik orucda Ana ekranda düymələr görünmür.</string>
 </resources>

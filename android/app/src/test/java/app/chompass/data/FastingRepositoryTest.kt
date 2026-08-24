@@ -19,7 +19,9 @@ import org.robolectric.annotation.Config
 
 /**
  * Intermittent-fasting timer state machine (docs/local/PLAN_FASTING_TRACKER.md):
- * start/stop/cancel transitions, restart re-derivation from persisted scalars,
+ * start (manual or auto) / stop (incl. exact goal-time end), restart
+ * re-derivation from persisted scalars, the one-shot goal latch, the
+ * auto-started flag, and the onSessionChanged re-arm hook.
  * the one-shot goal latch, and the onSessionChanged re-arm hook.
  */
 @RunWith(RobolectricTestRunner::class)
@@ -38,6 +40,7 @@ class FastingRepositoryTest {
         prefs.setFastingEnabled(false)
         prefs.setFastingGoalHours(0)
         prefs.setFastingGoalNotificationEnabled(true)
+        prefs.setFastingAutoWindows(false)
         prefs.setFastingStartReminderEnabled(false)
         prefs.setFastingStartReminderLeadMinutes(DEFAULT_FASTING_START_REMINDER_LEAD_MINUTES)
         prefs.setFastingEndReminderLeadMinutes(DEFAULT_FASTING_END_REMINDER_LEAD_MINUTES)
@@ -101,33 +104,37 @@ class FastingRepositoryTest {
     }
 
     @Test
-    fun `cancel abandons the fast without recording it`() = runBlocking {
+    fun `auto start marks the session auto and manual start does not`() = runBlocking {
         val prefs = PreferencesStore(RuntimeEnvironment.getApplication())
         val r = repo(prefs)
-        r.start(1_000L)
-        r.cancel()
+        r.start(1_000L, auto = true)
+        assertTrue(prefs.fastingSession.first().autoStarted)
 
-        val s = prefs.fastingSession.first()
-        assertFalse(s.isFasting)
-        assertNull(s.lastEndedAtMillis)
-        assertNull(s.lastFastStartedAtMillis)
-        assertEquals(0L, s.lastFastDurationMillis())
+        r.stop(10_000L)
+        assertFalse(prefs.fastingSession.first().autoStarted)
+        r.start(20_000L) // manual
+        assertFalse(prefs.fastingSession.first().autoStarted)
     }
 
     @Test
-    fun `cancel keeps the previous last-fast record`() = runBlocking {
+    fun `stop at goal anchors the end to the exact goal instant`() = runBlocking {
         val prefs = PreferencesStore(RuntimeEnvironment.getApplication())
         val r = repo(prefs)
         r.start(1_000L)
-        r.stop(10_000L)
-        r.start(20_000L)
-        r.cancel()
+        val goal = 1_000L + 16 * 3_600_000L
+        r.stop(atGoalMillis = goal)
 
         val s = prefs.fastingSession.first()
         assertFalse(s.isFasting)
-        // The cancelled fast must not overwrite the completed one.
-        assertEquals(10_000L, s.lastEndedAtMillis)
-        assertEquals(1_000L, s.lastFastStartedAtMillis)
+        assertEquals(goal, s.lastEndedAtMillis)
+        assertEquals(16 * 3_600_000L, s.lastFastDurationMillis())
+    }
+
+    @Test
+    fun `auto defaults are off and require an eating window`() = runBlocking {
+        val prefs = PreferencesStore(RuntimeEnvironment.getApplication())
+        assertFalse(prefs.fastingAutoWindows.first())
+        assertFalse(prefs.fastingSession.first().autoStarted)
     }
 
     @Test
@@ -172,7 +179,7 @@ class FastingRepositoryTest {
     }
 
     @Test
-    fun `session change hooks fire on start stop and cancel`() = runBlocking {
+    fun `session change hooks fire on start and stop`() = runBlocking {
         val prefs = PreferencesStore(RuntimeEnvironment.getApplication())
         val changed = mutableListOf<Int>()
         val r = repo(prefs, changed)
@@ -180,7 +187,7 @@ class FastingRepositoryTest {
         r.start(1_000L)
         r.stop(10_000L)
         r.start(20_000L)
-        r.cancel()
+        r.stop(atGoalMillis = 30_000L)
 
         assertEquals(4, changed.size)
     }
@@ -206,7 +213,7 @@ class FastingRepositoryTest {
         assertEquals(0L, s.remainingUntilGoalMillis(16, nowMillis = 1_000L + 20 * 3_600_000L))
         // No goal / idle → 0.
         assertEquals(0L, s.remainingUntilGoalMillis(0, nowMillis = 1_000L))
-        r.cancel()
+        r.stop(9 * 3_600_000L + 1_000L)
         assertEquals(0L, prefs.fastingSession.first().remainingUntilGoalMillis(16, nowMillis = 1_000L))
     }
 

@@ -79,6 +79,7 @@ export const ko = Object.freeze({
   "diary.fasting_stop": "단식 종료",
   "diary.fasting_goal_reached": "목표 달성",
   "diary.fasting_goal_hint": "{elapsed} · 목표 {goal}시간",
+  "diary.fasting_auto": "자동",
   "diary.fasting_window_opens_in": "식사 시간까지 {remaining}",
   "diary.fasting_eating_progress": "식사 {eat}시간 중 {elapsed}",
   "diary.fasting_fast_starts_in": "단식 시작까지 {remaining}",

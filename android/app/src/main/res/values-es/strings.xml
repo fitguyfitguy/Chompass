@@ -1780,4 +1780,7 @@
     <string name="notif_fasting_end_soon_text">Tu ayuno termina en %1$d min: entonces se abre tu ventana de comida.</string>
     <string name="notif_fasting_start_soon_title">El ayuno empieza pronto</string>
     <string name="notif_fasting_start_soon_text">Tu ventana de comida se cierra en %1$d min: empieza tu ayuno entonces.</string>
+    <string name="fasting_auto_tag">Automático</string>
+    <string name="settings_fasting_auto_windows">Ventanas de ayuno automáticas</string>
+    <string name="settings_fasting_auto_windows_help">Al activarlo, tu ayuno empieza solo cuando se cierra la ventana de comida y termina al alcanzar el objetivo. También puedes iniciarlo manualmente. Los ayunos automáticos no muestran botones en la pantalla principal.</string>
 </resources>

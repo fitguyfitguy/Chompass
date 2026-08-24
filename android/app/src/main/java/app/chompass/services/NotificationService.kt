@@ -321,6 +321,41 @@ class NotificationService(private val context: Context) {
     fun cancelFastingStartReminder() = cancel(REQUEST_FASTING_START)
 
     /**
+     * Silent auto-cycle alarms: fire at the eating-window end (start the next
+     * fast) or the goal instant (end the fast). The receiver performs the
+     * transition and posts nothing.
+     */
+    fun scheduleFastingAutoStartAt(fireAtMillis: Long) {
+        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, ReminderReceiver::class.java).apply {
+            putExtra(EXTRA_CHANNEL, CHANNEL_FASTING)
+            putExtra(EXTRA_REQUEST, REQUEST_FASTING_AUTO_START)
+        }
+        val pi = PendingIntent.getBroadcast(
+            context, REQUEST_FASTING_AUTO_START, intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, fireAtMillis, pi)
+    }
+
+    fun cancelFastingAutoStart() = cancel(REQUEST_FASTING_AUTO_START)
+
+    fun scheduleFastingAutoEndAt(fireAtMillis: Long) {
+        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, ReminderReceiver::class.java).apply {
+            putExtra(EXTRA_CHANNEL, CHANNEL_FASTING)
+            putExtra(EXTRA_REQUEST, REQUEST_FASTING_AUTO_END)
+        }
+        val pi = PendingIntent.getBroadcast(
+            context, REQUEST_FASTING_AUTO_END, intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, fireAtMillis, pi)
+    }
+
+    fun cancelFastingAutoEnd() = cancel(REQUEST_FASTING_AUTO_END)
+
+    /**
      * Arms a silent daily alarm for just after midnight that rewrites the
      * widget snapshot to "today" (issue #16). The receiver re-arms the chain;
      * ChompassApp re-arms on cold start (reboots drop alarms). No notification
@@ -421,6 +456,8 @@ class NotificationService(private val context: Context) {
         private const val REQUEST_WATER = 1006
         internal const val REQUEST_FASTING_GOAL = 1009
         internal const val REQUEST_FASTING_START = 1010
+        internal const val REQUEST_FASTING_AUTO_START = 1011
+        internal const val REQUEST_FASTING_AUTO_END = 1012
         private const val REQUEST_WIDGET_MIDNIGHT = 1007
         private const val REQUEST_GOAL = 1008
     }
@@ -465,6 +502,8 @@ class ReminderReceiver : BroadcastReceiver() {
                         // start nudge is daily — same computed class as water).
                         FastingGoalPlanner.rearm(container)
                         FastingReminderPlanner.rearmStartReminder(container)
+                        FastingAutoPlanner.rearm(container)
+                        FastingAutoPlanner.heal(container)
                     }
                 } finally {
                     pendingResult.finish()
@@ -474,6 +513,31 @@ class ReminderReceiver : BroadcastReceiver() {
         }
 
         val channel = intent.getStringExtra(NotificationService.EXTRA_CHANNEL) ?: return
+
+        // Silent auto-cycle transitions: the fast starts when the eating window
+        // closes and ends at its goal. No notification is posted; re-arm the
+        // next transition from the resulting session.
+        val request = intent.getIntExtra(NotificationService.EXTRA_REQUEST, -1)
+        if (channel == NotificationService.CHANNEL_FASTING &&
+            (request == NotificationService.REQUEST_FASTING_AUTO_START ||
+                request == NotificationService.REQUEST_FASTING_AUTO_END)
+        ) {
+            val pendingResult = goAsync()
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val container = (context.applicationContext as? ChompassApp)?.container
+                    if (container != null) {
+                        // Drive the boundary transition (idempotent catch-up) and
+                        // re-arm the next one; nothing is posted.
+                        FastingAutoPlanner.heal(container)
+                        FastingAutoPlanner.rearm(container)
+                    }
+                } finally {
+                    pendingResult.finish()
+                }
+            }
+            return
+        }
 
         // Silent midnight widget rollover: rewrite the snapshot to today's data
         // and re-arm the chain. No notification is posted (issue #16).
@@ -493,7 +557,6 @@ class ReminderReceiver : BroadcastReceiver() {
 
         val title = intent.getStringExtra(NotificationService.EXTRA_TITLE) ?: return
         val text = intent.getStringExtra(NotificationService.EXTRA_TEXT) ?: return
-        val request = intent.getIntExtra(NotificationService.EXTRA_REQUEST, -1)
 
         val pendingResult = goAsync()
         CoroutineScope(Dispatchers.IO).launch {

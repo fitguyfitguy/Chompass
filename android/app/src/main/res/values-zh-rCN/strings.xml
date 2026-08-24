@@ -1773,4 +1773,7 @@
     <string name="notif_fasting_end_soon_text">您的禁食将在 %1$d 分钟后结束，届时进食窗口开启。</string>
     <string name="notif_fasting_start_soon_title">禁食即将开始</string>
     <string name="notif_fasting_start_soon_text">您的进食窗口将在 %1$d 分钟后关闭，届时请开始禁食。</string>
+    <string name="fasting_auto_tag">自动</string>
+    <string name="settings_fasting_auto_windows">自动禁食时段</string>
+    <string name="settings_fasting_auto_windows_help">开启后，进食窗口关闭时禁食自动开始，达到目标后自动结束。您也可以手动开始。自动开始的禁食在主界面不显示按钮。</string>
 </resources>

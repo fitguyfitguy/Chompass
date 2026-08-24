@@ -1700,4 +1700,7 @@ LBM = вага × (1 − %жиру)</string>
     <string name="notif_fasting_end_soon_text">Ваш пост завершиться через %1$d хв — тоді відкриється вікно прийому їжі.</string>
     <string name="notif_fasting_start_soon_title">Пост незабаром почнеться</string>
     <string name="notif_fasting_start_soon_text">Ваше вікно прийому їжі закриється через %1$d хв — почніть пост тоді.</string>
+    <string name="fasting_auto_tag">Авто</string>
+    <string name="settings_fasting_auto_windows">Автоматичні вікна посту</string>
+    <string name="settings_fasting_auto_windows_help">Коли ввімкнено, пост починається автоматично, щойно вікно прийому їжі закривається, і завершується після досягнення цілі. Можна почати й вручну. Автоматичні пости не показують кнопок на головному екрані.</string>
 </resources>

@@ -970,6 +970,16 @@ main.view {
 /* Fasting goal quick-pick chips in Settings. */
 .fasting-presets { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem; }
 .fasting-presets .chip--active { background: var(--primary, #6750a4); color: #fff; }
+.fasting-auto-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  vertical-align: middle;
+  margin-left: 0.3rem;
+  padding: 0.05rem 0.35rem;
+  border-radius: 999px;
+  background: var(--primary, #6750a4);
+  color: #fff;
+}
 
 /* Optional nicotine tracker row: same shape as water, amber accent. */
 .nicotine-row .water-row__meta strong { color: var(--nicotine, #b08040); }

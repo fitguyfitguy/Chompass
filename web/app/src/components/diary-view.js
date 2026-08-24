@@ -91,6 +91,7 @@ function fastingCard(p) {
   const pct = showBar
     ? Math.min(100, ((fasting ? elapsed / goalMillis : eatElapsed / (eat * 3_600_000)) * 100))
     : 0;
+  const autoManaged = fasting && p.fastingAutoStarted === true;
   let hint = "";
   if (fasting && goal > 0 && !reached) {
     hint = `<div class="water-row__hint">${t("diary.fasting_window_opens_in", { remaining: fmtFastDuration(Math.max(0, goalMillis - elapsed)) })}</div>`;
@@ -99,13 +100,14 @@ function fastingCard(p) {
   }
   return `<div class="card card--glass water-row fasting-row">
       <div class="water-row__top">
-        <div class="water-row__meta"><strong>${t("diary.fasting")}</strong><br/><span class="water-row__meta-sub">${status}</span></div>
+        <div class="water-row__meta"><strong>${t("diary.fasting")}${autoManaged ? ` <span class="fasting-auto-tag">${t("diary.fasting_auto")}</span>` : ""}</strong><br/><span class="water-row__meta-sub">${status}</span></div>
         <div class="water-presets">
           ${
-            fasting
-              ? `<button type="button" class="chip" data-fasting-stop>${t("diary.fasting_stop")}</button>
-                 <button type="button" class="chip chip--ghost" data-fasting-cancel>${t("action.cancel")}</button>`
-              : `<button type="button" class="chip" data-fasting-start>${t("diary.fasting_start")}</button>`
+            !autoManaged
+              ? fasting
+                ? `<button type="button" class="chip" data-fasting-stop>${t("diary.fasting_stop")}</button>`
+                : `<button type="button" class="chip" data-fasting-start>${t("diary.fasting_start")}</button>`
+              : ""
           }
         </div>
       </div>
@@ -474,10 +476,14 @@ export class DiaryView extends HTMLElement {
   connectedCallback() {
     this.render();
     // Local-only fasting timer (mirrors the Android tracker): roll the elapsed
-    // label over each minute while a fast is running (re-render is cheap).
-    this._fastingTick = setInterval(() => {
+    // label over each minute while a fast is running (re-render is cheap), and
+    // drive auto-cycle transitions (PWA has no background alarms).
+    this._fastingTick = setInterval(async () => {
       const p = this._appPrefs;
-      if (p?.showFasting === true && p?.fastingStartedAt != null) this.render();
+      const active = p?.showFasting === true && (p?.fastingStartedAt != null || p?.fastingEatHours > 0);
+      if (!active) return;
+      await this.fastingHeal();
+      this.render();
     }, 60_000);
   }
 
@@ -857,7 +863,6 @@ export class DiaryView extends HTMLElement {
     this.querySelector("[data-caffeine-undo]")?.addEventListener("click", () => this.undoLastCaffeine(caffeineLogs));
     this.querySelector("[data-fasting-start]")?.addEventListener("click", () => this.fastingStart());
     this.querySelector("[data-fasting-stop]")?.addEventListener("click", () => this.fastingStop());
-    this.querySelector("[data-fasting-cancel]")?.addEventListener("click", () => this.fastingCancel());
     this.querySelectorAll("[data-nutrition-detail]").forEach((el) => {
       el.addEventListener("click", () => {
         this.openNutritionDetail(entries, targets, optionalGoals);
@@ -1883,7 +1888,7 @@ export class DiaryView extends HTMLElement {
   async fastingStart() {
     const p = await prefs.load();
     if (p.fastingStartedAt != null) return;
-    await prefs.save({ fastingStartedAt: Date.now(), fastingGoalNotified: false });
+    await prefs.save({ fastingStartedAt: Date.now(), fastingGoalNotified: false, fastingAutoStarted: false });
     this.render();
   }
 
@@ -1896,16 +1901,38 @@ export class DiaryView extends HTMLElement {
       fastingLastEndedAt: Date.now(),
       fastingLastFastStartedAt: p.fastingStartedAt,
       fastingGoalNotified: false,
+      fastingAutoStarted: false,
     });
     this.render();
   }
 
-  /** Abandons the running fast without recording it. */
-  async fastingCancel() {
+  /**
+   * Auto-cycle catch-up (PWA has no background alarms, so the minute ticker
+   * drives the transitions while the page is open — same heal as Android's
+   * FastingAutoPlanner). Returns true when a transition ran.
+   */
+  async fastingHeal() {
     const p = await prefs.load();
-    if (p.fastingStartedAt == null) return;
-    await prefs.save({ fastingStartedAt: null, fastingGoalNotified: false });
-    this.render();
+    if (p.showFasting !== true || p.fastingAutoWindows !== true) return false;
+    const goal = p.fastingGoalHours ?? 0;
+    const eat = p.fastingEatHours ?? 0;
+    const now = Date.now();
+    if (p.fastingStartedAt != null) {
+      if (goal > 0 && now - p.fastingStartedAt >= goal * 3_600_000) {
+        await prefs.save({
+          fastingStartedAt: null,
+          fastingLastEndedAt: p.fastingStartedAt + goal * 3_600_000,
+          fastingLastFastStartedAt: p.fastingStartedAt,
+          fastingGoalNotified: false,
+          fastingAutoStarted: false,
+        });
+        return true;
+      }
+    } else if (eat > 0 && p.fastingLastEndedAt != null && now >= p.fastingLastEndedAt + eat * 3_600_000) {
+      await prefs.save({ fastingStartedAt: now, fastingGoalNotified: false, fastingAutoStarted: true });
+      return true;
+    }
+    return false;
   }
 
   /** @param {string} kind */

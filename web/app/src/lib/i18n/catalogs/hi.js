@@ -79,6 +79,7 @@ export const hi = Object.freeze({
   "diary.fasting_stop": "उपवास समाप्त करें",
   "diary.fasting_goal_reached": "लक्ष्य प्राप्त हुआ",
   "diary.fasting_goal_hint": "{elapsed} · लक्ष्य {goal} घंटे",
+  "diary.fasting_auto": "स्वचालित",
   "diary.fasting_window_opens_in": "खाने की विंडो {remaining} में खुलेगी",
   "diary.fasting_eating_progress": "खाने के {eat} घंटे में से {elapsed}",
   "diary.fasting_fast_starts_in": "उपवास {remaining} में शुरू होगा",

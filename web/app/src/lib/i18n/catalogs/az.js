@@ -79,6 +79,7 @@ export const az = Object.freeze({
   "diary.fasting_stop": "Orucu bitir",
   "diary.fasting_goal_reached": "Məqsədə çatdı",
   "diary.fasting_goal_hint": "{elapsed} · məqsəd {goal} saat",
+  "diary.fasting_auto": "Avto",
   "diary.fasting_window_opens_in": "Yemək pəncərəsi {remaining} sonra açılır",
   "diary.fasting_eating_progress": "{elapsed} / {eat} saat yemək",
   "diary.fasting_fast_starts_in": "Oruc {remaining} sonra başlayır",

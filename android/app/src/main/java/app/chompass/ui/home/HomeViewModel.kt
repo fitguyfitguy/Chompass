@@ -40,6 +40,7 @@ import app.chompass.models.WaterGoalCalculator
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WaterEntry
 import app.chompass.services.FoodImageComposer
+import app.chompass.services.FastingAutoPlanner
 import app.chompass.services.FoodPhotoSession
 import app.chompass.services.OpenFoodFactsService
 import app.chompass.services.PerfLog
@@ -225,6 +226,7 @@ data class HomeUiState(
     /** Elapsed millis inside the open eating window; ticked each minute. */
     val fastingEatingElapsedMillis: Long = 0L,
     val fastingGoalReached: Boolean = false,
+    val fastingAutoStarted: Boolean = false,
     val fastingLastEndedAtMillis: Long? = null,
     val fastingLastFastStartedAtMillis: Long? = null,
     /** In-progress weigh-as-you-go meal (photo-per-ingredient). Null when idle. */
@@ -441,6 +443,7 @@ data class HomeUiState(
             fastingElapsedMillis == other.fastingElapsedMillis &&
             fastingEatingElapsedMillis == other.fastingEatingElapsedMillis &&
             fastingGoalReached == other.fastingGoalReached &&
+            fastingAutoStarted == other.fastingAutoStarted &&
             fastingLastEndedAtMillis == other.fastingLastEndedAtMillis &&
             fastingLastFastStartedAtMillis == other.fastingLastFastStartedAtMillis &&
             progressiveMeal == other.progressiveMeal &&
@@ -518,6 +521,7 @@ data class HomeUiState(
         result = 31 * result + fastingElapsedMillis.hashCode()
         result = 31 * result + fastingEatingElapsedMillis.hashCode()
         result = 31 * result + fastingGoalReached.hashCode()
+        result = 31 * result + fastingAutoStarted.hashCode()
         result = 31 * result + (fastingLastEndedAtMillis?.hashCode() ?: 0)
         result = 31 * result + (fastingLastFastStartedAtMillis?.hashCode() ?: 0)
         result = 31 * result + (progressiveMeal?.hashCode() ?: 0)
@@ -1269,10 +1273,6 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch { container.fastingRepository.stop() }
     }
 
-    fun cancelFast() {
-        viewModelScope.launch { container.fastingRepository.cancel() }
-    }
-
     /** Launcher quick action (#182): start when idle, stop when fasting. */
     fun toggleFast() {
         viewModelScope.launch {
@@ -1284,10 +1284,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     /**
      * Re-derives the fasting cycle display fields (phase, elapsed, goal
      * reached) from the session + windows; called on session change and each
-     * minute.
+     * minute. When auto windows are on, first drives any transition whose
+     * boundary already passed (missed-alarm catch-up, same heal as the
+     * planners) so the cycle stays on schedule.
      */
     private fun refreshFastingTick(session: app.chompass.models.FastingSession? = null) {
         viewModelScope.launch {
+            if (session == null) FastingAutoPlanner.heal(container)
             val s = session ?: container.fastingRepository.current()
             val now = System.currentTimeMillis()
             val goal = container.prefs.fastingGoalHours.first()
@@ -1307,6 +1310,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         0L
                     },
                     fastingGoalReached = s.goalReached(goal, now),
+                    fastingAutoStarted = s.autoStarted,
                     fastingLastEndedAtMillis = s.lastEndedAtMillis,
                     fastingLastFastStartedAtMillis = s.lastFastStartedAtMillis,
                 )

@@ -281,7 +281,10 @@ class PreferencesStore(private val appContext: Context) {
         lastEndedAtMillis: Long? = null,
         lastFastStartedAtMillis: Long? = null,
         goalReachedNotified: Boolean = false,
-    ) = setFastingSessionFieldsImpl(startedAtMillis, lastEndedAtMillis, lastFastStartedAtMillis, goalReachedNotified)
+        autoStarted: Boolean = false,
+    ) = setFastingSessionFieldsImpl(startedAtMillis, lastEndedAtMillis, lastFastStartedAtMillis, goalReachedNotified, autoStarted)
+    val fastingAutoWindows: Flow<Boolean> get() = fastingAutoWindowsImpl
+    suspend fun setFastingAutoWindows(v: Boolean) = setFastingAutoWindowsImpl(v)
     val fastingStartReminderEnabled: Flow<Boolean> get() = fastingStartReminderEnabledImpl
     suspend fun setFastingStartReminderEnabled(v: Boolean) = setFastingStartReminderEnabledImpl(v)
     val fastingStartReminderLeadMinutes: Flow<Int> get() = fastingStartReminderLeadMinutesImpl

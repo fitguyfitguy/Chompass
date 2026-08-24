@@ -1849,4 +1849,7 @@
     <string name="notif_fasting_end_soon_text">Ваш пост закончится через %1$d мин — тогда откроется окно приёма пищи.</string>
     <string name="notif_fasting_start_soon_title">Пост скоро начнётся</string>
     <string name="notif_fasting_start_soon_text">Ваше окно приёма пищи закроется через %1$d мин — начните пост тогда.</string>
+    <string name="fasting_auto_tag">Авто</string>
+    <string name="settings_fasting_auto_windows">Автоматические окна поста</string>
+    <string name="settings_fasting_auto_windows_help">Когда включено, пост начинается автоматически, как только окно приёма пищи закрывается, и заканчивается при достижении цели. Можно начать и вручную. Автоматические посты не показывают кнопки на главном экране.</string>
 </resources>

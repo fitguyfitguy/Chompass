@@ -8,24 +8,31 @@ import kotlinx.coroutines.flow.first
  * Local-only intermittent-fasting timer (docs/local/PLAN_FASTING_TRACKER.md).
  * The session is persisted in DataStore as a few scalar fields; the repository
  * is notification-agnostic — [ChompassApp] wires [onSessionChanged] to the
- * goal-alarm planner, same shape as WaterRepository.onEntriesChanged → water
+ * alarm planners, same shape as WaterRepository.onEntriesChanged → water
  * reminder chain.
  *
- * Transitions: start (IDLE→FASTING), stop (records the fast), cancel
- * (abandons, no record). The goal is a settings pref, not session state; the
- * session only latches whether the goal notification already fired.
+ * Transitions: start (IDLE→FASTING, manual or [auto]), stop (records the fast;
+ * [stopAtGoal] makes the end deterministic at the goal time). There is no
+ * cancel: a running fast is either stopped or allowed to run its course. The
+ * goal is a settings pref, not session state; the session only latches whether
+ * its goal notification already fired and whether the current fast was
+ * auto-started ([FastingSession.autoStarted] — auto fasts show no manual
+ * buttons).
  */
 class FastingRepository(private val prefs: PreferencesStore) {
     val session: Flow<FastingSession> get() = prefs.fastingSession
 
-    /** Invoked after every start/stop/cancel so the goal alarm can re-arm. */
+    /** Invoked after every start/stop so the alarm planners can re-arm. */
     var onSessionChanged: (suspend () -> Unit)? = null
 
     suspend fun current(): FastingSession = prefs.fastingSession.first()
 
-    /** Starts a new fast (no-op when one is already running). The previous
-     *  completed fast (stop record) survives so coach context can still cite it. */
-    suspend fun start(nowMillis: Long = System.currentTimeMillis()) {
+    /**
+     * Starts a new fast (no-op when one is already running). The previous
+     * completed fast (stop record) survives so coach context can still cite it.
+     * [auto] marks the fast as auto-cycle-managed (no manual buttons shown).
+     */
+    suspend fun start(nowMillis: Long = System.currentTimeMillis(), auto: Boolean = false) {
         val s = current()
         if (s.isFasting) return
         prefs.setFastingSessionFields(
@@ -33,32 +40,27 @@ class FastingRepository(private val prefs: PreferencesStore) {
             lastEndedAtMillis = s.lastEndedAtMillis,
             lastFastStartedAtMillis = s.lastFastStartedAtMillis,
             goalReachedNotified = false,
+            autoStarted = auto,
         )
         onSessionChanged?.invoke()
     }
 
-    /** Ends the running fast, recording it as the last completed fast. */
-    suspend fun stop(nowMillis: Long = System.currentTimeMillis()) {
+    /**
+     * Ends the running fast, recording it as the last completed fast. When
+     * [atGoalMillis] is set (auto-cycle end), the end time is the exact goal
+     * instant so the next eating window anchors to the schedule, not to when
+     * the alarm happened to fire.
+     */
+    suspend fun stop(atGoalMillis: Long? = null) {
         val s = current()
         val started = s.startedAtMillis ?: return
+        val ended = atGoalMillis ?: System.currentTimeMillis()
         prefs.setFastingSessionFields(
             startedAtMillis = null,
-            lastEndedAtMillis = nowMillis,
+            lastEndedAtMillis = ended,
             lastFastStartedAtMillis = started,
             goalReachedNotified = false,
-        )
-        onSessionChanged?.invoke()
-    }
-
-    /** Abandons the running fast without recording it. */
-    suspend fun cancel() {
-        val s = current()
-        if (!s.isFasting) return
-        prefs.setFastingSessionFields(
-            startedAtMillis = null,
-            lastEndedAtMillis = s.lastEndedAtMillis,
-            lastFastStartedAtMillis = s.lastFastStartedAtMillis,
-            goalReachedNotified = false,
+            autoStarted = false,
         )
         onSessionChanged?.invoke()
     }
@@ -73,6 +75,7 @@ class FastingRepository(private val prefs: PreferencesStore) {
             lastEndedAtMillis = s.lastEndedAtMillis,
             lastFastStartedAtMillis = s.lastFastStartedAtMillis,
             goalReachedNotified = true,
+            autoStarted = s.autoStarted,
         )
     }
 }

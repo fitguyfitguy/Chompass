@@ -23,6 +23,8 @@ data class FastingSession(
     val lastFastStartedAtMillis: Long? = null,
     /** One-shot latch so the goal notification fires once per fast. */
     val goalReachedNotified: Boolean = false,
+    /** True when the running fast was started by the auto-cycle, not the user. */
+    val autoStarted: Boolean = false,
 ) {
     val isFasting: Boolean get() = startedAtMillis != null
 

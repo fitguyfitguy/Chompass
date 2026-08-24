@@ -79,6 +79,7 @@ export const zh_CN = Object.freeze({
   "diary.fasting_stop": "结束禁食",
   "diary.fasting_goal_reached": "已达目标",
   "diary.fasting_goal_hint": "{elapsed} · 目标 {goal} 小时",
+  "diary.fasting_auto": "自动",
   "diary.fasting_window_opens_in": "进食窗口将在 {remaining} 后开启",
   "diary.fasting_eating_progress": "进食 {eat} 小时中的 {elapsed}",
   "diary.fasting_fast_starts_in": "禁食将在 {remaining} 后开始",
