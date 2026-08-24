@@ -112,7 +112,7 @@ fun NotificationsSettingsScreen(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
 
-        SectionCard(title = stringResource(R.string.settings_section_notifications)) {
+        SectionCard(title = stringResource(R.string.settings_notifications)) {
             ToggleRow(
                 stringResource(R.string.settings_notifications),
                 ui.notificationsEnabled,

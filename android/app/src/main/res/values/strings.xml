@@ -853,7 +853,6 @@
     <!-- Settings -->
     <string name="settings_section_personal">Personal Info</string>
     <string name="settings_section_goals">Goals &amp; Nutrition</string>
-    <string name="settings_section_app">App Settings</string>
     <string name="settings_section_ai">AI &amp; Speech</string>
     <string name="settings_section_speech">Speech-to-Text</string>
     <string name="settings_section_health">Health &amp; Data</string>
@@ -875,7 +874,6 @@
     <string name="settings_water_section_reminders">Reminders</string>
     <string name="settings_water_reminders">Drinking reminders</string>
     <string name="settings_notifications_intro">Choose which reminders Chompass sends and when they appear.</string>
-    <string name="settings_section_notifications">Reminders</string>
     <string name="settings_food_intro">How entries behave: units, meal times, photo analysis and serving size detection.</string>
     <string name="settings_food_section_logging">Logging</string>
     <string name="settings_food_section_photo">Photo analysis</string>
@@ -953,6 +951,7 @@
     <string name="theme_color_indigo">Indigo</string>
     <string name="theme_color_neutral">Neutral</string>
     <string name="settings_metric_units">Metric Units</string>
+    <string name="settings_units">Units</string>
     <string name="settings_height_unit">Height Unit</string>
     <string name="settings_weight_unit">Weight Unit</string>
     <string name="settings_default_to_grams">Default to Grams</string>

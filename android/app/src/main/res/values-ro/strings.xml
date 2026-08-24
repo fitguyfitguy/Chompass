@@ -432,7 +432,6 @@
     <!-- Settings -->
     <string name="settings_section_personal">Informații personale</string>
     <string name="settings_section_goals">Obiective și nutriție</string>
-    <string name="settings_section_app">Setări aplicație</string>
     <string name="settings_section_ai">Furnizor AI</string>
     <string name="settings_section_speech">Voce în text</string>
     <string name="settings_section_health">Sănătate și date</string>
@@ -1386,7 +1385,6 @@
     <string name="settings_safety_title">Siguranță</string>
     <string name="settings_safety_water">Obiectivele de hidratare și mementourile de băut sunt estimări, nu sfaturi medicale. Ele nu înlocuiesc niciodată setea sau indicațiile medicului tău. Bea suficient, chiar și când aplicația nu îți amintește.</string>
     <string name="settings_section_home_display">Aspectul ecranului principal</string>
-    <string name="settings_section_notifications">Mementouri</string>
     <string name="settings_serving_unit_heuristics">Reguli pentru mărimea porției</string>
     <string name="settings_serving_unit_mode">Detectarea mărimii porției</string>
     <string name="settings_show_coach_tab">Arată fila antrenorului</string>

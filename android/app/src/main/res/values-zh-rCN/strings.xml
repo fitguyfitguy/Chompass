@@ -438,7 +438,6 @@
     <!-- Settings -->
     <string name="settings_section_personal">个人信息</string>
     <string name="settings_section_goals">目标与营养</string>
-    <string name="settings_section_app">应用设置</string>
     <string name="settings_section_ai">AI 与语音</string>
     <string name="settings_section_speech">语音转文字</string>
     <string name="settings_section_health">健康与数据</string>
@@ -1389,7 +1388,6 @@
     <string name="settings_safety_title">安全</string>
     <string name="settings_safety_water">补水目标和饮水提醒是估算，不是医疗建议。它们不能替代口渴感或医生指导。即使应用不提醒，也要喝够水。</string>
     <string name="settings_section_home_display">主页显示</string>
-    <string name="settings_section_notifications">提醒</string>
     <string name="settings_serving_unit_heuristics">份量大小规则</string>
     <string name="settings_serving_unit_mode">份量大小检测</string>
     <string name="settings_show_coach_tab">显示教练页</string>

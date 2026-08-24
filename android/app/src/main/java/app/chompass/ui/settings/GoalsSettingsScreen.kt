@@ -19,6 +19,7 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppTextOpacity
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -102,6 +103,20 @@ fun GoalsSettingsScreen(
             onShowAdaptiveGoalsInfo = { showAdaptiveGoalsInfo = true },
             onShowHealthEnergyGoalsInfo = { showHealthEnergyGoalsInfo = true },
             onThirdMacroLockBlocked = { showThirdMacroLockAlert = true },
+        )
+
+        // Rule C footer: destinations related to goals that live elsewhere
+        // (Water goal is edited on the Water screen; the formula register is a
+        // reference, not a goal).
+        RelatedLinks(
+            rows = listOf(
+                RelatedLink(label = stringResource(R.string.settings_water_title)) {
+                    nav.navigate(ChompassRoutes.waterRoute("goals"))
+                },
+                RelatedLink(label = stringResource(R.string.settings_calc_methods)) {
+                    nav.navigate(ChompassRoutes.CALCULATION_METHODS)
+                },
+            ),
         )
     }
 

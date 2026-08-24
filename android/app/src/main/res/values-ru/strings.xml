@@ -519,7 +519,6 @@
     
     <string name="settings_section_personal">Личные данные</string>
     <string name="settings_section_goals">Цели и питание</string>
-    <string name="settings_section_app">Настройки приложения</string>
     <string name="settings_section_ai">ИИ-провайдер</string>
     <string name="settings_section_speech">Речь в текст</string>
     <string name="settings_section_health">Здоровье и данные</string>
@@ -1599,7 +1598,6 @@
     <string name="settings_progress_plots_subtitle">Показывать тренды обхватов на вкладке «Прогресс». Данные берутся из «Личные данные» → «Замеры тела».</string>
     <string name="settings_related">Связанное</string>
     <string name="settings_safety_water">Цели гидратации и напоминания лишь оценки, а не медицинские советы. Они не заменяют жажду и рекомендации врача. Пей достаточно, даже если приложение не напоминает.</string>
-    <string name="settings_section_notifications">Напоминания</string>
     <string name="settings_show_coach_tab">Показывать вкладку тренера</string>
     <string name="settings_show_coach_tab_footer">Скрывает вкладку тренера из нижней панели. Сама функция остаётся включённой; переключатель ИИ-функций выше отключает всё.</string>
     <string name="settings_suggestion_action_connect">Подключить</string>

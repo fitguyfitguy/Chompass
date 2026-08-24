@@ -427,7 +427,6 @@
     <!-- Settings -->
     <string name="settings_section_personal">Información personal</string>
     <string name="settings_section_goals">Objetivos y nutrición</string>
-    <string name="settings_section_app">Ajustes de la app</string>
     <string name="settings_section_ai">Proveedor de IA</string>
     <string name="settings_section_speech">Voz a texto</string>
     <string name="settings_section_health">Salud y datos</string>
@@ -1449,7 +1448,6 @@
     <string name="settings_safety_title">Seguridad</string>
     <string name="settings_safety_water">Los objetivos de hidratación y los recordatorios de bebida son estimaciones, no consejo médico. Nunca sustituyen la sed ni las indicaciones de tu médico. Bebe lo suficiente aunque la app no te lo recuerde.</string>
     <string name="settings_section_home_display">Pantalla de inicio</string>
-    <string name="settings_section_notifications">Recordatorios</string>
     <string name="settings_serving_unit_heuristics">Reglas de tamaño de porción</string>
     <string name="settings_serving_unit_mode">Detección del tamaño de porción</string>
     <string name="settings_ai_features_master">Funciones de IA</string>

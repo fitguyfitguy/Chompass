@@ -78,7 +78,9 @@ internal fun <T> ListSheet(
     icon: ((T) -> ImageVector?)? = null,
     subtitle: (@Composable (T) -> String?)? = null,
     footer: String? = null,
-    customField: ((String) -> Unit)? = null
+    customField: ((String) -> Unit)? = null,
+    /** Composable leading slot (e.g. a color swatch) rendered before the label; overrides [icon]. */
+    leading: (@Composable (T) -> Unit)? = null
 ) {
     val isDark = isDarkTheme()
     Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
@@ -101,7 +103,10 @@ internal fun <T> ListSheet(
                     .padding(horizontal = 14.dp, vertical = 14.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (rowIcon != null) {
+                if (leading != null) {
+                    leading(item)
+                    Spacer(Modifier.width(14.dp))
+                } else if (rowIcon != null) {
                     FudIconBubble(rowIcon, size = 22.dp, iconSize = 14.dp)
                     Spacer(Modifier.width(14.dp))
                 }

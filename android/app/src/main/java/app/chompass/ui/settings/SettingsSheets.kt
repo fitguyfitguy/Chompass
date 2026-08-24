@@ -26,6 +26,8 @@ import androidx.compose.material.icons.outlined.DataUsage
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.Restaurant
+import androidx.compose.material.icons.outlined.Speed
+import androidx.compose.material.icons.outlined.Straighten
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -72,6 +74,7 @@ import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.home.FoodLogSortOrder
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
+import app.chompass.ui.theme.AppThemeColor
 import app.chompass.ui.theme.macroAccentColor
 import java.time.Instant
 
@@ -480,6 +483,24 @@ internal fun SettingsSheets(
                         onDismiss()
                     }
                 )
+                // Global height+weight unit switch, mirrors onboarding's single
+                // Metric/Imperial toggle (heightUnit + weightUnit move together).
+                SettingsSheet.UNITS -> ListSheet(
+                    title = stringResource(R.string.settings_units),
+                    items = listOf(true, false),
+                    label = { metric ->
+                        stringResource(
+                            if (metric) R.string.onboarding_metric else R.string.onboarding_imperial
+                        )
+                    },
+                    selected = { ui.heightMetric && ui.weightMetric },
+                    onSelect = { metric ->
+                        vm.setHeightUnit(if (metric) "cm" else "ftin")
+                        vm.setWeightUnit(if (metric) "kg" else "lbs")
+                        onDismiss()
+                    },
+                    icon = { if (it) Icons.Outlined.Straighten else Icons.Outlined.Speed },
+                )
                 SettingsSheet.APPEARANCE -> ListSheet(
                     title = stringResource(R.string.sheet_appearance),
                     items = listOf(
@@ -492,6 +513,18 @@ internal fun SettingsSheets(
                     selected = { it.first == ui.appearanceMode },
                     onSelect = { vm.setAppearanceMode(it.first); onDismiss() },
                     icon = { appearanceIcon(it.first) }
+                )
+                // Single-choice picker like Appearance/Language, but with a color
+                // swatch per option instead of a vector icon (was an inline
+                // dropdown on the row — same interaction, two patterns).
+                SettingsSheet.THEME_COLOR -> ListSheet(
+                    title = stringResource(R.string.sheet_theme_color),
+                    items = AppThemeColor.values().toList(),
+                    label = { stringResource(it.displayNameRes) },
+                    selected = { it == ui.appThemeColor },
+                    onSelect = { vm.setAppThemeColor(it); onDismiss() },
+                    leading = { ThemeColorSwatch(it, Modifier.size(22.dp)) },
+                    footer = stringResource(R.string.sheet_theme_color_footer),
                 )
                 SettingsSheet.LANGUAGE -> ListSheet(
                     title = stringResource(R.string.sheet_language),
