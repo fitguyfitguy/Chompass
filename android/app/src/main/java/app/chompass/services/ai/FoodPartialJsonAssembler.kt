@@ -49,6 +49,7 @@ class FoodPartialJsonAssembler {
             "polyunsaturated_fat", "cholesterol", "sodium", "potassium", "trans_fat",
             "calcium", "iron", "magnesium", "zinc", "vitamin_a", "vitamin_c",
             "vitamin_d", "vitamin_b12", "vitamin_e", "vitamin_k", "folate", "omega_3",
+            "caffeine",
         )
         val micronutrientCount = microKeys.count { key ->
             completeNumber(jsonSpan, key) != null

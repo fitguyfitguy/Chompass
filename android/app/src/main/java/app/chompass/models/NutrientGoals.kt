@@ -34,7 +34,8 @@ enum class HomeTopNutrient(
     VITAMIN_E("vitaminE", "Vit E", "mg", R.string.nutrient_short_vit_e, R.string.unit_mg),
     VITAMIN_K("vitaminK", "Vit K", "mcg", R.string.nutrient_short_vit_k, R.string.unit_mcg),
     FOLATE("folate", "Folate", "mcg", R.string.nutrition_label_folate, R.string.unit_mcg),
-    OMEGA3("omega3", "Omega", "g", R.string.nutrient_short_omega, R.string.unit_g);
+    OMEGA3("omega3", "Omega", "g", R.string.nutrient_short_omega, R.string.unit_g),
+    CAFFEINE("caffeine", "Caffeine", "mg", R.string.nutrition_label_caffeine, R.string.unit_mg);
 
     fun current(entries: List<FoodEntry>): Double = when (this) {
         PROTEIN -> entries.sumOf { it.protein }
@@ -60,6 +61,7 @@ enum class HomeTopNutrient(
         VITAMIN_K -> entries.sumOf { it.vitaminK ?: 0.0 }
         FOLATE -> entries.sumOf { it.folate ?: 0.0 }
         OMEGA3 -> entries.sumOf { it.omega3 ?: 0.0 }
+        CAFFEINE -> entries.sumOf { it.caffeine ?: 0.0 }
     }
 
     /**
@@ -91,6 +93,7 @@ enum class HomeTopNutrient(
         VITAMIN_K -> optionalGoals.vitaminK
         FOLATE -> optionalGoals.folate
         OMEGA3 -> optionalGoals.omega3
+        CAFFEINE -> optionalGoals.caffeine
     }
 
     private fun scaleMacro(grams: Int, scale: Float): Int =
@@ -160,7 +163,8 @@ enum class OptionalNutrient(
     VITAMIN_E("Vitamin E", "mg", 15, R.string.nutrition_label_vitamin_e, R.string.unit_mg, 5..100, 1, 1000),
     VITAMIN_K("Vitamin K", "mcg", 120, R.string.nutrition_label_vitamin_k, R.string.unit_mcg, 30..300, 10, 1000),
     FOLATE("Folate", "mcg", 400, R.string.nutrition_label_folate, R.string.unit_mcg, 100..1000, 50, 2000),
-    OMEGA3("Omega-3", "g", 2, R.string.nutrition_label_omega3, R.string.unit_g, 0..10, 1, 50)
+    OMEGA3("Omega-3", "g", 2, R.string.nutrition_label_omega3, R.string.unit_g, 0..10, 1, 50),
+    CAFFEINE("Caffeine", "mg", 400, R.string.nutrition_label_caffeine, R.string.unit_mg, 0..1000, 25, 2000)
 }
 
 @Serializable
@@ -184,7 +188,8 @@ data class OptionalNutrientGoals(
     val vitaminE: Int = OptionalNutrient.VITAMIN_E.defaultGoal,
     val vitaminK: Int = OptionalNutrient.VITAMIN_K.defaultGoal,
     val folate: Int = OptionalNutrient.FOLATE.defaultGoal,
-    val omega3: Int = OptionalNutrient.OMEGA3.defaultGoal
+    val omega3: Int = OptionalNutrient.OMEGA3.defaultGoal,
+    val caffeine: Int = OptionalNutrient.CAFFEINE.defaultGoal
 ) {
     fun valueFor(nutrient: OptionalNutrient): Int = when (nutrient) {
         OptionalNutrient.SUGAR -> sugar
@@ -207,6 +212,7 @@ data class OptionalNutrientGoals(
         OptionalNutrient.VITAMIN_K -> vitaminK
         OptionalNutrient.FOLATE -> folate
         OptionalNutrient.OMEGA3 -> omega3
+        OptionalNutrient.CAFFEINE -> caffeine
     }
 
     fun withValue(nutrient: OptionalNutrient, value: Int): OptionalNutrientGoals {
@@ -232,6 +238,7 @@ data class OptionalNutrientGoals(
             OptionalNutrient.VITAMIN_K -> copy(vitaminK = safe)
             OptionalNutrient.FOLATE -> copy(folate = safe)
             OptionalNutrient.OMEGA3 -> copy(omega3 = safe)
+            OptionalNutrient.CAFFEINE -> copy(caffeine = safe)
         }
     }
 

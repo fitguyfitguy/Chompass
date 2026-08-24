@@ -2708,6 +2708,7 @@ für dich ein</string>
 
     <string name="nutrition_label_folate">Folsäure</string>
 
+    <string name="nutrition_label_caffeine">Koffein</string>
     <string name="nutrition_label_omega3">Omega-3</string>
 
     <string name="nutrition_section_home_cards">Startseite-Karten</string>
@@ -3118,6 +3119,7 @@ für dich ein</string>
 
     <string name="nutrient_short_vit_k">Vitamin K</string>
 
+    <string name="nutrient_short_caffeine">Koffein</string>
     <string name="nutrient_short_omega">Omega</string>
 
     <string name="sort_standard">Frühstück → Mittagessen → Abendessen (neueste zuletzt)</string>

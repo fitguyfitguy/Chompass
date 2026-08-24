@@ -145,6 +145,7 @@
             "vitamin_k_mcg": { "type": ["number", "null"] },
             "folate_mcg": { "type": ["number", "null"] },
             "omega3_g": { "type": ["number", "null"] },
+            "caffeine_mg": { "type": ["number", "null"] },
             "grounding": { "type": ["object", "null"] },
             "serving_unit_options": {
               "type": "array",
