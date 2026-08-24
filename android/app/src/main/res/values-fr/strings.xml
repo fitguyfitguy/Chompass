@@ -601,6 +601,7 @@
     <string name="settings_section_fallback">Fournisseur de secours</string>
     <string name="settings_enable_fallback">Activer le fournisseur de secours</string>
     <string name="settings_fallback_footer">Si ton fournisseur principal échoue (surcharge, limite de débit, erreur réseau), l\'app réessaie automatiquement avec ce fournisseur de secours. Le même fournisseur que le principal est autorisé - choisis simplement un modèle différent.</string>
+    <string name="settings_fallback_on_device_switch_notice">Changer de modèle sur l\'appareil est lent : le modèle de secours doit se charger entièrement, jusqu\'à une minute ou plus. Garder un seul modèle est généralement plus rapide.</string>
     <string name="widget_all_metrics_label">Chompass Aujourd\'hui</string>
     <string name="widget_all_metrics_description">Voyez les calories, protéines, glucides et lipides du jour dans un seul widget.</string>
     <string name="settings_needs_health_connect">Nécessite Health Connect</string>

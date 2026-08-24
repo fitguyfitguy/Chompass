@@ -604,6 +604,7 @@
     <string name="settings_section_fallback">Provedor de fallback</string>
     <string name="settings_enable_fallback">Ativar fallback</string>
     <string name="settings_fallback_footer">Se o seu provedor principal falhar (sobrecarga, limite de taxa, erro de rede), o app tenta novamente automaticamente com este fallback. É permitido o mesmo provedor do principal, basta escolher um modelo diferente.</string>
+    <string name="settings_fallback_on_device_switch_notice">Trocar de modelo no dispositivo é lento: o modelo de fallback carrega do zero, até um minuto ou mais. Manter um único modelo costuma ser mais rápido.</string>
     <string name="widget_all_metrics_label">Chompass Hoje</string>
     <string name="widget_all_metrics_description">Veja calorias, proteínas, carboidratos e gordura de hoje em um widget.</string>
     <string name="settings_needs_health_connect">Requer Health Connect</string>

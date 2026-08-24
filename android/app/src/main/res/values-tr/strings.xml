@@ -1067,6 +1067,7 @@
     <string name="settings_section_fallback">Yedek Sağlayıcı</string>
     <string name="settings_enable_fallback">Yedeği Etkinleştir</string>
     <string name="settings_fallback_footer">Birincil sağlayıcın başarısız olursa (aşırı yük, hız sınırı, ağ hatası), uygulama bu yedekle otomatik yeniden dener. Birincil ile aynı sağlayıcıya izin verilir. Yalnızca farklı bir model seç.</string>
+    <string name="settings_fallback_on_device_switch_notice">Cihazdaki modeli değiştirmek yavaştır: yedek model sıfırdan yüklenir, bir dakika veya daha uzun sürebilir. Tek bir model kullanmak genellikle daha hızlıdır.</string>
 
     <string name="settings_health_connect">Health Connect</string>
     <string name="settings_manage_health_access">Health Connect erişimini yönet</string>

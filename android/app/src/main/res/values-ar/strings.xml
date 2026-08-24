@@ -617,6 +617,7 @@
     <string name="settings_section_fallback">المزود الاحتياطي</string>
     <string name="settings_enable_fallback">تفعيل الاحتياطي</string>
     <string name="settings_fallback_footer">إذا فشل المزود الأساسي (تحميل زائد، تجاوز الحد، خطأ في الشبكة)، يُعيد التطبيق المحاولة تلقائياً باستخدام هذا الاحتياطي. يُسمح بنفس المزود الأساسي. فقط اختر طرازاً مختلفاً.</string>
+    <string name="settings_fallback_on_device_switch_notice">تبديل النماذج المحلية بطيء: يُحمَّل النموذج الاحتياطي من البداية، وقد يستغرق دقيقة أو أكثر. عادةً ما يكون إبقاء نموذج واحد أسرع.</string>
     <string name="widget_all_metrics_label">Chompass اليوم</string>
     <string name="widget_all_metrics_description">شاهد سعرات اليوم والبروتين والكربوهيدرات والدهون في أداة واحدة.</string>
     <string name="settings_needs_health_connect">يتطلب Health Connect</string>

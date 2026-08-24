@@ -615,6 +615,7 @@
     <string name="settings_section_fallback">フォールバックプロバイダー</string>
     <string name="settings_enable_fallback">フォールバックを有効にする</string>
     <string name="settings_fallback_footer">プライマリプロバイダーが失敗した場合（過負荷、レート制限、ネットワークエラー）、アプリはこのフォールバックで自動的に再試行します。プライマリと同じプロバイダーも使用できます。別のモデルを選んでください。</string>
+    <string name="settings_fallback_on_device_switch_notice">オンデバイスモデルの切り替えは時間がかかります：フォールバックモデルは最初から読み込むため、最大1分以上かかることがあります。1つのモデルのままにしておくほうが通常は速いです。</string>
     <string name="widget_all_metrics_label">Chompass 今日</string>
     <string name="widget_all_metrics_description">今日のカロリー・タンパク質・炭水化物・脂質を1つのウィジェットで確認。</string>
     <string name="settings_needs_health_connect">Health Connectが必要</string>

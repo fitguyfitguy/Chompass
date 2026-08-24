@@ -1916,6 +1916,7 @@ für dich ein</string>
     <string name="settings_enable_fallback">Fallback aktivieren</string>
 
     <string name="settings_fallback_footer">Sollte dein primärer Anbieter ausfallen (Überlastung, Ratenbegrenzung, Netzwerkfehler), versucht die App es automatisch erneut mit diesem Fallback-Anbieter. Der gleiche Anbieter wie der primäre ist zulässig – wähle einfach ein anderes Modell aus.</string>
+    <string name="settings_fallback_on_device_switch_notice">Der Wechsel zwischen Geräte-Modellen ist langsam: Das Fallback-Modell lädt komplett neu, bis zu einer Minute oder länger. Bei einem Modell zu bleiben ist meist schneller.</string>
 
     <string name="settings_health_connect">Health Connect</string>
 
