@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://chompass.app/contracts/sync-1.1.schema.json",
-  "title": "Chompass user-hosted sync document format 1.1",
-  "description": "Sync 1.0 plus serving-unit metadata and embedded meal constituents on food records (snake_case). Imports still accept 1.0.",
+  "$id": "https://chompass.app/contracts/sync-1.2.schema.json",
+  "title": "Chompass user-hosted sync document format 1.2",
+  "description": "Sync 1.1 plus the day-granular `daily_notes` array (Codeberg #58a). Imports still accept 1.0/1.1.",
   "type": "object",
   "required": ["export", "food_entries", "weights", "body_fat", "measurements", "water", "favorites", "recipes"],
   "additionalProperties": true,
@@ -13,7 +13,7 @@
       "properties": {
         "app": { "type": "string", "minLength": 1 },
         "kind": { "const": "sync" },
-        "format_version": { "const": "1.1" },
+        "format_version": { "const": "1.2" },
         "generated_at": { "type": "string" }
       }
     },
@@ -40,6 +40,10 @@
     "water": {
       "type": "array",
       "items": { "$ref": "#/$defs/waterRecord" }
+    },
+    "daily_notes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/dailyNoteRecord" }
     },
     "nicotine_entries": {
       "type": "array",
@@ -216,11 +220,25 @@
         }
       ]
     },
+    "dailyNoteRecord": {
+      "allOf": [
+        { "$ref": "#/$defs/syncMeta" },
+        {
+          "type": "object",
+          "required": ["date", "text"],
+          "properties": {
+            "date": { "type": "string" },
+            "text": { "type": "string" }
+          }
+        }
+      ]
+    },
     "nicotineRecord": {
       "allOf": [
         { "$ref": "#/$defs/syncMeta" },
         {
           "type": "object",
+          "required": ["date", "kind", "count"],
           "properties": {
             "date": { "type": "string" },
             "kind": { "type": "string" },

@@ -222,6 +222,7 @@ export function toPrefill(e) {
     "vitaminKMcg",
     "folateMcg",
     "omega3G",
+    "caffeineMg",
   ]) {
     out[key] = e[key] ?? null;
   }

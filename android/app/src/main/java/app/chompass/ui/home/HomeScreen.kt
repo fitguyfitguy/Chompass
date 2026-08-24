@@ -143,6 +143,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     var showCustomWaterLog by rememberSaveable { mutableStateOf(false) }
     var showWaterHistory by rememberSaveable { mutableStateOf(false) }
     var editingWaterEntry by remember { mutableStateOf<WaterEntry?>(null) }
+    var showDailyNoteEditor by rememberSaveable { mutableStateOf(false) }
     var showNicotineCustom by rememberSaveable { mutableStateOf(false) }
     var showNicotineHistory by rememberSaveable { mutableStateOf(false) }
     var editingNicotineEntry by remember { mutableStateOf<NicotineEntry?>(null) }
@@ -538,6 +539,15 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
 
             // Food log
             item { Spacer(Modifier.height(8.dp)) }
+            // Daily note (Codeberg #58a): day-scoped like the water card, so it
+            // follows the selected day (today or any past day).
+            item(key = "daily-note-${selectedDate}") {
+                DailyNoteCard(
+                    note = ui.dailyNote,
+                    onClick = { showDailyNoteEditor = true },
+                )
+            }
+            item { Spacer(Modifier.height(8.dp)) }
             if (mealGroups.isEmpty()) {
                 item { SectionHeader(if (isToday) stringResource(R.string.home_todays_food) else stringResource(R.string.home_food_log)) }
                 item {
@@ -901,6 +911,16 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             onDismiss = { showWaterHistory = false },
             onEdit = { editingWaterEntry = it },
             onDelete = { vm.deleteWater(it.id) },
+        )
+    }
+
+    if (showDailyNoteEditor) {
+        DailyNoteSheet(
+            day = ui.date,
+            initialText = ui.dailyNote.orEmpty(),
+            onDismiss = { showDailyNoteEditor = false },
+            onSave = vm::setDailyNote,
+            onClear = vm::clearDailyNote,
         )
     }
 

@@ -66,6 +66,7 @@ const MICRO_FIELDS = [
   ["vitaminKMcg", "Vit K mcg"],
   ["folateMcg", "Folate mcg"],
   ["omega3G", "Omega-3 g"],
+  ["caffeineMg", "Caffeine mg"],
 ];
 
 const NUTRITION_KEYS = ["calories", "proteinG", "carbsG", "fatG", "fiberG", ...ALL_MICRO_KEYS.filter((k) => k !== "fiberG")];

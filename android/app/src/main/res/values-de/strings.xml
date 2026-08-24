@@ -755,6 +755,11 @@ für dich ein</string>
     <string name="home_water_next">Nächste %1$s · %2$s</string>
 
     <string name="home_water_next_tomorrow">Nächste %1$s · morgen %2$s</string>
+    <string name="home_note_empty">Notiz für diesen Tag hinzufügen</string>
+    <string name="note_edit_title">Tagesnotiz</string>
+    <string name="note_placeholder">Gedanken, Fortschritt, Beobachtungen…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
 
     <string name="home_food_removed">Lebensmittel entfernt</string>
 
@@ -2703,6 +2708,7 @@ für dich ein</string>
 
     <string name="nutrition_label_folate">Folsäure</string>
 
+    <string name="nutrition_label_caffeine">Koffein</string>
     <string name="nutrition_label_omega3">Omega-3</string>
 
     <string name="nutrition_section_home_cards">Startseite-Karten</string>
@@ -3113,6 +3119,7 @@ für dich ein</string>
 
     <string name="nutrient_short_vit_k">Vitamin K</string>
 
+    <string name="nutrient_short_caffeine">Koffein</string>
     <string name="nutrient_short_omega">Omega</string>
 
     <string name="sort_standard">Frühstück → Mittagessen → Abendessen (neueste zuletzt)</string>

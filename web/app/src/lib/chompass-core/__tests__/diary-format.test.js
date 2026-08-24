@@ -23,6 +23,9 @@ test("imports the parity diary fixture without throwing", () => {
   assert.equal(lunch.constituents?.length, 3);
   assert.equal(lunch.constituents?.[0].selectedServingUnit, "piece");
   assert.equal(lunch.constituents?.[0].servingUnitOptions?.[0].gramsPerUnit, 110);
+  const breakfast = entries.find((e) => e.name === "Sample Breakfast Item 1");
+  assert.ok(breakfast);
+  assert.equal(breakfast.caffeineMg, 95);
   const dinner = entries.find((e) => e.name === "Sample Dinner Item 1");
   assert.deepEqual(dinner?.constituents, []);
   assert.equal(dinner?.selectedServingUnit, "cup");
@@ -41,7 +44,14 @@ test("round-trips totals for parity diary fixture days", () => {
     };
   }
   const dateRange = doc.export.date_range;
-  const reExported = exportDiary({ entries, targets, dateRange });
+  const notes = doc.days
+    .filter((d) => d.note != null)
+    .map((d) => ({ date: d.date, text: d.note }));
+  const reExported = exportDiary({ entries, targets, dateRange, notes });
+
+  // The fixture day carries the #58a note; it must survive the round trip.
+  const noted = reExported.days.find((d) => d.date === "2026-04-27");
+  assert.equal(noted?.note, "First day back on plan; dinner portion was generous.");
 
   assert.equal(reExported.export.app, "Chompass");
   assert.equal(reExported.export.format_version, DIARY_FORMAT_VERSION);
@@ -59,6 +69,77 @@ test("round-trips totals for parity diary fixture days", () => {
     assert.ok(close(roundTripped.totals.carbs_g, original.totals.carbs_g), `carbs drift on ${original.date}`);
     assert.ok(close(roundTripped.totals.fat_g, original.totals.fat_g), `fat drift on ${original.date}`);
   }
+});
+
+test("exportDiary emits note-only days and day notes", () => {
+  const doc = exportDiary({
+    entries: [
+      {
+        id: "e1",
+        name: "Oats",
+        date: "2026-08-03",
+        time: "08:00",
+        mealType: "breakfast",
+        calories: 300,
+        proteinG: 10,
+        carbsG: 50,
+        fatG: 5,
+        quantityG: 100,
+        source: "manual",
+        fiberG: 4,
+        note: null,
+        servingUnitOptions: [],
+        constituents: [],
+        grounding: null,
+      },
+    ],
+    targets: {},
+    dateRange: { start: "2026-08-03", end: "2026-08-04" },
+    notes: [
+      { date: "2026-08-03", text: "Felt great after breakfast." },
+      { date: "2026-08-04", text: "Rest day, no food logged." },
+    ],
+  });
+  assert.equal(doc.export.format_version, "1.3");
+  assert.equal(doc.days.length, 2);
+  const foodDay = doc.days.find((d) => d.date === "2026-08-03");
+  assert.equal(foodDay?.note, "Felt great after breakfast.");
+  assert.equal(foodDay?.meals.length, 1);
+  const noteOnly = doc.days.find((d) => d.date === "2026-08-04");
+  assert.equal(noteOnly?.note, "Rest day, no food logged.");
+  assert.equal(noteOnly?.meals.length, 0);
+  assert.equal(noteOnly?.totals.calories, 0);
+});
+
+test("importDiary ignores day notes and still imports food", () => {
+  const doc = exportDiary({
+    entries: [
+      {
+        id: "e1",
+        name: "Oats",
+        date: "2026-08-03",
+        time: "08:00",
+        mealType: "breakfast",
+        calories: 300,
+        proteinG: 10,
+        carbsG: 50,
+        fatG: 5,
+        quantityG: 100,
+        source: "manual",
+        fiberG: 4,
+        note: null,
+        servingUnitOptions: [],
+        constituents: [],
+        grounding: null,
+      },
+    ],
+    targets: {},
+    dateRange: { start: "2026-08-03", end: "2026-08-03" },
+    notes: [{ date: "2026-08-03", text: "Journal text." }],
+  });
+  const entries = importDiary(doc, idGen);
+  assert.equal(entries.length, 1);
+  assert.equal(entries[0].name, "Oats");
 });
 
 test("grounding field passes through import->export untouched when present", () => {

@@ -996,6 +996,11 @@
     <string name="home_take_second_shot">दूसरी फोटो लें</string>
     <string name="home_water_next">अगला %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">अगला %1$s · कल %2$s</string>
+    <string name="home_note_empty">इस दिन के लिए एक नोट जोड़ें</string>
+    <string name="note_edit_title">दिन का नोट</string>
+    <string name="note_placeholder">विचार, प्रगति, अवलोकन…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="import_add_to_log">लॉग में जोड़ें</string>
     <string name="import_add_to_log_many_format">%1$d लॉग में जोड़ें · %2$d kcal</string>
     <string name="import_body_metrics_empty">इस फ़ाइल में आयात करने के लिए कोई वज़न या शरीर डेटा प्रविष्टि नहीं है।</string>
@@ -1064,6 +1069,7 @@
     <string name="nutrient_fiber_format">फाइबर: %1$sg</string>
     <string name="nutrient_potassium_format">पोटेशियम: %1$smg</string>
     <string name="nutrient_sat_fat_format">संतृप्त वसा: %1$sg</string>
+    <string name="nutrient_short_caffeine">कैफीन</string>
     <string name="nutrient_short_omega">ओमेगा</string>
     <string name="nutrient_short_sat_fat">सं. वसा</string>
     <string name="nutrient_short_vit_a">विट. A</string>
@@ -1077,6 +1083,7 @@
     <string name="nutrition_label_folate">फोलेट</string>
     <string name="nutrition_label_iron">आयरन</string>
     <string name="nutrition_label_magnesium">मैग्नीशियम</string>
+    <string name="nutrition_label_caffeine">कैफीन</string>
     <string name="nutrition_label_omega3">ओमेगा-3</string>
     <string name="nutrition_label_trans_fat">ट्रांस वसा</string>
     <string name="nutrition_label_vitamin_a">विटामिन A</string>

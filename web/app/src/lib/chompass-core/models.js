@@ -74,6 +74,7 @@
  * @property {number|null} [vitaminKMcg]
  * @property {number|null} [folateMcg]
  * @property {number|null} [omega3G]
+ * @property {number|null} [caffeineMg]
  */
 
 /**
@@ -177,6 +178,7 @@
  */
 
 /**
+/**
  * @typedef {Object} NicotineEntry
  * @property {string} id
  * @property {string} date        ISO date "YYYY-MM-DD"
@@ -188,6 +190,30 @@
 /**
  * @typedef {"cigarette"|"vape"|"pouch"|"gum"|"patch"|"other"} NicotineKind
  */
+
+/**
+ * One per-day free-text note (Codeberg #58a). The id is deterministic from the
+ * date (day count since 1970-01-01 in the low 48 bits), so both apps merge by
+ * id and a note written for the same day on two devices collapses to
+ * last-write-wins.
+ * @typedef {Object} DailyNote
+ * @property {string} id
+ * @property {string} date        ISO date "YYYY-MM-DD"
+ * @property {string} text
+ */
+
+/**
+ * Mirrors DailyNote.idFor in Android: `00000000-0000-0000-0000-<12 hex>` where
+ * the hex is the day count since 1970-01-01 masked to 48 bits. Plain arithmetic
+ * (no MD5) so the two implementations stay trivially in lockstep.
+ * @param {string} date ISO date "YYYY-MM-DD"
+ */
+export function dailyNoteIdFor(date) {
+  const days = Math.floor(Date.parse(`${date}T00:00:00Z`) / 86400000);
+  const masked = ((days % 0x1000000000000) + 0x1000000000000) % 0x1000000000000;
+  return `00000000-0000-0000-0000-${masked.toString(16).padStart(12, "0")}`;
+}
+
 
 /**
  * @typedef {"male"|"female"|"other"} Sex

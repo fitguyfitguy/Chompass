@@ -989,6 +989,11 @@ bilirsən?</string>
     <string name="home_take_second_shot">İkinci şəkli çək</string>
     <string name="home_water_next">Növbəti %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">Növbəti %1$s · sabah %2$s</string>
+    <string name="home_note_empty">Bu gün üçün qeyd əlavə edin</string>
+    <string name="note_edit_title">Günün qeydi</string>
+    <string name="note_placeholder">Fikirlər, irəliləyiş, müşahidələr…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="import_add_to_log">Jurnala əlavə et</string>
     <string name="import_add_to_log_many_format">%1$d jurnala əlavə et · %2$d kkal</string>
     <string name="import_body_metrics_empty">Bu faylda idxal üçün çəki və ya bədən məlumatı qeydi yoxdur.</string>
@@ -1059,6 +1064,7 @@ bilirsən?</string>
     <string name="nutrient_fiber_format">Lif: %1$sq</string>
     <string name="nutrient_potassium_format">Kalium: %1$smq</string>
     <string name="nutrient_sat_fat_format">Doymuş yağ: %1$sq</string>
+    <string name="nutrient_short_caffeine">Kofein</string>
     <string name="nutrient_short_omega">Omega</string>
     <string name="nutrient_short_sat_fat">Doy. yağ</string>
     <string name="nutrient_short_vit_a">Vit. A</string>
@@ -1072,6 +1078,7 @@ bilirsən?</string>
     <string name="nutrition_label_folate">Folat</string>
     <string name="nutrition_label_iron">Dəmir</string>
     <string name="nutrition_label_magnesium">Maqnezium</string>
+    <string name="nutrition_label_caffeine">Kofein</string>
     <string name="nutrition_label_omega3">Omeqa-3</string>
     <string name="nutrition_label_protein">Protein</string>
     <string name="nutrition_label_trans_fat">Trans yağ</string>

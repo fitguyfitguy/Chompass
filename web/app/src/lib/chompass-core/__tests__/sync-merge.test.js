@@ -8,6 +8,7 @@ import {
   pickNewer,
   partitionLiveAndDeleted,
 } from "../sync-merge.js";
+import { exportSyncDocument } from "../sync-format.js";
 
 test("pickNewer prefers higher updated_at", () => {
   const a = { id: "1", updated_at: "2026-01-01T00:00:00Z", name: "a" };
@@ -195,4 +196,61 @@ test("mergeSyncDocuments collapses duplicate weights under different ids", () =>
   assert.ok(merged.weights.some((w) => w.id === "w2"));
   assert.ok(merged.weights.some((w) => w.id === "w3"));
   assert.ok(merged.weights.some((w) => w.id === "w4" && w.deleted_at));
+});
+
+test("daily notes merge collapses same-day to last-write-wins and stamps 1.2", () => {
+  const id = "00000000-0000-0000-0000-0000000050b2";
+  const base = {
+    export: { app: "Chompass", kind: "sync", format_version: "1.2" },
+    food_entries: [],
+    favorites: [],
+    weights: [],
+    body_fat: [],
+    measurements: [],
+    water: [],
+    daily_notes: [],
+    recipes: [],
+    profile: null,
+    prefs: null,
+  };
+  const phone = {
+    ...base,
+    daily_notes: [
+      { id, updated_at: "2026-07-24T18:00:00Z", deleted_at: null, date: "2026-07-24", text: "phone draft" },
+    ],
+  };
+  const desktop = {
+    ...base,
+    daily_notes: [
+      { id, updated_at: "2026-07-24T19:00:00Z", deleted_at: null, date: "2026-07-24", text: "desktop wins" },
+    ],
+  };
+  const merged = mergeSyncDocuments(phone, desktop);
+  assert.equal(merged.export.format_version, "1.2");
+  assert.equal(merged.daily_notes.length, 1);
+  assert.equal(merged.daily_notes[0].text, "desktop wins");
+
+  // A tombstone on the same id wins when newer.
+  const deleted = {
+    ...base,
+    daily_notes: [{ id, updated_at: "2026-07-24T20:00:00Z", deleted_at: "2026-07-24T20:00:00Z" }],
+  };
+  const merged2 = mergeSyncDocuments(desktop, deleted);
+  assert.equal(merged2.daily_notes.length, 1);
+  assert.ok(merged2.daily_notes[0].deleted_at);
+});
+
+test("exportSyncDocument emits daily_notes array", () => {
+  const doc = exportSyncDocument({
+    dailyNotes: [{ id: "00000000-0000-0000-0000-0000000050b2", date: "2026-07-24", text: "x" }],
+  });
+  assert.deepEqual(doc.daily_notes, [
+    {
+      id: "00000000-0000-0000-0000-0000000050b2",
+      updated_at: "2026-07-24T00:00:00Z",
+      deleted_at: null,
+      date: "2026-07-24",
+      text: "x",
+    },
+  ]);
 });

@@ -2,7 +2,7 @@
   "export": {
     "app": "Chompass",
     "kind": "sync",
-    "format_version": "1.1",
+    "format_version": "1.2",
     "generated_at": "2026-07-24T10:00:00Z"
   },
   "food_entries": [
@@ -45,6 +45,7 @@
       "vitamin_k_mcg": null,
       "folate_mcg": null,
       "omega3_g": null,
+      "caffeine_mg": 95,
       "grounding": null,
       "serving_unit_options": [
         {
@@ -126,6 +127,7 @@
       "vitamin_k_mcg": null,
       "folate_mcg": null,
       "omega3_g": null,
+      "caffeine_mg": null,
       "grounding": null,
       "serving_unit_options": [
         {
@@ -158,6 +160,15 @@
       "deleted_at": null,
       "date": "2026-07-24",
       "amount_ml": 500
+    }
+  ],
+  "daily_notes": [
+    {
+      "id": "00000000-0000-0000-0000-0000000050b2",
+      "updated_at": "2026-07-24T21:30:00Z",
+      "deleted_at": null,
+      "date": "2026-07-24",
+      "text": "Solid day: lunch felt light, energy stayed up all afternoon."
     }
   ],
   "nicotine_entries": [

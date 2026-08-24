@@ -1028,6 +1028,11 @@
     <string name="home_take_second_shot">Prenez la deuxième photo</string>
     <string name="home_water_next">Prochain %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">Prochain %1$s · demain %2$s</string>
+    <string name="home_note_empty">Ajouter une note pour ce jour</string>
+    <string name="note_edit_title">Note du jour</string>
+    <string name="note_placeholder">Réflexions, progrès, observations…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="import_add_to_log">Ajouter au journal</string>
     <string name="import_add_to_log_many_format">Ajouter %1$d au journal · %2$d kcal</string>
     <plurals name="import_add_meals_title">
@@ -1110,6 +1115,7 @@
     <string name="nutrient_potassium_format">Potassium : %1$smg</string>
     <string name="nutrient_sat_fat_format">Lipides sat. : %1$sg</string>
     <string name="nutrient_short_b12">B12</string>
+    <string name="nutrient_short_caffeine">Caféine</string>
     <string name="nutrient_short_omega">Oméga</string>
     <string name="nutrient_short_sat_fat">Lipides sat.</string>
     <string name="nutrient_short_vit_a">Vit. A</string>
@@ -1125,6 +1131,7 @@
     <string name="nutrition_label_folate">Folates</string>
     <string name="nutrition_label_iron">Fer</string>
     <string name="nutrition_label_magnesium">Magnésium</string>
+    <string name="nutrition_label_caffeine">Caféine</string>
     <string name="nutrition_label_omega3">Oméga-3</string>
     <string name="nutrition_label_potassium">Potassium</string>
     <string name="nutrition_label_sodium">Sodium</string>

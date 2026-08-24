@@ -1035,6 +1035,11 @@
     <string name="home_take_second_shot">Toma la segunda foto</string>
     <string name="home_water_next">Siguiente %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">Siguiente %1$s · mañana %2$s</string>
+    <string name="home_note_empty">Añadir una nota para este día</string>
+    <string name="note_edit_title">Nota del día</string>
+    <string name="note_placeholder">Pensamientos, progreso, observaciones…</string>
+    <string name="note_char_count">%1$d / %2$d</string>
+
     <string name="import_add_to_log">Añadir al registro</string>
     <string name="import_add_to_log_many_format">Añadir %1$d al registro · %2$d kcal</string>
     <plurals name="import_add_meals_title">
@@ -1116,6 +1121,7 @@
     <string name="nutrient_potassium_format">Potasio: %1$smg</string>
     <string name="nutrient_sat_fat_format">Grasa sat.: %1$sg</string>
     <string name="nutrient_short_b12">B12</string>
+    <string name="nutrient_short_caffeine">Cafeína</string>
     <string name="nutrient_short_omega">Omega</string>
     <string name="nutrient_short_sat_fat">Grasa sat.</string>
     <string name="nutrient_short_vit_a">Vit. A</string>
@@ -1130,6 +1136,7 @@
     <string name="nutrition_label_folate">Folato</string>
     <string name="nutrition_label_iron">Hierro</string>
     <string name="nutrition_label_magnesium">Magnesio</string>
+    <string name="nutrition_label_caffeine">Cafeína</string>
     <string name="nutrition_label_omega3">Omega-3</string>
     <string name="nutrition_label_trans_fat">Grasas trans</string>
     <string name="nutrition_label_vitamin_a">Vitamina A</string>

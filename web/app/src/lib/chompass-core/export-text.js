@@ -28,6 +28,7 @@ const MICRO_CSV = [
   ["vitaminKMcg", "vitamin_k_mcg"],
   ["folateMcg", "folate_mcg"],
   ["omega3G", "omega3_g"],
+  ["caffeineMg", "caffeine_mg"],
 ];
 
 const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack"];
@@ -53,15 +54,17 @@ function csvEscape(field) {
  * @param {import('./models.js').FoodEntry[]} entries
  * @param {{start: string, end: string}} dateRange
  * @param {{calories: number, proteinG: number, carbsG: number, fatG: number}|null} [targets]
+ * @param {Array<{date: string, text: string}>} [notes]
  */
-export function exportDiaryMarkdown(entries, dateRange, targets = null) {
+export function exportDiaryMarkdown(entries, dateRange, targets = null, notes = []) {
   /** @type {Map<string, import('./models.js').FoodEntry[]>} */
   const byDay = new Map();
   for (const e of entries) {
     if (!byDay.has(e.date)) byDay.set(e.date, []);
     byDay.get(e.date).push(e);
   }
-  const days = [...byDay.keys()].sort();
+  const noteByDate = new Map(notes.map((n) => [n.date, n.text]));
+  const days = [...new Set([...byDay.keys(), ...noteByDate.keys()])].sort();
   const lines = [
     "# Food diary export",
     `Date range: ${dateRange.start} to ${dateRange.end}`,
@@ -88,6 +91,8 @@ export function exportDiaryMarkdown(entries, dateRange, targets = null) {
     lines.push(`- Protein: ${r1(tot.proteinG)} / ${tp} g`);
     lines.push(`- Carbs: ${r1(tot.carbsG)} / ${tcarb} g`);
     lines.push(`- Fat: ${r1(tot.fatG)} / ${tf} g`);
+    const note = noteByDate.get(date);
+    if (note) lines.push("", `> ${note.replace(/\n/g, "\n> ")}`);
     for (const mt of MEAL_ORDER) {
       const items = dayEntries.filter((e) => e.mealType === mt);
       if (!items.length) continue;

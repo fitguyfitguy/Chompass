@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://chompass.app/contracts/diary-1.2.schema.json",
-  "title": "Chompass diary export format 1.2",
-  "description": "Diary 1.1 plus serving-unit metadata and embedded meal constituents (snake_case). Imports still accept 1.0/1.1.",
+  "$id": "https://chompass.app/contracts/diary-1.3.schema.json",
+  "title": "Chompass diary export format 1.3",
+  "description": "Diary 1.2 plus an optional per-day `note` (Codeberg #58a). Imports still accept 1.0/1.1/1.2.",
   "type": "object",
   "required": ["export", "days"],
   "additionalProperties": true,
@@ -12,7 +12,7 @@
       "required": ["app", "format_version", "date_range"],
       "properties": {
         "app": { "type": "string", "minLength": 1 },
-        "format_version": { "const": "1.2" },
+        "format_version": { "const": "1.3" },
         "date_range": {
           "type": "object",
           "required": ["start", "end"],
@@ -30,6 +30,7 @@
         "required": ["date", "totals", "targets", "remaining", "meals"],
         "properties": {
           "date": { "type": "string" },
+          "note": { "type": ["string", "null"] },
           "totals": { "$ref": "#/$defs/macroBlock" },
           "targets": { "$ref": "#/$defs/macroBlock" },
           "remaining": { "$ref": "#/$defs/macroBlock" },

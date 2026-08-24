@@ -58,6 +58,7 @@ class DiaryImporterTest {
                     "vitamin_k_mcg": null,
                     "folate_mcg": null,
                     "omega3_g": 1.8,
+                    "caffeine_mg": 95.0,
                     "time": "12:30",
                     "source": "ai_estimated",
                     "note": "grilled"
@@ -78,6 +79,7 @@ class DiaryImporterTest {
         assertEquals(50.0, entry.sodium)
         assertEquals(10.5, entry.vitaminD)
         assertEquals(1.8, entry.omega3)
+        assertEquals(95.0, entry.caffeine)
         assertEquals(2.0, entry.saturatedFat)
         assertEquals(55.0, entry.cholesterol)
         assertEquals("grilled", entry.customNote)
@@ -252,7 +254,7 @@ class DiaryImporterTest {
             mealDisplay = { it.name },
         ) ?: error("expected export")
 
-        assertTrue(exported.second.contains("\"format_version\": \"1.2\""))
+        assertTrue(exported.second.contains("\"format_version\": \"1.3\""))
         val imported = DiaryImporter.parse(exported.second, ZoneId.systemDefault())
         assertTrue(imported is DiaryImportResult.Success)
         val entry = (imported as DiaryImportResult.Success).entries.single()

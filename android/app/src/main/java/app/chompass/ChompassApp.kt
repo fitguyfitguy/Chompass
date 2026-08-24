@@ -9,6 +9,7 @@ import app.chompass.data.FoodRepository
 import app.chompass.data.KeyStore
 import app.chompass.data.ManualActiveRepository
 import app.chompass.data.NicotineRepository
+import app.chompass.data.NotesRepository
 import app.chompass.data.PreferencesStore
 import app.chompass.data.ProfileRepository
 import app.chompass.data.RecipeRepository
@@ -198,6 +199,7 @@ class AppContainer(app: ChompassApp) {
     }
     val manualActiveRepository = ManualActiveRepository(prefs)
     val nicotineRepository = NicotineRepository(prefs, syncRepository)
+    val notesRepository = NotesRepository(prefs, syncRepository)
 
     // Weather input for the dynamic water goal (issue #3 Phase 5): shared
     // weather-app broadcast cache + Open-Meteo city forecast, with the manual

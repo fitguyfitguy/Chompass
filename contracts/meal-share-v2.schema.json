@@ -47,6 +47,7 @@
           "vitaminK": { "type": "number" },
           "folate": { "type": "number" },
           "omega3": { "type": "number" },
+          "caffeine": { "type": "number" },
           "servingSizeGrams": { "type": "number" },
           "servingUnitOptions": {
             "type": "array",
