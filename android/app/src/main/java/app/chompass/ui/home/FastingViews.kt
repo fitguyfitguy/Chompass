@@ -93,7 +93,7 @@ fun FastingProgressRow(
             countdownHint = if (autoMode && nextFastStartMillis != null) {
                 stringResource(
                     R.string.fasting_fast_starts_at,
-                    clockFormatter.format(java.time.Instant.ofEpochMilli(nextFastStartMillis)),
+                    clockFormatter.format(java.time.Instant.ofEpochMilli(nextFastStartMillis).atZone(java.time.ZoneId.systemDefault())),
                     fastingDurationLabel(remaining),
                 )
             } else {
@@ -102,7 +102,7 @@ fun FastingProgressRow(
         }
         FastingPhase.IDLE -> {
             statusLabel = if (autoMode && nextFastStartMillis != null) {
-                stringResource(R.string.fasting_next_fast_at, clockFormatter.format(java.time.Instant.ofEpochMilli(nextFastStartMillis)))
+                stringResource(R.string.fasting_next_fast_at, clockFormatter.format(java.time.Instant.ofEpochMilli(nextFastStartMillis).atZone(java.time.ZoneId.systemDefault())))
             } else {
                 stringResource(R.string.fasting_idle)
             }
@@ -229,7 +229,7 @@ fun FastingHubControl(
             if (autoMode && nextFastStartMillis != null) {
                 stringResource(
                     R.string.fasting_fast_starts_at,
-                    clockFormatter.format(java.time.Instant.ofEpochMilli(nextFastStartMillis)),
+                    clockFormatter.format(java.time.Instant.ofEpochMilli(nextFastStartMillis).atZone(java.time.ZoneId.systemDefault())),
                     fastingDurationLabel(remaining),
                 )
             } else {
@@ -237,7 +237,7 @@ fun FastingHubControl(
             }
         }
         FastingPhase.IDLE -> if (autoMode && nextFastStartMillis != null) {
-            stringResource(R.string.fasting_next_fast_at, clockFormatter.format(java.time.Instant.ofEpochMilli(nextFastStartMillis)))
+            stringResource(R.string.fasting_next_fast_at, clockFormatter.format(java.time.Instant.ofEpochMilli(nextFastStartMillis).atZone(java.time.ZoneId.systemDefault())))
         } else {
             stringResource(R.string.fasting_idle)
         }
