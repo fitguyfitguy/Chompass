@@ -11,6 +11,7 @@ import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Equalizer
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FilterAlt
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Language
@@ -168,6 +169,8 @@ internal val SETTINGS_INDEX: List<SettingsIndexEntry> = listOf(
         listOf("hydration", "goal", "drink", "ml", "presets"), ChompassRoutes.waterRoute("search"), Icons.Outlined.WaterDrop),
     SettingsIndexEntry(R.string.settings_group_trackers, R.string.settings_nicotine_title,
         listOf("cigarettes", "vape", "pouch", "smoking", "limit"), ChompassRoutes.nicotineRoute("search"), Icons.Outlined.FilterAlt),
+    SettingsIndexEntry(R.string.settings_group_trackers, R.string.settings_fasting_title,
+        listOf("fasting", "intermittent", "timer", "goal", "fast"), ChompassRoutes.fastingRoute("search"), Icons.Outlined.Schedule),
     SettingsIndexEntry(R.string.settings_group_trackers, R.string.settings_notifications,
         listOf("reminders", "streak", "summary", "weight reminder", "battery"), ChompassRoutes.notificationsRoute("search"), Icons.Outlined.Notifications),
 

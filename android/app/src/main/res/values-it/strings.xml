@@ -1720,4 +1720,33 @@
     <string name="widget_water_enable_short">Attiva in Chompass</string>
     <string name="widget_water_tracking">Monitoraggio acqua</string>
     <string name="settings_calc_target_formula">1 libbra di grasso ≈ 3500 kcal · 1 kg ≈ 7700 kcal\nIl tuo ritmo settimanale ÷ 7 viene sottratto (perdita) o aggiunto (guadagno) al mantenimento per impostare l\'obiettivo calorico giornaliero.</string>
+    <string name="fasting">Digiuno</string>
+    <string name="fasting_idle">Nessun digiuno attivo</string>
+    <string name="fasting_goal_reached">Obiettivo raggiunto</string>
+    <string name="fasting_goal_progress">%1$s · obiettivo %2$d h</string>
+    <string name="fasting_duration_h_m">%1$d h %2$d min</string>
+    <string name="fasting_duration_h">%1$d h</string>
+    <string name="fasting_duration_m">%1$d min</string>
+    <string name="fasting_start">Inizia digiuno</string>
+    <string name="fasting_stop">Termina digiuno</string>
+    <string name="fasting_cancel">Annulla</string>
+    <string name="add_food_fasting_section">Digiuno</string>
+    <string name="settings_fasting_title">Digiuno</string>
+    <string name="settings_fasting_intro">Tieni traccia dei periodi di digiuno intermittente con un timer locale: inizia, ferma o annulla quando vuoi, con una durata obiettivo opzionale. Il timer resta su questo dispositivo e non viene mai sincronizzato né esportato.</string>
+    <string name="settings_fasting_section_tracking">Monitoraggio</string>
+    <string name="settings_fasting_tracking">Timer digiuno</string>
+    <string name="settings_fasting_goal">Durata obiettivo</string>
+    <string name="settings_fasting_goal_summary_none">Nessun obiettivo</string>
+    <string name="settings_fasting_goal_summary">%1$d h</string>
+    <string name="settings_fasting_goal_wheel_help">Una notifica una tantum viene inviata al raggiungimento dell\'obiettivo. 0 = nessun obiettivo.</string>
+    <string name="settings_fasting_section_notification">Notifica</string>
+    <string name="settings_fasting_notification">Obiettivo raggiunto</string>
+    <string name="fasting_local_only_note">Il timer del digiuno resta su questo dispositivo: non viene mai sincronizzato, esportato o incluso nei pasti condivisi. La notifica di obiettivo raggiunto è l\'unica cosa che Chompass pubblica al riguardo.</string>
+    <string name="shortcut_fasting_short">Digiuno</string>
+    <string name="shortcut_fasting_long">Inizia o ferma il digiuno</string>
+    <string name="fasting_goal_unit_h">h</string>
+    <string name="notif_channel_fasting">Digiuno</string>
+    <string name="notif_channel_fasting_desc">Avviso una tantum quando un obiettivo di digiuno viene raggiunto.</string>
+    <string name="notif_fasting_goal_title">Obiettivo digiuno raggiunto</string>
+    <string name="notif_fasting_goal_text">Il tuo digiuno di %1$d h è completo: ora puoi mangiare.</string>
 </resources>

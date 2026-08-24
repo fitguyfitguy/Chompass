@@ -1720,4 +1720,33 @@
     <string name="ai_provider_ollama">Ollama (local)</string>
     <string name="nutrition_section_macros">Macros</string>
     <string name="sheet_macros">Macros</string>
+    <string name="fasting">Jejum</string>
+    <string name="fasting_idle">Sem jejum ativo</string>
+    <string name="fasting_goal_reached">Meta atingida</string>
+    <string name="fasting_goal_progress">%1$s · meta %2$d h</string>
+    <string name="fasting_duration_h_m">%1$d h %2$d min</string>
+    <string name="fasting_duration_h">%1$d h</string>
+    <string name="fasting_duration_m">%1$d min</string>
+    <string name="fasting_start">Iniciar jejum</string>
+    <string name="fasting_stop">Encerrar jejum</string>
+    <string name="fasting_cancel">Cancelar</string>
+    <string name="add_food_fasting_section">Jejum</string>
+    <string name="settings_fasting_title">Jejum</string>
+    <string name="settings_fasting_intro">Acompanhe janelas de jejum intermitente com um timer local: inicie, pare ou cancele quando quiser, com uma duração de meta opcional. O timer fica neste dispositivo e nunca é sincronizado nem exportado.</string>
+    <string name="settings_fasting_section_tracking">Acompanhamento</string>
+    <string name="settings_fasting_tracking">Timer de jejum</string>
+    <string name="settings_fasting_goal">Duração da meta</string>
+    <string name="settings_fasting_goal_summary_none">Sem meta</string>
+    <string name="settings_fasting_goal_summary">%1$d h</string>
+    <string name="settings_fasting_goal_wheel_help">Uma notificação única é enviada ao atingir a meta. 0 = sem meta.</string>
+    <string name="settings_fasting_section_notification">Notificação</string>
+    <string name="settings_fasting_notification">Meta atingida</string>
+    <string name="fasting_local_only_note">O timer de jejum fica neste dispositivo: nunca é sincronizado, exportado nem incluído em refeições compartilhadas. A notificação de meta atingida é a única coisa que o Chompass publica sobre ele.</string>
+    <string name="shortcut_fasting_short">Jejum</string>
+    <string name="shortcut_fasting_long">Iniciar ou encerrar o jejum</string>
+    <string name="fasting_goal_unit_h">h</string>
+    <string name="notif_channel_fasting">Jejum</string>
+    <string name="notif_channel_fasting_desc">Aviso único quando uma meta de jejum é atingida.</string>
+    <string name="notif_fasting_goal_title">Meta de jejum atingida</string>
+    <string name="notif_fasting_goal_text">Seu jejum de %1$d h terminou — você já pode comer.</string>
 </resources>

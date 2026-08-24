@@ -601,6 +601,13 @@ internal fun SettingsSheets(
                         onDismiss()
                     },
                 )
+                SettingsSheet.FASTING_GOAL -> FastingGoalSheet(
+                    current = ui.fastingGoalHours,
+                    onSave = {
+                        vm.setFastingGoalHours(it)
+                        onDismiss()
+                    },
+                )
                 SettingsSheet.WATER_DYNAMIC_BASE -> ListSheet(
                     title = stringResource(R.string.settings_water_dynamic_base),
                     items = listOf(

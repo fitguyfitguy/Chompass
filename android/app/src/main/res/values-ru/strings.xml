@@ -1796,4 +1796,33 @@
     <string name="water_amount_fl_oz">%1$d fl oz</string>
     <string name="widget_center_small_format">/ %1$d</string>
     <string name="widget_value_unit_format">%1$d%2$s / %3$d%4$s</string>
+    <string name="fasting">Пост</string>
+    <string name="fasting_idle">Нет активного поста</string>
+    <string name="fasting_goal_reached">Цель достигнута</string>
+    <string name="fasting_goal_progress">%1$s · цель %2$d ч</string>
+    <string name="fasting_duration_h_m">%1$d ч %2$d мин</string>
+    <string name="fasting_duration_h">%1$d ч</string>
+    <string name="fasting_duration_m">%1$d мин</string>
+    <string name="fasting_start">Начать пост</string>
+    <string name="fasting_stop">Завершить пост</string>
+    <string name="fasting_cancel">Отмена</string>
+    <string name="add_food_fasting_section">Пост</string>
+    <string name="settings_fasting_title">Пост</string>
+    <string name="settings_fasting_intro">Отслеживайте окна интервального голодания с помощью локального таймера: начинайте, останавливайте или отменяйте в любой момент, с опциональной целевой длительностью. Таймер остаётся на этом устройстве и никогда не синхронизируется и не экспортируется.</string>
+    <string name="settings_fasting_section_tracking">Отслеживание</string>
+    <string name="settings_fasting_tracking">Таймер поста</string>
+    <string name="settings_fasting_goal">Целевая длительность</string>
+    <string name="settings_fasting_goal_summary_none">Без цели</string>
+    <string name="settings_fasting_goal_summary">%1$d ч</string>
+    <string name="settings_fasting_goal_wheel_help">При достижении цели отправляется одно уведомление. 0 = без цели.</string>
+    <string name="settings_fasting_section_notification">Уведомление</string>
+    <string name="settings_fasting_notification">Цель достигнута</string>
+    <string name="fasting_local_only_note">Таймер поста остаётся на этом устройстве — он никогда не синхронизируется, не экспортируется и не включается в общие приёмы пищи. Уведомление о достижении цели — единственное, что Chompass публикует о нём.</string>
+    <string name="shortcut_fasting_short">Пост</string>
+    <string name="shortcut_fasting_long">Начать или остановить пост</string>
+    <string name="fasting_goal_unit_h">ч</string>
+    <string name="notif_channel_fasting">Пост</string>
+    <string name="notif_channel_fasting_desc">Одноразовое уведомление о достижении цели поста.</string>
+    <string name="notif_fasting_goal_title">Цель поста достигнута</string>
+    <string name="notif_fasting_goal_text">Ваш %1$d-часовой пост завершён — теперь можно прервать пост.</string>
 </resources>

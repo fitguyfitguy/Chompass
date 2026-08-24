@@ -1720,4 +1720,33 @@
     <string name="sheet_weekly_change_format">%1$.1f %2$s/week %3$s</string>
     <string name="shortcut_camera_short">Camera</string>
     <string name="voice_stop">Stop</string>
+    <string name="fasting">Vasten</string>
+    <string name="fasting_idle">Geen actief vasten</string>
+    <string name="fasting_goal_reached">Doel bereikt</string>
+    <string name="fasting_goal_progress">%1$s · doel %2$d u</string>
+    <string name="fasting_duration_h_m">%1$d u %2$d min</string>
+    <string name="fasting_duration_h">%1$d u</string>
+    <string name="fasting_duration_m">%1$d min</string>
+    <string name="fasting_start">Vasten starten</string>
+    <string name="fasting_stop">Vasten stoppen</string>
+    <string name="fasting_cancel">Annuleren</string>
+    <string name="add_food_fasting_section">Vasten</string>
+    <string name="settings_fasting_title">Vasten</string>
+    <string name="settings_fasting_intro">Volg periodes van intermittent fasting met een lokale timer: start, stop of annuleer wanneer je wilt, met een optionele doellengte. De timer blijft op dit apparaat en wordt nooit gesynchroniseerd of geëxporteerd.</string>
+    <string name="settings_fasting_section_tracking">Bijhouden</string>
+    <string name="settings_fasting_tracking">Vastentimer</string>
+    <string name="settings_fasting_goal">Doellengte</string>
+    <string name="settings_fasting_goal_summary_none">Geen doel</string>
+    <string name="settings_fasting_goal_summary">%1$d u</string>
+    <string name="settings_fasting_goal_wheel_help">Wanneer je het doel bereikt, verschijnt een eenmalige melding. 0 = geen doel.</string>
+    <string name="settings_fasting_section_notification">Melding</string>
+    <string name="settings_fasting_notification">Doel bereikt</string>
+    <string name="fasting_local_only_note">De vastentimer blijft op dit apparaat: hij wordt nooit gesynchroniseerd, geëxporteerd of toegevoegd aan gedeelde maaltijden. De doel-berichtmelding is het enige wat Chompass hierover plaatst.</string>
+    <string name="shortcut_fasting_short">Vasten</string>
+    <string name="shortcut_fasting_long">Vasten starten of stoppen</string>
+    <string name="fasting_goal_unit_h">u</string>
+    <string name="notif_channel_fasting">Vasten</string>
+    <string name="notif_channel_fasting_desc">Eenmalig bericht wanneer een vastendoel is bereikt.</string>
+    <string name="notif_fasting_goal_title">Vastendoel bereikt</string>
+    <string name="notif_fasting_goal_text">Je vasten van %1$d u is voltooid — je kunt nu eten.</string>
 </resources>

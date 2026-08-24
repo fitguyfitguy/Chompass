@@ -3,8 +3,11 @@ package app.chompass.services
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
+import app.chompass.ChompassApp
 import app.chompass.ui.theme.AppThemeColor
 import app.chompass.ui.theme.resolveLauncherIconTheme
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 object AndroidAppIconManager {
     private const val MANIFEST_NAMESPACE = "app.chompass"
@@ -41,8 +44,16 @@ object AndroidAppIconManager {
             }
         }
         // Shortcuts must target the enabled alias (same component as the live
-        // task). Republish after every apply so theme switches stay in sync.
-        LauncherShortcuts.publish(context)
+        // task). Republish after every apply so theme switches stay in sync;
+        // include the fasting toggle only when the tracker is enabled.
+        val app = context.applicationContext as? ChompassApp
+        if (app != null) {
+            app.applicationScope.launch {
+                LauncherShortcuts.publish(context, app.container.prefs.fastingEnabled.first())
+            }
+        } else {
+            LauncherShortcuts.publish(context)
+        }
     }
 
     /**

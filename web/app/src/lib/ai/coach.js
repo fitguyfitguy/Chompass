@@ -16,6 +16,47 @@ Keep replies short: a sentence or two plus the tool call, not an essay. Never us
 const MAX_TOOL_ITERATIONS = 4;
 
 /**
+ * Local-only fasting timer snapshot for the coach prompt (mirrors the Android
+ * ChatService block): differ "should I eat now?" at hour 2 vs hour 15, with an
+ * explicit no-claims rule (no autophagy / fat-burning zones, no medical advice).
+ * Returns null when fasting is off and there is no recorded fast.
+ * @param {import('../db.js').AppPrefs} p
+ * @returns {string|null}
+ */
+export function buildFastingPromptBlock(p) {
+  if (p.showFasting !== true) return null;
+  const goal = p.fastingGoalHours ?? 0;
+  const now = Date.now();
+  let body;
+  if (p.fastingStartedAt != null) {
+    const started = new Date(p.fastingStartedAt).toISOString();
+    const elapsed = Math.max(0, now - p.fastingStartedAt);
+    body = `- Active fast: started ${started}, elapsed ${fmtFastDuration(elapsed)}, goal ${goal}h`;
+  } else if (p.fastingLastEndedAt != null && p.fastingLastFastStartedAt != null) {
+    const ended = new Date(p.fastingLastEndedAt).toISOString();
+    const lasted = Math.max(0, p.fastingLastEndedAt - p.fastingLastFastStartedAt);
+    body = `- No active fast; last fast ended ${ended}, lasted ${fmtFastDuration(lasted)}`;
+  } else {
+    return null;
+  }
+  return [
+    "## Fasting (intermittent fasting tracker - user-optional, local-only)",
+    body,
+    "- When the user asks about eating timing, weigh elapsed time against the goal. Never claim autophagy, fat-burning zones, or health effects of fasting duration; fasting is a scheduling tool, not medical advice. Suggest a clinician for fasting-related health questions.",
+  ].join("\n");
+}
+
+/** @param {number} millis */
+function fmtFastDuration(millis) {
+  const totalMinutes = Math.max(0, Math.floor(millis / 60_000));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (hours > 0 && minutes > 0) return `${hours}h ${minutes}m`;
+  if (hours > 0) return `${hours}h`;
+  return `${minutes}m`;
+}
+
+/**
  * @param {Object} args
  * @param {keyof typeof PROVIDERS} args.providerId
  * @param {{apiKey: string, model?: string, baseUrl?: string, reasoningEffort?: string, visionModel?: string}} args.config
@@ -42,6 +83,10 @@ export async function runCoachTurn({ providerId, config, history, userText, imag
     };
   }
   let systemPrompt = BASE_SYSTEM;
+  const fastingBlock = buildFastingPromptBlock(appPrefs);
+  if (fastingBlock) {
+    systemPrompt += `\n\n${fastingBlock}`;
+  }
   if (appPrefs.userContext?.trim()) {
     systemPrompt += `\n\nUser preferences:\n${appPrefs.userContext.trim()}`;
   }

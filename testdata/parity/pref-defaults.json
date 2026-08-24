@@ -5,6 +5,8 @@
   "showNicotine": false,
   "nicotineDailyLimit": 0,
   "nicotineQuickKinds": ["cigarette", "vape", "pouch"],
+  "showFasting": false,
+  "fastingGoalHours": 0,
   "coachTabEnabled": true,
   "aiFeaturesEnabled": true,
   "waterGoalMl": 2000,

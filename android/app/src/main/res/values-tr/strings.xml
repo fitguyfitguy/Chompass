@@ -1741,4 +1741,33 @@
     <string name="home_share_together">Birlikte paylaş</string>
     <string name="home_share_separately">Ayrı ayrı paylaş</string>
     <string name="copy_meal_format">%1$s kopyala</string>
+    <string name="fasting">Oruç</string>
+    <string name="fasting_idle">Aktif oruç yok</string>
+    <string name="fasting_goal_reached">Hedefe ulaşıldı</string>
+    <string name="fasting_goal_progress">%1$s · hedef %2$d saat</string>
+    <string name="fasting_duration_h_m">%1$d sa %2$d dk</string>
+    <string name="fasting_duration_h">%1$d sa</string>
+    <string name="fasting_duration_m">%1$d dk</string>
+    <string name="fasting_start">Orucu başlat</string>
+    <string name="fasting_stop">Orucu bitir</string>
+    <string name="fasting_cancel">İptal</string>
+    <string name="add_food_fasting_section">Oruç</string>
+    <string name="settings_fasting_title">Oruç</string>
+    <string name="settings_fasting_intro">Yerel bir zamanlayıcıyla aralıklı oruç pencerelerini takip edin: isteğe bağlı hedef süresiyle istediğiniz zaman başlatın, durdurun veya iptal edin. Zamanlayıcı bu cihazda kalır ve asla senkronize edilmez veya dışa aktarılmaz.</string>
+    <string name="settings_fasting_section_tracking">Takip</string>
+    <string name="settings_fasting_tracking">Oruç zamanlayıcısı</string>
+    <string name="settings_fasting_goal">Hedef süresi</string>
+    <string name="settings_fasting_goal_summary_none">Hedef yok</string>
+    <string name="settings_fasting_goal_summary">%1$d saat</string>
+    <string name="settings_fasting_goal_wheel_help">Hedefe ulaşıldığında bir kez bildirim gönderilir. 0 = hedef yok.</string>
+    <string name="settings_fasting_section_notification">Bildirim</string>
+    <string name="settings_fasting_notification">Hedefe ulaşıldı</string>
+    <string name="fasting_local_only_note">Oruç zamanlayıcısı bu cihazda kalır — asla senkronize edilmez, dışa aktarılmaz veya paylaşılan öğünlere dahil edilmez. Chompass\'ın bu konuda yayınladığı tek şey hedef bildirimidir.</string>
+    <string name="shortcut_fasting_short">Oruç</string>
+    <string name="shortcut_fasting_long">Orucu başlat veya durdur</string>
+    <string name="fasting_goal_unit_h">sa</string>
+    <string name="notif_channel_fasting">Oruç</string>
+    <string name="notif_channel_fasting_desc">Oruç hedefine ulaşıldığında tek seferlik bildirim.</string>
+    <string name="notif_fasting_goal_title">Oruç hedefine ulaşıldı</string>
+    <string name="notif_fasting_goal_text">%1$d saatlik orucunuz tamamlandı — artık yemek yiyebilirsiniz.</string>
 </resources>

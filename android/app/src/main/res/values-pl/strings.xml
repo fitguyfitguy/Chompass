@@ -1745,4 +1745,33 @@
     <string name="home_share_together">Udostępnij razem</string>
     <string name="home_share_separately">Udostępnij osobno</string>
     <string name="copy_meal_format">Kopiuj %1$s</string>
+    <string name="fasting">Post</string>
+    <string name="fasting_idle">Brak aktywnego postu</string>
+    <string name="fasting_goal_reached">Osiągnięto cel</string>
+    <string name="fasting_goal_progress">%1$s · cel %2$d h</string>
+    <string name="fasting_duration_h_m">%1$d h %2$d min</string>
+    <string name="fasting_duration_h">%1$d h</string>
+    <string name="fasting_duration_m">%1$d min</string>
+    <string name="fasting_start">Rozpocznij post</string>
+    <string name="fasting_stop">Zakończ post</string>
+    <string name="fasting_cancel">Anuluj</string>
+    <string name="add_food_fasting_section">Post</string>
+    <string name="settings_fasting_title">Post</string>
+    <string name="settings_fasting_intro">Śledź okna postu przerywanego za pomocą lokalnego timera: zacznij, zatrzymaj lub anuluj w dowolnym momencie, z opcjonalną długością celu. Timer pozostaje na tym urządzeniu i nigdy nie jest synchronizowany ani eksportowany.</string>
+    <string name="settings_fasting_section_tracking">Śledzenie</string>
+    <string name="settings_fasting_tracking">Timer postu</string>
+    <string name="settings_fasting_goal">Długość celu</string>
+    <string name="settings_fasting_goal_summary_none">Brak celu</string>
+    <string name="settings_fasting_goal_summary">%1$d h</string>
+    <string name="settings_fasting_goal_wheel_help">Po osiągnięciu celu wysyłane jest jednorazowe powiadomienie. 0 = brak celu.</string>
+    <string name="settings_fasting_section_notification">Powiadomienie</string>
+    <string name="settings_fasting_notification">Osiągnięto cel</string>
+    <string name="fasting_local_only_note">Timer postu pozostaje na tym urządzeniu — nigdy nie jest synchronizowany, eksportowany ani dołączany do udostępnianych posiłków. Jedyną rzeczą, którą Chompass o nim publikuje, jest powiadomienie o osiągnięciu celu.</string>
+    <string name="shortcut_fasting_short">Post</string>
+    <string name="shortcut_fasting_long">Rozpocznij lub zatrzymaj post</string>
+    <string name="fasting_goal_unit_h">h</string>
+    <string name="notif_channel_fasting">Post</string>
+    <string name="notif_channel_fasting_desc">Jednorazowa wiadomość po osiągnięciu celu postu.</string>
+    <string name="notif_fasting_goal_title">Osiągnięto cel postu</string>
+    <string name="notif_fasting_goal_text">Twój %1$d-godzinny post zakończony — możesz teraz przerwać post.</string>
 </resources>

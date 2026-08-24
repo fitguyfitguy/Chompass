@@ -117,6 +117,8 @@ export const ANDROID_PREF_DEFAULTS = {
   nicotineDailyLimit: 0,
   nicotineQuickKinds: ["cigarette", "vape", "pouch"],
   waterGoalMl: 2000,
+  showFasting: false,
+  fastingGoalHours: 0,
   aiFallbackEnabled: true,
   fallbackAiProvider: "gemini",
   fallbackAiModel: "gemini-3.5-flash-lite",

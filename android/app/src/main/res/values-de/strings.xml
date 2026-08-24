@@ -3132,4 +3132,33 @@ für dich ein</string>
 
     <string name="copy_meal_format">%1$s kopieren</string>
 
+    <string name="fasting">Fasten</string>
+    <string name="fasting_idle">Kein aktives Fasten</string>
+    <string name="fasting_goal_reached">Ziel erreicht</string>
+    <string name="fasting_goal_progress">%1$s · Ziel %2$d h</string>
+    <string name="fasting_duration_h_m">%1$d Std %2$d Min</string>
+    <string name="fasting_duration_h">%1$d Std</string>
+    <string name="fasting_duration_m">%1$d Min</string>
+    <string name="fasting_start">Fasten starten</string>
+    <string name="fasting_stop">Fasten beenden</string>
+    <string name="fasting_cancel">Abbrechen</string>
+    <string name="add_food_fasting_section">Fasten</string>
+    <string name="settings_fasting_title">Fasten</string>
+    <string name="settings_fasting_intro">Verfolge intermittierende Fastenfenster mit einem lokalen Timer: jederzeit starten, stoppen oder abbrechen, optional mit Ziellänge. Der Timer bleibt auf diesem Gerät und wird nie synchronisiert oder exportiert.</string>
+    <string name="settings_fasting_section_tracking">Verfolgung</string>
+    <string name="settings_fasting_tracking">Fasten-Timer</string>
+    <string name="settings_fasting_goal">Ziellänge</string>
+    <string name="settings_fasting_goal_summary_none">Kein Ziel</string>
+    <string name="settings_fasting_goal_summary">%1$d h</string>
+    <string name="settings_fasting_goal_wheel_help">Beim Erreichen des Ziels erscheint eine einmalige Benachrichtigung. 0 = kein Ziel.</string>
+    <string name="settings_fasting_section_notification">Benachrichtigung</string>
+    <string name="settings_fasting_notification">Ziel erreicht</string>
+    <string name="fasting_local_only_note">Der Fasten-Timer bleibt auf diesem Gerät — er wird nie synchronisiert, exportiert oder in geteilte Mahlzeiten aufgenommen. Die Ziel-Benachrichtigung ist das Einzige, was Chompass darüber sendet.</string>
+    <string name="shortcut_fasting_short">Fasten</string>
+    <string name="shortcut_fasting_long">Fasten starten oder stoppen</string>
+    <string name="fasting_goal_unit_h">h</string>
+    <string name="notif_channel_fasting">Fasten</string>
+    <string name="notif_channel_fasting_desc">Einmalige Mitteilung, wenn ein Fastenziel erreicht ist.</string>
+    <string name="notif_fasting_goal_title">Fastenziel erreicht</string>
+    <string name="notif_fasting_goal_text">Dein %1$d-stündiges Fasten ist abgeschlossen — du kannst jetzt deine Fastenpause beenden.</string>
 </resources>

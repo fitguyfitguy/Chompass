@@ -392,6 +392,12 @@ export const profile = {
  * @property {boolean} [mealConstituentsEnabled] Ask AI for optional meal ingredient rows (default true)
  * @property {"gramsOnly"|"heuristic"|"aiCall"} [servingUnitInferenceMode] How to fill non-gram units when AI omits them
  * @property {Array<{id: string, date: string, name: string, calories: number}>} [manualActiveEntries] Local-only active burn logs
+ * @property {boolean} [showFasting] Optional local-only intermittent-fasting timer (off by default)
+ * @property {number} [fastingGoalHours] Goal length in hours; 0 = no goal
+ * @property {number|null} [fastingStartedAt] Epoch millis the running fast started; null = idle
+ * @property {number|null} [fastingLastEndedAt] Epoch millis the last completed fast ended
+ * @property {number|null} [fastingLastFastStartedAt] Epoch millis the last completed fast started
+ * @property {boolean} [fastingGoalNotified] One-shot goal latch (alarm fire)
  * @property {string} [speechLang] BCP-47 tag for Web Speech (browser STT)
  * @property {string} [uiLang] UI locale id from locales.json (empty = auto-detect browser)
  * @property {string} [progressDefaultRangeId] Settings default Progress range (1W…All)
@@ -434,6 +440,12 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   mealConstituentsEnabled: true,
   servingUnitInferenceMode: "gramsOnly",
   manualActiveEntries: [],
+  showFasting: false,
+  fastingGoalHours: 0,
+  fastingStartedAt: null,
+  fastingLastEndedAt: null,
+  fastingLastFastStartedAt: null,
+  fastingGoalNotified: false,
   speechLang: "",
   uiLang: "",
   progressDefaultRangeId: "1W",

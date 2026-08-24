@@ -1720,4 +1720,33 @@
     <string name="about_made_by">Chompass、著者 fitguy</string>
     <string name="settings_custom_url_placeholder">https://anata-no-endpoint.com/v1</string>
     <string name="speech_key_placeholder_deepgram">トークン あなたの-deepgram-キー</string>
+    <string name="fasting">ファスティング</string>
+    <string name="fasting_idle">進行中のファスティングはありません</string>
+    <string name="fasting_goal_reached">目標達成</string>
+    <string name="fasting_goal_progress">%1$s · 目標 %2$d 時間</string>
+    <string name="fasting_duration_h_m">%1$d 時間 %2$d 分</string>
+    <string name="fasting_duration_h">%1$d 時間</string>
+    <string name="fasting_duration_m">%1$d 分</string>
+    <string name="fasting_start">ファスティング開始</string>
+    <string name="fasting_stop">ファスティング終了</string>
+    <string name="fasting_cancel">キャンセル</string>
+    <string name="add_food_fasting_section">ファスティング</string>
+    <string name="settings_fasting_title">ファスティング</string>
+    <string name="settings_fasting_intro">ローカルのタイマーで間欠的ファスティングの時間帯を記録できます。いつでも開始・停止・キャンセルでき、目標時間も任意で設定可能。タイマーはこの端末にのみ保存され、同期や書き出しは一切行われません。</string>
+    <string name="settings_fasting_section_tracking">記録</string>
+    <string name="settings_fasting_tracking">ファスティングタイマー</string>
+    <string name="settings_fasting_goal">目標時間</string>
+    <string name="settings_fasting_goal_summary_none">目標なし</string>
+    <string name="settings_fasting_goal_summary">%1$d 時間</string>
+    <string name="settings_fasting_goal_wheel_help">目標に到達すると通知が1回送信されます。0 = 目標なし。</string>
+    <string name="settings_fasting_section_notification">通知</string>
+    <string name="settings_fasting_notification">目標達成</string>
+    <string name="fasting_local_only_note">ファスティングタイマーはこの端末にのみ保存されます。同期・書き出し・共有メニューへの組み込みは一切行われません。Chompassが送信するのは目標達成通知のみです。</string>
+    <string name="shortcut_fasting_short">ファスティング</string>
+    <string name="shortcut_fasting_long">ファスティングを開始または終了</string>
+    <string name="fasting_goal_unit_h">時間</string>
+    <string name="notif_channel_fasting">ファスティング</string>
+    <string name="notif_channel_fasting_desc">ファスティング目標達成時の1回限りの通知。</string>
+    <string name="notif_fasting_goal_title">ファスティング目標達成</string>
+    <string name="notif_fasting_goal_text">%1$d 時間のファスティングが完了しました。そろそろ食事を始められます。</string>
 </resources>

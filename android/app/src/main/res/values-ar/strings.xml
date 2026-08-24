@@ -1726,4 +1726,33 @@
     </plurals>
     <string name="settings_custom_url_placeholder">https://endpoint-khas.com/v1</string>
     <string name="speech_key_placeholder_deepgram">رمز مفتاح-deepgram-الخاص بك</string>
+    <string name="fasting">صيام</string>
+    <string name="fasting_idle">لا يوجد صيام نشط</string>
+    <string name="fasting_goal_reached">تم بلوغ الهدف</string>
+    <string name="fasting_goal_progress">%1$s · الهدف %2$d ساعة</string>
+    <string name="fasting_duration_h_m">%1$d س %2$d د</string>
+    <string name="fasting_duration_h">%1$d س</string>
+    <string name="fasting_duration_m">%1$d د</string>
+    <string name="fasting_start">بدء الصيام</string>
+    <string name="fasting_stop">إنهاء الصيام</string>
+    <string name="fasting_cancel">إلغاء</string>
+    <string name="add_food_fasting_section">صيام</string>
+    <string name="settings_fasting_title">صيام</string>
+    <string name="settings_fasting_intro">تتبّع نوافذ الصيام المتقطع بمؤقّت محلي: ابدأ أو أوقف أو ألغِ في أي وقت، مع مدة هدف اختيارية. يبقى المؤقّت على هذا الجهاز ولا تتم مزامنته أو تصديره أبدًا.</string>
+    <string name="settings_fasting_section_tracking">التتبّع</string>
+    <string name="settings_fasting_tracking">مؤقّت الصيام</string>
+    <string name="settings_fasting_goal">مدة الهدف</string>
+    <string name="settings_fasting_goal_summary_none">بلا هدف</string>
+    <string name="settings_fasting_goal_summary">%1$d ساعة</string>
+    <string name="settings_fasting_goal_wheel_help">يُرسَل إشعار واحد عند بلوغ الهدف. 0 = بلا هدف.</string>
+    <string name="settings_fasting_section_notification">الإشعارات</string>
+    <string name="settings_fasting_notification">بلوغ الهدف</string>
+    <string name="fasting_local_only_note">يبقى مؤقّت الصيام على هذا الجهاز — لا تتم مزامنته أو تصديره أو تضمينه في الوجبات المشتركة. إشعار بلوغ الهدف هو الشيء الوحيد الذي ينشره Chompass عنه.</string>
+    <string name="shortcut_fasting_short">صيام</string>
+    <string name="shortcut_fasting_long">بدء أو إيقاف الصيام</string>
+    <string name="fasting_goal_unit_h">س</string>
+    <string name="notif_channel_fasting">صيام</string>
+    <string name="notif_channel_fasting_desc">ملاحظة لمرة واحدة عند بلوغ هدف الصيام.</string>
+    <string name="notif_fasting_goal_title">تم بلوغ هدف الصيام</string>
+    <string name="notif_fasting_goal_text">اكتمل صيامك البالغ %1$d ساعة — يمكنك الإفطار الآن.</string>
 </resources>

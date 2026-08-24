@@ -1647,4 +1647,33 @@ LBM = вага × (1 − %жиру)</string>
     </plurals>
     <string name="nutrient_short_caffeine">Кофеїн</string>
     <string name="nutrient_short_omega">Омега</string>
+    <string name="fasting">Пост</string>
+    <string name="fasting_idle">Немає активного посту</string>
+    <string name="fasting_goal_reached">Мета досягнута</string>
+    <string name="fasting_goal_progress">%1$s · мета %2$d год</string>
+    <string name="fasting_duration_h_m">%1$d год %2$d хв</string>
+    <string name="fasting_duration_h">%1$d год</string>
+    <string name="fasting_duration_m">%1$d хв</string>
+    <string name="fasting_start">Почати пост</string>
+    <string name="fasting_stop">Завершити пост</string>
+    <string name="fasting_cancel">Скасувати</string>
+    <string name="add_food_fasting_section">Пост</string>
+    <string name="settings_fasting_title">Пост</string>
+    <string name="settings_fasting_intro">Відстежуйте вікна інтервального голодування за допомогою локального таймера: починайте, зупиняйте або скасовуйте будь-коли, з необов\'язковою цільовою тривалістю. Таймер залишається на цьому пристрої й ніколи не синхронізується та не експортується.</string>
+    <string name="settings_fasting_section_tracking">Відстеження</string>
+    <string name="settings_fasting_tracking">Таймер посту</string>
+    <string name="settings_fasting_goal">Цільова тривалість</string>
+    <string name="settings_fasting_goal_summary_none">Без цілі</string>
+    <string name="settings_fasting_goal_summary">%1$d год</string>
+    <string name="settings_fasting_goal_wheel_help">Після досягнення цілі надсилається одне сповіщення. 0 = без цілі.</string>
+    <string name="settings_fasting_section_notification">Сповіщення</string>
+    <string name="settings_fasting_notification">Мета досягнута</string>
+    <string name="fasting_local_only_note">Таймер посту залишається на цьому пристрої — він ніколи не синхронізується, не експортується та не додається до спільних прийомів їжі. Єдине, що Chompass публікує про нього, — сповіщення про досягнення цілі.</string>
+    <string name="shortcut_fasting_short">Пост</string>
+    <string name="shortcut_fasting_long">Почати або зупинити пост</string>
+    <string name="fasting_goal_unit_h">год</string>
+    <string name="notif_channel_fasting">Пост</string>
+    <string name="notif_channel_fasting_desc">Одноразове сповіщення про досягнення цілі посту.</string>
+    <string name="notif_fasting_goal_title">Ціль посту досягнута</string>
+    <string name="notif_fasting_goal_text">Ваш %1$d-годинний пост завершено — тепер можна перервати пост.</string>
 </resources>

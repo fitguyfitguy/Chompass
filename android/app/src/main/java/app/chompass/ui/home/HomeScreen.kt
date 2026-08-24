@@ -320,6 +320,12 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                 ShortcutEntryAction.BARCODE -> openBarcodeScanner()
                 ShortcutEntryAction.VOICE ->
                     if (aiFeaturesEnabled) return@repeatOnLifecycle else clearShortcut(ShortcutEntryAction.VOICE)
+                // #182: launcher long-press toggles the fast and clears immediately —
+                // there is no destination UI, so the sticky-inbox rule doesn't apply.
+                ShortcutEntryAction.FASTING -> {
+                    vm.toggleFast()
+                    clearShortcut(ShortcutEntryAction.FASTING)
+                }
                 null -> return@repeatOnLifecycle
             }
         }
@@ -521,6 +527,19 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                             current = ui.nicotineTodayCount,
                             limit = ui.nicotineDailyLimit,
                             onClick = { showNicotineHistory = true },
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                        )
+                    }
+                    if (ui.fastingEnabled) {
+                        Spacer(Modifier.height(12.dp))
+                        FastingProgressRow(
+                            active = ui.fastingActive,
+                            elapsedMillis = ui.fastingElapsedMillis,
+                            goalHours = ui.fastingGoalHours,
+                            goalReached = ui.fastingGoalReached,
+                            onStart = vm::startFast,
+                            onStop = vm::stopFast,
+                            onCancel = vm::cancelFast,
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )
                     }
@@ -841,6 +860,14 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             nicotineQuickKinds = ui.nicotineQuickKinds,
             onNicotine = { kind -> vm.addNicotine(kind) },
             onNicotineCustom = { showNicotineCustom = true },
+            fastingEnabled = ui.fastingEnabled,
+            fastingActive = ui.fastingActive,
+            fastingElapsedMillis = ui.fastingElapsedMillis,
+            fastingGoalHours = ui.fastingGoalHours,
+            fastingGoalReached = ui.fastingGoalReached,
+            onStartFast = vm::startFast,
+            onStopFast = vm::stopFast,
+            onCancelFast = vm::cancelFast,
             onRelogRecent = { vm.relogMeal(it) },
             onReviewRecent = { vm.reviewSavedMeal(it) },
             onDismiss = {
