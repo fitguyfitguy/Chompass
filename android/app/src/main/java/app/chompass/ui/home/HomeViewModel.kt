@@ -221,7 +221,7 @@ data class HomeUiState(
     val fastingEnabled: Boolean = false,
     val fastingGoalHours: Int = 0,
     val fastingEatHours: Int = 0,
-    val fastingAutoWindows: Boolean = false,
+    val fastingAutoWindows: Boolean = true,
     val fastingPhase: FastingPhase = FastingPhase.IDLE,
     /** Elapsed millis of the running fast; ticked each minute by the VM. */
     val fastingElapsedMillis: Long = 0L,
@@ -1316,7 +1316,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             val windowEnds = s.eatingWindowEndsAtMillis(eat, now)
             val nextFastStart = when {
                 s.isFasting -> null
-                auto -> nextFastingStartMillis(
+                // Auto cycle needs a goal length to be meaningful (the fast
+                // would never end otherwise); without one, fall back to the
+                // relative eating-window anchor so the bar still counts down.
+                auto && goal > 0 -> nextFastingStartMillis(
                     container.prefs.fastingStartHour.first(),
                     container.prefs.fastingStartMinute.first(),
                     now,

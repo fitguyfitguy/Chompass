@@ -517,7 +517,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                             nowMillis = ui.fastingNowMillis,
                             goalReached = ui.fastingGoalReached,
                             autoStarted = ui.fastingAutoStarted,
-                            autoMode = ui.fastingAutoWindows,
+                            autoMode = ui.fastingAutoWindows && ui.fastingGoalHours > 0,
                             onStart = vm::startFast,
                             onStop = vm::stopFast,
                             modifier = Modifier.padding(horizontal = 16.dp),

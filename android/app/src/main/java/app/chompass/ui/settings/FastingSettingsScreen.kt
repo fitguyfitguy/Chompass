@@ -101,7 +101,7 @@ fun FastingSettingsScreen(
                         icon = Icons.Outlined.Schedule,
                     ) { sheet = SettingsSheet.FASTING_END_LEAD }
                 }
-                if (ui.fastingEatHours > 0) {
+                if (ui.fastingGoalHours > 0) {
                     HorizontalDivider()
                     ToggleRow(
                         stringResource(R.string.settings_fasting_auto_windows),
@@ -111,7 +111,7 @@ fun FastingSettingsScreen(
                     )
                     SettingFootnote(stringResource(R.string.settings_fasting_auto_windows_help))
                 }
-                if (ui.fastingEatHours > 0) {
+                if (ui.fastingGoalHours > 0 && (ui.fastingEatHours > 0 || ui.fastingAutoWindows)) {
                     HorizontalDivider()
                     ToggleRow(
                         stringResource(R.string.settings_fasting_start_reminder),

@@ -74,9 +74,10 @@ internal suspend fun PreferencesStore.setFastingSessionFieldsImpl(
     }
 }
 
-/** Auto-cycle toggle (off by default); needs an eating window to anchor to. */
+/** Auto-cycle toggle (on by default — the fasting default when enabled); the
+ *  cycle only acts once a goal length is set. */
 internal val PreferencesStore.fastingAutoWindowsImpl: Flow<Boolean>
-    get() = boolPref(Keys.FASTING_AUTO_WINDOWS, false)
+    get() = boolPref(Keys.FASTING_AUTO_WINDOWS, true)
 internal suspend fun PreferencesStore.setFastingAutoWindowsImpl(v: Boolean) =
     setBoolPref(Keys.FASTING_AUTO_WINDOWS, v)
 
