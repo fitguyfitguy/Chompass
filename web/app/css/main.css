@@ -976,6 +976,58 @@ main.view {
   transition: width 280ms ease-out;
 }
 
+/* —— Day note (Codeberg #58a) —— */
+.note-row {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.note-row__top strong {
+  font-size: 0.9rem;
+}
+
+.note-row__input {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  padding: 0.55rem 0.65rem;
+  font: inherit;
+  background: var(--surface);
+  color: inherit;
+}
+
+.note-row__input:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+.note-row__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.note-row__empty {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.35rem 0.25rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.note-row__empty:hover {
+  color: var(--text);
+}
+
 .water-presets {
   display: flex;
   gap: 0.35rem;
