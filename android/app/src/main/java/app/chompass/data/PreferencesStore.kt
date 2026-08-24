@@ -11,6 +11,8 @@ import app.chompass.models.FoodEntry
 import app.chompass.models.HeuristicServingUnitSettings
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.ManualActiveEntry
+import app.chompass.models.NicotineEntry
+import app.chompass.models.NicotineKind
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.PendingFoodAnalysisDraft
 import app.chompass.models.PendingFoodInputDraft
@@ -54,6 +56,15 @@ class PreferencesStore(private val appContext: Context) {
             serializer = WaterEntry.serializer(),
             idOf = { it.id },
             order = compareBy(WaterEntry::date),
+        )
+    }
+    internal val nicotineBucketStore by lazy {
+        JsonBucketStore(
+            root = File(appContext.filesDir, "chompass-buckets/nicotine"),
+            json = json,
+            serializer = NicotineEntry.serializer(),
+            idOf = { it.id },
+            order = compareBy(NicotineEntry::date),
         )
     }
     internal val weightBucketStore by lazy {
@@ -194,6 +205,19 @@ class PreferencesStore(private val appContext: Context) {
         upsertsByMonth: Map<YearMonth, List<WaterEntry>> = emptyMap(),
         removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),
     ) = applyWaterBucketChangesImpl(upsertsByMonth, removalIdsByMonth)
+    val nicotineTrackingEnabled: Flow<Boolean> get() = nicotineTrackingEnabledImpl
+    suspend fun setNicotineTrackingEnabled(v: Boolean) = setNicotineTrackingEnabledImpl(v)
+    val nicotineDailyLimit: Flow<Int> get() = nicotineDailyLimitImpl
+    suspend fun setNicotineDailyLimit(v: Int) = setNicotineDailyLimitImpl(v)
+    val nicotineQuickKinds: Flow<List<NicotineKind>> get() = nicotineQuickKindsImpl
+    suspend fun setNicotineQuickKinds(kinds: List<NicotineKind>) = setNicotineQuickKindsImpl(kinds)
+    val nicotineEntries: Flow<List<NicotineEntry>> get() = nicotineEntriesImpl
+    suspend fun setNicotineEntries(entries: List<NicotineEntry>) = setNicotineEntriesImpl(entries)
+    /** Month-scoped nicotine write (one bucket file). */
+    suspend fun applyNicotineBucketChanges(
+        upsertsByMonth: Map<YearMonth, List<NicotineEntry>> = emptyMap(),
+        removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),
+    ) = applyNicotineBucketChangesImpl(upsertsByMonth, removalIdsByMonth)
     val manualActiveEntries: Flow<List<ManualActiveEntry>> get() = manualActiveEntriesImpl
     suspend fun setManualActiveEntries(entries: List<ManualActiveEntry>) = setManualActiveEntriesImpl(entries)
     val lastNotifiedUpdateVersion: Flow<String?> get() = lastNotifiedUpdateVersionImpl

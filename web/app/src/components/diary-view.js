@@ -1,5 +1,5 @@
 // @ts-check
-import { foodEntries, profile as profileStore, water, prefs } from "../lib/db.js";
+import { foodEntries, profile as profileStore, water, nicotine, prefs } from "../lib/db.js";
 import { dailyTargets, estimatedDailyActiveCalories } from "../lib/chompass-core/formulas.js";
 import { openSheet } from "../lib/ui/sheet.js";
 import { openConfirm, openInfo, openInput } from "../lib/ui/dialog.js";
@@ -55,6 +55,8 @@ import {
 const MEAL_LABELS = { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack" };
 const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack"];
 const WATER_PRESETS = [250, 500, 750];
+/** PWA quick chips mirror Android NicotineKind.DefaultQuickKinds. */
+const NICOTINE_QUICK_KINDS = ["cigarette", "vape", "pouch"];
 const HOME_DATE_KEY = "chompass-home-date";
 
 /** Lazy-load the photo AI flow (camera + AI stack) only when used — the demo
@@ -422,6 +424,7 @@ export class DiaryView extends HTMLElement {
       prefs.load(),
       manualActiveKcalForDate(this.date),
     ]);
+    const nicotineLogs = await nicotine.byDate(this.date);
 
     const totals = entries.reduce(
       (acc, e) => {
@@ -458,6 +461,10 @@ export class DiaryView extends HTMLElement {
     const waterGoal = appPrefs.waterGoalMl ?? 2000;
     const waterPct = waterGoal > 0 ? Math.min(100, (waterMl / waterGoal) * 100) : 0;
     const showWater = appPrefs.showWater === true;
+    const nicotineCount = nicotineLogs.reduce((s, n) => s + (n.count ?? 1), 0);
+    const nicotineLimit = appPrefs.nicotineDailyLimit ?? 0;
+    const nicotinePct = nicotineLimit > 0 ? Math.min(100, (nicotineCount / nicotineLimit) * 100) : 0;
+    const showNicotine = appPrefs.showNicotine === true;
     // #38 (Android parity): in ADD_ACTIVE the ring target can sit above the
     // stored base (manual kcal stacked on the estimate); scale the macro
     // goals to the ring so cards and gauge never disagree. Typical days
@@ -610,6 +617,32 @@ export class DiaryView extends HTMLElement {
           : ""
       }
 
+      ${
+        showNicotine
+          ? `<div class="card card--glass water-row nicotine-row">
+              <div class="water-row__top">
+                <div class="water-row__meta">${
+                  nicotineLimit > 0
+                    ? `<strong>${nicotineCount}</strong> / ${nicotineLimit} nicotine`
+                    : `<strong>${nicotineCount}</strong> logged`
+                }</div>
+                <div class="water-presets">
+                  ${NICOTINE_QUICK_KINDS.map((kind) => `<button type="button" class="chip" data-nicotine="${kind}">+1 ${kind}</button>`).join("")}
+                  <button type="button" class="chip" data-nicotine-custom>Custom</button>
+                  ${nicotineLogs.length ? `<button type="button" class="chip chip--ghost" data-nicotine-undo title="Remove last log">Undo</button>` : ""}
+                </div>
+              </div>
+              ${
+                nicotineLimit > 0
+                  ? `<div class="water-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${nicotineLimit}" aria-valuenow="${nicotineCount}" aria-label="Nicotine intake">
+                      <span data-width="${nicotinePct.toFixed(1)}%"></span>
+                    </div>`
+                  : ""
+              }
+            </div>`
+          : ""
+      }
+
       ${progressiveChip ? `<div class="progressive-meal-bar">${progressiveChip}</div>` : ""}
 
       ${
@@ -625,7 +658,7 @@ export class DiaryView extends HTMLElement {
 
     this._gaugeInfo = gaugeInfo;
     this._gaugeGoal = calorieTarget;
-    this.bindInteractions(entries, appPrefs, macroTargets, optionalGoals, waterLogs);
+    this.bindInteractions(entries, appPrefs, macroTargets, optionalGoals, waterLogs, nicotineLogs);
     this.animateFills();
     requestAnimationFrame(() => this.scrollWeekPagerTo(selectedWeekIndex));
     this.afterHomeRender(appPrefs);
@@ -657,7 +690,7 @@ export class DiaryView extends HTMLElement {
    * @param {import('../lib/db.js').OptionalNutrientGoals} optionalGoals
    * @param {{id: string, date: string, amountMl: number}[]} waterLogs
    */
-  bindInteractions(entries, appPrefs, targets, optionalGoals, waterLogs) {
+  bindInteractions(entries, appPrefs, targets, optionalGoals, waterLogs, nicotineLogs) {
     this.querySelectorAll("[data-date]").forEach((el) => {
       el.addEventListener("click", () => {
         const iso = el.getAttribute("data-date") || this.date;
@@ -671,6 +704,11 @@ export class DiaryView extends HTMLElement {
     });
     this.querySelector("[data-water-custom]")?.addEventListener("click", () => this.customWater());
     this.querySelector("[data-water-undo]")?.addEventListener("click", () => this.undoLastWater(waterLogs));
+    this.querySelectorAll("[data-nicotine]").forEach((el) => {
+      el.addEventListener("click", () => this.addNicotine(String(el.getAttribute("data-nicotine"))));
+    });
+    this.querySelector("[data-nicotine-custom]")?.addEventListener("click", () => this.customNicotine());
+    this.querySelector("[data-nicotine-undo]")?.addEventListener("click", () => this.undoLastNicotine(nicotineLogs));
     this.querySelectorAll("[data-nutrition-detail]").forEach((el) => {
       el.addEventListener("click", () => {
         this.openNutritionDetail(entries, targets, optionalGoals);
@@ -1662,6 +1700,41 @@ export class DiaryView extends HTMLElement {
 
   async addWater(amountMl) {
     await water.put({ id: crypto.randomUUID(), date: this.date, amountMl });
+    this.render();
+  }
+
+  /** @param {string} kind */
+  async addNicotine(kind) {
+    await nicotine.put({ id: crypto.randomUUID(), date: this.date, kind, count: 1, mg: null });
+    this.render();
+  }
+
+  async customNicotine() {
+    const raw = await openInput({
+      title: "Add nicotine",
+      label: "Count",
+      value: "1",
+      unit: "",
+      inputMode: "numeric",
+      type: "number",
+      confirmLabel: "Add",
+    });
+    if (raw == null) return;
+    const count = Number(raw);
+    if (count > 0) {
+      await nicotine.put({ id: crypto.randomUUID(), date: this.date, kind: "cigarette", count, mg: null });
+      this.render();
+    }
+  }
+
+  /**
+   * @param {{id: string, date: string, count?: number}[]} nicotineLogs
+   */
+  async undoLastNicotine(nicotineLogs) {
+    if (!nicotineLogs.length) return;
+    const last = nicotineLogs[nicotineLogs.length - 1];
+    await nicotine.delete(last.id);
+    this.showToast(`Removed ${last.count ?? 1}`);
     this.render();
   }
 

@@ -77,6 +77,7 @@ import app.chompass.R
 import app.chompass.data.QuickRelogRows
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
+import app.chompass.models.NicotineEntry
 import app.chompass.models.WaterAmountFormat
 import app.chompass.models.WaterEntry
 import app.chompass.services.FoodPhotoSession
@@ -142,6 +143,9 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     var showCustomWaterLog by rememberSaveable { mutableStateOf(false) }
     var showWaterHistory by rememberSaveable { mutableStateOf(false) }
     var editingWaterEntry by remember { mutableStateOf<WaterEntry?>(null) }
+    var showNicotineCustom by rememberSaveable { mutableStateOf(false) }
+    var showNicotineHistory by rememberSaveable { mutableStateOf(false) }
+    var editingNicotineEntry by remember { mutableStateOf<NicotineEntry?>(null) }
     var showManualActive by rememberSaveable { mutableStateOf(false) }
     var showGroundedEntry by rememberSaveable { mutableStateOf(false) }
     var showFoodSearch by rememberSaveable { mutableStateOf(false) }
@@ -510,6 +514,15 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )
                     }
+                    if (ui.nicotineTrackingEnabled) {
+                        Spacer(Modifier.height(12.dp))
+                        NicotineProgressRow(
+                            current = ui.nicotineTodayCount,
+                            limit = ui.nicotineDailyLimit,
+                            onClick = { showNicotineHistory = true },
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                        )
+                    }
                     Box(
                         Modifier
                             .fillMaxWidth()
@@ -814,6 +827,10 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             queuePendingCount = ui.queuePendingCount,
             onWater = { ml -> vm.addWater(ml) },
             onWaterCustom = { showCustomWaterLog = true },
+            nicotineTrackingEnabled = ui.nicotineTrackingEnabled,
+            nicotineQuickKinds = ui.nicotineQuickKinds,
+            onNicotine = { kind -> vm.addNicotine(kind) },
+            onNicotineCustom = { showNicotineCustom = true },
             onRelogRecent = { vm.relogMeal(it) },
             onReviewRecent = { vm.reviewSavedMeal(it) },
             onDismiss = {
@@ -893,6 +910,31 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             useMetric = ui.weightMetric,
             onDismiss = { editingWaterEntry = null },
             onSave = { ml -> vm.updateWater(entry.id, ml) },
+        )
+    }
+
+    if (showNicotineCustom) {
+        NicotineCustomCountSheet(
+            onDismiss = { showNicotineCustom = false },
+            onAdd = { kind, count, mg -> vm.addNicotine(kind, count, mg) },
+        )
+    }
+
+    if (showNicotineHistory) {
+        NicotineHistorySheet(
+            day = ui.date,
+            entries = ui.nicotineTodayEntries,
+            onDismiss = { showNicotineHistory = false },
+            onEdit = { editingNicotineEntry = it },
+            onDelete = { vm.deleteNicotine(it.id) },
+        )
+    }
+
+    editingNicotineEntry?.let { entry ->
+        NicotineEditSheet(
+            entry = entry,
+            onDismiss = { editingNicotineEntry = null },
+            onSave = { kind, count, mg -> vm.updateNicotine(entry.id, kind, count, mg) },
         )
     }
 

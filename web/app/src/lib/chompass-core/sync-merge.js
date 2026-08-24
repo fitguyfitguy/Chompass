@@ -144,6 +144,7 @@ const LIST_KEYS = [
   "body_fat",
   "measurements",
   "water",
+  "nicotine_entries",
   "recipes",
 ];
 

@@ -960,6 +960,10 @@ main.view {
 .water-row__meta { font-size: 0.9rem; }
 .water-row__meta strong { color: var(--water); }
 
+/* Optional nicotine tracker row: same shape as water, amber accent. */
+.nicotine-row .water-row__meta strong { color: var(--nicotine, #b08040); }
+.nicotine-row .water-bar > span { background: var(--nicotine, #b08040); }
+
 .water-bar {
   height: 0.35rem;
   border-radius: 999px;

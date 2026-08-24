@@ -70,6 +70,10 @@ internal object Keys {
         val WEATHER_OM_UPDATED_AT = longPreferencesKey("weatherOmUpdatedAt")
         val WATER_QUICK_PRESETS_ML = stringPreferencesKey("waterQuickPresetsMl")
         val WATER_ENTRIES = stringPreferencesKey("waterEntries")
+        // Optional nicotine tracker (docs/local/PLAN_NICOTINE_TRACKER.md).
+        val NICOTINE_TRACKING_ENABLED = booleanPreferencesKey("nicotineTrackingEnabled")
+        val NICOTINE_DAILY_LIMIT = intPreferencesKey("nicotineDailyLimit")
+        val NICOTINE_QUICK_KINDS = stringPreferencesKey("nicotineQuickKinds")
         val MANUAL_ACTIVE_ENTRIES = stringPreferencesKey("manualActiveEntries")
         val LAST_NOTIFIED_UPDATE_VERSION = stringPreferencesKey("lastNotifiedUpdateVersion")
         val HEALTH_CONNECT_ENABLED = booleanPreferencesKey("healthConnectEnabled")

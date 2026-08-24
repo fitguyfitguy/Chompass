@@ -110,6 +110,9 @@ export const DEFAULT_NUTRIENT_CARD_COUNT = 4;
 /** Android-aligned non-nutrient prefs used by db.js DEFAULT_PREFS. */
 export const ANDROID_PREF_DEFAULTS = {
   showWater: false,
+  showNicotine: false,
+  nicotineDailyLimit: 0,
+  nicotineQuickKinds: ["cigarette", "vape", "pouch"],
   waterGoalMl: 2000,
   aiFallbackEnabled: true,
   fallbackAiProvider: "gemini",
