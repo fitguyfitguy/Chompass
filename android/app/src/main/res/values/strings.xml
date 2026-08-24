@@ -532,6 +532,8 @@
     <string name="fasting_preset_detail">%1$d h fasting · %2$d h eating window</string>
     <string name="fasting_window_opens_in">Eating window opens in %1$s</string>
     <string name="fasting_fast_starts_in">Fast starts in %1$s</string>
+    <string name="fasting_fast_starts_at">Fast starts at %1$s · in %2$s</string>
+    <string name="fasting_next_fast_at">Next fast at %1$s</string>
     <string name="fasting_eating_progress">%1$s of %2$d h eating</string>
     <string name="fasting_start">Start fast</string>
     <string name="fasting_stop">Stop fast</string>
@@ -554,6 +556,8 @@
     <string name="settings_fasting_start_reminder">Start reminder</string>
     <string name="settings_fasting_auto_windows">Auto fast windows</string>
     <string name="settings_fasting_auto_windows_help">When on, your fast starts automatically the moment your eating window closes and ends when it reaches the goal. You can still start one manually. Auto-started fasts show no buttons on Home.</string>
+    <string name="settings_fasting_start_time">Fast start time</string>
+    <string name="settings_fasting_start_time_help">Auto fast windows start your fast at this time each day. The start reminder fires the lead time before it.</string>
     <string name="settings_fasting_reminder_lead_end">Before the fast ends</string>
     <string name="settings_fasting_reminder_lead_start">Before the fast starts</string>
     <string name="settings_fasting_reminder_lead_unit">min</string>
@@ -2203,7 +2207,9 @@
     <string name="notif_fasting_start_title">Start your fast</string>
     <string name="notif_fasting_start_text">Start your fast now.</string>
     <string name="notif_fasting_start_soon_title">Fast starts soon</string>
+    <string name="notif_fasting_start_soon_auto_title">Fast starts soon</string>
     <string name="notif_fasting_start_soon_text">Your eating window closes in %1$d min — start your fast then.</string>
+    <string name="notif_fasting_start_soon_auto">Your fast starts in %1$d min — no need to do anything.</string>
     <string name="notif_update_title">Update available</string>
     <string name="notif_update_text">A new version of Chompass is ready. Tap to update.</string>
     <string name="settings_calc_intro">Your daily calorie and macro targets start from the formulas below. They are never set below your estimated resting calories or 1,200 kcal. When you tap Recalculate Goals, or automatically about once a week if Adaptive Goals is on, Chompass can refine them using your logs and your AI provider, but not below that floor.</string>

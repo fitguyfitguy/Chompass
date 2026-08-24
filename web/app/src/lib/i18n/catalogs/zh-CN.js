@@ -83,6 +83,8 @@ export const zh_CN = Object.freeze({
   "diary.fasting_window_opens_in": "进食窗口将在 {remaining} 后开启",
   "diary.fasting_eating_progress": "进食 {eat} 小时中的 {elapsed}",
   "diary.fasting_fast_starts_in": "禁食将在 {remaining} 后开始",
+  "diary.fasting_fast_starts_at": "禁食于 {time} 开始 · {remaining} 后",
+  "diary.fasting_next_fast_at": "下次禁食于 {time}",
   "diary.note_title": "每日笔记",
   "diary.note_empty": "为这一天添加笔记",
   "diary.note_save": "保存",

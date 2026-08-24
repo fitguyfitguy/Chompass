@@ -1782,4 +1782,10 @@
     <string name="fasting_auto_tag">تلقائي</string>
     <string name="settings_fasting_auto_windows">نوافذ صيام تلقائية</string>
     <string name="settings_fasting_auto_windows_help">عند التشغيل، يبدأ صيامك تلقائيًا لحظة إغلاق نافذة الأكل وينتهي عند بلوغ الهدف. يمكنك أيضًا البدء يدويًا. الصيام التلقائي لا يعرض أزرارًا في الشاشة الرئيسية.</string>
+    <string name="fasting_fast_starts_at">يبدأ الصيام في %1$s · خلال %2$s</string>
+    <string name="fasting_next_fast_at">الصيام القادم في %1$s</string>
+    <string name="settings_fasting_start_time">وقت بدء الصيام</string>
+    <string name="settings_fasting_start_time_help">تبدأ نوافذ الصيام التلقائية صيامك في هذا الوقت يوميًا. يُرسَل تذكير البدء قبل هذا الوقت بالمدة المحددة.</string>
+    <string name="notif_fasting_start_soon_auto_title">يبدأ الصيام قريبًا</string>
+    <string name="notif_fasting_start_soon_auto">يبدأ صيامك خلال %1$d دقيقة — لا حاجة لأي إجراء.</string>
 </resources>

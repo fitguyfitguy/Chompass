@@ -83,6 +83,8 @@ export const ro = Object.freeze({
   "diary.fasting_window_opens_in": "Fereastra de mese se deschide în {remaining}",
   "diary.fasting_eating_progress": "{elapsed} din {eat} h de mese",
   "diary.fasting_fast_starts_in": "Postul începe în {remaining}",
+  "diary.fasting_fast_starts_at": "Postul începe la {time} · în {remaining}",
+  "diary.fasting_next_fast_at": "Următorul post la {time}",
   "diary.note_title": "Nota zilei",
   "diary.note_empty": "Adaugă o notă pentru această zi",
   "diary.note_save": "Salvează",

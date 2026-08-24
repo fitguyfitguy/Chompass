@@ -87,6 +87,16 @@ const OPTIONAL_GOAL_FIELDS = Object.keys(DEFAULT_OPTIONAL_NUTRIENT_GOALS).map((k
 });
 
 /** Parent hash for nested settings pages (mirrors Android hub groups). */
+/** "HH:MM" (or "HH:MM:SS") from an <input type=time> → pref patch, or {} when empty. */
+function parseFastStartTime(raw) {
+  const m = /^(\d{1,2}):(\d{2})/.exec(String(raw ?? ""));
+  if (!m) return {};
+  return {
+    fastingStartHour: Math.min(23, Math.max(0, Number(m[1]))),
+    fastingStartMinute: Math.min(59, Math.max(0, Number(m[2]))),
+  };
+}
+
 const SETTINGS_PARENT = {
   personal: "#/settings",
   profile: "#/settings",
@@ -784,6 +794,11 @@ export class SettingsView extends HTMLElement {
           </div>
         </div>
         <div class="field">
+          <label for="fastingStartHour">Fast start time</label>
+          <input id="fastingStartTime" name="fastingStartTime" type="time" value="${String(p.fastingStartHour ?? 20).padStart(2, "0")}:${String(p.fastingStartMinute ?? 0).padStart(2, "0")}" />
+          <p class="nutrient-picker__hint">Auto fast windows start your fast at this time each day.</p>
+        </div>
+        <div class="field">
           <label for="fastingAutoWindows">Auto fast windows</label>
           <select id="fastingAutoWindows" name="fastingAutoWindows">
             <option value="false" ${p.fastingAutoWindows !== true ? "selected" : ""}>Off</option>
@@ -857,7 +872,8 @@ export class SettingsView extends HTMLElement {
         showFasting: fd.get("showFasting") === "true",
         fastingGoalHours: Math.min(48, Math.max(0, Number(fd.get("fastingGoalHours") || 0))),
         fastingEatHours: Math.min(24, Math.max(0, Number(fd.get("fastingEatHours") || 0))),
-        fastingAutoWindows: fd.get("fastingAutoWindows") === "true",        calorieGaugeMode: /** @type {any} */ (fd.get("calorieGaugeMode")),
+        fastingAutoWindows: fd.get("fastingAutoWindows") === "true",
+        ...parseFastStartTime(fd.get("fastingStartTime")),        calorieGaugeMode: /** @type {any} */ (fd.get("calorieGaugeMode")),
         adaptiveGoals: fd.get("adaptiveGoals") === "true",
         homeNutrientCardCount: cardCount,
         homeTopNutrients: normalizeHomeTopNutrients(tubeRaw, cardCount),

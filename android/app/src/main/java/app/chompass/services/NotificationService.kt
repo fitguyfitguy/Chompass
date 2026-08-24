@@ -288,19 +288,19 @@ class NotificationService(private val context: Context) {
     fun cancelFastingGoal() = cancel(REQUEST_FASTING_GOAL)
 
     /**
-     * Arms the start-fast nudge to fire at [fireAtMillis] (eating-window end −
-     * lead). The receiver skips it when a fast is already running. Copy is
-     * lead-aware: >0 minutes before the window closes says "starts soon",
-     * 0 says "start now".
+     * Arms the start-fast nudge to fire at [fireAtMillis] (anchor − lead). The
+     * receiver skips it when a fast is already running. Copy is lead-aware and
+     * mode-aware: [auto] fasts start on their own ("starts in X min"), manual
+     * ones tell the user the eating window is closing.
      */
-    fun scheduleFastingStartReminderAt(fireAtMillis: Long, leadMinutes: Int) {
-        val text = if (leadMinutes > 0) {
-            context.getString(R.string.notif_fasting_start_soon_text, leadMinutes)
-        } else {
-            context.getString(R.string.notif_fasting_start_text)
+    fun scheduleFastingStartReminderAt(fireAtMillis: Long, leadMinutes: Int, auto: Boolean = false) {
+        val text = when {
+            auto -> context.getString(R.string.notif_fasting_start_soon_auto, leadMinutes)
+            leadMinutes > 0 -> context.getString(R.string.notif_fasting_start_soon_text, leadMinutes)
+            else -> context.getString(R.string.notif_fasting_start_text)
         }
         val title = if (leadMinutes > 0) {
-            context.getString(R.string.notif_fasting_start_soon_title)
+            context.getString(if (auto) R.string.notif_fasting_start_soon_auto_title else R.string.notif_fasting_start_soon_title)
         } else {
             context.getString(R.string.notif_fasting_start_title)
         }

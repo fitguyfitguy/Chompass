@@ -1797,4 +1797,10 @@
     <string name="fasting_auto_tag">Otomatik</string>
     <string name="settings_fasting_auto_windows">Otomatik oruç pencereleri</string>
     <string name="settings_fasting_auto_windows_help">Açıkken, yemek pencereniz kapandığı anda orucunuz otomatik başlar ve hedefe ulaşınca biter. Yine de elle başlatabilirsiniz. Otomatik oruçlarda Ana ekranda düğme görünmez.</string>
+    <string name="fasting_fast_starts_at">Oruç %1$s başlar · %2$s sonra</string>
+    <string name="fasting_next_fast_at">Sonraki oruç %1$s</string>
+    <string name="settings_fasting_start_time">Oruç başlama saati</string>
+    <string name="settings_fasting_start_time_help">Otomatik oruç pencereleri orucu her gün bu saatte başlatır. Başlangıç hatırlatıcısı bundan önce ayarlanan süre kadar erkenden çalar.</string>
+    <string name="notif_fasting_start_soon_auto_title">Oruç yakında başlıyor</string>
+    <string name="notif_fasting_start_soon_auto">Orucunuz %1$d dk sonra başlıyor — yapmanız gereken bir şey yok.</string>
 </resources>

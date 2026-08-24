@@ -14,19 +14,26 @@ import kotlinx.coroutines.flow.first
  * A missed alarm (device off) heals on the next app open via the Home ticker.
  */
 object FastingAutoPlanner {
-    /** Next auto-start = eating-window end, when auto mode is on and a window is open. */
+    /**
+     * Next auto-start = the next occurrence of the daily fast-start clock time
+     * (when auto mode is on and no fast is running). The schedule is the
+     * anchor: a user who enables auto mode at 21:00 with a 20:00 start gets
+     * their fast tomorrow 20:00; one who stops eating at 13:00 starts today
+     * 20:00.
+     */
     suspend fun nextAutoStartFireMillis(
         container: AppContainer,
         nowMillis: Long = System.currentTimeMillis(),
     ): Long? {
         val prefs = container.prefs
         if (!prefs.fastingEnabled.first() || !prefs.fastingAutoWindows.first()) return null
-        val eatHours = prefs.fastingEatHours.first()
-        if (eatHours <= 0) return null
         val session = container.fastingRepository.current()
         if (session.isFasting) return null
-        val windowEnds = session.eatingWindowEndsAtMillis(eatHours, nowMillis) ?: return null
-        return windowEnds
+        return nextFastingStartMillis(
+            hour = prefs.fastingStartHour.first(),
+            minute = prefs.fastingStartMinute.first(),
+            nowMillis = nowMillis,
+        )
     }
 
     /** Next auto-end = goal instant, when auto mode is on and a fast is running. */
@@ -70,7 +77,6 @@ object FastingAutoPlanner {
         val prefs = container.prefs
         if (!prefs.fastingEnabled.first() || !prefs.fastingAutoWindows.first()) return
         val goal = prefs.fastingGoalHours.first()
-        val eat = prefs.fastingEatHours.first()
         val repo = container.fastingRepository
         val now = System.currentTimeMillis()
         val s = repo.current()
@@ -79,10 +85,39 @@ object FastingAutoPlanner {
             if (goal > 0 && s.elapsedMillis(now) >= goal * FastingSession.MILLIS_PER_HOUR) {
                 repo.stop(atGoalMillis = started + goal * FastingSession.MILLIS_PER_HOUR)
             }
-        } else if (eat > 0 && s.lastEndedAtMillis != null &&
-            s.eatingWindowEndsAtMillis(eat, now) == null
-        ) {
-            repo.start(auto = true)
+        } else {
+            val hour = prefs.fastingStartHour.first()
+            val minute = prefs.fastingStartMinute.first()
+            val todayT = nextFastingStartMillis(hour, minute, now)
+            val zone = java.time.ZoneId.systemDefault()
+            val scheduledStart = if (now >= todayT) todayT else todayT - 24 * 60 * 60_000L
+            // Missed-alarm catch-up: the auto-start at [scheduledStart] was
+            // skipped (device off), the user has cycle history, and they last
+            // stopped eating before that scheduled start — so the fast should
+            // already be running. Start it at the scheduled instant so the
+            // cycle stays on the clock. A user who stopped *after* the start
+            // time is in their eating phase and waits for the next one; a
+            // fresh user (no history) waits for the next start time too.
+            val lastEnded = s.lastEndedAtMillis
+            if (lastEnded != null && lastEnded < scheduledStart && now >= scheduledStart) {
+                repo.start(nowMillis = scheduledStart, auto = true)
+            }
         }
     }
+}
+
+/**
+ * Next occurrence of the daily clock time [hour]:[minute] strictly after
+ * [nowMillis] (or equal, if we are exactly at it). Shared by the auto planner
+ * and the start nudge so both agree on "when the fast starts".
+ */
+suspend fun nextFastingStartMillis(
+    hour: Int,
+    minute: Int,
+    nowMillis: Long = System.currentTimeMillis(),
+): Long {
+    val zone = java.time.ZoneId.systemDefault()
+    val now = java.time.Instant.ofEpochMilli(nowMillis).atZone(zone)
+    val today = now.toLocalDate().atTime(hour.coerceIn(0, 23), minute.coerceIn(0, 59)).atZone(zone).toInstant().toEpochMilli()
+    return if (nowMillis <= today) today else today + 24 * 60 * 60_000L
 }

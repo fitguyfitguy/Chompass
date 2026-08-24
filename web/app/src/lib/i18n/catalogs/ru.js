@@ -83,6 +83,8 @@ export const ru = Object.freeze({
   "diary.fasting_window_opens_in": "Окно приёма пищи откроется через {remaining}",
   "diary.fasting_eating_progress": "{elapsed} из {eat} ч приёма пищи",
   "diary.fasting_fast_starts_in": "Пост начнётся через {remaining}",
+  "diary.fasting_fast_starts_at": "Пост начнётся в {time} · через {remaining}",
+  "diary.fasting_next_fast_at": "Следующий пост в {time}",
   "diary.note_title": "Заметка дня",
   "diary.note_empty": "Добавить заметку за этот день",
   "diary.note_save": "Сохранить",

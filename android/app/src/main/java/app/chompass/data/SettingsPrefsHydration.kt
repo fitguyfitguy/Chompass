@@ -53,6 +53,8 @@ internal data class SettingsPrefsHydration(
     val fastingGoalNotificationEnabled: Boolean,
     val fastingEndReminderLeadMinutes: Int,
     val fastingAutoWindows: Boolean,
+    val fastingStartHour: Int,
+    val fastingStartMinute: Int,
     val fastingStartReminderEnabled: Boolean,
     val fastingStartReminderLeadMinutes: Int,
     val waterReminderEnabled: Boolean,
@@ -149,6 +151,8 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
         fastingEndReminderLeadMinutes = (this[Keys.FASTING_END_REMINDER_LEAD_MINUTES]
             ?: DEFAULT_FASTING_END_REMINDER_LEAD_MINUTES).coerceIn(0, MAX_FASTING_REMINDER_LEAD_MINUTES),
         fastingAutoWindows = this[Keys.FASTING_AUTO_WINDOWS] ?: false,
+        fastingStartHour = (this[Keys.FASTING_START_HOUR] ?: DEFAULT_FASTING_START_HOUR).coerceIn(0, 23),
+        fastingStartMinute = (this[Keys.FASTING_START_MINUTE] ?: DEFAULT_FASTING_START_MINUTE).coerceIn(0, 59),
         fastingStartReminderEnabled = this[Keys.FASTING_START_REMINDER_ENABLED] ?: false,
         fastingStartReminderLeadMinutes = (this[Keys.FASTING_START_REMINDER_LEAD_MINUTES]
             ?: DEFAULT_FASTING_START_REMINDER_LEAD_MINUTES).coerceIn(0, MAX_FASTING_REMINDER_LEAD_MINUTES),

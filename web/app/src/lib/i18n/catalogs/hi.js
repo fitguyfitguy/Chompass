@@ -83,6 +83,8 @@ export const hi = Object.freeze({
   "diary.fasting_window_opens_in": "खाने की विंडो {remaining} में खुलेगी",
   "diary.fasting_eating_progress": "खाने के {eat} घंटे में से {elapsed}",
   "diary.fasting_fast_starts_in": "उपवास {remaining} में शुरू होगा",
+  "diary.fasting_fast_starts_at": "उपवास {time} बजे शुरू होगा · {remaining} में",
+  "diary.fasting_next_fast_at": "अगला उपवास {time} बजे",
   "diary.note_title": "दिन का नोट",
   "diary.note_empty": "इस दिन के लिए एक नोट जोड़ें",
   "diary.note_save": "सहेजें",

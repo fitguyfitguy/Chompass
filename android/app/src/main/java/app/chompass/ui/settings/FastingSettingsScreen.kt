@@ -13,11 +13,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.ui.theme.AppTextOpacity
+import app.chompass.ui.util.clockTimePattern
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 /**
  * Optional intermittent-fasting timer settings (docs/local/PLAN_FASTING_TRACKER.md):
@@ -37,6 +42,13 @@ fun FastingSettingsScreen(
     val vm: SettingsViewModel = rememberSettingsViewModel(container, nav)
     val ui by vm.ui.collectAsState()
     var sheet by remember { mutableStateOf<SettingsSheet?>(null) }
+    val context = LocalContext.current
+    val timeFormatter = remember(context) {
+        DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault())
+    }
+    val startReminderTime = remember(ui.fastingStartHour, ui.fastingStartMinute) {
+        LocalTime.of(ui.fastingStartHour, ui.fastingStartMinute).format(timeFormatter)
+    }
 
     SettingsSubScreen(
         title = stringResource(R.string.settings_fasting_title),
@@ -63,6 +75,13 @@ fun FastingSettingsScreen(
                     fastingGoalSummary(ui),
                     icon = Icons.Outlined.Schedule,
                 ) { sheet = SettingsSheet.FASTING_GOAL }
+                HorizontalDivider()
+                SettingRow(
+                    stringResource(R.string.settings_fasting_start_time),
+                    startReminderTime,
+                    icon = Icons.Outlined.Schedule,
+                ) { sheet = SettingsSheet.FASTING_START_TIME }
+                SettingFootnote(stringResource(R.string.settings_fasting_start_time_help))
             }
         }
 
@@ -92,7 +111,7 @@ fun FastingSettingsScreen(
                     )
                     SettingFootnote(stringResource(R.string.settings_fasting_auto_windows_help))
                 }
-                if (!ui.fastingAutoWindows && ui.fastingEatHours > 0) {
+                if (ui.fastingEatHours > 0) {
                     HorizontalDivider()
                     ToggleRow(
                         stringResource(R.string.settings_fasting_start_reminder),

@@ -102,6 +102,9 @@ internal object Keys {
         val FASTING_AUTO_STARTED = booleanPreferencesKey("fastingAutoStarted")
         /** Auto-cycle: fast starts when the eating window closes, ends at the goal. */
         val FASTING_AUTO_WINDOWS = booleanPreferencesKey("fastingAutoWindows")
+        /** Daily fast-start clock time; anchors the auto-cycle and the start nudge. */
+        val FASTING_START_HOUR = intPreferencesKey("fastingStartHour")
+        val FASTING_START_MINUTE = intPreferencesKey("fastingStartMinute")
         val LAST_NOTIFIED_UPDATE_VERSION = stringPreferencesKey("lastNotifiedUpdateVersion")
         val HEALTH_CONNECT_ENABLED = booleanPreferencesKey("healthConnectEnabled")
         val HEALTH_TYPES_VERSION = intPreferencesKey("healthTypesVersion")

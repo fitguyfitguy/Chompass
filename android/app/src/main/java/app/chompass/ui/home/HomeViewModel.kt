@@ -41,6 +41,7 @@ import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WaterEntry
 import app.chompass.services.FoodImageComposer
 import app.chompass.services.FastingAutoPlanner
+import app.chompass.services.nextFastingStartMillis
 import app.chompass.services.FoodPhotoSession
 import app.chompass.services.OpenFoodFactsService
 import app.chompass.services.PerfLog
@@ -220,11 +221,17 @@ data class HomeUiState(
     val fastingEnabled: Boolean = false,
     val fastingGoalHours: Int = 0,
     val fastingEatHours: Int = 0,
+    val fastingAutoWindows: Boolean = false,
     val fastingPhase: FastingPhase = FastingPhase.IDLE,
     /** Elapsed millis of the running fast; ticked each minute by the VM. */
     val fastingElapsedMillis: Long = 0L,
+    /** Wall-clock "now" of the latest tick; lets the bar compute remaining. */
+    val fastingNowMillis: Long = 0L,
     /** Elapsed millis inside the open eating window; ticked each minute. */
     val fastingEatingElapsedMillis: Long = 0L,
+    /** Millis of the next fast start (schedule T in auto mode, eating-window
+     *  end in manual); null while fasting or with no anchor. Drives the bar. */
+    val fastingNextFastStartMillis: Long? = null,
     val fastingGoalReached: Boolean = false,
     val fastingAutoStarted: Boolean = false,
     val fastingLastEndedAtMillis: Long? = null,
@@ -439,9 +446,12 @@ data class HomeUiState(
             fastingEnabled == other.fastingEnabled &&
             fastingGoalHours == other.fastingGoalHours &&
             fastingEatHours == other.fastingEatHours &&
+            fastingAutoWindows == other.fastingAutoWindows &&
             fastingPhase == other.fastingPhase &&
             fastingElapsedMillis == other.fastingElapsedMillis &&
+            fastingNowMillis == other.fastingNowMillis &&
             fastingEatingElapsedMillis == other.fastingEatingElapsedMillis &&
+            fastingNextFastStartMillis == other.fastingNextFastStartMillis &&
             fastingGoalReached == other.fastingGoalReached &&
             fastingAutoStarted == other.fastingAutoStarted &&
             fastingLastEndedAtMillis == other.fastingLastEndedAtMillis &&
@@ -517,9 +527,12 @@ data class HomeUiState(
         result = 31 * result + fastingEnabled.hashCode()
         result = 31 * result + fastingGoalHours
         result = 31 * result + fastingEatHours
+        result = 31 * result + fastingAutoWindows.hashCode()
         result = 31 * result + fastingPhase.hashCode()
         result = 31 * result + fastingElapsedMillis.hashCode()
+        result = 31 * result + fastingNowMillis.hashCode()
         result = 31 * result + fastingEatingElapsedMillis.hashCode()
+        result = 31 * result + (fastingNextFastStartMillis?.hashCode() ?: 0)
         result = 31 * result + fastingGoalReached.hashCode()
         result = 31 * result + fastingAutoStarted.hashCode()
         result = 31 * result + (fastingLastEndedAtMillis?.hashCode() ?: 0)
@@ -1124,6 +1137,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             .onEach { eat -> _ui.update { it.copy(fastingEatHours = eat) } }
             .launchIn(viewModelScope)
 
+        container.prefs.fastingAutoWindows
+            .onEach { auto -> _ui.update { it.copy(fastingAutoWindows = auto) } }
+            .launchIn(viewModelScope)
+
         // Session changes (start/stop/cancel) re-derive the display state; the
         // minute ticker below keeps the elapsed label rolling without any write.
         container.fastingRepository.session
@@ -1295,20 +1312,35 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             val now = System.currentTimeMillis()
             val goal = container.prefs.fastingGoalHours.first()
             val eat = container.prefs.fastingEatHours.first()
+            val auto = container.prefs.fastingAutoWindows.first()
             val windowEnds = s.eatingWindowEndsAtMillis(eat, now)
+            val nextFastStart = when {
+                s.isFasting -> null
+                auto -> nextFastingStartMillis(
+                    container.prefs.fastingStartHour.first(),
+                    container.prefs.fastingStartMinute.first(),
+                    now,
+                )
+                else -> windowEnds
+            }
             _ui.update {
                 it.copy(
                     fastingPhase = when {
                         s.isFasting -> FastingPhase.FASTING
+                        // Auto mode: the schedule is the boundary, so any stop
+                        // opens the eating phase until the next start time.
+                        auto && s.lastEndedAtMillis != null -> FastingPhase.EATING
                         windowEnds != null -> FastingPhase.EATING
                         else -> FastingPhase.IDLE
                     },
                     fastingElapsedMillis = s.elapsedMillis(now),
+                    fastingNowMillis = now,
                     fastingEatingElapsedMillis = if (windowEnds != null) {
                         (now - (s.lastEndedAtMillis ?: now)).coerceAtLeast(0L)
                     } else {
                         0L
                     },
+                    fastingNextFastStartMillis = nextFastStart,
                     fastingGoalReached = s.goalReached(goal, now),
                     fastingAutoStarted = s.autoStarted,
                     fastingLastEndedAtMillis = s.lastEndedAtMillis,

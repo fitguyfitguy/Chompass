@@ -1776,4 +1776,10 @@
     <string name="fasting_auto_tag">自动</string>
     <string name="settings_fasting_auto_windows">自动禁食时段</string>
     <string name="settings_fasting_auto_windows_help">开启后，进食窗口关闭时禁食自动开始，达到目标后自动结束。您也可以手动开始。自动开始的禁食在主界面不显示按钮。</string>
+    <string name="fasting_fast_starts_at">禁食于 %1$s 开始 · %2$s 后</string>
+    <string name="fasting_next_fast_at">下次禁食于 %1$s</string>
+    <string name="settings_fasting_start_time">禁食开始时间</string>
+    <string name="settings_fasting_start_time_help">自动禁食时段每天在此时间开始禁食。开始提醒会提前设定的时间响起。</string>
+    <string name="notif_fasting_start_soon_auto_title">禁食即将开始</string>
+    <string name="notif_fasting_start_soon_auto">您的禁食将在 %1$d 分钟后开始，无需任何操作。</string>
 </resources>

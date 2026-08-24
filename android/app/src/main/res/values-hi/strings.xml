@@ -1776,4 +1776,10 @@
     <string name="fasting_auto_tag">स्वचालित</string>
     <string name="settings_fasting_auto_windows">स्वचालित उपवास विंडो</string>
     <string name="settings_fasting_auto_windows_help">चालू होने पर, खाने की विंडो बंद होते ही आपका उपवास अपने आप शुरू हो जाता है और लक्ष्य पूरा होने पर समाप्त हो जाता है। आप इसे मैन्युअल भी शुरू कर सकते हैं। स्वचालित उपवास में होम पर कोई बटन नहीं दिखते।</string>
+    <string name="fasting_fast_starts_at">उपवास %1$s बजे शुरू होगा · %2$s में</string>
+    <string name="fasting_next_fast_at">अगला उपवास %1$s बजे</string>
+    <string name="settings_fasting_start_time">उपवास शुरू होने का समय</string>
+    <string name="settings_fasting_start_time_help">स्वचालित उपवास विंडो हर दिन इस समय उपवास शुरू करती हैं। शुरुआत अनुस्मारक इससे पहले निर्धारित समय तक बजता है।</string>
+    <string name="notif_fasting_start_soon_auto_title">उपवास जल्द शुरू होगा</string>
+    <string name="notif_fasting_start_soon_auto">आपका उपवास %1$d मिनट में शुरू होगा — कुछ करने की ज़रूरत नहीं।</string>
 </resources>

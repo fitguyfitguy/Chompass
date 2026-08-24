@@ -80,6 +80,20 @@ internal val PreferencesStore.fastingAutoWindowsImpl: Flow<Boolean>
 internal suspend fun PreferencesStore.setFastingAutoWindowsImpl(v: Boolean) =
     setBoolPref(Keys.FASTING_AUTO_WINDOWS, v)
 
+/** Daily fast-start clock time (20:00 default); anchors auto mode + start nudge. */
+const val DEFAULT_FASTING_START_HOUR = 20
+const val DEFAULT_FASTING_START_MINUTE = 0
+
+internal val PreferencesStore.fastingStartHourImpl: Flow<Int>
+    get() = intPref(Keys.FASTING_START_HOUR, DEFAULT_FASTING_START_HOUR)
+internal suspend fun PreferencesStore.setFastingStartHourImpl(v: Int) =
+    setIntPref(Keys.FASTING_START_HOUR, v.coerceIn(0, 23))
+
+internal val PreferencesStore.fastingStartMinuteImpl: Flow<Int>
+    get() = intPref(Keys.FASTING_START_MINUTE, DEFAULT_FASTING_START_MINUTE)
+internal suspend fun PreferencesStore.setFastingStartMinuteImpl(v: Int) =
+    setIntPref(Keys.FASTING_START_MINUTE, v.coerceIn(0, 59))
+
 /** Default lead (minutes before the window closes) for the start-fast nudge. */
 const val DEFAULT_FASTING_START_REMINDER_LEAD_MINUTES = 15
 /** Default lead (minutes before the fast ends) for the break-fast nudge. */

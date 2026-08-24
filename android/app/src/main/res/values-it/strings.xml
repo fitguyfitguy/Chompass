@@ -1776,4 +1776,10 @@
     <string name="fasting_auto_tag">Automatico</string>
     <string name="settings_fasting_auto_windows">Finestre di digiuno automatiche</string>
     <string name="settings_fasting_auto_windows_help">Quando attivo, il tuo digiuno parte da solo quando si chiude la finestra dei pasti e termina al raggiungimento dell\'obiettivo. Puoi comunque iniziare manualmente. I digiuni automatici non mostrano pulsanti nella Home.</string>
+    <string name="fasting_fast_starts_at">Il digiuno inizia alle %1$s · tra %2$s</string>
+    <string name="fasting_next_fast_at">Prossimo digiuno alle %1$s</string>
+    <string name="settings_fasting_start_time">Ora di inizio del digiuno</string>
+    <string name="settings_fasting_start_time_help">Le finestre di digiuno automatiche iniziano il tuo digiuno ogni giorno a quest\'ora. Il promemoria di inizio suona il tempo impostato prima.</string>
+    <string name="notif_fasting_start_soon_auto_title">Il digiuno inizia presto</string>
+    <string name="notif_fasting_start_soon_auto">Il tuo digiuno inizia tra %1$d min: non devi fare nulla.</string>
 </resources>
