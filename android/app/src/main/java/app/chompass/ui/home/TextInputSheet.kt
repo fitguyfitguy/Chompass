@@ -5,6 +5,7 @@ import app.chompass.ui.components.blockSheetDragAtScrollEdges
 import app.chompass.ui.components.rememberChompassSheetState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,9 +20,12 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.History
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,6 +52,7 @@ import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Bottom sheet for text-only food logging (Note hero tile). Opens with the
@@ -59,6 +64,8 @@ fun TextInputSheet(
     onDismiss: () -> Unit,
     onSubmit: (String) -> Unit,
     isSubmitting: Boolean = false,
+    /** Codeberg #53: previously saved analysis prompts for quick reuse. */
+    recentPrompts: List<String> = emptyList(),
 ) {
     val isDark = isDarkTheme()
     val focusRequester = remember { FocusRequester() }
@@ -81,6 +88,10 @@ fun TextInputSheet(
     var submitted by rememberSaveable { mutableStateOf(false) }
     val busy = isSubmitting || submitted
     val sheetState = rememberChompassSheetState(busy = busy)
+    // Grey auto-fill (device walk 2026-08-24): a picked history prompt renders
+    // muted until the user edits it, so old prompts read as placeholders.
+    var autofilled by rememberSaveable { mutableStateOf(false) }
+    var showHistory by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -153,7 +164,7 @@ fun TextInputSheet(
             ) {
                 FudGlassTextField(
                     value = input,
-                    onValueChange = { if (!busy) input = it },
+                    onValueChange = { if (!busy) { input = it; autofilled = false } },
                     placeholder = placeholders[placeholderIdx],
                     singleLine = false,
                     minLines = 3,
@@ -162,8 +173,49 @@ fun TextInputSheet(
                     keyboardActions = KeyboardActions(onDone = { submit() }),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .focusRequester(focusRequester)
+                        .focusRequester(focusRequester),
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(
+                        color = if (autofilled) {
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        },
+                    ),
                 )
+
+                if (recentPrompts.isNotEmpty()) {
+                    TextButton(
+                        onClick = {
+                            keyboardController?.hide()
+                            showHistory = true
+                        },
+                        contentPadding = PaddingValues(horizontal = 4.dp),
+                    ) {
+                        Icon(
+                            Icons.Filled.History,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            modifier = Modifier.size(16.dp),
+                        )
+                        Spacer(Modifier.width(6.dp))
+                        Text(
+                            stringResource(R.string.prompt_history_button),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        )
+                    }
+                }
+
+                if (showHistory) {
+                    PromptHistorySheet(
+                        prompts = recentPrompts,
+                        onPick = { prompt ->
+                            input = prompt
+                            autofilled = true
+                            showHistory = false
+                        },
+                        onDismiss = { showHistory = false },
+                    )
+                }
 
                 FudGlassPrimaryButton(
                     text = stringResource(R.string.action_analyze),
