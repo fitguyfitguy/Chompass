@@ -597,6 +597,6 @@ internal fun GradientSaveButton(
             .padding(vertical = 14.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(text ?: stringResource(R.string.action_save), color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+        Text(text ?: stringResource(R.string.action_save), color = AppColors.onCalorieGradient, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
     }
 }

@@ -100,7 +100,7 @@ fun ImportSharedMealSheet(
             ) {
                 Text(
                     if (meals.size == 1) stringResource(R.string.import_add_to_log) else stringResource(R.string.import_add_to_log_many_format, meals.size, totalCalories),
-                    color = Color.White,
+                    color = AppColors.onCalorieGradient,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                 )
