@@ -14,6 +14,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Fixed
 
 - **On-device AI falls back to a smaller model when the chosen one cannot run** (Android): when the primary on-device model is too big for the free memory on your phone, photo analysis now switches to the fallback model you picked in Settings → AI & Speech, for example from Gemma 4 E4B to E2B, instead of failing with a memory error. Closes Codeberg [#54](https://codeberg.org/fitguy/Chompass/issues/54) by [@ARR8](https://codeberg.org/ARR8).
+- **Review and save buttons stay readable on light wallpapers** (Android): with a light wallpaper, the white text on the accent-gradient buttons could vanish on phones whose accent color comes out near-white. The label now switches to a dark color automatically when the accent is too light. Follow-up on Codeberg [#44](https://codeberg.org/fitguy/Chompass/issues/44) by [@tuxMode](https://codeberg.org/tuxMode).
 
 ## [3.23.0] - 2026-08-22
 
