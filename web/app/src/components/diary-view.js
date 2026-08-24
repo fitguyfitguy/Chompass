@@ -2,6 +2,7 @@
 import { foodEntries, profile as profileStore, water, dailyNotes, nicotine, caffeine, prefs } from "../lib/db.js";
 import { dailyTargets, estimatedDailyActiveCalories } from "../lib/chompass-core/formulas.js";
 import { dailyNoteIdFor } from "../lib/chompass-core/models.js";
+import { computeFastingState, nextFastStartMillis, FastingPhase } from "../lib/chompass-core/fasting-state.js";
 import { openSheet } from "../lib/ui/sheet.js";
 import { openConfirm, openInfo, openInput } from "../lib/ui/dialog.js";
 import {
@@ -63,64 +64,58 @@ const CAFFEINE_QUICK_KINDS = ["coffee", "tea", "energy"];
 const CAFFEINE_KIND_MG = { coffee: 95, tea: 28, energy: 80, other: 0 };
 const HOME_DATE_KEY = "chompass-home-date";
 
-/** Local-only fasting timer card (docs/local/PLAN_FASTING_TRACKER.md mirror). */
+/** Local-only fasting timer card (docs/local/PLAN_FASTING_TRACKER.md mirror).
+ *  State derivation lives in chompass-core/fasting-state.js — an exact mirror
+ *  of Android's refreshFastingTick + FastingViews; this function only renders. */
 function fastingCard(p) {
-  const goal = p.fastingGoalHours ?? 0;
-  const eat = p.fastingEatHours ?? 0;
-  const auto = p.fastingAutoWindows === true;
-  const autoEffective = auto && goal > 0;
   const now = Date.now();
-  const fasting = p.fastingStartedAt != null;
-  const windowEnds = !fasting && eat > 0 && p.fastingLastEndedAt != null ? p.fastingLastEndedAt + eat * 3_600_000 : null;
-  const nextT = !fasting && auto ? nextFastStartMillis(p.fastingStartHour ?? 20, p.fastingStartMinute ?? 0, now) : null;
-  const nextFastStart = auto ? nextT : windowEnds;
-  const eating = !fasting && nextFastStart != null && nextFastStart > now;
-  const elapsed = fasting ? Math.max(0, now - p.fastingStartedAt) : 0;
-  const eatElapsed = eating ? Math.max(0, now - p.fastingLastEndedAt) : 0;
-  const goalMillis = goal * 3_600_000;
-  const reached = fasting && goal > 0 && elapsed >= goalMillis;
+  const s = computeFastingState(p, now);
+  const { phase, goal, autoEffective, anchor, elapsed, eatElapsed, goalMillis, reached, autoStarted } = s;
+  // Clock-time labels only in an effective auto cycle (Android: autoMode &&
+  // nextFastStartMillis != null); manual mode stays relative.
+  const clock = autoEffective && anchor != null;
   const timeStr = (ms) =>
     new Date(ms).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   let status;
-  if (fasting) {
+  if (phase === FastingPhase.FASTING) {
     status = reached
       ? t("diary.fasting_goal_reached")
       : goal > 0
         ? t("diary.fasting_goal_hint", { elapsed: fmtFastDuration(elapsed), goal })
         : fmtFastDuration(elapsed);
-  } else if (eating) {
-    const remaining = fmtFastDuration(Math.max(0, nextFastStart - now));
-    status = auto
-      ? t("diary.fasting_fast_starts_at", { time: timeStr(nextFastStart), remaining })
+  } else if (phase === FastingPhase.EATING) {
+    const remaining = fmtFastDuration(Math.max(0, (anchor ?? now) - now));
+    status = clock
+      ? t("diary.fasting_fast_starts_at", { time: timeStr(anchor), remaining })
       : t("diary.fasting_fast_starts_in", { remaining });
   } else {
-    status = auto && nextT != null
-      ? t("diary.fasting_next_fast_at", { time: timeStr(nextT) })
+    status = clock
+      ? t("diary.fasting_next_fast_at", { time: timeStr(anchor) })
       : t("diary.fasting_idle");
   }
-  const showBar = (fasting && goal > 0) || eating;
+  const showBar = (phase === FastingPhase.FASTING && goal > 0) || phase === FastingPhase.EATING;
   const pct = showBar
-    ? Math.min(100, ((fasting ? elapsed / goalMillis : eatElapsed / Math.max(1, nextFastStart - now + eatElapsed)) * 100))
+    ? Math.min(100, ((phase === FastingPhase.FASTING ? elapsed / goalMillis : eatElapsed / Math.max(1, (anchor ?? now) - now + eatElapsed)) * 100))
     : 0;
-  const autoManaged = fasting && p.fastingAutoStarted === true;
-  const showButtons = !autoEffective || (fasting && !p.fastingAutoStarted);
+  const showButtons = s.showStart || s.showStop;
   let hint = "";
-  if (fasting && goal > 0 && !reached) {
+  if (phase === FastingPhase.FASTING && goal > 0 && !reached) {
     hint = `<div class="water-row__hint">${t("diary.fasting_window_opens_in", { remaining: fmtFastDuration(Math.max(0, goalMillis - elapsed)) })}</div>`;
-  } else if (eating) {
+  } else if (phase === FastingPhase.EATING) {
+    const remaining = fmtFastDuration(Math.max(0, (anchor ?? now) - now));
     hint = `<div class="water-row__hint">${
-      auto
-        ? t("diary.fasting_fast_starts_at", { time: timeStr(nextFastStart), remaining: fmtFastDuration(Math.max(0, nextFastStart - now)) })
-        : t("diary.fasting_fast_starts_in", { remaining: fmtFastDuration(Math.max(0, nextFastStart - now)) })
+      clock
+        ? t("diary.fasting_fast_starts_at", { time: timeStr(anchor), remaining })
+        : t("diary.fasting_fast_starts_in", { remaining })
     }</div>`;
   }
   return `<div class="card card--glass water-row fasting-row">
       <div class="water-row__top">
-        <div class="water-row__meta"><strong>${t("diary.fasting")}${autoManaged ? ` <span class="fasting-auto-tag">${t("diary.fasting_auto")}</span>` : ""}</strong><br/><span class="water-row__meta-sub">${status}</span></div>
+        <div class="water-row__meta"><strong>${t("diary.fasting")}${autoStarted && phase === FastingPhase.FASTING ? ` <span class="fasting-auto-tag">${t("diary.fasting_auto")}</span>` : ""}</strong><br/><span class="water-row__meta-sub">${status}</span></div>
         <div class="water-presets">
           ${
             showButtons
-              ? fasting
+              ? phase === FastingPhase.FASTING
                 ? `<button type="button" class="chip" data-fasting-stop>${t("diary.fasting_stop")}</button>`
                 : `<button type="button" class="chip" data-fasting-start>${t("diary.fasting_start")}</button>`
               : ""
@@ -129,20 +124,12 @@ function fastingCard(p) {
       </div>
       ${
         showBar
-          ? `<div class="water-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${fasting ? goal : eat}" aria-valuenow="${(fasting ? elapsed / 3_600_000 : eatElapsed / 3_600_000).toFixed(1)}" aria-label="${t("diary.fasting")}">
+          ? `<div class="water-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${phase === FastingPhase.FASTING ? goal : s.eat}" aria-valuenow="${(phase === FastingPhase.FASTING ? elapsed / 3_600_000 : eatElapsed / 3_600_000).toFixed(1)}" aria-label="${t("diary.fasting")}">
               <span data-width="${pct.toFixed(1)}%"></span>
             </div>${hint}`
           : ""
       }
     </div>`;
-}
-
-/** Next occurrence of the daily fast-start clock time after now (PWA mirror of nextFastingStartMillis). */
-function nextFastStartMillis(hour, minute, nowMillis) {
-  const today = new Date(nowMillis);
-  today.setHours(hour, minute, 0, 0);
-  const todayMs = today.getTime();
-  return nowMillis <= todayMs ? todayMs : todayMs + 24 * 60 * 60_000;
 }
 
 /** "14h 20m" / "45m" / "2h" — elapsed label shared by the fasting card. */
