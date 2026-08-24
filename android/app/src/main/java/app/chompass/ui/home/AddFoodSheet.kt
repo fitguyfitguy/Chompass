@@ -421,6 +421,14 @@ internal fun AddFoodSheetContent(
                 onWaterCustom = onWaterCustom,
             )
         }
+        if (nicotineTrackingEnabled) {
+            Spacer(Modifier.height(12.dp))
+            AddFoodNicotineQuickRow(
+                quickKinds = nicotineQuickKinds,
+                onNicotine = onNicotine,
+                onNicotineCustom = onNicotineCustom,
+            )
+        }
         if (fastingEnabled) {
             Spacer(Modifier.height(12.dp))
             FastingHubControl(
