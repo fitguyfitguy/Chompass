@@ -1057,6 +1057,7 @@
     <string name="nutrient_fiber_format">Fibre: %1$sg</string>
     <string name="nutrient_potassium_format">Potasiu: %1$smg</string>
     <string name="nutrient_sat_fat_format">Grăsimi saturate: %1$sg</string>
+    <string name="nutrient_short_caffeine">Cafeină</string>
     <string name="nutrient_short_omega">Omega</string>
     <string name="nutrient_short_sat_fat">Gr. saturate</string>
     <string name="nutrient_short_vit_a">Vit. A</string>
@@ -1070,6 +1071,7 @@
     <string name="nutrition_label_folate">Folat</string>
     <string name="nutrition_label_iron">Fier</string>
     <string name="nutrition_label_magnesium">Magneziu</string>
+    <string name="nutrition_label_caffeine">Cafeină</string>
     <string name="nutrition_label_omega3">Omega-3</string>
     <string name="nutrition_label_trans_fat">Grăsimi trans</string>
     <string name="nutrition_label_vitamin_a">Vitamina A</string>

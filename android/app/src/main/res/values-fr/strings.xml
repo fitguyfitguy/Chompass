@@ -1110,6 +1110,7 @@
     <string name="nutrient_potassium_format">Potassium : %1$smg</string>
     <string name="nutrient_sat_fat_format">Lipides sat. : %1$sg</string>
     <string name="nutrient_short_b12">B12</string>
+    <string name="nutrient_short_caffeine">Caféine</string>
     <string name="nutrient_short_omega">Oméga</string>
     <string name="nutrient_short_sat_fat">Lipides sat.</string>
     <string name="nutrient_short_vit_a">Vit. A</string>
@@ -1125,6 +1126,7 @@
     <string name="nutrition_label_folate">Folates</string>
     <string name="nutrition_label_iron">Fer</string>
     <string name="nutrition_label_magnesium">Magnésium</string>
+    <string name="nutrition_label_caffeine">Caféine</string>
     <string name="nutrition_label_omega3">Oméga-3</string>
     <string name="nutrition_label_potassium">Potassium</string>
     <string name="nutrition_label_sodium">Sodium</string>

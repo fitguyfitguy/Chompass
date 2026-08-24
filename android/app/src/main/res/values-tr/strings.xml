@@ -1506,6 +1506,7 @@
     <string name="nutrition_label_vitamin_e">E Vitamini</string>
     <string name="nutrition_label_vitamin_k">K Vitamini</string>
     <string name="nutrition_label_folate">Folat</string>
+    <string name="nutrition_label_caffeine">Kafein</string>
     <string name="nutrition_label_omega3">Omega-3</string>
     <string name="nutrition_section_home_cards">Ana Ekran Kartları</string>
     <string name="home_nutrients_pick_four">Ana ekran özet satırı için tam olarak dört besin seç.</string>
@@ -1729,6 +1730,7 @@
     <string name="nutrient_short_b12">B12</string>
     <string name="nutrient_short_vit_e">E Vit.</string>
     <string name="nutrient_short_vit_k">K Vit.</string>
+    <string name="nutrient_short_caffeine">Kafein</string>
     <string name="nutrient_short_omega">Omega</string>
     <string name="sort_standard">Kahvaltı → Öğle → Akşam (en yeniler sonda)</string>
     <string name="sort_latest_first">Önce En Yeni Öğünler</string>

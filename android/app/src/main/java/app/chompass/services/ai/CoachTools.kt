@@ -198,6 +198,7 @@ class CoachTools(
                 putDoubleIfPresent("vitamin_k_mcg", f.vitaminK)
                 putDoubleIfPresent("folate_mcg", f.folate)
                 putDoubleIfPresent("omega_3_g", f.omega3)
+                putDoubleIfPresent("caffeine_mg", f.caffeine)
             })
         }
         return JSONObject().apply {

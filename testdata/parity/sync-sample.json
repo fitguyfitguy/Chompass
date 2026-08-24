@@ -45,6 +45,7 @@
       "vitamin_k_mcg": null,
       "folate_mcg": null,
       "omega3_g": null,
+      "caffeine_mg": 95,
       "grounding": null,
       "serving_unit_options": [
         {
@@ -126,6 +127,7 @@
       "vitamin_k_mcg": null,
       "folate_mcg": null,
       "omega3_g": null,
+      "caffeine_mg": null,
       "grounding": null,
       "serving_unit_options": [
         {

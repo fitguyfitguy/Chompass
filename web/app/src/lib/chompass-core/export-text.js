@@ -28,6 +28,7 @@ const MICRO_CSV = [
   ["vitaminKMcg", "vitamin_k_mcg"],
   ["folateMcg", "folate_mcg"],
   ["omega3G", "omega3_g"],
+  ["caffeineMg", "caffeine_mg"],
 ];
 
 const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack"];

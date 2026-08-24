@@ -1063,6 +1063,7 @@
     <string name="nutrient_fiber_format">식이섬유: %1$sg</string>
     <string name="nutrient_potassium_format">칼륨: %1$smg</string>
     <string name="nutrient_sat_fat_format">포화지방: %1$sg</string>
+    <string name="nutrient_short_caffeine">카페인</string>
     <string name="nutrient_short_omega">오메가</string>
     <string name="nutrient_short_sat_fat">포화지방</string>
     <string name="nutrient_short_vit_a">비타A</string>
@@ -1076,6 +1077,7 @@
     <string name="nutrition_label_folate">엽산</string>
     <string name="nutrition_label_iron">철</string>
     <string name="nutrition_label_magnesium">마그네슘</string>
+    <string name="nutrition_label_caffeine">카페인</string>
     <string name="nutrition_label_omega3">오메가-3</string>
     <string name="nutrition_label_trans_fat">트랜스지방</string>
     <string name="nutrition_label_vitamin_a">비타민 A</string>

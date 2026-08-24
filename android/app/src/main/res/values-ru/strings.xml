@@ -872,6 +872,7 @@
     <string name="nutrition_label_vitamin_e">Витамин E</string>
     <string name="nutrition_label_vitamin_k">Витамин K</string>
     <string name="nutrition_label_folate">Фолат</string>
+    <string name="nutrition_label_caffeine">Кофеин</string>
     <string name="nutrition_label_omega3">Омега-3</string>
     <string name="nutrition_section_home_cards">Карточки на главной</string>
     <string name="home_nutrients_pick_four">Выбери ровно четыре нутриента для сводки на главном экране.</string>
@@ -1016,6 +1017,7 @@
 
     <string name="nutrient_short_vit_e">Вит. E</string>
     <string name="nutrient_short_vit_k">Вит. K</string>
+    <string name="nutrient_short_caffeine">Кофеин</string>
     <string name="nutrient_short_omega">Омега</string>
     <string name="sort_standard">Завтрак → Обед → Ужин (сначала ранние)</string>
     <string name="sort_latest_first">Сначала последние</string>

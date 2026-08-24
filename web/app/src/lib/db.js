@@ -295,6 +295,7 @@ export const profile = {
  * @property {number|null} [vitaminKMcg]
  * @property {number|null} [folateMcg]
  * @property {number|null} [omega3G]
+ * @property {number|null} [caffeineMg]
  */
 
 /** @typedef {Object} AppPrefs

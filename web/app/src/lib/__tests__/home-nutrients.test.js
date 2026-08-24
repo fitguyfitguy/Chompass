@@ -114,7 +114,7 @@ test("formatFoodPills_androidCapsules", () => {
 });
 
 test("ALL_MICRO_KEYS_count", () => {
-  assert.equal(ALL_MICRO_KEYS.length, 22);
+  assert.equal(ALL_MICRO_KEYS.length, 23);
 });
 
 test("offMapProduct_servingMicros", () => {

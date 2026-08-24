@@ -436,6 +436,7 @@ object OpenFoodFactsService {
             vitaminK = micrograms(servingValue("vitamin-k")),
             folate = micrograms(servingValue("folates")),
             omega3 = rounded(servingValue("omega-3-fat")),
+            caffeine = milligrams(servingValue("caffeine")),
             servingUnitOptions = listOf(servingOption),
             selectedServingUnit = servingOption.unit,
             selectedServingQuantity = 1.0,

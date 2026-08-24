@@ -124,6 +124,7 @@ object DiaryImporter {
                         vitaminK = item["vitamin_k_mcg"]?.asDouble(),
                         folate = item["folate_mcg"]?.asDouble(),
                         omega3 = item["omega3_g"]?.asDouble(),
+                        caffeine = item["caffeine_mg"]?.asDouble(),
                         servingSizeGrams = item["quantity_g"]?.asDouble(),
                         servingUnitOptions = parseServingUnitOptions(item["serving_unit_options"]?.asArrayOrNull()),
                         selectedServingUnit = item["selected_serving_unit"]?.asString()?.takeIf { it.isNotBlank() },

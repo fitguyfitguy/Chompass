@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Coffee
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.Spa
@@ -113,6 +114,7 @@ fun NutritionDetailSheet(
     val vitaminK = entries.sumOf { it.vitaminK ?: 0.0 }
     val folate = entries.sumOf { it.folate ?: 0.0 }
     val omega3 = entries.sumOf { it.omega3 ?: 0.0 }
+    val caffeine = entries.sumOf { it.caffeine ?: 0.0 }
     val isDark = isDarkTheme()
     val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
 
@@ -218,6 +220,8 @@ fun NutritionDetailSheet(
                     DetailRow(Icons.Filled.Spa, stringResource(R.string.nutrition_label_folate), fmt(folate), stringResource(R.string.unit_mcg), goal = "${optionalGoals.folate}")
                     Hairline()
                     DetailRow(Icons.Filled.WaterDrop, stringResource(R.string.nutrition_label_omega3), fmt(omega3), stringResource(R.string.unit_g), goal = "${optionalGoals.omega3}")
+                    Hairline()
+                    DetailRow(Icons.Filled.Coffee, stringResource(R.string.nutrition_label_caffeine), fmt(caffeine), stringResource(R.string.unit_mg), goal = "${optionalGoals.caffeine}")
                 }
             }
         }

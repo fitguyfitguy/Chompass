@@ -81,6 +81,7 @@ const MICRO_FIELDS = [
   ["vitamin_k_mcg", "vitaminKMcg"],
   ["folate_mcg", "folateMcg"],
   ["omega3_g", "omega3G"],
+  ["caffeine_mg", "caffeineMg"],
 ];
 
 const SOURCE_TO_WIRE = {

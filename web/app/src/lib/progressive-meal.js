@@ -182,6 +182,7 @@ export function progressiveMealToFoodEntries(d, opts) {
       vitaminKMcg: a.vitaminKMcg ?? null,
       folateMcg: a.folateMcg ?? null,
       omega3G: a.omega3G ?? null,
+      caffeineMg: a.caffeineMg ?? null,
       source: item.source || a.source || "ai_estimated",
       note: a.note ?? null,
       emoji: a.emoji ?? null,
