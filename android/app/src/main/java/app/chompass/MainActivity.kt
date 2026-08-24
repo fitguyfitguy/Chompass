@@ -539,7 +539,13 @@ open class MainActivity : ComponentActivity() {
             if (actions.seedOverGoal) container.testDataSeeder.seedOverGoal()
             if (actions.restoreRealData) container.testDataSeeder.restore()
             if (actions.demoAi) container.prefs.setDebugDemoAnalysis(true)
-            if (actions.demoAiFail) container.prefs.setDebugDemoAnalysisFail(true)
+            if (actions.demoAiFail) {
+                // demo_ai_fail implies the scripted response: the failure must
+                // replay the demo progress stream, then throw. Without demo_ai
+                // it would make a real (keyed) provider call.
+                container.prefs.setDebugDemoAnalysis(true)
+                container.prefs.setDebugDemoAnalysisFail(true)
+            }
             if (actions.clearPendingDraft) {
                 container.prefs.setPendingFoodAnalysisDraft(null)
                 container.prefs.setPendingFoodInputDraft(null)
