@@ -1602,6 +1602,12 @@
     <string name="voice_slide_to_cancel">‹ 밀어서 취소</string>
     <string name="water">물</string>
     <string name="water_add">물 추가</string>
+    <string name="water_history_title">물 기록</string>
+    <string name="water_history_total">%1$s · %2$s</string>
+    <string name="water_no_entries">이 날에 기록된 물이 아직 없습니다.</string>
+    <string name="water_edit_title">물 수정</string>
+    <string name="cd_delete_water">물 기록 삭제</string>
+
     <string name="water_amount_fl_oz">%1$d fl oz</string>
     <string name="water_amount_ml">%1$d ml</string>
     <string name="water_custom_amount">사용자 지정 양</string>

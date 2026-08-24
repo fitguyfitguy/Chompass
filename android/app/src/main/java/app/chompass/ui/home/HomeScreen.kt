@@ -78,6 +78,7 @@ import app.chompass.data.QuickRelogRows
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.WaterAmountFormat
+import app.chompass.models.WaterEntry
 import app.chompass.services.FoodPhotoSession
 import app.chompass.services.MealShare
 import app.chompass.services.PerfLog
@@ -139,6 +140,8 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     var hubRelogLoading by remember { mutableStateOf(vm.peekQuickRelogCache() == null) }
     var hubOpenedAtNs by remember { mutableLongStateOf(0L) }
     var showCustomWaterLog by rememberSaveable { mutableStateOf(false) }
+    var showWaterHistory by rememberSaveable { mutableStateOf(false) }
+    var editingWaterEntry by remember { mutableStateOf<WaterEntry?>(null) }
     var showManualActive by rememberSaveable { mutableStateOf(false) }
     var showGroundedEntry by rememberSaveable { mutableStateOf(false) }
     var showFoodSearch by rememberSaveable { mutableStateOf(false) }
@@ -503,6 +506,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                             auto = ui.waterGoalDynamic,
                             onAutoClick = onOpenSettings,
                             nextDrinkLabel = nextDrinkLabel,
+                            onClick = { showWaterHistory = true },
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )
                     }
@@ -869,6 +873,26 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             useMetric = ui.weightMetric,
             onDismiss = { showCustomWaterLog = false },
             onAdd = vm::addWater,
+        )
+    }
+
+    if (showWaterHistory) {
+        WaterHistorySheet(
+            day = ui.date,
+            entries = ui.waterTodayEntries,
+            useMetric = ui.weightMetric,
+            onDismiss = { showWaterHistory = false },
+            onEdit = { editingWaterEntry = it },
+            onDelete = { vm.deleteWater(it.id) },
+        )
+    }
+
+    editingWaterEntry?.let { entry ->
+        WaterEditAmountSheet(
+            entry = entry,
+            useMetric = ui.weightMetric,
+            onDismiss = { editingWaterEntry = null },
+            onSave = { ml -> vm.updateWater(entry.id, ml) },
         )
     }
 

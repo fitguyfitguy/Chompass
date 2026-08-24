@@ -741,6 +741,12 @@ für dich ein</string>
     <string name="water_custom_amount">Benutzerdefinierte Menge</string>
 
     <string name="water_add">Wasser hinzufügen</string>
+    <string name="water_history_title">Wasserverlauf</string>
+    <string name="water_history_total">%1$s · %2$s</string>
+    <string name="water_no_entries">Für diesen Tag ist noch kein Wasser protokolliert.</string>
+    <string name="water_edit_title">Wasser bearbeiten</string>
+    <string name="cd_delete_water">Wassereintrag löschen</string>
+
 
     <string name="water_progress">%1$d / %2$d ml</string>
 

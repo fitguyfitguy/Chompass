@@ -1529,6 +1529,12 @@ LBM = вага × (1 − %жиру)</string>
     <string name="voice_slide_to_cancel">‹ проведи, щоб скасувати</string>
     <string name="water">Вода</string>
     <string name="water_add">Додати води</string>
+    <string name="water_history_title">Історія води</string>
+    <string name="water_history_total">%1$s · %2$s</string>
+    <string name="water_no_entries">За цей день воду ще не записано.</string>
+    <string name="water_edit_title">Змінити воду</string>
+    <string name="cd_delete_water">Видалити запис води</string>
+
     <string name="water_custom_amount">Своя кількість</string>
     <string name="water_custom_short">Своя</string>
     <string name="water_how_much">Скільки води?</string>

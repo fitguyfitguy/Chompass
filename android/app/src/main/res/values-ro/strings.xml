@@ -1603,6 +1603,12 @@
     <string name="voice_slide_to_cancel">‹ glisează pentru a anula</string>
     <string name="water">Apă</string>
     <string name="water_add">Adaugă apă</string>
+    <string name="water_history_title">Istoric apă</string>
+    <string name="water_history_total">%1$s · %2$s</string>
+    <string name="water_no_entries">Nicio apă înregistrată pentru această zi.</string>
+    <string name="water_edit_title">Editează apa</string>
+    <string name="cd_delete_water">Șterge intrarea de apă</string>
+
     <string name="water_amount_fl_oz">%1$d fl oz</string>
     <string name="water_amount_ml">%1$d ml</string>
     <string name="water_custom_amount">Cantitate personalizată</string>

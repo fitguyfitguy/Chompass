@@ -426,6 +426,12 @@
     <string name="water_three_glasses_amount">3 bardak (~750 ml)</string>
     <string name="water_custom_amount">Özel miktar</string>
     <string name="water_add">Su ekle</string>
+    <string name="water_history_title">Su geçmişi</string>
+    <string name="water_history_total">%1$s · %2$s</string>
+    <string name="water_no_entries">Bu gün için henüz su kaydedilmedi.</string>
+    <string name="water_edit_title">Suyu düzenle</string>
+    <string name="cd_delete_water">Su kaydını sil</string>
+
     <string name="water_progress">%1$d / %2$d ml</string>
     <string name="water_progress_fl_oz">%1$d / %2$d fl oz</string>
     <string name="home_water_next">Sonraki %1$s · %2$s</string>

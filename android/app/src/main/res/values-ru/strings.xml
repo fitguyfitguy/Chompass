@@ -1212,6 +1212,12 @@
     <string name="sheet_serving_unit_mode">Определение единицы порции</string>
     <string name="water">Вода</string>
     <string name="water_add">Добавить воду</string>
+    <string name="water_history_title">История воды</string>
+    <string name="water_history_total">%1$s · %2$s</string>
+    <string name="water_no_entries">За этот день вода ещё не записана.</string>
+    <string name="water_edit_title">Изменить воду</string>
+    <string name="cd_delete_water">Удалить запись воды</string>
+
     <string name="water_custom_amount">Своё количество</string>
     <string name="water_how_much">Сколько воды?</string>
     <string name="water_log_title">Записать воду</string>

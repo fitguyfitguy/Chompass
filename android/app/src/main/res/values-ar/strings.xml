@@ -1603,6 +1603,12 @@
     <string name="voice_slide_to_cancel">‹ اسحب للإلغاء</string>
     <string name="water">ماء</string>
     <string name="water_add">إضافة ماء</string>
+    <string name="water_history_title">سجل الماء</string>
+    <string name="water_history_total">%1$s · %2$s</string>
+    <string name="water_no_entries">لا يوجد ماء مسجل لهذا اليوم بعد.</string>
+    <string name="water_edit_title">تعديل الماء</string>
+    <string name="cd_delete_water">حذف إدخال الماء</string>
+
     <string name="water_amount_fl_oz">%1$d أونصة سائلة</string>
     <string name="water_amount_ml">%1$d مل</string>
     <string name="water_custom_amount">كمية مخصصة</string>

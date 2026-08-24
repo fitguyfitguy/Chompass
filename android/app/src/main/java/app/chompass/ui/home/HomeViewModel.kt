@@ -181,6 +181,8 @@ data class HomeUiState(
     val waterDailyGoalMl: Int = 2_000,
     val waterQuickPresetsMl: List<Int> = WaterQuickPresets.DEFAULT_AMOUNTS_ML,
     val waterTodayMl: Int = 0,
+    /** Individual sips for the selected day, newest first (drives the history sheet). */
+    val waterTodayEntries: List<WaterEntry> = emptyList(),
     /** True when the goal shown comes from the dynamic calculator (issue #3). */
     val waterGoalDynamic: Boolean = false,
     /**
@@ -381,6 +383,7 @@ data class HomeUiState(
             waterDailyGoalMl == other.waterDailyGoalMl &&
             waterQuickPresetsMl == other.waterQuickPresetsMl &&
             waterTodayMl == other.waterTodayMl &&
+            waterTodayEntries == other.waterTodayEntries &&
             waterGoalDynamic == other.waterGoalDynamic &&
             waterNextPlan == other.waterNextPlan &&
             progressiveMeal == other.progressiveMeal &&
@@ -436,6 +439,7 @@ data class HomeUiState(
         result = 31 * result + waterDailyGoalMl
         result = 31 * result + waterQuickPresetsMl.hashCode()
         result = 31 * result + waterTodayMl
+        result = 31 * result + waterTodayEntries.hashCode()
         result = 31 * result + waterGoalDynamic.hashCode()
         result = 31 * result + (waterNextPlan?.hashCode() ?: 0)
         result = 31 * result + (progressiveMeal?.hashCode() ?: 0)
@@ -972,12 +976,11 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
         combine(container.waterRepository.entries, _selectedDate) { entries, day ->
             val zone = ZoneId.systemDefault()
-            entries
-                .filter { it.date.atZone(zone).toLocalDate() == day }
-                .sumOf { it.milliliters }
+            val dayEntries = entries.filter { it.date.atZone(zone).toLocalDate() == day }
+            dayEntries.sumOf { it.milliliters } to dayEntries
         }
-            .onEach { total ->
-                _ui.update { it.copy(waterTodayMl = total) }
+            .onEach { (total, dayEntries) ->
+                _ui.update { it.copy(waterTodayMl = total, waterTodayEntries = dayEntries) }
                 refreshWaterPlan()
                 val sipAt = waterAckAtNs
                 if (sipAt != 0L && total > waterAckPriorMl) {
@@ -1047,6 +1050,17 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 WaterEntry(date = timestampForSelectedDay(), milliliters = milliliters),
             )
         }
+    }
+
+    /** Edits an existing sip's amount in place (keeps its time of day). */
+    fun updateWater(id: UUID, milliliters: Int) {
+        if (milliliters <= 0) return
+        viewModelScope.launch { container.waterRepository.update(id, milliliters) }
+    }
+
+    /** Removes an individual sip (history sheet delete). */
+    fun deleteWater(id: UUID) {
+        viewModelScope.launch { container.waterRepository.delete(id) }
     }
 
     /**

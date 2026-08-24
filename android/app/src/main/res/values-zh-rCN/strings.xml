@@ -1603,6 +1603,12 @@
     <string name="voice_slide_to_cancel">‹ 滑动取消</string>
     <string name="water">水</string>
     <string name="water_add">添加饮水</string>
+    <string name="water_history_title">饮水历史</string>
+    <string name="water_history_total">%1$s · %2$s</string>
+    <string name="water_no_entries">这一天还没有记录饮水。</string>
+    <string name="water_edit_title">编辑饮水</string>
+    <string name="cd_delete_water">删除饮水记录</string>
+
     <string name="water_amount_fl_oz">%1$d 液量盎司</string>
     <string name="water_amount_ml">%1$d 毫升</string>
     <string name="water_custom_amount">自定义量</string>

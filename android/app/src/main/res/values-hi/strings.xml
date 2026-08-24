@@ -1603,6 +1603,12 @@
     <string name="voice_slide_to_cancel">‹ रद्द करने के लिए स्लाइड करें</string>
     <string name="water">पानी</string>
     <string name="water_add">पानी जोड़ें</string>
+    <string name="water_history_title">पानी का इतिहास</string>
+    <string name="water_history_total">%1$s · %2$s</string>
+    <string name="water_no_entries">इस दिन के लिए अभी तक पानी लॉग नहीं किया गया है।</string>
+    <string name="water_edit_title">पानी संपादित करें</string>
+    <string name="cd_delete_water">पानी की प्रविष्टि हटाएं</string>
+
     <string name="water_amount_fl_oz">%1$d fl oz</string>
     <string name="water_amount_ml">%1$d मिली</string>
     <string name="water_custom_amount">कस्टम मात्रा</string>

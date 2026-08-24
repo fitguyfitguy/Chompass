@@ -1602,6 +1602,12 @@
     <string name="voice_slide_to_cancel">‹ スライドでキャンセル</string>
     <string name="water">水</string>
     <string name="water_add">水を追加</string>
+    <string name="water_history_title">水の履歴</string>
+    <string name="water_history_total">%1$s · %2$s</string>
+    <string name="water_no_entries">この日の水はまだ記録されていません。</string>
+    <string name="water_edit_title">水を編集</string>
+    <string name="cd_delete_water">水の記録を削除</string>
+
     <string name="water_amount_fl_oz">%1$d fl oz</string>
     <string name="water_amount_ml">%1$d ml</string>
     <string name="water_custom_amount">カスタム量</string>

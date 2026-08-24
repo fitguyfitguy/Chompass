@@ -39,6 +39,29 @@ class WaterRepository(
         onEntriesChanged?.invoke()
     }
 
+    /**
+     * Edits the amount of an existing sip in place (same id, same timestamp).
+     * The month-bucket upsert replaces the record, so no storage API changes.
+     * Health Connect has no hydration update API: mirror
+     * [app.chompass.data.FoodRepository.updateEntry] and delete-then-write the
+     * stale fudai-tagged record (also when sync is off, so the restore path
+     * can't resurrect the old amount).
+     */
+    suspend fun update(id: UUID, milliliters: Int) {
+        if (milliliters <= 0) return
+        val existing = prefs.waterEntries.first().firstOrNull { it.id == id } ?: return
+        val updated = existing.copy(milliliters = milliliters)
+        PerfLog.measure("waterEdit", "dataStore", "ml=${updated.milliliters}") {
+            prefs.applyWaterBucketChanges(
+                upsertsByMonth = mapOf(updated.month() to listOf(updated)),
+            )
+        }
+        sync?.touch(id, "water")
+        health?.deleteHydration(id)
+        if (shouldSyncHealth()) health?.writeHydration(updated)
+        onEntriesChanged?.invoke()
+    }
+
     suspend fun delete(id: UUID) {
         val existing = prefs.waterEntries.first().firstOrNull { it.id == id } ?: return
         prefs.applyWaterBucketChanges(removalIdsByMonth = mapOf(existing.month() to setOf(id)))

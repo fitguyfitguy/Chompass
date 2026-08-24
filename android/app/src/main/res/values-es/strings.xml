@@ -1692,6 +1692,12 @@
     <string name="voice_slide_to_cancel">‹ desliza para cancelar</string>
     <string name="water">Agua</string>
     <string name="water_add">Añadir agua</string>
+    <string name="water_history_title">Historial de agua</string>
+    <string name="water_history_total">%1$s · %2$s</string>
+    <string name="water_no_entries">Aún no hay agua registrada para este día.</string>
+    <string name="water_edit_title">Editar agua</string>
+    <string name="cd_delete_water">Eliminar entrada de agua</string>
+
     <string name="water_amount_fl_oz">%1$d fl oz</string>
     <string name="water_amount_ml">%1$d ml</string>
     <string name="water_custom_amount">Cantidad personalizada</string>

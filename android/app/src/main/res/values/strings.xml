@@ -426,6 +426,11 @@
     <string name="water_three_glasses_amount">3 glasses (~750 ml)</string>
     <string name="water_custom_amount">Custom amount</string>
     <string name="water_add">Add water</string>
+    <string name="water_history_title">Water history</string>
+    <string name="water_history_total">%1$s · %2$s</string>
+    <string name="water_no_entries">No water logged for this day yet.</string>
+    <string name="water_edit_title">Edit water</string>
+    <string name="cd_delete_water">Delete water entry</string>
     <string name="water_progress">%1$d / %2$d ml</string>
     <string name="water_progress_fl_oz">%1$d / %2$d fl oz</string>
     <string name="home_water_next">Next %1$s · %2$s</string>
