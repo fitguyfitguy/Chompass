@@ -13,20 +13,24 @@ const val MAX_FASTING_EAT_HOURS = 24
 /** Maximum reminder lead in minutes (wheels step by 5). */
 const val MAX_FASTING_REMINDER_LEAD_MINUTES = 120
 
+/** Popular 16:8 protocol — the fasting default when the tracker is enabled. */
+const val DEFAULT_FASTING_GOAL_HOURS = 16
+const val DEFAULT_FASTING_EAT_HOURS = 8
+
 internal val PreferencesStore.fastingEnabledImpl: Flow<Boolean>
     get() = boolPref(Keys.FASTING_ENABLED, false)
 internal suspend fun PreferencesStore.setFastingEnabledImpl(v: Boolean) =
     setBoolPref(Keys.FASTING_ENABLED, v)
 
-/** Goal length in hours; 0 = no goal (off by default). */
+/** Goal length in hours; 16:8 by default (0 = no goal). */
 internal val PreferencesStore.fastingGoalHoursImpl: Flow<Int>
-    get() = intPref(Keys.FASTING_GOAL_HOURS, 0)
+    get() = intPref(Keys.FASTING_GOAL_HOURS, DEFAULT_FASTING_GOAL_HOURS)
 internal suspend fun PreferencesStore.setFastingGoalHoursImpl(v: Int) =
     setIntPref(Keys.FASTING_GOAL_HOURS, v.coerceIn(0, MAX_FASTING_GOAL_HOURS))
 
-/** Eating-window length in hours (completes the fast → eat cycle); 0 = not set. */
+/** Eating-window length in hours (completes the fast → eat cycle); 8 by default. */
 internal val PreferencesStore.fastingEatHoursImpl: Flow<Int>
-    get() = intPref(Keys.FASTING_EAT_HOURS, 0)
+    get() = intPref(Keys.FASTING_EAT_HOURS, DEFAULT_FASTING_EAT_HOURS)
 internal suspend fun PreferencesStore.setFastingEatHoursImpl(v: Int) =
     setIntPref(Keys.FASTING_EAT_HOURS, v.coerceIn(0, MAX_FASTING_EAT_HOURS))
 
@@ -102,7 +106,7 @@ const val DEFAULT_FASTING_END_REMINDER_LEAD_MINUTES = 15
 
 /** 0 = off; the nudge fires this many minutes before the eating window closes. */
 internal val PreferencesStore.fastingStartReminderEnabledImpl: Flow<Boolean>
-    get() = boolPref(Keys.FASTING_START_REMINDER_ENABLED, false)
+    get() = boolPref(Keys.FASTING_START_REMINDER_ENABLED, true)
 internal suspend fun PreferencesStore.setFastingStartReminderEnabledImpl(v: Boolean) =
     setBoolPref(Keys.FASTING_START_REMINDER_ENABLED, v)
 

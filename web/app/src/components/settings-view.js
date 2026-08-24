@@ -804,7 +804,7 @@ export class SettingsView extends HTMLElement {
             <option value="false" ${p.fastingAutoWindows !== true ? "selected" : ""}>Off</option>
             <option value="true" ${p.fastingAutoWindows === true ? "selected" : ""}>On</option>
           </select>
-          <p class="nutrient-picker__hint">When on, your fast starts automatically when the eating window closes and ends at the goal, with no buttons on Home. Works while this page is open.</p>
+          <p class="nutrient-picker__hint">When on, your fast starts automatically at the fast start time and ends at the goal, with no buttons on Home. Works while this page is open.</p>
         </div>
         <div class="field">
           <label for="calorieGaugeMode">Calorie gauge</label>

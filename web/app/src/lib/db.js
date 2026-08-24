@@ -425,8 +425,8 @@ export const profile = {
  * @property {"gramsOnly"|"heuristic"|"aiCall"} [servingUnitInferenceMode] How to fill non-gram units when AI omits them
  * @property {Array<{id: string, date: string, name: string, calories: number}>} [manualActiveEntries] Local-only active burn logs
  * @property {boolean} [showFasting] Optional local-only intermittent-fasting timer (off by default)
- * @property {number} [fastingGoalHours] Goal fast length in hours; 0 = no goal
- * @property {number} [fastingEatHours] Eating-window length in hours; 0 = not configured
+ * @property {number} [fastingGoalHours] Goal fast length in hours; 16 by default (16:8 protocol), 0 = no goal
+ * @property {number} [fastingEatHours] Eating-window length in hours; 8 by default (16:8 protocol), 0 = not configured
  * @property {boolean} [fastingAutoWindows] Auto-cycle: fast starts when the eating window closes, ends at the goal
  * @property {number} [fastingStartHour] Daily fast-start clock hour (0-23, default 20)
  * @property {number} [fastingStartMinute] Daily fast-start clock minute (0-59)
@@ -480,8 +480,8 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   servingUnitInferenceMode: "gramsOnly",
   manualActiveEntries: [],
   showFasting: false,
-  fastingGoalHours: 0,
-  fastingEatHours: 0,
+  fastingGoalHours: 16,
+  fastingEatHours: 8,
   fastingAutoWindows: true,
   fastingStartHour: 20,
   fastingStartMinute: 0,

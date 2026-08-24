@@ -144,15 +144,15 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
         caffeineTrackingEnabled = this[Keys.CAFFEINE_TRACKING_ENABLED] ?: false,
         caffeineQuickKinds = CaffeineKind.quickKindsFromStorage(this[Keys.CAFFEINE_QUICK_KINDS]),
         fastingEnabled = this[Keys.FASTING_ENABLED] ?: false,
-        fastingGoalHours = (this[Keys.FASTING_GOAL_HOURS] ?: 0).coerceIn(0, MAX_FASTING_GOAL_HOURS),
-        fastingEatHours = (this[Keys.FASTING_EAT_HOURS] ?: 0).coerceIn(0, MAX_FASTING_EAT_HOURS),
+        fastingGoalHours = (this[Keys.FASTING_GOAL_HOURS] ?: DEFAULT_FASTING_GOAL_HOURS).coerceIn(0, MAX_FASTING_GOAL_HOURS),
+        fastingEatHours = (this[Keys.FASTING_EAT_HOURS] ?: DEFAULT_FASTING_EAT_HOURS).coerceIn(0, MAX_FASTING_EAT_HOURS),
         fastingGoalNotificationEnabled = this[Keys.FASTING_GOAL_NOTIFICATION_ENABLED] ?: true,
         fastingEndReminderLeadMinutes = (this[Keys.FASTING_END_REMINDER_LEAD_MINUTES]
             ?: DEFAULT_FASTING_END_REMINDER_LEAD_MINUTES).coerceIn(0, MAX_FASTING_REMINDER_LEAD_MINUTES),
         fastingAutoWindows = this[Keys.FASTING_AUTO_WINDOWS] ?: true,
         fastingStartHour = (this[Keys.FASTING_START_HOUR] ?: DEFAULT_FASTING_START_HOUR).coerceIn(0, 23),
         fastingStartMinute = (this[Keys.FASTING_START_MINUTE] ?: DEFAULT_FASTING_START_MINUTE).coerceIn(0, 59),
-        fastingStartReminderEnabled = this[Keys.FASTING_START_REMINDER_ENABLED] ?: false,
+        fastingStartReminderEnabled = this[Keys.FASTING_START_REMINDER_ENABLED] ?: true,
         fastingStartReminderLeadMinutes = (this[Keys.FASTING_START_REMINDER_LEAD_MINUTES]
             ?: DEFAULT_FASTING_START_REMINDER_LEAD_MINUTES).coerceIn(0, MAX_FASTING_REMINDER_LEAD_MINUTES),
         waterReminderEnabled = this[Keys.WATER_REMINDER_ENABLED] ?: false,
