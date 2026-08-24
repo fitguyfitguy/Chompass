@@ -1074,6 +1074,7 @@
     <string name="settings_section_fallback">Fallback Provider</string>
     <string name="settings_enable_fallback">Enable Fallback</string>
     <string name="settings_fallback_footer">If your primary provider fails (overload, rate limit, network error), the app retries automatically with this fallback. Same provider as primary is allowed. Just pick a different model.</string>
+    <string name="settings_fallback_on_device_switch_notice">Switching on-device models is slow: the fallback model starts from a cold load, up to a minute or more. Keeping one model is usually faster.</string>
 
     <string name="settings_health_connect">Health Connect</string>
     <string name="settings_manage_health_access">Manage Health Connect access</string>
