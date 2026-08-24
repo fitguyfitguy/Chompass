@@ -96,14 +96,15 @@ object FastingAutoPlanner {
             val zone = java.time.ZoneId.systemDefault()
             val scheduledStart = if (now >= todayT) todayT else todayT - 24 * 60 * 60_000L
             // Missed-alarm catch-up: the auto-start at [scheduledStart] was
-            // skipped (device off), the user has cycle history, and they last
-            // stopped eating before that scheduled start — so the fast should
-            // already be running. Start it at the scheduled instant so the
-            // cycle stays on the clock. A user who stopped *after* the start
-            // time is in their eating phase and waits for the next one; a
-            // fresh user (no history) waits for the next start time too.
+            // skipped (device off, alarm lost, or auto mode just enabled) — so
+            // the fast should already be running. Start it at the scheduled
+            // instant so the cycle stays on the clock. A user who stopped
+            // eating *after* the start time is still in their eating phase and
+            // waits for the next one; every other not-fasting state (fresh
+            // user included — enabling Auto fast windows is the opt-in to the
+            // self-driving cycle) picks the fast up from the scheduled start.
             val lastEnded = s.lastEndedAtMillis
-            if (lastEnded != null && lastEnded < scheduledStart && now >= scheduledStart) {
+            if ((lastEnded == null || lastEnded < scheduledStart) && now >= scheduledStart) {
                 repo.start(nowMillis = scheduledStart, auto = true)
             }
         }

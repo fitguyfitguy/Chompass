@@ -1307,6 +1307,14 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             val eat = container.prefs.fastingEatHours.first()
             val auto = container.prefs.fastingAutoWindows.first()
             val windowEnds = s.eatingWindowEndsAtMillis(eat, now)
+            val phase = when {
+                s.isFasting -> FastingPhase.FASTING
+                // Auto mode: the schedule is the boundary, so any stop
+                // opens the eating phase until the next start time.
+                auto && s.lastEndedAtMillis != null -> FastingPhase.EATING
+                windowEnds != null -> FastingPhase.EATING
+                else -> FastingPhase.IDLE
+            }
             val nextFastStart = when {
                 s.isFasting -> null
                 // Auto cycle needs a goal length to be meaningful (the fast
@@ -1319,27 +1327,25 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 )
                 else -> windowEnds
             }
+            // Eating-window elapsed is anchored to the last stop whenever the
+            // eating phase is active (auto mode included) — mirrors the PWA
+            // fasting card instead of zeroing out outside the manual window.
+            val lastEnded = s.lastEndedAtMillis
+            val eatElapsed = if (phase == FastingPhase.EATING && lastEnded != null) {
+                (now - lastEnded).coerceAtLeast(0L)
+            } else {
+                0L
+            }
             _ui.update {
                 it.copy(
-                    fastingPhase = when {
-                        s.isFasting -> FastingPhase.FASTING
-                        // Auto mode: the schedule is the boundary, so any stop
-                        // opens the eating phase until the next start time.
-                        auto && s.lastEndedAtMillis != null -> FastingPhase.EATING
-                        windowEnds != null -> FastingPhase.EATING
-                        else -> FastingPhase.IDLE
-                    },
+                    fastingPhase = phase,
                     fastingElapsedMillis = s.elapsedMillis(now),
                     fastingNowMillis = now,
-                    fastingEatingElapsedMillis = if (windowEnds != null) {
-                        (now - (s.lastEndedAtMillis ?: now)).coerceAtLeast(0L)
-                    } else {
-                        0L
-                    },
+                    fastingEatingElapsedMillis = eatElapsed,
                     fastingNextFastStartMillis = nextFastStart,
                     fastingGoalReached = s.goalReached(goal, now),
                     fastingAutoStarted = s.autoStarted,
-                    fastingLastEndedAtMillis = s.lastEndedAtMillis,
+                    fastingLastEndedAtMillis = lastEnded,
                     fastingLastFastStartedAtMillis = s.lastFastStartedAtMillis,
                 )
             }
