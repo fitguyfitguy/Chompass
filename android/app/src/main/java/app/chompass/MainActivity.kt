@@ -507,12 +507,17 @@ open class MainActivity : ComponentActivity() {
                 container.testDataSeeder.seedFullyUtilized(
                     keto = actions.seedKetoSettings,
                     busyHome = actions.seedBusyHome,
+                    macroCycle = actions.seedFullMacroCycle,
                 )
             } else {
                 if (actions.seedTestData) container.testDataSeeder.seedYear()
                 if (actions.seedBodyMetrics) container.testDataSeeder.seedBodyMetrics()
                 if (actions.seedBodyMetricsTwoYears) container.testDataSeeder.seedTwoYearsBodyMetrics()
                 if (actions.seedKetoSettings) container.testDataSeeder.seedKetoSettings()
+                if (actions.seedMacroCycle) {
+                    runCatching { container.testDataSeeder.seedMacroCycle() }
+                        .onFailure { Log.e(PHOTO_IMPORT_TAG, "seedMacroCycle failed", it) }
+                }
             }
             if (actions.seedAnalysisQueue) {
                 runCatching { container.testDataSeeder.seedAnalysisQueue() }

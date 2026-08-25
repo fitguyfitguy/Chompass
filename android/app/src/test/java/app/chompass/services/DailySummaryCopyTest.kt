@@ -1,6 +1,11 @@
 package app.chompass.services
 
 import android.app.Application
+import app.chompass.models.MacroDayProfile
+import app.chompass.models.MacroPlan
+import app.chompass.models.MacroPlanMode
+import app.chompass.models.UserProfile
+import app.chompass.models.WidgetSnapshot
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -9,6 +14,8 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
+import java.time.Instant
+import java.time.LocalDate
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [33], application = Application::class)
@@ -138,5 +145,45 @@ class DailySummaryCopyTest {
         )!!
         assertTrue(copy.title.isNotBlank())
         assertTrue(!copy.title.contains("50"))
+    }
+
+    // -- #60: goal kcal resolution (widget snapshot first, day-type plan next) --
+
+    private fun snapshot(displayGoalTarget: Int? = null, calorieGoal: Int = 2400) = WidgetSnapshot(
+        date = Instant.EPOCH,
+        dayStart = Instant.EPOCH,
+        calories = 1000,
+        calorieGoal = calorieGoal,
+        protein = 10.0,
+        proteinGoal = 150,
+        carbs = 10.0,
+        carbsGoal = 250,
+        fat = 10.0,
+        fatGoal = 70,
+        displayGoalTarget = displayGoalTarget,
+    )
+
+    @Test
+    fun goalKcal_prefersFreshWidgetTarget() {
+        assertEquals(3000, summaryGoalKcal(snapshot(displayGoalTarget = 3000), null, LocalDate.now()))
+    }
+
+    @Test
+    fun goalKcal_resolvesTheDayThroughTheMacroPlan() {
+        val plan = MacroPlan(
+            enabled = true,
+            profiles = listOf(MacroDayProfile("t", "Training day", 2800, 170, 350, 78)),
+            mode = MacroPlanMode.MANUAL,
+            defaultProfileId = "t",
+        )
+        val profile = UserProfile(customCalories = 2400, customProtein = 150, customCarbs = 250, customFat = 70, macroPlan = plan)
+        assertEquals(2800, summaryGoalKcal(widgetForDay = null, profile = profile, day = LocalDate.now()))
+    }
+
+    @Test
+    fun goalKcal_fallsBackToBaseTargetThenZero() {
+        val base = UserProfile(customCalories = 2400, customProtein = 150, customCarbs = 250, customFat = 70)
+        assertEquals(2400, summaryGoalKcal(null, base, LocalDate.now()))
+        assertEquals(0, summaryGoalKcal(null, null, LocalDate.now()))
     }
 }

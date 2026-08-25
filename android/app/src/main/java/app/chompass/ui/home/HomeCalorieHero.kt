@@ -16,12 +16,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -114,6 +117,10 @@ internal fun CalorieHero(
     /** Resting (basal) burn so far, when known. Feeds the budget sheet's burned-today total. */
     restingBurn: Int? = null,
     freezeProgress: Boolean = false,
+    /** #60: today's day-type label ("Training day"); null hides the chip. */
+    dayTypeLabel: String? = null,
+    /** Opens the day-type quick-switch sheet; chip hidden when null (previews). */
+    onDayTypeClick: (() -> Unit)? = null,
     /** True when a goal-change explanation exists; shows the ⓘ dialog's recalc-details link. */
     recalcDetailsAvailable: Boolean = false,
     /** Opens the recalc details sheet (closes the ⓘ budget dialog first). */
@@ -399,6 +406,10 @@ internal fun CalorieHero(
             } else if (showActiveCalories && liveActiveBurn > 0) {
                 BurnCaption(active = liveActiveBurn)
             }
+            if (dayTypeLabel != null && onDayTypeClick != null) {
+                Spacer(Modifier.size(6.dp))
+                DayTypeChip(label = dayTypeLabel, onClick = onDayTypeClick)
+            }
         }
     }
     if (showBudgetSheet) {
@@ -412,6 +423,38 @@ internal fun CalorieHero(
             recalcDetailsAvailable = recalcDetailsAvailable && onShowRecalcDetails != null,
             onShowRecalcDetails = onShowRecalcDetails,
         )
+    }
+}
+
+/** Small tappable pill under the hero captions: today's day type (#60). */
+@Composable
+private fun DayTypeChip(label: String, onClick: () -> Unit) {
+    val a11y = stringResource(R.string.home_day_type_chip_a11y, label)
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(50),
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        modifier = Modifier.semantics { contentDescription = a11y },
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
+            modifier = Modifier.padding(start = 10.dp, end = 6.dp, top = 4.dp, bottom = 4.dp),
+        ) {
+            Text(
+                label,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                maxLines = 1,
+            )
+            Icon(
+                Icons.Filled.KeyboardArrowDown,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier.size(14.dp),
+            )
+        }
     }
 }
 

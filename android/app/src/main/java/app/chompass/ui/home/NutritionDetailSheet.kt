@@ -53,6 +53,7 @@ import app.chompass.models.FoodEntry
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.OptionalNutrientGoals
+import app.chompass.models.ResolvedDayTargets
 import app.chompass.models.UserProfile
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.isDarkTheme
@@ -79,6 +80,8 @@ import kotlin.math.roundToInt
 fun NutritionDetailSheet(
     entries: List<FoodEntry>,
     profile: UserProfile?,
+    /** #60: the viewed day's resolved targets; null falls back to the base set. */
+    resolved: ResolvedDayTargets? = null,
     homeTopNutrients: List<HomeTopNutrient>,
     optionalGoals: OptionalNutrientGoals,
     macroScale: Float = 1f,
@@ -159,18 +162,19 @@ fun NutritionDetailSheet(
             item { NutritionSheetSectionHeader(stringResource(R.string.nutrition_section_macros)) }
             item {
                 Card {
-                    val calorieGoal = if (macroScale > 1f && profile != null) {
-                        (profile.effectiveCalories * macroScale).roundToInt()
+                    val baseCalorieGoal = resolved?.targets?.calories ?: profile?.effectiveCalories ?: 2000
+                    val calorieGoal = if (macroScale > 1f && (resolved != null || profile != null)) {
+                        (baseCalorieGoal * macroScale).roundToInt()
                     } else {
-                        profile?.effectiveCalories ?: 2000
+                        baseCalorieGoal
                     }
                     DetailRow(Icons.Filled.LocalFireDepartment, stringResource(R.string.nutrition_label_calories), "$calories", stringResource(R.string.unit_kcal), goal = "$calorieGoal", accentColor = AppColors.Calorie)
                     Hairline()
-                    DetailRow(null, stringResource(R.string.nutrition_label_protein), MacroValueFormatter.string(protein), stringResource(R.string.unit_g), goal = "${HomeTopNutrient.PROTEIN.goal(profile, optionalGoals, macroScale)}", labelGlyph = "P", accentColor = AppColors.Protein)
+                    DetailRow(null, stringResource(R.string.nutrition_label_protein), MacroValueFormatter.string(protein), stringResource(R.string.unit_g), goal = "${HomeTopNutrient.PROTEIN.goal(resolved, profile, optionalGoals, macroScale)}", labelGlyph = "P", accentColor = AppColors.Protein)
                     Hairline()
-                    DetailRow(null, stringResource(R.string.nutrition_label_carbs), MacroValueFormatter.string(carbs), stringResource(R.string.unit_g), goal = "${HomeTopNutrient.CARBS.goal(profile, optionalGoals, macroScale)}", labelGlyph = "C", accentColor = AppColors.Carbs)
+                    DetailRow(null, stringResource(R.string.nutrition_label_carbs), MacroValueFormatter.string(carbs), stringResource(R.string.unit_g), goal = "${HomeTopNutrient.CARBS.goal(resolved, profile, optionalGoals, macroScale)}", labelGlyph = "C", accentColor = AppColors.Carbs)
                     Hairline()
-                    DetailRow(null, stringResource(R.string.nutrition_label_fat), MacroValueFormatter.string(fat), stringResource(R.string.unit_g), goal = "${HomeTopNutrient.FAT.goal(profile, optionalGoals, macroScale)}", labelGlyph = "F", accentColor = AppColors.Fat)
+                    DetailRow(null, stringResource(R.string.nutrition_label_fat), MacroValueFormatter.string(fat), stringResource(R.string.unit_g), goal = "${HomeTopNutrient.FAT.goal(resolved, profile, optionalGoals, macroScale)}", labelGlyph = "F", accentColor = AppColors.Fat)
                 }
             }
 

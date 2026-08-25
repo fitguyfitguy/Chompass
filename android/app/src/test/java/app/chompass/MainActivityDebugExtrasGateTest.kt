@@ -33,6 +33,8 @@ class MainActivityDebugExtrasGateTest {
             putExtra("seed_body_metrics", true)
             putExtra("seed_body_metrics_2y", true)
             putExtra("seed_keto_settings", true)
+            putExtra("seed_macro_cycle", true)
+            putExtra("macro_cycle", true)
             putExtra("seed_active_calories", true)
             putExtra("seed_over_goal", true)
             putExtra("restore_real_data", true)
@@ -57,6 +59,20 @@ class MainActivityDebugExtrasGateTest {
         val actions = consumeDebugIntentExtras(intent, debugEnabled = false)
         // Every flag/extra comes back at its default: no seed, no restore, no reset.
         assertEquals(DebugIntentActions(), actions)
+    }
+
+    @Test
+    fun debugBuild_parsesAndStripsMacroCycleExtras() {
+        val intent = Intent().apply {
+            putExtra("seed_macro_cycle", true)
+            putExtra("macro_cycle", true)
+        }
+        val actions = consumeDebugIntentExtras(intent, debugEnabled = true)
+        assertTrue(actions.seedMacroCycle)
+        assertTrue(actions.seedFullMacroCycle)
+        assertTrue(actions.hasSeedAction)
+        assertFalse(intent.hasExtra("seed_macro_cycle"))
+        assertFalse(intent.hasExtra("macro_cycle"))
     }
 
     @Test

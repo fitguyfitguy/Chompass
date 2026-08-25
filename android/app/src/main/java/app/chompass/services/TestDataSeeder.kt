@@ -5,6 +5,7 @@ import app.chompass.BuildConfig
 import app.chompass.models.ActivityLevel
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.BodyMeasurement
+import app.chompass.models.CalorieSafety
 import app.chompass.models.ChatMessage
 import app.chompass.models.DietMode
 import app.chompass.models.FoodEntry
@@ -13,6 +14,10 @@ import app.chompass.models.Gender
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.KetoCarbMode
+import app.chompass.models.MacroDayProfile
+import app.chompass.models.MacroPlan
+import app.chompass.models.MacroPlanMode
+import app.chompass.models.MacroPlanResolver
 import app.chompass.models.MealType
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.QueuedAnalysis
@@ -34,6 +39,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.util.UUID
+import kotlin.math.roundToInt
 
 /**
  * Dev-only helper that swaps the user's real data for a year of synthetic food + weight
@@ -80,6 +86,66 @@ class TestDataSeeder(private val container: AppContainer) {
         container.prefs.setOnboardingCompleted(true)
     }
 
+    /**
+     * Focused seeder for macro day-type debugging (#60 phase 1): Training/Rest
+     * profiles on a 2-on/1-off cycle anchored today−14, with one past and one
+     * future override. Mutates only the profile (like [seedKetoSettings]) —
+     * food/weight history stays untouched. KETO keeps the plan disabled (the
+     * feature is STANDARD-only, settled decision Q4).
+     *
+     *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_macro_cycle true
+     *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_full true --ez macro_cycle true
+     */
+    suspend fun seedMacroCycle() {
+        if (!BuildConfig.DEBUG) return
+        snapshotRealDataIfNeeded()
+
+        val baseProfile = container.profileRepository.profile.first()
+            ?: UserProfile(weightKg = 80.0, goalWeightKg = 72.0)
+        container.profileRepository.save(baseProfile.copy(macroPlan = macroCyclePlan(baseProfile)))
+        container.prefs.setOnboardingCompleted(true)
+    }
+
+    /** The seeded plan: ±300 kcal Training/Rest spread around the base targets. */
+    internal fun macroCyclePlan(profile: UserProfile): MacroPlan {
+        val base = MacroPlanResolver.baseTargets(profile)
+        val trainingCalories = base.calories + 300
+        val restCalories = (base.calories - 300).coerceAtLeast(CalorieSafety.ABSOLUTE_FLOOR_KCAL)
+        val trainingCarbs = base.carbsG + 45
+        val restCarbs = (base.carbsG - 60).coerceAtLeast(20)
+        val training = MacroDayProfile(
+            id = "seed-training",
+            name = "Training day",
+            calories = trainingCalories,
+            proteinG = base.proteinG + 10,
+            carbsG = trainingCarbs,
+            fatG = ((trainingCalories - (base.proteinG + 10) * 4 - trainingCarbs * 4) / 9.0).roundToInt(),
+        )
+        val rest = MacroDayProfile(
+            id = "seed-rest",
+            name = "Rest day",
+            calories = restCalories,
+            proteinG = base.proteinG,
+            carbsG = restCarbs,
+            fatG = ((restCalories - base.proteinG * 4 - restCarbs * 4) / 9.0).roundToInt(),
+        )
+        val today = LocalDate.now()
+        return MacroPlan(
+            enabled = profile.dietMode != DietMode.KETO,
+            profiles = listOf(training, rest),
+            mode = MacroPlanMode.CYCLE,
+            defaultProfileId = training.id,
+            cyclePattern = listOf(training.id, training.id, rest.id),
+            cycleAnchorDay = today.minusDays(14).toString(),
+            dayAssignments = mapOf(
+                // Past override: a rest day the 2-on/1-off cycle would call training.
+                today.minusDays(3).toString() to rest.id,
+                // Future override: a training day the cycle would call rest.
+                today.plusDays(2).toString() to training.id,
+            ),
+        )
+    }
+
     suspend fun seedYear() {
         snapshotRealDataIfNeeded()
 
@@ -113,8 +179,9 @@ class TestDataSeeder(private val container: AppContainer) {
      *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_full true
      *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_full true --ez seed_keto_settings true
      *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_full true --ez seed_busy_home true
+     *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_full true --ez macro_cycle true
      */
-    suspend fun seedFullyUtilized(keto: Boolean = false, busyHome: Boolean = false) {
+    suspend fun seedFullyUtilized(keto: Boolean = false, busyHome: Boolean = false, macroCycle: Boolean = false) {
         if (!BuildConfig.DEBUG) return
         _seeding.value = true
         try {
@@ -135,7 +202,12 @@ class TestDataSeeder(private val container: AppContainer) {
                 goalBodyFatPercentage = 0.15,
                 goalWeightKg = 70.0,
                 weeklyChangeKg = 0.5,
-            )
+            ).let { base ->
+                // #60 macro_cycle flag: Training/Rest day types on the fixture
+                // profile. Ignored with keto (STANDARD-only, Q4) — the plan is
+                // stored disabled instead.
+                if (macroCycle) base.copy(macroPlan = macroCyclePlan(base)) else base
+            }
             container.profileRepository.save(profile)
             container.prefs.setOnboardingCompleted(true)
 

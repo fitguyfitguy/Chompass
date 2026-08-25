@@ -30,6 +30,10 @@ internal data class DebugIntentActions(
     val seedBodyMetrics: Boolean = false,
     val seedBodyMetricsTwoYears: Boolean = false,
     val seedKetoSettings: Boolean = false,
+    /** Debug-only: Training/Rest macro day-type plan on a 2-on/1-off cycle (#60). */
+    val seedMacroCycle: Boolean = false,
+    /** Debug-only: adds the #60 day-type plan to seed_full (ignored with keto). */
+    val seedFullMacroCycle: Boolean = false,
     val seedActiveCalories: Boolean = false,
     /** Debug-only: seed the analysis queue + prompt history (Codeberg #53). */
     val seedAnalysisQueue: Boolean = false,
@@ -88,7 +92,7 @@ internal data class DebugIntentActions(
 ) {
     val hasSeedAction: Boolean
         get() = seedTestData || seedFull || seedBodyMetrics || seedBodyMetricsTwoYears ||
-            seedKetoSettings || seedActiveCalories || seedAnalysisQueue
+            seedKetoSettings || seedActiveCalories || seedAnalysisQueue || seedMacroCycle
     /** Seeders that write onboarded=true before the heavy diary replace. */
     val writesOnboarded: Boolean get() = hasSeedAction
 }
@@ -113,6 +117,8 @@ internal fun consumeDebugIntentExtras(
         seedBodyMetrics = intent.getBooleanExtra("seed_body_metrics", false),
         seedBodyMetricsTwoYears = intent.getBooleanExtra("seed_body_metrics_2y", false),
         seedKetoSettings = intent.getBooleanExtra("seed_keto_settings", false),
+        seedMacroCycle = BuildConfig.DEBUG && intent.getBooleanExtra("seed_macro_cycle", false),
+        seedFullMacroCycle = BuildConfig.DEBUG && intent.getBooleanExtra("macro_cycle", false),
         seedActiveCalories = intent.getBooleanExtra("seed_active_calories", false),
         seedAnalysisQueue = BuildConfig.DEBUG && intent.getBooleanExtra("seed_analysis_queue", false),
         activeTodayOverride = intent.getIntExtra("active_today_override", Int.MIN_VALUE)
@@ -176,6 +182,8 @@ internal fun consumeDebugIntentExtras(
     if (actions.seedBodyMetrics) intent.removeExtra("seed_body_metrics")
     if (actions.seedBodyMetricsTwoYears) intent.removeExtra("seed_body_metrics_2y")
     if (actions.seedKetoSettings) intent.removeExtra("seed_keto_settings")
+    if (actions.seedMacroCycle) intent.removeExtra("seed_macro_cycle")
+    if (actions.seedFullMacroCycle) intent.removeExtra("macro_cycle")
     if (actions.seedAnalysisQueue) intent.removeExtra("seed_analysis_queue")
     if (actions.seedActiveCalories) {
         intent.removeExtra("seed_active_calories")
