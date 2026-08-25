@@ -98,4 +98,74 @@ class CoachSystemPromptTest {
         assertFalse(prompt.contains("## Fasting"))
         assertFalse(prompt.contains("intermittent fasting"))
     }
+
+    // -- Day types (#60 phase 4) --------------------------------------------
+
+    private fun planProfile(): UserProfile {
+        val today = java.time.LocalDate.now(zone)
+        return profile().copy(
+            macroPlan = app.chompass.models.MacroPlan(
+                enabled = true,
+                profiles = listOf(
+                    app.chompass.models.MacroDayProfile("t", "Training day", 2800, 170, 350, 78),
+                    app.chompass.models.MacroDayProfile("r", "Rest day", 2100, 150, 160, 78),
+                ),
+                mode = app.chompass.models.MacroPlanMode.CYCLE,
+                defaultProfileId = "r",
+                cyclePattern = listOf("t", "r"),
+                cycleAnchorDay = today.toString(),
+            ),
+        )
+    }
+
+    @Test
+    fun dayTypes_summarySitsAboveCacheMarker_todayLineBelowIt() {
+        val prompt = buildSystemPrompt(
+            profile = planProfile(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            foods = emptyList(),
+            heightMetric = true,
+            weightMetric = true,
+        )
+        val volatileStart = prompt.indexOf("\n## Current date")
+        assertTrue(volatileStart > 0)
+        val stable = prompt.substring(0, volatileStart)
+        // Stable config: profile list + schedule + weekly average.
+        assertTrue(stable.contains("Day types: Training day 2800 kcal (170P/350C/78F); Rest day 2100 kcal (150P/160C/78F)"))
+        assertTrue(stable.contains("Day-type schedule: repeating cycle Training day → Rest day"))
+        assertTrue(stable.contains("weekly average target 2450 kcal/day"))
+        // The per-day line must never live in the cached prefix.
+        assertFalse(stable.contains("Today is a"))
+        // Volatile tail carries today's resolved day type (anchor = today → training).
+        val tail = prompt.substring(volatileStart)
+        assertTrue(tail.contains("Today is a Training day: 2800 kcal, 170P/350C/78F"))
+        assertTrue(tail.contains("weekly average target"))
+    }
+
+    @Test
+    fun dayTypes_off_omitsBothLines() {
+        val prompt = buildSystemPrompt(
+            profile = profile().copy(macroPlan = null),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            foods = emptyList(),
+            heightMetric = true,
+            weightMetric = true,
+        )
+        assertFalse(prompt.contains("Day types:"))
+        assertFalse(prompt.contains("Today is a"))
+        // A disabled plan (keto pause) also shows nothing.
+        val paused = planProfile().copy(macroPlan = planProfile().macroPlan?.copy(enabled = false))
+        val pausedPrompt = buildSystemPrompt(
+            profile = paused,
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            foods = emptyList(),
+            heightMetric = true,
+            weightMetric = true,
+        )
+        assertFalse(pausedPrompt.contains("Day types:"))
+        assertFalse(pausedPrompt.contains("Today is a"))
+    }
 }

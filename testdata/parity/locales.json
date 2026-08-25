@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "notes": "Shared UI locale contract for Android resource packs and the PWA i18n catalog. Speech recognition languages are independent (see speechLocales). Pref key: Android system/per-app language; PWA prefs.uiLang (empty = auto-detect browser). Fallback always English (en). maxMissing raised to 35 on 2026-08-24 for the nicotine-tracker strings; raised to 40 on 2026-02-13 for settings Units row + Trackers group + search; raised to 85 on 2026-08-24 for caffeine tracker + daily-notes toggle + prompt-history strings; raised to 90 on 2026-08-25 for the macro day-type strings (#60, en+de shipped, remaining locales batch before 4.0.0); raised to 130 on 2026-08-25 for the day-types Settings editor (#60 phase 2, en+de shipped, remaining locales batch before 4.0.0).",
+  "notes": "Shared UI locale contract for Android resource packs and the PWA i18n catalog. Speech recognition languages are independent (see speechLocales). Pref key: Android system/per-app language; PWA prefs.uiLang (empty = auto-detect browser). Fallback always English (en). maxMissing raised to 35 on 2026-08-24 for the nicotine-tracker strings; raised to 40 on 2026-02-13 for settings Units row + Trackers group + search; raised to 85 on 2026-08-24 for caffeine tracker + daily-notes toggle + prompt-history strings; raised to 90 on 2026-08-25 for the macro day-type strings (#60, en+de shipped, remaining locales batch before 4.0.0); raised to 130 on 2026-08-25 for the day-types Settings editor (#60 phase 2, en+de shipped, remaining locales batch before 4.0.0); dropped to 0 (de/es/fr) and 5 (all other packs, small buffer) on 2026-08-25 when the full batch landed: caffeine + nicotine + notes + search + units + prompt-history strings and all day-types strings incl. the phase-4 recalc-sheet + calculation-methods additions (#60 phase 4).",
   "defaultLocale": "en",
   "fallbackLocale": "en",
   "pwaPrefKey": "uiLang",
@@ -28,7 +28,7 @@
       "speechCodes": [
         "ar"
       ],
-      "maxMissing": 130
+      "maxMissing": 5
     },
     {
       "id": "az",
@@ -40,7 +40,7 @@
       "speechCodes": [
         "az"
       ],
-      "maxMissing": 130
+      "maxMissing": 5
     },
     {
       "id": "de",
@@ -53,7 +53,7 @@
         "de",
         "de-DE"
       ],
-      "maxMissing": 130
+      "maxMissing": 0
     },
     {
       "id": "es",
@@ -66,7 +66,7 @@
         "es",
         "es-ES"
       ],
-      "maxMissing": 130
+      "maxMissing": 0
     },
     {
       "id": "fr",
@@ -79,7 +79,7 @@
         "fr",
         "fr-FR"
       ],
-      "maxMissing": 130
+      "maxMissing": 0
     },
     {
       "id": "hi",
@@ -92,7 +92,7 @@
         "hi",
         "hi-IN"
       ],
-      "maxMissing": 130
+      "maxMissing": 5
     },
     {
       "id": "it",
@@ -105,7 +105,7 @@
         "it",
         "it-IT"
       ],
-      "maxMissing": 130
+      "maxMissing": 5
     },
     {
       "id": "ja",
@@ -118,7 +118,7 @@
         "ja",
         "ja-JP"
       ],
-      "maxMissing": 130
+      "maxMissing": 5
     },
     {
       "id": "ko",
@@ -131,7 +131,7 @@
         "ko",
         "ko-KR"
       ],
-      "maxMissing": 130
+      "maxMissing": 5
     },
     {
       "id": "nl",
@@ -144,7 +144,7 @@
         "nl",
         "nl-NL"
       ],
-      "maxMissing": 130
+      "maxMissing": 5
     },
     {
       "id": "pl",
@@ -157,7 +157,7 @@
         "pl",
         "pl-PL"
       ],
-      "maxMissing": 130
+      "maxMissing": 5
     },
     {
       "id": "pt-BR",
@@ -170,7 +170,7 @@
         "pt",
         "pt-BR"
       ],
-      "maxMissing": 130
+      "maxMissing": 5
     },
     {
       "id": "ro",
@@ -183,7 +183,7 @@
         "ro",
         "ro-RO"
       ],
-      "maxMissing": 130
+      "maxMissing": 5
     },
     {
       "id": "ru",
@@ -196,7 +196,7 @@
         "ru",
         "ru-RU"
       ],
-      "maxMissing": 130
+      "maxMissing": 5
     },
     {
       "id": "tr",
@@ -209,7 +209,7 @@
         "tr",
         "tr-TR"
       ],
-      "maxMissing": 130
+      "maxMissing": 5
     },
     {
       "id": "uk",
@@ -222,7 +222,7 @@
         "uk",
         "uk-UA"
       ],
-      "maxMissing": 130
+      "maxMissing": 5
     },
     {
       "id": "zh-CN",
@@ -235,7 +235,7 @@
         "zh",
         "zh-CN"
       ],
-      "maxMissing": 130
+      "maxMissing": 5
     }
   ],
   "speechLocales": {

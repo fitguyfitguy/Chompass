@@ -5,6 +5,7 @@ import app.chompass.models.CalorieSafety
 import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodGroundingProvenance
 import app.chompass.models.GroundingConfidence
+import app.chompass.models.MacroPlanEdit
 import app.chompass.models.MicronutrientValues
 import app.chompass.models.ServingUnitOption
 import app.chompass.models.OptionalNutrientGoals
@@ -342,6 +343,24 @@ data class GoalCalculation(
     val primaryError: String? = null,
     /** Deterministic inputs behind this calculation (formula baseline + data used). */
     val report: GoalCalculationReport? = null,
+    /**
+     * Per-day-type targets from the optional `profiles[]` response (#60 phase
+     * 4): matched by id against the plan at apply time. Empty when the plan is
+     * off, the model omitted the array (older behavior, on-device tier, parse
+     * miss), or the deterministic enforcement snapped the answer — then the
+     * apply path falls back to the kcal delta implied by the base change.
+     */
+    val profiles: List<GoalCalculationProfile> = emptyList(),
+)
+
+/** One `profiles[]` row from the AI goal response (#60 phase 4). */
+@Serializable
+data class GoalCalculationProfile(
+    val id: String,
+    val calories: Int,
+    val proteinG: Int,
+    val carbsG: Int,
+    val fatG: Int,
 )
 
 /** Where a stored goal-change entry came from (drives the sheet's title/subtitle). */
@@ -603,8 +622,47 @@ internal object FoodJsonParser {
             protein = macro("protein", 500),
             carbs = macro("carbs", 1200),
             fat = macro("fat", 400),
-            reason = json.optString("reason").takeIf { it.isNotBlank() }
+            reason = json.optString("reason").takeIf { it.isNotBlank() },
+            profiles = parseGoalProfiles(json),
         )
+    }
+
+    /**
+     * Optional `profiles[]` for macro day plans (#60 phase 4): one row per day
+     * type, matched by id at apply time. Accepts both `protein` and `protein_g`
+     * key styles; unknown rows are dropped by the apply path, so a garbage id
+     * is harmless. Capped at the plan's max profile count.
+     */
+    private fun parseGoalProfiles(json: JSONObject): List<GoalCalculationProfile> {
+        val raw = json.optJSONArray("profiles") ?: return emptyList()
+        fun intOf(row: JSONObject, key: String, fallbackKey: String): Int? =
+            when (val value = row.opt(key)) {
+                is Number -> value.toDouble().roundToInt()
+                is String -> value.toDoubleOrNull()?.roundToInt()
+                else -> when (val other = row.opt(fallbackKey)) {
+                    is Number -> other.toDouble().roundToInt()
+                    is String -> other.toDoubleOrNull()?.roundToInt()
+                    else -> null
+                }
+            }
+        val out = mutableListOf<GoalCalculationProfile>()
+        for (i in 0 until raw.length()) {
+            if (out.size >= MacroPlanEdit.MAX_PROFILES) break
+            val row = raw.optJSONObject(i) ?: continue
+            val id = row.optString("id").trim().takeIf { it.isNotEmpty() } ?: continue
+            val calories = intOf(row, "calories", "calories") ?: continue
+            out += GoalCalculationProfile(
+                id = id,
+                calories = calories.coerceIn(
+                    CalorieSafety.ABSOLUTE_FLOOR_KCAL,
+                    CalorieSafety.PARSER_CEILING_KCAL,
+                ),
+                proteinG = (intOf(row, "protein_g", "protein") ?: 0).coerceIn(0, 500),
+                carbsG = (intOf(row, "carbs_g", "carbs") ?: 0).coerceIn(0, 1200),
+                fatG = (intOf(row, "fat_g", "fat") ?: 0).coerceIn(0, 400),
+            )
+        }
+        return out
     }
 
     private fun parseConstituents(json: JSONObject): List<FoodConstituent> {

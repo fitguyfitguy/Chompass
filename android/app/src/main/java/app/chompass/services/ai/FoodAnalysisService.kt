@@ -15,6 +15,8 @@ import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.resolveModelForRequest
 import app.chompass.models.GoalFormulaReference
 import app.chompass.models.HeuristicServingUnitSettings
+import app.chompass.models.MacroPlanMode
+import app.chompass.models.MacroPlanResolver
 import app.chompass.models.NutritionConstants
 import app.chompass.models.ResolvedDayTargets
 import app.chompass.models.ServingUnitHeuristics
@@ -47,6 +49,8 @@ import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import java.io.IOException
+import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Locale
 import kotlin.math.abs
@@ -323,14 +327,19 @@ class FoodAnalysisService(
             "\nBODY MEASUREMENTS: the user's latest tape-measure circumferences and the metrics derived from them. Use as extra signal: a shrinking waist with steady or falling weight suggests recomposition, so keep protein high and don't over-cut. Treat the US-Navy body-fat figure as a rough estimate, not exact.\n$measurementsSummary"
         } else ""
 
+        // #60 phase 4: day-types block (profile list, today's day type, schedule,
+        // weekly average, `profiles[]` response contract). Empty when the plan is
+        // off, so prompts stay byte-identical for everyone else.
+        val dayTypesSection = dayTypesPromptSection(profile)
+
         val safePrompt = goalPrompt(
             profile, heightMetric, weightMetric, bmrMethod, weekly,
-            measuredSection, measurementsSection,
+            measuredSection, measurementsSection, dayTypesSection,
             safeObservedSection(signals, forecast, measuredTdee, weightMetric),
         )
         val smartPrompt = goalPrompt(
             profile, heightMetric, weightMetric, bmrMethod, weekly,
-            measuredSectionSmart, measurementsSection,
+            measuredSectionSmart, measurementsSection, dayTypesSection,
             smartObservedSection(signals, weights, foods, forecast, weightMetric),
         )
 
@@ -389,6 +398,7 @@ class FoodAnalysisService(
                 protein = profile.proteinGoal,
                 carbs = profile.carbsGoal,
                 fat = profile.fatGoal,
+                profiles = emptyList(),
                 reason = when {
                     measuredTdee != null ->
                         "Calculated from your measured Health Connect energy burn plus your weekly goal pace."
@@ -411,6 +421,7 @@ class FoodAnalysisService(
                     protein = profile.proteinGoal,
                     carbs = profile.carbsGoal,
                     fat = profile.fatGoal,
+                    profiles = emptyList(),
                     reason = "Applied your weekly goal pace to your observed maintenance.",
                 )
             }
@@ -446,6 +457,7 @@ class FoodAnalysisService(
         weekly: String,
         measuredSection: String,
         measurementsSection: String,
+        dayTypesSection: String,
         observedSection: String,
     ): String {
         val weight = if (weightMetric) String.format(Locale.US, "%.1f kg", profile.weightKg)
@@ -456,10 +468,19 @@ class FoodAnalysisService(
         val goalWeight = profile.goalWeightKg?.let { kg ->
             if (weightMetric) String.format(Locale.US, "%.1f kg", kg) else String.format(Locale.US, "%.1f lb", UnitFormat.kgToLbs(kg))
         } ?: "not set"
+        // #60 phase 4: with day types on, the response also carries a per-profile
+        // array; the allowed-key list and the JSON shape must say so.
+        val hasDayTypes = dayTypesSection.isNotEmpty()
+        val jsonShape = if (hasDayTypes) {
+            """{"calories":2000,"protein":150,"carbs":200,"fat":60,"reason":"Short reason under 100 characters","profiles":[{"id":"<day-type id>","calories":2600,"protein":170,"carbs":300,"fat":75}]}"""
+        } else {
+            """{"calories":2000,"protein":150,"carbs":200,"fat":60,"reason":"Short reason under 100 characters""""
+        }
+        val allowedKeys = if (hasDayTypes) "calories, protein, carbs, fat, reason, profiles" else "calories, protein, carbs, fat, reason"
         return """
             You are the goal calculator for a calorie & macro tracking app. Using the FORMULAS, the USER PROFILE, and any OBSERVED DATA below, compute the user's daily targets.
             Return ONLY valid JSON with these exact keys (integers, plus a short reason):
-            {"calories":2000,"protein":150,"carbs":200,"fat":60,"reason":"Short reason under 100 characters"}
+            $jsonShape
 
             Use the app's formulas as the basis. When OBSERVED DATA is present and reliable, prefer the empirical maintenance estimate it implies over the formula TDEE.
             FORMULAS
@@ -472,7 +493,7 @@ class FoodAnalysisService(
             - Carbs: the calories remaining after protein (4 kcal/g) and fat (9 kcal/g), divided by 4. Keep 4*protein + 4*carbs + 9*fat approximately equal to calories.
             BMR method in effect for this user: $bmrMethod.
             ${GoalFormulaReference.calorieSafetyLine()}
-            This user's BMR is ${profile.bmr.toInt()} kcal; floor is ${CalorieSafety.floorKcal(profile.bmr)} kcal. Use integers only. Output no keys other than calories, protein, carbs, fat, reason.
+            This user's BMR is ${profile.bmr.toInt()} kcal; floor is ${CalorieSafety.floorKcal(profile.bmr)} kcal. Use integers only. Output no keys other than $allowedKeys.
 
             USER PROFILE
             - Gender: ${profile.gender.name.lowercase()}
@@ -492,10 +513,54 @@ class FoodAnalysisService(
             - TDEE: ${profile.tdee.toInt()} kcal/day
             - Formula calorie target: ${profile.dailyCalories} kcal/day
             - Formula macros: ${profile.proteinGoal} g protein, ${profile.carbsGoal} g carbs, ${profile.fatGoal} g fat
+            $dayTypesSection
             $measuredSection
             $measurementsSection
             $observedSection
         """.trimIndent()
+    }
+
+    /**
+     * DAY TYPES block for both goal-prompt tiers (#60 phase 4): the profile
+     * list with current targets, today's active profile, the schedule, and the
+     * weekly (forward-window) average, plus the `profiles[]` response contract.
+     * Empty string when the plan is off — prompts stay byte-identical to the
+     * pre-plan shape, so non-plan users see zero change.
+     */
+    internal fun dayTypesPromptSection(profile: UserProfile, today: LocalDate = LocalDate.now()): String {
+        val plan = profile.macroPlan?.takeIf { it.enabled } ?: return ""
+        fun nameOf(id: String?): String = plan.profileById(id)?.name ?: "the default"
+        val schedule = when (plan.mode) {
+            MacroPlanMode.MANUAL ->
+                "manual, every day follows ${nameOf(plan.defaultProfileId)} unless overridden"
+            MacroPlanMode.WEEKDAYS ->
+                "by weekday (unset days follow ${nameOf(plan.defaultProfileId)}): " +
+                    DayOfWeek.entries.joinToString(", ") { day ->
+                        "${day.name.lowercase().replaceFirstChar { it.uppercase() }} ${nameOf(plan.weekdayProfileIds[day.name])}"
+                    }
+            MacroPlanMode.CYCLE ->
+                "repeating cycle " + plan.cyclePattern.map { nameOf(it) }.joinToString(" → ") +
+                    " (anchored ${plan.cycleAnchorDay ?: "unanchored"})"
+        }
+        val resolved = MacroPlanResolver.targetsFor(profile, today)
+        val todayLine = if (resolved.profileName != null) {
+            "- Today ($today) is a ${resolved.profileName}: ${resolved.targets.calories} kcal, " +
+                "${resolved.targets.proteinG} g protein, ${resolved.targets.carbsG} g carbs, ${resolved.targets.fatG} g fat."
+        } else {
+            "- Today ($today) currently resolves to the base targets."
+        }
+        val average = MacroPlanResolver.averageForward(plan, MacroPlanResolver.baseTargets(profile), today)
+        return buildString {
+            append("\n")
+            appendLine("DAY TYPES (the user rotates explicit per-day targets; keep this structure)")
+            plan.profiles.forEach { p ->
+                appendLine("- ${p.name} (id ${p.id}): ${p.calories} kcal, ${p.proteinG} g protein, ${p.carbsG} g carbs, ${p.fatG} g fat")
+            }
+            appendLine("- Schedule: $schedule")
+            appendLine(todayLine)
+            appendLine("- Weekly average target: ${average.calories} kcal/day.")
+            append("Rules: the top-level calories act as the today/average anchor. Keep each day type's role and the spread between them (high-carb training days, lower-carb rest days). Move every profile in the same direction as the top-level change. Never take any profile below this user's floor. Keep the weekly average near the top-level calories. Return the profiles array with one object per day type above, using those exact ids; in each, 4*protein + 4*carbs + 9*fat must be about that profile's calories.")
+        }
     }
 
     /**

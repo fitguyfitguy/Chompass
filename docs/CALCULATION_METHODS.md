@@ -46,6 +46,10 @@ Deterministic formulas are the **reference layer**. AI recalculation and adaptiv
 | WATER-DYN-A | Dynamic gross water goal | Heuristic     | `WaterGoalCalculator.grossGoalMl`              | ml/day   |
 | WATER-DYN-B | Food-water subtraction   | Heuristic     | `WaterGoalCalculator.foodWaterMl` / `netGoalMl` | ml/day  |
 | WATER-DYN-C | Adaptive reminder interval | Heuristic   | `WaterGoalCalculator.liveIntervalMin`          | min      |
+| MACRO-CYCLE-A | Day-type resolution      | Deterministic | `MacroPlanResolver.resolve` / `macro-plan.js resolveDay` | kcal/day, g/day |
+| MACRO-CYCLE-B | Forward window average   | Deterministic | `MacroPlanResolver.averageForward` / `averageForward` | kcal/day, g/day |
+| MACRO-CYCLE-C | Per-profile safety clamp | Guardrail     | `CalorieSafety.clampAuto` per profile at every write | kcal/day |
+| MACRO-CYCLE-D | Journaled target average | Deterministic | `MacroPlanResolver.journalAverage` / `journalAverage` | kcal/day, g/day |
 | NIGHT-BAL | Nightly energy-balance band | Display     | `DailySummaryPolicy.evaluate`                  | kcal     |
 
 ### BMR-MSJ: Mifflin-St Jeor
@@ -245,6 +249,8 @@ If currentCalories < safetyFloor, raise to the floor immediately (even without t
 
 **Locked calories:** if `caloriesLocked`, Adaptive skips the calorie write (including the sub-floor lift). Locked macros stay put when an unlocked calorie target is nudged (`applyCaloriesEdit`).
 
+**Day types (MACRO-CYCLE):** when a macro day plan is enabled, the baseline the tweak runs against is `AdaptiveGoalService.planCurrentCalories`: the journaled lookback average (MACRO-CYCLE-D over the last 14 days, used once ≥7 days of that window are journaled — what the user actually targeted, which is what the observed trend tests) or the forward window average (MACRO-CYCLE-B) before that. The signed adjustment then applies to EVERY day-type profile (spread preserved, MACRO-CYCLE-C clamps per profile) and the base target moves by the same delta; `updatedCalories` reports the new forward weekly average.
+
 ### AI-RECALC: AI goal recalculation (two tiers, per-dispatch selection)
 
 `FoodAnalysisService.calculateGoals` asks the AI for a full plan. The AI may replace the formula TDEE with a **hit-and-trial** maintenance estimate (logged intake minus the observed weight trend). The prompt is built TWICE and the tier follows the model that actually runs, picked per dispatch at the moment of the call:
@@ -285,6 +291,51 @@ if trustEmpir AND |model − (implied + pace)| > 150 AND |model − implied| <= 
 ```
 
 Rationale: with sparse weigh-ins the on-device model anchored the target at ~BMR (e.g. 1742 kcal vs formula TDEE ~2680), and CAL-SAFE passes it (it is ≥ BMR), so the guard is prompt-side plus this deterministic snap. SMART shows the raw series even when thin and trusts the model's judgment (cloud matrix validation; revisit if the cloud matrix shows the same failure patterns). Unit tests: `GoalPromptGateTest` (SAFE prompt contract via the delegate) + `GoalTierSelectionTest` (per-dispatch tier selection incl. fallback); device matrix: `run_goal_matrix_test` debug extra (docs/ON_DEVICE_LLM.md).
+
+**Day types (MACRO-CYCLE):** when a macro day plan is enabled, both prompt tiers carry a DAY TYPES block (profile list with current targets, today's active profile, the schedule, the weekly average) and the response schema gains an optional `profiles[]` array (`id`, `calories`, `protein_g`, `carbs_g`, `fat_g`; top-level numbers act as the today/average anchor). Rows are clamped per profile at parse and again at apply (`UserProfile.applyingAiGoalsToPlan`); ids that do not match the plan are ignored. When the model returns no array, or the deterministic snaps above fire (the snapped result clears it), every profile shifts by the same kcal delta the base change implies, macros re-balanced per profile (`MacroDayProfile.shiftedBy`). Locked base calories skip the plan application entirely. Unit tests: `GoalPlanRecalcTest`.
+
+### MACRO-CYCLE: day types (#60)
+
+Opt-in macro day plans (Settings → Goals & Nutrition → Day types): 2 to 7 named day-type profiles with explicit absolute targets, assigned by manual toggle, weekday map, or repeating cycle. Keto mode pauses the plan (data kept). Mirror implementations: `models/MacroPlanResolver.kt` (Android) and `web/app/src/lib/chompass-core/macro-plan.js` (PWA), gated by shared goldens in `testdata/parity/macro-plan-expected.json`.
+
+#### MACRO-CYCLE-A: Day-type resolution
+
+```
+resolve(date) = assignment[date]                     // manual per-day override, any mode
+             ?? mode(date)                            // MANUAL: default
+                                                       // WEEKDAYS: weekday map, missing -> default
+                                                       // CYCLE: pattern[floorMod(epochDay(date) − epochDay(anchor), pattern.size)]
+             ?? defaultProfile
+             ?? base targets (effectiveCalories / effective* macros)
+```
+
+Epoch-day integer arithmetic only (no datetime library, no zones): every device resolves a date identically, which is what the shared goldens assert.
+
+#### MACRO-CYCLE-B: Forward window average (planning)
+
+```
+averageForward(today) = mean(resolve(today .. today + window − 1))
+window = cycle pattern length (CYCLE), else 7 days
+```
+
+Already-planned per-day overrides inside the window count (that is what the user will actually eat). Used by AI Recalculate, Adaptive (before journal coverage), Coach "this week", and the widget/notification planning numbers.
+
+#### MACRO-CYCLE-C: Per-profile safety clamp
+
+```
+profileCalories = clampAuto(raw, BMR, TDEE)   // same floor/ceiling as CAL-SAFE
+macros re-balanced to the new calorie total (kcal-share distribution, fat absorbs the remainder)
+```
+
+Enforced at every write: the Settings editor, seeds, AI Recalculate rows and delta fallback, and the Adaptive spread alike. Averaging rule: since every profile ≥ floor, any average of profiles is ≥ floor too.
+
+#### MACRO-CYCLE-D: Journaled target average (analysis)
+
+```
+journalAverage(from, to) = mean(journaled entries in [from, to])   // gaps skipped, never filled
+```
+
+The goal journal freezes each day's resolved targets as they happen (past immutable, today live, future never journaled; gap-fill from the current plan is marked GAP_FILL). Progress range lines, goal pace, the Adaptive lookback, and diary export read journaled actuals; only gaps and future days resolve live. Skipping gaps (rather than filling them) keeps today's schedule from being smuggled into history.
 
 ### WATER-DYN-A: Dynamic gross water goal
 

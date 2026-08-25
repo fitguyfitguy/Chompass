@@ -1748,12 +1748,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 )
                 Log.d("Chompass", "recalculateGoals: got ${result.calories} kcal")
                 // Write unlocked fields only. Locked calories/macros survive Recalculate.
-                val next = current.applyingAiGoals(
-                    calories = result.calories,
-                    protein = result.protein,
-                    carbs = result.carbs,
-                    fat = result.fat,
-                )
+                // #60 phase 4: with day types enabled this also moves every
+                // day-type profile (explicit model rows when present, else the
+                // kcal delta the base change implies).
+                val next = current.applyingAiGoalsToPlan(result)
                 container.profileRepository.save(next)
                 lastRecalcSignature = next.goalInputSignature
                 container.prefs.setLastRecalcGoalSignature(next.goalInputSignature)

@@ -2,6 +2,7 @@ package app.chompass.models
 
 import kotlinx.serialization.Serializable
 import app.chompass.services.KetoCarbRecommendationService
+import app.chompass.services.ai.GoalCalculation
 import java.time.Instant
 import java.time.LocalDate
 import java.time.Period
@@ -527,6 +528,37 @@ data class UserProfile(
                 .copy(customCalories = targetCalories)
         }
         return applyCaloriesEdit(targetCalories)
+    }
+
+    /**
+     * Recalculate application with day types (#60 phase 4): the base target set
+     * is written by [applyingAiGoals]; when a macro plan is enabled (and base
+     * calories are not locked — locks stay base-scoped), every day-type profile
+     * moves too. Explicit model results ([GoalCalculation.profiles], matched by
+     * id, per-profile MACRO-CYCLE-C clamps) win; a missing or snapped array
+     * falls back to the same kcal delta the base change implies, so the
+     * training/rest spread survives and older-model responses still work.
+     */
+    fun applyingAiGoalsToPlan(result: GoalCalculation): UserProfile {
+        val base = applyingAiGoals(result.calories, result.protein, result.carbs, result.fat)
+        val plan = macroPlan?.takeIf { it.enabled } ?: return base
+        if (caloriesLocked) return base
+        val deltaKcal = base.effectiveCalories - effectiveCalories
+        val aiById = result.profiles.associateBy { it.id }
+        val updated = plan.profiles.map { profile ->
+            val ai = aiById[profile.id]
+            if (ai != null) {
+                profile.copy(
+                    calories = CalorieSafety.clampAuto(ai.calories, bmr, tdee),
+                    proteinG = ai.proteinG.coerceIn(0, 500),
+                    carbsG = ai.carbsG.coerceIn(0, 1200),
+                    fatG = ai.fatG.coerceIn(0, 400),
+                )
+            } else {
+                profile.shiftedBy(deltaKcal, bmr, tdee)
+            }
+        }
+        return base.copy(macroPlan = plan.copy(profiles = updated))
     }
 
     /**
