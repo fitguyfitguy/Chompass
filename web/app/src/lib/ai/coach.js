@@ -104,19 +104,26 @@ export function buildIntakeAverageBlock(entries, isoToday) {
     days.set(day, acc);
   }
   if (days.size === 0) return null;
-  const n = days.size;
-  const avg = { kcal: 0, p: 0, c: 0, f: 0 };
-  for (const acc of days.values()) {
-    avg.kcal += acc.kcal;
-    avg.p += acc.p;
-    avg.c += acc.c;
-    avg.f += acc.f;
-  }
-  const r = (x) => Math.round(x / n);
+  /** @param {number} window */
+  const windowLine = (window) => {
+    const from = new Date(`${isoToday}T00:00:00Z`);
+    from.setUTCDate(from.getUTCDate() - window);
+    const inWindow = [...days.entries()].filter(([d]) => d >= from.toISOString().slice(0, 10));
+    if (inWindow.length === 0) return null;
+    const n = inWindow.length;
+    const sum = inWindow.reduce(
+      (acc, [, v]) => ({ kcal: acc.kcal + v.kcal, p: acc.p + v.p, c: acc.c + v.c, f: acc.f + v.f }),
+      { kcal: 0, p: 0, c: 0, f: 0 },
+    );
+    const r = (x) => Math.round(x / n);
+    return `- Average intake last ${window} days (${n} logged day${n === 1 ? "" : "s"}): ${Math.round(sum.kcal / n)} kcal, ${r(sum.p)}g protein, ${r(sum.c)}g carbs, ${r(sum.f)}g fat.`;
+  };
+  const lines = [windowLine(7), windowLine(30)].filter((x) => x != null);
+  if (lines.length === 0) return null;
   return [
     "## Data available",
-    `- Average intake over ${n} logged day${n === 1 ? "" : "s"}: ${Math.round(avg.kcal / n)} kcal, ${r(avg.p)}g protein, ${r(avg.c)}g carbs, ${r(avg.f)}g fat.`,
-    "- Judge intake questions against this (and, with day types, the weekly average target); use the tools for ranges and details.",
+    ...lines,
+    "- Judge intake questions against these (and, with day types, the weekly average target); use the tools for ranges and details.",
   ].join("\n");
 }
 

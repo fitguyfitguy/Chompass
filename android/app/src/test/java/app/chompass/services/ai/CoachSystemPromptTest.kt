@@ -63,14 +63,18 @@ class CoachSystemPromptTest {
     }
 
     @Test
-    fun intakeAverageLine_reportsKcalAndMacrosOverLoggedDays() {
+    fun intakeAverage_reports7and30DayWindowsOverLoggedDays() {
         fun foodWithMacros(kcal: Int, p: Double, c: Double, f: Double, daysAgo: Long) = food(kcal, daysAgo).copy(
             protein = p, carbs = c, fat = f,
         )
+        // Days 1..3 (both windows): 2000/3000/4000 kcal.
+        // Day 20 (30-day window only): 1000 kcal.
+        // Today: excluded (incomplete day).
         val foods = listOf(
             foodWithMacros(2000, 150.0, 200.0, 60.0, daysAgo = 1),
             foodWithMacros(3000, 150.0, 300.0, 80.0, daysAgo = 2),
-            // today: excluded (incomplete day)
+            foodWithMacros(4000, 150.0, 400.0, 100.0, daysAgo = 3),
+            foodWithMacros(1000, 101.0, 100.0, 31.0, daysAgo = 20),
             foodWithMacros(9000, 900.0, 900.0, 900.0, daysAgo = 0),
         )
         val prompt = buildSystemPrompt(
@@ -81,8 +85,11 @@ class CoachSystemPromptTest {
             heightMetric = true,
             weightMetric = true,
         )
-        // Average over the 2 complete days: 2500 kcal, 150P/250C/70F.
-        assertTrue(prompt.contains("Average intake over 2 logged days: 2500 kcal, 150g protein, 250g carbs, 70g fat"))
+        // 7-day window: 3 logged days, mean 3000 kcal, 150P/300C/80F.
+        assertTrue(prompt.contains("Average intake last 7 days (3 logged days): 3000 kcal, 150g protein, 300g carbs, 80g fat"))
+        // 30-day window: 4 logged days, mean 2500 kcal, 138P/250C/68F.
+        assertTrue(prompt.contains("Average intake last 30 days (4 logged days): 2500 kcal, 138g protein, 250g carbs, 68g fat"))
+        assertTrue(prompt.contains("Judge intake questions against these"))
     }
 
     @Test
@@ -96,6 +103,20 @@ class CoachSystemPromptTest {
             weightMetric = true,
         )
         assertFalse(prompt.contains("Average intake"))
+    }
+
+    @Test
+    fun intakeAverage_onlyOldLogs_omitsThe7DayLineButKeeps30Day() {
+        val prompt = buildSystemPrompt(
+            profile = profile(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            foods = listOf(food(1000, daysAgo = 20)),
+            heightMetric = true,
+            weightMetric = true,
+        )
+        assertFalse(prompt.contains("last 7 days"))
+        assertTrue(prompt.contains("Average intake last 30 days (1 logged day): 1000 kcal"))
     }
 
     @Test
