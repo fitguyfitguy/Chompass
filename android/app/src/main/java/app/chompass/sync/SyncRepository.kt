@@ -10,6 +10,7 @@ import app.chompass.data.PreferencesStore
 import app.chompass.data.SyncRevision
 import app.chompass.export.SyncDocument
 import app.chompass.models.FoodEntry
+import app.chompass.models.GoalJournal
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -44,6 +45,7 @@ class SyncRepository(
             nicotine = prefs.nicotineEntries.first(),
             caffeine = prefs.caffeineEntries.first(),
             recipes = prefs.recipes.first(),
+            goalJournal = prefs.goalJournal.first(),
             revisions = revisions.mapValues { (_, rev) ->
                 SyncDocument.Revision(rev.updatedAt, rev.deletedAt, rev.kind)
             },
@@ -303,6 +305,20 @@ class SyncRepository(
             it.entry
         }
         prefs.setRecipes(liveRecipes)
+
+        // Goal journal (#60): per-day LWW by updatedAtMillis (GoalJournal.merge
+        // against the local list — the wire merge already collapsed ids), then
+        // the 400-day prune. Rows absent from an older remote parse to [] and
+        // merge to a no-op, so pre-#60 docs round-trip untouched.
+        doc.goalJournal.forEach {
+            track(it.id, it.updatedAt, it.deletedAt, "goal_journal")
+        }
+        val localJournal = prefs.goalJournal.first()
+        val mergedJournal = GoalJournal.prune(
+            GoalJournal.merge(localJournal, doc.goalJournal.mapNotNull { it.entry }),
+            LocalDate.now(),
+        )
+        prefs.setGoalJournal(mergedJournal)
 
         prefs.setSyncRevisions(revisionMap)
         return SyncResult.Success(appContext.getString(R.string.sync_success_applied))

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://chompass.app/contracts/sync-1.2.schema.json",
   "title": "Chompass user-hosted sync document format 1.2",
-  "description": "Sync 1.1 plus the day-granular `daily_notes` array (Codeberg #58a). Imports still accept 1.0/1.1.",
+  "description": "Sync 1.2 adds the day-granular `daily_notes` array (Codeberg #58a) and the optional per-day `goal_journal` array of frozen day-type targets (Codeberg #60; pre-#60 docs parse with an empty array — ids are deterministic per date, merges are per-day last-write-wins). Imports still accept 1.0/1.1.",
   "type": "object",
   "required": ["export", "food_entries", "weights", "body_fat", "measurements", "water", "favorites", "recipes"],
   "additionalProperties": true,
@@ -56,6 +56,10 @@
     "recipes": {
       "type": "array",
       "items": { "$ref": "#/$defs/recipeRecord" }
+    },
+    "goal_journal": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/goalJournalRecord" }
     },
     "profile": {
       "type": ["object", "null"],
@@ -276,6 +280,28 @@
             "meal_type": { "type": "string" },
             "created_at": { "type": "string" },
             "ingredients": { "type": "array" }
+          }
+        }
+      ]
+    },
+    "goalJournalRecord": {
+      "allOf": [
+        { "$ref": "#/$defs/syncMeta" },
+        {
+          "type": "object",
+          "required": ["date"],
+          "properties": {
+            "date": { "type": "string" },
+            "calories": { "type": "number" },
+            "protein_g": { "type": "number" },
+            "carbs_g": { "type": "number" },
+            "fat_g": { "type": "number" },
+            "profile_id": { "type": ["string", "null"] },
+            "profile_name": { "type": ["string", "null"] },
+            "source": {
+              "type": "string",
+              "enum": ["plan", "manual_switch", "override", "gap_fill"]
+            }
           }
         }
       ]

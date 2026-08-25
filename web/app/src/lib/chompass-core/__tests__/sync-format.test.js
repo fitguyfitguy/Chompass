@@ -7,6 +7,7 @@ import {
   parseSyncDocument,
   liveFoodEntriesFromSync,
   liveDailyNotesFromSync,
+  liveGoalJournalFromSync,
   liveNicotineFromSync,
   liveCaffeineFromSync,
   appendTombstones,
@@ -32,6 +33,50 @@ test("parity sync-sample parses", () => {
   assert.deepEqual(foods[1].constituents, []);
   assert.equal(foods[1].selectedServingUnit, "cup");
   assert.equal(foods[0].caffeineMg, 95);
+});
+
+test("parity sync-sample goal_journal rows convert to model entries", () => {
+  const doc = parseSyncDocument(sample);
+  assert.equal(doc.goal_journal.length, 2);
+  const entries = liveGoalJournalFromSync(doc.goal_journal);
+  assert.equal(entries.length, 2);
+  const rest = entries.find((e) => e.date === "2026-07-24");
+  assert.equal(rest.calories, 2100);
+  assert.equal(rest.proteinG, 150);
+  assert.equal(rest.profileId, "r-2026-07");
+  assert.equal(rest.profileName, "Rest day");
+  assert.equal(rest.source, "MANUAL_SWITCH");
+  assert.equal(rest.updatedAtMillis, Date.parse("2026-07-24T22:10:00.000Z"));
+  const training = entries.find((e) => e.date === "2026-07-23");
+  assert.equal(training.source, "PLAN");
+});
+
+test("exportSyncDocument round-trips goal_journal with per-day ids", () => {
+  const doc = exportSyncDocument({
+    goalJournal: [
+      {
+        date: "2026-07-23",
+        calories: 2800,
+        proteinG: 170,
+        carbsG: 350,
+        fatG: 78,
+        profileId: "t",
+        profileName: "Training day",
+        updatedAtMillis: 1784192700000,
+        source: "PLAN",
+      },
+    ],
+    generatedAt: "2026-07-24T10:00:00.000Z",
+  });
+  assert.equal(doc.goal_journal.length, 1);
+  assert.equal(doc.goal_journal[0].id, "00000000-0000-0000-0000-0000000050b1");
+  assert.equal(doc.goal_journal[0].source, "plan");
+  const parsed = parseSyncDocument(doc);
+  const live = liveGoalJournalFromSync(parsed.goal_journal);
+  assert.equal(live[0].date, "2026-07-23");
+  assert.equal(live[0].calories, 2800);
+  assert.equal(live[0].updatedAtMillis, 1784192700000);
+  assert.equal(live[0].source, "PLAN");
 });
 
 test("exportSyncDocument round-trips food id", () => {
@@ -96,16 +141,19 @@ test("caffeine-less legacy docs still parse (optional array)", () => {
 });
 
 test("1.1-shaped doc parses with daily_notes defaulted", () => {
-  // Pre-1.2 remotes (Chompass ≤ 3.23.0) carry only the classic seven arrays.
+  // Pre-1.2 remotes (Chompass ≤ 3.23.0) carry only the classic seven arrays;
+  // pre-#60 docs have no goal_journal either. Both must default to [].
   const v11 = structuredClone(sample);
   v11.export.format_version = "1.1";
   delete v11.daily_notes;
   delete v11.nicotine_entries;
   delete v11.caffeine_entries;
+  delete v11.goal_journal;
   const doc = parseSyncDocument(v11);
   assert.deepEqual(doc.daily_notes, []);
   assert.deepEqual(doc.nicotine_entries, []);
   assert.deepEqual(doc.caffeine_entries, []);
+  assert.deepEqual(doc.goal_journal, []);
   assert.equal(doc.food_entries.length, 2);
 });
 

@@ -1,6 +1,7 @@
 package app.chompass.models
 
 import java.time.LocalDate
+import java.util.UUID
 import kotlinx.serialization.Serializable
 
 /**
@@ -37,6 +38,18 @@ data class GoalJournalEntry(
 object GoalJournal {
     /** Journal retention (days back from today); matches plan docs. */
     const val KEEP_DAYS = 400L
+
+    /**
+     * Stable per-day sync record id (daily_notes precedent): epoch day in the
+     * low 48 bits, zeros elsewhere. Wire form `00000000-0000-0000-0000-<12
+     * lowercase hex digits>`; the PWA mirrors this in `macro-plan.js`
+     * (`goalJournalIdFor`). Same date → same id on every device, so sync's
+     * merge-by-id is per-day last-write-wins.
+     */
+    fun idFor(date: LocalDate): UUID {
+        val days = date.toEpochDay() and 0x0000FFFFFFFFFFFFL
+        return UUID.fromString("00000000-0000-0000-0000-" + days.toString(16).padStart(12, '0'))
+    }
 
     internal fun parseDateOrNull(iso: String): LocalDate? =
         runCatching { LocalDate.parse(iso) }.getOrNull()

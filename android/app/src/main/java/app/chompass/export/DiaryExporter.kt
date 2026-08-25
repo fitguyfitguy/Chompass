@@ -6,6 +6,8 @@ import app.chompass.models.DailyNote
 import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
+import app.chompass.models.GoalJournalEntry
+import app.chompass.models.MacroPlanResolver
 import app.chompass.models.MealType
 import app.chompass.models.ServingUnitOption
 import app.chompass.models.UserProfile
@@ -64,7 +66,13 @@ object DiaryExporter {
         }
     }
 
-    /** Returns (filename, content) or null if nothing is logged in the range. */
+    /**
+     * Returns (filename, content) or null if nothing is logged in the range.
+     *
+     * Per-day targets (#60 phase 3): journal-first — a journaled day exports its
+     * frozen actual targets, gaps resolve live from the plan (base targets when
+     * the plan is off, so plan-off exports are byte-identical to before).
+     */
     fun build(
         entries: List<FoodEntry>,
         start: LocalDate,
@@ -73,6 +81,8 @@ object DiaryExporter {
         profile: UserProfile?,
         mealDisplay: (MealType) -> String,
         notes: List<DailyNote> = emptyList(),
+        goalJournal: List<GoalJournalEntry> = emptyList(),
+        today: LocalDate = LocalDate.now(),
     ): Pair<String, String>? {
         val lo = if (start.isAfter(end)) end else start
         val hi = if (start.isAfter(end)) start else end
@@ -91,16 +101,19 @@ object DiaryExporter {
         // CSV, which is entry-row-only and has no place for a day-level note.
         if (byDay.isEmpty() && (format == DiaryFormat.CSV || noteByDay.isEmpty())) return null
 
-        val targets = Targets(
-            calories = profile?.effectiveCalories ?: 0,
-            protein = (profile?.effectiveProtein ?: 0).toDouble(),
-            carbs = (profile?.effectiveCarbs ?: 0).toDouble(),
-            fat = (profile?.effectiveFat ?: 0).toDouble(),
-        )
+        val targetsForDay: (LocalDate) -> Targets = { date ->
+            val resolved = MacroPlanResolver.targetsForJournaled(goalJournal, profile, date, today)
+            Targets(
+                calories = resolved.targets.calories,
+                protein = resolved.targets.proteinG.toDouble(),
+                carbs = resolved.targets.carbsG.toDouble(),
+                fat = resolved.targets.fatG.toDouble(),
+            )
+        }
 
         val content = when (format) {
-            DiaryFormat.JSON -> json(byDay, noteByDay, lo, hi, targets)
-            DiaryFormat.MARKDOWN -> markdown(byDay, noteByDay, lo, hi, targets, mealDisplay)
+            DiaryFormat.JSON -> json(byDay, noteByDay, lo, hi, targetsForDay)
+            DiaryFormat.MARKDOWN -> markdown(byDay, noteByDay, lo, hi, targetsForDay, mealDisplay)
             DiaryFormat.CSV -> csv(byDay)
         }
         val name = "Fud-Food-Diary-${dayFmt.format(lo)}_to_${dayFmt.format(hi)}.${format.ext}"
@@ -308,12 +321,13 @@ object DiaryExporter {
     private fun json(
         byDay: Map<LocalDate, List<FoodEntry>>,
         noteByDay: Map<LocalDate, DailyNote>,
-        lo: LocalDate, hi: LocalDate, t: Targets,
+        lo: LocalDate, hi: LocalDate, t: (LocalDate) -> Targets,
     ): String {
         // Union of days: food days plus note-only days (journal entries).
         val days = (byDay.keys + noteByDay.keys).sorted().map { date ->
             val dayEntries = byDay[date].orEmpty()
             val tot = totals(dayEntries)
+            val dayTarget = t(date)
             val mealDtos = meals(dayEntries).map { (mt, items) ->
                 MealDto(
                     type = mt.name.lowercase(),
@@ -323,12 +337,12 @@ object DiaryExporter {
             DayDto(
                 date = dayFmt.format(date),
                 totals = Macro(tot[0].roundToInt(), r1(tot[1]), r1(tot[2]), r1(tot[3])),
-                targets = Macro(t.calories, t.protein, t.carbs, t.fat),
+                targets = Macro(dayTarget.calories, dayTarget.protein, dayTarget.carbs, dayTarget.fat),
                 remaining = Macro(
-                    max(0, t.calories - tot[0].roundToInt()),
-                    r1(max(0.0, t.protein - tot[1])),
-                    r1(max(0.0, t.carbs - tot[2])),
-                    r1(max(0.0, t.fat - tot[3])),
+                    max(0, dayTarget.calories - tot[0].roundToInt()),
+                    r1(max(0.0, dayTarget.protein - tot[1])),
+                    r1(max(0.0, dayTarget.carbs - tot[2])),
+                    r1(max(0.0, dayTarget.fat - tot[3])),
                 ),
                 meals = mealDtos,
                 note = noteByDay[date]?.text,
@@ -346,7 +360,7 @@ object DiaryExporter {
     private fun markdown(
         byDay: Map<LocalDate, List<FoodEntry>>,
         noteByDay: Map<LocalDate, DailyNote>,
-        lo: LocalDate, hi: LocalDate, t: Targets,
+        lo: LocalDate, hi: LocalDate, t: (LocalDate) -> Targets,
         mealDisplay: (MealType) -> String,
     ): String {
         val sb = StringBuilder()
@@ -355,12 +369,13 @@ object DiaryExporter {
         sb.append("Generated by Chompass\n")
         for ((date, dayEntries) in byDay) {
             val tot = totals(dayEntries)
+            val dayTarget = t(date)
             sb.append("\n## ${dayFmt.format(date)}\n")
             sb.append("Totals:\n")
-            sb.append("- Calories: ${tot[0].roundToInt()} / ${t.calories} kcal\n")
-            sb.append("- Protein: ${r1(tot[1])} / ${t.protein.roundToInt()} g\n")
-            sb.append("- Carbs: ${r1(tot[2])} / ${t.carbs.roundToInt()} g\n")
-            sb.append("- Fat: ${r1(tot[3])} / ${t.fat.roundToInt()} g\n")
+            sb.append("- Calories: ${tot[0].roundToInt()} / ${dayTarget.calories} kcal\n")
+            sb.append("- Protein: ${r1(tot[1])} / ${dayTarget.protein.roundToInt()} g\n")
+            sb.append("- Carbs: ${r1(tot[2])} / ${dayTarget.carbs.roundToInt()} g\n")
+            sb.append("- Fat: ${r1(tot[3])} / ${dayTarget.fat.roundToInt()} g\n")
             for ((mt, items) in meals(dayEntries)) {
                 sb.append("### ${mealDisplay(mt)}\n")
                 sb.append("| Time | Food | Weight | Calories | Protein (g) | Carbs (g) | Fat (g) | Sugar (g) | Added sugar (g) | Fiber (g) | Saturated fat (g) | Monounsaturated fat (g) | Polyunsaturated fat (g) | Cholesterol (mg) | Sodium (mg) | Potassium (mg) | Trans fat (g) | Calcium (mg) | Iron (mg) | Magnesium (mg) | Zinc (mg) | Vitamin A (mcg) | Vitamin C (mg) | Vitamin D (mcg) | Vitamin B12 (mcg) | Vitamin E (mg) | Vitamin K (mcg) | Folate (mcg) | Omega-3 (g) | Caffeine (mg) | Source |\n")

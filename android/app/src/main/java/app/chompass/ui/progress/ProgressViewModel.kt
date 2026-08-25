@@ -20,6 +20,8 @@ import app.chompass.models.BodyFatEntry
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.DailyFoodTotals
 import app.chompass.models.FoodEntry
+import app.chompass.models.GoalJournalEntry
+import app.chompass.models.MacroPlanResolver
 import app.chompass.models.UserProfile
 import app.chompass.models.WeightEntry
 import app.chompass.services.health.DailyActivity
@@ -60,6 +62,19 @@ data class ProgressUiState(
     val dailyCalories: List<Pair<LocalDate, Int>> = emptyList(),
     /** Mean of complete days in [dailyCalories] (today excluded). Null if none. */
     val calorieAverage: Int? = null,
+    /**
+     * Calorie goal rule for the selected range (#60 phase 3): the journaled
+     * range average (MACRO-CYCLE-D) when journal days exist, else the current
+     * profile target (plan-off behavior, unchanged). 2000 mirrors the old
+     * profile-null fallback.
+     */
+    val calorieGoal: Int = 2000,
+    /** Range macro goals (journal average, current-target fallback) for the % rows. */
+    val proteinGoal: Int = 0,
+    val carbsGoal: Int = 0,
+    val fatGoal: Int = 0,
+    /** Per-day calorie targets for the logged bars (journal-first; live-resolve fallback). */
+    val dailyCalorieGoals: Map<LocalDate, Int> = emptyMap(),
     val macroAverages: Triple<Double, Double, Double> = Triple(0.0, 0.0, 0.0),
     val weightStats: WeightSummaryStats = WeightSummaryStats(),
     val bodyFatStats: BodyFatSummaryStats = BodyFatSummaryStats(),
@@ -72,7 +87,9 @@ private data class BaseProgressData(
     val bodyFatEntries: List<BodyFatEntry>,
     val bodyMeasurements: List<BodyMeasurement>,
     /** Site storage ids with a Progress-tab plot enabled (empty = off). */
-    val measurementSites: Set<String> = emptySet()
+    val measurementSites: Set<String> = emptySet(),
+    /** Per-day goal journal (#60): frozen actual targets behind the range goals + bars. */
+    val goalJournal: List<GoalJournalEntry> = emptyList(),
 )
 
 class ProgressViewModel(private val container: AppContainer) : ViewModel() {
@@ -126,6 +143,10 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
                 bodyMeasurements = measurements,
                 measurementSites = measurementSites
             )
+        }.let { base ->
+            combine(base, container.prefs.goalJournal) { b, journal ->
+                b.copy(goalJournal = journal)
+            }
         }.let { baseData ->
             combine(
                 baseData,
@@ -278,6 +299,18 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
         val fat = completeFoodByDay.values.sumOf { it.fat } / days
         Triple(protein, carbs, fat)
     }
+    // #60 phase 3: range goals = journaled average (MACRO-CYCLE-D, gaps
+    // skipped) with the current profile target as fallback — no more "current
+    // target painted over all history" once day types exist. Per-bar goals are
+    // journal-first per day (resolver fallback for gaps), so a logged rest day
+    // under a training-day rule line still colors correctly.
+    val (rangeStartDay, rangeEndDay) = selectedRange.dateRange(anchorDate)
+    val baseTargets = base.profile?.let { MacroPlanResolver.baseTargets(it) }
+    val rangeTargets = MacroPlanResolver.journalAverage(base.goalJournal, rangeStartDay, rangeEndDay)
+        ?: baseTargets
+    val dailyCalorieGoals = dailyCalories.associate { (day, _) ->
+        day to MacroPlanResolver.targetsForJournaled(base.goalJournal, base.profile, day, anchorDate).targets.calories
+    }
     return ProgressUiState(
         profile = base.profile,
         weightCount = base.entries.size,
@@ -292,6 +325,11 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
         measurementSites = base.measurementSites.mapNotNull { BodyMeasurement.Site.fromStorageId(it) }.toSet(),
         dailyCalories = dailyCalories,
         calorieAverage = calorieAverage,
+        calorieGoal = rangeTargets?.calories ?: 2000,
+        proteinGoal = rangeTargets?.proteinG ?: 0,
+        carbsGoal = rangeTargets?.carbsG ?: 0,
+        fatGoal = rangeTargets?.fatG ?: 0,
+        dailyCalorieGoals = dailyCalorieGoals,
         macroAverages = macroAverages,
         weightStats = filteredWeights.toWeightStats(),
         bodyFatStats = filteredBodyFats.toBodyFatStats(),
@@ -339,6 +377,7 @@ internal fun buildProgressPreviewUiState(
     weightUnit: String = "kg",
     bodyMeasurements: List<BodyMeasurement> = emptyList(),
     measurementSites: Set<BodyMeasurement.Site> = emptySet(),
+    goalJournal: List<GoalJournalEntry> = emptyList(),
 ): ProgressUiState {
     // Same range filter the old per-entry grouping applied inside toUiState:
     // previews receive full-history lists and must not count days outside
@@ -351,6 +390,7 @@ internal fun buildProgressPreviewUiState(
             bodyFatEntries = bodyFatEntries,
             bodyMeasurements = bodyMeasurements,
             measurementSites = measurementSites.map { it.storageId }.toSet(),
+            goalJournal = goalJournal,
         ),
         dailyTotals = aggregateFoodEntriesByDay(
             foods.filter { it.timestamp in rangeStart..rangeEnd }

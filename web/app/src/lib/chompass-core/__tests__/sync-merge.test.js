@@ -296,3 +296,56 @@ test("exportSyncDocument emits daily_notes array", () => {
     },
   ]);
 });
+
+test("goal journal merge collapses same-day to last-write-wins", () => {
+  // #60: ids are deterministic per date (goalJournalIdFor), so merge-by-id is
+  // per-day LWW across devices even when a row rides through a PWA that does
+  // not consume the array (pass-through merge).
+  const id = "00000000-0000-0000-0000-0000000050b2";
+  const base = {
+    export: { app: "Chompass", kind: "sync", format_version: "1.2" },
+    food_entries: [],
+    favorites: [],
+    weights: [],
+    body_fat: [],
+    measurements: [],
+    water: [],
+    daily_notes: [],
+    recipes: [],
+    goal_journal: [],
+    profile: null,
+    prefs: null,
+  };
+  const phone = {
+    ...base,
+    goal_journal: [
+      {
+        id, updated_at: "2026-07-24T18:00:00Z", deleted_at: null, date: "2026-07-24",
+        calories: 2800, protein_g: 170, carbs_g: 350, fat_g: 78,
+        profile_id: "t", profile_name: "Training day", source: "plan",
+      },
+    ],
+  };
+  const desktop = {
+    ...base,
+    goal_journal: [
+      {
+        id, updated_at: "2026-07-24T19:00:00Z", deleted_at: null, date: "2026-07-24",
+        calories: 2100, protein_g: 150, carbs_g: 160, fat_g: 78,
+        profile_id: "r", profile_name: "Rest day", source: "manual_switch",
+      },
+      {
+        id: "00000000-0000-0000-0000-0000000050b1",
+        updated_at: "2026-07-23T21:00:00Z", deleted_at: null, date: "2026-07-23",
+        calories: 2800, protein_g: 170, carbs_g: 350, fat_g: 78,
+        profile_id: "t", profile_name: "Training day", source: "plan",
+      },
+    ],
+  };
+  const merged = mergeSyncDocuments(phone, desktop);
+  assert.equal(merged.goal_journal.length, 2);
+  const day24 = merged.goal_journal.find((r) => r.date === "2026-07-24");
+  assert.equal(day24.calories, 2100);
+  assert.equal(day24.source, "manual_switch");
+  assert.ok(merged.goal_journal.some((r) => r.date === "2026-07-23"));
+});

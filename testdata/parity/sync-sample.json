@@ -193,6 +193,34 @@
     }
   ],
   "recipes": [],
+  "goal_journal": [
+    {
+      "id": "00000000-0000-0000-0000-0000000050b1",
+      "updated_at": "2026-07-23T21:45:00.000Z",
+      "deleted_at": null,
+      "date": "2026-07-23",
+      "calories": 2800,
+      "protein_g": 170,
+      "carbs_g": 350,
+      "fat_g": 78,
+      "profile_id": "t-2026-07",
+      "profile_name": "Training day",
+      "source": "plan"
+    },
+    {
+      "id": "00000000-0000-0000-0000-0000000050b2",
+      "updated_at": "2026-07-24T22:10:00.000Z",
+      "deleted_at": null,
+      "date": "2026-07-24",
+      "calories": 2100,
+      "protein_g": 150,
+      "carbs_g": 160,
+      "fat_g": 78,
+      "profile_id": "r-2026-07",
+      "profile_name": "Rest day",
+      "source": "manual_switch"
+    }
+  ],
   "profile": {
     "updated_at": "2026-07-01T00:00:00Z",
     "deleted_at": null,
@@ -202,7 +230,36 @@
       "height_cm": 178,
       "weight_kg": 79.4,
       "activity": "moderate",
-      "goal": "lose"
+      "goal": "lose",
+      "macroPlan": {
+        "enabled": true,
+        "profiles": [
+          {
+            "id": "t-2026-07",
+            "name": "Training day",
+            "calories": 2800,
+            "proteinG": 170,
+            "carbsG": 350,
+            "fatG": 78
+          },
+          {
+            "id": "r-2026-07",
+            "name": "Rest day",
+            "calories": 2100,
+            "proteinG": 150,
+            "carbsG": 160,
+            "fatG": 78
+          }
+        ],
+        "mode": "CYCLE",
+        "defaultProfileId": "r-2026-07",
+        "cyclePattern": [
+          "t-2026-07",
+          "t-2026-07",
+          "r-2026-07"
+        ],
+        "cycleAnchorDay": "2026-07-20"
+      }
     }
   },
   "prefs": {

@@ -199,4 +199,62 @@ class MacroPlanResolverTest {
         assertEquals(setOf(today.toString(), today.minusDays(366).toString(), today.plusDays(366).toString()), pruned.keys)
         assertTrue(pruned.values.all { it in setOf("t", "r") })
     }
+
+    // -- Journal-first reads (phase 3: Progress + DiaryExporter) -------------
+
+    @Test
+    fun `targetsForJournaled prefers frozen entries for past and today, live for gaps and future`() {
+        val today = LocalDate.parse("2026-09-10")
+        val profile = UserProfile(
+            customCalories = 2400,
+            customProtein = 150,
+            customCarbs = 250,
+            customFat = 70,
+            macroPlan = plan(),
+        )
+        val journal = listOf(
+            GoalJournalEntry(
+                date = "2026-09-08", calories = 2100, proteinG = 150, carbsG = 160, fatG = 78,
+                profileId = "r", profileName = "Rest day", updatedAtMillis = 1L,
+            ),
+        )
+        // Past journaled day: frozen entry wins over the cycle (which resolves t).
+        val past = MacroPlanResolver.targetsForJournaled(journal, profile, LocalDate.parse("2026-09-08"), today)
+        assertEquals(2100, past.targets.calories)
+        assertEquals("r", past.profileId)
+        // Past gap: live resolve (offset 6 -> pattern[0] = t).
+        val gap = MacroPlanResolver.targetsForJournaled(journal, profile, LocalDate.parse("2026-09-07"), today)
+        assertEquals(2800, gap.targets.calories)
+        // Future: never journaled, live resolve.
+        val future = MacroPlanResolver.targetsForJournaled(journal, profile, LocalDate.parse("2026-09-15"), today)
+        assertEquals("r", future.profileId)
+    }
+
+    @Test
+    fun `targetsForJournaled keeps history when the plan is disabled and zeros without a profile`() {
+        val today = LocalDate.parse("2026-09-10")
+        val entry = GoalJournalEntry(
+            date = "2026-09-09", calories = 2800, proteinG = 170, carbsG = 350, fatG = 78,
+            profileId = "t", profileName = "Training day", updatedAtMillis = 1L,
+        )
+        val disabled = UserProfile(
+            customCalories = 2400, customProtein = 150, customCarbs = 250, customFat = 70,
+            macroPlan = plan(enabled = false),
+        )
+        // A journaled day from a since-disabled plan stays frozen (design Q2).
+        assertEquals(2800, MacroPlanResolver.targetsForJournaled(listOf(entry), disabled, LocalDate.parse("2026-09-09"), today).targets.calories)
+        // No profile, no entry -> the DiaryExporter zero-targets shape.
+        val zero = MacroPlanResolver.targetsForJournaled(emptyList(), null, LocalDate.parse("2026-09-09"), today)
+        assertEquals(DayTargets(0, 0, 0, 0), zero.targets)
+        assertNull(zero.profileId)
+    }
+
+    @Test
+    fun `journal sync record id mirrors the daily_notes per-day scheme`() {
+        // 2026-09-01 = epoch day 20697 -> low 48 bits as 12 hex digits.
+        assertEquals("00000000-0000-0000-0000-0000000050d9", GoalJournal.idFor(LocalDate.parse("2026-09-01")).toString())
+        assertEquals("00000000-0000-0000-0000-000000000000", GoalJournal.idFor(LocalDate.parse("1970-01-01")).toString())
+        // Same date -> same id (merge-by-id == merge-by-date).
+        assertEquals(GoalJournal.idFor(LocalDate.parse("2026-09-01")), GoalJournal.idFor(LocalDate.parse("2026-09-01")))
+    }
 }

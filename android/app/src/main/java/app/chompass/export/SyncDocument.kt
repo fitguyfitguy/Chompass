@@ -19,6 +19,9 @@ import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodGroundingProvenance
 import app.chompass.models.FoodSource
+import app.chompass.models.GoalJournal
+import app.chompass.models.GoalJournalEntry
+import app.chompass.models.GoalJournalSource
 import app.chompass.models.MealType
 import app.chompass.models.CaffeineEntry
 import app.chompass.models.CaffeineKind
@@ -39,8 +42,10 @@ import java.util.UUID
 
 /**
  * Sync-1.2 document parse/build. Mirrors web/.../sync-format.js.
- * 1.2 adds the day-granular `daily_notes` array (Codeberg #58a). Photos and
- * API keys are intentionally excluded. Imports also accept 1.0/1.1.
+ * 1.2 adds the day-granular `daily_notes` array (Codeberg #58a) and, since the
+ * #60 goal-journal phase, the optional `goal_journal` array (per-day frozen
+ * targets; old docs parse with an empty array — daily_notes precedent).
+ * Photos and API keys are intentionally excluded. Imports also accept 1.0/1.1.
  */
 object SyncDocument {
     const val APP_NAME = "Chompass"
@@ -69,6 +74,7 @@ object SyncDocument {
         val nicotine: List<NicotineWire>,
         val caffeine: List<CaffeineWire>,
         val recipes: List<RecipeWire>,
+        val goalJournal: List<GoalJournalWire>,
         val profile: SingletonEnvelope?,
         val prefs: SingletonEnvelope?,
         val raw: JsonObject,
@@ -137,6 +143,13 @@ object SyncDocument {
         val entry: Recipe?,
     )
 
+    data class GoalJournalWire(
+        val id: String,
+        val updatedAt: String,
+        val deletedAt: String?,
+        val entry: GoalJournalEntry?,
+    )
+
     sealed class ParseResult {
         data class Success(val parsed: Parsed) : ParseResult()
         object UnsupportedFormat : ParseResult()
@@ -172,6 +185,7 @@ object SyncDocument {
                     nicotine = arr("nicotine_entries").mapNotNull { parseNicotineWire(it) },
                     caffeine = arr("caffeine_entries").mapNotNull { parseCaffeineWire(it) },
                     recipes = arr("recipes").mapNotNull { parseRecipeWire(it) },
+                    goalJournal = arr("goal_journal").mapNotNull { parseGoalJournalWire(it) },
                     profile = parseSingleton(root["profile"]),
                     prefs = parseSingleton(root["prefs"]),
                     raw = root,
@@ -193,6 +207,7 @@ object SyncDocument {
         nicotine: List<NicotineEntry> = emptyList(),
         caffeine: List<CaffeineEntry> = emptyList(),
         recipes: List<Recipe>,
+        goalJournal: List<GoalJournalEntry> = emptyList(),
         revisions: Map<String, Revision> = emptyMap(),
         profile: SingletonEnvelope? = null,
         prefs: SingletonEnvelope? = null,
@@ -390,6 +405,35 @@ object SyncDocument {
                     appendTombstones(revisions, "recipe", recipes.map { it.id.toString() }.toSet())
                 },
             )
+            put(
+                "goal_journal",
+                buildJsonArray {
+                    for (e in goalJournal) {
+                        val date = runCatching { LocalDate.parse(e.date) }.getOrNull()
+                        val id = date?.let { GoalJournal.idFor(it).toString() } ?: e.date
+                        val fallback = Instant.ofEpochMilli(e.updatedAtMillis).toString()
+                        val meta = metaFor(id, revisions, fallback)
+                        add(
+                            buildJsonObject {
+                                put("id", id)
+                                put("updated_at", meta.updatedAt)
+                                putNullable("deleted_at", meta.deletedAt)
+                                put("date", e.date)
+                                put("calories", e.calories)
+                                put("protein_g", e.proteinG)
+                                put("carbs_g", e.carbsG)
+                                put("fat_g", e.fatG)
+                                putNullable("profile_id", e.profileId)
+                                putNullable("profile_name", e.profileName)
+                                put("source", e.source.name.lowercase())
+                            },
+                        )
+                    }
+                    appendTombstones(revisions, "goal_journal", goalJournal.mapNotNull { g ->
+                        runCatching { GoalJournal.idFor(LocalDate.parse(g.date)).toString() }.getOrNull()
+                    }.toSet())
+                },
+            )
             if (profile != null) {
                 put(
                     "profile",
@@ -481,7 +525,7 @@ object SyncDocument {
                 },
             )
             for (key in listOf(
-                "food_entries", "favorites", "body_fat", "measurements", "water", "daily_notes", "nicotine_entries", "caffeine_entries", "recipes",
+                "food_entries", "favorites", "body_fat", "measurements", "water", "daily_notes", "nicotine_entries", "caffeine_entries", "recipes", "goal_journal",
             )) {
                 put(key, mergeList(key))
             }
@@ -882,6 +926,38 @@ object SyncDocument {
             createdAt = createdAt,
         )
         return RecipeWire(id, updatedAt, null, entry)
+    }
+
+    /**
+     * Goal-journal rows (#60): id is the deterministic per-day record id
+     * (GoalJournal.idFor), so merge-by-id is per-day LWW. `updated_at` carries
+     * updatedAtMillis; `source` is the provenance enum, lowercase.
+     */
+    private fun parseGoalJournalWire(el: JsonElement): GoalJournalWire? {
+        val o = el.asObjectOrNull() ?: return null
+        val id = o["id"]?.asString()?.takeIf { it.isNotBlank() } ?: return null
+        val updatedAt = o["updated_at"]?.asString() ?: return null
+        val deletedAt = o["deleted_at"]?.asString()
+        if (!deletedAt.isNullOrBlank()) return GoalJournalWire(id, updatedAt, deletedAt, null)
+        val date = o["date"]?.asString()?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
+            ?: return GoalJournalWire(id, updatedAt, null, null)
+        val entry = GoalJournalEntry(
+            date = date.toString(),
+            calories = o["calories"]?.asInt() ?: 0,
+            proteinG = o["protein_g"]?.asInt() ?: 0,
+            carbsG = o["carbs_g"]?.asInt() ?: 0,
+            fatG = o["fat_g"]?.asInt() ?: 0,
+            profileId = o["profile_id"]?.asString()?.takeIf { it.isNotBlank() },
+            profileName = o["profile_name"]?.asString()?.takeIf { it.isNotBlank() },
+            updatedAtMillis = parseInstant(updatedAt)?.toEpochMilli() ?: 0L,
+            source = when (o["source"]?.asString()?.trim()?.uppercase()) {
+                "MANUAL_SWITCH" -> GoalJournalSource.MANUAL_SWITCH
+                "OVERRIDE" -> GoalJournalSource.OVERRIDE
+                "GAP_FILL" -> GoalJournalSource.GAP_FILL
+                else -> GoalJournalSource.PLAN
+            },
+        )
+        return GoalJournalWire(id, updatedAt, null, entry)
     }
 
     private fun parseSingleton(el: JsonElement?): SingletonEnvelope? {

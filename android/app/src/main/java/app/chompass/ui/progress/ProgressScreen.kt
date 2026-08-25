@@ -231,8 +231,9 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                     CardSection {
                         CalorieSection(
                             dailyCalories = ui.dailyCalories,
-                            calorieGoal = ui.profile?.effectiveCalories ?: 2000,
+                            calorieGoal = ui.calorieGoal,
                             calorieAverage = ui.calorieAverage,
+                            dailyCalorieGoals = ui.dailyCalorieGoals,
                         )
                     }
                 }
@@ -241,16 +242,16 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
             }
 
             if (heavySectionsReady) {
-                ui.profile?.let { p ->
+                ui.profile?.let { _ ->
                     item {
                         CardSection {
                             MacroAveragesSection(
                                 avgProtein = ui.macroAverages.first,
                                 avgCarbs = ui.macroAverages.second,
                                 avgFat = ui.macroAverages.third,
-                                proteinGoal = p.effectiveProtein,
-                                carbsGoal = p.effectiveCarbs,
-                                fatGoal = p.effectiveFat
+                                proteinGoal = ui.proteinGoal,
+                                carbsGoal = ui.carbsGoal,
+                                fatGoal = ui.fatGoal
                             )
                         }
                     }
@@ -416,21 +417,22 @@ internal fun ProgressScreenPreviewContent(
                 CardSection {
                     CalorieSection(
                         dailyCalories = ui.dailyCalories,
-                        calorieGoal = ui.profile?.effectiveCalories ?: 2000,
+                        calorieGoal = ui.calorieGoal,
                         calorieAverage = ui.calorieAverage,
+                        dailyCalorieGoals = ui.dailyCalorieGoals,
                     )
                 }
             }
-            ui.profile?.let { p ->
+            ui.profile?.let { _ ->
                 item {
                     CardSection {
                         MacroAveragesSection(
                             avgProtein = ui.macroAverages.first,
                             avgCarbs = ui.macroAverages.second,
                             avgFat = ui.macroAverages.third,
-                            proteinGoal = p.effectiveProtein,
-                            carbsGoal = p.effectiveCarbs,
-                            fatGoal = p.effectiveFat,
+                            proteinGoal = ui.proteinGoal,
+                            carbsGoal = ui.carbsGoal,
+                            fatGoal = ui.fatGoal,
                         )
                     }
                 }

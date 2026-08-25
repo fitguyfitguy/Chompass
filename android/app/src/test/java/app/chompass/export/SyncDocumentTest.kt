@@ -367,5 +367,74 @@ class SyncDocumentTest {
         assertTrue("expected Success but was $result", result is SyncDocument.ParseResult.Success)
         val parsed = (result as SyncDocument.ParseResult.Success).parsed
         assertTrue(parsed.dailyNotes.isEmpty())
+        // The #60 goal journal rides the same optional-array rule.
+        assertTrue(parsed.goalJournal.isEmpty())
+    }
+
+    @Test
+    fun goalJournalRoundTripsWithDeterministicIds() {
+        val day = LocalDate.of(2026, 7, 23)
+        val entry = app.chompass.models.GoalJournalEntry(
+            date = day.toString(),
+            calories = 2100,
+            proteinG = 150,
+            carbsG = 160,
+            fatG = 78,
+            profileId = "r",
+            profileName = "Rest day",
+            updatedAtMillis = 1_784_300_700_000L,
+            source = app.chompass.models.GoalJournalSource.MANUAL_SWITCH,
+        )
+        val json = SyncDocument.buildJson(
+            foodEntries = emptyList(),
+            favorites = emptyList(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            measurements = emptyList(),
+            water = emptyList(),
+            recipes = emptyList(),
+            goalJournal = listOf(entry),
+            zone = ZoneOffset.UTC,
+        )
+        val root = Json.parseToJsonElement(json).jsonObject
+        val wire = root["goal_journal"]!!.jsonArray.single().jsonObject
+        // Deterministic per-day id (daily_notes scheme) — merge-by-id == per-day LWW.
+        assertEquals(app.chompass.models.GoalJournal.idFor(day).toString(), wire["id"]!!.jsonPrimitive.content)
+        assertEquals("2026-07-23", wire["date"]!!.jsonPrimitive.content)
+        assertEquals("manual_switch", wire["source"]!!.jsonPrimitive.content)
+        assertEquals(2100, wire["calories"]!!.jsonPrimitive.content.toInt())
+
+        val parsed = (SyncDocument.parse(json, ZoneOffset.UTC) as SyncDocument.ParseResult.Success).parsed
+        val live = parsed.goalJournal.single().entry!!
+        assertEquals(entry, live)
+        assertEquals(1_784_300_700_000L, live.updatedAtMillis)
+    }
+
+    @Test
+    fun goalJournalMergeCollapsesSameDayLastWriteWins() {
+        val id = app.chompass.models.GoalJournal.idFor(LocalDate.of(2026, 7, 24)).toString()
+        val phone = """
+            {"export":{"app":"Chompass","kind":"sync","format_version":"1.2"},
+             "food_entries":[],"favorites":[],"weights":[],"body_fat":[],"measurements":[],"water":[],
+             "goal_journal":[
+               {"id":"$id","updated_at":"2026-07-24T18:00:00Z","deleted_at":null,"date":"2026-07-24","calories":2800,"protein_g":170,"carbs_g":350,"fat_g":78,"profile_id":"t","profile_name":"Training day","source":"plan"}
+             ],
+             "recipes":[],"profile":null,"prefs":null}
+        """.trimIndent()
+        val desktop = """
+            {"export":{"app":"Chompass","kind":"sync","format_version":"1.2"},
+             "food_entries":[],"favorites":[],"weights":[],"body_fat":[],"measurements":[],"water":[],
+             "goal_journal":[
+               {"id":"$id","updated_at":"2026-07-24T19:00:00Z","deleted_at":null,"date":"2026-07-24","calories":2100,"protein_g":150,"carbs_g":160,"fat_g":78,"profile_id":"r","profile_name":"Rest day","source":"manual_switch"}
+             ],
+             "recipes":[],"profile":null,"prefs":null}
+        """.trimIndent()
+        val local = (SyncDocument.parse(phone, ZoneOffset.UTC) as SyncDocument.ParseResult.Success).parsed.raw
+        val remote = (SyncDocument.parse(desktop, ZoneOffset.UTC) as SyncDocument.ParseResult.Success).parsed.raw
+        val merged = SyncDocument.mergeRawDocuments(local, remote)
+        val rows = merged["goal_journal"]!!.jsonArray
+        assertEquals(1, rows.size)
+        assertEquals(2100, rows.single().jsonObject["calories"]!!.jsonPrimitive.content.toInt())
+        assertEquals("manual_switch", rows.single().jsonObject["source"]!!.jsonPrimitive.content)
     }
 }

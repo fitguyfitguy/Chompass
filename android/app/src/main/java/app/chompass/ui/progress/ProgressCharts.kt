@@ -691,8 +691,18 @@ internal fun MeasurementChartCanvas(
     }
 }
 
+/**
+ * Per-day calorie bars against a goal rule line (#60 phase 3): [goal] is the
+ * range average (MACRO-CYCLE-D); each bar colors over/under against its own
+ * day's target from [dailyGoals] (journal-first; missing entries — e.g.
+ * downsampled week buckets — fall back to [goal]).
+ */
 @Composable
-internal fun CalorieBarChart(dailyCalories: List<Pair<LocalDate, Int>>, goal: Int) {
+internal fun CalorieBarChart(
+    dailyCalories: List<Pair<LocalDate, Int>>,
+    goal: Int,
+    dailyGoals: Map<LocalDate, Int> = emptyMap(),
+) {
     val maxValue = dailyCalories.maxOf { it.second }.coerceAtLeast(goal).toDouble()
     val gradientStart = AppColors.CalorieStart
     val gradientEnd = AppColors.CalorieEnd
@@ -740,11 +750,11 @@ internal fun CalorieBarChart(dailyCalories: List<Pair<LocalDate, Int>>, goal: In
                         strokeWidth = 2f,
                         pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 6f))
                     )
-                    dailyCalories.forEachIndexed { i, (_, cals) ->
+                    dailyCalories.forEachIndexed { i, (day, cals) ->
                         val barH = ((cals / yTop).toFloat() * pxH)
                         val x = startX + i * (barWidth + gap)
                         val y = pxH - barH
-                        val brush = if (cals > goal) {
+                        val brush = if (cals > (dailyGoals[day] ?: goal)) {
                             Brush.verticalGradient(
                                 colors = listOf(overColorSoft, overColor),
                                 startY = y, endY = pxH
