@@ -13,6 +13,7 @@ import {
   dailyNotes,
   nicotine,
   caffeine,
+  goalJournal,
   prefs,
   withRevisionHooksSuppressed,
 } from "./db.js";
@@ -28,9 +29,19 @@ import {
   liveDailyNotesFromSync,
   liveNicotineFromSync,
   liveCaffeineFromSync,
+  liveGoalJournalFromSync,
   liveRecipesFromSync,
 } from "./chompass-core/sync-format.js";
 import { mergeSyncDocuments, partitionLiveAndDeleted } from "./chompass-core/sync-merge.js";
+import { epochDayToIso, goalJournalIdFor } from "./chompass-core/macro-plan.js";
+
+/** Per-day sync id (goalJournalIdFor) → ISO date (goal_journal delete path). */
+function goalJournalIdToDate(id) {
+  const hex = /-([0-9a-f]{12})$/.exec(String(id ?? ""))?.[1];
+  if (!hex) return null;
+  const days = parseInt(hex, 16);
+  return Number.isFinite(days) ? epochDayToIso(days) : null;
+}
 
 /** @returns {Promise<Record<string, { updatedAt: string, deletedAt?: string|null, kind?: string }>>} */
 async function loadRevisions() {
@@ -69,6 +80,7 @@ export async function buildLocalSyncDocument() {
     dailyNotes: await dailyNotes.all(),
     nicotine: await nicotine.all(),
     caffeine: await caffeine.all(),
+    goalJournal: await goalJournal.all(),
     recipes: await recipes.all(),
     revisions,
     generatedAt: new Date().toISOString(),
@@ -166,6 +178,21 @@ export async function applySyncDocument(doc) {
   }
   for (const id of rPart.deletedIds) await recipes.delete(id);
   for (const entry of liveRecipesFromSync(rPart.live)) await recipes.put(entry);
+
+  const gjPart = partitionLiveAndDeleted(doc.goal_journal ?? []);
+  for (const row of doc.goal_journal ?? []) {
+    revisions[row.id] = { updatedAt: row.updated_at, deletedAt: row.deleted_at ?? null, kind: "goal_journal" };
+  }
+  for (const id of gjPart.deletedIds) {
+    const date = goalJournalIdToDate(id);
+    if (date) await goalJournal.delete(date);
+  }
+  // Per-day last-write-wins: the doc is already merged per-day LWW by
+  // mergeSyncDocuments; local rows win only when the wire row is older, which
+  // the merge already excluded. Live rows replace their day outright.
+  for (const entry of liveGoalJournalFromSync(gjPart.live)) {
+    await goalJournal.put({ ...entry, id: goalJournalIdFor(entry.date) });
+  }
 
   await saveRevisions(revisions);
   });

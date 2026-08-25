@@ -7,6 +7,7 @@ import {
   measurements,
   dailyNotes,
   prefs,
+  goalJournal,
   clearAllUserData,
 } from "../lib/db.js";
 import { dailyTargets, bmr, tdee, safetyFloorKcal, CALORIE_PARSER_CEILING_KCAL } from "../lib/chompass-core/formulas.js";
@@ -52,6 +53,65 @@ import {
   MAX_CUSTOM_GOAL_BY_KEY,
 } from "../lib/home-nutrients.js";
 import { LOCALES, t, formatNumber } from "../lib/i18n/index.js";
+import {
+  setPlanEnabled,
+  upsertProfile,
+  deleteProfile,
+  reorderProfiles,
+  setPlanMode,
+  setDefaultProfile,
+  setWeekdayProfile,
+  setCyclePattern,
+  restartCycle,
+  setDayAssignment,
+  pausedForKeto,
+  MIN_PROFILES,
+  MAX_PROFILES,
+} from "../lib/chompass-core/macro-plan-edit.js";
+import { resolveDay, resolveDayJournaled } from "../lib/chompass-core/macro-plan.js";
+import { applyingAiGoalsToPlan } from "../lib/chompass-core/macro-plan-edit.js";
+import { refreshGoalJournal } from "../lib/goal-journal-store.js";
+
+function escapeHtmlSettings(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+}
+
+/** Local calendar day yyyy-MM-dd. */
+function localTodayIso() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function shiftIso(iso, days) {
+  const d = new Date(`${iso}T00:00:00`);
+  d.setDate(d.getDate() + days);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+const WEEKDAY_ORDER = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
+
+/** @param {string} name DayOfWeek name */
+function weekdayLabel(name) {
+  return name.charAt(0) + name.slice(1).toLowerCase();
+}
+
+/** @param {import('../lib/chompass-core/macro-plan.js').MacroPlan|null} plan */
+function dayTypesSummary(plan) {
+  if (!plan || !plan.enabled) return t("day_types.summary_off");
+  const mode =
+    plan.mode === "WEEKDAYS"
+      ? t("day_types.mode_weekdays")
+      : plan.mode === "CYCLE"
+        ? t("day_types.mode_cycle")
+        : t("day_types.mode_manual");
+  return t("day_types.summary_format", { count: String(plan.profiles?.length ?? 0), mode });
+}
 
 const ACTIVITY_LEVELS = [
   { id: "sedentary", label: "Sedentary" },
@@ -102,6 +162,7 @@ const SETTINGS_PARENT = {
   profile: "#/settings",
   goals: "#/settings",
   nutrients: "#/settings?section=goals",
+  daytypes: "#/settings?section=goals",
   app: "#/settings",
   units: "#/settings?section=app",
   home: "#/settings?section=app",
@@ -177,6 +238,10 @@ export class SettingsView extends HTMLElement {
     }
     if (this.section === "nutrients") {
       await this.renderNutrients();
+      return;
+    }
+    if (this.section === "daytypes") {
+      await this.renderDayTypes();
       return;
     }
     if (this.section === "app") {
@@ -442,6 +507,7 @@ export class SettingsView extends HTMLElement {
       </div>
       <nav class="settings-nav" aria-label="Related">
         <a href="#/settings?section=nutrients">Optional nutrients <span>Fiber, sodium…</span></a>
+        ${!p.ketoMode ? `<a href="#/settings?section=daytypes">${escapeHtmlSettings(t("day_types.title"))} <span>${escapeHtmlSettings(dayTypesSummary(p.macroPlan))}</span></a>` : ""}
       </nav>`;
     this.querySelector("#goals-form")?.addEventListener("submit", async (ev) => {
       ev.preventDefault();
@@ -488,6 +554,11 @@ export class SettingsView extends HTMLElement {
         weeklyChangeKg: paceRaw ? Number(paceRaw) : null,
         goalWeightKg: goalW ? Number(goalW) : null,
         ketoMode: fd.get("ketoMode") === "true",
+        // Keto transition (#60 Q4): a day-type plan pauses (data kept).
+        macroPlan:
+          fd.get("ketoMode") === "true" && p.macroPlan
+            ? pausedForKeto(p.macroPlan)
+            : p.macroPlan,
         customCalories,
         customProtein,
         customCarbs,
@@ -565,7 +636,8 @@ export class SettingsView extends HTMLElement {
         heightMetric: appPrefs.heightUnit !== "in",
         weightMetric: appPrefs.weightUnit !== "lb",
       });
-      await profileStore.save(applyingAiGoals(profile, result));
+      await profileStore.save(applyingAiGoalsToPlan(profile, result, applyingAiGoals));
+      await refreshGoalJournal().catch(() => null);
       const reason = result.reason ? ` ${result.reason}` : "";
       this.render();
       const after = /** @type {HTMLElement | null} */ (this.querySelector("#recalc-status"));
@@ -581,6 +653,304 @@ export class SettingsView extends HTMLElement {
       }
       if (btn) btn.disabled = false;
     }
+  }
+
+  /**
+   * Day types editor (#60, PWA mirror of Android DayTypesSettingsScreen):
+   * profiles + schedule + overrides, every mutation saved immediately through
+   * the pure write path (macro-plan-edit) and followed by a journal refresh.
+   */
+  async renderDayTypes() {
+    const p = await this.loadProfile();
+    const plan = p.macroPlan ?? null;
+    const profiles = plan?.profiles ?? [];
+    const today = localTodayIso();
+    const base = dailyTargets(p);
+    const floor = safetyFloorKcal(p);
+    const enabled = plan?.enabled === true;
+    const countOk = profiles.length >= MIN_PROFILES && profiles.length <= MAX_PROFILES;
+    const editingId = this._editingProfileId ?? null; // "new" | profile id | null
+    const editing = editingId === "new" ? null : profiles.find((x) => x.id === editingId) ?? null;
+
+    /** Persist a mutated plan + refresh the goal journal (write trigger 1). */
+    const savePlan = async (nextPlan) => {
+      const safe = p.ketoMode ? pausedForKeto(nextPlan) : nextPlan;
+      await profileStore.save({ ...p, macroPlan: safe });
+      await refreshGoalJournal().catch(() => null);
+      this.render();
+    };
+
+    const profileOptions = (selected, includeEmpty, emptyLabel) =>
+      `${includeEmpty ? `<option value="" ${!selected ? "selected" : ""}>${escapeHtmlSettings(emptyLabel)}</option>` : ""}${profiles
+        .map((x) => `<option value="${escapeHtmlSettings(x.id)}" ${selected === x.id ? "selected" : ""}>${escapeHtmlSettings(x.name)}</option>`)
+        .join("")}`;
+
+    const pattern = plan?.cyclePattern ?? [];
+    const assignments = Object.entries(plan?.dayAssignments ?? {}).sort(([a], [b]) => a.localeCompare(b));
+    const preview = Array.from({ length: 7 }, (_, i) => {
+      const iso = shiftIso(today, i);
+      const r = resolveDay(plan, base, iso);
+      return { iso, r };
+    });
+
+    this.innerHTML = `
+      ${subpageBar(t("day_types.title"), { backHref: SETTINGS_PARENT.daytypes })}
+      ${p.ketoMode ? `<div class="card"><p style="margin:0;color:var(--muted);font-size:0.88rem;">${escapeHtmlSettings(t("day_types.keto_paused"))}</p></div>` : ""}
+      <div class="card">
+        <div class="field" style="display:flex;align-items:center;gap:0.6rem;">
+          <label for="dt-enabled" style="margin:0;">${escapeHtmlSettings(t("day_types.master_toggle"))}</label>
+          <select id="dt-enabled" style="max-width:110px;" ${countOk ? "" : "disabled"}>
+            <option value="false" ${!enabled ? "selected" : ""}>Off</option>
+            <option value="true" ${enabled ? "selected" : ""}>On</option>
+          </select>
+        </div>
+        ${countOk ? "" : `<p class="field-hint">${escapeHtmlSettings(t("day_types.need_profiles", { min: String(MIN_PROFILES), max: String(MAX_PROFILES) }))}</p>`}
+      </div>
+
+      <div class="card">
+        <h2 class="chart-title">${escapeHtmlSettings(t("day_types.profiles"))}</h2>
+        ${profiles.length === 0 ? `<p style="color:var(--muted);font-size:0.85rem;margin:0;">${escapeHtmlSettings(t("day_types.no_profiles"))}</p>` : ""}
+        ${profiles
+          .map(
+            (x, i) => `
+          <div class="day-type-row">
+            <div class="day-type-row__text">
+              <strong>${escapeHtmlSettings(x.name)}</strong>
+              <span class="day-type-row__sub">${x.calories} kcal · ${x.proteinG}P / ${x.carbsG}C / ${x.fatG}F${x.calories <= floor ? ` · ${escapeHtmlSettings(t("day_types.at_floor"))}` : ""}</span>
+            </div>
+            <div class="day-type-row__actions">
+              <button type="button" class="chip" data-dt-up="${x.id}" ${i === 0 ? "disabled" : ""} aria-label="Move up">↑</button>
+              <button type="button" class="chip" data-dt-down="${x.id}" ${i === profiles.length - 1 ? "disabled" : ""} aria-label="Move down">↓</button>
+              <button type="button" class="chip" data-dt-edit="${x.id}">${escapeHtmlSettings(t("day_types.edit"))}</button>
+              <button type="button" class="chip" data-dt-del="${x.id}">${escapeHtmlSettings(t("day_types.delete"))}</button>
+            </div>
+          </div>`,
+          )
+          .join("")}
+        ${profiles.length < MAX_PROFILES ? `<button type="button" class="btn btn--ghost" data-dt-add>${escapeHtmlSettings(t("day_types.add_profile"))}</button>` : ""}
+      </div>
+
+      ${editingId ? `
+      <form class="entry-form card" id="dt-profile-form">
+        <h2 class="chart-title">${escapeHtmlSettings(editingId === "new" ? t("day_types.add_profile") : t("day_types.edit_profile"))}</h2>
+        <div class="field">
+          <label for="dt-name">${escapeHtmlSettings(t("day_types.name"))}</label>
+          <input id="dt-name" name="name" type="text" maxlength="40" value="${escapeHtmlSettings(editing?.name ?? "")}" required />
+        </div>
+        <div class="field-row field-row--2">
+          <div class="field"><label for="dt-kcal">${escapeHtmlSettings(t("day_types.calories"))}</label><input id="dt-kcal" name="calories" type="number" min="1200" max="6000" step="10" value="${editing?.calories ?? base.calories}" required /></div>
+          <div class="field"><label for="dt-protein">${escapeHtmlSettings(t("day_types.protein_g"))}</label><input id="dt-protein" name="proteinG" type="number" min="0" max="500" value="${editing?.proteinG ?? base.proteinG}" required /></div>
+          <div class="field"><label for="dt-carbs">${escapeHtmlSettings(t("day_types.carbs_g"))}</label><input id="dt-carbs" name="carbsG" type="number" min="0" max="1200" value="${editing?.carbsG ?? base.carbsG}" required /></div>
+          <div class="field"><label for="dt-fat">${escapeHtmlSettings(t("day_types.fat_g"))}</label><input id="dt-fat" name="fatG" type="number" min="0" max="400" value="${editing?.fatG ?? base.fatG}" required /></div>
+        </div>
+        <p class="field-hint">${escapeHtmlSettings(t("day_types.floor_hint", { floor: String(floor) }))}</p>
+        <div class="btn-row">
+          <button type="submit" class="btn btn--primary">${escapeHtmlSettings(t("day_types.save_profile"))}</button>
+          <button type="button" class="btn btn--ghost" id="dt-copy-current">${escapeHtmlSettings(t("day_types.copy_current"))}</button>
+          <button type="button" class="btn btn--ghost" id="dt-cancel">${escapeHtmlSettings(t("action.cancel"))}</button>
+        </div>
+      </form>` : ""}
+
+      ${profiles.length >= MIN_PROFILES ? `
+      <div class="card">
+        <h2 class="chart-title">${escapeHtmlSettings(t("day_types.schedule"))}</h2>
+        <div class="field">
+          <label for="dt-mode">${escapeHtmlSettings(t("day_types.mode"))}</label>
+          <select id="dt-mode">
+            <option value="MANUAL" ${plan?.mode !== "WEEKDAYS" && plan?.mode !== "CYCLE" ? "selected" : ""}>${escapeHtmlSettings(t("day_types.mode_manual"))}</option>
+            <option value="WEEKDAYS" ${plan?.mode === "WEEKDAYS" ? "selected" : ""}>${escapeHtmlSettings(t("day_types.mode_weekdays"))}</option>
+            <option value="CYCLE" ${plan?.mode === "CYCLE" ? "selected" : ""}>${escapeHtmlSettings(t("day_types.mode_cycle"))}</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="dt-default">${escapeHtmlSettings(t("day_types.default"))}</label>
+          <select id="dt-default">${profileOptions(plan?.defaultProfileId ?? null, false, "")}</select>
+        </div>
+        ${plan?.mode === "WEEKDAYS"
+          ? WEEKDAY_ORDER.map(
+              (day) => `
+          <div class="field">
+            <label for="dt-wd-${day}">${weekdayLabel(day)}</label>
+            <select id="dt-wd-${day}" data-dt-weekday="${day}">${profileOptions(plan?.weekdayProfileIds?.[day] ?? null, true, t("day_types.follow_default"))}</select>
+          </div>`,
+            ).join("")
+          : ""}
+        ${plan?.mode === "CYCLE"
+          ? `
+          <div class="field">
+            <label for="dt-pattern-add">${escapeHtmlSettings(t("day_types.pattern"))}</label>
+            <div class="btn-row" style="align-items:center;">
+              <select id="dt-pattern-add">${profileOptions(null, false, "")}</select>
+              <button type="button" class="btn btn--ghost" id="dt-pattern-append">${escapeHtmlSettings(t("day_types.pattern_add"))}</button>
+              <button type="button" class="btn btn--ghost" id="dt-restart">${escapeHtmlSettings(t("day_types.restart"))}</button>
+            </div>
+            <div class="day-type-pattern">
+              ${pattern.map((id, i) => {
+                const x = profiles.find((y) => y.id === id);
+                return `<button type="button" class="chip" data-dt-pattern-remove="${i}" title="${escapeHtmlSettings(t("day_types.remove"))}">${i + 1}. ${escapeHtmlSettings(x?.name ?? "?")} ×</button>`;
+              }).join("")}
+            </div>
+            ${plan.cycleAnchorDay ? `<p class="field-hint">${escapeHtmlSettings(t("day_types.anchor_hint", { date: plan.cycleAnchorDay }))}</p>` : ""}
+          </div>`
+          : ""}
+      </div>
+
+      <div class="card">
+        <h2 class="chart-title">${escapeHtmlSettings(t("day_types.overrides"))}</h2>
+        <div class="field-row field-row--2" style="align-items:flex-end;">
+          <div class="field"><label for="dt-ov-date">${escapeHtmlSettings(t("day_types.date"))}</label><input id="dt-ov-date" type="date" value="${today}" /></div>
+          <div class="field"><label for="dt-ov-profile">${escapeHtmlSettings(t("day_types.day_type"))}</label><select id="dt-ov-profile">${profileOptions(null, false, "")}</select></div>
+        </div>
+        <button type="button" class="btn btn--ghost" id="dt-ov-add">${escapeHtmlSettings(t("day_types.override_add"))}</button>
+        ${assignments.length ? `
+          <div style="margin-top:0.6rem;">
+          ${assignments
+            .map(
+              ([date, id]) => {
+                const x = profiles.find((y) => y.id === id);
+                return `<div class="day-type-row"><div class="day-type-row__text"><strong>${escapeHtmlSettings(date)}</strong><span class="day-type-row__sub">${escapeHtmlSettings(x?.name ?? "?")}</span></div><div class="day-type-row__actions"><button type="button" class="chip" data-dt-ov-remove="${date}">${escapeHtmlSettings(t("day_types.remove"))}</button></div></div>`;
+              },
+            )
+            .join("")}
+          </div>` : ""}
+      </div>
+
+      <div class="card">
+        <h2 class="chart-title">${escapeHtmlSettings(t("day_types.preview"))}</h2>
+        ${preview
+          .map(
+            ({ iso, r }) => `
+          <div class="day-type-row">
+            <div class="day-type-row__text"><strong>${escapeHtmlSettings(iso)}${iso === today ? ` · ${escapeHtmlSettings(t("day_types.today"))}` : ""}</strong></div>
+            <div class="day-type-row__actions"><span class="day-type-row__sub">${escapeHtmlSettings(r.profileName ?? t("day_types.base"))} · ${r.targets.calories} kcal</span></div>
+          </div>`,
+          )
+          .join("")}
+      </div>` : ""}
+    `;
+
+    // -- bindings --------------------------------------------------------------
+    this.querySelector("#dt-enabled")?.addEventListener("change", async (ev) => {
+      const on = /** @type {HTMLSelectElement} */ (ev.target).value === "true";
+      await savePlan(setPlanEnabled(plan, on, today));
+    });
+    this.querySelector("[data-dt-add]")?.addEventListener("click", () => {
+      this._editingProfileId = "new";
+      this.render();
+    });
+    this.querySelectorAll("[data-dt-edit]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        this._editingProfileId = btn.getAttribute("data-dt-edit");
+        this.render();
+      });
+    });
+    this.querySelector("#dt-cancel")?.addEventListener("click", () => {
+      this._editingProfileId = null;
+      this.render();
+    });
+    this.querySelector("#dt-copy-current")?.addEventListener("click", () => {
+      const set = (id, v) => {
+        const el = /** @type {HTMLInputElement|null} */ (this.querySelector(id));
+        if (el) el.value = String(Math.round(v));
+      };
+      set("#dt-kcal", base.calories);
+      set("#dt-protein", base.proteinG);
+      set("#dt-carbs", base.carbsG);
+      set("#dt-fat", base.fatG);
+    });
+    this.querySelector("#dt-profile-form")?.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
+      const name = String(fd.get("name") ?? "").trim();
+      if (!name) return;
+      const clash = profiles.some((x) => x.name.toLowerCase() === name.toLowerCase() && x.id !== editing?.id);
+      if (clash) {
+        await openConfirm({ title: t("day_types.duplicate_name"), message: t("day_types.duplicate_name_hint"), confirmLabel: "OK" });
+        return;
+      }
+      const id = editing?.id ?? crypto.randomUUID();
+      const next = upsertProfile(
+        plan,
+        {
+          id,
+          name,
+          calories: Number(fd.get("calories")),
+          proteinG: Number(fd.get("proteinG")),
+          carbsG: Number(fd.get("carbsG")),
+          fatG: Number(fd.get("fatG")),
+        },
+        p,
+        today,
+      );
+      this._editingProfileId = null;
+      await savePlan(next);
+    });
+    this.querySelectorAll("[data-dt-del]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const id = btn.getAttribute("data-dt-del");
+        const x = profiles.find((y) => y.id === id);
+        const ok = await openConfirm({
+          title: t("day_types.delete"),
+          message: t("day_types.delete_hint", { name: x?.name ?? "" }),
+          confirmLabel: t("day_types.delete"),
+          danger: true,
+        });
+        if (!ok) return;
+        await savePlan(deleteProfile(plan, id, null, today));
+      });
+    });
+    this.querySelectorAll("[data-dt-up], [data-dt-down]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const id = btn.getAttribute("data-dt-up") ?? btn.getAttribute("data-dt-down");
+        const ids = profiles.map((x) => x.id);
+        const i = ids.indexOf(id);
+        const j = btn.hasAttribute("data-dt-up") ? i - 1 : i + 1;
+        if (i < 0 || j < 0 || j >= ids.length) return;
+        [ids[i], ids[j]] = [ids[j], ids[i]];
+        await savePlan(reorderProfiles(plan, ids));
+      });
+    });
+    this.querySelector("#dt-mode")?.addEventListener("change", async (ev) => {
+      const mode = /** @type {"MANUAL"|"WEEKDAYS"|"CYCLE"} */ (/** @type {HTMLSelectElement} */ (ev.target).value);
+      await savePlan(setPlanMode(plan, mode, today));
+    });
+    this.querySelector("#dt-default")?.addEventListener("change", async (ev) => {
+      const v = /** @type {HTMLSelectElement} */ (ev.target).value;
+      await savePlan(setDefaultProfile(plan, v || null));
+    });
+    this.querySelectorAll("[data-dt-weekday]").forEach((sel) => {
+      sel.addEventListener("change", async () => {
+        await savePlan(
+          setWeekdayProfile(plan, sel.getAttribute("data-dt-weekday"), /** @type {HTMLSelectElement} */ (sel).value || null),
+        );
+      });
+    });
+    this.querySelector("#dt-pattern-append")?.addEventListener("click", async () => {
+      const v = /** @type {HTMLSelectElement|null} */ (this.querySelector("#dt-pattern-add"))?.value;
+      if (!v || pattern.length >= MAX_PROFILES) return;
+      await savePlan(setCyclePattern(plan, [...pattern, v]));
+    });
+    this.querySelectorAll("[data-dt-pattern-remove]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const i = Number(btn.getAttribute("data-dt-pattern-remove"));
+        await savePlan(setCyclePattern(plan, pattern.filter((_, idx) => idx !== i)));
+      });
+    });
+    this.querySelector("#dt-restart")?.addEventListener("click", async () => {
+      await savePlan(restartCycle(plan, today));
+    });
+    this.querySelector("#dt-ov-add")?.addEventListener("click", async () => {
+      const date = /** @type {HTMLInputElement|null} */ (this.querySelector("#dt-ov-date"))?.value;
+      const id = /** @type {HTMLSelectElement|null} */ (this.querySelector("#dt-ov-profile"))?.value;
+      if (!date || !id) return;
+      await savePlan(setDayAssignment(plan, date, id));
+    });
+    this.querySelectorAll("[data-dt-ov-remove]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        await savePlan(setDayAssignment(plan, btn.getAttribute("data-dt-ov-remove"), null));
+      });
+    });
+    bindSubpageBack(this, SETTINGS_PARENT.daytypes);
   }
 
   async renderUnits() {
@@ -1518,6 +1888,7 @@ export class SettingsView extends HTMLElement {
     const dates = entries.map((e) => e.date).sort();
     const dateRange = { start: dates[0] ?? "", end: dates[dates.length - 1] ?? "" };
     const targets = prof ? dailyTargets(prof) : null;
+    const journal = await goalJournal.all();
     const allNotes = await dailyNotes.all();
     const notes = allNotes
       .filter((n) => n.date >= dateRange.start && n.date <= dateRange.end)
@@ -1536,8 +1907,15 @@ export class SettingsView extends HTMLElement {
     }
     /** @type {Record<string, {calories: number, proteinG: number, carbsG: number, fatG: number}>} */
     const targetsByDay = {};
-    if (targets) {
-      for (const e of entries) targetsByDay[e.date] = targets;
+    if (prof && targets) {
+      // Day types (#60): journal-first (frozen actuals for past days), live
+      // resolution for gaps/today — matches the Android DiaryExporter.
+      const today = new Date().toISOString().slice(0, 10);
+      for (const e of entries) {
+        if (!targetsByDay[e.date]) {
+          targetsByDay[e.date] = resolveDayJournaled(journal, prof.macroPlan ?? null, targets, e.date, today).targets;
+        }
+      }
     }
     const doc = exportDiary({ entries, targets: targetsByDay, dateRange, notes });
     await downloadJson(doc, `Chompass-Food-Diary-${dateRange.start}_to_${dateRange.end}.json`);

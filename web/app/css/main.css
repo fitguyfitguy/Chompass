@@ -534,6 +534,61 @@ main.view {
   text-decoration: underline;
 }
 
+/* Macro day types (#60): hero chip rides inline under the gauge. */
+.day-type-chip-row {
+  display: flex;
+  justify-content: center;
+  margin: 0.3rem 0 0;
+}
+
+.day-type-chip {
+  font-size: 0.78rem;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Day types editor rows (#60). */
+.day-type-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--outline-variant, rgba(128, 128, 128, 0.25));
+}
+
+.day-type-row:last-of-type {
+  border-bottom: none;
+}
+
+.day-type-row__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.day-type-row__sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.day-type-row__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.day-type-pattern {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+}
+
 .macro-tube--protein { --tube-color: var(--protein); }
 .macro-tube--carbs { --tube-color: var(--carbs); }
 .macro-tube--fat { --tube-color: var(--fat); }

@@ -1,6 +1,7 @@
 // @ts-check
-import { foodEntries, weights, water, bodyFat, profile as profileStore, prefs } from "../db.js";
+import { foodEntries, weights, water, bodyFat, profile as profileStore, prefs, goalJournal } from "../db.js";
 import { dailyTargets, bmr, tdee } from "../chompass-core/formulas.js";
+import { averageForward, resolveDayJournaled } from "../chompass-core/macro-plan.js";
 import { PROVIDERS, resolveVisionModel, resolveProviderModel } from "./providers.js";
 import { AI_TOOLS, READ_ONLY_TOOLS, WRITE_TOOLS } from "./tools.js";
 import { t } from "../i18n/index.js";
@@ -43,6 +44,42 @@ export function buildFastingPromptBlock(p) {
     "## Fasting (intermittent fasting tracker - user-optional, local-only)",
     body,
     "- When the user asks about eating timing, weigh elapsed time against the goal. Never claim autophagy, fat-burning zones, or health effects of fasting duration; fasting is a scheduling tool, not medical advice. Suggest a clinician for fasting-related health questions.",
+  ].join("\n");
+}
+
+/**
+ * Macro day-types block (#60, PWA mirror of the Android ChatService lines):
+ * schedule summary + weekly average + today's day type, so "why did I gain
+ * weight this week" answers against the average, not a single day's target.
+ * Returns null while the plan is off or paused (keto).
+ * @param {import('../chompass-core/models.js').UserProfile} profile
+ * @param {string} isoToday
+ * @returns {string|null}
+ */
+export function buildDayTypesPromptBlock(profile, isoToday) {
+  const plan = profile.macroPlan;
+  if (!plan || plan.enabled !== true || !plan.profiles?.length) return null;
+  const base = dailyTargets(profile);
+  const avg = averageForward(plan, base, isoToday);
+  const schedule =
+    plan.mode === "WEEKDAYS"
+      ? "weekday map"
+      : plan.mode === "CYCLE"
+        ? `repeating cycle anchored ${plan.cycleAnchorDay ?? "?"}`
+        : "manual default";
+  const profiles = plan.profiles
+    .map((x) => `- ${x.name}: ${x.calories} kcal, ${x.proteinG}P/${x.carbsG}C/${x.fatG}F`)
+    .join("\n");
+  const today = resolveDayJournaled([], plan, base, isoToday, isoToday);
+  const todayLine = today.profileName
+    ? `Today (${isoToday}) is a ${today.profileName}: ${today.targets.calories} kcal, ${today.targets.proteinG}P/${today.targets.carbsG}C/${today.targets.fatG}F`
+    : `Today (${isoToday}) uses the base targets: ${base.calories} kcal`;
+  return [
+    "## Day types (different calorie/macro targets per day)",
+    `- Assignment: ${schedule}. Weekly average target: ${avg.calories} kcal/day, ${avg.proteinG}P/${avg.carbsG}C/${avg.fatG}F.`,
+    "- Judge single days against that day's target and whole weeks against the weekly average.",
+    profiles,
+    `- ${todayLine}`,
   ].join("\n");
 }
 
@@ -90,6 +127,11 @@ export async function runCoachTurn({ providerId, config, history, userText, imag
   if (appPrefs.userContext?.trim()) {
     systemPrompt += `\n\nUser preferences:\n${appPrefs.userContext.trim()}`;
   }
+  const prof = await profileStore.load();
+  if (prof) {
+    const dayTypesBlock = buildDayTypesPromptBlock(prof, new Date().toISOString().slice(0, 10));
+    if (dayTypesBlock) systemPrompt += `\n\n${dayTypesBlock}`;
+  }
 
   const messages = /** @type {import('./providers.js').AiMessage[]} */ ([
     ...history,
@@ -119,7 +161,11 @@ async function executeReadTool(tc) {
   const today = new Date().toISOString().slice(0, 10);
   if (tc.name === "get_diary_context") {
     const date = tc.input?.date || today;
-    const [entries, prof] = await Promise.all([foodEntries.byDate(date), profileStore.load()]);
+    const [entries, prof, journal] = await Promise.all([
+      foodEntries.byDate(date),
+      profileStore.load(),
+      goalJournal.all(),
+    ]);
     const totals = sumMacros(entries);
     return {
       date,
@@ -133,7 +179,17 @@ async function executeReadTool(tc) {
         fatG,
       })),
       totals,
-      targets: prof ? dailyTargets(prof) : null,
+      // Day types (#60): journal-first (frozen actuals for past days), live
+      // resolution for today/future.
+      targets: prof
+        ? resolveDayJournaled(
+            journal,
+            prof.macroPlan ?? null,
+            dailyTargets(prof),
+            String(date).slice(0, 10),
+            today,
+          ).targets
+        : null,
     };
   }
   if (tc.name === "get_food_entries") {

@@ -15,6 +15,7 @@ import { initInstallPrompt, maybeShowInstallBanner } from "./lib/install-prompt.
 import { initUpdatePrompt } from "./lib/update-prompt.js";
 import { activateFromPrefs, t } from "./lib/i18n/index.js";
 import { maybeAutoSyncWebDav } from "./lib/sync.js";
+import { refreshGoalJournal } from "./lib/goal-journal-store.js";
 
 const view = document.getElementById("view");
 const nav = document.getElementById("bottom-nav");
@@ -153,6 +154,9 @@ window.addEventListener("chompass-prefs-changed", () => {
 if (!location.hash || location.hash === "#/") location.hash = "#/home";
 maybeSeedFromUrl()
   .then(render)
+  // App-start journal trigger (#60): gap-fill days missed while the app was
+  // closed; no-op while the day plan is off.
+  .then(() => refreshGoalJournal().catch(() => null))
   .then(() => maybeAutoSyncWebDav().catch(() => null));
 
 if ("serviceWorker" in navigator) {
