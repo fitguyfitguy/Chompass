@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
@@ -46,6 +47,7 @@ import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
@@ -400,15 +402,18 @@ internal fun CalorieHero(
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary
                 )
+                // Day-type chip rides the remaining caption's line (#60) — one
+                // row instead of its own, keeping the hero compact. Hidden when
+                // the plan is off / past-day view (dayTypeLabel == null).
+                if (dayTypeLabel != null && onDayTypeClick != null) {
+                    Spacer(Modifier.width(5.dp))
+                    DayTypeChip(label = dayTypeLabel, onClick = onDayTypeClick)
+                }
             }
             if (shadesActive) {
                 BurnShadeCaption(burn = shade!!)
             } else if (showActiveCalories && liveActiveBurn > 0) {
                 BurnCaption(active = liveActiveBurn)
-            }
-            if (dayTypeLabel != null && onDayTypeClick != null) {
-                Spacer(Modifier.size(6.dp))
-                DayTypeChip(label = dayTypeLabel, onClick = onDayTypeClick)
             }
         }
     }
@@ -426,7 +431,7 @@ internal fun CalorieHero(
     }
 }
 
-/** Small tappable pill under the hero captions: today's day type (#60). */
+/** Compact tappable pill beside the hero's remaining caption: today's day type (#60). */
 @Composable
 private fun DayTypeChip(label: String, onClick: () -> Unit) {
     val a11y = stringResource(R.string.home_day_type_chip_a11y, label)
@@ -434,25 +439,31 @@ private fun DayTypeChip(label: String, onClick: () -> Unit) {
         onClick = onClick,
         shape = RoundedCornerShape(50),
         color = MaterialTheme.colorScheme.secondaryContainer,
-        modifier = Modifier.semantics { contentDescription = a11y },
+        modifier = Modifier
+            // The chip shares the remaining-caption line: cap it so a long
+            // day-type name ellipsizes instead of pushing the caption around.
+            .widthIn(max = 140.dp)
+            .semantics { contentDescription = a11y },
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(2.dp),
-            modifier = Modifier.padding(start = 10.dp, end = 6.dp, top = 4.dp, bottom = 4.dp),
+            modifier = Modifier.padding(start = 10.dp, end = 6.dp, top = 3.dp, bottom = 3.dp),
         ) {
             Text(
                 label,
-                fontSize = 12.sp,
+                fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false),
             )
             Icon(
                 Icons.Filled.KeyboardArrowDown,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.size(14.dp),
+                modifier = Modifier.size(13.dp),
             )
         }
     }

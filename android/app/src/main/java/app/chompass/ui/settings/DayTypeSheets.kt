@@ -17,7 +17,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -36,11 +35,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.DayTargets
 import app.chompass.models.LocaleFormat
 import app.chompass.models.MacroDayProfile
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.FudGlassDialog
+import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.theme.AppColors
@@ -67,7 +69,12 @@ internal fun DayTypePickerSheet(
     onSelectFollowSchedule: (() -> Unit)? = null,
 ) {
     ChompassBottomSheet(onDismiss = onDismiss) {
-        Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Text(
+            title,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 18.dp),
+        )
         Spacer(Modifier.height(12.dp))
         Column(
             Modifier
@@ -195,16 +202,19 @@ internal fun DayTypeProfileEditorSheet(
             ),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 18.dp),
         )
         Spacer(Modifier.height(12.dp))
         // Wheels scroll (4 of them exceed the sheet on small screens / large
         // font scale — the WaterQuickPresetsSheet pattern); name + Save stay
-        // pinned and reachable.
+        // pinned and reachable. 18dp side padding matches the sheet title so
+        // text lines never hug the screen edge.
         Column(
             Modifier
                 .fillMaxWidth()
                 .weight(1f, fill = false)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 18.dp),
         ) {
             FudGlassTextField(
                 value = name,
@@ -280,13 +290,14 @@ internal fun DayTypeProfileEditorSheet(
                     carbs = base.carbsG.coerceIn(0, 800)
                     fat = base.fatG.coerceIn(10, 300)
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
             ) {
                 Text(stringResource(R.string.settings_day_types_copy_current))
             }
         }
         GradientSaveButton(
             enabled = canSave,
+            modifier = Modifier.padding(horizontal = 18.dp),
             onClick = {
                 onSave(
                     MacroDayProfile(
@@ -304,7 +315,7 @@ internal fun DayTypeProfileEditorSheet(
             Spacer(Modifier.height(4.dp))
             TextButton(
                 onClick = { confirmDelete = true },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
             ) {
                 Text(
                     stringResource(R.string.settings_day_types_delete),
@@ -316,48 +327,64 @@ internal fun DayTypeProfileEditorSheet(
     }
 
     if (confirmDelete && editing != null) {
-        if (isReferenced) {
-            AlertDialog(
-                onDismissRequest = { confirmDelete = false },
-                title = { Text(stringResource(R.string.settings_day_types_delete_used_title, editing.name)) },
-                text = { Text(stringResource(R.string.settings_day_types_delete_used_message)) },
-                confirmButton = {
-                    Column(horizontalAlignment = Alignment.End) {
-                        replacementOptions.forEach { option ->
-                            TextButton(onClick = { onDelete(option) }) {
-                                Text(stringResource(R.string.settings_day_types_delete_replace, option))
-                            }
-                        }
-                        TextButton(onClick = { onDelete(null) }) {
-                            Text(stringResource(R.string.settings_day_types_delete_scrub))
-                        }
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { confirmDelete = false }) {
-                        Text(stringResource(R.string.action_cancel))
-                    }
-                },
+        // Replace/scrub options render as full-width rows in the body — the
+        // old AlertDialog stacked them as trailing text buttons right next to
+        // Cancel, which made the scrub option hard to hit (device review,
+        // phase 2 pass).
+        FudGlassDialog(
+            onDismissRequest = { confirmDelete = false },
+            scrollable = true,
+        ) {
+            Text(
+                stringResource(R.string.settings_day_types_delete_used_title, editing.name),
+                fontSize = 21.sp,
+                fontWeight = FontWeight.Bold,
             )
-        } else {
-            AlertDialog(
-                onDismissRequest = { confirmDelete = false },
-                title = { Text(stringResource(R.string.settings_day_types_delete_used_title, editing.name)) },
-                text = { Text(stringResource(R.string.settings_day_types_delete)) },
-                confirmButton = {
-                    TextButton(onClick = { onDelete(null) }) {
+            Text(
+                stringResource(R.string.settings_day_types_delete_used_message),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f),
+            )
+            if (isReferenced) {
+                replacementOptions.forEach { option ->
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(AppRadii.Field))
+                            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                            .clickable { onDelete(option) }
+                            .padding(horizontal = 14.dp, vertical = 13.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         Text(
-                            stringResource(R.string.action_delete),
-                            color = MaterialTheme.colorScheme.error,
+                            stringResource(R.string.settings_day_types_delete_replace, option),
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.weight(1f),
+                        )
+                        Icon(
+                            Icons.Filled.Check,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
+                            modifier = Modifier.size(18.dp),
                         )
                     }
-                },
-                dismissButton = {
-                    TextButton(onClick = { confirmDelete = false }) {
-                        Text(stringResource(R.string.action_cancel))
-                    }
-                },
-            )
+                }
+                FudGlassDialogActions(
+                    primaryText = stringResource(R.string.settings_day_types_delete_scrub),
+                    onPrimary = { onDelete(null) },
+                    dismissText = stringResource(R.string.action_cancel),
+                    onDismiss = { confirmDelete = false },
+                    destructive = true,
+                )
+            } else {
+                FudGlassDialogActions(
+                    primaryText = stringResource(R.string.action_delete),
+                    onPrimary = { onDelete(null) },
+                    dismissText = stringResource(R.string.action_cancel),
+                    onDismiss = { confirmDelete = false },
+                    destructive = true,
+                )
+            }
         }
     }
 }
