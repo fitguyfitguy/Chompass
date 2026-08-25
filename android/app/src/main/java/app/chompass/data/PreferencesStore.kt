@@ -144,6 +144,8 @@ class PreferencesStore(private val appContext: Context) {
 
     val userProfile: Flow<UserProfile?> get() = userProfileImpl
     suspend fun setUserProfile(profile: UserProfile) = setUserProfileImpl(profile)
+    val goalJournal: Flow<List<app.chompass.models.GoalJournalEntry>> get() = goalJournalImpl
+    suspend fun setGoalJournal(entries: List<app.chompass.models.GoalJournalEntry>) = setGoalJournalImpl(entries)
     val hasCompletedOnboarding: Flow<Boolean> get() = hasCompletedOnboardingImpl
     suspend fun setOnboardingCompleted(value: Boolean) = setOnboardingCompletedImpl(value)
     val onboardingDraft: Flow<app.chompass.ui.onboarding.OnboardingDraft?> get() = onboardingDraftImpl

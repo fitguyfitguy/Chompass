@@ -44,7 +44,11 @@ data class UserProfile(
     /** User locks over individual macros — at most two at once, so at least one stays free to
      *  balance. A locked macro is never auto-adjusted during a rebalance. Recalculate and weekly
      *  Adaptive leave locked macros untouched. Defaults empty. */
-    val lockedMacros: Set<AutoBalanceMacro> = emptySet()
+    val lockedMacros: Set<AutoBalanceMacro> = emptySet(),
+    /** Macro day-type plan (Codeberg #60): named profiles with explicit targets assigned by
+     *  manual toggle / weekday map / repeating cycle. Null = feature off (base targets
+     *  everywhere). Rides this object through sync-1.2 + backup; see MacroPlanResolver. */
+    val macroPlan: MacroPlan? = null
 ) {
     val displayName: String get() = name?.takeIf { it.isNotEmpty() } ?: "User"
 
@@ -218,7 +222,8 @@ data class UserProfile(
     val goalInputSignature: String get() = listOf(
         gender, birthday.epochSecond, heightCm, weightKg, activityLevel, goal, dietMode,
         ketoCarbMode, ketoCarbManualTarget,
-        weeklyChangeKg, goalWeightKg, bodyFatPercentage, useBodyFatInBMR
+        weeklyChangeKg, goalWeightKg, bodyFatPercentage, useBodyFatInBMR,
+        macroPlan?.signature() ?: "-"
     ).joinToString("|")
 
     // -- User locks (a control layer on top of the stored custom* snapshot) -----------------
