@@ -2036,6 +2036,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
      * today's per-day override ([MacroPlan.dayAssignments]) and re-journal
      * today with MANUAL_SWITCH provenance. `profileId == null` clears the
      * override, falling back to the schedule's resolution for today.
+     *
+     * Tapping the type already in effect today is a no-op — re-selecting the
+     * resolved type must not create an override (which would only surface the
+     * "clear today's override" action without changing any target).
      */
     fun switchTodayDayType(profileId: String?) {
         viewModelScope.launch {
@@ -2043,6 +2047,11 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             val plan = current.macroPlan?.takeIf { it.enabled } ?: return@launch
             val today = LocalDate.now()
             val todayKey = today.toString()
+            if (profileId != null &&
+                MacroPlanResolver.targetsFor(current, today).profileId == profileId
+            ) {
+                return@launch
+            }
             val merged = if (profileId == null) {
                 plan.dayAssignments - todayKey
             } else {

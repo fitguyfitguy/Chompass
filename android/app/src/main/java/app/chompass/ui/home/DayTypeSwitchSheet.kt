@@ -70,12 +70,14 @@ fun DayTypeSwitchSheet(
             stringResource(R.string.day_type_sheet_title),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 18.dp),
         )
         Spacer(Modifier.height(2.dp))
         Text(
             stringResource(R.string.day_type_sheet_subtitle),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            modifier = Modifier.padding(horizontal = 18.dp),
         )
         Spacer(Modifier.height(12.dp))
         Column(
@@ -109,10 +111,13 @@ fun DayTypeSwitchSheet(
                     }
                 }
                 if (hasOverrideToday) {
-                    TextButton(onClick = {
-                        onSwitch(null)
-                        onDismiss()
-                    }) {
+                    TextButton(
+                        onClick = {
+                            onSwitch(null)
+                            onDismiss()
+                        },
+                        modifier = Modifier.padding(horizontal = 4.dp),
+                    ) {
                         Text(stringResource(R.string.day_type_clear_override))
                     }
                 }
@@ -121,6 +126,7 @@ fun DayTypeSwitchSheet(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.padding(horizontal = 18.dp),
                     ) {
                         Icon(
                             Icons.Filled.Event,
@@ -150,7 +156,7 @@ fun DayTypeSwitchSheet(
                             onDismiss()
                             onOpenSettings()
                         }
-                        .padding(vertical = 10.dp),
+                        .padding(horizontal = 18.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
