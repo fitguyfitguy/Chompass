@@ -2477,6 +2477,17 @@ für dich ein</string>
 
     <string name="home_calorie_of_goal">von %1$s</string>
 
+    <!-- Macro day types (#60): hero chip + quick-switch sheet. -->
+    <string name="home_day_type_chip_a11y">Heutiger Tagestyp: %1$s. Zum Wechseln tippen.</string>
+    <string name="day_type_sheet_title">Tagestyp</string>
+    <string name="day_type_sheet_subtitle">Wechsle die heutigen Ziele zu einem anderen Tagestyp.</string>
+    <string name="day_type_targets_summary">%1$s kcal · %2$dP %3$dC %4$dF</string>
+    <string name="day_type_base_goals">Basisziele</string>
+    <string name="day_type_clear_override">Außerkraftsetzung für heute aufheben</string>
+    <string name="day_type_tomorrow">Morgen: %1$s · %2$s kcal</string>
+    <string name="day_type_edit_settings">Tagestypen bearbeiten</string>
+    <string name="day_type_plan_off_hint">Tagestypen sind ausgeschaltet. Aktiviere sie in den Einstellungen, um an verschiedenen Tagen unterschiedliche Ziele zu verwenden.</string>
+
     <string name="home_calorie_active_estimated_a11y">Aktive Kalorien, geschätzt anhand deines Aktivitätsniveaus</string>
 
     <string name="home_calorie_mode_static">Statisches Ziel</string>

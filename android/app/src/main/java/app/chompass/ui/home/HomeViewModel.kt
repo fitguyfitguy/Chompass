@@ -16,7 +16,11 @@ import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.HomeCalorieDisplay
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.DietMode
+import app.chompass.models.DayTargets
+import app.chompass.models.GoalJournalEntry
 import app.chompass.models.HomeDisplayPreferences
+import app.chompass.models.MacroPlanResolver
+import app.chompass.models.ResolvedDayTargets
 import app.chompass.models.ResolvedActiveBurn
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.ManualActiveEntry
@@ -112,6 +116,8 @@ internal fun needsMeasuredEnergyFor(
 data class HomeUiState(
     val date: LocalDate = LocalDate.now(),
     val profile: UserProfile? = null,
+    /** Per-day goal journal (#60): frozen past targets behind [resolvedDayTargets]. */
+    val goalJournal: List<GoalJournalEntry> = emptyList(),
     val todayEntries: List<FoodEntry> = emptyList(),
     val homeDisplay: HomeDisplayPreferences = HomeDisplayPreferences(),
     val homeTopNutrients: List<HomeTopNutrient> = HomeTopNutrient.DefaultSelection,
@@ -260,7 +266,39 @@ data class HomeUiState(
     val proteinToday: Double get() = todayEntries.sumOf { it.protein }
     val carbsToday: Double get() = todayEntries.sumOf { it.carbs }
     val fatToday: Double get() = todayEntries.sumOf { it.fat }
-    val baseCalorieGoal: Int get() = profile?.effectiveCalories ?: 2000
+    val baseCalorieGoal: Int get() = resolvedDayTargets.targets.calories
+
+    /**
+     * MACRO-CYCLE-A (#60): the viewed day's targets. Past days read the goal
+     * journal first (frozen history — schedule edits never rewrite it), gaps
+     * and today/future resolve live from the plan; plan off = base effective
+     * targets, so behavior is unchanged while disabled.
+     */
+    val resolvedDayTargets: ResolvedDayTargets get() {
+        val p = profile
+            ?: return ResolvedDayTargets(DayTargets(2000, 150, 220, 70), null, null)
+        val day = date
+        if (day.isBefore(LocalDate.now())) {
+            val key = day.toString()
+            val entry = goalJournal.firstOrNull { it.date == key }
+            if (entry != null) {
+                return ResolvedDayTargets(
+                    targets = DayTargets(entry.calories, entry.proteinG, entry.carbsG, entry.fatG),
+                    profileId = entry.profileId,
+                    profileName = entry.profileName,
+                )
+            }
+        }
+        return MacroPlanResolver.targetsFor(p, day)
+    }
+
+    /**
+     * Hero day-type chip label (#60): today's profile name, null when the plan
+     * is off / resolved to base, or while browsing another day (the quick
+     * switch sheet only edits today).
+     */
+    val dayTypeLabel: String? get() =
+        if (date == LocalDate.now()) resolvedDayTargets.profileName else null
     val resolvedActiveBurn: ResolvedActiveBurn? get() {
         val p = profile ?: return null
         val estimate = measuredActiveAverageCalories.takeIf { it > 0 } ?: p.estimatedDailyActiveCalories
@@ -329,7 +367,9 @@ data class HomeUiState(
     val macroGoalScale: Float get() {
         val p = profile ?: return 1f
         if (p.dietMode == DietMode.KETO) return 1f
-        val base = p.effectiveCalories
+        // #60: the denominator is the viewed day's resolved target, so the
+        // cards scale against the ring exactly as before the day plan existed.
+        val base = resolvedDayTargets.targets.calories
         if (base <= 0) return 1f
         return (heroCalorieGoal.toFloat() / base).coerceAtLeast(1f)
     }
@@ -384,6 +424,7 @@ data class HomeUiState(
         if (other !is HomeUiState) return false
         return date == other.date &&
             profile == other.profile &&
+            goalJournal == other.goalJournal &&
             todayEntries == other.todayEntries &&
             homeDisplay == other.homeDisplay &&
             homeTopNutrients == other.homeTopNutrients &&
@@ -464,6 +505,7 @@ data class HomeUiState(
     override fun hashCode(): Int {
         var result = date.hashCode()
         result = 31 * result + (profile?.hashCode() ?: 0)
+        result = 31 * result + goalJournal.hashCode()
         result = 31 * result + todayEntries.hashCode()
         result = 31 * result + homeDisplay.hashCode()
         result = 31 * result + homeTopNutrients.hashCode()
@@ -953,6 +995,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         "op=homeList phase=emission date=${next.date} sort=${next.foodLogSortOrder} n=${next.todayEntries.size} entries=[$listView]",
                     )
                 }
+            }
+            .launchIn(viewModelScope)
+
+        container.prefs.goalJournal
+            .onEach { entries ->
+                _ui.update { it.copy(goalJournal = entries) }
             }
             .launchIn(viewModelScope)
 
@@ -1983,6 +2031,32 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
+    /**
+     * Quick day-type switch (#60 phase 1, hero chip sheet): write or clear
+     * today's per-day override ([MacroPlan.dayAssignments]) and re-journal
+     * today with MANUAL_SWITCH provenance. `profileId == null` clears the
+     * override, falling back to the schedule's resolution for today.
+     */
+    fun switchTodayDayType(profileId: String?) {
+        viewModelScope.launch {
+            val current = container.profileRepository.current() ?: return@launch
+            val plan = current.macroPlan?.takeIf { it.enabled } ?: return@launch
+            val today = LocalDate.now()
+            val todayKey = today.toString()
+            val merged = if (profileId == null) {
+                plan.dayAssignments - todayKey
+            } else {
+                plan.dayAssignments + (todayKey to profileId)
+            }
+            val updated = plan.copy(dayAssignments = merged)
+                .let { it.copy(dayAssignments = it.prunedAssignments(today)) }
+            container.profileRepository.save(current.copy(macroPlan = updated))
+            // Journal with MANUAL_SWITCH provenance; the app-scope observer's
+            // follow-up write skips because the values now match.
+            runCatching { container.goalJournalService.recordManualSwitch() }
+        }
+    }
+
     suspend fun suggestMealWhatIf(entry: FoodEntry): String {
         val snapshot = _ui.value
         val profile = snapshot.profile
@@ -1991,7 +2065,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             entry = entry,
             dayEntries = snapshot.todayEntries,
             profile = profile,
-            weightMetric = snapshot.weightMetric
+            weightMetric = snapshot.weightMetric,
+            resolved = snapshot.resolvedDayTargets,
         )
     }
 

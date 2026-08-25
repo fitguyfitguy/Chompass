@@ -1939,6 +1939,16 @@
     <string name="home_display_needs_health">Requires Health Connect with steps permission</string>
     <string name="home_calories_label">CALORIES</string>
     <string name="home_calorie_of_goal">of %1$s</string>
+    <!-- Macro day types (#60): hero chip + quick-switch sheet. -->
+    <string name="home_day_type_chip_a11y">Today’s day type: %1$s. Tap to switch.</string>
+    <string name="day_type_sheet_title">Day type</string>
+    <string name="day_type_sheet_subtitle">Switch today’s targets to another day type.</string>
+    <string name="day_type_targets_summary">%1$s kcal · %2$dP %3$dC %4$dF</string>
+    <string name="day_type_base_goals">Base goals</string>
+    <string name="day_type_clear_override">Clear today’s override</string>
+    <string name="day_type_tomorrow">Tomorrow: %1$s · %2$s kcal</string>
+    <string name="day_type_edit_settings">Edit day types</string>
+    <string name="day_type_plan_off_hint">Day types are turned off. Turn them on in Settings to use different targets on different days.</string>
     <string name="home_calorie_active_estimated_a11y">Active calories estimated from your activity level</string>
     <string name="home_calorie_mode_static">Static goal</string>
     <string name="home_calorie_mode_add_active">Add active burn to budget</string>

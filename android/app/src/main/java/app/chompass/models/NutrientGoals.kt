@@ -96,6 +96,24 @@ enum class HomeTopNutrient(
         CAFFEINE -> optionalGoals.caffeine
     }
 
+    /**
+     * Macro day types (#60 phase 1): P/C/F goals come from the day-type plan's
+     * resolved targets for the viewed day ([MacroPlanResolver] output); a null
+     * [resolved] or a base fallback keeps the profile set. Optional
+     * micronutrient goals are unchanged fixed globals.
+     */
+    fun goal(
+        resolved: ResolvedDayTargets?,
+        profile: UserProfile?,
+        optionalGoals: OptionalNutrientGoals,
+        macroScale: Float = 1f,
+    ): Int = when (this) {
+        PROTEIN -> scaleMacro(resolved?.targets?.proteinG ?: profile?.effectiveProtein ?: 150, macroScale)
+        CARBS -> scaleMacro(resolved?.targets?.carbsG ?: profile?.effectiveCarbs ?: 220, macroScale)
+        FAT -> scaleMacro(resolved?.targets?.fatG ?: profile?.effectiveFat ?: 70, macroScale)
+        else -> goal(profile, optionalGoals, macroScale)
+    }
+
     private fun scaleMacro(grams: Int, scale: Float): Int =
         if (scale > 1f && grams > 0) (grams * scale).roundToInt() else grams
 

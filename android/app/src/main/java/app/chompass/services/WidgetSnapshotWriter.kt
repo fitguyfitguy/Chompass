@@ -10,6 +10,7 @@ import app.chompass.data.ProfileRepository
 import app.chompass.models.FoodEntry
 import app.chompass.models.HomeCalorieDisplay
 import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.models.MacroPlanResolver
 import app.chompass.models.UserProfile
 import app.chompass.models.WaterEntry
 import app.chompass.models.WaterGoalCalculator
@@ -194,7 +195,11 @@ class WidgetSnapshotWriter(
             val theme = AppThemeColor.fromKey(prefs.appThemeColor.first())
             val (themeStart, themeEnd) = theme.widgetAccentColors(context, appearanceIsDark(appearance, context))
             val activity = homeActivityReader.readForDate(LocalDate.now())
-            val effectiveCalories = profile.effectiveCalories
+            // #60: today's targets resolve through the day-type plan (live —
+            // the snapshot is a frozen forward-looking today view; the midnight
+            // rollover alarm rewrites it so a CYCLE/WEEKDAYS switch lands).
+            val resolvedToday = MacroPlanResolver.targetsFor(profile, LocalDate.now())
+            val effectiveCalories = resolvedToday.targets.calories
             // Energy Burn measured active average overrides the PAL estimate for the ADD_ACTIVE
             // split, so the widget mirrors the home gauge (goal − measured active → base).
             val measuredActive = prefs.healthEnergyMeasuredActive.first()
@@ -262,18 +267,18 @@ class WidgetSnapshotWriter(
                 calories = todaysEntries.sumOf { it.calories },
                 calorieGoal = effectiveCalories,
                 protein = todaysEntries.sumOf { it.protein },
-                proteinGoal = profile.effectiveProtein,
+                proteinGoal = resolvedToday.targets.proteinG,
                 carbs = todaysEntries.sumOf { it.carbs },
-                carbsGoal = profile.effectiveCarbs,
+                carbsGoal = resolvedToday.targets.carbsG,
                 fat = todaysEntries.sumOf { it.fat },
-                fatGoal = profile.effectiveFat,
+                fatGoal = resolvedToday.targets.fatG,
                 homeNutrients = selection.map { nutrient ->
                     WidgetNutrient(
                         id = nutrient.storageKey,
                         label = context.getString(nutrient.displayNameRes),
                         unit = context.getString(nutrient.unitRes),
                         value = nutrient.current(todaysEntries),
-                        goal = nutrient.goal(profile, optionalGoals).toDouble()
+                        goal = nutrient.goal(resolvedToday, profile, optionalGoals).toDouble()
                     )
                 },
                 themeStartHex = themeStart.toArgb() and 0xFFFFFF,

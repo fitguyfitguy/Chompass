@@ -28,6 +28,7 @@ import app.chompass.services.FastingGoalPlanner
 import app.chompass.services.FastingReminderPlanner
 import app.chompass.services.FoodImageStore
 import app.chompass.services.FoodPhotoSession
+import app.chompass.services.GoalJournalService
 import app.chompass.services.LauncherShortcuts
 import app.chompass.services.NotificationService
 import app.chompass.services.ShortcutEntryAction
@@ -91,6 +92,11 @@ class ChompassApp : Application() {
         // first paint — wait until the first frame is out before observing.
         container.widgetSnapshotWriter.observe()
             .onStart { delay(WIDGET_OBSERVE_DELAY_MS) }
+            .launchIn(appScope)
+        // Goal journal (#60): gap-fill + record today's resolved targets on
+        // every plan edit and at app start (first profile emission). Writes
+        // only while the day-type plan is enabled.
+        container.goalJournalService.observe()
             .launchIn(appScope)
         scheduleDeferredStartupWork()
     }
@@ -204,6 +210,7 @@ class AppContainer(app: ChompassApp) {
 
     val syncRepository = SyncRepository(prefs, keyStore, appContext = appContext)
     val profileRepository = ProfileRepository(prefs)
+    val goalJournalService = GoalJournalService(prefs, profileRepository)
     val foodRepository = FoodRepository(prefs, health, imageStore, syncRepository)
     val recipeRepository = RecipeRepository(prefs, foodRepository, syncRepository)
     val weightRepository = WeightRepository(prefs, profileRepository, health, syncRepository)

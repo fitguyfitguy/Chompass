@@ -78,6 +78,7 @@ import app.chompass.models.MacroValueFormatter
 import app.chompass.models.LocaleFormat
 import app.chompass.models.MealType
 import app.chompass.models.MicronutrientField
+import app.chompass.models.ResolvedDayTargets
 import app.chompass.models.ServingUnitOption
 import app.chompass.models.UserProfile
 import app.chompass.services.FoodPhotoSession
@@ -129,6 +130,8 @@ fun FoodResultSheet(
     imageBytes: ByteArray? = null,
     preferGramsByDefault: Boolean = false,
     profile: UserProfile? = null,
+    /** #60: the viewed day's resolved targets for the What-if totals/goals. */
+    resolved: ResolvedDayTargets? = null,
     dayEntries: List<FoodEntry> = emptyList(),
     source: FoodSource = FoodSource.TEXT_INPUT,
     portionClarifyEnabled: Boolean = false,
@@ -969,6 +972,7 @@ fun FoodResultSheet(
             entry = entry,
             dayEntries = dayEntries,
             profile = profile,
+            resolved = resolved,
             onDismiss = { whatIfEntry = null },
             onSuggest = onWhatIfSuggestion
         )
@@ -1284,6 +1288,7 @@ internal fun WhatIfMealImpactDialog(
     entry: FoodEntry,
     dayEntries: List<FoodEntry>,
     profile: UserProfile?,
+    resolved: ResolvedDayTargets? = null,
     onDismiss: () -> Unit,
     onSuggest: (suspend (FoodEntry) -> String)?,
     initialSuggestion: String? = null,
@@ -1336,7 +1341,9 @@ internal fun WhatIfMealImpactDialog(
                     WhatIfImpactRow(
                         label = stringResource(R.string.nutrition_label_calories),
                         added = "+${kcalText(entry.calories)}",
-                        total = profile?.let {
+                        total = resolved?.let {
+                            "${LocaleFormat.integer(after.calories)} / ${LocaleFormat.integer(it.targets.calories)} ${stringResource(R.string.unit_kcal)}"
+                        } ?: profile?.let {
                             "${LocaleFormat.integer(after.calories)} / ${LocaleFormat.integer(it.effectiveCalories)} ${stringResource(R.string.unit_kcal)}"
                         } ?: kcalText(after.calories),
                         accentColor = AppColors.Calorie
@@ -1345,7 +1352,8 @@ internal fun WhatIfMealImpactDialog(
                     WhatIfImpactRow(
                         label = stringResource(R.string.nutrition_label_protein),
                         added = "+${macroGramsText(entry.protein)}",
-                        total = profile?.let { "${macroGramsText(after.protein)} / ${macroGramsText(it.effectiveProtein.toDouble())}" }
+                        total = resolved?.let { "${macroGramsText(after.protein)} / ${macroGramsText(it.targets.proteinG.toDouble())}" }
+                            ?: profile?.let { "${macroGramsText(after.protein)} / ${macroGramsText(it.effectiveProtein.toDouble())}" }
                             ?: macroGramsText(after.protein),
                         accentColor = AppColors.Protein
                     )
@@ -1353,7 +1361,8 @@ internal fun WhatIfMealImpactDialog(
                     WhatIfImpactRow(
                         label = stringResource(R.string.nutrition_label_carbs),
                         added = "+${macroGramsText(entry.carbs)}",
-                        total = profile?.let { "${macroGramsText(after.carbs)} / ${macroGramsText(it.effectiveCarbs.toDouble())}" }
+                        total = resolved?.let { "${macroGramsText(after.carbs)} / ${macroGramsText(it.targets.carbsG.toDouble())}" }
+                            ?: profile?.let { "${macroGramsText(after.carbs)} / ${macroGramsText(it.effectiveCarbs.toDouble())}" }
                             ?: macroGramsText(after.carbs),
                         accentColor = AppColors.Carbs
                     )
@@ -1361,7 +1370,8 @@ internal fun WhatIfMealImpactDialog(
                     WhatIfImpactRow(
                         label = stringResource(R.string.nutrition_label_fat),
                         added = "+${macroGramsText(entry.fat)}",
-                        total = profile?.let { "${macroGramsText(after.fat)} / ${macroGramsText(it.effectiveFat.toDouble())}" }
+                        total = resolved?.let { "${macroGramsText(after.fat)} / ${macroGramsText(it.targets.fatG.toDouble())}" }
+                            ?: profile?.let { "${macroGramsText(after.fat)} / ${macroGramsText(it.effectiveFat.toDouble())}" }
                             ?: macroGramsText(after.fat),
                         accentColor = AppColors.Fat
                     )

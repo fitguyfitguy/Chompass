@@ -5,8 +5,12 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.ActiveCalorieSource
 import app.chompass.models.DietMode
+import app.chompass.models.MacroPlanResolver
+import app.chompass.models.UserProfile
+import app.chompass.models.WidgetSnapshot
 import kotlinx.coroutines.flow.first
 import java.text.NumberFormat
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import kotlin.math.abs
@@ -56,9 +60,7 @@ internal suspend fun buildDailySummaryNotification(
     } else {
         carbsTotal.roundToInt()
     }
-    val goalKcal = widgetForDay?.resolvedDisplayGoalTarget
-        ?: profile?.effectiveCalories
-        ?: 0
+    val goalKcal = summaryGoalKcal(widgetForDay, profile, day)
 
     val input = DailySummaryInput(
         eatenKcal = entries.sumOf { it.calories },
@@ -82,6 +84,19 @@ internal suspend fun buildDailySummaryNotification(
         carbsAreNet = keto,
     )
 }
+
+/**
+ * The goal kcal for the summary's "of X" line: today's widget snapshot when it
+ * is fresh, else the live resolution for the summarized day — the day-type
+ * plan's target when enabled (#60), else the base effective target.
+ */
+internal fun summaryGoalKcal(
+    widgetForDay: WidgetSnapshot?,
+    profile: UserProfile?,
+    day: LocalDate,
+): Int = widgetForDay?.resolvedDisplayGoalTarget
+    ?: profile?.let { MacroPlanResolver.targetsFor(it, day).targets.calories }
+    ?: 0
 
 internal fun formatDailySummary(
     context: Context,

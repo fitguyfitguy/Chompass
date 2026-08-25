@@ -16,6 +16,7 @@ import app.chompass.models.resolveModelForRequest
 import app.chompass.models.GoalFormulaReference
 import app.chompass.models.HeuristicServingUnitSettings
 import app.chompass.models.NutritionConstants
+import app.chompass.models.ResolvedDayTargets
 import app.chompass.models.ServingUnitHeuristics
 import app.chompass.models.ServingUnitInferenceMode
 import app.chompass.models.ServingUnitOption
@@ -647,7 +648,8 @@ class FoodAnalysisService(
         entry: FoodEntry,
         dayEntries: List<FoodEntry>,
         profile: UserProfile,
-        weightMetric: Boolean
+        weightMetric: Boolean,
+        resolved: ResolvedDayTargets? = null,
     ): String {
         val beforeCalories = dayEntries.sumOf { it.calories }
         val beforeProtein = dayEntries.sumOf { it.protein }
@@ -683,10 +685,12 @@ class FoodAnalysisService(
             ${dietModeLine(profile)}
 
             Daily goals:
-            - Calories: ${profile.effectiveCalories} kcal
-            - Protein: ${profile.effectiveProtein}g
-            - Carbs: ${profile.effectiveCarbs}g
-            - Fat: ${profile.effectiveFat}g
+            - Calories: ${resolved?.targets?.calories ?: profile.effectiveCalories} kcal
+            - Protein: ${resolved?.targets?.proteinG ?: profile.effectiveProtein}g
+            - Carbs: ${resolved?.targets?.carbsG ?: profile.effectiveCarbs}g
+            - Fat: ${resolved?.targets?.fatG ?: profile.effectiveFat}g${
+            resolved?.profileName?.let { name -> "\n- Day type: $name (targets vary by day)" } ?: ""
+        }
 
             Today's totals before this meal:
             - Calories: $beforeCalories kcal

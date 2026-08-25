@@ -163,6 +163,8 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
     var editingEntry by remember { mutableStateOf<FoodEntry?>(null) }
     var editingRecipe by remember { mutableStateOf<app.chompass.models.Recipe?>(null) }
     var showNutritionDetail by rememberSaveable { mutableStateOf(false) }
+    // #60: day-type quick-switch sheet (hero chip).
+    var showDayTypeSheet by rememberSaveable { mutableStateOf(false) }
     // Codeberg #30: add-food flow. Tapping a tile (or the "+" FAB) marks the
     // flow active; backing out of a flow-launched destination reopens the grid
     // instead of closing the whole flow. Shortcut/share/gallery-launched sheets
@@ -468,6 +470,8 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                         baseGoal = baseGoal,
                         activeCalories = activeCalories,
                         displayMode = calorieMode,
+                        dayTypeLabel = ui.dayTypeLabel,
+                        onDayTypeClick = { showDayTypeSheet = true },
                         activeCalorieSource = ui.resolvedActiveBurn?.source,
                         showActiveCalories = ui.homeDisplay.showActiveCalories,
                         liveActiveBurn = ui.liveActiveBurn,
@@ -502,7 +506,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                             MacroCard(
                                 label = stringResource(nutrient.displayNameRes),
                                 current = nutrient.current(ui.todayEntries),
-                                goal = nutrient.goal(ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale),
+                                goal = nutrient.goal(ui.resolvedDayTargets, ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale),
                                 unit = stringResource(nutrient.unitRes),
                                 accentColor = nutrientAccentColor(nutrient),
                                 modifier = Modifier.weight(1f),
@@ -1399,11 +1403,22 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
         NutritionDetailSheet(
             entries = ui.todayEntries,
             profile = ui.profile,
+            resolved = ui.resolvedDayTargets,
             homeTopNutrients = ui.homeTopNutrients,
             optionalGoals = ui.optionalNutrientGoals,
             macroScale = ui.macroGoalScale,
             onHomeTopNutrientsChange = vm::setHomeTopNutrients,
             onDismiss = { showNutritionDetail = false }
+        )
+    }
+
+    if (showDayTypeSheet) {
+        DayTypeSwitchSheet(
+            profile = ui.profile,
+            today = LocalDate.now(),
+            onSwitch = vm::switchTodayDayType,
+            onDismiss = { showDayTypeSheet = false },
+            onOpenSettings = onOpenSettings,
         )
     }
 
@@ -1454,6 +1469,7 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             imageBytes = ui.pendingImageBytes,
             preferGramsByDefault = ui.preferGramsByDefault,
             profile = ui.profile,
+            resolved = ui.resolvedDayTargets,
             dayEntries = ui.todayEntries,
             isSaving = ui.saving,
             inferringUnits = ui.inferringUnits,
@@ -1602,7 +1618,7 @@ internal fun HomeScreenPreviewContent(
                                 MacroCard(
                                     label = stringResource(nutrient.displayNameRes),
                                     current = nutrient.current(ui.todayEntries),
-                                    goal = nutrient.goal(ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale),
+                                    goal = nutrient.goal(ui.resolvedDayTargets, ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale),
                                     unit = stringResource(nutrient.unitRes),
                                     accentColor = nutrientAccentColor(nutrient),
                                     modifier = Modifier.weight(1f),

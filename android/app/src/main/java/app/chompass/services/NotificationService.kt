@@ -547,6 +547,10 @@ class ReminderReceiver : BroadcastReceiver() {
                 try {
                     val container = (context.applicationContext as? ChompassApp)?.container
                     container?.widgetSnapshotWriter?.refresh()
+                    // Day-rollover journal write (#60): freeze the new day's
+                    // resolved targets so a CYCLE/WEEKDAYS switch lands at
+                    // midnight even without a food edit.
+                    container?.goalJournalService?.refresh()
                 } finally {
                     NotificationService(context).scheduleWidgetMidnightRefresh()
                     pendingResult.finish()
