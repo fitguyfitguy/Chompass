@@ -63,6 +63,42 @@ class CoachSystemPromptTest {
     }
 
     @Test
+    fun intakeAverageLine_reportsKcalAndMacrosOverLoggedDays() {
+        fun foodWithMacros(kcal: Int, p: Double, c: Double, f: Double, daysAgo: Long) = food(kcal, daysAgo).copy(
+            protein = p, carbs = c, fat = f,
+        )
+        val foods = listOf(
+            foodWithMacros(2000, 150.0, 200.0, 60.0, daysAgo = 1),
+            foodWithMacros(3000, 150.0, 300.0, 80.0, daysAgo = 2),
+            // today: excluded (incomplete day)
+            foodWithMacros(9000, 900.0, 900.0, 900.0, daysAgo = 0),
+        )
+        val prompt = buildSystemPrompt(
+            profile = profile(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            foods = foods,
+            heightMetric = true,
+            weightMetric = true,
+        )
+        // Average over the 2 complete days: 2500 kcal, 150P/250C/70F.
+        assertTrue(prompt.contains("Average intake over 2 logged days: 2500 kcal, 150g protein, 250g carbs, 70g fat"))
+    }
+
+    @Test
+    fun intakeAverageLine_noLoggedDays_omitsTheLine() {
+        val prompt = buildSystemPrompt(
+            profile = profile(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            foods = listOf(food(1000, daysAgo = 0)), // today only
+            heightMetric = true,
+            weightMetric = true,
+        )
+        assertFalse(prompt.contains("Average intake"))
+    }
+
+    @Test
     fun fastingBlock_whenProvided_sitsInTheVolatileTail() {
         val fasting = "## Fasting (intermittent fasting tracker - user-optional, local-only)\n" +
             "- Active fast: started 2026-08-24T08:00:00, elapsed 14h 20m, goal 16h"
