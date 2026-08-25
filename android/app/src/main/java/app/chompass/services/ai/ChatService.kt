@@ -699,6 +699,11 @@ internal fun buildSystemPrompt(
     }
     lines.add("## Data available")
     lines.add("- ${weights.size} weight entries, ${bodyFats.size} body-fat readings, ${foods.size} food entries logged total. Use get_data_summary to see exact date ranges.")
+    // #60 phase 6 follow-up: concise default intake context so the coach can
+    // judge "how am I doing" without a tool call. Volatile by design (changes
+    // with logging), so it lives below the cache marker like the rest of this
+    // section. Complete days only (today excluded), last 14.
+    intakeAverageLine(foods)?.let { lines.add(it) }
     measurements.maxByOrNull { it.date }?.promptSummary(profile.gender, profile.heightCm)?.let { summary ->
         lines.add("")
         lines.add("## Body measurements (latest)")
@@ -706,6 +711,31 @@ internal fun buildSystemPrompt(
         lines.add("A shrinking waist alongside steady or rising weight is recomposition (fat down, muscle up). Read it that way instead of calling a flat scale a plateau. Treat the US-Navy body-fat figure as an estimate.")
     }
     return lines.joinToString("\n")
+}
+
+// MARK: - Intake average (concise default context, #60 phase 6 follow-up)
+
+/**
+ * Mean daily kcal + P/C/F over the last 14 complete logged days (today
+ * excluded), or null when there are none. One line, no per-day detail —
+ * details stay behind the get_calorie_totals / get_food_entries tools.
+ */
+private fun intakeAverageLine(foods: List<FoodEntry>, zone: ZoneId = ZoneId.systemDefault()): String? {
+    val today = LocalDate.now(zone)
+    var kcal = 0; var protein = 0.0; var carbs = 0.0; var fat = 0.0; var days = 0
+    for ((day, entries) in foods.groupBy { it.timestamp.atZone(zone).toLocalDate() }) {
+        if (day >= today) continue
+        kcal += entries.sumOf { it.calories }
+        protein += entries.sumOf { it.protein }
+        carbs += entries.sumOf { it.carbs }
+        fat += entries.sumOf { it.fat }
+        days++
+    }
+    if (days == 0) return null
+    return "- Average intake over $days logged day${if (days == 1) "" else "s"}: " +
+        "${kcal / days} kcal, ${String.format(Locale.US, "%.0f", protein / days)}g protein, " +
+        "${String.format(Locale.US, "%.0f", carbs / days)}g carbs, ${String.format(Locale.US, "%.0f", fat / days)}g fat. " +
+        "Judge intake questions against this (and, with day types, the weekly average target); use the tools for ranges and details."
 }
 
 // MARK: - Fasting context (local-only timer, docs/local/PLAN_FASTING_TRACKER.md)

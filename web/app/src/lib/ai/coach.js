@@ -83,6 +83,43 @@ export function buildDayTypesPromptBlock(profile, isoToday) {
   ].join("\n");
 }
 
+/**
+ * Concise default intake context (#60 phase 6 follow-up, mirrors the Android
+ * ChatService intakeAverageLine): mean daily kcal + P/C/F over the last 14
+ * complete logged days (today excluded), or null when there are none.
+ * @param {import('../chompass-core/models.js').FoodEntry[]} entries
+ * @param {string} isoToday
+ * @returns {string|null}
+ */
+export function buildIntakeAverageBlock(entries, isoToday) {
+  const days = new Map();
+  for (const e of entries) {
+    const day = e.date;
+    if (!day || day >= isoToday) continue;
+    const acc = days.get(day) ?? { kcal: 0, p: 0, c: 0, f: 0 };
+    acc.kcal += e.calories ?? 0;
+    acc.p += e.proteinG ?? 0;
+    acc.c += e.carbsG ?? 0;
+    acc.f += e.fatG ?? 0;
+    days.set(day, acc);
+  }
+  if (days.size === 0) return null;
+  const n = days.size;
+  const avg = { kcal: 0, p: 0, c: 0, f: 0 };
+  for (const acc of days.values()) {
+    avg.kcal += acc.kcal;
+    avg.p += acc.p;
+    avg.c += acc.c;
+    avg.f += acc.f;
+  }
+  const r = (x) => Math.round(x / n);
+  return [
+    "## Data available",
+    `- Average intake over ${n} logged day${n === 1 ? "" : "s"}: ${Math.round(avg.kcal / n)} kcal, ${r(avg.p)}g protein, ${r(avg.c)}g carbs, ${r(avg.f)}g fat.`,
+    "- Judge intake questions against this (and, with day types, the weekly average target); use the tools for ranges and details.",
+  ].join("\n");
+}
+
 /** @param {number} millis */
 function fmtFastDuration(millis) {
   const totalMinutes = Math.max(0, Math.floor(millis / 60_000));
@@ -132,6 +169,9 @@ export async function runCoachTurn({ providerId, config, history, userText, imag
     const dayTypesBlock = buildDayTypesPromptBlock(prof, new Date().toISOString().slice(0, 10));
     if (dayTypesBlock) systemPrompt += `\n\n${dayTypesBlock}`;
   }
+  const allEntries = await foodEntries.all();
+  const intakeBlock = buildIntakeAverageBlock(allEntries, new Date().toISOString().slice(0, 10));
+  if (intakeBlock) systemPrompt += `\n\n${intakeBlock}`;
 
   const messages = /** @type {import('./providers.js').AiMessage[]} */ ([
     ...history,
