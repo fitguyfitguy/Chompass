@@ -630,7 +630,31 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
                             macroChips = ui.foodLogMacroChips,
                         )
                     }
-                    itemsIndexed(group.entries, key = { _, entry -> entry.id }) { index, entry ->
+                    // Group-scoped row keys (#56): an entry moving between meal
+                    // groups (Meal Type edit) must dispose its old row and compose
+                    // a fresh one under the destination group instead of relying
+                    // on LazyColumn move-in-place layout, which on slow devices
+                    // left the moved row composed but drawn at a stale offset
+                    // (card vanished until restart; state/groups stayed correct).
+                    itemsIndexed(group.entries, key = { _, entry -> "${group.id}:${entry.id}" }) { index, entry ->
+                        // Codeberg #56 repro instrumentation (TEMP, debug-only):
+                        // log every row entering/leaving composition so logcat
+                        // can catch a render drop — a row present in the groups
+                        // (op=homeList phase=renderGroups) but never composed
+                        // here, or composed then disposed, is the composition
+                        // drop the state/group logs cannot see.
+                        DisposableEffect(entry.id) {
+                            PerfLog.event(
+                                "op=homeList phase=rowComposed id=${entry.id.toString().take(8)} " +
+                                    "meal=${entry.mealType.name} group=${group.id}",
+                            )
+                            onDispose {
+                                PerfLog.event(
+                                    "op=homeList phase=rowDisposed id=${entry.id.toString().take(8)} " +
+                                        "meal=${entry.mealType.name} group=${group.id}",
+                                )
+                            }
+                        }
                         val isFirst = index == 0
                         val isLast = index == group.entries.lastIndex
                         val rowShape = sectionCardShape(isFirst, isLast)
@@ -1628,7 +1652,8 @@ internal fun HomeScreenPreviewContent(
                                 macroChips = ui.foodLogMacroChips,
                             )
                         }
-                        itemsIndexed(group.entries, key = { _, entry -> entry.id }) { index, entry ->
+                        // Group-scoped keys, see main list above (#56).
+                        itemsIndexed(group.entries, key = { _, entry -> "${group.id}:${entry.id}" }) { index, entry ->
                             val isFirst = index == 0
                             val isLast = index == group.entries.lastIndex
                             val rowShape = sectionCardShape(isFirst, isLast)
