@@ -41,6 +41,7 @@ import app.chompass.ui.settings.AppSettingsScreen
 import app.chompass.ui.settings.CalculationMethodsScreen
 import app.chompass.ui.settings.CustomizeProgressScreen
 import app.chompass.ui.settings.DataSettingsScreen
+import app.chompass.ui.settings.DayTypesSettingsScreen
 import app.chompass.ui.settings.FoodEntrySettingsScreen
 import app.chompass.ui.settings.GoalsSettingsScreen
 import app.chompass.ui.settings.HomeDisplaySettingsScreen
@@ -225,6 +226,13 @@ fun ChompassNavHost(
                                 restoreState = true
                             }
                         },
+                        onOpenDayTypes = {
+                            nav.navigate(ChompassRoutes.SETTINGS_DAY_TYPES) {
+                                popUpTo(ChompassRoutes.HOME) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
                     )
                 }
                 composable(ChompassRoutes.PROGRESS) {
@@ -258,6 +266,13 @@ fun ChompassNavHost(
                 }
                 composable(ChompassRoutes.SETTINGS_GOALS) {
                     GoalsSettingsScreen(
+                        container = container,
+                        nav = nav,
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+                composable(ChompassRoutes.SETTINGS_DAY_TYPES) {
+                    DayTypesSettingsScreen(
                         container = container,
                         nav = nav,
                         onBack = { nav.popBackStack() },

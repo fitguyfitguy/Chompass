@@ -173,6 +173,8 @@ internal val SETTINGS_INDEX: List<SettingsIndexEntry> = listOf(
         R.array.settings_search_kw_recalculate_goals, ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Refresh),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_calc_methods,
         R.array.settings_search_kw_calc_methods, ChompassRoutes.CALCULATION_METHODS, Icons.Outlined.Calculate),
+    SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_day_types_title,
+        R.array.settings_search_kw_day_types, ChompassRoutes.SETTINGS_DAY_TYPES, Icons.Outlined.CalendarToday),
 
     // — Food & Entry —
     SettingsIndexEntry(R.string.settings_group_food, R.string.settings_default_to_grams,

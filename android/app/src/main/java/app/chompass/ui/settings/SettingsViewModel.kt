@@ -16,6 +16,10 @@ import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.KetoCarbMode
+import app.chompass.models.MacroDayProfile
+import app.chompass.models.MacroPlan
+import app.chompass.models.MacroPlanEdit
+import app.chompass.models.MacroPlanMode
 import app.chompass.models.CaffeineKind
 import app.chompass.models.NicotineKind
 import app.chompass.models.OptionalNutrientGoals
@@ -193,6 +197,8 @@ data class SettingsUiState(
     val goalsNeedRecalc: Boolean = false,
     /** Dismissible hub suggestions toward beneficial-but-optional setups (§6.3 of the plan). */
     val suggestions: List<SettingsSuggestion> = emptyList(),
+    /** Increments each time a keto switch pauses a live day-type plan (#60); the Goals screen shows a snackbar on change. */
+    val dayTypesKetoPausedTick: Int = 0,
 ) {
     val heightMetric: Boolean get() = heightUnit == "cm"
     val weightMetric: Boolean get() = weightUnit == "kg"
@@ -1002,7 +1008,22 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     )
 
     fun setDietMode(mode: DietMode) {
-        updateProfile { it.copy(dietMode = mode) }
+        viewModelScope.launch {
+            val current = container.profileRepository.current() ?: return@launch
+            var next = current.copy(dietMode = mode)
+            // Keto transition (settled Q4): pause a live day-type plan, keep the
+            // data; switching back to STANDARD re-shows the row with the plan intact.
+            var pausedPlan = false
+            if (mode == DietMode.KETO && current.macroPlan?.enabled == true) {
+                next = next.copy(macroPlan = MacroPlanEdit.pausedForKeto(current.macroPlan))
+                pausedPlan = true
+            }
+            container.profileRepository.save(next)
+            applyProfile(next)
+            if (pausedPlan) {
+                _ui.update { it.copy(dayTypesKetoPausedTick = it.dayTypesKetoPausedTick + 1) }
+            }
+        }
     }
 
     fun setKetoCarbMode(mode: KetoCarbMode) {
@@ -1889,6 +1910,57 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
 
     fun setProteinTargetMode(mode: ProteinTargetMode) {
         updateProfile { it.withProteinTargetMode(mode) }
+    }
+
+    // -- Macro day types (#60 phase 2) --------------------------------------------
+    // All writes go through MacroPlanEdit (pure invariants) and land in the
+    // profile; GoalJournalService.observe + the widget writer follow the
+    // profile flow, so today's journal entry and snapshot refresh for free.
+
+    private fun editPlan(transform: (MacroPlan?) -> MacroPlan?) {
+        updateProfile { profile -> profile.copy(macroPlan = transform(profile.macroPlan)) }
+    }
+
+    fun setDayTypesEnabled(enabled: Boolean) = editPlan {
+        MacroPlanEdit.setEnabled(it, enabled, LocalDate.now())
+    }
+
+    fun saveDayTypeProfile(profile: MacroDayProfile) {
+        updateProfile { p ->
+            p.copy(macroPlan = MacroPlanEdit.upsertProfile(p.macroPlan, profile, p.bmr, p.tdee, LocalDate.now()))
+        }
+    }
+
+    fun deleteDayTypeProfile(id: String, replacementId: String?) = editPlan {
+        it?.let { plan -> MacroPlanEdit.deleteProfile(plan, id, replacementId, LocalDate.now()) }
+    }
+
+    fun reorderDayTypeProfiles(orderedIds: List<String>) = editPlan {
+        it?.let { plan -> MacroPlanEdit.reorder(plan, orderedIds) }
+    }
+
+    fun setDayTypesMode(mode: MacroPlanMode) = editPlan {
+        it?.let { plan -> MacroPlanEdit.setMode(plan, mode, LocalDate.now()) }
+    }
+
+    fun setDayTypesDefault(profileId: String) = editPlan {
+        it?.let { plan -> MacroPlanEdit.setDefault(plan, profileId) }
+    }
+
+    fun setDayTypesWeekday(day: java.time.DayOfWeek, profileId: String?) = editPlan {
+        it?.let { plan -> MacroPlanEdit.setWeekday(plan, day, profileId) }
+    }
+
+    fun setDayTypesCyclePattern(pattern: List<String>) = editPlan {
+        it?.let { plan -> MacroPlanEdit.setCyclePattern(plan, pattern) }
+    }
+
+    fun restartDayTypesCycle() = editPlan {
+        it?.let { plan -> MacroPlanEdit.restartCycle(plan, LocalDate.now()) }
+    }
+
+    fun setDayTypesAssignment(date: LocalDate, profileId: String?) = editPlan {
+        it?.let { plan -> MacroPlanEdit.setDayAssignment(plan, date, profileId) }
     }
 
     fun setCustomBaseUrl(provider: AIProvider, url: String) = launchPref {

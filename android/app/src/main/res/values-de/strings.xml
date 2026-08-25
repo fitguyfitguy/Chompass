@@ -2487,6 +2487,45 @@ für dich ein</string>
     <string name="day_type_tomorrow">Morgen: %1$s · %2$s kcal</string>
     <string name="day_type_edit_settings">Tagestypen bearbeiten</string>
     <string name="day_type_plan_off_hint">Tagestypen sind ausgeschaltet. Aktiviere sie in den Einstellungen, um an verschiedenen Tagen unterschiedliche Ziele zu verwenden.</string>
+    <!-- Macro day types (#60) phase 2: Settings editor. -->
+    <string name="settings_day_types_title">Tagestypen</string>
+    <string name="settings_day_types_summary_format">%1$d Typen · %2$s</string>
+    <string name="settings_day_types_intro">Verwende an verschiedenen Tagen unterschiedliche Kalorien- und Makroziele, zum Beispiel Trainings- und Ruhetage.</string>
+    <string name="settings_day_types_need_two">Lege mindestens 2 Tagestypen an, um dies zu aktivieren.</string>
+    <string name="settings_day_types_paused_hint">Pausiert. Deine Tagestypen bleiben gespeichert und lassen sich jederzeit wieder aktivieren.</string>
+    <string name="settings_day_types_add">Tagestyp hinzufügen</string>
+    <string name="settings_day_types_name">Name</string>
+    <string name="settings_day_types_name_placeholder">z. B. Trainingstag</string>
+    <string name="settings_day_types_name_taken">Dieser Name wird bereits verwendet</string>
+    <string name="settings_day_types_copy_current">Von aktuellen Zielen übernehmen</string>
+    <string name="settings_day_types_floor_warning">Dieses Ziel liegt an deinem Kalorienminimum (%1$d kcal). Für einen Tagestyp sehr aggressiv.</string>
+    <string name="settings_day_types_delete">Tagestyp löschen</string>
+    <string name="settings_day_types_delete_used_title">„%1$s“ löschen?</string>
+    <string name="settings_day_types_delete_used_message">Er wird in deinem Zeitplan verwendet. Wähle, was mit diesen Tagen passiert.</string>
+    <string name="settings_day_types_delete_replace">Ersetzen durch „%1$s“</string>
+    <string name="settings_day_types_delete_scrub">Aus Zeitplan entfernen</string>
+    <string name="settings_day_types_move_up">%1$s nach oben</string>
+    <string name="settings_day_types_move_down">%1$s nach unten</string>
+    <string name="settings_day_types_schedule">Zeitplan</string>
+    <string name="settings_day_types_mode_manual">Manuell</string>
+    <string name="settings_day_types_mode_weekdays">Wochentage</string>
+    <string name="settings_day_types_mode_cycle">Zyklus</string>
+    <string name="settings_day_types_mode_manual_hint">Wechsle Tage selbst über die Startseite.</string>
+    <string name="settings_day_types_mode_weekdays_hint">Ordne Tagestypen den Wochentagen zu.</string>
+    <string name="settings_day_types_mode_cycle_hint">Wiederhole ein Muster wie 2 an, 1 aus.</string>
+    <string name="settings_day_types_default">Standard-Tagestyp</string>
+    <string name="settings_day_types_weekday_default">Standard (%1$s)</string>
+    <string name="settings_day_types_pattern">Zyklusmuster</string>
+    <string name="settings_day_types_pattern_day">Tag %1$d</string>
+    <string name="settings_day_types_pattern_add">Tag hinzufügen</string>
+    <string name="settings_day_types_pattern_remove">Tag entfernen</string>
+    <string name="settings_day_types_restart">Zyklus heute neu starten</string>
+    <string name="settings_day_types_preview">Nächste 7 Tage</string>
+    <string name="settings_day_types_preview_help">Tippe auf einen Tag, um ihn zu überschreiben.</string>
+    <string name="settings_day_types_override">Überschreibung</string>
+    <string name="settings_day_types_overrides">Tagesüberschreibungen</string>
+    <string name="settings_day_types_follow_schedule">Zeitplan folgen</string>
+    <string name="settings_day_types_keto_paused">Tagestypen im Keto-Modus pausiert</string>
 
     <string name="home_calorie_active_estimated_a11y">Aktive Kalorien, geschätzt anhand deines Aktivitätsniveaus</string>
 
