@@ -148,6 +148,7 @@ const LIST_KEYS = [
   "nicotine_entries",
   "caffeine_entries",
   "recipes",
+  "goal_journal",
 ];
 
 /**

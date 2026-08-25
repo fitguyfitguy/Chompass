@@ -3,12 +3,14 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   resolveDay,
+  resolveDayJournaled,
   averageForward,
   journalAverage,
   upsertJournalEntry,
   mergeJournal,
   pruneJournal,
   gapFillJournal,
+  goalJournalIdFor,
   isoToEpochDay,
   epochDayToIso,
   isoWeekday,
@@ -42,6 +44,24 @@ for (const scenario of fixture.scenarios) {
     if (scenario.kind === "averageForward") {
       const r = averageForward(scenario.plan, base, scenario.today, scenario.windowDays ?? null);
       assert.deepEqual(r, {
+        calories: scenario.expect.calories,
+        proteinG: scenario.expect.proteinG,
+        carbsG: scenario.expect.carbsG,
+        fatG: scenario.expect.fatG,
+      });
+      return;
+    }
+    if (scenario.kind === "resolveJournaled") {
+      const r = resolveDayJournaled(
+        scenario.entries,
+        scenario.plan,
+        base,
+        scenario.date,
+        scenario.today,
+      );
+      if (scenario.expect.profileId !== undefined) assert.equal(r.profileId, scenario.expect.profileId);
+      if (scenario.expect.profileName !== undefined) assert.equal(r.profileName, scenario.expect.profileName);
+      assert.deepEqual(r.targets, {
         calories: scenario.expect.calories,
         proteinG: scenario.expect.proteinG,
         carbsG: scenario.expect.carbsG,
@@ -137,4 +157,13 @@ test("gap fill bridges holes between first entry and yesterday", () => {
 
 test("keep-days constant matches Android", () => {
   assert.equal(JOURNAL_KEEP_DAYS, 400);
+});
+
+test("sync record id mirrors Android GoalJournal.idFor (daily_notes scheme)", () => {
+  // 2026-09-01 is epoch day 20697 -> 12 hex digits, low 48 bits.
+  assert.equal(isoToEpochDay("2026-09-01"), 20697);
+  assert.equal(goalJournalIdFor("2026-09-01"), "00000000-0000-0000-0000-0000000050d9");
+  assert.equal(goalJournalIdFor("1970-01-01"), "00000000-0000-0000-0000-000000000000");
+  // Malformed input degrades to the epoch id instead of throwing.
+  assert.equal(goalJournalIdFor("nope"), "00000000-0000-0000-0000-000000000000");
 });

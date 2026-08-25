@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "source": "docs/local/MACRO_PROFILES_DESIGN.md (MACRO-CYCLE-A resolve / MACRO-CYCLE-B averageForward / MACRO-CYCLE-D journalAverage). Consumers: Android MacroPlanParityTest + PWA chompass-core/__tests__/macro-plan.test.js. Update both runners when adding scenarios.",
+  "source": "docs/local/MACRO_PROFILES_DESIGN.md (MACRO-CYCLE-A resolve / MACRO-CYCLE-B averageForward / MACRO-CYCLE-D journalAverage / journal-first read resolveDayJournaled). Consumers: Android MacroPlanParityTest + PWA chompass-core/__tests__/macro-plan.test.js. Update both runners when adding scenarios.",
   "base": {
     "calories": 2400,
     "proteinG": 150,
@@ -134,6 +134,72 @@
       "from": "2026-09-01",
       "to": "2026-09-07",
       "expect": { "null": true }
+    },
+    {
+      "id": "resolveJournaled_pastDayEntryWinsOverLivePlan",
+      "kind": "resolveJournaled",
+      "plan": { "enabled": true, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }, { "id": "r", "name": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 } ], "mode": "CYCLE", "defaultProfileId": "r", "cyclePattern": [ "t", "t", "r" ], "cycleAnchorDay": "2026-09-01" },
+      "today": "2026-09-10",
+      "date": "2026-09-08",
+      "entries": [
+        { "date": "2026-09-08", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78, "profileId": "r", "profileName": "Rest day", "updatedAtMillis": 1000, "source": "PLAN" }
+      ],
+      "expect": { "profileId": "r", "profileName": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 }
+    },
+    {
+      "id": "resolveJournaled_pastGapResolvesLive",
+      "kind": "resolveJournaled",
+      "plan": { "enabled": true, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }, { "id": "r", "name": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 } ], "mode": "CYCLE", "defaultProfileId": "r", "cyclePattern": [ "t", "t", "r" ], "cycleAnchorDay": "2026-09-01" },
+      "today": "2026-09-10",
+      "date": "2026-09-07",
+      "entries": [
+        { "date": "2026-09-08", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78, "profileId": "r", "profileName": "Rest day", "updatedAtMillis": 1000, "source": "PLAN" }
+      ],
+      "expect": { "profileId": "t", "profileName": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }
+    },
+    {
+      "id": "resolveJournaled_disabledPlanKeepsFrozenPast",
+      "kind": "resolveJournaled",
+      "plan": { "enabled": false, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }, { "id": "r", "name": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 } ], "mode": "CYCLE", "defaultProfileId": "r", "cyclePattern": [ "t", "t", "r" ], "cycleAnchorDay": "2026-09-01" },
+      "today": "2026-09-10",
+      "date": "2026-09-08",
+      "entries": [
+        { "date": "2026-09-08", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78, "profileId": "r", "profileName": "Rest day", "updatedAtMillis": 1000, "source": "PLAN" }
+      ],
+      "expect": { "profileId": "r", "profileName": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 }
+    },
+    {
+      "id": "resolveJournaled_futureDayIgnoresEntry",
+      "kind": "resolveJournaled",
+      "plan": { "enabled": true, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }, { "id": "r", "name": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 } ], "mode": "CYCLE", "defaultProfileId": "r", "cyclePattern": [ "t", "t", "r" ], "cycleAnchorDay": "2026-09-01" },
+      "today": "2026-09-10",
+      "date": "2026-09-15",
+      "entries": [
+        { "date": "2026-09-15", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training day", "updatedAtMillis": 1000, "source": "PLAN" }
+      ],
+      "expect": { "profileId": "r", "profileName": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 }
+    },
+    {
+      "id": "resolveJournaled_todayPrefersEntry",
+      "kind": "resolveJournaled",
+      "plan": { "enabled": true, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }, { "id": "r", "name": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 } ], "mode": "CYCLE", "defaultProfileId": "r", "cyclePattern": [ "t", "t", "r" ], "cycleAnchorDay": "2026-09-01" },
+      "today": "2026-09-10",
+      "date": "2026-09-10",
+      "entries": [
+        { "date": "2026-09-10", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78, "profileId": "r", "profileName": "Rest day", "updatedAtMillis": 1000, "source": "MANUAL_SWITCH" }
+      ],
+      "expect": { "profileId": "r", "profileName": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 }
+    },
+    {
+      "id": "resolveJournaled_nullPlanKeepsFrozenPast",
+      "kind": "resolveJournaled",
+      "plan": null,
+      "today": "2026-09-10",
+      "date": "2026-09-09",
+      "entries": [
+        { "date": "2026-09-09", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training day", "updatedAtMillis": 1000, "source": "PLAN" }
+      ],
+      "expect": { "profileId": "t", "profileName": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }
     }
   ]
 }

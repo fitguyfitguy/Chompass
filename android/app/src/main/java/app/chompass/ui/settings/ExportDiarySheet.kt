@@ -122,11 +122,13 @@ fun ExportDiarySheet(
                 scope.launch {
                     val entries = container.foodRepository.entries.first()
                     val notes = container.notesRepository.notes.first()
+                    val goalJournal = container.prefs.goalJournal.first()
                     val (lo, hi) = DiaryExporter.resolveRange(range, customStart, customEnd, entries)
                     val result = DiaryExporter.build(
                         entries = entries, start = lo, end = hi, format = format,
                         profile = profile, mealDisplay = { mealNames[it] ?: it.name },
                         notes = notes,
+                        goalJournal = goalJournal,
                     )
                     if (result == null) {
                         status = context.getString(R.string.export_no_meals)

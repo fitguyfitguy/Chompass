@@ -25,6 +25,7 @@ internal fun CalorieSection(
     dailyCalories: List<Pair<LocalDate, Int>>,
     calorieGoal: Int,
     calorieAverage: Int? = null,
+    dailyCalorieGoals: Map<LocalDate, Int> = emptyMap(),
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -51,6 +52,7 @@ internal fun CalorieSection(
             CalorieBarChart(
                 dailyCalories = downsampleCalorieBars(dailyCalories),
                 goal = calorieGoal,
+                dailyGoals = dailyCalorieGoals,
             )
         }
     }

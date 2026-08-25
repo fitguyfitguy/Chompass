@@ -77,6 +77,46 @@ object MacroPlanResolver {
     fun targetsFor(profile: UserProfile, date: LocalDate): ResolvedDayTargets =
         resolve(profile.macroPlan, baseTargets(profile), date)
 
+    /**
+     * Journal-first read rule (#60 phase 3): past + today consult the goal
+     * journal before the resolver — frozen actuals win even when the plan has
+     * since been edited or disabled (history never rewrites); gaps and future
+     * days resolve live from the plan. Mirrors `resolveDayJournaled` in the
+     * PWA `macro-plan.js` (goldens: `resolveJournaled` scenarios).
+     */
+    fun resolveJournaled(
+        journal: List<GoalJournalEntry>,
+        plan: MacroPlan?,
+        base: DayTargets,
+        date: LocalDate,
+        today: LocalDate,
+    ): ResolvedDayTargets {
+        if (!date.isAfter(today)) {
+            val entry = journal.firstOrNull { it.date == date.toString() }
+            if (entry != null) {
+                return ResolvedDayTargets(
+                    targets = DayTargets(entry.calories, entry.proteinG, entry.carbsG, entry.fatG),
+                    profileId = entry.profileId,
+                    profileName = entry.profileName,
+                )
+            }
+        }
+        return resolve(plan, base, date)
+    }
+
+    /**
+     * [resolveJournaled] over a [UserProfile]: plan + base targets come from
+     * the profile; a null profile resolves zero targets (the DiaryExporter
+     * no-profile shape) unless a journaled entry covers the day.
+     */
+    fun targetsForJournaled(
+        journal: List<GoalJournalEntry>,
+        profile: UserProfile?,
+        date: LocalDate,
+        today: LocalDate = LocalDate.now(),
+    ): ResolvedDayTargets =
+        resolveJournaled(journal, profile?.macroPlan, profile?.let(::baseTargets) ?: DayTargets(0, 0, 0, 0), date, today)
+
     // -- Averages ---------------------------------------------------------------
 
     /** MACRO-CYCLE-B: forward window mean starting [today] (overrides count). */

@@ -1,9 +1,11 @@
 // @ts-check
 /**
  * Serializer/validator for the sync-1.2 JSON document (1.2 adds the day-
- * granular `daily_notes` array, Codeberg #58a). Compatible with
+ * granular `daily_notes` array, Codeberg #58a, and the optional per-day
+ * `goal_journal` array, Codeberg #60). Compatible with
  * android/.../export/SyncDocument.kt. Imports also accept 1.0/1.1.
  */
+import { goalJournalIdFor } from "./macro-plan.js";
 
 export const SYNC_FORMAT_VERSION = "1.2";
 export const SYNC_KIND = "sync";
@@ -270,6 +272,7 @@ export function foodEntryFromSyncWire(wire) {
  *   nicotine?: import('./models.js').NicotineEntry[],
  *   caffeine?: import('./models.js').CaffeineEntry[],
  *   recipes?: import('./models.js').Recipe[],
+ *   goalJournal?: import('./macro-plan.js').GoalJournalEntry[],
  *   profile?: { updatedAt: string, deletedAt?: string|null, payload: object }|null,
  *   prefs?: { updatedAt: string, deletedAt?: string|null, payload: object }|null,
  *   revisions?: Record<string, { updatedAt: string, deletedAt?: string|null }>,
@@ -416,6 +419,23 @@ export function exportSyncDocument(input) {
         })),
       };
     }),
+    goal_journal: (input.goalJournal ?? []).map((e) => {
+      const id = goalJournalIdFor(e.date);
+      const meta = metaFor(id, new Date(e.updatedAtMillis ?? 0).toISOString());
+      return {
+        id,
+        updated_at: meta.updated_at,
+        deleted_at: meta.deleted_at,
+        date: e.date,
+        calories: Math.round(e.calories ?? 0),
+        protein_g: Math.round(e.proteinG ?? 0),
+        carbs_g: Math.round(e.carbsG ?? 0),
+        fat_g: Math.round(e.fatG ?? 0),
+        profile_id: e.profileId ?? null,
+        profile_name: e.profileName ?? null,
+        source: String(e.source ?? "PLAN").toLowerCase(),
+      };
+    }),
     profile: input.profile
       ? {
           updated_at: input.profile.updatedAt,
@@ -451,6 +471,7 @@ export function appendTombstones(doc, revisions) {
     nicotine: "nicotine_entries",
     caffeine: "caffeine_entries",
     recipe: "recipes",
+    goal_journal: "goal_journal",
   };
   for (const [id, rev] of Object.entries(revisions)) {
     if (!rev.deletedAt) continue;
@@ -492,8 +513,9 @@ export function parseSyncDocument(doc) {
     throw new UnsupportedSyncFormatError(`Unsupported format_version: ${exp.format_version}`);
   }
   // pre-1.2 remotes have no nicotine/caffeine/daily-notes arrays at all; each
-  // must default to [] (Android's parser is lenient the same way).
-  const OPTIONAL_ARRAYS = new Set(["nicotine_entries", "caffeine_entries", "daily_notes"]);
+  // must default to [] (Android's parser is lenient the same way). goal_journal
+  // (#60) rides the same optional-array rule: old docs parse with [].
+  const OPTIONAL_ARRAYS = new Set(["nicotine_entries", "caffeine_entries", "daily_notes", "goal_journal"]);
   for (const key of [
     "food_entries",
     "favorites",
@@ -505,6 +527,7 @@ export function parseSyncDocument(doc) {
     "nicotine_entries",
     "caffeine_entries",
     "recipes",
+    "goal_journal",
   ]) {
     if (!Array.isArray(doc[key])) {
       if (OPTIONAL_ARRAYS.has(key)) {
@@ -628,6 +651,33 @@ export function liveCaffeineFromSync(wires) {
       date: String(w.date).slice(0, 10),
       kind: String(w.kind ?? "coffee"),
       mg: Math.max(0, Number(w.mg) || 0),
+    }));
+}
+
+/**
+ * Goal-journal wire rows (#60) -> model entries. `updated_at` (ISO instant)
+ * becomes updatedAtMillis so mergeJournal can do per-day LWW. Phase 5 wires
+ * the store apply; this keeps the wire conversion in core next to the others.
+ * @param {any[]} wires
+ * @returns {import('./macro-plan.js').GoalJournalEntry[]}
+ */
+export function liveGoalJournalFromSync(wires) {
+  return wires
+    .filter((w) => w && w.id && !w.deleted_at && w.date)
+    .map((w) => ({
+      date: String(w.date).slice(0, 10),
+      calories: Math.round(Number(w.calories) || 0),
+      proteinG: Math.round(Number(w.protein_g) || 0),
+      carbsG: Math.round(Number(w.carbs_g) || 0),
+      fatG: Math.round(Number(w.fat_g) || 0),
+      profileId: w.profile_id ?? null,
+      profileName: w.profile_name ?? null,
+      updatedAtMillis: Math.max(0, Date.parse(String(w.updated_at ?? "")) || 0),
+      source: /** @type {"PLAN"|"MANUAL_SWITCH"|"OVERRIDE"|"GAP_FILL"} */ (
+        ["PLAN", "MANUAL_SWITCH", "OVERRIDE", "GAP_FILL"].includes(String(w.source ?? "").toUpperCase())
+          ? String(w.source).toUpperCase()
+          : "PLAN"
+      ),
     }));
 }
 

@@ -78,6 +78,28 @@ class MacroPlanParityTest(
                 )
                 assertTargets(expect, r)
             }
+            "resolveJournaled" -> {
+                val entries = json.decodeFromString(
+                    ListSerializer(GoalJournalEntry.serializer()),
+                    scenario.getJSONArray("entries").toString(),
+                )
+                val r = MacroPlanResolver.resolveJournaled(
+                    entries,
+                    plan,
+                    baseTargets,
+                    LocalDate.parse(scenario.getString("date")),
+                    LocalDate.parse(scenario.getString("today")),
+                )
+                if (expect.has("profileId")) {
+                    if (expect.isNull("profileId")) assertNull(scenarioId, r.profileId)
+                    else assertEquals(scenarioId, expect.getString("profileId"), r.profileId)
+                }
+                if (expect.has("profileName")) {
+                    if (expect.isNull("profileName")) assertNull(scenarioId, r.profileName)
+                    else assertEquals(scenarioId, expect.getString("profileName"), r.profileName)
+                }
+                assertTargets(expect, r.targets)
+            }
             "journalAverage" -> {
                 val entries = json.decodeFromString(
                     ListSerializer(GoalJournalEntry.serializer()),

@@ -25,6 +25,20 @@ const WEEKDAY_NAMES = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "
 export const JOURNAL_KEEP_DAYS = 400;
 
 /**
+ * Stable per-day sync record id for a journal entry (daily_notes precedent):
+ * epoch day in the low 48 bits as 12 lowercase hex digits, zeros elsewhere.
+ * Mirrors Android GoalJournal.idFor — same date → same id on every platform,
+ * so sync's merge-by-id is per-day last-write-wins.
+ * @param {string} isoDate
+ * @returns {string} "00000000-0000-0000-0000-<12 hex>"
+ */
+export function goalJournalIdFor(isoDate) {
+  const days = isoToEpochDay(isoDate);
+  const safe = Number.isFinite(days) ? Math.max(0, Math.min(days, 0x0000ffffffffffff)) : 0;
+  return `00000000-0000-0000-0000-${safe.toString(16).padStart(12, "0")}`;
+}
+
+/**
  * @param {string} iso "2026-09-01"
  * @returns {number} epoch day; NaN for malformed input
  */
@@ -135,6 +149,33 @@ function cycleProfileId(plan, isoDate) {
   const offset = isoToEpochDay(isoDate) - isoToEpochDay(plan.cycleAnchorDay);
   if (!Number.isFinite(offset)) return plan.defaultProfileId ?? null;
   return plan.cyclePattern[floorMod(offset, plan.cyclePattern.length)];
+}
+
+/**
+ * Journal-first read rule (#60 phase 3): past + today consult the goal journal
+ * before the resolver — frozen actuals win even when the plan has since been
+ * edited or disabled; gaps and future days resolve live from the plan.
+ * Mirrors Android MacroPlanResolver.targetsForJournaled.
+ * @param {GoalJournalEntry[]} journal
+ * @param {MacroPlan|null} plan
+ * @param {DayTargets} base
+ * @param {string} isoDate
+ * @param {string} isoToday
+ */
+export function resolveDayJournaled(journal, plan, base, isoDate, isoToday) {
+  const today = isoToEpochDay(isoToday);
+  const d = isoToEpochDay(isoDate);
+  if (Number.isFinite(today) && Number.isFinite(d) && d <= today) {
+    const entry = journal.find((e) => e.date === isoDate);
+    if (entry) {
+      return {
+        targets: { calories: entry.calories, proteinG: entry.proteinG, carbsG: entry.carbsG, fatG: entry.fatG },
+        profileId: entry.profileId ?? null,
+        profileName: entry.profileName ?? null,
+      };
+    }
+  }
+  return resolveDay(plan, base, isoDate);
 }
 
 /**
