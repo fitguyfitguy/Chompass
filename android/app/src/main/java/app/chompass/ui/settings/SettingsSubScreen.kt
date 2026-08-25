@@ -40,16 +40,21 @@ import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
 /**
  * Shared scaffold for settings drill-down screens: back chip, large title,
- * then a vertically scrolling column of section cards.
+ * then a vertically scrolling column of section cards. Optional [snackbarHost]
+ * for one-shot notices (e.g. the keto→day-types pause snackbar on Goals).
  */
 @Composable
 fun SettingsSubScreen(
     title: String,
     onBack: () -> Unit,
     backLabel: String = stringResource(R.string.nav_settings),
+    snackbarHost: @Composable () -> Unit = {},
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        snackbarHost = snackbarHost,
+    ) { padding ->
         Column(
             Modifier
                 .fillMaxSize()

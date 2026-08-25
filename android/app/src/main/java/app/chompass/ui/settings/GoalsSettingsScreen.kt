@@ -3,8 +3,11 @@ package app.chompass.ui.settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +34,13 @@ fun GoalsSettingsScreen(
 ) {
     val vm: SettingsViewModel = rememberSettingsViewModel(container, nav)
     val ui by vm.ui.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val ketoPausedMessage = stringResource(R.string.settings_day_types_keto_paused)
+    // A keto switch pauses a live day-type plan (Q4): tell the user the plan
+    // survived instead of silently losing their schedule.
+    LaunchedEffect(ui.dayTypesKetoPausedTick) {
+        if (ui.dayTypesKetoPausedTick > 0) snackbarHostState.showSnackbar(ketoPausedMessage)
+    }
     var sheet by remember { mutableStateOf<SettingsSheet?>(null) }
     var invalidGoalWeightMessage by remember { mutableStateOf<String?>(null) }
     var showRebalanceBlockedAlert by remember { mutableStateOf(false) }
@@ -87,6 +97,7 @@ fun GoalsSettingsScreen(
     SettingsSubScreen(
         title = stringResource(R.string.settings_section_goals),
         onBack = onBack,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) {
         Text(
             stringResource(R.string.settings_goals_intro),

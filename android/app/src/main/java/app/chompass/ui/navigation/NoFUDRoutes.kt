@@ -8,6 +8,7 @@ object ChompassRoutes {
     const val SETTINGS = "settings"
     const val SETTINGS_PERSONAL = "settings/personal"
     const val SETTINGS_GOALS = "settings/goals"
+    const val SETTINGS_DAY_TYPES = "settings/day-types"
     const val SETTINGS_APP = "settings/app"
     const val SETTINGS_TRACKERS = "settings/trackers"
     const val SETTINGS_AI = "settings/ai"
@@ -53,6 +54,7 @@ object ChompassRoutes {
         SETTINGS,
         SETTINGS_PERSONAL,
         SETTINGS_GOALS,
+        SETTINGS_DAY_TYPES,
         SETTINGS_APP,
         SETTINGS_TRACKERS,
         SETTINGS_AI,

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DataUsage
+import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Equalizer
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocalFireDepartment
@@ -38,6 +39,7 @@ import app.chompass.models.AutoBalanceMacro
 import app.chompass.models.DietMode
 import app.chompass.models.KetoCarbMode
 import app.chompass.models.LocaleFormat
+import app.chompass.models.MacroPlanMode
 import app.chompass.models.WeightGoal
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.components.gramsText
@@ -205,6 +207,17 @@ internal fun SettingsGoalsSection(
                         optionalNutrientSummary(ui.optionalNutrientGoals),
                         icon = Icons.Outlined.DataUsage
                     ) { nav.navigate(ChompassRoutes.OPTIONAL_NUTRIENT_GOALS) }
+                    if (p.dietMode == DietMode.STANDARD) {
+                        // Day types (#60): STANDARD-only — keto's fixed net-carb
+                        // ceiling contradicts carb cycling (settled Q4). Switching
+                        // to keto hides this row and pauses a live plan.
+                        HorizontalDivider()
+                        SettingRow(
+                            stringResource(R.string.settings_day_types_title),
+                            dayTypesRowSummary(p),
+                            icon = Icons.Outlined.CalendarToday
+                        ) { nav.navigate(ChompassRoutes.SETTINGS_DAY_TYPES) }
+                    }
                     HorizontalDivider()
                     Row(
                         Modifier
@@ -291,4 +304,17 @@ private fun recalcDetailsSubtitle(sheet: RecalcSheetData): String {
     }
     val date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(sheet.savedAtMillis))
     return "$who · $date"
+}
+
+/** "Off" / "2 types · Cycle" for the Day types row. */
+@Composable
+internal fun dayTypesRowSummary(profile: app.chompass.models.UserProfile): String {
+    val plan = profile.macroPlan ?: return stringResource(R.string.settings_off)
+    if (!plan.enabled) return stringResource(R.string.settings_off)
+    val mode = when (plan.mode) {
+        MacroPlanMode.MANUAL -> stringResource(R.string.settings_day_types_mode_manual)
+        MacroPlanMode.WEEKDAYS -> stringResource(R.string.settings_day_types_mode_weekdays)
+        MacroPlanMode.CYCLE -> stringResource(R.string.settings_day_types_mode_cycle)
+    }
+    return stringResource(R.string.settings_day_types_summary_format, plan.profiles.size, mode)
 }

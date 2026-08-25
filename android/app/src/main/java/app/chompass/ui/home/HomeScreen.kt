@@ -103,7 +103,11 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
+fun HomeScreen(
+    container: AppContainer,
+    onOpenSettings: (() -> Unit)? = null,
+    onOpenDayTypes: (() -> Unit)? = null,
+) {
     val vm: HomeViewModel = viewModel(factory = HomeViewModel.Factory(container))
     val ui by vm.ui.collectAsState()
     val ctx = LocalContext.current
@@ -1418,7 +1422,9 @@ fun HomeScreen(container: AppContainer, onOpenSettings: (() -> Unit)? = null) {
             today = LocalDate.now(),
             onSwitch = vm::switchTodayDayType,
             onDismiss = { showDayTypeSheet = false },
-            onOpenSettings = onOpenSettings,
+            // "Edit day types" deep-links straight into the editor when the
+            // nav host provides the route; the Settings hub stays the fallback.
+            onOpenSettings = onOpenDayTypes ?: onOpenSettings,
         )
     }
 
