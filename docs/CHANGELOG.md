@@ -10,7 +10,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
-- **Moving a food to another meal no longer makes its card vanish** (Android): after changing an entry's meal type, for example from Lunch to Breakfast, the food sometimes disappeared from the home screen until the app was restarted, even though it was still saved and counted in the day's totals. The card now stays on screen right after the change. Follow-up on Codeberg [#56](https://codeberg.org/fitguy/Chompass/issues/56) by [@tuxMode](https://codeberg.org/tuxMode).
+- **Moving a food to another meal no longer makes its card vanish** (Android): on some devices, after changing an entry's meal type, for example from Lunch to Breakfast, the food disappeared from the home screen until the app was restarted, even though it was still saved and counted in the day's totals. The card now stays on screen right after the change on every device. Follow-up on Codeberg [#56](https://codeberg.org/fitguy/Chompass/issues/56) by [@tuxMode](https://codeberg.org/tuxMode).
 
 ## [3.24.0] - 2026-08-24
 
