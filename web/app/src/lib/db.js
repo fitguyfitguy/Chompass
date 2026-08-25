@@ -16,7 +16,7 @@ const DB_NAME =
   typeof window !== "undefined" && /** @type {any} */ (window).CHOMPASS_DEMO
     ? "chompass-pwa-demo"
     : "chompass-pwa";
-const DB_VERSION = 6;
+const DB_VERSION = 7;
 
 /** @type {Promise<IDBDatabase>|null} */
 let dbPromise = null;
@@ -55,6 +55,13 @@ function openChompassDb() {
     // Caffeine tracker (device-pass revision): own store, own version bump.
     if (oldVersion < 6) {
       if (!db.objectStoreNames.contains("caffeine")) db.createObjectStore("caffeine", { keyPath: "id" }).createIndex("date", "date");
+    }
+    // Per-day goal journal (Codeberg #60): entries keyed by ISO date, with the
+    // deterministic per-day sync id (goalJournalIdFor) as `id` for sync merges.
+    if (oldVersion < 7) {
+      if (!db.objectStoreNames.contains("goalJournal")) {
+        db.createObjectStore("goalJournal", { keyPath: "date" }).createIndex("date", "date");
+      }
     }
   });
 }
@@ -344,6 +351,29 @@ export const dailyNotes = {
   },
 };
 
+/** Per-day goal journal (Codeberg #60). Entries carry both `date` (key)
+ *  and the deterministic per-day sync id (goalJournalIdFor) for merges. */
+export const goalJournal = {
+  /** @param {import('./chompass-core/macro-plan.js').GoalJournalEntry & { id?: string }} entry */
+  async put(entry) {
+    const result = await (await store("goalJournal")).put(entry);
+    await touchRevision(entry.id ?? entry.date, "goal_journal");
+    return result;
+  },
+  async delete(id) {
+    const result = await (await store("goalJournal")).delete(id);
+    await tombstoneRevision(id, "goal_journal");
+    return result;
+  },
+  /** @returns {Promise<import('./chompass-core/macro-plan.js').GoalJournalEntry[]>} */
+  async all() {
+    return (await store("goalJournal")).getAll();
+  },
+  async clear() {
+    return (await store("goalJournal")).clear();
+  },
+};
+
 const PROFILE_ID = "singleton";
 const PREFS_ID = "singleton";
 const CHAT_ID = "singleton";
@@ -579,6 +609,8 @@ export async function clearAllUserData() {
     measurements.clear(),
     water.clear(),
     nicotine.clear(),
+    caffeine.clear(),
+    goalJournal.clear(),
     profile.clear(),
     chat.clear(),
     keys.clear(),

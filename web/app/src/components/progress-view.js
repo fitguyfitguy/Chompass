@@ -1,6 +1,7 @@
 // @ts-check
-import { weights, foodEntries, profile as profileStore, bodyFat, prefs } from "../lib/db.js";
+import { weights, foodEntries, profile as profileStore, bodyFat, prefs, goalJournal } from "../lib/db.js";
 import { dailyTargets } from "../lib/chompass-core/formulas.js";
+import { journalAverage } from "../lib/chompass-core/macro-plan.js";
 import { computeWeightForecast, suggestAdaptiveCalories } from "../lib/chompass-core/forecast.js";
 import {
   computeWeightTrend,
@@ -57,12 +58,13 @@ export class ProgressView extends HTMLElement {
   }
 
   async render() {
-    const [allWeights, allEntries, allBf, prof, appPrefs] = await Promise.all([
+    const [allWeights, allEntries, allBf, prof, appPrefs, journal] = await Promise.all([
       weights.all(),
       foodEntries.all(),
       bodyFat.all(),
       profileStore.load(),
       prefs.load(),
+      goalJournal.all(),
     ]);
     this.rangeId = resolveProgressRangeId(
       this.rangeId ?? appPrefs.progressRangeId,
@@ -133,7 +135,14 @@ export class ProgressView extends HTMLElement {
       .sort(([a], [b]) => a.localeCompare(b));
     const calorieBars = calorieEntries.map(([d, t]) => ({ label: shortDate(d), value: t.calories }));
     const completeCalorieEntries = calorieEntries.filter(([d]) => d < today);
-    const targets = prof ? dailyTargets(prof) : null;
+    // Macro day types (#60): goal lines switch from "current target" to the
+    // journaled range average (MACRO-CYCLE-D, gaps skipped); falls back to the
+    // live base targets when nothing is journaled (plan off = today's behavior).
+    const baseTargets = prof ? dailyTargets(prof) : null;
+    const rangeAverage = baseTargets
+      ? journalAverage(journal, startIso, today) ?? baseTargets
+      : null;
+    const targets = rangeAverage;
     const goalWeight = prof?.goalWeightKg != null ? toDisplay(prof.goalWeightKg) : null;
 
     const currentW = weightPoints.length ? weightPoints[weightPoints.length - 1].value : null;

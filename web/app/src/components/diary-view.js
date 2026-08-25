@@ -1,5 +1,5 @@
 // @ts-check
-import { foodEntries, profile as profileStore, water, dailyNotes, nicotine, caffeine, prefs } from "../lib/db.js";
+import { foodEntries, profile as profileStore, water, dailyNotes, nicotine, caffeine, prefs, goalJournal } from "../lib/db.js";
 import { dailyTargets, estimatedDailyActiveCalories } from "../lib/chompass-core/formulas.js";
 import { dailyNoteIdFor } from "../lib/chompass-core/models.js";
 import { computeFastingState, nextFastStartMillis, FastingPhase } from "../lib/chompass-core/fasting-state.js";
@@ -53,6 +53,9 @@ import {
   manualActiveKcalForDate,
   resolveWebActiveBurn,
 } from "../lib/manual-active.js";
+import { setDayAssignment } from "../lib/chompass-core/macro-plan-edit.js";
+import { resolveDay, resolveDayJournaled } from "../lib/chompass-core/macro-plan.js";
+import { refreshGoalJournal, recordManualSwitchGoalJournal } from "../lib/goal-journal-store.js";
 
 const MEAL_LABELS = { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack" };
 const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack"];
@@ -482,10 +485,21 @@ export class DiaryView extends HTMLElement {
     this._undoEntry = null;
     /** @type {ReturnType<typeof openSheet> | null} */
     this._sheet = null;
+    /** @type {string|null} */
+    this._renderedDay = null;
   }
 
   connectedCallback() {
     this.render();
+    // Day-rollover journal trigger (#60): a CYCLE/WEEKDAYS switch lands at
+    // midnight while the app is open (a PWA has no background alarms); the
+    // refresh core is a no-op when nothing changed.
+    this._dayRolloverTick = setInterval(async () => {
+      const day = todayIso();
+      if (day === this._renderedDay) return;
+      await refreshGoalJournal().catch(() => null);
+      this.render();
+    }, 60_000);
     // Local-only fasting timer (mirrors the Android tracker): roll the elapsed
     // label over each minute while a fast is running (re-render is cheap), and
     // drive auto-cycle transitions (PWA has no background alarms).
@@ -500,6 +514,7 @@ export class DiaryView extends HTMLElement {
 
   disconnectedCallback() {
     clearInterval(this._fastingTick);
+    clearInterval(this._dayRolloverTick);
     this._sheet?.close();
     this._sheet = null;
   }
@@ -511,14 +526,16 @@ export class DiaryView extends HTMLElement {
   }
 
   async render() {
-    const [entries, prof, waterLogs, appPrefs, manualKcal, noteLogs] = await Promise.all([
+    const [entries, prof, waterLogs, appPrefs, manualKcal, noteLogs, journal] = await Promise.all([
       foodEntries.byDate(this.date),
       profileStore.load(),
       water.byDate(this.date),
       prefs.load(),
       manualActiveKcalForDate(this.date),
       dailyNotes.byDate(this.date),
+      goalJournal.all(),
     ]);
+    this._renderedDay = todayIso();
     const note = noteLogs[0] ?? null;
     const nicotineLogs = await nicotine.byDate(this.date);
     const caffeineLogs = await caffeine.byDate(this.date);
@@ -534,7 +551,19 @@ export class DiaryView extends HTMLElement {
       { calories: 0, proteinG: 0, carbsG: 0, fatG: 0 }
     );
 
-    const targets = prof ? dailyTargets(prof) : null;
+    // Macro day types (#60): today's (or the viewed past day's) targets resolve
+    // journal-first (frozen actuals) with live plan resolution as fallback.
+    const baseTargets = prof ? dailyTargets(prof) : null;
+    const dayResolved = baseTargets
+      ? resolveDayJournaled(journal, prof?.macroPlan ?? null, baseTargets, this.date, todayIso())
+      : null;
+    const targets = dayResolved ? dayResolved.targets : null;
+    const dayTypeChip =
+      dayResolved && (prof?.macroPlan?.enabled || dayResolved.profileName)
+        ? `<button type="button" class="chip day-type-chip" data-day-type>${escapeHtml(
+            dayResolved.profileName ?? t("day_types.chip_none"),
+          )}</button>`
+        : "";
     let calorieTarget = targets?.calories ?? 0;
     /** @type {{ goal: number, active: number, live: number, typical: number, source: string, awaiting: false } | { goal: number, awaiting: true } | null} */
     let gaugeInfo = null;
@@ -688,6 +717,7 @@ export class DiaryView extends HTMLElement {
             </div>
             <button type="button" class="day-nav-btn" data-day-delta="1" aria-label="Next day" ${nextDisabled}>${DAY_NAV_CHEVRON_R}</button>
           </div>
+          <div class="day-type-chip-row">${dayTypeChip}</div>
           ${macrosMobile}
         </div>
         <div class="home-hero--desktop">
@@ -701,6 +731,7 @@ export class DiaryView extends HTMLElement {
             </div>
             ${gaugeInfoBtnDesktop}
           </div>
+          <div class="day-type-chip-row">${dayTypeChip}</div>
           ${macrosDesktop}
         </div>
       </div>
@@ -854,6 +885,7 @@ export class DiaryView extends HTMLElement {
     this.querySelectorAll("[data-water]").forEach((el) => {
       el.addEventListener("click", () => this.addWater(Number(el.getAttribute("data-water"))));
     });
+    this.querySelector("[data-day-type]")?.addEventListener("click", () => this.openDayTypeSheet());
     this.querySelector("[data-water-custom]")?.addEventListener("click", () => this.customWater());
     this.querySelector("[data-water-undo]")?.addEventListener("click", () => this.undoLastWater(waterLogs));
     this.querySelector("[data-note-empty]")?.addEventListener("click", () => {
@@ -1092,6 +1124,60 @@ export class DiaryView extends HTMLElement {
 
     row.addEventListener("pointerup", end);
     row.addEventListener("pointercancel", () => reset());
+  }
+
+  /** Macro day types (#60): quick-switch sheet from the hero chip. */
+  async openDayTypeSheet() {
+    const prof = await profileStore.load();
+    if (!prof) return;
+    const plan = prof.macroPlan ?? null;
+    const today = todayIso();
+    const base = dailyTargets(prof);
+    const profiles = plan?.profiles ?? [];
+    const active = resolveDay(plan, base, today);
+    const tomorrow = resolveDay(plan, base, shiftDate(today, 1));
+    const tomorrowLabel = tomorrow.profileName
+      ? t("day_types.tomorrow_format", { name: tomorrow.profileName, kcal: String(tomorrow.targets.calories) })
+      : t("day_types.tomorrow_base", { kcal: String(base.calories) });
+    const hasOverride = plan?.dayAssignments?.[today] != null;
+    const sheet = openSheet({
+      title: t("day_types.sheet_title"),
+      body: `
+        <div class="sheet-actions" role="listbox" aria-label="${escapeAttr(t("day_types.sheet_title"))}">
+          ${profiles
+            .map(
+              (p) => `
+            <button type="button" role="option" data-type-id="${escapeAttr(p.id)}" aria-selected="${active.profileId === p.id}">
+              ${escapeHtml(p.name)} · ${p.calories} kcal
+              <span style="display:block;font-size:0.8rem;color:var(--muted);">${p.proteinG}P / ${p.carbsG}C / ${p.fatG}F</span>
+            </button>`,
+            )
+            .join("")}
+          ${hasOverride ? `<button type="button" role="option" data-type-clear>${escapeHtml(t("day_types.follow_schedule"))}</button>` : ""}
+        </div>
+        <p style="margin:0.6rem 0 0;font-size:0.82rem;color:var(--muted);">${escapeHtml(tomorrowLabel)}</p>
+        <div class="btn-row" style="margin-top:0.6rem;">
+          <button type="button" class="btn btn--ghost" data-type-edit>${escapeHtml(t("day_types.edit"))}</button>
+        </div>`,
+    });
+    /** @param {string|null} profileId */
+    const apply = async (profileId) => {
+      if (!plan || !plan.enabled) return;
+      if (profileId != null && profileId === active.profileId) return; // already active: no stray override
+      const next = setDayAssignment(plan, today, profileId);
+      await profileStore.save({ ...prof, macroPlan: next });
+      await recordManualSwitchGoalJournal();
+      sheet.close();
+      this.render();
+    };
+    sheet.body.querySelectorAll("[data-type-id]").forEach((btn) => {
+      btn.addEventListener("click", () => apply(btn.getAttribute("data-type-id")));
+    });
+    sheet.body.querySelector("[data-type-clear]")?.addEventListener("click", () => apply(null));
+    sheet.body.querySelector("[data-type-edit]")?.addEventListener("click", () => {
+      sheet.close();
+      location.hash = "#/settings?section=daytypes";
+    });
   }
 
   /** @param {import('../lib/chompass-core/models.js').FoodEntry} entry */

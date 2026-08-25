@@ -26,6 +26,7 @@ import {
   calorieAdjustmentLine,
   calorieSafetyLine,
 } from "../chompass-core/goal-formula-reference.js";
+import { averageForward, resolveDay } from "../chompass-core/macro-plan.js";
 
 /** @typedef {import('../chompass-core/models.js').UserProfile} UserProfile */
 /** @typedef {ReturnType<import('../chompass-core/forecast.js').computeWeightForecast>} WeightForecast */
@@ -37,6 +38,7 @@ import {
  * @property {number} carbs
  * @property {number} fat
  * @property {string|null} [reason]
+ * @property {Array<{id: string, calories: number, proteinG: number, carbsG: number, fatG: number}>} [profiles] day-type rows (#60); empty = none returned
  */
 
 /**
@@ -126,12 +128,25 @@ export function parseGoalCalculation(text) {
   /** @param {unknown} v @param {number} cap */
   const macro = (v, cap) => Math.min(cap, Math.max(0, intOf(v) ?? 0));
   const reasonRaw = json.reason != null ? String(json.reason).trim() : "";
+  const profiles = Array.isArray(json.profiles)
+    ? json.profiles
+        .slice(0, 7)
+        .map((row) => ({
+          id: String(row?.id ?? "").trim(),
+          calories: intOf(row?.calories) ?? 0,
+          proteinG: macro(row?.protein_g ?? row?.protein, 500),
+          carbsG: macro(row?.carbs_g ?? row?.carbs, 1200),
+          fatG: macro(row?.fat_g ?? row?.fat, 400),
+        }))
+        .filter((row) => row.id && row.calories > 0)
+    : [];
   return {
     calories: Math.min(CALORIE_PARSER_CEILING_KCAL, Math.max(CALORIE_ABSOLUTE_FLOOR_KCAL, calories)),
     protein: macro(json.protein, 500),
     carbs: macro(json.carbs, 1200),
     fat: macro(json.fat, 400),
     reason: reasonRaw || null,
+    profiles,
   };
 }
 
@@ -241,6 +256,50 @@ export function lockConstraintsSection(profile) {
   return lines.join("\n");
 }
 
+/** Local calendar day yyyy-MM-dd. */
+function localIsoToday() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+/**
+ * Day-types prompt section (#60 phase 4 mirror): profile list with ids,
+ * schedule, today's active profile, weekly average, and the optional
+ * `profiles[]` response contract. Empty string while the plan is off.
+ * @param {UserProfile} profile
+ * @param {string} isoToday
+ * @returns {string}
+ */
+export function dayTypesPromptSection(profile, isoToday) {
+  const plan = profile.macroPlan;
+  if (!plan || plan.enabled !== true || !plan.profiles?.length) return "";
+  const base = dailyTargets({ ...profile, customCalories: null });
+  const avg = averageForward(plan, base, isoToday);
+  const today = resolveDay(plan, base, isoToday);
+  const schedule =
+    plan.mode === "WEEKDAYS"
+      ? "weekday map"
+      : plan.mode === "CYCLE"
+        ? `repeating cycle anchored ${plan.cycleAnchorDay ?? "?"}`
+        : "manual default";
+  const rows = plan.profiles
+    .map((x) => `- id=${x.id} ${x.name}: ${x.calories} kcal, ${x.proteinG}g protein, ${x.carbsG}g carbs, ${x.fatG}g fat`)
+    .join("\n");
+  return [
+    "",
+    "DAY TYPES: this user has different targets per day type. Current profiles:",
+    rows,
+    `- Assignment: ${schedule}. Today is a ${today.profileName ?? "base"} day.`,
+    `- Weekly average target: ${avg.calories} kcal, ${avg.proteinG}g protein, ${avg.carbsG}g carbs, ${avg.fatG}g fat.`,
+    'You MAY return an optional "profiles" array in the JSON, one row per day type you want to change:',
+    '{"id":"<profile id>","calories":2600,"protein_g":170,"carbs_g":300,"fat_g":75}',
+    "Keep the relative spread between day types (e.g. training vs rest) unless the user asked to change it. Return rows only for the profiles you adjust; omitting the array shifts every profile by the same kcal delta as the base change.",
+  ].join("\n");
+}
+
 /**
  * @param {UserProfile} profile
  * @param {WeightForecast|null} forecast
@@ -275,7 +334,6 @@ export function buildCalculateGoalsPrompt(profile, forecast, heightMetric, weigh
   const proteinLine = proteinPerKgLine();
   const calorieAdjLine = calorieAdjustmentLine();
 
-  const observedSection = buildObservedSection(forecast, weightMetric);
   const dietLine = profile.ketoMode
     ? `- Diet mode: keto (net carbs target ${targets.carbsG} g/day)`
     : "- Diet mode: standard";
@@ -287,9 +345,17 @@ export function buildCalculateGoalsPrompt(profile, forecast, heightMetric, weigh
       `\n- Keep 4*protein + 4*carbs + 9*fat approximately equal to calories.`
     : "";
 
+  const observedSection = buildObservedSection(forecast, weightMetric);
+  const dayTypesSection = dayTypesPromptSection(profile, localIsoToday());
+  const jsonShape = dayTypesSection
+    ? 'Return ONLY valid JSON with these exact keys (integers, plus a short reason) and an optional "profiles" array described under DAY TYPES:\n{"calories":2000,"protein":150,"carbs":200,"fat":60,"reason":"Short reason under 100 characters"}'
+    : 'Return ONLY valid JSON with these exact keys (integers, plus a short reason):\n{"calories":2000,"protein":150,"carbs":200,"fat":60,"reason":"Short reason under 100 characters"}';
+  const keysLine = dayTypesSection
+    ? "Use integers only. Output no keys other than calories, protein, carbs, fat, reason and the optional profiles array."
+    : "Use integers only. Output no keys other than calories, protein, carbs, fat, reason.";
+
   return `You are the goal calculator for a calorie & macro tracking app. Using the FORMULAS, the USER PROFILE, and any OBSERVED DATA below, compute the user's daily targets.
-Return ONLY valid JSON with these exact keys (integers, plus a short reason):
-{"calories":2000,"protein":150,"carbs":200,"fat":60,"reason":"Short reason under 100 characters"}
+${jsonShape}
 
 Use the app's formulas as the basis. When OBSERVED DATA is present and reliable, prefer the empirical maintenance estimate it implies over the formula TDEE.
 FORMULAS
@@ -302,7 +368,7 @@ FORMULAS
 - Carbs: the calories remaining after protein (4 kcal/g) and fat (9 kcal/g), divided by 4. Keep 4*protein + 4*carbs + 9*fat approximately equal to calories.
 BMR method in effect for this user: ${bmrMethod}.
 ${calorieSafetyLine()}
-This user's BMR is ${Math.trunc(bmr(formulaProfile))} kcal; floor is ${safetyFloorKcal(formulaProfile)} kcal. Use integers only. Output no keys other than calories, protein, carbs, fat, reason.
+This user's BMR is ${Math.trunc(bmr(formulaProfile))} kcal; floor is ${safetyFloorKcal(formulaProfile)} kcal. ${keysLine}
 
 USER PROFILE
 - Gender: ${profile.sex}
@@ -322,7 +388,7 @@ APP FORMULA REFERENCE (already computed deterministically; use as the anchor)
 - TDEE: ${Math.trunc(tdee(formulaProfile))} kcal/day
 - Formula calorie target: ${targets.calories} kcal/day
 - Formula macros: ${Math.round(proteinGoal(formulaProfile))} g protein, ${targets.carbsG} g carbs, ${targets.fatG} g fat
-${observedSection}`;
+${dayTypesSection}${observedSection}`;
 }
 
 /**
