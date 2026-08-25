@@ -41,6 +41,9 @@ The site-header hero is a **cinematic live demo, not a video file**: `website/as
 
 - **IzzyOnDroid:** rejected because of AI features; do not re-submit without a policy change
 
+GitHub list placements (awesome lists / app collections) are tracked in [`local/GITHUB_LIST_PLACEMENTS.md`](local/GITHUB_LIST_PLACEMENTS.md)
+
+
 ## Outreach (manual)
 
 Use the Hugo site as the link people should open first. Point builders at the Codeberg repo. Lead with **private calorie tracking on Android and in the browser** (try the PWA, or install via F-Droid / Obtainium). Keep the calorie budget and scanning details for the feature list, not the pitch: after a big run, log the burn manually in Add Food or let a wearable feed it through Health Connect; barcode scans resolve against Open Food Facts (4.6M+ products). Mention meal components, recipes, and AI entry with your own key when space allows. Keep Fud AI as upstream credit, not the headline. Mention Chromium works best without claiming Chromium-only.
