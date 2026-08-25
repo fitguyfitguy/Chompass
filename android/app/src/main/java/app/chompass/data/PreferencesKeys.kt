@@ -40,7 +40,7 @@ internal object Keys {
         val WATER_REMINDER_ENABLED = booleanPreferencesKey("waterReminderEnabled")
         val WATER_REMINDER_HOUR = intPreferencesKey("waterReminderHour")
         val WATER_REMINDER_MINUTE = intPreferencesKey("waterReminderMinute")
-        // Dynamic goal + adaptive reminders (issue #3); see docs/WATER_DYNAMIC_GOAL_DESIGN.md.
+        // Dynamic goal + adaptive reminders (issue #3); see docs/local/WATER_DYNAMIC_GOAL_DESIGN.md.
         val WATER_DYNAMIC_ENABLED = booleanPreferencesKey("waterDynamicEnabled")
         /** Base-goal source: WaterGoalCalculator.BASE_SOURCE_WEIGHT or _MANUAL. */
         val WATER_BASE_SOURCE = stringPreferencesKey("waterBaseSource")

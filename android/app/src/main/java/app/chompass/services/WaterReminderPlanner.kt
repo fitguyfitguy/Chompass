@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.first
 
 /**
  * Computes the next fire for the adaptive water reminder chain (issue #3,
- * WATER-DYN-C in docs/WATER_DYNAMIC_GOAL_DESIGN.md). Pure state → plan; every
+ * WATER-DYN-C in docs/local/WATER_DYNAMIC_GOAL_DESIGN.md). Pure state → plan; every
  * caller (ChompassApp start, Settings re-sync, entry add/delete, reminder
  * fire, boot re-arm) re-derives the plan from live prefs + diary, so the
  * cadence always reflects the most recent entry (the reporter's ask).

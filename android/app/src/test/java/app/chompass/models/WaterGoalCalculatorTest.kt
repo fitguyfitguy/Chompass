@@ -5,7 +5,7 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 /**
- * WATER-DYN-A/B/C from docs/WATER_DYNAMIC_GOAL_DESIGN.md. All assertions are
+ * WATER-DYN-A/B/C from docs/local/WATER_DYNAMIC_GOAL_DESIGN.md. All assertions are
  * hand-computed from the registered formulas; change the formulas only
  * together with the docs and the calculation-change checklist.
  */

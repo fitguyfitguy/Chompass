@@ -43,7 +43,6 @@ status is missing or stale, fix it (release checklist step 3).
 |-----|--------|
 | [`GROUNDED_ENTRY.md`](GROUNDED_ENTRY.md) | **WIP: not production**, UI off via feature flag |
 | [`UNCERTAINTY_DRIVEN_ENTRY.md`](UNCERTAINTY_DRIVEN_ENTRY.md) | Strategy; Bet 1 shipping since 2026-07-29 |
-| [`WATER_DYNAMIC_GOAL_DESIGN.md`](WATER_DYNAMIC_GOAL_DESIGN.md) | Shipped 3.13.0 (opt-in Beta): design + formula record |
 | [`WEATHER_INTEGRATION_DESIGN.md`](WEATHER_INTEGRATION_DESIGN.md) | Shipped 3.13.0 (Open-Meteo only) |
 | [`LOCAL_ENDPOINT_TRUST_DESIGN.md`](LOCAL_ENDPOINT_TRUST_DESIGN.md) | Shipped 3.21.0 (cleartext opt-in + Ollama user-CA trust; D1/D3/D4 in 3.9.0) |
 | [`ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md) | Gemma on-device: production Tiers A/B + debug extras |

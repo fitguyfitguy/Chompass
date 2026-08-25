@@ -7,7 +7,7 @@ key). The manual °C wheel stays the default and the universal fallback.
 Weather-app broadcast input (Breezy Weather etc.) is documented but parked; see Sources below.
 
 Related: [Codeberg #3](https://codeberg.org/fitguy/Chompass/issues/3),
-[`docs/WATER_DYNAMIC_GOAL_DESIGN.md`](WATER_DYNAMIC_GOAL_DESIGN.md) (Phases 1–4),
+WATER_DYNAMIC_GOAL_DESIGN.md (maintainer-local, Phases 1–4),
 [`docs/CALCULATION_METHODS.md`](CALCULATION_METHODS.md) (WATER-DYN-A/B/C).
 
 ## Problem statement

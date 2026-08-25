@@ -12,7 +12,7 @@ import kotlin.math.roundToInt
  * previews, the Home ring, the widget, and the reminder chain.
  *
  * Registered in docs/CALCULATION_METHODS.md as WATER-DYN-A/B/C; full design in
- * docs/WATER_DYNAMIC_GOAL_DESIGN.md.
+ * docs/local/WATER_DYNAMIC_GOAL_DESIGN.md.
  */
 object WaterGoalCalculator {
     // -- WATER-DYN-A: gross drink goal ----------------------------------
