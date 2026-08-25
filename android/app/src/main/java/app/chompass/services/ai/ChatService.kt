@@ -12,6 +12,8 @@ import app.chompass.models.BodyMeasurement
 import app.chompass.models.ChatMessage
 import app.chompass.models.DietMode
 import app.chompass.models.KetoCarbMode
+import app.chompass.models.MacroPlanMode
+import app.chompass.models.MacroPlanResolver
 import app.chompass.models.WeightGoal
 import app.chompass.models.FoodEntry
 import app.chompass.models.UserProfile
@@ -631,6 +633,18 @@ internal fun buildSystemPrompt(
     lines.add("- TDEE: BMR × activity multiplier ≈ ${profile.tdee.toInt()} kcal/day")
     lines.add("- Calorie goal: ${profile.effectiveCalories} kcal/day")
     lines.add("- Macro targets: ${profile.effectiveProtein}g protein, ${profile.effectiveCarbs}g carbs, ${profile.effectiveFat}g fat")
+    // #60 phase 4 — day types, stable config (safe above the Anthropic cache
+    // marker below: it only changes when the user edits the plan, which costs
+    // one cache miss like any profile edit). The weekly average is the number
+    // week-scale questions should be judged against, not any single day.
+    profile.macroPlan?.takeIf { it.enabled }?.let { plan ->
+        val today = LocalDate.now(zone)
+        val average = MacroPlanResolver.averageForward(plan, MacroPlanResolver.baseTargets(profile), today)
+        lines.add("- Day types: " + plan.profiles.joinToString("; ") {
+            "${it.name} ${it.calories} kcal (${it.proteinG}P/${it.carbsG}C/${it.fatG}F)"
+        })
+        lines.add("- Day-type schedule: ${dayTypeScheduleEnglish(plan)}; weekly average target ${average.calories} kcal/day")
+    }
     lines.add("")
     lines.add("When the user asks how to lose or gain, give a concrete calorie target and at least one actionable food or activity change. Never recommend a daily calorie target below this user's BMR (${profile.bmr.toInt()} kcal) or ${CalorieSafety.ABSOLUTE_FLOOR_KCAL} kcal. If they ask to go lower, explain the floor and suggest a clinician. When they ask expected weight, reference the forecast numbers below.")
     // --- Below this marker is the per-day / per-log volatile tail ---
@@ -640,6 +654,14 @@ internal fun buildSystemPrompt(
     lines.add("## Current date")
     lines.add("- Today: $currentDate ($currentTimeZone)")
     lines.add("- Treat \"today\" as $currentDate when choosing tool date ranges.")
+    // #60 phase 4 — today's day type, deliberately volatile (below the cache
+    // marker: the active profile legitimately changes with the date).
+    MacroPlanResolver.targetsFor(profile, LocalDate.now(zone)).let { resolved ->
+        if (resolved.profileName != null) {
+            val t = resolved.targets
+            lines.add("- Today is a ${resolved.profileName}: ${t.calories} kcal, ${t.proteinG}P/${t.carbsG}C/${t.fatG}F. Judge a single day against this target and the week against the weekly average target.")
+        }
+    }
     lines.add("")
     lines.add("## Computed forecast (from their logged data)")
     if (forecast.hasEnoughData) {
@@ -758,4 +780,17 @@ private fun dietModeEnglish(mode: DietMode): String = when (mode) {
 private fun ketoCarbModeEnglish(mode: KetoCarbMode): String = when (mode) {
     KetoCarbMode.ADAPTIVE -> "Adaptive recommendation"
     KetoCarbMode.MANUAL -> "Manual override"
+}
+
+/** Day-type schedule in one prompt line (#60 phase 4; user profile names are user data). */
+private fun dayTypeScheduleEnglish(plan: app.chompass.models.MacroPlan): String {
+    fun nameOf(id: String?): String = plan.profileById(id)?.name ?: "default"
+    return when (plan.mode) {
+        MacroPlanMode.MANUAL -> "manual, every day is a ${nameOf(plan.defaultProfileId)} unless overridden"
+        MacroPlanMode.WEEKDAYS -> "by weekday (unset days follow ${nameOf(plan.defaultProfileId)}): " +
+            java.time.DayOfWeek.entries.joinToString(", ") { day ->
+                "${day.name.lowercase().replaceFirstChar { it.uppercase() }} ${nameOf(plan.weekdayProfileIds[day.name])}"
+            }
+        MacroPlanMode.CYCLE -> "repeating cycle " + plan.cyclePattern.map { nameOf(it) }.joinToString(" → ")
+    }
 }

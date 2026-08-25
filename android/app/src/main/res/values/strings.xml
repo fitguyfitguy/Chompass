@@ -2213,6 +2213,12 @@
     <string name="recalc_sheet_change">Change</string>
     <string name="recalc_sheet_previous">Previous: %1$s kcal</string>
     <string name="recalc_sheet_new_with_delta">New: %1$s kcal (%2$s)</string>
+    <string name="recalc_sheet_day_types">Day types</string>
+    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s kcal</string>
+    <string name="recalc_sheet_daytype_value">%1$s: %2$s kcal</string>
+    <string name="recalc_sheet_daytype_macros_format">%1$d g protein · %2$d g carbs · %3$d g fat</string>
+    <string name="recalc_sheet_daytype_avg_change">Weekly average: %1$s → %2$s kcal</string>
+    <string name="recalc_sheet_daytype_avg_value">Weekly average: %1$s kcal</string>
     <string name="recalc_sheet_reason">Why</string>
     <plurals name="import_add_meals_title">
         <item quantity="one">Add shared meal</item>
@@ -2301,6 +2307,16 @@
     <string name="settings_calc_adaptive_name">Adaptive Goals (weekly)</string>
     <string name="settings_calc_adaptive_used">When enabled, Chompass compares your observed weight trend to your selected weekly pace and nudges calories by up to ±150 kcal/day (minimum 25 kcal change). Safety floor: max(BMR, 1,200 kcal); a target already below the floor is raised to it. Safety ceiling: 125%% of measured or formula maintenance. Requires at least 4 logged food days and 6 weigh-ins spanning 28 days, or Health Connect energy data.</string>
     <string name="settings_calc_adaptive_formula">adjustment = (targetWeeklyChange − observedWeeklyChange) × 7,700 ÷ 7\nclamped to ±150 kcal/day</string>
+    <string name="settings_calc_sec_day_types">Day types</string>
+    <string name="settings_calc_daytypes_resolve_name">Day-type target resolution</string>
+    <string name="settings_calc_daytypes_resolve_used">When day types are on, each day takes its calorie and macro targets from the plan instead of the single goal set. A manual switch for one day wins over the schedule, the schedule wins over the default, and anything unresolved falls back to your base targets.</string>
+    <string name="settings_calc_daytypes_resolve_formula">day assignment → schedule (manual / weekday / cycle) → default → base targets\ncycle position = floorMod(epochDay − anchorDay, pattern length)</string>
+    <string name="settings_calc_daytypes_avg_name">Day-type averages</string>
+    <string name="settings_calc_daytypes_avg_used">Planning numbers (Adaptive, AI Recalculate, Coach) use the mean over a forward window: the cycle length or 7 days, with planned one-day switches included. History and analysis use the targets that were actually in effect each day, taken from the goal journal; days with no journal entry are skipped, not filled.</string>
+    <string name="settings_calc_daytypes_avg_formula">forward: mean of resolved targets, today to today + window − 1\njournal: mean of journaled targets in the range, gaps skipped</string>
+    <string name="settings_calc_daytypes_clamp_name">Per-day-type safety clamp</string>
+    <string name="settings_calc_daytypes_clamp_used">Every day-type profile is clamped to the same calorie floor and ceiling as your base target whenever the plan is written: never below max(BMR, 1,200 kcal), never above the auto ceiling. This applies to your edits, AI Recalculate, and Adaptive Goals alike.</string>
+    <string name="settings_calc_daytypes_clamp_formula">profile calories = clamp between max(BMR, 1,200) and the auto ceiling\nmacros re-balanced to the new calorie total</string>
     <string name="settings_calc_sec_body">Body composition estimates</string>
     <string name="settings_calc_body_name">Tape-measure derived metrics</string>
     <string name="settings_calc_body_used">Optional circumferences can derive waist-to-hip, waist-to-height, US Navy body-fat %, and wrist frame size. These are rough tape-measure estimates. They do not override BMR unless you separately enter a body-fat percentage on your profile.</string>

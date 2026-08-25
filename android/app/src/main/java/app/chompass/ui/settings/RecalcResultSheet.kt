@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.models.LocaleFormat
+import app.chompass.models.MacroPlanResolver
 import app.chompass.services.ai.GoalRecalcTier
 import app.chompass.services.ai.ImpliedWithheldReason
 import app.chompass.services.ai.RecalcSheetData
@@ -176,6 +177,62 @@ internal fun RecalcResultSheet(
                     signed(delta),
                 ),
             )
+            // 6b. Day types (#60 phase 4): per-profile before/after + the weekly
+            // average line, so a plan-user can audit what the change did to each
+            // day type and not just the base anchor.
+            val afterPlan = after.macroPlan?.takeIf { it.enabled }
+            if (afterPlan != null) {
+                HorizontalDivider()
+                SheetSectionHeader(stringResource(R.string.recalc_sheet_day_types))
+                val today = java.time.LocalDate.now()
+                afterPlan.profiles.forEach { profile ->
+                    val beforeKcal = before.macroPlan?.profileById(profile.id)?.calories
+                    if (beforeKcal != null && beforeKcal != profile.calories) {
+                        SheetInfoRow(
+                            stringResource(
+                                R.string.recalc_sheet_daytype_change,
+                                profile.name,
+                                LocaleFormat.integer(beforeKcal),
+                                LocaleFormat.integer(profile.calories),
+                            ),
+                        )
+                    } else {
+                        SheetInfoRow(
+                            stringResource(
+                                R.string.recalc_sheet_daytype_value,
+                                profile.name,
+                                LocaleFormat.integer(profile.calories),
+                            ),
+                        )
+                    }
+                    SheetInfoRow(
+                        stringResource(
+                            R.string.recalc_sheet_daytype_macros_format,
+                            profile.proteinG, profile.carbsG, profile.fatG,
+                        ),
+                        dim = true,
+                    )
+                }
+                val averageAfter = MacroPlanResolver.averageForward(
+                    afterPlan, MacroPlanResolver.baseTargets(after), today,
+                ).calories
+                val averageBefore = before.macroPlan?.takeIf { it.enabled }?.let {
+                    MacroPlanResolver.averageForward(it, MacroPlanResolver.baseTargets(before), today).calories
+                }
+                if (averageBefore != null && averageBefore != averageAfter) {
+                    SheetInfoRow(
+                        stringResource(
+                            R.string.recalc_sheet_daytype_avg_change,
+                            LocaleFormat.integer(averageBefore),
+                            LocaleFormat.integer(averageAfter),
+                        ),
+                    )
+                } else {
+                    SheetInfoRow(
+                        stringResource(R.string.recalc_sheet_daytype_avg_value, LocaleFormat.integer(averageAfter)),
+                    )
+                }
+            }
             // 7. Model's full reason
             result.reason?.let { reason ->
                 HorizontalDivider()

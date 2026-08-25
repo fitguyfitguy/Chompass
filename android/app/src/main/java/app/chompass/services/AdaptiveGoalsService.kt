@@ -64,11 +64,21 @@ class AdaptiveGoalsService(
 
             val profile = profileRepository.current() ?: return null
             val measuredTdee = measuredEnergyTdeeIfEnabled(profile)
+            // #60 phase 4: with day types on, the baseline is what the user
+            // actually targeted (journaled lookback, MACRO-CYCLE-D) or, before
+            // enough journal coverage, the forward window average — not the
+            // base single-target number.
+            val planAverageCalories = AdaptiveGoalService.planCurrentCalories(
+                profile = profile,
+                journal = prefs.goalJournal.first(),
+                today = today,
+            )
             val result = AdaptiveGoalService.apply(
                 profile = profile,
                 weights = weightRepository.entries.first(),
                 foods = foodRepository.entries.first(),
                 measuredTdee = measuredTdee,
+                planAverageCalories = planAverageCalories,
             )
             Log.d("Chompass", "adaptive: changed=${result.changed} kcal=${result.updatedCalories} ${result.message}")
             prefs.setAdaptiveGoalsLastCheckDay(today.toString())

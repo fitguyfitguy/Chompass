@@ -2914,6 +2914,12 @@ für dich ein</string>
         <string name="recalc_sheet_change">Änderung</string>
         <string name="recalc_sheet_previous">Bisher: %1$s kcal</string>
         <string name="recalc_sheet_new_with_delta">Neu: %1$s kcal (%2$s)</string>
+        <string name="recalc_sheet_day_types">Tagestypen</string>
+        <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s kcal</string>
+        <string name="recalc_sheet_daytype_value">%1$s: %2$s kcal</string>
+        <string name="recalc_sheet_daytype_macros_format">%1$d g Protein · %2$d g Kohlenhydrate · %3$d g Fett</string>
+        <string name="recalc_sheet_daytype_avg_change">Wochendurchschnitt: %1$s → %2$s kcal</string>
+        <string name="recalc_sheet_daytype_avg_value">Wochendurchschnitt: %1$s kcal</string>
         <string name="recalc_sheet_reason">Warum</string>
 
     <plurals name="import_add_meals_title">
@@ -3062,6 +3068,26 @@ für dich ein</string>
     <string name="settings_calc_adaptive_used">Wenn diese Funktion aktiviert ist, vergleicht Chompass deinen beobachteten Gewichtsverlauf mit deinem ausgewählten wöchentlichen Tempo und passt die Kalorienzufuhr um bis zu ±150 kcal/Tag an (Mindeständerung 25 kcal). Sicherheitsuntergrenze: max(BMR, 1.200 kcal). Sicherheitsobergrenze: 125 % des gemessenen oder nach der Formel berechneten Erhaltungsbedarfs. Erfordert mindestens 4 Tage mit erfassten Mahlzeiten und 3 Wiegetermine oder Energiedaten von Health Connect.</string>
 
     <string name="settings_calc_adaptive_formula">Anpassung = (Ziel-Wochenänderung − beobachtete Wochenänderung) × 7.700 ÷ 7\nbegrenzt auf ±150 kcal/Tag</string>
+
+    <string name="settings_calc_sec_day_types">Tagestypen</string>
+
+    <string name="settings_calc_daytypes_resolve_name">Zielauflösung pro Tagestyp</string>
+
+    <string name="settings_calc_daytypes_resolve_used">Wenn Tagestypen aktiviert sind, nimmt jeder Tag seine Kalorien- und Makroziele aus dem Plan statt aus dem einzelnen Zielsatz. Ein manueller Wechsel für einen Tag gewinnt gegen den Zeitplan, der Zeitplan gewinnt gegen den Standard, und alles Ungelöste fällt auf deine Basisziele zurück.</string>
+
+    <string name="settings_calc_daytypes_resolve_formula">Tageszuweisung → Zeitplan (manuell / Wochentag / Zyklus) → Standard → Basisziele\nZyklusposition = floorMod(Epoche-Tag − Anker-Tag, Zykluslänge)</string>
+
+    <string name="settings_calc_daytypes_avg_name">Durchschnittswerte der Tagestypen</string>
+
+    <string name="settings_calc_daytypes_avg_used">Planungszahlen (Adaptiv, KI-Neuberechnung, Coach) nutzen den Mittelwert über ein vorausliegendes Zeitfenster: die Zykluslänge oder 7 Tage, geplante Tageswechsel eingeschlossen. Verlauf und Auswertung nutzen die Ziele, die an jedem Tag tatsächlich galten, aus dem Ziel-Journal; Tage ohne Eintrag werden übersprungen, nicht aufgefüllt.</string>
+
+    <string name="settings_calc_daytypes_avg_formula">vorausliegend: Mittelwert der aufgelösten Ziele, heute bis heute + Fenster − 1\nJournal: Mittelwert der erfassten Ziele im Zeitraum, Lücken übersprungen</string>
+
+    <string name="settings_calc_daytypes_clamp_name">Sicherheitsgrenze pro Tagestyp</string>
+
+    <string name="settings_calc_daytypes_clamp_used">Jeder Tagestyp wird bei jeder Änderung des Plans auf dieselbe Kalorien-Untergrenze und Obergrenze begrenzt wie dein Basisziel: nie unter max(BMR, 1.200 kcal), nie über die automatische Obergrenze. Das gilt für deine Bearbeitungen, die KI-Neuberechnung und Adaptive Goals gleichermaßen.</string>
+
+    <string name="settings_calc_daytypes_clamp_formula">Tagestyp-Kalorien = begrenzt zwischen max(BMR, 1.200) und der automatischen Obergrenze\nMakros werden auf die neue Kalorienzahl neu verteilt</string>
 
     <string name="settings_calc_sec_body">Schätzungen zur Körperzusammensetzung</string>
 
@@ -3241,4 +3267,84 @@ für dich ein</string>
     <string name="settings_fasting_start_time_help">Automatische Fastenfenster starten dein Fasten täglich zu dieser Zeit. Die Start-Erinnerung ertönt die eingestellte Vorlaufzeit davor.</string>
     <string name="notif_fasting_start_soon_auto_title">Fasten startet bald</string>
     <string name="notif_fasting_start_soon_auto">Dein Fasten startet in %1$d Min — du musst nichts tun.</string>
+    <string name="settings_group_trackers">Tracker &amp; Erinnerungen</string>
+    <string name="settings_group_trackers_summary">Wasser, Nikotin, Koffein, Fasten, Erinnerungen</string>
+    <string name="settings_units">Einheiten</string>
+    <string name="settings_search_hint">Einstellungen durchsuchen</string>
+    <string name="settings_search_empty">Keine Treffer. Versuche „kg“, „kcal“ oder „ml“.</string>
+    <string name="prompt_history_button">Prompt-Verlauf</string>
+    <string name="prompt_history_title">Prompt-Verlauf</string>
+    <string name="prompt_history_empty">Noch keine gespeicherten Prompts. Prompts aus der Analyse-Warteschlange und fehlgeschlagene Analysen erscheinen hier.</string>
+    <string name="prompt_history_use">Diesen Prompt verwenden</string>
+    <string name="caffeine">Koffein</string>
+    <string name="add_food_caffeine_section">Koffein</string>
+    <string name="caffeine_add">Koffein hinzufügen</string>
+    <string name="caffeine_log_title">Koffein eintragen</string>
+    <string name="caffeine_edit_title">Koffein bearbeiten</string>
+    <string name="caffeine_history_title">Koffein-Verlauf</string>
+    <string name="caffeine_mg">Koffein (mg)</string>
+    <string name="caffeine_daily_limit">Tageslimit</string>
+    <string name="caffeine_daily_limit_summary">%1$d mg</string>
+    <string name="caffeine_no_limit">Kein Limit</string>
+    <string name="caffeine_progress">%1$s / %2$d mg</string>
+    <string name="caffeine_total_today">%1$s mg</string>
+    <string name="caffeine_mg_value">%1$s mg</string>
+    <string name="caffeine_no_entries">Für diesen Tag ist noch kein Koffein eingetragen.</string>
+    <string name="caffeine_quick_plus_one">+1 %1$s</string>
+    <string name="caffeine_custom_short">Eigene</string>
+    <string name="caffeine_kind_coffee">Kaffee</string>
+    <string name="caffeine_kind_tea">Tee</string>
+    <string name="caffeine_kind_energy">Energydrink</string>
+    <string name="caffeine_kind_other">Sonstiges</string>
+    <string name="caffeine_history_total">%1$s · %2$s mg</string>
+    <string name="cd_log_caffeine">Koffein eintragen</string>
+    <string name="cd_delete_caffeine">Koffein-Eintrag löschen</string>
+    <string name="settings_caffeine_title">Koffein</string>
+    <string name="settings_caffeine_tracking">Koffein-Tracking</string>
+    <string name="settings_caffeine_intro">Erfasse Kaffee, Tee und Energydrinks, sieh die heutige Gesamtmenge (inklusive Koffein aus Mahlzeiten) neben einem selbst gesetzten Tageslimit in mg, und bearbeite oder lösche Einträge im Tagesverlauf.</string>
+    <string name="settings_caffeine_section_quick">Schnelleintrag</string>
+    <string name="settings_caffeine_section_tracking">Erfassung</string>
+    <string name="settings_caffeine_quick_kinds_help">Arten, die als +1-Chips auf dem „Mahlzeit hinzufügen“-Sheet erscheinen.</string>
+    <string name="settings_caffeine_limit_wheel_help">Scrolle, um ein tägliches Koffeinlimit von 0 (kein Limit) bis 1000 mg zu setzen.</string>
+    <string name="settings_caffeine_privacy_note">Koffein-Einträge bleiben auf diesem Gerät und in deiner WebDAV-Synchronisation. Sie sind nie in geteilten Mahlzeiten enthalten und werden nie an einen KI-Anbieter gesendet.</string>
+    <string name="nicotine">Nikotin</string>
+    <string name="add_food_nicotine_section">Nikotin</string>
+    <string name="nicotine_add">Nikotin hinzufügen</string>
+    <string name="nicotine_log_title">Nikotin eintragen</string>
+    <string name="nicotine_edit_title">Nikotin bearbeiten</string>
+    <string name="nicotine_history_title">Nikotin-Verlauf</string>
+    <string name="nicotine_count">Anzahl</string>
+    <string name="nicotine_count_today">%1$d</string>
+    <string name="nicotine_count_unit">Stück</string>
+    <string name="nicotine_daily_limit">Tageslimit</string>
+    <string name="nicotine_daily_limit_summary">%1$d</string>
+    <string name="nicotine_no_limit">Kein Limit</string>
+    <string name="nicotine_progress">%1$d / %2$d</string>
+    <string name="nicotine_no_entries">Für diesen Tag ist noch kein Nikotin eingetragen.</string>
+    <string name="nicotine_quick_plus_one">+1 %1$s</string>
+    <string name="nicotine_custom_short">Eigene</string>
+    <string name="nicotine_kind_cigarette">Zigarette</string>
+    <string name="nicotine_kind_vape">E-Zigarette</string>
+    <string name="nicotine_kind_pouch">Nikotinbeutel</string>
+    <string name="nicotine_kind_gum">Kaugummi</string>
+    <string name="nicotine_kind_patch">Pflaster</string>
+    <string name="nicotine_kind_other">Sonstiges</string>
+    <string name="nicotine_mg_optional">Nikotin (mg, optional)</string>
+    <string name="nicotine_count_with_mg">%1$d · %2$s mg</string>
+    <string name="nicotine_history_total">%1$s · %2$d</string>
+    <string name="cd_log_nicotine">Nikotin eintragen</string>
+    <string name="cd_delete_nicotine">Nikotin-Eintrag löschen</string>
+    <string name="settings_nicotine_title">Nikotin</string>
+    <string name="settings_nicotine_tracking">Nikotin-Tracking</string>
+    <string name="settings_nicotine_intro">Erfasse Zigaretten, E-Zigaretten und Pouches, sieh die heutige Gesamtmenge neben einem selbst gesetzten Tageslimit, und bearbeite oder lösche Einträge im Tagesverlauf.</string>
+    <string name="settings_nicotine_section_quick">Schnelleintrag</string>
+    <string name="settings_nicotine_section_tracking">Erfassung</string>
+    <string name="settings_nicotine_quick_kinds_help">Arten, die als +1-Chips auf dem „Mahlzeit hinzufügen“-Sheet erscheinen.</string>
+    <string name="settings_nicotine_limit_wheel_help">Scrolle, um ein tägliches Limit von 0 (kein Limit) bis 100 Stück zu setzen.</string>
+    <string name="settings_nicotine_privacy_note">Nikotin-Einträge bleiben auf diesem Gerät und in deiner WebDAV-Synchronisation. Sie sind nie in geteilten Mahlzeiten enthalten und werden nie an einen KI-Anbieter gesendet.</string>
+    <string name="settings_notes_title">Tagesnotizen</string>
+    <string name="settings_notes_tracking">Tagesnotizen</string>
+    <string name="settings_notes_intro">Schreibe eine private Notiz für jeden Tag, als Journal, Protokoll oder Erinnerung. Notizen werden mit dem Tagebuch synchronisiert und exportiert.</string>
+    <string name="settings_notes_section_tracking">Erfassung</string>
+    <string name="settings_notes_privacy_note">Deine Notizen bleiben privat: Sie verlassen dieses Gerät nur über deine WebDAV-Synchronisation und den Tagebuch-Export und werden nie an einen KI-Anbieter gesendet.</string>
 </resources>

@@ -1,6 +1,7 @@
 package app.chompass.models
 
 import java.time.LocalDate
+import kotlin.math.roundToInt
 import kotlinx.serialization.Serializable
 
 /**
@@ -28,6 +29,35 @@ data class MacroDayProfile(
     val fatG: Int,
 ) {
     fun signature(): String = listOf(id, name, calories, proteinG, carbsG, fatG).joinToString(",")
+
+    /**
+     * Shift calories by [deltaKcal] with the MACRO-CYCLE-C clamp, then
+     * re-balance macros ([rebalancedTo]). The Adaptive weekly tweak and the
+     * AI-recalc delta fallback both use this so the training/rest spread
+     * survives a uniform adjustment (#60 phase 4).
+     */
+    fun shiftedBy(deltaKcal: Int, bmr: Double, tdee: Double): MacroDayProfile {
+        val target = CalorieSafety.clampAuto(calories + deltaKcal, bmr, tdee)
+        if (target == calories) return this
+        return rebalancedTo(target)
+    }
+
+    /**
+     * applyCaloriesEdit-style re-split at a new calorie total: macros keep
+     * their current kcal share, the last macro (fat) absorbs the rounding
+     * remainder — the same distribution shape [UserProfile.applyCaloriesEdit]
+     * uses for the base target set.
+     */
+    fun rebalancedTo(targetCalories: Int): MacroDayProfile {
+        val weights = listOf(proteinG * 4.0, carbsG * 4.0, fatG * 9.0)
+        val total = weights.sum()
+        if (total <= 0.0) return copy(calories = targetCalories.coerceAtLeast(0))
+        val target = targetCalories.coerceAtLeast(0)
+        val protein = (target * weights[0] / total / 4.0).roundToInt()
+        val carbs = (target * weights[1] / total / 4.0).roundToInt()
+        val fat = ((target - protein * 4 - carbs * 4).coerceAtLeast(0)) / 9
+        return copy(calories = target, proteinG = protein, carbsG = carbs, fatG = fat)
+    }
 }
 
 @Serializable

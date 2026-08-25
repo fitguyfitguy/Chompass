@@ -2,6 +2,9 @@ package app.chompass.services
 
 import app.chompass.models.CalorieSafety
 import app.chompass.models.FoodEntry
+import app.chompass.models.GoalJournal
+import app.chompass.models.GoalJournalEntry
+import app.chompass.models.MacroPlanResolver
 import app.chompass.models.NutritionConstants
 import app.chompass.models.UserProfile
 import app.chompass.models.WeightEntry
@@ -69,6 +72,39 @@ object AdaptiveGoalService {
     private val caloriesPerKg: Double get() = NutritionConstants.KCAL_PER_KG_BODY_MASS
 
     /**
+     * #60 phase 4: window for the journaled lookback average (MACRO-CYCLE-D)
+     * that replaces `effectiveCalories` as the Adaptive baseline when day types
+     * are on — the ~14-day span the weight trend tests against.
+     */
+    internal const val PLAN_LOOKBACK_DAYS = 14
+
+    /** Journaled days required in that window before the lookback wins over the forward average. */
+    internal const val PLAN_MIN_JOURNAL_DAYS = 7
+
+    /**
+     * Plan-aware `currentCalories` for [apply] (#60 phase 4): the journaled
+     * lookback average (MACRO-CYCLE-D, what the user actually targeted) when
+     * at least [PLAN_MIN_JOURNAL_DAYS] days of the last [PLAN_LOOKBACK_DAYS]
+     * are journaled, else the forward window average (MACRO-CYCLE-B). Null
+     * when the plan is off — callers then pass nothing and today's single-target
+     * behavior is unchanged.
+     */
+    fun planCurrentCalories(
+        profile: UserProfile,
+        journal: List<GoalJournalEntry>,
+        today: LocalDate,
+    ): Int? {
+        val plan = profile.macroPlan?.takeIf { it.enabled } ?: return null
+        val from = today.minusDays((PLAN_LOOKBACK_DAYS - 1).toLong())
+        val coverage = journal.count { entry ->
+            GoalJournal.parseDateOrNull(entry.date)?.let { !it.isBefore(from) && !it.isAfter(today) } == true
+        }
+        val lookback = MacroPlanResolver.journalAverage(journal, from, today)
+        if (coverage >= PLAN_MIN_JOURNAL_DAYS && lookback != null) return lookback.calories
+        return MacroPlanResolver.averageForward(plan, MacroPlanResolver.baseTargets(profile), today).calories
+    }
+
+    /**
      * [measuredTdee] (Health Connect active + basal energy, kcal/day) is preferred over the
      * formula TDEE when available: it sets the safety ceiling and, when there isn't yet enough
      * weight-trend data, drives a burn-based correction toward measured maintenance + the goal
@@ -78,7 +114,12 @@ object AdaptiveGoalService {
         profile: UserProfile,
         weights: List<WeightEntry>,
         foods: List<FoodEntry>,
-        measuredTdee: Int? = null
+        measuredTdee: Int? = null,
+        /**
+         * #60 phase 4: plan-aware current target from [planCurrentCalories]
+         * (journaled lookback or forward average). Null = plan off.
+         */
+        planAverageCalories: Int? = null,
     ): AdaptiveGoalResult {
         if (profile.caloriesLocked) {
             return AdaptiveGoalResult(
@@ -91,13 +132,16 @@ object AdaptiveGoalService {
         val forecast = WeightAnalysisService.compute(weights = weights, foods = foods, profile = profile)
         val observedWeeklyChangeKg = forecast.observedWeeklyChangeKg
         val targetWeeklyChangeKg = targetWeeklyChangeKg(profile)
-        val currentCalories = profile.effectiveCalories
+        val currentCalories = planAverageCalories ?: profile.effectiveCalories
         val safetyFloor = CalorieSafety.floorKcal(profile.bmr)
         // Prefer Health Connect measured burn for the maintenance/ceiling basis when available.
         val maintenanceTdee = measuredTdee ?: profile.tdee.roundToInt()
         val safetyCeiling = max(safetyFloor, (maintenanceTdee * 1.25).roundToInt())
 
-        if (currentCalories < safetyFloor) {
+        // Plan users cannot sit below the floor: every profile is floored at
+        // every write (MACRO-CYCLE-C), so their average cannot either. The lift
+        // branch stays a single-target repair.
+        if (planAverageCalories == null && currentCalories < safetyFloor) {
             val lifted = profile.applyCaloriesEdit(safetyFloor)
             return AdaptiveGoalResult(
                 profile = lifted,
@@ -173,18 +217,49 @@ object AdaptiveGoalService {
             )
         }
 
-        val nextProfile = profile.applyCaloriesEdit(adjustedCalories)
         val signedAdjustment = adjustedCalories - currentCalories
+        val nextProfile = if (planAverageCalories != null) {
+            applyToDayTypePlan(profile, signedAdjustment)
+        } else {
+            profile.applyCaloriesEdit(adjustedCalories)
+        }
         val sign = if (signedAdjustment > 0) "+" else ""
         val basis = if (hasWeightTrend) "your recent weight trend" else "your Health Connect energy burn"
         val trendNote = if (hasWeightTrend && observedWeeklyChangeKg != null) {
             " Observed ${formatWeeklyKg(observedWeeklyChangeKg)}, target ${formatWeeklyKg(targetWeeklyChangeKg)}."
         } else ""
+        // #60 phase 4: with day types the tweak hit every profile and the headline number is the new weekly average.
+        val newAverage = if (planAverageCalories != null) {
+            MacroPlanResolver.averageForward(
+                nextProfile.macroPlan,
+                MacroPlanResolver.baseTargets(nextProfile),
+                LocalDate.now(),
+            ).calories
+        } else {
+            null
+        }
+        val dayTypesNote = newAverage?.let { " Adjusted every day-type profile by the same amount; your new weekly average is $it kcal." } ?: ""
         return AdaptiveGoalResult(
             profile = nextProfile,
             changed = true,
-            updatedCalories = adjustedCalories,
-            message = "Adaptive Goals adjusted calories by $sign$signedAdjustment kcal to $adjustedCalories kcal based on $basis.$trendNote"
+            updatedCalories = newAverage ?: adjustedCalories,
+            message = "Adaptive Goals adjusted calories by $sign$signedAdjustment kcal to $adjustedCalories kcal based on $basis.$trendNote$dayTypesNote"
+        )
+    }
+
+    /**
+     * #60 phase 4: the weekly tweak applies to EVERY day-type profile (spread
+     * preserved, each clamped to its own floor/ceiling via
+     * [app.chompass.models.MacroDayProfile.shiftedBy]) and the base target set
+     * moves by the same delta so the disabled state stays consistent.
+     */
+    private fun applyToDayTypePlan(profile: UserProfile, deltaKcal: Int): UserProfile {
+        val base = profile.applyCaloriesEdit(profile.effectiveCalories + deltaKcal)
+        val plan = profile.macroPlan?.takeIf { it.enabled } ?: return base
+        return base.copy(
+            macroPlan = plan.copy(
+                profiles = plan.profiles.map { it.shiftedBy(deltaKcal, profile.bmr, profile.tdee) },
+            ),
         )
     }
 

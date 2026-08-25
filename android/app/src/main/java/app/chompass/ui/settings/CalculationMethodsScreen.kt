@@ -190,6 +190,32 @@ fun CalculationMethodsScreen(
             }
 
             item {
+                CalcMethodSection(stringResource(R.string.settings_calc_sec_day_types)) {
+                    CalcFormulaCard(
+                        name = stringResource(R.string.settings_calc_daytypes_resolve_name),
+                        usedWhen = stringResource(R.string.settings_calc_daytypes_resolve_used),
+                        formula = stringResource(R.string.settings_calc_daytypes_resolve_formula),
+                        citation = "Day-type assignment and averaging are app policy (issue #60). The cycle position uses whole epoch days so every device resolves a date identically.",
+                        url = null
+                    )
+                    CalcFormulaCard(
+                        name = stringResource(R.string.settings_calc_daytypes_avg_name),
+                        usedWhen = stringResource(R.string.settings_calc_daytypes_avg_used),
+                        formula = stringResource(R.string.settings_calc_daytypes_avg_formula),
+                        citation = "Forward-window and journaled averages are app policy (issue #60). The journal freezes each day's targets as they happened, so later schedule edits cannot rewrite history.",
+                        url = null
+                    )
+                    CalcFormulaCard(
+                        name = stringResource(R.string.settings_calc_daytypes_clamp_name),
+                        usedWhen = stringResource(R.string.settings_calc_daytypes_clamp_used),
+                        formula = stringResource(R.string.settings_calc_daytypes_clamp_formula),
+                        citation = "Same BMR-based guardrail as the base calorie target (CAL-SAFE); see the sections above.",
+                        url = null
+                    )
+                }
+            }
+
+            item {
                 CalcMethodSection(stringResource(R.string.settings_calc_sec_body)) {
                     CalcFormulaCard(
                         name = stringResource(R.string.settings_calc_body_name),
