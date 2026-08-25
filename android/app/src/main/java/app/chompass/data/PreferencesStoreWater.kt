@@ -39,7 +39,7 @@ internal suspend fun PreferencesStore.setWaterReminderMinuteImpl(v: Int) =
 
 // -- Dynamic goal + adaptive reminders (issue #3) --------------------
 // Defaults keep the feature off and match today's behavior; see
-// docs/WATER_DYNAMIC_GOAL_DESIGN.md for the formulas (WATER-DYN-A/B/C).
+// docs/local/WATER_DYNAMIC_GOAL_DESIGN.md for the formulas (WATER-DYN-A/B/C).
 
 internal val PreferencesStore.waterDynamicEnabledImpl: Flow<Boolean>
     get() = boolPref(Keys.WATER_DYNAMIC_ENABLED, false)
