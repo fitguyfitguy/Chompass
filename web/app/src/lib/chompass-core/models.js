@@ -256,6 +256,7 @@ export function dailyNoteIdFor(date) {
  * @property {number|null} [proteinGramsPerKg]   when mode is g/kg, rate is source of truth
  * @property {string|null} [birthday]            ISO date YYYY-MM-DD; when set, age is derived at save time
  * @property {number|null} [goalBodyFatPercentage] fraction 0-1 optional goal
+ * @property {import("./macro-plan.js").MacroPlan|null} [macroPlan] day-type plan (Codeberg #60); null = feature off
  */
 
 export {};

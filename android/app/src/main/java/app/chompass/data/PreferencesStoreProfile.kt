@@ -4,6 +4,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.first
 import app.chompass.models.FoodLogMacroChip
+import app.chompass.models.GoalJournalEntry
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
@@ -13,6 +14,7 @@ import app.chompass.ui.onboarding.OnboardingDraft
 import app.chompass.ui.theme.AppThemeColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.builtins.ListSerializer
 
 private const val HOME_DISPLAY_LAYOUT_VERSION = 2
 
@@ -22,6 +24,16 @@ internal val PreferencesStore.userProfileImpl: Flow<UserProfile?>
 
 internal suspend fun PreferencesStore.setUserProfileImpl(profile: UserProfile) =
     setObjectPref(Keys.USER_PROFILE, UserProfile.serializer(), profile)
+
+// -- Goal journal (Codeberg #60) -----------------------------------------------
+
+internal val PreferencesStore.goalJournalImpl: Flow<List<GoalJournalEntry>>
+    get() = objectPref(Keys.GOAL_JOURNAL, ListSerializer(GoalJournalEntry.serializer()))
+        .map { it ?: emptyList() }
+
+/** Full replace — callers go through GoalJournal's pure helpers (freeze/merge/prune/gapFill). */
+internal suspend fun PreferencesStore.setGoalJournalImpl(entries: List<GoalJournalEntry>) =
+    setObjectPref(Keys.GOAL_JOURNAL, ListSerializer(GoalJournalEntry.serializer()), entries)
 
 // -- Onboarding -------------------------------------------------------
 internal val PreferencesStore.hasCompletedOnboardingImpl: Flow<Boolean>

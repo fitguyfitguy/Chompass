@@ -14,6 +14,8 @@ internal const val FOOD_ENTRIES_BUCKET_PREFIX = "foodEntries_"
 
 internal object Keys {
         val USER_PROFILE = stringPreferencesKey("userProfile")
+        /** Per-day goal journal (Codeberg #60, MACRO-CYCLE-D); see models/GoalJournal.kt. */
+        val GOAL_JOURNAL = stringPreferencesKey("goalJournal")
         val LAST_RECALC_GOAL_SIGNATURE = stringPreferencesKey("lastRecalcGoalSignature")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("hasCompletedOnboarding")
         val ONBOARDING_DRAFT = stringPreferencesKey("onboardingDraft")

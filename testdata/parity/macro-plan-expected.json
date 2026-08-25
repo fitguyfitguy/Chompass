@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "source": "docs/local/MACRO_PROFILES_DESIGN.md (MACRO-CYCLE-A resolve / MACRO-CYCLE-B averageForward / MACRO-CYCLE-D journalAverage). Consumers: Android MacroPlanParityTest + PWA chompass-core/__tests__/macro-plan.test.js. Update both runners when adding scenarios.",
+  "base": {
+    "calories": 2400,
+    "proteinG": 150,
+    "carbsG": 250,
+    "fatG": 70
+  },
+  "scenarios": [
+    {
+      "id": "disabledPlan_fallsBackToBase",
+      "kind": "resolve",
+      "plan": { "enabled": false, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }, { "id": "r", "name": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 } ], "mode": "CYCLE", "defaultProfileId": "t", "cyclePattern": [ "t", "r" ], "cycleAnchorDay": "2026-09-01" },
+      "date": "2026-09-01",
+      "expect": { "profileId": null, "profileName": null, "calories": 2400, "proteinG": 150, "carbsG": 250, "fatG": 70 }
+    },
+    {
+      "id": "manualMode_defaultProfile",
+      "kind": "resolve",
+      "plan": { "enabled": true, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }, { "id": "r", "name": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 } ], "mode": "MANUAL", "defaultProfileId": "r" },
+      "date": "2026-09-01",
+      "expect": { "profileId": "r", "profileName": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 }
+    },
+    {
+      "id": "manualMode_noDefault_fallsBackToBase",
+      "kind": "resolve",
+      "plan": { "enabled": true, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }, { "id": "r", "name": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 } ], "mode": "MANUAL" },
+      "date": "2026-09-01",
+      "expect": { "profileId": null, "profileName": null, "calories": 2400, "proteinG": 150, "carbsG": 250, "fatG": 70 }
+    },
+    {
+      "id": "overrideWinsOverWeekday",
+      "kind": "resolve",
+      "plan": { "enabled": true, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }, { "id": "r", "name": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 } ], "mode": "WEEKDAYS", "defaultProfileId": "r", "weekdayProfileIds": { "MONDAY": "t", "TUESDAY": "t", "WEDNESDAY": "r", "THURSDAY": "r", "FRIDAY": "t", "SATURDAY": "r", "SUNDAY": "r" }, "dayAssignments": { "2026-08-31": "r" } },
+      "date": "2026-08-31",
+      "expect": { "profileId": "r", "profileName": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 }
+    },
+    {
+      "id": "weekdayMapMissingDayUsesDefault",
+      "kind": "resolve",
+      "plan": { "enabled": true, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }, { "id": "r", "name": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 } ], "mode": "WEEKDAYS", "defaultProfileId": "r", "weekdayProfileIds": { "MONDAY": "t" } },
+      "date": "2026-09-02",
+      "expect": { "profileId": "r", "profileName": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 }
+    },
+    {
+      "id": "cycle_day0_anchor",
+      "kind": "resolve",
+      "plan": { "enabled": true, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }, { "id": "r", "name": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 } ], "mode": "CYCLE", "defaultProfileId": "r", "cyclePattern": [ "t", "t", "r" ], "cycleAnchorDay": "2026-09-01" },
+      "date": "2026-09-01",
+      "expect": { "profileId": "t", "profileName": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }
+    },
+    {
+      "id": "cycle_day1",
+      "kind": "resolve",
+      "plan": { "enabled": true, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }, { "id": "r", "name": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 } ], "mode": "CYCLE", "defaultProfileId": "r", "cyclePattern": [ "t", "t", "r" ], "cycleAnchorDay": "2026-09-01" },
+      "date": "2026-09-02",
+      "expect": { "profileId": "t", "profileName": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }
+    },
+    {
+      "id": "cycle_day2",
+      "kind": "resolve",
+      "plan": { "enabled": true, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }, { "id": "r", "name": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 } ], "mode": "CYCLE", "defaultProfileId": "r", "cyclePattern": [ "t", "t", "r" ], "cycleAnchorDay": "2026-09-01" },
+      "date": "2026-09-03",
+      "expect": { "profileId": "r", "profileName": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 }
+    },
+    {
+      "id": "cycle_day3_wrapsToStart",
+      "kind": "resolve",
+      "plan": { "enabled": true, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }, { "id": "r", "name": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 } ], "mode": "CYCLE", "defaultProfileId": "r", "cyclePattern": [ "t", "t", "r" ], "cycleAnchorDay": "2026-09-01" },
+      "date": "2026-09-04",
+      "expect": { "profileId": "t", "profileName": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }
+    },
+    {
+      "id": "cycle_beforeAnchor_negativeFloorMod",
+      "kind": "resolve",
+      "plan": { "enabled": true, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }, { "id": "r", "name": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 } ], "mode": "CYCLE", "defaultProfileId": "r", "cyclePattern": [ "t", "t", "r" ], "cycleAnchorDay": "2026-09-01" },
+      "date": "2026-08-31",
+      "expect": { "profileId": "r", "profileName": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 }
+    },
+    {
+      "id": "deletedProfileFallsBackToDefault",
+      "kind": "resolve",
+      "plan": { "enabled": true, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }, { "id": "r", "name": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 } ], "mode": "WEEKDAYS", "defaultProfileId": "t", "weekdayProfileIds": { "TUESDAY": "gone" } },
+      "date": "2026-09-02",
+      "expect": { "profileId": "t", "profileName": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }
+    },
+    {
+      "id": "deletedDefaultFallsBackToBase",
+      "kind": "resolve",
+      "plan": { "enabled": true, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }, { "id": "r", "name": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 } ], "mode": "MANUAL", "defaultProfileId": "gone" },
+      "date": "2026-09-01",
+      "expect": { "profileId": null, "profileName": null, "calories": 2400, "proteinG": 150, "carbsG": 250, "fatG": 70 }
+    },
+    {
+      "id": "averageForward_cycleWindowIncludesOverride",
+      "kind": "averageForward",
+      "plan": { "enabled": true, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }, { "id": "r", "name": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 } ], "mode": "CYCLE", "defaultProfileId": "r", "cyclePattern": [ "t", "t", "r" ], "cycleAnchorDay": "2026-09-01", "dayAssignments": { "2026-09-02": "r" } },
+      "today": "2026-09-01",
+      "expect": { "calories": 2333, "proteinG": 157, "carbsG": 223, "fatG": 78 }
+    },
+    {
+      "id": "averageForward_sevenDayWindowWithOverride",
+      "kind": "averageForward",
+      "plan": { "enabled": true, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 }, { "id": "r", "name": "Rest day", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78 } ], "mode": "MANUAL", "defaultProfileId": "t", "dayAssignments": { "2026-09-02": "r" } },
+      "today": "2026-09-01",
+      "expect": { "calories": 2700, "proteinG": 167, "carbsG": 323, "fatG": 78 }
+    },
+    {
+      "id": "averageForward_disabledPlan_returnsBase",
+      "kind": "averageForward",
+      "plan": { "enabled": false, "profiles": [ { "id": "t", "name": "Training day", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78 } ], "mode": "MANUAL", "defaultProfileId": "t" },
+      "today": "2026-09-01",
+      "expect": { "calories": 2400, "proteinG": 150, "carbsG": 250, "fatG": 70 }
+    },
+    {
+      "id": "journalAverage_skipsGapDays",
+      "kind": "journalAverage",
+      "entries": [
+        { "date": "2026-08-28", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training day", "updatedAtMillis": 1000, "source": "PLAN" },
+        { "date": "2026-08-29", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78, "profileId": "r", "profileName": "Rest day", "updatedAtMillis": 1000, "source": "PLAN" },
+        { "date": "2026-08-31", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training day", "updatedAtMillis": 1000, "source": "PLAN" }
+      ],
+      "from": "2026-08-27",
+      "to": "2026-09-02",
+      "expect": { "calories": 2567, "proteinG": 163, "carbsG": 287, "fatG": 78 }
+    },
+    {
+      "id": "journalAverage_emptyRange_returnsNull",
+      "kind": "journalAverage",
+      "entries": [
+        { "date": "2026-08-28", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training day", "updatedAtMillis": 1000, "source": "PLAN" }
+      ],
+      "from": "2026-09-01",
+      "to": "2026-09-07",
+      "expect": { "null": true }
+    }
+  ]
+}
