@@ -45,6 +45,9 @@ val BottomNavScrollPadding = 80.dp
 
 val BottomNavDockedControlPadding = 72.dp
 
+/** Docked overlays (FAB, chips, snackbar) sit this far above the nav bar. */
+val BottomOverlayPadding = BottomNavDockedControlPadding + 16.dp
+
 @Composable
 fun ChompassBottomNavBar(
     currentRoute: String?,

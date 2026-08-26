@@ -53,8 +53,7 @@ internal fun SettingRowStressPreviewContent() {
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = AppRadii.Container,
             padding = 0.dp,
-            allowBlur = false,
-        ) {
+                    ) {
             Column(Modifier.padding(vertical = 4.dp)) {
                 SettingRow(
                     label = stringResource(R.string.settings_food_log_sort),
@@ -95,8 +94,7 @@ internal fun SettingRowAlignmentPreviewContent() {
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = AppRadii.Container,
             padding = 0.dp,
-            allowBlur = false,
-        ) {
+                    ) {
             Column(Modifier.padding(vertical = 4.dp)) {
                 SettingRow(
                     label = stringResource(R.string.settings_gender),
@@ -161,8 +159,7 @@ internal fun SettingsScreenPreviewContent(
                 modifier = Modifier.fillMaxWidth(),
                 cornerRadius = AppRadii.Container,
                 padding = 0.dp,
-                allowBlur = false,
-            ) {
+                            ) {
                 Column(Modifier.padding(vertical = 4.dp)) {
                     SettingsHubRow(
                         label = stringResource(R.string.settings_section_personal),

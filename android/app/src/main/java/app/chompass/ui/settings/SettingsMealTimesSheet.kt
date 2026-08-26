@@ -33,6 +33,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -220,10 +223,10 @@ private fun MealCatalogRow(
     ) {
         Column {
             IconButton(onClick = onMoveUp, enabled = canMoveUp) {
-                Icon(Icons.Filled.KeyboardArrowUp, contentDescription = null)
+                Icon(Icons.Filled.KeyboardArrowUp, contentDescription = stringResource(R.string.cd_move_up))
             }
             IconButton(onClick = onMoveDown, enabled = canMoveDown) {
-                Icon(Icons.Filled.KeyboardArrowDown, contentDescription = null)
+                Icon(Icons.Filled.KeyboardArrowDown, contentDescription = stringResource(R.string.cd_move_down))
             }
         }
         Column(Modifier.weight(1f)) {
@@ -256,17 +259,21 @@ private fun MealCatalogRow(
                 Text(
                     if (def.enabled) shownLabel else stringResource(R.string.settings_meals_hidden, shownLabel),
                     fontSize = 17.sp,
-                    modifier = Modifier.clickable {
-                        draft = def.label.ifBlank { shownLabel }
-                        editingName = true
-                    },
+                    modifier = Modifier
+                        .clickable {
+                            draft = def.label.ifBlank { shownLabel }
+                            editingName = true
+                        }
+                        .semantics { role = Role.Button },
                 )
                 val start = def.startMinutes
                 Text(
                     if (start != null) formatTime(start, is24Hour) else stringResource(R.string.settings_meals_no_auto),
                     fontSize = 13.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
-                    modifier = Modifier.clickable(enabled = def.enabled) { onTime() },
+                    modifier = Modifier
+                        .clickable(enabled = def.enabled) { onTime() }
+                        .semantics { role = Role.Button },
                 )
             }
         }

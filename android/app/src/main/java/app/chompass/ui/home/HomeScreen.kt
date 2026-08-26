@@ -94,8 +94,8 @@ import app.chompass.ui.components.StepsCard
 import app.chompass.ui.components.WeekEnergyStrip
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.util.formatClockMillis
-import app.chompass.ui.navigation.BottomNavDockedControlPadding
 import app.chompass.ui.navigation.BottomNavScrollPadding
+import app.chompass.ui.navigation.BottomOverlayPadding
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.nutrientAccentColor
@@ -389,7 +389,7 @@ fun HomeScreen(
             // snackbars (delete-undo, paste confirmation) are not hidden behind it.
             SnackbarHost(
                 hostState = snackbarHostState,
-                modifier = Modifier.padding(bottom = BottomNavDockedControlPadding + 16.dp),
+                modifier = Modifier.padding(bottom = BottomOverlayPadding),
             )
         },
     ) { padding ->
@@ -744,7 +744,7 @@ fun HomeScreen(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .navigationBarsPadding()
-                .padding(end = 24.dp, bottom = BottomNavDockedControlPadding + 16.dp),
+                .padding(end = 24.dp, bottom = BottomOverlayPadding),
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         ) {
@@ -767,7 +767,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .navigationBarsPadding()
-                    .padding(start = 24.dp, bottom = BottomNavDockedControlPadding + 16.dp),
+                    .padding(start = 24.dp, bottom = BottomOverlayPadding),
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
             ) {
@@ -790,7 +790,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .navigationBarsPadding()
-                    .padding(start = 16.dp, end = 16.dp, bottom = BottomNavDockedControlPadding + 16.dp)
+                    .padding(start = 16.dp, end = 16.dp, bottom = BottomOverlayPadding)
                     .fillMaxWidth()
                     .alpha(if (pasteBusy) 0.55f else 1f)
                     .clickable(enabled = !pasteBusy, onClick = paste)
@@ -1696,7 +1696,7 @@ internal fun HomeScreenPreviewContent(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .navigationBarsPadding()
-                    .padding(end = 24.dp, bottom = BottomNavDockedControlPadding + 16.dp),
+                    .padding(end = 24.dp, bottom = BottomOverlayPadding),
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
             ) {

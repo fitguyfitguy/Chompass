@@ -7,7 +7,7 @@ import app.chompass.ui.components.ChompassBottomSheet
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import app.chompass.ui.components.FudIconBubble
 import androidx.compose.foundation.layout.Column
@@ -973,7 +973,7 @@ internal fun OptionalNutrientGoalRow(
         )
         Spacer(Modifier.width(8.dp))
         Icon(
-            Icons.Filled.ChevronRight,
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
             modifier = Modifier.size(18.dp)

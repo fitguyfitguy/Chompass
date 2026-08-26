@@ -19,7 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.UnfoldMore
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.automirrored.outlined.DirectionsRun
@@ -139,7 +139,6 @@ internal fun SectionCard(title: String, content: @Composable () -> Unit) {
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = AppRadii.Container,
             padding = 0.dp,
-            allowBlur = false
         ) {
             Column(Modifier.padding(vertical = 4.dp)) { content() }
         }
@@ -187,7 +186,7 @@ internal fun SettingRow(
         Spacer(Modifier.weight(1f))
         Box {
             Icon(
-                if (inlineMenu) Icons.Filled.UnfoldMore else Icons.Filled.ChevronRight,
+                if (inlineMenu) Icons.Filled.UnfoldMore else Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
                 modifier = Modifier

@@ -631,7 +631,6 @@ private fun AddFoodWaterQuickRow(
         )
         IconButton(
             onClick = { onWater(selectedMl) },
-            modifier = Modifier.size(40.dp),
         ) {
             Icon(
                 Icons.Filled.Add,
@@ -643,7 +642,6 @@ private fun AddFoodWaterQuickRow(
         TextButton(
             onClick = onWaterCustom,
             contentPadding = PaddingValues(horizontal = 4.dp),
-            modifier = Modifier.widthIn(max = 64.dp),
         ) {
             Icon(
                 Icons.Filled.DriveFileRenameOutline,

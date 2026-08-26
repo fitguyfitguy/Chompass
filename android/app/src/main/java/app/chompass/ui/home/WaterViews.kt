@@ -212,10 +212,9 @@ fun WaterCustomAmountSheet(
 
             Button(
                 onClick = {
-                    amountMl?.let(onAdd)
+                    onAdd(amountMl)
                     onDismiss()
                 },
-                enabled = amountMl != null,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(54.dp),

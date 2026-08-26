@@ -16,7 +16,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Equalizer
 import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.Person
@@ -99,8 +99,7 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                     modifier = Modifier.fillMaxWidth(),
                     cornerRadius = AppRadii.Container,
                     padding = 0.dp,
-                    allowBlur = false,
-                ) {
+                                    ) {
                     Column(Modifier.padding(vertical = 4.dp)) {
                         SettingsHubRow(
                             label = stringResource(R.string.settings_section_personal),
@@ -174,8 +173,7 @@ internal fun SettingsSearchField(
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = AppRadii.Container,
         padding = 0.dp,
-        allowBlur = false,
-    ) {
+            ) {
         Row(
             Modifier
                 .fillMaxWidth()
@@ -259,8 +257,7 @@ private fun SettingsSearchResults(query: String, nav: NavHostController) {
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = AppRadii.Container,
         padding = 0.dp,
-        allowBlur = false,
-    ) {
+            ) {
         Column(Modifier.padding(vertical = 4.dp)) {
             matched.forEachIndexed { index, (entry, label) ->
                 if (index > 0) HorizontalDivider()
@@ -286,7 +283,7 @@ private fun SettingsSearchResults(query: String, nav: NavHostController) {
                         )
                     }
                     Icon(
-                        Icons.Filled.ChevronRight,
+                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
                     )
@@ -307,8 +304,7 @@ private fun SuggestionsCard(
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = AppRadii.Container,
         padding = 0.dp,
-        allowBlur = false,
-    ) {
+            ) {
         Column(Modifier.padding(vertical = 4.dp)) {
             Text(
                 stringResource(R.string.settings_suggestions),

@@ -67,7 +67,6 @@ internal fun CardSection(content: @Composable () -> Unit) {
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = 16.dp,
         padding = 16.dp,
-        allowBlur = false
     ) { content() }
 }
 

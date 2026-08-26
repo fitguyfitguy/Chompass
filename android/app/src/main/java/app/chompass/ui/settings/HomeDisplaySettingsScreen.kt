@@ -110,7 +110,7 @@ fun HomeDisplaySettingsScreen(
             }
 
             item {
-                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp, allowBlur = false) {
+                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp) {
                     Column {
                         SettingRow(
                             label = stringResource(R.string.home_display_nutrient_cards),
@@ -134,7 +134,7 @@ fun HomeDisplaySettingsScreen(
             }
 
             item {
-                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp, allowBlur = false) {
+                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp) {
                     Column {
                         ToggleRow(
                             label = stringResource(R.string.home_display_show_steps),
@@ -158,7 +158,7 @@ fun HomeDisplaySettingsScreen(
             // controls the STATIC "N active" caption.
             if (display.calorieDisplayMode == HomeCalorieDisplayMode.STATIC) {
                 item {
-                    FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp, allowBlur = false) {
+                    FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp) {
                         Column {
                             ToggleRow(
                                 label = stringResource(R.string.home_display_show_active_calories),
@@ -177,7 +177,7 @@ fun HomeDisplaySettingsScreen(
             }
 
             item {
-                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp, allowBlur = false) {
+                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp) {
                     Column {
                         SettingRow(
                             label = stringResource(R.string.home_display_calorie_mode),
@@ -208,7 +208,7 @@ fun HomeDisplaySettingsScreen(
             }
 
             item {
-                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp, allowBlur = false) {
+                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp) {
                     SettingRow(
                         label = stringResource(R.string.home_display_food_log_chips),
                         value = display.foodLogMacroChips.joinToString(" ") { it.glyph },

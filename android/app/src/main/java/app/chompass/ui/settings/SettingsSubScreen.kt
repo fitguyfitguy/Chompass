@@ -17,7 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -142,7 +142,6 @@ internal fun RelatedLinks(rows: List<RelatedLink>) {
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = AppRadii.Container,
             padding = 0.dp,
-            allowBlur = false
         ) {
             Column(Modifier.padding(vertical = 4.dp)) {
                 rows.forEachIndexed { index, row ->
@@ -161,7 +160,7 @@ internal fun RelatedLinks(rows: List<RelatedLink>) {
                             fontWeight = FontWeight.Medium,
                         )
                         Icon(
-                            Icons.Filled.ChevronRight,
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
                         )
@@ -202,7 +201,7 @@ internal fun SettingsHubRow(
             )
         }
         Icon(
-            Icons.Filled.ChevronRight,
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
         )

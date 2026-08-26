@@ -627,26 +627,6 @@ internal fun ServingQuantityCard(
 }
 
 @Composable
-private fun QuantityOperatorChip(
-    operator: String,
-    contentDescription: String,
-    enabled: Boolean,
-    onClick: () -> Unit
-) {
-    Text(
-        operator,
-        fontSize = 15.sp,
-        color = if (enabled) AppColors.Calorie else MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
-        fontWeight = FontWeight.SemiBold,
-        modifier = Modifier
-            .clip(RoundedCornerShape(9.dp))
-            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
-            .clickable(enabled = enabled, onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 6.dp)
-    )
-}
-
-@Composable
 internal fun SheetNutritionRow(
     label: String,
     value: String,
