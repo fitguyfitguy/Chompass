@@ -34,6 +34,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +49,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
@@ -67,7 +69,9 @@ import androidx.compose.material.icons.filled.LocalCafe
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.WbTwilight
+import app.chompass.ChompassApp
 import app.chompass.R
+import app.chompass.models.CurrentMealCatalog
 import app.chompass.models.MealType
 import app.chompass.models.ServingUnitOption
 import app.chompass.ui.theme.AppColors
@@ -834,16 +838,24 @@ internal fun sheetMealIcon(mealId: String): ImageVector =
     sheetMealIcon(MealType.iconMeal(mealId))
 
 @Composable
+private fun rememberedMealCatalog(): app.chompass.models.MealCatalog {
+    val app = LocalContext.current.applicationContext as ChompassApp
+    val catalog by app.container.prefs.mealCatalog.collectAsState(initial = CurrentMealCatalog.value)
+    return catalog
+}
+
+@Composable
 internal fun mealLabel(mealId: String): String {
-    val def = app.chompass.models.CurrentMealCatalog.value.def(mealId)
+    val def = rememberedMealCatalog().def(mealId)
     val custom = def?.label?.trim().orEmpty()
     if (custom.isNotEmpty()) return custom
     val builtin = MealType.fromId(mealId)
     return if (builtin != null) stringResource(builtin.displayNameRes) else mealId
 }
 
+@Composable
 internal fun pickerMealIds(): List<String> {
-    val enabled = app.chompass.models.CurrentMealCatalog.value.enabledForPicker().map { it.id }
+    val enabled = rememberedMealCatalog().enabledForPicker().map { it.id }
     return enabled.ifEmpty { listOf(MealType.SNACK.id) }
 }
 

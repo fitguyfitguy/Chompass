@@ -224,7 +224,10 @@ private fun MealCatalogRow(
             if (editingName) {
                 BasicTextField(
                     value = draft,
-                    onValueChange = { draft = it.take(MealCatalog.MAX_LABEL) },
+                    onValueChange = {
+                        draft = it.take(MealCatalog.MAX_LABEL)
+                        onLabel(draft)
+                    },
                     singleLine = true,
                     textStyle = TextStyle(
                         fontSize = 17.sp,
