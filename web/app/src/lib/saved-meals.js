@@ -16,7 +16,7 @@ export function favoriteKey(entry) {
  * @param {import('./chompass-core/models.js').FoodEntry} entry
  * @param {string} [date]
  * @param {string} [time]
- * @param {"breakfast"|"lunch"|"dinner"|"snack"} [mealType]
+ * @param {string} [mealType]
  */
 export function duplicatedForLogging(entry, date, time, mealType) {
   const now = new Date();
