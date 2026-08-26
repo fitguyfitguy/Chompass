@@ -86,7 +86,7 @@ object MealShare {
             .put("protein", e.protein)
             .put("carbs", e.carbs)
             .put("fat", e.fat)
-            .put("mealType", e.mealType.name.lowercase())
+            .put("mealType", e.mealType)
         e.emoji?.let { d.put("emoji", it) }
         fun put(key: String, v: Double?) { if (v != null) d.put(key, v) }
         put("sugar", e.sugar); put("addedSugar", e.addedSugar); put("fiber", e.fiber)
@@ -223,8 +223,13 @@ object MealShare {
             ?: return null
         if (!d.has("calories")) return null
         fun dbl(k: String): Double? = if (d.has(k) && !d.isNull(k)) d.optDouble(k) else null
-        val meal = runCatching { MealType.valueOf(d.optString("mealType").uppercase()) }
-            .getOrDefault(MealType.currentMeal)
+        val rawMeal = d.optString("mealType").trim()
+        val meal = when {
+            rawMeal.isEmpty() -> MealType.currentMealId
+            MealType.fromId(rawMeal) != null -> MealType.fromId(rawMeal)!!.id
+            rawMeal.startsWith("c_") -> rawMeal
+            else -> MealType.SNACK.id // foreign-app unknown token
+        }
         return FoodEntry(
             name = name,
             calories = InputSanitizer.calories(d.optInt("calories")),

@@ -153,7 +153,7 @@ fun FoodResultSheet(
         name: String,
         servingGrams: Double?,
         scale: Double,
-        mealType: MealType,
+        mealType: String,
         selectedServingUnit: String?,
         selectedServingQuantity: Double?,
         editedAnalysis: FoodAnalysis
@@ -166,7 +166,7 @@ fun FoodResultSheet(
         name: String,
         servingGrams: Double?,
         scale: Double,
-        mealType: MealType,
+        mealType: String,
         selectedServingUnit: String?,
         selectedServingQuantity: Double?,
         editedAnalysis: FoodAnalysis,
@@ -241,7 +241,7 @@ fun FoodResultSheet(
     val selectedServingOption = ServingUnitOption.optionMatching(selectedServingUnitId, servingUnitOptions)
     val selectedServingQuantity = ServingUnitOption.parseQuantity(servingQuantityText)?.takeIf { it > 0 }
     val scale = ServingUnitOption.servingScale(recordedServing, servingGrams, baseServingGrams)
-    var mealType by remember { mutableStateOf(MealType.currentMeal) }
+    var mealType by remember { mutableStateOf(MealType.currentMealId) }
     var moreNutritionExpanded by remember { mutableStateOf(false) }
     var nutritionUnlocked by remember { mutableStateOf(false) }
     var editableCalories by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.calories) }
@@ -806,7 +806,7 @@ fun FoodResultSheet(
                             )
                             Spacer(Modifier.width(6.dp))
                             Text(
-                                stringResource(mealType.displayNameRes),
+                                mealLabel(mealType),
                                 fontSize = 17.sp,
                                 color = AppColors.Calorie,
                                 fontWeight = FontWeight.Medium
@@ -823,9 +823,9 @@ fun FoodResultSheet(
                             onDismissRequest = { mealMenuExpanded = false },
                             menuWidth = 184.dp
                         ) {
-                            for (m in MealType.values()) {
+                            for (m in pickerMealIds()) {
                                 SheetGlassDropdownMenuItem(
-                                    label = stringResource(m.displayNameRes),
+                                    label = mealLabel(m),
                                     leadingIcon = sheetMealIcon(m),
                                     selected = m == mealType,
                                     onClick = {

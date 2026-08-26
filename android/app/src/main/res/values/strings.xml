@@ -1550,6 +1550,14 @@
     <string name="settings_progress_plots_count">%1$d plots</string>
     <string name="settings_progress_plots_no_data">No measurements yet</string>
     <string name="settings_progress_plots_latest">Latest: %1$s %2$s</string>
+    <string name="settings_meals">Meals</string>
+    <string name="settings_meals_description">Names, order, and start times</string>
+    <string name="settings_meals_help">New food uses the meal whose start time is closest before now.</string>
+    <string name="settings_meals_add">Add meal</string>
+    <string name="settings_meals_remove_title">Remove this meal?</string>
+    <string name="settings_meals_remove_body">Existing diary items keep their meal until you edit them. Built-in meals are hidden instead of deleted.</string>
+    <string name="settings_meals_hidden">%1$s (hidden)</string>
+    <string name="settings_meals_no_auto">Not used for auto-guess</string>
     <string name="settings_meal_times">Meal times</string>
     <string name="settings_meal_times_customize">Customize</string>
     <string name="settings_meal_times_description">Set when automatic meal selection switches to the next meal.</string>

@@ -76,8 +76,8 @@ fun FoodEntrySettingsScreen(
             ) { sheet = SettingsSheet.FOOD_LOG_SORT }
             HorizontalDivider()
             SettingRow(
-                stringResource(R.string.settings_meal_times),
-                stringResource(R.string.settings_meal_times_customize),
+                stringResource(R.string.settings_meals),
+                stringResource(R.string.settings_meals_description),
                 icon = Icons.Outlined.Schedule,
             ) { sheet = SettingsSheet.MEAL_TIMES }
         }

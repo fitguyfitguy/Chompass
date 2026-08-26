@@ -36,7 +36,7 @@ class EntryPerfBenchmark(private val container: AppContainer) {
                 val analysis = container.foodAnalysis.analyzeText(description)
                 if (persist) {
                     container.foodRepository.addEntry(
-                        analysis.toFoodEntry(FoodSource.TEXT_INPUT, MealType.currentMeal)
+                        analysis.toFoodEntry(FoodSource.TEXT_INPUT, MealType.currentMealId)
                     )
                 }
                 ok++

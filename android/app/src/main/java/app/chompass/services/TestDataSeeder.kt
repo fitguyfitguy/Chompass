@@ -388,7 +388,7 @@ class TestDataSeeder(private val container: AppContainer) {
                 timestamp = ts,
                 emoji = "🍽️",
                 source = FoodSource.TEXT_INPUT,
-                mealType = MealType.SNACK,
+                mealType = MealType.SNACK.id,
             )
         )
     }

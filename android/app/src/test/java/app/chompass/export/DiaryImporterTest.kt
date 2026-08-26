@@ -83,7 +83,7 @@ class DiaryImporterTest {
         assertEquals(2.0, entry.saturatedFat)
         assertEquals(55.0, entry.cholesterol)
         assertEquals("grilled", entry.customNote)
-        assertEquals(MealType.LUNCH, entry.mealType)
+        assertEquals(MealType.LUNCH.id, entry.mealType)
         assertEquals(FoodSource.TEXT_INPUT, entry.source)
         assertEquals(
             LocalDate.of(2026, 7, 20).atTime(12, 30).atZone(zone).toInstant(),
@@ -131,7 +131,7 @@ class DiaryImporterTest {
         assertEquals(5.0, entry.carbs, 0.0)
         assertEquals(2.0, entry.fat, 0.0)
         assertEquals(80.0, entry.servingSizeGrams)
-        assertEquals(MealType.BREAKFAST, entry.mealType)
+        assertEquals(MealType.BREAKFAST.id, entry.mealType)
         assertEquals(FoodSource.MANUAL, entry.source)
         assertEquals(null, entry.fiber)
         assertEquals(null, entry.sodium)
@@ -174,7 +174,7 @@ class DiaryImporterTest {
         val entry = (result as DiaryImportResult.Success).entries.single()
         assertEquals("Salmon", entry.name)
         assertEquals(1.2, entry.fiber)
-        assertEquals(MealType.LUNCH, entry.mealType)
+        assertEquals(MealType.LUNCH.id, entry.mealType)
     }
 
     @Test
@@ -238,7 +238,7 @@ class DiaryImporterTest {
             carbs = 0.0,
             fat = 12.0,
             source = FoodSource.MANUAL,
-            mealType = MealType.LUNCH,
+            mealType = MealType.LUNCH.id,
             timestamp = Instant.parse("2026-07-20T12:00:00Z"),
             fiber = 1.2,
             sodium = 50.0,
@@ -251,10 +251,10 @@ class DiaryImporterTest {
             end = LocalDate.of(2026, 7, 20),
             format = DiaryFormat.JSON,
             profile = null,
-            mealDisplay = { it.name },
+            mealDisplay = { it },
         ) ?: error("expected export")
 
-        assertTrue(exported.second.contains("\"format_version\": \"1.3\""))
+        assertTrue(exported.second.contains("\"format_version\": \"1.4\""))
         val imported = DiaryImporter.parse(exported.second, ZoneId.systemDefault())
         assertTrue(imported is DiaryImportResult.Success)
         val entry = (imported as DiaryImportResult.Success).entries.single()

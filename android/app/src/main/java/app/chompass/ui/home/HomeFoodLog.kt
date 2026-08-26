@@ -97,7 +97,7 @@ internal fun SectionHeader(title: String) {
 
 @Composable
 internal fun MealSectionHeader(
-    meal: MealType,
+    meal: String,
     totalCalories: Int? = null,
     totalProtein: Double = 0.0,
     totalCarbs: Double = 0.0,
@@ -121,7 +121,7 @@ internal fun MealSectionHeader(
         )
         Spacer(Modifier.width(8.dp))
         Text(
-            stringResource(meal.displayNameRes),
+            mealLabel(meal),
             fontSize = 17.sp,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.85f)
@@ -216,7 +216,7 @@ internal fun SelectionActionBar(
 
 internal data class FoodLogMealGroup(
     val id: String,
-    val meal: MealType,
+    val meal: String,
     val entries: List<FoodEntry>
 ) {
     // Combined nutrients for this meal group (issue #103: chicken + pasta + sauce = one total).
@@ -245,16 +245,26 @@ internal fun foodLogMealGroups(
 ): List<FoodLogMealGroup> = when (sortOrder) {
     FoodLogSortOrder.STANDARD -> {
         val grouped = entries.groupBy { it.mealType }
-        listOf(MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER, MealType.SNACK, MealType.OTHER)
-            .mapNotNull { meal ->
+        val order = app.chompass.models.CurrentMealCatalog.value.displayOrderIds()
+        val known = order.mapNotNull { meal ->
                 val mealEntries = grouped[meal].orEmpty()
                     .sortedWith(compareBy<FoodEntry> { it.timestamp }.thenBy { it.id })
                 if (mealEntries.isEmpty()) null else FoodLogMealGroup(
-                    id = "standard-${meal.name}",
+                    id = "standard-$meal",
                     meal = meal,
                     entries = mealEntries
                 )
             }
+        val orphans = grouped.keys.filter { it !in order }.sorted().mapNotNull { meal ->
+            val mealEntries = grouped[meal].orEmpty()
+                .sortedWith(compareBy<FoodEntry> { it.timestamp }.thenBy { it.id })
+            if (mealEntries.isEmpty()) null else FoodLogMealGroup(
+                id = "standard-$meal",
+                meal = meal,
+                entries = mealEntries,
+            )
+        }
+        known + orphans
     }
     FoodLogSortOrder.LATEST_MEALS_FIRST -> latestMealRuns(entries)
 }
@@ -264,7 +274,7 @@ private fun latestMealRuns(entries: List<FoodEntry>): List<FoodLogMealGroup> {
         compareByDescending<FoodEntry> { it.timestamp }.thenByDescending { it.id }
     )
     val groups = mutableListOf<FoodLogMealGroup>()
-    var currentMeal: MealType? = null
+    var currentMeal: String? = null
     val currentEntries = mutableListOf<FoodEntry>()
 
     fun appendCurrentGroup() {
@@ -280,7 +290,7 @@ private fun latestMealRuns(entries: List<FoodEntry>): List<FoodLogMealGroup> {
             // Unaffected runs now keep their key; a single entry moving between
             // meals only renames the source run (if it loses its newest entry)
             // and the destination run (if the moved entry becomes its newest).
-            id = "latest-${meal.name}-${currentEntries.first().id}",
+            id = "latest-${meal}-${currentEntries.first().id}",
             meal = meal,
             entries = currentEntries.toList()
         )
@@ -301,7 +311,7 @@ private fun latestMealRuns(entries: List<FoodEntry>): List<FoodLogMealGroup> {
     return groups
 }
 
-private fun mealIcon(meal: MealType): ImageVector = when (meal) {
+private fun mealIcon(meal: String): ImageVector = when (MealType.iconMeal(meal)) {
     MealType.BREAKFAST -> Icons.Filled.WbTwilight
     MealType.LUNCH -> Icons.Filled.WbSunny
     MealType.DINNER -> Icons.Filled.Bedtime

@@ -1379,6 +1379,14 @@
     <string name="settings_meal_constituents">Desglose de ingredientes de la comida</string>
     <string name="settings_meal_constituents_footer">Cuando está activado, la IA puede dividir comidas compuestas en ingredientes editables con gramos y unidades. Funciona mejor con modelos en la nube potentes; desactívalo para modelos más baratos o pequeños si los resultados parecen inconsistentes.</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
+    <string name="settings_meals">Comidas</string>
+    <string name="settings_meals_description">Nombres, orden y horarios</string>
+    <string name="settings_meals_help">La comida nueva usa el tipo cuya hora de inicio es la más cercana antes de ahora.</string>
+    <string name="settings_meals_add">Añadir comida</string>
+    <string name="settings_meals_remove_title">¿Quitar esta comida?</string>
+    <string name="settings_meals_remove_body">Los registros existentes conservan su tipo hasta que los edites. Las comidas predefinidas se ocultan en lugar de borrarse.</string>
+    <string name="settings_meals_hidden">%1$s (oculta)</string>
+    <string name="settings_meals_no_auto">Sin selección automática</string>
     <string name="settings_meal_times">Horarios de comida</string>
     <string name="settings_meal_times_customize">Personalizar</string>
     <string name="settings_meal_times_description">Define cuándo la selección automática de comida cambia a la siguiente.</string>

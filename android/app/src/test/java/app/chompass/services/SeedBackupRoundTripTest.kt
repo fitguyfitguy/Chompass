@@ -29,7 +29,7 @@ class SeedBackupRoundTripTest {
                 fat = 3.0,
                 timestamp = Instant.parse("2026-08-18T08:00:00Z"),
                 source = FoodSource.TEXT_INPUT,
-                mealType = MealType.BREAKFAST,
+                mealType = MealType.BREAKFAST.id,
             )
         )
         val recipes = SampleDataGenerators.sampleRecipes(now = Instant.parse("2026-08-19T12:00:00Z"))

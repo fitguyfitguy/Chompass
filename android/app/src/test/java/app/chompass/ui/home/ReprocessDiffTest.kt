@@ -20,7 +20,7 @@ class ReprocessDiffTest {
             fat = 35.0,
             timestamp = Instant.parse("2024-01-01T12:00:00Z"),
             source = FoodSource.SNAP_FOOD,
-            mealType = MealType.LUNCH,
+            mealType = MealType.LUNCH.id,
             servingSizeGrams = 360.0,
         )
         val after = before.copy(
@@ -58,7 +58,7 @@ class ReprocessDiffTest {
             fat = 0.3,
             timestamp = Instant.parse("2024-01-01T12:00:00Z"),
             source = FoodSource.TEXT_INPUT,
-            mealType = MealType.SNACK,
+            mealType = MealType.SNACK.id,
             servingSizeGrams = 180.0,
         )
         assertTrue(
