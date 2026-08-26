@@ -839,7 +839,8 @@ internal fun sheetMealIcon(mealId: String): ImageVector =
 
 @Composable
 private fun rememberedMealCatalog(): app.chompass.models.MealCatalog {
-    val app = LocalContext.current.applicationContext as ChompassApp
+    val app = LocalContext.current.applicationContext as? ChompassApp
+    if (app == null) return CurrentMealCatalog.value
     val catalog by app.container.prefs.mealCatalog.collectAsState(initial = CurrentMealCatalog.value)
     return catalog
 }
