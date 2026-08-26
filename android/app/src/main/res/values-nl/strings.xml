@@ -773,6 +773,7 @@
     <string name="cd_add_food">Voedsel toevoegen</string>
     <string name="cd_add_image">Afbeelding toevoegen</string>
     <string name="cd_apply_serving_edit">Portiebewerking toepassen</string>
+    <string name="cd_remove_serving_unit">Deze eenheid verwijderen</string>
     <string name="cd_cancel_recording">Opname annuleren</string>
     <string name="cd_clear_quantity">Hoeveelheid wissen</string>
     <string name="cd_close">Sluiten</string>

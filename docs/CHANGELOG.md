@@ -16,6 +16,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **Delete leftover serving units** (Android): leftover prefix units from older versions can be removed from an entry. Select the unit, tap the pencil, then the trash next to the checkmark. Grams stays; nutrition is unchanged. Follow-up to Codeberg [#59](https://codeberg.org/fitguy/Chompass/issues/59).
 - **Logged weight stays in history when Health Connect or WebDAV is catching up** (Android): if you logged today's weight while the app was still pulling from Health Connect or WebDAV, the new row could vanish from Weight History a moment later. The pull now adds remote rows without replacing the one you just saved. Codeberg [#63](https://codeberg.org/fitguy/Chompass/issues/63) by [@tuxMode](https://codeberg.org/tuxMode).
 
 ## [3.24.0] - 2026-08-24

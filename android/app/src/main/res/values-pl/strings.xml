@@ -1443,6 +1443,7 @@
     <string name="cd_clear_quantity">Wyczyść ilość</string>
     <string name="cd_edit_serving">Edytuj porcję</string>
     <string name="cd_apply_serving_edit">Zastosuj zmianę porcji</string>
+    <string name="cd_remove_serving_unit">Usuń tę jednostkę</string>
     <string name="sheet_serving_custom_name">Nazwa jednostki</string>
     <string name="sheet_serving_custom_grams">Gramy na jednostkę</string>
     <string name="cd_quantity_operator">Wstaw %1$s do ilości</string>

@@ -1443,6 +1443,7 @@
     <string name="cd_clear_quantity">Miktarı temizle</string>
     <string name="cd_edit_serving">Porsiyonu düzenle</string>
     <string name="cd_apply_serving_edit">Porsiyon düzenlemesini uygula</string>
+    <string name="cd_remove_serving_unit">Bu birimi kaldır</string>
     <string name="sheet_serving_custom_name">Birim adı</string>
     <string name="sheet_serving_custom_grams">Birim başına gram</string>
     <string name="cd_quantity_operator">%1$s miktara ekle</string>

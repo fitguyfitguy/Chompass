@@ -804,6 +804,7 @@
     <string name="cd_add_food">添加食物</string>
     <string name="cd_add_image">添加图片</string>
     <string name="cd_apply_serving_edit">应用份量修改</string>
+    <string name="cd_remove_serving_unit">删除此单位</string>
     <string name="cd_cancel_recording">取消录音</string>
     <string name="cd_clear_quantity">清除数量</string>
     <string name="cd_close">关闭</string>

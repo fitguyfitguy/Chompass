@@ -191,11 +191,20 @@ private fun ConstituentRowCard(
                 onMenuExpandedChange = { unitMenuExpanded = it },
                 gramUnit = stringResource(R.string.unit_g),
                 onUnitOptionsChange = { options, newId ->
+                    val gramsBefore = row.servingSizeGrams
+                    val option = ServingUnitOption.optionMatching(newId, options)
+                    val qty = if (option.gramsPerUnit > 0) {
+                        gramsBefore / option.gramsPerUnit
+                    } else {
+                        gramsBefore
+                    }
                     unitId = newId
+                    quantityText = ServingUnitOption.formatQuantity(qty)
                     onChange(
                         row.copy(
                             servingUnitOptions = options,
-                            selectedServingUnit = ServingUnitOption.optionMatching(newId, options).unit,
+                            selectedServingUnit = option.unit,
+                            selectedServingQuantity = qty,
                         ),
                     )
                 },

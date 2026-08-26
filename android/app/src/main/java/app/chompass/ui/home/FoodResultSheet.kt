@@ -704,8 +704,16 @@ fun FoodResultSheet(
                     isLoadingUnits = inferringUnits,
                     enabled = analysisReady,
                     onUnitOptionsChange = { options, newId ->
+                        val gramsBefore = servingGrams
                         servingUnitOptions = options
                         selectedServingUnitId = newId
+                        val option = ServingUnitOption.optionMatching(newId, options)
+                        val quantity = if (option.gramsPerUnit > 0) {
+                            gramsBefore / option.gramsPerUnit
+                        } else {
+                            gramsBefore
+                        }
+                        servingQuantityText = ServingUnitOption.formatQuantity(quantity)
                     },
                 )
             }

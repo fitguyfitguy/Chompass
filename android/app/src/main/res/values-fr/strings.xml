@@ -857,6 +857,7 @@
     <string name="cd_add_food">Ajouter un aliment</string>
     <string name="cd_add_image">Ajouter une image</string>
     <string name="cd_apply_serving_edit">Appliquer la modification de portion</string>
+    <string name="cd_remove_serving_unit">Supprimer cette unité</string>
     <string name="cd_cancel_recording">Annuler l\'enregistrement</string>
     <string name="cd_clear_quantity">Effacer la quantité</string>
     <string name="cd_close">Fermer</string>

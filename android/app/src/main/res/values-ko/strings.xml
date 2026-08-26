@@ -802,6 +802,7 @@
     <string name="cd_add_food">음식 추가</string>
     <string name="cd_add_image">이미지 추가</string>
     <string name="cd_apply_serving_edit">1인분 편집 적용</string>
+    <string name="cd_remove_serving_unit">이 단위 삭제</string>
     <string name="cd_cancel_recording">녹음 취소</string>
     <string name="cd_clear_quantity">수량 지우기</string>
     <string name="cd_close">닫기</string>
