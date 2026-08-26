@@ -75,16 +75,17 @@ private val MAGNITUDE_ROW_HEIGHT = 44.dp * 5
 
 @Composable
 internal fun rememberMagnitudePickerMode(): Pair<Boolean, (Boolean) -> Unit> {
-    val app = LocalContext.current.applicationContext as ChompassApp
-    val prefs = app.container.prefs
-    val stored by prefs.numericPickerEntry.collectAsState(initial = PICKER_MODE_WHEEL)
+    val app = LocalContext.current.applicationContext as? ChompassApp
+    val prefs = app?.container?.prefs
+    val stored by (prefs?.numericPickerEntry ?: kotlinx.coroutines.flow.flowOf(PICKER_MODE_WHEEL))
+        .collectAsState(initial = PICKER_MODE_WHEEL)
     var override by remember { mutableStateOf<String?>(null) }
     val typed = (override ?: stored) == PICKER_MODE_TYPED
     val scope = rememberCoroutineScope()
     val setTyped: (Boolean) -> Unit = { wantTyped ->
         val id = if (wantTyped) PICKER_MODE_TYPED else PICKER_MODE_WHEEL
         override = id
-        scope.launch { prefs.setNumericPickerEntry(id) }
+        if (prefs != null) scope.launch { prefs.setNumericPickerEntry(id) }
     }
     return typed to setTyped
 }
