@@ -1908,4 +1908,13 @@ journaal: gemiddelde van vastgelegde doelen in het bereik, gaten overgeslagen</s
 macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
     <string name="picker_type_value">Waarde typen</string>
     <string name="picker_use_wheel">Wiel gebruiken</string>
+
+    <string name="settings_meals">Maaltijden</string>
+    <string name="settings_meals_description">Namen, volgorde en starttijden</string>
+    <string name="settings_meals_help">Nieuw eten gebruikt de maaltijd waarvan de starttijd het dichtst vóór nu ligt.</string>
+    <string name="settings_meals_add">Maaltijd toevoegen</string>
+    <string name="settings_meals_remove_title">Deze maaltijd verwijderen?</string>
+    <string name="settings_meals_remove_body">Bestaande items houden hun type tot je ze wijzigt. Ingebouwde maaltijden worden verborgen, niet verwijderd.</string>
+    <string name="settings_meals_hidden">%1$s (verborgen)</string>
+    <string name="settings_meals_no_auto">Niet voor auto-gok</string>
 </resources>

@@ -1909,4 +1909,13 @@ jurnal: aralıqdakı qeyd edilmiş hədəflərin ortası, boşluqlar ötürülü
 makrolar yeni kalori cəminə uyğun yenidən tarazlaşdırılır</string>
     <string name="picker_type_value">Dəyəri yazın</string>
     <string name="picker_use_wheel">Təkərdən istifadə et</string>
+
+    <string name="settings_meals">Yeməklər</string>
+    <string name="settings_meals_description">Adlar, sıra və başlama vaxtları</string>
+    <string name="settings_meals_help">Yeni yemək indidən əvvəlki ən yaxın başlama vaxtı olan qəbulu istifadə edir.</string>
+    <string name="settings_meals_add">Qəbul əlavə et</string>
+    <string name="settings_meals_remove_title">Bu qəbul silinsin?</string>
+    <string name="settings_meals_remove_body">Mövcud qeydlər dəyişənə qədər növünü saxlayır. Daxili qəbullar silinmir, gizlədilir.</string>
+    <string name="settings_meals_hidden">%1$s (gizli)</string>
+    <string name="settings_meals_no_auto">Avto seçim yoxdur</string>
 </resources>

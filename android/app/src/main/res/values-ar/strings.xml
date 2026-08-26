@@ -1914,4 +1914,13 @@
 تُعاد الموازنة للمغذيات الكبرى إلى مجموع السعرات الجديد</string>
     <string name="picker_type_value">اكتب القيمة</string>
     <string name="picker_use_wheel">استخدم العجلة</string>
+
+    <string name="settings_meals">الوجبات</string>
+    <string name="settings_meals_description">الأسماء والترتيب وأوقات البداية</string>
+    <string name="settings_meals_help">الطعام الجديد يستخدم الوجبة التي يبدأ وقتها الأقرب قبل الآن.</string>
+    <string name="settings_meals_add">إضافة وجبة</string>
+    <string name="settings_meals_remove_title">إزالة هذه الوجبة؟</string>
+    <string name="settings_meals_remove_body">السجلات الحالية تبقي نوعها حتى تعدّلها. الوجبات المدمجة تُخفى بدل الحذف.</string>
+    <string name="settings_meals_hidden">%1$s (مخفية)</string>
+    <string name="settings_meals_no_auto">بدون تخمين تلقائي</string>
 </resources>

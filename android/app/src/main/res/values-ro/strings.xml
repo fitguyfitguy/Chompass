@@ -1908,4 +1908,13 @@ jurnal: media țintelor înregistrate în interval, golurile sărite</string>
 macro-urile reechilibrate la noul total caloric</string>
     <string name="picker_type_value">Tastează valoarea</string>
     <string name="picker_use_wheel">Folosește roata</string>
+
+    <string name="settings_meals">Mese</string>
+    <string name="settings_meals_description">Nume, ordine și ore de start</string>
+    <string name="settings_meals_help">Mâncarea nouă folosește masa a cărei oră de start e cea mai apropiată înainte de acum.</string>
+    <string name="settings_meals_add">Adaugă masă</string>
+    <string name="settings_meals_remove_title">Elimini masa?</string>
+    <string name="settings_meals_remove_body">Înregistrările existente păstrează tipul până le editezi. Mesele implicite sunt ascunse, nu șterse.</string>
+    <string name="settings_meals_hidden">%1$s (ascunsă)</string>
+    <string name="settings_meals_no_auto">Fără alegere automată</string>
 </resources>

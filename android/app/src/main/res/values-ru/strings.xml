@@ -1984,4 +1984,13 @@
 макросы перераспределяются под новую калорийность</string>
     <string name="picker_type_value">Ввести значение</string>
     <string name="picker_use_wheel">Использовать колесо</string>
+
+    <string name="settings_meals">Приёмы пищи</string>
+    <string name="settings_meals_description">Названия, порядок и время начала</string>
+    <string name="settings_meals_help">Новая еда получает приём, чьё время начала ближе всего до сейчас.</string>
+    <string name="settings_meals_add">Добавить приём</string>
+    <string name="settings_meals_remove_title">Убрать этот приём?</string>
+    <string name="settings_meals_remove_body">Старые записи сохраняют тип, пока вы их не измените. Встроенные приёмы скрываются, а не удаляются.</string>
+    <string name="settings_meals_hidden">%1$s (скрыт)</string>
+    <string name="settings_meals_no_auto">Не для автовыбора</string>
 </resources>

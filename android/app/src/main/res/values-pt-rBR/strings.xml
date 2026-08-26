@@ -1908,4 +1908,13 @@ diário: média dos objetivos registrados no intervalo, lacunas puladas</string>
 macros reequilibradas ao novo total calórico</string>
     <string name="picker_type_value">Digitar valor</string>
     <string name="picker_use_wheel">Usar a roda</string>
+
+    <string name="settings_meals">Refeições</string>
+    <string name="settings_meals_description">Nomes, ordem e horários</string>
+    <string name="settings_meals_help">Comida nova usa a refeição cujo horário de início é o mais próximo antes de agora.</string>
+    <string name="settings_meals_add">Adicionar refeição</string>
+    <string name="settings_meals_remove_title">Remover esta refeição?</string>
+    <string name="settings_meals_remove_body">Itens existentes mantêm o tipo até você editá-los. Refeições padrão são ocultadas, não apagadas.</string>
+    <string name="settings_meals_hidden">%1$s (oculta)</string>
+    <string name="settings_meals_no_auto">Sem escolha automática</string>
 </resources>

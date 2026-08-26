@@ -1908,4 +1908,13 @@
 매크로는 새 칼로리 총량에 맞게 재분배</string>
     <string name="picker_type_value">값 입력</string>
     <string name="picker_use_wheel">휠 사용</string>
+
+    <string name="settings_meals">식사</string>
+    <string name="settings_meals_description">이름, 순서, 시작 시각</string>
+    <string name="settings_meals_help">새 음식은 지금보다 이전에서 가장 가까운 시작 시각의 식사를 씁니다.</string>
+    <string name="settings_meals_add">식사 추가</string>
+    <string name="settings_meals_remove_title">이 식사를 제거할까요?</string>
+    <string name="settings_meals_remove_body">기존 항목은 수정할 때까지 종류를 유지합니다. 기본 식사는 삭제 대신 숨깁니다.</string>
+    <string name="settings_meals_hidden">%1$s (숨김)</string>
+    <string name="settings_meals_no_auto">자동 추정 없음</string>
 </resources>
