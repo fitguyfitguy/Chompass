@@ -1,6 +1,5 @@
 package app.chompass.data
 
-import app.chompass.models.MealType
 import app.chompass.models.Recipe
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first

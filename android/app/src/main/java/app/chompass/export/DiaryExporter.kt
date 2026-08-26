@@ -8,7 +8,6 @@ import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.GoalJournalEntry
 import app.chompass.models.MacroPlanResolver
-import app.chompass.models.MealType
 import app.chompass.models.ServingUnitOption
 import app.chompass.models.UserProfile
 import kotlinx.serialization.Serializable
