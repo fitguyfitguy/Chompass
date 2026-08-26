@@ -1,7 +1,7 @@
 // @ts-check
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { importDiary, exportDiary, DIARY_FORMAT_VERSION } from "../diary-format.js";
+import { importDiary, exportDiary, DIARY_FORMAT_VERSION, DIARY_IMPORT_VERSIONS } from "../diary-format.js";
 import { loadParityFixture } from "../../parity-fixtures.js";
 
 let seq = 0;
@@ -9,7 +9,7 @@ const idGen = () => `test-id-${seq++}`;
 
 test("imports the parity diary fixture without throwing", () => {
   const doc = loadParityFixture("diary-sample.json");
-  assert.equal(doc.export.format_version, DIARY_FORMAT_VERSION);
+  assert.ok(DIARY_IMPORT_VERSIONS.has(doc.export.format_version));
   const entries = importDiary(doc, idGen);
   assert.ok(entries.length > 0);
   for (const e of entries) {
@@ -100,7 +100,7 @@ test("exportDiary emits note-only days and day notes", () => {
       { date: "2026-08-04", text: "Rest day, no food logged." },
     ],
   });
-  assert.equal(doc.export.format_version, "1.3");
+  assert.equal(doc.export.format_version, "1.4");
   assert.equal(doc.days.length, 2);
   const foodDay = doc.days.find((d) => d.date === "2026-08-03");
   assert.equal(foodDay?.note, "Felt great after breakfast.");

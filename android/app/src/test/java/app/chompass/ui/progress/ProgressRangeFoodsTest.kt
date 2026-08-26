@@ -193,6 +193,6 @@ class ProgressRangeFoodsTest {
         fat = 5.0,
         timestamp = day.atTime(12, 0).toInstant(ZoneOffset.UTC),
         source = FoodSource.MANUAL,
-        mealType = MealType.LUNCH,
+        mealType = MealType.LUNCH.id,
     )
 }

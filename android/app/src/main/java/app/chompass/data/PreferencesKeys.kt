@@ -153,6 +153,7 @@ internal object Keys {
         val MEAL_LUNCH_START = intPreferencesKey("mealLunchStart")
         val MEAL_DINNER_START = intPreferencesKey("mealDinnerStart")
         val MEAL_SNACK_START = intPreferencesKey("mealSnackStart")
+        val MEAL_CATALOG = stringPreferencesKey("mealCatalog")
         val LAST_SAVED_MEALS_SEGMENT = stringPreferencesKey("lastRecentsSegment")
         val FOOD_LOG_SORT_ORDER = stringPreferencesKey("foodLogSortOrder")
         val HOME_TOP_NUTRIENTS = stringPreferencesKey("homeTopNutrients")

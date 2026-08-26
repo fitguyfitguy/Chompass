@@ -654,12 +654,12 @@ fun HomeScreen(
                         DisposableEffect(entry.id) {
                             PerfLog.event(
                                 "op=homeList phase=rowComposed id=${entry.id.toString().take(8)} " +
-                                    "meal=${entry.mealType.name} group=${group.id}",
+                                    "meal=${entry.mealType} group=${group.id}",
                             )
                             onDispose {
                                 PerfLog.event(
                                     "op=homeList phase=rowDisposed id=${entry.id.toString().take(8)} " +
-                                        "meal=${entry.mealType.name} group=${group.id}",
+                                        "meal=${entry.mealType} group=${group.id}",
                                 )
                             }
                         }

@@ -141,12 +141,19 @@ class FoodRepository(
         }
     }
 
-    fun entriesByMealForDate(date: LocalDate): Flow<List<Pair<MealType, List<FoodEntry>>>> =
+    fun entriesByMealForDate(date: LocalDate): Flow<List<Pair<String, List<FoodEntry>>>> =
         entriesForDate(date).map { dayEntries ->
-            MealType.values().mapNotNull { meal ->
-                val mealEntries = dayEntries.filter { it.mealType == meal }
-                if (mealEntries.isEmpty()) null else meal to mealEntries
+            val catalog = app.chompass.models.CurrentMealCatalog.value
+            val order = catalog.displayOrderIds()
+            val grouped = dayEntries.groupBy { it.mealType }
+            val known = order.mapNotNull { id ->
+                val mealEntries = grouped[id].orEmpty()
+                if (mealEntries.isEmpty()) null else id to mealEntries
             }
+            val orphans = grouped.keys.filter { it !in order }.sorted().map { id ->
+                id to grouped.getValue(id)
+            }
+            known + orphans
         }
 
     suspend fun addEntry(
@@ -238,7 +245,7 @@ class FoodRepository(
         // Codeberg #56 repro instrumentation (TEMP, debug-only).
         PerfLog.event(
             "op=editEntry phase=updateEntry id=${updated.id.toString().take(8)} " +
-                "meal=${original.mealType.name}->${updated.mealType.name} " +
+                "meal=${original.mealType}->${updated.mealType} " +
                 "ts=${original.timestamp.epochSecond}->${updated.timestamp.epochSecond} " +
                 "month=$oldMonth->$newMonth",
         )
@@ -447,7 +454,7 @@ class FoodRepository(
                 fat = record.fat ?: 0.0,
                 timestamp = record.time,
                 source = FoodSource.MANUAL,
-                mealType = record.mealType,
+                mealType = record.mealType.id,
                 sugar = record.sugar,
                 fiber = record.fiber,
                 saturatedFat = record.saturatedFat,
@@ -495,7 +502,7 @@ class FoodRepository(
                 fat = record.fat ?: 0.0,
                 timestamp = record.time,
                 source = FoodSource.MANUAL,
-                mealType = record.mealType,
+                mealType = record.mealType.id,
                 sugar = record.sugar,
                 fiber = record.fiber,
                 saturatedFat = record.saturatedFat,

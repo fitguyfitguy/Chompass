@@ -70,7 +70,7 @@ fun ExportDiarySheet(
     var picking by remember { mutableStateOf<String?>(null) } // "start" | "end" | null
     var status by remember { mutableStateOf<String?>(null) }
 
-    val mealNames: Map<MealType, String> = MealType.values().associateWith { stringResource(it.displayNameRes) }
+    val mealNames: Map<String, String> = MealType.values().associate { it.id to stringResource(it.displayNameRes) }
     val niceDate = DateTimeFormatter.ofPattern("d MMM yyyy")
 
     ChompassBottomSheet(
@@ -126,7 +126,7 @@ fun ExportDiarySheet(
                     val (lo, hi) = DiaryExporter.resolveRange(range, customStart, customEnd, entries)
                     val result = DiaryExporter.build(
                         entries = entries, start = lo, end = hi, format = format,
-                        profile = profile, mealDisplay = { mealNames[it] ?: it.name },
+                        profile = profile, mealDisplay = { mealNames[it] ?: it },
                         notes = notes,
                         goalJournal = goalJournal,
                     )

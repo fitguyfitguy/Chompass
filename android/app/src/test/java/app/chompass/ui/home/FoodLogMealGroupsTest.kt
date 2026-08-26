@@ -26,7 +26,7 @@ class FoodLogMealGroupsTest {
         )
 
         assertEquals(
-            listOf(MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER, MealType.SNACK),
+            listOf(MealType.BREAKFAST.id, MealType.LUNCH.id, MealType.DINNER.id, MealType.SNACK.id),
             groups.map { it.meal },
         )
         assertEquals(
@@ -52,7 +52,7 @@ class FoodLogMealGroupsTest {
         )
 
         assertEquals(
-            listOf(MealType.DINNER, MealType.SNACK, MealType.LUNCH, MealType.BREAKFAST),
+            listOf(MealType.DINNER.id, MealType.SNACK.id, MealType.LUNCH.id, MealType.BREAKFAST.id),
             groups.map { it.meal },
         )
         assertEquals(
@@ -76,23 +76,23 @@ class FoodLogMealGroupsTest {
         )
         // Edit: dinner -> lunch. Snack is untouched and stays the last run; its
         // id must be identical before and after.
-        val edited = dinner.copy(mealType = MealType.LUNCH)
+        val edited = dinner.copy(mealType = MealType.LUNCH.id)
         val after = foodLogMealGroups(
             listOf(lunch, edited, snack),
             FoodLogSortOrder.LATEST_MEALS_FIRST,
         )
 
-        val snackBefore = before.first { it.meal == MealType.SNACK }
-        val snackAfter = after.first { it.meal == MealType.SNACK }
+        val snackBefore = before.first { it.meal == MealType.SNACK.id }
+        val snackAfter = after.first { it.meal == MealType.SNACK.id }
         assertEquals(snackBefore.id, snackAfter.id)
-        assertEquals("latest-SNACK-${snack.id}", snackAfter.id)
+        assertEquals("latest-snack-${snack.id}", snackAfter.id)
         // The lunch run absorbs the moved entry and keeps its anchor (lunch is
         // still its newest entry).
-        val lunchAfter = after.first { it.meal == MealType.LUNCH }
-        assertEquals("latest-LUNCH-${lunch.id}", lunchAfter.id)
+        val lunchAfter = after.first { it.meal == MealType.LUNCH.id }
+        assertEquals("latest-lunch-${lunch.id}", lunchAfter.id)
         assertEquals(listOf("Lunch", "Dinner"), lunchAfter.entries.map { it.name })
         // The emptied dinner run is gone (correct section removal, not a bug).
-        assertTrue(after.none { it.meal == MealType.DINNER })
+        assertTrue(after.none { it.meal == MealType.DINNER.id })
     }
 
     @Test
@@ -107,15 +107,15 @@ class FoodLogMealGroupsTest {
             listOf(lunchLate, lunchEarly, dinner),
             FoodLogSortOrder.LATEST_MEALS_FIRST,
         )
-        val edited = dinner.copy(mealType = MealType.LUNCH)
+        val edited = dinner.copy(mealType = MealType.LUNCH.id)
         val after = foodLogMealGroups(
             listOf(lunchLate, lunchEarly, edited),
             FoodLogSortOrder.LATEST_MEALS_FIRST,
         )
 
-        assertEquals("latest-LUNCH-${lunchLate.id}", before.first { it.meal == MealType.LUNCH }.id)
-        val lunchAfter = after.first { it.meal == MealType.LUNCH }
-        assertEquals("latest-LUNCH-${lunchLate.id}", lunchAfter.id)
+        assertEquals("latest-lunch-${lunchLate.id}", before.first { it.meal == MealType.LUNCH.id }.id)
+        val lunchAfter = after.first { it.meal == MealType.LUNCH.id }
+        assertEquals("latest-lunch-${lunchLate.id}", lunchAfter.id)
         assertEquals(listOf("Lunch late", "Dinner", "Lunch early"), lunchAfter.entries.map { it.name })
     }
 
@@ -148,7 +148,7 @@ class FoodLogMealGroupsTest {
             sugar = 0.8,
             timestamp = Instant.parse("2024-06-01T08:00:00Z"),
             source = FoodSource.MANUAL,
-            mealType = MealType.BREAKFAST,
+            mealType = MealType.BREAKFAST.id,
         )
         val berries = FoodEntry(
             id = UUID.nameUUIDFromBytes("berries".toByteArray()),
@@ -161,7 +161,7 @@ class FoodLogMealGroupsTest {
             sugar = 7.0,
             timestamp = Instant.parse("2024-06-01T08:10:00Z"),
             source = FoodSource.MANUAL,
-            mealType = MealType.BREAKFAST,
+            mealType = MealType.BREAKFAST.id,
         )
 
         val group = foodLogMealGroups(
@@ -192,6 +192,6 @@ class FoodLogMealGroupsTest {
         fat = 1.0,
         timestamp = Instant.parse(iso),
         source = FoodSource.MANUAL,
-        mealType = meal,
+        mealType = meal.id,
     )
 }

@@ -109,7 +109,7 @@ data class RecipeIngredient(
     }
 
     /** Resolves this ingredient into a loggable diary row, tagged with the shared [recipeLogId]. */
-    fun toFoodEntry(logDate: Instant, mealType: MealType, recipeLogId: UUID): FoodEntry = FoodEntry(
+    fun toFoodEntry(logDate: Instant, mealType: String, recipeLogId: UUID): FoodEntry = FoodEntry(
         name = name,
         calories = calories,
         protein = protein,
@@ -153,7 +153,7 @@ data class Recipe(
     val id: UUID = UUID.randomUUID(),
     val name: String,
     val emoji: String? = null,
-    val mealType: MealType = MealType.OTHER,
+    val mealType: String = MealType.OTHER.id,
     val ingredients: List<RecipeIngredient> = emptyList(),
     @Serializable(with = InstantSerializer::class)
     val createdAt: Instant = Instant.now(),

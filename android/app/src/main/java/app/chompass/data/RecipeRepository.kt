@@ -45,7 +45,7 @@ class RecipeRepository(
     }
 
     /** Logs every ingredient as its own diary row, sharing a fresh [Recipe.recipeLogId]. */
-    suspend fun logRecipe(recipe: Recipe, logDate: Instant, mealType: MealType = recipe.mealType): List<UUID> {
+    suspend fun logRecipe(recipe: Recipe, logDate: Instant, mealType: String = recipe.mealType): List<UUID> {
         val recipeLogId = UUID.randomUUID()
         val entries = recipe.ingredients.map { it.toFoodEntry(logDate, mealType, recipeLogId) }
         // One batched DataStore edit instead of one full-file write per ingredient.

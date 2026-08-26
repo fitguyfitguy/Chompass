@@ -537,7 +537,7 @@ internal fun ManualEntryDialog(
         carbs: Double,
         fat: Double,
         micronutrients: MicronutrientValues,
-        mealType: MealType,
+        mealType: String,
         servingSizeGrams: Double,
         servingUnitOptions: List<ServingUnitOption>,
         selectedServingUnit: String?,
@@ -553,7 +553,7 @@ internal fun ManualEntryDialog(
     var carbs by rememberSaveable { mutableStateOf(0.0) }
     var fat by rememberSaveable { mutableStateOf(0.0) }
     var micros by rememberSaveable { mutableStateOf(MicronutrientValues()) }
-    var mealType by rememberSaveable { mutableStateOf(MealType.currentMeal) }
+    var mealType by rememberSaveable { mutableStateOf(MealType.currentMealId) }
     var mealMenuExpanded by remember { mutableStateOf(false) }
 
     // Serving: unit options suggested from the entered name (same heuristics as
@@ -747,7 +747,7 @@ internal fun ManualEntryDialog(
                             )
                             Spacer(Modifier.width(6.dp))
                             Text(
-                                stringResource(mealType.displayNameRes),
+                                mealLabel(mealType),
                                 fontSize = 16.sp,
                                 color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Medium
@@ -758,9 +758,9 @@ internal fun ManualEntryDialog(
                             onDismissRequest = { mealMenuExpanded = false },
                             menuWidth = 184.dp
                         ) {
-                            for (m in MealType.values()) {
+                            for (m in pickerMealIds()) {
                                 SheetGlassDropdownMenuItem(
-                                    label = stringResource(m.displayNameRes),
+                                    label = mealLabel(m),
                                     leadingIcon = sheetMealIcon(m),
                                     selected = m == mealType,
                                     onClick = {

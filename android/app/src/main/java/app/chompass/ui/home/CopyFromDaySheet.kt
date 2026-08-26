@@ -228,7 +228,7 @@ internal fun CopyFromDaySheet(
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 Text(
-                                    stringResource(R.string.copy_meal_format, stringResource(group.meal.displayNameRes)),
+                                    stringResource(R.string.copy_meal_format, mealLabel(group.meal)),
                                     color = MaterialTheme.colorScheme.primary,
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.SemiBold

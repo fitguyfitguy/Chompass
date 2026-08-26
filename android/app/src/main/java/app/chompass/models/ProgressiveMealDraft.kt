@@ -15,7 +15,7 @@ data class ProgressiveMealItem(
     val id: UUID = UUID.randomUUID(),
     val analysis: FoodAnalysis,
     val imageBytes: ByteArray? = null,
-    val mealType: MealType = MealType.OTHER,
+    val mealType: String = MealType.OTHER.id,
     val source: FoodSource = FoodSource.SNAP_FOOD,
     val selectedServingUnit: String? = null,
     val selectedServingQuantity: Double? = null,
@@ -47,7 +47,7 @@ data class ProgressiveMealItem(
 /** In-memory session for accumulating photo-per-ingredient meal builds. */
 data class ProgressiveMealDraft(
     val name: String = "",
-    val mealType: MealType = MealType.currentMeal,
+    val mealType: String = MealType.currentMealId,
     val items: List<ProgressiveMealItem> = emptyList(),
 ) {
     val totalCalories: Int get() = items.sumOf { it.analysis.calories }

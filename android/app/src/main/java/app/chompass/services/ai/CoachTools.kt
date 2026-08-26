@@ -217,7 +217,7 @@ class CoachTools(
         val description = args.optString("description").takeIf { it.isNotBlank() }
             ?: return jsonError("propose_log_food requires a non-empty 'description'.")
         val mealType = args.optString("meal_type").takeIf { it.isNotBlank() }?.let(::parseMealType)
-            ?: MealType.currentMeal
+            ?: MealType.currentMealId
         val analysis = try {
             foodAnalysisService.analyzeText(description)
         } catch (e: Throwable) {
@@ -261,13 +261,8 @@ class CoachTools(
         }.toString()
     }
 
-    private fun parseMealType(raw: String): MealType = when (raw.trim().lowercase()) {
-        "breakfast" -> MealType.BREAKFAST
-        "lunch" -> MealType.LUNCH
-        "dinner" -> MealType.DINNER
-        "snack" -> MealType.SNACK
-        else -> MealType.OTHER
-    }
+    private fun parseMealType(raw: String): String =
+        MealType.fromId(raw)?.id ?: MealType.OTHER.id
 
     private fun optDouble(json: JSONObject, key: String): Double? {
         if (!json.has(key) || json.isNull(key)) return null
@@ -311,13 +306,7 @@ class CoachTools(
         FoodSource.GROUNDED -> "grounded"
     }
 
-    private fun mealTypeName(mealType: MealType): String = when (mealType) {
-        MealType.BREAKFAST -> "breakfast"
-        MealType.LUNCH -> "lunch"
-        MealType.DINNER -> "dinner"
-        MealType.SNACK -> "snack"
-        MealType.OTHER -> "other"
-    }
+    private fun mealTypeName(mealType: String): String = mealType
 
     private fun iso(instant: Instant): String =
         ISO_FMT.format(instant.atZone(ZoneId.systemDefault()).toLocalDate().atStartOfDay(ZoneId.systemDefault()).toInstant())

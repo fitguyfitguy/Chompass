@@ -44,7 +44,7 @@ class DailyFoodAggregatesTest {
         fat = fat,
         timestamp = Instant.parse(ts),
         source = FoodSource.MANUAL,
-        mealType = MealType.LUNCH,
+        mealType = MealType.LUNCH.id,
     )
 
     private fun totals(month: YearMonth, prefs: PreferencesStore): List<DailyFoodTotals> =

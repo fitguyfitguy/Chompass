@@ -2,6 +2,7 @@
 /**
  * Meal schedule prefs — Android MealSchedule defaults (minutes from midnight).
  */
+import { mealIdAt, parseCatalog } from "./chompass-core/meal-catalog.js";
 
 const DEFAULTS = {
   breakfast: 5 * 60,
@@ -45,13 +46,8 @@ export function timeInputToMinutes(hhmm) {
  * @returns {"breakfast"|"lunch"|"dinner"|"snack"}
  */
 export function guessMealTypeFromPrefs(prefs, now = new Date()) {
-  const mins = now.getHours() * 60 + now.getMinutes();
-  const s = mealStarts(prefs);
-  // Mirror Android MealSchedule.mealTypeAt: overnight / pre-breakfast is snack.
-  if (mins >= s.snack || mins < s.breakfast) return "snack";
-  if (mins >= s.dinner) return "dinner";
-  if (mins >= s.lunch) return "lunch";
-  return "breakfast";
+  const catalog = parseCatalog(prefs?.mealCatalog, mealStarts(prefs));
+  return mealIdAt(catalog, now);
 }
 
 /**

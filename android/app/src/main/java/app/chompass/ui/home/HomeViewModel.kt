@@ -989,7 +989,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     // here, not on screen) when compared against
                     // op=homeList phase=renderGroups.
                     val listView = next.todayEntries.joinToString(",") { e ->
-                        "${e.id.toString().take(8)}:${e.mealType.name}:${e.timestamp.epochSecond}"
+                        "${e.id.toString().take(8)}:${e.mealType}:${e.timestamp.epochSecond}"
                     }
                     PerfLog.event(
                         "op=homeList phase=emission date=${next.date} sort=${next.foodLogSortOrder} n=${next.todayEntries.size} entries=[$listView]",
@@ -1765,7 +1765,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         name: String? = null,
         servingGrams: Double? = null,
         scale: Double = 1.0,
-        mealType: MealType = MealType.currentMeal,
+        mealType: String = MealType.currentMealId,
         selectedServingUnit: String? = null,
         selectedServingQuantity: Double? = null,
         editedAnalysis: FoodAnalysis? = null
@@ -1872,7 +1872,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     fun addToProgressiveMeal(
         name: String? = null,
         servingGrams: Double? = null,
-        mealType: MealType = MealType.currentMeal,
+        mealType: String = MealType.currentMealId,
         selectedServingUnit: String? = null,
         selectedServingQuantity: Double? = null,
         editedAnalysis: FoodAnalysis,
@@ -1931,7 +1931,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
-    fun updateProgressiveMealMeta(name: String, mealType: MealType) {
+    fun updateProgressiveMealMeta(name: String, mealType: String) {
         val draft = _ui.value.progressiveMeal ?: return
         _ui.update { it.copy(progressiveMeal = draft.copy(name = name, mealType = mealType)) }
     }
@@ -2483,7 +2483,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         carbs: Double,
         fat: Double,
         micronutrients: MicronutrientValues = MicronutrientValues(),
-        mealType: MealType = MealType.currentMeal,
+        mealType: String = MealType.currentMealId,
         servingSizeGrams: Double = 0.0,
         servingUnitOptions: List<ServingUnitOption> = emptyList(),
         selectedServingUnit: String? = null,
@@ -2860,7 +2860,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 carbs = 55.0,
                 fat = 8.0,
                 source = FoodSource.MANUAL,
-                mealType = MealType.BREAKFAST,
+                mealType = MealType.BREAKFAST.id,
             )
             val ms = awaitUiAck {
                 if (PerfLog.enabled) {
