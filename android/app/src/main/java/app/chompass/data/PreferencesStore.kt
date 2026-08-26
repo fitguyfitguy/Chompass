@@ -426,8 +426,6 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setGeminiGoogleSearchEnabled(v: Boolean) = setGeminiGoogleSearchEnabledImpl(v)
     val openRouterReasoningEffort: Flow<OpenRouterReasoningEffort> get() = openRouterReasoningEffortImpl
     suspend fun setOpenRouterReasoningEffort(e: OpenRouterReasoningEffort) = setOpenRouterReasoningEffortImpl(e)
-    val portionClarifyEnabled: Flow<Boolean> get() = portionClarifyEnabledImpl
-    suspend fun setPortionClarifyEnabled(v: Boolean) = setPortionClarifyEnabledImpl(v)
     val skipPhotoNotePrompt: Flow<Boolean> get() = skipPhotoNotePromptImpl
     suspend fun setSkipPhotoNotePrompt(v: Boolean) = setSkipPhotoNotePromptImpl(v)
     val photoNoteSkipCount: Flow<Int> get() = photoNoteSkipCountImpl

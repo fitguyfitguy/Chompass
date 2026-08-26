@@ -704,7 +704,6 @@ für dich ein</string>
 
     <string name="add_food_hero_saved_sub">Zuletzt verwendet &amp; Favoriten</string>
 
-    <string name="add_food_more_section">Weitere Möglichkeiten zum Erfassen</string>
 
     <string name="add_food_quick_relog">Erneut eintragen</string>
 
@@ -714,7 +713,6 @@ für dich ein</string>
 
     <string name="cd_relog_meal">%1$s erneut eintragen</string>
 
-    <string name="add_food_water_section">Wasser</string>
 
     <string name="water_amount_ml">%1$d ml</string>
 
@@ -969,31 +967,18 @@ für dich ein</string>
 
     <string name="sheet_constituents_remove">Zutat entfernen</string>
 
-    <string name="sheet_portion_clarify_prompt">Portion bestätigen?</string>
 
-    <string name="sheet_portion_clarify_weight_label">Genaues Gewicht</string>
 
-    <string name="sheet_portion_clarify_weight_placeholder">Gramm</string>
 
-    <string name="sheet_portion_clarify_weight_apply">Übernehmen</string>
 
-    <string name="sheet_portion_clarify_weight_hint">Gib das gesamte essbare Gewicht ein, um Kalorien und Makronährstoffe ohne weiteren KI-Aufruf neu zu berechnen.</string>
 
-    <string name="sheet_portion_clarify_weight_invalid">Gib ein Gewicht größer als 0 g ein</string>
 
-    <string name="sheet_portion_clarify_small">Klein</string>
 
-    <string name="sheet_portion_clarify_regular">Normal</string>
 
-    <string name="sheet_portion_clarify_large">Groß</string>
 
-    <string name="sheet_portion_clarify_restaurant">Restaurantportion</string>
 
-    <string name="sheet_portion_clarify_updating">Schätzung wird aktualisiert…</string>
 
-    <string name="sheet_portion_clarify_failed">Die Schätzung konnte nicht aktualisiert werden</string>
 
-    <string name="sheet_portion_clarify_dismiss">Überspringen</string>
 
     <string name="sheet_nutrition">Nährwerte</string>
 
@@ -1868,9 +1853,7 @@ für dich ein</string>
 
     <string name="settings_show_coach_tab_footer">Entfernt den Coach-Tab aus der unteren Leiste. Die Coach-Funktion selbst bleibt aktiviert; der KI-Funktionen-Schalter oben schaltet alles aus.</string>
 
-    <string name="settings_portion_clarify">Überprüfung der Portionsgröße</string>
 
-    <string name="settings_portion_clarify_footer">Wenn diese Option aktiviert ist, bietet jeder Fotoeintrag eine Korrektur des genauen Gewichts (Neuskalierung ohne weiteren KI-Aufruf) sowie optionale Größenangaben (klein/normal/groß/Restaurantgröße), die anhand deiner Antwort neu analysiert werden.</string>
 
     <string name="settings_meal_constituents">Aufschlüsselung der Mahlzeitbestandteile</string>
 
@@ -3227,7 +3210,6 @@ für dich ein</string>
     <string name="fasting_start">Fasten starten</string>
     <string name="fasting_stop">Fasten beenden</string>
     <string name="fasting_cancel">Abbrechen</string>
-    <string name="add_food_fasting_section">Fasten</string>
     <string name="settings_fasting_title">Fasten</string>
     <string name="settings_fasting_intro">Verfolge intermittierende Fastenfenster mit einem lokalen Timer: jederzeit starten, stoppen oder abbrechen, optional mit Ziellänge. Der Timer bleibt auf diesem Gerät und wird nie synchronisiert oder exportiert.</string>
     <string name="settings_fasting_section_tracking">Verfolgung</string>
@@ -3286,7 +3268,6 @@ für dich ein</string>
     <string name="prompt_history_empty">Noch keine gespeicherten Prompts. Prompts aus der Analyse-Warteschlange und fehlgeschlagene Analysen erscheinen hier.</string>
     <string name="prompt_history_use">Diesen Prompt verwenden</string>
     <string name="caffeine">Koffein</string>
-    <string name="add_food_caffeine_section">Koffein</string>
     <string name="caffeine_add">Koffein hinzufügen</string>
     <string name="caffeine_log_title">Koffein eintragen</string>
     <string name="caffeine_edit_title">Koffein bearbeiten</string>
@@ -3317,7 +3298,6 @@ für dich ein</string>
     <string name="settings_caffeine_limit_wheel_help">Scrolle, um ein tägliches Koffeinlimit von 0 (kein Limit) bis 1000 mg zu setzen.</string>
     <string name="settings_caffeine_privacy_note">Koffein-Einträge bleiben auf diesem Gerät und in deiner WebDAV-Synchronisation. Sie sind nie in geteilten Mahlzeiten enthalten und werden nie an einen KI-Anbieter gesendet.</string>
     <string name="nicotine">Nikotin</string>
-    <string name="add_food_nicotine_section">Nikotin</string>
     <string name="nicotine_add">Nikotin hinzufügen</string>
     <string name="nicotine_log_title">Nikotin eintragen</string>
     <string name="nicotine_edit_title">Nikotin bearbeiten</string>

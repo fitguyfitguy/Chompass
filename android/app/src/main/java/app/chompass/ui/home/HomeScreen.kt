@@ -1494,10 +1494,8 @@ fun HomeScreen(
             source = ui.pendingReviewSource?.source
                 ?: ui.pendingFoodSource
                 ?: if (ui.pendingImageBytes != null) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT,
-            portionClarifyEnabled = ui.portionClarifyEnabled && aiFeaturesEnabled,
             portionPreConfirmed = ui.pendingPortionPreConfirmed,
             progressiveMealActive = ui.progressiveMeal?.items?.isNotEmpty() == true,
-            onReprocessPortion = if (aiFeaturesEnabled) { answer -> vm.reprocessPendingAnalysis(answer) } else null,
             onWhatIfSuggestion = if (aiFeaturesEnabled) vm::suggestMealWhatIf else null,
             onReanalyzeWithTip = if (
                 aiFeaturesEnabled &&

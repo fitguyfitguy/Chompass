@@ -260,7 +260,6 @@
     <string name="add_food_hero_note_sub">食べたものを説明</string>
     <string name="add_food_hero_saved">保存済み</string>
     <string name="add_food_hero_saved_sub">最近とお気に入り</string>
-    <string name="add_food_more_section">その他の記録方法</string>
     <string name="add_food_photo_source_title">写真を追加</string>
     <string name="add_food_photo_camera">写真を撮る</string>
     <string name="add_food_photo_gallery">ギャラリーから選択</string>
@@ -756,7 +755,6 @@
     <string name="action_undo">戻す</string>
     <string name="action_what_if">どうなる？</string>
     <string name="add_food_relog_kcal">%1$d kcal</string>
-    <string name="add_food_water_section">水</string>
     <string name="ai_error_coach_on_device">コーチはまだオンデバイスプロバイダーに対応していません。設定 → AI プロバイダーでクラウドプロバイダーに切り替えてください。</string>
     <string name="ai_error_coach_round_limit">コーチは回答できませんでした。質問の言い方を変えてみてください。</string>
     <string name="ai_error_disabled">AI 機能は設定 → AI と音声でオフになっています。</string>
@@ -1360,8 +1358,6 @@
     <string name="settings_calorie_below_floor_continue">それでも続ける</string>
     <string name="settings_picker_use_wheel">ホイールを使用</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d IU</string>
-    <string name="settings_portion_clarify">分量サイズの確認</string>
-    <string name="settings_portion_clarify_footer">オンの場合、写真記録ごとに、AI 呼び出しなしで再スケールできる正確な重量修正と、回答に応じて再分析するサイズチップ（小、普通、大、レストランサイズ）が提供されます。</string>
     <string name="settings_progress_plots">身体測定グラフ</string>
     <string name="settings_progress_plots_count">%1$d グラフ</string>
     <string name="settings_progress_plots_latest">最新：%1$s %2$s</string>
@@ -1491,19 +1487,6 @@
     <string name="sheet_keto_carb_mode">ケト炭水化物モード</string>
     <string name="sheet_language">言語</string>
     <string name="sheet_macro_label_format">%1$s（%2$s）</string>
-    <string name="sheet_portion_clarify_dismiss">スキップ</string>
-    <string name="sheet_portion_clarify_failed">推定を更新できませんでした</string>
-    <string name="sheet_portion_clarify_large">大</string>
-    <string name="sheet_portion_clarify_prompt">分量を確認しますか？</string>
-    <string name="sheet_portion_clarify_regular">普通</string>
-    <string name="sheet_portion_clarify_restaurant">レストランサイズ</string>
-    <string name="sheet_portion_clarify_small">小</string>
-    <string name="sheet_portion_clarify_updating">推定を更新中…</string>
-    <string name="sheet_portion_clarify_weight_apply">適用</string>
-    <string name="sheet_portion_clarify_weight_hint">AI 呼び出しなしでカロリーとマクロを再スケールするには、可食部の総重量を入力してください。</string>
-    <string name="sheet_portion_clarify_weight_invalid">0 g より大きい重量を入力してください</string>
-    <string name="sheet_portion_clarify_weight_label">正確な重量</string>
-    <string name="sheet_portion_clarify_weight_placeholder">グラム</string>
     <string name="sheet_serving_custom_grams">単位あたりのグラム</string>
     <string name="sheet_serving_custom_name">単位名</string>
     <string name="sheet_serving_unit_heuristics">ヒューリスティックをカスタマイズ</string>
@@ -1731,7 +1714,6 @@
     <string name="fasting_start">ファスティング開始</string>
     <string name="fasting_stop">ファスティング終了</string>
     <string name="fasting_cancel">キャンセル</string>
-    <string name="add_food_fasting_section">ファスティング</string>
     <string name="settings_fasting_title">ファスティング</string>
     <string name="settings_fasting_intro">ローカルのタイマーで間欠的ファスティングの時間帯を記録できます。いつでも開始・停止・キャンセルでき、目標時間も任意で設定可能。タイマーはこの端末にのみ保存され、同期や書き出しは一切行われません。</string>
     <string name="settings_fasting_section_tracking">記録</string>
@@ -1790,7 +1772,6 @@
     <string name="prompt_history_empty">保存されたプロンプトはまだありません。分析キューと失敗した分析のプロンプトがここに表示されます。</string>
     <string name="prompt_history_use">このプロンプトを使う</string>
     <string name="caffeine">カフェイン</string>
-    <string name="add_food_caffeine_section">カフェイン</string>
     <string name="caffeine_add">カフェインを追加</string>
     <string name="caffeine_log_title">カフェインを記録</string>
     <string name="caffeine_edit_title">カフェインを編集</string>
@@ -1821,7 +1802,6 @@
     <string name="settings_caffeine_limit_wheel_help">スクロールして0（上限なし）から1000 mgまでの1日のカフェイン上限を設定します。</string>
     <string name="settings_caffeine_privacy_note">カフェインの記録はこの端末とWebDAV同期にのみ残ります。共有の食事に含まれることはなく、AIプロバイダーに送信されることもありません。</string>
     <string name="nicotine">ニコチン</string>
-    <string name="add_food_nicotine_section">ニコチン</string>
     <string name="nicotine_add">ニコチンを追加</string>
     <string name="nicotine_log_title">ニコチンを記録</string>
     <string name="nicotine_edit_title">ニコチンを編集</string>

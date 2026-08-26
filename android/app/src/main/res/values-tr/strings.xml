@@ -407,12 +407,10 @@
     <string name="add_food_hero_note_sub">Ne yediğini anlat</string>
     <string name="add_food_hero_saved">Kayıtlı</string>
     <string name="add_food_hero_saved_sub">Son kullanılanlar ve favoriler</string>
-    <string name="add_food_more_section">Diğer ekleme yolları</string>
     <string name="add_food_quick_relog">Tekrar ekle</string>
     <string name="add_food_quick_relog_empty">Bir öğünü favorilere ekle veya bir kez kaydet. Tek dokunuşla tekrar eklemek için burada görünür.</string>
     <string name="add_food_relog_kcal">%1$d kcal</string>
     <string name="cd_relog_meal">%1$s tekrar ekle</string>
-    <string name="add_food_water_section">Su</string>
     <string name="water_amount_ml">%1$d ml</string>
     <string name="water_amount_fl_oz">%1$d fl oz</string>
     <string name="unit_fl_oz">fl oz</string>
@@ -550,19 +548,6 @@
     <string name="sheet_constituents_count">Malzemeler (%1$d)</string>
     <string name="sheet_constituents_add">Malzeme ekle</string>
     <string name="sheet_constituents_remove">Malzemeyi kaldır</string>
-    <string name="sheet_portion_clarify_prompt">Porsiyon onaylansın mı?</string>
-    <string name="sheet_portion_clarify_weight_label">Tam ağırlık</string>
-    <string name="sheet_portion_clarify_weight_placeholder">gram</string>
-    <string name="sheet_portion_clarify_weight_apply">Uygula</string>
-    <string name="sheet_portion_clarify_weight_hint">Başka bir AI çağrısı olmadan kalori ve makroları yeniden ölçeklemek için toplam yenilebilir ağırlığı gir.</string>
-    <string name="sheet_portion_clarify_weight_invalid">0 g\'dan büyük bir ağırlık gir</string>
-    <string name="sheet_portion_clarify_small">Küçük</string>
-    <string name="sheet_portion_clarify_regular">Normal</string>
-    <string name="sheet_portion_clarify_large">Büyük</string>
-    <string name="sheet_portion_clarify_restaurant">Restoran boyu</string>
-    <string name="sheet_portion_clarify_updating">Tahmin güncelleniyor…</string>
-    <string name="sheet_portion_clarify_failed">Tahmin güncellenemedi</string>
-    <string name="sheet_portion_clarify_dismiss">Atla</string>
     <string name="sheet_nutrition">Besin Değerleri</string>
     <string name="sheet_meal">Öğün</string>
     <string name="sheet_more_nutrition">Daha Fazla Besin</string>
@@ -1040,8 +1025,6 @@
     <string name="settings_ai_features_master_footer">AI sağlayıcısına veri gönderen her şeyi kapatır: koç, fotoğraf/metin/ses kaydı, “Ya şöyle olsaydı?” ve AI hedef önerileri. Barkod, yemek arama, manuel giriş, kayıtlı öğünler, su, senkronizasyon ve Health Connect normal şekilde çalışmaya devam eder.</string>
     <string name="settings_show_coach_tab">Koç sekmesini göster</string>
     <string name="settings_show_coach_tab_footer">Koç sekmesini alt çubuktan gizler. Koç özelliği etkin kalır; yukarıdaki AI özellikleri anahtarı her şeyi kapatır.</string>
-    <string name="settings_portion_clarify">Porsiyon boyutu kontrolü</string>
-    <string name="settings_portion_clarify_footer">Etkinken her fotoğraf kaydı, başka bir AI çağrısı olmadan yeniden ölçekleyen tam ağırlık düzeltmesi ve yanıtınla yeniden analiz eden boyut çipleri (küçük, normal, büyük, restoran boyu) sunar.</string>
     <string name="settings_meal_constituents">Öğün malzemesi dökümü</string>
     <string name="settings_meal_constituents_footer">Etkinken AI, karma öğünleri gram ve birimlerle düzenlenebilir malzemelere ayırabilir. Daha güçlü bulut modelleriyle en iyi çalışır; sonuçlar tutarsız görünüyorsa daha ucuz veya daha küçük modeller için kapat.</string>
     <string name="settings_meal_constituents_footer_on_device">Cihazdaki Gemma için kullanılamaz: malzeme dökümü daha güçlü bir model gerektirir. Bunu etkinleştirmek için bir bulut sağlayıcısına geç.</string>
@@ -1752,7 +1735,6 @@
     <string name="fasting_start">Orucu başlat</string>
     <string name="fasting_stop">Orucu bitir</string>
     <string name="fasting_cancel">İptal</string>
-    <string name="add_food_fasting_section">Oruç</string>
     <string name="settings_fasting_title">Oruç</string>
     <string name="settings_fasting_intro">Yerel bir zamanlayıcıyla aralıklı oruç pencerelerini takip edin: isteğe bağlı hedef süresiyle istediğiniz zaman başlatın, durdurun veya iptal edin. Zamanlayıcı bu cihazda kalır ve asla senkronize edilmez veya dışa aktarılmaz.</string>
     <string name="settings_fasting_section_tracking">Takip</string>
@@ -1811,7 +1793,6 @@
     <string name="prompt_history_empty">Henüz kayıtlı istem yok. Analiz kuyruğundan ve başarısız analizlerden istemler burada görünür.</string>
     <string name="prompt_history_use">Bu istemi kullan</string>
     <string name="caffeine">Kafein</string>
-    <string name="add_food_caffeine_section">Kafein</string>
     <string name="caffeine_add">Kafein ekle</string>
     <string name="caffeine_log_title">Kafein kaydet</string>
     <string name="caffeine_edit_title">Kafeini düzenle</string>
@@ -1842,7 +1823,6 @@
     <string name="settings_caffeine_limit_wheel_help">0 (limitsiz) ile 1000 mg arasında günlük kafein limiti ayarlamak için kaydırın.</string>
     <string name="settings_caffeine_privacy_note">Kafein kayıtları bu cihazda ve yalnızca WebDAV eşzamanlamanızda kalır. Paylaşılan yemeklere asla eklenmez ve hiçbir zaman bir yapay zekâ sağlayıcısına gönderilmez.</string>
     <string name="nicotine">Nikotin</string>
-    <string name="add_food_nicotine_section">Nikotin</string>
     <string name="nicotine_add">Nikotin ekle</string>
     <string name="nicotine_log_title">Nikotin kaydet</string>
     <string name="nicotine_edit_title">Nikotini düzenle</string>

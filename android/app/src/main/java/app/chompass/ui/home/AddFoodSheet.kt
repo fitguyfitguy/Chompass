@@ -241,7 +241,7 @@ internal fun AddFoodSheetContent(
         Modifier
             .fillMaxWidth()
             .navigationBarsPadding()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(scrollState)
             // Device pass #2 (2026-08-24): the content outgrew the sheet on
             // shorter screens (water + nicotine + caffeine + fasting rows), so
             // the bottom rows were clipped below the sheet edge. Scrolling the
@@ -331,8 +331,6 @@ internal fun AddFoodSheetContent(
             )
         }
         Spacer(Modifier.height(16.dp))
-        SheetSectionHeader(stringResource(R.string.add_food_more_section))
-        Spacer(Modifier.height(6.dp))
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(
                 Modifier.fillMaxWidth(),
@@ -409,8 +407,6 @@ internal fun AddFoodSheetContent(
                             modifier = Modifier.weight(1f),
                             onClick = onQueue,
                         )
-                    } else {
-                        Spacer(Modifier.weight(1f))
                     }
                 }
             } else {
@@ -444,10 +440,7 @@ internal fun AddFoodSheetContent(
                             modifier = Modifier.weight(1f),
                             onClick = onQueue,
                         )
-                    } else {
-                        Spacer(Modifier.weight(1f))
                     }
-                    Spacer(Modifier.weight(1f))
                 }
             }
         }
@@ -608,7 +601,6 @@ private fun AddFoodWaterQuickRow(
     }
     val selectedMl = presets[selectedIndex]
 
-    SheetSectionHeader(stringResource(R.string.add_food_water_section))
     Row(
         Modifier
             .fillMaxWidth()
@@ -695,7 +687,6 @@ private fun AddFoodNicotineQuickRow(
 ) {
     val kinds = remember(quickKinds) { quickKinds.distinct().ifEmpty { NicotineKind.DefaultQuickKinds } }
 
-    SheetSectionHeader(stringResource(R.string.add_food_nicotine_section))
     Row(
         Modifier
             .fillMaxWidth()
@@ -746,7 +737,6 @@ private fun AddFoodCaffeineQuickRow(
 ) {
     val kinds = remember(quickKinds) { quickKinds.distinct().ifEmpty { CaffeineKind.DefaultQuickKinds } }
 
-    SheetSectionHeader(stringResource(R.string.add_food_caffeine_section))
     Row(
         Modifier
             .fillMaxWidth()

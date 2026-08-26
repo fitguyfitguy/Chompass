@@ -1,6 +1,5 @@
 package app.chompass.ui.home
 
-import app.chompass.models.FoodSource
 import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.PartialFoodAnalysis
 import org.junit.Assert.assertFalse
@@ -25,13 +24,6 @@ class FoodResultReadyGateTest {
         assertFalse(analysisReadyForEdit(pending = sampleAnalysis(), busy = true))
         assertFalse(analysisReadyForEdit(pending = null, busy = false))
         assertTrue(analysisReadyForEdit(pending = sampleAnalysis(), busy = false))
-    }
-
-    @Test
-    fun portionClarify_stillSnapOnlyAfterReady() {
-        assertTrue(shouldOfferPortionClarify(FoodSource.SNAP_FOOD))
-        assertFalse(shouldOfferPortionClarify(FoodSource.SNAP_FOOD, portionPreConfirmed = true))
-        assertFalse(shouldOfferPortionClarify(FoodSource.TEXT_INPUT))
     }
 
     @Test

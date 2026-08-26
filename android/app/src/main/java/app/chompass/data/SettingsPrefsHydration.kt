@@ -95,7 +95,6 @@ internal data class SettingsPrefsHydration(
     val fallbackModelRaw: String?,
     val geminiGoogleSearchEnabled: Boolean,
     val openRouterReasoningEffort: OpenRouterReasoningEffort,
-    val portionClarifyEnabled: Boolean,
     val mealConstituentsEnabled: Boolean,
     val skipPhotoNotePrompt: Boolean,
     val optionalNutrientGoals: OptionalNutrientGoals,
@@ -217,7 +216,6 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
         fallbackModelRaw = this[Keys.FALLBACK_MODEL],
         geminiGoogleSearchEnabled = this[Keys.GEMINI_GOOGLE_SEARCH_ENABLED] ?: false,
         openRouterReasoningEffort = OpenRouterReasoningEffort.fromStorage(this[Keys.OPENROUTER_REASONING_EFFORT]),
-        portionClarifyEnabled = this[Keys.PORTION_CLARIFY_ENABLED] ?: true,
         mealConstituentsEnabled = this[Keys.MEAL_CONSTITUENTS_ENABLED] ?: true,
         skipPhotoNotePrompt = this[Keys.SKIP_PHOTO_NOTE_PROMPT] ?: false,
         optionalNutrientGoals = run {

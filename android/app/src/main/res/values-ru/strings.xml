@@ -330,7 +330,6 @@
     <string name="add_food_hero_note_sub">Опиши, что ты ел</string>
     <string name="add_food_hero_saved">Сохранённое</string>
     <string name="add_food_hero_saved_sub">Недавние и избранное</string>
-    <string name="add_food_more_section">Другие способы записи</string>
     <string name="add_food_photo_source_title">Добавить фото</string>
     <string name="add_food_photo_camera">Сделать фото</string>
     <string name="add_food_photo_gallery">Выбрать из галереи</string>
@@ -1075,7 +1074,6 @@
     <string name="analysis_queue_days_ago">%1$d дн. назад</string>
     <string name="analysis_queue_on_day">на</string>    <string name="action_retry">Повторить</string>
     <string name="action_show">Показать</string>
-    <string name="add_food_water_section">Вода</string>
     <string name="error_failed_input_missing">Сохранённый ввод не удалось восстановить. Сделай новое фото.</string>
     <string name="export_body_metrics_empty">Записей о весе, жире или измерениях для экспорта не найдено.</string>
     <string name="export_body_metrics_format">Формат</string>
@@ -1589,8 +1587,6 @@
     <string name="settings_calorie_below_floor_continue">Всё равно продолжить</string>
     <string name="settings_picker_use_wheel">Использовать колесо</string>
     <string name="settings_picker_vitd_iu_hint">%1$d мкг ≈ %2$d МЕ</string>
-    <string name="settings_portion_clarify">Проверка размера порции</string>
-    <string name="settings_portion_clarify_footer">Когда включено, каждая запись по фото предлагает точную корректировку веса без нового запроса к ИИ, а также чипы размера (маленькая, обычная, большая, ресторанная), которые пересчитывают анализ с твоим ответом.</string>
     <string name="settings_progress_plots">Графики замеров тела</string>
     <string name="settings_progress_plots_count">%1$d графиков</string>
     <string name="settings_progress_plots_latest">Последние: %1$s %2$s</string>
@@ -1689,19 +1685,6 @@
     <string name="sheet_constituents_count">Ингредиенты (%1$d)</string>
     <string name="sheet_constituents_remove">Убрать</string>
     <string name="sheet_language">Язык</string>
-    <string name="sheet_portion_clarify_dismiss">Пропустить</string>
-    <string name="sheet_portion_clarify_failed">Не удалось обновить оценку</string>
-    <string name="sheet_portion_clarify_large">Большая</string>
-    <string name="sheet_portion_clarify_prompt">Подтвердить порцию?</string>
-    <string name="sheet_portion_clarify_regular">Обычная</string>
-    <string name="sheet_portion_clarify_restaurant">Ресторанная</string>
-    <string name="sheet_portion_clarify_small">Маленькая</string>
-    <string name="sheet_portion_clarify_updating">Обновление оценки…</string>
-    <string name="sheet_portion_clarify_weight_apply">Применить</string>
-    <string name="sheet_portion_clarify_weight_hint">Введи общий съедобный вес, чтобы пересчитать калории и макросы без нового запроса к ИИ.</string>
-    <string name="sheet_portion_clarify_weight_invalid">Введи вес больше 0 г</string>
-    <string name="sheet_portion_clarify_weight_label">Точный вес</string>
-    <string name="sheet_portion_clarify_weight_placeholder">граммы</string>
     <string name="sheet_serving_custom_grams">Граммов на единицу</string>
     <string name="sheet_serving_custom_name">Название единицы</string>
     <string name="speech_error_audio_capture_failed">Сбой захвата звука</string>
@@ -1807,7 +1790,6 @@
     <string name="fasting_start">Начать пост</string>
     <string name="fasting_stop">Завершить пост</string>
     <string name="fasting_cancel">Отмена</string>
-    <string name="add_food_fasting_section">Пост</string>
     <string name="settings_fasting_title">Пост</string>
     <string name="settings_fasting_intro">Отслеживайте окна интервального голодания с помощью локального таймера: начинайте, останавливайте или отменяйте в любой момент, с опциональной целевой длительностью. Таймер остаётся на этом устройстве и никогда не синхронизируется и не экспортируется.</string>
     <string name="settings_fasting_section_tracking">Отслеживание</string>
@@ -1866,7 +1848,6 @@
     <string name="prompt_history_empty">Сохранённых промптов пока нет. Промпты из очереди анализа и неудачных анализов появятся здесь.</string>
     <string name="prompt_history_use">Использовать этот промпт</string>
     <string name="caffeine">Кофеин</string>
-    <string name="add_food_caffeine_section">Кофеин</string>
     <string name="caffeine_add">Добавить кофеин</string>
     <string name="caffeine_log_title">Записать кофеин</string>
     <string name="caffeine_edit_title">Изменить кофеин</string>
@@ -1897,7 +1878,6 @@
     <string name="settings_caffeine_limit_wheel_help">Прокрутите, чтобы задать дневной лимит кофеина от 0 (без лимита) до 1000 мг.</string>
     <string name="settings_caffeine_privacy_note">Записи о кофеине остаются на этом устройстве и в вашей синхронизации WebDAV. Они никогда не попадают в общие приёмы пищи и не отправляются ИИ-провайдеру.</string>
     <string name="nicotine">Никотин</string>
-    <string name="add_food_nicotine_section">Никотин</string>
     <string name="nicotine_add">Добавить никотин</string>
     <string name="nicotine_log_title">Записать никотин</string>
     <string name="nicotine_edit_title">Изменить никотин</string>

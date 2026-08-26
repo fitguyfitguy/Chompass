@@ -261,7 +261,6 @@
     <string name="add_food_hero_note_sub">صف ما أكلته</string>
     <string name="add_food_hero_saved">محفوظ</string>
     <string name="add_food_hero_saved_sub">الأخيرة والمفضلة</string>
-    <string name="add_food_more_section">طرق أخرى للتسجيل</string>
     <string name="add_food_photo_source_title">إضافة صورة</string>
     <string name="add_food_photo_camera">التقاط صورة</string>
     <string name="add_food_photo_gallery">اختيار من المعرض</string>
@@ -757,7 +756,6 @@
     <string name="action_undo">تراجع</string>
     <string name="action_what_if">ماذا لو؟</string>
     <string name="add_food_relog_kcal">%1$d سعرة</string>
-    <string name="add_food_water_section">ماء</string>
     <string name="ai_error_coach_on_device">المدرب غير متاح بعد مع المزوّد المحلي. انتقل إلى مزوّد سحابي في الإعدادات ← مزوّد الذكاء الاصطناعي.</string>
     <string name="ai_error_coach_round_limit">تعذّر على المدرب الرد. حاول إعادة صياغة السؤال.</string>
     <string name="ai_error_disabled">ميزات الذكاء الاصطناعي معطّلة في الإعدادات ← الذكاء الاصطناعي والصوت.</string>
@@ -1361,8 +1359,6 @@
     <string name="settings_calorie_below_floor_continue">المتابعة على أي حال</string>
     <string name="settings_picker_use_wheel">استخدام العجلة</string>
     <string name="settings_picker_vitd_iu_hint">%1$d مكغ ≈ %2$d وحدة دولية</string>
-    <string name="settings_portion_clarify">التحقق من حجم الحصة</string>
-    <string name="settings_portion_clarify_footer">عند التفعيل، يقدم كل سجل بالصورة تصحيحًا دقيقًا للوزن يعيد القياس دون استدعاء ذكاء اصطناعي آخر، بالإضافة إلى رقائق الحجم (صغيرة، عادية، كبيرة، بحجم المطعم) التي تعيد التحليل بإجابتك.</string>
     <string name="settings_progress_plots">رسوم قياسات الجسم</string>
     <string name="settings_progress_plots_count">%1$d رسوم</string>
     <string name="settings_progress_plots_latest">الأحدث: %1$s %2$s</string>
@@ -1492,19 +1488,6 @@
     <string name="sheet_keto_carb_mode">وضع كربوهيدرات الكيتو</string>
     <string name="sheet_language">اللغة</string>
     <string name="sheet_macro_label_format">%1$s (%2$s)</string>
-    <string name="sheet_portion_clarify_dismiss">تخطي</string>
-    <string name="sheet_portion_clarify_failed">تعذّر تحديث التقدير</string>
-    <string name="sheet_portion_clarify_large">كبيرة</string>
-    <string name="sheet_portion_clarify_prompt">تأكيد الحصة؟</string>
-    <string name="sheet_portion_clarify_regular">عادية</string>
-    <string name="sheet_portion_clarify_restaurant">بحجم المطعم</string>
-    <string name="sheet_portion_clarify_small">صغيرة</string>
-    <string name="sheet_portion_clarify_updating">جارٍ تحديث التقدير…</string>
-    <string name="sheet_portion_clarify_weight_apply">تطبيق</string>
-    <string name="sheet_portion_clarify_weight_hint">أدخل الوزن الصالح للأكل الإجمالي لإعادة قياس السعرات والمغذيات الكبرى دون استدعاء ذكاء اصطناعي آخر.</string>
-    <string name="sheet_portion_clarify_weight_invalid">أدخل وزنًا أكبر من 0 غ</string>
-    <string name="sheet_portion_clarify_weight_label">الوزن الدقيق</string>
-    <string name="sheet_portion_clarify_weight_placeholder">جرام</string>
     <string name="sheet_serving_custom_grams">الجرام لكل وحدة</string>
     <string name="sheet_serving_custom_name">اسم الوحدة</string>
     <string name="sheet_serving_unit_heuristics">تخصيص الاستدلالات</string>
@@ -1737,7 +1720,6 @@
     <string name="fasting_start">بدء الصيام</string>
     <string name="fasting_stop">إنهاء الصيام</string>
     <string name="fasting_cancel">إلغاء</string>
-    <string name="add_food_fasting_section">صيام</string>
     <string name="settings_fasting_title">صيام</string>
     <string name="settings_fasting_intro">تتبّع نوافذ الصيام المتقطع بمؤقّت محلي: ابدأ أو أوقف أو ألغِ في أي وقت، مع مدة هدف اختيارية. يبقى المؤقّت على هذا الجهاز ولا تتم مزامنته أو تصديره أبدًا.</string>
     <string name="settings_fasting_section_tracking">التتبّع</string>
@@ -1796,7 +1778,6 @@
     <string name="prompt_history_empty">لا توجد أوامر محفوظة بعد. تظهر هنا الأوامر من قائمة التحليل والتحليلات الفاشلة.</string>
     <string name="prompt_history_use">استخدم هذا الأمر</string>
     <string name="caffeine">الكافيين</string>
-    <string name="add_food_caffeine_section">الكافيين</string>
     <string name="caffeine_add">إضافة كافيين</string>
     <string name="caffeine_log_title">تسجيل الكافيين</string>
     <string name="caffeine_edit_title">تعديل الكافيين</string>
@@ -1827,7 +1808,6 @@
     <string name="settings_caffeine_limit_wheel_help">مرّر لتحديد حد يومي للكافيين من 0 (بلا حد) إلى 1000 ملغ.</string>
     <string name="settings_caffeine_privacy_note">تبقى سجلات الكافيين على هذا الجهاز وفي مزامنة WebDAV فقط. لا تُدرج أبدًا في الوجبات المشتركة ولا تُرسل أبدًا إلى مزوّد ذكاء اصطناعي.</string>
     <string name="nicotine">النيكوتين</string>
-    <string name="add_food_nicotine_section">النيكوتين</string>
     <string name="nicotine_add">إضافة نيكوتين</string>
     <string name="nicotine_log_title">تسجيل النيكوتين</string>
     <string name="nicotine_edit_title">تعديل النيكوتين</string>

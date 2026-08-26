@@ -261,7 +261,6 @@
     <string name="add_food_hero_note_sub">먹은 것을 설명하세요</string>
     <string name="add_food_hero_saved">저장됨</string>
     <string name="add_food_hero_saved_sub">최근 및 즐겨찾기</string>
-    <string name="add_food_more_section">다른 기록 방법</string>
     <string name="add_food_photo_source_title">사진 추가</string>
     <string name="add_food_photo_camera">사진 촬영</string>
     <string name="add_food_photo_gallery">갤러리에서 선택</string>
@@ -756,7 +755,6 @@
     <string name="action_undo">실행 취소</string>
     <string name="action_what_if">어떻게 될까?</string>
     <string name="add_food_relog_kcal">%1$d kcal</string>
-    <string name="add_food_water_section">물</string>
     <string name="ai_error_coach_on_device">코치는 아직 온디바이스 제공자에서 지원되지 않아요. 설정 → AI 제공자에서 클라우드 제공자로 전환하세요.</string>
     <string name="ai_error_coach_round_limit">코치가 답변할 수 없어요. 질문을 바꿔서 다시 시도해 보세요.</string>
     <string name="ai_error_disabled">AI 기능이 설정 → AI 및 음성에서 꺼져 있어요.</string>
@@ -1360,8 +1358,6 @@
     <string name="settings_calorie_below_floor_continue">그래도 계속</string>
     <string name="settings_picker_use_wheel">휠 사용</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d IU</string>
-    <string name="settings_portion_clarify">1인분 크기 확인</string>
-    <string name="settings_portion_clarify_footer">켜면 모든 사진 기록이 추가 AI 호출 없이 재조정되는 정확한 무게 보정과, 답변에 따라 재분석하는 크기 칩(소, 보통, 대, 레스토랑)을 제공해요.</string>
     <string name="settings_progress_plots">신체 측정 그래프</string>
     <string name="settings_progress_plots_count">그래프 %1$d개</string>
     <string name="settings_progress_plots_latest">최신: %1$s %2$s</string>
@@ -1491,19 +1487,6 @@
     <string name="sheet_keto_carb_mode">케토 탄수화물 모드</string>
     <string name="sheet_language">언어</string>
     <string name="sheet_macro_label_format">%1$s(%2$s)</string>
-    <string name="sheet_portion_clarify_dismiss">건너뛰기</string>
-    <string name="sheet_portion_clarify_failed">추정치를 업데이트하지 못했어요</string>
-    <string name="sheet_portion_clarify_large">대</string>
-    <string name="sheet_portion_clarify_prompt">1인분을 확인할까요?</string>
-    <string name="sheet_portion_clarify_regular">보통</string>
-    <string name="sheet_portion_clarify_restaurant">레스토랑</string>
-    <string name="sheet_portion_clarify_small">소</string>
-    <string name="sheet_portion_clarify_updating">추정치 업데이트 중…</string>
-    <string name="sheet_portion_clarify_weight_apply">적용</string>
-    <string name="sheet_portion_clarify_weight_hint">추가 AI 호출 없이 칼로리와 매크로를 재조정하려면 총 식용 무게를 입력하세요.</string>
-    <string name="sheet_portion_clarify_weight_invalid">0g보다 큰 무게를 입력하세요</string>
-    <string name="sheet_portion_clarify_weight_label">정확한 무게</string>
-    <string name="sheet_portion_clarify_weight_placeholder">그램</string>
     <string name="sheet_serving_custom_grams">단위당 그램</string>
     <string name="sheet_serving_custom_name">단위 이름</string>
     <string name="sheet_serving_unit_heuristics">휴리스틱 사용자 지정</string>
@@ -1731,7 +1714,6 @@
     <string name="fasting_start">단식 시작</string>
     <string name="fasting_stop">단식 종료</string>
     <string name="fasting_cancel">취소</string>
-    <string name="add_food_fasting_section">단식</string>
     <string name="settings_fasting_title">단식</string>
     <string name="settings_fasting_intro">로컬 타이머로 간헐적 단식 시간을 기록하세요. 언제든 시작, 중지 또는 취소할 수 있고 목표 시간도 선택 사항입니다. 타이머는 이 기기에만 남으며 동기화되거나 내보내지지 않습니다.</string>
     <string name="settings_fasting_section_tracking">기록</string>
@@ -1790,7 +1772,6 @@
     <string name="prompt_history_empty">아직 저장된 프롬프트가 없어요. 분석 대기열과 실패한 분석의 프롬프트가 여기에 나타나요.</string>
     <string name="prompt_history_use">이 프롬프트 사용</string>
     <string name="caffeine">카페인</string>
-    <string name="add_food_caffeine_section">카페인</string>
     <string name="caffeine_add">카페인 추가</string>
     <string name="caffeine_log_title">카페인 기록</string>
     <string name="caffeine_edit_title">카페인 편집</string>
@@ -1821,7 +1802,6 @@
     <string name="settings_caffeine_limit_wheel_help">스크롤해서 0(한도 없음)부터 1000 mg까지 일일 카페인 한도를 정하세요.</string>
     <string name="settings_caffeine_privacy_note">카페인 기록은 이 기기와 WebDAV 동기화에만 남아요. 공유 식사에 포함되지 않고 AI 제공자에게 전송되지도 않아요.</string>
     <string name="nicotine">니코틴</string>
-    <string name="add_food_nicotine_section">니코틴</string>
     <string name="nicotine_add">니코틴 추가</string>
     <string name="nicotine_log_title">니코틴 기록</string>
     <string name="nicotine_edit_title">니코틴 편집</string>

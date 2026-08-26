@@ -185,8 +185,6 @@ internal val SETTINGS_INDEX: List<SettingsIndexEntry> = listOf(
         R.array.settings_search_kw_meal_times, ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.LocalDining),
     SettingsIndexEntry(R.string.settings_group_food, R.string.settings_photo_note_prompt,
         R.array.settings_search_kw_photo_note_prompt, ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.LocalDining),
-    SettingsIndexEntry(R.string.settings_group_food, R.string.settings_portion_clarify,
-        R.array.settings_search_kw_portion_clarify, ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.LocalDining),
     SettingsIndexEntry(R.string.settings_group_food, R.string.settings_meal_constituents,
         R.array.settings_search_kw_meal_constituents, ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.Restaurant),
     SettingsIndexEntry(R.string.settings_group_food, R.string.settings_serving_unit_mode,

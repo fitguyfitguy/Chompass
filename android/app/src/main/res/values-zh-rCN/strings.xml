@@ -262,7 +262,6 @@
     <string name="add_food_hero_note_sub">描述你吃了什么</string>
     <string name="add_food_hero_saved">已保存</string>
     <string name="add_food_hero_saved_sub">最近和收藏</string>
-    <string name="add_food_more_section">更多记录方式</string>
     <string name="add_food_photo_source_title">添加照片</string>
     <string name="add_food_photo_camera">拍照</string>
     <string name="add_food_photo_gallery">从相册选择</string>
@@ -758,7 +757,6 @@
     <string name="action_undo">撤销</string>
     <string name="action_what_if">会怎样？</string>
     <string name="add_food_relog_kcal">%1$d 千卡</string>
-    <string name="add_food_water_section">水</string>
     <string name="ai_error_coach_on_device">教练暂不支持端侧提供商，请在设置 → AI 提供商中切换到云端提供商。</string>
     <string name="ai_error_coach_round_limit">教练无法回答，请尝试换个说法。</string>
     <string name="ai_error_disabled">AI 功能已在设置 → AI 与语音中关闭。</string>
@@ -1362,8 +1360,6 @@
     <string name="settings_calorie_below_floor_continue">仍然继续</string>
     <string name="settings_picker_use_wheel">使用滚轮</string>
     <string name="settings_picker_vitd_iu_hint">%1$d 微克 ≈ %2$d IU</string>
-    <string name="settings_portion_clarify">份量大小确认</string>
-    <string name="settings_portion_clarify_footer">开启后，每个照片条目都提供无需再次调用 AI 即可重新缩放的精确重量修正，以及随你的回答重新分析的大小芯片（小、普通、大、餐厅份）。</string>
     <string name="settings_progress_plots">身体测量图表</string>
     <string name="settings_progress_plots_count">%1$d 张图表</string>
     <string name="settings_progress_plots_latest">最新：%1$s %2$s</string>
@@ -1492,19 +1488,6 @@
     <string name="sheet_diet_mode">饮食模式</string>
     <string name="sheet_keto_carb_mode">生酮碳水模式</string>
     <string name="sheet_language">语言</string>
-    <string name="sheet_portion_clarify_dismiss">跳过</string>
-    <string name="sheet_portion_clarify_failed">无法更新估算</string>
-    <string name="sheet_portion_clarify_large">大份</string>
-    <string name="sheet_portion_clarify_prompt">确认份量？</string>
-    <string name="sheet_portion_clarify_regular">普通</string>
-    <string name="sheet_portion_clarify_restaurant">餐厅份</string>
-    <string name="sheet_portion_clarify_small">小份</string>
-    <string name="sheet_portion_clarify_updating">正在更新估算…</string>
-    <string name="sheet_portion_clarify_weight_apply">应用</string>
-    <string name="sheet_portion_clarify_weight_hint">输入可食用总重量，无需再次调用 AI 即可重新缩放热量和宏量营养素。</string>
-    <string name="sheet_portion_clarify_weight_invalid">请输入大于 0 克的重量</string>
-    <string name="sheet_portion_clarify_weight_label">精确重量</string>
-    <string name="sheet_portion_clarify_weight_placeholder">克</string>
     <string name="sheet_serving_custom_grams">每单位克数</string>
     <string name="sheet_serving_custom_name">单位名称</string>
     <string name="sheet_serving_unit_heuristics">自定义启发式</string>
@@ -1731,7 +1714,6 @@
     <string name="fasting_start">开始禁食</string>
     <string name="fasting_stop">结束禁食</string>
     <string name="fasting_cancel">取消</string>
-    <string name="add_food_fasting_section">间歇性禁食</string>
     <string name="settings_fasting_title">间歇性禁食</string>
     <string name="settings_fasting_intro">使用本地计时器跟踪间歇性禁食时段：可随时开始、停止或取消，并可设置可选的目标时长。计时器仅保存在此设备上，绝不会同步或导出。</string>
     <string name="settings_fasting_section_tracking">跟踪</string>
@@ -1790,7 +1772,6 @@
     <string name="prompt_history_empty">还没有已保存的提示词。分析队列和失败分析的提示词会显示在这里。</string>
     <string name="prompt_history_use">使用这条提示词</string>
     <string name="caffeine">咖啡因</string>
-    <string name="add_food_caffeine_section">咖啡因</string>
     <string name="caffeine_add">添加咖啡因</string>
     <string name="caffeine_log_title">记录咖啡因</string>
     <string name="caffeine_edit_title">编辑咖啡因</string>
@@ -1821,7 +1802,6 @@
     <string name="settings_caffeine_limit_wheel_help">滚动设置每日咖啡因上限，范围 0（无上限）到 1000 mg。</string>
     <string name="settings_caffeine_privacy_note">咖啡因记录只保存在本设备和你的 WebDAV 同步中。它们绝不会包含在共享餐食里，也绝不会发送给 AI 提供商。</string>
     <string name="nicotine">尼古丁</string>
-    <string name="add_food_nicotine_section">尼古丁</string>
     <string name="nicotine_add">添加尼古丁</string>
     <string name="nicotine_log_title">记录尼古丁</string>
     <string name="nicotine_edit_title">编辑尼古丁</string>

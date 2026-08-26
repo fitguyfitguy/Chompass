@@ -15,6 +15,12 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Coach sees your average intake by default** (Android + web): the coach now knows your average calories and macros over the last 7 and the last 30 logged days without needing to look them up, so questions like "how am I doing" get an immediate, grounded answer. With day types on, it weighs single days against that day's target and the week against the weekly average.
 - Closes Codeberg [#60](https://codeberg.org/fitguy/Chompass/issues/60) by [@Ir0nhid3](https://codeberg.org/Ir0nhid3).
 
+### Changed
+
+- **Add Food sheet is less wordy** (Android): the extra section titles (More ways to log, Water, Caffeine, Nicotine, Fasting) are gone. The rows still show their icons.
+- **Photo review no longer asks to confirm the portion** (Android): size chips and the extra exact-weight row are removed. Correct the portion with the existing tip note, or edit grams on the serving card. The Settings toggle is gone too.
+- **Smoother back gesture on Android 14 and 15**: the system back preview is on.
+
 ### Fixed
 
 - **Caffeine and nicotine limit sheets stay on screen** (Android): the daily-limit sheets no longer sit under the status bar, and Save stays visible when the keyboard is open.
