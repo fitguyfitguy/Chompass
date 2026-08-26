@@ -6,8 +6,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -56,6 +59,12 @@ internal fun MealTimesSheet(current: MealCatalog, onSave: (MealCatalog) -> Unit)
     val is24Hour = LocaleFormat.is24Hour(context)
 
     val selectedId = editingId
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .navigationBarsPadding(),
+    ) {
     if (selectedId == null) {
         Text(
             stringResource(R.string.settings_meals),
@@ -155,6 +164,7 @@ internal fun MealTimesSheet(current: MealCatalog, onSave: (MealCatalog) -> Unit)
         )
         Spacer(Modifier.height(8.dp))
     }
+    }
 
     val remove = pendingRemove
     if (remove != null) {
@@ -194,8 +204,8 @@ private fun MealCatalogRow(
     onRemove: () -> Unit,
 ) {
     var editingName by remember(def.id, def.label) { mutableStateOf(false) }
-    val defaultLabel = mealLabel(def.id)
-    var draft by remember(def.id, def.label) { mutableStateOf(def.label.ifBlank { defaultLabel }) }
+    val shownLabel = catalogRowLabel(def)
+    var draft by remember(def.id, def.label) { mutableStateOf(def.label.ifBlank { shownLabel }) }
     Row(
         Modifier
             .fillMaxWidth()
@@ -229,7 +239,7 @@ private fun MealCatalogRow(
                 }) { Text(stringResource(R.string.action_save)) }
             } else {
                 Text(
-                    if (def.enabled) defaultLabel else stringResource(R.string.settings_meals_hidden, defaultLabel),
+                    if (def.enabled) shownLabel else stringResource(R.string.settings_meals_hidden, shownLabel),
                     fontSize = 17.sp,
                     modifier = Modifier.clickable { editingName = true },
                 )
@@ -245,6 +255,14 @@ private fun MealCatalogRow(
         Spacer(Modifier.width(8.dp))
         TextButton(onClick = onRemove) { Text(stringResource(R.string.action_delete)) }
     }
+}
+
+@Composable
+private fun catalogRowLabel(def: MealDef): String {
+    val custom = def.label.trim()
+    if (custom.isNotEmpty()) return custom
+    val builtin = MealType.fromId(def.id)
+    return if (builtin != null) stringResource(builtin.displayNameRes) else def.id
 }
 
 private fun formatTime(minutes: Int, is24Hour: Boolean): String {

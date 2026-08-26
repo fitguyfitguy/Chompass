@@ -151,4 +151,19 @@ class FoodJsonParserTest {
             FoodJsonParser.parseHealthEnergyGoalSuggestion("""{"calories":"1800"}""").reason,
         )
     }
+
+    @Test
+    fun parseFood_acceptsFoodNameAlias() {
+        val food = FoodJsonParser.parseFood(
+            """{"food_name":"Yogurt","calories":90,"protein":8,"carbs":6,"fat":3}""",
+        )
+        assertEquals("Yogurt", food.name)
+    }
+
+    @Test
+    fun proseFromMaybeJson_unwrapsAdvice() {
+        val raw = """{"food_name":"Pizza","reason":"high kcal","advice":"Log a smaller slice."}"""
+        assertEquals("Log a smaller slice.", FoodJsonParser.proseFromMaybeJson(raw))
+        assertEquals("Just log it.", FoodJsonParser.proseFromMaybeJson("Just log it."))
+    }
 }

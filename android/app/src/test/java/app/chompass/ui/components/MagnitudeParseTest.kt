@@ -6,8 +6,8 @@ import org.junit.Test
 
 class MagnitudeParseTest {
     @Test
-    fun snapStepFive() {
-        assertEquals(185.0, parseMagnitude("187", 0.0, 400.0, 5.0, '.')!!, 0.0)
+    fun typedValueKeepsExactNumber() {
+        assertEquals(187.0, parseMagnitude("187", 0.0, 400.0, 5.0, '.')!!, 0.0)
     }
 
     @Test
@@ -39,7 +39,7 @@ class MagnitudeParseTest {
 
     @Test
     fun intHelper() {
-        assertEquals(185, parseMagnitudeInt("187", 0, 400, 5))
+        assertEquals(187, parseMagnitudeInt("187", 0, 400, 5))
         assertNull(parseMagnitudeInt("", 0, 400, 5))
     }
 }

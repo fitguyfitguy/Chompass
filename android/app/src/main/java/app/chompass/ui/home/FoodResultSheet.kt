@@ -1,7 +1,7 @@
 package app.chompass.ui.home
 
 import app.chompass.ui.components.DecimalWheelPicker
-import app.chompass.ui.components.WheelPicker
+import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.ChompassSheetLazyColumn
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.rememberChompassSheetState
@@ -1160,24 +1160,22 @@ internal fun ReviewNutritionValueRow(
             exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f))
         ) {
             if (isCalories) {
-                // Unified calorie picker: single wheel with 2 kcal step
-                val calorieItems = remember { (0..5000 step 2).toList() }
-                val currentCalories = currentValue.roundToInt()
-                val clampedCalories = currentCalories.coerceIn(0, 5000)
-                val snappedCalories = (clampedCalories / 2) * 2
-                WheelPicker(
-                    items = calorieItems,
-                    selected = snappedCalories,
-                    onSelect = { newVal ->
+                val currentCalories = currentValue.roundToInt().coerceIn(0, 5000)
+                NumericWheelPicker(
+                    value = currentCalories,
+                    onValueChange = { newVal ->
                         val formatted = newVal.toString()
                         draft = formatted
                         onEdit(formatted)
                     },
-                    label = { "${it} kcal" },
+                    min = 0,
+                    max = 5000,
+                    unit = unit,
+                    step = 1,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 18.dp)
-                        .padding(bottom = 16.dp)
+                        .padding(bottom = 16.dp),
                 )
             } else {
                 DecimalWheelPicker(

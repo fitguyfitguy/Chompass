@@ -7,6 +7,7 @@ package app.chompass.ui.components
  * [decimalSeparator] is the locale mark (',' or '.'); the other mark is also
  * accepted so a leftover US keyboard still works.
  */
+@Suppress("UNUSED_PARAMETER")
 fun parseMagnitude(
     raw: String,
     min: Double,
@@ -27,9 +28,8 @@ fun parseMagnitude(
     }
     val parsed = normalized.toDoubleOrNull() ?: return null
     if (parsed.isNaN() || parsed.isInfinite()) return null
-    val safeStep = if (step > 0.0) step else 1.0
-    val snapped = min + kotlin.math.round((parsed - min) / safeStep) * safeStep
-    return snapped.coerceIn(min, max)
+    // Keep the typed number. Wheel step is only for spinning, not for keypad commit.
+    return parsed.coerceIn(min, max)
 }
 
 fun parseMagnitudeInt(
