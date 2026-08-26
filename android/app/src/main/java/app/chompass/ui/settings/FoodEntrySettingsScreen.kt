@@ -9,7 +9,6 @@ import androidx.compose.material.icons.outlined.LocalDining
 import androidx.compose.material.icons.outlined.Notes
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.Schedule
-import androidx.compose.material.icons.outlined.Straighten
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -90,14 +89,6 @@ fun FoodEntrySettingsScreen(
                 onChange = { vm.setAskPhotoNotePrompt(it) }
             )
             SettingFootnote(stringResource(R.string.settings_photo_note_prompt_footer))
-            HorizontalDivider()
-            ToggleRow(
-                stringResource(R.string.settings_portion_clarify),
-                ui.portionClarifyEnabled,
-                icon = Icons.Outlined.Straighten,
-                onChange = { vm.setPortionClarifyEnabled(it) }
-            )
-            SettingFootnote(stringResource(R.string.settings_portion_clarify_footer))
             HorizontalDivider()
             val constituentsAvailable = ui.selectedAI != app.chompass.models.AIProvider.ON_DEVICE
             ToggleRow(

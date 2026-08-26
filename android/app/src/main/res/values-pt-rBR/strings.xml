@@ -256,7 +256,6 @@
     <string name="add_food_hero_note_sub">Descreva o que você comeu</string>
     <string name="add_food_hero_saved">Salvos</string>
     <string name="add_food_hero_saved_sub">Recentes e favoritos</string>
-    <string name="add_food_more_section">Outras formas de registrar</string>
     <string name="add_food_photo_source_title">Adicionar uma foto</string>
     <string name="add_food_photo_camera">Tirar foto</string>
     <string name="add_food_photo_gallery">Escolher da galeria</string>
@@ -745,7 +744,6 @@
     <string name="action_undo">Desfazer</string>
     <string name="action_what_if">E se...?</string>
     <string name="add_food_relog_kcal">%1$d kcal</string>
-    <string name="add_food_water_section">Água</string>
     <string name="ai_error_coach_on_device">O Coach ainda não está disponível com o provedor no dispositivo. Troque para um provedor em nuvem em Configurações → Provedor de IA.</string>
     <string name="ai_error_coach_round_limit">O Coach não conseguiu responder. Tente reformular sua pergunta.</string>
     <string name="ai_error_disabled">Os recursos de IA estão desativados em Configurações → IA e fala.</string>
@@ -1357,8 +1355,6 @@
     <string name="settings_calorie_below_floor_continue">Continuar mesmo assim</string>
     <string name="settings_picker_use_wheel">Usar roda</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d UI</string>
-    <string name="settings_portion_clarify">Verificação do tamanho da porção</string>
-    <string name="settings_portion_clarify_footer">Quando ativo, cada registro por foto oferece uma correção de peso exata que redimensiona sem outra chamada de IA, além de chips de tamanho (pequeno, normal, grande, de restaurante) que reanalisam com sua resposta.</string>
     <string name="settings_progress_plots">Gráficos de medidas corporais</string>
     <string name="settings_progress_plots_count">%1$d gráficos</string>
     <string name="settings_progress_plots_latest">Últimas: %1$s %2$s</string>
@@ -1489,19 +1485,6 @@
     <string name="sheet_language">Idioma</string>
     <string name="sheet_macro_auto">auto</string>
     <string name="sheet_macro_label_format">%1$s (%2$s)</string>
-    <string name="sheet_portion_clarify_dismiss">Pular</string>
-    <string name="sheet_portion_clarify_failed">Não foi possível atualizar a estimativa</string>
-    <string name="sheet_portion_clarify_large">Grande</string>
-    <string name="sheet_portion_clarify_prompt">Confirmar a porção?</string>
-    <string name="sheet_portion_clarify_regular">Normal</string>
-    <string name="sheet_portion_clarify_restaurant">De restaurante</string>
-    <string name="sheet_portion_clarify_small">Pequena</string>
-    <string name="sheet_portion_clarify_updating">Atualizando estimativa…</string>
-    <string name="sheet_portion_clarify_weight_apply">Aplicar</string>
-    <string name="sheet_portion_clarify_weight_hint">Informe o peso comestível total para redimensionar calorias e macros sem outra chamada de IA.</string>
-    <string name="sheet_portion_clarify_weight_invalid">Informe um peso maior que 0 g</string>
-    <string name="sheet_portion_clarify_weight_label">Peso exato</string>
-    <string name="sheet_portion_clarify_weight_placeholder">gramas</string>
     <string name="sheet_serving_custom_grams">Gramas por unidade</string>
     <string name="sheet_serving_custom_name">Nome da unidade</string>
     <string name="sheet_serving_unit_heuristics">Personalizar heurísticas</string>
@@ -1731,7 +1714,6 @@
     <string name="fasting_start">Iniciar jejum</string>
     <string name="fasting_stop">Encerrar jejum</string>
     <string name="fasting_cancel">Cancelar</string>
-    <string name="add_food_fasting_section">Jejum</string>
     <string name="settings_fasting_title">Jejum</string>
     <string name="settings_fasting_intro">Acompanhe janelas de jejum intermitente com um timer local: inicie, pare ou cancele quando quiser, com uma duração de meta opcional. O timer fica neste dispositivo e nunca é sincronizado nem exportado.</string>
     <string name="settings_fasting_section_tracking">Acompanhamento</string>
@@ -1790,7 +1772,6 @@
     <string name="prompt_history_empty">Nenhum prompt salvo ainda. Os prompts da fila de análise e das análises que falharam aparecem aqui.</string>
     <string name="prompt_history_use">Usar este prompt</string>
     <string name="caffeine">Cafeína</string>
-    <string name="add_food_caffeine_section">Cafeína</string>
     <string name="caffeine_add">Adicionar cafeína</string>
     <string name="caffeine_log_title">Registrar cafeína</string>
     <string name="caffeine_edit_title">Editar cafeína</string>
@@ -1821,7 +1802,6 @@
     <string name="settings_caffeine_limit_wheel_help">Role para definir um limite diário de cafeína de 0 (sem limite) a 1000 mg.</string>
     <string name="settings_caffeine_privacy_note">Os registros de cafeína ficam neste aparelho e na sua sincronização WebDAV. Nunca são incluídos em refeições compartilhadas e nunca são enviados a um provedor de IA.</string>
     <string name="nicotine">Nicotina</string>
-    <string name="add_food_nicotine_section">Nicotina</string>
     <string name="nicotine_add">Adicionar nicotina</string>
     <string name="nicotine_log_title">Registrar nicotina</string>
     <string name="nicotine_edit_title">Editar nicotina</string>

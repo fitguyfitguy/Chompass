@@ -185,7 +185,6 @@ data class SettingsUiState(
     val fallbackApiKeyMasked: String = "",
     val geminiGoogleSearchEnabled: Boolean = false,
     val openRouterReasoningEffort: OpenRouterReasoningEffort = OpenRouterReasoningEffort.AUTO,
-    val portionClarifyEnabled: Boolean = false,
     val mealConstituentsEnabled: Boolean = true,
     /** Inverted in UI: “Ask for a photo note” = !skipPhotoNotePrompt. */
     val skipPhotoNotePrompt: Boolean = false,
@@ -452,7 +451,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     fallbackApiKeyMasked = fbMasked,
                     geminiGoogleSearchEnabled = snap.geminiGoogleSearchEnabled,
                     openRouterReasoningEffort = snap.openRouterReasoningEffort,
-                    portionClarifyEnabled = snap.portionClarifyEnabled,
                     mealConstituentsEnabled = snap.mealConstituentsEnabled,
                     skipPhotoNotePrompt = snap.skipPhotoNotePrompt,
                     optionalNutrientGoals = snap.optionalNutrientGoals,
@@ -711,11 +709,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setOpenRouterReasoningEffort(e: OpenRouterReasoningEffort) = updateUiPref(
         { container.prefs.setOpenRouterReasoningEffort(e) },
         { copy(openRouterReasoningEffort = e) },
-    )
-
-    fun setPortionClarifyEnabled(v: Boolean) = updateUiPref(
-        { container.prefs.setPortionClarifyEnabled(v) },
-        { copy(portionClarifyEnabled = v) },
     )
 
     fun setAskPhotoNotePrompt(ask: Boolean) = updateUiPref(

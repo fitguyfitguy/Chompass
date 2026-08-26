@@ -181,6 +181,7 @@ internal object Keys {
         val GEMINI_GOOGLE_SEARCH_ENABLED = booleanPreferencesKey("geminiGoogleSearchEnabled")
         /** OpenRouter reasoning-effort setting; missing = AUTO (current behavior). */
         val OPENROUTER_REASONING_EFFORT = stringPreferencesKey("openrouterReasoningEffort")
+        /** Unused leftover: portion-clarify UI removed; stored value is ignored. */
         val PORTION_CLARIFY_ENABLED = booleanPreferencesKey("portionClarifyEnabled")
         /**
          * When true, photo staging does not require a text note before Analyze

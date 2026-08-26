@@ -256,7 +256,6 @@
     <string name="add_food_hero_note_sub">Descrie ce ai mâncat</string>
     <string name="add_food_hero_saved">Salvate</string>
     <string name="add_food_hero_saved_sub">Recente și favorite</string>
-    <string name="add_food_more_section">Alte moduri de înregistrare</string>
     <string name="add_food_photo_source_title">Adaugă o fotografie</string>
     <string name="add_food_photo_camera">Fă o fotografie</string>
     <string name="add_food_photo_gallery">Alege din galerie</string>
@@ -748,7 +747,6 @@
     <string name="action_undo">Revocă</string>
     <string name="action_what_if">Ce-ar fi?</string>
     <string name="add_food_relog_kcal">%1$d kcal</string>
-    <string name="add_food_water_section">Apă</string>
     <string name="ai_error_coach_on_device">Antrenorul nu este încă disponibil cu furnizorul local. Comută la un furnizor cloud în Setări → Furnizor IA.</string>
     <string name="ai_error_coach_round_limit">Antrenorul nu a putut răspunde. Încearcă să reformulezi întrebarea.</string>
     <string name="ai_error_disabled">Funcțiile IA sunt dezactivate în Setări → IA și voce.</string>
@@ -1359,8 +1357,6 @@
     <string name="settings_calorie_below_floor_continue">Continuă oricum</string>
     <string name="settings_picker_use_wheel">Folosește roata</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d UI</string>
-    <string name="settings_portion_clarify">Verificarea mărimii porției</string>
-    <string name="settings_portion_clarify_footer">Când este activ, fiecare înregistrare din fotografie oferă o corecție exactă a greutății care redimensionează fără alt apel IA, plus cipuri de mărime (mic, normal, mare, de restaurant) care reanalizează cu răspunsul tău.</string>
     <string name="settings_progress_plots">Grafice de măsurători corporale</string>
     <string name="settings_progress_plots_count">%1$d grafice</string>
     <string name="settings_progress_plots_latest">Ultimele: %1$s %2$s</string>
@@ -1492,19 +1488,6 @@
     <string name="sheet_macro_auto">auto</string>
     <string name="sheet_macro_label_format">%1$s (%2$s)</string>
     <string name="sheet_model">Model</string>
-    <string name="sheet_portion_clarify_dismiss">Sari peste</string>
-    <string name="sheet_portion_clarify_failed">Estimarea nu a putut fi actualizată</string>
-    <string name="sheet_portion_clarify_large">Mare</string>
-    <string name="sheet_portion_clarify_prompt">Confirmi porția?</string>
-    <string name="sheet_portion_clarify_regular">Normală</string>
-    <string name="sheet_portion_clarify_restaurant">De restaurant</string>
-    <string name="sheet_portion_clarify_small">Mică</string>
-    <string name="sheet_portion_clarify_updating">Se actualizează estimarea…</string>
-    <string name="sheet_portion_clarify_weight_apply">Aplică</string>
-    <string name="sheet_portion_clarify_weight_hint">Introdu greutatea comestibilă totală pentru a redimensiona caloriile și macrourile fără alt apel IA.</string>
-    <string name="sheet_portion_clarify_weight_invalid">Introdu o greutate mai mare de 0 g</string>
-    <string name="sheet_portion_clarify_weight_label">Greutate exactă</string>
-    <string name="sheet_portion_clarify_weight_placeholder">grame</string>
     <string name="sheet_serving_custom_grams">Grame per unitate</string>
     <string name="sheet_serving_custom_name">Numele unității</string>
     <string name="sheet_serving_unit_heuristics">Personalizează euristicile</string>
@@ -1731,7 +1714,6 @@
     <string name="fasting_start">Începe postul</string>
     <string name="fasting_stop">Oprește postul</string>
     <string name="fasting_cancel">Anulează</string>
-    <string name="add_food_fasting_section">Post</string>
     <string name="settings_fasting_title">Post</string>
     <string name="settings_fasting_intro">Urmărește ferestrele de post intermitent cu un cronometru local: începe, oprește sau anulează oricând, cu o durată-țintă opțională. Cronometrul rămâne pe acest dispozitiv și nu este niciodată sincronizat sau exportat.</string>
     <string name="settings_fasting_section_tracking">Urmărire</string>
@@ -1790,7 +1772,6 @@
     <string name="prompt_history_empty">Niciun prompt salvat încă. Prompturile din coada de analiză și analizele eșuate apar aici.</string>
     <string name="prompt_history_use">Folosește acest prompt</string>
     <string name="caffeine">Cofeină</string>
-    <string name="add_food_caffeine_section">Cofeină</string>
     <string name="caffeine_add">Adaugă cofeină</string>
     <string name="caffeine_log_title">Înregistrează cofeină</string>
     <string name="caffeine_edit_title">Editează cofeina</string>
@@ -1821,7 +1802,6 @@
     <string name="settings_caffeine_limit_wheel_help">Derulează pentru a stabili o limită zilnică de cofeină între 0 (fără limită) și 1000 mg.</string>
     <string name="settings_caffeine_privacy_note">Înregistrările de cofeină rămân pe acest dispozitiv și în sincronizarea ta WebDAV. Nu sunt niciodată incluse în mesele partajate și nu sunt niciodată trimise unui furnizor de AI.</string>
     <string name="nicotine">Nicotină</string>
-    <string name="add_food_nicotine_section">Nicotină</string>
     <string name="nicotine_add">Adaugă nicotină</string>
     <string name="nicotine_log_title">Înregistrează nicotină</string>
     <string name="nicotine_edit_title">Editează nicotina</string>

@@ -261,7 +261,6 @@
     <string name="add_food_hero_note_sub">बताएं आपने क्या खाया</string>
     <string name="add_food_hero_saved">सहेजा गया</string>
     <string name="add_food_hero_saved_sub">हाल के और पसंदीदा</string>
-    <string name="add_food_more_section">रिकॉर्ड करने के और तरीके</string>
     <string name="add_food_photo_source_title">फ़ोटो जोड़ें</string>
     <string name="add_food_photo_camera">फ़ोटो लें</string>
     <string name="add_food_photo_gallery">गैलरी से चुनें</string>
@@ -757,7 +756,6 @@
     <string name="action_undo">पूर्ववत</string>
     <string name="action_what_if">क्या होगा अगर?</string>
     <string name="add_food_relog_kcal">%1$d kcal</string>
-    <string name="add_food_water_section">पानी</string>
     <string name="ai_error_coach_on_device">कोच अभी ऑन-डिवाइस प्रदाता के साथ उपलब्ध नहीं है। सेटिंग्स → AI प्रदाता में क्लाउड प्रदाता पर स्विच करें।</string>
     <string name="ai_error_coach_round_limit">कोच जवाब नहीं दे सका। अपना प्रश्न दोबारा लिखकर देखें।</string>
     <string name="ai_error_disabled">AI सुविधाएं सेटिंग्स → AI और भाषण में बंद हैं।</string>
@@ -1361,8 +1359,6 @@
     <string name="settings_calorie_below_floor_continue">फिर भी जारी रखें</string>
     <string name="settings_picker_use_wheel">व्हील उपयोग करें</string>
     <string name="settings_picker_vitd_iu_hint">%1$d एमसीजी ≈ %2$d IU</string>
-    <string name="settings_portion_clarify">सर्विंग आकार जांच</string>
-    <string name="settings_portion_clarify_footer">सक्षम होने पर, हर फोटो प्रविष्टि बिना दूसरी AI कॉल के पुनर्मापित करने वाला सटीक-वज़न सुधार प्रदान करती है, साथ ही आकार चिप्स (छोटा, नियमित, बड़ा, रेस्तरां-आकार) जो आपके उत्तर के साथ फिर विश्लेषण करते हैं।</string>
     <string name="settings_progress_plots">शरीर माप प्लॉट</string>
     <string name="settings_progress_plots_count">%1$d प्लॉट</string>
     <string name="settings_progress_plots_latest">नवीनतम: %1$s %2$s</string>
@@ -1492,19 +1488,6 @@
     <string name="sheet_keto_carb_mode">कीटो कार्ब मोड</string>
     <string name="sheet_language">भाषा</string>
     <string name="sheet_macro_label_format">%1$s (%2$s)</string>
-    <string name="sheet_portion_clarify_dismiss">छोड़ें</string>
-    <string name="sheet_portion_clarify_failed">अनुमान अपडेट नहीं हो सका</string>
-    <string name="sheet_portion_clarify_large">बड़ा</string>
-    <string name="sheet_portion_clarify_prompt">सर्विंग की पुष्टि करें?</string>
-    <string name="sheet_portion_clarify_regular">नियमित</string>
-    <string name="sheet_portion_clarify_restaurant">रेस्तरां-आकार</string>
-    <string name="sheet_portion_clarify_small">छोटा</string>
-    <string name="sheet_portion_clarify_updating">अनुमान अपडेट हो रहा है…</string>
-    <string name="sheet_portion_clarify_weight_apply">लागू करें</string>
-    <string name="sheet_portion_clarify_weight_hint">बिना दूसरी AI कॉल के कैलोरी और मैक्रोज़ पुनर्मापित करने के लिए कुल खाद्य वज़न दर्ज करें।</string>
-    <string name="sheet_portion_clarify_weight_invalid">0 ग्राम से अधिक वज़न दर्ज करें</string>
-    <string name="sheet_portion_clarify_weight_label">सटीक वज़न</string>
-    <string name="sheet_portion_clarify_weight_placeholder">ग्राम</string>
     <string name="sheet_serving_custom_grams">प्रति इकाई ग्राम</string>
     <string name="sheet_serving_custom_name">इकाई नाम</string>
     <string name="sheet_serving_unit_heuristics">ह्यूरिस्टिक अनुकूलित करें</string>
@@ -1731,7 +1714,6 @@
     <string name="fasting_start">उपवास शुरू करें</string>
     <string name="fasting_stop">उपवास समाप्त करें</string>
     <string name="fasting_cancel">रद्द करें</string>
-    <string name="add_food_fasting_section">उपवास</string>
     <string name="settings_fasting_title">उपवास</string>
     <string name="settings_fasting_intro">स्थानीय टाइमर से आंतरायिक उपवास विंडो ट्रैक करें: कभी भी शुरू करें, रोकें या रद्द करें, वैकल्पिक लक्ष्य अवधि के साथ। टाइमर इसी डिवाइस पर रहता है और कभी सिंक या निर्यात नहीं होता।</string>
     <string name="settings_fasting_section_tracking">ट्रैकिंग</string>
@@ -1790,7 +1772,6 @@
     <string name="prompt_history_empty">अभी कोई सेव किया गया प्रॉम्प्ट नहीं है। विश्लेषण कतार और असफल विश्लेषणों के प्रॉम्प्ट यहाँ दिखते हैं।</string>
     <string name="prompt_history_use">यह प्रॉम्प्ट इस्तेमाल करें</string>
     <string name="caffeine">कैफीन</string>
-    <string name="add_food_caffeine_section">कैफीन</string>
     <string name="caffeine_add">कैफीन जोड़ें</string>
     <string name="caffeine_log_title">कैफीन दर्ज करें</string>
     <string name="caffeine_edit_title">कैफीन संपादित करें</string>
@@ -1821,7 +1802,6 @@
     <string name="settings_caffeine_limit_wheel_help">0 (कोई सीमा नहीं) से 1000 मि.ग्रा. तक दैनिक कैफीन सीमा सेट करने के लिए स्क्रॉल करें।</string>
     <string name="settings_caffeine_privacy_note">कैफीन लॉग इसी डिवाइस पर और आपकी WebDAV सिंक में रहते हैं। वे कभी साझा भोजन में शामिल नहीं होते और कभी AI प्रोवाइडर को नहीं भेजे जाते।</string>
     <string name="nicotine">निकोटीन</string>
-    <string name="add_food_nicotine_section">निकोटीन</string>
     <string name="nicotine_add">निकोटीन जोड़ें</string>
     <string name="nicotine_log_title">निकोटीन दर्ज करें</string>
     <string name="nicotine_edit_title">निकोटीन संपादित करें</string>

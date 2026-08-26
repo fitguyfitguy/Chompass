@@ -407,12 +407,10 @@
     <string name="add_food_hero_note_sub">Opisz, co zjadłeś</string>
     <string name="add_food_hero_saved">Zapisane</string>
     <string name="add_food_hero_saved_sub">Ostatnie i ulubione</string>
-    <string name="add_food_more_section">Inne sposoby dodawania</string>
     <string name="add_food_quick_relog">Dodaj ponownie</string>
     <string name="add_food_quick_relog_empty">Dodaj posiłek do ulubionych lub zaloguj go raz. Pojawi się tutaj i dodasz go jednym stuknięciem.</string>
     <string name="add_food_relog_kcal">%1$d kcal</string>
     <string name="cd_relog_meal">Dodaj ponownie: %1$s</string>
-    <string name="add_food_water_section">Woda</string>
     <string name="water_amount_ml">%1$d ml</string>
     <string name="water_amount_fl_oz">%1$d fl oz</string>
     <string name="unit_fl_oz">fl oz</string>
@@ -550,19 +548,6 @@
     <string name="sheet_constituents_count">Składniki (%1$d)</string>
     <string name="sheet_constituents_add">Dodaj składnik</string>
     <string name="sheet_constituents_remove">Usuń składnik</string>
-    <string name="sheet_portion_clarify_prompt">Potwierdzić porcję?</string>
-    <string name="sheet_portion_clarify_weight_label">Dokładna waga</string>
-    <string name="sheet_portion_clarify_weight_placeholder">gramy</string>
-    <string name="sheet_portion_clarify_weight_apply">Zastosuj</string>
-    <string name="sheet_portion_clarify_weight_hint">Podaj całkowitą wagę jadalną, aby przeliczyć kalorie i makroskładniki bez kolejnego wywołania AI.</string>
-    <string name="sheet_portion_clarify_weight_invalid">Podaj wagę większą niż 0 g</string>
-    <string name="sheet_portion_clarify_small">Mała</string>
-    <string name="sheet_portion_clarify_regular">Zwykła</string>
-    <string name="sheet_portion_clarify_large">Duża</string>
-    <string name="sheet_portion_clarify_restaurant">Wielkość restauracyjna</string>
-    <string name="sheet_portion_clarify_updating">Aktualizowanie szacunku…</string>
-    <string name="sheet_portion_clarify_failed">Nie udało się zaktualizować szacunku</string>
-    <string name="sheet_portion_clarify_dismiss">Pomiń</string>
     <string name="sheet_nutrition">Wartości odżywcze</string>
     <string name="sheet_meal">Posiłek</string>
     <string name="sheet_more_nutrition">Więcej wartości odżywczych</string>
@@ -1040,8 +1025,6 @@
     <string name="settings_ai_features_master_footer">Wyłącza wszystko, co wysyła dane do dostawcy AI: trenera, dodawanie ze zdjęcia/tekstu/głosu, „A co gdyby?” i sugestie celów AI. Kod kreskowy, wyszukiwanie jedzenia, dodawanie ręczne, zapisane posiłki, woda, synchronizacja i Health Connect działają dalej normalnie.</string>
     <string name="settings_show_coach_tab">Pokazuj kartę Trenera</string>
     <string name="settings_show_coach_tab_footer">Ukrywa kartę Trenera z dolnego paska. Sama funkcja Trenera pozostaje włączona; przełącznik funkcji AI powyżej wyłącza wszystko.</string>
-    <string name="settings_portion_clarify">Kontrola wielkości porcji</string>
-    <string name="settings_portion_clarify_footer">Gdy włączone, każdy wpis ze zdjęcia oferuje korektę dokładnej wagi, która przelicza bez kolejnego wywołania AI, oraz kafelki wielkości (mała, zwykła, duża, restauracyjna), które ponownie analizują z Twoją odpowiedzią.</string>
     <string name="settings_meal_constituents">Rozbicie posiłku na składniki</string>
     <string name="settings_meal_constituents_footer">Gdy włączone, AI może rozbić złożone posiłki na edytowalne składniki z gramami i jednostkami. Najlepiej działa z mocniejszymi modelami chmurowymi; wyłącz dla tańszych lub mniejszych modeli, jeśli wyniki wyglądają niespójnie.</string>
     <string name="settings_meal_constituents_footer_on_device">Niedostępne dla Gemma na urządzeniu: rozbicie składników wymaga mocniejszego modelu. Przełącz się na dostawcę chmurowego, aby to włączyć.</string>
@@ -1756,7 +1739,6 @@
     <string name="fasting_start">Rozpocznij post</string>
     <string name="fasting_stop">Zakończ post</string>
     <string name="fasting_cancel">Anuluj</string>
-    <string name="add_food_fasting_section">Post</string>
     <string name="settings_fasting_title">Post</string>
     <string name="settings_fasting_intro">Śledź okna postu przerywanego za pomocą lokalnego timera: zacznij, zatrzymaj lub anuluj w dowolnym momencie, z opcjonalną długością celu. Timer pozostaje na tym urządzeniu i nigdy nie jest synchronizowany ani eksportowany.</string>
     <string name="settings_fasting_section_tracking">Śledzenie</string>
@@ -1815,7 +1797,6 @@
     <string name="prompt_history_empty">Nie ma jeszcze zapisanych promptów. Prompty z kolejki analiz i nieudanych analiz pojawią się tutaj.</string>
     <string name="prompt_history_use">Użyj tego promptu</string>
     <string name="caffeine">Kofeina</string>
-    <string name="add_food_caffeine_section">Kofeina</string>
     <string name="caffeine_add">Dodaj kofeinę</string>
     <string name="caffeine_log_title">Zapisz kofeinę</string>
     <string name="caffeine_edit_title">Edytuj kofeinę</string>
@@ -1846,7 +1827,6 @@
     <string name="settings_caffeine_limit_wheel_help">Przewiń, aby ustawić dzienny limit kofeiny od 0 (bez limitu) do 1000 mg.</string>
     <string name="settings_caffeine_privacy_note">Wpisy kofeiny zostają na tym urządzeniu i w Twojej synchronizacji WebDAV. Nigdy nie trafiają do udostępnianych posiłków i nigdy nie są wysyłane do dostawcy AI.</string>
     <string name="nicotine">Nikotyna</string>
-    <string name="add_food_nicotine_section">Nikotyna</string>
     <string name="nicotine_add">Dodaj nikotynę</string>
     <string name="nicotine_log_title">Zapisz nikotynę</string>
     <string name="nicotine_edit_title">Edytuj nikotynę</string>

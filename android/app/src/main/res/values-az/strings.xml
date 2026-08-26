@@ -258,7 +258,6 @@ bilirsən?</string>
     <string name="add_food_hero_note_sub">Nə yediyini təsvir et</string>
     <string name="add_food_hero_saved">Saxlanılan</string>
     <string name="add_food_hero_saved_sub">Son və sevimlilər</string>
-    <string name="add_food_more_section">Qeyd etməyin digər yolları</string>
     <string name="add_food_photo_source_title">Foto əlavə et</string>
     <string name="add_food_photo_camera">Foto çək</string>
     <string name="add_food_photo_gallery">Qalereyadan seç</string>
@@ -748,7 +747,6 @@ bilirsən?</string>
     <string name="action_undo">Geri al</string>
     <string name="action_what_if">Nə olardı?</string>
     <string name="add_food_relog_kcal">%1$d kkal</string>
-    <string name="add_food_water_section">Su</string>
     <string name="ai_error_coach_on_device">Məşqçi hələlik cihazdaxili provayderlə mövcud deyil. Parametrlər → AI Provayderi bölməsində bulud provayderinə keç.</string>
     <string name="ai_error_coach_round_limit">Məşqçi cavab verə bilmədi. Sualını yenidən ifadə etməyə çalış.</string>
     <string name="ai_error_disabled">AI funksiyaları Parametrlər → AI və Nitq bölməsində söndürülüb.</string>
@@ -1360,8 +1358,6 @@ bilirsən?</string>
     <string name="settings_calorie_below_floor_continue">Yenə də davam et</string>
     <string name="settings_picker_use_wheel">Təkərdən istifadə et</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mkq ≈ %2$d IU</string>
-    <string name="settings_portion_clarify">Porsiya ölçüsü yoxlaması</string>
-    <string name="settings_portion_clarify_footer">Aktiv olduqda hər foto qeydi başqa AI çağırışı olmadan yenidən miqyaslayan dəqiq çəki korreksiyası, üstəlik cavabınla yenidən analiz edən ölçü çipləri (kiçik, normal, böyük, restoran) təklif edir.</string>
     <string name="settings_progress_plots">Bədən ölçüsü qrafikləri</string>
     <string name="settings_progress_plots_count">%1$d qrafik</string>
     <string name="settings_progress_plots_latest">Son: %1$s %2$s</string>
@@ -1492,19 +1488,6 @@ bilirsən?</string>
     <string name="sheet_language">Dil</string>
     <string name="sheet_macro_label_format">%1$s (%2$s)</string>
     <string name="sheet_model">Model</string>
-    <string name="sheet_portion_clarify_dismiss">Keç</string>
-    <string name="sheet_portion_clarify_failed">Təxmin yenilənə bilmədi</string>
-    <string name="sheet_portion_clarify_large">Böyük</string>
-    <string name="sheet_portion_clarify_prompt">Porsiyanı təsdiqləyirsən?</string>
-    <string name="sheet_portion_clarify_regular">Normal</string>
-    <string name="sheet_portion_clarify_restaurant">Restoran ölçüsü</string>
-    <string name="sheet_portion_clarify_small">Kiçik</string>
-    <string name="sheet_portion_clarify_updating">Təxmin yenilənir…</string>
-    <string name="sheet_portion_clarify_weight_apply">Tətbiq et</string>
-    <string name="sheet_portion_clarify_weight_hint">Başqa AI çağırışı olmadan kalori və makroları yenidən miqyaslamaq üçün ümumi yeməli çəkini daxil et.</string>
-    <string name="sheet_portion_clarify_weight_invalid">0 q-dan böyük çəki daxil et</string>
-    <string name="sheet_portion_clarify_weight_label">Dəqiq çəki</string>
-    <string name="sheet_portion_clarify_weight_placeholder">qram</string>
     <string name="sheet_serving_custom_grams">Vahid üçün qram</string>
     <string name="sheet_serving_custom_name">Vahid adı</string>
     <string name="sheet_serving_unit_heuristics">Evristikanı fərdiləşdir</string>
@@ -1732,7 +1715,6 @@ bilirsən?</string>
     <string name="fasting_start">Oruca başla</string>
     <string name="fasting_stop">Orucu bitir</string>
     <string name="fasting_cancel">Ləğv et</string>
-    <string name="add_food_fasting_section">Oruc</string>
     <string name="settings_fasting_title">Oruc</string>
     <string name="settings_fasting_intro">Fasiləli oruc pəncərələrini yerli taymerlə izləyin: istənilən vaxt başlayın, dayandırın və ya ləğv edin, istəyə görə hədəf müddəti ilə. Taymer bu cihazda qalır və heç vaxt sinxronlaşdırılmır və ya ixrac edilmir.</string>
     <string name="settings_fasting_section_tracking">İzləmə</string>
@@ -1791,7 +1773,6 @@ bilirsən?</string>
     <string name="prompt_history_empty">Hələ saxlanmış prompt yoxdur. Analiz növbəsindən və uğursuz analizlərdən olan promptlar burada görünür.</string>
     <string name="prompt_history_use">Bu promptu istifadə et</string>
     <string name="caffeine">Kofein</string>
-    <string name="add_food_caffeine_section">Kofein</string>
     <string name="caffeine_add">Kofein əlavə et</string>
     <string name="caffeine_log_title">Kofeini qeyd et</string>
     <string name="caffeine_edit_title">Kofeini redaktə et</string>
@@ -1822,7 +1803,6 @@ bilirsən?</string>
     <string name="settings_caffeine_limit_wheel_help">0 (limitsiz) ilə 1000 mq arasında gündəlik kofein limiti təyin etmək üçün fırladın.</string>
     <string name="settings_caffeine_privacy_note">Kofein qeydləri bu cihazda və yalnız WebDAV eyniləşdirmənizdə qalır. Paylaşılan yeməklərə heç vaxt daxil edilmir və heç vaxt AI təchizatçısına göndərilmir.</string>
     <string name="nicotine">Nikotin</string>
-    <string name="add_food_nicotine_section">Nikotin</string>
     <string name="nicotine_add">Nikotin əlavə et</string>
     <string name="nicotine_log_title">Nikotini qeyd et</string>
     <string name="nicotine_edit_title">Nikotini redaktə et</string>

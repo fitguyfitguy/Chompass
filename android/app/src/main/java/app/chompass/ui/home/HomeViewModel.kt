@@ -132,7 +132,6 @@ data class HomeUiState(
     val lastRecalcSheet: app.chompass.services.ai.RecalcSheetData? = null,
     /** Recalc details sheet currently shown (opened from the hero ⓘ budget dialog). */
     val recalcSheet: app.chompass.services.ai.RecalcSheetData? = null,
-    val portionClarifyEnabled: Boolean = false,
     /** When false (default), photo staging requires a text note before Analyze. */
     val skipPhotoNotePrompt: Boolean = false,
     /** Consecutive empty-note photo analyzes; at ≥3 offer “don’t ask again”. */
@@ -172,7 +171,7 @@ data class HomeUiState(
     val pendingQueueEntryId: UUID? = null,
     /**
      * True when the pending review already received exact grams on multi-photo /
-     * context note — skip the portion-clarify row on [FoodResultSheet].
+     * context note (tip strip / prior note).
      */
     val pendingPortionPreConfirmed: Boolean = false,
     val pendingInputDraftImageFilenames: List<String> = emptyList(),
@@ -436,7 +435,6 @@ data class HomeUiState(
             preferGramsByDefault == other.preferGramsByDefault &&
             lastRecalcSheet == other.lastRecalcSheet &&
             recalcSheet == other.recalcSheet &&
-            portionClarifyEnabled == other.portionClarifyEnabled &&
             skipPhotoNotePrompt == other.skipPhotoNotePrompt &&
             photoNoteSkipCount == other.photoNoteSkipCount &&
             photoAccuracyGuideCount == other.photoAccuracyGuideCount &&
@@ -517,7 +515,6 @@ data class HomeUiState(
         result = 31 * result + preferGramsByDefault.hashCode()
         result = 31 * result + (lastRecalcSheet?.hashCode() ?: 0)
         result = 31 * result + (recalcSheet?.hashCode() ?: 0)
-        result = 31 * result + portionClarifyEnabled.hashCode()
         result = 31 * result + skipPhotoNotePrompt.hashCode()
         result = 31 * result + photoNoteSkipCount
         result = 31 * result + photoAccuracyGuideCount
@@ -1034,12 +1031,6 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         container.prefs.preferGramsByDefault
             .onEach { preferGrams ->
                 _ui.update { it.copy(preferGramsByDefault = preferGrams) }
-            }
-            .launchIn(viewModelScope)
-
-        container.prefs.portionClarifyEnabled
-            .onEach { enabled ->
-                _ui.update { it.copy(portionClarifyEnabled = enabled) }
             }
             .launchIn(viewModelScope)
 
@@ -2926,32 +2917,6 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
             HomeViewModel(container) as T
-    }
-
-    /** Portion-clarify chip (docs/UNCERTAINTY_DRIVEN_ENTRY.md bet 1): re-analyzes the
-     *  still-pending (not yet saved) photo analysis with the user's portion answer injected
-     *  as extra context, preserving the original custom note, then replaces pendingAnalysis
-     *  so FoodResultSheet recomposes with the refined estimate. */
-    suspend fun reprocessPendingAnalysis(portionAnswer: String) {
-        val bytes = _ui.value.pendingImageBytes ?: return
-        val current = _ui.value.pendingAnalysis
-        val originalNote = current?.customNote?.trim()?.takeIf { it.isNotEmpty() }
-        val description = buildString {
-            current?.name?.trim()?.takeIf { it.isNotEmpty() }?.let {
-                append(it)
-                append(". ")
-            }
-            if (originalNote != null) {
-                append(originalNote)
-                append(". ")
-            }
-            append("Portion size: $portionAnswer")
-        }
-        // Portion clarify runs inside FoodResultSheet with its own spinner; still
-        // emit progress so callers can observe streaming fields if needed.
-        val result = container.foodAnalysis.analyzeFood(bytes, description) { }
-            .copy(customNote = originalNote)
-        _ui.update { it.copy(pendingAnalysis = result) }
     }
 
     suspend fun reprocessFoodEntry(

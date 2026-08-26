@@ -257,7 +257,6 @@
     <string name="add_food_hero_note_sub">Describe lo que comiste</string>
     <string name="add_food_hero_saved">Guardado</string>
     <string name="add_food_hero_saved_sub">Recientes y favoritos</string>
-    <string name="add_food_more_section">Más formas de registrar</string>
     <string name="add_food_photo_source_title">Añadir una foto</string>
     <string name="add_food_photo_camera">Tomar foto</string>
     <string name="add_food_photo_gallery">Elegir de la galería</string>
@@ -791,7 +790,6 @@
     <string name="action_undo">Deshacer</string>
     <string name="action_what_if">¿Y si…?</string>
     <string name="add_food_relog_kcal">%1$d kcal</string>
-    <string name="add_food_water_section">Agua</string>
     <string name="ai_error_coach_on_device">El Coach aún no está disponible con el proveedor en el dispositivo. Cambia a un proveedor en la nube en Ajustes → Proveedor de IA.</string>
     <string name="ai_error_coach_round_limit">El Coach no pudo responder. Intenta reformular tu pregunta.</string>
     <string name="ai_error_grounded_on_device">El bucle de herramientas de Entrada contrastada no está disponible para modelos en el dispositivo.</string>
@@ -1430,8 +1428,6 @@
     <string name="settings_calorie_below_floor_continue">Continuar de todos modos</string>
     <string name="settings_picker_use_wheel">Usar rueda</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d UI</string>
-    <string name="settings_portion_clarify">Comprobación del tamaño de porción</string>
-    <string name="settings_portion_clarify_footer">Cuando está activado, cada entrada por foto ofrece una corrección de peso exacto que reescala sin otra llamada de IA, además de chips de tamaño (pequeño, normal, grande, tamaño restaurante) que vuelven a analizar con tu respuesta.</string>
     <string name="settings_progress_plots">Gráficos de medidas corporales</string>
     <string name="settings_progress_plots_count">%1$d gráficos</string>
     <string name="settings_progress_plots_latest">Última: %1$s %2$s</string>
@@ -1564,19 +1560,6 @@
     <string name="sheet_macro_auto">automático</string>
     <string name="sheet_macro_label_format">%1$s (%2$s)</string>
     <string name="sheet_macros">Macros</string>
-    <string name="sheet_portion_clarify_dismiss">Omitir</string>
-    <string name="sheet_portion_clarify_failed">No se pudo actualizar la estimación</string>
-    <string name="sheet_portion_clarify_large">Grande</string>
-    <string name="sheet_portion_clarify_prompt">¿Confirmar la porción?</string>
-    <string name="sheet_portion_clarify_regular">Normal</string>
-    <string name="sheet_portion_clarify_restaurant">Tamaño restaurante</string>
-    <string name="sheet_portion_clarify_small">Pequeño</string>
-    <string name="sheet_portion_clarify_updating">Actualizando la estimación…</string>
-    <string name="sheet_portion_clarify_weight_apply">Aplicar</string>
-    <string name="sheet_portion_clarify_weight_hint">Introduce el peso comestible total para reescalar calorías y macros sin otra llamada de IA.</string>
-    <string name="sheet_portion_clarify_weight_invalid">Introduce un peso mayor que 0 g</string>
-    <string name="sheet_portion_clarify_weight_label">Peso exacto</string>
-    <string name="sheet_portion_clarify_weight_placeholder">gramos</string>
     <string name="sheet_serving_custom_grams">Gramos por unidad</string>
     <string name="sheet_serving_custom_name">Nombre de la unidad</string>
     <string name="sheet_serving_unit_heuristics">Personalizar heurísticas</string>
@@ -1746,7 +1729,6 @@
     <string name="fasting_start">Iniciar ayuno</string>
     <string name="fasting_stop">Terminar ayuno</string>
     <string name="fasting_cancel">Cancelar</string>
-    <string name="add_food_fasting_section">Ayuno</string>
     <string name="settings_fasting_title">Ayuno</string>
     <string name="settings_fasting_intro">Sigue ventanas de ayuno intermitente con un temporizador local: inicia, detén o cancela cuando quieras, con una duración objetivo opcional. El temporizador se queda en este dispositivo y nunca se sincroniza ni se exporta.</string>
     <string name="settings_fasting_section_tracking">Seguimiento</string>
@@ -1805,7 +1787,6 @@
     <string name="prompt_history_empty">Aún no hay prompts guardados. Los prompts de la cola de análisis y de los análisis fallidos aparecen aquí.</string>
     <string name="prompt_history_use">Usar este prompt</string>
     <string name="caffeine">Cafeína</string>
-    <string name="add_food_caffeine_section">Cafeína</string>
     <string name="caffeine_add">Añadir cafeína</string>
     <string name="caffeine_log_title">Registrar cafeína</string>
     <string name="caffeine_edit_title">Editar cafeína</string>
@@ -1836,7 +1817,6 @@
     <string name="settings_caffeine_limit_wheel_help">Desplázate para fijar un límite diario de cafeína entre 0 (sin límite) y 1000 mg.</string>
     <string name="settings_caffeine_privacy_note">Los registros de cafeína se quedan en este dispositivo y en tu sincronización WebDAV. Nunca se incluyen en comidas compartidas ni se envían a un proveedor de IA.</string>
     <string name="nicotine">Nicotina</string>
-    <string name="add_food_nicotine_section">Nicotina</string>
     <string name="nicotine_add">Añadir nicotina</string>
     <string name="nicotine_log_title">Registrar nicotina</string>
     <string name="nicotine_edit_title">Editar nicotina</string>

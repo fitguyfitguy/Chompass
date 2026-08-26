@@ -15,7 +15,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,12 +37,9 @@ import androidx.compose.material.icons.filled.UnfoldMore
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -51,7 +47,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -93,7 +88,6 @@ import kotlin.math.roundToInt
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.asImageBitmap
 import java.time.Instant
-import kotlinx.coroutines.launch
 import app.chompass.ui.components.rememberDecodedBitmap
 import app.chompass.ui.components.kcalText
 import app.chompass.ui.components.macroGramsText
@@ -101,13 +95,6 @@ import app.chompass.ui.components.FudGlassTextField
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-
-/** Exposed for JVM tests: every SNAP_FOOD photo gets the portion correction row. */
-internal fun shouldOfferPortionClarify(
-    source: FoodSource,
-    portionPreConfirmed: Boolean = false,
-): Boolean =
-    source == FoodSource.SNAP_FOOD && !portionPreConfirmed
 
 private val EmptyFoodAnalysisPlaceholder = FoodAnalysis(
     name = "",
@@ -134,7 +121,6 @@ fun FoodResultSheet(
     resolved: ResolvedDayTargets? = null,
     dayEntries: List<FoodEntry> = emptyList(),
     source: FoodSource = FoodSource.TEXT_INPUT,
-    portionClarifyEnabled: Boolean = false,
     /** True when the user already entered exact grams on tip strip / prior note. */
     portionPreConfirmed: Boolean = false,
     /** True when a weigh-as-you-go draft already has ingredients. */
@@ -144,7 +130,6 @@ fun FoodResultSheet(
     /** False while AI (or unit inference) is in flight — fields and Log stay locked. */
     analysisReady: Boolean = analysis != null,
     imageCount: Int = if (imageBytes != null) 1 else 0,
-    onReprocessPortion: (suspend (portionAnswer: String) -> Unit)? = null,
     onWhatIfSuggestion: (suspend (FoodEntry) -> String)? = null,
     onReanalyzeWithTip: ((note: String?, confirmedPortionGrams: Double?) -> Unit)? = null,
     /** Add another photo for re-analyze; receives current tip note/grams to preserve. */
@@ -183,18 +168,6 @@ fun FoodResultSheet(
     val bitmap = rememberDecodedBitmap(imageBytes)
     // Codeberg #14: hoisted so the bottom-edge sheet-drag blocker can read it.
     val listState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
-    val portionClarifyFailedMessage = stringResource(R.string.sheet_portion_clarify_failed)
-    // Keyed on imageBytes (stable across a reprocess call for the same photo), not analysis
-    // (a new FoodAnalysis instance arrives after reprocessing) — so answering or skipping stays
-    // sticky for this entry instead of re-showing once the refined estimate lands.
-    var portionChipDismissed by remember(imageBytes) { mutableStateOf(false) }
-    var isReprocessingPortion by remember(imageBytes) { mutableStateOf(false) }
-    var portionClarifyError by remember(imageBytes) { mutableStateOf<String?>(null) }
-    val showPortionClarify = analysisReady &&
-        portionClarifyEnabled &&
-        !portionChipDismissed &&
-        shouldOfferPortionClarify(source, portionPreConfirmed)
     var name by remember { mutableStateOf(effectiveAnalysis.name) }
     // The entry's recorded serving, if any: null means macros are absolute
     // portion totals and weight edits must not scale them (Codeberg #10 follow-up).
@@ -839,43 +812,8 @@ fun FoodResultSheet(
                 }
             }
 
-            // Secondary: portion check, ingredients, micros, what-if — after the Log path.
-            if (showPortionClarify) {
-                item {
-                    PortionClarifyRow(
-                        estimatedGrams = effectiveAnalysis.servingSizeGrams ?: 100.0,
-                        isLoading = isReprocessingPortion,
-                        error = portionClarifyError,
-                        showQualitativeChips = onReprocessPortion != null,
-                        onApplyExactGrams = { grams ->
-                            servingGrams = grams
-                            servingTouched = true
-                            selectedServingUnitId = ServingUnitOption.grams.unit
-                            servingQuantityText = ServingUnitOption.formatQuantity(grams)
-                            portionChipDismissed = true
-                            portionClarifyError = null
-                        },
-                        onSelect = { answer ->
-                            val reprocess = onReprocessPortion ?: return@PortionClarifyRow
-                            scope.launch {
-                                isReprocessingPortion = true
-                                portionClarifyError = null
-                                try {
-                                    reprocess(answer)
-                                    portionChipDismissed = true
-                                } catch (e: Exception) {
-                                    portionClarifyError = e.localizedMessage ?: portionClarifyFailedMessage
-                                } finally {
-                                    isReprocessingPortion = false
-                                }
-                            }
-                        },
-                        onDismiss = { portionChipDismissed = true },
-                    )
-                }
-            }
-
-            item {
+            // Secondary: ingredients, micros, what-if — after the Log path.
+                        item {
                 ConstituentsSection(
                     rows = app.chompass.services.ai.ConstituentReconcile.scaleAll(
                         editableConstituents,
@@ -1460,130 +1398,6 @@ private fun WhatIfImpactRow(
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.72f)
         )
-    }
-}
-
-/** Portion correction row (docs/UNCERTAINTY_DRIVEN_ENTRY.md bet 1).
- *  Exact grams rescales locally via [servingGrams]; qualitative chips optionally
- *  re-analyze with the answer injected as extra context. */
-@Composable
-private fun PortionClarifyRow(
-    estimatedGrams: Double,
-    isLoading: Boolean,
-    error: String?,
-    showQualitativeChips: Boolean,
-    onApplyExactGrams: (Double) -> Unit,
-    onSelect: (String) -> Unit,
-    onDismiss: () -> Unit,
-) {
-    var weightText by remember(estimatedGrams) { mutableStateOf("") }
-    var localError by remember(estimatedGrams) { mutableStateOf<String?>(null) }
-    val invalidWeightMessage = stringResource(R.string.sheet_portion_clarify_weight_invalid)
-    Column(Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp)) {
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(
-                stringResource(R.string.sheet_portion_clarify_prompt),
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
-            )
-            if (isLoading) {
-                CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
-            } else {
-                TextButton(onClick = onDismiss) {
-                    Text(stringResource(R.string.sheet_portion_clarify_dismiss), fontSize = 13.sp)
-                }
-            }
-        }
-        Spacer(Modifier.height(4.dp))
-        Text(
-            stringResource(R.string.sheet_portion_clarify_weight_hint),
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-        )
-        Spacer(Modifier.height(8.dp))
-        Row(
-            Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            OutlinedTextField(
-                value = weightText,
-                onValueChange = {
-                    weightText = it.filter { ch -> ch.isDigit() || ch == '.' || ch == ',' }
-                    localError = null
-                },
-                enabled = !isLoading,
-                singleLine = true,
-                label = { Text(stringResource(R.string.sheet_portion_clarify_weight_label)) },
-                placeholder = {
-                    Text(
-                        if (estimatedGrams > 0) {
-                            ServingUnitOption.formatQuantity(estimatedGrams)
-                        } else {
-                            stringResource(R.string.sheet_portion_clarify_weight_placeholder)
-                        }
-                    )
-                },
-                suffix = { Text(stringResource(R.string.unit_g)) },
-                modifier = Modifier.weight(1f),
-            )
-            FilterChip(
-                selected = false,
-                enabled = !isLoading,
-                onClick = {
-                    val grams = parsePositiveGrams(weightText)
-                    if (grams == null) {
-                        localError = invalidWeightMessage
-                    } else {
-                        onApplyExactGrams(grams)
-                    }
-                },
-                label = { Text(stringResource(R.string.sheet_portion_clarify_weight_apply)) },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = AppColors.Calorie.copy(alpha = 0.18f),
-                    selectedLabelColor = AppColors.Calorie,
-                ),
-            )
-        }
-        if (showQualitativeChips) {
-            Spacer(Modifier.height(8.dp))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf(
-                    R.string.sheet_portion_clarify_small,
-                    R.string.sheet_portion_clarify_regular,
-                    R.string.sheet_portion_clarify_large,
-                    R.string.sheet_portion_clarify_restaurant,
-                ).forEach { labelRes ->
-                    val label = stringResource(labelRes)
-                    FilterChip(
-                        selected = false,
-                        enabled = !isLoading,
-                        onClick = { onSelect(label) },
-                        label = { Text(label) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = AppColors.Calorie.copy(alpha = 0.18f),
-                            selectedLabelColor = AppColors.Calorie,
-                        ),
-                    )
-                }
-            }
-        }
-        if (isLoading) {
-            Spacer(Modifier.height(4.dp))
-            Text(
-                stringResource(R.string.sheet_portion_clarify_updating),
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-            )
-        }
-        (localError ?: error)?.let {
-            Spacer(Modifier.height(4.dp))
-            Text(it, fontSize = 12.sp, color = MaterialTheme.colorScheme.error)
-        }
     }
 }
 

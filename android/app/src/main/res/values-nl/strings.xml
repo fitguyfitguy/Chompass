@@ -246,7 +246,6 @@
     <string name="add_food_hero_note_sub">Beschrijf wat je at</string>
     <string name="add_food_hero_saved">Opgeslagen</string>
     <string name="add_food_hero_saved_sub">Recent en favorieten</string>
-    <string name="add_food_more_section">Meer manieren om te loggen</string>
     <string name="add_food_photo_source_title">Foto toevoegen</string>
     <string name="add_food_photo_camera">Foto maken</string>
     <string name="add_food_photo_gallery">Kies uit galerij</string>
@@ -727,7 +726,6 @@
     <string name="action_undo">Herstel</string>
     <string name="action_what_if">Wat als?</string>
     <string name="add_food_relog_kcal">%1$d kcal</string>
-    <string name="add_food_water_section">Water</string>
     <string name="ai_error_coach_on_device">Coach is nog niet beschikbaar met de on-device provider. Schakel over naar een cloudprovider in Instellingen → AI-provider.</string>
     <string name="ai_error_coach_round_limit">Coach kon niet antwoorden. Probeer je vraag anders te formuleren.</string>
     <string name="ai_error_disabled">AI-functies zijn uitgeschakeld in Instellingen → AI en spraak.</string>
@@ -1342,8 +1340,6 @@
     <string name="settings_calorie_below_floor_continue">Toch doorgaan</string>
     <string name="settings_picker_use_wheel">Wiel gebruiken</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d IE</string>
-    <string name="settings_portion_clarify">Portiegroottecontrole</string>
-    <string name="settings_portion_clarify_footer">Wanneer ingeschakeld biedt elke foto-invoer een exacte gewichtscorrectie die herschaalt zonder een nieuwe AI-aanroep, plus groottechips (klein, normaal, groot, restaurantformaat) die opnieuw analyseren met jouw antwoord.</string>
     <string name="settings_progress_plots">Lichaamsmetinggrafieken</string>
     <string name="settings_progress_plots_count">%1$d grafieken</string>
     <string name="settings_progress_plots_latest">Laatste: %1$s %2$s</string>
@@ -1474,19 +1470,6 @@
     <string name="sheet_language">Taal</string>
     <string name="sheet_macro_auto">auto</string>
     <string name="sheet_macro_label_format">%1$s (%2$s)</string>
-    <string name="sheet_portion_clarify_dismiss">Overslaan</string>
-    <string name="sheet_portion_clarify_failed">Schatting bijwerken mislukt</string>
-    <string name="sheet_portion_clarify_large">Groot</string>
-    <string name="sheet_portion_clarify_prompt">Portie bevestigen?</string>
-    <string name="sheet_portion_clarify_regular">Normaal</string>
-    <string name="sheet_portion_clarify_restaurant">Restaurantformaat</string>
-    <string name="sheet_portion_clarify_small">Klein</string>
-    <string name="sheet_portion_clarify_updating">Schatting bijwerken…</string>
-    <string name="sheet_portion_clarify_weight_apply">Toepassen</string>
-    <string name="sheet_portion_clarify_weight_hint">Voer het totale eetbare gewicht in om calorieën en macro\'s te herschalen zonder een nieuwe AI-aanroep.</string>
-    <string name="sheet_portion_clarify_weight_invalid">Voer een gewicht groter dan 0 g in</string>
-    <string name="sheet_portion_clarify_weight_label">Exact gewicht</string>
-    <string name="sheet_portion_clarify_weight_placeholder">gram</string>
     <string name="sheet_serving_custom_grams">Gram per eenheid</string>
     <string name="sheet_serving_custom_name">Eenheidsnaam</string>
     <string name="sheet_serving_unit_heuristics">Heuristiek aanpassen</string>
@@ -1731,7 +1714,6 @@
     <string name="fasting_start">Vasten starten</string>
     <string name="fasting_stop">Vasten stoppen</string>
     <string name="fasting_cancel">Annuleren</string>
-    <string name="add_food_fasting_section">Vasten</string>
     <string name="settings_fasting_title">Vasten</string>
     <string name="settings_fasting_intro">Volg periodes van intermittent fasting met een lokale timer: start, stop of annuleer wanneer je wilt, met een optionele doellengte. De timer blijft op dit apparaat en wordt nooit gesynchroniseerd of geëxporteerd.</string>
     <string name="settings_fasting_section_tracking">Bijhouden</string>
@@ -1790,7 +1772,6 @@
     <string name="prompt_history_empty">Nog geen opgeslagen prompts. Prompts uit de analysewachtrij en mislukte analyses verschijnen hier.</string>
     <string name="prompt_history_use">Deze prompt gebruiken</string>
     <string name="caffeine">Cafeïne</string>
-    <string name="add_food_caffeine_section">Cafeïne</string>
     <string name="caffeine_add">Cafeïne toevoegen</string>
     <string name="caffeine_log_title">Cafeïne loggen</string>
     <string name="caffeine_edit_title">Cafeïne bewerken</string>
@@ -1821,7 +1802,6 @@
     <string name="settings_caffeine_limit_wheel_help">Scroll om een dagelijkse cafeïnelimiet in te stellen van 0 (geen limiet) tot 1000 mg.</string>
     <string name="settings_caffeine_privacy_note">Cafeïnelogs blijven op dit apparaat en in je WebDAV-synchronisatie. Ze zitten nooit in gedeelde maaltijden en worden nooit naar een AI-aanbieder gestuurd.</string>
     <string name="nicotine">Nicotine</string>
-    <string name="add_food_nicotine_section">Nicotine</string>
     <string name="nicotine_add">Nicotine toevoegen</string>
     <string name="nicotine_log_title">Nicotine loggen</string>
     <string name="nicotine_edit_title">Nicotine bewerken</string>

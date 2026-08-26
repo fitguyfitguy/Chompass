@@ -248,7 +248,6 @@ fun FastingHubControl(
         }
     }
     Column(modifier) {
-        SheetSectionHeader(stringResource(R.string.add_food_fasting_section))
         Row(
             modifier = Modifier
                 .fillMaxWidth()

@@ -36,16 +36,6 @@ class PortionGroundingTest {
     }
 
     @Test
-    fun shouldOfferPortionClarify_onlyForSnapFood() {
-        assertTrue(shouldOfferPortionClarify(FoodSource.SNAP_FOOD))
-        assertFalse(shouldOfferPortionClarify(FoodSource.SNAP_FOOD, portionPreConfirmed = true))
-        assertFalse(shouldOfferPortionClarify(FoodSource.TEXT_INPUT))
-        assertFalse(shouldOfferPortionClarify(FoodSource.BARCODE))
-        assertFalse(shouldOfferPortionClarify(FoodSource.MANUAL))
-        assertFalse(shouldOfferPortionClarify(FoodSource.NUTRITION_LABEL))
-    }
-
-    @Test
     fun appendUserMealContext_keepsNoteSeparateFromConfirmedGrams() {
         val base = "Analyze this food image."
         val withBoth = service().appendUserMealContext(base, "scrambled eggs, bacon", 280.0)

@@ -411,12 +411,10 @@
     <string name="add_food_hero_note_sub">Describe what you ate</string>
     <string name="add_food_hero_saved">Saved</string>
     <string name="add_food_hero_saved_sub">Recents &amp; favorites</string>
-    <string name="add_food_more_section">More ways to log</string>
     <string name="add_food_quick_relog">Log again</string>
     <string name="add_food_quick_relog_empty">Favorite a meal or log one once. It will show up here for one-tap re-log.</string>
     <string name="add_food_relog_kcal">%1$d kcal</string>
     <string name="cd_relog_meal">Log %1$s again</string>
-    <string name="add_food_water_section">Water</string>
     <string name="water_amount_ml">%1$d ml</string>
     <string name="water_amount_fl_oz">%1$d fl oz</string>
     <string name="unit_fl_oz">fl oz</string>
@@ -470,7 +468,6 @@
     <string name="cd_log_nicotine">Log nicotine</string>
     <string name="nicotine_quick_plus_one">+1 %1$s</string>
     <string name="nicotine_custom_short">Custom</string>
-    <string name="add_food_nicotine_section">Nicotine</string>
     <string name="nicotine_daily_limit">Daily limit</string>
     <string name="nicotine_daily_limit_summary">%1$d</string>
     <string name="nicotine_no_limit">No limit</string>
@@ -502,7 +499,6 @@
     <string name="cd_log_caffeine">Log caffeine</string>
     <string name="caffeine_quick_plus_one">+1 %1$s</string>
     <string name="caffeine_custom_short">Custom</string>
-    <string name="add_food_caffeine_section">Caffeine</string>
     <string name="caffeine_daily_limit">Daily limit</string>
     <string name="caffeine_daily_limit_summary">%1$d mg</string>
     <string name="caffeine_no_limit">No limit</string>
@@ -538,7 +534,6 @@
     <string name="fasting_start">Start fast</string>
     <string name="fasting_stop">Stop fast</string>
     <string name="fasting_cancel">Cancel</string>
-    <string name="add_food_fasting_section">Fasting</string>
     <string name="settings_fasting_title">Fasting</string>
     <string name="settings_fasting_intro">Track intermittent fasting windows with a local-only timer: start, stop or cancel anytime, with an optional goal length. The timer stays on this device and is never synced or exported.</string>
     <string name="settings_fasting_section_tracking">Tracking</string>
@@ -676,19 +671,6 @@
     <string name="sheet_constituents_count">Ingredients (%1$d)</string>
     <string name="sheet_constituents_add">Add ingredient</string>
     <string name="sheet_constituents_remove">Remove ingredient</string>
-    <string name="sheet_portion_clarify_prompt">Confirm the portion?</string>
-    <string name="sheet_portion_clarify_weight_label">Exact weight</string>
-    <string name="sheet_portion_clarify_weight_placeholder">grams</string>
-    <string name="sheet_portion_clarify_weight_apply">Apply</string>
-    <string name="sheet_portion_clarify_weight_hint">Enter the total edible weight to rescale calories and macros without another AI call.</string>
-    <string name="sheet_portion_clarify_weight_invalid">Enter a weight greater than 0 g</string>
-    <string name="sheet_portion_clarify_small">Small</string>
-    <string name="sheet_portion_clarify_regular">Regular</string>
-    <string name="sheet_portion_clarify_large">Large</string>
-    <string name="sheet_portion_clarify_restaurant">Restaurant-size</string>
-    <string name="sheet_portion_clarify_updating">Updating estimate…</string>
-    <string name="sheet_portion_clarify_failed">Could not update the estimate</string>
-    <string name="sheet_portion_clarify_dismiss">Skip</string>
     <string name="sheet_nutrition">Nutrition</string>
     <string name="sheet_meal">Meal</string>
     <string name="sheet_more_nutrition">More Nutrition</string>
@@ -1155,11 +1137,6 @@
         <item>note</item>
         <item>describe</item>
     </string-array>
-    <string-array name="settings_search_kw_portion_clarify">
-        <item>portion</item>
-        <item>serving</item>
-        <item>grams</item>
-    </string-array>
     <string-array name="settings_search_kw_meal_constituents">
         <item>ingredients</item>
         <item>components</item>
@@ -1609,8 +1586,6 @@
     <string name="settings_ai_features_master_footer">Turns off everything that sends data to an AI provider: the coach, photo/text/voice logging, “What if?”, and AI goal suggestions. Barcode, food search, manual entry, saved meals, water, sync, and Health Connect keep working normally.</string>
     <string name="settings_show_coach_tab">Show the coach tab</string>
     <string name="settings_show_coach_tab_footer">Hides the coach tab from the bottom bar. The coach feature itself stays enabled; the AI features switch above turns everything off.</string>
-    <string name="settings_portion_clarify">Portion size check</string>
-    <string name="settings_portion_clarify_footer">When enabled, every photo entry offers an exact-weight correction that rescales without another AI call, plus size chips (small, regular, large, restaurant-size) that re-analyze with your answer.</string>
     <string name="settings_meal_constituents">Meal ingredient breakdown</string>
     <string name="settings_meal_constituents_footer">When enabled, the AI may split composite meals into editable ingredients with grams and units. Works best with stronger cloud models; turn off for cheaper or smaller models if results look inconsistent.</string>
     <string name="settings_meal_constituents_footer_on_device">Unavailable for on-device Gemma: ingredient breakdown needs a stronger model. Switch to a cloud provider to enable this.</string>
