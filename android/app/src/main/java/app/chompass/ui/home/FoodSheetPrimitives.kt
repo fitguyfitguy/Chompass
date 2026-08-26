@@ -807,6 +807,23 @@ internal fun WithoutOverscroll(content: @Composable () -> Unit) {
     )
 }
 
+internal fun sheetMealIcon(mealId: String): ImageVector =
+    sheetMealIcon(MealType.iconMeal(mealId))
+
+@Composable
+internal fun mealLabel(mealId: String): String {
+    val def = app.chompass.models.CurrentMealCatalog.value.def(mealId)
+    val custom = def?.label?.trim().orEmpty()
+    if (custom.isNotEmpty()) return custom
+    val builtin = MealType.fromId(mealId)
+    return if (builtin != null) stringResource(builtin.displayNameRes) else mealId
+}
+
+internal fun pickerMealIds(): List<String> {
+    val enabled = app.chompass.models.CurrentMealCatalog.value.enabledForPicker().map { it.id }
+    return enabled.ifEmpty { listOf(MealType.SNACK.id) }
+}
+
 internal fun sheetMealIcon(meal: MealType): ImageVector = when (meal) {
     MealType.BREAKFAST -> Icons.Filled.WbTwilight
     MealType.LUNCH -> Icons.Filled.WbSunny

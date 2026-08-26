@@ -573,9 +573,9 @@ internal fun SettingsSheets(
                     onSelect = { vm.setProgressDefaultRangeId(it.storageId); onDismiss() }
                 )
                 SettingsSheet.MEAL_TIMES -> MealTimesSheet(
-                    current = ui.mealSchedule,
+                    current = ui.mealCatalog,
                     onSave = {
-                        vm.setMealSchedule(it)
+                        vm.setMealCatalog(it)
                         onDismiss()
                     },
                 )

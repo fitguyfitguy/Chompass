@@ -57,8 +57,16 @@ import { setDayAssignment } from "../lib/chompass-core/macro-plan-edit.js";
 import { resolveDay, resolveDayJournaled } from "../lib/chompass-core/macro-plan.js";
 import { refreshGoalJournal, recordManualSwitchGoalJournal } from "../lib/goal-journal-store.js";
 
-const MEAL_LABELS = { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack" };
-const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack"];
+const MEAL_LABELS = { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack", other: "Other" };
+const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack", "other"];
+
+/** @param {Array<{mealType?: string}>} entries */
+function mealOrderFor(entries) {
+  const present = [...new Set(entries.map((e) => e.mealType).filter(Boolean))];
+  const known = MEAL_ORDER.filter((m) => present.includes(m));
+  const extra = present.filter((m) => !MEAL_ORDER.includes(m)).sort();
+  return known.concat(extra);
+}
 const WATER_PRESETS = [250, 500, 750];
 /** PWA quick chips mirror Android NicotineKind.DefaultQuickKinds. */
 const NICOTINE_QUICK_KINDS = ["cigarette", "vape", "pouch"];
@@ -439,7 +447,7 @@ function mealCard(mealType, mealEntries, chipKeys) {
       <header class="meal-card__header">
         <span class="meal-card__icon meal-card__icon--${mealType}">${icon}</span>
         <div class="meal-card__titles">
-          <h2 class="meal-card__title">${MEAL_LABELS[mealType]}</h2>
+          <h2 class="meal-card__title">${MEAL_LABELS[mealType] || mealType}</h2>
           <p class="meal-card__summary">
             <span class="meal-card__kcal">${Math.round(totals.calories)} kcal</span>
             <span class="meal-card__summary-sep"> · </span>${formatMacroChipLine(totals, chipKeys)}
@@ -828,7 +836,7 @@ export class DiaryView extends HTMLElement {
       ${
         entries.length === 0
           ? `<p class="empty-state">${t("diary.empty")}</p>`
-          : MEAL_ORDER.filter((m) => entries.some((e) => e.mealType === m))
+          : mealOrderFor(entries)
               .map((mealType) => mealCard(mealType, entries.filter((e) => e.mealType === mealType), chipKeys))
               .join("")
       }

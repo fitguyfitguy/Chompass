@@ -62,7 +62,7 @@ fun ProgressiveMealSheet(
     draft: ProgressiveMealDraft,
     isSaving: Boolean,
     onNameChange: (String) -> Unit,
-    onMealTypeChange: (MealType) -> Unit,
+    onMealTypeChange: (String) -> Unit,
     onRemoveItem: (java.util.UUID) -> Unit,
     onAddAnother: () -> Unit,
     onLogMeal: () -> Unit,
@@ -143,7 +143,7 @@ fun ProgressiveMealSheet(
                                 )
                                 Spacer(Modifier.width(6.dp))
                                 Text(
-                                    stringResource(draft.mealType.displayNameRes),
+                                    mealLabel(draft.mealType),
                                     fontSize = 17.sp,
                                     color = AppColors.Calorie,
                                     fontWeight = FontWeight.Medium,
@@ -154,9 +154,9 @@ fun ProgressiveMealSheet(
                                 onDismissRequest = { mealMenuExpanded = false },
                                 menuWidth = 184.dp,
                             ) {
-                                for (m in MealType.values()) {
+                                for (m in pickerMealIds()) {
                                     SheetGlassDropdownMenuItem(
-                                        label = stringResource(m.displayNameRes),
+                                        label = mealLabel(m),
                                         leadingIcon = sheetMealIcon(m),
                                         selected = m == draft.mealType,
                                         onClick = {

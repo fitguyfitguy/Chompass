@@ -5,10 +5,10 @@
  * DiaryExporter.kt and DiaryImporter.kt.
  */
 
-export const DIARY_FORMAT_VERSION = "1.3";
+export const DIARY_FORMAT_VERSION = "1.4";
 
 /** Versions accepted on import. New exports always stamp [DIARY_FORMAT_VERSION]. */
-export const DIARY_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2", "1.3"]);
+export const DIARY_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2", "1.3", "1.4"]);
 
 /** Micronutrient wire-key <-> model-field pairs, in ItemDto declaration order. */
 const MICRO_FIELDS = [
@@ -241,7 +241,7 @@ const MEAL_TYPES = ["breakfast", "lunch", "dinner", "snack"];
 /**
  * @param {{ entries: import('./models.js').FoodEntry[], targets?: Record<string, {calories: number, proteinG: number, carbsG: number, fatG: number}>, dateRange: {start: string, end: string}, notes?: Array<{date: string, text: string}> }} arg
  */
-export function exportDiary({ entries, targets = {}, dateRange, notes = [] }) {
+export function exportDiary({ entries, targets = {}, dateRange, notes = [], mealCatalog = null }) {
   const byDate = new Map();
   for (const e of entries) {
     if (!byDate.has(e.date)) byDate.set(e.date, []);
@@ -282,7 +282,13 @@ export function exportDiary({ entries, targets = {}, dateRange, notes = [] }) {
       fat_g: round1(targetWire.fat_g - totals.fat_g),
     };
 
-    const meals = MEAL_TYPES.filter((t) => dayEntries.some((e) => e.mealType === t)).map((type) => ({
+    const mealOrder = [];
+    for (const e of dayEntries) {
+      if (e.mealType && !mealOrder.includes(e.mealType)) mealOrder.push(e.mealType);
+    }
+    const ordered = MEAL_TYPES.filter((t) => mealOrder.includes(t))
+      .concat(mealOrder.filter((t) => !MEAL_TYPES.includes(t)));
+    const meals = ordered.map((type) => ({
       type,
       items: dayEntries.filter((e) => e.mealType === type).map(itemToWire),
     }));
@@ -291,7 +297,12 @@ export function exportDiary({ entries, targets = {}, dateRange, notes = [] }) {
   });
 
   return {
-    export: { app: "Chompass", format_version: DIARY_FORMAT_VERSION, date_range: dateRange },
+    export: {
+      app: "Chompass",
+      format_version: DIARY_FORMAT_VERSION,
+      date_range: dateRange,
+      ...(mealCatalog ? { meal_catalog: mealCatalog } : {}),
+    },
     days,
   };
 }
@@ -311,7 +322,7 @@ export function importDiary(doc, idGen = () => crypto.randomUUID()) {
   const app = exp.app.trim().toLowerCase();
   if (app !== "chompass" && app !== "nofud" && app !== "fud ai") throw new UnsupportedFormatError(`unrecognized app "${exp.app}"`);
   if (!DIARY_IMPORT_VERSIONS.has(exp.format_version)) {
-    throw new UnsupportedFormatError(`unsupported format_version "${exp.format_version}" (need 1.0, 1.1, 1.2, or 1.3)`);
+    throw new UnsupportedFormatError(`unsupported format_version "${exp.format_version}" (need 1.0, 1.1, 1.2, 1.3, or 1.4)`);
   }
 
   /** @type {import('./models.js').FoodEntry[]} */

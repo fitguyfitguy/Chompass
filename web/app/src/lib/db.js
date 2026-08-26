@@ -441,6 +441,7 @@ export const profile = {
  * @property {number} [mealLunchStart]
  * @property {number} [mealDinnerStart]
  * @property {number} [mealSnackStart]
+ * @property {{version?: number, meals?: Array<{id: string, label?: string, startMinutes?: number|null, enabled?: boolean}>}|null} [mealCatalog]
  * @property {number} [homeNutrientCardCount]
  * @property {string[]} [homeTopNutrients]
  * @property {string[]} [foodLogMacroChips]
@@ -496,6 +497,7 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   mealLunchStart: 11 * 60,
   mealDinnerStart: 15 * 60,
   mealSnackStart: 21 * 60,
+  mealCatalog: null,
   homeNutrientCardCount: DEFAULT_NUTRIENT_CARD_COUNT,
   homeTopNutrients: [...DEFAULT_HOME_TOP],
   foodLogMacroChips: [...DEFAULT_FOOD_CHIPS],

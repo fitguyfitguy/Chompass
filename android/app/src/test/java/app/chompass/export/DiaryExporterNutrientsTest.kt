@@ -17,7 +17,7 @@ class DiaryExporterNutrientsTest {
             carbs = 0.0,
             fat = 12.0,
             source = FoodSource.MANUAL,
-            mealType = MealType.LUNCH,
+            mealType = MealType.LUNCH.id,
             timestamp = Instant.parse("2026-07-20T12:00:00Z"),
             fiber = 1.2,
             sodium = 50.0,
@@ -30,11 +30,11 @@ class DiaryExporterNutrientsTest {
             end = java.time.LocalDate.of(2026, 7, 20),
             format = DiaryFormat.JSON,
             profile = null,
-            mealDisplay = { it.name },
+            mealDisplay = { it },
         ) ?: error("expected export")
 
         val content = result.second
-        assertTrue(content.contains("\"format_version\": \"1.3\""))
+        assertTrue(content.contains("\"format_version\": \"1.4\""))
         assertTrue(content.contains("\"fiber_g\": 1.2"))
         assertTrue(content.contains("\"sodium_mg\": 50"))
         assertTrue(content.contains("\"vitamin_d_mcg\": 10.5"))

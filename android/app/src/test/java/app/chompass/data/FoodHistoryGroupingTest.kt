@@ -123,7 +123,7 @@ class FoodHistoryGroupingTest {
         fat = 0.0,
         timestamp = Instant.ofEpochSecond(at),
         source = FoodSource.MANUAL,
-        mealType = MealType.OTHER,
+        mealType = MealType.OTHER.id,
         servingSizeGrams = grams,
     )
 }

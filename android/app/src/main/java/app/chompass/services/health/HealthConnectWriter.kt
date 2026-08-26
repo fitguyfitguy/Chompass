@@ -138,7 +138,7 @@ internal class HealthConnectWriter(
                 startZoneOffset = null,
                 endZoneOffset = null,
                 name = entry.name,
-                mealType = mealTypeFor(entry.mealType),
+                mealType = mealTypeFor(app.chompass.models.MealType.iconMeal(entry.mealType)),
                 energy = Energy.kilocalories(entry.calories.toDouble()),
                 protein = Mass.grams(entry.protein),
                 totalCarbohydrate = Mass.grams(entry.carbs),

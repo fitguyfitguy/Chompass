@@ -79,7 +79,7 @@ object DiaryExporter {
         end: LocalDate,
         format: DiaryFormat,
         profile: UserProfile?,
-        mealDisplay: (MealType) -> String,
+        mealDisplay: (String) -> String,
         notes: List<DailyNote> = emptyList(),
         goalJournal: List<GoalJournalEntry> = emptyList(),
         today: LocalDate = LocalDate.now(),
@@ -125,11 +125,18 @@ object DiaryExporter {
     private data class Targets(val calories: Int, val protein: Double, val carbs: Double, val fat: Double)
 
     /** A day's entries grouped by meal in enum order, each sorted by time ascending. */
-    private fun meals(dayEntries: List<FoodEntry>): List<Pair<MealType, List<FoodEntry>>> =
-        MealType.values().mapNotNull { mt ->
-            val items = dayEntries.filter { it.mealType == mt }.sortedBy { it.timestamp }
-            if (items.isEmpty()) null else mt to items
+    private fun meals(dayEntries: List<FoodEntry>): List<Pair<String, List<FoodEntry>>> {
+        val order = app.chompass.models.CurrentMealCatalog.value.displayOrderIds()
+        val grouped = dayEntries.groupBy { it.mealType }
+        val known = order.mapNotNull { id ->
+            val items = grouped[id].orEmpty().sortedBy { it.timestamp }
+            if (items.isEmpty()) null else id to items
         }
+        val orphans = grouped.keys.filter { it !in order }.sorted().map { id ->
+            id to grouped.getValue(id).sortedBy { it.timestamp }
+        }
+        return known + orphans
+    }
 
     private fun totals(dayEntries: List<FoodEntry>): DoubleArray {
         var cal = 0.0; var p = 0.0; var c = 0.0; var f = 0.0
@@ -313,7 +320,13 @@ object DiaryExporter {
         val meals: List<MealDto>, val note: String? = null,
     )
     @Serializable private data class RangeDto(val start: String, val end: String)
-    @Serializable private data class MetaDto(val app: String, val format_version: String, val date_range: RangeDto)
+    @Serializable private data class MealCatalogDto(val id: String, val label: String)
+    @Serializable private data class MetaDto(
+        val app: String,
+        val format_version: String,
+        val date_range: RangeDto,
+        val meal_catalog: List<MealCatalogDto>? = null,
+    )
     @Serializable private data class Doc(val export: MetaDto, val days: List<DayDto>)
 
     private val jsonPretty = Json { prettyPrint = true; encodeDefaults = true }
@@ -330,7 +343,7 @@ object DiaryExporter {
             val dayTarget = t(date)
             val mealDtos = meals(dayEntries).map { (mt, items) ->
                 MealDto(
-                    type = mt.name.lowercase(),
+                    type = mt,
                     items = items.map { itemDto(it) },
                 )
             }
@@ -349,7 +362,14 @@ object DiaryExporter {
             )
         }
         val doc = Doc(
-            export = MetaDto("Chompass", "1.3", RangeDto(dayFmt.format(lo), dayFmt.format(hi))),
+            export = MetaDto(
+                app = "Chompass",
+                format_version = "1.4",
+                date_range = RangeDto(dayFmt.format(lo), dayFmt.format(hi)),
+                meal_catalog = app.chompass.models.CurrentMealCatalog.value.meals.map {
+                    MealCatalogDto(it.id, it.label)
+                },
+            ),
             days = days,
         )
         return jsonPretty.encodeToString(Doc.serializer(), doc)
@@ -361,7 +381,7 @@ object DiaryExporter {
         byDay: Map<LocalDate, List<FoodEntry>>,
         noteByDay: Map<LocalDate, DailyNote>,
         lo: LocalDate, hi: LocalDate, t: (LocalDate) -> Targets,
-        mealDisplay: (MealType) -> String,
+        mealDisplay: (String) -> String,
     ): String {
         val sb = StringBuilder()
         sb.append("# Food diary export\n")
@@ -412,7 +432,7 @@ object DiaryExporter {
             for ((mt, items) in meals(dayEntries)) {
                 for (e in items) {
                     val cols = listOf(
-                        d, mt.name.lowercase(), time(e), e.name,
+                        d, mt, time(e), e.name,
                         e.servingSizeGrams?.roundToInt()?.toString() ?: "",
                         e.calories.toString(), r1(e.protein).toString(), r1(e.carbs).toString(), r1(e.fat).toString(),
                         optionalNumber(e.sugar), optionalNumber(e.addedSugar), optionalNumber(e.fiber),

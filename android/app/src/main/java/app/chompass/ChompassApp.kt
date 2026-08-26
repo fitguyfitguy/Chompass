@@ -19,6 +19,7 @@ import app.chompass.data.WaterRepository
 import app.chompass.data.WeatherRepository
 import app.chompass.data.WeightRepository
 import app.chompass.models.AIProvider
+import app.chompass.models.CurrentMealCatalog
 import app.chompass.models.CurrentMealSchedule
 import app.chompass.models.UserProfile
 import app.chompass.services.AdaptiveGoalResult
@@ -85,8 +86,11 @@ class ChompassApp : Application() {
         LauncherShortcuts.publish(this)
         appScope.launch { container.prefs.migrateHomeDisplayLayoutIfNeeded() }
         appScope.launch { container.prefs.migrateCaffeineDailyLimitIfNeeded() }
-        container.prefs.mealSchedule
-            .onEach { CurrentMealSchedule.value = it }
+        container.prefs.mealCatalog
+            .onEach {
+                CurrentMealCatalog.value = it
+                CurrentMealSchedule.value = it.toLegacySchedule()
+            }
             .launchIn(appScope)
         // Widget snapshot writes the same DataStore file Home is reading on
         // first paint — wait until the first frame is out before observing.
