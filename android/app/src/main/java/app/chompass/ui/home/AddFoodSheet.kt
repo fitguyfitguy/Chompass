@@ -404,7 +404,7 @@ internal fun AddFoodSheetContent(
             }
         }
         if (!relogRows.isEmpty) {
-            Spacer(Modifier.height(14.dp))
+            Spacer(Modifier.height(22.dp))
             Column(
                 Modifier
                     .fillMaxWidth()
@@ -428,7 +428,7 @@ internal fun AddFoodSheetContent(
             }
             Spacer(Modifier.height(14.dp))
         } else if (relogLoading) {
-            Spacer(Modifier.height(14.dp))
+            Spacer(Modifier.height(22.dp))
             AddFoodRelogPlaceholder()
             Spacer(Modifier.height(14.dp))
         }
