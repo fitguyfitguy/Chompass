@@ -123,17 +123,10 @@ class WeightRepository(
                 )
             }
         if (incoming.isEmpty()) return
-        val byId = prefs.weightEntries.first().associateBy { it.id }.toMutableMap()
-        var changed = false
-        for (entry in incoming) {
-            val existing = byId[entry.id]
-            if (existing == null || abs(existing.weightKg - entry.weightKg) > 0.0001 || existing.date != entry.date) {
-                byId[entry.id] = entry
-                changed = true
-            }
-        }
-        if (!changed) return
-        prefs.setWeightEntries(byId.values.sortedBy { it.date })
+        // Upsert into current month files. Do not replaceAll from a snapshot taken
+        // around a slow Health Connect read: that wipe is #63 (a weigh-in logged
+        // while the pull is in flight disappears when the stale list is written).
+        prefs.applyWeightBucketChanges(upsertsByMonth = incoming.groupBy { it.month() })
         syncProfileWeightToLatest()
     }
 
@@ -147,9 +140,15 @@ class WeightRepository(
      */
     suspend fun importFromFile(entries: List<WeightEntry>): Int {
         if (entries.isEmpty()) return 0
-        val (merged, changed) = mergeWeightsById(prefs.weightEntries.first(), entries)
+        val existing = prefs.weightEntries.first()
+        val (merged, changed) = mergeWeightsById(existing, entries)
         if (changed == 0) return 0
-        prefs.setWeightEntries(merged)
+        val existingById = existing.associateBy { it.id }
+        val upserts = merged.filter { row ->
+            val prev = existingById[row.id]
+            prev == null || abs(prev.weightKg - row.weightKg) > 0.0001 || prev.date != row.date
+        }
+        prefs.applyWeightBucketChanges(upsertsByMonth = upserts.groupBy { it.month() })
         syncProfileWeightToLatest()
         return changed
     }

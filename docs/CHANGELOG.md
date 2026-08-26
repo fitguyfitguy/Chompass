@@ -14,6 +14,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Coach sees your average intake by default** (Android + web): the coach now knows your average calories and macros over the last 7 and the last 30 logged days without needing to look them up, so questions like "how am I doing" get an immediate, grounded answer. With day types on, it weighs single days against that day's target and the week against the weekly average.
 - Closes Codeberg [#60](https://codeberg.org/fitguy/Chompass/issues/60) by [@Ir0nhid3](https://codeberg.org/Ir0nhid3).
 
+### Fixed
+
+- **Logged weight stays in history when Health Connect or WebDAV is catching up** (Android): if you logged today's weight while the app was still pulling from Health Connect or WebDAV, the new row could vanish from Weight History a moment later. The pull now adds remote rows without replacing the one you just saved. Codeberg [#63](https://codeberg.org/fitguy/Chompass/issues/63) by [@tuxMode](https://codeberg.org/tuxMode).
+
 ## [3.24.0] - 2026-08-24
 
 ### Added

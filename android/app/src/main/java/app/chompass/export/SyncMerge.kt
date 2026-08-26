@@ -98,6 +98,15 @@ object SyncMerge {
         return (tombstones + byKey.values).sortedBy { idOf(it) }
     }
 
+    /**
+     * Ids that were in the local export snapshot but did not survive the merge
+     * as live rows (tombstones or #39 weight dedupe). Concurrent local inserts
+     * whose ids were *not* in the snapshot must not appear here — applying
+     * only this drop set plus merged upserts is the #63 contract.
+     */
+    fun dropIdsNotInMerged(localIds: Collection<String>, mergedLiveIds: Collection<String>): Set<String> =
+        localIds.toSet() - mergedLiveIds.toSet()
+
     data class Partition<T>(val live: List<T>, val deletedIds: List<String>)
 
     fun <T> partitionLiveAndDeleted(

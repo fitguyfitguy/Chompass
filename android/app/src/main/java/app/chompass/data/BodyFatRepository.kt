@@ -97,17 +97,9 @@ class BodyFatRepository(
                 )
             }
         if (incoming.isEmpty()) return
-        val byId = prefs.bodyFatEntries.first().associateBy { it.id }.toMutableMap()
-        var changed = false
-        for (entry in incoming) {
-            val existing = byId[entry.id]
-            if (existing == null || abs(existing.bodyFatFraction - entry.bodyFatFraction) > 0.0001 || existing.date != entry.date) {
-                byId[entry.id] = entry
-                changed = true
-            }
-        }
-        if (!changed) return
-        prefs.setBodyFatEntries(byId.values.sortedBy { it.date })
+        // Same #63 contract as WeightRepository.importExternalWeights: upsert
+        // into current month files, never replaceAll from a stale snapshot.
+        prefs.applyBodyFatBucketChanges(upsertsByMonth = incoming.groupBy { it.month() })
         syncProfileBodyFatToLatest()
     }
 
