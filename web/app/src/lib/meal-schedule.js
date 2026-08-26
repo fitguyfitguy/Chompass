@@ -43,7 +43,7 @@ export function timeInputToMinutes(hhmm) {
 /**
  * @param {import('./db.js').AppPrefs | null | undefined} prefs
  * @param {Date} [now]
- * @returns {"breakfast"|"lunch"|"dinner"|"snack"}
+ * @returns {string}
  */
 export function guessMealTypeFromPrefs(prefs, now = new Date()) {
   const catalog = parseCatalog(prefs?.mealCatalog, mealStarts(prefs));

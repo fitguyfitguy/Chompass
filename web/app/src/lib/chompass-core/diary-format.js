@@ -239,7 +239,7 @@ const MEAL_TYPES = ["breakfast", "lunch", "dinner", "snack"];
  * @param {{entries: import('./models.js').FoodEntry[], targets: Record<string, {calories:number, proteinG:number, carbsG:number, fatG:number}>, dateRange: {start: string, end: string}}} input
  */
 /**
- * @param {{ entries: import('./models.js').FoodEntry[], targets?: Record<string, {calories: number, proteinG: number, carbsG: number, fatG: number}>, dateRange: {start: string, end: string}, notes?: Array<{date: string, text: string}> }} arg
+ * @param {{ entries: import('./models.js').FoodEntry[], targets?: Record<string, {calories: number, proteinG: number, carbsG: number, fatG: number}>, dateRange: {start: string, end: string}, notes?: Array<{date: string, text: string}>, mealCatalog?: unknown }} arg
  */
 export function exportDiary({ entries, targets = {}, dateRange, notes = [], mealCatalog = null }) {
   const byDate = new Map();
