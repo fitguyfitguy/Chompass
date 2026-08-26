@@ -9,10 +9,15 @@ import app.chompass.data.KeyStore
 import app.chompass.data.PreferencesStore
 import app.chompass.data.SyncRevision
 import app.chompass.export.SyncDocument
+import app.chompass.export.SyncMerge
+import app.chompass.models.BodyFatEntry
+import app.chompass.models.BodyMeasurement
 import app.chompass.models.FoodEntry
 import app.chompass.models.GoalJournal
+import app.chompass.models.WeightEntry
 import java.time.Instant
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.ZoneId
 import java.util.UUID
 
@@ -68,7 +73,11 @@ class SyncRepository(
         val localRaw = (localParsed as? SyncDocument.ParseResult.Success)?.parsed?.raw
             ?: remoteParsed.parsed.raw
         val merged = SyncDocument.mergeRawDocuments(localRaw, remoteParsed.parsed.raw)
-        return applyMergedDocument(json.encodeToString(JsonObject.serializer(), merged), zone)
+        return applyMergedDocument(
+            json.encodeToString(JsonObject.serializer(), merged),
+            zone,
+            local = (localParsed as? SyncDocument.ParseResult.Success)?.parsed,
+        )
     }
 
     /**
@@ -106,11 +115,13 @@ class SyncRepository(
             backfillRevisionsIfNeeded()
             val remote = webDav.get(url, user, password)
             val localJson = exportDocumentJson(zone)
+            val localParsed = SyncDocument.parse(localJson, zone) as? SyncDocument.ParseResult.Success
             val mergedJson = if (remote.notFound || remote.body.isNullOrBlank()) {
                 localJson
             } else {
-                val localParsed = SyncDocument.parse(localJson, zone) as? SyncDocument.ParseResult.Success
-                    ?: return SyncResult.Failed(appContext.getString(R.string.sync_error_build_local_doc))
+                if (localParsed == null) {
+                    return SyncResult.Failed(appContext.getString(R.string.sync_error_build_local_doc))
+                }
                 val remoteParsed = SyncDocument.parse(remote.body, zone) as? SyncDocument.ParseResult.Success
                     ?: return SyncResult.Failed(appContext.getString(R.string.sync_error_remote_invalid))
                 json.encodeToString(
@@ -118,7 +129,7 @@ class SyncRepository(
                     SyncDocument.mergeRawDocuments(localParsed.parsed.raw, remoteParsed.parsed.raw),
                 )
             }
-            val apply = applyMergedDocument(mergedJson, zone)
+            val apply = applyMergedDocument(mergedJson, zone, local = localParsed?.parsed)
             if (apply is SyncResult.Failed) return apply
 
             var etag = remote.etag
@@ -133,7 +144,7 @@ class SyncRepository(
                     JsonObject.serializer(),
                     SyncDocument.mergeRawDocuments(localParsed.parsed.raw, remoteParsed.parsed.raw),
                 )
-                val retryApply = applyMergedDocument(retryJson, zone)
+                val retryApply = applyMergedDocument(retryJson, zone, local = localParsed.parsed)
                 if (retryApply is SyncResult.Failed) return retryApply
                 put = webDav.put(url, user, password, retryJson, webDavPutMode(again.etag, again.notFound))
                 // Broken/weak ETags (or CORS-hidden ones on some stacks) can 412 forever;
@@ -225,7 +236,11 @@ class SyncRepository(
         if (changed) prefs.setSyncRevisions(revisions)
     }
 
-    private suspend fun applyMergedDocument(jsonText: String, zone: ZoneId): SyncResult {
+    private suspend fun applyMergedDocument(
+        jsonText: String,
+        zone: ZoneId,
+        local: SyncDocument.Parsed? = null,
+    ): SyncResult {
         val parsed = SyncDocument.parse(jsonText, zone)
         if (parsed !is SyncDocument.ParseResult.Success) {
             return SyncResult.Failed(appContext.getString(R.string.sync_error_merged_invalid))
@@ -262,19 +277,19 @@ class SyncRepository(
             track(it.id, it.updatedAt, it.deletedAt, "weight")
             it.entry
         }
-        prefs.setWeightEntries(liveWeights)
+        applyMergedWeightBuckets(liveWeights, local?.weights?.map { it.id }.orEmpty())
 
         val liveBodyFat = doc.bodyFats.mapNotNull {
             track(it.id, it.updatedAt, it.deletedAt, "bodyfat")
             it.entry
         }
-        prefs.setBodyFatEntries(liveBodyFat)
+        applyMergedBodyFatBuckets(liveBodyFat, local?.bodyFats?.map { it.id }.orEmpty())
 
         val liveMeasures = doc.measurements.mapNotNull {
             track(it.id, it.updatedAt, it.deletedAt, "measure")
             it.entry
         }
-        prefs.setBodyMeasurements(liveMeasures)
+        applyMergedMeasurementBuckets(liveMeasures, local?.measurements?.map { it.id }.orEmpty())
 
         val liveWater = doc.water.mapNotNull {
             track(it.id, it.updatedAt, it.deletedAt, "water")
@@ -323,6 +338,64 @@ class SyncRepository(
         prefs.setSyncRevisions(revisionMap)
         return SyncResult.Success(appContext.getString(R.string.sync_success_applied))
     }
+
+    /**
+     * Apply merged body-metric rows without [PreferencesStore.setWeightEntries]
+     * replaceAll. Upsert the merged live set and drop only ids that were in the
+     * local *export snapshot* and did not survive the merge. A weigh-in logged
+     * after that snapshot (#63) is not in [localIds], so it stays.
+     */
+    private suspend fun applyMergedWeightBuckets(live: List<WeightEntry>, localIds: Collection<String>) {
+        val drop = uuidDropSet(localIds, live.map { it.id.toString() })
+        val current = prefs.weightEntries.first()
+        prefs.applyWeightBucketChanges(
+            upsertsByMonth = live.groupBy { it.date.monthBucket() },
+            removalIdsByMonth = removalsByMonth(
+                current, drop, idOf = { it.id }, monthOf = { it.date.monthBucket() },
+            ),
+        )
+    }
+
+    private suspend fun applyMergedBodyFatBuckets(live: List<BodyFatEntry>, localIds: Collection<String>) {
+        val drop = uuidDropSet(localIds, live.map { it.id.toString() })
+        val current = prefs.bodyFatEntries.first()
+        prefs.applyBodyFatBucketChanges(
+            upsertsByMonth = live.groupBy { it.date.monthBucket() },
+            removalIdsByMonth = removalsByMonth(
+                current, drop, idOf = { it.id }, monthOf = { it.date.monthBucket() },
+            ),
+        )
+    }
+
+    private suspend fun applyMergedMeasurementBuckets(live: List<BodyMeasurement>, localIds: Collection<String>) {
+        val drop = uuidDropSet(localIds, live.map { it.id.toString() })
+        val current = prefs.bodyMeasurements.first()
+        prefs.applyMeasurementBucketChanges(
+            upsertsByMonth = live.groupBy { it.date.monthBucket() },
+            removalIdsByMonth = removalsByMonth(
+                current, drop, idOf = { it.id }, monthOf = { it.date.monthBucket() },
+            ),
+        )
+    }
+}
+
+private fun Instant.monthBucket(): YearMonth = YearMonth.from(atZone(ZoneId.systemDefault()))
+
+private fun uuidDropSet(localIds: Collection<String>, mergedLiveIds: Collection<String>): Set<UUID> =
+    SyncMerge.dropIdsNotInMerged(localIds, mergedLiveIds).mapNotNull {
+        runCatching { UUID.fromString(it) }.getOrNull()
+    }.toSet()
+
+private fun <T> removalsByMonth(
+    current: List<T>,
+    dropIds: Set<UUID>,
+    idOf: (T) -> UUID,
+    monthOf: (T) -> YearMonth,
+): Map<YearMonth, Set<UUID>> {
+    if (dropIds.isEmpty()) return emptyMap()
+    return current.filter { idOf(it) in dropIds }
+        .groupBy(monthOf)
+        .mapValues { (_, rows) -> rows.map(idOf).toSet() }
 }
 
 /**

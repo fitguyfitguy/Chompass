@@ -121,4 +121,18 @@ class SyncMergeTest {
         val merged = dedupe(local, remote)
         assertEquals(3, merged.size)
     }
+
+    @Test
+    fun dropIdsNotInMergedKeepsConcurrentInsertsOutOfTheDropSet() {
+        val snapshot = setOf("yesterday", "dup-a", "dup-b")
+        val mergedLive = setOf("yesterday", "dup-a")
+        // #39 collapse: dup-b was in the export and did not survive.
+        assertEquals(setOf("dup-b"), SyncMerge.dropIdsNotInMerged(snapshot, mergedLive))
+        // #63: today's weigh-in was logged after export, so it is not in snapshot.
+        assertEquals(
+            setOf("dup-b"),
+            SyncMerge.dropIdsNotInMerged(snapshot, mergedLive + "today"),
+        )
+        assertTrue("today" !in SyncMerge.dropIdsNotInMerged(snapshot, mergedLive))
+    }
 }

@@ -222,4 +222,24 @@ class JsonBucketStoreTest {
         assertTrue(s.readMonth(YearMonth.of(2025, 1)).isEmpty())
         assertEquals(emptyList<WaterEntry>(), s.allFlow().first())
     }
+
+    @Test
+    fun `stale replaceAll drops a concurrent upsert but applyChanges does not`() = runBlocking {
+        val month = YearMonth.of(2026, 8)
+        val yesterday = entry("y", "2026-08-25T08:00:00Z")
+        val today = entry("t", "2026-08-26T08:00:00Z")
+
+        val wiped = store(tmp.newFolder("wiped"))
+        wiped.applyChanges(upsertsByMonth = mapOf(month to listOf(yesterday)))
+        val snapshot = wiped.readAll().groupBy { YearMonth.from(it.date.atZone(java.time.ZoneId.of("UTC"))) }
+        wiped.applyChanges(upsertsByMonth = mapOf(month to listOf(today)))
+        wiped.replaceAll(snapshot)
+        assertTrue(wiped.readAll().none { it.id == today.id })
+
+        val kept = store(tmp.newFolder("kept"))
+        kept.applyChanges(upsertsByMonth = mapOf(month to listOf(yesterday)))
+        kept.applyChanges(upsertsByMonth = mapOf(month to listOf(today)))
+        kept.applyChanges(upsertsByMonth = mapOf(month to listOf(yesterday)))
+        assertEquals(setOf(yesterday.id, today.id), kept.readAll().map { it.id }.toSet())
+    }
 }
