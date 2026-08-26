@@ -203,7 +203,18 @@ class WidgetSnapshotWriter(
             // Energy Burn measured active average overrides the PAL estimate for the ADD_ACTIVE
             // split, so the widget mirrors the home gauge (goal − measured active → base).
             val measuredActive = prefs.healthEnergyMeasuredActive.first()
-            val estimatedActive = measuredActive.takeIf { it > 0 } ?: profile.estimatedDailyActiveCalories
+            val dayTypeTypical = run {
+                val journal = prefs.goalJournal.first()
+                val merged = app.chompass.models.DayTypeActiveStats.mergeDayTotals(
+                    prefs.healthEnergyActiveByDay.first(),
+                    app.chompass.models.DayTypeActiveStats.sumManualByDay(prefs.manualActiveEntries.first()),
+                )
+                val stats = app.chompass.models.DayTypeActiveStats.compute(journal, merged, LocalDate.now())
+                stats.typicalFor(resolvedToday.profileId)
+            }
+            val estimatedActive = dayTypeTypical
+                ?: measuredActive.takeIf { it > 0 }
+                ?: profile.estimatedDailyActiveCalories
             val burn = HomeCalorieDisplay.resolveActiveBurn(
                 display.calorieDisplayMode,
                 activity,

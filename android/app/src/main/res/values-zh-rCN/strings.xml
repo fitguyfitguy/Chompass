@@ -948,9 +948,11 @@
     <string name="home_active_burn_a11y">主动消耗 %1$d</string>
     <string name="home_active_burn_caption">%1$d 主动</string>
     <string name="home_active_burn_caption_progress">%1$d / %2$d 主动</string>
+    <string name="home_active_burn_caption_progress_day_type">%1$d of %2$d active · %3$s</string>
     <string name="home_active_burn_over">+%1$d 高于平常</string>
     <string name="home_active_burn_over_a11y">主动消耗 %1$d，比平常一天多 %2$d</string>
     <string name="home_active_burn_progress_a11y">主动消耗 %1$d，平常 %2$d</string>
+    <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
     <string name="home_active_calories_label">主动千卡</string>
     <string name="home_budget_burned_today">今日消耗：%1$d 千卡</string>
     <string name="home_calorie_active_estimated_a11y">主动热量根据你的活动水平估算</string>
@@ -959,6 +961,7 @@
     <string name="home_calorie_budget_sheet_title">今日热量预算</string>
     <string name="home_calorie_budget_source_manual">你手动记录的热量</string>
     <string name="home_calorie_budget_source_measured">来自 Health Connect 的主动热量</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
     <string name="home_calorie_mode_static">固定目标</string>
     <string name="home_calorie_of_goal">%1$s 中的</string>
     <string name="home_calories_active_burn">主动消耗 %1$d</string>
@@ -1569,6 +1572,7 @@
         <string name="recalc_sheet_pace_row">目标节奏：%1$s 千卡/天</string>
         <string name="recalc_sheet_formula_target_row">公式目标：%1$s 千卡</string>
         <string name="recalc_sheet_measured_row">实测 Health Connect 消耗：%1$s 千卡</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
         <string name="recalc_sheet_data_used">使用的数据</string>
         <string name="recalc_sheet_data_weighins">%2$d 天内的 %1$d 次称重</string>
         <string name="recalc_sheet_data_no_weighins">暂无称重记录</string>
@@ -1848,6 +1852,7 @@
     <string name="day_type_edit_settings">编辑日类型</string>
     <string name="day_type_plan_off_hint">日类型已关闭。要在不同日子使用不同目标，请在设置中开启。</string>
     <string name="day_type_targets_summary">%1$s kcal · 蛋白 %2$d · 碳水 %3$d · 脂肪 %4$d</string>
+    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
     <string name="day_type_tomorrow">明天：%1$s · %2$s kcal</string>
     <string name="settings_day_types_title">日类型</string>
     <string name="settings_day_types_intro">在不同日子使用不同的热量和宏量目标，例如训练日和休息日。</string>

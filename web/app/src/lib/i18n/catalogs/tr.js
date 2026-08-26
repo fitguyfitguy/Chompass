@@ -414,6 +414,7 @@ export const tr = Object.freeze({
   "day_types.mode_cycle": "Döngü",
   "day_types.chip_none": "Temel hedefler",
   "day_types.sheet_title": "Gün türü",
+  "day_types.active_typical": "≈ {kcal} kcal active typical",
   "day_types.follow_schedule": "Programa uy",
   "day_types.tomorrow_format": "Yarın: {name} · {kcal} kcal",
   "day_types.tomorrow_base": "Yarın: temel hedefler · {kcal} kcal",

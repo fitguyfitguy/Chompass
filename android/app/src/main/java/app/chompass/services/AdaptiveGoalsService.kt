@@ -7,6 +7,7 @@ import app.chompass.data.PreferencesStore
 import app.chompass.data.ProfileRepository
 import app.chompass.data.WeightRepository
 import app.chompass.data.saveLastGoalChangeSheet
+import app.chompass.models.DayTypeActiveStats
 import app.chompass.models.UserProfile
 import app.chompass.services.ai.GoalCalculation
 import app.chompass.services.ai.RecalcSheetData
@@ -43,6 +44,7 @@ class AdaptiveGoalsService(
         // Persist the measured active average so the home gauge can split the measured goal
         // into a sedentary base (goal − measured active) instead of a PAL estimate.
         prefs.setHealthEnergyMeasuredActive(summary.activeAverageCalories)
+        persistDailyActiveHistory(summary.dailyActiveKcal)
         return summary.totalAverageCalories ?: (profile.bmr.roundToInt() + summary.activeAverageCalories)
     }
 
@@ -116,6 +118,16 @@ class AdaptiveGoalsService(
         } finally {
             refreshInFlight = false
         }
+    }
+
+    private suspend fun persistDailyActiveHistory(daily: Map<String, Int>) {
+        if (daily.isEmpty()) return
+        val today = LocalDate.now()
+        val merged = DayTypeActiveStats.pruneHistory(
+            prefs.healthEnergyActiveByDay.first() + daily.filterValues { it > 0 },
+            today,
+        )
+        prefs.setHealthEnergyActiveByDay(merged)
     }
 
     private fun shouldCheckAdaptiveGoals(lastCheckDay: String?, today: LocalDate): Boolean {

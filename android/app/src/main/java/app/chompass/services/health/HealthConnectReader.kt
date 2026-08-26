@@ -201,7 +201,7 @@ internal class HealthConnectReader(
             val active = result[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL]?.inKilocalories ?: 0.0
             val total = result[TotalCaloriesBurnedRecord.ENERGY_TOTAL]?.inKilocalories?.takeIf { it > 0.0 }
             if (active + (total ?: 0.0) <= 0.0) continue
-            daily.add(DailyEnergy(active = active, total = total))
+            daily.add(DailyEnergy(date = date, active = active, total = total))
         }
 
         if (daily.size < 3) return null
@@ -215,7 +215,11 @@ internal class HealthConnectReader(
             basalAverageCalories = basalAverage?.roundToInt(),
             totalAverageCalories = totalAverage?.roundToInt(),
             daysUsed = daily.size,
-            requestedDays = requestedDays
+            requestedDays = requestedDays,
+            dailyActiveKcal = daily.mapNotNull { row ->
+                val iso = row.date?.toString() ?: return@mapNotNull null
+                iso to row.active.roundToInt().coerceAtLeast(0)
+            }.filter { it.second > 0 }.toMap(),
         )
     }
 

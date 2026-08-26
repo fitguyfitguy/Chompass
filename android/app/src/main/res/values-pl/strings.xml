@@ -1385,7 +1385,9 @@
     <string name="home_active_burn_caption">%1$d aktywnych</string>
     <string name="home_active_burn_a11y">Aktywne spalanie %1$d</string>
     <string name="home_active_burn_caption_progress">%1$d z %2$d aktywnych</string>
+    <string name="home_active_burn_caption_progress_day_type">%1$d of %2$d active · %3$s</string>
     <string name="home_active_burn_progress_a11y">Aktywne spalanie %1$d, typowe %2$d</string>
+    <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
     <string name="home_active_burn_over">+%1$d ponad typową</string>
     <string name="home_active_burn_over_a11y">Aktywne spalanie %1$d, %2$d ponad typowy dzień</string>
     <string name="home_budget_burned_today">Spalone dzisiaj: %1$d kcal</string>
@@ -1394,6 +1396,7 @@
     <string name="home_calories_left">%1$s zostało</string>
     <string name="home_calorie_budget_sheet_title">Dzisiejszy budżet kalorii</string>
     <string name="home_calorie_budget_source_measured">Aktywne kalorie z Health Connect</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
     <string name="home_calorie_budget_source_manual">Kalorie dodane ręcznie</string>
     <string name="home_calorie_budget_info">Jak obliczany jest dzisiejszy budżet</string>
     <string name="home_calorie_budget_a11y">Budżet %1$d: cel %2$d plus %3$d aktywnych spalonych</string>
@@ -1579,6 +1582,7 @@
         <string name="recalc_sheet_pace_row">Tempo celu: %1$s kcal/dzień</string>
         <string name="recalc_sheet_formula_target_row">Cel formuły: %1$s kcal</string>
         <string name="recalc_sheet_measured_row">Zmierzone spalanie z Health Connect: %1$s kcal</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
         <string name="recalc_sheet_data_used">Użyte dane</string>
         <string name="recalc_sheet_data_weighins">%1$d ważeń z %2$d dni</string>
         <string name="recalc_sheet_data_no_weighins">Brak zarejestrowanych ważeń</string>
@@ -1873,6 +1877,7 @@
     <string name="day_type_edit_settings">Edytuj typy dni</string>
     <string name="day_type_plan_off_hint">Typy dni są wyłączone. Włącz je w ustawieniach, aby używać różnych celów w różne dni.</string>
     <string name="day_type_targets_summary">%1$s kcal · %2$dP %3$dC %4$dF</string>
+    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
     <string name="day_type_tomorrow">Jutro: %1$s · %2$s kcal</string>
     <string name="settings_day_types_title">Typy dni</string>
     <string name="settings_day_types_intro">Używaj różnych celów kalorii i makro w różne dni, na przykład dni treningowe i dni odpoczynku.</string>

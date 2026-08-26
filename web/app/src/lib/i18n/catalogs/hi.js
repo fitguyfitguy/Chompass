@@ -386,6 +386,7 @@ export const hi = Object.freeze({
   "day_types.mode_cycle": "चक्र",
   "day_types.chip_none": "मूल लक्ष्य",
   "day_types.sheet_title": "दिन का प्रकार",
+  "day_types.active_typical": "≈ {kcal} kcal active typical",
   "day_types.follow_schedule": "शेड्यूल के अनुसार",
   "day_types.tomorrow_format": "कल: {name} · {kcal} kcal",
   "day_types.tomorrow_base": "कल: मूल लक्ष्य · {kcal} kcal",

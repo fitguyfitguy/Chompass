@@ -137,6 +137,16 @@ internal fun RecalcResultSheet(
                 report.measuredTdee?.let {
                     SheetInfoRow(stringResource(R.string.recalc_sheet_measured_row, LocaleFormat.integer(it)))
                 }
+                report.dayTypeActiveTypical.forEach { line ->
+                    SheetInfoRow(
+                        stringResource(
+                            R.string.recalc_sheet_day_type_active,
+                            line.name,
+                            line.kcal,
+                            line.samples,
+                        ),
+                    )
+                }
                 HorizontalDivider()
             }
             // 5. Data used

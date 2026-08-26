@@ -11,6 +11,8 @@ import app.chompass.models.DietMode
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.Gender
+import app.chompass.models.GoalJournalEntry
+import app.chompass.models.GoalJournalSource
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.KetoCarbMode
@@ -223,6 +225,7 @@ class TestDataSeeder(private val container: AppContainer) {
                 SampleDataGenerators.measurementSeries(totalDays = 180, seed = 0x7A1)
             )
             seedDebugHomeActivity(totalDays = 365)
+            if (macroCycle && !keto) seedDayTypeActiveHistory(profile)
 
             val favorites = SampleDataGenerators.sampleFavorites()
             container.prefs.setFavoriteFoodEntries(favorites)
@@ -297,6 +300,35 @@ class TestDataSeeder(private val container: AppContainer) {
             if (filename != null) out[idx] = entry.copy(imageFilename = filename)
         }
         return out
+    }
+
+    /** Debug-only: 28 days of journal + per-type active so Training vs Rest typicals differ. */
+    private suspend fun seedDayTypeActiveHistory(profile: UserProfile) {
+        val plan = profile.macroPlan ?: return
+        val today = LocalDate.now()
+        val journal = mutableListOf<GoalJournalEntry>()
+        val active = mutableMapOf<String, Int>()
+        for (i in 0 until 28) {
+            val day = today.minusDays(i.toLong())
+            val resolved = MacroPlanResolver.targetsFor(profile, day)
+            val id = resolved.profileId ?: continue
+            journal += GoalJournalEntry(
+                date = day.toString(),
+                calories = resolved.targets.calories,
+                proteinG = resolved.targets.proteinG,
+                carbsG = resolved.targets.carbsG,
+                fatG = resolved.targets.fatG,
+                profileId = id,
+                profileName = resolved.profileName,
+                updatedAtMillis = System.currentTimeMillis(),
+                source = GoalJournalSource.PLAN,
+            )
+            val isTraining = id.contains("training", ignoreCase = true)
+            active[day.toString()] = if (isTraining) 620 else 320
+        }
+        container.prefs.setGoalJournal(journal)
+        container.prefs.setHealthEnergyActiveByDay(active)
+        container.prefs.setHealthEnergyMeasuredActive(480)
     }
 
     private suspend fun seedDebugHomeActivity(totalDays: Int) {

@@ -2473,6 +2473,7 @@ für dich ein</string>
     <string name="day_type_sheet_title">Tagestyp</string>
     <string name="day_type_sheet_subtitle">Wechsle die heutigen Ziele zu einem anderen Tagestyp.</string>
     <string name="day_type_targets_summary">%1$s kcal · %2$dP %3$dC %4$dF</string>
+    <string name="day_type_active_typical">≈ %1$d kcal aktiv typisch</string>
     <string name="day_type_base_goals">Basisziele</string>
     <string name="day_type_clear_override">Außerkraftsetzung für heute aufheben</string>
     <string name="day_type_tomorrow">Morgen: %1$s · %2$s kcal</string>
@@ -2543,8 +2544,10 @@ für dich ein</string>
     <string name="home_active_burn_a11y">Aktiver Kalorienverbrauch %1$d</string>
 
     <string name="home_active_burn_caption_progress">%1$d von %2$d aktiv</string>
+    <string name="home_active_burn_caption_progress_day_type">%1$d von %2$d aktiv · %3$s</string>
 
     <string name="home_active_burn_progress_a11y">Aktiver Kalorienverbrauch %1$d, typischer Wert %2$d</string>
+    <string name="home_active_burn_progress_day_type_a11y">Aktiver Kalorienverbrauch %1$d, typischer Wert %2$d an %3$s-Tagen</string>
 
     <string name="home_active_burn_over">+%1$d über dem typischen Wert</string>
 
@@ -2561,6 +2564,7 @@ für dich ein</string>
     <string name="home_calorie_budget_sheet_title">Das heutige Kalorienbudget</string>
 
     <string name="home_calorie_budget_source_measured">Aktive Kalorien aus Health Connect</string>
+    <string name="home_calorie_budget_day_type_typical">Typischer aktiver Verbrauch an %1$s-Tagen ist %2$d kcal (14-Tage-Mittel %3$d).</string>
 
     <string name="home_calorie_budget_source_manual">Kalorien, die du manuell erfasst hast</string>
 
@@ -2894,6 +2898,7 @@ für dich ein</string>
         <string name="recalc_sheet_pace_row">Zieltempo: %1$s kcal/Tag</string>
         <string name="recalc_sheet_formula_target_row">Formelziel: %1$s kcal</string>
         <string name="recalc_sheet_measured_row">Gemessener Health-Connect-Verbrauch: %1$s kcal</string>
+        <string name="recalc_sheet_day_type_active">%1$s: typisch %2$d kcal aktiv (%3$d der letzten 28 Tage)</string>
         <string name="recalc_sheet_data_used">Verwendete Daten</string>
         <string name="recalc_sheet_data_weighins">%1$d Wiegungen über %2$d Tage</string>
         <string name="recalc_sheet_data_no_weighins">Noch keine Wiegungen erfasst</string>

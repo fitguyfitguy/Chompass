@@ -1571,12 +1571,21 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 }
                 container.prefs.setHealthConnectEnabled(true)
                 container.prefs.setHealthPermissionsVersion(HealthConnectManager.CURRENT_TYPES_VERSION)
-                if (container.health.readRecentEnergySummary(days = 14) == null) {
+                val energySummary = container.health.readRecentEnergySummary(days = 14)
+                if (energySummary == null) {
                     showHealthEnergyGoalAlert(
                         title = container.appContext.getString(R.string.vm_not_enough_energy),
                         message = container.appContext.getString(R.string.vm_not_enough_energy_msg)
                     )
                     return@launch
+                }
+                if (energySummary.dailyActiveKcal.isNotEmpty()) {
+                    val today = java.time.LocalDate.now()
+                    val merged = app.chompass.models.DayTypeActiveStats.pruneHistory(
+                        container.prefs.healthEnergyActiveByDay.first() + energySummary.dailyActiveKcal,
+                        today,
+                    )
+                    container.prefs.setHealthEnergyActiveByDay(merged)
                 }
             }
             container.prefs.setHealthEnergyGoalsEnabled(v)

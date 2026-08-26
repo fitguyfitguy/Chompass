@@ -50,6 +50,7 @@ Deterministic formulas are the **reference layer**. AI recalculation and adaptiv
 | MACRO-CYCLE-B | Forward window average   | Deterministic | `MacroPlanResolver.averageForward` / `averageForward` | kcal/day, g/day |
 | MACRO-CYCLE-C | Per-profile safety clamp | Guardrail     | `CalorieSafety.clampAuto` per profile at every write | kcal/day |
 | MACRO-CYCLE-D | Journaled target average | Deterministic | `MacroPlanResolver.journalAverage` / `journalAverage` | kcal/day, g/day |
+| DTP-ACT | Per-type typical active burn | Deterministic | `DayTypeActiveStats.compute` / `day-type-active.js` | kcal/day |
 | NIGHT-BAL | Nightly energy-balance band | Display     | `DailySummaryPolicy.evaluate`                  | kcal     |
 
 ### BMR-MSJ: Mifflin-St Jeor
@@ -336,6 +337,18 @@ journalAverage(from, to) = mean(journaled entries in [from, to])   // gaps skipp
 ```
 
 The goal journal freezes each day's resolved targets as they happen (past immutable, today live, future never journaled; gap-fill from the current plan is marked GAP_FILL). Progress range lines, goal pace, the Adaptive lookback, and diary export read journaled actuals; only gaps and future days resolve live. Skipping gaps (rather than filling them) keeps today's schedule from being smuggled into history.
+
+#### DTP-ACT: Per-type typical active burn
+
+```
+window = last 28 calendar days including today
+dayTotal(date) = HC active(date) + sum(manual active on date)
+group days by GoalJournalEntry.profileId (null / missing journal excluded)
+typical(type) = round(mean(dayTotal)) if n ≥ 3 else unset
+activeBurnTypical = typical(viewed day's type) ?: 14-day blended measured ?: PAL estimate
+```
+
+Derived only (not stored on `MacroDayProfile`, not synced). Adaptive's weekly delta stays uniform. Goldens: `testdata/parity/day-type-active-expected.json`.
 
 ### WATER-DYN-A: Dynamic gross water goal
 

@@ -423,6 +423,9 @@ internal fun CalorieHero(
             goal = baseGoal,
             active = activeCalories,
             typical = shade?.typical,
+            typicalIsDayType = shade?.typicalIsDayType == true,
+            typicalDayTypeName = shade?.typicalDayTypeName,
+            blendedTypical = shade?.blendedTypical,
             source = activeCalorieSource,
             burnedToday = restingBurn?.let { it + liveActiveBurn },
             onDismiss = { showBudgetSheet = false },
@@ -501,8 +504,11 @@ private fun BurnShadeCaption(burn: ActiveBurnShade) {
     val tertiary = MaterialTheme.colorScheme.tertiary
     val success = MaterialTheme.colorScheme.success
     val over = HomeCalorieDisplay.isActiveBurnOverTypical(burn.live, burn.typical)
+    val dayType = burn.typicalDayTypeName.takeIf { burn.typicalIsDayType && !it.isNullOrBlank() }
     val a11y = if (over) {
         stringResource(R.string.home_active_burn_over_a11y, burn.live, burn.live - burn.typical)
+    } else if (dayType != null) {
+        stringResource(R.string.home_active_burn_progress_day_type_a11y, burn.live, burn.typical, dayType)
     } else {
         stringResource(R.string.home_active_burn_progress_a11y, burn.live, burn.typical)
     }
@@ -518,7 +524,11 @@ private fun BurnShadeCaption(burn: ActiveBurnShade) {
             modifier = Modifier.size(11.dp)
         )
         Text(
-            stringResource(R.string.home_active_burn_caption_progress, burn.live, burn.typical),
+            if (dayType != null) {
+                stringResource(R.string.home_active_burn_caption_progress_day_type, burn.live, burn.typical, dayType)
+            } else {
+                stringResource(R.string.home_active_burn_caption_progress, burn.live, burn.typical)
+            },
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
             color = tertiary,
@@ -539,6 +549,9 @@ private fun BudgetExplanationDialog(
     goal: Int,
     active: Int,
     typical: Int? = null,
+    typicalIsDayType: Boolean = false,
+    typicalDayTypeName: String? = null,
+    blendedTypical: Int? = null,
     source: ActiveCalorieSource?,
     burnedToday: Int? = null,
     onDismiss: () -> Unit,
@@ -583,6 +596,18 @@ private fun BudgetExplanationDialog(
                     color = muted,
                 )
                 ActiveCalorieSource.UNAVAILABLE, null -> {}
+            }
+            if (typicalIsDayType && typicalDayTypeName != null && typical != null && blendedTypical != null && blendedTypical > 0) {
+                Text(
+                    stringResource(
+                        R.string.home_calorie_budget_day_type_typical,
+                        typicalDayTypeName,
+                        typical,
+                        blendedTypical,
+                    ),
+                    fontSize = 13.sp,
+                    color = muted,
+                )
             }
             if (burnedToday != null) {
                 Text(

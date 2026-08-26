@@ -1426,6 +1426,9 @@ fun HomeScreen(
         DayTypeSwitchSheet(
             profile = ui.profile,
             today = LocalDate.now(),
+            typicalActiveByProfileId = ui.dayTypeActiveStats.byProfileId
+                .filter { it.value.sampleCount >= app.chompass.models.DayTypeActiveStats.MIN_SAMPLES }
+                .mapValues { it.value.averageKcal },
             onSwitch = vm::switchTodayDayType,
             onDismiss = { showDayTypeSheet = false },
             // "Edit day types" deep-links straight into the editor when the

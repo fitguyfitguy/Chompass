@@ -939,9 +939,11 @@ bilirsən?</string>
     <string name="home_active_burn_a11y">Aktiv yanma %1$d</string>
     <string name="home_active_burn_caption">%1$d aktiv</string>
     <string name="home_active_burn_caption_progress">%1$d / %2$d aktiv</string>
+    <string name="home_active_burn_caption_progress_day_type">%1$d of %2$d active · %3$s</string>
     <string name="home_active_burn_over">+%1$d normadan çox</string>
     <string name="home_active_burn_over_a11y">Aktiv yanma %1$d, normal gündən %2$d çox</string>
     <string name="home_active_burn_progress_a11y">Aktiv yanma %1$d, normal %2$d</string>
+    <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
     <string name="home_active_calories_label">Aktiv kkal</string>
     <string name="home_budget_burned_today">Bu gün yandırılıb: %1$d kkal</string>
     <string name="home_calorie_active_estimated_a11y">Aktiv kalorilər aktivlik səviyyənizdən təxmin edilib</string>
@@ -950,6 +952,7 @@ bilirsən?</string>
     <string name="home_calorie_budget_sheet_title">Bugünkü kalori büdcəsi</string>
     <string name="home_calorie_budget_source_manual">Əl ilə qeyd etdiyin kalorilər</string>
     <string name="home_calorie_budget_source_measured">Health Connect-dən aktiv kalorilər</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
     <string name="home_calorie_mode_static">Sabit məqsəd</string>
     <string name="home_calorie_of_goal">%1$s-dən</string>
     <string name="home_calories_active_burn">%1$d aktiv yandırılıb</string>
@@ -1569,6 +1572,7 @@ bilirsən?</string>
         <string name="recalc_sheet_pace_row">Hədəf tempi: %1$s kcal/gün</string>
         <string name="recalc_sheet_formula_target_row">Düstur hədəfi: %1$s kcal</string>
         <string name="recalc_sheet_measured_row">Health Connect ölçülmüş yanma: %1$s kcal</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
         <string name="recalc_sheet_data_used">İstifadə olunan məlumatlar</string>
         <string name="recalc_sheet_data_weighins">%2$d gündə %1$d çəkinmə</string>
         <string name="recalc_sheet_data_no_weighins">Hələ çəkinmə qeyd olunmayıb</string>
@@ -1849,6 +1853,7 @@ bilirsən?</string>
     <string name="day_type_edit_settings">Gün tiplərini redaktə et</string>
     <string name="day_type_plan_off_hint">Gün tipləri söndürülüb. Fərqli günlərdə fərqli hədəflər istifadə etmək üçün onları tənzimləmələrdən yandırın.</string>
     <string name="day_type_targets_summary">%1$s kkal · %2$dP %3$dK %4$dY</string>
+    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
     <string name="day_type_tomorrow">Sabah: %1$s · %2$s kkal</string>
     <string name="settings_day_types_title">Gün tipləri</string>
     <string name="settings_day_types_intro">Fərqli günlərdə fərqli kalori və makro hədəfləri istifadə edin, məsələn trenirovka və istirahət günləri.</string>

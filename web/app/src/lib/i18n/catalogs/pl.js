@@ -414,6 +414,7 @@ export const pl = Object.freeze({
   "day_types.mode_cycle": "Cykl",
   "day_types.chip_none": "Cele podstawowe",
   "day_types.sheet_title": "Typ dnia",
+  "day_types.active_typical": "≈ {kcal} kcal active typical",
   "day_types.follow_schedule": "Według harmonogramu",
   "day_types.tomorrow_format": "Jutro: {name} · {kcal} kcal",
   "day_types.tomorrow_base": "Jutro: cele podstawowe · {kcal} kcal",

@@ -15,6 +15,7 @@ import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.resolveModelForRequest
 import app.chompass.models.GoalFormulaReference
 import app.chompass.models.HeuristicServingUnitSettings
+import app.chompass.models.DayTypeActiveStats
 import app.chompass.models.MacroPlanMode
 import app.chompass.models.MacroPlanResolver
 import app.chompass.models.NutritionConstants
@@ -254,6 +255,7 @@ class FoodAnalysisService(
             - Goal weight: $goalWeight
             - Body fat: $bodyFat
             ${dietModeLine(profile)}
+            ${dayTypesPromptSection(profile, stats = loadDayTypeActiveStats())}
 
             Existing app formula:
             - BMR: ${profile.bmr.toInt()} kcal/day
@@ -304,7 +306,7 @@ class FoodAnalysisService(
                 carbs = profile.carbsGoal,
                 fat = profile.fatGoal,
                 reason = "Calculated from the built-in formulas.",
-                report = buildGoalReport(profile, forecast, measuredTdee, empiricalSignals(forecast, profile)),
+                report = buildGoalReport(profile, forecast, measuredTdee, empiricalSignals(forecast, profile), loadDayTypeActiveStats()),
             )
         }
 
@@ -330,7 +332,9 @@ class FoodAnalysisService(
         // #60 phase 4: day-types block (profile list, today's day type, schedule,
         // weekly average, `profiles[]` response contract). Empty when the plan is
         // off, so prompts stay byte-identical for everyone else.
-        val dayTypesSection = dayTypesPromptSection(profile)
+        val activeStats = loadDayTypeActiveStats()
+        val dayTypesSection = dayTypesPromptSection(profile, stats = activeStats, includeDailyList = false)
+        val dayTypesSectionSmart = dayTypesPromptSection(profile, stats = activeStats, includeDailyList = true)
 
         val safePrompt = goalPrompt(
             profile, heightMetric, weightMetric, bmrMethod, weekly,
@@ -339,7 +343,7 @@ class FoodAnalysisService(
         )
         val smartPrompt = goalPrompt(
             profile, heightMetric, weightMetric, bmrMethod, weekly,
-            measuredSectionSmart, measurementsSection, dayTypesSection,
+            measuredSectionSmart, measurementsSection, dayTypesSectionSmart,
             smartObservedSection(signals, weights, foods, forecast, weightMetric),
         )
 
@@ -371,7 +375,7 @@ class FoodAnalysisService(
             fallbackFired = trace.fallbackFired,
             primaryProvider = trace.primaryProvider,
             primaryError = trace.primaryError,
-            report = buildGoalReport(profile, forecast, measuredTdee, signals),
+            report = buildGoalReport(profile, forecast, measuredTdee, signals, activeStats),
         )
         if (profile.caloriesLocked) return clamped
         // SMART (cloud) tier: the model judged the raw series itself — no deterministic
@@ -435,7 +439,24 @@ class FoodAnalysisService(
         forecast: WeightForecast?,
         measuredTdee: Int?,
         signals: EmpiricalSignals,
-    ): GoalCalculationReport = buildGoalCalculationReport(profile, forecast, measuredTdee)
+        stats: DayTypeActiveStats.Result? = null,
+    ): GoalCalculationReport = buildGoalCalculationReport(
+        profile, forecast, measuredTdee,
+        dayTypeActiveTypical = typicalLines(profile, stats),
+    )
+
+    private fun typicalLines(
+        profile: UserProfile,
+        stats: DayTypeActiveStats.Result?,
+    ): List<DayTypeActiveTypicalLine> {
+        val plan = profile.macroPlan?.takeIf { it.enabled } ?: return emptyList()
+        if (stats == null) return emptyList()
+        return plan.profiles.mapNotNull { p ->
+            val row = stats.byProfileId[p.id] ?: return@mapNotNull null
+            if (row.sampleCount < DayTypeActiveStats.MIN_SAMPLES) return@mapNotNull null
+            DayTypeActiveTypicalLine(name = p.name, kcal = row.averageKcal, samples = row.sampleCount)
+        }
+    }
 
     /** MEASURED ENERGY BURN block; the trend-refinement rule differs by tier (app-side gates vs model-side judgment). */
     private fun measuredSectionFor(measuredTdee: Int?, smart: Boolean): String {
@@ -527,7 +548,22 @@ class FoodAnalysisService(
      * Empty string when the plan is off — prompts stay byte-identical to the
      * pre-plan shape, so non-plan users see zero change.
      */
-    internal fun dayTypesPromptSection(profile: UserProfile, today: LocalDate = LocalDate.now()): String {
+    private suspend fun loadDayTypeActiveStats(): DayTypeActiveStats.Result {
+        val store = prefs ?: return DayTypeActiveStats.Result()
+        val journal = store.goalJournal.first()
+        val merged = DayTypeActiveStats.mergeDayTotals(
+            store.healthEnergyActiveByDay.first(),
+            DayTypeActiveStats.sumManualByDay(store.manualActiveEntries.first()),
+        )
+        return DayTypeActiveStats.compute(journal, merged, LocalDate.now())
+    }
+
+    internal fun dayTypesPromptSection(
+        profile: UserProfile,
+        today: LocalDate = LocalDate.now(),
+        stats: DayTypeActiveStats.Result? = null,
+        includeDailyList: Boolean = false,
+    ): String {
         val plan = profile.macroPlan?.takeIf { it.enabled } ?: return ""
         fun nameOf(id: String?): String = plan.profileById(id)?.name ?: "the default"
         val schedule = when (plan.mode) {
@@ -559,6 +595,28 @@ class FoodAnalysisService(
             appendLine("- Schedule: $schedule")
             appendLine(todayLine)
             appendLine("- Weekly average target: ${average.calories} kcal/day.")
+            val resolvedStats = stats
+            if (resolvedStats != null) {
+                plan.profiles.forEach { p ->
+                    val row = resolvedStats.byProfileId[p.id]
+                    if (row != null && row.sampleCount >= DayTypeActiveStats.MIN_SAMPLES) {
+                        appendLine("- ${p.name}: typically ${row.averageKcal} kcal active burn (${row.sampleCount} of last 28 days measured)")
+                    }
+                }
+                if (plan.profiles.any {
+                        val row = resolvedStats.byProfileId[it.id]
+                        row != null && row.sampleCount >= DayTypeActiveStats.MIN_SAMPLES
+                    }
+                ) {
+                    appendLine("When the user asks to restructure day types, size or adjust the train-rest spread using the per-type active burn above.")
+                }
+                if (includeDailyList && resolvedStats.daily.isNotEmpty()) {
+                    appendLine("Per-day measured active (date → day type → kcal):")
+                    resolvedStats.daily.forEach { d ->
+                        appendLine("- ${d.date} ${d.profileName ?: d.profileId} ${d.activeKcal}")
+                    }
+                }
+            }
             append("Rules: the top-level calories act as the today/average anchor. Keep each day type's role and the spread between them (high-carb training days, lower-carb rest days). Move every profile in the same direction as the top-level change. Never take any profile below this user's floor. Keep the weekly average near the top-level calories. Return the profiles array with one object per day type above, using those exact ids; in each, 4*protein + 4*carbs + 9*fat must be about that profile's calories.")
         }
     }

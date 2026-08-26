@@ -51,8 +51,14 @@ import {
   addManualActiveEntry,
   makeManualActiveEntry,
   manualActiveKcalForDate,
+  loadManualActiveEntries,
   resolveWebActiveBurn,
 } from "../lib/manual-active.js";
+import {
+  computeDayTypeActiveStats,
+  resolveActiveTypical,
+  sumManualByDay,
+} from "../lib/chompass-core/day-type-active.js";
 import { setDayAssignment } from "../lib/chompass-core/macro-plan-edit.js";
 import { resolveDay, resolveDayJournaled } from "../lib/chompass-core/macro-plan.js";
 import { refreshGoalJournal, recordManualSwitchGoalJournal } from "../lib/goal-journal-store.js";
@@ -255,7 +261,12 @@ function formatGrams(g) {
 /** Android BurnShadeCaption: "380 of 560 active" (live of typical), else "560 active". */
 function burnCaptionText(zoneActive, burn) {
   if (!burn) return `${zoneActive} active`;
-  if (burn.live > 0 && burn.typical > 0) return `${burn.live} of ${burn.typical} active`;
+  if (burn.live > 0 && burn.typical > 0) {
+    if (burn.typicalIsDayType && burn.typicalDayTypeName) {
+      return `${burn.live} of ${burn.typical} active · ${burn.typicalDayTypeName}`;
+    }
+    return `${burn.live} of ${burn.typical} active`;
+  }
   return `${Math.max(burn.typical, zoneActive)} active`;
 }
 
@@ -534,7 +545,7 @@ export class DiaryView extends HTMLElement {
   }
 
   async render() {
-    const [entries, prof, waterLogs, appPrefs, manualKcal, noteLogs, journal] = await Promise.all([
+    const [entries, prof, waterLogs, appPrefs, manualKcal, noteLogs, journal, allManual] = await Promise.all([
       foodEntries.byDate(this.date),
       profileStore.load(),
       water.byDate(this.date),
@@ -542,6 +553,7 @@ export class DiaryView extends HTMLElement {
       manualActiveKcalForDate(this.date),
       dailyNotes.byDate(this.date),
       goalJournal.all(),
+      loadManualActiveEntries(),
     ]);
     this._renderedDay = todayIso();
     const note = noteLogs[0] ?? null;
@@ -573,18 +585,23 @@ export class DiaryView extends HTMLElement {
           )}</button>`
         : "";
     let calorieTarget = targets?.calories ?? 0;
-    /** @type {{ goal: number, active: number, live: number, typical: number, source: string, awaiting: false } | { goal: number, awaiting: true } | null} */
+    /** @type {{ goal: number, active: number, live: number, typical: number, typicalIsDayType?: boolean, typicalDayTypeName?: string|null, source: string, awaiting: false } | { goal: number, awaiting: true } | null} */
     let gaugeInfo = null;
     if (prof && targets && appPrefs.calorieGaugeMode === "add_active") {
       const { sedentaryBudget, estimatedDailyActive } = estimatedDailyActiveCalories(prof, targets.calories);
-      const burn = resolveWebActiveBurn(estimatedDailyActive, manualKcal);
+      const stats = computeDayTypeActiveStats(journal, sumManualByDay(allManual), this.date);
+      const typicalRes = resolveActiveTypical(dayResolved?.profileId, stats, 0, estimatedDailyActive);
+      const typical = typicalRes.kcal;
+      const burn = resolveWebActiveBurn(typical, manualKcal);
       calorieTarget = addActiveGaugeTarget(targets.calories, sedentaryBudget, burn);
       gaugeInfo = burn
         ? {
             goal: sedentaryBudget,
             active: burn.calories,
             live: Math.round(manualKcal),
-            typical: estimatedDailyActive,
+            typical,
+            typicalIsDayType: typicalRes.typicalIsDayType,
+            typicalDayTypeName: dayResolved?.profileName ?? null,
             source: burn.source,
             awaiting: false,
           }
@@ -1148,18 +1165,29 @@ export class DiaryView extends HTMLElement {
       ? t("day_types.tomorrow_format", { name: tomorrow.profileName, kcal: String(tomorrow.targets.calories) })
       : t("day_types.tomorrow_base", { kcal: String(base.calories) });
     const hasOverride = plan?.dayAssignments?.[today] != null;
+    const allManual = await loadManualActiveEntries();
+    const journal = await goalJournal.all();
+    const stats = computeDayTypeActiveStats(journal, sumManualByDay(allManual), today);
     const sheet = openSheet({
       title: t("day_types.sheet_title"),
       body: `
         <div class="sheet-actions" role="listbox" aria-label="${escapeAttr(t("day_types.sheet_title"))}">
           ${profiles
-            .map(
-              (p) => `
+            .map((p) => {
+              const typ = stats.byProfileId[p.id];
+              const typLine =
+                typ && typ.sampleCount >= 3
+                  ? `<span style="display:block;font-size:0.78rem;color:var(--muted);">${escapeHtml(
+                      t("day_types.active_typical", { kcal: String(typ.averageKcal) }),
+                    )}</span>`
+                  : "";
+              return `
             <button type="button" role="option" data-type-id="${escapeAttr(p.id)}" aria-selected="${active.profileId === p.id}">
               ${escapeHtml(p.name)} · ${p.calories} kcal
               <span style="display:block;font-size:0.8rem;color:var(--muted);">${p.proteinG}P / ${p.carbsG}C / ${p.fatG}F</span>
-            </button>`,
-            )
+              ${typLine}
+            </button>`;
+            })
             .join("")}
           ${hasOverride ? `<button type="button" role="option" data-type-clear>${escapeHtml(t("day_types.follow_schedule"))}</button>` : ""}
         </div>

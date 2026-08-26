@@ -118,6 +118,8 @@ internal object Keys {
         /** Measured Health Connect active kcal/day average used to split the Energy Burn goal
          *  into a sedentary base for the ADD_ACTIVE home gauge. 0 = not available. */
         val HEALTH_ENERGY_MEASURED_ACTIVE = intPreferencesKey("healthEnergyMeasuredActiveCalories")
+        /** Compact ISO-date → active kcal map (internal, never synced). Pruned to 60 days. */
+        val HEALTH_ENERGY_ACTIVE_BY_DAY = stringPreferencesKey("healthEnergyActiveByDayJson")
         val HEALTH_BACKGROUND_SYNC_ENABLED = booleanPreferencesKey("healthBackgroundSyncEnabled")
         val HEALTH_ENERGY_GOALS_PREVIOUS_TARGETS = stringPreferencesKey("healthEnergyGoalsPreviousTargets")
         val HEALTH_ENERGY_GOALS_LAST_AUTO_REFRESH_DAY = stringPreferencesKey("healthEnergyGoalsLastAutoRefreshDay")
