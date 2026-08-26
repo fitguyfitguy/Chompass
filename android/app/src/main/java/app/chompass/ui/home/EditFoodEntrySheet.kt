@@ -599,7 +599,7 @@ fun EditFoodEntrySheet(
                             )
                             Spacer(Modifier.width(6.dp))
                             Text(
-                                stringResource(mealType.displayNameRes),
+                                mealLabel(mealType),
                                 fontSize = 17.sp,
                                 color = AppColors.Calorie,
                                 fontWeight = FontWeight.Medium
@@ -616,9 +616,9 @@ fun EditFoodEntrySheet(
                             onDismissRequest = { mealMenuExpanded = false },
                             menuWidth = 184.dp
                         ) {
-                            for (m in MealType.values()) {
+                            for (m in pickerMealIds()) {
                                 SheetGlassDropdownMenuItem(
-                                    label = stringResource(m.displayNameRes),
+                                    label = mealLabel(m),
                                     leadingIcon = sheetMealIcon(m),
                                     selected = m == mealType,
                                     onClick = {

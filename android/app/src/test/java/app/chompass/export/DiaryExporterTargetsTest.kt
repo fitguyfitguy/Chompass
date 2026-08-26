@@ -34,7 +34,7 @@ class DiaryExporterTargetsTest {
         carbs = 20.0,
         fat = 5.0,
         source = FoodSource.MANUAL,
-        mealType = MealType.LUNCH,
+        mealType = MealType.LUNCH.id,
         timestamp = day.atTime(12, 0).atZone(zone).toInstant(),
     )
 
@@ -80,7 +80,7 @@ class DiaryExporterTargetsTest {
             end = LocalDate.of(2026, 7, 24),
             format = DiaryFormat.JSON,
             profile = profile(cyclePlan()),
-            mealDisplay = { it.name },
+            mealDisplay = { it },
             goalJournal = journal,
             today = today,
         ) ?: error("expected export")
@@ -107,7 +107,7 @@ class DiaryExporterTargetsTest {
             end = LocalDate.of(2026, 7, 24),
             format = DiaryFormat.JSON,
             profile = profile(plan = null),
-            mealDisplay = { it.name },
+            mealDisplay = { it },
             today = today,
         ) ?: error("expected export")
 
@@ -125,7 +125,7 @@ class DiaryExporterTargetsTest {
             end = LocalDate.of(2026, 7, 24),
             format = DiaryFormat.MARKDOWN,
             profile = profile(cyclePlan()),
-            mealDisplay = { it.name },
+            mealDisplay = { it },
             goalJournal = journal,
             today = today,
         ) ?: error("expected export")
@@ -144,7 +144,7 @@ class DiaryExporterTargetsTest {
             end = LocalDate.of(2026, 7, 23),
             format = DiaryFormat.JSON,
             profile = null,
-            mealDisplay = { it.name },
+            mealDisplay = { it },
             goalJournal = journal,
             today = today,
         ) ?: error("expected export")

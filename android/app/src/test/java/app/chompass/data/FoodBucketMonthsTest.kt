@@ -103,6 +103,6 @@ class FoodBucketMonthsTest {
         fat = 5.0,
         timestamp = timestamp,
         source = FoodSource.MANUAL,
-        mealType = MealType.LUNCH,
+        mealType = MealType.LUNCH.id,
     )
 }

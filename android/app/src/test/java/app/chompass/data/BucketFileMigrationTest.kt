@@ -175,6 +175,6 @@ class BucketFileMigrationTest {
         fat = 2.0,
         timestamp = Instant.parse(ts),
         source = FoodSource.MANUAL,
-        mealType = MealType.LUNCH,
+        mealType = MealType.LUNCH.id,
     )
 }

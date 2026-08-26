@@ -32,11 +32,11 @@ sealed class DiaryImportResult {
 /**
  * Parses the JSON structure emitted by [DiaryExporter] (and Fud AI / NoFUD) into [FoodEntry] rows.
  * Accepts format 1.0 (macros), 1.1 (macros + micros), 1.2 (serving units + constituents),
- * and 1.3 (day notes, #58a). Exports always use 1.3.
+ * 1.3 (day notes, #58a), and 1.4 (custom meal types, #61). Exports always use 1.4.
  */
 object DiaryImporter {
-    /** Versions accepted on import. New exports always stamp format 1.3 (day notes, #58a). */
-    private val SUPPORTED_IMPORT_VERSIONS = setOf("1.0", "1.1", "1.2", "1.3")
+    /** Versions accepted on import. New exports always stamp format 1.4. */
+    private val SUPPORTED_IMPORT_VERSIONS = setOf("1.0", "1.1", "1.2", "1.3", "1.4")
 
     private val parser = Json {
         ignoreUnknownKeys = true
@@ -63,7 +63,7 @@ object DiaryImporter {
         val version = export["format_version"]?.asString()
         if (version == null || version !in SUPPORTED_IMPORT_VERSIONS) {
             return DiaryImportResult.UnsupportedFormat(
-                "unsupported format_version \"${version ?: ""}\" (need 1.0, 1.1, 1.2, or 1.3)",
+                "unsupported format_version \"${version ?: ""}\" (need 1.0, 1.1, 1.2, 1.3, or 1.4)",
             )
         }
 
@@ -149,14 +149,11 @@ object DiaryImporter {
         return runCatching { LocalTime.parse(cleaned) }.getOrNull()
     }
 
-    private fun parseMealType(raw: String?): MealType =
-        when (raw?.trim()?.lowercase()) {
-            "breakfast" -> MealType.BREAKFAST
-            "lunch" -> MealType.LUNCH
-            "dinner" -> MealType.DINNER
-            "snack" -> MealType.SNACK
-            else -> MealType.OTHER
-        }
+    private fun parseMealType(raw: String?): String {
+        val id = raw?.trim().orEmpty()
+        if (id.isEmpty()) return MealType.OTHER.id
+        return id
+    }
 
     private fun parseSource(raw: String?): FoodSource =
         when (raw?.trim()?.lowercase()) {

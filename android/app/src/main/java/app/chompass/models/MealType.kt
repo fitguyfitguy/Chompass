@@ -14,6 +14,14 @@ enum class MealType {
     @SerialName("snack") SNACK,
     @SerialName("other") OTHER;
 
+    val id: String get() = when (this) {
+        BREAKFAST -> "breakfast"
+        LUNCH -> "lunch"
+        DINNER -> "dinner"
+        SNACK -> "snack"
+        OTHER -> "other"
+    }
+
     @get:StringRes
     val displayNameRes: Int get() = when (this) {
         BREAKFAST -> R.string.meal_breakfast
@@ -24,6 +32,20 @@ enum class MealType {
     }
 
     companion object {
-        val currentMeal: MealType get() = CurrentMealSchedule.value.mealTypeAt(LocalTime.now())
+        val currentMeal: MealType get() = CurrentMealCatalog.value.mealTypeAt(LocalTime.now())
+        val currentMealId: String get() = CurrentMealCatalog.value.mealIdAt(LocalTime.now())
+
+        fun fromId(id: String?): MealType? = when (id?.trim()?.lowercase()) {
+            "breakfast" -> BREAKFAST
+            "lunch" -> LUNCH
+            "dinner" -> DINNER
+            "snack" -> SNACK
+            "other" -> OTHER
+            else -> null
+        }
+
+        fun fromIdOrOther(id: String?): MealType = fromId(id) ?: OTHER
+
+        fun iconMeal(id: String?): MealType = fromId(id) ?: OTHER
     }
 }

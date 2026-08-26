@@ -5,7 +5,8 @@ Versioned JSON Schemas for cross-app interchange. Fixtures in
 
 | Schema | Format | Consumers |
 |--------|--------|-----------|
-| [`diary-1.3.schema.json`](diary-1.3.schema.json) | Diary export `format_version` **1.3** | `DiaryExporter` / `DiaryImporter`, `web/.../diary-format.js` |
+| [`diary-1.4.schema.json`](diary-1.4.schema.json) | Diary export `format_version` **1.4** | `DiaryExporter` / `DiaryImporter`, `web/.../diary-format.js` |
+| [`diary-1.3.schema.json`](diary-1.3.schema.json) | Diary export `format_version` **1.3** (legacy; still accepted on import) | same |
 | [`diary-1.2.schema.json`](diary-1.2.schema.json) | Diary export **1.2** (legacy; still accepted on import) | same |
 | [`diary-1.1.schema.json`](diary-1.1.schema.json) | Diary export **1.1** (legacy; still accepted on import) | same |
 | [`body-metrics-1.0.schema.json`](body-metrics-1.0.schema.json) | Body metrics `kind=body_metrics` **1.0** | `BodyMetricsExporter` / `BodyMetricsImporter`, `body-metrics-format.js` |

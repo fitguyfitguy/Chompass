@@ -114,7 +114,7 @@ class SyncDocumentTest {
             fat = 5.0,
             timestamp = Instant.parse("2026-08-15T22:30:00Z"),
             source = FoodSource.MANUAL,
-            mealType = MealType.BREAKFAST,
+            mealType = MealType.BREAKFAST.id,
         )
         val water = WaterEntry(date = Instant.parse("2026-08-15T23:00:00Z"), milliliters = 250)
         val json = SyncDocument.buildJson(
@@ -151,7 +151,7 @@ class SyncDocumentTest {
             fat = 5.0,
             timestamp = Instant.parse("2026-08-15T22:30:00Z"),
             source = FoodSource.MANUAL,
-            mealType = MealType.BREAKFAST,
+            mealType = MealType.BREAKFAST.id,
             emoji = "🥣",
         )
         val json = SyncDocument.buildJson(
@@ -181,7 +181,7 @@ class SyncDocumentTest {
             fat = 0.0,
             timestamp = Instant.parse("2026-08-15T08:00:00Z"),
             source = FoodSource.MANUAL,
-            mealType = MealType.BREAKFAST,
+            mealType = MealType.BREAKFAST.id,
             caffeine = 95.0,
         )
         val json = SyncDocument.buildJson(

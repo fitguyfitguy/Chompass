@@ -1,54 +1,70 @@
 package app.chompass.ui.settings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.LocaleFormat
-import app.chompass.models.MealSchedule
+import app.chompass.models.MealCatalog
+import app.chompass.models.MealDef
+import app.chompass.models.MealType
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.FudGlassTextButton
 import app.chompass.ui.components.TimeWheelPicker
+import app.chompass.ui.home.mealLabel
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
 
-private enum class MealBoundary {
-    BREAKFAST, LUNCH, DINNER, SNACK
-}
-
 @Composable
-internal fun MealTimesSheet(current: MealSchedule, onSave: (MealSchedule) -> Unit) {
-    var schedule by remember(current) { mutableStateOf(current.validatedOrDefault()) }
-    var editing by remember { mutableStateOf<MealBoundary?>(null) }
+internal fun MealTimesSheet(current: MealCatalog, onSave: (MealCatalog) -> Unit) {
+    var catalog by remember(current) { mutableStateOf(current.validatedOrDefault()) }
+    var editingId by remember { mutableStateOf<String?>(null) }
+    var pendingRemove by remember { mutableStateOf<MealDef?>(null) }
     val context = LocalContext.current
     val is24Hour = LocaleFormat.is24Hour(context)
 
-    val selectedBoundary = editing
-    if (selectedBoundary == null) {
+    val selectedId = editingId
+    if (selectedId == null) {
         Text(
-            stringResource(R.string.settings_meal_times),
+            stringResource(R.string.settings_meals),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
         )
         Spacer(Modifier.height(6.dp))
         Text(
-            stringResource(R.string.settings_meal_times_description),
+            stringResource(R.string.settings_meals_description),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
         )
@@ -59,38 +75,64 @@ internal fun MealTimesSheet(current: MealSchedule, onSave: (MealSchedule) -> Uni
             padding = 0.dp,
         ) {
             Column {
-                MealBoundary.entries.forEachIndexed { index, boundary ->
-                    SettingRow(
-                        label = stringResource(boundary.labelRes()),
-                        value = formatTime(boundary.valueIn(schedule), is24Hour),
-                    ) { editing = boundary }
-                    if (index != MealBoundary.entries.lastIndex) HorizontalDivider()
+                catalog.meals.forEachIndexed { index, def ->
+                    MealCatalogRow(
+                        def = def,
+                        is24Hour = is24Hour,
+                        canMoveUp = index > 0,
+                        canMoveDown = index < catalog.meals.lastIndex,
+                        onMoveUp = {
+                            val ids = catalog.meals.map { it.id }.toMutableList()
+                            ids.add(index - 1, ids.removeAt(index))
+                            catalog = catalog.reordered(ids)
+                        },
+                        onMoveDown = {
+                            val ids = catalog.meals.map { it.id }.toMutableList()
+                            ids.add(index + 1, ids.removeAt(index))
+                            catalog = catalog.reordered(ids)
+                        },
+                        onLabel = { catalog = catalog.withLabel(def.id, it) },
+                        onTime = { editingId = def.id },
+                        onRemove = { pendingRemove = def },
+                    )
+                    if (index != catalog.meals.lastIndex) HorizontalDivider()
                 }
             }
         }
         Spacer(Modifier.height(10.dp))
         Text(
-            stringResource(R.string.settings_meal_times_help),
+            stringResource(R.string.settings_meals_help),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
+        Spacer(Modifier.height(12.dp))
+        FudGlassTextButton(
+            text = stringResource(R.string.settings_meals_add),
+            onClick = {
+                if (catalog.meals.size < MealCatalog.MAX_MEALS) {
+                    catalog = catalog.addCustom("", catalog.suggestedStartForNew())
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            color = AppColors.Calorie,
+        )
         Spacer(Modifier.height(16.dp))
-        GradientSaveButton { onSave(schedule) }
+        GradientSaveButton {
+            onSave(catalog.validatedOrDefault())
+        }
         FudGlassTextButton(
             text = stringResource(R.string.settings_restore_default_times),
-            onClick = { schedule = MealSchedule.Default },
+            onClick = { catalog = MealCatalog.Default },
             modifier = Modifier.fillMaxWidth(),
             color = AppColors.Calorie,
         )
         Spacer(Modifier.height(8.dp))
     } else {
-        val allowed = selectedBoundary.allowedRange(schedule)
-        var selectedMinutes by remember(selectedBoundary, schedule) {
-            mutableIntStateOf(selectedBoundary.valueIn(schedule))
-        }
-        val label = stringResource(selectedBoundary.labelRes())
+        val def = catalog.def(selectedId) ?: return
+        val minutes = def.startMinutes ?: catalog.suggestedStartForNew()
+        var selectedMinutes by remember(selectedId, minutes) { mutableIntStateOf(minutes) }
         Text(
-            stringResource(R.string.settings_meal_time_edit_format, label),
+            stringResource(R.string.settings_meal_time_edit_format, mealLabel(selectedId)),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
         )
@@ -102,16 +144,106 @@ internal fun MealTimesSheet(current: MealSchedule, onSave: (MealSchedule) -> Uni
         )
         Spacer(Modifier.height(16.dp))
         GradientSaveButton {
-            schedule = selectedBoundary.updatedSchedule(schedule, selectedMinutes)
-            editing = null
+            catalog = catalog.withStart(selectedId, selectedMinutes)
+            editingId = null
         }
         FudGlassTextButton(
             text = stringResource(R.string.action_cancel),
-            onClick = { editing = null },
+            onClick = { editingId = null },
             modifier = Modifier.fillMaxWidth(),
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
         )
         Spacer(Modifier.height(8.dp))
+    }
+
+    val remove = pendingRemove
+    if (remove != null) {
+        AlertDialog(
+            onDismissRequest = { pendingRemove = null },
+            title = { Text(stringResource(R.string.settings_meals_remove_title)) },
+            text = { Text(stringResource(R.string.settings_meals_remove_body)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    catalog = if (remove.isBuiltin) {
+                        catalog.withEnabled(remove.id, false)
+                    } else {
+                        catalog.without(remove.id)
+                    }
+                    pendingRemove = null
+                }) { Text(stringResource(R.string.action_delete)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingRemove = null }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            },
+        )
+    }
+}
+
+@Composable
+private fun MealCatalogRow(
+    def: MealDef,
+    is24Hour: Boolean,
+    canMoveUp: Boolean,
+    canMoveDown: Boolean,
+    onMoveUp: () -> Unit,
+    onMoveDown: () -> Unit,
+    onLabel: (String) -> Unit,
+    onTime: () -> Unit,
+    onRemove: () -> Unit,
+) {
+    var editingName by remember(def.id, def.label) { mutableStateOf(false) }
+    val defaultLabel = mealLabel(def.id)
+    var draft by remember(def.id, def.label) { mutableStateOf(def.label.ifBlank { defaultLabel }) }
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column {
+            IconButton(onClick = onMoveUp, enabled = canMoveUp) {
+                Icon(Icons.Filled.KeyboardArrowUp, contentDescription = null)
+            }
+            IconButton(onClick = onMoveDown, enabled = canMoveDown) {
+                Icon(Icons.Filled.KeyboardArrowDown, contentDescription = null)
+            }
+        }
+        Column(Modifier.weight(1f)) {
+            if (editingName) {
+                BasicTextField(
+                    value = draft,
+                    onValueChange = { draft = it.take(MealCatalog.MAX_LABEL) },
+                    singleLine = true,
+                    textStyle = TextStyle(
+                        fontSize = 17.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    ),
+                    cursorBrush = SolidColor(AppColors.Calorie),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                TextButton(onClick = {
+                    onLabel(draft)
+                    editingName = false
+                }) { Text(stringResource(R.string.action_save)) }
+            } else {
+                Text(
+                    if (def.enabled) defaultLabel else stringResource(R.string.settings_meals_hidden, defaultLabel),
+                    fontSize = 17.sp,
+                    modifier = Modifier.clickable { editingName = true },
+                )
+                val start = def.startMinutes
+                Text(
+                    if (start != null) formatTime(start, is24Hour) else stringResource(R.string.settings_meals_no_auto),
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                    modifier = Modifier.clickable(enabled = def.enabled) { onTime() },
+                )
+            }
+        }
+        Spacer(Modifier.width(8.dp))
+        TextButton(onClick = onRemove) { Text(stringResource(R.string.action_delete)) }
     }
 }
 
@@ -119,32 +251,4 @@ private fun formatTime(minutes: Int, is24Hour: Boolean): String {
     val time = java.time.LocalTime.of(minutes / 60, minutes % 60)
     val pattern = if (is24Hour) "HH:mm" else "h:mm a"
     return time.format(java.time.format.DateTimeFormatter.ofPattern(pattern, java.util.Locale.getDefault()))
-}
-
-private fun MealBoundary.labelRes(): Int = when (this) {
-    MealBoundary.BREAKFAST -> R.string.settings_breakfast_starts
-    MealBoundary.LUNCH -> R.string.settings_lunch_starts
-    MealBoundary.DINNER -> R.string.settings_dinner_starts
-    MealBoundary.SNACK -> R.string.settings_late_snack_starts
-}
-
-private fun MealBoundary.valueIn(schedule: MealSchedule): Int = when (this) {
-    MealBoundary.BREAKFAST -> schedule.breakfastStartMinutes
-    MealBoundary.LUNCH -> schedule.lunchStartMinutes
-    MealBoundary.DINNER -> schedule.dinnerStartMinutes
-    MealBoundary.SNACK -> schedule.snackStartMinutes
-}
-
-private fun MealBoundary.allowedRange(schedule: MealSchedule): IntRange = when (this) {
-    MealBoundary.BREAKFAST -> 0..(schedule.lunchStartMinutes - 15)
-    MealBoundary.LUNCH -> (schedule.breakfastStartMinutes + 15)..(schedule.dinnerStartMinutes - 15)
-    MealBoundary.DINNER -> (schedule.lunchStartMinutes + 15)..(schedule.snackStartMinutes - 15)
-    MealBoundary.SNACK -> (schedule.dinnerStartMinutes + 15)..1439
-}
-
-private fun MealBoundary.updatedSchedule(schedule: MealSchedule, minutes: Int): MealSchedule = when (this) {
-    MealBoundary.BREAKFAST -> schedule.copy(breakfastStartMinutes = minutes)
-    MealBoundary.LUNCH -> schedule.copy(lunchStartMinutes = minutes)
-    MealBoundary.DINNER -> schedule.copy(dinnerStartMinutes = minutes)
-    MealBoundary.SNACK -> schedule.copy(snackStartMinutes = minutes)
 }

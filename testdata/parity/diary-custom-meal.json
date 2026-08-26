@@ -1,0 +1,57 @@
+{
+  "export": {
+    "app": "Chompass",
+    "format_version": "1.4",
+    "date_range": {
+      "start": "2026-08-26",
+      "end": "2026-08-26"
+    },
+    "meal_catalog": [
+      { "id": "breakfast", "label": "Desayuno" },
+      { "id": "c_ab12cd34", "label": "Comida" },
+      { "id": "dinner", "label": "Cena" },
+      { "id": "snack", "label": "" }
+    ]
+  },
+  "days": [
+    {
+      "date": "2026-08-26",
+      "totals": {
+        "calories": 500,
+        "protein_g": 30.0,
+        "carbs_g": 40.0,
+        "fat_g": 20.0
+      },
+      "targets": {
+        "calories": 2000,
+        "protein_g": 150.0,
+        "carbs_g": 200.0,
+        "fat_g": 60.0
+      },
+      "remaining": {
+        "calories": 1500,
+        "protein_g": 120.0,
+        "carbs_g": 160.0,
+        "fat_g": 40.0
+      },
+      "note": null,
+      "meals": [
+        {
+          "type": "c_ab12cd34",
+          "items": [
+            {
+              "name": "Comida plate",
+              "quantity_g": 350.0,
+              "calories": 500,
+              "protein_g": 30.0,
+              "carbs_g": 40.0,
+              "fat_g": 20.0,
+              "time": "15:30",
+              "source": "manually_edited"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -66,7 +66,7 @@ internal object SampleDataGenerators {
             val skipDay = rng.nextInt(20) == 0
             if (skipDay) continue
 
-            fun add(template: MealTemplate, hour: Int, meal: MealType) {
+            fun add(template: MealTemplate, hour: Int, meal: String) {
                 val jitter = rng.nextDouble(0.85, 1.15)
                 val ts = day.atTime(LocalTime.of(hour, rng.nextInt(0, 50)))
                     .atZone(zone).toInstant()
@@ -85,10 +85,10 @@ internal object SampleDataGenerators {
                 )
             }
 
-            add(breakfast.random(rng), hour = 8, meal = MealType.BREAKFAST)
-            add(lunch.random(rng), hour = 13, meal = MealType.LUNCH)
-            add(dinner.random(rng), hour = 19, meal = MealType.DINNER)
-            if (rng.nextBoolean()) add(snacks.random(rng), hour = 16, meal = MealType.SNACK)
+            add(breakfast.random(rng), hour = 8, meal = MealType.BREAKFAST.id)
+            add(lunch.random(rng), hour = 13, meal = MealType.LUNCH.id)
+            add(dinner.random(rng), hour = 19, meal = MealType.DINNER.id)
+            if (rng.nextBoolean()) add(snacks.random(rng), hour = 16, meal = MealType.SNACK.id)
         }
         return out
     }
@@ -273,7 +273,7 @@ internal object SampleDataGenerators {
             fun add(
                 template: MealTemplate,
                 hour: Int,
-                meal: MealType,
+                meal: String,
                 source: FoodSource,
                 recipeLogId: UUID? = null,
                 withMicros: Boolean,
@@ -308,19 +308,19 @@ internal object SampleDataGenerators {
                 else -> FoodSource.TEXT_INPUT
             }
 
-            add(breakfast.random(rng), hour = 8, meal = MealType.BREAKFAST, source = sourceFor(daysAgo), withMicros = rng.nextInt(3) != 0)
-            add(lunch.random(rng), hour = 13, meal = MealType.LUNCH, source = sourceFor(daysAgo), withMicros = rng.nextInt(3) != 0)
+            add(breakfast.random(rng), hour = 8, meal = MealType.BREAKFAST.id, source = sourceFor(daysAgo), withMicros = rng.nextInt(3) != 0)
+            add(lunch.random(rng), hour = 13, meal = MealType.LUNCH.id, source = sourceFor(daysAgo), withMicros = rng.nextInt(3) != 0)
             if (daysAgo % 11 == 0) {
                 val recipeLogId = UUID.randomUUID()
                 val parts = recipeMains.random(rng)
-                add(parts.first, hour = 18, meal = MealType.DINNER, source = FoodSource.MANUAL, recipeLogId = recipeLogId, withMicros = true)
-                add(parts.second, hour = 18, meal = MealType.DINNER, source = FoodSource.MANUAL, recipeLogId = recipeLogId, withMicros = true)
-                add(parts.third, hour = 18, meal = MealType.DINNER, source = FoodSource.MANUAL, recipeLogId = recipeLogId, withMicros = true)
+                add(parts.first, hour = 18, meal = MealType.DINNER.id, source = FoodSource.MANUAL, recipeLogId = recipeLogId, withMicros = true)
+                add(parts.second, hour = 18, meal = MealType.DINNER.id, source = FoodSource.MANUAL, recipeLogId = recipeLogId, withMicros = true)
+                add(parts.third, hour = 18, meal = MealType.DINNER.id, source = FoodSource.MANUAL, recipeLogId = recipeLogId, withMicros = true)
             } else {
-                add(dinner.random(rng), hour = 19, meal = MealType.DINNER, source = sourceFor(daysAgo), withMicros = rng.nextInt(3) != 0)
+                add(dinner.random(rng), hour = 19, meal = MealType.DINNER.id, source = sourceFor(daysAgo), withMicros = rng.nextInt(3) != 0)
             }
             if (rng.nextBoolean()) {
-                add(snacks.random(rng), hour = 16, meal = MealType.SNACK, source = sourceFor(daysAgo), withMicros = rng.nextBoolean())
+                add(snacks.random(rng), hour = 16, meal = MealType.SNACK.id, source = sourceFor(daysAgo), withMicros = rng.nextBoolean())
             }
         }
         return out
@@ -426,7 +426,7 @@ internal object SampleDataGenerators {
             Recipe(
                 name = "Overnight oats",
                 emoji = "\uD83E\uDD63",
-                mealType = MealType.BREAKFAST,
+                mealType = MealType.BREAKFAST.id,
                 createdAt = now.minusSeconds(86_400L * 40),
                 ingredients = listOf(
                     ing("Rolled oats", "\uD83C\uDF3E", 150, 5, 27, 3, 4.0, 2.0),
@@ -437,7 +437,7 @@ internal object SampleDataGenerators {
             Recipe(
                 name = "Chicken rice bowl",
                 emoji = "\uD83C\uDF57",
-                mealType = MealType.LUNCH,
+                mealType = MealType.LUNCH.id,
                 createdAt = now.minusSeconds(86_400L * 20),
                 ingredients = listOf(
                     ing("Chicken thigh", "\uD83C\uDF57", 240, 28, 0, 14, 0.0, 90.0),
@@ -448,7 +448,7 @@ internal object SampleDataGenerators {
             Recipe(
                 name = "Tofu soba",
                 emoji = "\uD83C\uDF5C",
-                mealType = MealType.DINNER,
+                mealType = MealType.DINNER.id,
                 createdAt = now.minusSeconds(86_400L * 8),
                 ingredients = listOf(
                     ing("Tofu", "\uD83E\uDDC6", 180, 16, 6, 10, 1.0, 20.0),
@@ -459,7 +459,7 @@ internal object SampleDataGenerators {
             Recipe(
                 name = "Salmon plate",
                 emoji = "\uD83D\uDC1F",
-                mealType = MealType.DINNER,
+                mealType = MealType.DINNER.id,
                 createdAt = now.minusSeconds(86_400L * 3),
                 ingredients = listOf(
                     ing("Grilled salmon", "\uD83D\uDC1F", 360, 34, 0, 24, 0.0, 80.0),
@@ -494,10 +494,10 @@ internal object SampleDataGenerators {
                 emoji = t.emoji,
                 source = FoodSource.TEXT_INPUT,
                 mealType = when {
-                    i < 3 -> MealType.BREAKFAST
-                    i < 6 -> MealType.LUNCH
-                    i < 8 -> MealType.DINNER
-                    else -> MealType.SNACK
+                    i < 3 -> MealType.BREAKFAST.id
+                    i < 6 -> MealType.LUNCH.id
+                    i < 8 -> MealType.DINNER.id
+                    else -> MealType.SNACK.id
                 },
                 fiber = t.fiber,
                 sodium = t.sodium,

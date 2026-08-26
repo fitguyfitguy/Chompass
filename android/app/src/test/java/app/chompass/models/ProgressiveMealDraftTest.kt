@@ -13,7 +13,7 @@ class ProgressiveMealDraftTest {
     fun toFoodEntries_sharesOneRecipeLogId() {
         val draft = ProgressiveMealDraft(
             name = "Plate",
-            mealType = MealType.LUNCH,
+            mealType = MealType.LUNCH.id,
             items = listOf(
                 ProgressiveMealItem(
                     analysis = FoodAnalysis(
@@ -61,7 +61,7 @@ class ProgressiveMealDraftTest {
 
         assertEquals(3, entries.size)
         assertTrue(entries.all { it.recipeLogId == recipeLogId })
-        assertTrue(entries.all { it.mealType == MealType.LUNCH })
+        assertTrue(entries.all { it.mealType == MealType.LUNCH.id })
         assertTrue(entries.all { it.timestamp == timestamp })
         assertEquals("Buckwheat", entries[0].name)
         assertEquals("Chicken", entries[1].name)

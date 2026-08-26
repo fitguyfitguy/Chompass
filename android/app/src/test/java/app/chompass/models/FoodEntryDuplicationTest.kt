@@ -15,7 +15,7 @@ class FoodEntryDuplicationTest {
             carbs = 27.0,
             fat = 3.0,
             source = FoodSource.MANUAL,
-            mealType = MealType.BREAKFAST,
+            mealType = MealType.BREAKFAST.id,
             timestamp = Instant.parse("2026-01-15T08:30:00Z"),
         )
         val logAt = Instant.parse("2026-07-22T18:05:00Z")
@@ -23,7 +23,7 @@ class FoodEntryDuplicationTest {
 
         assertNotEquals(source.id, copy.id)
         assertEquals(logAt, copy.timestamp)
-        assertEquals(MealType.currentMeal, copy.mealType)
+        assertEquals(MealType.currentMealId, copy.mealType)
         assertEquals(source.name, copy.name)
         assertEquals(source.calories, copy.calories)
     }
@@ -37,13 +37,13 @@ class FoodEntryDuplicationTest {
             carbs = 15.0,
             fat = 8.0,
             source = FoodSource.MANUAL,
-            mealType = MealType.LUNCH,
+            mealType = MealType.LUNCH.id,
         )
         val copy = source.duplicatedForLogging(
             Instant.parse("2026-07-22T12:00:00Z"),
-            mealType = MealType.DINNER,
+            mealType = MealType.DINNER.id,
         )
-        assertEquals(MealType.DINNER, copy.mealType)
+        assertEquals(MealType.DINNER.id, copy.mealType)
     }
 
     @Test

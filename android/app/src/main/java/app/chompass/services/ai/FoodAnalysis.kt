@@ -178,7 +178,7 @@ data class FoodAnalysis(
  */
 fun FoodAnalysis.toFoodEntry(
     source: app.chompass.models.FoodSource,
-    mealType: app.chompass.models.MealType,
+    mealType: String,
 ): app.chompass.models.FoodEntry =
     toMicronutrients().applyTo(
         app.chompass.models.FoodEntry(

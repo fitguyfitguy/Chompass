@@ -376,7 +376,7 @@ object SyncDocument {
                                 put("updated_at", meta.updatedAt)
                                 putNullable("deleted_at", meta.deletedAt)
                                 put("name", r.name)
-                                put("meal_type", r.mealType.name.lowercase())
+                                put("meal_type", r.mealType)
                                 put("created_at", r.createdAt.toString())
                                 put(
                                     "ingredients",
@@ -567,7 +567,7 @@ object SyncDocument {
             putNullable("emoji", e.emoji)
             put("date", localDate.toString())
             put("time", String.format("%02d:%02d", localTime.hour, localTime.minute))
-            put("meal_type", e.mealType.name.lowercase())
+            put("meal_type", e.mealType)
             putNullableNumber("quantity_g", e.servingSizeGrams)
             put("calories", e.calories)
             put("protein_g", e.protein)
@@ -1048,12 +1048,9 @@ object SyncDocument {
         else -> FoodSource.TEXT_INPUT
     }
 
-    private fun parseMealType(raw: String?): MealType = when (raw?.trim()?.lowercase()) {
-        "breakfast" -> MealType.BREAKFAST
-        "lunch" -> MealType.LUNCH
-        "dinner" -> MealType.DINNER
-        "snack" -> MealType.SNACK
-        else -> MealType.OTHER
+    private fun parseMealType(raw: String?): String {
+        val id = raw?.trim().orEmpty()
+        return id.ifEmpty { MealType.OTHER.id }
     }
 
     private fun parseInstant(raw: String?): Instant? {

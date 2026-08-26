@@ -192,6 +192,7 @@ data class SettingsUiState(
     val optionalNutrientGoals: OptionalNutrientGoals = OptionalNutrientGoals.Default,
     val homeDisplay: HomeDisplayPreferences = HomeDisplayPreferences(),
     val mealSchedule: app.chompass.models.MealSchedule = app.chompass.models.MealSchedule.Default,
+    val mealCatalog: app.chompass.models.MealCatalog = app.chompass.models.MealCatalog.Default,
     /** A goal-relevant input changed since the last Recalculate. Drives a soft nudge on the
      *  Recalculate row; the button stays tappable at all times — this never disables it. */
     val goalsNeedRecalc: Boolean = false,
@@ -457,6 +458,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     optionalNutrientGoals = snap.optionalNutrientGoals,
                     homeDisplay = snap.homeDisplay,
                     mealSchedule = snap.mealSchedule,
+                    mealCatalog = snap.mealCatalog,
                     goalsNeedRecalc = needsRecalc(profile)
                 )
                 // The hydration rebuild above is wholesale; re-apply the persisted
@@ -864,7 +866,15 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         val validated = schedule.validatedOrDefault()
         updateUiPref(
             { container.prefs.setMealSchedule(validated) },
-            { copy(mealSchedule = validated) },
+            { copy(mealSchedule = validated, mealCatalog = app.chompass.models.MealCatalog.fromLegacySchedule(validated)) },
+        )
+    }
+
+    fun setMealCatalog(catalog: app.chompass.models.MealCatalog) {
+        val validated = catalog.validatedOrDefault()
+        updateUiPref(
+            { container.prefs.setMealCatalog(validated) },
+            { copy(mealCatalog = validated, mealSchedule = validated.toLegacySchedule()) },
         )
     }
 

@@ -59,7 +59,7 @@ class HomeFoodLogLazyMoveTest {
         fat = 1.0,
         timestamp = ts,
         source = FoodSource.TEXT_INPUT,
-        mealType = meal,
+        mealType = meal.id,
     )
 
     @Test
@@ -123,14 +123,14 @@ class HomeFoodLogLazyMoveTest {
         }
 
         composeRule.onNodeWithText("Bread roll").assertExists()
-        composeRule.onNodeWithText("HEADER-LUNCH").assertExists()
+        composeRule.onNodeWithText("HEADER-lunch").assertExists()
 
         if (changeBehindSheet) {
             // Mutate while the sheet is up, then dismiss like EditFoodEntrySheet.
             composeRule.runOnIdle {
                 entries = entries.map {
                     if (it.id == movedId) {
-                        it.copy(mealType = MealType.BREAKFAST, timestamp = base.plusSeconds(15))
+                        it.copy(mealType = MealType.BREAKFAST.id, timestamp = base.plusSeconds(15))
                     } else it
                 }
             }
@@ -140,7 +140,7 @@ class HomeFoodLogLazyMoveTest {
         // Meal Type edit: LUNCH -> BREAKFAST, timestamp rewritten to the meal's
         // default time (matches the on-device trace: ts ...464 -> ...460).
             entries = entries.map {
-                if (it.id == movedId) it.copy(mealType = MealType.BREAKFAST, timestamp = base.plusSeconds(15))
+                if (it.id == movedId) it.copy(mealType = MealType.BREAKFAST.id, timestamp = base.plusSeconds(15))
                 else it
             }
         }
@@ -189,7 +189,7 @@ private fun HomeFoodLogTestList(
             }
             for (group in mealGroups) {
                 item(key = "header-${group.id}") {
-                    Text("HEADER-${group.meal.name}", Modifier.fillMaxWidth())
+                    Text("HEADER-${group.meal}", Modifier.fillMaxWidth())
                 }
                 // Group-scoped keys — mirrors the #56 fix in HomeScreen.
                 itemsIndexed(group.entries, key = { _, entry -> "${group.id}:${entry.id}" }) { _, entry ->

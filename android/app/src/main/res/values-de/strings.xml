@@ -1763,6 +1763,14 @@ für dich ein</string>
 
     <string name="settings_progress_plots_latest">Aktuellste: %1$s %2$s</string>
 
+    <string name="settings_meals">Mahlzeiten</string>
+    <string name="settings_meals_description">Namen, Reihenfolge und Startzeiten</string>
+    <string name="settings_meals_help">Neues Essen nutzt die Mahlzeit, deren Startzeit am nächsten vor jetzt liegt.</string>
+    <string name="settings_meals_add">Mahlzeit hinzufügen</string>
+    <string name="settings_meals_remove_title">Diese Mahlzeit entfernen?</string>
+    <string name="settings_meals_remove_body">Vorhandene Einträge behalten ihren Typ, bis du sie änderst. Eingebaute Mahlzeiten werden ausgeblendet statt gelöscht.</string>
+    <string name="settings_meals_hidden">%1$s (ausgeblendet)</string>
+    <string name="settings_meals_no_auto">Nicht für Auto-Auswahl</string>
     <string name="settings_meal_times">Essenszeiten</string>
 
     <string name="settings_meal_times_customize">Anpassen</string>

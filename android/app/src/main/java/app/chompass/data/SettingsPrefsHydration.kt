@@ -19,6 +19,7 @@ import app.chompass.models.WaterGoalCalculator
 import app.chompass.models.WaterQuickPresets
 import app.chompass.ui.theme.AppThemeColor
 import kotlinx.coroutines.flow.first
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 /** One-shot Settings hydration from a single DataStore snapshot. */
@@ -100,6 +101,7 @@ internal data class SettingsPrefsHydration(
     val optionalNutrientGoals: OptionalNutrientGoals,
     val homeDisplay: HomeDisplayPreferences,
     val mealSchedule: MealSchedule,
+    val mealCatalog: app.chompass.models.MealCatalog,
     val lastRecalcGoalSignature: String?,
 )
 
@@ -107,6 +109,20 @@ internal suspend fun PreferencesStore.readSettingsHydration(): SettingsPrefsHydr
     dataStore.data.first().toSettingsHydration(json)
 
 internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration {
+    val mealCatalog = run {
+        val raw = this[Keys.MEAL_CATALOG]
+        if (!raw.isNullOrBlank()) {
+            runCatching { json.decodeFromString<app.chompass.models.MealCatalog>(raw) }
+                .getOrNull()?.validatedOrDefault()
+        } else null
+    } ?: app.chompass.models.MealCatalog.fromLegacySchedule(
+        MealSchedule(
+            breakfastStartMinutes = this[Keys.MEAL_BREAKFAST_START] ?: MealSchedule.DEFAULT_BREAKFAST_START,
+            lunchStartMinutes = this[Keys.MEAL_LUNCH_START] ?: MealSchedule.DEFAULT_LUNCH_START,
+            dinnerStartMinutes = this[Keys.MEAL_DINNER_START] ?: MealSchedule.DEFAULT_DINNER_START,
+            snackStartMinutes = this[Keys.MEAL_SNACK_START] ?: MealSchedule.DEFAULT_SNACK_START,
+        ),
+    ).validatedOrDefault()
     val metric = this[Keys.USE_METRIC] ?: true
     val provider = AIProvider.entries.firstOrNull { it.name == this[Keys.SELECTED_AI_PROVIDER] }
         ?: AIProvider.GEMINI
@@ -230,12 +246,8 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
             calorieDisplayMode = HomeCalorieDisplayMode.fromStorage(this[Keys.HOME_CALORIE_DISPLAY_MODE]),
             foodLogMacroChips = FoodLogMacroChip.fromStorage(this[Keys.FOOD_LOG_MACRO_CHIPS]),
         ),
-        mealSchedule = MealSchedule(
-            breakfastStartMinutes = this[Keys.MEAL_BREAKFAST_START] ?: MealSchedule.DEFAULT_BREAKFAST_START,
-            lunchStartMinutes = this[Keys.MEAL_LUNCH_START] ?: MealSchedule.DEFAULT_LUNCH_START,
-            dinnerStartMinutes = this[Keys.MEAL_DINNER_START] ?: MealSchedule.DEFAULT_DINNER_START,
-            snackStartMinutes = this[Keys.MEAL_SNACK_START] ?: MealSchedule.DEFAULT_SNACK_START,
-        ).validatedOrDefault(),
+        mealSchedule = mealCatalog.toLegacySchedule(),
+        mealCatalog = mealCatalog,
         lastRecalcGoalSignature = this[Keys.LAST_RECALC_GOAL_SIGNATURE],
     )
 }

@@ -19,7 +19,7 @@ data class FoodEntry(
     val imageFilename: String? = null,
     val emoji: String? = null,
     val source: FoodSource,
-    val mealType: MealType = MealType.OTHER,
+    val mealType: String = MealType.OTHER.id,
     val sugar: Double? = null,
     val addedSugar: Double? = null,
     val fiber: Double? = null,
@@ -81,7 +81,7 @@ data class FoodEntry(
      */
     fun duplicatedForLogging(
         logDate: Instant,
-        mealType: MealType = MealType.currentMeal
+        mealType: String = MealType.currentMealId
     ): FoodEntry = FoodEntry(
         id = UUID.randomUUID(),
         name = name,

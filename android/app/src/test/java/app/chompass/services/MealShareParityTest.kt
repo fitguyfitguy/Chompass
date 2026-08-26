@@ -38,9 +38,7 @@ class MealShareParityTest {
                 fat = m.optDouble("fat", 0.0),
                 fiber = if (m.has("fiber")) m.getDouble("fiber") else null,
                 sodium = if (m.has("sodium")) m.getDouble("sodium") else null,
-                mealType = runCatching {
-                    MealType.valueOf(m.optString("mealType", "snack").uppercase())
-                }.getOrDefault(MealType.SNACK),
+                mealType = m.optString("mealType", "snack").ifBlank { MealType.SNACK.id },
                 servingSizeGrams = if (m.has("servingSizeGrams")) m.getDouble("servingSizeGrams") else null,
                 servingUnitOptions = parseUnits(m.optJSONArray("servingUnitOptions")),
                 selectedServingUnit = m.optString("selectedServingUnit").takeIf { it.isNotEmpty() },
