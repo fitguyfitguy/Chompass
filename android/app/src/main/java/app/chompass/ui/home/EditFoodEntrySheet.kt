@@ -58,7 +58,6 @@ import app.chompass.models.LocaleFormat
 import app.chompass.models.FoodEntry
 import app.chompass.services.MealShare
 import app.chompass.models.MacroValueFormatter
-import app.chompass.models.MealType
 import app.chompass.models.MicronutrientField
 import app.chompass.models.MicronutrientValues
 import app.chompass.models.ServingUnitOption

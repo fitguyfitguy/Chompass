@@ -7,7 +7,6 @@ import app.chompass.models.PendingFoodAnalysisDraft
 import app.chompass.services.FoodImageStore
 import app.chompass.services.PerfLog
 import app.chompass.services.ReviewPrompter
-import app.chompass.models.MealType
 import app.chompass.services.health.HealthConnectManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first

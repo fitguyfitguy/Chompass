@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.sp
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.FoodEntry
-import app.chompass.models.MealType
 import app.chompass.models.Recipe
 import app.chompass.models.RecipeIngredient
 import app.chompass.ui.components.MacroChip

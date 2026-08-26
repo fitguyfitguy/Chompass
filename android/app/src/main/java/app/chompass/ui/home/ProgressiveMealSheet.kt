@@ -40,7 +40,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
-import app.chompass.models.MealType
 import app.chompass.models.ProgressiveMealDraft
 import app.chompass.models.ProgressiveMealItem
 import app.chompass.ui.components.MacroChip
