@@ -1918,10 +1918,10 @@ macros rééquilibrées au nouveau total calorique</string>
 
     <string name="settings_meals">Repas</string>
     <string name="settings_meals_description">Noms, ordre et heures de début</string>
-    <string name="settings_meals_help">Un nouvel aliment utilise le repas dont l'heure de début est la plus proche avant maintenant.</string>
+    <string name="settings_meals_help">Un nouvel aliment utilise le repas dont l\'heure de début est la plus proche avant maintenant.</string>
     <string name="settings_meals_add">Ajouter un repas</string>
     <string name="settings_meals_remove_title">Retirer ce repas ?</string>
-    <string name="settings_meals_remove_body">Les entrées existantes gardent leur type jusqu'à ce que vous les modifiiez. Les repas intégrés sont masqués au lieu d'être supprimés.</string>
+    <string name="settings_meals_remove_body">Les entrées existantes gardent leur type jusqu\'à ce que vous les modifiiez. Les repas intégrés sont masqués au lieu d\'être supprimés.</string>
     <string name="settings_meals_hidden">%1$s (masqué)</string>
     <string name="settings_meals_no_auto">Pas pour la détection auto</string>
 </resources>
