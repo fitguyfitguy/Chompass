@@ -1926,4 +1926,6 @@ diário: média dos objetivos registrados no intervalo, lacunas puladas</string>
     <string name="settings_calc_daytypes_clamp_used">Cada tipo de dia é limitado ao mesmo piso e teto calóricos do seu objetivo base sempre que o plano é gravado: nunca abaixo de max(BMR, 1.200 kcal), nunca acima do teto automático. Vale igualmente para suas edições, o recálculo com IA e os objetivos adaptativos.</string>
     <string name="settings_calc_daytypes_clamp_formula">calorias do tipo = limitadas entre max(BMR, 1.200) e o teto automático
 macros reequilibradas ao novo total calórico</string>
+    <string name="picker_type_value">Digitar valor</string>
+    <string name="picker_use_wheel">Usar a roda</string>
 </resources>

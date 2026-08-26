@@ -81,7 +81,8 @@ fun <T> WheelPicker(
      * when several WheelPickers sit in a Row and the parent overlays a single
      * shared capsule spanning every column (matches iOS UIDatePicker).
      */
-    showSelectionHighlight: Boolean = true
+    showSelectionHighlight: Boolean = true,
+    onCenterTap: (() -> Unit)? = null,
 ) {
     if (items.isEmpty()) return
     val initialIndex = items.indexOf(selected).coerceAtLeast(0)
@@ -180,7 +181,14 @@ fun <T> WheelPicker(
                 Box(
                     modifier = Modifier
                         .height(ITEM_HEIGHT)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .then(
+                            if (isSelected && onCenterTap != null) {
+                                Modifier.clickable(onClick = onCenterTap)
+                            } else {
+                                Modifier
+                            }
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -303,28 +311,41 @@ fun NumericWheelPicker(
         min + (offset / step) * step
     }
     val clamped = snapped
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        WheelPicker(
-            items = items,
-            selected = clamped,
-            onSelect = onValueChange,
-            modifier = Modifier.weight(1f)
+    val (typed, setTyped) = rememberMagnitudePickerMode()
+    val sep = remember { LocaleFormat.decimalSeparator() }
+    val typeCd = stringResource(R.string.picker_type_value)
+    if (typed) {
+        MagnitudeTypeField(
+            display = clamped.toString(),
+            decimal = false,
+            onCommitRaw = { raw ->
+                val parsed = parseMagnitudeInt(raw, min, max, step, sep)
+                if (parsed != null) {
+                    onValueChange(parsed)
+                    true
+                } else false
+            },
+            onFlipToWheel = { setTyped(false) },
+            unit = unit,
+            contentDescription = typeCd,
+            modifier = modifier,
         )
-        if (unit != null) {
-            val compactUnit = unit.length <= 2
-            Spacer(Modifier.width(if (compactUnit) 4.dp else 8.dp))
-            Text(
-                unit,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
-                modifier = Modifier.width(if (compactUnit) 30.dp else 48.dp).padding(start = 4.dp),
-                maxLines = 1,
-                softWrap = false
+        return
+    }
+    MagnitudeWheelChrome(showHint = true, onType = { setTyped(true) }) {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            WheelPicker(
+                items = items,
+                selected = clamped,
+                onSelect = onValueChange,
+                modifier = Modifier.weight(1f),
+                onCenterTap = { setTyped(true) },
             )
+            MagnitudeUnitLabel(unit)
         }
     }
 }
@@ -393,40 +414,60 @@ fun SplitDecimalWheelPicker(
     val ints = remember(min, max) { (min..max).toList() }
     val tenths = remember { (0..9).toList() }
     val decimalSeparator = remember { LocaleFormat.decimalSeparator() }
-
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        WheelPicker(
-            items = ints,
-            selected = intPart,
-            onSelect = { newInt -> onValueChange(newInt + tenthsPart / 10.0) },
-            modifier = Modifier.weight(1f),
-            showSelectionHighlight = showSelectionHighlight,
+    val (typed, setTyped) = rememberMagnitudePickerMode()
+    val typeCd = stringResource(R.string.picker_type_value)
+    if (typed) {
+        val display = buildString {
+            append(intPart)
+            append(decimalSeparator)
+            append(tenthsPart)
+        }
+        MagnitudeTypeField(
+            display = display,
+            decimal = true,
+            onCommitRaw = { raw ->
+                val parsed = parseMagnitude(raw, min.toDouble(), max.toDouble(), 0.1, decimalSeparator)
+                if (parsed != null) {
+                    onValueChange(parsed)
+                    true
+                } else false
+            },
+            onFlipToWheel = { setTyped(false) },
+            unit = unit,
+            contentDescription = typeCd,
+            modifier = modifier,
         )
-        Text(
-            decimalSeparator.toString(),
-            style = MaterialTheme.typography.displaySmall,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
-            modifier = Modifier.padding(horizontal = 4.dp)
-        )
-        WheelPicker(
-            items = tenths,
-            selected = tenthsPart,
-            onSelect = { newTenth -> onValueChange(intPart + newTenth / 10.0) },
-            modifier = Modifier.weight(0.6f),
-            showSelectionHighlight = showSelectionHighlight,
-        )
-        if (unit != null) {
-            Spacer(Modifier.size(8.dp))
-            Text(
-                unit,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
-                modifier = Modifier.width(48.dp).padding(start = 4.dp)
+        return
+    }
+    MagnitudeWheelChrome(showHint = true, onType = { setTyped(true) }) {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            WheelPicker(
+                items = ints,
+                selected = intPart,
+                onSelect = { newInt -> onValueChange(newInt + tenthsPart / 10.0) },
+                modifier = Modifier.weight(1f),
+                showSelectionHighlight = showSelectionHighlight,
+                onCenterTap = { setTyped(true) },
             )
+            Text(
+                decimalSeparator.toString(),
+                style = MaterialTheme.typography.displaySmall,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
+                modifier = Modifier.padding(horizontal = 4.dp)
+            )
+            WheelPicker(
+                items = tenths,
+                selected = tenthsPart,
+                onSelect = { newTenth -> onValueChange(intPart + newTenth / 10.0) },
+                modifier = Modifier.weight(0.6f),
+                showSelectionHighlight = showSelectionHighlight,
+                onCenterTap = { setTyped(true) },
+            )
+            MagnitudeUnitLabel(unit)
         }
     }
 }
@@ -449,26 +490,43 @@ fun DecimalWheelPicker(
         (start..end).toList()
     }
     val currentScaled = (value * scaled).toInt().coerceIn(items.first(), items.last())
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        WheelPicker(
-            items = items,
-            selected = currentScaled,
-            onSelect = { onValueChange(it.toDouble() / scaled) },
-            label = { String.format("%.1f", it.toDouble() / scaled) },
-            modifier = Modifier.weight(1f)
+    val (typed, setTyped) = rememberMagnitudePickerMode()
+    val sep = remember { LocaleFormat.decimalSeparator() }
+    val typeCd = stringResource(R.string.picker_type_value)
+    if (typed) {
+        val shown = (currentScaled.toDouble() / scaled).toString().replace('.', sep)
+        MagnitudeTypeField(
+            display = shown,
+            decimal = true,
+            onCommitRaw = { raw ->
+                val parsed = parseMagnitude(raw, min, max, step, sep)
+                if (parsed != null) {
+                    onValueChange(parsed)
+                    true
+                } else false
+            },
+            onFlipToWheel = { setTyped(false) },
+            unit = unit,
+            contentDescription = typeCd,
+            modifier = modifier,
         )
-        if (unit != null) {
-            Spacer(Modifier.size(8.dp))
-            Text(
-                unit,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
-                modifier = Modifier.width(48.dp).padding(start = 4.dp)
+        return
+    }
+    MagnitudeWheelChrome(showHint = true, onType = { setTyped(true) }) {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            WheelPicker(
+                items = items,
+                selected = currentScaled,
+                onSelect = { onValueChange(it.toDouble() / scaled) },
+                label = { String.format("%.1f", it.toDouble() / scaled) },
+                modifier = Modifier.weight(1f),
+                onCenterTap = { setTyped(true) },
             )
+            MagnitudeUnitLabel(unit)
         }
     }
 }
@@ -522,29 +580,15 @@ fun MacroWheelPicker(
     step: Int = 1,
     modifier: Modifier = Modifier
 ) {
-    val items = remember(min, max, step) { (min..max step step).toList() }
-    val snapped = value.coerceIn(min, max)
-    val clamped = (snapped - min) / step * step + min
-
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        WheelPicker(
-            items = items,
-            selected = clamped,
-            onSelect = onValueChange,
-            modifier = Modifier.weight(1f)
-        )
-        Spacer(Modifier.width(8.dp))
-        Text(
-            unit,
-            style = MaterialTheme.typography.titleMedium,
-            color = accentColor.copy(alpha = 0.85f),
-            modifier = Modifier.width(48.dp).padding(start = 4.dp)
-        )
-    }
+    NumericWheelPicker(
+        value = value,
+        onValueChange = onValueChange,
+        min = min,
+        max = max,
+        unit = unit,
+        modifier = modifier,
+        step = step,
+    )
 }
 
 /**
@@ -566,10 +610,6 @@ fun ExpandableMacroPicker(
     onExpandChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val items = remember(min, max, step) { (min..max step step).toList() }
-    val snapped = value.coerceIn(min, max)
-    val clamped = (snapped - min) / step * step + min
-
     Column(modifier = modifier.fillMaxWidth()) {
         // Summary row - tap to expand/collapse
         Row(
@@ -624,10 +664,13 @@ fun ExpandableMacroPicker(
             enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
             exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f))
         ) {
-            WheelPicker(
-                items = items,
-                selected = clamped,
-                onSelect = onValueChange,
+            NumericWheelPicker(
+                value = value,
+                onValueChange = onValueChange,
+                min = min,
+                max = max,
+                unit = unit,
+                step = step,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 18.dp)

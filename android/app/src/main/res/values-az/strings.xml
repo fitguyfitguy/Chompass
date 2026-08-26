@@ -1927,4 +1927,6 @@ jurnal: aralıqdakı qeyd edilmiş hədəflərin ortası, boşluqlar ötürülü
     <string name="settings_calc_daytypes_clamp_used">Plan hər yazılanda hər gün tipi əsas hədəfinizlə eyni kalori tabanına və tavanına sıxılır: heç vaxt max(BMR, 1 200) altına, heç vaxt avtomatik tavanın üstünə düşmür. Bu, redaktələrinizə, AI yenidən hesaplamasına və adaptiv hədəflərə eyni şəkildə aiddir.</string>
     <string name="settings_calc_daytypes_clamp_formula">gün tipi kalorisi = max(BMR, 1 200) ilə avtomatik tavan arasına sıxılır
 makrolar yeni kalori cəminə uyğun yenidən tarazlaşdırılır</string>
+    <string name="picker_type_value">Dəyəri yazın</string>
+    <string name="picker_use_wheel">Təkərdən istifadə et</string>
 </resources>

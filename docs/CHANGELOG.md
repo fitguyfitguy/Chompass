@@ -8,6 +8,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Added
 
+- **Type numbers on wheels** (Android): tap the keypad on a calorie, macro, weight, or limit wheel to type the value, then Done. The last choice (type or wheel) is remembered. Dates, times, and units stay wheels. Closes Codeberg [#62](https://codeberg.org/fitguy/Chompass/issues/62) by [@swayevenly](https://codeberg.org/swayevenly).
 - **Day types, different goals per day** (Android + web): set up to 7 named day types, each with its own calorie and macro targets, for example a high-carb Training day and a low-carb Rest day. Assign them the way your plan works: switch today's type by hand from a chip under the Home ring, map them to weekdays, or run a repeating cycle like 2 training days then a rest day, with one-day overrides when the schedule shifts. Off by default under Settings → Goals & Nutrition → Day types, and available outside keto mode (a switch to keto pauses the plan and keeps your day types).
 - **Day types everywhere goals appear** (Android + web): Home's ring, macro cards and the active-burn split follow the day's type, and the daily summary notification and widgets show the right target at midnight. Coach knows today's type and the weekly average, AI Recalculate can adjust each day type separately (shown as before/after columns in the results sheet), and the weekly Adaptive tweak moves every day type while keeping their spread.
 - **Goals history is frozen per day** (Android + web): the target that was in effect is recorded for each day, so Progress shows the actual per-day targets over your history and its range lines use the average of what you actually targeted, instead of painting today's goal across the whole past. Diary exports carry each day's targets, and the journal syncs through WebDAV and comes along in backups.
@@ -16,6 +17,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **Caffeine and nicotine limit sheets stay on screen** (Android): the daily-limit sheets no longer sit under the status bar, and Save stays visible when the keyboard is open.
 - **Delete leftover serving units** (Android): leftover prefix units from older versions can be removed from an entry. Select the unit, tap the pencil, then the trash next to the checkmark. Grams stays; nutrition is unchanged. Follow-up to Codeberg [#59](https://codeberg.org/fitguy/Chompass/issues/59).
 - **Logged weight stays in history when Health Connect or WebDAV is catching up** (Android): if you logged today's weight while the app was still pulling from Health Connect or WebDAV, the new row could vanish from Weight History a moment later. The pull now adds remote rows without replacing the one you just saved. Codeberg [#63](https://codeberg.org/fitguy/Chompass/issues/63) by [@tuxMode](https://codeberg.org/tuxMode).
 

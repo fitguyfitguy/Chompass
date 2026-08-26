@@ -1933,4 +1933,6 @@ journal : moyenne des objectifs consignés dans la plage, trous ignorés</string
     <string name="settings_calc_daytypes_clamp_used">Chaque type de journée est borné au même plancher et plafond caloriques que votre objectif de base à chaque écriture du plan : jamais sous max(BMR, 1 200 kcal), jamais au-dessus du plafond automatique. Cela vaut également pour vos modifications, le recalcul IA et les Objectifs adaptatifs.</string>
     <string name="settings_calc_daytypes_clamp_formula">calories du type = bornées entre max(BMR, 1 200) et le plafond automatique
 macros rééquilibrées au nouveau total calorique</string>
+    <string name="picker_type_value">Saisir la valeur</string>
+    <string name="picker_use_wheel">Utiliser la molette</string>
 </resources>

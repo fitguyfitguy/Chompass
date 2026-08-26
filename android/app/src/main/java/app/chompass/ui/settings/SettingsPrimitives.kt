@@ -597,7 +597,10 @@ internal fun GradientSaveButton(
                 )
             )
             .border(0.7.dp, Color.White.copy(alpha = 0.22f), shape)
-            .clickable(enabled = enabled, onClick = onClick)
+            .clickable(enabled = enabled, onClick = {
+                app.chompass.ui.components.MagnitudeDrafts.commitAll()
+                onClick()
+            })
             .padding(vertical = 14.dp),
         contentAlignment = Alignment.Center
     ) {

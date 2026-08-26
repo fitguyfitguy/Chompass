@@ -1926,4 +1926,6 @@
     <string name="settings_calc_daytypes_clamp_used">プランが書き込まれるたびに、各デイタイプは基本の目標と同じカロリーの下限と上限に収まります。max(BMR, 1,200 kcal)を下回ることや自動上限を超えることはありません。手動編集、AI再計算、アダプティブ目標に同じように適用されます。</string>
     <string name="settings_calc_daytypes_clamp_formula">タイプのカロリー = max(BMR, 1,200) と自動上限の間に制限
 マクロは新しいカロリー合計に合わせて再配分</string>
+    <string name="picker_type_value">値を入力</string>
+    <string name="picker_use_wheel">ホイールに戻る</string>
 </resources>

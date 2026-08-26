@@ -2378,4 +2378,6 @@
     <string name="home_share_together">Share together</string>
     <string name="home_share_separately">Share separately</string>
     <string name="copy_meal_format">Copy %1$s</string>
+    <string name="picker_type_value">Type value</string>
+    <string name="picker_use_wheel">Use wheel</string>
 </resources>

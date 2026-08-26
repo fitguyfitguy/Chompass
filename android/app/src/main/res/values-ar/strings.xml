@@ -1932,4 +1932,6 @@
     <string name="settings_calc_daytypes_clamp_used">يُقيَّد كل نوع يوم عند كل كتابة للخطة إلى نفس حد السعرات الأدنى والأقصى الذي يتبعه هدفك الأساسي: أبدًا دون max(BMR, 1200 سعرة)، وأبدًا فوق الحد الأقصى التلقائي. ينطبق ذلك على تعديلاتك وإعادة حساب الذكاء الاصطناعي والأهداف التكيفية بالتساوي.</string>
     <string name="settings_calc_daytypes_clamp_formula">سعرات النوع = مقيَّدة بين max(BMR, 1200) والحد الأقصى التلقائي
 تُعاد الموازنة للمغذيات الكبرى إلى مجموع السعرات الجديد</string>
+    <string name="picker_type_value">اكتب القيمة</string>
+    <string name="picker_use_wheel">استخدم العجلة</string>
 </resources>

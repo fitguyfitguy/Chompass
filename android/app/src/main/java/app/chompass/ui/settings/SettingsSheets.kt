@@ -13,6 +13,7 @@ import app.chompass.ui.components.FudIconBubble
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -96,7 +97,12 @@ internal fun SettingsSheets(
         onDismiss = onDismiss,
         sheetState = state,
     ) {
-        Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .imePadding()
+                .padding(horizontal = 20.dp, vertical = 8.dp)
+        ) {
             when (sheet) {
                 SettingsSheet.AI_PROVIDER -> ListSheet(
                     title = stringResource(R.string.sheet_ai_provider),

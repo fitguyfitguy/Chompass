@@ -1926,4 +1926,6 @@ diario: media degli obiettivi registrati nell\'intervallo, vuoti saltati</string
     <string name="settings_calc_daytypes_clamp_used">Ogni tipo di giornata è limitato allo stesso minimo e massimo di calorie del tuo obiettivo base a ogni scrittura del piano: mai sotto max(BMR, 1.200 kcal), mai sopra il massimo automatico. Vale per le tue modifiche, il ricalcolo AI e gli obiettivi adattivi allo stesso modo.</string>
     <string name="settings_calc_daytypes_clamp_formula">calorie del tipo = limitate tra max(BMR, 1.200) e il massimo automatico
 macro riequilibrate al nuovo totale calorico</string>
+    <string name="picker_type_value">Digita il valore</string>
+    <string name="picker_use_wheel">Usa la ruota</string>
 </resources>
