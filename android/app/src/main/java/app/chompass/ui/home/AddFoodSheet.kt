@@ -289,40 +289,6 @@ internal fun AddFoodSheetContent(
                 onClick = onSavedRecents,
             )
         }
-        if (!relogRows.isEmpty) {
-            Spacer(Modifier.height(12.dp))
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                if (relogRows.recents.isNotEmpty()) {
-                    AddFoodRelogRow(
-                        entries = relogRows.recents,
-                        onRelog = onRelogRecent,
-                        onReview = onReviewRecent,
-                    )
-                }
-                if (relogRows.frequents.isNotEmpty()) {
-                    AddFoodRelogRow(
-                        entries = relogRows.frequents,
-                        onRelog = onRelogRecent,
-                        onReview = onReviewRecent,
-                    )
-                }
-            }
-        } else if (relogLoading) {
-            Spacer(Modifier.height(12.dp))
-            AddFoodRelogPlaceholder()
-        } else {
-            Spacer(Modifier.height(12.dp))
-            Text(
-                stringResource(R.string.add_food_quick_relog_empty),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
-            )
-        }
         Spacer(Modifier.height(16.dp))
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(
@@ -436,6 +402,35 @@ internal fun AddFoodSheetContent(
                     }
                 }
             }
+        }
+        if (!relogRows.isEmpty) {
+            Spacer(Modifier.height(14.dp))
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                if (relogRows.recents.isNotEmpty()) {
+                    AddFoodRelogRow(
+                        entries = relogRows.recents,
+                        onRelog = onRelogRecent,
+                        onReview = onReviewRecent,
+                    )
+                }
+                if (relogRows.frequents.isNotEmpty()) {
+                    AddFoodRelogRow(
+                        entries = relogRows.frequents,
+                        onRelog = onRelogRecent,
+                        onReview = onReviewRecent,
+                    )
+                }
+            }
+            Spacer(Modifier.height(14.dp))
+        } else if (relogLoading) {
+            Spacer(Modifier.height(14.dp))
+            AddFoodRelogPlaceholder()
+            Spacer(Modifier.height(14.dp))
         }
         if (waterTrackingEnabled) {
             Spacer(Modifier.height(12.dp))
