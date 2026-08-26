@@ -386,6 +386,7 @@ export const nl = Object.freeze({
   "day_types.mode_cycle": "Cyclus",
   "day_types.chip_none": "Basisdoelen",
   "day_types.sheet_title": "Dagtype",
+  "day_types.active_typical": "≈ {kcal} kcal active typical",
   "day_types.follow_schedule": "Volg schema",
   "day_types.tomorrow_format": "Morgen: {name} · {kcal} kcal",
   "day_types.tomorrow_base": "Morgen: basisdoelen · {kcal} kcal",

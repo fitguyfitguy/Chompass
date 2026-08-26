@@ -386,6 +386,7 @@ export const ko = Object.freeze({
   "day_types.mode_cycle": "순환",
   "day_types.chip_none": "기본 목표",
   "day_types.sheet_title": "요일 유형",
+  "day_types.active_typical": "≈ {kcal} kcal active typical",
   "day_types.follow_schedule": "일정 따르기",
   "day_types.tomorrow_format": "내일: {name} · {kcal} kcal",
   "day_types.tomorrow_base": "내일: 기본 목표 · {kcal} kcal",

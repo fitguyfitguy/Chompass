@@ -320,6 +320,14 @@ data class GoalCalculationReport(
     val impliedMaintenance: Int? = null,
     val impliedWithheld: ImpliedWithheldReason? = null,
     val trendsDisagree: Boolean = false,
+    val dayTypeActiveTypical: List<DayTypeActiveTypicalLine> = emptyList(),
+)
+
+@Serializable
+data class DayTypeActiveTypicalLine(
+    val name: String,
+    val kcal: Int,
+    val samples: Int,
 )
 
 @Serializable

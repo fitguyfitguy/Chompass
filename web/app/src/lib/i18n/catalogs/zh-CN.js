@@ -386,6 +386,7 @@ export const zh_CN = Object.freeze({
   "day_types.mode_cycle": "循环",
   "day_types.chip_none": "基础目标",
   "day_types.sheet_title": "日类型",
+  "day_types.active_typical": "≈ {kcal} kcal active typical",
   "day_types.follow_schedule": "按计划",
   "day_types.tomorrow_format": "明天：{name} · {kcal} kcal",
   "day_types.tomorrow_base": "明天：基础目标 · {kcal} kcal",

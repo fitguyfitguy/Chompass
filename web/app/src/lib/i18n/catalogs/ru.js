@@ -386,6 +386,7 @@ export const ru = Object.freeze({
   "day_types.mode_cycle": "Цикл",
   "day_types.chip_none": "Базовые цели",
   "day_types.sheet_title": "Тип дня",
+  "day_types.active_typical": "≈ {kcal} kcal active typical",
   "day_types.follow_schedule": "По расписанию",
   "day_types.tomorrow_format": "Завтра: {name} · {kcal} ккал",
   "day_types.tomorrow_base": "Завтра: базовые цели · {kcal} ккал",

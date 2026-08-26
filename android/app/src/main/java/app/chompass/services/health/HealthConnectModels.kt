@@ -15,6 +15,7 @@ enum class HealthConnectSdkStatus {
 }
 
 internal data class DailyEnergy(
+    val date: java.time.LocalDate? = null,
     val active: Double,
     val total: Double?
 )
@@ -132,5 +133,7 @@ data class HealthEnergySummary(
     val basalAverageCalories: Int?,
     val totalAverageCalories: Int?,
     val daysUsed: Int,
-    val requestedDays: Int
+    val requestedDays: Int,
+    /** ISO date → rounded active kcal for days that contributed to the average. */
+    val dailyActiveKcal: Map<String, Int> = emptyMap(),
 )

@@ -124,6 +124,10 @@ data class HomeUiState(
     val foodLogMacroChips: List<FoodLogMacroChip> = FoodLogMacroChip.DefaultSelection,
     /** Measured Health Connect active kcal/day average (Energy Burn Goals). 0 = unavailable. */
     val measuredActiveAverageCalories: Int = 0,
+    /** Internal 60-day HC active-by-day map (never synced). */
+    val healthEnergyActiveByDay: Map<String, Int> = emptyMap(),
+    /** Manual active totals keyed by ISO date. */
+    val manualActiveByDay: Map<String, Int> = emptyMap(),
     val activitySnapshot: HomeActivitySnapshot = HomeActivitySnapshot(date = LocalDate.now()),
     val optionalNutrientGoals: OptionalNutrientGoals = OptionalNutrientGoals.Default,
     val foodLogSortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
@@ -334,11 +338,27 @@ data class HomeUiState(
             s.activeCalories > 0
     }
 
-    /** The day's active norm: measured Health Connect 14-day average, else the PAL estimate. */
-    val activeBurnTypical: Int get() {
-        val p = profile ?: return 0
-        return measuredActiveAverageCalories.takeIf { it > 0 } ?: p.estimatedDailyActiveCalories
+    val dayTypeActiveStats: app.chompass.models.DayTypeActiveStats.Result get() {
+        val totals = app.chompass.models.DayTypeActiveStats.mergeDayTotals(
+            healthEnergyActiveByDay,
+            manualActiveByDay,
+        )
+        return app.chompass.models.DayTypeActiveStats.compute(goalJournal, totals, date)
     }
+
+    val typicalResolution: app.chompass.models.DayTypeActiveStats.TypicalResolution get() {
+        val p = profile
+        val pal = p?.estimatedDailyActiveCalories ?: 0
+        return app.chompass.models.DayTypeActiveStats.resolveTypical(
+            viewedProfileId = resolvedDayTargets.profileId,
+            stats = dayTypeActiveStats,
+            blendedMeasured = measuredActiveAverageCalories,
+            palEstimate = pal,
+        )
+    }
+
+    /** The day's active norm: per-type average, else 14-day blended, else PAL. */
+    val activeBurnTypical: Int get() = typicalResolution.kcal
 
     /**
      * The hero ring's displayed calorie goal — ADD_ACTIVE: base + active burn,
@@ -392,7 +412,14 @@ data class HomeUiState(
         } else {
             ActiveCalorieSource.ESTIMATED
         }
-        return ActiveBurnShade(live = liveActiveBurn, typical = typical, source = source)
+        return ActiveBurnShade(
+            live = liveActiveBurn,
+            typical = typical,
+            source = source,
+            typicalIsDayType = typicalResolution.typicalIsDayType,
+            typicalDayTypeName = resolvedDayTargets.profileName,
+            blendedTypical = measuredActiveAverageCalories,
+        )
     }
 
     /**
@@ -429,6 +456,8 @@ data class HomeUiState(
             homeTopNutrients == other.homeTopNutrients &&
             foodLogMacroChips == other.foodLogMacroChips &&
             measuredActiveAverageCalories == other.measuredActiveAverageCalories &&
+            healthEnergyActiveByDay == other.healthEnergyActiveByDay &&
+            manualActiveByDay == other.manualActiveByDay &&
             activitySnapshot == other.activitySnapshot &&
             optionalNutrientGoals == other.optionalNutrientGoals &&
             foodLogSortOrder == other.foodLogSortOrder &&
@@ -509,6 +538,8 @@ data class HomeUiState(
         result = 31 * result + homeTopNutrients.hashCode()
         result = 31 * result + foodLogMacroChips.hashCode()
         result = 31 * result + measuredActiveAverageCalories
+        result = 31 * result + healthEnergyActiveByDay.hashCode()
+        result = 31 * result + manualActiveByDay.hashCode()
         result = 31 * result + activitySnapshot.hashCode()
         result = 31 * result + optionalNutrientGoals.hashCode()
         result = 31 * result + foodLogSortOrder.hashCode()
@@ -1018,6 +1049,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             }
             .launchIn(viewModelScope)
 
+        container.prefs.healthEnergyActiveByDay
+            .onEach { map ->
+                _ui.update { it.copy(healthEnergyActiveByDay = map) }
+            }
+            .launchIn(viewModelScope)
+
         _selectedDate
             .onEach { refreshActivitySnapshot() }
             .launchIn(viewModelScope)
@@ -1244,9 +1281,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
 
         combine(container.manualActiveRepository.entries, _selectedDate) { entries, day ->
-            entries.filter { it.date == day.toString() }.sumOf { it.calories }
+            val byDay = app.chompass.models.DayTypeActiveStats.sumManualByDay(entries)
+            val total = entries.filter { it.date == day.toString() }.sumOf { it.calories }
+            total to byDay
         }
-            .onEach { total -> _ui.update { it.copy(manualActiveKcal = total) } }
+            .onEach { (total, byDay) ->
+                _ui.update { it.copy(manualActiveKcal = total, manualActiveByDay = byDay) }
+            }
             .launchIn(viewModelScope)
 
         viewModelScope.launch {

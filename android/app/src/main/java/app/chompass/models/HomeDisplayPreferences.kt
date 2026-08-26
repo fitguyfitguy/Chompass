@@ -127,6 +127,9 @@ data class ActiveBurnShade(
     val live: Int,
     val typical: Int,
     val source: ActiveCalorieSource,
+    val typicalIsDayType: Boolean = false,
+    val typicalDayTypeName: String? = null,
+    val blendedTypical: Int = 0,
 )
 
 object HomeCalorieDisplay {

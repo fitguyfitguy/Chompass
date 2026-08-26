@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Changed
+
+- **Active burn follows the day type** (Android + web): when you have enough recent Training and Rest days, the Home ring's typical active burn is the average for that day type, not one blended number. The caption reads like `380 of 620 active · Training`. Recalculate and Coach see the same per-type typicals.
+
 ## [4.0.0] - 2026-08-26
 
 ### Added

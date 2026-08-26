@@ -918,9 +918,11 @@
     <string name="home_active_burn_a11y">Actief verbruik %1$d</string>
     <string name="home_active_burn_caption">%1$d actief</string>
     <string name="home_active_burn_caption_progress">%1$d van %2$d actief</string>
+    <string name="home_active_burn_caption_progress_day_type">%1$d of %2$d active · %3$s</string>
     <string name="home_active_burn_over">+%1$d boven normaal</string>
     <string name="home_active_burn_over_a11y">Actief verbruik %1$d, %2$d boven een normale dag</string>
     <string name="home_active_burn_progress_a11y">Actief verbruik %1$d, normaal %2$d</string>
+    <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
     <string name="home_active_calories_label">Actieve kcal</string>
     <string name="home_budget_burned_today">Vandaag verbrand: %1$d kcal</string>
     <string name="home_calorie_active_estimated_a11y">Actieve calorieën geschat op basis van je activiteitsniveau</string>
@@ -929,6 +931,7 @@
     <string name="home_calorie_budget_sheet_title">Caloriebudget van vandaag</string>
     <string name="home_calorie_budget_source_manual">Calorieën die je handmatig hebt gelogd</string>
     <string name="home_calorie_budget_source_measured">Actieve calorieën uit Health Connect</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
     <string name="home_calorie_mode_static">Vast doel</string>
     <string name="home_calorie_of_goal">van %1$s</string>
     <string name="home_calories_active_burn">%1$d actief verbrand</string>
@@ -1552,6 +1555,7 @@
         <string name="recalc_sheet_pace_row">Doeltempo: %1$s kcal/dag</string>
         <string name="recalc_sheet_formula_target_row">Formuledoel: %1$s kcal</string>
         <string name="recalc_sheet_measured_row">Gemeten Health Connect-verbruik: %1$s kcal</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
         <string name="recalc_sheet_data_used">Gebruikte gegevens</string>
         <string name="recalc_sheet_data_weighins">%1$d wegingen over %2$d dagen</string>
         <string name="recalc_sheet_data_no_weighins">Nog geen wegingen geregistreerd</string>
@@ -1848,6 +1852,7 @@
     <string name="day_type_edit_settings">Dagtypes bewerken</string>
     <string name="day_type_plan_off_hint">Dagtypes staan uit. Zet ze aan in de instellingen om per dag andere doelen te gebruiken.</string>
     <string name="day_type_targets_summary">%1$s kcal · %2$dP %3$dC %4$dF</string>
+    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
     <string name="day_type_tomorrow">Morgen: %1$s · %2$s kcal</string>
     <string name="settings_day_types_title">Dagtypes</string>
     <string name="settings_day_types_intro">Gebruik op verschillende dagen andere calorie- en macrodoelen, bijvoorbeeld trainings- en rustdagen.</string>

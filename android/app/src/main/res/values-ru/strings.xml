@@ -925,6 +925,7 @@
         <string name="recalc_sheet_pace_row">Темп цели: %1$s ккал/день</string>
         <string name="recalc_sheet_formula_target_row">Цель по формуле: %1$s ккал</string>
         <string name="recalc_sheet_measured_row">Измеренный расход Health Connect: %1$s ккал</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
         <string name="recalc_sheet_data_used">Использованные данные</string>
         <string name="recalc_sheet_data_weighins">%1$d взвешиваний за %2$d дней</string>
         <string name="recalc_sheet_data_no_weighins">Взвешиваний пока нет</string>
@@ -1422,15 +1423,18 @@
     <string name="home_active_burn_a11y">Активный расход %1$d</string>
     <string name="home_active_burn_caption">%1$d активных</string>
     <string name="home_active_burn_caption_progress">%1$d из %2$d активных</string>
+    <string name="home_active_burn_caption_progress_day_type">%1$d of %2$d active · %3$s</string>
     <string name="home_active_burn_over">+%1$d сверх обычного</string>
     <string name="home_active_burn_over_a11y">Активный расход %1$d, на %2$d больше обычного дня</string>
     <string name="home_active_burn_progress_a11y">Активный расход %1$d, обычно %2$d</string>
+    <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
     <string name="home_budget_burned_today">Сожжено сегодня: %1$d ккал</string>
     <string name="home_calorie_budget_a11y">Бюджет %1$d: цель %2$d плюс активные %3$d</string>
     <string name="home_calorie_budget_info">Как рассчитывается сегодняшний бюджет</string>
     <string name="home_calorie_budget_sheet_title">Сегодняшний бюджет калорий</string>
     <string name="home_calorie_budget_source_manual">Калории, записанные вручную</string>
     <string name="home_calorie_budget_source_measured">Активные калории из Health Connect</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
     <string name="home_display_show_active_calories">Показывать активные калории</string>
     <string name="home_display_show_active_calories_desc">Показывать сегодняшний активный расход на шкале калорий.</string>
     <string name="home_food_removed">Продукт удалён</string>
@@ -1924,6 +1928,7 @@
     <string name="day_type_edit_settings">Изменить типы дней</string>
     <string name="day_type_plan_off_hint">Типы дней выключены. Включите их в настройках, чтобы использовать разные цели в разные дни.</string>
     <string name="day_type_targets_summary">%1$s ккал · %2$dБ %3$dУ %4$dЖ</string>
+    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
     <string name="day_type_tomorrow">Завтра: %1$s · %2$s ккал</string>
     <string name="settings_day_types_title">Типы дней</string>
     <string name="settings_day_types_intro">Используйте разные цели по калориям и макросам в разные дни, например дни тренировок и отдыха.</string>

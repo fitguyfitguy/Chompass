@@ -386,6 +386,7 @@ export const az = Object.freeze({
   "day_types.mode_cycle": "Dövr",
   "day_types.chip_none": "Əsas hədəflər",
   "day_types.sheet_title": "Gün növü",
+  "day_types.active_typical": "≈ {kcal} kcal active typical",
   "day_types.follow_schedule": "Cədvələ uyğun",
   "day_types.tomorrow_format": "Sabah: {name} · {kcal} kkal",
   "day_types.tomorrow_base": "Sabah: əsas hədəflər · {kcal} kkal",

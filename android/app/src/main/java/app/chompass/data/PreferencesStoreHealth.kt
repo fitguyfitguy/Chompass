@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
 
 @Serializable
 private data class HealthEnergyGoalTargetSnapshot(
@@ -75,6 +77,26 @@ internal suspend fun PreferencesStore.setHealthEnergyMeasuredActiveImpl(v: Int) 
     setIntPref(Keys.HEALTH_ENERGY_MEASURED_ACTIVE, v.coerceAtLeast(0))
 internal suspend fun PreferencesStore.clearHealthEnergyMeasuredActiveImpl() {
     removePref(Keys.HEALTH_ENERGY_MEASURED_ACTIVE)
+}
+
+internal val PreferencesStore.healthEnergyActiveByDayImpl: Flow<Map<String, Int>>
+    get() = dataStore.data.map { prefs ->
+        prefs[Keys.HEALTH_ENERGY_ACTIVE_BY_DAY]?.let { raw ->
+            runCatching {
+                json.decodeFromString(
+                    MapSerializer(String.serializer(), Int.serializer()),
+                    raw,
+                )
+            }.getOrNull()
+        } ?: emptyMap()
+    }
+internal suspend fun PreferencesStore.setHealthEnergyActiveByDayImpl(map: Map<String, Int>) {
+    dataStore.edit {
+        it[Keys.HEALTH_ENERGY_ACTIVE_BY_DAY] = json.encodeToString(
+            MapSerializer(String.serializer(), Int.serializer()),
+            map,
+        )
+    }
 }
 
 /** Opt-in periodic background Health Connect sync. Default OFF — see HealthSyncWorker. */

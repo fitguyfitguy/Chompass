@@ -939,9 +939,11 @@
     <string name="home_active_burn_a11y">Ars activ %1$d</string>
     <string name="home_active_burn_caption">%1$d active</string>
     <string name="home_active_burn_caption_progress">%1$d din %2$d active</string>
+    <string name="home_active_burn_caption_progress_day_type">%1$d of %2$d active · %3$s</string>
     <string name="home_active_burn_over">+%1$d peste normal</string>
     <string name="home_active_burn_over_a11y">Ars activ %1$d, %2$d peste o zi normală</string>
     <string name="home_active_burn_progress_a11y">Ars activ %1$d, normal %2$d</string>
+    <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
     <string name="home_active_calories_label">Kcal active</string>
     <string name="home_budget_burned_today">Arse astăzi: %1$d kcal</string>
     <string name="home_calorie_active_estimated_a11y">Caloriile active estimate din nivelul tău de activitate</string>
@@ -950,6 +952,7 @@
     <string name="home_calorie_budget_sheet_title">Bugetul caloric de azi</string>
     <string name="home_calorie_budget_source_manual">Calorii înregistrate manual</string>
     <string name="home_calorie_budget_source_measured">Calorii active din Health Connect</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
     <string name="home_calorie_mode_static">Obiectiv fix</string>
     <string name="home_calorie_of_goal">din %1$s</string>
     <string name="home_calories_active_burn">%1$d active arse</string>
@@ -1569,6 +1572,7 @@
         <string name="recalc_sheet_pace_row">Ritmul obiectivului: %1$s kcal/zi</string>
         <string name="recalc_sheet_formula_target_row">Ținta formulei: %1$s kcal</string>
         <string name="recalc_sheet_measured_row">Ardere măsurată din Health Connect: %1$s kcal</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
         <string name="recalc_sheet_data_used">Date utilizate</string>
         <string name="recalc_sheet_data_weighins">%1$d cântăriri din %2$d zile</string>
         <string name="recalc_sheet_data_no_weighins">Nicio cântărire înregistrată încă</string>
@@ -1848,6 +1852,7 @@
     <string name="day_type_edit_settings">Editează tipurile de zi</string>
     <string name="day_type_plan_off_hint">Tipurile de zi sunt oprite. Activează-le în setări ca să folosești ținte diferite în zile diferite.</string>
     <string name="day_type_targets_summary">%1$s kcal · %2$dP %3$dC %4$dG</string>
+    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
     <string name="day_type_tomorrow">Mâine: %1$s · %2$s kcal</string>
     <string name="settings_day_types_title">Tipuri de zi</string>
     <string name="settings_day_types_intro">Folosește ținte de calorii și macro diferite în zile diferite, de exemplu zile de antrenament și de odihnă.</string>

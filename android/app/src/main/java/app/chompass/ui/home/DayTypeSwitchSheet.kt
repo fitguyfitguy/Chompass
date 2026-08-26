@@ -53,6 +53,7 @@ fun DayTypeSwitchSheet(
     onSwitch: (profileId: String?) -> Unit,
     onDismiss: () -> Unit,
     onOpenSettings: (() -> Unit)? = null,
+    typicalActiveByProfileId: Map<String, Int> = emptyMap(),
 ) {
     val plan = profile?.macroPlan?.takeIf { it.enabled }
     // Resolution snapshots while the sheet is open: profile re-emits after a
@@ -99,6 +100,7 @@ fun DayTypeSwitchSheet(
                         DayTypeRow(
                             profile = p,
                             selected = resolvedToday?.profileId == p.id,
+                            typicalActive = typicalActiveByProfileId[p.id],
                             onClick = {
                                 onSwitch(p.id)
                                 onDismiss()
@@ -183,6 +185,7 @@ fun DayTypeSwitchSheet(
 private fun DayTypeRow(
     profile: MacroDayProfile,
     selected: Boolean,
+    typicalActive: Int? = null,
     onClick: () -> Unit,
 ) {
     Row(
@@ -205,6 +208,13 @@ private fun DayTypeRow(
                 fontSize = 13.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             )
+            if (typicalActive != null && typicalActive > 0) {
+                Text(
+                    stringResource(R.string.day_type_active_typical, typicalActive),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                )
+            }
         }
         if (selected) {
             Icon(

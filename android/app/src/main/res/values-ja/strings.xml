@@ -946,9 +946,11 @@
     <string name="home_active_burn_a11y">活動消費 %1$d</string>
     <string name="home_active_burn_caption">%1$d 活動</string>
     <string name="home_active_burn_caption_progress">活動 %1$d / %2$d</string>
+    <string name="home_active_burn_caption_progress_day_type">%1$d of %2$d active · %3$s</string>
     <string name="home_active_burn_over">通常より +%1$d</string>
     <string name="home_active_burn_over_a11y">活動消費 %1$d、通常の1日より %2$d 多い</string>
     <string name="home_active_burn_progress_a11y">活動消費 %1$d、通常 %2$d</string>
+    <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
     <string name="home_active_calories_label">活動 kcal</string>
     <string name="home_budget_burned_today">今日の消費：%1$d kcal</string>
     <string name="home_calorie_active_estimated_a11y">活動カロリーは活動レベルから推定</string>
@@ -957,6 +959,7 @@
     <string name="home_calorie_budget_sheet_title">今日のカロリー予算</string>
     <string name="home_calorie_budget_source_manual">手動で記録したカロリー</string>
     <string name="home_calorie_budget_source_measured">Health Connect の活動カロリー</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
     <string name="home_calorie_mode_static">固定目標</string>
     <string name="home_calorie_of_goal">%1$s 中</string>
     <string name="home_calories_active_burn">活動消費 %1$d</string>
@@ -1568,6 +1571,7 @@
         <string name="recalc_sheet_pace_row">目標ペース: %1$s kcal/日</string>
         <string name="recalc_sheet_formula_target_row">計算式の目標: %1$s kcal</string>
         <string name="recalc_sheet_measured_row">Health Connect の実測消費量: %1$s kcal</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
         <string name="recalc_sheet_data_used">使用したデータ</string>
         <string name="recalc_sheet_data_weighins">%2$d 日間で %1$d 回の計測</string>
         <string name="recalc_sheet_data_no_weighins">まだ計測の記録なし</string>
@@ -1848,6 +1852,7 @@
     <string name="day_type_edit_settings">デイタイプを編集</string>
     <string name="day_type_plan_off_hint">デイタイプはオフです。日ごとに違う目標を使うには設定でオンにしてください。</string>
     <string name="day_type_targets_summary">%1$s kcal · %2$dP %3$dC %4$dF</string>
+    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
     <string name="day_type_tomorrow">明日: %1$s · %2$s kcal</string>
     <string name="settings_day_types_title">デイタイプ</string>
     <string name="settings_day_types_intro">日ごとに違うカロリーとマクロの目標を使えます。トレーニング日と休養日など。</string>

@@ -91,7 +91,15 @@ class ChatService(
         // Codeberg #20 phase 2: the master AI-features switch gates the coach
         // BEFORE the system prompt (profile + diary) is even assembled.
         if (!prefs.aiFeaturesEnabled.first()) throw AiError.Disabled
-        val baseSystemPrompt = buildSystemPrompt(profile, weights, bodyFats, measurements, foods, heightMetric, weightMetric, fastingContext = buildFastingContext())
+        val dayTypeActiveStats = run {
+            val journal = prefs.goalJournal.first()
+            val merged = app.chompass.models.DayTypeActiveStats.mergeDayTotals(
+                prefs.healthEnergyActiveByDay.first(),
+                app.chompass.models.DayTypeActiveStats.sumManualByDay(prefs.manualActiveEntries.first()),
+            )
+            app.chompass.models.DayTypeActiveStats.compute(journal, merged, java.time.LocalDate.now())
+        }
+        val baseSystemPrompt = buildSystemPrompt(profile, weights, bodyFats, measurements, foods, heightMetric, weightMetric, fastingContext = buildFastingContext(), dayTypeActiveStats = dayTypeActiveStats)
         val userContext = prefs.userContext.first()
         val systemPrompt = if (userContext.isNotBlank()) {
             "$baseSystemPrompt\n\n## User-provided context (user preferences / DATA)\n" +
@@ -574,6 +582,7 @@ internal fun buildSystemPrompt(
     weightMetric: Boolean,
     /** Optional fasting snapshot block (below the cache marker); null = no block. */
     fastingContext: String? = null,
+    dayTypeActiveStats: app.chompass.models.DayTypeActiveStats.Result? = null,
 ): String {
     val forecast: WeightForecast = WeightAnalysisService.compute(weights, foods, profile)
     val zone = ZoneId.systemDefault()
@@ -644,6 +653,15 @@ internal fun buildSystemPrompt(
             "${it.name} ${it.calories} kcal (${it.proteinG}P/${it.carbsG}C/${it.fatG}F)"
         })
         lines.add("- Day-type schedule: ${dayTypeScheduleEnglish(plan)}; weekly average target ${average.calories} kcal/day")
+        val typicalBits = plan.profiles.mapNotNull { p ->
+            val row = dayTypeActiveStats?.byProfileId?.get(p.id)
+            if (row != null && row.sampleCount >= app.chompass.models.DayTypeActiveStats.MIN_SAMPLES) {
+                "${p.name} typically ${row.averageKcal} kcal active"
+            } else null
+        }
+        if (typicalBits.isNotEmpty()) {
+            lines.add("- Day-type typical active burn: " + typicalBits.joinToString("; "))
+        }
     }
     lines.add("")
     lines.add("When the user asks how to lose or gain, give a concrete calorie target and at least one actionable food or activity change. Never recommend a daily calorie target below this user's BMR (${profile.bmr.toInt()} kcal) or ${CalorieSafety.ABSOLUTE_FLOOR_KCAL} kcal. If they ask to go lower, explain the floor and suggest a clinician. When they ask expected weight, reference the forecast numbers below.")

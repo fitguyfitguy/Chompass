@@ -1,0 +1,168 @@
+{
+  "version": 1,
+  "notes": "Golden vectors for DayTypeActiveStats / day-type-active.js (day-type × active-burn). Window 28d, floor ≥3 samples, day total = HC + manual.",
+  "today": "2026-09-01",
+  "windowDays": 28,
+  "minSamples": 3,
+  "scenarios": [
+    {
+      "id": "DTP-AVG-A",
+      "kind": "compute",
+      "journal": [
+        { "date": "2026-08-10", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" },
+        { "date": "2026-08-11", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" },
+        { "date": "2026-08-12", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78, "profileId": "r", "profileName": "Rest" },
+        { "date": "2026-08-13", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" },
+        { "date": "2026-08-14", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" },
+        { "date": "2026-08-15", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78, "profileId": "r", "profileName": "Rest" },
+        { "date": "2026-08-16", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" },
+        { "date": "2026-08-17", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" },
+        { "date": "2026-08-18", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78, "profileId": "r", "profileName": "Rest" },
+        { "date": "2026-08-19", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" }
+      ],
+      "activeByDay": {
+        "2026-08-10": 700,
+        "2026-08-11": 700,
+        "2026-08-12": 300,
+        "2026-08-13": 700,
+        "2026-08-14": 700,
+        "2026-08-15": 300,
+        "2026-08-16": 700,
+        "2026-08-17": 700,
+        "2026-08-18": 300,
+        "2026-08-19": 700
+      },
+      "expect": {
+        "averages": {
+          "t": { "averageKcal": 700, "sampleCount": 7 },
+          "r": { "averageKcal": 300, "sampleCount": 3 }
+        },
+        "typical": { "t": 700, "r": 300 }
+      }
+    },
+    {
+      "id": "DTP-AVG-B-floor",
+      "kind": "compute",
+      "journal": [
+        { "date": "2026-08-20", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78, "profileId": "r", "profileName": "Rest" },
+        { "date": "2026-08-21", "calories": 2100, "proteinG": 150, "carbsG": 160, "fatG": 78, "profileId": "r", "profileName": "Rest" },
+        { "date": "2026-08-22", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" },
+        { "date": "2026-08-23", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" },
+        { "date": "2026-08-24", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" }
+      ],
+      "activeByDay": {
+        "2026-08-20": 280,
+        "2026-08-21": 320,
+        "2026-08-22": 610,
+        "2026-08-23": 630,
+        "2026-08-24": 650
+      },
+      "expect": {
+        "averages": {
+          "t": { "averageKcal": 630, "sampleCount": 3 },
+          "r": { "averageKcal": 300, "sampleCount": 2 }
+        },
+        "typical": { "t": 630 }
+      }
+    },
+    {
+      "id": "DTP-AVG-C-exclude-base",
+      "kind": "compute",
+      "journal": [
+        { "date": "2026-08-10", "calories": 2500, "proteinG": 160, "carbsG": 250, "fatG": 70 },
+        { "date": "2026-08-11", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" },
+        { "date": "2026-08-12", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" },
+        { "date": "2026-08-13", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" }
+      ],
+      "activeByDay": {
+        "2026-08-10": 900,
+        "2026-08-11": 600,
+        "2026-08-12": 600,
+        "2026-08-13": 600
+      },
+      "expect": {
+        "averages": {
+          "t": { "averageKcal": 600, "sampleCount": 3 }
+        },
+        "typical": { "t": 600 }
+      }
+    },
+    {
+      "id": "DTP-AVG-D-window",
+      "kind": "compute",
+      "journal": [
+        { "date": "2026-07-20", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" },
+        { "date": "2026-08-05", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" },
+        { "date": "2026-08-06", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" },
+        { "date": "2026-08-07", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" }
+      ],
+      "activeByDay": {
+        "2026-07-20": 999,
+        "2026-08-05": 500,
+        "2026-08-06": 500,
+        "2026-08-07": 500
+      },
+      "expect": {
+        "averages": {
+          "t": { "averageKcal": 500, "sampleCount": 3 }
+        },
+        "typical": { "t": 500 }
+      }
+    },
+    {
+      "id": "DTP-MERGE-E",
+      "kind": "mergeThenCompute",
+      "journal": [
+        { "date": "2026-08-10", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" },
+        { "date": "2026-08-11", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" },
+        { "date": "2026-08-12", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" }
+      ],
+      "healthConnectByDay": {
+        "2026-08-10": 400,
+        "2026-08-11": 400,
+        "2026-08-12": 400
+      },
+      "manualByDay": {
+        "2026-08-10": 100,
+        "2026-08-11": 100,
+        "2026-08-12": 100
+      },
+      "expect": {
+        "averages": {
+          "t": { "averageKcal": 500, "sampleCount": 3 }
+        },
+        "typical": { "t": 500 }
+      }
+    },
+    {
+      "id": "DTP-RESOLVE-F",
+      "kind": "resolveTypical",
+      "journal": [
+        { "date": "2026-08-20", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" },
+        { "date": "2026-08-21", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" },
+        { "date": "2026-08-22", "calories": 2800, "proteinG": 170, "carbsG": 350, "fatG": 78, "profileId": "t", "profileName": "Training" }
+      ],
+      "activeByDay": {
+        "2026-08-20": 620,
+        "2026-08-21": 620,
+        "2026-08-22": 620
+      },
+      "cases": [
+        { "viewedProfileId": "t", "blendedMeasured": 480, "palEstimate": 350, "expectKcal": 620, "typicalIsDayType": true },
+        { "viewedProfileId": "r", "blendedMeasured": 480, "palEstimate": 350, "expectKcal": 480, "typicalIsDayType": false },
+        { "viewedProfileId": "r", "blendedMeasured": 0, "palEstimate": 350, "expectKcal": 350, "typicalIsDayType": false }
+      ]
+    },
+    {
+      "id": "DTP-PRUNE-G",
+      "kind": "prune",
+      "map": {
+        "2026-06-01": 400,
+        "2026-07-04": 400,
+        "2026-08-20": 500
+      },
+      "keepDays": 60,
+      "expectKeys": ["2026-07-04", "2026-08-20"]
+    }
+  ]
+}

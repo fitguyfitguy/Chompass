@@ -1,5 +1,8 @@
 package app.chompass.models
 
+import app.chompass.models.GoalJournalEntry
+import app.chompass.models.MacroDayProfile
+import app.chompass.models.MacroPlan
 import app.chompass.services.health.ActivityDataSource
 import app.chompass.services.health.HomeActivitySnapshot
 import app.chompass.ui.home.HomeUiState
@@ -373,5 +376,47 @@ class HomeCalorieDisplayTest {
         )
         assertTrue(state.heroCalorieGoal > 2607)
         assertEquals(1f, state.macroGoalScale, 0.001f)
+    }
+
+    @Test
+    fun activeBurnTypical_usesPerTypeAverageWhenEnoughSamples() {
+        val today = LocalDate.parse("2026-09-01")
+        val journal = (0..5).map { i ->
+            val d = today.minusDays(i.toLong()).toString()
+            GoalJournalEntry(
+                date = d,
+                calories = 2800,
+                proteinG = 170,
+                carbsG = 350,
+                fatG = 78,
+                profileId = "t",
+                profileName = "Training",
+            )
+        }
+        val hc = journal.associate { it.date to 620 }
+        val profile = UserProfile(customCalories = 2500)
+        val state = HomeUiState(
+            date = today,
+            profile = profile.copy(
+                macroPlan = MacroPlan(
+                    enabled = true,
+                    profiles = listOf(MacroDayProfile("t", "Training", 2800, 170, 350, 78)),
+                    defaultProfileId = "t",
+                ),
+            ),
+            goalJournal = journal,
+            healthEnergyActiveByDay = hc,
+            measuredActiveAverageCalories = 400,
+            homeDisplay = HomeDisplayPreferences(calorieDisplayMode = HomeCalorieDisplayMode.ADD_ACTIVE),
+            activitySnapshot = HomeActivitySnapshot(
+                date = today,
+                activeCalories = 100,
+                source = ActivityDataSource.HEALTH_CONNECT,
+                energyLive = true,
+            ),
+        )
+        assertEquals(620, state.activeBurnTypical)
+        assertTrue(state.activeBurnShade?.typicalIsDayType == true)
+        assertEquals("Training", state.activeBurnShade?.typicalDayTypeName)
     }
 }

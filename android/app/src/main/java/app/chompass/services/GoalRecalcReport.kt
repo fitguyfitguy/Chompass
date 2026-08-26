@@ -3,6 +3,7 @@ package app.chompass.services
 import app.chompass.models.CalorieSafety
 import app.chompass.models.NutritionConstants
 import app.chompass.models.UserProfile
+import app.chompass.services.ai.DayTypeActiveTypicalLine
 import app.chompass.services.ai.GoalCalculationReport
 import app.chompass.services.ai.ImpliedWithheldReason
 
@@ -84,6 +85,7 @@ fun buildGoalCalculationReport(
     profile: UserProfile,
     forecast: WeightForecast?,
     measuredTdee: Int?,
+    dayTypeActiveTypical: List<DayTypeActiveTypicalLine> = emptyList(),
 ): GoalCalculationReport {
     val signals = empiricalSignals(forecast, profile)
     return GoalCalculationReport(
@@ -108,5 +110,6 @@ fun buildGoalCalculationReport(
             else -> null
         },
         trendsDisagree = forecast?.trendsDisagree ?: false,
+        dayTypeActiveTypical = dayTypeActiveTypical,
     )
 }

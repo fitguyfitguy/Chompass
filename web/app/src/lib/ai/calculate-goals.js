@@ -27,6 +27,7 @@ import {
   calorieSafetyLine,
 } from "../chompass-core/goal-formula-reference.js";
 import { averageForward, resolveDay } from "../chompass-core/macro-plan.js";
+import { typicalForProfile } from "../chompass-core/day-type-active.js";
 
 /** @typedef {import('../chompass-core/models.js').UserProfile} UserProfile */
 /** @typedef {ReturnType<import('../chompass-core/forecast.js').computeWeightForecast>} WeightForecast */
@@ -273,7 +274,7 @@ function localIsoToday() {
  * @param {string} isoToday
  * @returns {string}
  */
-export function dayTypesPromptSection(profile, isoToday) {
+export function dayTypesPromptSection(profile, isoToday, stats = null, includeDailyList = false) {
   const plan = profile.macroPlan;
   if (!plan || plan.enabled !== true || !plan.profiles?.length) return "";
   const base = dailyTargets({ ...profile, customCalories: null });
@@ -288,7 +289,7 @@ export function dayTypesPromptSection(profile, isoToday) {
   const rows = plan.profiles
     .map((x) => `- id=${x.id} ${x.name}: ${x.calories} kcal, ${x.proteinG}g protein, ${x.carbsG}g carbs, ${x.fatG}g fat`)
     .join("\n");
-  return [
+  const lines = [
     "",
     "DAY TYPES: this user has different targets per day type. Current profiles:",
     rows,
@@ -297,7 +298,25 @@ export function dayTypesPromptSection(profile, isoToday) {
     'You MAY return an optional "profiles" array in the JSON, one row per day type you want to change:',
     '{"id":"<profile id>","calories":2600,"protein_g":170,"carbs_g":300,"fat_g":75}',
     "Keep the relative spread between day types (e.g. training vs rest) unless the user asked to change it. Return rows only for the profiles you adjust; omitting the array shifts every profile by the same kcal delta as the base change.",
-  ].join("\n");
+  ];
+  if (stats) {
+    for (const p of plan.profiles) {
+      const row = stats.byProfileId?.[p.id];
+      if (row && row.sampleCount >= 3) {
+        lines.push(`- ${p.name}: typically ${row.averageKcal} kcal active burn (${row.sampleCount} of last 28 days measured)`);
+      }
+    }
+    if (plan.profiles.some((p) => typicalForProfile(stats, p.id) != null)) {
+      lines.push("When the user asks to restructure day types, size or adjust the train-rest spread using the per-type active burn above.");
+    }
+    if (includeDailyList && stats.daily?.length) {
+      lines.push("Per-day measured active (date → day type → kcal):");
+      for (const d of stats.daily) {
+        lines.push(`- ${d.date} ${d.profileName ?? d.profileId} ${d.activeKcal}`);
+      }
+    }
+  }
+  return lines.join("\n");
 }
 
 /**

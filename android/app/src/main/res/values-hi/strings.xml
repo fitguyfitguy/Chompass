@@ -947,9 +947,11 @@
     <string name="home_active_burn_a11y">सक्रिय खर्च %1$d</string>
     <string name="home_active_burn_caption">%1$d सक्रिय</string>
     <string name="home_active_burn_caption_progress">%1$d / %2$d सक्रिय</string>
+    <string name="home_active_burn_caption_progress_day_type">%1$d of %2$d active · %3$s</string>
     <string name="home_active_burn_over">+%1$d सामान्य से अधिक</string>
     <string name="home_active_burn_over_a11y">सक्रिय खर्च %1$d, सामान्य दिन से %2$d अधिक</string>
     <string name="home_active_burn_progress_a11y">सक्रिय खर्च %1$d, सामान्य %2$d</string>
+    <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
     <string name="home_active_calories_label">सक्रिय किलो कैलोरी</string>
     <string name="home_budget_burned_today">आज खर्च: %1$d kcal</string>
     <string name="home_calorie_active_estimated_a11y">सक्रिय कैलोरी आपके गतिविधि स्तर से अनुमानित</string>
@@ -958,6 +960,7 @@
     <string name="home_calorie_budget_sheet_title">आज का कैलोरी बजट</string>
     <string name="home_calorie_budget_source_manual">आपके द्वारा मैन्युअल रूप से लॉग की गई कैलोरी</string>
     <string name="home_calorie_budget_source_measured">Health Connect से सक्रिय कैलोरी</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
     <string name="home_calorie_mode_static">स्थिर लक्ष्य</string>
     <string name="home_calorie_of_goal">%1$s में से</string>
     <string name="home_calories_active_burn">%1$d सक्रिय खर्च</string>
@@ -1569,6 +1572,7 @@
         <string name="recalc_sheet_pace_row">लक्ष्य गति: %1$s kcal/दिन</string>
         <string name="recalc_sheet_formula_target_row">फ़ॉर्मूला लक्ष्य: %1$s kcal</string>
         <string name="recalc_sheet_measured_row">मापा गया Health Connect बर्न: %1$s kcal</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
         <string name="recalc_sheet_data_used">इस्तेमाल किया गया डेटा</string>
         <string name="recalc_sheet_data_weighins">%2$d दिनों में %1$d वज़न माप</string>
         <string name="recalc_sheet_data_no_weighins">अभी कोई वज़न माप दर्ज नहीं</string>
@@ -1848,6 +1852,7 @@
     <string name="day_type_edit_settings">दिन-प्रकार संपादित करें</string>
     <string name="day_type_plan_off_hint">दिन-प्रकार बंद हैं। अलग-अलग दिनों पर अलग लक्ष्यों के लिए उन्हें सेटिंग में चालू करें।</string>
     <string name="day_type_targets_summary">%1$s kcal · %2$dP %3$dC %4$dF</string>
+    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
     <string name="day_type_tomorrow">कल: %1$s · %2$s kcal</string>
     <string name="settings_day_types_title">दिन-प्रकार</string>
     <string name="settings_day_types_intro">अलग-अलग दिनों पर अलग कैलोरी और मैक्रो लक्ष्य इस्तेमाल करें, जैसे ट्रेनिंग और आराम के दिन।</string>

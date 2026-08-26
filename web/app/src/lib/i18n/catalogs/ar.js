@@ -386,6 +386,7 @@ export const ar = Object.freeze({
   "day_types.mode_cycle": "دورة",
   "day_types.chip_none": "الأهداف الأساسية",
   "day_types.sheet_title": "نوع اليوم",
+  "day_types.active_typical": "≈ {kcal} kcal active typical",
   "day_types.follow_schedule": "حسب الجدول",
   "day_types.tomorrow_format": "غدًا: {name} · {kcal} سعرة",
   "day_types.tomorrow_base": "غدًا: الأهداف الأساسية · {kcal} سعرة",

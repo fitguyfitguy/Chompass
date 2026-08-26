@@ -386,6 +386,7 @@ export const pt_BR = Object.freeze({
   "day_types.mode_cycle": "Ciclo",
   "day_types.chip_none": "Metas base",
   "day_types.sheet_title": "Tipo de dia",
+  "day_types.active_typical": "≈ {kcal} kcal active typical",
   "day_types.follow_schedule": "Seguir agenda",
   "day_types.tomorrow_format": "Amanhã: {name} · {kcal} kcal",
   "day_types.tomorrow_base": "Amanhã: metas base · {kcal} kcal",

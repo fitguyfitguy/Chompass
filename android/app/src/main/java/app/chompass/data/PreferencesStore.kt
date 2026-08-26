@@ -316,6 +316,8 @@ class PreferencesStore(private val appContext: Context) {
     val healthEnergyMeasuredActive: Flow<Int> get() = healthEnergyMeasuredActiveImpl
     suspend fun setHealthEnergyMeasuredActive(v: Int) = setHealthEnergyMeasuredActiveImpl(v)
     suspend fun clearHealthEnergyMeasuredActive() = clearHealthEnergyMeasuredActiveImpl()
+    val healthEnergyActiveByDay: Flow<Map<String, Int>> get() = healthEnergyActiveByDayImpl
+    suspend fun setHealthEnergyActiveByDay(map: Map<String, Int>) = setHealthEnergyActiveByDayImpl(map)
     val healthBackgroundSyncEnabled: Flow<Boolean> get() = healthBackgroundSyncEnabledImpl
     suspend fun setHealthBackgroundSyncEnabled(v: Boolean) = setHealthBackgroundSyncEnabledImpl(v)
     val healthEnergyGoalsLastAutoRefreshDay: Flow<String?> get() = healthEnergyGoalsLastAutoRefreshDayImpl

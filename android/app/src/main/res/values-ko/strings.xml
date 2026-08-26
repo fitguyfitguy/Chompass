@@ -946,9 +946,11 @@
     <string name="home_active_burn_a11y">활동 소비 %1$d</string>
     <string name="home_active_burn_caption">활동 %1$d</string>
     <string name="home_active_burn_caption_progress">활동 %1$d / %2$d</string>
+    <string name="home_active_burn_caption_progress_day_type">%1$d of %2$d active · %3$s</string>
     <string name="home_active_burn_over">평소보다 +%1$d</string>
     <string name="home_active_burn_over_a11y">활동 소비 %1$d, 평소 하루보다 %2$d 초과</string>
     <string name="home_active_burn_progress_a11y">활동 소비 %1$d, 평소 %2$d</string>
+    <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
     <string name="home_active_calories_label">활동 kcal</string>
     <string name="home_budget_burned_today">오늘 소비: %1$d kcal</string>
     <string name="home_calorie_active_estimated_a11y">활동 칼로리는 활동 수준에서 추정</string>
@@ -957,6 +959,7 @@
     <string name="home_calorie_budget_sheet_title">오늘의 칼로리 예산</string>
     <string name="home_calorie_budget_source_manual">수동으로 기록한 칼로리</string>
     <string name="home_calorie_budget_source_measured">Health Connect의 활동 칼로리</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
     <string name="home_calorie_mode_static">고정 목표</string>
     <string name="home_calorie_of_goal">%1$s 중</string>
     <string name="home_calories_active_burn">활동 소비 %1$d</string>
@@ -1568,6 +1571,7 @@
         <string name="recalc_sheet_pace_row">목표 속도: %1$s kcal/일</string>
         <string name="recalc_sheet_formula_target_row">공식 목표: %1$s kcal</string>
         <string name="recalc_sheet_measured_row">측정된 Health Connect 소비량: %1$s kcal</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
         <string name="recalc_sheet_data_used">사용된 데이터</string>
         <string name="recalc_sheet_data_weighins">%2$d일 동안 %1$d회 측정</string>
         <string name="recalc_sheet_data_no_weighins">아직 측정 기록 없음</string>
@@ -1848,6 +1852,7 @@
     <string name="day_type_edit_settings">데이 타입 편집</string>
     <string name="day_type_plan_off_hint">데이 타입이 꺼져 있어요. 날마다 다른 목표를 쓰려면 설정에서 켜세요.</string>
     <string name="day_type_targets_summary">%1$s kcal · P %2$d · C %3$d · F %4$d</string>
+    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
     <string name="day_type_tomorrow">내일: %1$s · %2$s kcal</string>
     <string name="settings_day_types_title">데이 타입</string>
     <string name="settings_day_types_intro">날마다 다른 칼로리와 매크로 목표를 사용해요. 예를 들어 훈련일과 휴식일이에요.</string>
