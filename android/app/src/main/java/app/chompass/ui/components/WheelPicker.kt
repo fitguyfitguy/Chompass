@@ -302,15 +302,11 @@ fun NumericWheelPicker(
     modifier: Modifier = Modifier,
     step: Int = 1
 ) {
-    val items = remember(min, max, step) { (min..max step step).toList() }
-    // Snap incoming value onto the stepped grid so the wheel always has a
-    // matching item to highlight.
-    val snapped = run {
-        val coerced = value.coerceIn(min, max)
-        val offset = coerced - min
-        min + (offset / step) * step
+    val clamped = value.coerceIn(min, max)
+    val items = remember(min, max, step, clamped) {
+        val grid = (min..max step step.coerceAtLeast(1)).toList()
+        if (clamped in grid) grid else (grid + clamped).sorted()
     }
-    val clamped = snapped
     val (typed, setTyped) = rememberMagnitudePickerMode()
     val sep = remember { LocaleFormat.decimalSeparator() }
     val typeCd = stringResource(R.string.picker_type_value)
@@ -332,7 +328,7 @@ fun NumericWheelPicker(
         )
         return
     }
-    MagnitudeWheelChrome(showHint = true, onType = { setTyped(true) }) {
+    MagnitudeWheelChrome(showHint = false, onType = { setTyped(true) }) {
         Row(
             modifier = modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -439,7 +435,7 @@ fun SplitDecimalWheelPicker(
         )
         return
     }
-    MagnitudeWheelChrome(showHint = true, onType = { setTyped(true) }) {
+    MagnitudeWheelChrome(showHint = false, onType = { setTyped(true) }) {
         Row(
             modifier = modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -512,7 +508,7 @@ fun DecimalWheelPicker(
         )
         return
     }
-    MagnitudeWheelChrome(showHint = true, onType = { setTyped(true) }) {
+    MagnitudeWheelChrome(showHint = false, onType = { setTyped(true) }) {
         Row(
             modifier = modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,

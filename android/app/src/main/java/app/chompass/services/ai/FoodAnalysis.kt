@@ -421,6 +421,21 @@ internal object FoodJsonParser {
         return if (endIndex > firstBrace) cleaned.substring(firstBrace, endIndex) else cleaned
     }
 
+    /** What-if (and similar) calls ask for prose; some models still wrap JSON. */
+    fun proseFromMaybeJson(text: String): String {
+        val trimmed = text.trim()
+        if (trimmed.isEmpty()) return trimmed
+        val extracted = extractJson(trimmed)
+        if (!extracted.trimStart().startsWith("{")) return trimmed
+        val json = runCatching { JSONObject(extracted) }.getOrNull() ?: return trimmed
+        val keys = arrayOf("advice", "suggestion", "reason", "text", "message")
+        for (key in keys) {
+            val value = json.optString(key).trim()
+            if (value.isNotEmpty()) return value
+        }
+        return trimmed
+    }
+
     fun parseFood(text: String): FoodAnalysis {
         val json = runCatching { JSONObject(extractJson(text)) }.getOrNull()
             ?: throw AiError.InvalidResponse
@@ -429,7 +444,8 @@ internal object FoodJsonParser {
         // numbers, drop NaN/Infinity, scrub text (InputSanitizer policy).
         val name = InputSanitizer.text(
             capitalizeAiFoodName(
-                json.optString("name").takeIf { it.isNotEmpty() } ?: throw AiError.InvalidResponse,
+                json.optString("name").ifBlank { json.optString("food_name") }
+                    .takeIf { it.isNotEmpty() } ?: throw AiError.InvalidResponse,
             ),
             InputSanitizer.MAX_NAME_LENGTH,
         ) ?: throw AiError.InvalidResponse

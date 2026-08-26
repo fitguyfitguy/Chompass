@@ -291,13 +291,6 @@ internal fun AddFoodSheetContent(
         }
         if (!relogRows.isEmpty) {
             Spacer(Modifier.height(12.dp))
-            Text(
-                stringResource(R.string.add_food_quick_relog),
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-            )
-            Spacer(Modifier.height(6.dp))
             Column(
                 Modifier
                     .fillMaxWidth()

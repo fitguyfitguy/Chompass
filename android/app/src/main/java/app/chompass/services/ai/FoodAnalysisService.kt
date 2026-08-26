@@ -776,7 +776,7 @@ class FoodAnalysisService(
             - Carbs: ${grams(afterCarbs)}
             - Fat: ${grams(afterFat)}
         """.trimIndent()
-        return callAi(prompt, imageBytes = null).trim()
+        return FoodJsonParser.proseFromMaybeJson(callAi(prompt, imageBytes = null).trim())
     }
 
     private suspend fun mealConstituentsRequested(): Boolean {
