@@ -159,6 +159,22 @@ data class ServingUnitOption(
             return ServingEditResult(updated, options)
         }
 
+        /**
+         * Drops a non-gram unit from the per-entry list (serving-card trash).
+         * Selection after delete is always grams. Returns null when the
+         * selected option is grams or [selectedUnitId] is not in [unitOptions].
+         */
+        fun servingRemove(
+            selectedUnitId: String,
+            selectedOption: ServingUnitOption,
+            unitOptions: List<ServingUnitOption>,
+        ): ServingEditResult? {
+            if (selectedOption.isGramUnit) return null
+            if (unitOptions.none { it.id == selectedUnitId && !it.isGramUnit }) return null
+            val options = unitOptions.filter { it.id != selectedUnitId && !it.isGramUnit }
+            return ServingEditResult(updated = grams, options = options)
+        }
+
         fun initialUnitId(
             preferredUnit: String?,
             options: List<ServingUnitOption>

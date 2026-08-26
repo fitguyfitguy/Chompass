@@ -90,4 +90,41 @@ class ServingEditTest {
         assertNull(edit("slice", slice, listOf(slice), "big slice", 0.0))
         assertNull(edit("slice", slice, listOf(slice), "big slice", -10.0))
     }
+
+    private fun remove(
+        selectedUnitId: String,
+        selectedOption: ServingUnitOption,
+        unitOptions: List<ServingUnitOption>,
+    ): ServingEditResult? =
+        ServingUnitOption.servingRemove(selectedUnitId, selectedOption, unitOptions)
+
+    @Test
+    fun remove_oneOfTwoCustoms_leavesTheOther_selectsGrams() {
+        val slice = ServingUnitOption(unit = "slice", gramsPerUnit = 120.0)
+        val cup = ServingUnitOption(unit = "cup", gramsPerUnit = 250.0)
+        val result = remove("slice", slice, listOf(slice, cup))!!
+        assertEquals(listOf("cup"), result.options.map { it.id })
+        assertEquals(ServingUnitOption.grams.id, result.updated.id)
+        assertEquals(1.0, result.updated.gramsPerUnit, 0.001)
+    }
+
+    @Test
+    fun remove_lastCustom_emptyOptions_selectsGrams() {
+        val spice = ServingUnitOption(unit = "spi", gramsPerUnit = 2.0)
+        val result = remove("spi", spice, listOf(spice))!!
+        assertEquals(emptyList<String>(), result.options.map { it.id })
+        assertEquals(ServingUnitOption.grams.id, result.updated.id)
+    }
+
+    @Test
+    fun remove_gramsSelected_null() {
+        assertNull(remove("g", ServingUnitOption.grams, listOf(ServingUnitOption(unit = "cup", gramsPerUnit = 250.0))))
+    }
+
+    @Test
+    fun remove_unknownId_null() {
+        val cup = ServingUnitOption(unit = "cup", gramsPerUnit = 250.0)
+        val slice = ServingUnitOption(unit = "slice", gramsPerUnit = 120.0)
+        assertNull(remove("spi", slice, listOf(cup)))
+    }
 }

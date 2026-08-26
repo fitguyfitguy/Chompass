@@ -803,6 +803,7 @@
     <string name="cd_add_food">खाना जोड़ें</string>
     <string name="cd_add_image">छवि जोड़ें</string>
     <string name="cd_apply_serving_edit">सर्विंग संपादन लागू करें</string>
+    <string name="cd_remove_serving_unit">यह इकाई हटाएँ</string>
     <string name="cd_cancel_recording">रिकॉर्डिंग रद्द करें</string>
     <string name="cd_clear_quantity">मात्रा साफ़ करें</string>
     <string name="cd_close">बंद करें</string>

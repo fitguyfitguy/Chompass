@@ -795,6 +795,7 @@ bilirsən?</string>
     <string name="cd_add_food">Yemək əlavə et</string>
     <string name="cd_add_image">Şəkil əlavə et</string>
     <string name="cd_apply_serving_edit">Porsiya dəyişikliyini tətbiq et</string>
+    <string name="cd_remove_serving_unit">Bu vahidi sil</string>
     <string name="cd_cancel_recording">Yazını ləğv et</string>
     <string name="cd_clear_quantity">Kəmiyyəti təmizlə</string>
     <string name="cd_close">Bağla</string>

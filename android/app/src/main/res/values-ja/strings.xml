@@ -802,6 +802,7 @@
     <string name="cd_add_food">食品を追加</string>
     <string name="cd_add_image">画像を追加</string>
     <string name="cd_apply_serving_edit">分量の編集を適用</string>
+    <string name="cd_remove_serving_unit">この単位を削除</string>
     <string name="cd_cancel_recording">録音をキャンセル</string>
     <string name="cd_clear_quantity">数量をクリア</string>
     <string name="cd_close">閉じる</string>

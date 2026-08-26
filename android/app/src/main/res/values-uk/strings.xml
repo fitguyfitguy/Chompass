@@ -779,6 +779,7 @@
     <string name="cd_add_food">Додати їжу</string>
     <string name="cd_add_image">Додати зображення</string>
     <string name="cd_apply_serving_edit">Застосувати правку порції</string>
+    <string name="cd_remove_serving_unit">Видалити цю одиницю</string>
     <string name="cd_cancel_recording">Скасувати запис</string>
     <string name="cd_clear_quantity">Очистити кількість</string>
     <string name="cd_close">Закрити</string>

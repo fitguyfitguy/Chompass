@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.LocalCafe
@@ -580,6 +581,28 @@ internal fun ServingQuantityCard(
                                 if (pushServingEdit()) editingServing = false
                             }
                     )
+                    if (!selectedOption.isGramUnit) {
+                        Spacer(Modifier.width(10.dp))
+                        Icon(
+                            Icons.Filled.Delete,
+                            contentDescription = stringResource(R.string.cd_remove_serving_unit),
+                            tint = AppColors.Calorie,
+                            modifier = Modifier
+                                .size(20.dp)
+                                .clip(CircleShape)
+                                .clickable {
+                                    dismissKeyboard()
+                                    ServingUnitOption.servingRemove(
+                                        selectedUnitId = selectedUnitId,
+                                        selectedOption = selectedOption,
+                                        unitOptions = unitOptions,
+                                    )?.let { result ->
+                                        onUnitOptionsChange?.invoke(result.options, result.updated.id)
+                                        editingServing = false
+                                    }
+                                }
+                        )
+                    }
                 }
             }
         } else if (!selectedOption.isGramUnit) {

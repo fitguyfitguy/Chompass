@@ -1354,6 +1354,7 @@
     <string name="camera_flash_on">Вкл</string>
     <string name="camera_scale_tip_dismiss">Понятно</string>
     <string name="cd_apply_serving_edit">Применить правку порции</string>
+    <string name="cd_remove_serving_unit">Удалить эту единицу</string>
     <string name="cd_copy_entries">Копировать записи</string>
     <string name="cd_dismiss_paste">Закрыть вставку</string>
     <string name="cd_edit_recipe">Изменить рецепт</string>

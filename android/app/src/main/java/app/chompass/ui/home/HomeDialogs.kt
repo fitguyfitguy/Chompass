@@ -718,9 +718,17 @@ internal fun ManualEntryDialog(
                     onMenuExpandedChange = { servingMenuExpanded = it },
                     gramUnit = stringResource(R.string.unit_g),
                     onUnitOptionsChange = { options, newId ->
+                        val gramsBefore = servingGrams
                         servingUnitOptions = options
                         selectedServingUnitId = newId
                         servingCustomized = true
+                        val option = ServingUnitOption.optionMatching(newId, options)
+                        val quantity = if (option.gramsPerUnit > 0) {
+                            gramsBefore / option.gramsPerUnit
+                        } else {
+                            gramsBefore
+                        }
+                        servingQuantityText = ServingUnitOption.formatQuantity(quantity)
                     },
                 )
 

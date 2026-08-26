@@ -795,6 +795,7 @@
     <string name="cd_add_food">Adaugă mâncare</string>
     <string name="cd_add_image">Adaugă imagine</string>
     <string name="cd_apply_serving_edit">Aplică modificarea porției</string>
+    <string name="cd_remove_serving_unit">Elimină această unitate</string>
     <string name="cd_cancel_recording">Anulează înregistrarea</string>
     <string name="cd_clear_quantity">Șterge cantitatea</string>
     <string name="cd_close">Închide</string>

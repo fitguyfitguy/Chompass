@@ -2051,6 +2051,7 @@
     <string name="cd_clear_quantity">Clear quantity</string>
     <string name="cd_edit_serving">Edit serving</string>
     <string name="cd_apply_serving_edit">Apply serving edit</string>
+    <string name="cd_remove_serving_unit">Remove this unit</string>
     <string name="sheet_serving_custom_name">Unit name</string>
     <string name="sheet_serving_custom_grams">Grams per unit</string>
     <string name="cd_quantity_operator">Insert %1$s into quantity</string>
