@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -377,7 +378,7 @@ internal fun CalorieHero(
                         contentDescription = stringResource(R.string.home_calorie_budget_info),
                         tint = tertiary,
                         modifier = Modifier
-                            .size(14.dp)
+                            .minimumInteractiveComponentSize()
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
@@ -442,6 +443,7 @@ private fun DayTypeChip(label: String, onClick: () -> Unit) {
         modifier = Modifier
             // The chip shares the remaining-caption line: cap it so a long
             // day-type name ellipsizes instead of pushing the caption around.
+            .minimumInteractiveComponentSize()
             .widthIn(max = 140.dp)
             .semantics { contentDescription = a11y },
     ) {
@@ -646,6 +648,7 @@ internal fun ViewMoreButton() {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
+            .minimumInteractiveComponentSize()
             .padding(horizontal = 10.dp, vertical = 8.dp)
     ) {
         Text(

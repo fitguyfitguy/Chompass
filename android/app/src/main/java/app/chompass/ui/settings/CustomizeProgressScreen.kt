@@ -66,8 +66,7 @@ fun CustomizeProgressScreen(
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = AppRadii.SectionCard,
             padding = 0.dp,
-            allowBlur = false,
-        ) {
+                    ) {
             Column {
                 // Moved here from Display: it is a calendar/progress preference.
                 SettingRow(
@@ -88,8 +87,7 @@ fun CustomizeProgressScreen(
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = AppRadii.SectionCard,
             padding = 0.dp,
-            allowBlur = false,
-        ) {
+                    ) {
             Column {
                 Text(
                     stringResource(R.string.settings_progress_plots),

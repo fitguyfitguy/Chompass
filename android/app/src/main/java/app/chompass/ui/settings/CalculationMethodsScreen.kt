@@ -280,7 +280,6 @@ internal fun CalcFormulaCard(
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = AppRadii.Container,
         padding = 14.dp,
-        allowBlur = false
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(

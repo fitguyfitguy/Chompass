@@ -24,17 +24,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bedtime
-import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.Coffee
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Restaurant
-import androidx.compose.material.icons.filled.WbSunny
-import androidx.compose.material.icons.filled.WbTwilight
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material.icons.outlined.IosShare
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -49,8 +45,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -65,7 +59,6 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodLogMacroChip
-import app.chompass.models.MealType
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.rememberFoodThumbnail
 import app.chompass.ui.components.isDarkTheme
@@ -114,7 +107,7 @@ internal fun MealSectionHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            mealIcon(meal),
+            sheetMealIcon(meal),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
             modifier = Modifier.size(16.dp)
@@ -179,12 +172,10 @@ internal fun SelectionActionBar(
         ) {
             IconButton(onClick = onCancel) {
                 Icon(
-                    imageVector = Icons.Filled.ChevronRight,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = stringResource(R.string.action_cancel),
                     tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
-                    modifier = Modifier
-                        .size(18.dp)
-                        .graphicsLayer { rotationZ = 180f }
+                    modifier = Modifier.size(18.dp),
                 )
             }
             Text(
@@ -204,7 +195,7 @@ internal fun SelectionActionBar(
             }
             IconButton(onClick = onShare, enabled = selectedCount > 0) {
                 Icon(
-                    imageVector = Icons.Outlined.IosShare,
+                    imageVector = Icons.Filled.Share,
                     contentDescription = stringResource(R.string.cd_share_meal),
                     tint = if (selectedCount > 0) AppColors.Calorie else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                     modifier = Modifier.size(20.dp)
@@ -309,14 +300,6 @@ private fun latestMealRuns(entries: List<FoodEntry>): List<FoodLogMealGroup> {
 
     appendCurrentGroup()
     return groups
-}
-
-private fun mealIcon(meal: String): ImageVector = when (MealType.iconMeal(meal)) {
-    MealType.BREAKFAST -> Icons.Filled.WbTwilight
-    MealType.LUNCH -> Icons.Filled.WbSunny
-    MealType.DINNER -> Icons.Filled.Bedtime
-    MealType.SNACK -> Icons.Filled.Coffee
-    MealType.OTHER -> Icons.Filled.Restaurant
 }
 
 internal fun sectionCardShape(isFirst: Boolean, isLast: Boolean): RoundedCornerShape {

@@ -60,7 +60,6 @@ fun FudGlassSurface(
     padding: Dp = 16.dp,
     contentAlignment: Alignment = Alignment.TopStart,
     elevated: Boolean = true,
-    allowBlur: Boolean = true,
     content: @Composable BoxScope.() -> Unit,
 ) {
     val shape = RoundedCornerShape(cornerRadius)

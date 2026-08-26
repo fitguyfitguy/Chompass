@@ -116,8 +116,7 @@ fun OptionalNutrientGoalsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         cornerRadius = AppRadii.SectionCard,
                         padding = 0.dp,
-                        allowBlur = false
-                    ) {
+                                ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -158,8 +157,7 @@ fun OptionalNutrientGoalsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     cornerRadius = AppRadii.SectionCard,
                     padding = 0.dp,
-                    allowBlur = false
-                ) {
+                        ) {
                     Column {
                         OptionalNutrient.values().forEachIndexed { index, nutrient ->
                             OptionalNutrientGoalRow(
