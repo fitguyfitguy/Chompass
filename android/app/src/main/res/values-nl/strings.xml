@@ -1926,4 +1926,6 @@ journaal: gemiddelde van vastgelegde doelen in het bereik, gaten overgeslagen</s
     <string name="settings_calc_daytypes_clamp_used">Elk dagtype wordt bij elke wijziging van het plan begrensd op dezelfde calorievloer en hetzelfde plafond als je basisdoel: nooit onder max(BMR, 1.200 kcal), nooit boven het automatische plafond. Dit geldt voor je bewerkingen, de AI-herberekening en Adaptieve doelen alike.</string>
     <string name="settings_calc_daytypes_clamp_formula">dagtype-calorieën = begrensd tussen max(BMR, 1.200) en het automatische plafond
 macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
+    <string name="picker_type_value">Waarde typen</string>
+    <string name="picker_use_wheel">Wiel gebruiken</string>
 </resources>

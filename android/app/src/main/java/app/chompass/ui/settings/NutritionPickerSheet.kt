@@ -104,10 +104,12 @@ fun NutritionPickerSheet(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        app.chompass.ui.components.WheelPicker(
-            items = items,
-            selected = selected,
-            onSelect = { selected = it; onValueChange?.invoke(it) },
+        app.chompass.ui.components.NumericWheelPicker(
+            value = selected,
+            onValueChange = { selected = it; onValueChange?.invoke(it) },
+            min = range.first,
+            max = range.last,
+            step = step,
             modifier = Modifier
                 .width(120.dp)
                 .semantics { contentDescription = label }
@@ -166,8 +168,11 @@ fun NutritionPickerSheet(
             .clip(RoundedCornerShape(AppRadii.Field))
             .background(accentColor)
             .clickable {
-                if (confirmBelow != null && saveValue < confirmBelow) pendingConfirm = true
-                else onSave(saveValue)
+                app.chompass.ui.components.MagnitudeDrafts.commitAll()
+                val parsed = customText.trim().replace(',', '.').toDoubleOrNull()?.toInt()?.coerceAtLeast(0)?.let(clampCustom)
+                val v = if (customMode) parsed ?: selected else selected
+                if (confirmBelow != null && v < confirmBelow) pendingConfirm = true
+                else onSave(v)
             },
         contentAlignment = Alignment.Center
     ) {

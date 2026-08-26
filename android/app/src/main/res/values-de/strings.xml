@@ -3348,4 +3348,6 @@ für dich ein</string>
     <string name="settings_notes_intro">Schreibe eine private Notiz für jeden Tag, als Journal, Protokoll oder Erinnerung. Notizen werden mit dem Tagebuch synchronisiert und exportiert.</string>
     <string name="settings_notes_section_tracking">Erfassung</string>
     <string name="settings_notes_privacy_note">Deine Notizen bleiben privat: Sie verlassen dieses Gerät nur über deine WebDAV-Synchronisation und den Tagebuch-Export und werden nie an einen KI-Anbieter gesendet.</string>
+    <string name="picker_type_value">Wert eintippen</string>
+    <string name="picker_use_wheel">Rad verwenden</string>
 </resources>

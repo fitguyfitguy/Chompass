@@ -1926,4 +1926,6 @@ jurnal: media țintelor înregistrate în interval, golurile sărite</string>
     <string name="settings_calc_daytypes_clamp_used">Fiecare tip de zi este limitat la același prag și plafon caloric ca și ținta ta de bază la fiecare scriere a planului: niciodată sub max(BMR, 1.200 kcal), niciodată peste plafonul automat. Se aplică la fel pentru editările tale, recalcularea AI și țintele adaptive.</string>
     <string name="settings_calc_daytypes_clamp_formula">caloriile tipului = limitate între max(BMR, 1.200) și plafonul automat
 macro-urile reechilibrate la noul total caloric</string>
+    <string name="picker_type_value">Tastează valoarea</string>
+    <string name="picker_use_wheel">Folosește roata</string>
 </resources>

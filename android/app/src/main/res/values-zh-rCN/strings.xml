@@ -1926,4 +1926,6 @@
     <string name="settings_calc_daytypes_clamp_used">每次写入计划时，每个日类型都被限制在与基础目标相同的热量下限和上限内：绝不低于 max(BMR, 1,200 kcal)，绝不超过自动上限。这对你的编辑、AI 重算和自适应目标同样适用。</string>
     <string name="settings_calc_daytypes_clamp_formula">类型热量 = 限制在 max(BMR, 1,200) 与自动上限之间
 宏量按新的热量总量重新平衡</string>
+    <string name="picker_type_value">输入数值</string>
+    <string name="picker_use_wheel">使用滚轮</string>
 </resources>

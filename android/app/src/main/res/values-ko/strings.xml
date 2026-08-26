@@ -1926,4 +1926,6 @@
     <string name="settings_calc_daytypes_clamp_used">플랜이 기록될 때마다 각 데이 타입은 기본 목표와 같은 칼로리 하한과 상한에 맞춰요. max(BMR, 1,200 kcal) 아래로 내려가거나 자동 상한을 넘지 않아요. 직접 편집, AI 재계산, 적응형 목표에 똑같이 적용돼요.</string>
     <string name="settings_calc_daytypes_clamp_formula">타입 칼로리 = max(BMR, 1,200)과 자동 상한 사이로 제한
 매크로는 새 칼로리 총량에 맞게 재분배</string>
+    <string name="picker_type_value">값 입력</string>
+    <string name="picker_use_wheel">휠 사용</string>
 </resources>

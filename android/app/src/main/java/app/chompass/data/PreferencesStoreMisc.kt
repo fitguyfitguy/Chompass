@@ -91,6 +91,13 @@ internal suspend fun PreferencesStore.setSuggestionDismissedImpl(id: String, dis
     }
 }
 
+// -- Magnitude picker last mode (Codeberg #62) ------------------------
+internal val PreferencesStore.numericPickerEntryImpl: Flow<String>
+    get() = dataStore.data.map { it[Keys.NUMERIC_PICKER_ENTRY] ?: "wheel" }
+
+internal suspend fun PreferencesStore.setNumericPickerEntryImpl(mode: String) =
+    setStringPref(Keys.NUMERIC_PICKER_ENTRY, mode)
+
 // -- Wipe everything --------------------------------------------------
 internal suspend fun PreferencesStore.clearAllImpl() {
     dataStore.edit { it.clear() }

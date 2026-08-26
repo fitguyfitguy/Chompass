@@ -1926,4 +1926,6 @@
     <string name="settings_calc_daytypes_clamp_used">प्लान लिखे जाने पर हर दिन-प्रकार वही कैलोरी न्यूनतम और अधिकतम सीमा मानता है जो आपका मूल लक्ष्य: कभी max(BMR, 1,200 kcal) से नीचे नहीं, कभी ऑटो अधिकतम से ऊपर नहीं। यह आपके बदलावों, AI पुनर्गणना और एडैप्टिव लक्ष्यों पर एक जैसा लागू होता है।</string>
     <string name="settings_calc_daytypes_clamp_formula">प्रकार की कैलोरी = max(BMR, 1,200) और ऑटो अधिकतम के बीच सीमित
 नई कैलोरी के अनुसार मैक्रो फिर से संतुलित</string>
+    <string name="picker_type_value">मान टाइप करें</string>
+    <string name="picker_use_wheel">पहिया इस्तेमाल करें</string>
 </resources>

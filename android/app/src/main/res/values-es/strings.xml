@@ -1933,4 +1933,6 @@ diario: media de los objetivos registrados en el rango, huecos omitidos</string>
     <string name="settings_calc_daytypes_clamp_used">Cada tipo de día se ajusta al mismo suelo y techo calóricos que tu objetivo base cada vez que se escribe el plan: nunca por debajo de max(BMR, 1.200 kcal), nunca por encima del techo automático. Se aplica igual a tus ediciones, al recálculo con IA y a Adaptive Goals.</string>
     <string name="settings_calc_daytypes_clamp_formula">calorías del tipo = recortadas entre max(BMR, 1.200) y el techo automático
 macros reequilibradas al nuevo total calórico</string>
+    <string name="picker_type_value">Escribir valor</string>
+    <string name="picker_use_wheel">Usar rueda</string>
 </resources>

@@ -1951,4 +1951,6 @@ dziennik: średnia zapisanych celów w zakresie, luki pominięte</string>
     <string name="settings_calc_daytypes_clamp_used">Każdy typ dnia przy każdym zapisie planu jest ograniczony do tej samej kalorycznej podłogi i sufitu co cel podstawowy: nigdy poniżej max(BMR, 1200 kcal), nigdy powyżej automatycznego sufitu. Dotyczy to tak samo Twoich edycji, przeliczania AI i celów adaptacyjnych.</string>
     <string name="settings_calc_daytypes_clamp_formula">kalorie typu = ograniczone między max(BMR, 1200) a automatycznym sufitem
 makro rebalansowane do nowej sumy kalorii</string>
+    <string name="picker_type_value">Wpisz wartość</string>
+    <string name="picker_use_wheel">Użyj kółka</string>
 </resources>

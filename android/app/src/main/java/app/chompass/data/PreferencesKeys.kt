@@ -235,4 +235,6 @@ internal object Keys {
         val LAST_SYNC_ETAG = stringPreferencesKey("lastSyncEtag")
         /** Serialized [app.chompass.services.ai.RecalcSheetData] of the latest goal change (AI Recalculate or Adaptive). */
         val LAST_GOAL_CHANGE_SHEET_JSON = stringPreferencesKey("lastGoalChangeSheetJson")
+        /** Last magnitude-wheel entry mode: "wheel" | "typed" (Codeberg #62). */
+        val NUMERIC_PICKER_ENTRY = stringPreferencesKey("numeric_picker_entry")
 }

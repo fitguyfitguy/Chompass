@@ -1947,4 +1947,6 @@ günlük: aralıktaki kayıtlı hedeflerin ortalaması, boşluklar atlanır</str
     <string name="settings_calc_daytypes_clamp_used">Plan her yazıldığında her gün tipi, temel hedefinizle aynı kalori tabanına ve tavanına sıkıştırılır: asla max(BMR, 1.200 kcal) altına, asla otomatik tavanın üstüne inmez. Bu, düzenlemelerinize, yapay zekâ yeniden hesaplamasına ve Uyarlanır hedeflere eşit derecede uygulanır.</string>
     <string name="settings_calc_daytypes_clamp_formula">gün tipi kalorisi = max(BMR, 1.200) ile otomatik tavan arasına sıkıştırılır
 makrolar yeni kalori toplamına göre yeniden dengelenir</string>
+    <string name="picker_type_value">Değer yaz</string>
+    <string name="picker_use_wheel">Tekerleği kullan</string>
 </resources>

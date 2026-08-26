@@ -289,6 +289,7 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                 // iOS continueButton: full-width inverse-coloured capsule.
                 Button(
                     onClick = {
+                        app.chompass.ui.components.MagnitudeDrafts.commitAll()
                         val age = Period.between(ui.birthday, LocalDate.now()).years
                         if (ui.step == OnboardingStep.BIRTHDAY && age < CalorieSafety.ADULT_MIN_AGE) {
                             showMinorDialog = true
