@@ -118,14 +118,14 @@ fun NicotineSettingsScreen(
         SettingFootnote(stringResource(R.string.settings_nicotine_privacy_note))
     }
 
-    when (sheet) {
-        SettingsSheet.NICOTINE_LIMIT -> NicotineLimitSheet(
-            current = ui.nicotineDailyLimit,
-            onSave = {
-                vm.setNicotineDailyLimit(it)
-                sheet = null
-            },
+    sheet?.let { s ->
+        SettingsSheets(
+            sheet = s,
+            ui = ui,
+            vm = vm,
+            onDismiss = { sheet = null },
+            onInvalidGoalWeight = {},
+            onRebalanceBlocked = {},
         )
-        else -> Unit
     }
 }
