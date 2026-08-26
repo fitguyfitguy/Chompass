@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -24,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
@@ -85,25 +89,27 @@ internal fun MealTimesSheet(current: MealCatalog, onSave: (MealCatalog) -> Unit)
         ) {
             Column {
                 catalog.meals.forEachIndexed { index, def ->
-                    MealCatalogRow(
-                        def = def,
-                        is24Hour = is24Hour,
-                        canMoveUp = index > 0,
-                        canMoveDown = index < catalog.meals.lastIndex,
-                        onMoveUp = {
-                            val ids = catalog.meals.map { it.id }.toMutableList()
-                            ids.add(index - 1, ids.removeAt(index))
-                            catalog = catalog.reordered(ids)
-                        },
-                        onMoveDown = {
-                            val ids = catalog.meals.map { it.id }.toMutableList()
-                            ids.add(index + 1, ids.removeAt(index))
-                            catalog = catalog.reordered(ids)
-                        },
-                        onLabel = { catalog = catalog.withLabel(def.id, it) },
-                        onTime = { editingId = def.id },
-                        onRemove = { pendingRemove = def },
-                    )
+                    key(def.id) {
+                        MealCatalogRow(
+                            def = def,
+                            is24Hour = is24Hour,
+                            canMoveUp = index > 0,
+                            canMoveDown = index < catalog.meals.lastIndex,
+                            onMoveUp = {
+                                val ids = catalog.meals.map { it.id }.toMutableList()
+                                ids.add(index - 1, ids.removeAt(index))
+                                catalog = catalog.reordered(ids)
+                            },
+                            onMoveDown = {
+                                val ids = catalog.meals.map { it.id }.toMutableList()
+                                ids.add(index + 1, ids.removeAt(index))
+                                catalog = catalog.reordered(ids)
+                            },
+                            onLabel = { catalog = catalog.withLabel(def.id, it) },
+                            onTime = { editingId = def.id },
+                            onRemove = { pendingRemove = def },
+                        )
+                    }
                     if (index != catalog.meals.lastIndex) HorizontalDivider()
                 }
             }
@@ -203,9 +209,9 @@ private fun MealCatalogRow(
     onTime: () -> Unit,
     onRemove: () -> Unit,
 ) {
-    var editingName by remember(def.id, def.label) { mutableStateOf(false) }
+    var editingName by remember(def.id) { mutableStateOf(false) }
     val shownLabel = catalogRowLabel(def)
-    var draft by remember(def.id, def.label) { mutableStateOf(def.label.ifBlank { shownLabel }) }
+    var draft by remember(def.id) { mutableStateOf(def.label.ifBlank { shownLabel }) }
     Row(
         Modifier
             .fillMaxWidth()
@@ -225,10 +231,16 @@ private fun MealCatalogRow(
                 BasicTextField(
                     value = draft,
                     onValueChange = {
-                        draft = it.take(MealCatalog.MAX_LABEL)
-                        onLabel(draft)
+                        val next = it.take(MealCatalog.MAX_LABEL)
+                        draft = next
+                        onLabel(next)
                     },
                     singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = {
+                        onLabel(draft)
+                        editingName = false
+                    }),
                     textStyle = TextStyle(
                         fontSize = 17.sp,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -244,7 +256,10 @@ private fun MealCatalogRow(
                 Text(
                     if (def.enabled) shownLabel else stringResource(R.string.settings_meals_hidden, shownLabel),
                     fontSize = 17.sp,
-                    modifier = Modifier.clickable { editingName = true },
+                    modifier = Modifier.clickable {
+                        draft = def.label.ifBlank { shownLabel }
+                        editingName = true
+                    },
                 )
                 val start = def.startMinutes
                 Text(
