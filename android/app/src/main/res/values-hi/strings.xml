@@ -1908,4 +1908,13 @@
 नई कैलोरी के अनुसार मैक्रो फिर से संतुलित</string>
     <string name="picker_type_value">मान टाइप करें</string>
     <string name="picker_use_wheel">पहिया इस्तेमाल करें</string>
+
+    <string name="settings_meals">भोजन</string>
+    <string name="settings_meals_description">नाम, क्रम और शुरू समय</string>
+    <string name="settings_meals_help">नया खाना उस भोजन का उपयोग करता है जिसका शुरू समय अभी से ठीक पहले सबसे पास हो.</string>
+    <string name="settings_meals_add">भोजन जोड़ें</string>
+    <string name="settings_meals_remove_title">यह भोजन हटाएँ?</string>
+    <string name="settings_meals_remove_body">मौजूदा प्रविष्टियाँ संपादन तक अपना प्रकार रखती हैं. बिल्ट-इन भोजन मिटते नहीं, छिप जाते हैं.</string>
+    <string name="settings_meals_hidden">%1$s (छिपा)</string>
+    <string name="settings_meals_no_auto">ऑटो अनुमान नहीं</string>
 </resources>

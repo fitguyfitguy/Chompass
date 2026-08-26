@@ -1835,4 +1835,13 @@ LBM = вага × (1 − %жиру)</string>
 макроси перерозподіляються під нову калорійність</string>
     <string name="picker_type_value">Ввести значення</string>
     <string name="picker_use_wheel">Використати колесо</string>
+
+    <string name="settings_meals">Прийоми їжі</string>
+    <string name="settings_meals_description">Назви, порядок і час початку</string>
+    <string name="settings_meals_help">Нова їжа бере прийом, чий початок найближчий перед зараз.</string>
+    <string name="settings_meals_add">Додати прийом</string>
+    <string name="settings_meals_remove_title">Прибрати цей прийом?</string>
+    <string name="settings_meals_remove_body">Існуючі записи зберігають тип, доки ви їх не зміните. Вбудовані прийоми ховаються, а не видаляються.</string>
+    <string name="settings_meals_hidden">%1$s (сховано)</string>
+    <string name="settings_meals_no_auto">Без автовибору</string>
 </resources>

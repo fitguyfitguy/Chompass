@@ -1933,4 +1933,13 @@ dziennik: średnia zapisanych celów w zakresie, luki pominięte</string>
 makro rebalansowane do nowej sumy kalorii</string>
     <string name="picker_type_value">Wpisz wartość</string>
     <string name="picker_use_wheel">Użyj kółka</string>
+
+    <string name="settings_meals">Posiłki</string>
+    <string name="settings_meals_description">Nazwy, kolejność i godziny startu</string>
+    <string name="settings_meals_help">Nowe jedzenie używa posiłku, którego start jest najbliżej przed teraz.</string>
+    <string name="settings_meals_add">Dodaj posiłek</string>
+    <string name="settings_meals_remove_title">Usunąć ten posiłek?</string>
+    <string name="settings_meals_remove_body">Istniejące wpisy zachowują typ, dopóki ich nie zmienisz. Wbudowane posiłki są ukrywane, nie usuwane.</string>
+    <string name="settings_meals_hidden">%1$s (ukryty)</string>
+    <string name="settings_meals_no_auto">Bez autodopasowania</string>
 </resources>

@@ -1929,4 +1929,13 @@ günlük: aralıktaki kayıtlı hedeflerin ortalaması, boşluklar atlanır</str
 makrolar yeni kalori toplamına göre yeniden dengelenir</string>
     <string name="picker_type_value">Değer yaz</string>
     <string name="picker_use_wheel">Tekerleği kullan</string>
+
+    <string name="settings_meals">Öğünler</string>
+    <string name="settings_meals_description">Adlar, sıra ve başlangıç saatleri</string>
+    <string name="settings_meals_help">Yeni yiyecek, başlangıcı şimdiye en yakın önceki öğünü kullanır.</string>
+    <string name="settings_meals_add">Öğün ekle</string>
+    <string name="settings_meals_remove_title">Bu öğün kaldırılsın mı?</string>
+    <string name="settings_meals_remove_body">Mevcut kayıtlar siz düzenleyene kadar türünü korur. Yerleşik öğünler silinmez, gizlenir.</string>
+    <string name="settings_meals_hidden">%1$s (gizli)</string>
+    <string name="settings_meals_no_auto">Otomatik seçim yok</string>
 </resources>

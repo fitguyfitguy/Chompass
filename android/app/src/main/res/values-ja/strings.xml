@@ -1908,4 +1908,13 @@
 マクロは新しいカロリー合計に合わせて再配分</string>
     <string name="picker_type_value">値を入力</string>
     <string name="picker_use_wheel">ホイールに戻る</string>
+
+    <string name="settings_meals">食事</string>
+    <string name="settings_meals_description">名前、順、開始時刻</string>
+    <string name="settings_meals_help">新しい食事は、今より前で最も近い開始時刻の枠を使います。</string>
+    <string name="settings_meals_add">食事を追加</string>
+    <string name="settings_meals_remove_title">この食事を外しますか？</string>
+    <string name="settings_meals_remove_body">既存の記録は編集するまで種類を保ちます。標準の食事は削除せず非表示にします。</string>
+    <string name="settings_meals_hidden">%1$s（非表示）</string>
+    <string name="settings_meals_no_auto">自動推定なし</string>
 </resources>

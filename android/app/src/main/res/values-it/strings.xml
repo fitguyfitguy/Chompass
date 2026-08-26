@@ -1908,4 +1908,13 @@ diario: media degli obiettivi registrati nell\'intervallo, vuoti saltati</string
 macro riequilibrate al nuovo totale calorico</string>
     <string name="picker_type_value">Digita il valore</string>
     <string name="picker_use_wheel">Usa la ruota</string>
+
+    <string name="settings_meals">Pasti</string>
+    <string name="settings_meals_description">Nomi, ordine e orari di inizio</string>
+    <string name="settings_meals_help">Un nuovo cibo usa il pasto il cui orario di inizio è il più vicino prima di adesso.</string>
+    <string name="settings_meals_add">Aggiungi pasto</string>
+    <string name="settings_meals_remove_title">Rimuovere questo pasto?</string>
+    <string name="settings_meals_remove_body">Le voci esistenti tengono il tipo finché non le modifichi. I pasti predefiniti vengono nascosti, non eliminati.</string>
+    <string name="settings_meals_hidden">%1$s (nascosto)</string>
+    <string name="settings_meals_no_auto">Non per la scelta automatica</string>
 </resources>

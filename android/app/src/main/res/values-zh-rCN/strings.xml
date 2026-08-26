@@ -1908,4 +1908,13 @@
 宏量按新的热量总量重新平衡</string>
     <string name="picker_type_value">输入数值</string>
     <string name="picker_use_wheel">使用滚轮</string>
+
+    <string name="settings_meals">餐次</string>
+    <string name="settings_meals_description">名称、顺序和开始时间</string>
+    <string name="settings_meals_help">新食物使用当前时刻之前最近的开始时间对应的餐次。</string>
+    <string name="settings_meals_add">添加餐次</string>
+    <string name="settings_meals_remove_title">移除此餐次？</string>
+    <string name="settings_meals_remove_body">已有记录在你编辑前会保留类型。内置餐次是隐藏而不是删除。</string>
+    <string name="settings_meals_hidden">%1$s（已隐藏）</string>
+    <string name="settings_meals_no_auto">不用于自动判断</string>
 </resources>
