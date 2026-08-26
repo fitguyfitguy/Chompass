@@ -67,7 +67,7 @@ internal object ScreenshotFixtures {
             fat = 9.0,
             timestamp = atNoon(snapshotDate),
             source = FoodSource.MANUAL,
-            mealType = MealType.BREAKFAST,
+            mealType = MealType.BREAKFAST.id,
             fiber = 4.0,
             emoji = "🥣",
         ),
@@ -80,7 +80,7 @@ internal object ScreenshotFixtures {
             fat = 14.0,
             timestamp = atNoon(snapshotDate).plusSeconds(14_400),
             source = FoodSource.SNAP_FOOD,
-            mealType = MealType.LUNCH,
+            mealType = MealType.LUNCH.id,
             fiber = 6.0,
             emoji = "🍗",
         ),
@@ -93,7 +93,7 @@ internal object ScreenshotFixtures {
             fat = 7.0,
             timestamp = atNoon(snapshotDate).plusSeconds(21_600),
             source = FoodSource.BARCODE,
-            mealType = MealType.SNACK,
+            mealType = MealType.SNACK.id,
             emoji = "🍫",
         ),
         FoodEntry(
@@ -105,7 +105,7 @@ internal object ScreenshotFixtures {
             fat = 38.0,
             timestamp = atNoon(snapshotDate).plusSeconds(32_400),
             source = FoodSource.MANUAL,
-            mealType = MealType.DINNER,
+            mealType = MealType.DINNER.id,
             fiber = 8.0,
             emoji = "🐟",
         ),
@@ -155,7 +155,7 @@ internal object ScreenshotFixtures {
             id = UUID.fromString("00000000-0000-4000-8000-000000000021"),
             name = "Chicken rice bowl",
             emoji = "🍗",
-            mealType = MealType.LUNCH,
+            mealType = MealType.LUNCH.id,
             ingredients = listOf(
                 RecipeIngredient(
                     id = UUID.fromString("00000000-0000-4000-8000-000000000031"),
@@ -191,7 +191,7 @@ internal object ScreenshotFixtures {
             id = UUID.fromString("00000000-0000-4000-8000-000000000022"),
             name = "Overnight oats",
             emoji = "🥣",
-            mealType = MealType.BREAKFAST,
+            mealType = MealType.BREAKFAST.id,
             ingredients = listOf(
                 RecipeIngredient(
                     id = UUID.fromString("00000000-0000-4000-8000-000000000034"),
@@ -227,7 +227,7 @@ internal object ScreenshotFixtures {
             id = UUID.fromString("00000000-0000-4000-8000-000000000023"),
             name = "Salmon plate",
             emoji = "🐟",
-            mealType = MealType.DINNER,
+            mealType = MealType.DINNER.id,
             ingredients = listOf(
                 RecipeIngredient(
                     id = UUID.fromString("00000000-0000-4000-8000-000000000037"),
