@@ -124,6 +124,13 @@ fun FoodResultSheet(
     portionPreConfirmed: Boolean = false,
     /** True when a weigh-as-you-go draft already has ingredients. */
     progressiveMealActive: Boolean = false,
+    /**
+     * Codeberg #66: meal slot the review should start from when the source
+     * carries one (Saved Meals tap — favorites/recents/frequent templates).
+     * Null / blank falls back to the time-of-day guess, so fresh AI analyses
+     * are unchanged. Matches the PWA entry-form prefill behavior.
+     */
+    initialMealType: String? = null,
     analysisPhase: EntryAnalysisPhase? = null,
     partial: PartialFoodAnalysis? = null,
     /** False while AI (or unit inference) is in flight — fields and Log stay locked. */
@@ -213,7 +220,9 @@ fun FoodResultSheet(
     val selectedServingOption = ServingUnitOption.optionMatching(selectedServingUnitId, servingUnitOptions)
     val selectedServingQuantity = ServingUnitOption.parseQuantity(servingQuantityText)?.takeIf { it > 0 }
     val scale = ServingUnitOption.servingScale(recordedServing, servingGrams, baseServingGrams)
-    var mealType by remember { mutableStateOf(MealType.currentMealId) }
+    var mealType by remember {
+        mutableStateOf(initialMealType?.takeIf { it.isNotBlank() } ?: MealType.currentMealId)
+    }
     var moreNutritionExpanded by remember { mutableStateOf(false) }
     var nutritionUnlocked by remember { mutableStateOf(false) }
     var editableCalories by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.calories) }
