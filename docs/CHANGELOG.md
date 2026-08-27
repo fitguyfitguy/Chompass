@@ -8,6 +8,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Added
 
+- **Favorites are editable saved foods** (Android + web): every food in Favorites has an edit button. Change the meal type, name, serving, or macros and Save updates the saved food permanently, so the next time you log it the saved values come back. Renaming is refused when another food already uses that name. Reviewing a saved food now starts on its saved meal type on Android too (the web app already did); the one-tap plus button still logs into the current meal. Closes Codeberg [#66](https://codeberg.org/fitguy/Chompass/issues/66) by [@swayevenly](https://codeberg.org/swayevenly).
 - **Waist body-fat estimate without a neck measure** (Android + web): RFM sits next to the Navy tape estimate. Optional Use as my body fat logs it like a normal reading. Tape estimates are typically a few percentage points from a scan.
 
 ### Fixed
