@@ -42,9 +42,11 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.ProgressiveMealDraft
 import app.chompass.models.ProgressiveMealItem
+import app.chompass.models.ServingUnitOption
 import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.kcalText
 import app.chompass.ui.components.gramsText
+import app.chompass.ui.components.culinaryUnitLabels
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
@@ -270,8 +272,24 @@ private fun ProgressiveIngredientRow(
 
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(analysis.name, fontSize = 15.sp, fontWeight = FontWeight.Medium, maxLines = 1)
+            // Same echo rule as saved rows (Codeberg #65): pending items keep
+            // their analyzed unit when resolvable, else grams.
+            val echo = ServingUnitOption.homeDisplaySelection(
+                analysis.selectedServingUnit,
+                analysis.selectedServingQuantity,
+                analysis.servingSizeGrams?.takeIf { it > 0 },
+                analysis.servingUnitOptions,
+            )
+            val servingText = echo?.let { (qty, option) ->
+                "${ServingUnitOption.formatQuantity(qty)} " + option.displayUnit(
+                    qty,
+                    stringResource(R.string.unit_serving),
+                    stringResource(R.string.unit_serving_plural),
+                    culinaryUnitLabels(),
+                )
+            } ?: gramsText((analysis.servingSizeGrams ?: 0.0).roundToIntSafe().toDouble())
             Text(
-                "${kcalText(analysis.calories)} · ${gramsText((analysis.servingSizeGrams ?: 0.0).roundToIntSafe().toDouble())}",
+                "${kcalText(analysis.calories)} · $servingText",
                 fontSize = 13.sp,
                 color = AppColors.Calorie,
             )

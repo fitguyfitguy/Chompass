@@ -2,6 +2,7 @@
 import { foodEntries, profile as profileStore, water, dailyNotes, nicotine, caffeine, prefs, goalJournal } from "../lib/db.js";
 import { dailyTargets, estimatedDailyActiveCalories } from "../lib/chompass-core/formulas.js";
 import { dailyNoteIdFor } from "../lib/chompass-core/models.js";
+import { displayUnit, entryServingEcho, formatQuantity } from "../lib/chompass-core/serving-units.js";
 import { computeFastingState, nextFastStartMillis, FastingPhase } from "../lib/chompass-core/fasting-state.js";
 import { openSheet } from "../lib/ui/sheet.js";
 import { openConfirm, openInfo, openInput } from "../lib/ui/dialog.js";
@@ -258,6 +259,33 @@ function formatGrams(g) {
   return Number.isInteger(n) ? `${n}g` : `${n.toFixed(1)}g`;
 }
 
+/** Localized cup / tbsp / tsp labels for displayUnit (same set as entry-form). */
+function culinaryUnitLabels() {
+  return {
+    cup: [t("unit.cup"), t("unit.cup_plural")],
+    tbsp: [t("unit.tbsp"), t("unit.tbsp")],
+    tsp: [t("unit.tsp"), t("unit.tsp")],
+  };
+}
+
+/**
+ * Diary-card serving echo (Codeberg #65): the logged choice ("2 oz", "1 bowl")
+ * when it still matches a non-gram option, else null (callers keep today's
+ * grams line).
+ * @param {import('../lib/chompass-core/models.js').FoodEntry} entry
+ */
+function servingEchoText(entry) {
+  const echo = entryServingEcho(entry);
+  if (!echo) return null;
+  return `${formatQuantity(echo.quantity)} ${displayUnit(
+    echo.option,
+    echo.quantity,
+    t("unit.serving"),
+    t("unit.serving_plural"),
+    culinaryUnitLabels()
+  )}`;
+}
+
 /** Android BurnShadeCaption: "380 of 560 active" (live of typical), else "560 active". */
 function burnCaptionText(zoneActive, burn) {
   if (!burn) return `${zoneActive} active`;
@@ -467,8 +495,10 @@ function mealCard(mealType, mealEntries, chipKeys) {
       </header>
       <div class="meal-card__list">
         ${mealEntries
-          .map(
-            (e) => `
+          .map((e) => {
+            // Serving echoes the logged unit when resolvable (#65), else grams.
+            const serving = servingEchoText(e) ?? (e.quantityG != null ? escapeHtml(formatGrams(e.quantityG)) : null);
+            return `
           <div class="food-swipe" data-entry-id="${e.id}">
             <div class="food-swipe__behind food-swipe__behind--fav" aria-hidden="true">Favorite</div>
             <div class="food-swipe__behind food-swipe__behind--del" aria-hidden="true">Delete</div>
@@ -481,15 +511,15 @@ function mealCard(mealType, mealEntries, chipKeys) {
                   </span>
                   <span class="food-item__kcalrow">
                     <span class="food-item__cals">${Math.round(e.calories)} kcal</span>
-                    ${e.quantityG != null ? `<span class="food-item__meta-sep"> · </span><span class="food-item__serving">${formatGrams(e.quantityG)}</span>` : ""}
+                    ${serving != null ? `<span class="food-item__meta-sep"> · </span><span class="food-item__serving">${serving}</span>` : ""}
                   </span>
                   <span class="food-item__pills">${formatFoodPills(e, chipKeys)}</span>
                 </span>
               </button>
               <button type="button" class="food-item__menu" data-menu aria-label="More actions for ${escapeAttr(e.name)}">⋮</button>
             </div>
-          </div>`
-          )
+          </div>`;
+          })
           .join("")}
       </div>
     </section>`;
@@ -1494,18 +1524,25 @@ export class DiaryView extends HTMLElement {
         `<option value="${m}" ${draft.mealType === m ? "selected" : ""}>${escapeHtml(t(`meal.${m}`))}</option>`
     ).join("");
     const rows = draft.items
-      .map(
-        (item) => `
+      .map((item) => {
+        // Same echo rule as saved rows (Codeberg #65): pending items keep
+        // their analyzed unit when resolvable, else today's grams text.
+        const serving = servingEchoText(item.analysis);
+        return `
         <div class="progressive-meal-row" data-item-id="${escapeAttr(item.id)}">
           <div class="progressive-meal-row__text">
             <strong>${escapeHtml(item.analysis.name)}</strong>
             <span>${Math.round(item.analysis.calories)} kcal${
-              item.analysis.quantityG != null ? ` · ${Math.round(item.analysis.quantityG)} g` : ""
-            }</span>
+          serving != null
+            ? ` · ${escapeHtml(serving)}`
+            : item.analysis.quantityG != null
+              ? ` · ${Math.round(item.analysis.quantityG)} g`
+              : ""
+        }</span>
           </div>
           <button type="button" class="btn btn--ghost btn--sm" data-remove-item aria-label="${escapeAttr(t("progressive_meal.remove"))}">×</button>
-        </div>`
-      )
+        </div>`;
+      })
       .join("");
 
     const sheet = openSheet({

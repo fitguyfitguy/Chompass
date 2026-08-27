@@ -59,11 +59,13 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodLogMacroChip
+import app.chompass.models.ServingUnitOption
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.rememberFoodThumbnail
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.kcalText
 import app.chompass.ui.components.gramsText
+import app.chompass.ui.components.culinaryUnitLabels
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.util.clockTimePattern
 import app.chompass.ui.theme.AppRadii
@@ -572,7 +574,9 @@ internal fun FoodRow(
                 )
             }
 
-            // Pink kcal · gray serving size.
+            // Pink kcal · gray serving size. The serving echoes the logged
+            // unit ("2 oz", "1 bowl") when the entry still has a resolvable
+            // non-gram selection; otherwise today's grams line (Codeberg #65).
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -583,9 +587,22 @@ internal fun FoodRow(
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary
                 )
-                entry.servingSizeGrams?.takeIf { it > 0 }?.let { grams ->
+                val echo = ServingUnitOption.homeDisplaySelection(
+                    entry.selectedServingUnit,
+                    entry.selectedServingQuantity,
+                    entry.servingSizeGrams?.takeIf { it > 0 },
+                    entry.servingUnitOptions,
+                )
+                val servingText = echo?.let { (qty, option) ->
+                    "${ServingUnitOption.formatQuantity(qty)} " + option.displayUnit(
+                        qty,
+                        stringResource(R.string.unit_serving),
+                        stringResource(R.string.unit_serving_plural),
+                        culinaryUnitLabels(),
+                    )
+                } ?: entry.servingSizeGrams?.takeIf { it > 0 }?.let { gramsText(it) }
+                if (servingText != null) {
                     Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled))
-                    val servingText = gramsText(grams)
                     Text(
                         servingText,
                         fontSize = 12.sp,

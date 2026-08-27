@@ -25,7 +25,7 @@ data class ServingUnitOption(
         get() = unit.trim().lowercase(Locale.US)
 
     val isGramUnit: Boolean
-        get() = normalizedUnit in setOf("g", "gram", "grams")
+        get() = normalizedUnit in GRAM_UNITS
 
     val isValid: Boolean
         get() = normalizedUnit.isNotEmpty() && gramsPerUnit > 0
@@ -65,6 +65,9 @@ data class ServingUnitOption(
         /** App-generated "serving" unit ids (OFF barcode lookup / AI fallback). */
         private val SERVING_UNITS = setOf("serving", "servings")
 
+        /** Unit ids that mean plain grams. */
+        private val GRAM_UNITS = setOf("g", "gram", "grams")
+
         /** Canonical key for a known English culinary unit (and common aliases). */
         fun culinaryUnitKey(normalizedUnit: String): String? = when (normalizedUnit) {
             "cup", "cups", "c" -> "cup"
@@ -101,6 +104,30 @@ data class ServingUnitOption(
 
         fun optionMatching(id: String, options: List<ServingUnitOption>): ServingUnitOption =
             pickerOptions(options).firstOrNull { it.id == id } ?: grams
+
+        /**
+         * Diary-card serving echo (Codeberg #65): the quantity + option to show
+         * on saved-entry rows, or null when the row keeps today's grams line.
+         * Resolvable = the stored unit id names a valid non-gram option, and
+         * [selectedQuantity] > 0 or total grams ÷ grams-per-unit computes.
+         * The stored quantity wins over re-dividing grams (avoids float noise
+         * like 56.7 g / 28.35 → "2.0004 oz"); stale or gram ids fall back to
+         * null silently so legacy rows need no migration.
+         */
+        fun homeDisplaySelection(
+            selectedUnit: String?,
+            selectedQuantity: Double?,
+            totalGrams: Double?,
+            options: List<ServingUnitOption>,
+        ): Pair<Double, ServingUnitOption>? {
+            val id = selectedUnit?.trim()?.lowercase(Locale.US)
+            if (id.isNullOrEmpty() || id in GRAM_UNITS) return null
+            val option = options.firstOrNull { it.isValid && !it.isGramUnit && it.id == id } ?: return null
+            val quantity = selectedQuantity?.takeIf { it > 0 }
+                ?: totalGrams?.takeIf { it > 0 }?.let { it / option.gramsPerUnit }
+                ?: return null
+            return quantity to option
+        }
 
         /**
          * Serving-scaling rule (Codeberg #10 follow-up): an entry without a

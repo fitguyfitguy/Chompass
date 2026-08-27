@@ -15,6 +15,8 @@ import {
   applyQuantityInput,
   isQuantityExpression,
   displayUnit,
+  entryServingEcho,
+  optionId,
   culinaryUnitKey,
   GRAMS_OPTION,
   HEURISTIC_RULES,
@@ -213,4 +215,70 @@ test("isQuantityExpression_distinguishesDeltas", () => {
   assert.equal(isQuantityExpression("-20"), false);
   assert.equal(isQuantityExpression("50"), false);
   assert.equal(isQuantityExpression(""), false);
+});
+
+// Diary-card serving echo (Codeberg #65) — mirrors Android
+// ServingUnitHomeDisplayTest.
+
+test("entryServingEcho_storedQuantityWins", () => {
+  const options = [{ unit: "oz", gramsPerUnit: 28.35 }];
+  // Re-dividing would give float noise (56.7 / 28.35); the stored 2 wins.
+  const result = entryServingEcho({ selectedServingUnit: "oz", selectedServingQuantity: 2, quantityG: 56.7, servingUnitOptions: options });
+  assert.equal(result?.quantity, 2);
+  assert.equal(result?.option, options[0]);
+});
+
+test("entryServingEcho_normalizesCaseAndWhitespace", () => {
+  const options = [{ unit: "slice", gramsPerUnit: 30 }, { unit: "oz", gramsPerUnit: 28.35 }];
+  const result = entryServingEcho({ selectedServingUnit: "  OZ ", selectedServingQuantity: 2, quantityG: 56.7, servingUnitOptions: options });
+  assert.equal(result?.quantity, 2);
+  assert.equal(optionId(result?.option), "oz");
+});
+
+test("entryServingEcho_nullBlankOrGramIdReturnsNull", () => {
+  assert.equal(entryServingEcho({ selectedServingUnit: null, selectedServingQuantity: 2, quantityG: 56.7 }), null);
+  assert.equal(entryServingEcho({ selectedServingUnit: "", selectedServingQuantity: 2, quantityG: 56.7 }), null);
+  assert.equal(entryServingEcho({ selectedServingUnit: "   ", selectedServingQuantity: 2, quantityG: 56.7 }), null);
+  assert.equal(entryServingEcho({ selectedServingUnit: "g", selectedServingQuantity: 1, quantityG: 56.7 }), null);
+  assert.equal(entryServingEcho({ selectedServingUnit: "grams", selectedServingQuantity: 3, quantityG: 300 }), null);
+});
+
+test("entryServingEcho_staleIdReturnsNull", () => {
+  // Option deleted via trash, or synced from a newer build: fall back to grams.
+  const options = [{ unit: "oz", gramsPerUnit: 28.35 }, { unit: "slice", gramsPerUnit: 30 }];
+  assert.equal(entryServingEcho({ selectedServingUnit: "bowl", selectedServingQuantity: 1, quantityG: 300, servingUnitOptions: options }), null);
+});
+
+test("entryServingEcho_derivesQuantityWhenStoredMissingOrNonPositive", () => {
+  const options = [{ unit: "oz", gramsPerUnit: 28.35 }];
+  const base = { servingUnitOptions: options };
+  assert.ok(Math.abs(entryServingEcho({ ...base, selectedServingUnit: "oz", selectedServingQuantity: null, quantityG: 56.7 }).quantity - 56.7 / 28.35) < 1e-9);
+  assert.ok(Math.abs(entryServingEcho({ ...base, selectedServingUnit: "oz", selectedServingQuantity: 0, quantityG: 56.7 }).quantity - 56.7 / 28.35) < 1e-9);
+  assert.ok(Math.abs(entryServingEcho({ ...base, selectedServingUnit: "oz", selectedServingQuantity: -3, quantityG: 56.7 }).quantity - 56.7 / 28.35) < 1e-9);
+  // No usable stored quantity and no total grams either -> not resolvable.
+  assert.equal(entryServingEcho({ ...base, selectedServingUnit: "oz", selectedServingQuantity: 0, quantityG: null }), null);
+});
+
+test("entryServingEcho_invalidOptionByIdReturnsNull", () => {
+  assert.equal(entryServingEcho({ selectedServingUnit: "cup", selectedServingQuantity: 1, quantityG: 240, servingUnitOptions: [{ unit: "cup", gramsPerUnit: 0 }] }), null);
+  assert.equal(entryServingEcho({ selectedServingUnit: "cup", selectedServingQuantity: null, quantityG: 240, servingUnitOptions: [{ unit: "cup", gramsPerUnit: -5 }] }), null);
+});
+
+test("entryServingEcho_followsPencilRename", () => {
+  // Pencil rename (#59) changes the id to the new name; the old id no longer
+  // resolves and the new one does with the same stored quantity.
+  const wedge = { unit: "wedge", gramsPerUnit: 30 };
+  assert.equal(entryServingEcho({ selectedServingUnit: "slice", selectedServingQuantity: 1, quantityG: 60, servingUnitOptions: [wedge] }), null);
+  const result = entryServingEcho({ selectedServingUnit: "wedge", selectedServingQuantity: 2, quantityG: 60, servingUnitOptions: [wedge] });
+  assert.equal(result?.quantity, 2);
+  assert.equal(optionId(result?.option), "wedge");
+});
+
+test("displayUnit_flOzPassesThroughAtNonOneQuantities", () => {
+  // fl oz is in the plural-passthrough list: no machine-pluralized "fl ozs".
+  assert.equal(displayUnit({ unit: "fl oz", gramsPerUnit: 29.57 }, 1), "fl oz");
+  assert.equal(displayUnit({ unit: "fl oz", gramsPerUnit: 29.57 }, 2), "fl oz");
+  const echo = entryServingEcho({ selectedServingUnit: "fl oz", selectedServingQuantity: 2, quantityG: 59.14, servingUnitOptions: [{ unit: "fl oz", gramsPerUnit: 29.57 }] });
+  assert.equal(echo?.quantity, 2);
+  assert.equal(displayUnit(echo.option, echo.quantity), "fl oz");
 });

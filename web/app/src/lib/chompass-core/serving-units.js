@@ -151,6 +151,38 @@ export function optionMatching(id, options) {
 }
 
 /**
+ * Diary-card serving echo (Codeberg #65): quantity + option to show on saved
+ * entry rows, or null when the row keeps today's grams text. Mirrors Android
+ * ServingUnitOption.homeDisplaySelection: resolvable = a valid non-gram
+ * option matches the stored unit id AND the stored quantity > 0 (preferred —
+ * re-dividing grams surfaces float noise like "2.0004 oz") or total grams ÷
+ * grams-per-unit computes. Stale / gram / blank ids fall back silently.
+ * @param {{
+ *   selectedServingUnit?: string|null,
+ *   selectedServingQuantity?: number|null,
+ *   quantityG?: number|null,
+ *   servingUnitOptions?: ServingUnitOption[],
+ * }} entry
+ * @returns {{ quantity: number, option: ServingUnitOption }|null}
+ */
+export function entryServingEcho(entry) {
+  const id = String(entry.selectedServingUnit ?? "")
+    .trim()
+    .toLowerCase();
+  if (!id || GRAM_UNITS.has(id)) return null;
+  const option = (entry.servingUnitOptions ?? []).find(
+    (o) => isValidOption(o) && !isGramUnit(o) && optionId(o) === id
+  );
+  if (!option) return null;
+  if (entry.selectedServingQuantity != null && entry.selectedServingQuantity > 0) {
+    return { quantity: entry.selectedServingQuantity, option };
+  }
+  const grams = entry.quantityG;
+  if (grams == null || !(grams > 0)) return null;
+  return { quantity: grams / option.gramsPerUnit, option };
+}
+
+/**
  * @param {string|null|undefined} preferredUnit
  * @param {ServingUnitOption[]} options
  */
