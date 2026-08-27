@@ -80,6 +80,8 @@ docs/benchmarks/food_accuracy/data/
 docs/benchmarks/goal_recalc/results/
 docs/benchmarks/food_accuracy/results/
 docs/benchmarks/food_accuracy/manifest/fndds_generated*.jsonl
+docs/benchmarks/body_fat/data/
+docs/benchmarks/body_fat/results/
 
 # USDA FoodData Central raw downloads (built assets live under src/main/assets/usda/)
 build/usda-fdc/
