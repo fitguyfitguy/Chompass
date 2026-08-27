@@ -3,6 +3,11 @@
 Status: **WIP** (2026-08-27). Research only. No product UI, no prompt change, no
 formula register change until Track A kill criteria are scored.
 
+**Phase 0 neck check:** CDC Examination variable lists for cycle start years
+1999–2021 have **no** `BMXNECK` / neck circumference. “Neck” hits are femoral-neck
+DXA. **Navy is not scorable on NHANES.** RFM is. Recorded in
+`download_nhanes.py`.
+
 Offline harness (to be built here) for comparing **deterministic formulas** and
 **BYOK / on-device LLMs** on body-fat percentage. Mirrors
 [`docs/benchmarks/food_accuracy/`](../food_accuracy/README.md): JSONL in, MAE /
@@ -177,8 +182,9 @@ Known shape (verify in code, do not trust this table blindly):
 
 | Cycles | DXA | Waist | Hip | Neck | Arm | Navy scorable? | RFM scorable? |
 |--------|-----|-------|-----|------|-----|----------------|---------------|
-| 1999–2006 | yes | yes | no | likely no | yes | no | yes |
-| 2011–2018 | yes | yes | yes (`BMXHIP`) | **verify `BMXNECK`** | yes | only if neck exists | yes |
+| 1999–2006 | yes | yes | no | **no** | yes | **no** | yes |
+| 2011–2016 | yes | yes | **no** in BMX_G/H/I | **no** | yes | **no** | yes |
+| 2017–2018 | yes | yes | yes (`BMXHIP`) | **no** | yes | **no** | yes |
 
 Adults only (age ≥ 18). Slice sex, ethnicity, age band, BMI tertile. Use the
 CDC-recommended DXA multiple-imputation files where the cycle requires them;
@@ -254,11 +260,7 @@ FNDDS seed. Full NHANES / Penrose live under `data/` (gitignored).
 
 ---
 
-## Planned layout
-
-Nothing below exists until Track A is implemented. This directory is the
-home; do not add a second top-level `BODY_FAT_*.md` until there are results
-worth a STATUS log.
+## Layout
 
 ```
 docs/benchmarks/body_fat/
@@ -288,15 +290,31 @@ harness cannot drift.
 
 | Phase | Work | Done when |
 |-------|------|-----------|
-| **0** | This plan. Verify NHANES neck/hip/DXA overlap from CDC codebooks (write the finding into the downloader docstring). | Neck overlap known yes/no per cycle. |
-| **1** | Penrose downloader + seed manifest + L0 baselines + scorer. Smoke on seed. | `navy` / `rfm` numbers on Penrose; Navy parity goldens green. |
-| **2** | NHANES downloader (adult DXA join) + slices. Score L0 on NHANES. | RFM vs Navy-if-possible vs Deurenberg table in `results/`. |
+| **0** | This plan. Verify NHANES neck/hip/DXA overlap from CDC codebooks (write the finding into the downloader docstring). | **Done:** no neck any cycle. `BMXHIP` present in 2017–2018 BMX_J only among 2011–2018 XPTs we joined. |
+| **1** | Penrose downloader + seed manifest + L0 baselines + scorer. Smoke on seed. | **Done** (L0). |
+| **2** | NHANES downloader (adult DXA join) + slices. Score L0 on NHANES. | **Done** (L0 table below). Navy n_pred=0. |
 | **3** | LLM cells (raw / navy_anchor / missing_neck) on a **fixed** NHANES subset + full Penrose. Gemma, Flash-Lite, 3.6 Flash, one free pin. | A1–A4 scored. Append a STATUS section here or a sibling STATUS doc. |
 | **4** | Product decision: formula-only vs LLM path vs “use tape as BF%” UX. | Explicit go/no-go in STATUS. Track B only on go for L2. |
 
 No Android / PWA code in phases 0–3. If phase 4 is “ship RFM,” that is a
 formula-register change (`CALCULATION_METHODS.md` checklist, Kotlin +
 `chompass-core`, goldens). Separate commit from the harness.
+
+### L0 numbers (not A1–A4; no LLM yet)
+
+MAE in body-fat **percentage points**. NHANES adults 2011–2018 with DXA
+`DXDTOPF` + waist (n=11707). Penrose n=252 men, abdomen as Navy waist.
+
+| Method | NHANES MAE | NHANES CCC | Penrose MAE | Penrose CCC | n_pred NHANES / Penrose |
+|--------|------------|------------|-------------|-------------|-------------------------|
+| `rfm` | 3.17 | 0.90 | 6.49 | 0.50 | 11707 / 252 |
+| `navy` | — | — | 4.19 | 0.76 | **0** / 252 |
+| `deurenberg` | 4.66 | 0.82 | 7.11 | 0.34 | 11707 / 252 |
+| `bmi` (control) | 6.70 | 0.51 | 7.70 | 0.29 | 11707 / 252 |
+| `ridge` OOF | 2.89 | 0.90 | 5.10* | 0.20* | 11707 / 252 |
+
+\*Penrose ridge RMSE is inflated by the known Johnson height outlier; MAE is
+the headline. Full JSON under gitignored `results/`.
 
 ## Literature ceiling (do not treat as harness targets)
 
