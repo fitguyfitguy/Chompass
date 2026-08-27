@@ -20,6 +20,10 @@ _FOOD = Path(__file__).resolve().parent.parent / "food_accuracy"
 if str(_FOOD) not in sys.path:
     sys.path.insert(0, str(_FOOD))
 
+from env_local import load_env_local  # noqa: E402
+
+load_env_local()
+
 
 def parse_bf_json(text: str) -> float | None:
     if not text:
@@ -73,6 +77,31 @@ def run_baselines(subjects: list[Subject]) -> dict[str, list[float | None]]:
     return out
 
 
+def _cache_path(model: str, variant: str, manifest_stem: str) -> Path:
+    safe = model.replace("/", "_")
+    return RESULTS_DIR / "cache" / f"{manifest_stem}_{safe}_{variant}.jsonl"
+
+
+def _load_cache(path: Path) -> dict[str, dict]:
+    out: dict[str, dict] = {}
+    if not path.exists():
+        return out
+    with path.open(encoding="utf-8") as handle:
+        for line in handle:
+            line = line.strip()
+            if not line:
+                continue
+            row = json.loads(line)
+            out[row["id"]] = row
+    return out
+
+
+def _append_cache(path: Path, row: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(row) + "\n")
+
+
 def run_llm(
     subjects: list[Subject],
     *,
@@ -80,22 +109,32 @@ def run_llm(
     provider_name: str,
     model: str,
     limit: int | None,
+    cache_path: Path,
 ) -> tuple[list[float | None], dict]:
     from providers import OpenRouterProvider
 
     n = len(subjects) if limit is None else min(limit, len(subjects))
     subset = subjects[:n]
     provider = OpenRouterProvider(model=model)
+    cache = _load_cache(cache_path)
     preds: list[float | None] = []
     n_ok = 0
-    for s in subset:
-        navy = us_navy(s)
-        user = user_prompt(s, variant, navy)
-        try:
-            resp = provider.complete(prompt=f"{SYSTEM}\n\n{user}")
-            text = resp.text
-        except Exception:
-            text = ""
+    n_hit = 0
+    for i, s in enumerate(subset, start=1):
+        if s.id in cache:
+            text = cache[s.id].get("text") or ""
+            n_hit += 1
+        else:
+            navy = us_navy(s)
+            user = user_prompt(s, variant, navy)
+            try:
+                resp = provider.complete(prompt=f"{SYSTEM}\n\n{user}")
+                text = resp.text
+            except Exception as exc:
+                text = ""
+                print(f"[{i}/{n}] {s.id} error: {exc}", flush=True)
+            _append_cache(cache_path, {"id": s.id, "text": text})
+            print(f"[{i}/{n}] {s.id} cached", flush=True)
         parsed = parse_bf_json(text)
         if parsed is not None:
             n_ok += 1
@@ -106,12 +145,9 @@ def run_llm(
         "variant": variant,
         "n": n,
         "parse_ok": n_ok,
+        "cache_hits": n_hit,
+        "cache": str(cache_path),
     }
-    # pad so zip with full subjects still works if we only scored a subset
-    if n < len(subjects):
-        preds.extend([None] * (len(subjects) - n))
-        subjects_note = subset
-        return preds, meta | {"scored_ids": [s.id for s in subjects_note]}
     return preds, meta
 
 
@@ -153,30 +189,31 @@ def main() -> None:
 
     check_navy_goldens()
     subjects = list(read_jsonl(args.manifest))
-    if args.limit and args.baseline:
+    if args.limit:
         subjects = subjects[: args.limit]
 
     tables: dict[str, dict] = {}
     extra: dict = {}
-    if args.baseline:
+    if args.baseline or args.provider:
         preds = run_baselines(subjects)
         for name, col in preds.items():
             tables[name] = _summarize(name, subjects, col)
-    elif args.provider:
+    if args.provider:
         if not args.model:
             raise SystemExit("--model required with --provider")
+        cache = _cache_path(args.model, args.variant, args.manifest.stem)
         col, meta = run_llm(
             subjects,
             variant=args.variant,
             provider_name=args.provider,
             model=args.model,
-            limit=args.limit,
+            limit=None,
+            cache_path=cache,
         )
         extra = meta
-        scored = subjects[: meta["n"]]
         name = f"llm:{args.model}:{args.variant}"
-        tables[name] = _summarize(name, scored, col[: len(scored)])
-    else:
+        tables[name] = _summarize(name, subjects, col)
+    if not args.baseline and not args.provider:
         raise SystemExit("pass --baseline or --provider")
 
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")

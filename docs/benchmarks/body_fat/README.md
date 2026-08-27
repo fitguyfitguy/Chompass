@@ -293,7 +293,7 @@ harness cannot drift.
 | **0** | This plan. Verify NHANES neck/hip/DXA overlap from CDC codebooks (write the finding into the downloader docstring). | **Done:** no neck any cycle. `BMXHIP` present in 2017–2018 BMX_J only among 2011–2018 XPTs we joined. |
 | **1** | Penrose downloader + seed manifest + L0 baselines + scorer. Smoke on seed. | **Done** (L0). |
 | **2** | NHANES downloader (adult DXA join) + slices. Score L0 on NHANES. | **Done** (L0 table below). Navy n_pred=0. |
-| **3** | LLM cells (raw / navy_anchor / missing_neck) on a **fixed** NHANES subset + full Penrose. Gemma, Flash-Lite, 3.6 Flash, one free pin. | A1–A4 scored. Append a STATUS section here or a sibling STATUS doc. |
+| **3** | LLM cells (raw / navy_anchor / missing_neck) on a **fixed** NHANES subset + full Penrose. Gemma, Flash-Lite, 3.6 Flash, one free pin. | **Flash-Lite `raw` scored** (below). Other models / variants not run. |
 | **4** | Product decision: formula-only vs LLM path vs “use tape as BF%” UX. | Explicit go/no-go in STATUS. Track B only on go for L2. |
 
 No Android / PWA code in phases 0–3. If phase 4 is “ship RFM,” that is a
@@ -315,6 +315,23 @@ MAE in body-fat **percentage points**. NHANES adults 2011–2018 with DXA
 
 \*Penrose ridge RMSE is inflated by the known Johnson height outlier; MAE is
 the headline. Full JSON under gitignored `results/`.
+
+### Flash-Lite `raw` (A1–A4)
+
+`google/gemini-3.5-flash-lite` via OpenRouter. NHANES: stratified n=200
+(`sample_subset.py --n 200 --seed 0`). Penrose: full n=252. Prompt variant `raw`.
+
+| Cell | LLM MAE | Floor | Kill |
+|------|---------|-------|------|
+| A1 NHANES vs RFM (≥0.5 pp better) | 3.67 | RFM 3.00 | **fail** (worse by 0.67) |
+| A2 Penrose vs Navy | 4.65 | Navy 4.19 | **fail** |
+| A3 ridge ≤ LLM (same rows) | NHANES ridge 2.84 | LLM 3.67 | **A3 trips** (formula wins) |
+| A4 parse `{bf_percent,lo,hi}` ≥95% | 200/200 and 252/252 | | **pass** |
+
+A miss on A1–A3 is the planned result: show Navy/RFM, do not ship an “AI
+estimate from tapes.” Track B stays parked. Gemma / 3.6 Flash not required to
+re-litigate A1 unless someone expects a different model to beat RFM by half a
+point on the same 200 rows.
 
 ## Literature ceiling (do not treat as harness targets)
 
