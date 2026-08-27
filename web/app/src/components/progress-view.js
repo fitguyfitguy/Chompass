@@ -386,7 +386,7 @@ export class ProgressView extends HTMLElement {
           : ""
       }
 
-      <a class="settings-link" href="#/measurements">Body measurements <span>Tape / US Navy</span></a>
+      <a class="settings-link" href="#/measurements">Body measurements <span>Tape / Navy / RFM</span></a>
     `;
 
     this.querySelectorAll("[data-range]").forEach((btn) => {

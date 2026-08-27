@@ -398,7 +398,7 @@ export class SettingsView extends HTMLElement {
         <button type="submit" class="btn btn--primary">Save</button>
       </form>
       <nav class="settings-nav" aria-label="Related">
-        <a href="#/measurements">Body measurements <span>Tape / US Navy</span></a>
+        <a href="#/measurements">Body measurements <span>Tape / Navy / RFM</span></a>
       </nav>`;
     this.querySelector("#profile-form")?.addEventListener("submit", async (ev) => {
       ev.preventDefault();
@@ -1803,6 +1803,7 @@ export class SettingsView extends HTMLElement {
           <dt>FCAST</dt><dd>Theil–Sen weight slope + sparse-logging intake average.</dd>
           <dt>ADAPT</dt><dd>Weekly adaptive calorie nudge (±150) with floors/ceilings.</dd>
           <dt>US Navy BF%</dt><dd>From neck / waist / hips tape measures.</dd>
+          <dt>RFM BF%</dt><dd>From waist and height (no neck). Display until you confirm Use as my body fat.</dd>
         </dl>
         <p style="color:var(--muted);font-size:0.85rem;margin:0.8rem 0 0;">Canonical register: <code>docs/CALCULATION_METHODS.md</code>. AI estimates are always reviewed before save.</p>
       </div>`;

@@ -427,4 +427,11 @@ export const nl = Object.freeze({
   "day_types.duplicate_name": "Naam al in gebruik",
   "day_types.duplicate_name_hint": "Elk dagtype heeft een unieke naam nodig.",
   "day_types.delete_hint": "«{name}» verwijderen? Dagen die het gebruikten vallen terug op het schema of de standaard.",
+  "measurements.navy_bf": 'US Navy LV',
+  "measurements.rfm_bf": 'RFM LV',
+  "measurements.tape_caption": 'Meetlintschatting. Vaak binnen ongeveer 3 tot 4 procentpunten van een scan.',
+  "measurements.use_as_bf": 'Gebruik als mijn lichaamsvet',
+  "measurements.confirm_log": '{pct}% lichaamsvet van het meetlint loggen? Als je lichaamsvet in de calorieberekening gebruikt, wordt dat bijgewerkt.',
+  "measurements.source_navy": 'US Navy',
+  "measurements.source_rfm": 'RFM',
 });

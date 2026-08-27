@@ -455,4 +455,11 @@ export const pl = Object.freeze({
   "day_types.duplicate_name": "Nazwa już użyta",
   "day_types.duplicate_name_hint": "Każdy typ dnia musi mieć inną nazwę.",
   "day_types.delete_hint": "Usunąć „{name}”? Dni, które go używały, wrócą do harmonogramu lub domyślnego.",
+  "measurements.navy_bf": 'US Navy TF',
+  "measurements.rfm_bf": 'RFM TF',
+  "measurements.tape_caption": 'Szacunek z taśmy. Często w granicach 3 do 4 punktów procentowych od skanu.',
+  "measurements.use_as_bf": 'Użyj jako moja tkanka tłuszczowa',
+  "measurements.confirm_log": 'Zalogować {pct}% tkanki tłuszczowej z taśmy? Jeśli używasz tkanki tłuszczowej w kaloriach, to ją zaktualizuje.',
+  "measurements.source_navy": 'US Navy',
+  "measurements.source_rfm": 'RFM',
 });

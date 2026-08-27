@@ -427,4 +427,11 @@ export const ko = Object.freeze({
   "day_types.duplicate_name": "이미 사용 중인 이름",
   "day_types.duplicate_name_hint": "각 요일 유형에는 고유한 이름이 필요합니다.",
   "day_types.delete_hint": "„{name}”을(를) 삭제할까요? 이를 사용하던 날은 일정 또는 기본값으로 돌아갑니다.",
+  "measurements.navy_bf": '미 해군 체지방',
+  "measurements.rfm_bf": 'RFM 체지방',
+  "measurements.tape_caption": '줄자 추정. 스캔과 보통 약 3~4퍼센트포인트 차이예요.',
+  "measurements.use_as_bf": '내 체지방으로 사용',
+  "measurements.confirm_log": '줄자에서 체지방 {pct}%을 기록할까요? 칼로리 계산에 체지방을 쓰면 그게 업데이트돼요.',
+  "measurements.source_navy": 'US Navy',
+  "measurements.source_rfm": 'RFM',
 });

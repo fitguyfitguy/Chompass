@@ -453,4 +453,11 @@ export const uk = Object.freeze({
   "day_types.duplicate_name": "Назву вже використано",
   "day_types.duplicate_name_hint": "Кожному типу днів потрібна унікальна назва.",
   "day_types.delete_hint": "Видалити «{name}»? Дні, де він використовувався, повернуться до розкладу або типового значення.",
+  "measurements.navy_bf": 'Жир US Navy',
+  "measurements.rfm_bf": 'Жир RFM',
+  "measurements.tape_caption": 'Оцінка стрічкою. Часто в межах приблизно 3–4 відсоткових пунктів від скану.',
+  "measurements.use_as_bf": 'Використати як мій жир',
+  "measurements.confirm_log": 'Записати {pct}% жиру з замірів? Якщо жир використовується в калоріях, це його оновить.',
+  "measurements.source_navy": 'US Navy',
+  "measurements.source_rfm": 'RFM',
 });

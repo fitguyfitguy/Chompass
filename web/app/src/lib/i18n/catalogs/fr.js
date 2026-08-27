@@ -427,4 +427,11 @@ export const fr = Object.freeze({
   "day_types.duplicate_name": "Nom déjà utilisé",
   "day_types.duplicate_name_hint": "Chaque type de journée doit avoir un nom distinct.",
   "day_types.delete_hint": "Supprimer « {name} » ? Les jours qui l'utilisaient reviennent au planning ou au défaut.",
+  "measurements.navy_bf": 'MG US Navy',
+  "measurements.rfm_bf": 'MG RFM',
+  "measurements.tape_caption": 'Estimation au mètre. Souvent à environ 3 à 4 points de pourcentage d’un scan.',
+  "measurements.use_as_bf": 'Utiliser comme ma masse grasse',
+  "measurements.confirm_log": 'Enregistrer {pct}% de masse grasse d’après les mesures ? Si vous utilisez la masse grasse dans le calcul des calories, cela le met à jour.',
+  "measurements.source_navy": 'US Navy',
+  "measurements.source_rfm": 'RFM',
 });

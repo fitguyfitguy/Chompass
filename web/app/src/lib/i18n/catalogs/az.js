@@ -427,4 +427,11 @@ export const az = Object.freeze({
   "day_types.duplicate_name": "Ad artıq istifadə olunur",
   "day_types.duplicate_name_hint": "Hər gün növünün fərqli adı olmalıdır.",
   "day_types.delete_hint": "«{name}» silinsin? Onu istifadə edən günlər cədvələ və ya standarta qayıdır.",
+  "measurements.navy_bf": 'US Navy yağ',
+  "measurements.rfm_bf": 'RFM yağ',
+  "measurements.tape_caption": 'Lent təxmini. Tez-tez skandan təxminən 3–4 faiz bəndi fərqlənir.',
+  "measurements.use_as_bf": 'Bədən yağım kimi istifadə et',
+  "measurements.confirm_log": 'Lentdən {pct}% bədən yağı qeyd edilsin? Kalori hesabında bədən yağı istifadə edirsinizsə, bu onu yeniləyir.',
+  "measurements.source_navy": 'US Navy',
+  "measurements.source_rfm": 'RFM',
 });

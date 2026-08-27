@@ -427,4 +427,11 @@ export const ru = Object.freeze({
   "day_types.duplicate_name": "Название уже занято",
   "day_types.duplicate_name_hint": "Каждому типу дней нужно уникальное название.",
   "day_types.delete_hint": "Удалить «{name}»? Дни, где он использовался, вернутся к расписанию или значению по умолчанию.",
+  "measurements.navy_bf": 'Жир US Navy',
+  "measurements.rfm_bf": 'Жир RFM',
+  "measurements.tape_caption": 'Оценка по ленте. Часто в пределах примерно 3–4 процентных пунктов от скана.',
+  "measurements.use_as_bf": 'Использовать как мой жир',
+  "measurements.confirm_log": 'Записать {pct}% жира по замерам? Если жир используется в расчёте калорий, это его обновит.',
+  "measurements.source_navy": 'US Navy',
+  "measurements.source_rfm": 'RFM',
 });
