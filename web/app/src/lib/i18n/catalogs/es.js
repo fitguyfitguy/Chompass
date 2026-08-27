@@ -427,4 +427,11 @@ export const es = Object.freeze({
   "day_types.duplicate_name": "Nombre ya utilizado",
   "day_types.duplicate_name_hint": "Cada tipo de día necesita un nombre distinto.",
   "day_types.delete_hint": "¿Eliminar «{name}»? Los días que lo usaban vuelven al horario o al predeterminado.",
+  "measurements.navy_bf": 'GC US Navy',
+  "measurements.rfm_bf": 'GC RFM',
+  "measurements.tape_caption": 'Estimación con cinta. Suele estar a unos 3 o 4 puntos porcentuales de un escáner.',
+  "measurements.use_as_bf": 'Usar como mi grasa corporal',
+  "measurements.confirm_log": '¿Registrar {pct}% de grasa corporal desde la cinta? Si usas grasa corporal en las calorías, esto lo actualiza.',
+  "measurements.source_navy": 'US Navy',
+  "measurements.source_rfm": 'RFM',
 });

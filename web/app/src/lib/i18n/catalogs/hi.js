@@ -427,4 +427,11 @@ export const hi = Object.freeze({
   "day_types.duplicate_name": "नाम पहले से उपयोग में",
   "day_types.duplicate_name_hint": "प्रत्येक दिन के प्रकार का नाम अलग होना चाहिए।",
   "day_types.delete_hint": "„{name}“ मिटाएँ? इसका उपयोग करने वाले दिन शेड्यूल या डिफ़ॉल्ट पर वापस चले जाएँगे।",
+  "measurements.navy_bf": 'US Navy वसा',
+  "measurements.rfm_bf": 'RFM वसा',
+  "measurements.tape_caption": 'टेप अनुमान। अक्सर स्कैन से लगभग 3 से 4 प्रतिशत अंक के भीतर।',
+  "measurements.use_as_bf": 'मेरी शारीरिक वसा के रूप में उपयोग करें',
+  "measurements.confirm_log": 'टेप से {pct}% शारीरिक वसा लॉग करें? यदि आप कैलोरी गणित में शारीरिक वसा उपयोग करते हैं, तो यह उसे अपडेट करता है।',
+  "measurements.source_navy": 'US Navy',
+  "measurements.source_rfm": 'RFM',
 });

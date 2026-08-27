@@ -427,4 +427,11 @@ export const ja = Object.freeze({
   "day_types.duplicate_name": "名前は既に使用中",
   "day_types.duplicate_name_hint": "各日タイプには一意の名前が必要です。",
   "day_types.delete_hint": "「{name}」を削除しますか？使用していた日はスケジュールまたはデフォルトに戻ります。",
+  "measurements.navy_bf": '米海軍体脂肪',
+  "measurements.rfm_bf": 'RFM 体脂肪',
+  "measurements.tape_caption": 'メジャーによる推定。スキャンからだいたい 3〜4 ポイント以内になることが多いです。',
+  "measurements.use_as_bf": '体脂肪として使う',
+  "measurements.confirm_log": 'メジャーから体脂肪 {pct}% を記録しますか？カロリー計算に体脂肪を使っている場合、それが更新されます。',
+  "measurements.source_navy": 'US Navy',
+  "measurements.source_rfm": 'RFM',
 });

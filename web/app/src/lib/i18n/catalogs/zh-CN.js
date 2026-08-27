@@ -427,4 +427,11 @@ export const zh_CN = Object.freeze({
   "day_types.duplicate_name": "名称已被使用",
   "day_types.duplicate_name_hint": "每种日类型都需要唯一的名称。",
   "day_types.delete_hint": "删除“{name}”？使用它的日子将回落到计划或默认值。",
+  "measurements.navy_bf": '美国海军体脂',
+  "measurements.rfm_bf": 'RFM 体脂',
+  "measurements.tape_caption": '卷尺估算。通常与扫描相差大约 3 到 4 个百分点。',
+  "measurements.use_as_bf": '用作我的体脂',
+  "measurements.confirm_log": '从卷尺记录 {pct}% 体脂？如果你在热量计算中使用体脂，这会更新它。',
+  "measurements.source_navy": 'US Navy',
+  "measurements.source_rfm": 'RFM',
 });

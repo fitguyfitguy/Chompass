@@ -427,4 +427,11 @@ export const ar = Object.freeze({
   "day_types.duplicate_name": "الاسم مستخدم بالفعل",
   "day_types.duplicate_name_hint": "يحتاج كل نوع يوم إلى اسم مميز.",
   "day_types.delete_hint": "حذف «{name}»؟ ستعود الأيام التي استخدمته إلى الجدول أو الافتراضي.",
+  "measurements.navy_bf": 'دهون Navy',
+  "measurements.rfm_bf": 'دهون RFM',
+  "measurements.tape_caption": 'تقدير بالشريط. غالباً ضمن نحو 3 إلى 4 نقاط مئوية من الفحص.',
+  "measurements.use_as_bf": 'استخدم كدهون جسمي',
+  "measurements.confirm_log": 'تسجيل {pct}% دهون من الشريط؟ إذا كنت تستخدم دهون الجسم في حساب السعرات، فهذا يحدّثه.',
+  "measurements.source_navy": 'US Navy',
+  "measurements.source_rfm": 'RFM',
 });

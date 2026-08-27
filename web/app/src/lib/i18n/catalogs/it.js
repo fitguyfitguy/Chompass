@@ -427,4 +427,11 @@ export const it = Object.freeze({
   "day_types.duplicate_name": "Nome già usato",
   "day_types.duplicate_name_hint": "Ogni tipo di giornata richiede un nome diverso.",
   "day_types.delete_hint": "Eliminare «{name}»? I giorni che lo usavano tornano alla programmazione o al predefinito.",
+  "measurements.navy_bf": 'Grasso US Navy',
+  "measurements.rfm_bf": 'Grasso RFM',
+  "measurements.tape_caption": 'Stima da metro. Spesso a circa 3 o 4 punti percentuali da una scansione.',
+  "measurements.use_as_bf": 'Usa come il mio grasso',
+  "measurements.confirm_log": 'Registrare {pct}% di grasso dalle misure? Se usi il grasso nel calcolo calorie, questo lo aggiorna.',
+  "measurements.source_navy": 'US Navy',
+  "measurements.source_rfm": 'RFM',
 });

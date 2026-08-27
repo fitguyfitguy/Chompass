@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Added
+
+- **Waist body-fat estimate without a neck measure** (Android + web): RFM sits next to the Navy tape estimate. Optional Use as my body fat logs it like a normal reading. Tape estimates are typically a few percentage points from a scan.
+
 ### Fixed
 
 - **Weight wheel keeps the tenth you see** (Android): logging 80.2 no longer lands as 80.3. The kg tenths column was truncating leftover IEEE bits, so 80.3 looked like 80.2 and Save wrote the old number. Codeberg [#63](https://codeberg.org/fitguy/Chompass/issues/63) by [@tuxMode](https://codeberg.org/tuxMode).

@@ -1,6 +1,7 @@
 // @ts-check
-import { measurements, profile as profileStore } from "../lib/db.js";
-import { usNavyBodyFatPercent, waistToHipRatio, waistToHeightRatio } from "../lib/chompass-core/formulas.js";
+import { measurements, profile as profileStore, bodyFat } from "../lib/db.js";
+import { usNavyBodyFatPercent, relativeFatMassPercent, waistToHipRatio, waistToHeightRatio } from "../lib/chompass-core/formulas.js";
+import { t } from "../lib/i18n/index.js";
 
 export class MeasurementsView extends HTMLElement {
   connectedCallback() {
@@ -12,18 +13,28 @@ export class MeasurementsView extends HTMLElement {
     const sorted = all.slice().sort((a, b) => b.date.localeCompare(a.date));
     const latest = sorted[0];
     let navy = null;
+    let rfm = null;
     let whr = null;
     let wth = null;
-    if (latest && prof && latest.waistCm != null && latest.neckCm != null) {
-      navy = usNavyBodyFatPercent({
-        sex: prof.sex,
-        waistCm: latest.waistCm,
-        neckCm: latest.neckCm,
-        heightCm: prof.heightCm,
-        hipsCm: latest.hipsCm ?? undefined,
-      });
-      if (latest.hipsCm) whr = waistToHipRatio(latest.waistCm, latest.hipsCm);
-      wth = waistToHeightRatio(latest.waistCm, prof.heightCm);
+    if (latest && prof) {
+      if (latest.waistCm != null && latest.neckCm != null) {
+        navy = usNavyBodyFatPercent({
+          sex: prof.sex,
+          waistCm: latest.waistCm,
+          neckCm: latest.neckCm,
+          heightCm: prof.heightCm,
+          hipsCm: latest.hipsCm ?? undefined,
+        });
+      }
+      if (latest.waistCm != null) {
+        rfm = relativeFatMassPercent({
+          sex: prof.sex,
+          heightCm: prof.heightCm,
+          waistCm: latest.waistCm,
+        });
+        if (latest.hipsCm) whr = waistToHipRatio(latest.waistCm, latest.hipsCm);
+        wth = waistToHeightRatio(latest.waistCm, prof.heightCm);
+      }
     }
 
     this.innerHTML = `
@@ -49,14 +60,25 @@ export class MeasurementsView extends HTMLElement {
         <button type="submit" class="btn btn--primary">Save measurement</button>
       </form>
       ${
-        navy != null || whr != null || wth != null
+        navy != null || rfm != null || whr != null || wth != null
           ? `<div class="card">
               <h2 class="chart-title">From latest</h2>
               <div class="stat-badges">
-                ${navy != null ? `<div class="stat-badge"><strong>${navy.toFixed(1)}%</strong>US Navy BF</div>` : ""}
+                ${navy != null ? `<div class="stat-badge"><strong>${navy.toFixed(0)}%</strong>${t("measurements.navy_bf")}</div>` : ""}
+                ${rfm != null ? `<div class="stat-badge"><strong>${rfm.toFixed(0)}%</strong>${t("measurements.rfm_bf")}</div>` : ""}
                 ${whr != null ? `<div class="stat-badge"><strong>${whr.toFixed(2)}</strong>WHR</div>` : ""}
                 ${wth != null ? `<div class="stat-badge"><strong>${wth.toFixed(2)}</strong>WTH</div>` : ""}
               </div>
+              ${navy != null || rfm != null
+                ? `<p style="color:var(--muted);font-size:0.85rem;margin:0.6rem 0 0;">${t("measurements.tape_caption")}</p>
+                   ${navy != null && rfm != null
+                     ? `<div class="field-row" style="margin-top:0.5rem;">
+                          <label><input type="radio" name="tapeSrc" value="navy" checked /> ${t("measurements.source_navy")}</label>
+                          <label><input type="radio" name="tapeSrc" value="rfm" /> ${t("measurements.source_rfm")}</label>
+                        </div>`
+                     : ""}
+                   <button type="button" class="btn" id="use-as-bf" style="margin-top:0.5rem;">${t("measurements.use_as_bf")}</button>`
+                : ""}
             </div>`
           : ""
       }
@@ -100,6 +122,19 @@ export class MeasurementsView extends HTMLElement {
         wristCm: num("wristCm"),
       });
       this.render();
+    });
+    this.querySelector("#use-as-bf")?.addEventListener("click", async () => {
+      const src = /** @type {HTMLInputElement|null} */ (this.querySelector('input[name="tapeSrc"]:checked'));
+      const useNavy = src ? src.value === "navy" : navy != null;
+      const pct = useNavy && navy != null ? navy : rfm;
+      if (pct == null) return;
+      const shown = pct.toFixed(0);
+      if (!window.confirm(t("measurements.confirm_log", { pct: shown }))) return;
+      await bodyFat.put({
+        id: crypto.randomUUID(),
+        date: new Date().toISOString(),
+        bodyFatPercent: pct / 100,
+      });
     });
     this.querySelectorAll("[data-del]").forEach((btn) => {
       btn.addEventListener("click", async () => {

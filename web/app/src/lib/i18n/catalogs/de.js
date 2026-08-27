@@ -427,4 +427,11 @@ export const de = Object.freeze({
   "day_types.duplicate_name": "Name bereits vergeben",
   "day_types.duplicate_name_hint": "Jeder Tagestyp braucht einen eigenen Namen.",
   "day_types.delete_hint": "„{name}“ löschen? Tage, die ihn nutzten, fallen auf den Zeitplan bzw. Standard zurück.",
+  "measurements.navy_bf": 'US-Navy-KF',
+  "measurements.rfm_bf": 'RFM-KF',
+  "measurements.tape_caption": 'Maßbandschätzung. Oft etwa 3 bis 4 Prozentpunkte von einem Scan entfernt.',
+  "measurements.use_as_bf": 'Als mein Körperfett verwenden',
+  "measurements.confirm_log": '{pct}% Körperfett aus Maßen speichern? Wenn du Körperfett in der Kalorienrechnung nutzt, wird das aktualisiert.',
+  "measurements.source_navy": 'US Navy',
+  "measurements.source_rfm": 'RFM',
 });

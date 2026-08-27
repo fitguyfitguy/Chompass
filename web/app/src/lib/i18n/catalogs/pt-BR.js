@@ -427,4 +427,11 @@ export const pt_BR = Object.freeze({
   "day_types.duplicate_name": "Nome já usado",
   "day_types.duplicate_name_hint": "Cada tipo de dia precisa de um nome diferente.",
   "day_types.delete_hint": "Excluir “{name}”? Os dias que o usavam voltam à agenda ou ao padrão.",
+  "measurements.navy_bf": 'Gordura US Navy',
+  "measurements.rfm_bf": 'Gordura RFM',
+  "measurements.tape_caption": 'Estimativa de fita. Costuma ficar a cerca de 3 a 4 pontos percentuais de um exame.',
+  "measurements.use_as_bf": 'Usar como minha gordura',
+  "measurements.confirm_log": 'Registrar {pct}% de gordura a partir da fita? Se você usa gordura no cálculo de calorias, isso atualiza.',
+  "measurements.source_navy": 'US Navy',
+  "measurements.source_rfm": 'RFM',
 });

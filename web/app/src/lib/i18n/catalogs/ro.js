@@ -427,4 +427,11 @@ export const ro = Object.freeze({
   "day_types.duplicate_name": "Nume deja folosit",
   "day_types.duplicate_name_hint": "Fiecare tip de zi are nevoie de un nume distinct.",
   "day_types.delete_hint": "Ștergi „{name}”? Zilele care îl foloseau revin la program sau la implicit.",
+  "measurements.navy_bf": 'Grăsime US Navy',
+  "measurements.rfm_bf": 'Grăsime RFM',
+  "measurements.tape_caption": 'Estimare cu banda. Adesea la circa 3–4 puncte procentuale de un scan.',
+  "measurements.use_as_bf": 'Folosește ca grăsimea mea',
+  "measurements.confirm_log": 'Înregistrezi {pct}% grăsime din măsurători? Dacă folosești grăsimea în caloriile zilnice, aceasta se actualizează.',
+  "measurements.source_navy": 'US Navy',
+  "measurements.source_rfm": 'RFM',
 });

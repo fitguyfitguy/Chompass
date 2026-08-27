@@ -455,4 +455,11 @@ export const tr = Object.freeze({
   "day_types.duplicate_name": "Ad zaten kullanımda",
   "day_types.duplicate_name_hint": "Her gün türünün farklı bir adı olmalı.",
   "day_types.delete_hint": "„{name}“ silinsin mi? Onu kullanan günler programa veya varsayılana döner.",
+  "measurements.navy_bf": 'US Navy yağ',
+  "measurements.rfm_bf": 'RFM yağ',
+  "measurements.tape_caption": 'Mezura tahmini. Çoğu zaman bir taramadan yaklaşık 3 ila 4 puan uzakta.',
+  "measurements.use_as_bf": 'Vücut yağım olarak kullan',
+  "measurements.confirm_log": 'Mezuradan %{pct} vücut yağı kaydedilsin mi? Kalori hesabında vücut yağı kullanıyorsan bu onu günceller.',
+  "measurements.source_navy": 'US Navy',
+  "measurements.source_rfm": 'RFM',
 });
