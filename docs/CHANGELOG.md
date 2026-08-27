@@ -12,7 +12,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
-- **Weight wheel keeps the tenth you see** (Android): logging 80.2 no longer lands as 80.3. The kg tenths column was truncating leftover IEEE bits, so 80.3 looked like 80.2 and Save wrote the old number. Codeberg [#63](https://codeberg.org/fitguy/Chompass/issues/63) by [@tuxMode](https://codeberg.org/tuxMode).
+- **Weight wheel keeps the tenth you see** (Android): logging 80.2 no longer lands as 80.3. The kg tenths column was truncating leftover IEEE bits, so 80.3 looked like 80.2 and Save wrote the old number. Typing a weight and tapping Save now stores that number too (it used to keep the previous kg unless you flipped back to the wheel first). Codeberg [#63](https://codeberg.org/fitguy/Chompass/issues/63) by [@tuxMode](https://codeberg.org/tuxMode).
 
 ### Changed
 
