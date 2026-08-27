@@ -14,6 +14,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **Saved Meals stays on the tab you picked** (Android): switching between Recent, Frequent, and Favorites in the Saved Meals sheet no longer jumps back to the previous tab moments later.
 - **Weight wheel keeps the tenth you see** (Android): logging 80.2 no longer lands as 80.3. The kg tenths column was truncating leftover IEEE bits, so 80.3 looked like 80.2 and Save wrote the old number. Typing a weight and tapping Save now stores that number too (it used to keep the previous kg unless you flipped back to the wheel first). Codeberg [#63](https://codeberg.org/fitguy/Chompass/issues/63) by [@tuxMode](https://codeberg.org/tuxMode).
 - **Water from food no longer double-counts slices** (Android): two slices totalling 220 g credit about 150 ml, not 250. The food-water toggle was multiplying the already-total grams by the slice count. Codeberg [#16](https://codeberg.org/fitguy/Chompass/issues/16) by [@1260er](https://codeberg.org/1260er).
 

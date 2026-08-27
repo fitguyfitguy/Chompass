@@ -81,6 +81,7 @@ import app.chompass.ui.theme.MacroKind
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
@@ -124,12 +125,18 @@ fun SavedMealsSheet(
 
     // Restore the last-selected segment from DataStore so reopening the sheet
     // remembers whether the user was on Recents / Frequent / Favorites — same
-    // as iOS @AppStorage("lastRecentsSegment") in RecentsView.swift.
-    val savedSegment by container.prefs.lastSavedMealsSegment.collectAsState(initial = SavedTab.RECENTS.name)
-    var tab by remember(initialTab, savedSegment) {
-        mutableStateOf(
-            initialTab ?: runCatching { SavedTab.valueOf(savedSegment) }.getOrDefault(SavedTab.RECENTS)
-        )
+    // as iOS @AppStorage("lastRecentsSegment") in RecentsView.swift. Restored
+    // exactly once, up front: keying the live tab on the DataStore stream let
+    // a late emission land after the user had already switched segments and
+    // yank them back to the persisted one (bounce to "Zuletzt").
+    var userPickedTab by remember { mutableStateOf(false) }
+    var tab by remember { mutableStateOf(initialTab ?: SavedTab.RECENTS) }
+    LaunchedEffect(Unit) {
+        if (initialTab != null) return@LaunchedEffect
+        val persisted = container.prefs.lastSavedMealsSegment.first()
+        if (!userPickedTab) {
+            tab = runCatching { SavedTab.valueOf(persisted) }.getOrDefault(SavedTab.RECENTS)
+        }
     }
     var recents by remember { mutableStateOf<List<FoodEntry>>(emptyList()) }
     var frequent by remember { mutableStateOf<List<FrequentFoodGroup>>(emptyList()) }
@@ -243,6 +250,7 @@ fun SavedMealsSheet(
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
             SegmentedTabs(selected = tab, onSelect = { newTab ->
+                userPickedTab = true
                 tab = newTab
                 scope.launch { container.prefs.setLastSavedMealsSegment(newTab.name) }
             })
