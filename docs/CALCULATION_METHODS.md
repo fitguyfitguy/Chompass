@@ -380,11 +380,11 @@ grossMl    = round50(baseMl × tempFactor × actFactor)
 ### WATER-DYN-B: Food-water subtraction (optional, coarse)
 
 ```
-foodWaterMl = min(round50(foodGramsToday × 0.6), 1000)   // foodGramsToday = Σ serving grams × quantity
+foodWaterMl = min(round50(foodGramsToday × 0.6), 1000)   // foodGramsToday = Σ servingSizeGrams (portion total)
 netGoalMl   = max(grossMl − foodWaterMl, 1000)            // never below 1 L
 ```
 
-**Evidence / rationale:** food moisture is **19–30 % of total water intake** (IOM 2004, 19 % from NHANES III; EFSA 2010 assumption 20–30 %). A mixed diet is roughly **55–75 % water by mass** (fruit/vegetables 80–95 %, meat 60–70 %, cooked grains ≈ 70 %, bread ≈ 35 %), so **60 % of diary grams** is a defensible midpoint. The **1 L cap** matches the food-moisture contribution to the agency AIs (2.5 L × 20–30 % ≈ 0.5–0.75 L; 3.7 L × 19 % ≈ 0.7 L). Opt-in and coarse by design (diary grams are estimated from serving size × quantity; entries without a serving weight contribute 0).
+**Evidence / rationale:** food moisture is **19–30 % of total water intake** (IOM 2004, 19 % from NHANES III; EFSA 2010 assumption 20–30 %). A mixed diet is roughly **55–75 % water by mass** (fruit/vegetables 80–95 %, meat 60–70 %, cooked grains ≈ 70 %, bread ≈ 35 %), so **60 % of diary grams** is a defensible midpoint. The **1 L cap** matches the food-moisture contribution to the agency AIs (2.5 L × 20–30 % ≈ 0.5–0.75 L; 3.7 L × 19 % ≈ 0.7 L). Opt-in and coarse by design (diary grams are the logged portion weight on each entry; quantity is already included in that weight. Entries without a serving weight contribute 0).
 
 **Call sites:** same as WATER-DYN-A when `waterFoodWaterEnabled`.
 

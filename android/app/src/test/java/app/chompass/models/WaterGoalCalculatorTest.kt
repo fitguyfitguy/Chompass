@@ -309,7 +309,7 @@ class WaterGoalCalculatorTest {
     }
 
     @Test
-    fun estimateDiaryGramsSumsServingGramsTimesQuantity() {
+    fun estimateDiaryGramsSumsPortionGramsNotQuantity() {
         fun entry(grams: Double?, qty: Double?) = FoodEntry(
             name = "x",
             calories = 1,
@@ -321,13 +321,14 @@ class WaterGoalCalculatorTest {
             selectedServingQuantity = qty,
         )
         val entries = listOf(
-            entry(100.0, 2.0),   // 200 g
-            entry(250.0, 1.0),   // 250 g
+            entry(220.0, 2.0),   // two slices, 220 g already the total
+            entry(250.0, 1.0),
             entry(null, 1.0),    // no weight → 0
-            entry(100.0, null),  // no quantity → 0
+            entry(100.0, null),  // grams-only row still counts
         )
-        assertEquals(450, WaterGoalCalculator.estimateDiaryGrams(entries))
+        assertEquals(570, WaterGoalCalculator.estimateDiaryGrams(entries))
         assertEquals(0, WaterGoalCalculator.estimateDiaryGrams(emptyList()))
+        assertEquals(150, WaterGoalCalculator.foodWaterMl(220))
     }
 
     // -- WATER-DYN-C: next-fire decision for the alarm chain ----------------
