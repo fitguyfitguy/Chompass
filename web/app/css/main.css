@@ -2488,6 +2488,35 @@ form.entry-form > button.btn--primary,
   cursor: pointer;
 }
 
+/* Codeberg #66: favorites rows in Saved Meals — main prefill area plus an
+   edit pencil that opens the saved food for permanent library editing. */
+.saved-row {
+  display: flex;
+  gap: 0.35rem;
+  align-items: stretch;
+}
+
+.saved-row__main {
+  flex: 1;
+}
+
+.saved-row__edit {
+  flex: 0 0 auto;
+  color: var(--muted);
+  padding: 0 0.9rem;
+}
+
+.saved-row__edit:hover {
+  color: var(--text);
+}
+
+/* Rename-collision error on the saved-food editor (Android parity). */
+.entry-form__error {
+  color: #b3261e;
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+}
+
 .analyze-preview {
   width: 100%;
   max-height: 14rem;
