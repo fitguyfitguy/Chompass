@@ -28,6 +28,7 @@ import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.components.FudGlassTextButton
 import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.MagnitudeDrafts
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.components.UnitToggle
 import app.chompass.ui.theme.AppColors
@@ -128,6 +129,9 @@ internal fun AddWeightDialog(
             FudGlassPrimaryButton(
                 text = stringResource(R.string.action_save),
                 onClick = {
+                    // Typed mode keeps the draft until Done / flip-to-wheel; Save must flush it
+                    // or type-then-Save writes the previous kg (Codeberg #63).
+                    MagnitudeDrafts.commitAll()
                     val hour = hourText.toIntOrNull()?.coerceIn(0, 23) ?: LocalTime.now().hour
                     val minute = minuteText.toIntOrNull()?.coerceIn(0, 59) ?: LocalTime.now().minute
                     val loggedAt = if (advanced) {
@@ -219,6 +223,7 @@ internal fun AddBodyFatDialog(
             FudGlassPrimaryButton(
                 text = stringResource(R.string.action_save),
                 onClick = {
+                    MagnitudeDrafts.commitAll()
                     val hour = hourText.toIntOrNull()?.coerceIn(0, 23) ?: LocalTime.now().hour
                     val minute = minuteText.toIntOrNull()?.coerceIn(0, 59) ?: LocalTime.now().minute
                     val loggedAt = if (advanced) {
