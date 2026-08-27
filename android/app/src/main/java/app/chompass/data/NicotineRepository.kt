@@ -1,7 +1,6 @@
 package app.chompass.data
 
 import app.chompass.models.NicotineEntry
-import app.chompass.models.NicotineKind
 import app.chompass.services.PerfLog
 import app.chompass.sync.SyncRepository
 import kotlinx.coroutines.flow.Flow
@@ -30,7 +29,7 @@ class NicotineRepository(
 
     suspend fun add(entry: NicotineEntry) {
         if (entry.count <= 0) return
-        PerfLog.measure("nicotineLog", "dataStore", "kind=${entry.kind.storageKey}") {
+        PerfLog.measure("nicotineLog", "dataStore", "kind=${entry.kind}") {
             prefs.applyNicotineBucketChanges(
                 upsertsByMonth = mapOf(entry.month() to listOf(entry)),
             )
@@ -39,7 +38,7 @@ class NicotineRepository(
     }
 
     /** Edits count/mg/kind of an existing log in place (same id, same timestamp). */
-    suspend fun update(id: UUID, kind: NicotineKind, count: Int, mg: Double?) {
+    suspend fun update(id: UUID, kind: String, count: Int, mg: Double?) {
         if (count <= 0) return
         val existing = prefs.nicotineEntries.first().firstOrNull { it.id == id } ?: return
         val updated = existing.copy(kind = kind, count = count, mg = mg?.takeIf { it > 0 })

@@ -8,8 +8,9 @@ import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.MealSchedule
-import app.chompass.models.CaffeineKind
-import app.chompass.models.NicotineKind
+import app.chompass.models.HabitPresetCatalog
+import app.chompass.models.HabitPresetDomain
+import app.chompass.models.parseHabitPresetCatalog
 import app.chompass.models.OptionalNutrient
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.ServingUnitInferenceMode
@@ -51,11 +52,13 @@ internal data class SettingsPrefsHydration(
     val waterQuickPresetsMl: List<Int>,
     val nicotineTrackingEnabled: Boolean,
     val nicotineDailyLimit: Int,
-    val nicotineQuickKinds: List<NicotineKind>,
+    val nicotineQuickKinds: List<String>,
+    val nicotinePresets: HabitPresetCatalog,
     val dailyNotesEnabled: Boolean,
     val mealTimesEnabled: Boolean,
     val caffeineTrackingEnabled: Boolean,
-    val caffeineQuickKinds: List<CaffeineKind>,
+    val caffeineQuickKinds: List<String>,
+    val caffeinePresets: HabitPresetCatalog,
     val fastingEnabled: Boolean,
     val fastingGoalHours: Int,
     val fastingEatHours: Int,
@@ -177,11 +180,13 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
         waterQuickPresetsMl = WaterQuickPresets.fromStorage(this[Keys.WATER_QUICK_PRESETS_ML]).amountsMl,
         nicotineTrackingEnabled = this[Keys.NICOTINE_TRACKING_ENABLED] ?: false,
         nicotineDailyLimit = this[Keys.NICOTINE_DAILY_LIMIT] ?: 0,
-        nicotineQuickKinds = NicotineKind.quickKindsFromStorage(this[Keys.NICOTINE_QUICK_KINDS]),
+        nicotineQuickKinds = HabitPresetDomain.NICOTINE.quickKindIdsFromStorage(this[Keys.NICOTINE_QUICK_KINDS]),
+        nicotinePresets = parseHabitPresetCatalog(this[Keys.NICOTINE_PRESETS], HabitPresetDomain.NICOTINE, json),
         dailyNotesEnabled = this[Keys.DAILY_NOTES_ENABLED] ?: false,
         mealTimesEnabled = this[Keys.MEAL_TIMES_ENABLED] ?: true,
         caffeineTrackingEnabled = this[Keys.CAFFEINE_TRACKING_ENABLED] ?: false,
-        caffeineQuickKinds = CaffeineKind.quickKindsFromStorage(this[Keys.CAFFEINE_QUICK_KINDS]),
+        caffeineQuickKinds = HabitPresetDomain.CAFFEINE.quickKindIdsFromStorage(this[Keys.CAFFEINE_QUICK_KINDS]),
+        caffeinePresets = parseHabitPresetCatalog(this[Keys.CAFFEINE_PRESETS], HabitPresetDomain.CAFFEINE, json),
         fastingEnabled = this[Keys.FASTING_ENABLED] ?: false,
         fastingGoalHours = (this[Keys.FASTING_GOAL_HOURS] ?: DEFAULT_FASTING_GOAL_HOURS).coerceIn(0, MAX_FASTING_GOAL_HOURS),
         fastingEatHours = (this[Keys.FASTING_EAT_HOURS] ?: DEFAULT_FASTING_EAT_HOURS).coerceIn(0, MAX_FASTING_EAT_HOURS),

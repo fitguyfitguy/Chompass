@@ -20,8 +20,8 @@ import app.chompass.models.MacroDayProfile
 import app.chompass.models.MacroPlan
 import app.chompass.models.MacroPlanEdit
 import app.chompass.models.MacroPlanMode
-import app.chompass.models.CaffeineKind
-import app.chompass.models.NicotineKind
+import app.chompass.models.HabitPresetCatalog
+import app.chompass.models.HabitPresetDomain
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.ProteinTargetMode
 import app.chompass.models.ServingUnitInferenceMode
@@ -107,11 +107,13 @@ data class SettingsUiState(
     val waterQuickPresetsMl: List<Int> = WaterQuickPresets.DEFAULT_AMOUNTS_ML,
     val nicotineTrackingEnabled: Boolean = false,
     val nicotineDailyLimit: Int = 0,
-    val nicotineQuickKinds: List<NicotineKind> = NicotineKind.DefaultQuickKinds,
+    val nicotineQuickKinds: List<String> = HabitPresetDomain.NICOTINE.defaultQuickKindIds,
+    val nicotinePresets: HabitPresetCatalog = HabitPresetDomain.NICOTINE.defaultCatalog,
     val dailyNotesEnabled: Boolean = false,
     val mealTimesEnabled: Boolean = true,
     val caffeineTrackingEnabled: Boolean = false,
-    val caffeineQuickKinds: List<CaffeineKind> = CaffeineKind.DefaultQuickKinds,
+    val caffeineQuickKinds: List<String> = HabitPresetDomain.CAFFEINE.defaultQuickKindIds,
+    val caffeinePresets: HabitPresetCatalog = HabitPresetDomain.CAFFEINE.defaultCatalog,
     val fastingEnabled: Boolean = false,
     val fastingGoalHours: Int = 16,
     val fastingEatHours: Int = 8,
@@ -447,10 +449,12 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     nicotineTrackingEnabled = snap.nicotineTrackingEnabled,
                     nicotineDailyLimit = snap.nicotineDailyLimit,
                     nicotineQuickKinds = snap.nicotineQuickKinds,
+                    nicotinePresets = snap.nicotinePresets,
                     dailyNotesEnabled = snap.dailyNotesEnabled,
                     mealTimesEnabled = snap.mealTimesEnabled,
                     caffeineTrackingEnabled = snap.caffeineTrackingEnabled,
                     caffeineQuickKinds = snap.caffeineQuickKinds,
+                    caffeinePresets = snap.caffeinePresets,
                     fastingEnabled = snap.fastingEnabled,
                     fastingGoalHours = snap.fastingGoalHours,
                     fastingEatHours = snap.fastingEatHours,
@@ -1374,8 +1378,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         { copy(caffeineTrackingEnabled = v) },
     )
 
-    fun setCaffeineQuickKinds(kinds: List<CaffeineKind>) {
-        val validated = CaffeineKind.quickKindsFromStorage(CaffeineKind.quickKindsToStorage(kinds))
+    fun setCaffeineQuickKinds(ids: List<String>) {
+        val validated = HabitPresetDomain.CAFFEINE.quickKindIdsFromStorage(HabitPresetDomain.CAFFEINE.quickKindIdsToStorage(ids))
         updateUiPref(
             { container.prefs.setCaffeineQuickKinds(validated) },
             { copy(caffeineQuickKinds = validated) },
@@ -1466,8 +1470,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         { copy(fastingStartReminderLeadMinutes = v) },
     )
 
-    fun setNicotineQuickKinds(kinds: List<NicotineKind>) {
-        val validated = NicotineKind.quickKindsFromStorage(NicotineKind.quickKindsToStorage(kinds))
+    fun setNicotineQuickKinds(ids: List<String>) {
+        val validated = HabitPresetDomain.NICOTINE.quickKindIdsFromStorage(HabitPresetDomain.NICOTINE.quickKindIdsToStorage(ids))
         updateUiPref(
             { container.prefs.setNicotineQuickKinds(validated) },
             { copy(nicotineQuickKinds = validated) },

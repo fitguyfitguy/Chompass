@@ -13,9 +13,8 @@ import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.FastingSession
 import app.chompass.models.ManualActiveEntry
 import app.chompass.models.CaffeineEntry
-import app.chompass.models.CaffeineKind
+import app.chompass.models.HabitPresetCatalog
 import app.chompass.models.NicotineEntry
-import app.chompass.models.NicotineKind
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.PendingFoodAnalysisDraft
 import app.chompass.models.PendingFoodInputDraft
@@ -262,8 +261,10 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setNicotineTrackingEnabled(v: Boolean) = setNicotineTrackingEnabledImpl(v)
     val nicotineDailyLimit: Flow<Int> get() = nicotineDailyLimitImpl
     suspend fun setNicotineDailyLimit(v: Int) = setNicotineDailyLimitImpl(v)
-    val nicotineQuickKinds: Flow<List<NicotineKind>> get() = nicotineQuickKindsImpl
-    suspend fun setNicotineQuickKinds(kinds: List<NicotineKind>) = setNicotineQuickKindsImpl(kinds)
+    val nicotinePresets: Flow<HabitPresetCatalog> get() = nicotinePresetsImpl
+    suspend fun setNicotinePresets(catalog: HabitPresetCatalog) = setNicotinePresetsImpl(catalog)
+    val nicotineQuickKinds: Flow<List<String>> get() = nicotineQuickKindsImpl
+    suspend fun setNicotineQuickKinds(ids: List<String>) = setNicotineQuickKindsImpl(ids)
     val nicotineEntries: Flow<List<NicotineEntry>> get() = nicotineEntriesImpl
     suspend fun setNicotineEntries(entries: List<NicotineEntry>) = setNicotineEntriesImpl(entries)
     /** Month-scoped nicotine write (one bucket file). */
@@ -274,8 +275,10 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     val caffeineTrackingEnabled: Flow<Boolean> get() = caffeineTrackingEnabledImpl
     suspend fun setCaffeineTrackingEnabled(v: Boolean) = setCaffeineTrackingEnabledImpl(v)
     suspend fun migrateCaffeineDailyLimitIfNeeded() = migrateCaffeineDailyLimitIfNeededImpl()
-    val caffeineQuickKinds: Flow<List<CaffeineKind>> get() = caffeineQuickKindsImpl
-    suspend fun setCaffeineQuickKinds(kinds: List<CaffeineKind>) = setCaffeineQuickKindsImpl(kinds)
+    val caffeineQuickKinds: Flow<List<String>> get() = caffeineQuickKindsImpl
+    suspend fun setCaffeineQuickKinds(ids: List<String>) = setCaffeineQuickKindsImpl(ids)
+    val caffeinePresets: Flow<HabitPresetCatalog> get() = caffeinePresetsImpl
+    suspend fun setCaffeinePresets(catalog: HabitPresetCatalog) = setCaffeinePresetsImpl(catalog)
     val caffeineEntries: Flow<List<CaffeineEntry>> get() = caffeineEntriesImpl
     suspend fun setCaffeineEntries(entries: List<CaffeineEntry>) = setCaffeineEntriesImpl(entries)
     /** Month-scoped caffeine write (one bucket file). */

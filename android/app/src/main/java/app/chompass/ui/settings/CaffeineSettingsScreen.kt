@@ -26,6 +26,7 @@ import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.CaffeineKind
+import app.chompass.models.HabitPresetDomain
 import app.chompass.ui.theme.AppTextOpacity
 
 /**
@@ -93,16 +94,16 @@ fun CaffeineSettingsScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     CaffeineKind.entries.forEach { kind ->
-                        val selected = ui.caffeineQuickKinds.contains(kind)
+                        val selected = ui.caffeineQuickKinds.contains(kind.storageKey)
                         FilterChip(
                             selected = selected,
                             onClick = {
                                 val next = if (selected) {
-                                    ui.caffeineQuickKinds.filterNot { it == kind }
+                                    ui.caffeineQuickKinds.filterNot { it == kind.storageKey }
                                 } else {
-                                    ui.caffeineQuickKinds + kind
+                                    ui.caffeineQuickKinds + kind.storageKey
                                 }
-                                vm.setCaffeineQuickKinds(next.ifEmpty { CaffeineKind.DefaultQuickKinds })
+                                vm.setCaffeineQuickKinds(next.ifEmpty { HabitPresetDomain.CAFFEINE.defaultQuickKindIds })
                             },
                             label = { Text(stringResource(kind.labelRes)) },
                             colors = FilterChipDefaults.filterChipColors(

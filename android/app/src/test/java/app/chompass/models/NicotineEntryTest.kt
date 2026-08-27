@@ -10,26 +10,43 @@ class NicotineEntryTest {
     @Test
     fun serializesRoundTrip() {
         val entry = NicotineEntry(
-            kind = NicotineKind.VAPE,
+            kind = "vape",
             count = 3,
             mg = 6.0,
         )
         val decoded = json.decodeFromString<NicotineEntry>(json.encodeToString(NicotineEntry.serializer(), entry))
         assertEquals(entry.id, decoded.id)
-        assertEquals(NicotineKind.VAPE, decoded.kind)
+        assertEquals("vape", decoded.kind)
         assertEquals(3, decoded.count)
-        assertEquals(6.0, decoded.mg)
+        assertEquals(6.0, decoded.mg!!, 0.001)
+    }
+
+    @Test
+    fun decodesLegacyEnumNameKinds() {
+        // Enum-era month buckets stored the constant name ("VAPE").
+        val dateMs = java.time.Instant.parse("2026-08-01T08:00:00Z").toEpochMilli()
+        val legacy = """[{"id":"9f1d0a52-3a4c-4b6e-8f2a-1c2d3e4f5a6b","date":$dateMs,"kind":"VAPE","count":2,"mg":6.5}]"""
+        val decoded = json.decodeFromString<List<NicotineEntry>>(legacy)
+        assertEquals("vape", decoded.single().kind)
+        assertEquals(2, decoded.single().count)
+        assertEquals(6.5, decoded.single().mg!!, 0.001)
+    }
+
+    @Test
+    fun decodesCustomPresetIdsVerbatim() {
+        val raw = """{"kind":"t_abcd1234","count":1}"""
+        assertEquals("t_abcd1234", json.decodeFromString<NicotineEntry>(raw).kind)
     }
 
     @Test
     fun forNowClampsCountAndDropsZeroMg() {
-        val zero = NicotineEntry.forNow(NicotineKind.PATCH, count = 0)
+        val zero = NicotineEntry.forNow("patch", count = 0)
         assertEquals(1, zero.count)
         assertEquals(null, zero.mg)
 
-        val withMg = NicotineEntry.forNow(NicotineKind.POUCH, count = 2, mg = 12.0)
+        val withMg = NicotineEntry.forNow("pouch", count = 2, mg = 12.0)
         assertEquals(2, withMg.count)
-        assertEquals(12.0, withMg.mg)
+        assertEquals(12.0, withMg.mg!!, 0.001)
     }
 
     @Test
@@ -37,11 +54,5 @@ class NicotineEntryTest {
         assertEquals(NicotineKind.POUCH, NicotineKind.fromStorage("pouch"))
         assertEquals(NicotineKind.OTHER, NicotineKind.fromStorage("snus_future"))
         assertEquals(NicotineKind.OTHER, NicotineKind.fromStorage(null))
-
-        val defaultKinds = NicotineKind.quickKindsFromStorage(null)
-        assertEquals(listOf(NicotineKind.CIGARETTE, NicotineKind.VAPE, NicotineKind.POUCH), defaultKinds)
-        val custom = NicotineKind.quickKindsFromStorage("pouch,gum,pouch,vape")
-        assertEquals(listOf(NicotineKind.POUCH, NicotineKind.GUM, NicotineKind.VAPE), custom)
-        assertEquals("pouch,gum,vape", NicotineKind.quickKindsToStorage(custom))
     }
 }

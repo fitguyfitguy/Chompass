@@ -80,9 +80,10 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import app.chompass.R
 import app.chompass.services.grounding.FoodSuggestion
-import app.chompass.models.CaffeineKind
 import app.chompass.models.FastingPhase
-import app.chompass.models.NicotineKind
+import app.chompass.models.HabitPresetDomain
+import app.chompass.models.caffeineKindLabelRes
+import app.chompass.models.nicotineKindLabelRes
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.ChompassSheetCornerRadius
 import app.chompass.ui.components.rememberChompassSheetState
@@ -118,12 +119,12 @@ fun AddFoodSheet(
     onWater: (Int) -> Unit = {},
     onWaterCustom: () -> Unit = {},
     nicotineTrackingEnabled: Boolean = false,
-    nicotineQuickKinds: List<NicotineKind> = NicotineKind.DefaultQuickKinds,
-    onNicotine: (NicotineKind) -> Unit = {},
+    nicotineQuickKinds: List<String> = HabitPresetDomain.NICOTINE.defaultQuickKindIds,
+    onNicotine: (String) -> Unit = {},
     onNicotineCustom: () -> Unit = {},
     caffeineTrackingEnabled: Boolean = false,
-    caffeineQuickKinds: List<CaffeineKind> = CaffeineKind.DefaultQuickKinds,
-    onCaffeine: (CaffeineKind) -> Unit = {},
+    caffeineQuickKinds: List<String> = HabitPresetDomain.CAFFEINE.defaultQuickKindIds,
+    onCaffeine: (String) -> Unit = {},
     onCaffeineCustom: () -> Unit = {},
     fastingEnabled: Boolean = false,
     fastingPhase: FastingPhase = FastingPhase.IDLE,
@@ -276,12 +277,12 @@ internal fun AddFoodSheetContent(
     onWater: (Int) -> Unit = {},
     onWaterCustom: () -> Unit = {},
     nicotineTrackingEnabled: Boolean = false,
-    nicotineQuickKinds: List<NicotineKind> = NicotineKind.DefaultQuickKinds,
-    onNicotine: (NicotineKind) -> Unit = {},
+    nicotineQuickKinds: List<String> = HabitPresetDomain.NICOTINE.defaultQuickKindIds,
+    onNicotine: (String) -> Unit = {},
     onNicotineCustom: () -> Unit = {},
     caffeineTrackingEnabled: Boolean = false,
-    caffeineQuickKinds: List<CaffeineKind> = CaffeineKind.DefaultQuickKinds,
-    onCaffeine: (CaffeineKind) -> Unit = {},
+    caffeineQuickKinds: List<String> = HabitPresetDomain.CAFFEINE.defaultQuickKindIds,
+    onCaffeine: (String) -> Unit = {},
     onCaffeineCustom: () -> Unit = {},
     fastingEnabled: Boolean = false,
     fastingPhase: FastingPhase = FastingPhase.IDLE,
@@ -669,11 +670,11 @@ private fun waterAmountLabel(ml: Int, useMetric: Boolean): String =
  */
 @Composable
 private fun AddFoodNicotineQuickRow(
-    quickKinds: List<NicotineKind>,
-    onNicotine: (NicotineKind) -> Unit,
+    quickKinds: List<String>,
+    onNicotine: (String) -> Unit,
     onNicotineCustom: () -> Unit,
 ) {
-    val kinds = remember(quickKinds) { quickKinds.distinct().ifEmpty { NicotineKind.DefaultQuickKinds } }
+    val kinds = remember(quickKinds) { quickKinds.distinct().ifEmpty { HabitPresetDomain.NICOTINE.defaultQuickKindIds } }
 
     Row(
         Modifier
@@ -690,7 +691,7 @@ private fun AddFoodNicotineQuickRow(
                 onClick = { onNicotine(kind) },
                 label = {
                     Text(
-                        stringResource(R.string.nicotine_quick_plus_one, stringResource(kind.labelRes)),
+                        stringResource(R.string.nicotine_quick_plus_one, stringResource(nicotineKindLabelRes(kind))),
                         maxLines = 1,
                     )
                 },
@@ -719,11 +720,11 @@ private fun AddFoodNicotineQuickRow(
  */
 @Composable
 private fun AddFoodCaffeineQuickRow(
-    quickKinds: List<CaffeineKind>,
-    onCaffeine: (CaffeineKind) -> Unit,
+    quickKinds: List<String>,
+    onCaffeine: (String) -> Unit,
     onCaffeineCustom: () -> Unit,
 ) {
-    val kinds = remember(quickKinds) { quickKinds.distinct().ifEmpty { CaffeineKind.DefaultQuickKinds } }
+    val kinds = remember(quickKinds) { quickKinds.distinct().ifEmpty { HabitPresetDomain.CAFFEINE.defaultQuickKindIds } }
 
     Row(
         Modifier
@@ -740,7 +741,7 @@ private fun AddFoodCaffeineQuickRow(
                 onClick = { onCaffeine(kind) },
                 label = {
                     Text(
-                        stringResource(R.string.caffeine_quick_plus_one, stringResource(kind.labelRes)),
+                        stringResource(R.string.caffeine_quick_plus_one, stringResource(caffeineKindLabelRes(kind))),
                         maxLines = 1,
                     )
                 },
