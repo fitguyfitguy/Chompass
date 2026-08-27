@@ -13,6 +13,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -84,9 +85,9 @@ import app.chompass.R
 import app.chompass.data.QuickRelogRows
 import app.chompass.models.FoodEntry
 import app.chompass.models.FastingPhase
+import app.chompass.models.HabitPreset
+import app.chompass.models.HabitPresetCatalog
 import app.chompass.models.HabitPresetDomain
-import app.chompass.models.caffeineKindLabelRes
-import app.chompass.models.nicotineKindLabelRes
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.blockSheetDragAtScrollEdges
@@ -129,10 +130,12 @@ fun AddFoodSheet(
     onWaterCustom: () -> Unit = {},
     nicotineTrackingEnabled: Boolean = false,
     nicotineQuickKinds: List<String> = HabitPresetDomain.NICOTINE.defaultQuickKindIds,
+    nicotinePresets: List<HabitPreset> = HabitPresetDomain.NICOTINE.defaultCatalog.presets,
     onNicotine: (String) -> Unit = {},
     onNicotineCustom: () -> Unit = {},
     caffeineTrackingEnabled: Boolean = false,
     caffeineQuickKinds: List<String> = HabitPresetDomain.CAFFEINE.defaultQuickKindIds,
+    caffeinePresets: List<HabitPreset> = HabitPresetDomain.CAFFEINE.defaultCatalog.presets,
     onCaffeine: (String) -> Unit = {},
     onCaffeineCustom: () -> Unit = {},
     fastingEnabled: Boolean = false,
@@ -176,10 +179,12 @@ fun AddFoodSheet(
             onWaterCustom = { onDismiss(); onWaterCustom() },
             nicotineTrackingEnabled = nicotineTrackingEnabled,
             nicotineQuickKinds = nicotineQuickKinds,
+            nicotinePresets = nicotinePresets,
             onNicotine = { kind -> onDismiss(); onNicotine(kind) },
             onNicotineCustom = { onDismiss(); onNicotineCustom() },
             caffeineTrackingEnabled = caffeineTrackingEnabled,
             caffeineQuickKinds = caffeineQuickKinds,
+            caffeinePresets = caffeinePresets,
             onCaffeine = { kind -> onDismiss(); onCaffeine(kind) },
             onCaffeineCustom = { onDismiss(); onCaffeineCustom() },
             fastingEnabled = fastingEnabled,
@@ -230,10 +235,12 @@ internal fun AddFoodSheetContent(
     onWaterCustom: () -> Unit = {},
     nicotineTrackingEnabled: Boolean = false,
     nicotineQuickKinds: List<String> = HabitPresetDomain.NICOTINE.defaultQuickKindIds,
+    nicotinePresets: List<HabitPreset> = HabitPresetDomain.NICOTINE.defaultCatalog.presets,
     onNicotine: (String) -> Unit = {},
     onNicotineCustom: () -> Unit = {},
     caffeineTrackingEnabled: Boolean = false,
     caffeineQuickKinds: List<String> = HabitPresetDomain.CAFFEINE.defaultQuickKindIds,
+    caffeinePresets: List<HabitPreset> = HabitPresetDomain.CAFFEINE.defaultCatalog.presets,
     onCaffeine: (String) -> Unit = {},
     onCaffeineCustom: () -> Unit = {},
     fastingEnabled: Boolean = false,
@@ -503,6 +510,7 @@ internal fun AddFoodSheetContent(
                         Spacer(Modifier.height(12.dp))
                         AddFoodNicotineQuickRow(
                             quickKinds = nicotineQuickKinds,
+                            presets = nicotinePresets,
                             onNicotine = onNicotine,
                             onNicotineCustom = onNicotineCustom,
                         )
@@ -511,6 +519,7 @@ internal fun AddFoodSheetContent(
                         Spacer(Modifier.height(12.dp))
                         AddFoodCaffeineQuickRow(
                             quickKinds = caffeineQuickKinds,
+                            presets = caffeinePresets,
                             onCaffeine = onCaffeine,
                             onCaffeineCustom = onCaffeineCustom,
                         )
@@ -770,27 +779,34 @@ private fun waterAmountLabel(ml: Int, useMetric: Boolean): String =
 @Composable
 private fun AddFoodNicotineQuickRow(
     quickKinds: List<String>,
+    presets: List<HabitPreset>,
     onNicotine: (String) -> Unit,
     onNicotineCustom: () -> Unit,
 ) {
-    val kinds = remember(quickKinds) { quickKinds.distinct().ifEmpty { HabitPresetDomain.NICOTINE.defaultQuickKindIds } }
+    // Enabled presets in catalog order (custom ids survive the selection;
+    // empty selection falls back to the defaults via hubPresets).
+    val chips = remember(quickKinds, presets) {
+        HabitPresetDomain.NICOTINE.hubPresets(quickKinds, HabitPresetCatalog(presets))
+    }
 
-    Row(
+    FlowRow(
         Modifier
             .fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.55f))
             .padding(horizontal = 10.dp, vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        kinds.forEach { kind ->
+        chips.forEach { preset ->
             AssistChip(
-                onClick = { onNicotine(kind) },
+                onClick = { onNicotine(preset.id) },
                 label = {
                     Text(
-                        stringResource(R.string.nicotine_quick_plus_one, stringResource(nicotineKindLabelRes(kind))),
+                        stringResource(
+                            R.string.nicotine_quick_plus_one,
+                            trackerPresetLabel(presets, preset.id, HabitPresetDomain.NICOTINE),
+                        ),
                         maxLines = 1,
                     )
                 },
@@ -820,27 +836,33 @@ private fun AddFoodNicotineQuickRow(
 @Composable
 private fun AddFoodCaffeineQuickRow(
     quickKinds: List<String>,
+    presets: List<HabitPreset>,
     onCaffeine: (String) -> Unit,
     onCaffeineCustom: () -> Unit,
 ) {
-    val kinds = remember(quickKinds) { quickKinds.distinct().ifEmpty { HabitPresetDomain.CAFFEINE.defaultQuickKindIds } }
+    // Enabled presets in catalog order; +1 logs the preset default mg.
+    val chips = remember(quickKinds, presets) {
+        HabitPresetDomain.CAFFEINE.hubPresets(quickKinds, HabitPresetCatalog(presets))
+    }
 
-    Row(
+    FlowRow(
         Modifier
             .fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.55f))
             .padding(horizontal = 10.dp, vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        kinds.forEach { kind ->
+        chips.forEach { preset ->
             AssistChip(
-                onClick = { onCaffeine(kind) },
+                onClick = { onCaffeine(preset.id) },
                 label = {
                     Text(
-                        stringResource(R.string.caffeine_quick_plus_one, stringResource(caffeineKindLabelRes(kind))),
+                        stringResource(
+                            R.string.caffeine_quick_plus_one,
+                            trackerPresetLabel(presets, preset.id, HabitPresetDomain.CAFFEINE),
+                        ),
                         maxLines = 1,
                     )
                 },
