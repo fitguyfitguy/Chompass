@@ -355,7 +355,7 @@ internal object SampleDataGenerators {
     ): List<NicotineEntry> {
         val zone = ZoneId.systemDefault()
         val rng = Random(seed = 0x51C0)
-        val kinds = NicotineKind.entries.filter { it != NicotineKind.OTHER }
+        val kinds = NicotineKind.entries.filter { it != NicotineKind.OTHER }.map { it.storageKey }
         val out = mutableListOf<NicotineEntry>()
         for (daysAgo in (totalDays - 1) downTo 0) {
             val day = today.minusDays(daysAgo.toLong())
@@ -391,7 +391,7 @@ internal object SampleDataGenerators {
             out.add(
                 CaffeineEntry(
                     date = morning,
-                    kind = CaffeineKind.COFFEE,
+                    kind = CaffeineKind.COFFEE.storageKey,
                     mg = CaffeineKind.COFFEE.defaultMg ?: 95.0,
                 )
             )
@@ -401,7 +401,7 @@ internal object SampleDataGenerators {
                 out.add(
                     CaffeineEntry(
                         date = afternoon,
-                        kind = kind,
+                        kind = kind.storageKey,
                         mg = kind.defaultMg ?: 28.0,
                     )
                 )
