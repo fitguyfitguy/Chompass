@@ -596,7 +596,7 @@
     <string name="settings_use_body_fat_bmr">استخدم نسبة الدهون لحساب BMR</string>
     <string name="settings_use_body_fat_bmr_subtitle">تشغيل = Katch-McArdle (يستخدم الكتلة الخالية من الدهون لحساب BMR أكثر دقة). إيقاف = Mifflin-St Jeor (الطول/الوزن/العمر فقط). أوقف إذا كانت قراءة نسبة الدهون قديمة.</string>
     <string name="sheet_goal_body_fat">هدف نسبة الدهون</string>
-    <string name="sheet_goal_body_fat_currently">حالياً %1$d%%</string>
+    <string name="sheet_goal_body_fat_currently">حالياً %1$s%%</string>
     <string name="action_remove_goal">إزالة الهدف</string>
     <string name="progress_metric_weight">الوزن</string>
     <string name="progress_metric_body_fat">نسبة الدهون</string>

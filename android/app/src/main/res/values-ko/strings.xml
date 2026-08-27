@@ -595,7 +595,7 @@
     <string name="settings_use_body_fat_bmr">BMR 계산에 체지방 사용</string>
     <string name="settings_use_body_fat_bmr_subtitle">켜짐 = Katch-McArdle (제지방량을 사용하여 더 정확한 BMR). 꺼짐 = Mifflin-St Jeor (키/체중/나이만 사용). 체지방 측정값이 오래되었다면 꺼두세요.</string>
     <string name="sheet_goal_body_fat">체지방 목표</string>
-    <string name="sheet_goal_body_fat_currently">현재 %1$d%%</string>
+    <string name="sheet_goal_body_fat_currently">현재 %1$s%%</string>
     <string name="action_remove_goal">목표 제거</string>
     <string name="progress_metric_weight">체중</string>
     <string name="progress_metric_body_fat">체지방</string>

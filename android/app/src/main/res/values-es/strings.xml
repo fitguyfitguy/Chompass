@@ -589,7 +589,7 @@
     <string name="settings_use_body_fat_bmr">Usar grasa corporal para BMR</string>
     <string name="settings_use_body_fat_bmr_subtitle">Activo = Katch-McArdle (usa la masa magra para un BMR más preciso). Desactivado = Mifflin-St Jeor (solo altura/peso/edad). Desactiva si tu medición de grasa corporal está desactualizada.</string>
     <string name="sheet_goal_body_fat">Objetivo de grasa corporal</string>
-    <string name="sheet_goal_body_fat_currently">Actual %1$d%%</string>
+    <string name="sheet_goal_body_fat_currently">Actual %1$s%%</string>
     <string name="action_remove_goal">Quitar objetivo</string>
     <string name="progress_metric_weight">Peso</string>
     <string name="progress_metric_body_fat">Grasa corporal</string>

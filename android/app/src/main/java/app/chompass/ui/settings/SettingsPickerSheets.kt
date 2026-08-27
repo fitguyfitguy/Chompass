@@ -260,7 +260,7 @@ internal fun BodyFatSheet(current: Double?, onSave: (Double?) -> Unit) {
     var pct by remember(current) { mutableStateOf((current ?: 0.20) * 100) }
     Text(stringResource(R.string.sheet_body_fat_percent), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(12.dp))
-    DecimalWheelPicker(pct, { pct = it }, 5.0, 60.0, 0.5, stringResource(R.string.unit_percent))
+    DecimalWheelPicker(pct, { pct = it }, 5.0, 60.0, 0.1, stringResource(R.string.unit_percent))
     Spacer(Modifier.height(12.dp))
     GradientSaveButton { onSave(pct / 100.0) }
     Spacer(Modifier.height(4.dp))
@@ -279,13 +279,13 @@ internal fun GoalBodyFatSheet(currentGoal: Double?, currentBodyFat: Double?, onS
     if (currentBodyFat != null) {
         Spacer(Modifier.height(4.dp))
         Text(
-            stringResource(R.string.sheet_goal_body_fat_currently, (currentBodyFat * 100).toInt()),
+            stringResource(R.string.sheet_goal_body_fat_currently, LocaleFormat.decimal(currentBodyFat * 100, 1)),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
         )
     }
     Spacer(Modifier.height(12.dp))
-    DecimalWheelPicker(pct, { pct = it }, 3.0, 60.0, 0.5, stringResource(R.string.unit_percent))
+    DecimalWheelPicker(pct, { pct = it }, 3.0, 60.0, 0.1, stringResource(R.string.unit_percent))
     Spacer(Modifier.height(12.dp))
     GradientSaveButton { onSave(pct / 100.0) }
     Spacer(Modifier.height(4.dp))

@@ -583,7 +583,7 @@
     <string name="sheet_height">Зріст</string>
     <string name="sheet_body_fat_percent">Жир у тілі, %</string>
     <string name="sheet_goal_body_fat">Ціль жиру в тілі</string>
-    <string name="sheet_goal_body_fat_currently">Зараз %1$d%%</string>
+    <string name="sheet_goal_body_fat_currently">Зараз %1$s%%</string>
     <string name="action_remove_goal">Прибрати ціль</string>
     <string name="sheet_weekly_change">Тижнева зміна</string>
     <string name="sheet_weekly_change_format">%1$.1f %2$s/тиждень %3$s</string>

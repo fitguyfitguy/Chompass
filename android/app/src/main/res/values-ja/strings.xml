@@ -594,7 +594,7 @@
     <string name="settings_use_body_fat_bmr">BMR計算に体脂肪を使用</string>
     <string name="settings_use_body_fat_bmr_subtitle">オン=Katch-McArdle(除脂肪体重を使ったより正確なBMR)。オフ=Mifflin-St Jeor(身長/体重/年齢のみ)。体脂肪の測定値が古い場合はオフにしてください。</string>
     <string name="sheet_goal_body_fat">体脂肪目標</string>
-    <string name="sheet_goal_body_fat_currently">現在%1$d%%</string>
+    <string name="sheet_goal_body_fat_currently">現在%1$s%%</string>
     <string name="action_remove_goal">目標を削除</string>
     <string name="progress_metric_weight">体重</string>
     <string name="progress_metric_body_fat">体脂肪</string>

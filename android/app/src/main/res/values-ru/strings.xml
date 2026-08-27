@@ -682,7 +682,7 @@
     <string name="settings_use_body_fat_bmr">Использовать жир для BMR</string>
     <string name="settings_use_body_fat_bmr_subtitle">Вкл = Katch-McArdle (использует сухую массу для более точного BMR). Выкл = Mifflin-St Jeor (только рост/вес/возраст). Отключи, если измерение жира устарело.</string>
     <string name="sheet_goal_body_fat">Цель по жиру</string>
-    <string name="sheet_goal_body_fat_currently">Сейчас %1$d%%</string>
+    <string name="sheet_goal_body_fat_currently">Сейчас %1$s%%</string>
     <string name="action_remove_goal">Удалить цель</string>
     <string name="progress_metric_weight">Вес</string>
     <string name="progress_metric_body_fat">Жир тела</string>

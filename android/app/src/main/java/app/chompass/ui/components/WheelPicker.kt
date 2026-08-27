@@ -517,7 +517,7 @@ fun DecimalWheelPicker(
                 items = items,
                 selected = currentScaled,
                 onSelect = { onValueChange(it.toDouble() / scaled) },
-                label = { String.format("%.1f", it.toDouble() / scaled) },
+                label = { LocaleFormat.decimal(it.toDouble() / scaled, 1) },
                 modifier = Modifier.weight(1f),
                 onCenterTap = { setTyped(true) },
             )
