@@ -680,6 +680,8 @@
     <string name="sheet_meal_type">Meal Type</string>
     <string name="sheet_review_food">Review Food</string>
     <string name="sheet_edit_food">Edit Food</string>
+    <string name="favorite_edit_title">Edit Saved Food</string>
+    <string name="favorite_edit_name_taken">That name is already used by another food</string>
     <string name="what_if_title">What if?</string>
     <string name="what_if_subtitle">Preview how this meal changes today before logging it.</string>
     <string name="what_if_ai_suggestion">AI suggestion</string>
@@ -2033,6 +2035,7 @@
     <string name="cd_move_up">Move up</string>
     <string name="cd_move_down">Move down</string>
     <string name="cd_unfavorite">Unfavorite</string>
+    <string name="cd_edit_favorite">Edit saved food</string>
     <string name="cd_log">Log</string>
     <string name="cd_close">Close</string>
     <string name="cd_clear_quantity">Clear quantity</string>

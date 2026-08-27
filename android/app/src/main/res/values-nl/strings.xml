@@ -303,6 +303,8 @@
     <string name="sheet_meal_type">Maaltijdtype</string>
     <string name="sheet_review_food">Eten beoordelen</string>
     <string name="sheet_edit_food">Eten bewerken</string>
+    <string name="favorite_edit_title">Bewaard eten bewerken</string>
+    <string name="favorite_edit_name_taken">Deze naam wordt al door ander eten gebruikt</string>
 
     <string name="sheet_micro_sugar">Suiker</string>
     <string name="sheet_micro_added_sugar">Toegevoegde suiker</string>
@@ -794,6 +796,7 @@
     <string name="cd_selected">Geselecteerd</string>
     <string name="cd_share_meal">Maaltijd delen</string>
     <string name="cd_unfavorite">Uit favorieten verwijderen</string>
+    <string name="cd_edit_favorite">Bewaard eten bewerken</string>
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (eiwit %3$s, koolhydraten %4$s, vet %5$s)</string>
     <string name="coach_confirm_log_food_title">Dit voedsel loggen?</string>
     <string name="coach_confirm_log_water_title">Dit water loggen?</string>

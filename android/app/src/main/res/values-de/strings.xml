@@ -997,6 +997,8 @@ für dich ein</string>
     <string name="sheet_review_food">Lebensmittel überprüfen</string>
 
     <string name="sheet_edit_food">Lebensmittel bearbeiten</string>
+    <string name="favorite_edit_title">Gespeichertes Lebensmittel bearbeiten</string>
+    <string name="favorite_edit_name_taken">Dieser Name wird bereits von einem anderen Lebensmittel verwendet</string>
 
     <string name="what_if_title">Was wäre, wenn?</string>
 
@@ -2619,6 +2621,7 @@ für dich ein</string>
     <string name="cd_move_down">Nach unten verschieben</string>
 
     <string name="cd_unfavorite">Als Favorit entfernen</string>
+    <string name="cd_edit_favorite">Gespeichertes Lebensmittel bearbeiten</string>
 
     <string name="cd_log">Protokoll</string>
 

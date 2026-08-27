@@ -557,6 +557,8 @@
     <string name="sheet_meal_type">Typ posiłku</string>
     <string name="sheet_review_food">Przejrzyj produkt</string>
     <string name="sheet_edit_food">Edytuj produkt</string>
+    <string name="favorite_edit_title">Edytuj zapisany produkt</string>
+    <string name="favorite_edit_name_taken">Ta nazwa jest już używana przez inny produkt</string>
     <string name="what_if_title">A co gdyby?</string>
     <string name="what_if_subtitle">Podgląd, jak ten posiłek zmieni dzisiejszy dzień, zanim go zapiszesz.</string>
     <string name="what_if_ai_suggestion">Sugestia AI</string>
@@ -1424,6 +1426,7 @@
     <string name="cd_move_up">Przesuń w górę</string>
     <string name="cd_move_down">Przesuń w dół</string>
     <string name="cd_unfavorite">Usuń z ulubionych</string>
+    <string name="cd_edit_favorite">Edytuj zapisany produkt</string>
     <string name="cd_log">Dodaj</string>
     <string name="cd_close">Zamknij</string>
     <string name="cd_clear_quantity">Wyczyść ilość</string>

@@ -319,6 +319,8 @@
     <string name="sheet_meal_type">نوع الوجبة</string>
     <string name="sheet_review_food">مراجعة الطعام</string>
     <string name="sheet_edit_food">تحرير الطعام</string>
+    <string name="favorite_edit_title">تحرير طعام محفوظ</string>
+    <string name="favorite_edit_name_taken">هذا الاسم مستخدم بالفعل لطعام آخر</string>
 
     <string name="sheet_micro_sugar">السكر</string>
     <string name="sheet_micro_added_sugar">السكر المضاف</string>
@@ -824,6 +826,7 @@
     <string name="cd_selected">محدد</string>
     <string name="cd_share_meal">مشاركة الوجبة</string>
     <string name="cd_unfavorite">إزالة من المفضلة</string>
+    <string name="cd_edit_favorite">تحرير طعام محفوظ</string>
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (بروتين %3$s، كربوهيدرات %4$s، دهون %5$s)</string>
     <string name="coach_confirm_log_food_title">تسجيل هذا الطعام؟</string>
     <string name="coach_confirm_log_water_title">تسجيل هذا الماء؟</string>

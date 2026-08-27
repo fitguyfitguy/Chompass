@@ -557,6 +557,8 @@
     <string name="sheet_meal_type">Öğün Türü</string>
     <string name="sheet_review_food">Yiyeceği İncele</string>
     <string name="sheet_edit_food">Yiyeceği Düzenle</string>
+    <string name="favorite_edit_title">Kaydedilen Yiyeceği Düzenle</string>
+    <string name="favorite_edit_name_taken">Bu ad zaten başka bir yiyecek tarafından kullanılıyor</string>
     <string name="what_if_title">Ya şöyle olsaydı?</string>
     <string name="what_if_subtitle">Kaydetmeden önce bu öğünün bugünü nasıl değiştireceğini önizle.</string>
     <string name="what_if_ai_suggestion">AI önerisi</string>
@@ -1424,6 +1426,7 @@
     <string name="cd_move_up">Yukarı taşı</string>
     <string name="cd_move_down">Aşağı taşı</string>
     <string name="cd_unfavorite">Favoriden çıkar</string>
+    <string name="cd_edit_favorite">Kaydedilen yiyeceği düzenle</string>
     <string name="cd_log">Ekle</string>
     <string name="cd_close">Kapat</string>
     <string name="cd_clear_quantity">Miktarı temizle</string>

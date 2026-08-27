@@ -315,6 +315,8 @@
     <string name="sheet_meal_type">Tipo di pasto</string>
     <string name="sheet_review_food">Rivedi cibo</string>
     <string name="sheet_edit_food">Modifica cibo</string>
+    <string name="favorite_edit_title">Modifica cibo salvato</string>
+    <string name="favorite_edit_name_taken">Questo nome è già usato da un altro cibo</string>
 
     <string name="sheet_micro_sugar">Zuccheri</string>
     <string name="sheet_micro_added_sugar">Zuccheri aggiunti</string>
@@ -811,6 +813,7 @@
     <string name="cd_selected">Selezionato</string>
     <string name="cd_share_meal">Condividi pasto</string>
     <string name="cd_unfavorite">Rimuovi dai preferiti</string>
+    <string name="cd_edit_favorite">Modifica cibo salvato</string>
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (proteine %3$s, carboidrati %4$s, grassi %5$s)</string>
     <string name="coach_confirm_log_food_title">Registrare questo cibo?</string>
     <string name="coach_confirm_log_water_title">Registrare quest\'acqua?</string>

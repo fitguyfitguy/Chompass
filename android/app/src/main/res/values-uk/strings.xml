@@ -332,6 +332,8 @@
     <string name="sheet_meal_type">Прийом їжі</string>
     <string name="sheet_review_food">Перегляд страви</string>
     <string name="sheet_edit_food">Редагувати страву</string>
+    <string name="favorite_edit_title">Редагувати збережену страву</string>
+    <string name="favorite_edit_name_taken">Ця назва вже зайнята іншою стравою</string>
     <string name="sheet_micro_sugar">Цукор</string>
     <string name="sheet_micro_added_sugar">Доданий цукор</string>
     <string name="sheet_micro_fiber">Клітковина</string>
@@ -800,6 +802,7 @@
     <string name="cd_selected">Вибрано</string>
     <string name="cd_share_meal">Поділитися стравою</string>
     <string name="cd_unfavorite">Прибрати з обраного</string>
+    <string name="cd_edit_favorite">Редагувати збережену страву</string>
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (білок %3$s, вуглеводи %4$s, жири %5$s)</string>
     <string name="coach_confirm_log_food_title">Записати цю їжу?</string>
     <string name="coach_confirm_log_water_title">Записати цю воду?</string>

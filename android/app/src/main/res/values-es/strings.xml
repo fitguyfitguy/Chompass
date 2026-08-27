@@ -314,6 +314,8 @@
     <string name="sheet_meal_type">Tipo de comida</string>
     <string name="sheet_review_food">Revisar alimento</string>
     <string name="sheet_edit_food">Editar alimento</string>
+    <string name="favorite_edit_title">Editar alimento guardado</string>
+    <string name="favorite_edit_name_taken">Ese nombre ya lo usa otro alimento</string>
 
     <string name="sheet_micro_sugar">Azúcar</string>
     <string name="sheet_micro_added_sugar">Azúcar añadido</string>
@@ -882,6 +884,7 @@
     <string name="cd_selected">Seleccionado</string>
     <string name="cd_share_meal">Compartir comida</string>
     <string name="cd_unfavorite">Quitar de favoritos</string>
+    <string name="cd_edit_favorite">Editar alimento guardado</string>
     <string name="coach_confirm_log_food_title">¿Registrar esta comida?</string>
     <string name="coach_confirm_log_water_title">¿Registrar esta agua?</string>
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (%3$s proteína, %4$s carbohidratos, %5$s grasas)</string>

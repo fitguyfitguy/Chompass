@@ -395,6 +395,8 @@
     <string name="sheet_meal_type">Приём пищи</string>
     <string name="sheet_review_food">Проверить еду</string>
     <string name="sheet_edit_food">Изменить еду</string>
+    <string name="favorite_edit_title">Изменить сохранённую еду</string>
+    <string name="favorite_edit_name_taken">Это название уже занято другой едой</string>
     <string name="edit_icon_picker_title">Выбери значок</string>
     <string name="edit_icon_set_photo">Установить фото</string>
     <string name="edit_icon_remove_photo">Удалить фото</string>
@@ -823,6 +825,7 @@
     <string name="cd_move_up">Переместить вверх</string>
     <string name="cd_move_down">Переместить вниз</string>
     <string name="cd_unfavorite">Убрать из избранного</string>
+    <string name="cd_edit_favorite">Изменить сохранённую еду</string>
     <string name="cd_log">Записать</string>
     <string name="cd_close">Закрыть</string>
     <string name="cd_clear_quantity">Очистить количество</string>
