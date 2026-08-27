@@ -3,7 +3,7 @@ import { foodEntries, prefs } from "../lib/db.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 import { openConfirm } from "../lib/ui/dialog.js";
 import { guessMealTypeFromPrefs } from "../lib/meal-schedule.js";
-import { toggleFavorite, isFavorite } from "../lib/saved-meals.js";
+import { toggleFavorite, isFavorite, listFavorites, updateFavorite, favoriteNameTaken } from "../lib/saved-meals.js";
 import {
   ensureServingUnits,
   pickerOptions,
@@ -78,9 +78,17 @@ export class EntryForm extends HTMLElement {
   connectedCallback() {
     const params = new URLSearchParams(location.hash.split("?")[1] ?? "");
     this.date = params.get("date") ?? new Date().toISOString().slice(0, 10);
-    this.entryId = location.hash.match(/#\/entry\/([^?]+)/)?.[1];
+    // Codeberg #66: #/entry/favorite/<id> edits a stored favorite (saved-foods
+    // library) instead of a diary row. Parsed first so the plain entry regex
+    // doesn't swallow "favorite/<id>" as an entry id.
+    this.favoriteId = location.hash.match(/#\/entry\/favorite\/([^/?]+)/)?.[1] ?? null;
+    this.favoriteMode = Boolean(this.favoriteId);
+    this.entryId = this.favoriteId
+      ? null
+      : (location.hash.match(/#\/entry\/([^/?]+)/)?.[1] ?? null);
     this.existing = null;
     this.prefill = null;
+    this.nameError = "";
     this.nutritionLocked = false;
     /** @type {Record<string, number|null>|null} */
     this.baseNutrition = null;
@@ -243,13 +251,22 @@ export class EntryForm extends HTMLElement {
       const all = await foodEntries.byDate(this.date);
       this.existing = all.find((e) => e.id === this.entryId) ?? null;
     }
+    if (this.favoriteId && !this.existing) {
+      this.existing = (await listFavorites()).find((f) => f.id === this.favoriteId) ?? null;
+    }
     const appPrefs = await prefs.load();
     const e = this.existing ?? this.prefill ?? {};
     if (!this.servingReady) this.initServingState(e);
 
     const defaultMeal = e.mealType || guessMealTypeFromPrefs(appPrefs);
     const isNew = !this.existing;
-    const title = this.existing ? "Edit entry" : this.prefill ? "Review food" : "Log food";
+    const title = this.favoriteMode
+      ? "Edit saved food"
+      : this.existing
+        ? "Edit entry"
+        : this.prefill
+          ? "Review food"
+          : "Log food";
     const progressiveActive = !this.existing && hasProgressiveMealItems();
     const primaryLabel = this.existing
       ? "Save"
@@ -286,6 +303,7 @@ export class EntryForm extends HTMLElement {
             <label for="name">Name</label>
             <input id="name" name="name" required value="${e.name ? escapeAttr(e.name) : ""}" />
           </div>
+          ${this.nameError ? `<p class="entry-form__error" role="alert">${escapeHtml(this.nameError)}</p>` : ""}
           ${
             e.note && isNew
               ? `<p class="entry-ai-note">${escapeHtml(String(e.note))}</p>`
@@ -401,10 +419,14 @@ export class EntryForm extends HTMLElement {
                   .join("")}
               </select>
             </div>
-            <div class="field">
+            ${
+              this.favoriteMode
+                ? ""
+                : `<div class="field">
               <label for="time">Time</label>
               <input id="time" name="time" type="time" value="${e.time ?? nowHm()}" />
-            </div>
+            </div>`
+            }
           </div>
           <div class="field">
             <label for="note">Note (optional)</label>
@@ -412,10 +434,19 @@ export class EntryForm extends HTMLElement {
           </div>
         </section>
 
-        ${this.existing ? this.renderCorrectSection(e) : ""}
+        ${this.existing && !this.favoriteMode ? this.renderCorrectSection(e) : ""}
 
-        ${this.existing ? `<button type="button" class="btn btn--ghost" data-action="favorite">${fav ? "Unfavorite" : "Favorite"}</button>` : ""}
-        ${this.existing ? `<button type="button" class="btn btn--danger" data-action="delete">Delete</button>` : ""}
+        ${
+          this.existing && !this.favoriteMode
+            ? `<button type="button" class="btn btn--ghost" data-action="favorite">${fav ? "Unfavorite" : "Favorite"}</button>`
+            : ""
+        }
+        ${
+          this.favoriteMode
+            ? `<button type="button" class="btn btn--ghost" data-action="favorite">Remove from favorites</button>`
+            : ""
+        }
+        ${this.existing && !this.favoriteMode ? `<button type="button" class="btn btn--danger" data-action="delete">Delete</button>` : ""}
         <div class="subpage-cta btn-row">
           <button type="submit" class="btn btn--primary" ${this.correcting ? "disabled" : ""}>${primaryLabel}</button>
           ${
@@ -443,6 +474,11 @@ export class EntryForm extends HTMLElement {
     this.querySelector('[data-action="favorite"]')?.addEventListener("click", async () => {
       if (!this.existing) return;
       await toggleFavorite(this.existing);
+      if (this.favoriteMode) {
+        // Library edit: removing the saved food ends the edit.
+        location.hash = "#/home";
+        return;
+      }
       this.servingReady = false;
       this.render();
     });
@@ -1057,7 +1093,9 @@ export class EntryForm extends HTMLElement {
       name: String(fd.get("name") || "").trim() || "Food",
       mealType: /** @type {any} */ (fd.get("mealType")),
       date: this.date,
-      time: String(fd.get("time") || nowHm()),
+      time: this.favoriteMode
+        ? (this.existing?.time ?? nowHm())
+        : String(fd.get("time") || nowHm()),
       quantityG: servingGrams > 0 ? Math.round(servingGrams * 10) / 10 : null,
       servingUnitOptions: this.servingUnitOptions,
       selectedServingUnit: this.selectedServingUnit,
@@ -1111,6 +1149,20 @@ export class EntryForm extends HTMLElement {
     }
     const entry = this.buildEntryFromForm();
     if (!entry) return;
+    if (this.favoriteMode) {
+      // Codeberg #66: the name is the identity key shared with diary rows and
+      // other favorites — a taken name blocks the library save (Android parity).
+      if (await favoriteNameTaken(entry.name, this.favoriteId)) {
+        this.captureFormIntoSource();
+        this.nameError = "That name is already used by another food";
+        this.servingReady = true;
+        this.render();
+        return;
+      }
+      await updateFavorite(entry);
+      location.hash = "#/home";
+      return;
+    }
     await foodEntries.put(entry);
     location.hash = "#/home";
   }

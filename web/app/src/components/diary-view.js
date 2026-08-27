@@ -1617,7 +1617,7 @@ export class DiaryView extends HTMLElement {
     const renderTab = async () => {
       const root = sheet.body.querySelector("[data-saved-root]");
       if (!root) return;
-      /** @type {Array<{label: string, meta: string, entry: import('../lib/chompass-core/models.js').FoodEntry, count?: number}>} */
+      /** @type {Array<{label: string, meta: string, entry: import('../lib/chompass-core/models.js').FoodEntry, count?: number, favEditId?: string}>} */
       let rows = [];
       if (segment === "RECENTS") {
         rows = (await recentFoodTemplates(30, 40)).map((e) => ({
@@ -1637,6 +1637,7 @@ export class DiaryView extends HTMLElement {
           label: e.name,
           meta: `${formatNumber(Math.round(e.calories))} kcal · ${Math.round(e.proteinG)}P / ${Math.round(e.carbsG)}C / ${Math.round(e.fatG)}F`,
           entry: e,
+          favEditId: e.id,
         }));
       } else {
         const recipeList = await listRecipes();
@@ -1701,10 +1702,17 @@ export class DiaryView extends HTMLElement {
                 ${rows
                   .map(
                     (r) => `
-                  <button type="button" data-prefill='${escapeAttr(JSON.stringify(toPrefill(r.entry)))}'>
-                    <strong>${escapeHtml(r.label)}</strong><br/>
-                    <span class="recents-meta">${escapeHtml(r.meta)}</span>
-                  </button>`
+                  <div class="saved-row">
+                    <button type="button" class="saved-row__main" data-prefill='${escapeAttr(JSON.stringify(toPrefill(r.entry)))}'>
+                      <strong>${escapeHtml(r.label)}</strong><br/>
+                      <span class="recents-meta">${escapeHtml(r.meta)}</span>
+                    </button>
+                    ${
+                      r.favEditId
+                        ? `<button type="button" class="saved-row__edit" data-edit-favorite="${escapeAttr(r.favEditId)}" aria-label="Edit saved food" title="Edit saved food">✎</button>`
+                        : ""
+                    }
+                  </div>`
                   )
                   .join("")}
               </div>`
@@ -1726,6 +1734,17 @@ export class DiaryView extends HTMLElement {
           sheet.close();
           parentSheet.close();
           location.hash = `#/entry/new?date=${this.date}&prefill=${encodeURIComponent(JSON.stringify(prefill))}`;
+        });
+      });
+      // Codeberg #66: edit the saved food itself (library semantics) instead
+      // of only prefilling a new diary row.
+      root.querySelectorAll("[data-edit-favorite]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-edit-favorite");
+          if (!id) return;
+          sheet.close();
+          parentSheet.close();
+          location.hash = `#/entry/favorite/${id}`;
         });
       });
     };

@@ -143,6 +143,59 @@ export async function listFavorites() {
   return favoritesStore.all();
 }
 
+/**
+ * Pure update normalization for a stored favorite (Codeberg #66, Android
+ * FoodRepository.updateFavorite parity): the id stays as passed so the sync
+ * LWW chain survives renames (which change favoriteKey), and recipeLogId is
+ * normalized to null — a favorite is a standalone saved food.
+ * @param {import('./chompass-core/models.js').FoodEntry} entry
+ * @returns {import('./chompass-core/models.js').FoodEntry}
+ */
+export function normalizedFavoriteUpdate(entry) {
+  return { ...entry, recipeLogId: null };
+}
+
+/**
+ * Update a stored favorite in place (Codeberg #66): favorites are a
+ * permanently editable saved-foods library. Same id → IndexedDB put replaces
+ * the row; the caller has already checked the name is not taken.
+ * @param {import('./chompass-core/models.js').FoodEntry} entry
+ * @returns {Promise<import('./chompass-core/models.js').FoodEntry>}
+ */
+export async function updateFavorite(entry) {
+  const copy = normalizedFavoriteUpdate(entry);
+  await favoritesStore.put(copy);
+  return copy;
+}
+
+/**
+ * Pure rename-collision check (Android FoodRepository.favoriteRenameBlocklist
+ * parity): true when [name] identifies any diary row or any favorite other
+ * than the one being renamed — the name is the identity key, so a taken name
+ * blocks the save instead of silently forking identities.
+ * @param {string} name
+ * @param {import('./chompass-core/models.js').FoodEntry[]} diary
+ * @param {import('./chompass-core/models.js').FoodEntry[]} favorites
+ * @param {string|null} [selfId] id of the favorite being renamed (own key allowed)
+ */
+export function favoriteNameTakenFrom(name, diary, favorites, selfId = null) {
+  const key = favoriteKey({ name });
+  if (!key) return false;
+  return (
+    diary.some((e) => favoriteKey(e) === key) ||
+    favorites.some((f) => f.id !== selfId && favoriteKey(f) === key)
+  );
+}
+
+/**
+ * @param {string} name
+ * @param {string|null} [selfId]
+ * @returns {Promise<boolean>}
+ */
+export async function favoriteNameTaken(name, selfId = null) {
+  return favoriteNameTakenFrom(name, await foodEntries.all(), await favoritesStore.all(), selfId);
+}
+
 /** @param {import('./chompass-core/models.js').FoodEntry} entry */
 export async function isFavorite(entry) {
   const key = favoriteKey(entry);
