@@ -1844,9 +1844,30 @@
     <string name="settings_caffeine_intro">记录咖啡、茶和能量饮料，将今日总量（含食物条目中的咖啡因）与你自设的每日 mg 上限对比，并可在按日历史中编辑或删除任何记录。</string>
     <string name="settings_caffeine_section_quick">快速记录</string>
     <string name="settings_caffeine_section_tracking">追踪</string>
-    <string name="settings_caffeine_quick_kinds_help">在添加食物面板上显示为 +1 角标的种类。</string>
+    <string name="settings_caffeine_quick_kinds_help">在添加食物面板上显示为 +1 角标的预设。</string>
     <string name="settings_caffeine_limit_wheel_help">滚动设置每日咖啡因上限，范围 0（无上限）到 1000 mg。</string>
     <string name="settings_caffeine_privacy_note">咖啡因记录只保存在本设备和你的 WebDAV 同步中。它们绝不会包含在共享餐食里，也绝不会发送给 AI 提供商。</string>
+    <!-- Tracker preset managers (custom/renamed caffeine + nicotine presets, #55 follow-up). -->
+    <string name="settings_tracker_presets_section">预设</string>
+    <string name="settings_tracker_presets_help_caffeine">重命名内置饮品，或添加带默认量的自定义饮品。此处的顺序即添加食物面板上角标的顺序。</string>
+    <string name="settings_tracker_presets_help_nicotine">重命名内置产品，或添加带默认数量的自定义产品。此处的顺序即添加食物面板上角标的顺序。</string>
+    <string name="settings_caffeine_preset_add">添加饮品</string>
+    <string name="settings_nicotine_preset_add">添加产品</string>
+    <string name="caffeine_preset_editor_title_add">新饮品</string>
+    <string name="caffeine_preset_editor_title_edit">编辑饮品</string>
+    <string name="nicotine_preset_editor_title_add">新产品</string>
+    <string name="nicotine_preset_editor_title_edit">编辑产品</string>
+    <string name="settings_tracker_preset_name">名称</string>
+    <string name="caffeine_preset_default_mg">默认量 (mg)</string>
+    <string name="nicotine_preset_default_count">默认数量</string>
+    <string name="nicotine_preset_default_dose">每份默认尼古丁 (mg，可选)</string>
+    <string name="settings_tracker_preset_builtin">内置</string>
+    <string name="settings_tracker_preset_delete_title">删除预设？</string>
+    <string name="settings_tracker_preset_delete_named">“%1$s”将被删除。</string>
+    <string name="settings_tracker_preset_amounts_kept">数量保持不变。</string>
+    <plurals name="settings_tracker_preset_delete_entries">
+        <item quantity="other">%1$d 条记录将移至其他。</item>
+    </plurals>
     <string name="nicotine">尼古丁</string>
     <string name="nicotine_add">添加尼古丁</string>
     <string name="nicotine_log_title">记录尼古丁</string>
@@ -1878,7 +1899,7 @@
     <string name="settings_nicotine_intro">记录香烟、电子烟和尼古丁袋，将今日总量与你自设的每日上限对比，并可在按日历史中编辑或删除任何记录。</string>
     <string name="settings_nicotine_section_quick">快速记录</string>
     <string name="settings_nicotine_section_tracking">追踪</string>
-    <string name="settings_nicotine_quick_kinds_help">在添加食物面板上显示为 +1 角标的种类。</string>
+    <string name="settings_nicotine_quick_kinds_help">在添加食物面板上显示为 +1 角标的预设。</string>
     <string name="settings_nicotine_limit_wheel_help">滚动设置每日上限，范围 0（无上限）到 100 次。</string>
     <string name="settings_nicotine_privacy_note">尼古丁记录只保存在本设备和你的 WebDAV 同步中。它们绝不会包含在共享餐食里，也绝不会发送给 AI 提供商。</string>
     <string name="settings_notes_title">每日笔记</string>

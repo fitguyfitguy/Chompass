@@ -499,7 +499,7 @@
     <string name="settings_nicotine_section_tracking">Tracking</string>
     <string name="settings_nicotine_tracking">Nicotine tracking</string>
     <string name="settings_nicotine_section_quick">Quick log</string>
-    <string name="settings_nicotine_quick_kinds_help">Kinds shown as +1 chips on the Add food sheet.</string>
+    <string name="settings_nicotine_quick_kinds_help">Presets shown as +1 chips on the Add food sheet.</string>
     <string name="settings_nicotine_limit_wheel_help">Scroll to set a daily count limit from 0 (no limit) to 100.</string>
     <string name="settings_nicotine_privacy_note">Nicotine logs stay on this device and in your WebDAV sync only. They are never included in shared meals and never sent to an AI provider.</string>
     <!-- Optional caffeine tracker (device-pass revision of the caffeine plan). -->
@@ -530,9 +530,31 @@
     <string name="settings_caffeine_section_tracking">Tracking</string>
     <string name="settings_caffeine_tracking">Caffeine tracking</string>
     <string name="settings_caffeine_section_quick">Quick log</string>
-    <string name="settings_caffeine_quick_kinds_help">Kinds shown as +1 chips on the Add food sheet.</string>
+    <string name="settings_caffeine_quick_kinds_help">Presets shown as +1 chips on the Add food sheet.</string>
     <string name="settings_caffeine_limit_wheel_help">Scroll to set a daily caffeine limit from 0 (no limit) to 1000 mg.</string>
     <string name="settings_caffeine_privacy_note">Caffeine logs stay on this device and in your WebDAV sync only. They are never included in shared meals and never sent to an AI provider.</string>
+    <!-- Tracker preset managers (custom/renamed caffeine + nicotine presets, #55 follow-up). -->
+    <string name="settings_tracker_presets_section">Presets</string>
+    <string name="settings_tracker_presets_help_caffeine">Rename the built-in drinks or add your own with a default amount. The order here is the chip order on the Add food sheet.</string>
+    <string name="settings_tracker_presets_help_nicotine">Rename the built-in products or add your own with a default count. The order here is the chip order on the Add food sheet.</string>
+    <string name="settings_caffeine_preset_add">Add drink</string>
+    <string name="settings_nicotine_preset_add">Add product</string>
+    <string name="caffeine_preset_editor_title_add">New drink</string>
+    <string name="caffeine_preset_editor_title_edit">Edit drink</string>
+    <string name="nicotine_preset_editor_title_add">New product</string>
+    <string name="nicotine_preset_editor_title_edit">Edit product</string>
+    <string name="settings_tracker_preset_name">Name</string>
+    <string name="caffeine_preset_default_mg">Default amount (mg)</string>
+    <string name="nicotine_preset_default_count">Default count</string>
+    <string name="nicotine_preset_default_dose">Default nicotine per dose (mg, optional)</string>
+    <string name="settings_tracker_preset_builtin">Built-in</string>
+    <string name="settings_tracker_preset_delete_title">Delete preset?</string>
+    <string name="settings_tracker_preset_delete_named">\"%1$s\" will be deleted.</string>
+    <string name="settings_tracker_preset_amounts_kept">Amounts stay unchanged.</string>
+    <plurals name="settings_tracker_preset_delete_entries">
+        <item quantity="one">%1$d logged entry moves to Other.</item>
+        <item quantity="other">%1$d logged entries move to Other.</item>
+    </plurals>
     <!-- Optional daily notes (docs/local/PLAN_DAILY_NOTES.md); default off. -->
     <string name="settings_notes_title">Daily notes</string>
     <string name="settings_notes_intro">Write a private note for any day — a journal, a log, or a reminder. Notes sync and export with your diary.</string>

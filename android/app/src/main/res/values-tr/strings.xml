@@ -1864,9 +1864,31 @@
     <string name="settings_caffeine_intro">Kahve, çay ve enerji içeceklerini kaydedin, bugünün toplamını (yemeklerdeki kafein dahil) belirlediğiniz mg cinsinden günlük limite göre görün ve günlük geçmişten kayıtları düzenleyin ya da silin.</string>
     <string name="settings_caffeine_section_quick">Hızlı kayıt</string>
     <string name="settings_caffeine_section_tracking">Takip</string>
-    <string name="settings_caffeine_quick_kinds_help">Yemek ekleme sayfasında +1 çipleri olarak gösterilen türler.</string>
+    <string name="settings_caffeine_quick_kinds_help">Yemek ekleme sayfasında +1 çipleri olarak gösterilen hazır ayarlar.</string>
     <string name="settings_caffeine_limit_wheel_help">0 (limitsiz) ile 1000 mg arasında günlük kafein limiti ayarlamak için kaydırın.</string>
     <string name="settings_caffeine_privacy_note">Kafein kayıtları bu cihazda ve yalnızca WebDAV eşzamanlamanızda kalır. Paylaşılan yemeklere asla eklenmez ve hiçbir zaman bir yapay zekâ sağlayıcısına gönderilmez.</string>
+    <!-- Tracker preset managers (custom/renamed caffeine + nicotine presets, #55 follow-up). -->
+    <string name="settings_tracker_presets_section">Hazır ayarlar</string>
+    <string name="settings_tracker_presets_help_caffeine">Yerleşik içecekleri yeniden adlandırın veya varsayılan miktarıyla kendi içeceğinizi ekleyin. Buradaki sıra, yemek ekleme sayfasındaki çip sırasıdır.</string>
+    <string name="settings_tracker_presets_help_nicotine">Yerleşik ürünleri yeniden adlandırın veya varsayılan sayıda kendi ürününüzü ekleyin. Buradaki sıra, yemek ekleme sayfasındaki çip sırasıdır.</string>
+    <string name="settings_caffeine_preset_add">İçecek ekle</string>
+    <string name="settings_nicotine_preset_add">Ürün ekle</string>
+    <string name="caffeine_preset_editor_title_add">Yeni içecek</string>
+    <string name="caffeine_preset_editor_title_edit">İçeceği düzenle</string>
+    <string name="nicotine_preset_editor_title_add">Yeni ürün</string>
+    <string name="nicotine_preset_editor_title_edit">Ürünü düzenle</string>
+    <string name="settings_tracker_preset_name">Ad</string>
+    <string name="caffeine_preset_default_mg">Varsayılan miktar (mg)</string>
+    <string name="nicotine_preset_default_count">Varsayılan sayı</string>
+    <string name="nicotine_preset_default_dose">Doz başına varsayılan nikotin (mg, isteğe bağlı)</string>
+    <string name="settings_tracker_preset_builtin">Yerleşik</string>
+    <string name="settings_tracker_preset_delete_title">Hazır ayar silinsin mi?</string>
+    <string name="settings_tracker_preset_delete_named">\"%1$s\" silinecek.</string>
+    <string name="settings_tracker_preset_amounts_kept">Miktarlar değişmeden kalır.</string>
+    <plurals name="settings_tracker_preset_delete_entries">
+        <item quantity="one">%1$d kayıtlı giriş Diğer\'e taşınır.</item>
+        <item quantity="other">%1$d kayıtlı giriş Diğer\'e taşınır.</item>
+    </plurals>
     <string name="nicotine">Nikotin</string>
     <string name="nicotine_add">Nikotin ekle</string>
     <string name="nicotine_log_title">Nikotin kaydet</string>
@@ -1898,7 +1920,7 @@
     <string name="settings_nicotine_intro">Sigara, elektronik sigara ve nikotin poşetlerini kaydedin, bugünün toplamını belirlediğiniz günlük limite göre görün ve günlük geçmişten kayıtları düzenleyin ya da silin.</string>
     <string name="settings_nicotine_section_quick">Hızlı kayıt</string>
     <string name="settings_nicotine_section_tracking">Takip</string>
-    <string name="settings_nicotine_quick_kinds_help">Yemek ekleme sayfasında +1 çipleri olarak gösterilen türler.</string>
+    <string name="settings_nicotine_quick_kinds_help">Yemek ekleme sayfasında +1 çipleri olarak gösterilen hazır ayarlar.</string>
     <string name="settings_nicotine_limit_wheel_help">0 (limitsiz) ile 100 adet arasında günlük limit ayarlamak için kaydırın.</string>
     <string name="settings_nicotine_privacy_note">Nikotin kayıtları bu cihazda ve yalnızca WebDAV eşzamanlamanızda kalır. Paylaşılan yemeklere asla eklenmez ve hiçbir zaman bir yapay zekâ sağlayıcısına gönderilmez.</string>
     <string name="settings_notes_title">Günlük notlar</string>
