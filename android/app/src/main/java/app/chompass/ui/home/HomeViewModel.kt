@@ -2433,6 +2433,16 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
+    /**
+     * Permanently edit a stored favorite (Codeberg #66): the saved-foods
+     * library row is updated in place; diary rows are untouched.
+     */
+    fun updateFavorite(original: FoodEntry, updated: FoodEntry) {
+        viewModelScope.launch {
+            container.foodRepository.updateFavorite(original, updated)
+        }
+    }
+
     fun updateEntry(original: FoodEntry, updated: FoodEntry) {
         viewModelScope.launch {
             container.foodRepository.updateEntry(original, updated)

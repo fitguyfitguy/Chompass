@@ -320,6 +320,8 @@
     <string name="sheet_meal_type">餐食类型</string>
     <string name="sheet_review_food">核对食物</string>
     <string name="sheet_edit_food">编辑食物</string>
+    <string name="favorite_edit_title">编辑收藏食物</string>
+    <string name="favorite_edit_name_taken">该名称已被其他食物使用</string>
 
     <string name="sheet_micro_sugar">糖</string>
     <string name="sheet_micro_added_sugar">添加糖</string>
@@ -825,6 +827,7 @@
     <string name="cd_selected">已选择</string>
     <string name="cd_share_meal">分享餐食</string>
     <string name="cd_unfavorite">取消收藏</string>
+    <string name="cd_edit_favorite">编辑收藏食物</string>
     <string name="coach_confirm_log_food_summary">%1$s：%2$s（蛋白质 %3$s、碳水 %4$s、脂肪 %5$s）</string>
     <string name="coach_confirm_log_food_title">记录这份食物？</string>
     <string name="coach_confirm_log_water_title">记录这次饮水？</string>

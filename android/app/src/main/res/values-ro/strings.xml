@@ -314,6 +314,8 @@
     <string name="sheet_meal_type">Tipul mesei</string>
     <string name="sheet_review_food">Verifică alimentul</string>
     <string name="sheet_edit_food">Editează alimentul</string>
+    <string name="favorite_edit_title">Editează alimentul salvat</string>
+    <string name="favorite_edit_name_taken">Numele acesta este deja folosit de un alt aliment</string>
 
     <string name="sheet_micro_sugar">Zahăr</string>
     <string name="sheet_micro_added_sugar">Zahăr adăugat</string>
@@ -816,6 +818,7 @@
     <string name="cd_selected">Selectat</string>
     <string name="cd_share_meal">Partajează masa</string>
     <string name="cd_unfavorite">Elimină din favorite</string>
+    <string name="cd_edit_favorite">Editează alimentul salvat</string>
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (proteine %3$s, carbohidrați %4$s, grăsimi %5$s)</string>
     <string name="coach_confirm_log_food_title">Înregistrezi această mâncare?</string>
     <string name="coach_confirm_log_water_title">Înregistrezi această apă?</string>

@@ -319,6 +319,8 @@
     <string name="sheet_meal_type">식사 종류</string>
     <string name="sheet_review_food">음식 검토</string>
     <string name="sheet_edit_food">음식 편집</string>
+    <string name="favorite_edit_title">저장한 음식 편집</string>
+    <string name="favorite_edit_name_taken">이 이름은 이미 다른 음식이 사용 중이에요</string>
 
     <string name="sheet_micro_sugar">당류</string>
     <string name="sheet_micro_added_sugar">첨가당</string>
@@ -823,6 +825,7 @@
     <string name="cd_selected">선택됨</string>
     <string name="cd_share_meal">식사 공유</string>
     <string name="cd_unfavorite">즐겨찾기에서 제거</string>
+    <string name="cd_edit_favorite">저장한 음식 편집</string>
     <string name="coach_confirm_log_food_summary">%1$s: %2$s(단백질 %3$s, 탄수화물 %4$s, 지방 %5$s)</string>
     <string name="coach_confirm_log_food_title">이 음식을 기록할까요?</string>
     <string name="coach_confirm_log_water_title">이 물을 기록할까요?</string>

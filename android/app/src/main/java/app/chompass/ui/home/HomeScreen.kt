@@ -166,6 +166,8 @@ fun HomeScreen(
     var showFoodSearch by rememberSaveable { mutableStateOf(false) }
     var editingEntry by remember { mutableStateOf<FoodEntry?>(null) }
     var editingRecipe by remember { mutableStateOf<app.chompass.models.Recipe?>(null) }
+    // Codeberg #66: favorite currently open in the saved-food editor.
+    var editingFavorite by remember { mutableStateOf<FoodEntry?>(null) }
     var showNutritionDetail by rememberSaveable { mutableStateOf(false) }
     // #60: day-type quick-switch sheet (hero chip).
     var showDayTypeSheet by rememberSaveable { mutableStateOf(false) }
@@ -1195,7 +1197,26 @@ fun HomeScreen(
                 savedMealsTab = null
                 addFoodFlowActive = false
                 editingRecipe = app.chompass.models.Recipe(name = "")
+            },
+            // Codeberg #66: close the sheet first (same pattern as recipe
+            // editing) so the favorite editor renders as its own modal.
+            onEditFavorite = { favorite ->
+                savedMealsTab = null
+                addFoodFlowActive = false
+                editingFavorite = favorite
             }
+        )
+    }
+
+    editingFavorite?.let { favorite ->
+        EditFavoriteSheet(
+            container = container,
+            entry = favorite,
+            onSave = { updated ->
+                vm.updateFavorite(favorite, updated)
+                editingFavorite = null
+            },
+            onDismiss = { editingFavorite = null }
         )
     }
 
@@ -1503,6 +1524,10 @@ fun HomeScreen(
                 ?: if (ui.pendingImageBytes != null) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT,
             portionPreConfirmed = ui.pendingPortionPreConfirmed,
             progressiveMealActive = ui.progressiveMeal?.items?.isNotEmpty() == true,
+            // Codeberg #66: a Saved Meals review starts from the saved food's
+            // meal slot (favorites as a library); fresh analyses keep the
+            // time-of-day guess.
+            initialMealType = ui.pendingReviewSource?.mealType,
             onWhatIfSuggestion = if (aiFeaturesEnabled) vm::suggestMealWhatIf else null,
             onReanalyzeWithTip = if (
                 aiFeaturesEnabled &&

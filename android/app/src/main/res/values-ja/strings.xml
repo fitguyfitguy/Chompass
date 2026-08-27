@@ -318,6 +318,8 @@
     <string name="sheet_meal_type">食事タイプ</string>
     <string name="sheet_review_food">食事を確認</string>
     <string name="sheet_edit_food">食事を編集</string>
+    <string name="favorite_edit_title">保存した食事を編集</string>
+    <string name="favorite_edit_name_taken">この名前はすでに他の食事で使われています</string>
 
     <string name="sheet_micro_sugar">糖質</string>
     <string name="sheet_micro_added_sugar">添加糖</string>
@@ -823,6 +825,7 @@
     <string name="cd_selected">選択中</string>
     <string name="cd_share_meal">食事を共有</string>
     <string name="cd_unfavorite">お気に入りから削除</string>
+    <string name="cd_edit_favorite">保存した食事を編集</string>
     <string name="coach_confirm_log_food_summary">%1$s：%2$s（タンパク質 %3$s、炭水化物 %4$s、脂質 %5$s）</string>
     <string name="coach_confirm_log_food_title">この食品を記録しますか？</string>
     <string name="coach_confirm_log_water_title">この水を記録しますか？</string>

@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Schedule
@@ -114,7 +115,9 @@ fun SavedMealsSheet(
     onLogEntry: (FoodEntry) -> Unit,
     onLogRecipe: (Recipe) -> Unit = {},
     onEditRecipe: (Recipe) -> Unit = {},
-    onCreateRecipe: () -> Unit = {}
+    onCreateRecipe: () -> Unit = {},
+    /** Codeberg #66: open the favorite editor for a stored favorite. */
+    onEditFavorite: (FoodEntry) -> Unit = {},
 ) {
     val state = rememberChompassSheetState()
     val scope = rememberCoroutineScope()
@@ -327,7 +330,8 @@ fun SavedMealsSheet(
                         // Drag-to-reorder is hidden during search since the
                         // filtered indices don't map back to the unfiltered
                         // favorites array — letting reorder run on a filtered
-                        // list would silently swap the wrong items.
+                        // list would silently swap the wrong items. Editing
+                        // still works: it targets the entry, not an index.
                         SavedList(items = filteredFavorites) { entry ->
                             SavedMealRow(
                                 entry = entry,
@@ -335,6 +339,19 @@ fun SavedMealsSheet(
                                 subtitle = null,
                                 imageStore = container.imageStore,
                                 onClick = { onRelogEntry(entry); onDismiss() },
+                                trailing = {
+                                    IconButton(
+                                        onClick = { onEditFavorite(entry) },
+                                        modifier = Modifier.size(36.dp),
+                                    ) {
+                                        Icon(
+                                            Icons.Outlined.Edit,
+                                            contentDescription = stringResource(R.string.cd_edit_favorite),
+                                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                            modifier = Modifier.size(18.dp),
+                                        )
+                                    }
+                                },
                                 onLog = { onLogEntry(entry); onDismiss() },
                             )
                         }
@@ -343,6 +360,7 @@ fun SavedMealsSheet(
                             favorites = favorites,
                             imageStore = container.imageStore,
                             onTap = { entry -> onRelogEntry(entry); onDismiss() },
+                            onEdit = onEditFavorite,
                             onRemove = { entry ->
                                 scope.launch { container.foodRepository.toggleFavorite(entry) }
                             },
@@ -452,12 +470,16 @@ private fun <T> SavedList(items: List<T>, row: @Composable (T) -> Unit) {
  * for manual list ordering (used by system Settings for default-app priority,
  * accessibility shortcut order, etc.) is per-row up/down arrow buttons; we
  * use that here.
+ *
+ * Each row also carries a pencil (Codeberg #66): tap to edit the saved food
+ * itself — meal slot, name, macros — permanently, in the favorites library.
  */
 @Composable
 private fun FavoritesReorderableList(
     favorites: List<FoodEntry>,
     imageStore: FoodImageStore,
     onTap: (FoodEntry) -> Unit,
+    onEdit: (FoodEntry) -> Unit,
     onRemove: (FoodEntry) -> Unit,
     onMove: (Int, Int) -> Unit
 ) {
@@ -485,12 +507,28 @@ private fun FavoritesReorderableList(
                     imageStore = imageStore,
                     onClick = { onTap(entry) },
                     trailing = {
-                        MoveButtons(
-                            canMoveUp = idx > 0,
-                            canMoveDown = idx < lastIndex,
-                            onMoveUp = { onMove(idx, idx - 1) },
-                            onMoveDown = { onMove(idx, idx + 1) }
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
+                            IconButton(
+                                onClick = { onEdit(entry) },
+                                modifier = Modifier.size(36.dp),
+                            ) {
+                                Icon(
+                                    Icons.Outlined.Edit,
+                                    contentDescription = stringResource(R.string.cd_edit_favorite),
+                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                    modifier = Modifier.size(18.dp),
+                                )
+                            }
+                            MoveButtons(
+                                canMoveUp = idx > 0,
+                                canMoveDown = idx < lastIndex,
+                                onMoveUp = { onMove(idx, idx - 1) },
+                                onMoveDown = { onMove(idx, idx + 1) }
+                            )
+                        }
                     }
                 )
             }

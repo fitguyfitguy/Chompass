@@ -314,6 +314,8 @@ bilirsən?</string>
     <string name="sheet_meal_type">Yemək Növü</string>
     <string name="sheet_review_food">Yeməyi Nəzərdən Keçir</string>
     <string name="sheet_edit_food">Yeməyi Redaktə Et</string>
+    <string name="favorite_edit_title">Sevimli Yeməyi Redaktə Et</string>
+    <string name="favorite_edit_name_taken">Bu ad artıq başqa bir yemək tərəfindən istifadə olunur</string>
 
     <string name="sheet_micro_sugar">Şəkər</string>
     <string name="sheet_micro_added_sugar">Əlavə Şəkər</string>
@@ -816,6 +818,7 @@ bilirsən?</string>
     <string name="cd_selected">Seçilib</string>
     <string name="cd_share_meal">Yeməyi paylaş</string>
     <string name="cd_unfavorite">Sevimlilərdən çıxar</string>
+    <string name="cd_edit_favorite">Sevimli yeməyi redaktə et</string>
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (protein %3$s, karbohidrat %4$s, yağ %5$s)</string>
     <string name="coach_confirm_log_food_title">Bu yeməyi qeyd edim?</string>
     <string name="coach_confirm_log_water_title">Bu suyu qeyd edim?</string>

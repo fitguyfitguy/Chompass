@@ -319,6 +319,8 @@
     <string name="sheet_meal_type">भोजन का प्रकार</string>
     <string name="sheet_review_food">भोजन समीक्षा करें</string>
     <string name="sheet_edit_food">भोजन संपादित करें</string>
+    <string name="favorite_edit_title">सहेजा गया भोजन संपादित करें</string>
+    <string name="favorite_edit_name_taken">यह नाम पहले से किसी और भोजन के लिए इस्तेमाल में है</string>
 
     <string name="sheet_micro_sugar">चीनी</string>
     <string name="sheet_micro_added_sugar">अतिरिक्त चीनी</string>
@@ -824,6 +826,7 @@
     <string name="cd_selected">चयनित</string>
     <string name="cd_share_meal">भोजन साझा करें</string>
     <string name="cd_unfavorite">पसंदीदा से हटाएं</string>
+    <string name="cd_edit_favorite">सहेजा गया भोजन संपादित करें</string>
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (प्रोटीन %3$s, कार्ब्स %4$s, वसा %5$s)</string>
     <string name="coach_confirm_log_food_title">यह खाना लॉग करें?</string>
     <string name="coach_confirm_log_water_title">यह पानी लॉग करें?</string>
