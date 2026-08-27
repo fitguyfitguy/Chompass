@@ -154,17 +154,17 @@ class HomeFoodLogLazyMoveTest {
         composeRule.onNodeWithText("Bread roll").assertExists()
         composeRule.onNodeWithText("Milk chocolate").assertExists()
 
-        // #56 fix contract: the moved row must be re-composed under the
-        // destination group (dispose + compose), not moved in place — the
-        // move-in-place path is what dropped the card on device.
+        // #56 fix contract: both the moved row and destination siblings must
+        // re-compose (dispose + compose). A stable-key unmoved sibling is what
+        // still vanished ~1/10 times on 4.0.0.
         composeRule.runOnIdle {
             org.junit.Assert.assertEquals(
                 "moved row must be composed twice (LUNCH then BREAKFAST)",
                 2, composeCount["Bread roll"],
             )
             org.junit.Assert.assertEquals(
-                "unmoved row must not be recomposed",
-                1, composeCount["Milk chocolate"],
+                "destination sibling must remount when group membership changes",
+                2, composeCount["Milk chocolate"],
             )
         }
     }
@@ -192,8 +192,9 @@ private fun HomeFoodLogTestList(
                     Text("HEADER-${group.meal}", Modifier.fillMaxWidth())
                 }
                 // Group-scoped keys — mirrors the #56 fix in HomeScreen.
-                itemsIndexed(group.entries, key = { _, entry -> "${group.id}:${entry.id}" }) { _, entry ->
-                    androidx.compose.runtime.DisposableEffect(entry.id, group.id) {
+                val groupMembership = group.entries.joinToString(",") { it.id.toString() }
+                itemsIndexed(group.entries, key = { _, entry -> "${group.id}:$groupMembership:${entry.id}" }) { _, entry ->
+                    androidx.compose.runtime.DisposableEffect(entry.id, group.id, groupMembership) {
                         composeCount.merge(entry.name, 1, Int::plus)
                         onDispose { }
                     }

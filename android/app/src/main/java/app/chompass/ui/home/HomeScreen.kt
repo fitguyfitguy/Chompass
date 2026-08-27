@@ -644,7 +644,11 @@ fun HomeScreen(
                     // on LazyColumn move-in-place layout, which on slow devices
                     // left the moved row composed but drawn at a stale offset
                     // (card vanished until restart; state/groups stayed correct).
-                    itemsIndexed(group.entries, key = { _, entry -> "${group.id}:${entry.id}" }) { index, entry ->
+                    // Membership is part of the key too: the *unmoved* sibling in
+                    // the destination group kept a stable key after 3.24.1/4.0.0
+                    // and still vanished ~1/10 times (self-heals on date switch).
+                    val groupMembership = group.entries.joinToString(",") { it.id.toString() }
+                    itemsIndexed(group.entries, key = { _, entry -> "${group.id}:$groupMembership:${entry.id}" }) { index, entry ->
                         // Codeberg #56 repro instrumentation (TEMP, debug-only):
                         // log every row entering/leaving composition so logcat
                         // can catch a render drop — a row present in the groups
