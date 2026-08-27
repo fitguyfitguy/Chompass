@@ -57,7 +57,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 /** Renders a mg value compactly: whole numbers without decimals. */
-private fun formatMg(mg: Double): String =
+internal fun formatMg(mg: Double): String =
     if (mg % 1.0 == 0.0) mg.toInt().toString() else String.format(Locale.US, "%.1f", mg)
 
 /**

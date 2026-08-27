@@ -1,6 +1,7 @@
 package app.chompass.data
 
 import app.chompass.models.CaffeineEntry
+import app.chompass.models.CaffeineKind
 import app.chompass.services.PerfLog
 import app.chompass.sync.SyncRepository
 import kotlinx.coroutines.flow.Flow
@@ -51,6 +52,21 @@ class CaffeineRepository(
         val existing = prefs.caffeineEntries.first().firstOrNull { it.id == id } ?: return
         prefs.applyCaffeineBucketChanges(removalIdsByMonth = mapOf(existing.month() to setOf(id)))
         sync?.tombstone(id, "caffeine")
+    }
+
+    /**
+     * Moves every log of kind [from] to [to] in place (preset delete: kind is
+     * cosmetic grouping, "other" is the fallback semantic; mg preserved).
+     */
+    suspend fun reassignKind(from: String, to: String = CaffeineKind.OTHER.storageKey) {
+        if (from == to) return
+        val moved = prefs.caffeineEntries.first().filter { it.kind == from }
+        if (moved.isEmpty()) return
+        val byMonth = moved.groupBy { it.month() }.mapValues { (_, list) ->
+            list.map { it.copy(kind = to) }
+        }
+        prefs.applyCaffeineBucketChanges(upsertsByMonth = byMonth)
+        moved.forEach { sync?.touch(it.id, "caffeine") }
     }
 
     private fun CaffeineEntry.month(): YearMonth = YearMonth.from(date.atZone(ZoneId.systemDefault()))

@@ -1850,9 +1850,35 @@
     <string name="settings_caffeine_intro">سجّل القهوة والشاي ومشروبات الطاقة، وشاهد مجموع اليوم (بما فيه الكافيين من وجبات الطعام) مقابل حد يومي بالملليغرام تحدده بنفسك، وحرر أو احذف أي سجل من سجل يومي.</string>
     <string name="settings_caffeine_section_quick">تسجيل سريع</string>
     <string name="settings_caffeine_section_tracking">التتبع</string>
-    <string name="settings_caffeine_quick_kinds_help">الأنواع التي تظهر كرقائق +1 في ورقة إضافة الطعام.</string>
+    <string name="settings_caffeine_quick_kinds_help">الإعدادات المسبقة التي تظهر كرقائق +1 في ورقة إضافة الطعام.</string>
     <string name="settings_caffeine_limit_wheel_help">مرّر لتحديد حد يومي للكافيين من 0 (بلا حد) إلى 1000 ملغ.</string>
     <string name="settings_caffeine_privacy_note">تبقى سجلات الكافيين على هذا الجهاز وفي مزامنة WebDAV فقط. لا تُدرج أبدًا في الوجبات المشتركة ولا تُرسل أبدًا إلى مزوّد ذكاء اصطناعي.</string>
+    <!-- Tracker preset managers (custom/renamed caffeine + nicotine presets, #55 follow-up). -->
+    <string name="settings_tracker_presets_section">الإعدادات المسبقة</string>
+    <string name="settings_tracker_presets_help_caffeine">أعد تسمية المشروبات المدمجة أو أضف مشروباتك الخاصة بمقدار افتراضي. الترتيب هنا هو ترتيب الرقائق في ورقة إضافة الطعام.</string>
+    <string name="settings_tracker_presets_help_nicotine">أعد تسمية المنتجات المدمجة أو أضف منتجاتك الخاصة بعدد افتراضي. الترتيب هنا هو ترتيب الرقائق في ورقة إضافة الطعام.</string>
+    <string name="settings_caffeine_preset_add">إضافة مشروب</string>
+    <string name="settings_nicotine_preset_add">إضافة منتج</string>
+    <string name="caffeine_preset_editor_title_add">مشروب جديد</string>
+    <string name="caffeine_preset_editor_title_edit">تعديل المشروب</string>
+    <string name="nicotine_preset_editor_title_add">منتج جديد</string>
+    <string name="nicotine_preset_editor_title_edit">تعديل المنتج</string>
+    <string name="settings_tracker_preset_name">الاسم</string>
+    <string name="caffeine_preset_default_mg">المقدار الافتراضي (ملغ)</string>
+    <string name="nicotine_preset_default_count">العدد الافتراضي</string>
+    <string name="nicotine_preset_default_dose">النيكوتين الافتراضي للجرعة (ملغ، اختياري)</string>
+    <string name="settings_tracker_preset_builtin">مدمج</string>
+    <string name="settings_tracker_preset_delete_title">حذف الإعداد المسبق؟</string>
+    <string name="settings_tracker_preset_delete_named">سيتم حذف \"%1$s\".</string>
+    <string name="settings_tracker_preset_amounts_kept">تبقى المقادير دون تغيير.</string>
+    <plurals name="settings_tracker_preset_delete_entries">
+        <item quantity="zero">لا تنتقل أي مُدخَلات مسجَّلة إلى غير ذلك.</item>
+        <item quantity="one">ينتقل مُدخَل واحد مسجَّل إلى غير ذلك.</item>
+        <item quantity="two">ينتقل مُدخَلان مسجَّلان إلى غير ذلك.</item>
+        <item quantity="few">ينتقل %1$d مُدخَلات مسجَّلة إلى غير ذلك.</item>
+        <item quantity="many">ينتقل %1$d مُدخَلًا مسجَّلًا إلى غير ذلك.</item>
+        <item quantity="other">ينتقل %1$d مُدخَل مسجَّل إلى غير ذلك.</item>
+    </plurals>
     <string name="nicotine">النيكوتين</string>
     <string name="nicotine_add">إضافة نيكوتين</string>
     <string name="nicotine_log_title">تسجيل النيكوتين</string>
@@ -1884,7 +1910,7 @@
     <string name="settings_nicotine_intro">سجّل السجائر والسجائر الإلكترونية وأكياس النيكوتين، وشاهد مجموع اليوم مقابل حد يومي تحدده بنفسك، وحرر أو احذف أي سجل من سجل يومي.</string>
     <string name="settings_nicotine_section_quick">تسجيل سريع</string>
     <string name="settings_nicotine_section_tracking">التتبع</string>
-    <string name="settings_nicotine_quick_kinds_help">الأنواع التي تظهر كرقائق +1 في ورقة إضافة الطعام.</string>
+    <string name="settings_nicotine_quick_kinds_help">الإعدادات المسبقة التي تظهر كرقائق +1 في ورقة إضافة الطعام.</string>
     <string name="settings_nicotine_limit_wheel_help">مرّر لتحديد حد يومي من 0 (بلا حد) إلى 100 مرة.</string>
     <string name="settings_nicotine_privacy_note">تبقى سجلات النيكوتين على هذا الجهاز وفي مزامنة WebDAV فقط. لا تُدرج أبدًا في الوجبات المشتركة ولا تُرسل أبدًا إلى مزوّد ذكاء اصطناعي.</string>
     <string name="settings_notes_title">ملاحظات يومية</string>

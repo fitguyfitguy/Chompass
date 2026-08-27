@@ -1868,9 +1868,33 @@
     <string name="settings_caffeine_intro">Zapisuj kawę, herbatę i napoje energetyczne, sprawdzaj dzisiejszą sumę (wraz z kofeiną z posiłków) względem dziennego limitu w mg, który sam ustawisz, oraz edytuj lub usuwaj wpisy w historii dnia.</string>
     <string name="settings_caffeine_section_quick">Szybki zapis</string>
     <string name="settings_caffeine_section_tracking">Śledzenie</string>
-    <string name="settings_caffeine_quick_kinds_help">Rodzaje pokazane jako chipy +1 na arkuszu dodawania jedzenia.</string>
+    <string name="settings_caffeine_quick_kinds_help">Ustawienia wstępne pokazane jako chipy +1 na arkuszu dodawania jedzenia.</string>
     <string name="settings_caffeine_limit_wheel_help">Przewiń, aby ustawić dzienny limit kofeiny od 0 (bez limitu) do 1000 mg.</string>
     <string name="settings_caffeine_privacy_note">Wpisy kofeiny zostają na tym urządzeniu i w Twojej synchronizacji WebDAV. Nigdy nie trafiają do udostępnianych posiłków i nigdy nie są wysyłane do dostawcy AI.</string>
+    <!-- Tracker preset managers (custom/renamed caffeine + nicotine presets, #55 follow-up). -->
+    <string name="settings_tracker_presets_section">Ustawienia wstępne</string>
+    <string name="settings_tracker_presets_help_caffeine">Zmień nazwy wbudowanych napojów lub dodaj własne z domyślną ilością. Kolejność tutaj to kolejność chipów na arkuszu dodawania jedzenia.</string>
+    <string name="settings_tracker_presets_help_nicotine">Zmień nazwy wbudowanych produktów lub dodaj własne z domyślną liczbą. Kolejność tutaj to kolejność chipów na arkuszu dodawania jedzenia.</string>
+    <string name="settings_caffeine_preset_add">Dodaj napój</string>
+    <string name="settings_nicotine_preset_add">Dodaj produkt</string>
+    <string name="caffeine_preset_editor_title_add">Nowy napój</string>
+    <string name="caffeine_preset_editor_title_edit">Edytuj napój</string>
+    <string name="nicotine_preset_editor_title_add">Nowy produkt</string>
+    <string name="nicotine_preset_editor_title_edit">Edytuj produkt</string>
+    <string name="settings_tracker_preset_name">Nazwa</string>
+    <string name="caffeine_preset_default_mg">Domyślna ilość (mg)</string>
+    <string name="nicotine_preset_default_count">Domyślna liczba</string>
+    <string name="nicotine_preset_default_dose">Domyślna nikotyna na dawkę (mg, opcjonalnie)</string>
+    <string name="settings_tracker_preset_builtin">Wbudowany</string>
+    <string name="settings_tracker_preset_delete_title">Usunąć ustawienie wstępne?</string>
+    <string name="settings_tracker_preset_delete_named">\"%1$s\" zostanie usunięte.</string>
+    <string name="settings_tracker_preset_amounts_kept">Ilości pozostaną bez zmian.</string>
+    <plurals name="settings_tracker_preset_delete_entries">
+        <item quantity="one">%1$d zapisany wpis przechodzi do Inne.</item>
+        <item quantity="few">%1$d zapisane wpisy przechodzą do Inne.</item>
+        <item quantity="many">%1$d zapisanych wpisów przechodzi do Inne.</item>
+        <item quantity="other">%1$d zapisanych wpisów przechodzi do Inne.</item>
+    </plurals>
     <string name="nicotine">Nikotyna</string>
     <string name="nicotine_add">Dodaj nikotynę</string>
     <string name="nicotine_log_title">Zapisz nikotynę</string>
@@ -1902,7 +1926,7 @@
     <string name="settings_nicotine_intro">Zapisuj papierosy, e-papierosy i saszetki nikotynowe, sprawdzaj dzisiejszą sumę względem dziennego limitu, który sam ustawisz, oraz edytuj lub usuwaj wpisy w historii dnia.</string>
     <string name="settings_nicotine_section_quick">Szybki zapis</string>
     <string name="settings_nicotine_section_tracking">Śledzenie</string>
-    <string name="settings_nicotine_quick_kinds_help">Rodzaje pokazane jako chipy +1 na arkuszu dodawania jedzenia.</string>
+    <string name="settings_nicotine_quick_kinds_help">Ustawienia wstępne pokazane jako chipy +1 na arkuszu dodawania jedzenia.</string>
     <string name="settings_nicotine_limit_wheel_help">Przewiń, aby ustawić dzienny limit od 0 (bez limitu) do 100 sztuk.</string>
     <string name="settings_nicotine_privacy_note">Wpisy nikotyny zostają na tym urządzeniu i w Twojej synchronizacji WebDAV. Nigdy nie trafiają do udostępnianych posiłków i nigdy nie są wysyłane do dostawcy AI.</string>
     <string name="settings_notes_title">Notatki dnia</string>

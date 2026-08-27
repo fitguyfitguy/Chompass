@@ -1865,9 +1865,32 @@
     <string name="settings_caffeine_intro">Consignez café, thé et boissons énergisantes, consultez le total du jour (caféine des aliments incluse) par rapport à une limite quotidienne en mg que vous choisissez, et modifiez ou supprimez des entrées depuis un historique par jour.</string>
     <string name="settings_caffeine_section_quick">Saisie rapide</string>
     <string name="settings_caffeine_section_tracking">Suivi</string>
-    <string name="settings_caffeine_quick_kinds_help">Types affichés en puces +1 sur la feuille d\'ajout d\'aliment.</string>
+    <string name="settings_caffeine_quick_kinds_help">Préréglages affichés en puces +1 sur la feuille d\'ajout d\'aliment.</string>
     <string name="settings_caffeine_limit_wheel_help">Faites défiler pour fixer une limite quotidienne de caféine entre 0 (aucune limite) et 1000 mg.</string>
     <string name="settings_caffeine_privacy_note">Les journalisations de caféine restent sur cet appareil et dans votre synchronisation WebDAV. Elles ne sont jamais incluses dans les repas partagés et ne sont jamais envoyées à un fournisseur d\'IA.</string>
+    <!-- Tracker preset managers (custom/renamed caffeine + nicotine presets, #55 follow-up). -->
+    <string name="settings_tracker_presets_section">Préréglages</string>
+    <string name="settings_tracker_presets_help_caffeine">Renommez les boissons intégrées ou ajoutez les vôtres avec une quantité par défaut. L\'ordre ici est l\'ordre des puces sur la feuille d\'ajout d\'aliment.</string>
+    <string name="settings_tracker_presets_help_nicotine">Renommez les produits intégrés ou ajoutez les vôtres avec un nombre par défaut. L\'ordre ici est l\'ordre des puces sur la feuille d\'ajout d\'aliment.</string>
+    <string name="settings_caffeine_preset_add">Ajouter une boisson</string>
+    <string name="settings_nicotine_preset_add">Ajouter un produit</string>
+    <string name="caffeine_preset_editor_title_add">Nouvelle boisson</string>
+    <string name="caffeine_preset_editor_title_edit">Modifier la boisson</string>
+    <string name="nicotine_preset_editor_title_add">Nouveau produit</string>
+    <string name="nicotine_preset_editor_title_edit">Modifier le produit</string>
+    <string name="settings_tracker_preset_name">Nom</string>
+    <string name="caffeine_preset_default_mg">Quantité par défaut (mg)</string>
+    <string name="nicotine_preset_default_count">Nombre par défaut</string>
+    <string name="nicotine_preset_default_dose">Nicotine par défaut par dose (mg, facultatif)</string>
+    <string name="settings_tracker_preset_builtin">Intégré</string>
+    <string name="settings_tracker_preset_delete_title">Supprimer le préréglage ?</string>
+    <string name="settings_tracker_preset_delete_named">« %1$s » sera supprimé.</string>
+    <string name="settings_tracker_preset_amounts_kept">Les quantités restent inchangées.</string>
+    <plurals name="settings_tracker_preset_delete_entries">
+        <item quantity="one">%1$d entrée enregistrée passe à Autre.</item>
+        <item quantity="many">%1$d entrées enregistrées passent à Autre.</item>
+        <item quantity="other">%1$d entrées enregistrées passent à Autre.</item>
+    </plurals>
     <string name="nicotine">Nicotine</string>
     <string name="nicotine_add">Ajouter de la nicotine</string>
     <string name="nicotine_log_title">Consigner la nicotine</string>
@@ -1899,7 +1922,7 @@
     <string name="settings_nicotine_intro">Consignez cigarettes, cigarettes électroniques et poches de nicotine, consultez le total du jour par rapport à une limite quotidienne que vous choisissez, et modifiez ou supprimez des entrées depuis un historique par jour.</string>
     <string name="settings_nicotine_section_quick">Saisie rapide</string>
     <string name="settings_nicotine_section_tracking">Suivi</string>
-    <string name="settings_nicotine_quick_kinds_help">Types affichés en puces +1 sur la feuille d\'ajout d\'aliment.</string>
+    <string name="settings_nicotine_quick_kinds_help">Préréglages affichés en puces +1 sur la feuille d\'ajout d\'aliment.</string>
     <string name="settings_nicotine_limit_wheel_help">Faites défiler pour fixer une limite quotidienne entre 0 (aucune limite) et 100 unités.</string>
     <string name="settings_nicotine_privacy_note">Les journalisations de nicotine restent sur cet appareil et dans votre synchronisation WebDAV. Elles ne sont jamais incluses dans les repas partagés et ne sont jamais envoyées à un fournisseur d\'IA.</string>
     <string name="settings_notes_title">Notes quotidiennes</string>

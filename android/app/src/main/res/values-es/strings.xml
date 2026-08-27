@@ -1876,9 +1876,32 @@
     <string name="settings_caffeine_intro">Registra café, té y bebidas energéticas, consulta el total de hoy (incluida la cafeína de las comidas) frente a un límite diario en mg que tú eliges, y edita o elimina cualquier entrada desde un historial por día.</string>
     <string name="settings_caffeine_section_quick">Registro rápido</string>
     <string name="settings_caffeine_section_tracking">Seguimiento</string>
-    <string name="settings_caffeine_quick_kinds_help">Tipos que se muestran como chips +1 en la hoja de añadir comida.</string>
+    <string name="settings_caffeine_quick_kinds_help">Preajustes que se muestran como chips +1 en la hoja de añadir comida.</string>
     <string name="settings_caffeine_limit_wheel_help">Desplázate para fijar un límite diario de cafeína entre 0 (sin límite) y 1000 mg.</string>
     <string name="settings_caffeine_privacy_note">Los registros de cafeína se quedan en este dispositivo y en tu sincronización WebDAV. Nunca se incluyen en comidas compartidas ni se envían a un proveedor de IA.</string>
+    <!-- Tracker preset managers (custom/renamed caffeine + nicotine presets, #55 follow-up). -->
+    <string name="settings_tracker_presets_section">Preajustes</string>
+    <string name="settings_tracker_presets_help_caffeine">Cambia el nombre de las bebidas integradas o añade las tuyas con una cantidad predeterminada. El orden aquí es el orden de los chips en la hoja de añadir comida.</string>
+    <string name="settings_tracker_presets_help_nicotine">Cambia el nombre de los productos integrados o añade los tuyos con un número predeterminado. El orden aquí es el orden de los chips en la hoja de añadir comida.</string>
+    <string name="settings_caffeine_preset_add">Añadir bebida</string>
+    <string name="settings_nicotine_preset_add">Añadir producto</string>
+    <string name="caffeine_preset_editor_title_add">Nueva bebida</string>
+    <string name="caffeine_preset_editor_title_edit">Editar bebida</string>
+    <string name="nicotine_preset_editor_title_add">Nuevo producto</string>
+    <string name="nicotine_preset_editor_title_edit">Editar producto</string>
+    <string name="settings_tracker_preset_name">Nombre</string>
+    <string name="caffeine_preset_default_mg">Cantidad predeterminada (mg)</string>
+    <string name="nicotine_preset_default_count">Número predeterminado</string>
+    <string name="nicotine_preset_default_dose">Nicotina predeterminada por dosis (mg, opcional)</string>
+    <string name="settings_tracker_preset_builtin">Integrado</string>
+    <string name="settings_tracker_preset_delete_title">¿Eliminar el preajuste?</string>
+    <string name="settings_tracker_preset_delete_named">Se eliminará «%1$s».</string>
+    <string name="settings_tracker_preset_amounts_kept">Las cantidades no cambian.</string>
+    <plurals name="settings_tracker_preset_delete_entries">
+        <item quantity="one">%1$d registro pasa a Otro.</item>
+        <item quantity="many">%1$d registros pasan a Otro.</item>
+        <item quantity="other">%1$d registros pasan a Otro.</item>
+    </plurals>
     <string name="nicotine">Nicotina</string>
     <string name="nicotine_add">Añadir nicotina</string>
     <string name="nicotine_log_title">Registrar nicotina</string>
@@ -1910,7 +1933,7 @@
     <string name="settings_nicotine_intro">Registra cigarrillos, vaporizadores y bolsas de nicotina, consulta el total de hoy frente a un límite diario que tú eliges, y edita o elimina cualquier entrada desde un historial por día.</string>
     <string name="settings_nicotine_section_quick">Registro rápido</string>
     <string name="settings_nicotine_section_tracking">Seguimiento</string>
-    <string name="settings_nicotine_quick_kinds_help">Tipos que se muestran como chips +1 en la hoja de añadir comida.</string>
+    <string name="settings_nicotine_quick_kinds_help">Preajustes que se muestran como chips +1 en la hoja de añadir comida.</string>
     <string name="settings_nicotine_limit_wheel_help">Desplázate para fijar un límite diario entre 0 (sin límite) y 100 unidades.</string>
     <string name="settings_nicotine_privacy_note">Los registros de nicotina se quedan en este dispositivo y en tu sincronización WebDAV. Nunca se incluyen en comidas compartidas ni se envían a un proveedor de IA.</string>
     <string name="settings_notes_title">Notas diarias</string>
