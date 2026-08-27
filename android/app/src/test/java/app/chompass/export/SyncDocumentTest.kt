@@ -5,8 +5,8 @@ import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.MealType
+import app.chompass.models.CaffeineEntry
 import app.chompass.models.NicotineEntry
-import app.chompass.models.NicotineKind
 import app.chompass.models.WaterEntry
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonArray
@@ -277,7 +277,7 @@ class SyncDocumentTest {
         // Optional nicotine tracker rides its own sync array + revisions kind.
         val nicotine = NicotineEntry(
             date = Instant.parse("2026-08-15T10:00:00Z"),
-            kind = NicotineKind.POUCH,
+            kind = "pouch",
             count = 2,
             mg = 6.5,
         )
@@ -297,7 +297,7 @@ class SyncDocumentTest {
         val parsed = (result as SyncDocument.ParseResult.Success).parsed
         val wire = parsed.nicotine.single()
         assertEquals(nicotine.id, wire.entry?.id)
-        assertEquals(NicotineKind.POUCH, wire.entry?.kind)
+        assertEquals("pouch", wire.entry?.kind)
         assertEquals(2, wire.entry?.count)
         assertEquals(6.5, wire.entry?.mg)
         // The wire key and kind are what the PWA mirrors.
@@ -309,7 +309,58 @@ class SyncDocumentTest {
     }
 
     @Test
-    fun parseNicotineUnknownKindFallsBackToOther() {
+    fun parseNicotineCustomKindRoundTripsVerbatim() {
+        // Old/new client interop (#55 follow-up): custom preset kinds are free
+        // strings on the wire. New clients round-trip them verbatim; old
+        // clients degrade them to "other" on their side (mg/count preserved).
+        val nicotine = NicotineEntry(
+            date = Instant.parse("2026-08-15T10:00:00Z"),
+            kind = "t_abcd1234",
+            count = 1,
+            mg = 6.0,
+        )
+        val json = SyncDocument.buildJson(
+            foodEntries = emptyList(),
+            favorites = emptyList(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            measurements = emptyList(),
+            water = emptyList(),
+            nicotine = listOf(nicotine),
+            recipes = emptyList(),
+            zone = ZoneOffset.UTC,
+        )
+        val root = Json.parseToJsonElement(json).jsonObject
+        assertEquals("t_abcd1234", root["nicotine_entries"]!!.jsonArray.single().jsonObject["kind"]!!.jsonPrimitive.content)
+        val parsed = (SyncDocument.parse(json, ZoneOffset.UTC) as SyncDocument.ParseResult.Success).parsed
+        assertEquals("t_abcd1234", parsed.nicotine.single().entry?.kind)
+        assertEquals(6.0, parsed.nicotine.single().entry?.mg)
+
+        // Caffeine custom kinds round-trip too.
+        val caffeine = CaffeineEntry(
+            date = Instant.parse("2026-08-15T10:00:00Z"),
+            kind = "t_c0ffee01",
+            mg = 65.0,
+        )
+        val caffeineJson = SyncDocument.buildJson(
+            foodEntries = emptyList(),
+            favorites = emptyList(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            measurements = emptyList(),
+            water = emptyList(),
+            nicotine = emptyList(),
+            caffeine = listOf(caffeine),
+            recipes = emptyList(),
+            zone = ZoneOffset.UTC,
+        )
+        val caffeineParsed = (SyncDocument.parse(caffeineJson, ZoneOffset.UTC) as SyncDocument.ParseResult.Success).parsed
+        assertEquals("t_c0ffee01", caffeineParsed.caffeine.single().entry?.kind)
+        assertEquals(65.0, caffeineParsed.caffeine.single().entry?.mg)
+    }
+
+    @Test
+    fun parseNicotineAbsentKindDefaultsAndUnknownPassesThrough() {
         // Old/new client interop: an unknown wire kind must not break the parse.
         val json = SyncDocument.buildJson(
             foodEntries = emptyList(),
@@ -346,8 +397,50 @@ class SyncDocumentTest {
         val result = SyncDocument.parse(withUnknownKind.toString(), ZoneOffset.UTC)
         assertTrue("expected Success but was $result", result is SyncDocument.ParseResult.Success)
         val entry = (result as SyncDocument.ParseResult.Success).parsed.nicotine.single().entry
-        assertEquals(NicotineKind.OTHER, entry?.kind)
+        // Unknown ids pass through verbatim (custom-preset interop); they
+        // render as the localized "Other" fallback when not in the catalog.
+        assertEquals("snus_future", entry?.kind)
         assertEquals(3, entry?.count)
+    }
+
+    @Test
+    fun parseNicotineAbsentKindDefaultsToCigarette() {
+        val json = SyncDocument.buildJson(
+            foodEntries = emptyList(),
+            favorites = emptyList(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            measurements = emptyList(),
+            water = emptyList(),
+            nicotine = emptyList(),
+            recipes = emptyList(),
+            zone = ZoneOffset.UTC,
+        )
+        val root = Json.parseToJsonElement(json).jsonObject
+        val noKind = buildJsonObject {
+            put("export", root["export"]!!)
+            put("food_entries", buildJsonArray {})
+            put("favorites", buildJsonArray {})
+            put("weights", buildJsonArray {})
+            put("body_fat", buildJsonArray {})
+            put("measurements", buildJsonArray {})
+            put("water", buildJsonArray {})
+            put("nicotine_entries", buildJsonArray {
+                add(buildJsonObject {
+                    put("id", "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee")
+                    put("updated_at", "2026-08-15T10:00:00Z")
+                    put("deleted_at", null)
+                    put("date", "2026-08-15")
+                    put("count", 2)
+                })
+            })
+            put("recipes", buildJsonArray {})
+        }
+        val result = SyncDocument.parse(noKind.toString(), ZoneOffset.UTC)
+        assertTrue("expected Success but was $result", result is SyncDocument.ParseResult.Success)
+        val entry = (result as SyncDocument.ParseResult.Success).parsed.nicotine.single().entry
+        // Absent kind defaults like the web's ?? default.
+        assertEquals("cigarette", entry?.kind)
     }
 
     @Test

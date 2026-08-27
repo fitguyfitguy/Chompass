@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.R
+import app.chompass.models.HabitPresetDomain
 import app.chompass.models.NicotineKind
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.warning
@@ -94,16 +95,16 @@ fun NicotineSettingsScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     NicotineKind.entries.forEach { kind ->
-                        val selected = ui.nicotineQuickKinds.contains(kind)
+                        val selected = ui.nicotineQuickKinds.contains(kind.storageKey)
                         FilterChip(
                             selected = selected,
                             onClick = {
                                 val next = if (selected) {
-                                    ui.nicotineQuickKinds.filterNot { it == kind }
+                                    ui.nicotineQuickKinds.filterNot { it == kind.storageKey }
                                 } else {
-                                    ui.nicotineQuickKinds + kind
+                                    ui.nicotineQuickKinds + kind.storageKey
                                 }
-                                vm.setNicotineQuickKinds(next.ifEmpty { NicotineKind.DefaultQuickKinds })
+                                vm.setNicotineQuickKinds(next.ifEmpty { HabitPresetDomain.NICOTINE.defaultQuickKindIds })
                             },
                             label = { Text(stringResource(kind.labelRes)) },
                             colors = FilterChipDefaults.filterChipColors(

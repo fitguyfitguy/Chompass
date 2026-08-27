@@ -25,9 +25,8 @@ import app.chompass.models.GoalJournalEntry
 import app.chompass.models.GoalJournalSource
 import app.chompass.models.MealType
 import app.chompass.models.CaffeineEntry
-import app.chompass.models.CaffeineKind
 import app.chompass.models.NicotineEntry
-import app.chompass.models.NicotineKind
+import app.chompass.models.normalizeKindId
 import app.chompass.models.NutrientSourceKind
 import app.chompass.models.Recipe
 import app.chompass.models.RecipeIngredient
@@ -338,7 +337,7 @@ object SyncDocument {
                                 put("updated_at", meta.updatedAt)
                                 putNullable("deleted_at", meta.deletedAt)
                                 put("date", day)
-                                put("kind", n.kind.storageKey)
+                                put("kind", n.kind)
                                 put("count", n.count)
                                 putNullableNumber("mg", n.mg)
                             },
@@ -359,7 +358,7 @@ object SyncDocument {
                                 put("updated_at", meta.updatedAt)
                                 putNullable("deleted_at", meta.deletedAt)
                                 put("date", day)
-                                put("kind", c.kind.storageKey)
+                                put("kind", c.kind)
                                 put("mg", c.mg)
                             },
                         )
@@ -917,7 +916,9 @@ object SyncDocument {
         val entry = NicotineEntry(
             id = runCatching { UUID.fromString(id) }.getOrElse { UUID.nameUUIDFromBytes(id.toByteArray()) },
             date = instant,
-            kind = NicotineKind.fromStorage(o["kind"]?.asString()),
+            // Custom preset ids round-trip verbatim (sync-1.2 kind is a free
+            // string); old clients degrade them to "other" on their side.
+            kind = normalizeKindId(o["kind"]?.asString() ?: "cigarette"),
             count = (o["count"]?.asInt() ?: 1).coerceAtLeast(1),
             mg = o["mg"]?.takeIf { it !is JsonNull }?.asDouble(),
         )
@@ -939,7 +940,9 @@ object SyncDocument {
         val entry = CaffeineEntry(
             id = runCatching { UUID.fromString(id) }.getOrElse { UUID.nameUUIDFromBytes(id.toByteArray()) },
             date = instant,
-            kind = CaffeineKind.fromStorage(o["kind"]?.asString()),
+            // Custom preset ids round-trip verbatim (sync-1.2 kind is a free
+            // string); old clients degrade them to "other" on their side.
+            kind = normalizeKindId(o["kind"]?.asString() ?: "coffee"),
             mg = mg,
         )
         return CaffeineWire(id, updatedAt, null, entry)

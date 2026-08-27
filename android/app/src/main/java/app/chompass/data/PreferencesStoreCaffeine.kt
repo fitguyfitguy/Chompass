@@ -1,7 +1,7 @@
 package app.chompass.data
 
 import app.chompass.models.CaffeineEntry
-import app.chompass.models.CaffeineKind
+import app.chompass.models.HabitPresetDomain
 import app.chompass.models.OptionalNutrient
 import app.chompass.models.OptionalNutrientGoals
 import androidx.datastore.preferences.core.edit
@@ -41,11 +41,11 @@ internal suspend fun PreferencesStore.migrateCaffeineDailyLimitIfNeededImpl() {
 }
 
 /** Quick-log chips on the Add Food hub (mirrors nicotine quick kinds). */
-internal val PreferencesStore.caffeineQuickKindsImpl: Flow<List<CaffeineKind>>
+internal val PreferencesStore.caffeineQuickKindsImpl: Flow<List<String>>
     get() = stringPref(Keys.CAFFEINE_QUICK_KINDS)
-        .map { CaffeineKind.quickKindsFromStorage(it) }
-internal suspend fun PreferencesStore.setCaffeineQuickKindsImpl(kinds: List<CaffeineKind>) =
-    setStringPref(Keys.CAFFEINE_QUICK_KINDS, CaffeineKind.quickKindsToStorage(kinds))
+        .map { HabitPresetDomain.CAFFEINE.quickKindIdsFromStorage(it) }
+internal suspend fun PreferencesStore.setCaffeineQuickKindsImpl(ids: List<String>) =
+    setStringPref(Keys.CAFFEINE_QUICK_KINDS, HabitPresetDomain.CAFFEINE.quickKindIdsToStorage(ids))
 
 internal val PreferencesStore.caffeineEntriesImpl: Flow<List<CaffeineEntry>>
     get() = caffeineBucketStore.allFlow()
