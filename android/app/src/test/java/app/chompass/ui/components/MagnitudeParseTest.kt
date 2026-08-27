@@ -1,5 +1,6 @@
 package app.chompass.ui.components
 
+import app.chompass.models.UnitFormat
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -41,5 +42,24 @@ class MagnitudeParseTest {
     fun intHelper() {
         assertEquals(187, parseMagnitudeInt("187", 0, 400, 5))
         assertNull(parseMagnitudeInt("", 0, 400, 5))
+    }
+
+    @Test
+    fun splitDecimalDoesNotPaint803As802() {
+        // Codeberg #63: truncate-toward-zero painted 80.3 as 80.2 so Save kept 80.3.
+        assertEquals(80 to 1, splitDecimalParts(80.1, 30, 250))
+        assertEquals(80 to 2, splitDecimalParts(80.2, 30, 250))
+        assertEquals(80 to 3, splitDecimalParts(80.3, 30, 250))
+        assertEquals(80 to 4, splitDecimalParts(80.4, 30, 250))
+        assertEquals(70 to 9, splitDecimalParts(70.9, 30, 250))
+        assertEquals(80 to 0, splitDecimalParts(80.0, 30, 250))
+        assertEquals(81 to 0, splitDecimalParts(80.96, 30, 250))
+    }
+
+    @Test
+    fun roundKgToTenthsMatchesWheel() {
+        assertEquals(80.3, UnitFormat.roundKgToTenths(80.3), 0.0)
+        assertEquals(80.2, UnitFormat.roundKgToTenths(80.2), 0.0)
+        assertEquals(80.1, UnitFormat.roundKgToTenths(80.1), 0.0)
     }
 }

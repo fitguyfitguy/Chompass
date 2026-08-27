@@ -57,6 +57,7 @@ import java.time.YearMonth
 import app.chompass.models.UnitFormat
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
+import kotlin.math.roundToInt
 
 private val ITEM_HEIGHT = 44.dp
 private const val VISIBLE_ITEMS = 5
@@ -404,9 +405,7 @@ fun SplitDecimalWheelPicker(
     modifier: Modifier = Modifier,
     showSelectionHighlight: Boolean = true,
 ) {
-    val clampedValue = value.coerceIn(min.toDouble(), max.toDouble())
-    val intPart = clampedValue.toInt().coerceIn(min, max)
-    val tenthsPart = ((clampedValue - intPart) * 10).toInt().coerceIn(0, 9)
+    val (intPart, tenthsPart) = splitDecimalParts(value, min, max)
     val ints = remember(min, max) { (min..max).toList() }
     val tenths = remember { (0..9).toList() }
     val decimalSeparator = remember { LocaleFormat.decimalSeparator() }
@@ -485,7 +484,7 @@ fun DecimalWheelPicker(
         val end = (max * scaled).toInt()
         (start..end).toList()
     }
-    val currentScaled = (value * scaled).toInt().coerceIn(items.first(), items.last())
+    val currentScaled = (value * scaled).roundToInt().coerceIn(items.first(), items.last())
     val (typed, setTyped) = rememberMagnitudePickerMode()
     val sep = remember { LocaleFormat.decimalSeparator() }
     val typeCd = stringResource(R.string.picker_type_value)

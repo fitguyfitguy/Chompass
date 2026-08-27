@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
+import android.util.Log
 import app.chompass.AppContainer
 import app.chompass.data.aggregateFoodEntriesByDay
 import app.chompass.models.BodyFatEntry
@@ -23,7 +24,9 @@ import app.chompass.models.FoodEntry
 import app.chompass.models.GoalJournalEntry
 import app.chompass.models.MacroPlanResolver
 import app.chompass.models.UserProfile
+import app.chompass.models.UnitFormat
 import app.chompass.models.WeightEntry
+import app.chompass.ui.components.splitDecimalParts
 import app.chompass.services.health.DailyActivity
 import app.chompass.services.health.DailyWellness
 import kotlinx.coroutines.launch
@@ -187,6 +190,11 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
 
     fun addWeightAt(kg: Double, at: Instant) {
         viewModelScope.launch {
+            val parts = splitDecimalParts(kg, 30, 250)
+            Log.i(
+                "ChompassWeight",
+                "save raw=$kg bits=${kg.toBits()} tenths=${UnitFormat.roundKgToTenths(kg)} wheel=${parts.first}.${parts.second} at=$at",
+            )
             val event = container.weightRepository.addEntry(WeightEntry(weightKg = kg, date = at))
             if (event != null) {
                 goalReached.value = true
