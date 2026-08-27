@@ -25,14 +25,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.R
-import app.chompass.models.CaffeineKind
+import app.chompass.models.HabitPreset
 import app.chompass.models.HabitPresetDomain
 import app.chompass.ui.theme.AppTextOpacity
 
 /**
- * Optional caffeine tracker settings: enable, daily mg limit (0 = none), and
- * the quick-log kinds shown on the Add Food hub. Mirrors the nicotine
- * settings shape; the tracker total also includes caffeine from food entries.
+ * Optional caffeine tracker settings: enable, daily mg limit (0 = none), the
+ * quick-log chips shown on the Add Food hub, and the preset manager (rename
+ * builtins, add/reorder/delete custom drinks; Codeberg #55 follow-up). The
+ * tracker total also includes caffeine from food entries.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,6 +46,9 @@ fun CaffeineSettingsScreen(
     val vm: SettingsViewModel = rememberSettingsViewModel(container, nav)
     val ui by vm.ui.collectAsState()
     var sheet by remember { mutableStateOf<SettingsSheet?>(null) }
+    var editingPreset by remember { mutableStateOf<HabitPreset?>(null) }
+    var addingPreset by remember { mutableStateOf(false) }
+    var pendingDelete by remember { mutableStateOf<HabitPreset?>(null) }
 
     SettingsSubScreen(
         title = stringResource(R.string.settings_caffeine_title),
@@ -93,19 +97,19 @@ fun CaffeineSettingsScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    CaffeineKind.entries.forEach { kind ->
-                        val selected = ui.caffeineQuickKinds.contains(kind.storageKey)
+                    ui.caffeinePresets.presets.forEach { preset ->
+                        val selected = ui.caffeineQuickKinds.contains(preset.id)
                         FilterChip(
                             selected = selected,
                             onClick = {
                                 val next = if (selected) {
-                                    ui.caffeineQuickKinds.filterNot { it == kind.storageKey }
+                                    ui.caffeineQuickKinds.filterNot { it == preset.id }
                                 } else {
-                                    ui.caffeineQuickKinds + kind.storageKey
+                                    ui.caffeineQuickKinds + preset.id
                                 }
                                 vm.setCaffeineQuickKinds(next.ifEmpty { HabitPresetDomain.CAFFEINE.defaultQuickKindIds })
                             },
-                            label = { Text(stringResource(kind.labelRes)) },
+                            label = { Text(presetLabel(preset, HabitPresetDomain.CAFFEINE)) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
                             ),
@@ -114,6 +118,15 @@ fun CaffeineSettingsScreen(
                 }
             }
         }
+
+        TrackerPresetsSection(
+            domain = HabitPresetDomain.CAFFEINE,
+            catalog = ui.caffeinePresets,
+            onReorder = vm::setCaffeinePresets,
+            onEdit = { editingPreset = it },
+            onDelete = { pendingDelete = it },
+            onAdd = { addingPreset = true },
+        )
 
         SettingFootnote(stringResource(R.string.settings_caffeine_privacy_note))
     }
@@ -126,6 +139,44 @@ fun CaffeineSettingsScreen(
             onDismiss = { sheet = null },
             onInvalidGoalWeight = {},
             onRebalanceBlocked = {},
+        )
+    }
+
+    if (addingPreset || editingPreset != null) {
+        CaffeinePresetEditorSheet(
+            existing = editingPreset,
+            onDismiss = { addingPreset = false; editingPreset = null },
+            onSave = { label, defaultMg ->
+                if (addingPreset) {
+                    vm.setCaffeinePresets(
+                        ui.caffeinePresets.addCustom(HabitPresetDomain.CAFFEINE, label, defaultMg = defaultMg)
+                    )
+                } else {
+                    editingPreset?.let { preset ->
+                        vm.setCaffeinePresets(
+                            ui.caffeinePresets.withPreset(
+                                preset.copy(
+                                    label = label,
+                                    defaultMg = defaultMg,
+                                )
+                            )
+                        )
+                    }
+                }
+            },
+        )
+    }
+
+    pendingDelete?.let { preset ->
+        TrackerPresetDeleteDialog(
+            preset = preset,
+            domain = HabitPresetDomain.CAFFEINE,
+            usageCount = ui.caffeineKindUsage[preset.id] ?: 0,
+            onConfirm = {
+                vm.deleteCaffeinePreset(preset.id)
+                pendingDelete = null
+            },
+            onDismiss = { pendingDelete = null },
         )
     }
 }

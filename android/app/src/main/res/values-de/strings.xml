@@ -3383,9 +3383,31 @@ für dich ein</string>
     <string name="settings_caffeine_intro">Erfasse Kaffee, Tee und Energydrinks, sieh die heutige Gesamtmenge (inklusive Koffein aus Mahlzeiten) neben einem selbst gesetzten Tageslimit in mg, und bearbeite oder lösche Einträge im Tagesverlauf.</string>
     <string name="settings_caffeine_section_quick">Schnelleintrag</string>
     <string name="settings_caffeine_section_tracking">Erfassung</string>
-    <string name="settings_caffeine_quick_kinds_help">Arten, die als +1-Chips auf dem „Mahlzeit hinzufügen“-Sheet erscheinen.</string>
+    <string name="settings_caffeine_quick_kinds_help">Voreinstellungen, die als +1-Chips auf dem „Mahlzeit hinzufügen“-Sheet erscheinen.</string>
     <string name="settings_caffeine_limit_wheel_help">Scrolle, um ein tägliches Koffeinlimit von 0 (kein Limit) bis 1000 mg zu setzen.</string>
     <string name="settings_caffeine_privacy_note">Koffein-Einträge bleiben auf diesem Gerät und in deiner WebDAV-Synchronisation. Sie sind nie in geteilten Mahlzeiten enthalten und werden nie an einen KI-Anbieter gesendet.</string>
+    <!-- Tracker preset managers (custom/renamed caffeine + nicotine presets, #55 follow-up). -->
+    <string name="settings_tracker_presets_section">Voreinstellungen</string>
+    <string name="settings_tracker_presets_help_caffeine">Benenne die eingebauten Getränke um oder füge eigene mit Standardmenge hinzu. Die Reihenfolge hier ist die Chip-Reihenfolge auf dem „Mahlzeit hinzufügen“-Sheet.</string>
+    <string name="settings_tracker_presets_help_nicotine">Benenne die eingebauten Produkte um oder füge eigene mit Standardanzahl hinzu. Die Reihenfolge hier ist die Chip-Reihenfolge auf dem „Mahlzeit hinzufügen“-Sheet.</string>
+    <string name="settings_caffeine_preset_add">Getränk hinzufügen</string>
+    <string name="settings_nicotine_preset_add">Produkt hinzufügen</string>
+    <string name="caffeine_preset_editor_title_add">Neues Getränk</string>
+    <string name="caffeine_preset_editor_title_edit">Getränk bearbeiten</string>
+    <string name="nicotine_preset_editor_title_add">Neues Produkt</string>
+    <string name="nicotine_preset_editor_title_edit">Produkt bearbeiten</string>
+    <string name="settings_tracker_preset_name">Name</string>
+    <string name="caffeine_preset_default_mg">Standardmenge (mg)</string>
+    <string name="nicotine_preset_default_count">Standardanzahl</string>
+    <string name="nicotine_preset_default_dose">Standard-Nikotin pro Dosis (mg, optional)</string>
+    <string name="settings_tracker_preset_builtin">Eingebaut</string>
+    <string name="settings_tracker_preset_delete_title">Voreinstellung löschen?</string>
+    <string name="settings_tracker_preset_delete_named">„%1$s“ wird gelöscht.</string>
+    <string name="settings_tracker_preset_amounts_kept">Mengen bleiben unverändert.</string>
+    <plurals name="settings_tracker_preset_delete_entries">
+        <item quantity="one">%1$d protokollierter Eintrag wandert zu Sonstiges.</item>
+        <item quantity="other">%1$d protokollierte Einträge wandern zu Sonstiges.</item>
+    </plurals>
     <string name="nicotine">Nikotin</string>
     <string name="nicotine_add">Nikotin hinzufügen</string>
     <string name="nicotine_log_title">Nikotin eintragen</string>
@@ -3417,7 +3439,7 @@ für dich ein</string>
     <string name="settings_nicotine_intro">Erfasse Zigaretten, E-Zigaretten und Pouches, sieh die heutige Gesamtmenge neben einem selbst gesetzten Tageslimit, und bearbeite oder lösche Einträge im Tagesverlauf.</string>
     <string name="settings_nicotine_section_quick">Schnelleintrag</string>
     <string name="settings_nicotine_section_tracking">Erfassung</string>
-    <string name="settings_nicotine_quick_kinds_help">Arten, die als +1-Chips auf dem „Mahlzeit hinzufügen“-Sheet erscheinen.</string>
+    <string name="settings_nicotine_quick_kinds_help">Voreinstellungen, die als +1-Chips auf dem „Mahlzeit hinzufügen“-Sheet erscheinen.</string>
     <string name="settings_nicotine_limit_wheel_help">Scrolle, um ein tägliches Limit von 0 (kein Limit) bis 100 Stück zu setzen.</string>
     <string name="settings_nicotine_privacy_note">Nikotin-Einträge bleiben auf diesem Gerät und in deiner WebDAV-Synchronisation. Sie sind nie in geteilten Mahlzeiten enthalten und werden nie an einen KI-Anbieter gesendet.</string>
     <string name="settings_notes_title">Tagesnotizen</string>

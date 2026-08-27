@@ -1848,9 +1848,32 @@
     <string name="settings_caffeine_intro">Registre café, chá e bebidas energéticas, veja o total de hoje (incluindo a cafeína das refeições) contra um limite diário em mg que você define, e edite ou exclua qualquer registro num histórico por dia.</string>
     <string name="settings_caffeine_section_quick">Registro rápido</string>
     <string name="settings_caffeine_section_tracking">Acompanhamento</string>
-    <string name="settings_caffeine_quick_kinds_help">Tipos mostrados como chips +1 na folha de adicionar comida.</string>
+    <string name="settings_caffeine_quick_kinds_help">Predefinições mostradas como chips +1 na folha de adicionar comida.</string>
     <string name="settings_caffeine_limit_wheel_help">Role para definir um limite diário de cafeína de 0 (sem limite) a 1000 mg.</string>
     <string name="settings_caffeine_privacy_note">Os registros de cafeína ficam neste aparelho e na sua sincronização WebDAV. Nunca são incluídos em refeições compartilhadas e nunca são enviados a um provedor de IA.</string>
+    <!-- Tracker preset managers (custom/renamed caffeine + nicotine presets, #55 follow-up). -->
+    <string name="settings_tracker_presets_section">Predefinições</string>
+    <string name="settings_tracker_presets_help_caffeine">Renomeie as bebidas integradas ou adicione as suas com uma quantidade padrão. A ordem aqui é a ordem dos chips na folha de adicionar comida.</string>
+    <string name="settings_tracker_presets_help_nicotine">Renomeie os produtos integrados ou adicione os seus com uma contagem padrão. A ordem aqui é a ordem dos chips na folha de adicionar comida.</string>
+    <string name="settings_caffeine_preset_add">Adicionar bebida</string>
+    <string name="settings_nicotine_preset_add">Adicionar produto</string>
+    <string name="caffeine_preset_editor_title_add">Nova bebida</string>
+    <string name="caffeine_preset_editor_title_edit">Editar bebida</string>
+    <string name="nicotine_preset_editor_title_add">Novo produto</string>
+    <string name="nicotine_preset_editor_title_edit">Editar produto</string>
+    <string name="settings_tracker_preset_name">Nome</string>
+    <string name="caffeine_preset_default_mg">Quantidade padrão (mg)</string>
+    <string name="nicotine_preset_default_count">Contagem padrão</string>
+    <string name="nicotine_preset_default_dose">Nicotina padrão por dose (mg, opcional)</string>
+    <string name="settings_tracker_preset_builtin">Integrado</string>
+    <string name="settings_tracker_preset_delete_title">Excluir predefinição?</string>
+    <string name="settings_tracker_preset_delete_named">\"%1$s\" será excluído.</string>
+    <string name="settings_tracker_preset_amounts_kept">As quantidades permanecem inalteradas.</string>
+    <plurals name="settings_tracker_preset_delete_entries">
+        <item quantity="one">%1$d registro passa para Outro.</item>
+        <item quantity="many">%1$d registros passam para Outro.</item>
+        <item quantity="other">%1$d registros passam para Outro.</item>
+    </plurals>
     <string name="nicotine">Nicotina</string>
     <string name="nicotine_add">Adicionar nicotina</string>
     <string name="nicotine_log_title">Registrar nicotina</string>
@@ -1882,7 +1905,7 @@
     <string name="settings_nicotine_intro">Registre cigarros, vaporizadores e sachês de nicotina, veja o total de hoje contra um limite diário que você define, e edite ou exclua qualquer registro num histórico por dia.</string>
     <string name="settings_nicotine_section_quick">Registro rápido</string>
     <string name="settings_nicotine_section_tracking">Acompanhamento</string>
-    <string name="settings_nicotine_quick_kinds_help">Tipos mostrados como chips +1 na folha de adicionar comida.</string>
+    <string name="settings_nicotine_quick_kinds_help">Predefinições mostradas como chips +1 na folha de adicionar comida.</string>
     <string name="settings_nicotine_limit_wheel_help">Role para definir um limite diário de 0 (sem limite) a 100 unidades.</string>
     <string name="settings_nicotine_privacy_note">Os registros de nicotina ficam neste aparelho e na sua sincronização WebDAV. Nunca são incluídos em refeições compartilhadas e nunca são enviados a um provedor de IA.</string>
     <string name="settings_notes_title">Notas diárias</string>
