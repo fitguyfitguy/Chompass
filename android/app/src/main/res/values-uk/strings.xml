@@ -817,6 +817,11 @@
     <string name="copy_no_foods_on_day">Цього дня не записано жодної їжі</string>
     <string name="copy_to">Копіювати в</string>
     <string name="derived_body_fat">Жир тіла</string>
+    <string name="derived_navy_body_fat">Жир за US Navy</string>
+    <string name="derived_rfm_body_fat">Жир RFM</string>
+    <string name="derived_tape_estimate_caption">Оцінка стрічкою. Часто в межах приблизно 3–4 відсоткових пунктів від скану.</string>
+    <string name="action_use_as_body_fat">Використати як мій жир</string>
+    <string name="confirm_log_tape_body_fat">Записати %1$s%% жиру з замірів? Якщо жир використовується в калоріях, це його оновить.</string>
     <string name="derived_frame">Статура</string>
     <string name="derived_waist_to_height">Талія/зріст</string>
     <string name="derived_waist_to_hip">Талія/стегна</string>

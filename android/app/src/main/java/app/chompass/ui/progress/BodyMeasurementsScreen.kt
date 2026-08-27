@@ -28,6 +28,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -50,10 +51,12 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import app.chompass.AppContainer
 import app.chompass.R
+import app.chompass.models.BodyFatEntry
 import app.chompass.models.LocaleFormat
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.Gender
 import app.chompass.ui.components.FudGlassDialog
+import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.UnitToggle
 import app.chompass.ui.navigation.BottomNavScrollPadding
@@ -88,13 +91,16 @@ private fun measurementSiteList(context: android.content.Context, m: BodyMeasure
 private fun derivedMetricList(context: android.content.Context, m: BodyMeasurement, gender: Gender, heightCm: Double): List<Pair<String, String>> = buildList {
     m.waistToHipRatio?.let { add(context.getString(R.string.derived_waist_to_hip) to String.format(Locale.getDefault(), "%.2f", it)) }
     m.waistToHeightRatio(heightCm)?.let { add(context.getString(R.string.derived_waist_to_height) to String.format(Locale.getDefault(), "%.2f", it)) }
-    m.usNavyBodyFatPercent(gender, heightCm)?.let { add(context.getString(R.string.derived_body_fat) to String.format(Locale.getDefault(), "%.0f%%", it)) }
+    m.usNavyBodyFatPercent(gender, heightCm)?.let { add(context.getString(R.string.derived_navy_body_fat) to String.format(Locale.getDefault(), "%.0f%%", it)) }
+    m.relativeFatMassPercent(gender, heightCm)?.let { add(context.getString(R.string.derived_rfm_body_fat) to String.format(Locale.getDefault(), "%.0f%%", it)) }
     m.wristFrame(gender, heightCm)?.let { add(context.getString(R.string.derived_frame) to context.getString(it.labelRes)) }
 }
 
 private fun measurementHistorySummary(context: android.content.Context, m: BodyMeasurement, gender: Gender, heightCm: Double, useMetric: Boolean): String {
     val sites = measurementSiteList(context, m).map { "${it.first} ${displayLengthCm(context, it.second, useMetric)}" }
-    val bf = m.usNavyBodyFatPercent(gender, heightCm)?.let { "BF ${String.format(Locale.getDefault(), "%.0f%%", it)}" }
+    val navy = m.usNavyBodyFatPercent(gender, heightCm)?.let { "Navy ${String.format(Locale.getDefault(), "%.0f%%", it)}" }
+    val rfm = m.relativeFatMassPercent(gender, heightCm)?.let { "RFM ${String.format(Locale.getDefault(), "%.0f%%", it)}" }
+    val bf = listOfNotNull(navy, rfm).joinToString(" · ").ifEmpty { null }
     return (sites + listOfNotNull(bf)).joinToString(" · ")
 }
 
@@ -176,6 +182,10 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
 
     var editing by remember { mutableStateOf<BodyMeasurement.Site?>(null) }
     var showHistory by remember { mutableStateOf(false) }
+    var showUseAsBodyFat by remember { mutableStateOf(false) }
+    var useNavyEstimate by remember { mutableStateOf(true) }
+    val navyPercent = latest?.usNavyBodyFatPercent(gender, heightCm)
+    val rfmPercent = latest?.relativeFatMassPercent(gender, heightCm)
 
     val notSet = stringResource(R.string.settings_not_set)
     val cmUnit = stringResource(R.string.unit_cm)
@@ -251,6 +261,21 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                                         Text(value, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = AppColors.Calorie)
                                     }
                                 }
+                                if (navyPercent != null || rfmPercent != null) {
+                                    Text(
+                                        stringResource(R.string.derived_tape_estimate_caption),
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                                    )
+                                    TextButton(
+                                        onClick = {
+                                            useNavyEstimate = navyPercent != null
+                                            showUseAsBodyFat = true
+                                        }
+                                    ) {
+                                        Text(stringResource(R.string.action_use_as_body_fat), color = AppColors.Calorie)
+                                    }
+                                }
                             }
                         }
                     }
@@ -321,6 +346,48 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                     onValueChange = { editorValue = it }
                 )
             }
+        }
+    }
+    if (showUseAsBodyFat && (navyPercent != null || rfmPercent != null)) {
+        val chosen = if (useNavyEstimate && navyPercent != null) navyPercent else rfmPercent ?: navyPercent
+        val chosenLabel = String.format(Locale.getDefault(), "%.0f", chosen)
+        FudGlassDialog(onDismissRequest = { showUseAsBodyFat = false }) {
+            Text(
+                stringResource(R.string.confirm_log_tape_body_fat, chosenLabel),
+                style = MaterialTheme.typography.bodyMedium
+            )
+            if (navyPercent != null && rfmPercent != null) {
+                Spacer(Modifier.height(8.dp))
+                Row(
+                    Modifier.fillMaxWidth().clickable { useNavyEstimate = true },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(selected = useNavyEstimate, onClick = { useNavyEstimate = true })
+                    Text(stringResource(R.string.confirm_tape_source_navy))
+                }
+                Row(
+                    Modifier.fillMaxWidth().clickable { useNavyEstimate = false },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(selected = !useNavyEstimate, onClick = { useNavyEstimate = false })
+                    Text(stringResource(R.string.confirm_tape_source_rfm))
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+            FudGlassDialogActions(
+                primaryText = stringResource(R.string.action_ok),
+                onPrimary = {
+                    val pct = if (useNavyEstimate && navyPercent != null) navyPercent else rfmPercent ?: navyPercent
+                    if (pct != null) {
+                        scope.launch {
+                            container.bodyFatRepository.addEntry(BodyFatEntry(bodyFatFraction = pct / 100.0))
+                        }
+                    }
+                    showUseAsBodyFat = false
+                },
+                dismissText = stringResource(R.string.action_cancel),
+                onDismiss = { showUseAsBodyFat = false }
+            )
         }
     }
     if (showHistory) {

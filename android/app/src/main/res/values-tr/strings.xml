@@ -1620,6 +1620,11 @@
     <string name="derived_waist_to_hip">Bel-kalça oranı</string>
     <string name="derived_waist_to_height">Bel-boy oranı</string>
     <string name="derived_body_fat">Vücut yağı</string>
+    <string name="derived_navy_body_fat">US Navy vücut yağı</string>
+    <string name="derived_rfm_body_fat">RFM vücut yağı</string>
+    <string name="derived_tape_estimate_caption">Mezura tahmini. Çoğu zaman bir taramadan yaklaşık 3 ila 4 puan uzakta.</string>
+    <string name="action_use_as_body_fat">Vücut yağım olarak kullan</string>
+    <string name="confirm_log_tape_body_fat">Mezuradan %1$s%% vücut yağı kaydedilsin mi? Kalori hesabında vücut yağı kullanıyorsan bu onu günceller.</string>
     <string name="derived_frame">Vücut yapısı</string>
     <string name="frame_small">Küçük</string>
     <string name="frame_medium">Orta</string>

@@ -903,6 +903,13 @@
     <string name="copy_no_foods_on_day">No hay alimentos registrados este día</string>
     <string name="copy_to">Copiar a</string>
     <string name="derived_body_fat">Grasa corporal</string>
+    <string name="derived_navy_body_fat">Grasa corporal US Navy</string>
+    <string name="derived_rfm_body_fat">Grasa corporal RFM</string>
+    <string name="derived_tape_estimate_caption">Estimación con cinta. Suele estar a unos 3 o 4 puntos porcentuales de un escáner.</string>
+    <string name="action_use_as_body_fat">Usar como mi grasa corporal</string>
+    <string name="confirm_log_tape_body_fat">¿Registrar %1$s%% de grasa corporal desde la cinta? Si usas grasa corporal en las calorías, esto lo actualiza.</string>
+    <string name="confirm_tape_source_navy">Marina de EE. UU.</string>
+    <string name="confirm_tape_source_rfm">Fórmula RFM</string>
     <string name="derived_frame">Complexión</string>
     <string name="derived_waist_to_height">Cintura-altura</string>
     <string name="derived_waist_to_hip">Cintura-cadera</string>

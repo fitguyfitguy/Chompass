@@ -2235,6 +2235,13 @@
     <string name="derived_waist_to_hip">Waist-to-hip</string>
     <string name="derived_waist_to_height">Waist-to-height</string>
     <string name="derived_body_fat">Body fat</string>
+    <string name="derived_navy_body_fat">US Navy body fat</string>
+    <string name="derived_rfm_body_fat">RFM body fat</string>
+    <string name="derived_tape_estimate_caption">Tape estimate. Often within about 3 to 4 percentage points of a scan.</string>
+    <string name="action_use_as_body_fat">Use as my body fat</string>
+    <string name="confirm_log_tape_body_fat">Log %1$s%% body fat from tapes? If you use body fat in calorie math, this updates that.</string>
+    <string name="confirm_tape_source_navy">US Navy</string>
+    <string name="confirm_tape_source_rfm">RFM</string>
     <string name="derived_frame">Frame</string>
     <string name="frame_small">Small</string>
     <string name="frame_medium">Medium</string>

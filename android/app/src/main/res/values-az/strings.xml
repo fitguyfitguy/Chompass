@@ -832,6 +832,11 @@ bilirsən?</string>
     <string name="copy_no_foods_on_day">Bu gün heç bir yemək qeyd olunmayıb</string>
     <string name="copy_to">Bura kopyala</string>
     <string name="derived_body_fat">Bədən yağı</string>
+    <string name="derived_navy_body_fat">ABŞ Dəniz Qüvvələri bədən yağı</string>
+    <string name="derived_rfm_body_fat">RFM bədən yağı</string>
+    <string name="derived_tape_estimate_caption">Lent təxmini. Tez-tez skandan təxminən 3–4 faiz bəndi fərqlənir.</string>
+    <string name="action_use_as_body_fat">Bədən yağım kimi istifadə et</string>
+    <string name="confirm_log_tape_body_fat">Lentdən %1$s%% bədən yağı qeyd edilsin? Kalori hesabında bədən yağı istifadə edirsinizsə, bu onu yeniləyir.</string>
     <string name="derived_frame">Bədən quruluşu</string>
     <string name="derived_waist_to_height">Bel/boy</string>
     <string name="derived_waist_to_hip">Bel/omba</string>

@@ -811,6 +811,11 @@
     <string name="copy_no_foods_on_day">Op deze dag is geen voedsel gelogd</string>
     <string name="copy_to">Kopiëren naar</string>
     <string name="derived_body_fat">Lichaamsvet</string>
+    <string name="derived_navy_body_fat">US Navy lichaamsvet</string>
+    <string name="derived_rfm_body_fat">RFM lichaamsvet</string>
+    <string name="derived_tape_estimate_caption">Meetlintschatting. Vaak binnen ongeveer 3 tot 4 procentpunten van een scan.</string>
+    <string name="action_use_as_body_fat">Gebruik als mijn lichaamsvet</string>
+    <string name="confirm_log_tape_body_fat">%1$s%% lichaamsvet van het meetlint loggen? Als je lichaamsvet in de calorieberekening gebruikt, wordt dat bijgewerkt.</string>
     <string name="derived_frame">Lichaamsbouw</string>
     <string name="derived_waist_to_height">Taille/lengte</string>
     <string name="derived_waist_to_hip">Taille/heup</string>

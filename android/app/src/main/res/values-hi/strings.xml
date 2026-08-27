@@ -840,6 +840,11 @@
     <string name="copy_no_foods_on_day">इस दिन कोई खाना लॉग नहीं हुआ</string>
     <string name="copy_to">में कॉपी करें</string>
     <string name="derived_body_fat">शारीरिक वसा</string>
+    <string name="derived_navy_body_fat">US Navy शारीरिक वसा</string>
+    <string name="derived_rfm_body_fat">RFM शारीरिक वसा</string>
+    <string name="derived_tape_estimate_caption">टेप अनुमान। अक्सर स्कैन से लगभग 3 से 4 प्रतिशत अंक के भीतर।</string>
+    <string name="action_use_as_body_fat">मेरी शारीरिक वसा के रूप में उपयोग करें</string>
+    <string name="confirm_log_tape_body_fat">टेप से %1$s%% शारीरिक वसा लॉग करें? यदि आप कैलोरी गणित में शारीरिक वसा उपयोग करते हैं, तो यह उसे अपडेट करता है।</string>
     <string name="derived_frame">शारीरिक ढांचा</string>
     <string name="derived_waist_to_height">कमर/ऊंचाई</string>
     <string name="derived_waist_to_hip">कमर/कूल्हे</string>

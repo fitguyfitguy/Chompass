@@ -839,6 +839,11 @@
     <string name="copy_no_foods_on_day">この日の食品は記録されていません</string>
     <string name="copy_to">コピー先</string>
     <string name="derived_body_fat">体脂肪率</string>
+    <string name="derived_navy_body_fat">米海軍体脂肪</string>
+    <string name="derived_rfm_body_fat">RFM 体脂肪</string>
+    <string name="derived_tape_estimate_caption">メジャーによる推定。スキャンからだいたい 3〜4 ポイント以内になることが多いです。</string>
+    <string name="action_use_as_body_fat">体脂肪として使う</string>
+    <string name="confirm_log_tape_body_fat">メジャーから体脂肪 %1$s%% を記録しますか？カロリー計算に体脂肪を使っている場合、それが更新されます。</string>
     <string name="derived_frame">骨格</string>
     <string name="derived_waist_to_height">ウエスト身長比</string>
     <string name="derived_waist_to_hip">ウエストヒップ比</string>

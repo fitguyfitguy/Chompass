@@ -840,6 +840,11 @@
     <string name="copy_no_foods_on_day">لا توجد أطعمة مسجلة في هذا اليوم</string>
     <string name="copy_to">نسخ إلى</string>
     <string name="derived_body_fat">دهون الجسم</string>
+    <string name="derived_navy_body_fat">دهون البحرية الأمريكية</string>
+    <string name="derived_rfm_body_fat">دهون RFM</string>
+    <string name="derived_tape_estimate_caption">تقدير بالشريط. غالباً ضمن نحو 3 إلى 4 نقاط مئوية من الفحص.</string>
+    <string name="action_use_as_body_fat">استخدم كدهون جسمي</string>
+    <string name="confirm_log_tape_body_fat">تسجيل %1$s%% دهون من الشريط؟ إذا كنت تستخدم دهون الجسم في حساب السعرات، فهذا يحدّثه.</string>
     <string name="derived_frame">الهيكل</string>
     <string name="derived_waist_to_height">الخصر/الطول</string>
     <string name="derived_waist_to_hip">الخصر/الورك</string>
