@@ -564,7 +564,7 @@
     <string name="settings_use_body_fat_bmr">Vetpercentage voor BMR gebruiken</string>
     <string name="settings_use_body_fat_bmr_subtitle">Aan = Katch-McArdle (gebruikt vetvrije massa voor een nauwkeuriger BMR). Uit = Mifflin-St Jeor (alleen lengte/gewicht/leeftijd). Uitschakelen als je vetpercentage verouderd is.</string>
     <string name="sheet_goal_body_fat">Vetpercentage-doel</string>
-    <string name="sheet_goal_body_fat_currently">Huidig %1$d%%</string>
+    <string name="sheet_goal_body_fat_currently">Huidig %1$s%%</string>
     <string name="action_remove_goal">Doel verwijderen</string>
     <string name="progress_metric_weight">Gewicht</string>
     <string name="progress_metric_body_fat">Vetpercentage</string>

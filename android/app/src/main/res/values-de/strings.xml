@@ -2091,7 +2091,7 @@ für dich ein</string>
 
     <string name="sheet_goal_body_fat">Körperfettziel</string>
 
-    <string name="sheet_goal_body_fat_currently">Derzeit %1$d%%</string>
+    <string name="sheet_goal_body_fat_currently">Derzeit %1$s%%</string>
 
     <string name="action_remove_goal">Ziel entfernen</string>
 

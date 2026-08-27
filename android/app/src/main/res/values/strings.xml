@@ -1722,7 +1722,7 @@
     <string name="sheet_height">Height</string>
     <string name="sheet_body_fat_percent">Body fat %</string>
     <string name="sheet_goal_body_fat">Body Fat Goal</string>
-    <string name="sheet_goal_body_fat_currently">Currently %1$d%%</string>
+    <string name="sheet_goal_body_fat_currently">Currently %1$s%%</string>
     <string name="action_remove_goal">Remove Goal</string>
     <string name="sheet_weekly_change">Weekly Change</string>
     <string name="sheet_weekly_change_format">%1$.1f %2$s/week %3$s</string>

@@ -161,7 +161,7 @@ internal fun AddBodyFatDialog(
             onValueChange = { pct = it },
             min = 3.0,
             max = 60.0,
-            step = 0.5,
+            step = 0.1,
             unit = stringResource(R.string.unit_percent)
         )
         Row(

@@ -1163,7 +1163,7 @@
     <string name="sheet_height">Boy</string>
     <string name="sheet_body_fat_percent">Vücut yağı %</string>
     <string name="sheet_goal_body_fat">Hedef Vücut Yağı</string>
-    <string name="sheet_goal_body_fat_currently">Şu an %1$d%%</string>
+    <string name="sheet_goal_body_fat_currently">Şu an %1$s%%</string>
     <string name="action_remove_goal">Hedefi Kaldır</string>
     <string name="sheet_weekly_change">Haftalık Değişim</string>
     <string name="sheet_weekly_change_format">%1$.1f %2$s/hafta %3$s</string>

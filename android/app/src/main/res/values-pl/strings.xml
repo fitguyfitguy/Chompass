@@ -1163,7 +1163,7 @@
     <string name="sheet_height">Wzrost</string>
     <string name="sheet_body_fat_percent">Tkanka tłuszczowa, %</string>
     <string name="sheet_goal_body_fat">Docelowa tkanka tłuszczowa</string>
-    <string name="sheet_goal_body_fat_currently">Obecnie %1$d%%</string>
+    <string name="sheet_goal_body_fat_currently">Obecnie %1$s%%</string>
     <string name="action_remove_goal">Usuń cel</string>
     <string name="sheet_weekly_change">Zmiana tygodniowa</string>
     <string name="sheet_weekly_change_format">%1$.1f %2$s/tydz. %3$s</string>

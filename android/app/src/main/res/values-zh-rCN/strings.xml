@@ -597,7 +597,7 @@
     <string name="settings_use_body_fat_bmr">使用体脂计算BMR</string>
     <string name="settings_use_body_fat_bmr_subtitle">开启 = Katch-McArdle(使用瘦体重以获得更准确的BMR)。关闭 = Mifflin-St Jeor(仅使用身高/体重/年龄)。如果体脂测量值已过时,请关闭。</string>
     <string name="sheet_goal_body_fat">体脂目标</string>
-    <string name="sheet_goal_body_fat_currently">当前%1$d%%</string>
+    <string name="sheet_goal_body_fat_currently">当前%1$s%%</string>
     <string name="action_remove_goal">移除目标</string>
     <string name="progress_metric_weight">体重</string>
     <string name="progress_metric_body_fat">体脂</string>

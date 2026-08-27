@@ -596,7 +596,7 @@
     <string name="settings_use_body_fat_bmr">BMR के लिए बॉडी फैट का उपयोग करें</string>
     <string name="settings_use_body_fat_bmr_subtitle">चालू = Katch-McArdle (अधिक सटीक BMR के लिए लीन मास का उपयोग)। बंद = Mifflin-St Jeor (केवल ऊंचाई/वजन/उम्र)। यदि आपका बॉडी फैट रीडिंग पुराना है तो बंद करें।</string>
     <string name="sheet_goal_body_fat">बॉडी फैट लक्ष्य</string>
-    <string name="sheet_goal_body_fat_currently">वर्तमान %1$d%%</string>
+    <string name="sheet_goal_body_fat_currently">वर्तमान %1$s%%</string>
     <string name="action_remove_goal">लक्ष्य हटाएं</string>
     <string name="progress_metric_weight">वज़न</string>
     <string name="progress_metric_body_fat">बॉडी फैट</string>

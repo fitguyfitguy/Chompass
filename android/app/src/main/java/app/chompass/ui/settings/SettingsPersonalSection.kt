@@ -61,7 +61,7 @@ internal fun SettingsPersonalSection(
                     HorizontalDivider()
                     SettingRow(
                         stringResource(R.string.settings_body_fat),
-                        p.bodyFatPercentage?.let { "${(it * 100).toInt()}%" } ?: stringResource(R.string.settings_not_set),
+                        p.bodyFatPercentage?.let { UnitFormat.percent(it * 100) } ?: stringResource(R.string.settings_not_set),
                         icon = Icons.Outlined.Percent
                     ) { onOpenSheet(SettingsSheet.BODY_FAT) }
 
@@ -75,7 +75,7 @@ internal fun SettingsPersonalSection(
                         HorizontalDivider()
                         SettingRow(
                             stringResource(R.string.settings_goal_body_fat),
-                            p.goalBodyFatPercentage?.let { "${(it * 100).toInt()}%" } ?: stringResource(R.string.settings_not_set),
+                            p.goalBodyFatPercentage?.let { UnitFormat.percent(it * 100) } ?: stringResource(R.string.settings_not_set),
                             icon = Icons.Outlined.TrackChanges
                         ) { onOpenSheet(SettingsSheet.GOAL_BODY_FAT) }
                     }
