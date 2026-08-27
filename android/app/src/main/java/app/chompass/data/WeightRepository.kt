@@ -1,5 +1,6 @@
 package app.chompass.data
 
+import app.chompass.models.UnitFormat
 import app.chompass.models.WeightEntry
 import app.chompass.services.health.ExternalWeight
 import app.chompass.services.health.HealthConnectManager
@@ -45,12 +46,13 @@ class WeightRepository(
     suspend fun addEntry(entry: WeightEntry): WeightGoalReachedEvent? {
         val current = prefs.weightEntries.first()
         val previousLatest = current.maxByOrNull { it.date }
-        prefs.applyWeightBucketChanges(upsertsByMonth = mapOf(entry.month() to listOf(entry)))
-        sync?.touch(entry.id, "weight")
+        val stored = entry.copy(weightKg = UnitFormat.roundKgToTenths(entry.weightKg))
+        prefs.applyWeightBucketChanges(upsertsByMonth = mapOf(stored.month() to listOf(stored)))
+        sync?.touch(stored.id, "weight")
 
         syncProfileWeightToLatest()
         if (shouldSyncHealth()) {
-            health?.writeWeight(entry)
+            health?.writeWeight(stored)
         }
 
         val profile = profileRepository.current()
@@ -58,12 +60,12 @@ class WeightRepository(
         if (profile != null && goal != null && previousLatest != null) {
             val crossed = when (profile.goal) {
                 app.chompass.models.WeightGoal.LOSE ->
-                    previousLatest.weightKg > goal && entry.weightKg <= goal
+                    previousLatest.weightKg > goal && stored.weightKg <= goal
                 app.chompass.models.WeightGoal.GAIN ->
-                    previousLatest.weightKg < goal && entry.weightKg >= goal
+                    previousLatest.weightKg < goal && stored.weightKg >= goal
                 app.chompass.models.WeightGoal.MAINTAIN -> false
             }
-            if (crossed) return WeightGoalReachedEvent(entry)
+            if (crossed) return WeightGoalReachedEvent(stored)
         }
         return null
     }

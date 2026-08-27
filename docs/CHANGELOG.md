@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Fixed
+
+- **Weight wheel keeps the tenth you see** (Android): logging 80.2 no longer lands as 80.3. The kg tenths column was truncating leftover IEEE bits, so 80.3 looked like 80.2 and Save wrote the old number. Codeberg [#63](https://codeberg.org/fitguy/Chompass/issues/63) by [@tuxMode](https://codeberg.org/tuxMode).
+
 ### Changed
 
 - **Active burn follows the day type** (Android + web): when you have enough recent Training and Rest days, the Home ring's typical active burn is the average for that day type, not one blended number. The caption reads like `380 of 620 active · Training`. Recalculate and Coach see the same per-type typicals.

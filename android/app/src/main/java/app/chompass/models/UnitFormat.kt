@@ -22,6 +22,9 @@ object UnitFormat {
 
     fun lbsToKg(lbs: Double): Double = lbs / LBS_PER_KG
 
+    /** One-decimal kg grid the weight wheel shows (Codeberg #63). */
+    fun roundKgToTenths(kg: Double): Double = (kg * 10.0).roundToInt() / 10.0
+
     fun cmToInches(cm: Double): Double = cm / CM_PER_INCH
 
     fun inchesToCm(inches: Double): Double = inches * CM_PER_INCH
