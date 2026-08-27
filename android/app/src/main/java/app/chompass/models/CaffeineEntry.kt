@@ -9,7 +9,12 @@ import java.util.UUID
  * Caffeine source kinds for the optional caffeine tracker. Mg-based habit
  * logging (coffee, tea, energy drinks); [defaultMg] is what the +1 quick chip
  * logs for that kind (FDA-style ballpark: 95 mg coffee, 28 mg tea, 80 mg
- * energy drink). `OTHER` is the parse fallback for unknown wire values.
+ * energy drink).
+ *
+ * Since custom presets (#55 follow-up) the enum is only the *builtin*
+ * vocabulary: label resources and builtin quick-chip defaults. Entries store
+ * raw kind ids ([CaffeineEntry.kind] is a String) so custom presets never
+ * grow this enum; unknown ids display as the localized "Other" fallback.
  */
 enum class CaffeineKind(val storageKey: String, val labelRes: Int, val defaultMg: Double?) {
     COFFEE("coffee", R.string.caffeine_kind_coffee, 95.0),
@@ -23,23 +28,15 @@ enum class CaffeineKind(val storageKey: String, val labelRes: Int, val defaultMg
 
         /** Default quick-log chips on the Add Food hub (mirrors NicotineKind). */
         val DefaultQuickKinds = listOf(COFFEE, TEA, ENERGY)
-
-        /** User-configurable quick chips, validated like NicotineKind. */
-        fun quickKindsFromStorage(raw: String?): List<CaffeineKind> {
-            if (raw.isNullOrBlank()) return DefaultQuickKinds
-            val parsed = raw.split(',').mapNotNull { fromStorage(it.trim()) }
-            return parsed.distinct().ifEmpty { DefaultQuickKinds }
-        }
-
-        fun quickKindsToStorage(kinds: List<CaffeineKind>): String =
-            kinds.distinct().joinToString(",") { it.storageKey }
     }
 }
 
 /**
  * One logged caffeine dose (a coffee, a tea, an energy drink). Mg-first: the
  * daily total is the sum of [mg]; [kind] drives the label and the quick-chip
- * default amount.
+ * default amount. [kind] is a raw preset id: builtin storageKeys ("coffee"…)
+ * or custom `t_…` ids (see [HabitPresetCatalog]); the wire format and month
+ * buckets accept any string, old clients degrade unknown ids to "other".
  */
 @Serializable
 data class CaffeineEntry(
@@ -47,14 +44,20 @@ data class CaffeineEntry(
     val id: UUID = UUID.randomUUID(),
     @Serializable(with = InstantSerializer::class)
     val date: Instant = Instant.now(),
-    val kind: CaffeineKind = CaffeineKind.COFFEE,
+    @Serializable(with = TrackerKindIdSerializer::class)
+    val kind: String = CaffeineKind.COFFEE.storageKey,
     val mg: Double,
 ) {
     companion object {
-        fun forNow(kind: CaffeineKind, mg: Double? = null): CaffeineEntry =
+        /**
+         * Quick factory for a log about now. [mg] falls back to the *builtin*
+         * default for known kinds; custom presets pass their preset default
+         * explicitly (the hub/VM resolves it from the catalog).
+         */
+        fun forNow(kind: String, mg: Double? = null): CaffeineEntry =
             CaffeineEntry(
-                kind = kind,
-                mg = (mg ?: kind.defaultMg ?: 0.0).coerceAtLeast(0.0),
+                kind = normalizeKindId(kind),
+                mg = (mg ?: builtinCaffeineDefaultMg(kind) ?: 0.0).coerceAtLeast(0.0),
             )
     }
 }

@@ -1,7 +1,6 @@
 package app.chompass.data
 
 import app.chompass.models.CaffeineEntry
-import app.chompass.models.CaffeineKind
 import app.chompass.services.PerfLog
 import app.chompass.sync.SyncRepository
 import kotlinx.coroutines.flow.Flow
@@ -31,7 +30,7 @@ class CaffeineRepository(
 
     suspend fun add(entry: CaffeineEntry) {
         if (entry.mg <= 0) return
-        PerfLog.measure("caffeineLog", "dataStore", "kind=${entry.kind.storageKey}") {
+        PerfLog.measure("caffeineLog", "dataStore", "kind=${entry.kind}") {
             prefs.applyCaffeineBucketChanges(
                 upsertsByMonth = mapOf(entry.month() to listOf(entry)),
             )
@@ -40,7 +39,7 @@ class CaffeineRepository(
     }
 
     /** Edits kind/mg of an existing log in place (same id, same timestamp). */
-    suspend fun update(id: UUID, kind: CaffeineKind, mg: Double) {
+    suspend fun update(id: UUID, kind: String, mg: Double) {
         if (mg <= 0) return
         val existing = prefs.caffeineEntries.first().firstOrNull { it.id == id } ?: return
         val updated = existing.copy(kind = kind, mg = mg)

@@ -90,6 +90,11 @@ internal object Keys {
         val CAFFEINE_TRACKING_ENABLED = booleanPreferencesKey("caffeineTrackingEnabled")
         val CAFFEINE_DAILY_LIMIT_MG = intPreferencesKey("caffeineDailyLimitMg")
         val CAFFEINE_QUICK_KINDS = stringPreferencesKey("caffeineQuickKinds")
+        // Tracker preset catalogs (custom/renamed caffeine + nicotine presets,
+        // #55 follow-up). Android-only: deliberately not in pref-defaults.json
+        // until the PWA implements its editor.
+        val CAFFEINE_PRESETS = stringPreferencesKey("caffeinePresetsJson")
+        val NICOTINE_PRESETS = stringPreferencesKey("nicotinePresetsJson")
         val MANUAL_ACTIVE_ENTRIES = stringPreferencesKey("manualActiveEntries")
         // Optional intermittent-fasting timer (docs/local/PLAN_FASTING_TRACKER.md).
         // Session state is three scalars (state is a pure function of them).

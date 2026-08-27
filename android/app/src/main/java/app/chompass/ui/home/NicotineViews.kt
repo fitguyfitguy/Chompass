@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.NicotineEntry
 import app.chompass.models.NicotineKind
+import app.chompass.models.nicotineKindLabelRes
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.ChompassPinnedFooterSheet
 import app.chompass.ui.components.NumericWheelPicker
@@ -121,10 +122,10 @@ fun NicotineProgressRow(
 @Composable
 fun NicotineCustomCountSheet(
     onDismiss: () -> Unit,
-    onAdd: (NicotineKind, Int, Double?) -> Unit,
+    onAdd: (String, Int, Double?) -> Unit,
 ) {
     val sheetState = rememberChompassSheetState()
-    var kind by remember { mutableStateOf(NicotineKind.CIGARETTE) }
+    var kind by remember { mutableStateOf(NicotineKind.CIGARETTE.storageKey) }
     var count by remember { mutableStateOf(1) }
     var mg by remember { mutableStateOf(0) }
 
@@ -152,8 +153,8 @@ fun NicotineCustomCountSheet(
                 ) {
                     NicotineKind.entries.forEach { option ->
                         FilterChip(
-                            selected = kind == option,
-                            onClick = { kind = option },
+                            selected = kind == option.storageKey,
+                            onClick = { kind = option.storageKey },
                             label = { Text(stringResource(option.labelRes)) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = MaterialTheme.colorScheme.warning.copy(alpha = 0.18f),
@@ -308,7 +309,7 @@ private fun NicotineHistoryRow(
         )
         Spacer(Modifier.width(10.dp))
         Text(
-            stringResource(entry.kind.labelRes),
+            stringResource(nicotineKindLabelRes(entry.kind)),
             fontWeight = FontWeight.Medium,
             fontSize = 13.sp,
         )
@@ -343,7 +344,7 @@ private fun NicotineHistoryRow(
 fun NicotineEditSheet(
     entry: NicotineEntry,
     onDismiss: () -> Unit,
-    onSave: (NicotineKind, Int, Double?) -> Unit,
+    onSave: (String, Int, Double?) -> Unit,
 ) {
     val sheetState = rememberChompassSheetState()
     var kind by remember { mutableStateOf(entry.kind) }
@@ -374,8 +375,8 @@ fun NicotineEditSheet(
                 ) {
                     NicotineKind.entries.forEach { option ->
                         FilterChip(
-                            selected = kind == option,
-                            onClick = { kind = option },
+                            selected = kind == option.storageKey,
+                            onClick = { kind = option.storageKey },
                             label = { Text(stringResource(option.labelRes)) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = MaterialTheme.colorScheme.warning.copy(alpha = 0.18f),

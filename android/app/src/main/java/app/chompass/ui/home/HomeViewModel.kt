@@ -27,10 +27,10 @@ import app.chompass.models.ManualActiveEntry
 import app.chompass.models.MealType
 import app.chompass.models.CurrentMealCatalog
 import app.chompass.models.CaffeineEntry
-import app.chompass.models.CaffeineKind
 import app.chompass.models.FastingPhase
+import app.chompass.models.HabitPresetDomain
 import app.chompass.models.NicotineEntry
-import app.chompass.models.NicotineKind
+import app.chompass.models.builtinCaffeineDefaultMg
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.PendingFoodAnalysisDraft
 import app.chompass.models.PendingFoodInputDraft
@@ -221,7 +221,7 @@ data class HomeUiState(
     /** Optional nicotine tracker (docs/local/PLAN_NICOTINE_TRACKER.md). */
     val nicotineTrackingEnabled: Boolean = false,
     val nicotineDailyLimit: Int = 0,
-    val nicotineQuickKinds: List<NicotineKind> = NicotineKind.DefaultQuickKinds,
+    val nicotineQuickKinds: List<String> = HabitPresetDomain.NICOTINE.defaultQuickKindIds,
     val nicotineTodayCount: Int = 0,
     /** Individual logs for the selected day, newest first (drives the history sheet). */
     val nicotineTodayEntries: List<NicotineEntry> = emptyList(),
@@ -231,7 +231,7 @@ data class HomeUiState(
     val mealTimesEnabled: Boolean = true,
     /** Optional caffeine tracker (device-pass revision); default off. */
     val caffeineTrackingEnabled: Boolean = false,
-    val caffeineQuickKinds: List<CaffeineKind> = CaffeineKind.DefaultQuickKinds,
+    val caffeineQuickKinds: List<String> = HabitPresetDomain.CAFFEINE.defaultQuickKindIds,
     /** Selected-day caffeine total: tracker logs + food-entry caffeine, mg. */
     val caffeineTodayMg: Double = 0.0,
     /** Tracker logs for the selected day, newest first (history sheet). */
@@ -1397,7 +1397,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch { container.notesRepository.deleteNote(day) }
     }
 
-    fun addNicotine(kind: NicotineKind, count: Int = 1, mg: Double? = null) {
+    fun addNicotine(kind: String, count: Int = 1, mg: Double? = null) {
         if (count <= 0) return
         viewModelScope.launch {
             container.nicotineRepository.add(
@@ -1406,15 +1406,15 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
-    fun addCaffeine(kind: CaffeineKind, mg: Double? = null) {
-        val effective = mg ?: kind.defaultMg
+    fun addCaffeine(kind: String, mg: Double? = null) {
+        val effective = mg ?: builtinCaffeineDefaultMg(kind)
         if (effective == null || effective <= 0) return
         viewModelScope.launch {
             container.caffeineRepository.add(CaffeineEntry.forNow(kind = kind, mg = mg))
         }
     }
 
-    fun updateCaffeine(id: UUID, kind: CaffeineKind, mg: Double) {
+    fun updateCaffeine(id: UUID, kind: String, mg: Double) {
         viewModelScope.launch { container.caffeineRepository.update(id, kind, mg) }
     }
 
@@ -1502,7 +1502,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /** Edits an existing log's kind/count/mg in place (keeps its timestamp). */
-    fun updateNicotine(id: UUID, kind: NicotineKind, count: Int, mg: Double?) {
+    fun updateNicotine(id: UUID, kind: String, count: Int, mg: Double?) {
         if (count <= 0) return
         viewModelScope.launch { container.nicotineRepository.update(id, kind, count, mg) }
     }

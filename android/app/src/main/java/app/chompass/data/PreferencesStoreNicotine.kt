@@ -1,7 +1,7 @@
 package app.chompass.data
 
+import app.chompass.models.HabitPresetDomain
 import app.chompass.models.NicotineEntry
-import app.chompass.models.NicotineKind
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.YearMonth
@@ -20,11 +20,11 @@ internal suspend fun PreferencesStore.setNicotineDailyLimitImpl(v: Int) =
     setIntPref(Keys.NICOTINE_DAILY_LIMIT, v.coerceAtLeast(0))
 
 /** Quick-log chips on the Add Food hub (mirrors water quick presets). */
-internal val PreferencesStore.nicotineQuickKindsImpl: Flow<List<NicotineKind>>
+internal val PreferencesStore.nicotineQuickKindsImpl: Flow<List<String>>
     get() = stringPref(Keys.NICOTINE_QUICK_KINDS)
-        .map { NicotineKind.quickKindsFromStorage(it) }
-internal suspend fun PreferencesStore.setNicotineQuickKindsImpl(kinds: List<NicotineKind>) =
-    setStringPref(Keys.NICOTINE_QUICK_KINDS, NicotineKind.quickKindsToStorage(kinds))
+        .map { HabitPresetDomain.NICOTINE.quickKindIdsFromStorage(it) }
+internal suspend fun PreferencesStore.setNicotineQuickKindsImpl(ids: List<String>) =
+    setStringPref(Keys.NICOTINE_QUICK_KINDS, HabitPresetDomain.NICOTINE.quickKindIdsToStorage(ids))
 
 internal val PreferencesStore.nicotineEntriesImpl: Flow<List<NicotineEntry>>
     get() = nicotineBucketStore.allFlow()

@@ -43,6 +43,8 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.CaffeineEntry
 import app.chompass.models.CaffeineKind
+import app.chompass.models.builtinCaffeineDefaultMg
+import app.chompass.models.caffeineKindLabelRes
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.ChompassPinnedFooterSheet
 import app.chompass.ui.components.NumericWheelPicker
@@ -127,15 +129,15 @@ fun CaffeineProgressRow(
 @Composable
 fun CaffeineCustomSheet(
     onDismiss: () -> Unit,
-    onAdd: (CaffeineKind, Double) -> Unit,
+    onAdd: (String, Double) -> Unit,
 ) {
     val sheetState = rememberChompassSheetState()
-    var kind by remember { mutableStateOf(CaffeineKind.COFFEE) }
+    var kind by remember { mutableStateOf(CaffeineKind.COFFEE.storageKey) }
     var mg by remember { mutableStateOf((CaffeineKind.COFFEE.defaultMg ?: 0.0).toInt()) }
 
-    fun switchKind(next: CaffeineKind) {
+    fun switchKind(next: String) {
         kind = next
-        mg = (next.defaultMg ?: 0.0).toInt().coerceAtLeast(0)
+        mg = (builtinCaffeineDefaultMg(next) ?: 0.0).toInt().coerceAtLeast(0)
     }
 
     ChompassPinnedFooterSheet(
@@ -162,8 +164,8 @@ fun CaffeineCustomSheet(
                 ) {
                     CaffeineKind.entries.forEach { option ->
                         FilterChip(
-                            selected = kind == option,
-                            onClick = { switchKind(option) },
+                            selected = kind == option.storageKey,
+                            onClick = { switchKind(option.storageKey) },
                             label = { Text(stringResource(option.labelRes)) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
@@ -305,7 +307,7 @@ private fun CaffeineHistoryRow(
         )
         Spacer(Modifier.width(10.dp))
         Text(
-            stringResource(entry.kind.labelRes),
+            stringResource(caffeineKindLabelRes(entry.kind)),
             fontWeight = FontWeight.Medium,
             fontSize = 13.sp,
         )
@@ -336,7 +338,7 @@ private fun CaffeineHistoryRow(
 fun CaffeineEditSheet(
     entry: CaffeineEntry,
     onDismiss: () -> Unit,
-    onSave: (CaffeineKind, Double) -> Unit,
+    onSave: (String, Double) -> Unit,
 ) {
     val sheetState = rememberChompassSheetState()
     var kind by remember { mutableStateOf(entry.kind) }
@@ -366,8 +368,8 @@ fun CaffeineEditSheet(
                 ) {
                     CaffeineKind.entries.forEach { option ->
                         FilterChip(
-                            selected = kind == option,
-                            onClick = { kind = option },
+                            selected = kind == option.storageKey,
+                            onClick = { kind = option.storageKey },
                             label = { Text(stringResource(option.labelRes)) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
