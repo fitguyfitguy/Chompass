@@ -83,6 +83,7 @@ import app.chompass.models.FoodSource
 import app.chompass.models.CaffeineEntry
 import app.chompass.models.NicotineEntry
 import app.chompass.models.WaterAmountFormat
+import app.chompass.models.builtinCaffeineDefaultMg
 import app.chompass.models.WaterEntry
 import app.chompass.services.FoodPhotoSession
 import app.chompass.services.MealShare
@@ -1026,11 +1027,23 @@ fun HomeScreen(
             onWaterCustom = { showCustomWaterLog = true },
             nicotineTrackingEnabled = ui.nicotineTrackingEnabled,
             nicotineQuickKinds = ui.nicotineQuickKinds,
+            nicotinePresets = ui.nicotinePresets,
             onNicotine = { kind -> vm.addNicotine(kind) },
             onNicotineCustom = { showNicotineCustom = true },
             caffeineTrackingEnabled = ui.caffeineTrackingEnabled,
             caffeineQuickKinds = ui.caffeineQuickKinds,
-            onCaffeine = { kind -> vm.addCaffeine(kind) },
+            caffeinePresets = ui.caffeinePresets,
+            onCaffeine = { kind ->
+                // A chip without an effective default (e.g. the bare "Other"
+                // builtin) opens the custom sheet instead of logging 0 mg.
+                val presetMg = ui.caffeinePresets.firstOrNull { it.id == kind }?.defaultMg
+                    ?: builtinCaffeineDefaultMg(kind)
+                if (presetMg != null && presetMg > 0) {
+                    vm.addCaffeine(kind)
+                } else {
+                    showCaffeineCustom = true
+                }
+            },
             onCaffeineCustom = { showCaffeineCustom = true },
             fastingEnabled = ui.fastingEnabled,
             fastingPhase = ui.fastingPhase,
@@ -1149,6 +1162,7 @@ fun HomeScreen(
 
     if (showNicotineCustom) {
         NicotineCustomCountSheet(
+            presets = ui.nicotinePresets,
             onDismiss = { showNicotineCustom = false },
             onAdd = { kind, count, mg -> vm.addNicotine(kind, count, mg) },
         )
@@ -1158,6 +1172,7 @@ fun HomeScreen(
         NicotineHistorySheet(
             day = ui.date,
             entries = ui.nicotineTodayEntries,
+            presets = ui.nicotinePresets,
             onDismiss = { showNicotineHistory = false },
             onEdit = { editingNicotineEntry = it },
             onDelete = { vm.deleteNicotine(it.id) },
@@ -1167,6 +1182,7 @@ fun HomeScreen(
     editingNicotineEntry?.let { entry ->
         NicotineEditSheet(
             entry = entry,
+            presets = ui.nicotinePresets,
             onDismiss = { editingNicotineEntry = null },
             onSave = { kind, count, mg -> vm.updateNicotine(entry.id, kind, count, mg) },
         )
@@ -1174,6 +1190,7 @@ fun HomeScreen(
 
     if (showCaffeineCustom) {
         CaffeineCustomSheet(
+            presets = ui.caffeinePresets,
             onDismiss = { showCaffeineCustom = false },
             onAdd = { kind, mg -> vm.addCaffeine(kind, mg) },
         )
@@ -1183,6 +1200,7 @@ fun HomeScreen(
         CaffeineHistorySheet(
             day = ui.date,
             entries = ui.caffeineTodayEntries,
+            presets = ui.caffeinePresets,
             onDismiss = { showCaffeineHistory = false },
             onEdit = { editingCaffeineEntry = it },
             onDelete = { vm.deleteCaffeine(it.id) },
@@ -1192,6 +1210,7 @@ fun HomeScreen(
     editingCaffeineEntry?.let { entry ->
         CaffeineEditSheet(
             entry = entry,
+            presets = ui.caffeinePresets,
             onDismiss = { editingCaffeineEntry = null },
             onSave = { kind, mg -> vm.updateCaffeine(entry.id, kind, mg) },
         )
