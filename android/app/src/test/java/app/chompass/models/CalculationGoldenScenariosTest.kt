@@ -24,6 +24,24 @@ class CalculationGoldenScenariosTest(
 ) {
     @Test
     fun matchesSharedParityFixture() {
+        if (scenario.optString("kind") == "rfm") {
+            val input = scenario.getJSONObject("input")
+            val expect = scenario.getJSONObject("expect")
+            val gender = when (input.optString("sex", "male")) {
+                "female" -> Gender.FEMALE
+                "male" -> Gender.MALE
+                else -> Gender.OTHER
+            }
+            val m = BodyMeasurement(waistCm = input.getDouble("waistCm"))
+            val actual = m.relativeFatMassPercent(gender, input.getDouble("heightCm"))
+            if (expect.isNull("percent")) {
+                assertEquals(scenarioId, null, actual)
+            } else {
+                requireNotNull(actual) { scenarioId }
+                assertEquals(scenarioId, expect.getDouble("percent"), actual, expect.optDouble("tol", 1e-9))
+            }
+            return
+        }
         if (scenario.optString("kind") == "averageDailyIntake") {
             val input = scenario.getJSONObject("input")
             val expect = scenario.getJSONObject("expect")

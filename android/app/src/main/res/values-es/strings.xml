@@ -1283,6 +1283,9 @@
     <string name="settings_calc_adaptive_name">Objetivos adaptativos (semanal)</string>
     <string name="settings_calc_adaptive_used">Cuando está activado, Chompass compara tu tendencia de peso observada con el ritmo semanal elegido y ajusta las calorías hasta ±150 kcal/día (cambio mínimo de 25 kcal). Límite de seguridad: máx(BMR, 1.200 kcal). Tope de seguridad: 125%% del mantenimiento medido o calculado por fórmula. Requiere al menos 4 días con comida registrada y 3 pesajes, o datos de energía de Health Connect.</string>
     <string name="settings_calc_body_formula">Cintura-cadera = cintura ÷ cadera\nCintura-altura = cintura ÷ altura\nGrasa corporal US Navy: ecuaciones logarítmicas según sexo (cuello, cintura, cadera, altura)</string>
+    <string name="settings_calc_rfm_name">% de grasa RFM</string>
+    <string name="settings_calc_rfm_used">Se muestra a partir de cintura y altura cuando están registradas. No escribe grasa corporal hasta que confirmes Usar como mi grasa corporal. El género otro usa el coeficiente masculino, como Navy.</string>
+    <string name="settings_calc_rfm_formula" formatted="false">%BF = 64 − 20 × (altura ÷ cintura) + 12 × sex\nsex = 0 hombre, 1 mujer. Se rechaza fuera de 2–65%.</string>
     <string name="settings_calc_body_name">Métricas derivadas de la cinta métrica</string>
     <string name="settings_calc_body_used" formatted="false">Las circunferencias opcionales permiten derivar cintura-cadera, cintura-altura, el % de grasa corporal US Navy y la complexión de la muñeca. Son estimaciones aproximadas con cinta métrica. No anulan el BMR salvo que introduzcas por separado un % de grasa corporal en tu perfil.</string>
     <string name="settings_calc_calorie_target">Objetivo de calorías para la meta</string>

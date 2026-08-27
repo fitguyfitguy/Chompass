@@ -224,6 +224,13 @@ fun CalculationMethodsScreen(
                         citation = "Hodgdon JA, Beckett MB. (1984). \"Prediction of percent body fat for U.S. Navy men and women from body circumferences and height.\" Report No. 84–29, Naval Health Research Center.",
                         url = null
                     )
+                    CalcFormulaCard(
+                        name = stringResource(R.string.settings_calc_rfm_name),
+                        usedWhen = stringResource(R.string.settings_calc_rfm_used),
+                        formula = stringResource(R.string.settings_calc_rfm_formula),
+                        citation = "Woolcott OO, Bergman RN. (2018). \"Relative fat mass (RFM) as a new estimator of whole-body fat percentage.\" Scientific Reports.",
+                        url = null
+                    )
                 }
             }
 

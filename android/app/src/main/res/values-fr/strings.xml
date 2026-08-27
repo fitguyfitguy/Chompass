@@ -1279,6 +1279,9 @@
     <string name="settings_calc_adaptive_name">Objectifs adaptatifs (hebdomadaire)</string>
     <string name="settings_calc_adaptive_used">Lorsqu\'il est activé, Chompass compare votre tendance de poids observée à votre rythme hebdomadaire choisi et ajuste les calories jusqu\'à ±150 kcal/jour (changement minimal de 25 kcal). Plancher de sécurité : max(BMR, 1 200 kcal). Plafond de sécurité : 125%% du maintien mesuré ou calculé par formule. Nécessite au moins 4 jours d\'aliments enregistrés et 3 pesées, ou des données d\'énergie Health Connect.</string>
     <string name="settings_calc_body_formula">Taille-hanches = taille ÷ hanches\nTaille-hauteur = taille ÷ hauteur\nMasse grasse US Navy : équations logarithmiques selon le sexe (cou, taille, hanches, hauteur)</string>
+    <string name="settings_calc_rfm_name">% de masse grasse RFM</string>
+    <string name="settings_calc_rfm_used">Affiché à partir de la taille et de la hauteur lorsqu’elles sont saisies. N’enregistre pas la masse grasse tant que vous ne confirmez pas Utiliser comme ma masse grasse. Le genre autre utilise le coefficient masculin, comme Navy.</string>
+    <string name="settings_calc_rfm_formula" formatted="false">%BF = 64 − 20 × (hauteur ÷ taille) + 12 × sex\nsex = 0 homme, 1 femme. Rejeté hors de 2–65 %.</string>
     <string name="settings_calc_body_name">Mesures dérivées du mètre ruban</string>
     <string name="settings_calc_body_used" formatted="false">Les circonférences facultatives permettent de dériver taille-hanches, taille-hauteur, le % de masse grasse US Navy et la morphologie du poignet. Ce sont des estimations approximatives au mètre ruban. Elles ne remplacent pas le BMR sauf si vous saisissez séparément un % de masse grasse dans votre profil.</string>
     <string name="settings_calc_calorie_target">Objectif calorique pour la cible</string>

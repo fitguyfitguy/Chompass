@@ -1218,6 +1218,9 @@
     <string name="settings_calc_adaptive_name">Obiective adaptive (săptămânal)</string>
     <string name="settings_calc_adaptive_used">Când este activ, Chompass compară tendința ta de greutate observată cu ritmul săptămânal ales și ajustează caloriile cu până la ±150 kcal/zi (minimum 25 kcal). Prag de siguranță: max(BMR, 1200 kcal). Plafon de siguranță: 125%% din menținerea măsurată sau din formulă. Necesită cel puțin 4 zile cu mâncare înregistrată și 3 cântăriri, sau date de energie din Health Connect.</string>
     <string name="settings_calc_body_formula">Talie/șolduri = talie ÷ șolduri\nTalie/înălțime = talie ÷ înălțime\n%BF Marina SUA: ecuații logaritmice pe sexe (gât, talie, șolduri, înălțime)</string>
+    <string name="settings_calc_rfm_name">% grăsime RFM</string>
+    <string name="settings_calc_rfm_used">Afișat din talie și înălțime când sunt înregistrate. Nu scrie grăsimea corporală până confirmi Folosește ca grăsimea mea. Genul altul folosește coeficientul masculin, ca Navy.</string>
+    <string name="settings_calc_rfm_formula" formatted="false">%BF = 64 − 20 × (înălțime ÷ talie) + 12 × sex\nsex = 0 bărbat, 1 femeie. Respins în afara 2–65%.</string>
     <string name="settings_calc_body_name">Valori derivate din măsurători cu banda</string>
     <string name="settings_calc_body_used">Circumferințele opționale pot deriva talie/șolduri, talie/înălțime, % de grăsime Marina SUA și mărimea constituției încheieturii. Sunt estimări aproximative din măsurători. Nu înlocuiesc BMR decât dacă introduci separat procentul de grăsime în profil.</string>
     <string name="settings_calc_calorie_target">Țintă calorică pentru obiectiv</string>

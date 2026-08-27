@@ -1,7 +1,7 @@
 // @ts-check
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { bmr, tdee, dailyCalories, calorieAdjustment, proteinGoal, fatGoalStandard, dailyTargets } from "../formulas.js";
+import { bmr, tdee, dailyCalories, calorieAdjustment, proteinGoal, fatGoalStandard, dailyTargets, relativeFatMassPercent } from "../formulas.js";
 import { averageDailyIntake } from "../forecast.js";
 import { loadParityFixture } from "../../parity-fixtures.js";
 
@@ -14,6 +14,16 @@ const { scenarios } = loadParityFixture("formulas-expected.json");
 
 for (const scenario of scenarios) {
   test(scenario.id, () => {
+    if (scenario.kind === "rfm") {
+      const actual = relativeFatMassPercent(scenario.input);
+      if (scenario.expect.percent == null) {
+        assert.equal(actual, null);
+      } else {
+        assert.ok(actual != null);
+        assert.ok(Math.abs(actual - scenario.expect.percent) <= (scenario.expect.tol ?? 1e-9));
+      }
+      return;
+    }
     if (scenario.kind === "averageDailyIntake") {
       const r = averageDailyIntake(
         scenario.input.totalCalories,

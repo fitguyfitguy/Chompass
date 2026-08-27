@@ -41,6 +41,32 @@ class BodyMeasurementCalculationTest {
   }
 
   @Test
+  fun rfmMale_knownGolden() {
+    val m = BodyMeasurement(waistCm = 80.0)
+    assertEquals(19.0, m.relativeFatMassPercent(Gender.MALE, 180.0)!!, 1e-9)
+  }
+
+  @Test
+  fun rfmFemale_addsSexTerm() {
+    val m = BodyMeasurement(waistCm = 80.0)
+    assertEquals(31.0, m.relativeFatMassPercent(Gender.FEMALE, 180.0)!!, 1e-9)
+  }
+
+  @Test
+  fun rfmOther_usesMaleCoefficient() {
+    val m = BodyMeasurement(waistCm = 80.0)
+    assertEquals(19.0, m.relativeFatMassPercent(Gender.OTHER, 180.0)!!, 1e-9)
+  }
+
+  @Test
+  fun rfm_rejectsMissingOrOutOfRange() {
+    assertNull(BodyMeasurement().relativeFatMassPercent(Gender.MALE, 180.0))
+    assertNull(BodyMeasurement(waistCm = 0.0).relativeFatMassPercent(Gender.MALE, 180.0))
+    assertNull(BodyMeasurement(waistCm = 80.0).relativeFatMassPercent(Gender.MALE, 0.0))
+    assertNull(BodyMeasurement(waistCm = 400.0).relativeFatMassPercent(Gender.FEMALE, 165.0))
+  }
+
+  @Test
   fun wristFrame_classifiesByGenderCutoffs() {
     val male = BodyMeasurement(wristCm = 17.0)
     assertEquals(BodyMeasurement.FrameSize.MEDIUM, male.wristFrame(Gender.MALE, 175.0))

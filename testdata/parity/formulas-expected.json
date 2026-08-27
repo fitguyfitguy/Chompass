@@ -169,6 +169,42 @@
         "avgDailyCalories": 1000,
         "usesCalendarDayAverage": false
       }
+    },
+    {
+      "id": "golden_rfm_male_180_80",
+      "kind": "rfm",
+      "input": { "sex": "male", "heightCm": 180, "waistCm": 80 },
+      "expect": { "percent": 19 }
+    },
+    {
+      "id": "golden_rfm_female_180_80",
+      "kind": "rfm",
+      "input": { "sex": "female", "heightCm": 180, "waistCm": 80 },
+      "expect": { "percent": 31 }
+    },
+    {
+      "id": "golden_rfm_other_uses_male",
+      "kind": "rfm",
+      "input": { "sex": "other", "heightCm": 180, "waistCm": 80 },
+      "expect": { "percent": 19 }
+    },
+    {
+      "id": "golden_rfm_reject_zero_waist",
+      "kind": "rfm",
+      "input": { "sex": "male", "heightCm": 180, "waistCm": 0 },
+      "expect": { "percent": null }
+    },
+    {
+      "id": "golden_rfm_reject_zero_height",
+      "kind": "rfm",
+      "input": { "sex": "male", "heightCm": 0, "waistCm": 80 },
+      "expect": { "percent": null }
+    },
+    {
+      "id": "golden_rfm_reject_out_of_range",
+      "kind": "rfm",
+      "input": { "sex": "female", "heightCm": 165, "waistCm": 400 },
+      "expect": { "percent": null }
     }
   ]
 }

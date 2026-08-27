@@ -1182,6 +1182,9 @@
     <string name="settings_calc_adaptive_name">Obiettivi adattivi (settimanali)</string>
     <string name="settings_calc_adaptive_used">Quando attiva, Chompass confronta il trend del peso osservato con il ritmo settimanale scelto e regola le calorie fino a ±150 kcal/giorno (minimo 25 kcal). Limite di sicurezza: max(BMR, 1200 kcal). Tetto di sicurezza: 125%% del mantenimento misurato o da formula. Richiede almeno 4 giorni con registrazioni alimentari e 3 pesate, oppure dati energetici da Health Connect.</string>
     <string name="settings_calc_body_formula">Vita/fianchi = vita ÷ fianchi\nVita/altezza = vita ÷ altezza\n%BF US Navy: equazioni logaritmiche per sesso (collo, vita, fianchi, altezza)</string>
+    <string name="settings_calc_rfm_name">% grasso RFM</string>
+    <string name="settings_calc_rfm_used">Mostrato da vita e altezza quando sono registrate. Non scrive il grasso corporeo finché non confermi Usa come il mio grasso. Il genere altro usa il coefficiente maschile, come Navy.</string>
+    <string name="settings_calc_rfm_formula" formatted="false">%BF = 64 − 20 × (altezza ÷ vita) + 12 × sex\nsex = 0 maschio, 1 femmina. Rifiutato fuori da 2–65%.</string>
     <string name="settings_calc_body_name">Metriche derivate da misure</string>
     <string name="settings_calc_body_used">Le circonferenze facoltative permettono di ricavare vita/fianchi, vita/altezza, % di grasso US Navy e dimensione della costituzione del polso. Sono stime approssimative da misure. Non sostituiscono il BMR a meno che tu non inserisca separatamente la percentuale di grasso nel profilo.</string>
     <string name="settings_calc_calorie_target">Obiettivo calorico per la meta</string>

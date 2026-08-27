@@ -320,6 +320,22 @@ export function usNavyBodyFatPercent(m) {
   return percent;
 }
 
+/**
+ * RFM: Relative fat mass % (Woolcott & Bergman 2018). Same units for height and
+ * waist (cm). sex 0 male / 1 female; non-female (including other) uses male.
+ * Returns null when inputs are missing or the result is outside [2, 65]%.
+ * @param {{sex: import('./models.js').Sex, heightCm: number, waistCm: number}} m
+ */
+export function relativeFatMassPercent(m) {
+  const heightCm = m.heightCm;
+  const waistCm = m.waistCm;
+  if (!(heightCm > 0) || !(waistCm > 0)) return null;
+  const sexTerm = m.sex === "female" ? 1 : 0;
+  const percent = 64 - 20 * (heightCm / waistCm) + 12 * sexTerm;
+  if (!Number.isFinite(percent) || percent < 2 || percent > 65) return null;
+  return percent;
+}
+
 /** WHR: waist-to-hip ratio. @param {number} waistCm @param {number} hipsCm */
 export function waistToHipRatio(waistCm, hipsCm) {
   return waistCm / hipsCm;

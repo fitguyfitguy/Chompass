@@ -2310,6 +2310,9 @@
     <string name="settings_calc_body_name">Tape-measure derived metrics</string>
     <string name="settings_calc_body_used">Optional circumferences can derive waist-to-hip, waist-to-height, US Navy body-fat %, and wrist frame size. These are rough tape-measure estimates. They do not override BMR unless you separately enter a body-fat percentage on your profile.</string>
     <string name="settings_calc_body_formula">Waist-to-hip = waist ÷ hips\nWaist-to-height = waist ÷ height\nUS Navy %BF: sex-specific log equations (neck, waist, hips, height)</string>
+    <string name="settings_calc_rfm_name">RFM body fat %</string>
+    <string name="settings_calc_rfm_used">Shown from waist and height when those are logged. Does not write body fat unless you confirm Use as my body fat. Gender other uses the male coefficient, like Navy.</string>
+    <string name="settings_calc_rfm_formula" formatted="false">%BF = 64 − 20 × (height ÷ waist) + 12 × sex\nsex = 0 male, 1 female. Rejected outside 2–65%.</string>
     <string name="settings_not_medical_title">Not medical advice</string>
     <string name="settings_not_medical_body">Chompass is an estimation tool, not a clinical instrument. Formula estimates can be off (often around ±10%% for BMR). Consult a registered dietitian, physician, or sports medicine professional before significant diet changes, especially if you have a medical condition, are pregnant or breastfeeding, are under 18, or are managing an eating disorder.</string>
     <string name="settings_safety_medical">Safety &amp; Medical</string>

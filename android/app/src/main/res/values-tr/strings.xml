@@ -1673,6 +1673,9 @@
     <string name="settings_calc_body_name">Mezura türevli ölçümler</string>
     <string name="settings_calc_body_used">İsteğe bağlı çevreler; bel-kalça, bel-boy, US Navy vücut yağı yüzdesi ve bilek iskelet boyutunu türetebilir. Bunlar kaba mezura tahminleridir. Profilinde ayrıca bir vücut yağı yüzdesi girmediğin sürece BMR\'yi geçersiz kılmazlar.</string>
     <string name="settings_calc_body_formula">Bel-kalça = bel ÷ kalça\nBel-boy = bel ÷ boy\nUS Navy %BF: cinsiyete özel log denklemleri (boyun, bel, kalça, boy)</string>
+    <string name="settings_calc_rfm_name">RFM vücut yağı %</string>
+    <string name="settings_calc_rfm_used">Bel ve boy kaydedildiğinde gösterilir. Vücut yağını, Vücut yağım olarak kullan onaylamadan yazmaz. Diğer cinsiyet, Navy gibi erkek katsayısını kullanır.</string>
+    <string name="settings_calc_rfm_formula" formatted="false">%BF = 64 − 20 × (boy ÷ bel) + 12 × sex\nsex = 0 erkek, 1 kadın. 2–65% dışında reddedilir.</string>
     <string name="settings_not_medical_title">Tıbbi tavsiye değil</string>
     <string name="settings_not_medical_body">Chompass bir tahmin aracıdır, klinik bir alet değildir. Formül tahminleri hatalı olabilir (BMR için genellikle yaklaşık ±10%%). Önemli diyet değişikliklerinden önce, özellikle tıbbi bir durumun varsa, hamileysen veya emziriyorsan, 18 yaşından küçüksen veya yeme bozukluğu yönetiyorsan kayıtlı bir diyetisyene, hekime veya spor hekimliği uzmanına danış.</string>
     <string name="settings_safety_medical">Güvenlik ve Tıp</string>

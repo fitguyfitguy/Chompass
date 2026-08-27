@@ -41,6 +41,7 @@ Deterministic formulas are the **reference layer**. AI recalculation and adaptiv
 | FCAST   | Weight forecast          | Deterministic | `WeightAnalysisService.compute`                | kg/week  |
 | ADAPT   | Adaptive calorie tweak   | Heuristic     | `AdaptiveGoalService.apply`                    | kcal/day |
 | USNAVY  | US Navy body fat %       | Deterministic | `BodyMeasurement.usNavyBodyFatPercent`         | %        |
+| RFM     | Relative fat mass %      | Deterministic | `BodyMeasurement.relativeFatMassPercent` / `formulas.relativeFatMassPercent` | %        |
 | WHR     | Waist-to-hip             | Deterministic | `BodyMeasurement.waistToHipRatio`              | ratio    |
 | WTH     | Waist-to-height          | Deterministic | `BodyMeasurement.waistToHeightRatio`           | ratio    |
 | WATER-DYN-A | Dynamic gross water goal | Heuristic     | `WaterGoalCalculator.grossGoalMl`              | ml/day   |
@@ -418,7 +419,16 @@ Male:   %BF = 495 / (1.0324 − 0.19077×log10(waist−neck) + 0.15456×log10(he
 Female: %BF = 495 / (1.29579 − 0.35004×log10(waist+hips−neck) + 0.22100×log10(height)) − 450
 ```
 
-Rejected if result ∉ [2, 65]% or log domain invalid.
+Rejected if result ∉ [2, 65]% or log domain invalid. Gender OTHER uses the male equation.
+
+**RFM (Woolcott & Bergman 2018):** waist + height; neck not required. Same units (cm).
+
+```
+sex = 0 male, 1 female
+%BF = 64 − 20 × (height / waist) + 12 × sex
+```
+
+Rejected if result not finite or ∉ [2, 65]% (same guard as Navy). Gender OTHER uses male (`sex = 0`). Display-only until the user confirms “Use as my body fat”, which writes a normal BF% log (no source tag).
 
 **Wrist frame:** height / wrist ratio with gender-specific cutoffs.
 
@@ -440,6 +450,7 @@ Rejected if result ∉ [2, 65]% or log domain invalid.
 | Linear regression on scale data  | **Replaced with Theil–Sen**     | Robust median-slope; resists outlier weigh-ins                            |
 | AI goal recalculation            | **Keep, segregated**            | Non-deterministic; empirical (hit-and-trial) maintenance gated by log density (AI-RECALC below); thin/under-floor/disagreeing data falls back deterministically to formula or measured maintenance |
 | US Navy BF%                      | **Keep**                        | Standard field estimate; tape measurement error propagates                |
+| RFM BF%                          | **Keep (display)**              | Waist + height when neck is missing; optional confirm to log as BF%       |
 | Water base 35 ml/kg              | **Keep**                        | Midpoint of 30–40 ml/kg clinical range; between EFSA (2.0/2.5 L) and IOM (2.7/3.7 L) totals |
 | Temp factor +4 %/°C ≥ 25 °C, cap 1.6 | **Keep (heuristic)**         | AIs apply only to temperate climates; +0.5–1.0 L on hot days matches guidance |
 | Water activity table 1.0–1.5     | **Keep (heuristic)**            | AIs assume sedentary/PAL 1.6; ACSM exercise sweat 0.5–2.0 L/h            |

@@ -1171,6 +1171,9 @@
     <string name="settings_calc_body_formula">Талія/стегна = талія ÷ стегна
 Талія/зріст = талія ÷ зріст
 %BF за формулою ВМС США: логарифмічні рівняння за статтю (шия, талія, стегна, зріст)</string>
+    <string name="settings_calc_rfm_name">RFM % жиру</string>
+    <string name="settings_calc_rfm_used">Показується з талії та зросту, якщо вони записані. Не записує відсоток жиру, доки ви не підтвердите Використати як мій жир. Стать інше використовує чоловічий коефіцієнт, як Navy.</string>
+    <string name="settings_calc_rfm_formula" formatted="false">%BF = 64 − 20 × (зріст ÷ талія) + 12 × sex\nsex = 0 чоловік, 1 жінка. Відхиляється поза 2–65%.</string>
     <string name="settings_calc_body_name">Показники із замірів стрічкою</string>
     <string name="settings_calc_body_used">Необов\'язкові обхвати дають змогу визначити талія/стегна, талія/зріст, відсоток жиру за формулою ВМС США та розмір зап\'ястя. Це грубі оцінки за замірами. Вони не замінюють BMR, якщо відсоток жиру не вказано в профілі окремо.</string>
     <string name="settings_calc_calorie_target">Ціль калорій для мети</string>

@@ -1203,6 +1203,9 @@
     <string name="settings_calc_adaptive_name">Adaptieve doelen (wekelijks)</string>
     <string name="settings_calc_adaptive_used">Wanneer ingeschakeld vergelijkt Chompass je waargenomen gewichtstrend met het gekozen wekelijkse tempo en past calorieën aan tot ±150 kcal/dag (minimaal 25 kcal). Veiligheidsvloer: max(BMR, 1200 kcal). Veiligheidsplafond: 125%% van gemeten of formule-onderhoud. Vereist minimaal 4 gelogde voedingsdagen en 3 weegmomenten, of energiegegevens van Health Connect.</string>
     <string name="settings_calc_body_formula">Taille/heup = taille ÷ heupen\nTaille/lengte = taille ÷ lengte\nUS Navy %BF: seksespecifieke logvergelijkingen (nek, taille, heupen, lengte)</string>
+    <string name="settings_calc_rfm_name">RFM lichaamsvet %</string>
+    <string name="settings_calc_rfm_used">Getoond uit taille en lengte als die zijn gelogd. Schrijft lichaamsvet pas na bevestiging van Gebruik als mijn lichaamsvet. Geslacht overig gebruikt de mannelijke coëfficiënt, zoals Navy.</string>
+    <string name="settings_calc_rfm_formula" formatted="false">%BF = 64 − 20 × (lengte ÷ taille) + 12 × sex\nsex = 0 man, 1 vrouw. Afgewezen buiten 2–65%.</string>
     <string name="settings_calc_body_name">Afgeleide maten van meetlint</string>
     <string name="settings_calc_body_used">Optionele omtrekken kunnen taille/heup, taille/lengte, US Navy-lichaamsvet-% en polsomvang afleiden. Dit zijn ruwe meetlint-schattingen. Ze overschrijven BMR niet, tenzij je apart een lichaamsvetpercentage in je profiel invult.</string>
     <string name="settings_calc_calorie_target">Caloriedoel voor doelstelling</string>
