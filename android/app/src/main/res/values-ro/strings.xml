@@ -832,6 +832,11 @@
     <string name="copy_no_foods_on_day">Nicio mâncare înregistrată în această zi</string>
     <string name="copy_to">Copiază în</string>
     <string name="derived_body_fat">Grăsime corporală</string>
+    <string name="derived_navy_body_fat">Grăsime US Navy</string>
+    <string name="derived_rfm_body_fat">Grăsime RFM</string>
+    <string name="derived_tape_estimate_caption">Estimare cu banda. Adesea la circa 3–4 puncte procentuale de un scan.</string>
+    <string name="action_use_as_body_fat">Folosește ca grăsimea mea</string>
+    <string name="confirm_log_tape_body_fat">Înregistrezi %1$s%% grăsime din măsurători? Dacă folosești grăsimea în caloriile zilnice, aceasta se actualizează.</string>
     <string name="derived_frame">Constituție</string>
     <string name="derived_waist_to_height">Talie/înălțime</string>
     <string name="derived_waist_to_hip">Talie/șolduri</string>

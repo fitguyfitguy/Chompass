@@ -966,6 +966,11 @@
     <string name="derived_waist_to_hip">Талия/бёдра</string>
     <string name="derived_waist_to_height">Талия/рост</string>
     <string name="derived_body_fat">Процент жира</string>
+    <string name="derived_navy_body_fat">Жир по US Navy</string>
+    <string name="derived_rfm_body_fat">Жир RFM</string>
+    <string name="derived_tape_estimate_caption">Оценка по ленте. Часто в пределах примерно 3–4 процентных пунктов от скана.</string>
+    <string name="action_use_as_body_fat">Использовать как мой жир</string>
+    <string name="confirm_log_tape_body_fat">Записать %1$s%% жира по замерам? Если жир используется в расчёте калорий, это его обновит.</string>
     <string name="derived_frame">Телосложение</string>
     <string name="frame_small">Худощавое</string>
     <string name="frame_medium">Среднее</string>

@@ -899,6 +899,13 @@
     <string name="copy_no_foods_on_day">Aucun aliment enregistré ce jour</string>
     <string name="copy_to">Copier vers</string>
     <string name="derived_body_fat">Masse grasse</string>
+    <string name="derived_navy_body_fat">Masse grasse US Navy</string>
+    <string name="derived_rfm_body_fat">Masse grasse RFM</string>
+    <string name="derived_tape_estimate_caption">Estimation au mètre. Souvent à environ 3 à 4 points de pourcentage d’un scan.</string>
+    <string name="action_use_as_body_fat">Utiliser comme ma masse grasse</string>
+    <string name="confirm_log_tape_body_fat">Enregistrer %1$s%% de masse grasse d’après les mesures ? Si vous utilisez la masse grasse dans le calcul des calories, cela le met à jour.</string>
+    <string name="confirm_tape_source_navy">Marine US</string>
+    <string name="confirm_tape_source_rfm">Formule RFM</string>
     <string name="derived_frame">Morphologie</string>
     <string name="derived_waist_to_height">Taille-hauteur</string>
     <string name="derived_waist_to_hip">Taille-hanches</string>

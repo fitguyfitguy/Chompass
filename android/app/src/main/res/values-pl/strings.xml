@@ -1624,6 +1624,11 @@
     <string name="derived_waist_to_hip">Stosunek talii do bioder</string>
     <string name="derived_waist_to_height">Stosunek talii do wzrostu</string>
     <string name="derived_body_fat">Tkanka tłuszczowa</string>
+    <string name="derived_navy_body_fat">Tkanka tłuszczowa US Navy</string>
+    <string name="derived_rfm_body_fat">Tkanka tłuszczowa RFM</string>
+    <string name="derived_tape_estimate_caption">Szacunek z taśmy. Często w granicach 3 do 4 punktów procentowych od skanu.</string>
+    <string name="action_use_as_body_fat">Użyj jako moja tkanka tłuszczowa</string>
+    <string name="confirm_log_tape_body_fat">Zalogować %1$s%% tkanki tłuszczowej z taśmy? Jeśli używasz tkanki tłuszczowej w kaloriach, to ją zaktualizuje.</string>
     <string name="derived_frame">Sylwetka</string>
     <string name="frame_small">Mała</string>
     <string name="frame_medium">Średnia</string>

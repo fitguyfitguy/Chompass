@@ -829,6 +829,11 @@
     <string name="copy_no_foods_on_day">Nenhum alimento registrado neste dia</string>
     <string name="copy_to">Copiar para</string>
     <string name="derived_body_fat">Gordura corporal</string>
+    <string name="derived_navy_body_fat">Gordura US Navy</string>
+    <string name="derived_rfm_body_fat">Gordura RFM</string>
+    <string name="derived_tape_estimate_caption">Estimativa de fita. Costuma ficar a cerca de 3 a 4 pontos percentuais de um exame.</string>
+    <string name="action_use_as_body_fat">Usar como minha gordura</string>
+    <string name="confirm_log_tape_body_fat">Registrar %1$s%% de gordura a partir da fita? Se você usa gordura no cálculo de calorias, isso atualiza.</string>
     <string name="derived_frame">Biombo</string>
     <string name="derived_waist_to_height">Cintura/altura</string>
     <string name="derived_waist_to_hip">Cintura/quadril</string>

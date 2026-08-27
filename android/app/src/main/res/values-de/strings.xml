@@ -2967,6 +2967,13 @@ für dich ein</string>
     <string name="derived_waist_to_height">Verhältnis von Taille zu Körpergröße</string>
 
     <string name="derived_body_fat">Körperfett</string>
+    <string name="derived_navy_body_fat">US-Navy-Körperfett</string>
+    <string name="derived_rfm_body_fat">RFM-Körperfett</string>
+    <string name="derived_tape_estimate_caption">Maßbandschätzung. Oft etwa 3 bis 4 Prozentpunkte von einem Scan entfernt.</string>
+    <string name="action_use_as_body_fat">Als mein Körperfett verwenden</string>
+    <string name="confirm_log_tape_body_fat">%1$s%% Körperfett aus Maßen speichern? Wenn du Körperfett in der Kalorienrechnung nutzt, wird das aktualisiert.</string>
+    <string name="confirm_tape_source_navy">US-Navy</string>
+    <string name="confirm_tape_source_rfm">RFM-Formel</string>
 
     <string name="derived_frame">Körperbau</string>
 

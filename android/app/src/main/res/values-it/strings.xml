@@ -828,6 +828,11 @@
     <string name="copy_no_foods_on_day">Nessun alimento registrato in questo giorno</string>
     <string name="copy_to">Copia in</string>
     <string name="derived_body_fat">Grasso corporeo</string>
+    <string name="derived_navy_body_fat">Grasso US Navy</string>
+    <string name="derived_rfm_body_fat">Grasso RFM</string>
+    <string name="derived_tape_estimate_caption">Stima da metro. Spesso a circa 3–4 punti percentuali da una scansione.</string>
+    <string name="action_use_as_body_fat">Usa come il mio grasso</string>
+    <string name="confirm_log_tape_body_fat">Registrare %1$s%% di grasso dalle misure? Se usi il grasso nel calcolo calorie, questo lo aggiorna.</string>
     <string name="derived_frame">Costituzione</string>
     <string name="derived_waist_to_height">Vita/altezza</string>
     <string name="derived_waist_to_hip">Vita/fianchi</string>

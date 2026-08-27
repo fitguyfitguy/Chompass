@@ -839,6 +839,11 @@
     <string name="copy_no_foods_on_day">이 날에는 기록된 음식이 없어요</string>
     <string name="copy_to">복사 대상</string>
     <string name="derived_body_fat">체지방률</string>
+    <string name="derived_navy_body_fat">미 해군 체지방</string>
+    <string name="derived_rfm_body_fat">RFM 체지방</string>
+    <string name="derived_tape_estimate_caption">줄자 추정. 스캔과 보통 약 3~4퍼센트포인트 차이예요.</string>
+    <string name="action_use_as_body_fat">내 체지방으로 사용</string>
+    <string name="confirm_log_tape_body_fat">줄자에서 체지방 %1$s%%을 기록할까요? 칼로리 계산에 체지방을 쓰면 그게 업데이트돼요.</string>
     <string name="derived_frame">골격</string>
     <string name="derived_waist_to_height">허리-키 비율</string>
     <string name="derived_waist_to_hip">허리-엉덩이 비율</string>
