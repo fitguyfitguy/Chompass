@@ -186,6 +186,16 @@ enum class HabitPresetDomain(val mgBased: Boolean) {
 
     fun quickKindIdsToStorage(ids: List<String>): String =
         ids.map { it.trim() }.filter { it.isNotEmpty() }.distinct().joinToString(",")
+
+    /**
+     * Hub +1 chips: catalog presets in catalog (user) order, restricted to
+     * the quick-kind selection; an empty selection falls back to the
+     * defaults, ids without a preset (deleted custom) drop out.
+     */
+    fun hubPresets(quickKindIds: List<String>, catalog: HabitPresetCatalog): List<HabitPreset> {
+        val selected = quickKindIds.ifEmpty { defaultQuickKindIds }.toHashSet()
+        return catalog.presets.filter { it.id in selected }
+    }
 }
 
 private val BUILTIN_KIND_IDS: Set<String> =

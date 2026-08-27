@@ -41,9 +41,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.models.HabitPreset
+import app.chompass.models.HabitPresetDomain
 import app.chompass.models.NicotineEntry
 import app.chompass.models.NicotineKind
-import app.chompass.models.nicotineKindLabelRes
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.ChompassPinnedFooterSheet
 import app.chompass.ui.components.NumericWheelPicker
@@ -121,13 +122,21 @@ fun NicotineProgressRow(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NicotineCustomCountSheet(
+    presets: List<HabitPreset> = HabitPresetDomain.NICOTINE.defaultCatalog.presets,
     onDismiss: () -> Unit,
     onAdd: (String, Int, Double?) -> Unit,
 ) {
     val sheetState = rememberChompassSheetState()
-    var kind by remember { mutableStateOf(NicotineKind.CIGARETTE.storageKey) }
-    var count by remember { mutableStateOf(1) }
-    var mg by remember { mutableStateOf(0) }
+    val initial = presets.firstOrNull() ?: HabitPreset(NicotineKind.CIGARETTE.storageKey)
+    var kind by remember { mutableStateOf(initial.id) }
+    var count by remember { mutableStateOf(initial.defaultCount.coerceIn(1, 20)) }
+    var mg by remember { mutableStateOf((initial.defaultDoseMg?.toInt() ?: 0).coerceIn(0, 30)) }
+
+    fun switchKind(next: HabitPreset) {
+        kind = next.id
+        count = next.defaultCount.coerceIn(1, 20)
+        mg = (next.defaultDoseMg?.toInt() ?: 0).coerceIn(0, 30)
+    }
 
     ChompassPinnedFooterSheet(
         onDismiss = onDismiss,
@@ -151,11 +160,11 @@ fun NicotineCustomCountSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    NicotineKind.entries.forEach { option ->
+                    presets.forEach { option ->
                         FilterChip(
-                            selected = kind == option.storageKey,
-                            onClick = { kind = option.storageKey },
-                            label = { Text(stringResource(option.labelRes)) },
+                            selected = kind == option.id,
+                            onClick = { switchKind(option) },
+                            label = { Text(trackerPresetLabel(presets, option.id, HabitPresetDomain.NICOTINE)) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = MaterialTheme.colorScheme.warning.copy(alpha = 0.18f),
                             ),
@@ -218,6 +227,7 @@ fun NicotineCustomCountSheet(
 fun NicotineHistorySheet(
     day: LocalDate,
     entries: List<NicotineEntry>,
+    presets: List<HabitPreset> = HabitPresetDomain.NICOTINE.defaultCatalog.presets,
     onDismiss: () -> Unit,
     onEdit: (NicotineEntry) -> Unit,
     onDelete: (NicotineEntry) -> Unit,
@@ -274,6 +284,7 @@ fun NicotineHistorySheet(
                     sorted.forEach { entry ->
                         NicotineHistoryRow(
                             entry = entry,
+                            presets = presets,
                             timeFmt = timeFmt,
                             onEdit = { onEdit(entry) },
                             onDelete = { onDelete(entry) },
@@ -289,6 +300,7 @@ fun NicotineHistorySheet(
 @Composable
 private fun NicotineHistoryRow(
     entry: NicotineEntry,
+    presets: List<HabitPreset>,
     timeFmt: DateTimeFormatter,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
@@ -309,7 +321,7 @@ private fun NicotineHistoryRow(
         )
         Spacer(Modifier.width(10.dp))
         Text(
-            stringResource(nicotineKindLabelRes(entry.kind)),
+            trackerPresetLabel(presets, entry.kind, HabitPresetDomain.NICOTINE),
             fontWeight = FontWeight.Medium,
             fontSize = 13.sp,
         )
@@ -343,6 +355,7 @@ private fun NicotineHistoryRow(
 @Composable
 fun NicotineEditSheet(
     entry: NicotineEntry,
+    presets: List<HabitPreset> = HabitPresetDomain.NICOTINE.defaultCatalog.presets,
     onDismiss: () -> Unit,
     onSave: (String, Int, Double?) -> Unit,
 ) {
@@ -350,6 +363,11 @@ fun NicotineEditSheet(
     var kind by remember { mutableStateOf(entry.kind) }
     var count by remember { mutableStateOf(entry.count) }
     var mg by remember { mutableStateOf(entry.mg?.toInt() ?: 0) }
+    // An entry whose preset was deleted keeps an "Other"-labeled chip so it
+    // stays editable.
+    val chips = remember(entry.kind, presets) {
+        if (presets.any { it.id == entry.kind }) presets else presets + HabitPreset(entry.kind)
+    }
 
     ChompassPinnedFooterSheet(
         onDismiss = onDismiss,
@@ -373,11 +391,11 @@ fun NicotineEditSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    NicotineKind.entries.forEach { option ->
+                    chips.forEach { option ->
                         FilterChip(
-                            selected = kind == option.storageKey,
-                            onClick = { kind = option.storageKey },
-                            label = { Text(stringResource(option.labelRes)) },
+                            selected = kind == option.id,
+                            onClick = { kind = option.id },
+                            label = { Text(trackerPresetLabel(chips, option.id, HabitPresetDomain.NICOTINE)) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = MaterialTheme.colorScheme.warning.copy(alpha = 0.18f),
                             ),

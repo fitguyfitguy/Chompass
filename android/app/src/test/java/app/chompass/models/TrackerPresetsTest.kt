@@ -175,4 +175,33 @@ class TrackerPresetsTest {
             HabitPresetDomain.NICOTINE.quickKindIdsFromStorage("snus_future, 9x"),
         )
     }
+
+    @Test
+    fun hubPresetsComposeChipsInCatalogOrder() {
+        val domain = HabitPresetDomain.CAFFEINE
+        var catalog = domain.defaultCatalog
+            .withLabel("coffee", "Doppio")
+            .addCustom(domain, "Espresso", defaultMg = 65.0)
+        val espressoId = catalog.presets.last().id
+
+        // Selection order is ignored: chips follow the catalog (user) order.
+        val chips = domain.hubPresets(listOf("tea", espressoId, "coffee"), catalog)
+        assertEquals(listOf("coffee", "tea", espressoId), chips.map { it.id })
+        assertEquals("Doppio", chips.first().label)
+        assertEquals(65.0, chips.last().defaultMg!!, 0.001)
+
+        // Empty selection falls back to the default quick kinds (the
+        // ifEmpty { Default } path keeps working with custom ids around).
+        assertEquals(
+            listOf("coffee", "tea", "energy"),
+            domain.hubPresets(emptyList(), catalog).map { it.id },
+        )
+
+        // Deleted customs drop out of the chips without affecting the rest;
+        // an "other" selection still resolves.
+        assertEquals(
+            listOf("other"),
+            domain.hubPresets(listOf("other", "t_gone000"), catalog).map { it.id },
+        )
+    }
 }
