@@ -1222,6 +1222,9 @@ bilirsən?</string>
     <string name="settings_calc_adaptive_name">Adaptiv məqsədlər (həftəlik)</string>
     <string name="settings_calc_adaptive_used">Aktiv olduqda Chompass müşahidə olunan çəki trendini seçilmiş həftəlik templə müqayisə edir və kaloriləri gündə ±150 kkal (minimum 25 kkal) tənzimləyir. Təhlükəsizlik döşəməsi: max(BMR, 1200 kkal). Təhlükəsizlik tavanı: ölçülmüş və ya formula saxlanmasının 125%%-i. Ən azı 4 qeyd olunmuş yemək günü və 3 çəkilmə və ya Health Connect enerji məlumatları tələb olunur.</string>
     <string name="settings_calc_body_formula">Bel/omba = bel ÷ omba\nBel/boy = bel ÷ boy\nABŞ Dəniz Qüvvələri %BF: cinsə görə loqarifmik tənliklər (boyun, bel, omba, boy)</string>
+    <string name="settings_calc_rfm_name">RFM bədən yağı %</string>
+    <string name="settings_calc_rfm_used">Bel və boy qeyd olunanda göstərilir. Bədən yağını Bədən yağım kimi istifadə et təsdiqləmədən yazmır. Digər cins Navy kimi kişi əmsalını istifadə edir.</string>
+    <string name="settings_calc_rfm_formula" formatted="false">%BF = 64 − 20 × (boy ÷ bel) + 12 × sex\nsex = 0 kişi, 1 qadın. 2–65% xaricində rədd edilir.</string>
     <string name="settings_calc_body_name">Lent ölçüsündən törəmə göstəricilər</string>
     <string name="settings_calc_body_used">İstəyə bağlı çevrələr bel/omba, bel/boy, ABŞ Dəniz Qüvvələri bədən yağı % və bilək quruluşu ölçüsü törədə bilər. Bunlar lent ölçüsünün kobud təxminləridir. Profildə ayrıca bədən yağı faizi daxil etməsən, BMR-ni əvəz etmirlər.</string>
     <string name="settings_calc_calorie_target">Məqsəd üçün kalori hədəfi</string>

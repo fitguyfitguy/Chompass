@@ -1223,6 +1223,9 @@
     <string name="settings_calc_adaptive_name">अनुकूली लक्ष्य (साप्ताहिक)</string>
     <string name="settings_calc_adaptive_used">सक्षम होने पर, Chompass आपके अवलोकित वज़न प्रवृत्ति की तुलना चयनित साप्ताहिक गति से करता है और कैलोरी को ±150 किलो कैलोरी/दिन (न्यूनतम 25 किलो कैलोरी) तक समायोजित करता है। सुरक्षा न्यूनतम: max(BMR, 1200 किलो कैलोरी)। सुरक्षा अधिकतम: मापे या फॉर्मूला रखरखाव का 125%%। कम से कम 4 लॉग किए गए खाद्य दिन और 3 वज़न, या Health Connect ऊर्जा डेटा आवश्यक है।</string>
     <string name="settings_calc_body_formula">कमर/कूल्हे = कमर ÷ कूल्हे\nकमर/ऊंचाई = कमर ÷ ऊंचाई\nUS Navy %BF: लिंग-विशिष्ट लॉग समीकरण (गर्दन, कमर, कूल्हे, ऊंचाई)</string>
+    <string name="settings_calc_rfm_name">RFM शारीरिक वसा %</string>
+    <string name="settings_calc_rfm_used">कमर और ऊंचाई लॉग होने पर दिखाया जाता है। मेरी शारीरिक वसा के रूप में उपयोग की पुष्टि के बिना वसा नहीं लिखता। अन्य लिंग Navy की तरह पुरुष गुणांक उपयोग करता है।</string>
+    <string name="settings_calc_rfm_formula" formatted="false">%BF = 64 − 20 × (ऊंचाई ÷ कमर) + 12 × sex\nsex = 0 पुरुष, 1 महिला। 2–65% के बाहर अस्वीकृत।</string>
     <string name="settings_calc_body_name">टेप-माप व्युत्पन्न मीट्रिक</string>
     <string name="settings_calc_body_used">वैकल्पिक परिधियां कमर/कूल्हे, कमर/ऊंचाई, US Navy शारीरिक वसा % और कलाई ढांचा आकार व्युत्पन्न कर सकती हैं। ये मोटे टेप-माप अनुमान हैं। जब तक आप प्रोफ़ाइल में अलग से शारीरिक वसा प्रतिशत दर्ज नहीं करते, ये BMR को ओवरराइड नहीं करते।</string>
     <string name="settings_calc_calorie_target">लक्ष्य की कैलोरी</string>

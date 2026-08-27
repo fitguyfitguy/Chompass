@@ -1222,6 +1222,9 @@
     <string name="settings_calc_adaptive_name">適応型目標（毎週）</string>
     <string name="settings_calc_adaptive_used">オンの間、Chompass は観測された体重傾向を選択した週のペースと比較し、カロリーを最大 ±150 kcal/日（最小25 kcal）調整します。安全下限：max(BMR, 1200 kcal)。安全上限：測定または計算式による維持量の125%%。少なくとも4日分の食品記録と3回の体重測定、または Health Connect のエネルギー・データが必要です。</string>
     <string name="settings_calc_body_formula">ウエストヒップ比 = ウエスト ÷ ヒップ\nウエスト身長比 = ウエスト ÷ 身長\n米海軍 %BF：性別別の対数式（首、ウエスト、ヒップ、身長）</string>
+    <string name="settings_calc_rfm_name">RFM 体脂肪率</string>
+    <string name="settings_calc_rfm_used">ウエストと身長が記録されているときに表示します。体脂肪として使うを確認するまで体脂肪は書き込みません。その他の性別は Navy と同様に男性係数を使います。</string>
+    <string name="settings_calc_rfm_formula" formatted="false">%BF = 64 − 20 × (身長 ÷ ウエスト) + 12 × sex\nsex = 0 男性、1 女性。2–65% の外は却下。</string>
     <string name="settings_calc_body_name">メジャー計測による派生指標</string>
     <string name="settings_calc_body_used">任意の周囲長から、ウエストヒップ比、ウエスト身長比、米海軍式体脂肪率、手首の骨格サイズを導出できます。これらはメジャー計測による大まかな推定です。プロフィールで体脂肪率を別途入力しない限り、BMR を上書きしません。</string>
     <string name="settings_calc_calorie_target">目標のカロリーターゲット</string>

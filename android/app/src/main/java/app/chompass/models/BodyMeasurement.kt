@@ -70,6 +70,21 @@ data class BodyMeasurement(
         return result
     }
 
+    /**
+     * Relative fat mass (RFM) body-fat % (Woolcott & Bergman 2018). Same units for height and
+     * waist (cm). Needs waist + height; neck is not used. Gender OTHER uses the male coefficient
+     * (sex = 0), matching Navy's non-female branch. Rejects non-finite results and values outside
+     * [2, 65]% (same guard as Navy).
+     */
+    fun relativeFatMassPercent(gender: Gender, heightCm: Double): Double? {
+        val waist = waistCm ?: return null
+        if (heightCm <= 0 || waist <= 0) return null
+        val sex = if (gender == Gender.FEMALE) 1.0 else 0.0
+        val result = 64.0 - 20.0 * (heightCm / waist) + 12.0 * sex
+        if (!result.isFinite() || result < 2 || result > 65) return null
+        return result
+    }
+
     /** Bone-frame size from height ÷ wrist circumference (gender-specific cut-offs). Needs wrist. */
     fun wristFrame(gender: Gender, heightCm: Double): FrameSize? {
         val wrist = wristCm ?: return null

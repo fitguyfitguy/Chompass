@@ -1224,6 +1224,9 @@
     <string name="settings_calc_adaptive_name">自适应目标（每周）</string>
     <string name="settings_calc_adaptive_used">开启后，Chompass 将你的观察体重趋势与所选每周速度比较，并将热量最多调整 ±150 千卡/天（最小 25 千卡）。安全下限：max(BMR, 1200 千卡)。安全上限：测量或公式维持量的 125%%。至少需要 4 天食物记录和 3 次称重，或 Health Connect 能量数据。</string>
     <string name="settings_calc_body_formula">腰臀比 = 腰围 ÷ 臀围\n腰高比 = 腰围 ÷ 身高\n美国海军 %BF：按性别的对数方程（颈、腰、臀、身高）</string>
+    <string name="settings_calc_rfm_name">RFM 体脂率</string>
+    <string name="settings_calc_rfm_used">在已记录腰围和身高时显示。确认“用作我的体脂”之前不会写入体脂。其他性别与 Navy 一样使用男性系数。</string>
+    <string name="settings_calc_rfm_formula" formatted="false">%BF = 64 − 20 × (身高 ÷ 腰围) + 12 × sex\nsex = 0 男，1 女。超出 2–65% 则拒绝。</string>
     <string name="settings_calc_body_name">卷尺派生指标</string>
     <string name="settings_calc_body_used">可选围度可派生腰臀比、腰高比、美国海军体脂率和腕围骨架大小。这些是粗略的卷尺估算。除非你在资料中单独输入体脂百分比，否则不会覆盖 BMR。</string>
     <string name="settings_calc_calorie_target">目标热量</string>

@@ -1222,6 +1222,9 @@
     <string name="settings_calc_adaptive_name">적응형 목표(주간)</string>
     <string name="settings_calc_adaptive_used">켜면 Chompass가 관측된 체중 추세를 선택한 주간 속도와 비교하여 칼로리를 최대 ±150 kcal/일(최소 25kcal) 조정해요. 안전 하한: max(BMR, 1200kcal). 안전 상한: 측정 또는 공식 유지량의 125%%. 최소 4일의 음식 기록과 3회 체중 측정 또는 Health Connect 에너지 데이터가 필요해요.</string>
     <string name="settings_calc_body_formula">허리-엉덩이 = 허리 ÷ 엉덩이\n허리-키 = 허리 ÷ 키\n미 해군 %BF: 성별별 로그 방정식(목, 허리, 엉덩이, 키)</string>
+    <string name="settings_calc_rfm_name">RFM 체지방률</string>
+    <string name="settings_calc_rfm_used">허리와 키가 기록되어 있으면 표시해요. 내 체지방으로 사용을 확인하기 전에는 체지방을 쓰지 않아요. 기타 성별은 Navy처럼 남성 계수를 써요.</string>
+    <string name="settings_calc_rfm_formula" formatted="false">%BF = 64 − 20 × (키 ÷ 허리) + 12 × sex\nsex = 0 남성, 1 여성. 2–65% 밖은 거부.</string>
     <string name="settings_calc_body_name">줄자 측정 파생 지표</string>
     <string name="settings_calc_body_used">선택적 둘레에서 허리-엉덩이 비율, 허리-키 비율, 미 해군 체지방률, 손목 골격 크기를 파생할 수 있어요. 이는 줄자 측정의 대략적인 추정이에요. 프로필에 체지방률을 별도로 입력하지 않는 한 BMR을 대체하지 않아요.</string>
     <string name="settings_calc_calorie_target">목표 칼로리 타깃</string>

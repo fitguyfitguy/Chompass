@@ -1223,6 +1223,9 @@
     <string name="settings_calc_adaptive_name">أهداف تكيفية (أسبوعية)</string>
     <string name="settings_calc_adaptive_used">عند التفعيل، يقارن Chompass اتجاه وزنك الملاحَظ بالوتيرة الأسبوعية المختارة ويعدّل السعرات حتى ±150 سعرة/يوم (بحد أدنى 25 سعرة). الحد الأدنى الآمن: max(BMR, 1200 سعرة). السقف الآمن: 125%% من الصيانة المقاسة أو المحسوبة. يتطلب 4 أيام على الأقل من تسجيل الطعام و3 عمليات وزن أو بيانات طاقة من Health Connect.</string>
     <string name="settings_calc_body_formula">الخصر/الورك = الخصر ÷ الورك\nالخصر/الطول = الخصر ÷ الطول\n%BF البحرية الأمريكية: معادلات لوغاريتمية حسب الجنس (الرقبة، الخصر، الورك، الطول)</string>
+    <string name="settings_calc_rfm_name">نسبة دهون RFM</string>
+    <string name="settings_calc_rfm_used">تُعرض من الخصر والطول عند تسجيلهما. لا تكتب دهون الجسم إلا بعد تأكيد استخدم كدهون جسمي. الجنس الآخر يستخدم معامل الذكر مثل Navy.</string>
+    <string name="settings_calc_rfm_formula" formatted="false">%BF = 64 − 20 × (الطول ÷ الخصر) + 12 × sex\nsex = 0 ذكر، 1 أنثى. يُرفض خارج 2–65%.</string>
     <string name="settings_calc_body_name">مؤشرات مشتقة من قياس الشريط</string>
     <string name="settings_calc_body_used">يمكن للمحيطات الاختيارية اشتقاق الخصر/الورك، والخصر/الطول، ونسبة دهون البحرية الأمريكية، وحجم هيكل المعصم. هذه تقديرات تقريبية بقياس الشريط. لا تتجاوز BMR إلا إذا أدخلت نسبة دهون الجسم بشكل منفصل في ملفك.</string>
     <string name="settings_calc_calorie_target">هدف السعرات للغاية</string>

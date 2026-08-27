@@ -3093,6 +3093,9 @@ für dich ein</string>
     <string name="settings_calc_body_used">Anhand optionaler Umfangsmessewerte lassen sich das Verhältnis von Taillen- zu Hüftumfang, das Verhältnis von Taillen- zu Körpergröße, der Körperfettanteil nach US-Navy-Standard sowie die Handgelenkgröße berechnen. Hierbei handelt es sich um grobe Schätzwerte, die mit einem Maßband ermittelt wurden. Sie haben keinen Vorrang vor dem Grundumsatz (BMR), es sei denn, du gibst in deinem Profil separat einen Körperfettanteil ein.</string>
 
     <string name="settings_calc_body_formula">Taillen-Hüft-Verhältnis = Taillenumfang ÷ Hüftumfang\nTaillen-Körpergrößen-Verhältnis = Taillenumfang ÷ Körpergröße\nKörperfettanteil nach US-Navy: geschlechtsspezifische logarithmische Gleichungen (Halsumfang, Taillenumfang, Hüftumfang, Körpergröße)</string>
+    <string name="settings_calc_rfm_name">RFM-Körperfett %</string>
+    <string name="settings_calc_rfm_used">Wird aus Taille und Körpergröße angezeigt, wenn diese erfasst sind. Schreibt Körperfett erst, wenn du „Als mein Körperfett verwenden“ bestätigst. Geschlecht „divers“ nutzt den männlichen Koeffizienten, wie bei Navy.</string>
+    <string name="settings_calc_rfm_formula" formatted="false">%BF = 64 − 20 × (Größe ÷ Taille) + 12 × sex\nsex = 0 männlich, 1 weiblich. Außerhalb 2–65 % verworfen.</string>
 
     <string name="settings_not_medical_title">Keine medizinische Beratung</string>
 

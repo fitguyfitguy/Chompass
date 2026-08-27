@@ -1677,6 +1677,9 @@
     <string name="settings_calc_body_name">Wskaźniki wyprowadzone z taśmy pomiarowej</string>
     <string name="settings_calc_body_used">Opcjonalne obwody mogą wyprowadzić stosunek talii do bioder, talii do wzrostu, tkankę tłuszczową wg US Navy i rozmiar sylwetki na podstawie nadgarstka. To przybliżone szacunki z taśmy. Nie nadpisują BMR, chyba że osobno podasz procent tkanki tłuszczowej w profilu.</string>
     <string name="settings_calc_body_formula">Talia-biodra = talia ÷ biodra\nTalia-wzrost = talia ÷ wzrost\n%BF US Navy: równania logarytmiczne wg płci (szyja, talia, biodra, wzrost)</string>
+    <string name="settings_calc_rfm_name">RFM % tkanki tłuszczowej</string>
+    <string name="settings_calc_rfm_used">Pokazywane z talii i wzrostu, gdy są zapisane. Nie zapisuje tkanki tłuszczowej, dopóki nie potwierdzisz Użyj jako moja tkanka tłuszczowa. Płeć inna używa współczynnika męskiego, jak Navy.</string>
+    <string name="settings_calc_rfm_formula" formatted="false">%BF = 64 − 20 × (wzrost ÷ talia) + 12 × sex\nsex = 0 mężczyzna, 1 kobieta. Odrzucane poza 2–65%.</string>
     <string name="settings_not_medical_title">Nie porada medyczna</string>
     <string name="settings_not_medical_body">Chompass to narzędzie do szacowania, nie instrument kliniczny. Szacunki ze wzorów mogą być błędne (często około ±10%% dla BMR). Skonsultuj się z dyplomowanym dietetykiem, lekarzem lub specjalistą medycyny sportowej przed znaczącymi zmianami diety, zwłaszcza jeśli masz schorzenie, jesteś w ciąży lub karmisz piersią, masz mniej niż 18 lat lub leczysz zaburzenia odżywiania.</string>
     <string name="settings_safety_medical">Bezpieczeństwo i medycyna</string>
