@@ -129,13 +129,13 @@ object WaterGoalCalculator {
     }
 
     /**
-     * Coarse food-mass estimate for WATER-DYN-B: serving grams × quantity
-     * summed across today's diary entries. Entries without a serving weight
-     * contribute 0 (the estimate is intentionally rough).
+     * Coarse food-mass estimate for WATER-DYN-B: sum of each entry's
+     * [FoodEntry.servingSizeGrams] (already the logged portion, quantity included).
+     * Multiplying by [FoodEntry.selectedServingQuantity] double-counts slices/pieces.
+     * Entries without a serving weight contribute 0.
      */
     fun estimateDiaryGrams(entries: List<FoodEntry>): Int =
-        entries.sumOf { (it.servingSizeGrams ?: 0.0) * (it.selectedServingQuantity ?: 0.0) }
-            .roundToInt()
+        entries.sumOf { it.servingSizeGrams ?: 0.0 }.roundToInt()
 
     // -- WATER-DYN-C: adaptive reminder interval --------------------------
 
