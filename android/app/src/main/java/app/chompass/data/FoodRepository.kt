@@ -352,6 +352,48 @@ class FoodRepository(
     }
 
     /**
+     * Identity keys a rename of [favorite] must avoid (Codeberg #66): every
+     * diary + favorite identity except this favorite's own current key, so
+     * renaming to itself stays valid while any other food's name collides.
+     */
+    suspend fun favoriteRenameBlocklist(favorite: FoodEntry): Set<String> =
+        existingFoodIdentityKeys() - favorite.favoriteKey
+
+    /**
+     * Update a stored favorite in place (Codeberg #66) — favorites behave as
+     * a personal saved-foods library, not one-shot diary snapshots. [original]
+     * is matched by id (fallback: favoriteKey, so stale UI snapshots still
+     * hit) and replaced by [updated] at the same position in the list.
+     *
+     * The stored favorite's id is kept even when [updated] carries another:
+     * renames change [FoodEntry.favoriteKey], and the sync revision chain
+     * (LWW by updatedAt, kind "favorite") is keyed by id. recipeLogId is
+     * normalized to null — a favorite is a standalone saved food, never a
+     * recipe member (PWA toggleFavorite parity). The legacy favoriteKeys set
+     * is rewritten alongside, sync touch notifies other devices, and a
+     * replaced photo filename is deleted once nothing else references it.
+     *
+     * @return the stored favorite, or null when no match existed (already
+     *         unfavorited elsewhere / migrated away).
+     */
+    suspend fun updateFavorite(original: FoodEntry, updated: FoodEntry): FoodEntry? {
+        ensureFavoritesMigrated()
+        val current = prefs.favoriteFoodEntries.first().toMutableList()
+        val idx = current.indexOfFirst { it.id == original.id || it.favoriteKey == original.favoriteKey }
+        if (idx < 0) return null
+        val storedId = current[idx].id
+        val stored = updated.copy(id = storedId, recipeLogId = null)
+        current[idx] = stored
+        prefs.setFavoriteFoodEntries(current)
+        prefs.setFavoriteKeys(current.map { it.favoriteKey }.toSet())
+        sync?.touch(storedId, "favorite")
+        if (stored.imageFilename != original.imageFilename) {
+            deleteImageIfUnreferenced(original.imageFilename)
+        }
+        return stored
+    }
+
+    /**
      * One-time migration: if the new ordered favoriteFoodEntries list is
      * empty but the legacy favoriteKeys Set has entries, reconstruct the
      * ordered list from current food log entries (best-effort — no preserved
