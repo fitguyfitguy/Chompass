@@ -43,8 +43,9 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.CaffeineEntry
 import app.chompass.models.CaffeineKind
+import app.chompass.models.HabitPreset
+import app.chompass.models.HabitPresetDomain
 import app.chompass.models.builtinCaffeineDefaultMg
-import app.chompass.models.caffeineKindLabelRes
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.ChompassPinnedFooterSheet
 import app.chompass.ui.components.NumericWheelPicker
@@ -128,16 +129,21 @@ fun CaffeineProgressRow(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CaffeineCustomSheet(
+    presets: List<HabitPreset> = HabitPresetDomain.CAFFEINE.defaultCatalog.presets,
     onDismiss: () -> Unit,
     onAdd: (String, Double) -> Unit,
 ) {
     val sheetState = rememberChompassSheetState()
-    var kind by remember { mutableStateOf(CaffeineKind.COFFEE.storageKey) }
-    var mg by remember { mutableStateOf((CaffeineKind.COFFEE.defaultMg ?: 0.0).toInt()) }
+    val initial = presets.firstOrNull()
+        ?: HabitPreset(CaffeineKind.COFFEE.storageKey, defaultMg = CaffeineKind.COFFEE.defaultMg)
+    var kind by remember { mutableStateOf(initial.id) }
+    var mg by remember { mutableStateOf((initial.defaultMg ?: builtinCaffeineDefaultMg(initial.id) ?: 0.0).toInt().coerceAtLeast(0)) }
 
-    fun switchKind(next: String) {
-        kind = next
-        mg = (builtinCaffeineDefaultMg(next) ?: 0.0).toInt().coerceAtLeast(0)
+    fun switchKind(next: HabitPreset) {
+        kind = next.id
+        mg = (next.defaultMg ?: builtinCaffeineDefaultMg(next.id) ?: 0.0)
+            .toInt()
+            .coerceIn(0, 500)
     }
 
     ChompassPinnedFooterSheet(
@@ -162,11 +168,11 @@ fun CaffeineCustomSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    CaffeineKind.entries.forEach { option ->
+                    presets.forEach { option ->
                         FilterChip(
-                            selected = kind == option.storageKey,
-                            onClick = { switchKind(option.storageKey) },
-                            label = { Text(stringResource(option.labelRes)) },
+                            selected = kind == option.id,
+                            onClick = { switchKind(option) },
+                            label = { Text(trackerPresetLabel(presets, option.id, HabitPresetDomain.CAFFEINE)) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
                             ),
@@ -216,6 +222,7 @@ fun CaffeineCustomSheet(
 fun CaffeineHistorySheet(
     day: LocalDate,
     entries: List<CaffeineEntry>,
+    presets: List<HabitPreset> = HabitPresetDomain.CAFFEINE.defaultCatalog.presets,
     onDismiss: () -> Unit,
     onEdit: (CaffeineEntry) -> Unit,
     onDelete: (CaffeineEntry) -> Unit,
@@ -272,6 +279,7 @@ fun CaffeineHistorySheet(
                     sorted.forEach { entry ->
                         CaffeineHistoryRow(
                             entry = entry,
+                            presets = presets,
                             timeFmt = timeFmt,
                             onEdit = { onEdit(entry) },
                             onDelete = { onDelete(entry) },
@@ -287,6 +295,7 @@ fun CaffeineHistorySheet(
 @Composable
 private fun CaffeineHistoryRow(
     entry: CaffeineEntry,
+    presets: List<HabitPreset>,
     timeFmt: DateTimeFormatter,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
@@ -307,7 +316,7 @@ private fun CaffeineHistoryRow(
         )
         Spacer(Modifier.width(10.dp))
         Text(
-            stringResource(caffeineKindLabelRes(entry.kind)),
+            trackerPresetLabel(presets, entry.kind, HabitPresetDomain.CAFFEINE),
             fontWeight = FontWeight.Medium,
             fontSize = 13.sp,
         )
@@ -337,12 +346,18 @@ private fun CaffeineHistoryRow(
 @Composable
 fun CaffeineEditSheet(
     entry: CaffeineEntry,
+    presets: List<HabitPreset> = HabitPresetDomain.CAFFEINE.defaultCatalog.presets,
     onDismiss: () -> Unit,
     onSave: (String, Double) -> Unit,
 ) {
     val sheetState = rememberChompassSheetState()
     var kind by remember { mutableStateOf(entry.kind) }
     var mg by remember { mutableStateOf(entry.mg.toInt().coerceAtLeast(0)) }
+    // An entry whose preset was deleted keeps an "Other"-labeled chip so it
+    // stays editable.
+    val chips = remember(entry.kind, presets) {
+        if (presets.any { it.id == entry.kind }) presets else presets + HabitPreset(entry.kind)
+    }
 
     ChompassPinnedFooterSheet(
         onDismiss = onDismiss,
@@ -366,11 +381,11 @@ fun CaffeineEditSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    CaffeineKind.entries.forEach { option ->
+                    chips.forEach { option ->
                         FilterChip(
-                            selected = kind == option.storageKey,
-                            onClick = { kind = option.storageKey },
-                            label = { Text(stringResource(option.labelRes)) },
+                            selected = kind == option.id,
+                            onClick = { kind = option.id },
+                            label = { Text(trackerPresetLabel(chips, option.id, HabitPresetDomain.CAFFEINE)) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
                             ),

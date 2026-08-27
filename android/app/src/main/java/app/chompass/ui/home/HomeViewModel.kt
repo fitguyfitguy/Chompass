@@ -28,6 +28,7 @@ import app.chompass.models.MealType
 import app.chompass.models.CurrentMealCatalog
 import app.chompass.models.CaffeineEntry
 import app.chompass.models.FastingPhase
+import app.chompass.models.HabitPreset
 import app.chompass.models.HabitPresetDomain
 import app.chompass.models.NicotineEntry
 import app.chompass.models.builtinCaffeineDefaultMg
@@ -222,6 +223,8 @@ data class HomeUiState(
     val nicotineTrackingEnabled: Boolean = false,
     val nicotineDailyLimit: Int = 0,
     val nicotineQuickKinds: List<String> = HabitPresetDomain.NICOTINE.defaultQuickKindIds,
+    /** Nicotine preset catalog (labels + defaults) in user order. */
+    val nicotinePresets: List<HabitPreset> = HabitPresetDomain.NICOTINE.defaultCatalog.presets,
     val nicotineTodayCount: Int = 0,
     /** Individual logs for the selected day, newest first (drives the history sheet). */
     val nicotineTodayEntries: List<NicotineEntry> = emptyList(),
@@ -232,6 +235,8 @@ data class HomeUiState(
     /** Optional caffeine tracker (device-pass revision); default off. */
     val caffeineTrackingEnabled: Boolean = false,
     val caffeineQuickKinds: List<String> = HabitPresetDomain.CAFFEINE.defaultQuickKindIds,
+    /** Caffeine preset catalog (labels + defaults) in user order. */
+    val caffeinePresets: List<HabitPreset> = HabitPresetDomain.CAFFEINE.defaultCatalog.presets,
     /** Selected-day caffeine total: tracker logs + food-entry caffeine, mg. */
     val caffeineTodayMg: Double = 0.0,
     /** Tracker logs for the selected day, newest first (history sheet). */
@@ -522,12 +527,14 @@ data class HomeUiState(
             nicotineTrackingEnabled == other.nicotineTrackingEnabled &&
             nicotineDailyLimit == other.nicotineDailyLimit &&
             nicotineQuickKinds == other.nicotineQuickKinds &&
+            nicotinePresets == other.nicotinePresets &&
             nicotineTodayCount == other.nicotineTodayCount &&
             nicotineTodayEntries == other.nicotineTodayEntries &&
             dailyNotesEnabled == other.dailyNotesEnabled &&
             mealTimesEnabled == other.mealTimesEnabled &&
             caffeineTrackingEnabled == other.caffeineTrackingEnabled &&
             caffeineQuickKinds == other.caffeineQuickKinds &&
+            caffeinePresets == other.caffeinePresets &&
             caffeineTodayMg == other.caffeineTodayMg &&
             caffeineTodayEntries == other.caffeineTodayEntries &&
             fastingEnabled == other.fastingEnabled &&
@@ -607,12 +614,14 @@ data class HomeUiState(
         result = 31 * result + nicotineTrackingEnabled.hashCode()
         result = 31 * result + nicotineDailyLimit
         result = 31 * result + nicotineQuickKinds.hashCode()
+        result = 31 * result + nicotinePresets.hashCode()
         result = 31 * result + nicotineTodayCount
         result = 31 * result + nicotineTodayEntries.hashCode()
         result = 31 * result + dailyNotesEnabled.hashCode()
         result = 31 * result + mealTimesEnabled.hashCode()
         result = 31 * result + caffeineTrackingEnabled.hashCode()
         result = 31 * result + caffeineQuickKinds.hashCode()
+        result = 31 * result + caffeinePresets.hashCode()
         result = 31 * result + caffeineTodayMg.hashCode()
         result = 31 * result + caffeineTodayEntries.hashCode()
         result = 31 * result + fastingEnabled.hashCode()
@@ -1209,6 +1218,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         container.prefs.nicotineQuickKinds
             .onEach { kinds -> _ui.update { it.copy(nicotineQuickKinds = kinds) } }
             .launchIn(viewModelScope)
+        container.prefs.nicotinePresets
+            .onEach { catalog -> _ui.update { it.copy(nicotinePresets = catalog.presets) } }
+            .launchIn(viewModelScope)
 
         combine(container.nicotineRepository.entries, _selectedDate) { entries, day ->
             val zone = ZoneId.systemDefault()
@@ -1226,6 +1238,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
         container.prefs.caffeineQuickKinds
             .onEach { kinds -> _ui.update { it.copy(caffeineQuickKinds = kinds) } }
+            .launchIn(viewModelScope)
+        container.prefs.caffeinePresets
+            .onEach { catalog -> _ui.update { it.copy(caffeinePresets = catalog.presets) } }
             .launchIn(viewModelScope)
 
         // Hero total = tracker logs + food-entry caffeine for the selected day
@@ -1407,10 +1422,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun addCaffeine(kind: String, mg: Double? = null) {
-        val effective = mg ?: builtinCaffeineDefaultMg(kind)
+        val effective = mg
+            ?: _ui.value.caffeinePresets.firstOrNull { it.id == kind }?.defaultMg
+            ?: builtinCaffeineDefaultMg(kind)
         if (effective == null || effective <= 0) return
         viewModelScope.launch {
-            container.caffeineRepository.add(CaffeineEntry.forNow(kind = kind, mg = mg))
+            container.caffeineRepository.add(CaffeineEntry.forNow(kind = kind, mg = effective))
         }
     }
 
