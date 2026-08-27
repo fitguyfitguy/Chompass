@@ -38,6 +38,12 @@ Day-level journaling (Codeberg #58a):
 | `daily_notes[]` (sync) | One record per day: `{id, updated_at, deleted_at?, date, text}`. Id is deterministic from the date (day count since 1970-01-01 in the low 48 bits), so merges collapse to last-write-wins per day |
 | `caffeine_mg` (diary/sync items) | Optional caffeine in mg on each food item (Codeberg #55); `caffeine` in meal-share |
 
+Tracker `kind` fields (`nicotine_entries[].kind`, `caffeine_entries[].kind`) are
+free strings. Builtins use the storage keys (`cigarette`…`other`,
+`coffee`…`other`); Android's preset catalogs (#55 follow-up) additionally
+generate opaque `t_…` ids that round-trip verbatim. Clients without a matching
+preset degrade unknown ids to their localized `other` kind (mg/count stay).
+
 ## New in diary 1.2 / sync 1.1 / meal-share v2
 
 Item / food-record fields (diary & sync use **snake_case**; meal-share keeps **camelCase**):
