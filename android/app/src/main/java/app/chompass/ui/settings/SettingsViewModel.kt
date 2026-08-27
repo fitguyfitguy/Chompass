@@ -20,8 +20,10 @@ import app.chompass.models.MacroDayProfile
 import app.chompass.models.MacroPlan
 import app.chompass.models.MacroPlanEdit
 import app.chompass.models.MacroPlanMode
+import app.chompass.models.CaffeineKind
 import app.chompass.models.HabitPresetCatalog
 import app.chompass.models.HabitPresetDomain
+import app.chompass.models.NicotineKind
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.ProteinTargetMode
 import app.chompass.models.ServingUnitInferenceMode
@@ -109,11 +111,15 @@ data class SettingsUiState(
     val nicotineDailyLimit: Int = 0,
     val nicotineQuickKinds: List<String> = HabitPresetDomain.NICOTINE.defaultQuickKindIds,
     val nicotinePresets: HabitPresetCatalog = HabitPresetDomain.NICOTINE.defaultCatalog,
+    /** Logged-entry count per kind id (preset delete confirms with N). */
+    val nicotineKindUsage: Map<String, Int> = emptyMap(),
     val dailyNotesEnabled: Boolean = false,
     val mealTimesEnabled: Boolean = true,
     val caffeineTrackingEnabled: Boolean = false,
     val caffeineQuickKinds: List<String> = HabitPresetDomain.CAFFEINE.defaultQuickKindIds,
     val caffeinePresets: HabitPresetCatalog = HabitPresetDomain.CAFFEINE.defaultCatalog,
+    /** Logged-entry count per kind id (preset delete confirms with N). */
+    val caffeineKindUsage: Map<String, Int> = emptyMap(),
     val fastingEnabled: Boolean = false,
     val fastingGoalHours: Int = 16,
     val fastingEatHours: Int = 8,
@@ -558,6 +564,18 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     )
                 }
                 refreshWaterDynamicPreview()
+            }
+        }
+
+        // Preset delete confirms need entry counts per kind id (#55 follow-up).
+        viewModelScope.launch {
+            container.caffeineRepository.entries.collect { entries ->
+                _ui.update { it.copy(caffeineKindUsage = entries.groupingBy { it.kind }.eachCount()) }
+            }
+        }
+        viewModelScope.launch {
+            container.nicotineRepository.entries.collect { entries ->
+                _ui.update { it.copy(nicotineKindUsage = entries.groupingBy { it.kind }.eachCount()) }
             }
         }
 
@@ -1363,6 +1381,30 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         )
     }
 
+    /** Preset manager edits (rename, defaults, order, add) land as whole catalogs. */
+    fun setCaffeinePresets(catalog: HabitPresetCatalog) = updateUiPref(
+        { container.prefs.setCaffeinePresets(catalog) },
+        { copy(caffeinePresets = catalog.validatedOrDefault(HabitPresetDomain.CAFFEINE)) },
+    )
+
+    /**
+     * Deletes a custom caffeine preset: entries logged with it move to Other
+     * (mg preserved), and the id drops from the catalog + hub chip selection.
+     */
+    fun deleteCaffeinePreset(id: String) {
+        if (!id.startsWith(HabitPresetCatalog.CUSTOM_PREFIX)) return
+        launchPref {
+            container.caffeineRepository.reassignKind(id, CaffeineKind.OTHER.storageKey)
+            val nextCatalog = _ui.value.caffeinePresets.without(id)
+            val nextKinds = _ui.value.caffeineQuickKinds
+                .filterNot { it == id }
+                .ifEmpty { HabitPresetDomain.CAFFEINE.defaultQuickKindIds }
+            container.prefs.setCaffeinePresets(nextCatalog)
+            container.prefs.setCaffeineQuickKinds(nextKinds)
+            _ui.update { it.copy(caffeinePresets = nextCatalog, caffeineQuickKinds = nextKinds) }
+        }
+    }
+
     fun setFastingEnabled(v: Boolean) = updateUiPref(
         {
             container.prefs.setFastingEnabled(v)
@@ -1453,6 +1495,30 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             { container.prefs.setNicotineQuickKinds(validated) },
             { copy(nicotineQuickKinds = validated) },
         )
+    }
+
+    /** Preset manager edits (rename, defaults, order, add) land as whole catalogs. */
+    fun setNicotinePresets(catalog: HabitPresetCatalog) = updateUiPref(
+        { container.prefs.setNicotinePresets(catalog) },
+        { copy(nicotinePresets = catalog.validatedOrDefault(HabitPresetDomain.NICOTINE)) },
+    )
+
+    /**
+     * Deletes a custom nicotine preset: entries logged with it move to Other
+     * (count/mg preserved), and the id drops from the catalog + hub chips.
+     */
+    fun deleteNicotinePreset(id: String) {
+        if (!id.startsWith(HabitPresetCatalog.CUSTOM_PREFIX)) return
+        launchPref {
+            container.nicotineRepository.reassignKind(id, NicotineKind.OTHER.storageKey)
+            val nextCatalog = _ui.value.nicotinePresets.without(id)
+            val nextKinds = _ui.value.nicotineQuickKinds
+                .filterNot { it == id }
+                .ifEmpty { HabitPresetDomain.NICOTINE.defaultQuickKindIds }
+            container.prefs.setNicotinePresets(nextCatalog)
+            container.prefs.setNicotineQuickKinds(nextKinds)
+            _ui.update { it.copy(nicotinePresets = nextCatalog, nicotineQuickKinds = nextKinds) }
+        }
     }
 
     fun setWaterQuickPresetsMl(amountsMl: List<Int>) {

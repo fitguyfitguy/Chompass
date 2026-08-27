@@ -1848,9 +1848,30 @@
     <string name="settings_caffeine_intro">コーヒー、お茶、エナジードリンクを記録し、食事のエントリーからのカフェインを含む今日の合計を、自分で設定した1日の mg 上限と照らして確認できます。日ごとの履歴から記録の編集や削除もできます。</string>
     <string name="settings_caffeine_section_quick">クイック記録</string>
     <string name="settings_caffeine_section_tracking">トラッキング</string>
-    <string name="settings_caffeine_quick_kinds_help">食事追加シートに +1 チップとして表示される種類です。</string>
+    <string name="settings_caffeine_quick_kinds_help">食事追加シートに +1 チップとして表示されるプリセットです。</string>
     <string name="settings_caffeine_limit_wheel_help">スクロールして0（上限なし）から1000 mgまでの1日のカフェイン上限を設定します。</string>
     <string name="settings_caffeine_privacy_note">カフェインの記録はこの端末とWebDAV同期にのみ残ります。共有の食事に含まれることはなく、AIプロバイダーに送信されることもありません。</string>
+    <!-- Tracker preset managers (custom/renamed caffeine + nicotine presets, #55 follow-up). -->
+    <string name="settings_tracker_presets_section">プリセット</string>
+    <string name="settings_tracker_presets_help_caffeine">組み込みの飲み物の名前を変更したり、デフォルト量を指定して独自の飲み物を追加したりできます。ここでの順序が、食事追加シートのチップの順序です。</string>
+    <string name="settings_tracker_presets_help_nicotine">組み込みの製品の名前を変更したり、デフォルト個数を指定して独自の製品を追加したりできます。ここでの順序が、食事追加シートのチップの順序です。</string>
+    <string name="settings_caffeine_preset_add">飲み物を追加</string>
+    <string name="settings_nicotine_preset_add">製品を追加</string>
+    <string name="caffeine_preset_editor_title_add">新しい飲み物</string>
+    <string name="caffeine_preset_editor_title_edit">飲み物を編集</string>
+    <string name="nicotine_preset_editor_title_add">新しい製品</string>
+    <string name="nicotine_preset_editor_title_edit">製品を編集</string>
+    <string name="settings_tracker_preset_name">名前</string>
+    <string name="caffeine_preset_default_mg">デフォルト量 (mg)</string>
+    <string name="nicotine_preset_default_count">デフォルト個数</string>
+    <string name="nicotine_preset_default_dose">1回あたりのデフォルトニコチン (mg、任意)</string>
+    <string name="settings_tracker_preset_builtin">組み込み</string>
+    <string name="settings_tracker_preset_delete_title">プリセットを削除しますか？</string>
+    <string name="settings_tracker_preset_delete_named">「%1$s」を削除します。</string>
+    <string name="settings_tracker_preset_amounts_kept">量は変更されません。</string>
+    <plurals name="settings_tracker_preset_delete_entries">
+        <item quantity="other">記録した %1$d 件は「その他」に移動します。</item>
+    </plurals>
     <string name="nicotine">ニコチン</string>
     <string name="nicotine_add">ニコチンを追加</string>
     <string name="nicotine_log_title">ニコチンを記録</string>
@@ -1882,7 +1903,7 @@
     <string name="settings_nicotine_intro">たばこ、電子たばこ、パウチを記録し、今日の合計を自分で設定した1日の上限と照らして確認できます。日ごとの履歴から記録の編集や削除もできます。</string>
     <string name="settings_nicotine_section_quick">クイック記録</string>
     <string name="settings_nicotine_section_tracking">トラッキング</string>
-    <string name="settings_nicotine_quick_kinds_help">食事追加シートに +1 チップとして表示される種類です。</string>
+    <string name="settings_nicotine_quick_kinds_help">食事追加シートに +1 チップとして表示されるプリセットです。</string>
     <string name="settings_nicotine_limit_wheel_help">スクロールして0（上限なし）から100本までの1日の上限を設定します。</string>
     <string name="settings_nicotine_privacy_note">ニコチンの記録はこの端末とWebDAV同期にのみ残ります。共有の食事に含まれることはなく、AIプロバイダーに送信されることもありません。</string>
     <string name="settings_notes_title">デイリーノート</string>

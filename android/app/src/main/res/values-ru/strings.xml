@@ -1924,9 +1924,33 @@
     <string name="settings_caffeine_intro">Записывайте кофе, чай и энергетики, смотрите итог дня (включая кофеин из блюд) относительно дневного лимита в мг, который вы задаёте, и изменяйте или удаляйте записи в истории по дням.</string>
     <string name="settings_caffeine_section_quick">Быстрая запись</string>
     <string name="settings_caffeine_section_tracking">Учёт</string>
-    <string name="settings_caffeine_quick_kinds_help">Виды, показанные как чипы +1 на листе добавления еды.</string>
+    <string name="settings_caffeine_quick_kinds_help">Пресеты, показанные как чипы +1 на листе добавления еды.</string>
     <string name="settings_caffeine_limit_wheel_help">Прокрутите, чтобы задать дневной лимит кофеина от 0 (без лимита) до 1000 мг.</string>
     <string name="settings_caffeine_privacy_note">Записи о кофеине остаются на этом устройстве и в вашей синхронизации WebDAV. Они никогда не попадают в общие приёмы пищи и не отправляются ИИ-провайдеру.</string>
+    <!-- Tracker preset managers (custom/renamed caffeine + nicotine presets, #55 follow-up). -->
+    <string name="settings_tracker_presets_section">Пресеты</string>
+    <string name="settings_tracker_presets_help_caffeine">Переименуйте встроенные напитки или добавьте свои со стандартным количеством. Порядок здесь — порядок чипов на листе добавления еды.</string>
+    <string name="settings_tracker_presets_help_nicotine">Переименуйте встроенные продукты или добавьте свои со стандартным числом. Порядок здесь — порядок чипов на листе добавления еды.</string>
+    <string name="settings_caffeine_preset_add">Добавить напиток</string>
+    <string name="settings_nicotine_preset_add">Добавить продукт</string>
+    <string name="caffeine_preset_editor_title_add">Новый напиток</string>
+    <string name="caffeine_preset_editor_title_edit">Изменить напиток</string>
+    <string name="nicotine_preset_editor_title_add">Новый продукт</string>
+    <string name="nicotine_preset_editor_title_edit">Изменить продукт</string>
+    <string name="settings_tracker_preset_name">Название</string>
+    <string name="caffeine_preset_default_mg">Стандартное количество (мг)</string>
+    <string name="nicotine_preset_default_count">Стандартное число</string>
+    <string name="nicotine_preset_default_dose">Стандартный никотин на дозу (мг, необязательно)</string>
+    <string name="settings_tracker_preset_builtin">Встроенный</string>
+    <string name="settings_tracker_preset_delete_title">Удалить пресет?</string>
+    <string name="settings_tracker_preset_delete_named">«%1$s» будет удалён.</string>
+    <string name="settings_tracker_preset_amounts_kept">Количество не изменится.</string>
+    <plurals name="settings_tracker_preset_delete_entries">
+        <item quantity="one">%1$d запись переходит в «Другое».</item>
+        <item quantity="few">%1$d записи переходят в «Другое».</item>
+        <item quantity="many">%1$d записей переходит в «Другое».</item>
+        <item quantity="other">%1$d записей переходит в «Другое».</item>
+    </plurals>
     <string name="nicotine">Никотин</string>
     <string name="nicotine_add">Добавить никотин</string>
     <string name="nicotine_log_title">Записать никотин</string>
@@ -1958,7 +1982,7 @@
     <string name="settings_nicotine_intro">Записывайте сигареты, электронные сигареты и паучи, смотрите итог дня относительно дневного лимита, который вы задаёте, и изменяйте или удаляйте записи в истории по дням.</string>
     <string name="settings_nicotine_section_quick">Быстрая запись</string>
     <string name="settings_nicotine_section_tracking">Учёт</string>
-    <string name="settings_nicotine_quick_kinds_help">Виды, показанные как чипы +1 на листе добавления еды.</string>
+    <string name="settings_nicotine_quick_kinds_help">Пресеты, показанные как чипы +1 на листе добавления еды.</string>
     <string name="settings_nicotine_limit_wheel_help">Прокрутите, чтобы задать дневной лимит от 0 (без лимита) до 100 шт.</string>
     <string name="settings_nicotine_privacy_note">Записи о никотине остаются на этом устройстве и в вашей синхронизации WebDAV. Они никогда не попадают в общие приёмы пищи и не отправляются ИИ-провайдеру.</string>
     <string name="settings_notes_title">Ежедневные заметки</string>

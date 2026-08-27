@@ -1,6 +1,7 @@
 package app.chompass.data
 
 import app.chompass.models.NicotineEntry
+import app.chompass.models.NicotineKind
 import app.chompass.services.PerfLog
 import app.chompass.sync.SyncRepository
 import kotlinx.coroutines.flow.Flow
@@ -50,6 +51,21 @@ class NicotineRepository(
         val existing = prefs.nicotineEntries.first().firstOrNull { it.id == id } ?: return
         prefs.applyNicotineBucketChanges(removalIdsByMonth = mapOf(existing.month() to setOf(id)))
         sync?.tombstone(id, "nicotine")
+    }
+
+    /**
+     * Moves every log of kind [from] to [to] in place (preset delete: kind is
+     * cosmetic grouping, "other" is the fallback semantic; count/mg kept).
+     */
+    suspend fun reassignKind(from: String, to: String = NicotineKind.OTHER.storageKey) {
+        if (from == to) return
+        val moved = prefs.nicotineEntries.first().filter { it.kind == from }
+        if (moved.isEmpty()) return
+        val byMonth = moved.groupBy { it.month() }.mapValues { (_, list) ->
+            list.map { it.copy(kind = to) }
+        }
+        prefs.applyNicotineBucketChanges(upsertsByMonth = byMonth)
+        moved.forEach { sync?.touch(it.id, "nicotine") }
     }
 
     private fun NicotineEntry.month(): YearMonth = YearMonth.from(date.atZone(ZoneId.systemDefault()))
