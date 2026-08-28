@@ -406,7 +406,7 @@ describe("sheet drag-to-dismiss", () => {
     let closes = 0;
     const div = new FakeElement("div");
     const sheet = open({ body: div, onClose: () => (closes += 1) });
-    sheet.panel.scrollTop = 40;
+    sheet.body.scrollTop = 40; // the inner scroller holds the scroll offset
 
     gesture(sheet.panel, div, "touchstart", 120, 300);
     const move = gesture(sheet.panel, div, "touchmove", 120, 400);
@@ -455,6 +455,24 @@ describe("sheet drag-to-dismiss", () => {
     gesture(sheet.panel, handle, "touchstart", 180, 40);
     gesture(sheet.panel, handle, "touchmove", 180, 150);
     gesture(sheet.panel, handle, "touchend", 180, 150);
+    finishDismiss(sheet.panel);
+
+    assert.equal(closes, 1);
+  });
+
+  it("a drag from the panel shell (title strip) always dismisses", () => {
+    let closes = 0;
+    const sheet = open({
+      title: "Add food",
+      body: new FakeElement("div"),
+      onClose: () => (closes += 1),
+    });
+    const title = sheet.panel.children[1]; // [handle, h2, body]
+
+    gesture(sheet.panel, title, "touchstart", 150, 30);
+    const move = gesture(sheet.panel, title, "touchmove", 150, 200);
+    assert.equal(move.prevented, true, "shell drags still claim the touchmove");
+    gesture(sheet.panel, title, "touchend", 150, 200);
     finishDismiss(sheet.panel);
 
     assert.equal(closes, 1);
