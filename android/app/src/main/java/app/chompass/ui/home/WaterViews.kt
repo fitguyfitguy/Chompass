@@ -44,6 +44,7 @@ import app.chompass.R
 import app.chompass.models.WaterAmountFormat
 import app.chompass.models.WaterEntry
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.water
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.util.clockTimePattern
 import java.time.LocalDate
@@ -96,7 +97,7 @@ fun WaterProgressRow(
             Icon(
                 Icons.Filled.WaterDrop,
                 contentDescription = null,
-                tint = AppColors.Calorie,
+                tint = MaterialTheme.colorScheme.water,
                 modifier = Modifier.size(17.dp),
             )
             Text(
@@ -126,7 +127,7 @@ fun WaterProgressRow(
             Spacer(Modifier.weight(1f))
             Text(
                 waterProgressLabel(current, goal, useMetric),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+                color = MaterialTheme.colorScheme.water,
                 fontSize = 12.sp,
             )
         }
@@ -274,6 +275,7 @@ fun WaterHistorySheet(
                     stringResource(R.string.water_history_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.water,
                 )
                 Spacer(Modifier.weight(1f))
                 Spacer(Modifier.padding(horizontal = 31.dp))
@@ -344,7 +346,7 @@ private fun WaterHistoryRow(
         Icon(
             Icons.Filled.WaterDrop,
             contentDescription = null,
-            tint = AppColors.Calorie.copy(alpha = 0.85f),
+            tint = MaterialTheme.colorScheme.water.copy(alpha = 0.85f),
             modifier = Modifier.size(18.dp),
         )
         Text(
@@ -358,6 +360,7 @@ private fun WaterHistoryRow(
             waterHistoryAmountLabel(entry.milliliters, useMetric),
             fontWeight = FontWeight.SemiBold,
             fontSize = 15.sp,
+            color = MaterialTheme.colorScheme.water,
         )
         IconButton(onClick = onDelete) {
             Icon(

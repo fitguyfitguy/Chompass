@@ -46,6 +46,7 @@ import app.chompass.models.CaffeineKind
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.rememberChompassSheetState
+import app.chompass.ui.theme.caffeine
 import app.chompass.ui.util.clockTimePattern
 import java.time.LocalDate
 import java.time.ZoneId
@@ -98,7 +99,7 @@ fun CaffeineProgressRow(
                 } else {
                     stringResource(R.string.caffeine_total_today, formatMg(currentMg))
                 },
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+                color = MaterialTheme.colorScheme.caffeine,
                 fontSize = 12.sp,
             )
         }
@@ -251,6 +252,7 @@ fun CaffeineHistorySheet(
                     stringResource(R.string.caffeine_history_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.caffeine,
                 )
                 Spacer(Modifier.weight(1f))
                 Spacer(Modifier.padding(horizontal = 31.dp))
@@ -328,6 +330,7 @@ private fun CaffeineHistoryRow(
             stringResource(R.string.caffeine_mg_value, formatMg(entry.mg)),
             fontWeight = FontWeight.SemiBold,
             fontSize = 15.sp,
+            color = MaterialTheme.colorScheme.caffeine,
         )
         IconButton(onClick = onDelete) {
             Icon(

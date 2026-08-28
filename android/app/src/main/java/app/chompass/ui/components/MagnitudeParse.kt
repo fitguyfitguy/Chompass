@@ -56,4 +56,4 @@ fun parseMagnitudeInt(
     max = max.toDouble(),
     step = step.coerceAtLeast(1).toDouble(),
     decimalSeparator = decimalSeparator,
-)?.toInt()
+)?.roundToInt()

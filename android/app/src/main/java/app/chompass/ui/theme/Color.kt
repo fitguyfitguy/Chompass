@@ -295,6 +295,14 @@ object AppColors {
     val ActivePillLight = Color(0xFFE8DEF8)
     val ActivePillDark = Color(0xFF4A4458)
 
+    /** Semantic water-tracker accent (icon + value caption; bar stays primary). */
+    val WaterLight = Color(0xFF0061A4)
+    val WaterDark = Color(0xFF9ECAFF)
+
+    /** Semantic caffeine-tracker accent (icon + value caption; bar stays primary). */
+    val CaffeineLight = Color(0xFF9A6700)
+    val CaffeineDark = Color(0xFFFFC14D)
+
     /** Semantic warning tone (non-destructive caution states). */
     val WarningLight = Color(0xFF8B5000)
     val WarningDark = Color(0xFFFFB77C)
@@ -328,6 +336,14 @@ val androidx.compose.material3.ColorScheme.warning: Color
 /** Resolves [AppColors.SuccessLight]/[AppColors.SuccessDark] against the active theme. */
 val androidx.compose.material3.ColorScheme.success: Color
     get() = if (background.luminance() < 0.5f) AppColors.SuccessDark else AppColors.SuccessLight
+
+/** Resolves [AppColors.WaterLight]/[AppColors.WaterDark] against the active theme. */
+val androidx.compose.material3.ColorScheme.water: Color
+    get() = if (background.luminance() < 0.5f) AppColors.WaterDark else AppColors.WaterLight
+
+/** Resolves [AppColors.CaffeineLight]/[AppColors.CaffeineDark] against the active theme. */
+val androidx.compose.material3.ColorScheme.caffeine: Color
+    get() = if (background.luminance() < 0.5f) AppColors.CaffeineDark else AppColors.CaffeineLight
 
 /** Muted tone for non-core nutrients (sodium, vitamins…), theme/dark aware (UI-audit 2.4). */
 val androidx.compose.material3.ColorScheme.mutedNutrient: Color

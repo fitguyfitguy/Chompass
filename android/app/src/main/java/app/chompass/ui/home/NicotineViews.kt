@@ -94,7 +94,7 @@ fun NicotineProgressRow(
                 } else {
                     stringResource(R.string.nicotine_count_today, current)
                 },
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+                color = MaterialTheme.colorScheme.warning,
                 fontSize = 12.sp,
             )
         }
@@ -105,8 +105,8 @@ fun NicotineProgressRow(
                     .fillMaxWidth()
                     .height(5.dp)
                     .clip(RoundedCornerShape(3.dp)),
-                color = MaterialTheme.colorScheme.warning,
-                trackColor = MaterialTheme.colorScheme.warning.copy(alpha = 0.16f),
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
             )
         }
     }
@@ -255,6 +255,7 @@ fun NicotineHistorySheet(
                     stringResource(R.string.nicotine_history_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.warning,
                 )
                 Spacer(Modifier.weight(1f))
                 Spacer(Modifier.padding(horizontal = 31.dp))
@@ -336,6 +337,7 @@ private fun NicotineHistoryRow(
             },
             fontWeight = FontWeight.SemiBold,
             fontSize = 15.sp,
+            color = MaterialTheme.colorScheme.warning,
         )
         IconButton(onClick = onDelete) {
             Icon(
