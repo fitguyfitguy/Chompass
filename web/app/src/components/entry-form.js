@@ -47,28 +47,28 @@ import { escapeHtml, escapeAttr } from "../lib/ui/html.js";
 import { todayIso } from "../lib/date.js";
 
 const MICRO_FIELDS = [
-  ["sugarG", "Sugar g"],
-  ["addedSugarG", "Added sugar g"],
-  ["saturatedFatG", "Sat fat g"],
-  ["monounsaturatedFatG", "Mono fat g"],
-  ["polyunsaturatedFatG", "Poly fat g"],
-  ["transFatG", "Trans fat g"],
-  ["cholesterolMg", "Cholesterol mg"],
-  ["sodiumMg", "Sodium mg"],
-  ["potassiumMg", "Potassium mg"],
-  ["calciumMg", "Calcium mg"],
-  ["ironMg", "Iron mg"],
-  ["magnesiumMg", "Magnesium mg"],
-  ["zincMg", "Zinc mg"],
-  ["vitaminAMcg", "Vit A mcg"],
-  ["vitaminCMg", "Vit C mg"],
-  ["vitaminDMcg", "Vit D mcg"],
-  ["vitaminB12Mcg", "Vit B12 mcg"],
-  ["vitaminEMg", "Vit E mg"],
-  ["vitaminKMcg", "Vit K mcg"],
-  ["folateMcg", "Folate mcg"],
-  ["omega3G", "Omega-3 g"],
-  ["caffeineMg", "Caffeine mg"],
+  ["sugarG", "entry.micro.sugar_g"],
+  ["addedSugarG", "entry.micro.added_sugar_g"],
+  ["saturatedFatG", "entry.micro.sat_fat_g"],
+  ["monounsaturatedFatG", "entry.micro.mono_fat_g"],
+  ["polyunsaturatedFatG", "entry.micro.poly_fat_g"],
+  ["transFatG", "entry.micro.trans_fat_g"],
+  ["cholesterolMg", "entry.micro.cholesterol_mg"],
+  ["sodiumMg", "entry.micro.sodium_mg"],
+  ["potassiumMg", "entry.micro.potassium_mg"],
+  ["calciumMg", "entry.micro.calcium_mg"],
+  ["ironMg", "entry.micro.iron_mg"],
+  ["magnesiumMg", "entry.micro.magnesium_mg"],
+  ["zincMg", "entry.micro.zinc_mg"],
+  ["vitaminAMcg", "entry.micro.vitamin_a_mcg"],
+  ["vitaminCMg", "entry.micro.vitamin_c_mg"],
+  ["vitaminDMcg", "entry.micro.vitamin_d_mcg"],
+  ["vitaminB12Mcg", "entry.micro.vitamin_b12_mcg"],
+  ["vitaminEMg", "entry.micro.vitamin_e_mg"],
+  ["vitaminKMcg", "entry.micro.vitamin_k_mcg"],
+  ["folateMcg", "entry.micro.folate_mcg"],
+  ["omega3G", "entry.micro.omega3_g"],
+  ["caffeineMg", "entry.micro.caffeine_mg"],
 ];
 
 const NUTRITION_KEYS = ["calories", "proteinG", "carbsG", "fatG", "fiberG", ...ALL_MICRO_KEYS.filter((k) => k !== "fiberG")];
@@ -263,15 +263,15 @@ export class EntryForm extends HTMLElement {
     const defaultMeal = e.mealType || guessMealTypeFromPrefs(appPrefs);
     const isNew = !this.existing;
     const title = this.favoriteMode
-      ? "Edit saved food"
+      ? t("entry.title_edit_saved_food")
       : this.existing
-        ? "Edit entry"
+        ? t("entry.title_edit_entry")
         : this.prefill
-          ? "Review food"
-          : "Log food";
+          ? t("entry.title_review_food")
+          : t("entry.title_log_food");
     const progressiveActive = !this.existing && hasProgressiveMealItems();
     const primaryLabel = this.existing
-      ? "Save"
+      ? t("action.save")
       : progressiveActive
         ? t("progressive_meal.add_to_meal")
         : t("action.log");
@@ -300,9 +300,9 @@ export class EntryForm extends HTMLElement {
       ${subpageBar(title, { backHref: "#/home" })}
       <form class="entry-form entry-form--review">
         <section class="entry-section">
-          <h2 class="entry-section__title">Food details</h2>
+          <h2 class="entry-section__title">${escapeHtml(t("entry.food_details"))}</h2>
           <div class="field">
-            <label for="name">Name</label>
+            <label for="name">${escapeHtml(t("entry.constituents.name"))}</label>
             <input id="name" name="name" required value="${e.name ? escapeAttr(e.name) : ""}" />
           </div>
           ${this.nameError ? `<p class="entry-form__error" role="alert">${escapeHtml(this.nameError)}</p>` : ""}
@@ -314,10 +314,10 @@ export class EntryForm extends HTMLElement {
         </section>
 
         <section class="entry-section entry-section--serving">
-          <h2 class="entry-section__title">Serving</h2>
+          <h2 class="entry-section__title">${escapeHtml(t("entry.serving"))}</h2>
           <div class="serving-quantity-card" data-serving-card>
             <div class="serving-quantity-card__row">
-              <span class="serving-quantity-card__label">Quantity</span>
+              <span class="serving-quantity-card__label">${escapeHtml(t("entry.constituents.quantity"))}</span>
               <div class="serving-quantity-card__controls">
                 <input
                   id="servingQuantity"
@@ -327,9 +327,9 @@ export class EntryForm extends HTMLElement {
                   inputmode="decimal"
                   autocomplete="off"
                   value="${escapeAttr(this.quantityText)}"
-                  aria-label="Serving quantity"
+                  aria-label="${escapeAttr(t("entry.serving_quantity_aria"))}"
                 />
-                <select id="servingUnit" name="servingUnit" class="serving-quantity-card__unit" aria-label="Serving unit">
+                <select id="servingUnit" name="servingUnit" class="serving-quantity-card__unit" aria-label="${escapeAttr(t("entry.serving_unit_aria"))}">
                   ${picker
                     .map((opt) => {
                       const id = optionId(opt);
@@ -344,7 +344,7 @@ export class EntryForm extends HTMLElement {
               ${["+", "-", "×", "÷"]
                 .map(
                   (op) =>
-                    `<button type="button" class="serving-quantity-card__op" data-qty-op="${op}" aria-label="Insert ${op} into quantity">${op}</button>`
+                    `<button type="button" class="serving-quantity-card__op" data-qty-op="${op}" aria-label="${escapeAttr(t("entry.insert_op_aria", { op }))}">${op}</button>`
                 )
                 .join("")}
               <span class="serving-quantity-card__result" data-qty-result hidden></span>
@@ -352,7 +352,7 @@ export class EntryForm extends HTMLElement {
             ${
               showTotal
                 ? `<div class="serving-quantity-card__total">
-                     <span>Total</span>
+                     <span>${escapeHtml(t("entry.total"))}</span>
                      <span data-serving-total>~${formatGramsDisplay(servingGrams)} g</span>
                    </div>`
                 : ""
@@ -363,32 +363,32 @@ export class EntryForm extends HTMLElement {
 
         <section class="entry-section ${lockClass}">
           <div class="entry-section__head">
-            <h2 class="entry-section__title">Nutrition</h2>
+            <h2 class="entry-section__title">${escapeHtml(t("entry.nutrition"))}</h2>
             ${
-              `<button type="button" class="btn btn--ghost btn--sm" data-toggle-lock>${this.nutritionLocked ? "Unlock" : "Lock"}</button>`
+              `<button type="button" class="btn btn--ghost btn--sm" data-toggle-lock>${escapeHtml(this.nutritionLocked ? t("entry.unlock") : t("entry.lock"))}</button>`
             }
           </div>
           <div class="field-row">
             <div class="field">
-              <label for="calories">Calories</label>
+              <label for="calories">${escapeHtml(t("diary.calories"))}</label>
               <input id="calories" name="calories" type="number" min="0" required value="${numVal(scaled.calories)}" ${lockAttr} data-nutrition />
             </div>
             <div class="field">
-              <label for="proteinG">Protein g</label>
+              <label for="proteinG">${escapeHtml(t("day_types.protein_g"))}</label>
               <input id="proteinG" name="proteinG" type="number" min="0" step="0.1" value="${numVal(scaled.proteinG, true)}" ${lockAttr} data-nutrition />
             </div>
           </div>
           <div class="field-row">
             <div class="field">
-              <label for="carbsG">Carbs g</label>
+              <label for="carbsG">${escapeHtml(t("day_types.carbs_g"))}</label>
               <input id="carbsG" name="carbsG" type="number" min="0" step="0.1" value="${numVal(scaled.carbsG, true)}" ${lockAttr} data-nutrition />
             </div>
             <div class="field">
-              <label for="fatG">Fat g</label>
+              <label for="fatG">${escapeHtml(t("day_types.fat_g"))}</label>
               <input id="fatG" name="fatG" type="number" min="0" step="0.1" value="${numVal(scaled.fatG, true)}" ${lockAttr} data-nutrition />
             </div>
             <div class="field">
-              <label for="fiberG">Fiber g</label>
+              <label for="fiberG">${escapeHtml(t("entry.fiber_g"))}</label>
               <input id="fiberG" name="fiberG" type="number" min="0" step="0.1" value="${scaled.fiberG == null ? "" : numVal(scaled.fiberG, true)}" ${lockAttr} data-nutrition />
             </div>
           </div>
@@ -397,13 +397,13 @@ export class EntryForm extends HTMLElement {
         ${this.renderConstituentsSection()}
 
         <details class="micros-details">
-          <summary>More nutrition</summary>
+          <summary>${escapeHtml(t("entry.more_nutrition"))}</summary>
           <div class="field-row field-row--micros">
             ${MICRO_FIELDS.map(([key, label]) => {
               const v = scaled[key];
               return `
               <div class="field">
-                <label for="${key}">${label}</label>
+                <label for="${key}">${t(label)}</label>
                 <input id="${key}" name="${key}" type="number" min="0" step="0.1" value="${v == null ? "" : numVal(v, true)}" ${lockAttr} data-nutrition />
               </div>`;
             }).join("")}
@@ -411,13 +411,13 @@ export class EntryForm extends HTMLElement {
         </details>
 
         <section class="entry-section">
-          <h2 class="entry-section__title">Meal</h2>
+          <h2 class="entry-section__title">${escapeHtml(t("progressive_meal.meal_label"))}</h2>
           <div class="field-row">
             <div class="field">
-              <label for="mealType">Meal type</label>
+              <label for="mealType">${escapeHtml(t("entry.meal_type"))}</label>
               <select id="mealType" name="mealType">
                 ${["breakfast", "lunch", "dinner", "snack"]
-                  .map((m) => `<option value="${m}" ${defaultMeal === m ? "selected" : ""}>${m[0].toUpperCase()}${m.slice(1)}</option>`)
+                  .map((m) => `<option value="${m}" ${defaultMeal === m ? "selected" : ""}>${escapeHtml(t(`meal.${m}`))}</option>`)
                   .join("")}
               </select>
             </div>
@@ -425,13 +425,13 @@ export class EntryForm extends HTMLElement {
               this.favoriteMode
                 ? ""
                 : `<div class="field">
-              <label for="time">Time</label>
+              <label for="time">${escapeHtml(t("entry.time"))}</label>
               <input id="time" name="time" type="time" value="${e.time ?? nowHm()}" />
             </div>`
             }
           </div>
           <div class="field">
-            <label for="note">Note (optional)</label>
+            <label for="note">${escapeHtml(t("entry.note_optional"))}</label>
             <textarea id="note" name="note" rows="2">${e.note && !isNew ? escapeHtml(String(e.note)) : isNew && e.note ? "" : e.note ?? ""}</textarea>
           </div>
         </section>
@@ -440,15 +440,15 @@ export class EntryForm extends HTMLElement {
 
         ${
           this.existing && !this.favoriteMode
-            ? `<button type="button" class="btn btn--ghost" data-action="favorite">${fav ? "Unfavorite" : "Favorite"}</button>`
+            ? `<button type="button" class="btn btn--ghost" data-action="favorite">${escapeHtml(fav ? t("entry.unfavorite") : t("entry.favorite"))}</button>`
             : ""
         }
         ${
           this.favoriteMode
-            ? `<button type="button" class="btn btn--ghost" data-action="favorite">Remove from favorites</button>`
+            ? `<button type="button" class="btn btn--ghost" data-action="favorite">${escapeHtml(t("entry.remove_from_favorites"))}</button>`
             : ""
         }
-        ${this.existing && !this.favoriteMode ? `<button type="button" class="btn btn--danger" data-action="delete">Delete</button>` : ""}
+        ${this.existing && !this.favoriteMode ? `<button type="button" class="btn btn--danger" data-action="delete">${escapeHtml(t("action.delete"))}</button>` : ""}
         <div class="subpage-cta btn-row">
           <button type="submit" class="btn btn--primary" ${this.correcting ? "disabled" : ""}>${primaryLabel}</button>
           ${
@@ -586,7 +586,7 @@ export class EntryForm extends HTMLElement {
           ${
             showTotal
               ? `<div class="serving-quantity-card__total">
-                   <span>Total</span>
+                   <span>${escapeHtml(t("entry.total"))}</span>
                    <span>~${formatGramsDisplay(row.servingSizeGrams)} g</span>
                  </div>`
               : ""
@@ -747,15 +747,15 @@ export class EntryForm extends HTMLElement {
    * @param {Record<string, any>} e
    */
   renderCorrectSection(e) {
-    const chips = ["Smaller portion", "Larger portion", "Extra oil / butter", "Different brand", "Different cooking"];
+    const chips = ["entry.chip_smaller_portion", "entry.chip_larger_portion", "entry.chip_extra_oil", "entry.chip_different_brand", "entry.chip_different_cooking"].map((k) => t(k));
     const diffHtml =
       this.correctDiff.length > 0
         ? `<div class="entry-correct-diff card">
-             <strong>What changed</strong>
+             <strong>${escapeHtml(t("entry.correct_diff_title"))}</strong>
              <ul>${this.correctDiff
                .map((row) => `<li><span>${escapeHtml(row.label)}</span>: ${escapeHtml(row.before)} → ${escapeHtml(row.after)}</li>`)
                .join("")}</ul>
-             <p class="entry-correct-diff__hint">Review the updated values above, then tap Save to keep them.</p>
+             <p class="entry-correct-diff__hint">${escapeHtml(t("entry.correct_diff_hint"))}</p>
            </div>`
         : "";
     const progressHtml = this.correcting
@@ -763,22 +763,22 @@ export class EntryForm extends HTMLElement {
         ? progressiveCardHtml(this.correctPartial)
         : `<p class="entry-correct-status" role="status">${escapeHtml(
             this.correctPhase === ANALYSIS_PHASE.CALLING_AI
-              ? "Calling AI…"
+              ? t("analysis.phase.calling_ai")
               : this.correctPhase === ANALYSIS_PHASE.PARSING
-                ? "Reading result…"
-                : "Correcting…"
+                ? t("analysis.phase.parsing")
+                : t("entry.correcting")
           )}</p>`
       : "";
     return `
       <section class="entry-section entry-correct">
-        <h2 class="entry-section__title">Ask AI to correct</h2>
+        <h2 class="entry-section__title">${escapeHtml(t("entry.correct_title"))}</h2>
         <div class="entry-correct-context card">
-          <strong>${escapeHtml(e.name || "Entry")}</strong>
+          <strong>${escapeHtml(e.name || t("entry.fallback_name"))}</strong>
           <p>${Math.round(Number(e.calories || 0))} kcal · ${formatQuantity(Number(e.proteinG || 0))}P /
             ${formatQuantity(Number(e.carbsG || 0))}C / ${formatQuantity(Number(e.fatG || 0))}F</p>
         </div>
-        <p class="field-hint">AI will recalculate name, serving, calories, and macros from your note. Review the changes, then tap Save.</p>
-        <label class="field-label" for="correct-note">What changed?</label>
+        <p class="field-hint">${escapeHtml(t("entry.correct_hint"))}</p>
+        <label class="field-label" for="correct-note">${escapeHtml(t("entry.correct_prompt"))}</label>
         <div class="chip-row">
           ${chips
             .map(
@@ -787,9 +787,9 @@ export class EntryForm extends HTMLElement {
             )
             .join("")}
         </div>
-        <textarea id="correct-note" rows="3" ${this.correcting ? "disabled" : ""} placeholder="Describe the correction, e.g. large bowl, cooked in butter">${escapeHtml(this.correctNote)}</textarea>
+        <textarea id="correct-note" rows="3" ${this.correcting ? "disabled" : ""} placeholder="${escapeAttr(t("entry.correct_note_placeholder"))}">${escapeHtml(this.correctNote)}</textarea>
         <button type="button" class="btn btn--primary" data-action="correct" ${this.correcting || !this.correctNote.trim() ? "disabled" : ""}>
-          ${this.correcting ? "Correcting…" : "Correct with AI"}
+          ${escapeHtml(this.correcting ? t("entry.correcting") : t("entry.correct_action"))}
         </button>
         ${progressHtml}
         ${this.correctError ? `<p class="entry-correct-error">${escapeHtml(this.correctError)}</p>` : ""}
@@ -847,7 +847,7 @@ export class EntryForm extends HTMLElement {
     }
     const config = await loadProviderKey(providerId);
     if (!config) {
-      this.correctError = "Provider key missing. Re-add it in Settings.";
+      this.correctError = t("entry.error_key_missing");
       this.render();
       return;
     }
@@ -1156,7 +1156,7 @@ export class EntryForm extends HTMLElement {
       // other favorites — a taken name blocks the library save (Android parity).
       if (await favoriteNameTaken(entry.name, this.favoriteId)) {
         this.captureFormIntoSource();
-        this.nameError = "That name is already used by another food";
+        this.nameError = t("entry.error_name_taken");
         this.servingReady = true;
         this.render();
         return;
@@ -1172,9 +1172,9 @@ export class EntryForm extends HTMLElement {
   async onDelete() {
     if (!this.existing) return;
     const ok = await openConfirm({
-      title: "Delete entry",
-      message: `Delete “${this.existing.name}”?`,
-      confirmLabel: "Delete",
+      title: t("entry.delete_title"),
+      message: t("entry.delete_confirm", { name: this.existing.name }),
+      confirmLabel: t("action.delete"),
       danger: true,
     });
     if (!ok) return;

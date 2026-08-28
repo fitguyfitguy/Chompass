@@ -1,5 +1,6 @@
 // @ts-check
 import { escapeHtml } from "./html.js";
+import { t } from "../i18n/index.js";
 
 /**
  * Shared glass toasts. Only one is visible at a time: a new toast replaces
@@ -29,7 +30,7 @@ export function showUndoToast(message, onUndo) {
   document.querySelector(".toast")?.remove();
   const toast = document.createElement("div");
   toast.className = "toast";
-  toast.innerHTML = `${escapeHtml(message)} <button type="button">Undo</button>`;
+  toast.innerHTML = `${escapeHtml(message)} <button type="button">${t("toast.undo")}</button>`;
   toast.querySelector("button")?.addEventListener("click", async () => {
     await onUndo();
     toast.remove();
