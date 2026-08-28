@@ -204,5 +204,5 @@ Builds:
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[0-9.]+$
-CurrentVersion: 4.1.0
-CurrentVersionCode: 68
+CurrentVersion: 4.2.0
+CurrentVersionCode: 69
