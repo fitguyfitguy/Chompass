@@ -682,19 +682,18 @@ export class DiaryView extends HTMLElement {
     const weekStart =
       appPrefs.weekStartDay || (appPrefs.weekStartsOnMonday === false ? "sunday" : "monday");
     const today = todayIso();
-    const currentWeekStart = weekDates(today, weekStart)[0];
-    const TOTAL_WEEKS = 53;
+    // Week pager window: ±2 weeks around the viewed day (five 7-day pages).
+    // The old 53-page strip rendered 371 buttons on every render, flooded
+    // the a11y tree, and made keyboard users tab through all of them before
+    // the food rows; a centered window keeps scroll context at 35 tabs.
+    const WEEK_PAGES_EACH_SIDE = 2;
     const selectedWeekStart = weekDates(this.date, weekStart)[0];
-    let selectedWeekIndex = Math.round(
-      (new Date(`${selectedWeekStart}T00:00:00`).getTime() - new Date(`${currentWeekStart}T00:00:00`).getTime()) /
-        (7 * 86400000)
-    ) + (TOTAL_WEEKS - 1);
-    selectedWeekIndex = Math.max(0, Math.min(TOTAL_WEEKS - 1, selectedWeekIndex));
+    const selectedWeekIndex = WEEK_PAGES_EACH_SIDE;
 
     /** @type {string[][]} */
     const weekPages = [];
-    for (let i = 0; i < TOTAL_WEEKS; i++) {
-      const start = shiftDate(currentWeekStart, (i - (TOTAL_WEEKS - 1)) * 7);
+    for (let i = -WEEK_PAGES_EACH_SIDE; i <= WEEK_PAGES_EACH_SIDE; i++) {
+      const start = shiftDate(selectedWeekStart, i * 7);
       weekPages.push(
         Array.from({ length: 7 }, (_, d) => shiftDate(start, d))
       );
@@ -744,7 +743,7 @@ export class DiaryView extends HTMLElement {
             .map(
               (days, pageIdx) => `
             <div class="week-page" data-week-page="${pageIdx}">
-              <div class="week-strip" role="tablist" aria-label="Week ${pageIdx + 1}">
+              <div class="week-strip" role="group" aria-label="Week of ${new Date(`${days[0]}T00:00:00`).toLocaleDateString(undefined, { month: "short", day: "numeric" })}">
                 ${days
                   .map((iso) => {
                     const d = new Date(`${iso}T00:00:00`);
@@ -752,8 +751,8 @@ export class DiaryView extends HTMLElement {
                     const isToday = iso === today ? " is-today" : "";
                     const future = iso > today;
                     return `
-                      <button type="button" class="week-day${selected}${isToday}" data-date="${iso}" role="tab"
-                        aria-selected="${iso === this.date}" ${future ? "disabled" : ""}>
+                      <button type="button" class="week-day${selected}${isToday}" data-date="${iso}"
+                        aria-pressed="${iso === this.date}" ${future ? "disabled" : ""}>
                         <span class="week-day__dow">${d.toLocaleDateString(undefined, { weekday: "narrow" })}</span>
                         <span class="week-day__num">${d.getDate()}</span>
                       </button>`;
@@ -973,6 +972,15 @@ export class DiaryView extends HTMLElement {
     this.querySelectorAll("[data-nutrition-detail]").forEach((el) => {
       el.addEventListener("click", () => {
         this.openNutritionDetail(entries, targets, optionalGoals);
+      });
+    });
+    // The desktop hero is a div (block content), not a <button>: give the
+    // keyboard the same Enter/Space activation a real button would have.
+    this.querySelectorAll('[data-nutrition-detail][role="button"]').forEach((el) => {
+      el.addEventListener("keydown", (/** @type {KeyboardEvent} */ ev) => {
+        if (ev.key !== "Enter" && ev.key !== " ") return;
+        ev.preventDefault();
+        if (el instanceof HTMLElement) el.click();
       });
     });
     this.querySelectorAll("[data-gauge-info]").forEach((el) => {
@@ -1210,7 +1218,7 @@ export class DiaryView extends HTMLElement {
     const sheet = openSheet({
       title: t("day_types.sheet_title"),
       body: `
-        <div class="sheet-actions" role="listbox" aria-label="${escapeAttr(t("day_types.sheet_title"))}">
+        <div class="sheet-actions" role="group" aria-label="${escapeAttr(t("day_types.sheet_title"))}">
           ${profiles
             .map((p) => {
               const typ = stats.byProfileId[p.id];
@@ -1221,14 +1229,14 @@ export class DiaryView extends HTMLElement {
                     )}</span>`
                   : "";
               return `
-            <button type="button" role="option" data-type-id="${escapeAttr(p.id)}" aria-selected="${active.profileId === p.id}">
+            <button type="button" data-type-id="${escapeAttr(p.id)}" aria-pressed="${active.profileId === p.id}">
               ${escapeHtml(p.name)} · ${p.calories} kcal
               <span style="display:block;font-size:0.8rem;color:var(--muted);">${p.proteinG}P / ${p.carbsG}C / ${p.fatG}F</span>
               ${typLine}
             </button>`;
             })
             .join("")}
-          ${hasOverride ? `<button type="button" role="option" data-type-clear>${escapeHtml(t("day_types.follow_schedule"))}</button>` : ""}
+          ${hasOverride ? `<button type="button" data-type-clear>${escapeHtml(t("day_types.follow_schedule"))}</button>` : ""}
         </div>
         <p style="margin:0.6rem 0 0;font-size:0.82rem;color:var(--muted);">${escapeHtml(tomorrowLabel)}</p>
         <div class="btn-row" style="margin-top:0.6rem;">
@@ -1313,10 +1321,10 @@ export class DiaryView extends HTMLElement {
     const sheet = openSheet({
       title: "Change meal",
       body: `
-        <div class="sheet-actions" role="listbox" aria-label="Meal type">
+        <div class="sheet-actions" role="group" aria-label="Meal type">
           ${MEAL_ORDER.map(
             (m) =>
-              `<button type="button" role="option" data-meal="${m}" aria-selected="${entry.mealType === m}">
+              `<button type="button" data-meal="${m}" aria-pressed="${entry.mealType === m}">
                 ${MEAL_LABELS[m]}${entry.mealType === m ? " · current" : ""}
               </button>`
           ).join("")}

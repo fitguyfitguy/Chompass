@@ -503,7 +503,7 @@ export class SettingsView extends HTMLElement {
         <div class="btn-row" style="margin-top:0.9rem;">
           <button type="button" class="btn btn--primary" id="recalculate-goals">Recalculate Goals</button>
         </div>
-        <p id="recalc-status" style="color:var(--muted);font-size:0.85rem;margin:0.55rem 0 0;" hidden></p>
+        <p id="recalc-status" role="status" aria-live="polite" style="color:var(--muted);font-size:0.85rem;margin:0.55rem 0 0;" hidden></p>
       </div>
       <nav class="settings-nav" aria-label="Related">
         <a href="#/settings?section=nutrients">Optional nutrients <span>Fiber, sodium…</span></a>
@@ -1352,7 +1352,7 @@ export class SettingsView extends HTMLElement {
             <input type="file" accept="application/json" id="import-body" style="display:none;" />
           </label>
         </div>
-        <p id="import-status" style="color:var(--muted);font-size:0.85rem;margin-top:0.5rem;"></p>
+        <p id="import-status" role="status" aria-live="polite" style="color:var(--muted);font-size:0.85rem;margin-top:0.5rem;"></p>
         <button class="btn btn--danger" id="clear-all" style="margin-top:0.8rem;" type="button">Clear all local data</button>
       </div>
       <nav class="settings-nav" aria-label="Sync">
@@ -1414,7 +1414,7 @@ export class SettingsView extends HTMLElement {
             <button class="btn btn--ghost" id="sync-now" type="button">Sync now</button>
           </div>
         </form>
-        <p id="sync-status" style="color:var(--muted);font-size:0.85rem;margin-top:0.5rem;">
+        <p id="sync-status" role="status" aria-live="polite" style="color:var(--muted);font-size:0.85rem;margin-top:0.5rem;">
           ${cfg.lastSyncAt ? `Last sync: ${cfg.lastSyncAt}` : "Not synced yet."}
         </p>
       </div>`;

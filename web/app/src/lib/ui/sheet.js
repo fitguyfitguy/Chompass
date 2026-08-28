@@ -7,6 +7,7 @@ import { trapFocus } from "./focus-trap.js";
  *   body: string | Node,
  *   onClose?: () => void,
  *   className?: string,
+ *   ariaLabel?: string,
  * }} SheetOptions
  */
 
@@ -17,6 +18,8 @@ const SHEET_HISTORY_FLAG = "chompassSheet";
 let sheetSeq = 0;
 /** @type {Map<number, () => void>} */
 const liveSheetBacks = new Map();
+/** Open sheets in open order; only the top one answers Escape. */
+const sheetStack = [];
 let skipNextSheetPop = 0;
 let sheetPopBound = false;
 
@@ -139,6 +142,15 @@ export function openSheet(opts) {
   bodyWrap.className = "sheet__body";
   if (typeof opts.body === "string") bodyWrap.innerHTML = opts.body;
   else bodyWrap.appendChild(opts.body);
+  if (!opts.title) {
+    // Title-less sheets still need an accessible name: prefer an explicit
+    // label, then the first heading inside the body.
+    const label =
+      opts.ariaLabel ||
+      bodyWrap.querySelector("h1, h2, h3, [data-sheet-name]")?.textContent
+        ?.trim();
+    if (label) panel.setAttribute("aria-label", label);
+  }
   panel.appendChild(bodyWrap);
 
   host.appendChild(scrim);
@@ -150,10 +162,13 @@ export function openSheet(opts) {
   let releaseFocus = () => {};
   let releaseHistory = () => {};
   let unbindDrag = () => {};
+  // Identity token in the sheet stack: Escape only ever closes the top.
+  const stackToken = {};
 
   /** @param {KeyboardEvent} ev */
   const onKey = (ev) => {
     if (ev.key === "Escape") {
+      if (sheetStack[sheetStack.length - 1] !== stackToken) return; // top sheet only
       ev.preventDefault();
       dismiss();
     }
@@ -162,6 +177,8 @@ export function openSheet(opts) {
   const dismiss = () => {
     if (closed) return;
     closed = true;
+    const stackIdx = sheetStack.indexOf(stackToken);
+    if (stackIdx >= 0) sheetStack.splice(stackIdx, 1);
     releaseHistory();
     unbindDrag();
     document.removeEventListener("keydown", onKey);
@@ -187,6 +204,7 @@ export function openSheet(opts) {
 
   scrim.addEventListener("click", dismiss);
   document.addEventListener("keydown", onKey);
+  sheetStack.push(stackToken);
   requestAnimationFrame(() => host.classList.add("is-open"));
   releaseFocus = trapFocus(panel);
   releaseHistory = bindSheetHistory(dismiss);
