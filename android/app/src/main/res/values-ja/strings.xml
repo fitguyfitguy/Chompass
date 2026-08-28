@@ -1348,6 +1348,7 @@
     <string name="settings_notif_none_selected">通知タイプが選択されていません。通知を許可したまま、すべてのリマインダーをオフにできます。</string>
     <string name="settings_notif_water_reminder">水分リマインダー</string>
     <string name="settings_notif_weight_reminder">体重記録リマインダー</string>
+    <string name="settings_notif_weight_reminder_time">時刻</string>
     <string name="settings_notification_types">通知タイプ</string>
     <string name="settings_notifications_intro">Chompass が送信するリマインダーと、表示されるタイミングを選択します。</string>
     <string name="settings_off">オフ</string>

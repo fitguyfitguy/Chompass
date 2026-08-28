@@ -34,6 +34,8 @@ internal object Keys {
         val DAILY_HOUR = intPreferencesKey("dailySummaryHour")
         val DAILY_MINUTE = intPreferencesKey("dailySummaryMinute")
         val WEIGHT_REMINDER_ENABLED = booleanPreferencesKey("weightReminderEnabled")
+        val WEIGHT_REMINDER_HOUR = intPreferencesKey("weightReminderHour")
+        val WEIGHT_REMINDER_MINUTE = intPreferencesKey("weightReminderMinute")
         val BODY_FAT_REMINDER_ENABLED = booleanPreferencesKey("bodyFatReminderEnabled")
         val GOAL_REACHED_NOTIFICATIONS_ENABLED = booleanPreferencesKey("goalReachedNotificationsEnabled")
         val APP_UPDATE_NOTIFICATIONS_ENABLED = booleanPreferencesKey("appUpdateNotificationsEnabled")

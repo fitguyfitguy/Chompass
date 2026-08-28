@@ -1539,6 +1539,7 @@
     <string name="settings_notif_daily_summary_time">Saat</string>
     <string name="settings_notif_daily_summary_needs_hc_background">Canlı bir yakım sayısı için %1$s içinde arka planda Health Connect\'i aç.</string>
     <string name="settings_notif_weight_reminder">Kilo kaydı hatırlatması</string>
+    <string name="settings_notif_weight_reminder_time">Saat</string>
     <string name="settings_notif_body_fat_reminder">Vücut yağı hatırlatması</string>
     <string name="settings_notif_water_reminder">Su hatırlatması</string>
     <string name="settings_notif_goal_alerts">Hedefe ulaşma bildirimleri</string>

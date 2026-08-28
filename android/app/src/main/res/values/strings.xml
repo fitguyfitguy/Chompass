@@ -2148,6 +2148,7 @@
     <string name="settings_notif_daily_summary_time">Summary time</string>
     <string name="settings_notif_daily_summary_needs_hc_background">For a live burn number, turn on background Health Connect in %1$s.</string>
     <string name="settings_notif_weight_reminder">Weight log reminder</string>
+    <string name="settings_notif_weight_reminder_time">Reminder time</string>
     <string name="settings_notif_body_fat_reminder">Body fat reminder</string>
     <string name="settings_notif_water_reminder">Water reminder</string>
     <string name="settings_notif_goal_alerts">Goal reached alerts</string>

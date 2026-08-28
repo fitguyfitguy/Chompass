@@ -23,6 +23,7 @@ import java.util.Locale
 
 @Composable
 internal fun DailySummaryTimeSheet(
+    title: String,
     hour: Int,
     minute: Int,
     onSave: (hour: Int, minute: Int) -> Unit,
@@ -38,7 +39,7 @@ internal fun DailySummaryTimeSheet(
         DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault())
     }
     Text(
-        stringResource(R.string.settings_notif_daily_summary_time),
+        title,
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Bold,
     )

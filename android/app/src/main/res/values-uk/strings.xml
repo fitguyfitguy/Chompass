@@ -1296,6 +1296,7 @@ LBM = вага × (1 − %жиру)</string>
     <string name="settings_notif_none_selected">Жоден тип сповіщень не вибрано. Ти можеш залишити сповіщення дозволеними, а всі нагадування вимкненими.</string>
     <string name="settings_notif_water_reminder">Нагадування про воду</string>
     <string name="settings_notif_weight_reminder">Нагадування про вагу</string>
+    <string name="settings_notif_weight_reminder_time">Час</string>
     <string name="settings_notification_types">Типи сповіщень</string>
     <string name="settings_notifications_intro">Вибери, які нагадування надсилає Chompass і коли вони з\'являються.</string>
     <string name="settings_off">Вимк</string>

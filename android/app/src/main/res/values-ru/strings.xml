@@ -894,6 +894,7 @@
     <string name="settings_notif_daily_summary_time">Время</string>
     <string name="settings_notif_daily_summary_needs_hc_background">Для актуального расхода включи Health Connect в фоне в разделе %1$s.</string>
     <string name="settings_notif_weight_reminder">Напоминание о взвешивании</string>
+    <string name="settings_notif_weight_reminder_time">Время</string>
     <string name="settings_notif_body_fat_reminder">Напоминание о проценте жира</string>
     <string name="settings_notif_goal_alerts">Достижение целей</string>
     <string name="settings_notif_app_updates">Обновления приложения</string>

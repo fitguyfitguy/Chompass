@@ -1349,6 +1349,7 @@
     <string name="settings_notif_none_selected">لم يُحدد نوع إشعار. يمكنك إبقاء الإشعارات مسموحة وجميع التذكيرات معطلة.</string>
     <string name="settings_notif_water_reminder">تذكير الماء</string>
     <string name="settings_notif_weight_reminder">تذكير سجل الوزن</string>
+    <string name="settings_notif_weight_reminder_time">الوقت</string>
     <string name="settings_notification_types">أنواع الإشعارات</string>
     <string name="settings_notifications_intro">اختر التذكيرات التي يرسلها Chompass ومتى تظهر.</string>
     <string name="settings_off">إيقاف</string>

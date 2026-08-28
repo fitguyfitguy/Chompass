@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Added
+
+- **Pick the weigh-in reminder time** (Android): Settings → Trackers & Reminders now lets you choose when the weight log reminder fires, instead of a fixed 8:00. Closes Codeberg [#69](https://codeberg.org/fitguy/Chompass/issues/69) by [@Making1167](https://codeberg.org/Making1167).
+
 ### Changed
 
 - **The web app uses your language in more places** (web): the entry form, the whole Settings screen, the diary menus, sheets and toasts, the coach, photo analysis and the update prompt now follow the app language instead of hardcoded English. German ships fully translated; other languages show English text on these surfaces until the next translation batch.

@@ -1348,6 +1348,7 @@
     <string name="settings_notif_none_selected">선택된 알림 유형이 없어요. 알림을 허용한 채 모든 알림을 끌 수 있어요.</string>
     <string name="settings_notif_water_reminder">물 알림</string>
     <string name="settings_notif_weight_reminder">체중 기록 알림</string>
+    <string name="settings_notif_weight_reminder_time">시간</string>
     <string name="settings_notification_types">알림 유형</string>
     <string name="settings_notifications_intro">Chompass가 보낼 알림과 표시 시점을 선택하세요.</string>
     <string name="settings_off">끄기</string>

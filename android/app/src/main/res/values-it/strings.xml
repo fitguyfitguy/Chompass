@@ -1297,6 +1297,7 @@
     <string name="settings_notif_none_selected">Nessun tipo di notifica selezionato. Puoi tenere le notifiche consentite e tutti i promemoria spenti.</string>
     <string name="settings_notif_water_reminder">Promemoria acqua</string>
     <string name="settings_notif_weight_reminder">Promemoria peso</string>
+    <string name="settings_notif_weight_reminder_time">Orario</string>
     <string name="settings_notification_types">Tipi di notifica</string>
     <string name="settings_notifications_intro">Scegli quali promemoria invia Chompass e quando compaiono.</string>
     <string name="settings_off">Spento</string>
