@@ -157,7 +157,10 @@ class ChompassApp : Application() {
                 }
                 val profile = container.profileRepository.current()
                 if (container.prefs.bodyFatReminderEnabled.first() && profile?.bodyFatPercentage != null) {
-                    container.notifications.scheduleBodyFatReminder()
+                    container.notifications.scheduleBodyFatReminder(
+                        container.prefs.bodyFatReminderHour.first(),
+                        container.prefs.bodyFatReminderMinute.first(),
+                    )
                 } else {
                     container.notifications.cancelBodyFatReminder()
                 }

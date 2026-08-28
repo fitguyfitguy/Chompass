@@ -91,6 +91,8 @@ data class SettingsUiState(
     val profile: UserProfile? = null,
     val notificationsEnabled: Boolean = false,
     val streakReminderEnabled: Boolean = false,
+    val streakReminderHour: Int = 19,
+    val streakReminderMinute: Int = 0,
     val dailySummaryEnabled: Boolean = false,
     val dailySummaryHour: Int = 21,
     val dailySummaryMinute: Int = 0,
@@ -98,6 +100,8 @@ data class SettingsUiState(
     val weightReminderHour: Int = 8,
     val weightReminderMinute: Int = 0,
     val bodyFatReminderEnabled: Boolean = true,
+    val bodyFatReminderHour: Int = 8,
+    val bodyFatReminderMinute: Int = 0,
     val waterTrackingEnabled: Boolean = false,
     val waterDailyGoalMl: Int = 2_000,
     val waterQuickPresetsMl: List<Int> = WaterQuickPresets.DEFAULT_AMOUNTS_ML,
@@ -378,6 +382,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     profile = profile,
                     notificationsEnabled = snap.notificationsEnabled,
                     streakReminderEnabled = snap.streakReminderEnabled,
+                    streakReminderHour = snap.streakReminderHour,
+                    streakReminderMinute = snap.streakReminderMinute,
                     dailySummaryEnabled = snap.dailySummaryEnabled,
                     dailySummaryHour = snap.dailySummaryHour,
                     dailySummaryMinute = snap.dailySummaryMinute,
@@ -385,6 +391,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     weightReminderHour = snap.weightReminderHour,
                     weightReminderMinute = snap.weightReminderMinute,
                     bodyFatReminderEnabled = snap.bodyFatReminderEnabled,
+                    bodyFatReminderHour = snap.bodyFatReminderHour,
+                    bodyFatReminderMinute = snap.bodyFatReminderMinute,
                     waterTrackingEnabled = snap.waterTrackingEnabled,
                     waterDailyGoalMl = snap.waterDailyGoalMl,
                     waterQuickPresetsMl = snap.waterQuickPresetsMl,
@@ -1064,6 +1072,15 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         { copy(streakReminderEnabled = v) },
     )
 
+    fun setStreakReminderTime(hour: Int, minute: Int) = updateUiPref(
+        {
+            container.prefs.setStreakReminderHour(hour)
+            container.prefs.setStreakReminderMinute(minute)
+            syncNotificationSchedules()
+        },
+        { copy(streakReminderHour = hour, streakReminderMinute = minute) },
+    )
+
     fun setDailySummaryEnabled(v: Boolean) = updateUiPref(
         {
             container.prefs.setDailySummaryEnabled(v)
@@ -1104,6 +1121,15 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             syncNotificationSchedules()
         },
         { copy(bodyFatReminderEnabled = v) },
+    )
+
+    fun setBodyFatReminderTime(hour: Int, minute: Int) = updateUiPref(
+        {
+            container.prefs.setBodyFatReminderHour(hour)
+            container.prefs.setBodyFatReminderMinute(minute)
+            syncNotificationSchedules()
+        },
+        { copy(bodyFatReminderHour = hour, bodyFatReminderMinute = minute) },
     )
 
     fun setGoalReachedNotificationsEnabled(v: Boolean) = updateUiPref(
@@ -1156,7 +1182,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
 
         val profile = container.profileRepository.current()
         if (container.prefs.bodyFatReminderEnabled.first() && profile?.bodyFatPercentage != null) {
-            container.notifications.scheduleBodyFatReminder()
+            container.notifications.scheduleBodyFatReminder(
+                container.prefs.bodyFatReminderHour.first(),
+                container.prefs.bodyFatReminderMinute.first(),
+            )
         } else {
             container.notifications.cancelBodyFatReminder()
         }

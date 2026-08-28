@@ -724,12 +724,30 @@ internal fun SettingsSheets(
                         onDismiss()
                     },
                 )
+                SettingsSheet.FOOD_REMINDER_TIME -> DailySummaryTimeSheet(
+                    title = stringResource(R.string.settings_notif_weight_reminder_time),
+                    hour = ui.streakReminderHour,
+                    minute = ui.streakReminderMinute,
+                    onSave = { hour, minute ->
+                        vm.setStreakReminderTime(hour, minute)
+                        onDismiss()
+                    },
+                )
                 SettingsSheet.WEIGHT_REMINDER_TIME -> DailySummaryTimeSheet(
                     title = stringResource(R.string.settings_notif_weight_reminder_time),
                     hour = ui.weightReminderHour,
                     minute = ui.weightReminderMinute,
                     onSave = { hour, minute ->
                         vm.setWeightReminderTime(hour, minute)
+                        onDismiss()
+                    },
+                )
+                SettingsSheet.BODY_FAT_REMINDER_TIME -> DailySummaryTimeSheet(
+                    title = stringResource(R.string.settings_notif_weight_reminder_time),
+                    hour = ui.bodyFatReminderHour,
+                    minute = ui.bodyFatReminderMinute,
+                    onSave = { hour, minute ->
+                        vm.setBodyFatReminderTime(hour, minute)
                         onDismiss()
                     },
                 )
