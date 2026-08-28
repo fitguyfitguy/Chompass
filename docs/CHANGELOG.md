@@ -6,6 +6,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+## [4.2.0] - 2026-08-28
+
 ### Added
 
 - **Pick the weigh-in reminder time** (Android): Settings → Trackers & Reminders now lets you choose when the weight log reminder fires, instead of a fixed 8:00. Closes Codeberg [#69](https://codeberg.org/fitguy/Chompass/issues/69) by [@Making1167](https://codeberg.org/Making1167).
