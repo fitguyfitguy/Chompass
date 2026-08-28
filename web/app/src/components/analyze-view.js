@@ -9,7 +9,7 @@ import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 import { createSpeechCapture } from "../lib/speech.js";
 import { shouldUseNativeCaptureHint } from "../lib/media-devices.js";
 import { renderAnalyzeOverlayHtml } from "../lib/ui/analyze-overlay.js";
-import { formatNumber } from "../lib/i18n/index.js";
+import { formatNumber, t } from "../lib/i18n/index.js";
 import { DEMO_PLATE_ESTIMATE, runDemoAnalyze } from "../demo/mock-ai.js";
 import { escapeHtml, escapeAttr } from "../lib/ui/html.js";
 import { todayIso } from "../lib/date.js";
@@ -72,7 +72,7 @@ export class AnalyzeView extends HTMLElement {
         this.render();
         return;
       }
-      this.innerHTML = `${subpageBar("Photo AI", { backHref: "#/home" })}<p class="empty-state" style="padding:1.5rem;">Opening camera…</p>`;
+      this.innerHTML = `${subpageBar(t("analyze.title_photo"), { backHref: "#/home" })}<p class="empty-state" style="padding:1.5rem;">${t("analyze.opening_camera")}</p>`;
       bindSubpageBack(this, "#/home");
       const { startPhotoAiFlow } = await import("../lib/ui/photo-ai-flow.js");
       startPhotoAiFlow({
@@ -122,14 +122,14 @@ export class AnalyzeView extends HTMLElement {
   }
 
   async render() {
-    const title = this.mode === "note" ? "Describe food" : "Photo AI";
+    const title = this.mode === "note" ? t("analyze.title_note") : t("analyze.title_photo");
 
     if (!this.activeProvider) {
       this.innerHTML = `
         ${subpageBar(title, { backHref: "#/home" })}
         <div class="card">
-          <p style="color:var(--muted);margin:0 0 0.8rem;">Add a BYOK API key in Settings to analyze food.</p>
-          <a class="btn btn--primary" href="#/settings?section=ai">Go to settings</a>
+          <p style="color:var(--muted);margin:0 0 0.8rem;">${t("analyze.no_provider_body")}</p>
+          <a class="btn btn--primary" href="#/settings?section=ai">${t("action.go_to_settings")}</a>
         </div>`;
       bindSubpageBack(this, "#/home");
       return;
@@ -167,22 +167,22 @@ export class AnalyzeView extends HTMLElement {
           ? `<div class="analyze-thumbs">${this.previewUrls
               .map(
                 (u) =>
-                  `<img class="analyze-preview" src="${u}" alt="Selected food photo" />`,
+                  `<img class="analyze-preview" src="${u}" alt="${t("analyze.selected_photo_alt")}" />`,
               )
               .join("")}</div>`
           : ""
       }
       <form class="entry-form card analyze-mode--${this.mode}" id="analyze-form" aria-busy="${this.busy ? "true" : "false"}">
         <div class="field analyze-photo-field">
-          <label for="photo">${this.mode === "photo" ? `Photos (up to ${MAX_PHOTOS})` : "Photo (optional)"}</label>
+          <label for="photo">${this.mode === "photo" ? t("analyze.photos_label", { max: MAX_PHOTOS }) : t("analyze.photo_optional")}</label>
           <input id="photo" name="photo" type="file" accept="image/*" ${this.mode === "photo" ? "multiple" : ""} ${shouldUseNativeCaptureHint() ? 'capture="environment"' : ""} ${inputsDisabled} />
         </div>
         <div class="field analyze-note-field">
-          <label for="note">${this.mode === "note" ? "Describe the food" : "Note (optional)"}</label>
-          <textarea id="note" name="note" rows="3" placeholder="e.g. bowl of oatmeal with banana and peanut butter" ${inputsDisabled}>${escapeAttr(this.pendingNote || this.notePrefill)}</textarea>
+          <label for="note">${this.mode === "note" ? t("analyze.describe_food") : t("analyze.note_optional")}</label>
+          <textarea id="note" name="note" rows="3" placeholder="${t("analyze.note_placeholder")}" ${inputsDisabled}>${escapeAttr(this.pendingNote || this.notePrefill)}</textarea>
           ${
             speech.supported
-              ? `<button type="button" class="btn btn--ghost" data-voice style="margin-top:0.4rem;" ${inputsDisabled}>Voice dictation</button>`
+              ? `<button type="button" class="btn btn--ghost" data-voice style="margin-top:0.4rem;" ${inputsDisabled}>${t("analyze.voice_dictation")}</button>`
               : ""
           }
         </div>
@@ -190,23 +190,23 @@ export class AnalyzeView extends HTMLElement {
           ${
             this.error
               ? escapeHtml(this.error)
-              : "Estimates are reviewed before saving. Nothing is auto-logged."
+              : t("analyze.review_hint")
           }
         </p>
         ${
           this.error
             ? `<div class="analyze-error-actions btn-row">
-                 <button type="button" class="btn btn--primary" data-retry>Retry</button>
-                 <button type="button" class="btn btn--ghost" data-discard>Discard</button>
+                 <button type="button" class="btn btn--primary" data-retry>${t("action.retry")}</button>
+                 <button type="button" class="btn btn--ghost" data-discard>${t("action.discard")}</button>
                </div>`
             : `<div class="subpage-cta btn-row">
-                 <button type="submit" class="btn btn--primary" ${this.busy ? "disabled" : ""}>Analyze</button>
+                 <button type="submit" class="btn btn--primary" ${this.busy ? "disabled" : ""}>${t("analyze.submit")}</button>
                </div>`
         }
       </form>
       ${
         recents.length && !this.error
-          ? `<h2 class="section-label">Recent foods</h2>
+          ? `<h2 class="section-label">${t("analyze.recent_foods")}</h2>
              <div class="recents-list">
                ${recents
                  .map(
@@ -460,8 +460,8 @@ export class AnalyzeView extends HTMLElement {
     if (!text && !this.files.length) {
       this.error =
         this.mode === "note"
-          ? "Add a short description."
-          : "Add a photo or a short description.";
+          ? t("analyze.error_need_description")
+          : t("analyze.error_need_photo_or_text");
       this.render();
       return;
     }
@@ -479,8 +479,8 @@ export class AnalyzeView extends HTMLElement {
     if (!text && !this.files.length) {
       this.error =
         this.mode === "note"
-          ? "Add a short description."
-          : "Add a photo or a short description.";
+          ? t("analyze.error_need_description")
+          : t("analyze.error_need_photo_or_text");
       this.render();
       return;
     }
@@ -519,7 +519,7 @@ export class AnalyzeView extends HTMLElement {
       );
       if (generation !== this.analysisGeneration || ac.signal.aborted) return;
       if (!config)
-        throw new Error("Provider key missing. Re-add it in Settings.");
+        throw new Error(t("errors.key_missing"));
 
       const offPromise = this.files.length
         ? (this.setPhase(ANALYSIS_PHASE.LOOKING_UP_BARCODE, generation),

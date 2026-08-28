@@ -3,6 +3,7 @@
 // so a stale open tab can hard-reload onto the new version deliberately
 // instead of the SW silently taking over mid-session (see sw.js). User data
 // lives in IndexedDB, never in the SW cache, so this reload never loses data.
+import { t } from "./i18n/index.js";
 
 let reloadTriggered = false;
 
@@ -49,11 +50,11 @@ function showUpdateToast(worker) {
   toast.setAttribute("role", "status");
   toast.innerHTML = `
     <div class="update-toast__text">
-      <span>A new version of Chompass is ready.</span>
+      <span>${t("update.ready")}</span>
     </div>
     <div class="update-toast__actions">
-      <button type="button" class="btn btn--primary update-toast__reload">Reload</button>
-      <button type="button" class="update-toast__dismiss" aria-label="Dismiss">✕</button>
+      <button type="button" class="btn btn--primary update-toast__reload">${t("update.reload")}</button>
+      <button type="button" class="update-toast__dismiss" aria-label="${t("install.dismiss")}">✕</button>
     </div>
   `;
 

@@ -17,7 +17,7 @@ import {
   toPrefill,
 } from "../lib/saved-meals.js";
 import { weekDates as weekDatesForPrefs, guessMealTypeFromPrefs } from "../lib/meal-schedule.js";
-import { listRecipes, logRecipe, recipeFromEntries, saveRecipe, deleteRecipe } from "../lib/recipes.js";
+import { listRecipes, logRecipe } from "../lib/recipes.js";
 import { mealShareText } from "../lib/meal-share.js";
 import {
   normalizeHomeTopNutrients,
@@ -68,7 +68,12 @@ import { shiftDate, todayIso } from "../lib/date.js";
 import { chevronLeft, chevronRight } from "../lib/icons.js";
 import { showToast, showUndoToast } from "../lib/ui/toast.js";
 
-const MEAL_LABELS = { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack", other: "Other" };
+/** Localized meal label; unknown ids fall back to the raw value. */
+function mealLabel(mealType) {
+  return MEAL_ORDER.includes(mealType) ? t(`meal.${mealType}`) : mealType;
+}
+/** Saved-meals sheet tab labels (catalog key names). */
+const SEGMENT_LABELS = { RECENTS: "add_food.hero_recents", FREQUENT: "add_food.frequent", FAVORITES: "add_food.favorites", RECIPES: "diary.tab_recipes" };
 const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack", "other"];
 
 /** @param {Array<{mealType?: string}>} entries */
@@ -271,14 +276,14 @@ function servingEchoText(entry) {
 
 /** Android BurnShadeCaption: "380 of 560 active" (live of typical), else "560 active". */
 function burnCaptionText(zoneActive, burn) {
-  if (!burn) return `${zoneActive} active`;
+  if (!burn) return t("diary.burn_active", { amount: zoneActive });
   if (burn.live > 0 && burn.typical > 0) {
     if (burn.typicalIsDayType && burn.typicalDayTypeName) {
-      return `${burn.live} of ${burn.typical} active · ${burn.typicalDayTypeName}`;
+      return t("diary.burn_active_of_named", { live: burn.live, typical: burn.typical, name: burn.typicalDayTypeName });
     }
-    return `${burn.live} of ${burn.typical} active`;
+    return t("diary.burn_active_of", { live: burn.live, typical: burn.typical });
   }
-  return `${Math.max(burn.typical, zoneActive)} active`;
+  return t("diary.burn_active", { amount: Math.max(burn.typical, zoneActive) });
 }
 
 const GAUGE_INFO_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 7h2v2h-2V7zm0 4h2v6h-2v-6zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>`;
@@ -299,7 +304,7 @@ function ringSvg(eaten, target, baseGoal = null, burn = null) {
   const cy = baseHeight - stroke / 2;
   const halfC = Math.PI * r;
   const pct = target > 0 ? Math.min(1, eaten / target) : 0;
-  const leftLabel = `${Math.max(0, Math.round(target - eaten))} left`;
+  const leftLabel = t("diary.calories_left", { amount: Math.max(0, Math.round(target - eaten)) });
   const x1 = (cx - r).toFixed(1);
   const x2 = (cx + r).toFixed(1);
   const y = cy.toFixed(1);
@@ -334,21 +339,21 @@ function ringSvg(eaten, target, baseGoal = null, burn = null) {
     const burnCaption = burnCaptionText(active, burn);
     burnMarkup = `
       <text x="50%" y="148" text-anchor="middle" class="calorie-ring__burn-label">🔥 ${burnCaption}</text>`;
-    ariaBurn = `, active burn ${burnCaption}`;
+    ariaBurn = `, ${t("diary.aria_active_burn", { caption: burnCaption })}`;
   }
 
   return `
     <svg class="calorie-ring calorie-ring--semi" viewBox="0 0 ${width} ${height}" role="img"
-      aria-label="${Math.round(eaten)} of ${Math.round(target)} calories, ${leftLabel}${ariaBurn}">
+      aria-label="${t("diary.ring_aria", { eaten: Math.round(eaten), target: Math.round(target), left: leftLabel })}${ariaBurn}">
       <path d="${arc}" fill="none" stroke="var(--surface)" stroke-width="${stroke}" stroke-linecap="round" />
       ${tailMarkup}
       <path class="calorie-ring__progress" d="${arc}" fill="none"
         stroke="var(--teal)" stroke-width="${stroke}" stroke-linecap="round"
         stroke-dasharray="0 ${halfC.toFixed(1)}"
         data-dash="${(pct * halfC).toFixed(1)} ${halfC.toFixed(1)}" />
-      <text x="50%" y="58" text-anchor="middle" class="calorie-ring__caption">Calories</text>
+      <text x="50%" y="58" text-anchor="middle" class="calorie-ring__caption">${t("diary.calories")}</text>
       <text x="50%" y="88" text-anchor="middle" class="calorie-ring__label">${Math.round(eaten)}</text>
-      <text x="50%" y="108" text-anchor="middle" class="calorie-ring__sub">of ${Math.round(target)}</text>
+      <text x="50%" y="108" text-anchor="middle" class="calorie-ring__sub">${t("diary.calories_of", { amount: Math.round(target) })}</text>
       <text x="50%" y="128" text-anchor="middle" class="calorie-ring__left">🔥 ${leftLabel}</text>
       ${burnMarkup}
     </svg>`;
@@ -357,7 +362,7 @@ function ringSvg(eaten, target, baseGoal = null, burn = null) {
 /** Horizontal calorie progress bar (desktop). */
 function calorieBar(eaten, target, baseGoal = null, burn = null) {
   const pct = target > 0 ? Math.min(100, (eaten / target) * 100) : 0;
-  const leftLabel = `${Math.max(0, Math.round(target - eaten))} left`;
+  const leftLabel = t("diary.calories_left", { amount: Math.max(0, Math.round(target - eaten)) });
   const baseFrac = baseGoal && baseGoal > 0 && target > 0 ? Math.min(1, baseGoal / target) : 1;
   const showActive = baseFrac < 1;
   const active = baseGoal && baseGoal < target ? Math.round(target - baseGoal) : 0;
@@ -374,12 +379,12 @@ function calorieBar(eaten, target, baseGoal = null, burn = null) {
   }
   return `
     <div class="calorie-hero calorie-hero--bar" role="img"
-      aria-label="${Math.round(eaten)} of ${Math.round(target)} calories, ${leftLabel}">
+      aria-label="${t("diary.ring_aria", { eaten: Math.round(eaten), target: Math.round(target), left: leftLabel })}">
       <div class="calorie-hero__top">
         <div class="calorie-hero__nums">
-          <span class="calorie-hero__caption">Calories</span>
+          <span class="calorie-hero__caption">${t("diary.calories")}</span>
           <span class="calorie-hero__value">${Math.round(eaten)}</span>
-          <span class="calorie-hero__sub">of ${Math.round(target)}</span>
+          <span class="calorie-hero__sub">${t("diary.calories_of", { amount: Math.round(target) })}</span>
         </div>
         <span class="calorie-hero__left">🔥 ${leftLabel}</span>
       </div>
@@ -469,7 +474,7 @@ function mealCard(mealType, mealEntries, chipKeys) {
       <header class="meal-card__header">
         <span class="meal-card__icon meal-card__icon--${mealType}">${icon}</span>
         <div class="meal-card__titles">
-          <h2 class="meal-card__title">${MEAL_LABELS[mealType] || mealType}</h2>
+          <h2 class="meal-card__title">${mealLabel(mealType)}</h2>
           <p class="meal-card__summary">
             <span class="meal-card__kcal">${Math.round(totals.calories)} kcal</span>
             <span class="meal-card__summary-sep"> · </span>${formatMacroChipLine(totals, chipKeys)}
@@ -483,8 +488,8 @@ function mealCard(mealType, mealEntries, chipKeys) {
             const serving = servingEchoText(e) ?? (e.quantityG != null ? escapeHtml(formatGrams(e.quantityG)) : null);
             return `
           <div class="food-swipe" data-entry-id="${e.id}">
-            <div class="food-swipe__behind food-swipe__behind--fav" aria-hidden="true">Favorite</div>
-            <div class="food-swipe__behind food-swipe__behind--del" aria-hidden="true">Delete</div>
+            <div class="food-swipe__behind food-swipe__behind--fav" aria-hidden="true">${t("diary.favorite")}</div>
+            <div class="food-swipe__behind food-swipe__behind--del" aria-hidden="true">${t("action.delete")}</div>
             <div class="food-item">
               <button type="button" class="food-item__main" data-edit>
                 <span class="food-item__text">
@@ -499,7 +504,7 @@ function mealCard(mealType, mealEntries, chipKeys) {
                   <span class="food-item__pills">${formatFoodPills(e, chipKeys)}</span>
                 </span>
               </button>
-              <button type="button" class="food-item__menu" data-menu aria-label="More actions for ${escapeAttr(e.name)}">⋮</button>
+              <button type="button" class="food-item__menu" data-menu aria-label="${escapeAttr(t("diary.more_actions", { name: e.name }))}">⋮</button>
             </div>
           </div>`;
           })
@@ -720,13 +725,13 @@ export class DiaryView extends HTMLElement {
 
     this.innerHTML = `
       <div class="week-nav">
-        <button type="button" class="day-nav-btn day-nav-btn--week" data-day-delta="-1" aria-label="Previous day">${chevronLeft}</button>
-        <div class="week-pager" data-week-pager aria-label="Week calendar">
+        <button type="button" class="day-nav-btn day-nav-btn--week" data-day-delta="-1" aria-label="${t("diary.prev_day")}">${chevronLeft}</button>
+        <div class="week-pager" data-week-pager aria-label="${t("diary.week_calendar")}">
           ${weekPages
             .map(
               (days, pageIdx) => `
             <div class="week-page" data-week-page="${pageIdx}">
-              <div class="week-strip" role="group" aria-label="Week of ${new Date(`${days[0]}T00:00:00`).toLocaleDateString(undefined, { month: "short", day: "numeric" })}">
+              <div class="week-strip" role="group" aria-label="${t("diary.week_of", { date: new Date(`${days[0]}T00:00:00`).toLocaleDateString(undefined, { month: "short", day: "numeric" }) })}">
                 ${days
                   .map((iso) => {
                     const d = new Date(`${iso}T00:00:00`);
@@ -746,20 +751,20 @@ export class DiaryView extends HTMLElement {
             )
             .join("")}
         </div>
-        <button type="button" class="day-nav-btn day-nav-btn--week" data-day-delta="1" aria-label="Next day" ${nextDisabled}>${chevronRight}</button>
+        <button type="button" class="day-nav-btn day-nav-btn--week" data-day-delta="1" aria-label="${t("diary.next_day")}" ${nextDisabled}>${chevronRight}</button>
       </div>
 
       <div class="home-hero" data-day-swipe>
         <div class="home-hero--mobile">
           <div class="home-hero__day-nav">
-            <button type="button" class="day-nav-btn" data-day-delta="-1" aria-label="Previous day">${chevronLeft}</button>
+            <button type="button" class="day-nav-btn" data-day-delta="-1" aria-label="${t("diary.prev_day")}">${chevronLeft}</button>
             <div class="home-hero__gauge-wrap">
-              <button type="button" class="calorie-hero calorie-hero--tap calorie-hero--tap-arc" data-nutrition-detail aria-label="Open nutrition detail">
+              <button type="button" class="calorie-hero calorie-hero--tap calorie-hero--tap-arc" data-nutrition-detail aria-label="${t("diary.open_nutrition_detail")}">
                 ${gaugeMobile}
               </button>
               ${gaugeInfoBtnMobile}
             </div>
-            <button type="button" class="day-nav-btn" data-day-delta="1" aria-label="Next day" ${nextDisabled}>${chevronRight}</button>
+            <button type="button" class="day-nav-btn" data-day-delta="1" aria-label="${t("diary.next_day")}" ${nextDisabled}>${chevronRight}</button>
           </div>
           <div class="day-type-chip-row">${dayTypeChip}</div>
           ${macrosMobile}
@@ -770,7 +775,7 @@ export class DiaryView extends HTMLElement {
                  nested button would break HTML parsing and escape this
                  container (visible on mobile). Mobile hero uses a real button
                  since it only wraps SVG. -->
-            <div class="calorie-hero--tap calorie-hero--tap-bar" data-nutrition-detail role="button" tabindex="0" aria-label="Open nutrition detail">
+            <div class="calorie-hero--tap calorie-hero--tap-bar" data-nutrition-detail role="button" tabindex="0" aria-label="${t("diary.open_nutrition_detail")}">
               ${gaugeDesktop}
             </div>
             ${gaugeInfoBtnDesktop}
@@ -784,14 +789,14 @@ export class DiaryView extends HTMLElement {
         showWater
           ? `<div class="card card--glass water-row">
               <div class="water-row__top">
-                <div class="water-row__meta"><strong>${waterMl} ml</strong> / ${waterGoal} ml water</div>
+                <div class="water-row__meta">${t("diary.water_intake_line", { count: `<strong>${waterMl} ml</strong>`, goal: waterGoal })}</div>
                 <div class="water-presets">
                   ${WATER_PRESETS.map((ml) => `<button type="button" class="chip" data-water="${ml}">+${ml}</button>`).join("")}
-                  <button type="button" class="chip" data-water-custom>Custom</button>
-                  ${waterLogs.length ? `<button type="button" class="chip chip--ghost" data-water-undo title="Remove last log">Undo</button>` : ""}
+                  <button type="button" class="chip" data-water-custom>${t("diary.custom")}</button>
+                  ${waterLogs.length ? `<button type="button" class="chip chip--ghost" data-water-undo title="${t("diary.remove_last")}">${t("diary.undo")}</button>` : ""}
                 </div>
               </div>
-              <div class="water-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${waterGoal}" aria-valuenow="${waterMl}" aria-label="Water intake">
+              <div class="water-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${waterGoal}" aria-valuenow="${waterMl}" aria-label="${t("diary.water_intake_aria")}">
                 <span data-width="${waterPct.toFixed(1)}%"></span>
               </div>
             </div>`
@@ -804,18 +809,18 @@ export class DiaryView extends HTMLElement {
               <div class="water-row__top">
                 <div class="water-row__meta">${
                   nicotineLimit > 0
-                    ? `<strong>${nicotineCount}</strong> / ${nicotineLimit} nicotine`
-                    : `<strong>${nicotineCount}</strong> logged`
+                    ? t("diary.nicotine_limit_line", { count: `<strong>${nicotineCount}</strong>`, limit: nicotineLimit })
+                    : t("diary.nicotine_logged_line", { count: `<strong>${nicotineCount}</strong>` })
                 }</div>
                 <div class="water-presets">
-                  ${NICOTINE_QUICK_KINDS.map((kind) => `<button type="button" class="chip" data-nicotine="${kind}">+1 ${kind}</button>`).join("")}
-                  <button type="button" class="chip" data-nicotine-custom>Custom</button>
-                  ${nicotineLogs.length ? `<button type="button" class="chip chip--ghost" data-nicotine-undo title="Remove last log">Undo</button>` : ""}
+                  ${NICOTINE_QUICK_KINDS.map((kind) => `<button type="button" class="chip" data-nicotine="${kind}">${t(`diary.chip_${kind}`)}</button>`).join("")}
+                  <button type="button" class="chip" data-nicotine-custom>${t("diary.custom")}</button>
+                  ${nicotineLogs.length ? `<button type="button" class="chip chip--ghost" data-nicotine-undo title="${t("diary.remove_last")}">${t("diary.undo")}</button>` : ""}
                 </div>
               </div>
               ${
                 nicotineLimit > 0
-                  ? `<div class="water-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${nicotineLimit}" aria-valuenow="${nicotineCount}" aria-label="Nicotine intake">
+                  ? `<div class="water-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${nicotineLimit}" aria-valuenow="${nicotineCount}" aria-label="${t("diary.nicotine_intake_aria")}">
                       <span data-width="${nicotinePct.toFixed(1)}%"></span>
                     </div>`
                   : ""
@@ -830,18 +835,18 @@ export class DiaryView extends HTMLElement {
               <div class="water-row__top">
                 <div class="water-row__meta">${
                   caffeineLimit > 0
-                    ? `<strong>${caffeineMg}</strong> / ${caffeineLimit} mg caffeine`
-                    : `<strong>${caffeineMg}</strong> mg logged`
+                    ? t("diary.caffeine_limit_line", { count: `<strong>${caffeineMg}</strong>`, limit: caffeineLimit })
+                    : t("diary.caffeine_logged_line", { count: `<strong>${caffeineMg}</strong>` })
                 }</div>
                 <div class="water-presets">
-                  ${CAFFEINE_QUICK_KINDS.map((kind) => `<button type="button" class="chip" data-caffeine="${kind}">+1 ${kind}</button>`).join("")}
-                  <button type="button" class="chip" data-caffeine-custom>Custom</button>
-                  ${caffeineLogs.length ? `<button type="button" class="chip chip--ghost" data-caffeine-undo title="Remove last log">Undo</button>` : ""}
+                  ${CAFFEINE_QUICK_KINDS.map((kind) => `<button type="button" class="chip" data-caffeine="${kind}">${t(`diary.chip_${kind}`)}</button>`).join("")}
+                  <button type="button" class="chip" data-caffeine-custom>${t("diary.custom")}</button>
+                  ${caffeineLogs.length ? `<button type="button" class="chip chip--ghost" data-caffeine-undo title="${t("diary.remove_last")}">${t("diary.undo")}</button>` : ""}
                 </div>
               </div>
               ${
                 caffeineLimit > 0
-                  ? `<div class="water-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${caffeineLimit}" aria-valuenow="${caffeineMg}" aria-label="Caffeine intake">
+                  ? `<div class="water-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${caffeineLimit}" aria-valuenow="${caffeineMg}" aria-label="${t("diary.caffeine_intake_aria")}">
                       <span data-width="${caffeinePct.toFixed(1)}%"></span>
                     </div>`
                   : ""
@@ -879,7 +884,7 @@ export class DiaryView extends HTMLElement {
               .join("")
       }
 
-      <button class="fab" aria-label="Add food" aria-expanded="${this.fabOpen}" data-action="fab">+</button>
+      <button class="fab" aria-label="${t("a11y.add_food")}" aria-expanded="${this.fabOpen}" data-action="fab">+</button>
     `;
 
     this._gaugeInfo = gaugeInfo;
@@ -1172,7 +1177,7 @@ export class DiaryView extends HTMLElement {
       if (dx < -88) this.deleteEntry(entry);
       else if (dx > 88) {
         const nowFav = await toggleFavorite(entry);
-        showToast(nowFav ? "Added to favorites" : "Removed from favorites");
+        showToast(nowFav ? t("diary.added_to_favorites") : t("diary.removed_from_favorites"));
         reset();
       } else reset();
     };
@@ -1252,12 +1257,12 @@ export class DiaryView extends HTMLElement {
       title: entry.name,
       body: `
         <div class="sheet-actions" role="menu">
-          <button type="button" role="menuitem" data-act="edit">Edit</button>
-          <button type="button" role="menuitem" data-act="meal">Change meal</button>
-          <button type="button" role="menuitem" data-act="fav">Favorite</button>
-          <button type="button" role="menuitem" data-act="share">Share</button>
-          <button type="button" role="menuitem" data-act="dup">Duplicate</button>
-          <button type="button" role="menuitem" data-act="del" class="is-danger">Delete</button>
+          <button type="button" role="menuitem" data-act="edit">${t("action.edit")}</button>
+          <button type="button" role="menuitem" data-act="meal">${t("diary.menu_change_meal")}</button>
+          <button type="button" role="menuitem" data-act="fav">${t("diary.favorite")}</button>
+          <button type="button" role="menuitem" data-act="share">${t("diary.share")}</button>
+          <button type="button" role="menuitem" data-act="dup">${t("diary.duplicate")}</button>
+          <button type="button" role="menuitem" data-act="del" class="is-danger">${t("action.delete")}</button>
         </div>`,
     });
 
@@ -1268,7 +1273,7 @@ export class DiaryView extends HTMLElement {
     sheet.body.querySelector('[data-act="fav"]')?.addEventListener("click", async () => {
       sheet.close();
       const nowFav = await toggleFavorite(entry);
-      showToast(nowFav ? "Added to favorites" : "Removed from favorites");
+      showToast(nowFav ? t("diary.added_to_favorites") : t("diary.removed_from_favorites"));
     });
     sheet.body.querySelector('[data-act="share"]')?.addEventListener("click", async () => {
       sheet.close();
@@ -1281,9 +1286,9 @@ export class DiaryView extends HTMLElement {
     sheet.body.querySelector('[data-act="del"]')?.addEventListener("click", async () => {
       sheet.close();
       const ok = await openConfirm({
-        title: "Delete entry",
-        message: `Delete “${entry.name}”?`,
-        confirmLabel: "Delete",
+        title: t("diary.delete_entry_title"),
+        message: t("diary.delete_entry_confirm", { name: entry.name }),
+        confirmLabel: t("action.delete"),
         danger: true,
       });
       if (ok) this.deleteEntry(entry);
@@ -1295,20 +1300,20 @@ export class DiaryView extends HTMLElement {
     // Refresh favorite label
     isFavorite(entry).then((fav) => {
       const btn = sheet.body.querySelector('[data-act="fav"]');
-      if (btn) btn.textContent = fav ? "Unfavorite" : "Favorite";
+      if (btn) btn.textContent = fav ? t("diary.unfavorite") : t("diary.favorite");
     });
   }
 
   /** @param {import('../lib/chompass-core/models.js').FoodEntry} entry */
   openChangeMealSheet(entry) {
     const sheet = openSheet({
-      title: "Change meal",
+      title: t("diary.menu_change_meal"),
       body: `
-        <div class="sheet-actions" role="group" aria-label="Meal type">
+        <div class="sheet-actions" role="group" aria-label="${t("diary.meal_type")}">
           ${MEAL_ORDER.map(
             (m) =>
               `<button type="button" data-meal="${m}" aria-pressed="${entry.mealType === m}">
-                ${MEAL_LABELS[m]}${entry.mealType === m ? " · current" : ""}
+                ${mealLabel(m)}${entry.mealType === m ? ` · ${t("diary.current")}` : ""}
               </button>`
           ).join("")}
         </div>`,
@@ -1387,10 +1392,10 @@ export class DiaryView extends HTMLElement {
              <div class="add-food-water">
                ${WATER_PRESETS.map((ml) => `<button type="button" class="chip" data-sheet-water="${ml}">+${ml} ml</button>`).join("")}
                <label class="add-food-water-slider">
-                 <span>Custom</span>
-                 <input type="range" min="50" max="1000" step="50" value="200" data-water-range aria-label="Water amount" />
+                 <span>${t("diary.custom")}</span>
+                 <input type="range" min="50" max="1000" step="50" value="200" data-water-range aria-label="${t("diary.water_amount")}" />
                  <span data-water-range-val>200 ml</span>
-                 <button type="button" class="chip" data-sheet-water-range>Add</button>
+                 <button type="button" class="chip" data-sheet-water-range>${t("diary.add")}</button>
                </label>
              </div>`
           : ""
@@ -1398,7 +1403,7 @@ export class DiaryView extends HTMLElement {
     `;
 
     const sheet = openSheet({
-      title: "Add food",
+      title: t("diary.add_food"),
       body,
       onClose: () => {
         this._sheet = null;
@@ -1635,7 +1640,7 @@ export class DiaryView extends HTMLElement {
       onCancel: () => {},
     });
     if (!sheet) {
-      showToast("Voice input is not supported in this browser");
+      showToast(t("diary.voice_unsupported"));
     }
   }
 
@@ -1647,8 +1652,8 @@ export class DiaryView extends HTMLElement {
   async openSavedMealsSheet(parentSheet, appPrefs, initialSegment) {
     let segment = initialSegment || appPrefs.lastSavedMealsSegment || "RECENTS";
     const sheet = openSheet({
-      title: "Saved meals",
-      body: `<div class="saved-meals" data-saved-root><p class="empty-state">Loading…</p></div>`,
+      title: t("diary.saved_meals"),
+      body: `<div class="saved-meals" data-saved-root><p class="empty-state">${t("diary.loading")}</p></div>`,
     });
 
     const renderTab = async () => {
@@ -1683,7 +1688,7 @@ export class DiaryView extends HTMLElement {
             ${["RECENTS", "FREQUENT", "FAVORITES", "RECIPES"]
               .map(
                 (s) =>
-                  `<button type="button" role="tab" data-seg="${s}" aria-selected="${segment === s}">${s[0] + s.slice(1).toLowerCase()}</button>`
+                  `<button type="button" role="tab" data-seg="${s}" aria-selected="${segment === s}">${t(SEGMENT_LABELS[s] ?? s)}</button>`
               )
               .join("")}
           </div>
@@ -1695,12 +1700,12 @@ export class DiaryView extends HTMLElement {
                       (r) => `
                     <button type="button" data-recipe-id="${r.id}">
                       <strong>${escapeHtml(r.name)}</strong><br/>
-                      <span class="recents-meta">${r.ingredients.length} ingredients · ${r.ingredients.reduce((s, i) => s + Math.round(i.baseCalories * (i.quantityScale ?? 1)), 0)} kcal</span>
+                      <span class="recents-meta">${t("diary.recipe_ingredients_kcal", { count: r.ingredients.length, kcal: r.ingredients.reduce((s, i) => s + Math.round(i.baseCalories * (i.quantityScale ?? 1)), 0) })}</span>
                     </button>`
                     )
                     .join("")}
                 </div>`
-              : `<p class="empty-state" style="padding:1rem 0;">No recipes yet. Build one from Favorites.</p>`
+              : `<p class="empty-state" style="padding:1rem 0;">${t("diary.no_recipes")}</p>`
           }`;
         root.querySelectorAll("[data-seg]").forEach((btn) => {
           btn.addEventListener("click", async () => {
@@ -1729,7 +1734,7 @@ export class DiaryView extends HTMLElement {
           ${["RECENTS", "FREQUENT", "FAVORITES", "RECIPES"]
             .map(
               (s) =>
-                `<button type="button" role="tab" data-seg="${s}" aria-selected="${segment === s}">${s[0] + s.slice(1).toLowerCase()}</button>`
+                `<button type="button" role="tab" data-seg="${s}" aria-selected="${segment === s}">${t(SEGMENT_LABELS[s] ?? s)}</button>`
             )
             .join("")}
         </div>
@@ -1746,7 +1751,7 @@ export class DiaryView extends HTMLElement {
                     </button>
                     ${
                       r.favEditId
-                        ? `<button type="button" class="saved-row__edit" data-edit-favorite="${escapeAttr(r.favEditId)}" aria-label="Edit saved food" title="Edit saved food">✎</button>`
+                        ? `<button type="button" class="saved-row__edit" data-edit-favorite="${escapeAttr(r.favEditId)}" aria-label="${t("diary.edit_saved_food")}" title="${t("diary.edit_saved_food")}">✎</button>`
                         : ""
                     }
                   </div>`
@@ -1794,17 +1799,17 @@ export class DiaryView extends HTMLElement {
     const all = await foodEntries.all();
     const dates = [...new Set(all.map((e) => e.date))].filter((d) => d !== this.date).sort().reverse().slice(0, 60);
     const sheet = openSheet({
-      title: "Copy from day",
+      title: t("add_food.copy"),
       body: dates.length
         ? `<div class="recents-list sheet-recents">
             ${dates
               .map(
                 (d) =>
-                  `<button type="button" data-copy-date="${d}"><strong>${escapeHtml(d)}</strong><br/><span class="recents-meta">Tap to choose foods</span></button>`
+                  `<button type="button" data-copy-date="${d}"><strong>${escapeHtml(d)}</strong><br/><span class="recents-meta">${t("diary.tap_to_choose")}</span></button>`
               )
               .join("")}
           </div>`
-        : `<p class="empty-state" style="padding:1rem 0;">No other days with food yet.</p>`,
+        : `<p class="empty-state" style="padding:1rem 0;">${t("diary.no_other_days")}</p>`,
     });
     sheet.body.querySelectorAll("[data-copy-date]").forEach((btn) => {
       btn.addEventListener("click", async () => {
@@ -1823,7 +1828,7 @@ export class DiaryView extends HTMLElement {
    */
   openCopySelectSheet(parentSheet, dayEntries) {
     const sheet = openSheet({
-      title: "Select foods to copy",
+      title: t("diary.select_foods"),
       body: `
         <div class="copy-select">
           ${dayEntries
@@ -1831,12 +1836,12 @@ export class DiaryView extends HTMLElement {
               (e) => `
             <label class="copy-select__row">
               <input type="checkbox" data-copy-id="${e.id}" checked />
-              <span><strong>${escapeHtml(e.name)}</strong><br/><span class="recents-meta">${Math.round(e.calories)} kcal · ${e.mealType}</span></span>
+              <span><strong>${escapeHtml(e.name)}</strong><br/><span class="recents-meta">${Math.round(e.calories)} kcal · ${mealLabel(e.mealType)}</span></span>
             </label>`
             )
             .join("")}
         </div>
-        <button type="button" class="btn btn--primary" data-copy-confirm>Copy to today</button>`,
+        <button type="button" class="btn btn--primary" data-copy-confirm>${t("diary.copy_to_today")}</button>`,
     });
     sheet.body.querySelector("[data-copy-confirm]")?.addEventListener("click", async () => {
       const ids = [...sheet.body.querySelectorAll("[data-copy-id]:checked")].map((el) => el.getAttribute("data-copy-id"));
@@ -1850,92 +1855,12 @@ export class DiaryView extends HTMLElement {
     });
   }
 
-  /**
-   * @param {ReturnType<typeof openSheet>} parentSheet
-   * @param {Awaited<ReturnType<typeof prefs.load>>} appPrefs
-   */
-  async openRecipeSheet(parentSheet, appPrefs) {
-    const favs = await listFavorites();
-    const existing = await listRecipes();
-    const sheet = openSheet({
-      title: "Recipes",
-      body: `
-        <p class="add-food-section">Log a recipe</p>
-        ${
-          existing.length
-            ? `<div class="recents-list sheet-recents">
-                ${existing
-                  .map(
-                    (r) => `
-                  <div class="recipe-row">
-                    <button type="button" data-log-recipe="${r.id}"><strong>${escapeHtml(r.name)}</strong><br/>
-                    <span class="recents-meta">${r.ingredients.length} ingredients</span></button>
-                    <button type="button" class="chip" data-del-recipe="${r.id}">Delete</button>
-                  </div>`
-                  )
-                  .join("")}
-              </div>`
-            : `<p class="empty-state" style="padding:0.5rem 0;">No saved recipes yet.</p>`
-        }
-        <p class="add-food-section">Build from favorites</p>
-        ${
-          favs.length
-            ? `<div class="copy-select">
-                ${favs
-                  .map(
-                    (e) => `
-                  <label class="copy-select__row">
-                    <input type="checkbox" data-ing-id="${e.id}" />
-                    <span><strong>${escapeHtml(e.name)}</strong><br/><span class="recents-meta">${Math.round(e.calories)} kcal</span></span>
-                  </label>`
-                  )
-                  .join("")}
-              </div>
-              <div class="field"><label for="recipe-name">Recipe name</label><input id="recipe-name" type="text" placeholder="My meal" /></div>
-              <button type="button" class="btn btn--primary" data-save-recipe>Save recipe</button>`
-            : `<p class="empty-state" style="padding:0.5rem 0;">Favorite some foods first, then build a recipe.</p>`
-        }`,
-    });
-
-    sheet.body.querySelectorAll("[data-log-recipe]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const id = btn.getAttribute("data-log-recipe");
-        const recipe = existing.find((r) => r.id === id);
-        if (!recipe) return;
-        sheet.close();
-        parentSheet.close();
-        await logRecipe(recipe, this.date, appPrefs);
-        this.render();
-      });
-    });
-    sheet.body.querySelectorAll("[data-del-recipe]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const id = btn.getAttribute("data-del-recipe");
-        if (id) await deleteRecipe(id);
-        sheet.close();
-        this.openRecipeSheet(parentSheet, appPrefs);
-      });
-    });
-    sheet.body.querySelector("[data-save-recipe]")?.addEventListener("click", async () => {
-      const ids = [...sheet.body.querySelectorAll("[data-ing-id]:checked")].map((el) => el.getAttribute("data-ing-id"));
-      const picked = favs.filter((f) => ids.includes(f.id));
-      if (!picked.length) return;
-      const nameEl = /** @type {HTMLInputElement | null} */ (sheet.body.querySelector("#recipe-name"));
-      const name = (nameEl?.value || "Recipe").trim() || "Recipe";
-      const recipe = recipeFromEntries(name, picked, guessMealTypeFromPrefs(appPrefs));
-      await saveRecipe(recipe);
-      sheet.close();
-      parentSheet.close();
-      showToast(`Saved recipe “${name}”`);
-    });
-  }
-
   /** @param {import('../lib/chompass-core/models.js').FoodEntry[]} entries */
   async shareEntries(entries) {
     const text = mealShareText(entries);
     try {
       if (navigator.share) {
-        await navigator.share({ text, title: "Chompass meal" });
+        await navigator.share({ text, title: t("diary.share_title") });
         return;
       }
     } catch {
@@ -1943,21 +1868,21 @@ export class DiaryView extends HTMLElement {
     }
     try {
       await navigator.clipboard.writeText(text);
-      showToast("Share link copied");
+      showToast(t("diary.share_copied"));
     } catch {
-      showToast("Could not share");
+      showToast(t("diary.share_failed"));
     }
   }
 
   async customWater() {
     const raw = await openInput({
-      title: "Add water",
-      label: "Amount",
+      title: t("diary.add_water"),
+      label: t("diary.amount"),
       value: "200",
       unit: "ml",
       inputMode: "numeric",
       type: "number",
-      confirmLabel: "Add",
+      confirmLabel: t("diary.add"),
     });
     if (raw == null) return;
     const ml = Number(raw);
@@ -1971,7 +1896,7 @@ export class DiaryView extends HTMLElement {
     if (!waterLogs.length) return;
     const last = waterLogs[waterLogs.length - 1];
     await water.delete(last.id);
-    showToast(`Removed ${last.amountMl} ml`);
+    showToast(t("diary.removed_ml", { amount: last.amountMl }));
     this.render();
   }
 
@@ -2010,10 +1935,10 @@ export class DiaryView extends HTMLElement {
     const fmt = (v) => (v === 0 ? "—" : v.toFixed(1));
     const cal = entries.reduce((s, e) => s + e.calories, 0);
     const macroRows = [
-      ["Calories", cal, targets?.calories ?? 0, "kcal"],
-      ["Protein", sumNutrient(entries, "proteinG"), targets?.proteinG ?? 0, "g"],
-      ["Carbs", sumNutrient(entries, "carbsG"), targets?.carbsG ?? 0, "g"],
-      ["Fat", sumNutrient(entries, "fatG"), targets?.fatG ?? 0, "g"],
+      [t("diary.calories"), cal, targets?.calories ?? 0, "kcal"],
+      [t("onboarding.plan.protein"), sumNutrient(entries, "proteinG"), targets?.proteinG ?? 0, "g"],
+      [t("onboarding.plan.carbs"), sumNutrient(entries, "carbsG"), targets?.carbsG ?? 0, "g"],
+      [t("onboarding.plan.fat"), sumNutrient(entries, "fatG"), targets?.fatG ?? 0, "g"],
     ];
     const microRows = NUTRITION_DETAIL_MICROS.map((def) => {
       const value = sumNutrient(entries, def.key);
@@ -2022,10 +1947,10 @@ export class DiaryView extends HTMLElement {
     });
 
     const sheet = openSheet({
-      title: "Nutrition detail",
+      title: t("diary.nutrition_detail"),
       body: `
         <section class="nutrition-detail">
-          <h3 class="nutrition-detail__heading">Macros</h3>
+          <h3 class="nutrition-detail__heading">${t("diary.macros")}</h3>
           <ul class="nutrition-detail__list">
             ${macroRows
               .map(
@@ -2038,7 +1963,7 @@ export class DiaryView extends HTMLElement {
               )
               .join("")}
           </ul>
-          <h3 class="nutrition-detail__heading">Detailed nutrition</h3>
+          <h3 class="nutrition-detail__heading">${t("diary.detailed_nutrition")}</h3>
           <ul class="nutrition-detail__list">
             ${microRows
               .map(
@@ -2137,13 +2062,13 @@ export class DiaryView extends HTMLElement {
 
   async customNicotine() {
     const raw = await openInput({
-      title: "Add nicotine",
-      label: "Count",
+      title: t("diary.add_nicotine"),
+      label: t("diary.count"),
       value: "1",
       unit: "",
       inputMode: "numeric",
       type: "number",
-      confirmLabel: "Add",
+      confirmLabel: t("diary.add"),
     });
     if (raw == null) return;
     const count = Number(raw);
@@ -2160,7 +2085,7 @@ export class DiaryView extends HTMLElement {
     if (!nicotineLogs.length) return;
     const last = nicotineLogs[nicotineLogs.length - 1];
     await nicotine.delete(last.id);
-    showToast(`Removed ${last.count ?? 1}`);
+    showToast(t("diary.removed_count", { count: last.count ?? 1 }));
     this.render();
   }
 
@@ -2174,13 +2099,13 @@ export class DiaryView extends HTMLElement {
 
   async customCaffeine() {
     const raw = await openInput({
-      title: "Add caffeine",
-      label: "Caffeine (mg)",
+      title: t("diary.add_caffeine"),
+      label: t("diary.caffeine_mg"),
       value: "95",
       unit: "mg",
       inputMode: "numeric",
       type: "number",
-      confirmLabel: "Add",
+      confirmLabel: t("diary.add"),
     });
     if (raw == null) return;
     const mg = Number(raw);
@@ -2197,7 +2122,7 @@ export class DiaryView extends HTMLElement {
     if (!caffeineLogs.length) return;
     const last = caffeineLogs[caffeineLogs.length - 1];
     await caffeine.delete(last.id);
-    showToast(`Removed ${last.mg ?? 0} mg`);
+    showToast(t("diary.removed_mg", { amount: last.mg ?? 0 }));
     this.render();
   }
 
@@ -2211,7 +2136,7 @@ export class DiaryView extends HTMLElement {
     this._undoEntry = entry;
     await foodEntries.delete(entry.id);
     this.render();
-    showUndoToast("Deleted", async () => {
+    showUndoToast(t("toast.deleted"), async () => {
       if (this._undoEntry) await foodEntries.put(this._undoEntry);
       this._undoEntry = null;
       this.render();

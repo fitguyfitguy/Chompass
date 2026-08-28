@@ -6,9 +6,19 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Changed
+
+- **The web app uses your language in more places** (web): the entry form, the whole Settings screen, the diary menus, sheets and toasts, the coach, photo analysis and the update prompt now follow the app language instead of hardcoded English. German ships fully translated; other languages show English text on these surfaces until the next translation batch.
+- **The update prompt moved to the bottom** (web): the "new version is ready" prompt used to sit over the week pager, the first settings row and the coach headline. It now docks at the bottom like the install banner, and both reserve their space instead of covering content.
+
 ### Fixed
 
 - **Close sheets with a swipe or the back gesture** (web): bottom sheets like Add Food can now be swiped down from anywhere on the sheet, not just the small handle, and starting the swipe on a button no longer gets ignored. The back gesture or browser back button closes the open sheet instead of navigating away or leaving the app while the sheet stays open.
+- **Typed notes survive picking photos** (web): on the photo and note analyze screen, choosing photos no longer wipes the description you already typed; voice dictation appends stay too.
+- **Day notes survive the minute tick and get a working button** (web): leaving the diary open while writing a day note no longer gets the note wiped by the once-a-minute fasting refresh, and "Add a note for this day" now actually opens the editor. The note entry only shows when the Daily notes setting is on, matching Android.
+- **Shared meals land on the right day** (web): importing a shared meal link near midnight no longer logs the foods to the wrong day. The entry form, photo analysis, barcode screen and onboarding derived "today" from UTC the same way and were fixed too.
+- **Screen reader and keyboard fixes** (web): tapping around no longer re-announces the whole page; the week picker renders five weeks instead of 53 (35 day buttons instead of 371 for keyboard users); the desktop calorie bar now works with Enter and Space; delete confirmations start focus on Cancel so a hasty Enter no longer confirms the deletion; Escape closes one sheet at a time instead of all of them; chip rows and day pickers expose honest toggle state; recalculation, import, sync and coach status lines are announced when they change.
+- **Custom nicotine and caffeine entries are honest** (web): a custom entry logs as kind "other" instead of pretending to be a cigarette or a coffee.
 
 ## [4.1.0] - 2026-08-27
 

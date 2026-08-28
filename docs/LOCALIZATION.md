@@ -103,7 +103,7 @@ run `validateDebugScreenshotTest` in CI to catch regressions.
 ## PWA
 
 - Catalog API: [`web/app/src/lib/i18n/`](../web/app/src/lib/i18n/)
-- English catalog is complete for **core surfaces** (nav, onboarding, diary, progress, settings hub/app/language, dialogs, errors, a11y)
+- English catalog is complete for the daily-driver surfaces (nav, onboarding, diary incl. menus/toasts/sheets, entry form, progress, full settings, coach, analyze, add-meal, dialogs, errors, a11y)
 - Other locale catalogs override English; missing keys fall back to English
 - Settings → App & Display → Language
 - `document.documentElement.lang` / `dir` update when locale changes
@@ -172,7 +172,8 @@ Core surfaces: shell nav, **full onboarding flow** (steps, choices, AI setup, pl
 
 ## Out of scope / deferred
 
-- Full 1:1 port of every Android string into the PWA (entry AI flows, grounded entry WIP, etc.)
+- Translating the 2026-08 UI-audit keys (entry form, settings body, diary surfaces, coach/analyze/add-meal chrome) beyond en + de: shipped with honest EN fallback, and `maxMissing` caps in `testdata/parity/locales.json` now gate the PWA i18n test too; translation batch pending
+- Full 1:1 port of the remaining Android-only strings into the PWA (grounded entry WIP, etc.)
 - Human review of machine-assisted translations beyond core surfaces
 - Store listing metadata beyond `metadata/en-US/`
 
@@ -184,4 +185,5 @@ Core surfaces: shell nav, **full onboarding flow** (steps, choices, AI setup, pl
 - `AiError.connectionFailureMessage` (unused/dead)
 - `friendlyMessage()` English text stays as the log/raw fallback; the localized
   counterpart is `friendlyMessageRes()` attached to the thrown `AiError.Api`
+- PWA UI-audit leftovers (deliberate): demo-hero mock strings (`web/app/demo/`, English-only marketing surface), language endonyms shown in their own language, unit/format tokens and machine ids
 

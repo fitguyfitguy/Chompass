@@ -77,9 +77,19 @@ import { chevronRight } from "../lib/icons.js";
 
 const WEEKDAY_ORDER = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
 
+const WEEKDAY_KEYS = {
+  MONDAY: "settings.weekday.monday",
+  TUESDAY: "settings.weekday.tuesday",
+  WEDNESDAY: "settings.weekday.wednesday",
+  THURSDAY: "settings.weekday.thursday",
+  FRIDAY: "settings.weekday.friday",
+  SATURDAY: "settings.weekday.saturday",
+  SUNDAY: "settings.weekday.sunday",
+};
+
 /** @param {string} name DayOfWeek name */
 function weekdayLabel(name) {
-  return name.charAt(0) + name.slice(1).toLowerCase();
+  return t(WEEKDAY_KEYS[name] ?? name);
 }
 
 /** @param {import('../lib/chompass-core/macro-plan.js').MacroPlan|null} plan */
@@ -95,14 +105,24 @@ function dayTypesSummary(plan) {
 }
 
 const ACTIVITY_LEVELS = [
-  { id: "sedentary", label: "Sedentary" },
-  { id: "light", label: "Light" },
-  { id: "moderate", label: "Moderate" },
-  { id: "active", label: "Active" },
-  { id: "very_active", label: "Very active" },
-  { id: "extra_active", label: "Extra active" },
+  { id: "sedentary", labelKey: "onboarding.activity.sedentary" },
+  { id: "light", labelKey: "onboarding.activity.light" },
+  { id: "moderate", labelKey: "onboarding.activity.moderate" },
+  { id: "active", labelKey: "onboarding.activity.active" },
+  { id: "very_active", labelKey: "onboarding.activity.very_active" },
+  { id: "extra_active", labelKey: "onboarding.activity.extra_active" },
 ];
-const ACCENTS = ["system", "teal", "blue", "green", "purple", "pink", "orange", "indigo", "neutral"];
+const ACCENTS = [
+  { id: "system", labelKey: "settings.units.accent_system" },
+  { id: "teal", labelKey: "settings.units.accent_teal" },
+  { id: "blue", labelKey: "settings.units.accent_blue" },
+  { id: "green", labelKey: "settings.units.accent_green" },
+  { id: "purple", labelKey: "settings.units.accent_purple" },
+  { id: "pink", labelKey: "settings.units.accent_pink" },
+  { id: "orange", labelKey: "settings.units.accent_orange" },
+  { id: "indigo", labelKey: "settings.units.accent_indigo" },
+  { id: "neutral", labelKey: "settings.units.accent_neutral" },
+];
 
 const SPEECH_LANGS = [
   { id: "", labelKey: "settings.speech.browser_default" },
@@ -205,7 +225,7 @@ export class SettingsView extends HTMLElement {
         <div class="settings-hub">
           ${this.hubRow("about", ICONS.info)}
         </div>
-        <p class="settings-android-note">Health Connect, notifications, widgets, and on-device LLM are Android-only.</p>`;
+        <p class="settings-android-note">${t("settings.android_note")}</p>`;
       return;
     }
 
@@ -331,23 +351,23 @@ export class SettingsView extends HTMLElement {
   async renderProfile() {
     const p = await this.loadProfile();
     const appPrefs = await prefs.load();
-    const heightLabel = appPrefs.heightUnit === "in" ? "Height in" : "Height cm";
-    const weightLabel = appPrefs.weightUnit === "lb" ? "Weight lb" : "Weight kg";
+    const heightLabel = appPrefs.heightUnit === "in" ? t("settings.personal.height_in") : t("settings.personal.height_cm");
+    const weightLabel = appPrefs.weightUnit === "lb" ? t("settings.personal.weight_lb") : t("settings.personal.weight_kg");
     const heightVal = appPrefs.heightUnit === "in" ? (p.heightCm / 2.54).toFixed(1) : p.heightCm;
     const weightVal = appPrefs.weightUnit === "lb" ? (p.weightKg * 2.20462).toFixed(1) : p.weightKg;
 
     this.innerHTML = `
-      ${subpageBar("Personal Info", { backHref: SETTINGS_PARENT.personal })}
+      ${subpageBar(t("settings.hub.personal"), { backHref: SETTINGS_PARENT.personal })}
       <form class="entry-form card" id="profile-form">
         <div class="field-row field-row--2">
           <div class="field">
-            <label for="sex">Sex</label>
+            <label for="sex">${t("settings.personal.sex")}</label>
             <select id="sex" name="sex">
-              ${["male", "female", "other"].map((s) => `<option value="${s}" ${p.sex === s ? "selected" : ""}>${s}</option>`).join("")}
+              ${["male", "female", "other"].map((s) => `<option value="${s}" ${p.sex === s ? "selected" : ""}>${t(`onboarding.sex.${s}`)}</option>`).join("")}
             </select>
           </div>
           <div class="field">
-            <label for="age">Age</label>
+            <label for="age">${t("settings.personal.age")}</label>
             <input id="age" name="age" type="number" min="1" value="${p.age}" />
           </div>
         </div>
@@ -361,25 +381,25 @@ export class SettingsView extends HTMLElement {
             <input id="weight" name="weight" type="number" step="0.1" min="1" value="${weightVal}" />
           </div>
           <div class="field">
-            <label for="bodyFatPercentage">Body fat %</label>
+            <label for="bodyFatPercentage">${t("onboarding.body_fat.pct")}</label>
             <input id="bodyFatPercentage" name="bodyFatPercentage" type="number" step="0.1" min="0" max="100"
               value="${p.bodyFatPercentage != null ? p.bodyFatPercentage * 100 : ""}" />
           </div>
         </div>
         <label class="field" style="display:flex;gap:0.5rem;align-items:center;">
           <input type="checkbox" name="useBodyFatInBMR" ${p.useBodyFatInBMR !== false ? "checked" : ""} />
-          Use body fat % in BMR (Katch-McArdle)
+          ${t("settings.personal.use_bf_bmr")}
         </label>
         <div class="field">
-          <label for="activityLevel">Activity</label>
+          <label for="activityLevel">${t("settings.personal.activity")}</label>
           <select id="activityLevel" name="activityLevel">
-            ${ACTIVITY_LEVELS.map((a) => `<option value="${a.id}" ${p.activityLevel === a.id ? "selected" : ""}>${a.label}</option>`).join("")}
+            ${ACTIVITY_LEVELS.map((a) => `<option value="${a.id}" ${p.activityLevel === a.id ? "selected" : ""}>${t(a.labelKey)}</option>`).join("")}
           </select>
         </div>
-        <button type="submit" class="btn btn--primary">Save</button>
+        <button type="submit" class="btn btn--primary">${t("action.save")}</button>
       </form>
-      <nav class="settings-nav" aria-label="Related">
-        <a href="#/measurements">Body measurements <span>Tape / Navy / RFM</span></a>
+      <nav class="settings-nav" aria-label="${t("settings.nav_related")}">
+        <a href="#/measurements">${t("settings.personal.measurements_link")} <span>${t("settings.personal.measurements_hint")}</span></a>
       </nav>`;
     this.querySelector("#profile-form")?.addEventListener("submit", async (ev) => {
       ev.preventDefault();
@@ -406,88 +426,88 @@ export class SettingsView extends HTMLElement {
     const p = await this.loadProfile();
     const targets = dailyTargets(p);
     this.innerHTML = `
-      ${subpageBar("Goals & Nutrition", { backHref: SETTINGS_PARENT.goals })}
+      ${subpageBar(t("settings.hub.goals"), { backHref: SETTINGS_PARENT.goals })}
       <form class="entry-form card" id="goals-form">
         <div class="field-row">
           <div class="field">
-            <label for="goal">Goal</label>
+            <label for="goal">${t("settings.goals.goal")}</label>
             <select id="goal" name="goal">
-              ${["lose", "maintain", "gain"].map((g) => `<option value="${g}" ${p.goal === g ? "selected" : ""}>${g}</option>`).join("")}
+              ${["lose", "maintain", "gain"].map((g) => `<option value="${g}" ${p.goal === g ? "selected" : ""}>${t(`onboarding.goal.${g}`)}</option>`).join("")}
             </select>
           </div>
           <div class="field">
-            <label for="weeklyChangeKg">Pace kg/wk</label>
+            <label for="weeklyChangeKg">${t("settings.goals.pace")}</label>
             <input id="weeklyChangeKg" name="weeklyChangeKg" type="number" step="0.05" min="0" value="${p.weeklyChangeKg ?? ""}" placeholder="0.5" />
           </div>
           <div class="field">
-            <label for="goalWeightKg">Goal weight kg</label>
+            <label for="goalWeightKg">${t("settings.goals.goal_weight")}</label>
             <input id="goalWeightKg" name="goalWeightKg" type="number" step="0.1" min="0" value="${p.goalWeightKg ?? ""}" />
           </div>
         </div>
         <div class="field-row">
           <div class="field">
-            <label for="ketoMode">Diet mode</label>
+            <label for="ketoMode">${t("onboarding.step.diet")}</label>
             <select id="ketoMode" name="ketoMode">
-              <option value="false" ${!p.ketoMode ? "selected" : ""}>Standard</option>
-              <option value="true" ${p.ketoMode ? "selected" : ""}>Keto</option>
+              <option value="false" ${!p.ketoMode ? "selected" : ""}>${t("onboarding.diet.standard")}</option>
+              <option value="true" ${p.ketoMode ? "selected" : ""}>${t("onboarding.diet.keto")}</option>
             </select>
           </div>
           <div class="field">
-            <label for="customCalories">Custom calories</label>
+            <label for="customCalories">${t("settings.goals.custom_calories")}</label>
             <input id="customCalories" name="customCalories" type="number" min="0" max="${CALORIE_PARSER_CEILING_KCAL}" value="${p.customCalories ?? ""}" placeholder="${targets.calories}" />
           </div>
         </div>
-        <p style="color:var(--muted);font-size:0.82rem;margin:0 0 0.5rem;">Formula targets: ${formatNumber(targets.calories)} kcal · ${Math.round(targets.proteinG)}P / ${Math.round(targets.carbsG)}C / ${Math.round(targets.fatG)}F. Leave blank to use formula.</p>
+        <p style="color:var(--muted);font-size:0.82rem;margin:0 0 0.5rem;">${t("settings.goals.formula_targets", { kcal: formatNumber(targets.calories), protein: Math.round(targets.proteinG), carbs: Math.round(targets.carbsG), fat: Math.round(targets.fatG) })}</p>
         <div class="field-row">
           <div class="field">
-            <label for="proteinTargetMode">Protein target</label>
+            <label for="proteinTargetMode">${t("settings.goals.protein_target")}</label>
             <select id="proteinTargetMode" name="proteinTargetMode">
-              <option value="gramsPerDay" ${(p.proteinTargetMode || "gramsPerDay") === "gramsPerDay" ? "selected" : ""}>Grams per day</option>
-              <option value="gPerKgTotal" ${p.proteinTargetMode === "gPerKgTotal" ? "selected" : ""}>g/kg body weight</option>
-              <option value="gPerKgLbm" ${p.proteinTargetMode === "gPerKgLbm" ? "selected" : ""}>g/kg lean mass</option>
+              <option value="gramsPerDay" ${(p.proteinTargetMode || "gramsPerDay") === "gramsPerDay" ? "selected" : ""}>${t("settings.goals.protein_grams_per_day")}</option>
+              <option value="gPerKgTotal" ${p.proteinTargetMode === "gPerKgTotal" ? "selected" : ""}>${t("settings.goals.protein_g_per_kg_total")}</option>
+              <option value="gPerKgLbm" ${p.proteinTargetMode === "gPerKgLbm" ? "selected" : ""}>${t("settings.goals.protein_g_per_kg_lbm")}</option>
             </select>
           </div>
           <div class="field">
-            <label for="proteinGramsPerKg">Protein g/kg</label>
+            <label for="proteinGramsPerKg">${t("settings.goals.protein_g_per_kg")}</label>
             <input id="proteinGramsPerKg" name="proteinGramsPerKg" type="number" min="0" step="0.1" value="${p.proteinGramsPerKg ?? ""}" placeholder="e.g. 2.0" />
           </div>
           <div class="field">
-            <label for="customProtein">Custom protein g</label>
+            <label for="customProtein">${t("settings.goals.custom_protein")}</label>
             <input id="customProtein" name="customProtein" type="number" min="0" value="${p.customProtein ?? ""}" placeholder="${Math.round(targets.proteinG)}" />
           </div>
         </div>
-        <p style="color:var(--muted);font-size:0.82rem;margin:0 0 0.5rem;">In g/kg mode, the rate updates daily grams when weight or body fat changes. Leave g/day blank when using a rate.</p>
+        <p style="color:var(--muted);font-size:0.82rem;margin:0 0 0.5rem;">${t("settings.goals.g_per_kg_hint")}</p>
         <div class="field-row">
           <div class="field">
-            <label for="customCarbs">Custom carbs g</label>
+            <label for="customCarbs">${t("settings.goals.custom_carbs")}</label>
             <input id="customCarbs" name="customCarbs" type="number" min="0" value="${p.customCarbs ?? ""}" placeholder="${Math.round(targets.carbsG)}" />
           </div>
           <div class="field">
-            <label for="customFat">Custom fat g</label>
+            <label for="customFat">${t("settings.goals.custom_fat")}</label>
             <input id="customFat" name="customFat" type="number" min="0" value="${p.customFat ?? ""}" placeholder="${Math.round(targets.fatG)}" />
           </div>
         </div>
-        <button type="submit" class="btn btn--primary">Save goals</button>
-        <button type="button" class="btn btn--ghost" id="clear-custom">Clear custom targets</button>
+        <button type="submit" class="btn btn--primary">${t("settings.goals.save")}</button>
+        <button type="button" class="btn btn--ghost" id="clear-custom">${t("settings.goals.clear_custom")}</button>
       </form>
       <div class="card">
-        <h2 class="chart-title">Calculated targets</h2>
+        <h2 class="chart-title">${t("settings.goals.calculated")}</h2>
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
-          BMR ${formatNumber(Math.round(bmr(p)))} · TDEE ${formatNumber(Math.round(tdee(p)))} kcal
+          ${t("settings.goals.bmr_tdee", { bmr: formatNumber(Math.round(bmr(p))), tdee: formatNumber(Math.round(tdee(p))) })}
         </p>
         <div class="stat-badges">
-          <div class="stat-badge"><strong>${targets.calories}</strong>Calories</div>
-          <div class="stat-badge" style="color:var(--protein)"><strong>${Math.round(targets.proteinG)} g</strong>Protein</div>
-          <div class="stat-badge" style="color:var(--carbs)"><strong>${Math.round(targets.carbsG)} g</strong>Carbs</div>
-          <div class="stat-badge" style="color:var(--fat)"><strong>${Math.round(targets.fatG)} g</strong>Fat</div>
+          <div class="stat-badge"><strong>${targets.calories}</strong>${t("diary.calories")}</div>
+          <div class="stat-badge" style="color:var(--protein)"><strong>${Math.round(targets.proteinG)} g</strong>${t("onboarding.plan.protein")}</div>
+          <div class="stat-badge" style="color:var(--carbs)"><strong>${Math.round(targets.carbsG)} g</strong>${t("onboarding.plan.carbs")}</div>
+          <div class="stat-badge" style="color:var(--fat)"><strong>${Math.round(targets.fatG)} g</strong>${t("onboarding.plan.fat")}</div>
         </div>
         <div class="btn-row" style="margin-top:0.9rem;">
-          <button type="button" class="btn btn--primary" id="recalculate-goals">Recalculate Goals</button>
+          <button type="button" class="btn btn--primary" id="recalculate-goals">${t("settings.goals.recalculate")}</button>
         </div>
         <p id="recalc-status" role="status" aria-live="polite" style="color:var(--muted);font-size:0.85rem;margin:0.55rem 0 0;" hidden></p>
       </div>
-      <nav class="settings-nav" aria-label="Related">
-        <a href="#/settings?section=nutrients">Optional nutrients <span>Fiber, sodium…</span></a>
+      <nav class="settings-nav" aria-label="${t("settings.nav_related")}">
+        <a href="#/settings?section=nutrients">${t("settings.nutrients.title")} <span>${t("settings.goals.nutrients_hint")}</span></a>
         ${!p.ketoMode ? `<a href="#/settings?section=daytypes">${escapeHtml(t("day_types.title"))} <span>${escapeHtml(dayTypesSummary(p.macroPlan))}</span></a>` : ""}
       </nav>`;
     this.querySelector("#goals-form")?.addEventListener("submit", async (ev) => {
@@ -499,9 +519,9 @@ export class SettingsView extends HTMLElement {
       const floor = safetyFloorKcal(p);
       if (custom && Number(custom) < floor) {
         const ok = await openConfirm({
-          title: "Below the safety floor",
-          message: "This is below your estimated resting burn or 1,200 kcal. Only continue if a clinician prescribed it.",
-          confirmLabel: "Continue anyway",
+          title: t("settings.goals.below_floor_title"),
+          message: t("settings.goals.below_floor_message"),
+          confirmLabel: t("onboarding.ai.skip_confirm"),
         });
         if (!ok) return;
       }
@@ -578,11 +598,11 @@ export class SettingsView extends HTMLElement {
   async onRecalculateGoals(profile) {
     const aiClient = await resolveGoalsAiClient();
     const ok = await openConfirm({
-      title: "Recalculate goals?",
+      title: t("settings.goals.recalculate_title"),
       message: aiClient
-        ? "Uses your AI provider with your profile and recent food/weight logs to refresh calorie and macro targets. Locked values stay put."
-        : "No AI key configured. Unlocked calories and macros go back to formula defaults. Locked values stay. Add an AI key in Settings for the same AI recalculation as Android.",
-      confirmLabel: "Recalculate",
+        ? t("settings.goals.recalculate_ai_message")
+        : t("settings.goals.recalculate_formula_message"),
+      confirmLabel: t("settings.goals.recalculate_confirm"),
     });
     if (!ok) return;
 
@@ -591,7 +611,7 @@ export class SettingsView extends HTMLElement {
     if (btn) btn.disabled = true;
     if (status) {
       status.hidden = false;
-      status.textContent = aiClient ? "Recalculating with AI…" : "Resetting to formula…";
+      status.textContent = aiClient ? t("settings.goals.recalculating_ai") : t("settings.goals.resetting_formula");
     }
 
     try {
@@ -601,7 +621,7 @@ export class SettingsView extends HTMLElement {
         const after = /** @type {HTMLElement | null} */ (this.querySelector("#recalc-status"));
         if (after) {
           after.hidden = false;
-          after.textContent = "Goals reset to formula defaults.";
+          after.textContent = t("settings.goals.reset_done");
         }
         return;
       }
@@ -624,13 +644,13 @@ export class SettingsView extends HTMLElement {
       const after = /** @type {HTMLElement | null} */ (this.querySelector("#recalc-status"));
       if (after) {
         after.hidden = false;
-        after.textContent = `Updated to ${formatNumber(result.calories)} kcal.${reason}`;
+        after.textContent = t("settings.goals.updated_format", { kcal: formatNumber(result.calories), reason });
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       if (status) {
         status.hidden = false;
-        status.textContent = `Couldn't recalculate. Goals unchanged. Check your AI key in Settings. (${msg})`;
+        status.textContent = t("settings.goals.recalc_failed", { msg });
       }
       if (btn) btn.disabled = false;
     }
@@ -681,8 +701,8 @@ export class SettingsView extends HTMLElement {
         <div class="field" style="display:flex;align-items:center;gap:0.6rem;">
           <label for="dt-enabled" style="margin:0;">${escapeHtml(t("day_types.master_toggle"))}</label>
           <select id="dt-enabled" style="max-width:110px;" ${countOk ? "" : "disabled"}>
-            <option value="false" ${!enabled ? "selected" : ""}>Off</option>
-            <option value="true" ${enabled ? "selected" : ""}>On</option>
+            <option value="false" ${!enabled ? "selected" : ""}>${t("settings.toggle.off")}</option>
+            <option value="true" ${enabled ? "selected" : ""}>${t("settings.toggle.on")}</option>
           </select>
         </div>
         ${countOk ? "" : `<p class="field-hint">${escapeHtml(t("day_types.need_profiles", { min: String(MIN_PROFILES), max: String(MAX_PROFILES) }))}</p>`}
@@ -700,8 +720,8 @@ export class SettingsView extends HTMLElement {
               <span class="day-type-row__sub">${x.calories} kcal · ${x.proteinG}P / ${x.carbsG}C / ${x.fatG}F${x.calories <= floor ? ` · ${escapeHtml(t("day_types.at_floor"))}` : ""}</span>
             </div>
             <div class="day-type-row__actions">
-              <button type="button" class="chip" data-dt-up="${x.id}" ${i === 0 ? "disabled" : ""} aria-label="Move up">↑</button>
-              <button type="button" class="chip" data-dt-down="${x.id}" ${i === profiles.length - 1 ? "disabled" : ""} aria-label="Move down">↓</button>
+              <button type="button" class="chip" data-dt-up="${x.id}" ${i === 0 ? "disabled" : ""} aria-label="${t("settings.daytype.move_up")}">↑</button>
+              <button type="button" class="chip" data-dt-down="${x.id}" ${i === profiles.length - 1 ? "disabled" : ""} aria-label="${t("settings.daytype.move_down")}">↓</button>
               <button type="button" class="chip" data-dt-edit="${x.id}">${escapeHtml(t("day_types.edit"))}</button>
               <button type="button" class="chip" data-dt-del="${x.id}">${escapeHtml(t("day_types.delete"))}</button>
             </div>
@@ -846,7 +866,7 @@ export class SettingsView extends HTMLElement {
       if (!name) return;
       const clash = profiles.some((x) => x.name.toLowerCase() === name.toLowerCase() && x.id !== editing?.id);
       if (clash) {
-        await openConfirm({ title: t("day_types.duplicate_name"), message: t("day_types.duplicate_name_hint"), confirmLabel: "OK" });
+        await openConfirm({ title: t("day_types.duplicate_name"), message: t("day_types.duplicate_name_hint"), confirmLabel: t("action.ok") });
         return;
       }
       const id = editing?.id ?? crypto.randomUUID();
@@ -937,18 +957,18 @@ export class SettingsView extends HTMLElement {
   async renderUnits() {
     const p = await prefs.load();
     this.innerHTML = `
-      ${subpageBar("Units & schedule", { backHref: SETTINGS_PARENT.units })}
+      ${subpageBar(t("settings.app.units"), { backHref: SETTINGS_PARENT.units })}
       <form class="entry-form card" id="units-form">
         <div class="field-row field-row--2">
           <div class="field">
-            <label for="weightUnit">Weight</label>
+            <label for="weightUnit">${t("progress.weight")}</label>
             <select id="weightUnit" name="weightUnit">
               <option value="kg" ${p.weightUnit === "kg" ? "selected" : ""}>kg</option>
               <option value="lb" ${p.weightUnit === "lb" ? "selected" : ""}>lb</option>
             </select>
           </div>
           <div class="field">
-            <label for="heightUnit">Height</label>
+            <label for="heightUnit">${t("settings.units.height")}</label>
             <select id="heightUnit" name="heightUnit">
               <option value="cm" ${p.heightUnit === "cm" ? "selected" : ""}>cm</option>
               <option value="in" ${p.heightUnit === "in" ? "selected" : ""}>in</option>
@@ -956,31 +976,31 @@ export class SettingsView extends HTMLElement {
           </div>
         </div>
         <div class="field">
-          <label for="theme">Theme</label>
+          <label for="theme">${t("settings.units.theme")}</label>
           <select id="theme" name="theme">
-            ${["system", "light", "dark"].map((t) => `<option value="${t}" ${p.theme === t ? "selected" : ""}>${t}</option>`).join("")}
+            ${[["system", "settings.units.theme_system"], ["light", "settings.units.theme_light"], ["dark", "settings.units.theme_dark"]].map(([id, key]) => `<option value="${id}" ${p.theme === id ? "selected" : ""}>${t(key)}</option>`).join("")}
           </select>
         </div>
         <div class="field">
-          <label for="accent">Accent</label>
+          <label for="accent">${t("settings.units.accent")}</label>
           <select id="accent" name="accent">
-            ${ACCENTS.map((a) => `<option value="${a}" ${p.accent === a ? "selected" : ""}>${a}</option>`).join("")}
+            ${ACCENTS.map((a) => `<option value="${a.id}" ${p.accent === a.id ? "selected" : ""}>${t(a.labelKey)}</option>`).join("")}
           </select>
         </div>
         <div class="field">
-          <label for="weekStartDay">Week starts</label>
+          <label for="weekStartDay">${t("settings.units.week_starts")}</label>
           <select id="weekStartDay" name="weekStartDay">
             ${(() => {
               const day =
                 p.weekStartDay || (p.weekStartsOnMonday === false ? "sunday" : "monday");
               return [
-                ["monday", "Monday"],
-                ["sunday", "Sunday"],
-                ["saturday", "Saturday"],
+                ["monday", "settings.weekday.monday"],
+                ["sunday", "settings.weekday.sunday"],
+                ["saturday", "settings.weekday.saturday"],
               ]
                 .map(
-                  ([id, label]) =>
-                    `<option value="${id}" ${day === id ? "selected" : ""}>${label}</option>`
+                  ([id, key]) =>
+                    `<option value="${id}" ${day === id ? "selected" : ""}>${t(key)}</option>`
                 )
                 .join("");
             })()}
@@ -1004,16 +1024,16 @@ export class SettingsView extends HTMLElement {
               .join("")}
           </select>
         </div>
-        <p class="section-label">Meal times</p>
+        <p class="section-label">${t("settings.units.meal_times")}</p>
         <div class="field-row field-row--2">
-          <div class="field"><label for="mealBreakfastStart">Breakfast</label><input id="mealBreakfastStart" name="mealBreakfastStart" type="time" value="${minutesToTimeInput(p.mealBreakfastStart ?? 300)}" /></div>
-          <div class="field"><label for="mealLunchStart">Lunch</label><input id="mealLunchStart" name="mealLunchStart" type="time" value="${minutesToTimeInput(p.mealLunchStart ?? 660)}" /></div>
+          <div class="field"><label for="mealBreakfastStart">${t("meal.breakfast")}</label><input id="mealBreakfastStart" name="mealBreakfastStart" type="time" value="${minutesToTimeInput(p.mealBreakfastStart ?? 300)}" /></div>
+          <div class="field"><label for="mealLunchStart">${t("meal.lunch")}</label><input id="mealLunchStart" name="mealLunchStart" type="time" value="${minutesToTimeInput(p.mealLunchStart ?? 660)}" /></div>
         </div>
         <div class="field-row field-row--2">
-          <div class="field"><label for="mealDinnerStart">Dinner</label><input id="mealDinnerStart" name="mealDinnerStart" type="time" value="${minutesToTimeInput(p.mealDinnerStart ?? 900)}" /></div>
-          <div class="field"><label for="mealSnackStart">Snack</label><input id="mealSnackStart" name="mealSnackStart" type="time" value="${minutesToTimeInput(p.mealSnackStart ?? 1260)}" /></div>
+          <div class="field"><label for="mealDinnerStart">${t("meal.dinner")}</label><input id="mealDinnerStart" name="mealDinnerStart" type="time" value="${minutesToTimeInput(p.mealDinnerStart ?? 900)}" /></div>
+          <div class="field"><label for="mealSnackStart">${t("meal.snack")}</label><input id="mealSnackStart" name="mealSnackStart" type="time" value="${minutesToTimeInput(p.mealSnackStart ?? 1260)}" /></div>
         </div>
-        <button type="submit" class="btn btn--primary">Save</button>
+        <button type="submit" class="btn btn--primary">${t("action.save")}</button>
       </form>`;
     this.querySelector("#units-form")?.addEventListener("submit", async (ev) => {
       ev.preventDefault();
@@ -1044,7 +1064,7 @@ export class SettingsView extends HTMLElement {
       ${subpageBar(t("settings.speech.language"), { backHref: SETTINGS_PARENT.speech })}
       <form class="entry-form card" id="speech-form">
         <p style="color:var(--muted);margin:0 0 0.75rem;font-size:0.88rem;">
-          Voice dictation uses the browser’s on-device speech recognition (Chrome/Edge best). Cloud speech engines are Android-only.
+          ${t("settings.speech.intro")}
         </p>
         <div class="field">
           <label for="speechLang">${t("settings.speech.language")}</label>
@@ -1074,67 +1094,67 @@ export class SettingsView extends HTMLElement {
     const selectedChips = new Set(normalizeFoodLogChips(p.foodLogMacroChips));
     const chipDefs = HOME_TOP_NUTRIENTS.filter((n) => FOOD_LOG_CHIP_KEYS.includes(n.key));
     this.innerHTML = `
-      ${subpageBar("Home display", { backHref: SETTINGS_PARENT.home })}
+      ${subpageBar(t("settings.app.home"), { backHref: SETTINGS_PARENT.home })}
       <form class="entry-form card" id="home-form">
         <div class="field">
-          <label for="showWater">Water tracking</label>
+          <label for="showWater">${t("settings.home.water_tracking")}</label>
           <select id="showWater" name="showWater">
-            <option value="false" ${p.showWater !== true ? "selected" : ""}>Off</option>
-            <option value="true" ${p.showWater === true ? "selected" : ""}>On</option>
+            <option value="false" ${p.showWater !== true ? "selected" : ""}>${t("settings.toggle.off")}</option>
+            <option value="true" ${p.showWater === true ? "selected" : ""}>${t("settings.toggle.on")}</option>
           </select>
         </div>
         <div class="field">
-          <label for="waterGoalMl">Water goal (ml)</label>
+          <label for="waterGoalMl">${t("settings.home.water_goal")}</label>
           <input id="waterGoalMl" name="waterGoalMl" type="number" min="0" value="${p.waterGoalMl ?? 2000}" />
         </div>
         <div class="field">
-          <label for="showNicotine">Nicotine tracking</label>
+          <label for="showNicotine">${t("settings.home.nicotine_tracking")}</label>
           <select id="showNicotine" name="showNicotine">
-            <option value="false" ${p.showNicotine !== true ? "selected" : ""}>Off</option>
-            <option value="true" ${p.showNicotine === true ? "selected" : ""}>On</option>
+            <option value="false" ${p.showNicotine !== true ? "selected" : ""}>${t("settings.toggle.off")}</option>
+            <option value="true" ${p.showNicotine === true ? "selected" : ""}>${t("settings.toggle.on")}</option>
           </select>
-          <p class="nutrient-picker__hint">Log cigarettes, vapes and pouches from the diary. Stays on your device and in your WebDAV sync; never sent to an AI provider.</p>
+          <p class="nutrient-picker__hint">${t("settings.home.nicotine_hint")}</p>
         </div>
         <div class="field">
-          <label for="nicotineDailyLimit">Nicotine daily limit (0 = none)</label>
+          <label for="nicotineDailyLimit">${t("settings.home.nicotine_limit")}</label>
           <input id="nicotineDailyLimit" name="nicotineDailyLimit" type="number" min="0" value="${p.nicotineDailyLimit ?? 0}" />
         </div>
         <div class="field">
-          <label for="showCaffeine">Caffeine tracking</label>
+          <label for="showCaffeine">${t("settings.home.caffeine_tracking")}</label>
           <select id="showCaffeine" name="showCaffeine">
-            <option value="false" ${p.showCaffeine !== true ? "selected" : ""}>Off</option>
-            <option value="true" ${p.showCaffeine === true ? "selected" : ""}>On</option>
+            <option value="false" ${p.showCaffeine !== true ? "selected" : ""}>${t("settings.toggle.off")}</option>
+            <option value="true" ${p.showCaffeine === true ? "selected" : ""}>${t("settings.toggle.on")}</option>
           </select>
-          <p class="nutrient-picker__hint">Log coffee, tea and energy drinks from the diary. The daily total includes caffeine from food entries. Stays on your device and in your WebDAV sync; never sent to an AI provider.</p>
+          <p class="nutrient-picker__hint">${t("settings.home.caffeine_hint")}</p>
         </div>
         <div class="field">
-          <label for="caffeineDailyLimitMg">Caffeine daily limit (mg, 0 = none)</label>
+          <label for="caffeineDailyLimitMg">${t("settings.home.caffeine_limit")}</label>
           <input id="caffeineDailyLimitMg" name="caffeineDailyLimitMg" type="number" min="0" max="1000" value="${p.optionalNutrientGoals?.caffeineMg ?? 400}" />
         </div>
         <div class="field">
-          <label for="showNotes">Daily notes</label>
+          <label for="showNotes">${t("settings.home.daily_notes")}</label>
           <select id="showNotes" name="showNotes">
-            <option value="false" ${p.showNotes !== true ? "selected" : ""}>Off</option>
-            <option value="true" ${p.showNotes === true ? "selected" : ""}>On</option>
+            <option value="false" ${p.showNotes !== true ? "selected" : ""}>${t("settings.toggle.off")}</option>
+            <option value="true" ${p.showNotes === true ? "selected" : ""}>${t("settings.toggle.on")}</option>
           </select>
-          <p class="nutrient-picker__hint">Show the per-day note card on the diary. Notes sync and export with your diary and are never sent to an AI provider.</p>
+          <p class="nutrient-picker__hint">${t("settings.home.notes_hint")}</p>
         </div>
         <div class="field">
-          <label for="showFasting">Fasting timer</label>
+          <label for="showFasting">${t("settings.home.fasting_timer")}</label>
           <select id="showFasting" name="showFasting">
-            <option value="false" ${p.showFasting !== true ? "selected" : ""}>Off</option>
-            <option value="true" ${p.showFasting === true ? "selected" : ""}>On</option>
+            <option value="false" ${p.showFasting !== true ? "selected" : ""}>${t("settings.toggle.off")}</option>
+            <option value="true" ${p.showFasting === true ? "selected" : ""}>${t("settings.toggle.on")}</option>
           </select>
-          <p class="nutrient-picker__hint">Start, stop or cancel a local-only intermittent-fasting timer from the diary. Stays on this device; never synced, exported or sent to an AI provider.</p>
+          <p class="nutrient-picker__hint">${t("settings.home.fasting_hint")}</p>
         </div>
         <div class="field">
-          <label for="fastingGoalHours">Fasting goal (hours, 0 = none)</label>
+          <label for="fastingGoalHours">${t("settings.home.fasting_goal")}</label>
           <input id="fastingGoalHours" name="fastingGoalHours" type="number" min="0" max="48" value="${p.fastingGoalHours ?? 0}" />
         </div>
         <div class="field">
-          <label for="fastingEatHours">Eating window (hours, 0 = off)</label>
+          <label for="fastingEatHours">${t("settings.home.eating_window")}</label>
           <input id="fastingEatHours" name="fastingEatHours" type="number" min="0" max="24" value="${p.fastingEatHours ?? 0}" />
-          <p class="nutrient-picker__hint">Quick picks (fast : eat):</p>
+          <p class="nutrient-picker__hint">${t("settings.home.quick_picks")}</p>
           <div class="fasting-presets">
             ${[12, 14, 16, 18, 20, 23]
               .map(
@@ -1145,40 +1165,40 @@ export class SettingsView extends HTMLElement {
           </div>
         </div>
         <div class="field">
-          <label for="fastingStartHour">Fast start time</label>
+          <label for="fastingStartHour">${t("settings.home.fast_start_time")}</label>
           <input id="fastingStartTime" name="fastingStartTime" type="time" value="${String(p.fastingStartHour ?? 20).padStart(2, "0")}:${String(p.fastingStartMinute ?? 0).padStart(2, "0")}" />
-          <p class="nutrient-picker__hint">Auto fast windows start your fast at this time each day.</p>
+          <p class="nutrient-picker__hint">${t("settings.home.fast_start_hint")}</p>
         </div>
         <div class="field">
-          <label for="fastingAutoWindows">Auto fast windows</label>
+          <label for="fastingAutoWindows">${t("settings.home.auto_windows")}</label>
           <select id="fastingAutoWindows" name="fastingAutoWindows">
-            <option value="false" ${p.fastingAutoWindows !== true ? "selected" : ""}>Off</option>
-            <option value="true" ${p.fastingAutoWindows === true ? "selected" : ""}>On</option>
+            <option value="false" ${p.fastingAutoWindows !== true ? "selected" : ""}>${t("settings.toggle.off")}</option>
+            <option value="true" ${p.fastingAutoWindows === true ? "selected" : ""}>${t("settings.toggle.on")}</option>
           </select>
-          <p class="nutrient-picker__hint">When on, your fast starts automatically at the fast start time and ends at the goal, with no buttons on Home. Works while this page is open.</p>
+          <p class="nutrient-picker__hint">${t("settings.home.auto_windows_hint")}</p>
         </div>
         <div class="field">
-          <label for="calorieGaugeMode">Calorie gauge</label>
+          <label for="calorieGaugeMode">${t("settings.home.calorie_gauge")}</label>
           <select id="calorieGaugeMode" name="calorieGaugeMode">
-            <option value="static" ${p.calorieGaugeMode !== "add_active" ? "selected" : ""}>Static (full target)</option>
-            <option value="add_active" ${p.calorieGaugeMode === "add_active" ? "selected" : ""}>Add active burn to budget</option>
+            <option value="static" ${p.calorieGaugeMode !== "add_active" ? "selected" : ""}>${t("settings.home.gauge_static")}</option>
+            <option value="add_active" ${p.calorieGaugeMode === "add_active" ? "selected" : ""}>${t("settings.home.gauge_add_active")}</option>
           </select>
-          <p class="nutrient-picker__hint">Add active: set Activity Level to everyday baseline (not peak training). Uses your activity-level estimate (TDEE − BMR) plus any manual active burn you log from Add food. Measured Health Connect burn is Android-only.</p>
+          <p class="nutrient-picker__hint">${t("settings.home.gauge_hint")}</p>
         </div>
         <div class="field">
-          <label for="adaptiveGoals">Adaptive goals (Progress)</label>
+          <label for="adaptiveGoals">${t("settings.home.adaptive_goals")}</label>
           <select id="adaptiveGoals" name="adaptiveGoals">
-            <option value="false" ${!p.adaptiveGoals ? "selected" : ""}>Off</option>
-            <option value="true" ${p.adaptiveGoals ? "selected" : ""}>On</option>
+            <option value="false" ${!p.adaptiveGoals ? "selected" : ""}>${t("settings.toggle.off")}</option>
+            <option value="true" ${p.adaptiveGoals ? "selected" : ""}>${t("settings.toggle.on")}</option>
           </select>
         </div>
         <div class="field">
-          <label for="homeNutrientCardCount">Home nutrient tubes (1–4)</label>
+          <label for="homeNutrientCardCount">${t("settings.home.tube_count")}</label>
           <input id="homeNutrientCardCount" name="homeNutrientCardCount" type="number" min="1" max="4" value="${p.homeNutrientCardCount ?? DEFAULT_NUTRIENT_CARD_COUNT}" />
         </div>
         <fieldset class="nutrient-picker">
-          <legend>Home tube nutrients</legend>
-          <p class="nutrient-picker__hint">Order = check order; first N tubes are shown.</p>
+          <legend>${t("settings.home.tube_nutrients")}</legend>
+          <p class="nutrient-picker__hint">${t("settings.home.tube_order_hint")}</p>
           <div class="nutrient-picker__list">
             ${HOME_TOP_NUTRIENTS.map(
               (n) => `
@@ -1190,7 +1210,7 @@ export class SettingsView extends HTMLElement {
           </div>
         </fieldset>
         <fieldset class="nutrient-picker">
-          <legend>Food-row chips</legend>
+          <legend>${t("settings.home.food_chips")}</legend>
           <div class="nutrient-picker__list">
             ${chipDefs
               .map(
@@ -1203,8 +1223,8 @@ export class SettingsView extends HTMLElement {
               .join("")}
           </div>
         </fieldset>
-        <p style="color:var(--muted);font-size:0.8rem;margin:0;">Steps / Health Connect active calories are Android-only. Optional nutrient goals power non-macro tubes.</p>
-        <button type="submit" class="btn btn--primary">Save</button>
+        <p style="color:var(--muted);font-size:0.8rem;margin:0;">${t("settings.home.android_note")}</p>
+        <button type="submit" class="btn btn--primary">${t("action.save")}</button>
       </form>`;
     this.querySelector("#home-form")?.addEventListener("submit", async (ev) => {
       ev.preventDefault();
@@ -1255,9 +1275,9 @@ export class SettingsView extends HTMLElement {
     const p = await prefs.load();
     const g = mergeOptionalGoals(p.optionalNutrientGoals);
     this.innerHTML = `
-      ${subpageBar("Optional nutrients", { backHref: SETTINGS_PARENT.nutrients })}
+      ${subpageBar(t("settings.nutrients.title"), { backHref: SETTINGS_PARENT.nutrients })}
       <form class="entry-form card" id="nutrients-form">
-        <p style="color:var(--muted);font-size:0.85rem;margin:0;">Daily goals for fiber and micros. Used by Home tubes when those nutrients are selected.</p>
+        <p style="color:var(--muted);font-size:0.85rem;margin:0;">${t("settings.nutrients.intro")}</p>
         <div class="field-row field-row--2">
           ${OPTIONAL_GOAL_FIELDS.map(
             ([k, label]) => `
@@ -1268,7 +1288,7 @@ export class SettingsView extends HTMLElement {
             </div>`
           ).join("")}
         </div>
-        <button type="submit" class="btn btn--primary">Save</button>
+        <button type="submit" class="btn btn--primary">${t("action.save")}</button>
       </form>`;
     this.querySelector("#nutrients-form")?.addEventListener("submit", async (ev) => {
       ev.preventDefault();
@@ -1290,23 +1310,23 @@ export class SettingsView extends HTMLElement {
 
   async renderData() {
     this.innerHTML = `
-      ${subpageBar("Health & Data", { backHref: SETTINGS_PARENT.data })}
+      ${subpageBar(t("settings.hub.data"), { backHref: SETTINGS_PARENT.data })}
       <div class="card">
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
-          Formats match the Android app. Move data freely between the two.
+          ${t("settings.data.intro")}
         </p>
         <div class="field-row field-row--2">
           <div class="field">
-            <label for="export-range">Diary range</label>
+            <label for="export-range">${t("settings.data.diary_range")}</label>
             <select id="export-range">
-              <option value="all">All</option>
-              <option value="month">Last 30 days</option>
-              <option value="week">Last 7 days</option>
-              <option value="today">Today</option>
+              <option value="all">${t("progress.range_all")}</option>
+              <option value="month">${t("settings.data.range_30d")}</option>
+              <option value="week">${t("settings.data.range_7d")}</option>
+              <option value="today">${t("diary.today")}</option>
             </select>
           </div>
           <div class="field">
-            <label for="export-format">Diary format</label>
+            <label for="export-format">${t("settings.data.diary_format")}</label>
             <select id="export-format">
               <option value="json">JSON</option>
               <option value="csv">CSV</option>
@@ -1315,29 +1335,29 @@ export class SettingsView extends HTMLElement {
           </div>
         </div>
         <div class="btn-row">
-          <button class="btn btn--ghost" id="export-diary" type="button">Export diary</button>
-          <label class="btn btn--ghost" style="cursor:pointer;">Import diary JSON
+          <button class="btn btn--ghost" id="export-diary" type="button">${t("settings.data.export_diary")}</button>
+          <label class="btn btn--ghost" style="cursor:pointer;">${t("settings.data.import_diary")}
             <input type="file" accept="application/json" id="import-diary" style="display:none;" />
           </label>
         </div>
         <div class="field" style="margin-top:0.8rem;">
-          <label for="body-format">Body metrics format</label>
+          <label for="body-format">${t("settings.data.body_format")}</label>
           <select id="body-format">
             <option value="json">JSON</option>
             <option value="csv">CSV</option>
           </select>
         </div>
         <div class="btn-row">
-          <button class="btn btn--ghost" id="export-body" type="button">Export body metrics</button>
-          <label class="btn btn--ghost" style="cursor:pointer;">Import body JSON
+          <button class="btn btn--ghost" id="export-body" type="button">${t("settings.data.export_body")}</button>
+          <label class="btn btn--ghost" style="cursor:pointer;">${t("settings.data.import_body")}
             <input type="file" accept="application/json" id="import-body" style="display:none;" />
           </label>
         </div>
         <p id="import-status" role="status" aria-live="polite" style="color:var(--muted);font-size:0.85rem;margin-top:0.5rem;"></p>
-        <button class="btn btn--danger" id="clear-all" style="margin-top:0.8rem;" type="button">Clear all local data</button>
+        <button class="btn btn--danger" id="clear-all" style="margin-top:0.8rem;" type="button">${t("settings.data.clear_all")}</button>
       </div>
-      <nav class="settings-nav" aria-label="Sync">
-        <a href="#/settings?section=sync">Sync <span>WebDAV / sync file</span></a>
+      <nav class="settings-nav" aria-label="${t("settings.sync.title")}">
+        <a href="#/settings?section=sync">${t("settings.sync.title")} <span>${t("settings.data.sync_hint")}</span></a>
       </nav>`;
     this.querySelector("#export-diary")?.addEventListener("click", () => this.onExportDiary());
     this.querySelector("#export-body")?.addEventListener("click", () => this.onExportBodyMetrics());
@@ -1345,9 +1365,9 @@ export class SettingsView extends HTMLElement {
     this.querySelector("#import-body")?.addEventListener("change", (ev) => this.onImportBodyMetrics(ev));
     this.querySelector("#clear-all")?.addEventListener("click", async () => {
       const ok = await openConfirm({
-        title: "Clear all data",
-        message: "Delete all diary, metrics, profile, and chat on this device?",
-        confirmLabel: "Delete everything",
+        title: t("settings.data.clear_title"),
+        message: t("settings.data.clear_message"),
+        confirmLabel: t("settings.data.clear_confirm"),
         danger: true,
       });
       if (!ok) return;
@@ -1360,50 +1380,50 @@ export class SettingsView extends HTMLElement {
   async renderSync() {
     const cfg = await loadWebDavSettings();
     this.innerHTML = `
-      ${subpageBar("Sync", { backHref: SETTINGS_PARENT.sync })}
+      ${subpageBar(t("settings.sync.title"), { backHref: SETTINGS_PARENT.sync })}
       <div class="card">
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
-          Optional user-hosted sync. Chompass has no cloud account. Point both the PWA and Android app at the same WebDAV file (e.g. Nextcloud), or move a sync JSON by hand. API keys and food photos are not included.
+          ${t("settings.sync.intro")}
         </p>
         <div class="btn-row">
-          <button class="btn btn--ghost" id="export-sync" type="button">Export sync JSON</button>
-          <label class="btn btn--ghost" style="cursor:pointer;">Import sync JSON
+          <button class="btn btn--ghost" id="export-sync" type="button">${t("settings.sync.export")}</button>
+          <label class="btn btn--ghost" style="cursor:pointer;">${t("settings.sync.import")}
             <input type="file" accept="application/json" id="import-sync" style="display:none;" />
           </label>
         </div>
         <form class="entry-form" id="webdav-form" style="margin-top:1rem;">
           <div class="field">
-            <label for="webdav-url">WebDAV file URL</label>
+            <label for="webdav-url">${t("settings.sync.url")}</label>
             <input id="webdav-url" name="url" type="url" placeholder="https://uXXXXX.your-storagebox.de/sync.json" value="${cfg.url.replace(/"/g, "&quot;")}" />
           </div>
           <div class="field-row field-row--2">
             <div class="field">
-              <label for="webdav-user">Username</label>
+              <label for="webdav-user">${t("settings.sync.username")}</label>
               <input id="webdav-user" name="username" autocomplete="username" value="${cfg.username.replace(/"/g, "&quot;")}" />
             </div>
             <div class="field">
-              <label for="webdav-pass">Password</label>
+              <label for="webdav-pass">${t("settings.sync.password")}</label>
               <input id="webdav-pass" name="password" type="password" autocomplete="current-password" value="${cfg.password.replace(/"/g, "&quot;")}" />
             </div>
           </div>
           <label class="field" style="display:flex;align-items:center;gap:0.6rem;margin-top:0.75rem;">
             <input id="webdav-auto" name="autoSync" type="checkbox" ${cfg.autoSync ? "checked" : ""} />
-            <span>Sync on open <span style="color:var(--muted);font-size:0.85rem;">(once a day; off by default)</span></span>
+            <span>${t("settings.sync.auto_sync")} <span style="color:var(--muted);font-size:0.85rem;">${t("settings.sync.auto_sync_hint")}</span></span>
           </label>
           <div class="btn-row">
-            <button class="btn" id="save-webdav" type="submit">Save WebDAV</button>
-            <button class="btn btn--ghost" id="sync-now" type="button">Sync now</button>
+            <button class="btn" id="save-webdav" type="submit">${t("settings.sync.save")}</button>
+            <button class="btn btn--ghost" id="sync-now" type="button">${t("settings.sync.now")}</button>
           </div>
         </form>
         <p id="sync-status" role="status" aria-live="polite" style="color:var(--muted);font-size:0.85rem;margin-top:0.5rem;">
-          ${cfg.lastSyncAt ? `Last sync: ${cfg.lastSyncAt}` : "Not synced yet."}
+          ${cfg.lastSyncAt ? t("settings.sync.last", { time: cfg.lastSyncAt }) : t("settings.sync.never")}
         </p>
       </div>`;
     const status = /** @type {HTMLElement|null} */ (this.querySelector("#sync-status"));
     this.querySelector("#export-sync")?.addEventListener("click", async () => {
       const doc = await buildLocalSyncDocument();
       await downloadJson(doc, `Chompass-sync-${new Date().toISOString().slice(0, 10)}.json`);
-      if (status) status.textContent = "Sync JSON exported.";
+      if (status) status.textContent = t("settings.sync.exported");
     });
     this.querySelector("#import-sync")?.addEventListener("change", async (ev) => {
       const input = /** @type {HTMLInputElement} */ (ev.target);
@@ -1412,9 +1432,9 @@ export class SettingsView extends HTMLElement {
       try {
         const doc = JSON.parse(await file.text());
         await importAndMergeSyncDocument(doc);
-        if (status) status.textContent = "Sync JSON imported and merged.";
+        if (status) status.textContent = t("settings.sync.imported");
       } catch (err) {
-        if (status) status.textContent = err instanceof Error ? err.message : "Import failed";
+        if (status) status.textContent = err instanceof Error ? err.message : t("settings.sync.import_failed");
       } finally {
         input.value = "";
       }
@@ -1435,10 +1455,10 @@ export class SettingsView extends HTMLElement {
       const saved = await loadWebDavSettings();
       const urlInput = /** @type {HTMLInputElement|null} */ (this.querySelector("#webdav-url"));
       if (urlInput) urlInput.value = saved.url;
-      if (status) status.textContent = "WebDAV settings saved.";
+      if (status) status.textContent = t("settings.sync.saved");
     });
     this.querySelector("#sync-now")?.addEventListener("click", async () => {
-      if (status) status.textContent = "Syncing…";
+      if (status) status.textContent = t("settings.sync.syncing");
       const result = await syncWebDavNow();
       if (status) status.textContent = result.message;
     });
@@ -1457,20 +1477,20 @@ export class SettingsView extends HTMLElement {
     const primaryModel = resolveProviderModel(initialProvider, saved?.model, "primary");
     const fallbackModel = resolveProviderModel(fallbackProvider, p.fallbackAiModel, "fallback");
 
-    const keyStatusLabel = saved ? "Key configured" : "No key saved";
+    const keyStatusLabel = saved ? t("settings.ai.key_configured") : t("settings.ai.key_missing");
     const keyStatusClass = saved ? "ai-key-status ai-key-status--ok" : "ai-key-status";
     const configuredList = configuredProviders.length
       ? configuredProviders.map((id) => PROVIDERS[id].label).join(", ")
-      : "none";
+      : t("settings.ai.providers_none");
 
     this.innerHTML = `
-      ${subpageBar("AI & Speech", { backHref: SETTINGS_PARENT.ai })}
+      ${subpageBar(t("settings.hub.ai"), { backHref: SETTINGS_PARENT.ai })}
       <div class="card">
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
-          Keys are encrypted at rest with Web Crypto (AES-GCM) in IndexedDB, then sent only from your browser to the provider you choose. Not a Chompass server.
+          ${t("settings.ai.storage_note")}
         </p>
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
-          With a cloud provider, food photos, meal notes, Coach chat (including your profile and recent logs), and your profile when AI estimates goals (plan and adaptive goals) are sent to that provider. Only the on-device Gemma 4 models (Android) guarantee that nothing leaves your device; the web app always uses a cloud provider.
+          ${t("settings.ai.privacy_note")}
         </p>
         <form class="entry-form" id="ai-key-form">
           <div class="field">
@@ -1481,7 +1501,7 @@ export class SettingsView extends HTMLElement {
             <p class="field-hint">${escapeHtml(t("settings.ai.ai_features_hint"))}</p>
           </div>
           <div class="field">
-            <label for="ai-provider">Provider</label>
+            <label for="ai-provider">${t("onboarding.ai.provider")}</label>
             <select id="ai-provider" name="provider">
               ${Object.entries(PROVIDERS)
                 .map(
@@ -1493,28 +1513,26 @@ export class SettingsView extends HTMLElement {
           </div>
           <div class="field">
             <div class="ai-key-label-row">
-              <label for="ai-key">API key</label>
+              <label for="ai-key">${t("onboarding.ai.key")}</label>
               <span id="ai-key-status" class="${keyStatusClass}" data-has-key="${saved ? "1" : "0"}">${keyStatusLabel}</span>
             </div>
-            <input id="ai-key" name="apiKey" type="password" autocomplete="off" placeholder="${saved ? "•••••••• (leave blank to keep)" : "AIza… or sk-…"}" />
+            <input id="ai-key" name="apiKey" type="password" autocomplete="off" placeholder="${saved ? t("settings.ai.key_placeholder_saved") : t("settings.ai.key_placeholder_example")}" />
           </div>
           <div class="field-row field-row--2">
             <div class="field">
-              <label for="ai-model">Model</label>
+              <label for="ai-model">${t("onboarding.ai.model")}</label>
               <select id="ai-model" name="model">
                 ${modelSelectOptionsHtml(initialProvider, primaryModel, "primary")}
               </select>
-              <input id="ai-model-custom" name="modelCustom" type="text" placeholder="Custom model id" style="display:none;margin-top:0.4rem;" />
+              <input id="ai-model-custom" name="modelCustom" type="text" placeholder="${t("settings.ai.custom_model_placeholder")}" style="display:none;margin-top:0.4rem;" />
             </div>
             <div class="field" id="ai-reasoning-field" style="display:${initialProvider === "openai_compatible" ? "" : "none"}">
-              <label for="ai-reasoning">Reasoning effort (OpenRouter)</label>
+              <label for="ai-reasoning">${t("settings.ai.reasoning_effort")}</label>
               <select id="ai-reasoning" name="reasoningEffort">
-                ${["auto", "low", "medium", "high"]
+                ${[["auto", "diary.fasting_auto"], ["low", "settings.ai.effort_low"], ["medium", "settings.ai.effort_medium"], ["high", "settings.ai.effort_high"]]
                   .map(
-                    (v) =>
-                      `<option value="${v}" ${(p.openrouterReasoningEffort || "auto") === v ? "selected" : ""}>${
-                        v === "auto" ? "Auto" : v[0].toUpperCase() + v.slice(1)
-                      }</option>`
+                    ([v, key]) =>
+                      `<option value="${v}" ${(p.openrouterReasoningEffort || "auto") === v ? "selected" : ""}>${t(key)}</option>`
                   )
                   .join("")}
               </select>
@@ -1522,33 +1540,33 @@ export class SettingsView extends HTMLElement {
           </div>
           <div class="field-row field-row--2">
             <div class="field" id="ai-vision-field" style="display:${initialProvider === "openai_compatible" ? "" : "none"}">
-              <label for="ai-vision-model">Vision model (photos)</label>
+              <label for="ai-vision-model">${t("settings.ai.vision_model")}</label>
               <select id="ai-vision-model" name="visionModel">
-                <option value="">(same as Model)</option>
+                <option value="">${t("settings.ai.vision_same_as_model")}</option>
                 ${visionModelOptionsHtml(initialProvider, saved?.visionModel, primaryModel)}
               </select>
-              <input id="ai-vision-model-custom" name="visionModelCustom" type="text" placeholder="Custom model id" style="display:none;margin-top:0.4rem;" />
+              <input id="ai-vision-model-custom" name="visionModelCustom" type="text" placeholder="${t("settings.ai.custom_model_placeholder")}" style="display:none;margin-top:0.4rem;" />
             </div>
             <div class="field">
-              <label for="ai-base-url">Base URL (openai-compatible)</label>
+              <label for="ai-base-url">${t("settings.ai.base_url")}</label>
               <input id="ai-base-url" name="baseUrl" type="text" placeholder="https://api.openai.com/v1" value="${escapeAttr(saved?.baseUrl || "")}" />
             </div>
           </div>
           <div class="btn-row">
-            <button type="submit" class="btn btn--primary">Save key</button>
-            <button type="button" class="btn" id="ai-key-test">Test key</button>
-            <button type="button" class="btn btn--danger" id="ai-key-remove">Remove</button>
+            <button type="submit" class="btn btn--primary">${t("settings.ai.save_key")}</button>
+            <button type="button" class="btn" id="ai-key-test">${t("onboarding.ai.test_key")}</button>
+            <button type="button" class="btn btn--danger" id="ai-key-remove">${t("day_types.remove")}</button>
           </div>
           <p id="ai-key-feedback" class="ai-key-feedback" role="status" aria-live="polite"></p>
         </form>
         <p style="color:var(--muted);font-size:0.85rem;margin-top:0.5rem;">
-          Providers with a saved key: ${configuredList}
+          ${t("settings.ai.providers_with_keys", { list: configuredList })}
         </p>
       </div>
       <form class="entry-form card" id="ai-extra-form">
         <div class="field">
-          <label for="userContext">Custom instructions</label>
-          <textarea id="userContext" name="userContext" rows="3" placeholder="Preferences the coach and food AI should follow…">${escapeAttr(p.userContext || "")}</textarea>
+          <label for="userContext">${t("settings.ai.custom_instructions")}</label>
+          <textarea id="userContext" name="userContext" rows="3" placeholder="${t("settings.ai.custom_instructions_placeholder")}">${escapeAttr(p.userContext || "")}</textarea>
         </div>
         <div class="field">
           <label class="checkbox-row">
@@ -1567,15 +1585,15 @@ export class SettingsView extends HTMLElement {
           <p class="field-hint">${escapeHtml(t("settings.ai.serving_unit_mode_hint"))}</p>
         </div>
         <div class="field">
-          <label for="aiFallbackEnabled">Fallback provider on failure</label>
+          <label for="aiFallbackEnabled">${t("settings.ai.fallback_toggle")}</label>
           <select id="aiFallbackEnabled" name="aiFallbackEnabled">
-            <option value="false" ${!p.aiFallbackEnabled ? "selected" : ""}>Off</option>
-            <option value="true" ${p.aiFallbackEnabled ? "selected" : ""}>On</option>
+            <option value="false" ${!p.aiFallbackEnabled ? "selected" : ""}>${t("settings.toggle.off")}</option>
+            <option value="true" ${p.aiFallbackEnabled ? "selected" : ""}>${t("settings.toggle.on")}</option>
           </select>
         </div>
         <div class="field-row field-row--2">
           <div class="field">
-            <label for="fallbackAiProvider">Fallback provider</label>
+            <label for="fallbackAiProvider">${t("settings.ai.fallback_provider")}</label>
             <select id="fallbackAiProvider" name="fallbackAiProvider">
               ${Object.entries(PROVIDERS)
                 .map(
@@ -1586,17 +1604,17 @@ export class SettingsView extends HTMLElement {
             </select>
           </div>
           <div class="field">
-            <label for="fallbackAiModel">Fallback model</label>
+            <label for="fallbackAiModel">${t("settings.ai.fallback_model")}</label>
             <select id="fallbackAiModel" name="fallbackAiModel">
               ${modelSelectOptionsHtml(fallbackProvider, fallbackModel, "fallback")}
             </select>
-            <input id="fallbackAiModel-custom" name="fallbackAiModelCustom" type="text" placeholder="Custom model id" style="display:none;margin-top:0.4rem;" />
+            <input id="fallbackAiModel-custom" name="fallbackAiModelCustom" type="text" placeholder="${t("settings.ai.custom_model_placeholder")}" style="display:none;margin-top:0.4rem;" />
           </div>
         </div>
-        <button type="submit" class="btn btn--primary">Save AI prefs</button>
+        <button type="submit" class="btn btn--primary">${t("settings.ai.save_prefs")}</button>
       </form>
-      <nav class="settings-nav" aria-label="Speech">
-        <a href="#/settings?section=speech">Speech <span>Voice language (browser)</span></a>
+      <nav class="settings-nav" aria-label="${t("settings.ai.speech_link")}">
+        <a href="#/settings?section=speech">${t("settings.ai.speech_link")} <span>${t("settings.ai.speech_link_hint")}</span></a>
       </nav>`;
 
     const providerSel = /** @type {HTMLSelectElement} */ (this.querySelector("#ai-provider"));
@@ -1616,12 +1634,12 @@ export class SettingsView extends HTMLElement {
       const statusEl = /** @type {HTMLElement|null} */ (this.querySelector("#ai-key-status"));
       const keyInput = /** @type {HTMLInputElement|null} */ (this.querySelector("#ai-key"));
       if (statusEl) {
-        statusEl.textContent = hasKey ? "Key configured" : "No key saved";
+        statusEl.textContent = hasKey ? t("settings.ai.key_configured") : t("settings.ai.key_missing");
         statusEl.className = hasKey ? "ai-key-status ai-key-status--ok" : "ai-key-status";
         statusEl.dataset.hasKey = hasKey ? "1" : "0";
       }
       if (keyInput) {
-        keyInput.placeholder = hasKey ? "•••••••• (leave blank to keep)" : "AIza… or sk-…";
+        keyInput.placeholder = hasKey ? t("settings.ai.key_placeholder_saved") : t("settings.ai.key_placeholder_example");
         keyInput.value = "";
       }
     };
@@ -1695,67 +1713,67 @@ export class SettingsView extends HTMLElement {
     const { promptInstall, hasDeferredInstallPrompt, isStandalone } = await import("../lib/install-prompt.js");
     const already = isStandalone();
     this.innerHTML = `
-      ${subpageBar("Install app", { backHref: SETTINGS_PARENT.install })}
+      ${subpageBar(t("settings.install.title"), { backHref: SETTINGS_PARENT.install })}
       <div class="card">
-        <p style="margin:0 0 0.75rem;">Install Chompass to your home screen or dock for quicker access and a full-screen app. Your data stays in this browser.</p>
+        <p style="margin:0 0 0.75rem;">${t("settings.install.lead")}</p>
         ${
           already
-            ? `<p class="install-note" style="margin:0;">You are already running the installed app.</p>`
+            ? `<p class="install-note" style="margin:0;">${t("settings.install.already")}</p>`
             : `<div class="btn-row">
                 <button type="button" class="btn btn--primary" id="install-cta">${
-                  hasDeferredInstallPrompt() ? "Install" : "Add to Home Screen"
+                  hasDeferredInstallPrompt() ? t("install.install") : t("install.sheet_title")
                 }</button>
               </div>`
         }
       </div>
       <div class="card">
-        <h2 class="chart-title">iPhone / iPad (Safari)</h2>
+        <h2 class="chart-title">${t("settings.install.ios_title")}</h2>
         <ol class="install-steps">
-          <li>Open Chompass in <strong>Safari</strong> (required for a true home-screen app).</li>
-          <li>Tap the <strong>Share</strong> button (square with an upward arrow).</li>
-          <li>Choose <strong>Add to Home Screen</strong>, then Add.</li>
-          <li>Open Chompass from the <strong>home-screen icon</strong> (not a Safari tab) for the full-screen app.</li>
+          <li>${t("settings.install.ios_step1")}</li>
+          <li>${t("settings.install.ios_step2")}</li>
+          <li>${t("settings.install.ios_step3")}</li>
+          <li>${t("settings.install.ios_step4")}</li>
         </ol>
-        <p class="install-note">Brave, Chrome, and Firefox on iOS cannot install home-screen web apps. Apple only allows Safari to. If you use one of those, copy the address into Safari and follow the steps above.</p>
+        <p class="install-note">${t("settings.install.ios_note")}</p>
       </div>
       <div class="card">
-        <h2 class="chart-title">Android (Chrome, Edge, Brave)</h2>
+        <h2 class="chart-title">${t("settings.install.android_title")}</h2>
         <ol class="install-steps">
-          <li>Open the browser menu (⋮).</li>
-          <li>Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li>
-          <li>Confirm. Open Chompass from the new icon afterward.</li>
+          <li>${t("install.help_step_open_menu")}</li>
+          <li>${t("install.help_android_step_add")}</li>
+          <li>${t("install.help_step_confirm_open")}</li>
         </ol>
-        <p class="install-note">Many Chromium browsers do not show an automatic install popup. Use the menu. An Install banner may also appear when the browser allows it.</p>
+        <p class="install-note">${t("settings.install.android_note")}</p>
       </div>
       <div class="card">
-        <h2 class="chart-title">Firefox (Android)</h2>
+        <h2 class="chart-title">${t("settings.install.firefox_title")}</h2>
         <ol class="install-steps">
-          <li>Tap the Firefox menu (⋮).</li>
-          <li>Tap <strong>Add to Home screen</strong> or <strong>Add app to Home screen</strong>.</li>
-          <li>Confirm, then open from the new icon.</li>
+          <li>${t("install.help_step_firefox_menu")}</li>
+          <li>${t("install.help_firefox_step_add")}</li>
+          <li>${t("settings.install.firefox_step3")}</li>
         </ol>
-        <p class="install-note">Firefox has no in-page install popup. If the menu item does nothing, set a Home app under Android Settings → Apps → Default apps (it must not be “None”). Desktop Firefox: bookmark the page; full PWA install is limited.</p>
+        <p class="install-note">${t("settings.install.firefox_note")}</p>
       </div>
       <div class="card">
-        <h2 class="chart-title">DuckDuckGo (Android)</h2>
+        <h2 class="chart-title">${t("settings.install.ddg_title")}</h2>
         <ol class="install-steps">
-          <li>Menu → <strong>Add to Home</strong> creates a shortcut only (not a full PWA).</li>
-          <li>If that does nothing, your launcher may block shortcuts. Try Chrome or Firefox instead.</li>
+          <li>${t("settings.install.ddg_step1")}</li>
+          <li>${t("settings.install.ddg_step2")}</li>
         </ol>
-        <p class="install-note">For a full-screen installed app, open this page in Chrome, Edge, or Brave, then use Install app / Add to Home screen.</p>
+        <p class="install-note">${t("settings.install.ddg_note")}</p>
       </div>
       <div class="card">
-        <h2 class="chart-title">Desktop (Chrome / Edge)</h2>
+        <h2 class="chart-title">${t("settings.install.desktop_title")}</h2>
         <ol class="install-steps">
-          <li>Look for the install icon in the address bar, or open the browser menu.</li>
-          <li>Choose <strong>Install Chompass</strong> (or Install app).</li>
-          <li>Launch from your dock, taskbar, or app launcher.</li>
+          <li>${t("install.help_desktop_step1")}</li>
+          <li>${t("install.help_desktop_step2")}</li>
+          <li>${t("install.help_desktop_step3")}</li>
         </ol>
-        <p class="install-note">Chromium-based browsers work best for install, camera barcode, and speech. Meal photo and barcode also work with desktop webcams over HTTPS.</p>
+        <p class="install-note">${t("settings.install.desktop_note")}</p>
       </div>
       <div class="card">
-        <h2 class="chart-title">Already installed?</h2>
-        <p style="margin:0;">Open Chompass from the home-screen or dock icon (not a normal browser tab) for the full-screen shell and offline app assets.</p>
+        <h2 class="chart-title">${t("settings.install.already_title")}</h2>
+        <p style="margin:0;">${t("settings.install.already_body")}</p>
       </div>`;
     this.querySelector("#install-cta")?.addEventListener("click", () => {
       void promptInstall();
@@ -1765,28 +1783,28 @@ export class SettingsView extends HTMLElement {
 
   async renderAbout() {
     this.innerHTML = `
-      ${subpageBar("About", { backHref: SETTINGS_PARENT.about })}
+      ${subpageBar(t("settings.hub.about"), { backHref: SETTINGS_PARENT.about })}
       <div class="card">
-        <p style="margin:0 0 0.6rem;">Chompass browser PWA. Local storage, no analytics. Compatible with the Android app diary and body-metrics JSON.</p>
-        <p style="margin:0;"><a href="#/settings?section=install">How to install</a> this app on your phone or computer.</p>
+        <p style="margin:0 0 0.6rem;">${t("settings.about.intro")}</p>
+        <p style="margin:0;"><a href="#/settings?section=install">${t("install.howto_link")}</a> ${t("settings.about.install_tail")}</p>
       </div>
       <div class="card">
-        <p style="margin:0;">Chompass is free and open source. If you'd like to say thanks, <a href="https://ko-fi.com/fitguy" target="_blank" rel="noopener noreferrer">buy fitguy a yogurt</a> on Ko-fi.</p>
+        <p style="margin:0;">${t("settings.about.opensource_pre")}<a href="https://ko-fi.com/fitguy" target="_blank" rel="noopener noreferrer">${t("settings.about.kofi_link")}</a> ${t("settings.about.kofi_post")}</p>
       </div>
       <div class="card methods-card">
-        <h2 class="chart-title">Calculation methods</h2>
+        <h2 class="chart-title">${t("settings.about.methods")}</h2>
         <dl class="methods-list">
-          <dt>BMR-MSJ</dt><dd>Mifflin–St Jeor from sex, age, height, weight.</dd>
-          <dt>BMR-KM</dt><dd>Katch–McArdle when body-fat % is set (lean mass based).</dd>
-          <dt>TDEE</dt><dd>BMR × activity factor (PAL).</dd>
-          <dt>CAL-ADJ</dt><dd>Goal calories from weekly kg pace × 7700/7.</dd>
-          <dt>MACRO</dt><dd>Protein by activity (+ cut boost); fat 0.6×kg; carbs remainder. Keto clamps net carbs.</dd>
-          <dt>FCAST</dt><dd>Theil–Sen weight slope + sparse-logging intake average.</dd>
-          <dt>ADAPT</dt><dd>Weekly adaptive calorie nudge (±150) with floors/ceilings.</dd>
-          <dt>US Navy BF%</dt><dd>From neck / waist / hips tape measures.</dd>
-          <dt>RFM BF%</dt><dd>From waist and height (no neck). Display until you confirm Use as my body fat.</dd>
+          <dt>BMR-MSJ</dt><dd>${t("settings.about.methods_bmr_msj")}</dd>
+          <dt>BMR-KM</dt><dd>${t("settings.about.methods_bmr_km")}</dd>
+          <dt>TDEE</dt><dd>${t("settings.about.methods_tdee")}</dd>
+          <dt>CAL-ADJ</dt><dd>${t("settings.about.methods_cal_adj")}</dd>
+          <dt>MACRO</dt><dd>${t("settings.about.methods_macro")}</dd>
+          <dt>FCAST</dt><dd>${t("settings.about.methods_fcast")}</dd>
+          <dt>ADAPT</dt><dd>${t("settings.about.methods_adapt")}</dd>
+          <dt>US Navy BF%</dt><dd>${t("settings.about.methods_navy")}</dd>
+          <dt>RFM BF%</dt><dd>${t("settings.about.methods_rfm")}</dd>
         </dl>
-        <p style="color:var(--muted);font-size:0.85rem;margin:0.8rem 0 0;">Canonical register: <code>docs/CALCULATION_METHODS.md</code>. AI estimates are always reviewed before save.</p>
+        <p style="color:var(--muted);font-size:0.85rem;margin:0.8rem 0 0;">${t("settings.about.register_pre")}<code>docs/CALCULATION_METHODS.md</code>${t("settings.about.register_post")}</p>
       </div>`;
     bindSubpageBack(this, SETTINGS_PARENT.about);
   }
@@ -1807,7 +1825,7 @@ export class SettingsView extends HTMLElement {
     const typed = String(fd.get("apiKey") || "").trim();
     const apiKey = typed || existing?.apiKey || "";
     if (!apiKey) {
-      this.setAiKeyFeedback("Enter an API key to save, or leave blank only when a key is already configured.", "err");
+      this.setAiKeyFeedback(t("settings.ai.enter_key"), "err");
       return;
     }
     let model = String(fd.get("model") || "").trim();
@@ -1825,7 +1843,7 @@ export class SettingsView extends HTMLElement {
       primaryAiProvider: provider,
       openrouterReasoningEffort: String(fd.get("reasoningEffort") || "auto"),
     });
-    this._aiFlash = typed ? "API key saved." : "Provider settings updated (existing key kept).";
+    this._aiFlash = typed ? t("settings.ai.key_saved") : t("settings.ai.provider_updated");
     this.render();
   }
 
@@ -1837,19 +1855,19 @@ export class SettingsView extends HTMLElement {
     const existing = await loadProviderKey(/** @type {any} */ (provider)).catch(() => null);
     const apiKey = String(fd.get("apiKey") || "").trim() || existing?.apiKey || "";
     if (!apiKey) {
-      this.setAiKeyFeedback("Paste a key (or save one first) before testing.", "err");
+      this.setAiKeyFeedback(t("settings.ai.paste_key_test"), "err");
       return;
     }
     if (provider !== "gemini") {
-      this.setAiKeyFeedback("Quick test is available for Google (Gemini) keys. Save the key and try Analyze or Coach to verify other providers.", "err");
+      this.setAiKeyFeedback(t("settings.ai.quick_test_gemini_only"), "err");
       return;
     }
     const btn = /** @type {HTMLButtonElement|null} */ (this.querySelector("#ai-key-test"));
     if (btn) btn.disabled = true;
-    this.setAiKeyFeedback("Testing…");
+    this.setAiKeyFeedback(t("onboarding.ai.testing"));
     const result = await validateGeminiApiKey(apiKey);
     if (btn) btn.disabled = false;
-    this.setAiKeyFeedback(result.ok ? "Key works." : /** @type {{ok:false, message:string}} */ (result).message, result.ok ? "ok" : "err");
+    this.setAiKeyFeedback(result.ok ? t("onboarding.ai.key_works") : /** @type {{ok:false, message:string}} */ (result).message, result.ok ? "ok" : "err");
   }
 
   async onRemoveAiKey() {
@@ -1857,7 +1875,7 @@ export class SettingsView extends HTMLElement {
     const provider = /** @type {any} */ (el?.value);
     if (!provider) return;
     await deleteProviderKey(provider);
-    this._aiFlash = "API key removed.";
+    this._aiFlash = t("settings.ai.key_removed");
     this.render();
   }
 
@@ -1922,9 +1940,9 @@ export class SettingsView extends HTMLElement {
       const doc = JSON.parse(await file.text());
       const entries = importDiary(doc);
       await Promise.all(entries.map((e) => foodEntries.put(e)));
-      if (status) status.textContent = `Imported ${entries.length} food entries.`;
+      if (status) status.textContent = t("settings.data.imported_entries", { count: entries.length });
     } catch (err) {
-      if (status) status.textContent = `Import failed: ${err.message}`;
+      if (status) status.textContent = t("settings.data.import_failed_msg", { msg: err.message });
     }
     ev.target.value = "";
   }
@@ -1937,9 +1955,9 @@ export class SettingsView extends HTMLElement {
       const doc = JSON.parse(await file.text());
       const { weights: w, bodyFat: bf, measurements: m } = await importBodyMetrics(doc);
       await Promise.all([...w.map((r) => weights.put(r)), ...bf.map((r) => bodyFat.put(r)), ...m.map((r) => measurements.put(r))]);
-      if (status) status.textContent = `Imported ${w.length} weights, ${bf.length} body-fat, ${m.length} measurements.`;
+      if (status) status.textContent = t("settings.data.imported_body", { weights: w.length, bodyFat: bf.length, measurements: m.length });
     } catch (err) {
-      if (status) status.textContent = `Import failed: ${err.message}`;
+      if (status) status.textContent = t("settings.data.import_failed_msg", { msg: err.message });
     }
     ev.target.value = "";
   }

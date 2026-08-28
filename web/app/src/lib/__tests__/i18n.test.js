@@ -68,11 +68,24 @@ describe("i18n catalogs", () => {
     assert.ok(keys.length >= 80);
   });
 
-  it("every supported locale has a complete core catalog", async () => {
+  it("every supported locale stays within its maxMissing cap", async () => {
+    // maxMissing in testdata/parity/locales.json documents each locale's
+    // pending-translation batch while new keys ship in en + de first; missing
+    // keys fall back to English honestly (docs/LOCALIZATION.md). de stays at
+    // 0: it is the fit + voice parent and must always be complete.
+    const caps = new Map(
+      /** @type {Array<{id: string, maxMissing?: number}>} */ (fixture.locales).map(
+        (l) => [l.id, l.maxMissing ?? 0],
+      ),
+    );
     for (const loc of LOCALES) {
       if (loc.id === "en") continue;
       const { missing } = await catalogDiff(loc.id);
-      assert.equal(missing.length, 0, `${loc.id} missing: ${missing.slice(0, 5).join(", ")}`);
+      const cap = caps.get(loc.id) ?? 0;
+      assert.ok(
+        missing.length <= cap,
+        `${loc.id} missing ${missing.length} > cap ${cap}: ${missing.slice(0, 5).join(", ")}`,
+      );
     }
   });
 

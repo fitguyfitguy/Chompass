@@ -4,7 +4,7 @@ import { decodeMealShare } from "../lib/meal-share.js";
 import { guessMealTypeFromPrefs } from "../lib/meal-schedule.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 import { todayIso } from "../lib/date.js";
-import { formatNumber } from "../lib/i18n/index.js";
+import { formatNumber, t } from "../lib/i18n/index.js";
 import { ALL_MICRO_KEYS } from "../lib/home-nutrients.js";
 import { escapeHtml } from "../lib/ui/html.js";
 
@@ -20,18 +20,18 @@ export class AddMealView extends HTMLElement {
   async render() {
     if (!this.meals?.length) {
       this.innerHTML = `
-        ${subpageBar("Add shared meal", { backHref: "#/home" })}
+        ${subpageBar(t("add_meal.title"), { backHref: "#/home" })}
         <div class="card">
-          <p style="color:var(--muted);margin:0;">Invalid or empty meal share link.</p>
+          <p style="color:var(--muted);margin:0;">${t("add_meal.invalid_link")}</p>
         </div>`;
       bindSubpageBack(this, "#/home");
       return;
     }
 
     this.innerHTML = `
-      ${subpageBar("Add shared meal", { backHref: "#/home" })}
+      ${subpageBar(t("add_meal.title"), { backHref: "#/home" })}
       <div class="card">
-        <p style="color:var(--muted);margin:0 0 0.8rem;">Review and log these foods from a shared meal link.</p>
+        <p style="color:var(--muted);margin:0 0 0.8rem;">${t("add_meal.intro")}</p>
         <div class="recents-list">
           ${this.meals
             .map(
@@ -44,7 +44,7 @@ export class AddMealView extends HTMLElement {
             )
             .join("")}
         </div>
-        <button type="button" class="btn btn--primary" data-log style="margin-top:0.8rem;">Log selected</button>
+        <button type="button" class="btn btn--primary" data-log style="margin-top:0.8rem;">${t("add_meal.log_selected")}</button>
       </div>`;
     bindSubpageBack(this, "#/home");
     this.querySelector("[data-log]")?.addEventListener("click", () => this.logSelected());
