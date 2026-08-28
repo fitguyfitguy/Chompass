@@ -3500,6 +3500,7 @@ body.dialog-open {
   bottom: 0;
   max-height: min(88vh, 40rem);
   overflow: auto;
+  overscroll-behavior: contain;
   padding: 0.4rem 1.15rem calc(1.35rem + env(safe-area-inset-bottom));
   border-radius: 1.25rem 1.25rem 0 0;
   background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);

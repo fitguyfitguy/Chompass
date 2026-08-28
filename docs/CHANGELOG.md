@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Fixed
+
+- **Close sheets with a swipe or the back gesture** (web): bottom sheets like Add Food can now be swiped down from anywhere on the sheet, not just the small handle, and starting the swipe on a button no longer gets ignored. The back gesture or browser back button closes the open sheet instead of navigating away or leaving the app while the sheet stays open.
+
 ## [4.1.0] - 2026-08-27
 
 ### Added
