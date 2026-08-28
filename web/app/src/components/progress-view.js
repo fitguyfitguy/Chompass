@@ -54,6 +54,8 @@ export class ProgressView extends HTMLElement {
     this.showBodyFatHistory = false;
     /** @type {HTMLElement | null} */
     this._tipEl = null;
+    /** @type {AbortController | null} */
+    this._chartTipsAC = null;
   }
 
   connectedCallback() {
@@ -453,9 +455,9 @@ export class ProgressView extends HTMLElement {
     this.querySelectorAll("[data-del-weight]").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const ok = await openConfirm({
-          title: "Delete weight",
-          message: "Remove this weight entry?",
-          confirmLabel: "Delete",
+          title: t("progress.delete_weight_title"),
+          message: t("progress.delete_weight_confirm"),
+          confirmLabel: t("action.delete"),
           danger: true,
         });
         if (!ok) return;
@@ -466,9 +468,9 @@ export class ProgressView extends HTMLElement {
     this.querySelectorAll("[data-del-bf]").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const ok = await openConfirm({
-          title: "Delete body fat",
-          message: "Remove this body fat entry?",
-          confirmLabel: "Delete",
+          title: t("progress.delete_bf_title"),
+          message: t("progress.delete_bf_confirm"),
+          confirmLabel: t("action.delete"),
           danger: true,
         });
         if (!ok) return;
@@ -500,13 +502,22 @@ export class ProgressView extends HTMLElement {
       el.addEventListener("pointerdown", show);
       el.addEventListener("click", show);
     });
+    // Re-render would stack host-level listeners: abort the previous
+    // render's controller before adding a fresh one.
+    this._chartTipsAC?.abort();
+    const ac = new AbortController();
+    this._chartTipsAC = ac;
     this.addEventListener(
       "pointerdown",
       (ev) => {
         if (!(/** @type {Element} */ (ev.target).closest(".chart-hit"))) tip.hidden = true;
       },
-      true
+      { capture: true, signal: ac.signal }
     );
+  }
+
+  disconnectedCallback() {
+    this._chartTipsAC?.abort();
   }
 }
 

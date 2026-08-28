@@ -867,4 +867,9 @@ export const en = Object.freeze({
   // update.* (PWA UI audit sweep, 2026-08)
   "update.ready": "A new version of Chompass is ready.",
   "update.reload": "Reload",
+  // progress.* (weight/body-fat delete confirms, UI audit follow-up)
+  "progress.delete_weight_title": "Delete weight",
+  "progress.delete_weight_confirm": "Remove this weight entry?",
+  "progress.delete_bf_title": "Delete body fat",
+  "progress.delete_bf_confirm": "Remove this body fat entry?",
 });
