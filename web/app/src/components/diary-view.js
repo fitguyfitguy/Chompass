@@ -575,6 +575,13 @@ export class DiaryView extends HTMLElement {
   }
 
   async render() {
+    // The 60s fasting/day-rollover ticks re-render every minute; a full render
+    // rebuilds the day-note textarea from the stored note and would wipe
+    // unsaved typing. Skip while the user is in the note: the tick's store
+    // healing still ran, and the next render after blur or any interaction
+    // catches the UI up.
+    const activeNoteInput = this.querySelector("[data-note-input]");
+    if (activeNoteInput && document.activeElement === activeNoteInput) return;
     const [entries, prof, waterLogs, appPrefs, manualKcal, noteLogs, journal, allManual] = await Promise.all([
       foodEntries.byDate(this.date),
       profileStore.load(),
@@ -866,8 +873,9 @@ export class DiaryView extends HTMLElement {
       ${progressiveChip ? `<div class="progressive-meal-bar">${progressiveChip}</div>` : ""}
 
       ${
-        showNotes && (this._noteEditing || note)
-          ? `<div class="card card--glass note-row">
+        showNotes
+          ? this._noteEditing || note
+            ? `<div class="card card--glass note-row">
               <div class="note-row__top">
                 <strong>${t("diary.note_title")}</strong>
               </div>
@@ -877,7 +885,8 @@ export class DiaryView extends HTMLElement {
                 <button type="button" class="chip" data-note-save>${t("diary.note_save")}</button>
               </div>
             </div>`
-          : `<button type="button" class="note-row__empty" data-note-empty>✎ ${t("diary.note_empty")}</button>`
+            : `<button type="button" class="note-row__empty" data-note-empty>✎ ${t("diary.note_empty")}</button>`
+          : ""
       }
 
       ${

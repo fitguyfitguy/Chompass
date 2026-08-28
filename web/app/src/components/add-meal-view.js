@@ -3,6 +3,7 @@ import { foodEntries, prefs } from "../lib/db.js";
 import { decodeMealShare } from "../lib/meal-share.js";
 import { guessMealTypeFromPrefs } from "../lib/meal-schedule.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
+import { todayIso } from "../lib/date.js";
 import { formatNumber } from "../lib/i18n/index.js";
 import { ALL_MICRO_KEYS } from "../lib/home-nutrients.js";
 
@@ -51,7 +52,7 @@ export class AddMealView extends HTMLElement {
   async logSelected() {
     const idxs = [...this.querySelectorAll("[data-idx]:checked")].map((el) => Number(el.getAttribute("data-idx")));
     const appPrefs = await prefs.load();
-    const date = new Date().toISOString().slice(0, 10);
+    const date = todayIso();
     const now = new Date();
     const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
     for (const i of idxs) {

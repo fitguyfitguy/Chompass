@@ -241,13 +241,21 @@ export class AnalyzeView extends HTMLElement {
       this.previewUrls = list.map((f) => URL.createObjectURL(f));
       this.render();
     });
+    this.querySelector("#note")?.addEventListener("input", (ev) => {
+      // Keep unsaved typing in state: picking a photo re-renders the form and
+      // would otherwise rebuild the textarea from the stale pendingNote.
+      this.pendingNote = /** @type {HTMLTextAreaElement} */ (ev.target).value;
+    });
     this.querySelector("[data-voice]")?.addEventListener("click", () => {
       if (this.busy) return;
       const note = /** @type {HTMLTextAreaElement | null} */ (
         this.querySelector("#note")
       );
       speech.start((text) => {
-        if (note) note.value = note.value ? `${note.value} ${text}` : text;
+        if (note) {
+          note.value = note.value ? `${note.value} ${text}` : text;
+          this.pendingNote = note.value;
+        }
       });
     });
     this.querySelector("#analyze-form")?.addEventListener("submit", (ev) =>
