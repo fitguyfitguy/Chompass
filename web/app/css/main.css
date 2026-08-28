@@ -3499,9 +3499,13 @@ body.dialog-open {
   right: 0;
   bottom: 0;
   max-height: min(88vh, 40rem);
-  overflow: auto;
-  overscroll-behavior: contain;
-  touch-action: pan-y;
+  display: flex;
+  flex-direction: column;
+  /* The panel itself never scrolls: it is the drag-to-dismiss surface, so
+     its touch-action is none and the browser can never claim the gesture
+     into a scroll session. Content scrolls inside .sheet__body instead. */
+  overflow: hidden;
+  touch-action: none;
   padding: 0.4rem 1.15rem calc(1.35rem + env(safe-area-inset-bottom));
   border-radius: 1.25rem 1.25rem 0 0;
   background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);
@@ -3537,7 +3541,15 @@ body.dialog-open {
   font-weight: 700;
 }
 
-.sheet__body { display: grid; gap: 0.9rem; }
+.sheet__body {
+  display: grid;
+  gap: 0.9rem;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
 
 /* —— Dialogs —— */
 .dialog {

@@ -183,7 +183,7 @@ export function openSheet(opts) {
     }
   };
 
-  unbindDrag = bindDragDismiss(panel, handle, dismiss);
+  unbindDrag = bindDragDismiss(panel, handle, bodyWrap, dismiss);
 
   scrim.addEventListener("click", dismiss);
   document.addEventListener("keydown", onKey);
@@ -200,25 +200,27 @@ export function openSheet(opts) {
 }
 
 /**
- * Drag-to-dismiss. The handle always drags; the panel body drags when its
- * content is scrolled to the top — including drags that start on buttons and
+ * Drag-to-dismiss. The panel shell (handle, title, padding — everything
+ * outside the scrollable body) is touch-action: none, so drags there always
+ * work, fast or slow. Drags starting inside the scrollable body dismiss when
+ * its content is at the top — including drags that start on buttons and
  * links (the Add Food sheet is almost entirely buttons), where a committed
  * drag suppresses the trailing click and a gesture under the claim threshold
  * still taps. Inputs keep their own gestures, and with content scrolled a
  * vertical drag means "scroll", not "dismiss".
  *
- * Touch drags are tracked with a non-passive touchmove + preventDefault: a
- * pointer-move tracker loses the race against the browser's scroll detector,
- * which starts a (doomed) scroll session on the overflow:auto panel and
- * cancels the pointers once the ~8px touch slop is crossed — fast swipes
- * never delivered a single usable pointermove. The claim threshold sits
+ * Touch drags inside the scroller are tracked with a non-passive touchmove +
+ * preventDefault: a pointer-move tracker loses the race against the
+ * browser's scroll detector, which starts a scroll session once the ~8px
+ * touch slop is crossed and cancels the pointers. The claim threshold sits
  * below that slop, so the drag wins it. Mouse drags keep pointer events.
  * @param {HTMLElement} panel
  * @param {HTMLElement} handle
+ * @param {HTMLElement} scroller the scrollable body inside the panel
  * @param {() => void} dismiss
  * @returns {() => void} teardown removing window-level listeners
  */
-function bindDragDismiss(panel, handle, dismiss) {
+function bindDragDismiss(panel, handle, scroller, dismiss) {
   const CLAIM_PX = 6; // must stay below the browser's ~8px scroll slop
   const DISMISS_PX = 80;
   let mouseId = null; // pointerId while a mouse drag is tracked
@@ -252,11 +254,14 @@ function bindDragDismiss(panel, handle, dismiss) {
    */
   const dragEligible = (target) => {
     if (handle.contains(/** @type {Node} */ (target))) return true;
+    // The panel shell (handle, title, padding) is touch-action: none — the
+    // browser can never claim gestures there, so they always drag.
+    if (!scroller.contains(/** @type {Node} */ (target))) return true;
     // Text fields, sliders and selects own their gestures; never hijack.
     if (/** @type {Element} */ (target).closest("input, textarea, select")) return false;
     // With content scrolled up, a vertical drag is a scroll gesture.
-    // Swipe-to-dismiss applies at the top of the content (or the handle).
-    return panel.scrollTop === 0;
+    // Swipe-to-dismiss applies at the top of the content.
+    return scroller.scrollTop === 0;
   };
 
   /** @param {TouchList} touches @returns {Touch | null} */
