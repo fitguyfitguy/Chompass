@@ -1,4 +1,5 @@
 // @ts-check
+import { captureRerender } from "../lib/ui/rerender.js";
 import { runCoachTurn, applyProposal } from "../lib/ai/coach.js";
 import { listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.js";
 import { fileToJpegBase64 } from "../lib/ai/image.js";
@@ -40,6 +41,7 @@ export class CoachView extends HTMLElement {
   }
 
   render() {
+    const rr = captureRerender(this);
     if (!this.activeProvider) {
       this.innerHTML = `
         <div class="card">
@@ -119,6 +121,7 @@ export class CoachView extends HTMLElement {
     );
     const log = this.querySelector("#coach-log");
     if (log) log.scrollTop = log.scrollHeight;
+    rr.restore();
   }
 
   async onSend(ev) {

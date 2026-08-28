@@ -10,6 +10,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **The web app uses your language in more places** (web): the entry form, the whole Settings screen, the diary menus, sheets and toasts, the coach, photo analysis and the update prompt now follow the app language instead of hardcoded English. German ships fully translated; other languages show English text on these surfaces until the next translation batch.
 - **The update prompt moved to the bottom** (web): the "new version is ready" prompt used to sit over the week pager, the first settings row and the coach headline. It now docks at the bottom like the install banner, and both reserve their space instead of covering content.
+- **Typing stays put while the app updates** (web): sending a coach message no longer throws you out of the coach text field, and the entry form keeps your cursor in place when it refreshes mid-edit (unit change, serving lock, AI correction) instead of rebuilding the form around you.
 
 ### Fixed
 
@@ -19,6 +20,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Shared meals land on the right day** (web): importing a shared meal link near midnight no longer logs the foods to the wrong day. The entry form, photo analysis, barcode screen and onboarding derived "today" from UTC the same way and were fixed too.
 - **Screen reader and keyboard fixes** (web): tapping around no longer re-announces the whole page; the week picker renders five weeks instead of 53 (35 day buttons instead of 371 for keyboard users); the desktop calorie bar now works with Enter and Space; delete confirmations start focus on Cancel so a hasty Enter no longer confirms the deletion; Escape closes one sheet at a time instead of all of them; chip rows and day pickers expose honest toggle state; recalculation, import, sync and coach status lines are announced when they change.
 - **Custom nicotine and caffeine entries are honest** (web): a custom entry logs as kind "other" instead of pretending to be a cigarette or a coffee.
+- **Progress stays light on repeat visits** (web): switching ranges or re-opening Progress no longer stacks leftover tap handlers from earlier renders, and the weight and body fat delete confirmations now follow the app language too.
 
 ## [4.1.0] - 2026-08-27
 

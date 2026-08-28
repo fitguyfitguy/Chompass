@@ -1,4 +1,5 @@
 // @ts-check
+import { captureRerender } from "../lib/ui/rerender.js";
 import { foodEntries, prefs } from "../lib/db.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 import { openConfirm } from "../lib/ui/dialog.js";
@@ -249,6 +250,7 @@ export class EntryForm extends HTMLElement {
   }
 
   async render() {
+    const rr = captureRerender(this);
     if (this.entryId && this.entryId !== "new" && !this.existing) {
       const all = await foodEntries.byDate(this.date);
       this.existing = all.find((e) => e.id === this.entryId) ?? null;
@@ -490,6 +492,7 @@ export class EntryForm extends HTMLElement {
       this.servingReady = true;
       this.render();
     });
+    rr.restore();
   }
 
   renderConstituentsSection() {

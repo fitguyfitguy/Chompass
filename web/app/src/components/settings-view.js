@@ -1,4 +1,5 @@
 // @ts-check
+import { captureRerender } from "../lib/ui/rerender.js";
 import {
   profile as profileStore,
   foodEntries,
@@ -662,6 +663,7 @@ export class SettingsView extends HTMLElement {
    * the pure write path (macro-plan-edit) and followed by a journal refresh.
    */
   async renderDayTypes() {
+    const rr = captureRerender(this);
     const p = await this.loadProfile();
     const plan = p.macroPlan ?? null;
     const profiles = plan?.profiles ?? [];
@@ -952,6 +954,7 @@ export class SettingsView extends HTMLElement {
       });
     });
     bindSubpageBack(this, SETTINGS_PARENT.daytypes);
+    rr.restore();
   }
 
   async renderUnits() {
