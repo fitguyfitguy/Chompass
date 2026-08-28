@@ -6,6 +6,7 @@ import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 import { todayIso } from "../lib/date.js";
 import { formatNumber } from "../lib/i18n/index.js";
 import { ALL_MICRO_KEYS } from "../lib/home-nutrients.js";
+import { escapeHtml } from "../lib/ui/html.js";
 
 /** Import shared meals from `#/add-meal?d=` (Android MealShare bridge). */
 export class AddMealView extends HTMLElement {
@@ -78,10 +79,6 @@ export class AddMealView extends HTMLElement {
     }
     location.hash = "#/home";
   }
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 }
 
 customElements.define("add-meal-view", AddMealView);

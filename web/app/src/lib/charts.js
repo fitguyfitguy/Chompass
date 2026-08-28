@@ -1,5 +1,6 @@
 // @ts-check
 // Minimal hand-rolled SVG charts — no canvas library.
+import { escapeHtml, escapeAttr } from "./ui/html.js";
 
 /**
  * Downsample chronological points to at most maxPoints (keep ends).
@@ -216,12 +217,4 @@ export function barChartSvg(points, opts = {}) {
 
 function formatNum(n) {
   return Math.abs(n - Math.round(n)) < 0.05 ? String(Math.round(n)) : n.toFixed(1);
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-}
-
-function escapeAttr(s) {
-  return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 }

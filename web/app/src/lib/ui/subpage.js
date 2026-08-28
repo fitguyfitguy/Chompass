@@ -1,4 +1,5 @@
 // @ts-check
+import { escapeHtml, escapeAttr } from "./html.js";
 
 /**
  * Shared subpage chrome: back chevron + sticky title.
@@ -32,14 +33,4 @@ export function bindSubpageBack(root, fallbackHash = "#/home") {
       else location.hash = fallbackHash;
     });
   });
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]
-  );
-}
-
-function escapeAttr(s) {
-  return String(s).replace(/"/g, "&quot;");
 }

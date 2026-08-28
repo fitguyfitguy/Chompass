@@ -5,6 +5,7 @@ import {
   ANALYSIS_PHASE_STEPS,
   phaseLabel,
 } from "../ai/analysis-phase.js";
+import { escapeHtml, escapeAttr } from "./html.js";
 
 /**
  * @param {Object} opts
@@ -113,12 +114,4 @@ export function progressiveCardHtml(partial) {
 function formatMacro(v) {
   const n = Math.round(v * 10) / 10;
   return Number.isInteger(n) ? `${n}g` : `${n.toFixed(1)}g`;
-}
-
-function escapeAttr(s) {
-  return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 }

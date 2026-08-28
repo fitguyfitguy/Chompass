@@ -2868,7 +2868,7 @@ form.entry-form > button.btn--primary,
   position: fixed;
   left: var(--chrome-inset-left);
   right: var(--chrome-inset-right);
-  top: calc(0.75rem + env(safe-area-inset-top));
+  bottom: calc(var(--chrome-bottom) + 0.75rem + var(--banner-space, 0rem));
   z-index: 45;
   background: var(--bg-elevated);
   border: 1px solid color-mix(in srgb, var(--teal) 40%, var(--line));
@@ -3826,7 +3826,7 @@ body.dialog-open {
 
 .add-food-tile__label {
   font-weight: 500;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   line-height: 1.2;
   max-width: 100%;
   display: -webkit-box;
@@ -4849,3 +4849,25 @@ body.camera-open {
   }
 }
 
+
+/* —— Fixed bottom chrome (install banner, update toast) —— */
+/* Both persist until dismissed, so they reserve real layout space at the
+   end of <body> instead of covering the FAB zone, meal cards, or the first
+   settings rows. --banner-space lifts the update toast above the install
+   banner when both are up. Rules sit after the desktop media block on
+   purpose so they win over its body padding reset. */
+body.install-banner-open {
+  --banner-space: 5.25rem;
+}
+
+body.install-banner-open {
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 5.25rem);
+}
+
+body.update-toast-open {
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 4rem);
+}
+
+body.install-banner-open.update-toast-open {
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 9.25rem);
+}

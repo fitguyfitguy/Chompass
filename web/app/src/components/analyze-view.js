@@ -11,6 +11,8 @@ import { shouldUseNativeCaptureHint } from "../lib/media-devices.js";
 import { renderAnalyzeOverlayHtml } from "../lib/ui/analyze-overlay.js";
 import { formatNumber } from "../lib/i18n/index.js";
 import { DEMO_PLATE_ESTIMATE, runDemoAnalyze } from "../demo/mock-ai.js";
+import { escapeHtml, escapeAttr } from "../lib/ui/html.js";
+import { todayIso } from "../lib/date.js";
 
 const MAX_PHOTOS = 10;
 
@@ -35,7 +37,7 @@ export class AnalyzeView extends HTMLElement {
 
   async connectedCallback() {
     const params = new URLSearchParams(location.hash.split("?")[1] ?? "");
-    this.date = params.get("date") ?? new Date().toISOString().slice(0, 10);
+    this.date = params.get("date") ?? todayIso();
     this.mode = params.get("mode") === "note" ? "note" : "photo";
     const { listConfiguredProviders } = await import("../lib/ai/key-storage.js");
     this.providers = await listConfiguredProviders();
@@ -568,24 +570,6 @@ export class AnalyzeView extends HTMLElement {
       this.render();
     }
   }
-}
-
-function escapeHtml(s) {
-  return String(s).replace(
-    /[&<>"']/g,
-    (c) =>
-      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
-        c
-      ],
-  );
-}
-
-function escapeAttr(s) {
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/'/g, "&#39;")
-    .replace(/"/g, "&quot;")
-    .replace(/</g, "&lt;");
 }
 
 customElements.define("analyze-view", AnalyzeView);
