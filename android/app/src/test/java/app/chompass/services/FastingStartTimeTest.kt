@@ -1,10 +1,13 @@
 package app.chompass.services
 
+import org.junit.After
+import org.junit.Before
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.Instant
 import java.time.ZoneId
+import java.util.TimeZone
 import java.time.ZonedDateTime
 
 /**
@@ -13,6 +16,18 @@ import java.time.ZonedDateTime
  * and the Home bar, so all three must agree on "when the fast starts".
  */
 class FastingStartTimeTest {
+    private val previousTz: TimeZone = TimeZone.getDefault()
+
+    @Before
+    fun pinBerlin() {
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"))
+    }
+
+    @After
+    fun restoreTz() {
+        TimeZone.setDefault(previousTz)
+    }
+
     private fun at(iso: String): Long = ZonedDateTime.parse(iso).toInstant().toEpochMilli()
 
     @Test
