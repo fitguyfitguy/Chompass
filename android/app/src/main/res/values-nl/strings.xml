@@ -1330,6 +1330,7 @@
     <string name="settings_notif_none_selected">Geen meldingstype geselecteerd. Je kunt meldingen toegestaan houden en alle herinneringen uit.</string>
     <string name="settings_notif_water_reminder">Waterherinnering</string>
     <string name="settings_notif_weight_reminder">Gewichtslog-herinnering</string>
+    <string name="settings_notif_weight_reminder_time">Tijd</string>
     <string name="settings_notification_types">Meldingstypen</string>
     <string name="settings_notifications_intro">Kies welke herinneringen Chompass stuurt en wanneer ze verschijnen.</string>
     <string name="settings_off">Uit</string>

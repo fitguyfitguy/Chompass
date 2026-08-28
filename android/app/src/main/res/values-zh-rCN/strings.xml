@@ -1350,6 +1350,7 @@
     <string name="settings_notif_none_selected">未选择任何通知类型。你可以保持通知允许并关闭所有提醒。</string>
     <string name="settings_notif_water_reminder">饮水提醒</string>
     <string name="settings_notif_weight_reminder">体重记录提醒</string>
+    <string name="settings_notif_weight_reminder_time">时间</string>
     <string name="settings_notification_types">通知类型</string>
     <string name="settings_notifications_intro">选择 Chompass 发送哪些提醒以及何时出现。</string>
     <string name="settings_off">关闭</string>

@@ -1348,6 +1348,7 @@ bilirsən?</string>
     <string name="settings_notif_none_selected">Heç bir bildiriş növü seçilməyib. Bildirişlərə icazə verilmiş qala və bütün xatırlatmalar söndürülə bilər.</string>
     <string name="settings_notif_water_reminder">Su xatırlatması</string>
     <string name="settings_notif_weight_reminder">Çəki qeydi xatırlatması</string>
+    <string name="settings_notif_weight_reminder_time">Vaxt</string>
     <string name="settings_notification_types">Bildiriş növləri</string>
     <string name="settings_notifications_intro">Chompass-ın hansı xatırlatmaları göndərəcəyini və onların nə vaxt görəcəyini seç.</string>
     <string name="settings_off">Söndürülüb</string>

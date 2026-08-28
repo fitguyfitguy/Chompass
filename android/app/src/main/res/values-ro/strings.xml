@@ -1347,6 +1347,7 @@
     <string name="settings_notif_none_selected">Niciun tip de notificare selectat. Poți păstra notificările permise și toate mementourile oprite.</string>
     <string name="settings_notif_water_reminder">Memento apă</string>
     <string name="settings_notif_weight_reminder">Memento greutate</string>
+    <string name="settings_notif_weight_reminder_time">Oră</string>
     <string name="settings_notification_types">Tipuri de notificare</string>
     <string name="settings_notifications_intro">Alege ce mementouri trimite Chompass și când apar.</string>
     <string name="settings_off">Oprit</string>

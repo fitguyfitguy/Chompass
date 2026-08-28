@@ -174,6 +174,10 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setDailySummaryMinute(v: Int) = setDailySummaryMinuteImpl(v)
     val weightReminderEnabled: Flow<Boolean> get() = weightReminderEnabledImpl
     suspend fun setWeightReminderEnabled(v: Boolean) = setWeightReminderEnabledImpl(v)
+    val weightReminderHour: Flow<Int> get() = weightReminderHourImpl
+    suspend fun setWeightReminderHour(v: Int) = setWeightReminderHourImpl(v)
+    val weightReminderMinute: Flow<Int> get() = weightReminderMinuteImpl
+    suspend fun setWeightReminderMinute(v: Int) = setWeightReminderMinuteImpl(v)
     val bodyFatReminderEnabled: Flow<Boolean> get() = bodyFatReminderEnabledImpl
     suspend fun setBodyFatReminderEnabled(v: Boolean) = setBodyFatReminderEnabledImpl(v)
     val goalReachedNotificationsEnabled: Flow<Boolean> get() = goalReachedNotificationsEnabledImpl

@@ -1541,6 +1541,7 @@
     <string name="settings_notif_daily_summary_time">Godzina</string>
     <string name="settings_notif_daily_summary_needs_hc_background">Aby mieć aktualny wydatek, włącz Health Connect w tle w %1$s.</string>
     <string name="settings_notif_weight_reminder">Przypomnienie o ważeniu</string>
+    <string name="settings_notif_weight_reminder_time">Godzina</string>
     <string name="settings_notif_body_fat_reminder">Przypomnienie o tkance tłuszczowej</string>
     <string name="settings_notif_water_reminder">Przypomnienie o wodzie</string>
     <string name="settings_notif_goal_alerts">Powiadomienia o osiągnięciu celu</string>

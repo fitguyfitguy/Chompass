@@ -1349,6 +1349,7 @@
     <string name="settings_notif_none_selected">कोई सूचना प्रकार चयनित नहीं। आप सूचनाएं अनुमत रख सकते हैं और सभी रिमाइंडर बंद कर सकते हैं।</string>
     <string name="settings_notif_water_reminder">पानी रिमाइंडर</string>
     <string name="settings_notif_weight_reminder">वज़न लॉग रिमाइंडर</string>
+    <string name="settings_notif_weight_reminder_time">समय</string>
     <string name="settings_notification_types">सूचना प्रकार</string>
     <string name="settings_notifications_intro">चुनें कि Chompass कौन से रिमाइंडर भेजे और वे कब दिखें।</string>
     <string name="settings_off">बंद</string>

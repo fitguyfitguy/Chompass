@@ -1420,6 +1420,7 @@
     <string name="settings_notif_none_selected">No hay ningún tipo de notificación seleccionado. Puedes mantener las notificaciones permitidas y todos los recordatorios desactivados.</string>
     <string name="settings_notif_water_reminder">Recordatorio de agua</string>
     <string name="settings_notif_weight_reminder">Recordatorio de registro de peso</string>
+    <string name="settings_notif_weight_reminder_time">Hora</string>
     <string name="settings_notification_types">Tipos de notificación</string>
     <string name="settings_notifications_intro">Elige qué recordatorios envía Chompass y cuándo aparecen.</string>
     <string name="settings_off">Desactivado</string>

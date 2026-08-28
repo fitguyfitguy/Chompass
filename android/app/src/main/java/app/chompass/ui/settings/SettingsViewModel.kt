@@ -95,6 +95,8 @@ data class SettingsUiState(
     val dailySummaryHour: Int = 21,
     val dailySummaryMinute: Int = 0,
     val weightReminderEnabled: Boolean = true,
+    val weightReminderHour: Int = 8,
+    val weightReminderMinute: Int = 0,
     val bodyFatReminderEnabled: Boolean = true,
     val waterTrackingEnabled: Boolean = false,
     val waterDailyGoalMl: Int = 2_000,
@@ -380,6 +382,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     dailySummaryHour = snap.dailySummaryHour,
                     dailySummaryMinute = snap.dailySummaryMinute,
                     weightReminderEnabled = snap.weightReminderEnabled,
+                    weightReminderHour = snap.weightReminderHour,
+                    weightReminderMinute = snap.weightReminderMinute,
                     bodyFatReminderEnabled = snap.bodyFatReminderEnabled,
                     waterTrackingEnabled = snap.waterTrackingEnabled,
                     waterDailyGoalMl = snap.waterDailyGoalMl,
@@ -1085,6 +1089,15 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         { copy(weightReminderEnabled = v) },
     )
 
+    fun setWeightReminderTime(hour: Int, minute: Int) = updateUiPref(
+        {
+            container.prefs.setWeightReminderHour(hour)
+            container.prefs.setWeightReminderMinute(minute)
+            syncNotificationSchedules()
+        },
+        { copy(weightReminderHour = hour, weightReminderMinute = minute) },
+    )
+
     fun setBodyFatReminderEnabled(v: Boolean) = updateUiPref(
         {
             container.prefs.setBodyFatReminderEnabled(v)
@@ -1133,7 +1146,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         }
 
         if (container.prefs.weightReminderEnabled.first()) {
-            container.notifications.scheduleWeightReminder()
+            container.notifications.scheduleWeightReminder(
+                container.prefs.weightReminderHour.first(),
+                container.prefs.weightReminderMinute.first(),
+            )
         } else {
             container.notifications.cancelWeightReminder()
         }

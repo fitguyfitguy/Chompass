@@ -716,10 +716,20 @@ internal fun SettingsSheets(
                     },
                 )
                 SettingsSheet.DAILY_SUMMARY_TIME -> DailySummaryTimeSheet(
+                    title = stringResource(R.string.settings_notif_daily_summary_time),
                     hour = ui.dailySummaryHour,
                     minute = ui.dailySummaryMinute,
                     onSave = { hour, minute ->
                         vm.setDailySummaryTime(hour, minute)
+                        onDismiss()
+                    },
+                )
+                SettingsSheet.WEIGHT_REMINDER_TIME -> DailySummaryTimeSheet(
+                    title = stringResource(R.string.settings_notif_weight_reminder_time),
+                    hour = ui.weightReminderHour,
+                    minute = ui.weightReminderMinute,
+                    onSave = { hour, minute ->
+                        vm.setWeightReminderTime(hour, minute)
                         onDismiss()
                     },
                 )

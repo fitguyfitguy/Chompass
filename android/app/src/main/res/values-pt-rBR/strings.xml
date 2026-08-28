@@ -1345,6 +1345,7 @@
     <string name="settings_notif_none_selected">Nenhum tipo de notificação selecionado. Você pode manter as notificações permitidas e todos os lembretes desligados.</string>
     <string name="settings_notif_water_reminder">Lembrete de água</string>
     <string name="settings_notif_weight_reminder">Lembrete de peso</string>
+    <string name="settings_notif_weight_reminder_time">Horário</string>
     <string name="settings_notification_types">Tipos de notificação</string>
     <string name="settings_notifications_intro">Escolha quais lembretes o Chompass envia e quando eles aparecem.</string>
     <string name="settings_off">Desligado</string>

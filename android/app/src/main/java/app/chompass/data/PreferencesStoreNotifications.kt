@@ -43,6 +43,16 @@ internal val PreferencesStore.weightReminderEnabledImpl: Flow<Boolean>
 internal suspend fun PreferencesStore.setWeightReminderEnabledImpl(v: Boolean) =
     setBoolPref(Keys.WEIGHT_REMINDER_ENABLED, v)
 
+internal val PreferencesStore.weightReminderHourImpl: Flow<Int>
+    get() = intPref(Keys.WEIGHT_REMINDER_HOUR, 8)
+internal suspend fun PreferencesStore.setWeightReminderHourImpl(v: Int) =
+    setIntPref(Keys.WEIGHT_REMINDER_HOUR, v)
+
+internal val PreferencesStore.weightReminderMinuteImpl: Flow<Int>
+    get() = intPref(Keys.WEIGHT_REMINDER_MINUTE, 0)
+internal suspend fun PreferencesStore.setWeightReminderMinuteImpl(v: Int) =
+    setIntPref(Keys.WEIGHT_REMINDER_MINUTE, v)
+
 internal val PreferencesStore.bodyFatReminderEnabledImpl: Flow<Boolean>
     get() = boolPref(Keys.BODY_FAT_REMINDER_ENABLED, true)
 internal suspend fun PreferencesStore.setBodyFatReminderEnabledImpl(v: Boolean) =

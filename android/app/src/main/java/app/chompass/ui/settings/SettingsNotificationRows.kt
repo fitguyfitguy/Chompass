@@ -91,6 +91,17 @@ internal fun NotificationTypeRows(
         icon = Icons.Outlined.MonitorWeight,
         onChange = vm::setWeightReminderEnabled
     )
+    if (ui.weightReminderEnabled) {
+        val weighInTime = remember(ui.weightReminderHour, ui.weightReminderMinute, context) {
+            DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault())
+                .format(LocalTime.of(ui.weightReminderHour, ui.weightReminderMinute))
+        }
+        SettingRow(
+            stringResource(R.string.settings_notif_weight_reminder_time),
+            weighInTime,
+            icon = Icons.Outlined.Schedule,
+        ) { onOpenSheet(SettingsSheet.WEIGHT_REMINDER_TIME) }
+    }
     HorizontalDivider()
     ToggleRow(
         stringResource(R.string.settings_notif_body_fat_reminder),

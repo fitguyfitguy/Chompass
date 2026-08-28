@@ -148,7 +148,10 @@ class ChompassApp : Application() {
                     container.notifications.cancelDailySummary()
                 }
                 if (container.prefs.weightReminderEnabled.first()) {
-                    container.notifications.scheduleWeightReminder()
+                    container.notifications.scheduleWeightReminder(
+                        container.prefs.weightReminderHour.first(),
+                        container.prefs.weightReminderMinute.first(),
+                    )
                 } else {
                     container.notifications.cancelWeightReminder()
                 }
