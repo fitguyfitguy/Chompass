@@ -9,12 +9,14 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Changed
 
 - **The web app uses your language in more places** (web): the entry form, the whole Settings screen, the diary menus, sheets and toasts, the coach, photo analysis and the update prompt now follow the app language instead of hardcoded English. German ships fully translated; other languages show English text on these surfaces until the next translation batch.
+- **Trackers have their own colors** (Android): water reads blue and caffeine amber. Nicotine keeps the caution color. Progress bars stay the app accent.
 - **The update prompt moved to the bottom** (web): the "new version is ready" prompt used to sit over the week pager, the first settings row and the coach headline. It now docks at the bottom like the install banner, and both reserve their space instead of covering content.
 - **Typing stays put while the app updates** (web): sending a coach message no longer throws you out of the coach text field, and the entry form keeps your cursor in place when it refreshes mid-edit (unit change, serving lock, AI correction) instead of rebuilding the form around you.
 
 ### Fixed
 
 - **Close sheets with a swipe or the back gesture** (web): bottom sheets like Add Food can now be swiped down from anywhere on the sheet, not just the small handle, and starting the swipe on a button no longer gets ignored. The back gesture or browser back button closes the open sheet instead of navigating away or leaving the app while the sheet stays open.
+- **Integer wheels round typed decimals** (Android): typing 72.9 on a whole-number wheel now commits 73 instead of 72.
 - **Typed notes survive picking photos** (web): on the photo and note analyze screen, choosing photos no longer wipes the description you already typed; voice dictation appends stay too.
 - **Day notes survive the minute tick and get a working button** (web): leaving the diary open while writing a day note no longer gets the note wiped by the once-a-minute fasting refresh, and "Add a note for this day" now actually opens the editor. The note entry only shows when the Daily notes setting is on, matching Android.
 - **Shared meals land on the right day** (web): importing a shared meal link near midnight no longer logs the foods to the wrong day. The entry form, photo analysis, barcode screen and onboarding derived "today" from UTC the same way and were fixed too.

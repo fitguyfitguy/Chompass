@@ -78,6 +78,8 @@ import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.warning
+import app.chompass.ui.theme.water
+import app.chompass.ui.theme.caffeine
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WaterAmountFormat
 
@@ -600,7 +602,7 @@ private fun AddFoodWaterQuickRow(
         Icon(
             Icons.Filled.WaterDrop,
             contentDescription = null,
-            tint = AppColors.Calorie.copy(alpha = 0.85f),
+            tint = MaterialTheme.colorScheme.water.copy(alpha = 0.85f),
             modifier = Modifier.size(18.dp),
         )
         if (presets.size > 1) {
@@ -743,7 +745,7 @@ private fun AddFoodCaffeineQuickRow(
                     )
                 },
                 colors = AssistChipDefaults.assistChipColors(
-                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                    containerColor = MaterialTheme.colorScheme.caffeine.copy(alpha = 0.12f),
                 ),
             )
         }

@@ -45,6 +45,14 @@ class MagnitudeParseTest {
     }
 
     @Test
+    fun intHelperRoundsTypedDecimal() {
+        // Truncation committed 72.9 as 72 on integer wheels (#64 leftover).
+        assertEquals(73, parseMagnitudeInt("72.9", 0, 400, 1))
+        assertEquals(72, parseMagnitudeInt("72.1", 0, 400, 1))
+        assertEquals(73, parseMagnitudeInt("72,9", 0, 400, 1, ','))
+    }
+
+    @Test
     fun splitDecimalDoesNotPaint803As802() {
         // Codeberg #63: truncate-toward-zero painted 80.3 as 80.2 so Save kept 80.3.
         assertEquals(80 to 1, splitDecimalParts(80.1, 30, 250))
