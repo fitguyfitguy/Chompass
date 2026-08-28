@@ -58,6 +58,16 @@ internal val PreferencesStore.bodyFatReminderEnabledImpl: Flow<Boolean>
 internal suspend fun PreferencesStore.setBodyFatReminderEnabledImpl(v: Boolean) =
     setBoolPref(Keys.BODY_FAT_REMINDER_ENABLED, v)
 
+internal val PreferencesStore.bodyFatReminderHourImpl: Flow<Int>
+    get() = intPref(Keys.BODY_FAT_REMINDER_HOUR, 8)
+internal suspend fun PreferencesStore.setBodyFatReminderHourImpl(v: Int) =
+    setIntPref(Keys.BODY_FAT_REMINDER_HOUR, v)
+
+internal val PreferencesStore.bodyFatReminderMinuteImpl: Flow<Int>
+    get() = intPref(Keys.BODY_FAT_REMINDER_MINUTE, 0)
+internal suspend fun PreferencesStore.setBodyFatReminderMinuteImpl(v: Int) =
+    setIntPref(Keys.BODY_FAT_REMINDER_MINUTE, v)
+
 internal val PreferencesStore.goalReachedNotificationsEnabledImpl: Flow<Boolean>
     get() = boolPref(Keys.GOAL_REACHED_NOTIFICATIONS_ENABLED, true)
 internal suspend fun PreferencesStore.setGoalReachedNotificationsEnabledImpl(v: Boolean) =

@@ -37,6 +37,8 @@ internal object Keys {
         val WEIGHT_REMINDER_HOUR = intPreferencesKey("weightReminderHour")
         val WEIGHT_REMINDER_MINUTE = intPreferencesKey("weightReminderMinute")
         val BODY_FAT_REMINDER_ENABLED = booleanPreferencesKey("bodyFatReminderEnabled")
+        val BODY_FAT_REMINDER_HOUR = intPreferencesKey("bodyFatReminderHour")
+        val BODY_FAT_REMINDER_MINUTE = intPreferencesKey("bodyFatReminderMinute")
         val GOAL_REACHED_NOTIFICATIONS_ENABLED = booleanPreferencesKey("goalReachedNotificationsEnabled")
         val APP_UPDATE_NOTIFICATIONS_ENABLED = booleanPreferencesKey("appUpdateNotificationsEnabled")
         val WATER_TRACKING_ENABLED = booleanPreferencesKey("waterTrackingEnabled")

@@ -1,5 +1,6 @@
 package app.chompass.ui.settings
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -49,6 +50,13 @@ internal fun NotificationTypeRows(
         icon = Icons.Outlined.LocalDining,
         onChange = vm::setStreakReminderEnabled
     )
+    if (ui.streakReminderEnabled) {
+        ReminderTimeRow(
+            titleRes = R.string.settings_notif_weight_reminder_time,
+            hour = ui.streakReminderHour,
+            minute = ui.streakReminderMinute,
+        ) { onOpenSheet(SettingsSheet.FOOD_REMINDER_TIME) }
+    }
     HorizontalDivider()
     ToggleRow(
         stringResource(R.string.settings_notif_daily_summary),
@@ -57,14 +65,10 @@ internal fun NotificationTypeRows(
         onChange = vm::setDailySummaryEnabled
     )
     if (ui.dailySummaryEnabled) {
-        val summaryTime = remember(ui.dailySummaryHour, ui.dailySummaryMinute, context) {
-            DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault())
-                .format(LocalTime.of(ui.dailySummaryHour, ui.dailySummaryMinute))
-        }
-        SettingRow(
-            stringResource(R.string.settings_notif_daily_summary_time),
-            summaryTime,
-            icon = Icons.Outlined.Schedule,
+        ReminderTimeRow(
+            titleRes = R.string.settings_notif_daily_summary_time,
+            hour = ui.dailySummaryHour,
+            minute = ui.dailySummaryMinute,
         ) { onOpenSheet(SettingsSheet.DAILY_SUMMARY_TIME) }
     }
     if (ui.dailySummaryEnabled &&
@@ -92,14 +96,10 @@ internal fun NotificationTypeRows(
         onChange = vm::setWeightReminderEnabled
     )
     if (ui.weightReminderEnabled) {
-        val weighInTime = remember(ui.weightReminderHour, ui.weightReminderMinute, context) {
-            DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault())
-                .format(LocalTime.of(ui.weightReminderHour, ui.weightReminderMinute))
-        }
-        SettingRow(
-            stringResource(R.string.settings_notif_weight_reminder_time),
-            weighInTime,
-            icon = Icons.Outlined.Schedule,
+        ReminderTimeRow(
+            titleRes = R.string.settings_notif_weight_reminder_time,
+            hour = ui.weightReminderHour,
+            minute = ui.weightReminderMinute,
         ) { onOpenSheet(SettingsSheet.WEIGHT_REMINDER_TIME) }
     }
     HorizontalDivider()
@@ -109,6 +109,13 @@ internal fun NotificationTypeRows(
         icon = Icons.Outlined.Percent,
         onChange = vm::setBodyFatReminderEnabled
     )
+    if (ui.bodyFatReminderEnabled) {
+        ReminderTimeRow(
+            titleRes = R.string.settings_notif_weight_reminder_time,
+            hour = ui.bodyFatReminderHour,
+            minute = ui.bodyFatReminderMinute,
+        ) { onOpenSheet(SettingsSheet.BODY_FAT_REMINDER_TIME) }
+    }
     HorizontalDivider()
     // Always visible: when water tracking is off this is disabled with a link to
     // the Water screen instead of being hidden (cross-link rule: never hide a
@@ -176,4 +183,23 @@ private fun drinkingWindowSummary(ui: SettingsUiState, context: android.content.
         fmt(ui.waterAwakeStartMinutes),
         fmt(ui.waterAwakeEndMinutes),
     )
+}
+
+@Composable
+private fun ReminderTimeRow(
+    @StringRes titleRes: Int,
+    hour: Int,
+    minute: Int,
+    onClick: () -> Unit,
+) {
+    val context = LocalContext.current
+    val time = remember(hour, minute, context) {
+        DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault())
+            .format(LocalTime.of(hour.coerceIn(0, 23), minute.coerceIn(0, 59)))
+    }
+    SettingRow(
+        stringResource(titleRes),
+        time,
+        icon = Icons.Outlined.Schedule,
+    ) { onClick() }
 }
