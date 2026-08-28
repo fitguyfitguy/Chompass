@@ -10,6 +10,9 @@ import {
 import { lineChartSvg, barChartSvg } from "../lib/charts.js";
 import { openInput, openConfirm } from "../lib/ui/dialog.js";
 import { t, formatNumber } from "../lib/i18n/index.js";
+import { escapeHtml } from "../lib/ui/html.js";
+import { shiftDate, todayIso } from "../lib/date.js";
+import { chevronRight } from "../lib/icons.js";
 
 const RANGES = [
   { id: "1W", labelKey: "progress.range_1w", days: 7 },
@@ -24,7 +27,7 @@ const RANGE_IDS = RANGES.map((r) => r.id);
 const ICONS = {
   addCircle: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>`,
   listAlt: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19 5v14H5V5h14m1.1-2H3.9c-.5 0-.9.4-.9.9v16.2c0 .4.4.9.9.9h16.2c.4 0 .9-.5.9-.9V3.9c0-.5-.5-.9-.9-.9zM11 7h6v2h-6V7zm0 4h6v2h-6v-2zm0 4h6v2h-6v-2zM7 7h2v2H7V7zm0 4h2v2H7v-2zm0 4h2v2H7v-2z"/></svg>`,
-  chevron: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>`,
+  chevron: chevronRight,
 };
 
 /** Android MacroProgressRow: colored label + "63g / 75g" + 8dp progress bar. */
@@ -507,24 +510,6 @@ export class ProgressView extends HTMLElement {
   }
 }
 
-/** Local calendar YYYY-MM-DD (avoid UTC shift from toISOString). */
-function localIsoDate(d) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-
-function todayIso() {
-  return localIsoDate(new Date());
-}
-
-function shiftDate(iso, days) {
-  const d = new Date(`${iso}T00:00:00`);
-  d.setDate(d.getDate() + days);
-  return localIsoDate(d);
-}
-
 function shortDate(iso) {
   const d = iso.includes("T") ? new Date(iso) : new Date(`${iso}T00:00:00`);
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
@@ -554,10 +539,6 @@ function fmt(n, signed = false) {
   const s = Math.abs(n - Math.round(n)) < 0.05 ? String(Math.round(n)) : n.toFixed(1);
   if (signed && n > 0) return `+${s}`;
   return s;
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 }
 
 customElements.define("progress-view", ProgressView);

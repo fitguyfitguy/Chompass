@@ -63,6 +63,10 @@ import {
 import { setDayAssignment } from "../lib/chompass-core/macro-plan-edit.js";
 import { resolveDay, resolveDayJournaled } from "../lib/chompass-core/macro-plan.js";
 import { refreshGoalJournal, recordManualSwitchGoalJournal } from "../lib/goal-journal-store.js";
+import { escapeHtml, escapeAttr } from "../lib/ui/html.js";
+import { shiftDate, todayIso } from "../lib/date.js";
+import { chevronLeft, chevronRight } from "../lib/icons.js";
+import { showToast, showUndoToast } from "../lib/ui/toast.js";
 
 const MEAL_LABELS = { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack", other: "Other" };
 const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack", "other"];
@@ -190,24 +194,6 @@ const ICONS = {
   snack: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 6c1.11 0 2-.9 2-2 0-.38-.1-.73-.29-1.03L12 0l-1.71 2.97c-.19.3-.29.65-.29 1.03 0 1.1.9 2 2 2zm4.6 9.99c-.84-.33-1.4-.99-1.58-1.82-.03-.15-.05-.3-.05-.46 0-.84.41-1.58 1.04-2.04C16.66 11.2 17 10.39 17 9.5c0-1.52-.98-2.81-2.34-3.28C14.21 5.91 13.14 5.75 12 5.75s-2.21.16-2.66.47C7.98 6.69 7 7.98 7 9.5c0 .89.34 1.7.99 2.17.63.46 1.04 1.2 1.04 2.04 0 .16-.02.31-.05.46-.18.83-.74 1.49-1.58 1.82C5.85 16.66 5 17.95 5 19.5V21h14v-1.5c0-1.55-.85-2.84-2.4-3.51z"/></svg>`,
 };
 
-/** Local calendar YYYY-MM-DD (avoid UTC shift from toISOString). */
-function localIsoDate(d) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-
-function todayIso() {
-  return localIsoDate(new Date());
-}
-
-function shiftDate(iso, days) {
-  const d = new Date(`${iso}T00:00:00`);
-  d.setDate(d.getDate() + days);
-  return localIsoDate(d);
-}
-
 /**
  * @param {string} selectedIso
  * @param {boolean|string} [weekStart] true/"monday", false/"sunday", or "saturday"
@@ -239,9 +225,6 @@ function saveHomeDate(iso) {
     /* ignore */
   }
 }
-
-const DAY_NAV_CHEVRON_L = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>`;
-const DAY_NAV_CHEVRON_R = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8.59 16.59 10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>`;
 
 /** Android clockTimePattern: locale-aware time, lowercased (e.g. "2:00 pm"). */
 function formatEntryTime(time) {
@@ -737,7 +720,7 @@ export class DiaryView extends HTMLElement {
 
     this.innerHTML = `
       <div class="week-nav">
-        <button type="button" class="day-nav-btn day-nav-btn--week" data-day-delta="-1" aria-label="Previous day">${DAY_NAV_CHEVRON_L}</button>
+        <button type="button" class="day-nav-btn day-nav-btn--week" data-day-delta="-1" aria-label="Previous day">${chevronLeft}</button>
         <div class="week-pager" data-week-pager aria-label="Week calendar">
           ${weekPages
             .map(
@@ -763,20 +746,20 @@ export class DiaryView extends HTMLElement {
             )
             .join("")}
         </div>
-        <button type="button" class="day-nav-btn day-nav-btn--week" data-day-delta="1" aria-label="Next day" ${nextDisabled}>${DAY_NAV_CHEVRON_R}</button>
+        <button type="button" class="day-nav-btn day-nav-btn--week" data-day-delta="1" aria-label="Next day" ${nextDisabled}>${chevronRight}</button>
       </div>
 
       <div class="home-hero" data-day-swipe>
         <div class="home-hero--mobile">
           <div class="home-hero__day-nav">
-            <button type="button" class="day-nav-btn" data-day-delta="-1" aria-label="Previous day">${DAY_NAV_CHEVRON_L}</button>
+            <button type="button" class="day-nav-btn" data-day-delta="-1" aria-label="Previous day">${chevronLeft}</button>
             <div class="home-hero__gauge-wrap">
               <button type="button" class="calorie-hero calorie-hero--tap calorie-hero--tap-arc" data-nutrition-detail aria-label="Open nutrition detail">
                 ${gaugeMobile}
               </button>
               ${gaugeInfoBtnMobile}
             </div>
-            <button type="button" class="day-nav-btn" data-day-delta="1" aria-label="Next day" ${nextDisabled}>${DAY_NAV_CHEVRON_R}</button>
+            <button type="button" class="day-nav-btn" data-day-delta="1" aria-label="Next day" ${nextDisabled}>${chevronRight}</button>
           </div>
           <div class="day-type-chip-row">${dayTypeChip}</div>
           ${macrosMobile}
@@ -1189,7 +1172,7 @@ export class DiaryView extends HTMLElement {
       if (dx < -88) this.deleteEntry(entry);
       else if (dx > 88) {
         const nowFav = await toggleFavorite(entry);
-        this.showToast(nowFav ? "Added to favorites" : "Removed from favorites");
+        showToast(nowFav ? "Added to favorites" : "Removed from favorites");
         reset();
       } else reset();
     };
@@ -1285,7 +1268,7 @@ export class DiaryView extends HTMLElement {
     sheet.body.querySelector('[data-act="fav"]')?.addEventListener("click", async () => {
       sheet.close();
       const nowFav = await toggleFavorite(entry);
-      this.showToast(nowFav ? "Added to favorites" : "Removed from favorites");
+      showToast(nowFav ? "Added to favorites" : "Removed from favorites");
     });
     sheet.body.querySelector('[data-act="share"]')?.addEventListener("click", async () => {
       sheet.close();
@@ -1652,7 +1635,7 @@ export class DiaryView extends HTMLElement {
       onCancel: () => {},
     });
     if (!sheet) {
-      this.showToast("Voice input is not supported in this browser");
+      showToast("Voice input is not supported in this browser");
     }
   }
 
@@ -1943,7 +1926,7 @@ export class DiaryView extends HTMLElement {
       await saveRecipe(recipe);
       sheet.close();
       parentSheet.close();
-      this.showToast(`Saved recipe “${name}”`);
+      showToast(`Saved recipe “${name}”`);
     });
   }
 
@@ -1960,20 +1943,10 @@ export class DiaryView extends HTMLElement {
     }
     try {
       await navigator.clipboard.writeText(text);
-      this.showToast("Share link copied");
+      showToast("Share link copied");
     } catch {
-      this.showToast("Could not share");
+      showToast("Could not share");
     }
-  }
-
-  /** @param {string} message */
-  showToast(message) {
-    document.querySelector(".toast")?.remove();
-    const toast = document.createElement("div");
-    toast.className = "toast";
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3500);
   }
 
   async customWater() {
@@ -1998,7 +1971,7 @@ export class DiaryView extends HTMLElement {
     if (!waterLogs.length) return;
     const last = waterLogs[waterLogs.length - 1];
     await water.delete(last.id);
-    this.showToast(`Removed ${last.amountMl} ml`);
+    showToast(`Removed ${last.amountMl} ml`);
     this.render();
   }
 
@@ -2175,7 +2148,7 @@ export class DiaryView extends HTMLElement {
     if (raw == null) return;
     const count = Number(raw);
     if (count > 0) {
-      await nicotine.put({ id: crypto.randomUUID(), date: this.date, kind: "cigarette", count, mg: null });
+      await nicotine.put({ id: crypto.randomUUID(), date: this.date, kind: "other", count, mg: null });
       this.render();
     }
   }
@@ -2187,7 +2160,7 @@ export class DiaryView extends HTMLElement {
     if (!nicotineLogs.length) return;
     const last = nicotineLogs[nicotineLogs.length - 1];
     await nicotine.delete(last.id);
-    this.showToast(`Removed ${last.count ?? 1}`);
+    showToast(`Removed ${last.count ?? 1}`);
     this.render();
   }
 
@@ -2212,7 +2185,7 @@ export class DiaryView extends HTMLElement {
     if (raw == null) return;
     const mg = Number(raw);
     if (mg > 0) {
-      await caffeine.put({ id: crypto.randomUUID(), date: this.date, kind: "coffee", mg });
+      await caffeine.put({ id: crypto.randomUUID(), date: this.date, kind: "other", mg });
       this.render();
     }
   }
@@ -2224,7 +2197,7 @@ export class DiaryView extends HTMLElement {
     if (!caffeineLogs.length) return;
     const last = caffeineLogs[caffeineLogs.length - 1];
     await caffeine.delete(last.id);
-    this.showToast(`Removed ${last.mg ?? 0} mg`);
+    showToast(`Removed ${last.mg ?? 0} mg`);
     this.render();
   }
 
@@ -2238,35 +2211,16 @@ export class DiaryView extends HTMLElement {
     this._undoEntry = entry;
     await foodEntries.delete(entry.id);
     this.render();
-    this.showUndoToast();
-  }
-
-  showUndoToast() {
-    document.querySelector(".toast")?.remove();
-    const toast = document.createElement("div");
-    toast.className = "toast";
-    toast.innerHTML = `Deleted <button type="button">Undo</button>`;
-    toast.querySelector("button")?.addEventListener("click", async () => {
+    showUndoToast("Deleted", async () => {
       if (this._undoEntry) await foodEntries.put(this._undoEntry);
       this._undoEntry = null;
-      toast.remove();
       this.render();
     });
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 5000);
   }
 
   openEntryForm(entry) {
     location.hash = entry ? `#/entry/${entry.id}?date=${this.date}` : `#/entry/new?date=${this.date}`;
   }
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-}
-
-function escapeAttr(s) {
-  return String(s).replace(/'/g, "&#39;").replace(/"/g, "&quot;");
 }
 
 customElements.define("diary-view", DiaryView);

@@ -7,6 +7,8 @@ import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
 import { maybeShowPostOnboardingInstallSheet } from "../lib/install-prompt.js";
 import { openInput, openConfirm } from "../lib/ui/dialog.js";
 import { t } from "../lib/i18n/index.js";
+import { escapeAttr } from "../lib/ui/html.js";
+import { todayIso } from "../lib/date.js";
 
 /** Gemini first — matches Android AI Studio default/recommend. */
 const ONBOARDING_PROVIDER_ORDER = ["gemini", "anthropic", "openai_compatible"];
@@ -845,19 +847,6 @@ function planSafetyNote(draft, targets) {
     return `<p style="color:var(--warning, #b45309);margin:0.6rem 0 0;font-size:0.85rem;">Please consult with a doctor. This is below your estimated resting calories or 1,200 kcal a day.</p>`;
   }
   return "";
-}
-
-/** @param {string} s */
-function escapeAttr(s) {
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
-function todayIso() {
-  return new Date().toISOString().slice(0, 10);
 }
 
 /** @param {string} iso */

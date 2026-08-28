@@ -57,11 +57,16 @@ function showUpdateToast(worker) {
     </div>
   `;
 
-  toast.querySelector(".update-toast__dismiss")?.addEventListener("click", () => toast.remove());
+  toast.querySelector(".update-toast__dismiss")?.addEventListener("click", () => {
+    document.body.classList.remove("update-toast-open");
+    toast.remove();
+  });
   toast.querySelector(".update-toast__reload")?.addEventListener("click", () => {
     reloadTriggered = true;
+    document.body.classList.remove("update-toast-open");
     worker.postMessage("SKIP_WAITING");
   });
 
   document.body.appendChild(toast);
+  document.body.classList.add("update-toast-open");
 }

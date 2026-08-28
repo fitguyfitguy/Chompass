@@ -13,6 +13,7 @@ import {
   prefersMobileCameraUx,
   savePreferredVideoDeviceId,
 } from "../lib/media-devices.js";
+import { todayIso } from "../lib/date.js";
 
 /** Demo hero mode (web/app/demo.html): no camera, canned product lookup. */
 const DEMO = typeof window !== "undefined" && Boolean(/** @type {any} */ (window).CHOMPASS_DEMO);
@@ -44,7 +45,7 @@ const DEMO_PRODUCT = Object.freeze({
 export class BarcodeScanner extends HTMLElement {
   connectedCallback() {
     const params = new URLSearchParams(location.hash.split("?")[1] ?? "");
-    this.date = params.get("date") ?? new Date().toISOString().slice(0, 10);
+    this.date = params.get("date") ?? todayIso();
     this.supported = isLiveCameraSupported();
     this.mobileUx = prefersMobileCameraUx();
     this.stopped = false;

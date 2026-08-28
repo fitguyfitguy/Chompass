@@ -4,6 +4,7 @@ import { openSheet } from "./sheet.js";
 import { createSpeechCapture } from "../speech.js";
 import { prefs } from "../db.js";
 import { t } from "../i18n/index.js";
+import { escapeHtml } from "./html.js";
 
 /**
  * @param {{
@@ -99,8 +100,4 @@ export async function openVoiceCaptureSheet(opts) {
     body.querySelector("[data-mic]")?.dispatchEvent(new Event("click"));
   });
   return sheet;
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 }

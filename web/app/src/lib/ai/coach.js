@@ -5,6 +5,7 @@ import { averageForward, resolveDayJournaled } from "../chompass-core/macro-plan
 import { PROVIDERS, resolveVisionModel, resolveProviderModel } from "./providers.js";
 import { AI_TOOLS, READ_ONLY_TOOLS, WRITE_TOOLS } from "./tools.js";
 import { t } from "../i18n/index.js";
+import { localIsoDate, todayIso } from "../date.js";
 
 const BASE_SYSTEM = `You are the Chompass coach: a concise, encouraging calorie and macro tracking assistant embedded in a food diary app.
 
@@ -108,7 +109,7 @@ export function buildIntakeAverageBlock(entries, isoToday) {
   const windowLine = (window) => {
     const from = new Date(`${isoToday}T00:00:00Z`);
     from.setUTCDate(from.getUTCDate() - window);
-    const inWindow = [...days.entries()].filter(([d]) => d >= from.toISOString().slice(0, 10));
+    const inWindow = [...days.entries()].filter(([d]) => d >= localIsoDate(from));
     if (inWindow.length === 0) return null;
     const n = inWindow.length;
     const sum = inWindow.reduce(
@@ -173,11 +174,11 @@ export async function runCoachTurn({ providerId, config, history, userText, imag
   }
   const prof = await profileStore.load();
   if (prof) {
-    const dayTypesBlock = buildDayTypesPromptBlock(prof, new Date().toISOString().slice(0, 10));
+    const dayTypesBlock = buildDayTypesPromptBlock(prof, todayIso());
     if (dayTypesBlock) systemPrompt += `\n\n${dayTypesBlock}`;
   }
   const allEntries = await foodEntries.all();
-  const intakeBlock = buildIntakeAverageBlock(allEntries, new Date().toISOString().slice(0, 10));
+  const intakeBlock = buildIntakeAverageBlock(allEntries, todayIso());
   if (intakeBlock) systemPrompt += `\n\n${intakeBlock}`;
 
   const messages = /** @type {import('./providers.js').AiMessage[]} */ ([
@@ -205,7 +206,7 @@ export async function runCoachTurn({ providerId, config, history, userText, imag
 }
 
 async function executeReadTool(tc) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayIso();
   if (tc.name === "get_diary_context") {
     const date = tc.input?.date || today;
     const [entries, prof, journal] = await Promise.all([
@@ -331,7 +332,7 @@ export async function applyProposal(tc) {
   if (tc.name === "propose_log_water") {
     await water.put({
       id: crypto.randomUUID(),
-      date: tc.input.date || new Date().toISOString().slice(0, 10),
+      date: tc.input.date || todayIso(),
       amountMl: tc.input.amountMl,
     });
     return;

@@ -43,6 +43,8 @@ import {
   addToProgressiveMeal,
   hasProgressiveMealItems,
 } from "../lib/progressive-meal.js";
+import { escapeHtml, escapeAttr } from "../lib/ui/html.js";
+import { todayIso } from "../lib/date.js";
 
 const MICRO_FIELDS = [
   ["sugarG", "Sugar g"],
@@ -77,7 +79,7 @@ const NUTRITION_KEYS = ["calories", "proteinG", "carbsG", "fatG", "fiberG", ...A
 export class EntryForm extends HTMLElement {
   connectedCallback() {
     const params = new URLSearchParams(location.hash.split("?")[1] ?? "");
-    this.date = params.get("date") ?? new Date().toISOString().slice(0, 10);
+    this.date = params.get("date") ?? todayIso();
     // Codeberg #66: #/entry/favorite/<id> edits a stored favorite (saved-foods
     // library) instead of a diary row. Parsed first so the plain entry regex
     // doesn't swallow "favorite/<id>" as an entry id.
@@ -1184,14 +1186,6 @@ export class EntryForm extends HTMLElement {
 function nowHm() {
   const d = new Date();
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
-}
-
-function escapeAttr(s) {
-  return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 }
 
 /**

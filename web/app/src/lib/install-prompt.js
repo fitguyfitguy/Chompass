@@ -219,6 +219,7 @@ function fillBanner(banner) {
 
   banner.querySelector(".install-banner__dismiss")?.addEventListener("click", () => {
     localStorage.setItem(BANNER_DISMISSED_KEY, "1");
+    document.body.classList.remove("install-banner-open");
     banner.remove();
   });
 
@@ -244,6 +245,7 @@ export function maybeShowInstallBanner() {
   banner.setAttribute("role", "status");
   fillBanner(banner);
   document.body.appendChild(banner);
+  document.body.classList.add("install-banner-open");
 }
 
 /**

@@ -11,6 +11,7 @@ import { collectOffPromptContext } from "../ai/off-prompt-context.js";
 import { listConfiguredProviders, loadProviderKey } from "../ai/key-storage.js";
 import { prefs } from "../db.js";
 import { renderAnalyzeOverlayHtml } from "./analyze-overlay.js";
+import { escapeHtml, escapeAttr } from "./html.js";
 
 export const MAX_PHOTOS = 10;
 
@@ -361,12 +362,4 @@ async function runPhotoAnalysis(args) {
       args.onCancel?.();
     });
   }
-}
-
-function escapeAttr(s) {
-  return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 }

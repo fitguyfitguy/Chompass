@@ -3,6 +3,7 @@
 // to one shape so coach.js doesn't need to know which provider it's talking
 // to. No SDKs — these are plain REST calls, matching the public Messages /
 // generateContent / chat.completions APIs directly.
+import { escapeAttr } from "../ui/html.js";
 
 /**
  * @typedef {Object} AiTool
@@ -557,10 +558,3 @@ export function modelSelectOptionsHtml(providerId, selected, role = "primary") {
   return opts.join("");
 }
 
-function escapeAttr(s) {
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}

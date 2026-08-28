@@ -1,5 +1,6 @@
 // @ts-check
 import { trapFocus } from "./focus-trap.js";
+import { escapeHtml, escapeAttr } from "./html.js";
 
 /**
  * @typedef {{
@@ -225,14 +226,4 @@ function mountDialog(opts) {
   releaseFocus = trapFocus(panel);
 
   return host;
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]
-  );
-}
-
-function escapeAttr(s) {
-  return String(s).replace(/"/g, "&quot;");
 }
