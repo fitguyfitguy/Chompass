@@ -817,12 +817,12 @@ export class OnboardingView extends HTMLElement {
  * @param {string} selected
  */
 function choiceGrid(field, options, selected) {
-  return `<div class="onboarding-choice-grid" role="listbox" aria-label="${field}">
+  return `<div class="onboarding-choice-grid" role="group" aria-label="${field}">
     ${options
       .map(
         (o) => `
       <button type="button" class="onboarding-choice ${o.id === selected ? "is-selected" : ""}"
-        data-field="${field}" data-choice="${o.id}" role="option" aria-selected="${o.id === selected}">
+        data-field="${field}" data-choice="${o.id}" aria-pressed="${o.id === selected}">
         <span>
           <span class="onboarding-choice__label">${o.label}</span>
           ${o.sub ? `<span class="onboarding-choice__sub">${o.sub}</span>` : ""}

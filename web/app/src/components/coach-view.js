@@ -79,7 +79,7 @@ export class CoachView extends HTMLElement {
         <input type="text" id="coach-text" placeholder="Ask the coach…" autocomplete="off" />
         <button type="submit" class="btn btn--primary">Send</button>
       </form>
-      <p id="coach-status" style="color:var(--muted);font-size:0.8rem;margin-top:0.4rem;"></p>
+      <p id="coach-status" role="status" aria-live="polite" style="color:var(--muted);font-size:0.8rem;margin-top:0.4rem;"></p>
     `;
 
     this.querySelector("#coach-form").addEventListener("submit", (ev) => this.onSend(ev));

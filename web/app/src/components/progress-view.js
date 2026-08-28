@@ -295,19 +295,19 @@ export class ProgressView extends HTMLElement {
       </div>`;
 
     this.innerHTML = `
-      <div class="range-chips" role="tablist" aria-label="${t("progress.title")}">
+      <div class="range-chips" role="group" aria-label="${t("progress.title")}">
         ${RANGES.map(
           (r) =>
-            `<button type="button" class="chip${r.id === this.rangeId ? " is-active" : ""}" data-range="${r.id}" role="tab" aria-selected="${r.id === this.rangeId}">${t(r.labelKey)}</button>`
+            `<button type="button" class="chip${r.id === this.rangeId ? " is-active" : ""}" data-range="${r.id}" aria-pressed="${r.id === this.rangeId}">${t(r.labelKey)}</button>`
         ).join("")}
       </div>
       <div class="chart-tip" hidden data-chart-tip></div>
 
       ${
         hasBodyFatLogs
-          ? `<div class="metric-toggle" role="tablist" aria-label="${t("progress.body_fat")}">
-        <button type="button" class="metric-toggle__segment${this.bodyMetric === "weight" ? " is-active" : ""}" data-metric="weight" role="tab" aria-selected="${this.bodyMetric === "weight"}">${t("progress.weight")}</button>
-        <button type="button" class="metric-toggle__segment${this.bodyMetric === "body_fat" ? " is-active" : ""}" data-metric="body_fat" role="tab" aria-selected="${this.bodyMetric === "body_fat"}">${t("progress.metric_body_fat")}</button>
+          ? `<div class="metric-toggle" role="group" aria-label="${t("progress.body_fat")}">
+        <button type="button" class="metric-toggle__segment${this.bodyMetric === "weight" ? " is-active" : ""}" data-metric="weight" aria-pressed="${this.bodyMetric === "weight"}">${t("progress.weight")}</button>
+        <button type="button" class="metric-toggle__segment${this.bodyMetric === "body_fat" ? " is-active" : ""}" data-metric="body_fat" aria-pressed="${this.bodyMetric === "body_fat"}">${t("progress.metric_body_fat")}</button>
       </div>`
           : ""
       }
