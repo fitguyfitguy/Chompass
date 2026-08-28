@@ -203,18 +203,26 @@ export function openSheet(opts) {
  * Drag-to-dismiss. The handle always drags; the panel body drags when its
  * content is scrolled to the top — including drags that start on buttons and
  * links (the Add Food sheet is almost entirely buttons), where a committed
- * drag suppresses the trailing click and a gesture under the ~10px slop
+ * drag suppresses the trailing click and a gesture under the claim threshold
  * still taps. Inputs keep their own gestures, and with content scrolled a
  * vertical drag means "scroll", not "dismiss".
+ *
+ * Touch drags are tracked with a non-passive touchmove + preventDefault: a
+ * pointer-move tracker loses the race against the browser's scroll detector,
+ * which starts a (doomed) scroll session on the overflow:auto panel and
+ * cancels the pointers once the ~8px touch slop is crossed — fast swipes
+ * never delivered a single usable pointermove. The claim threshold sits
+ * below that slop, so the drag wins it. Mouse drags keep pointer events.
  * @param {HTMLElement} panel
  * @param {HTMLElement} handle
  * @param {() => void} dismiss
  * @returns {() => void} teardown removing window-level listeners
  */
 function bindDragDismiss(panel, handle, dismiss) {
-  const SLOP_PX = 10;
+  const CLAIM_PX = 6; // must stay below the browser's ~8px scroll slop
   const DISMISS_PX = 80;
-  let pointerId = null;
+  let mouseId = null; // pointerId while a mouse drag is tracked
+  let touchId = null; // touch identifier while a touch drag is tracked
   let startX = 0;
   let startY = 0;
   let dy = 0;
@@ -238,51 +246,118 @@ function bindDragDismiss(panel, handle, dismiss) {
     panel.style.transform = "";
   };
 
-  /** @param {PointerEvent} ev */
-  const onDown = (ev) => {
-    suppressClick = false;
-    if (ev.pointerType === "mouse" && ev.button !== 0) return;
-    if (pointerId !== null) return; // one gesture at a time
-    const fromHandle = handle.contains(/** @type {Node} */ (ev.target));
-    if (!fromHandle) {
-      // Text fields, sliders and selects own their gestures; never hijack.
-      if (/** @type {Element} */ (ev.target).closest("input, textarea, select")) return;
-      // With content scrolled up, a vertical drag is a scroll gesture.
-      // Swipe-to-dismiss applies at the top of the content (or the handle).
-      if (panel.scrollTop > 0) return;
+  /**
+   * @param {EventTarget} target
+   * @returns {boolean} true when a gesture starting here may become a drag
+   */
+  const dragEligible = (target) => {
+    if (handle.contains(/** @type {Node} */ (target))) return true;
+    // Text fields, sliders and selects own their gestures; never hijack.
+    if (/** @type {Element} */ (target).closest("input, textarea, select")) return false;
+    // With content scrolled up, a vertical drag is a scroll gesture.
+    // Swipe-to-dismiss applies at the top of the content (or the handle).
+    return panel.scrollTop === 0;
+  };
+
+  /** @param {TouchList} touches @returns {Touch | null} */
+  const trackedTouch = (touches) => {
+    if (touchId === null) return null;
+    for (let i = 0; i < touches.length; i += 1) {
+      if (touches[i].identifier === touchId) return touches[i];
     }
-    pointerId = ev.pointerId;
+    return null;
+  };
+
+  /** @param {TouchEvent} ev */
+  const onTouchStart = (ev) => {
+    suppressClick = false;
+    if (touchId !== null || mouseId !== null) return; // one gesture at a time
+    const touch = ev.changedTouches[0];
+    if (!touch || !dragEligible(ev.target)) return;
+    touchId = touch.identifier;
+    startX = touch.clientX;
+    startY = touch.clientY;
+    dy = 0;
+  };
+
+  /** @param {TouchEvent} ev */
+  const onTouchMove = (ev) => {
+    const touch = trackedTouch(ev.changedTouches);
+    if (!touch) return;
+    const dyNow = touch.clientY - startY;
+    const dxNow = touch.clientX - startX;
+    if (!dragging) {
+      // Under the claim threshold it is still a tap; horizontal intent wins
+      // over a downward drag.
+      if (dyNow <= CLAIM_PX || dyNow <= Math.abs(dxNow)) return;
+      dragging = true;
+      suppressClick = true;
+    }
+    // Claim the gesture before the scroll detector can: at scrollTop 0 a
+    // downward drag cannot scroll anyway, and once the scroll session starts
+    // the browser cancels the touch and the drag is dead.
+    ev.preventDefault();
+    dy = dyNow;
+    setOffset(dy);
+  };
+
+  /** @param {TouchEvent} ev */
+  const onTouchEnd = (ev) => {
+    if (touchId === null || !trackedTouch(ev.changedTouches)) return;
+    touchId = null;
+    if (!dragging) return;
+    dragging = false;
+    if (dy > DISMISS_PX) {
+      dismiss();
+      return;
+    }
+    clearOffset();
+    // suppressClick stays armed: the click lands after the touch ends.
+  };
+
+  const onTouchCancel = () => {
+    if (touchId === null) return;
+    touchId = null;
+    dragging = false;
+    suppressClick = false;
+    clearOffset();
+  };
+
+  /** @param {PointerEvent} ev */
+  const onMouseDown = (ev) => {
+    suppressClick = false;
+    if (ev.pointerType !== "mouse" || ev.button !== 0) return;
+    if (mouseId !== null || touchId !== null) return; // one gesture at a time
+    if (!dragEligible(ev.target)) return;
+    mouseId = ev.pointerId;
     startX = ev.clientX;
     startY = ev.clientY;
     dy = 0;
   };
 
   /** @param {PointerEvent} ev */
-  const onMove = (ev) => {
-    if (pointerId === null || ev.pointerId !== pointerId) return;
+  const onMouseMove = (ev) => {
+    if (mouseId === null || ev.pointerId !== mouseId) return;
+    const dyNow = ev.clientY - startY;
     if (!dragging) {
-      const dyNow = ev.clientY - startY;
-      // Under the slop it is still a tap; horizontal intent wins over a
-      // downward drag. Only past that does the pointer commit to the dismiss
-      // gesture (at scrollTop 0 a downward drag cannot scroll anyway).
-      if (dyNow <= SLOP_PX || dyNow <= Math.abs(ev.clientX - startX)) return;
+      if (dyNow <= CLAIM_PX || dyNow <= Math.abs(ev.clientX - startX)) return;
       dragging = true;
       suppressClick = true;
       try {
-        panel.setPointerCapture(pointerId);
+        panel.setPointerCapture(mouseId);
       } catch {
         /* ignore */
       }
     }
-    dy = ev.clientY - startY;
+    dy = dyNow;
     ev.preventDefault();
     setOffset(dy);
   };
 
   /** @param {PointerEvent} ev */
-  const onUp = (ev) => {
-    if (pointerId === null || ev.pointerId !== pointerId) return;
-    pointerId = null;
+  const onMouseUp = (ev) => {
+    if (mouseId === null || ev.pointerId !== mouseId) return;
+    mouseId = null;
     if (!dragging) return;
     dragging = false;
     if (dy > DISMISS_PX) {
@@ -293,20 +368,23 @@ function bindDragDismiss(panel, handle, dismiss) {
     // suppressClick stays armed: the click lands after pointerup.
   };
 
-  const onCancel = () => {
-    if (pointerId === null) return;
-    pointerId = null;
+  /** @param {PointerEvent} ev */
+  const onMouseCancel = (ev) => {
+    if (mouseId === null || ev.pointerId !== mouseId) return;
+    mouseId = null;
     dragging = false;
     suppressClick = false;
     clearOffset();
   };
 
-  // Safety net: a gesture released (or canceled) off the panel must still
-  // reset the tracking state, or every later pointerdown is dropped.
+  // Safety net: a mouse gesture released (or canceled) off the panel must
+  // still reset the tracking state, or later pointerdowns are dropped.
+  // (Touch events implicitly capture to their start element, so they always
+  // end on the panel.)
   /** @param {PointerEvent} ev */
   const onEndAnywhere = (ev) => {
-    if (pointerId === null || ev.pointerId !== pointerId) return;
-    pointerId = null;
+    if (mouseId === null || ev.pointerId !== mouseId) return;
+    mouseId = null;
     if (dragging) {
       dragging = false;
       clearOffset();
@@ -327,11 +405,14 @@ function bindDragDismiss(panel, handle, dismiss) {
 
   handle.style.touchAction = "none";
   handle.style.cursor = "grab";
-  handle.addEventListener("pointerdown", onDown);
-  panel.addEventListener("pointerdown", onDown);
-  panel.addEventListener("pointermove", onMove);
-  panel.addEventListener("pointerup", onUp);
-  panel.addEventListener("pointercancel", onCancel);
+  panel.addEventListener("touchstart", onTouchStart);
+  panel.addEventListener("touchmove", onTouchMove, { passive: false });
+  panel.addEventListener("touchend", onTouchEnd);
+  panel.addEventListener("touchcancel", onTouchCancel);
+  panel.addEventListener("pointerdown", onMouseDown);
+  panel.addEventListener("pointermove", onMouseMove);
+  panel.addEventListener("pointerup", onMouseUp);
+  panel.addEventListener("pointercancel", onMouseCancel);
   window.addEventListener("pointerup", onEndAnywhere);
   window.addEventListener("pointercancel", onEndAnywhere);
 

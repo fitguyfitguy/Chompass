@@ -145,13 +145,12 @@ const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
 globalThis.HTMLElement = /** @type {any} */ (FakeElement);
 
 /** @param {FakeElement} target @param {number} x @param {number} y */
-function pointerEv(target, x, y) {
+function mouseEv(target, x, y) {
   return {
     type: "pointer",
-
     target,
     pointerId: 7,
-    pointerType: "touch",
+    pointerType: "mouse",
     button: 0,
     clientX: x,
     clientY: y,
@@ -166,14 +165,41 @@ function pointerEv(target, x, y) {
   };
 }
 
-/** Fire a pointer gesture on the panel as if it bubbled from `target`. */
+/** @param {FakeElement} target @param {"touchstart" | "touchmove" | "touchend"} type */
+function touchEv(target, type, x, y) {
+  return {
+    type,
+    target,
+    changedTouches: [{ identifier: 7, clientX: x, clientY: y }],
+    prevented: false,
+    stopped: false,
+    preventDefault() {
+      this.prevented = true;
+    },
+    stopPropagation() {
+      this.stopped = true;
+    },
+  };
+}
+
+/** Fire a touch gesture step on the panel as if it bubbled from `target`. */
 function gesture(panel, target, type, x, y) {
-  panel.fire(type, pointerEv(target, x, y));
+  const ev = touchEv(target, type, x, y);
+  panel.fire(type, ev);
+  return ev;
+}
+
+/** Fire a mouse pointer-gesture step on the panel from `target`. */
+function mouseGesture(panel, target, type, x, y) {
+  const ev = mouseEv(target, x, y);
+  ev.type = type;
+  panel.fire(type, ev);
+  return ev;
 }
 
 /** Click `target` under the panel: panel capture listeners run first. */
 function clickUnder(panel, target) {
-  const ev = pointerEv(target, 0, 0);
+  const ev = mouseEv(target, 0, 0);
   ev.type = "click";
   panel.fire("click", ev);
   if (!ev.stopped) target.fire("click", ev);
@@ -292,7 +318,7 @@ describe("sheet back-gesture history", () => {
 });
 
 describe("sheet drag-to-dismiss", () => {
-  it("a drag starting on a button dismisses and suppresses the trailing click", () => {
+  it("a touch drag starting on a button claims the gesture and dismisses", () => {
     let clicks = 0;
     let closes = 0;
     const button = new FakeElement("button");
@@ -300,15 +326,34 @@ describe("sheet drag-to-dismiss", () => {
     const sheet = open({ body: button, onClose: () => (closes += 1) });
     const panel = sheet.panel;
 
-    gesture(panel, button, "pointerdown", 120, 300);
-    gesture(panel, button, "pointermove", 122, 400); // commits past the slop
+    gesture(panel, button, "touchstart", 120, 300);
+    const commit = gesture(panel, button, "touchmove", 122, 310); // past the ~6px claim
+    assert.equal(commit.prevented, true, "must preventDefault before the scroll detector wakes");
+    const follow = gesture(panel, button, "touchmove", 122, 400);
+    assert.equal(follow.prevented, true, "keep claiming for the whole gesture");
     assert.equal(panel.style.transform, "translateY(100px)", "panel follows the finger");
-    gesture(panel, button, "pointerup", 122, 400);
+    gesture(panel, button, "touchend", 122, 400);
     finishDismiss(panel);
 
     assert.equal(closes, 1, "100px down-drag dismisses");
     clickUnder(panel, button);
     assert.equal(clicks, 0, "committed drag must not click the button");
+  });
+
+  it("a fast swipe (jumps of 50px+) still claims on its first move and dismisses", () => {
+    let closes = 0;
+    const div = new FakeElement("div");
+    const sheet = open({ body: div, onClose: () => (closes += 1) });
+    const panel = sheet.panel;
+
+    gesture(panel, div, "touchstart", 120, 300);
+    const first = gesture(panel, div, "touchmove", 120, 350);
+    assert.equal(first.prevented, true, "claim happens before the scroll slop, fast or slow");
+    gesture(panel, div, "touchmove", 120, 420);
+    gesture(panel, div, "touchend", 120, 420);
+    finishDismiss(panel);
+
+    assert.equal(closes, 1);
   });
 
   it("a tap on a button still clicks and keeps the sheet open", () => {
@@ -318,8 +363,8 @@ describe("sheet drag-to-dismiss", () => {
     button.addEventListener("click", () => (clicks += 1));
     const sheet = open({ body: button, onClose: () => (closes += 1) });
 
-    gesture(sheet.panel, button, "pointerdown", 120, 300);
-    gesture(sheet.panel, button, "pointerup", 120, 300);
+    gesture(sheet.panel, button, "touchstart", 120, 300);
+    gesture(sheet.panel, button, "touchend", 120, 300);
     clickUnder(sheet.panel, button);
 
     assert.equal(clicks, 1);
@@ -333,9 +378,9 @@ describe("sheet drag-to-dismiss", () => {
     button.addEventListener("click", () => (clicks += 1));
     const sheet = open({ body: button, onClose: () => (closes += 1) });
 
-    gesture(sheet.panel, button, "pointerdown", 120, 300);
-    gesture(sheet.panel, button, "pointermove", 121, 340); // committed, under 80px
-    gesture(sheet.panel, button, "pointerup", 121, 340);
+    gesture(sheet.panel, button, "touchstart", 120, 300);
+    gesture(sheet.panel, button, "touchmove", 121, 340); // claimed, under 80px
+    gesture(sheet.panel, button, "touchend", 121, 340);
     clickUnder(sheet.panel, button);
 
     assert.equal(closes, 0, "under the dismiss threshold it springs back");
@@ -348,10 +393,11 @@ describe("sheet drag-to-dismiss", () => {
     const input = new FakeElement("input");
     const sheet = open({ body: input, onClose: () => (closes += 1) });
 
-    gesture(sheet.panel, input, "pointerdown", 120, 300);
-    gesture(sheet.panel, input, "pointermove", 120, 420);
-    gesture(sheet.panel, input, "pointerup", 120, 420);
+    gesture(sheet.panel, input, "touchstart", 120, 300);
+    const move = gesture(sheet.panel, input, "touchmove", 120, 420);
+    gesture(sheet.panel, input, "touchend", 120, 420);
 
+    assert.equal(move.prevented, false, "never preventDefault inside a slider's drag");
     assert.equal(closes, 0);
     assert.equal(sheet.panel.style.transform, undefined, "panel never moved");
   });
@@ -362,10 +408,11 @@ describe("sheet drag-to-dismiss", () => {
     const sheet = open({ body: div, onClose: () => (closes += 1) });
     sheet.panel.scrollTop = 40;
 
-    gesture(sheet.panel, div, "pointerdown", 120, 300);
-    gesture(sheet.panel, div, "pointermove", 120, 400);
-    gesture(sheet.panel, div, "pointerup", 120, 400);
+    gesture(sheet.panel, div, "touchstart", 120, 300);
+    const move = gesture(sheet.panel, div, "touchmove", 120, 400);
+    gesture(sheet.panel, div, "touchend", 120, 400);
 
+    assert.equal(move.prevented, false, "native scrolling must stay available");
     assert.equal(closes, 0);
     assert.equal(sheet.panel.style.transform, undefined);
   });
@@ -375,39 +422,54 @@ describe("sheet drag-to-dismiss", () => {
     const div = new FakeElement("div");
     const sheet = open({ body: div, onClose: () => (closes += 1) });
 
-    gesture(sheet.panel, div, "pointerdown", 120, 300);
-    gesture(sheet.panel, div, "pointermove", 120, 400);
-    gesture(sheet.panel, div, "pointerup", 120, 400);
+    gesture(sheet.panel, div, "touchstart", 120, 300);
+    gesture(sheet.panel, div, "touchmove", 120, 400);
+    gesture(sheet.panel, div, "touchend", 120, 400);
     finishDismiss(sheet.panel);
 
     assert.equal(closes, 1);
   });
 
-  it("horizontal movement on a button does not commit the drag", () => {
+  it("horizontal movement on a button does not claim the drag", () => {
     let clicks = 0;
     let closes = 0;
     const button = new FakeElement("button");
     button.addEventListener("click", () => (clicks += 1));
     const sheet = open({ body: button, onClose: () => (closes += 1) });
 
-    gesture(sheet.panel, button, "pointerdown", 120, 300);
-    gesture(sheet.panel, button, "pointermove", 220, 302); // horizontal intent
-    gesture(sheet.panel, button, "pointerup", 220, 302);
+    gesture(sheet.panel, button, "touchstart", 120, 300);
+    const move = gesture(sheet.panel, button, "touchmove", 220, 302); // horizontal intent
+    gesture(sheet.panel, button, "touchend", 220, 302);
     clickUnder(sheet.panel, button);
 
+    assert.equal(move.prevented, false, "horizontal gestures are never claimed");
     assert.equal(closes, 0);
     assert.equal(clicks, 1, "horizontal gesture stays a tap");
   });
 
-  it("handle drag still dismisses", () => {
+  it("handle touch drag still dismisses", () => {
     let closes = 0;
     const sheet = open({ body: new FakeElement("div"), onClose: () => (closes += 1) });
     const handle = sheet.panel.children[0];
 
-    gesture(sheet.panel, handle, "pointerdown", 180, 40);
-    gesture(sheet.panel, handle, "pointermove", 180, 150);
-    gesture(sheet.panel, handle, "pointerup", 180, 150);
+    gesture(sheet.panel, handle, "touchstart", 180, 40);
+    gesture(sheet.panel, handle, "touchmove", 180, 150);
+    gesture(sheet.panel, handle, "touchend", 180, 150);
     finishDismiss(sheet.panel);
+
+    assert.equal(closes, 1);
+  });
+
+  it("a mouse drag still dismisses via pointer events", () => {
+    let closes = 0;
+    const div = new FakeElement("div");
+    const sheet = open({ body: div, onClose: () => (closes += 1) });
+    const panel = sheet.panel;
+
+    mouseGesture(panel, div, "pointerdown", 120, 300);
+    mouseGesture(panel, div, "pointermove", 120, 400);
+    mouseGesture(panel, div, "pointerup", 120, 400);
+    finishDismiss(panel);
 
     assert.equal(closes, 1);
   });
