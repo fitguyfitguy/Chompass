@@ -1565,6 +1565,10 @@
     <string name="settings_fixed_launcher_icon_subtitle">Значок остаётся бирюзовым и не меняется под цвет темы и обоев.</string>
     <string name="settings_system_date_time_pickers">Системный выбор даты и времени</string>
     <string name="settings_system_date_time_pickers_subtitle">При правке приёма пищи использовать системные окна даты и времени.</string>
+    <string name="add_food_log_time">Время записи</string>
+    <string name="add_food_log_time_now">Сейчас</string>
+    <string name="cd_clear_log_time">Использовать текущее время</string>
+    <string name="edit_food_apply_time">Применить и к другим записям «%1$s»</string>
     <string name="settings_food_intro">Как ведут себя записи: единицы, время приёмов пищи, анализ фото и определение размера порции.</string>
     <string name="settings_food_section_logging">Запись</string>
     <string name="settings_food_section_photo">Анализ фото</string>

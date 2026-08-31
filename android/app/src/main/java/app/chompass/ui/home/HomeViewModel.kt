@@ -25,6 +25,7 @@ import app.chompass.models.ResolvedActiveBurn
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.ManualActiveEntry
 import app.chompass.models.MealType
+import app.chompass.models.CurrentMealCatalog
 import app.chompass.models.CaffeineEntry
 import app.chompass.models.CaffeineKind
 import app.chompass.models.FastingPhase
@@ -253,6 +254,11 @@ data class HomeUiState(
     val manualActiveKcal: Int = 0,
     /** Manual active logs for the selected day, newest first. */
     val manualActiveTodayEntries: List<ManualActiveEntry> = emptyList(),
+    /**
+     * Codeberg #77 part 3: when set, new food logs use this clock time on the
+     * selected day instead of now. Null = wall clock. Session-only.
+     */
+    val logTimeOverride: LocalTime? = null,
     /**
      * Diary entries copied via the selection bar, waiting to be pasted onto
      * the viewed day (in-memory only, cleared on app restart). Empty when the
@@ -1317,6 +1323,11 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         _selectedDate.value = date
     }
 
+    /** Codeberg #77 part 3: session clock for new food logs. Null = now. */
+    fun setLogTimeOverride(time: LocalTime?) {
+        _ui.update { it.copy(logTimeOverride = time?.withSecond(0)?.withNano(0)) }
+    }
+
     fun addWater(milliliters: Int) {
         if (milliliters <= 0) return
         viewModelScope.launch {
@@ -1874,7 +1885,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         protein = macro(analysis.protein),
                         carbs = macro(analysis.carbs),
                         fat = macro(analysis.fat),
-                        timestamp = timestampForSelectedDay(),
+                        timestamp = timestampForFoodLog(),
                         imageFilename = filename,
                         emoji = analysis.emoji,
                         source = entrySource,
@@ -2028,7 +2039,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             _ui.update { it.copy(saving = true) }
             try {
                 val recipeLogId = UUID.randomUUID()
-                val timestamp = timestampForSelectedDay()
+                val timestamp = timestampForFoodLog()
                 val knownKeys = container.foodRepository.existingFoodIdentityKeys().toMutableSet()
                 val built = draft.items.map { item ->
                     val entryId = UUID.randomUUID()
@@ -2468,9 +2479,25 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
-    fun updateEntry(original: FoodEntry, updated: FoodEntry) {
+    fun updateEntry(
+        original: FoodEntry,
+        updated: FoodEntry,
+        applyTimeToMeal: Boolean = false,
+    ) {
         viewModelScope.launch {
+            val zone = ZoneId.systemDefault()
+            val siblings = if (applyTimeToMeal && original.timestamp != updated.timestamp) {
+                siblingEntriesForTimeApply(_ui.value.todayEntries, original, zone)
+            } else {
+                emptyList()
+            }
             container.foodRepository.updateEntry(original, updated)
+            for (sibling in siblings) {
+                container.foodRepository.updateEntry(
+                    sibling,
+                    sibling.copy(timestamp = updated.timestamp),
+                )
+            }
         }
     }
 
@@ -2483,7 +2510,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         promoteQuickRelog(template)
         viewModelScope.launch {
             PerfLog.measure("relog", "addEntry", "name=${template.name}") {
-                container.foodRepository.addEntry(template.duplicatedForLogging(timestampForSelectedDay()))
+                container.foodRepository.addEntry(
+                    template.duplicatedForLogging(timestampForFoodLog(), loggingMealId()),
+                )
             }
         }
     }
@@ -2491,7 +2520,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     /** Log every ingredient of a Recipe as its own diary row, timestamped to the selected day. */
     fun logRecipe(recipe: app.chompass.models.Recipe) {
         viewModelScope.launch {
-            container.recipeRepository.logRecipe(recipe, timestampForSelectedDay())
+            container.recipeRepository.logRecipe(recipe, timestampForFoodLog())
         }
     }
 
@@ -2519,7 +2548,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 // (not the source entry's clock time / meal bucket). One batched
                 // DataStore edit instead of one full-file write per copied row;
                 // Health Connect mirrors in the background.
-                val duplicated = entries.map { it.duplicatedForLogging(timestampForDate(targetDate)) }
+                val duplicated = entries.map {
+                    it.duplicatedForLogging(timestampForFoodLog(targetDate), loggingMealId())
+                }
                 container.foodRepository.addEntries(duplicated, writeHealth = false)
                 viewModelScope.launch {
                     duplicated.forEach { container.foodRepository.mirrorEntryToHealth(it) }
@@ -2572,7 +2603,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                             protein = protein,
                             carbs = carbs,
                             fat = fat,
-                            timestamp = timestampForSelectedDay(),
+                            timestamp = timestampForFoodLog(),
                             source = FoodSource.MANUAL,
                             mealType = mealType,
                             servingSizeGrams = servingSizeGrams,
@@ -2589,20 +2620,28 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /**
-     * Mirrors iOS `logDate: selectedDate` behavior. When viewing today, returns now.
-     * When viewing a past or future day, combines that day with the current wall-clock
-     * time so the entry shows a sensible time and lands on the correct calendar day.
+     * Water / non-food: selected day + wall clock. Food logs use
+     * [timestampForFoodLog] so a session stamp does not move sips.
      */
     private fun timestampForSelectedDay(): Instant = timestampForDate(_selectedDate.value)
 
-    /** Same as [timestampForSelectedDay] but for an explicit day (copy target). */
-    private fun timestampForDate(day: LocalDate): Instant {
-        val today = LocalDate.now()
-        if (day == today) return Instant.now()
-        val zone = ZoneId.systemDefault()
-        val nowTime = java.time.LocalTime.now()
-        return day.atTime(nowTime).atZone(zone).toInstant()
-    }
+    private fun timestampForDate(day: LocalDate): Instant =
+        timestampForLogging(day, Instant.now(), ZoneId.systemDefault(), timeOverride = null)
+
+    private fun timestampForFoodLog(day: LocalDate = _selectedDate.value): Instant =
+        timestampForLogging(
+            day,
+            Instant.now(),
+            ZoneId.systemDefault(),
+            _ui.value.logTimeOverride,
+        )
+
+    private fun loggingMealId(): String =
+        mealIdForLogging(
+            CurrentMealCatalog.value,
+            _ui.value.logTimeOverride,
+            LocalTime.now(),
+        )
 
     private suspend fun savePendingDraft(
         analysis: FoodAnalysis,
@@ -2938,7 +2977,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 viewModelScope.launch {
                     PerfLog.measure("entryLocal", "addEntry", "i=$i") {
                         container.foodRepository.addEntry(
-                            canned.duplicatedForLogging(timestampForSelectedDay()),
+                            canned.duplicatedForLogging(timestampForFoodLog(), loggingMealId()),
                         )
                     }
                 }

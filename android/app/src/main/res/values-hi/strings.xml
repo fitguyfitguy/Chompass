@@ -1286,6 +1286,10 @@
     <string name="settings_fixed_launcher_icon_subtitle">लॉन्चर आइकन को टील रखता है। यह थीम रंग और वॉलपेपर का अनुसरण करना बंद कर देता है।</string>
     <string name="settings_system_date_time_pickers">सिस्टम तारीख और समय चुनने वाले</string>
     <string name="settings_system_date_time_pickers_subtitle">भोजन संपादित करते समय फ़ोन के तारीख और समय संवाद इस्तेमाल करें।</string>
+    <string name="add_food_log_time">लॉग समय</string>
+    <string name="add_food_log_time_now">अभी</string>
+    <string name="cd_clear_log_time">अभी का समय इस्तेमाल करें</string>
+    <string name="edit_food_apply_time">अन्य %1$s आइटम पर भी लागू करें</string>
     <string name="settings_food_intro">प्रविष्टियां कैसे व्यवहार करती हैं: इकाइयां, भोजन समय, फोटो विश्लेषण और सर्विंग आकार पहचान।</string>
     <string name="settings_food_log_sort">खाद्य लॉग क्रम</string>
     <string name="settings_food_section_logging">लॉगिंग</string>

@@ -888,6 +888,10 @@
     <string name="settings_fixed_launcher_icon_subtitle">Utrzymuje ikonę launchera w kolorze morskim. Przestaje podążać za kolorem motywu i tapetą.</string>
     <string name="settings_system_date_time_pickers">Systemowe wybieranie daty i godziny</string>
     <string name="settings_system_date_time_pickers_subtitle">Przy edycji posiłku używaj systemowych okien daty i godziny.</string>
+    <string name="add_food_log_time">Czas wpisu</string>
+    <string name="add_food_log_time_now">Teraz</string>
+    <string name="cd_clear_log_time">Użyj bieżącej godziny</string>
+    <string name="edit_food_apply_time">Zastosuj też do innych pozycji %1$s</string>
     <string name="sheet_theme_color">Kolor motywu</string>
     <string name="sheet_theme_color_footer">Zmienia główny kolor akcentu używany do przycisków, wykresów i wskaźników postępu.</string>
     <string name="theme_color_system">Systemowy</string>

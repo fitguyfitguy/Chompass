@@ -1280,6 +1280,10 @@
     <string name="settings_fixed_launcher_icon_subtitle">Mantém o ícone do app azul-petróleo. Ele deixa de seguir a cor do tema e do papel de parede.</string>
     <string name="settings_system_date_time_pickers">Seletores de data e hora do sistema</string>
     <string name="settings_system_date_time_pickers_subtitle">Use os diálogos de data e hora do telefone ao editar uma refeição.</string>
+    <string name="add_food_log_time">Hora do registro</string>
+    <string name="add_food_log_time_now">Agora</string>
+    <string name="cd_clear_log_time">Usar a hora atual</string>
+    <string name="edit_food_apply_time">Aplicar também aos outros itens de %1$s</string>
     <string name="settings_food_intro">Como os registros se comportam: unidades, horários de refeições, análise de fotos e detecção de tamanho de porção.</string>
     <string name="settings_food_log_sort">Ordem do diário alimentar</string>
     <string name="settings_food_section_logging">Registro</string>

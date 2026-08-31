@@ -888,6 +888,10 @@
     <string name="settings_fixed_launcher_icon_subtitle">Başlatıcı simgesini turkuaz tutar. Tema rengini ve duvar kâğıdını takip etmeyi bırakır.</string>
     <string name="settings_system_date_time_pickers">Sistem tarih ve saat seçicileri</string>
     <string name="settings_system_date_time_pickers_subtitle">Öğün düzenlerken telefonun tarih ve saat pencerelerini kullan.</string>
+    <string name="add_food_log_time">Kayıt saati</string>
+    <string name="add_food_log_time_now">Şimdi</string>
+    <string name="cd_clear_log_time">Şu anki saati kullan</string>
+    <string name="edit_food_apply_time">Diğer %1$s öğelerine de uygula</string>
     <string name="sheet_theme_color">Tema Rengi</string>
     <string name="sheet_theme_color_footer">Düğmeler, grafikler ve ilerleme göstergeleri için kullanılan ana vurgu rengini değiştirir.</string>
     <string name="theme_color_system">Sistem</string>

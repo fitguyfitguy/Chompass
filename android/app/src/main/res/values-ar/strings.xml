@@ -1286,6 +1286,10 @@
     <string name="settings_fixed_launcher_icon_subtitle">تبقي أيقونة التطبيق بلون تركوازي. تتوقف عن متابعة لون السمة والخلفية.</string>
     <string name="settings_system_date_time_pickers">منتقي التاريخ والوقت للنظام</string>
     <string name="settings_system_date_time_pickers_subtitle">استخدم نوافذ التاريخ والوقت في الهاتف عند تعديل وجبة.</string>
+    <string name="add_food_log_time">وقت التسجيل</string>
+    <string name="add_food_log_time_now">الآن</string>
+    <string name="cd_clear_log_time">استخدام الوقت الحالي</string>
+    <string name="edit_food_apply_time">طبّق أيضا على عناصر %1$s الأخرى</string>
     <string name="settings_food_intro">كيف تتصرف السجلات: الوحدات وأوقات الوجبات وتحليل الصور واكتشاف حجم الحصة.</string>
     <string name="settings_food_log_sort">ترتيب سجل الطعام</string>
     <string name="settings_food_section_logging">التسجيل</string>

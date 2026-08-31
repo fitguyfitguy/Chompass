@@ -530,6 +530,7 @@ internal fun AnalysisResultDialog(
 @Composable
 internal fun ManualEntryDialog(
     isSaving: Boolean = false,
+    initialMealType: String = MealType.currentMealId,
     onDismiss: () -> Unit,
     onSave: (
         name: String,
@@ -554,7 +555,7 @@ internal fun ManualEntryDialog(
     var carbs by rememberSaveable { mutableStateOf(0.0) }
     var fat by rememberSaveable { mutableStateOf(0.0) }
     var micros by rememberSaveable { mutableStateOf(MicronutrientValues()) }
-    var mealType by rememberSaveable { mutableStateOf(MealType.currentMealId) }
+    var mealType by rememberSaveable { mutableStateOf(initialMealType.ifBlank { MealType.currentMealId }) }
     var mealMenuExpanded by remember { mutableStateOf(false) }
 
     // Serving: unit options suggested from the entered name (same heuristics as

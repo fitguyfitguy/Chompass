@@ -1285,6 +1285,10 @@
     <string name="settings_fixed_launcher_icon_subtitle">런처 아이콘을 청록색으로 유지해요. 테마 색상과 배경화면을 따르지 않아요.</string>
     <string name="settings_system_date_time_pickers">시스템 날짜 및 시간 선택기</string>
     <string name="settings_system_date_time_pickers_subtitle">식사를 편집할 때 휴대폰의 날짜와 시간 대화상자를 사용합니다.</string>
+    <string name="add_food_log_time">기록 시간</string>
+    <string name="add_food_log_time_now">지금</string>
+    <string name="cd_clear_log_time">현재 시간 사용</string>
+    <string name="edit_food_apply_time">다른 %1$s 항목에도 적용</string>
     <string name="settings_food_intro">기록 동작: 단위, 식사 시간, 사진 분석, 1인분 크기 감지.</string>
     <string name="settings_food_log_sort">음식 기록 정렬</string>
     <string name="settings_food_section_logging">기록</string>

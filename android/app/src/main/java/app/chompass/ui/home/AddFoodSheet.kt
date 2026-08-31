@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -54,6 +55,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material.icons.filled.Close
+import app.chompass.ui.util.clockTimePattern
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -64,6 +71,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
 import app.chompass.R
 import app.chompass.data.QuickRelogRows
@@ -136,6 +144,9 @@ fun AddFoodSheet(
     relogLoading: Boolean = false,
     onRelogRecent: (FoodEntry) -> Unit = {},
     onReviewRecent: (FoodEntry) -> Unit = {},
+    logTimeOverride: LocalTime? = null,
+    useSystemDateTimePickers: Boolean = false,
+    onLogTimeOverride: (LocalTime?) -> Unit = {},
 ) {
     ChompassBottomSheet(onDismiss = onDismiss) {
         AddFoodSheetContent(
@@ -183,6 +194,9 @@ fun AddFoodSheet(
             relogLoading = relogLoading,
             onRelogRecent = { entry -> onDismiss(); onRelogRecent(entry) },
             onReviewRecent = { entry -> onDismiss(); onReviewRecent(entry) },
+            logTimeOverride = logTimeOverride,
+            useSystemDateTimePickers = useSystemDateTimePickers,
+            onLogTimeOverride = onLogTimeOverride,
         )
     }
 }
@@ -237,7 +251,17 @@ internal fun AddFoodSheetContent(
     relogLoading: Boolean = false,
     onRelogRecent: (FoodEntry) -> Unit = {},
     onReviewRecent: (FoodEntry) -> Unit = {},
+    logTimeOverride: LocalTime? = null,
+    useSystemDateTimePickers: Boolean = false,
+    onLogTimeOverride: (LocalTime?) -> Unit = {},
 ) {
+    val context = LocalContext.current
+    val timeFormatter = remember(context) {
+        DateTimeFormatter.ofPattern(clockTimePattern(context))
+    }
+    var showLogTimePicker by remember { mutableStateOf(false) }
+    val logTimeLabel = logTimeOverride?.format(timeFormatter)
+        ?: stringResource(R.string.add_food_log_time_now)
     val scrollState = rememberScrollState()
     Column(
         Modifier
@@ -258,6 +282,47 @@ internal fun AddFoodSheetContent(
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
+        Spacer(Modifier.height(10.dp))
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clickable { showLogTimePicker = true }
+                .padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                Icons.Filled.Schedule,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                modifier = Modifier.size(18.dp),
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                stringResource(R.string.add_food_log_time),
+                fontSize = 15.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
+                modifier = Modifier.weight(1f),
+            )
+            Text(
+                logTimeLabel,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Medium,
+                color = AppColors.Calorie,
+            )
+            if (logTimeOverride != null) {
+                IconButton(
+                    onClick = { onLogTimeOverride(null) },
+                    modifier = Modifier.size(32.dp),
+                ) {
+                    Icon(
+                        Icons.Filled.Close,
+                        contentDescription = stringResource(R.string.cd_clear_log_time),
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
+            }
+        }
         Spacer(Modifier.height(14.dp))
         Row(
             Modifier.fillMaxWidth(),
@@ -476,6 +541,17 @@ internal fun AddFoodSheetContent(
                 onStop = onStopFast,
             )
         }
+    }
+    if (showLogTimePicker) {
+        FoodLogTimePicker(
+            initialTime = logTimeOverride ?: LocalTime.now().withSecond(0).withNano(0),
+            useSystem = useSystemDateTimePickers,
+            onConfirm = {
+                onLogTimeOverride(it)
+                showLogTimePicker = false
+            },
+            onDismiss = { showLogTimePicker = false },
+        )
     }
 }
 

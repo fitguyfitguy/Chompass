@@ -71,6 +71,11 @@ import app.chompass.models.FoodSource
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.LocaleFormat
 import app.chompass.models.MealType
+import app.chompass.models.CurrentMealCatalog
+import androidx.compose.ui.platform.LocalContext
+import app.chompass.ui.util.clockTimePattern
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import app.chompass.models.MicronutrientField
 import app.chompass.models.ResolvedDayTargets
 import app.chompass.models.ServingUnitOption
@@ -131,6 +136,10 @@ fun FoodResultSheet(
      * are unchanged. Matches the PWA entry-form prefill behavior.
      */
     initialMealType: String? = null,
+    logTimeOverride: LocalTime? = null,
+    useSystemDateTimePickers: Boolean = false,
+    onLogTimeOverride: (LocalTime?) -> Unit = {},
+    mealTypeFromSavedMeal: Boolean = false,
     analysisPhase: EntryAnalysisPhase? = null,
     partial: PartialFoodAnalysis? = null,
     /** False while AI (or unit inference) is in flight — fields and Log stay locked. */
@@ -223,6 +232,14 @@ fun FoodResultSheet(
     var mealType by remember {
         mutableStateOf(initialMealType?.takeIf { it.isNotBlank() } ?: MealType.currentMealId)
     }
+    var mealTypeTouched by remember { mutableStateOf(mealTypeFromSavedMeal) }
+    var showLogTimePicker by remember { mutableStateOf(false) }
+    val logTimeContext = LocalContext.current
+    val logTimeFormatter = remember(logTimeContext) {
+        DateTimeFormatter.ofPattern(clockTimePattern(logTimeContext))
+    }
+    val displayLogTime = logTimeOverride
+        ?: remember { LocalTime.now().withSecond(0).withNano(0) }
     var moreNutritionExpanded by remember { mutableStateOf(false) }
     var nutritionUnlocked by remember { mutableStateOf(false) }
     var editableCalories by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.calories) }
@@ -811,12 +828,24 @@ fun FoodResultSheet(
                                     selected = m == mealType,
                                     onClick = {
                                         mealType = m
+                                        mealTypeTouched = true
                                         mealMenuExpanded = false
                                     }
                                 )
                             }
                         }
                     }
+                }
+            }
+            item {
+                SheetPillRow(onClick = { if (analysisReady) showLogTimePicker = true }) {
+                    Text(stringResource(R.string.label_time), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                    Text(
+                        displayLogTime.format(logTimeFormatter),
+                        fontSize = 17.sp,
+                        color = AppColors.Calorie,
+                        fontWeight = FontWeight.Medium,
+                    )
                 }
             }
 
@@ -929,6 +958,21 @@ fun FoodResultSheet(
             resolved = resolved,
             onDismiss = { whatIfEntry = null },
             onSuggest = onWhatIfSuggestion
+        )
+    }
+
+    if (showLogTimePicker) {
+        FoodLogTimePicker(
+            initialTime = displayLogTime,
+            useSystem = useSystemDateTimePickers,
+            onConfirm = { time ->
+                onLogTimeOverride(time)
+                if (!mealTypeFromSavedMeal && !mealTypeTouched) {
+                    mealType = CurrentMealCatalog.value.mealIdAt(time)
+                }
+                showLogTimePicker = false
+            },
+            onDismiss = { showLogTimePicker = false },
         )
     }
 }

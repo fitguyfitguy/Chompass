@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.UnfoldMore
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -110,11 +111,12 @@ fun EditFoodEntrySheet(
      *  only — never Reprocess). */
     aiFeaturesEnabled: Boolean = true,
     useSystemDateTimePickers: Boolean = false,
+    dayEntries: List<FoodEntry> = emptyList(),
     onReprocess: suspend (
         updatedNote: String,
         onProgress: (FoodAnalysisProgress) -> Unit,
     ) -> FoodAnalysis,
-    onSave: (FoodEntry) -> Unit,
+    onSave: (FoodEntry, applyTimeToMeal: Boolean) -> Unit,
     onDismiss: () -> Unit
 ) {
     var currentBaseEntry by remember(entry) { mutableStateOf(entry) }
@@ -201,6 +203,12 @@ fun EditFoodEntrySheet(
     var loggedTime by remember(entry.id, entry.timestamp) { mutableStateOf(initialLoggedAt.toLocalTime().withSecond(0).withNano(0)) }
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
+    var applyTimeToMeal by remember(entry.id) { mutableStateOf(false) }
+    val siblingCount = remember(entry.id, entry.mealType, entry.timestamp, dayEntries) {
+        siblingEntriesForTimeApply(dayEntries, entry, zone).size
+    }
+    val timeChanged = loggedDate != initialLoggedAt.toLocalDate() ||
+        loggedTime != initialLoggedAt.toLocalTime().withSecond(0).withNano(0)
     // Entry icon: pickable emoji and/or photo (see EditFoodIconDialog).
     var editableEmoji by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.emoji) }
     var editableImageFilename by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.imageFilename) }
@@ -909,6 +917,27 @@ fun EditFoodEntrySheet(
                             fontWeight = FontWeight.Medium
                         )
                     }
+                    if (siblingCount > 0 && timeChanged) {
+                        SheetHairline()
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable { applyTimeToMeal = !applyTimeToMeal }
+                                .padding(horizontal = 10.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Checkbox(
+                                checked = applyTimeToMeal,
+                                onCheckedChange = { applyTimeToMeal = it },
+                            )
+                            Text(
+                                stringResource(R.string.edit_food_apply_time, mealLabel(entry.mealType)),
+                                fontSize = 15.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
+                                modifier = Modifier.padding(end = 8.dp),
+                            )
+                        }
+                    }
                 }
             }
 
@@ -956,7 +985,7 @@ fun EditFoodEntrySheet(
                 primaryEnabled = !isReprocessing,
                 onPrimary = {
                     if (!isReprocessing) {
-                        if (noteChanged) reprocess() else onSave(buildUpdated())
+                        if (noteChanged) reprocess() else onSave(buildUpdated(), applyTimeToMeal && timeChanged)
                     }
                 },
             )
@@ -1007,34 +1036,15 @@ fun EditFoodEntrySheet(
     }
 
     if (showTimePicker) {
-        if (useSystemDateTimePickers) {
-            val ctx = LocalContext.current
-            LaunchedEffect(Unit) {
-                TimePickerDialog(
-                    ctx,
-                    { _, h, min ->
-                        loggedTime = LocalTime.of(h, min)
-                        showTimePicker = false
-                    },
-                    loggedTime.hour,
-                    loggedTime.minute,
-                    DateFormat.is24HourFormat(ctx),
-                ).apply {
-                    setOnCancelListener { showTimePicker = false }
-                    setOnDismissListener { showTimePicker = false }
-                    show()
-                }
-            }
-        } else {
-            EditFoodTimeDialog(
-                initialTime = loggedTime,
-                onConfirm = {
-                    loggedTime = it
-                    showTimePicker = false
-                },
-                onDismiss = { showTimePicker = false }
-            )
-        }
+        FoodLogTimePicker(
+            initialTime = loggedTime,
+            useSystem = useSystemDateTimePickers,
+            onConfirm = {
+                loggedTime = it
+                showTimePicker = false
+            },
+            onDismiss = { showTimePicker = false },
+        )
     }
 
     if (showIconPicker) {
@@ -1072,6 +1082,37 @@ internal fun shouldOfferReprocess(
     noteText: String,
     savedNote: String?,
 ): Boolean = aiFeaturesEnabled && noteText.trim() != (savedNote ?: "")
+
+@Composable
+internal fun FoodLogTimePicker(
+    initialTime: LocalTime,
+    useSystem: Boolean,
+    onConfirm: (LocalTime) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    if (useSystem) {
+        val ctx = LocalContext.current
+        LaunchedEffect(Unit) {
+            TimePickerDialog(
+                ctx,
+                { _, h, min -> onConfirm(LocalTime.of(h, min)) },
+                initialTime.hour,
+                initialTime.minute,
+                DateFormat.is24HourFormat(ctx),
+            ).apply {
+                setOnCancelListener { onDismiss() }
+                setOnDismissListener { onDismiss() }
+                show()
+            }
+        }
+    } else {
+        EditFoodTimeDialog(
+            initialTime = initialTime,
+            onConfirm = onConfirm,
+            onDismiss = onDismiss,
+        )
+    }
+}
 
 @Composable
 private fun EditFoodTimeDialog(

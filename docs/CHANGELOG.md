@@ -11,6 +11,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Edit or delete a logged active burn** (Android + web): Add Food → Active burn now lists that day's named logs. Tap a row to change the name or calories, or delete it. Closes Codeberg [#74](https://codeberg.org/fitguy/Chompass/issues/74) by [@bluepostofficebox](https://codeberg.org/bluepostofficebox).
 - **Number pad when editing meal time** (Android): hour and minute fields on Edit Food open the number keyboard. Closes part of Codeberg [#77](https://codeberg.org/fitguy/Chompass/issues/77) by [@BitLicker000](https://codeberg.org/BitLicker000).
 - **System date and time pickers** (Android): Settings → App & Display has a toggle to use the phone's date and time dialogs when editing a meal. Off by default. Closes part of Codeberg [#77](https://codeberg.org/fitguy/Chompass/issues/77) by [@BitLicker000](https://codeberg.org/BitLicker000).
+- **Log a past meal at one time** (Android): Add Food has a Log time row. Set 13:00 once and photo, barcode, note, relog, and manual all save at that time on the day you are viewing. Meal type follows that clock. Edit Food can copy the new date and time onto the other items in that meal. Closes the rest of Codeberg [#77](https://codeberg.org/fitguy/Chompass/issues/77) by [@BitLicker000](https://codeberg.org/BitLicker000).
 
 ### Fixed
 

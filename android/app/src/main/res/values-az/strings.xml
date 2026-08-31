@@ -1285,6 +1285,10 @@ bilirsən?</string>
     <string name="settings_fixed_launcher_icon_subtitle">Tətbiq ikonunu firuzəyi saxlayır. Tema rəngini və divar kağızını izləməyi dayandırır.</string>
     <string name="settings_system_date_time_pickers">Sistem tarix və saat seçiciləri</string>
     <string name="settings_system_date_time_pickers_subtitle">Yeməyi redaktə edərkən telefonun tarix və saat pəncərələrindən istifadə et.</string>
+    <string name="add_food_log_time">Qeyd vaxtı</string>
+    <string name="add_food_log_time_now">İndi</string>
+    <string name="cd_clear_log_time">Cari vaxtı istifadə et</string>
+    <string name="edit_food_apply_time">Digər %1$s elementlərinə də tətbiq et</string>
     <string name="settings_food_intro">Qeydlərin davranışı: vahidlər, yemək vaxtları, foto analizi və porsiya ölçüsü aşkarlanması.</string>
     <string name="settings_food_log_sort">Yemək jurnalının sıralanması</string>
     <string name="settings_food_section_logging">Qeyd</string>
