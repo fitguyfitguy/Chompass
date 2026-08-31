@@ -471,7 +471,8 @@ fun MultiPhotoCaptureSheet(
                         item(key = "add-photo") {
                             OutlinedButton(
                                 onClick = onAddPhoto,
-                                modifier = Modifier.size(width = 120.dp, height = 180.dp),
+                                modifier = Modifier.size(width = 150.dp, height = 180.dp),
+
                                 shape = RoundedCornerShape(16.dp),
                             ) {
                                 Column(
