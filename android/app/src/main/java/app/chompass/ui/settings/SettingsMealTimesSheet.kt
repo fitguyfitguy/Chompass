@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.BasicTextField
@@ -222,10 +223,18 @@ private fun MealCatalogRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column {
-            IconButton(onClick = onMoveUp, enabled = canMoveUp) {
+            IconButton(
+                onClick = onMoveUp,
+                enabled = canMoveUp,
+                modifier = Modifier.minimumInteractiveComponentSize(),
+            ) {
                 Icon(Icons.Filled.KeyboardArrowUp, contentDescription = stringResource(R.string.cd_move_up))
             }
-            IconButton(onClick = onMoveDown, enabled = canMoveDown) {
+            IconButton(
+                onClick = onMoveDown,
+                enabled = canMoveDown,
+                modifier = Modifier.minimumInteractiveComponentSize(),
+            ) {
                 Icon(Icons.Filled.KeyboardArrowDown, contentDescription = stringResource(R.string.cd_move_down))
             }
         }
@@ -260,7 +269,9 @@ private fun MealCatalogRow(
                     if (def.enabled) shownLabel else stringResource(R.string.settings_meals_hidden, shownLabel),
                     fontSize = 17.sp,
                     modifier = Modifier
-                        .clickable {
+                        .fillMaxWidth()
+                        .minimumInteractiveComponentSize()
+                        .clickable(onClickLabel = stringResource(R.string.cd_edit_meal_name)) {
                             draft = def.label.ifBlank { shownLabel }
                             editingName = true
                         }
@@ -272,7 +283,12 @@ private fun MealCatalogRow(
                     fontSize = 13.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
                     modifier = Modifier
-                        .clickable(enabled = def.enabled) { onTime() }
+                        .fillMaxWidth()
+                        .minimumInteractiveComponentSize()
+                        .clickable(
+                            enabled = def.enabled,
+                            onClickLabel = stringResource(R.string.cd_set_meal_start),
+                        ) { onTime() }
                         .semantics { role = Role.Button },
                 )
             }

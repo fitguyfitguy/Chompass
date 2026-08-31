@@ -131,6 +131,10 @@ export const ar = Object.freeze({
 "progress.history_count_format": "{count} إدخالات · اضغط للعرض أو الحذف",
 "progress.avg_format": "المتوسط: {avg} سعرة",
 "progress.macro_averages": "متوسطات المغذيات",
+  "progress.nutrient_averages": "متوسطات المغذيات الأخرى",
+  "progress.fiber": "ألياف",
+  "progress.sugar": "سكر",
+  "progress.sodium": "صوديوم",
 "progress.macro_progress_format": "{current}غ / {goal}غ",
 "progress.log_first_weight": "سجّل وزنك الأول لرؤية الاتجاهات",
 "progress.log_first_body_fat": "سجّل نسبة الدهون الأولى لرؤية الاتجاهات",
@@ -434,4 +438,6 @@ export const ar = Object.freeze({
   "measurements.confirm_log": 'تسجيل {pct}% دهون من الشريط؟ إذا كنت تستخدم دهون الجسم في حساب السعرات، فهذا يحدّثه.',
   "measurements.source_navy": 'US Navy',
   "measurements.source_rfm": 'RFM',
+  "entry.saved_meal_review_hint": "تسجيل يضيف هذه الوجبة. القلم يعدّل الطعام المحفوظ.",
+  "manual_active.delete": "حذف",
 });

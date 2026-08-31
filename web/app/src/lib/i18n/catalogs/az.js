@@ -131,6 +131,10 @@ export const az = Object.freeze({
 "progress.history_count_format": "{count} qeyd · baxmaq və ya silmək üçün toxunun",
 "progress.avg_format": "Orta: {avg} kkal",
 "progress.macro_averages": "Makro ortalamalar",
+  "progress.nutrient_averages": "Qida maddəsi ortalamaları",
+  "progress.fiber": "Lif",
+  "progress.sugar": "Şəkər",
+  "progress.sodium": "Natrium",
 "progress.macro_progress_format": "{current}q / {goal}q",
 "progress.log_first_weight": "Trendləri görmək üçün ilk çəkini qeyd edin",
 "progress.log_first_body_fat": "Trendləri görmək üçün ilk bədən yağını qeyd edin",
@@ -434,4 +438,6 @@ export const az = Object.freeze({
   "measurements.confirm_log": 'Lentdən {pct}% bədən yağı qeyd edilsin? Kalori hesabında bədən yağı istifadə edirsinizsə, bu onu yeniləyir.',
   "measurements.source_navy": 'US Navy',
   "measurements.source_rfm": 'RFM',
+  "entry.saved_meal_review_hint": "Qeyd Et bu yeməyi əlavə edir. Qələm saxlanılan yeməyi redaktə edir.",
+  "manual_active.delete": "Sil",
 });

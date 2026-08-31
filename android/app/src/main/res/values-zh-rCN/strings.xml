@@ -430,6 +430,7 @@
     <string name="progress_no_food">尚未记录食物</string>
 
     <string name="progress_macro_averages">宏量平均值</string>
+    <string name="progress_nutrient_averages">营养素平均值</string>
 
     <string name="progress_log_weight_title">记录体重</string>
 
@@ -831,6 +832,9 @@
     <string name="cd_share_meal">分享餐食</string>
     <string name="cd_unfavorite">取消收藏</string>
     <string name="cd_edit_favorite">编辑收藏食物</string>
+    <string name="cd_edit_meal_name">编辑餐次名称</string>
+    <string name="cd_set_meal_start">设置开始时间</string>
+
     <string name="coach_confirm_log_food_summary">%1$s：%2$s（蛋白质 %3$s、碳水 %4$s、脂肪 %5$s）</string>
     <string name="coach_confirm_log_food_title">记录这份食物？</string>
     <string name="coach_confirm_log_water_title">记录这次饮水？</string>
@@ -1201,6 +1205,8 @@
     <string name="recipe_builder_title_new">新建食谱</string>
     <string name="recipe_ingredient_count_format">%1$d 种配料</string>
     <string name="saved_meals_no_recipes">暂无食谱\n点按 + 用多种配料创建</string>
+    <string name="saved_meal_review_hint">记录会添加这顿餐。铅笔会编辑已保存的食物。</string>
+
     <string name="saved_meals_tab_recipes">食谱</string>
     <string name="section_date_time">日期和时间</string>
     <string name="section_share">分享</string>

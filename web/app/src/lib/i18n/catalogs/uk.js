@@ -166,6 +166,10 @@ export const uk = Object.freeze({
 "progress.history_count_format": "{count} записів · натисніть, щоб переглянути чи видалити",
 "progress.avg_format": "Середнє: {avg} ккал",
 "progress.macro_averages": "Середні макронутрієнти",
+  "progress.nutrient_averages": "Середні нутрієнти",
+  "progress.fiber": "Клітковина",
+  "progress.sugar": "Цукор",
+  "progress.sodium": "Натрій",
 "progress.macro_progress_format": "{current} г / {goal} г",
 "progress.log_first_weight": "Внесіть першу вагу, щоб бачити динаміку",
 "progress.log_first_body_fat": "Внесіть перший % жиру в тілі, щоб бачити динаміку",
@@ -460,4 +464,6 @@ export const uk = Object.freeze({
   "measurements.confirm_log": 'Записати {pct}% жиру з замірів? Якщо жир використовується в калоріях, це його оновить.',
   "measurements.source_navy": 'US Navy',
   "measurements.source_rfm": 'RFM',
+  "entry.saved_meal_review_hint": "Записати додає цю страву. Олівець змінює збережену їжу.",
+  "manual_active.delete": "Видалити",
 });

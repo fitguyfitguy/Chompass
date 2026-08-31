@@ -671,6 +671,8 @@
     <string name="saved_meals_move_down">Przesuń w dół</string>
     <string name="saved_meals_tab_recipes">Przepisy</string>
     <string name="saved_meals_no_recipes">Brak przepisów\nStuknij +, aby zbudować go z kilku składników</string>
+    <string name="saved_meal_review_hint">Dodaj zapisuje ten posiłek. Ołówek edytuje zapisane jedzenie.</string>
+
     <string name="recipe_builder_title_new">Nowy przepis</string>
     <string name="recipe_builder_title_edit">Edytuj przepis</string>
     <string name="recipe_builder_name_placeholder">Nazwa przepisu</string>
@@ -778,6 +780,8 @@
     <string name="progress_no_food">Brak zalogowanego jedzenia</string>
 
     <string name="progress_macro_averages">Średnie makroskładniki</string>
+    <string name="progress_nutrient_averages">Średnie składników</string>
+
     <string name="progress_macro_progress_format">%1$dg / %2$dg</string>
 
     <string name="progress_activity_section">Aktywność</string>
@@ -1436,6 +1440,9 @@
     <string name="cd_move_down">Przesuń w dół</string>
     <string name="cd_unfavorite">Usuń z ulubionych</string>
     <string name="cd_edit_favorite">Edytuj zapisany produkt</string>
+    <string name="cd_edit_meal_name">Zmień nazwę posiłku</string>
+    <string name="cd_set_meal_start">Ustaw godzinę startu</string>
+
     <string name="cd_log">Dodaj</string>
     <string name="cd_close">Zamknij</string>
     <string name="cd_clear_quantity">Wyczyść ilość</string>

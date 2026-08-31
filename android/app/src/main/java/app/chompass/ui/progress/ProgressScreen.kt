@@ -255,6 +255,18 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                             )
                         }
                     }
+                    item {
+                        CardSection {
+                            NutrientAveragesSection(
+                                avgFiber = ui.avgFiber,
+                                avgSugar = ui.avgSugar,
+                                avgSodium = ui.avgSodium,
+                                fiberGoal = ui.fiberGoal,
+                                sugarGoal = ui.sugarGoal,
+                                sodiumGoal = ui.sodiumGoal,
+                            )
+                        }
+                    }
                 }
             } else {
                 item { CardSection { ChartPlaceholder(height = 120.dp) } }
@@ -433,6 +445,18 @@ internal fun ProgressScreenPreviewContent(
                             proteinGoal = ui.proteinGoal,
                             carbsGoal = ui.carbsGoal,
                             fatGoal = ui.fatGoal,
+                        )
+                    }
+                }
+                item {
+                    CardSection {
+                        NutrientAveragesSection(
+                            avgFiber = ui.avgFiber,
+                            avgSugar = ui.avgSugar,
+                            avgSodium = ui.avgSodium,
+                            fiberGoal = ui.fiberGoal,
+                            sugarGoal = ui.sugarGoal,
+                            sodiumGoal = ui.sodiumGoal,
                         )
                     }
                 }

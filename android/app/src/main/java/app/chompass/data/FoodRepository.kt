@@ -55,6 +55,9 @@ internal fun aggregateFoodEntriesByDay(
             protein = dayEntries.sumOf { it.protein },
             carbs = dayEntries.sumOf { it.carbs },
             fat = dayEntries.sumOf { it.fat },
+            fiber = dayEntries.sumOf { it.fiber ?: 0.0 },
+            sugar = dayEntries.sumOf { it.sugar ?: 0.0 },
+            sodium = dayEntries.sumOf { it.sodium ?: 0.0 },
         )
     }
 }

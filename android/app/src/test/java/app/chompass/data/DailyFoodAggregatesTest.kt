@@ -35,6 +35,9 @@ class DailyFoodAggregatesTest {
         protein: Double = 10.0,
         carbs: Double = 20.0,
         fat: Double = 5.0,
+        fiber: Double? = null,
+        sugar: Double? = null,
+        sodium: Double? = null,
     ) = FoodEntry(
         id = UUID.nameUUIDFromBytes(id.toByteArray()),
         name = id,
@@ -42,6 +45,9 @@ class DailyFoodAggregatesTest {
         protein = protein,
         carbs = carbs,
         fat = fat,
+        fiber = fiber,
+        sugar = sugar,
+        sodium = sodium,
         timestamp = Instant.parse(ts),
         source = FoodSource.MANUAL,
         mealType = MealType.LUNCH.id,
@@ -246,4 +252,17 @@ class DailyFoodAggregatesTest {
         assertEquals(DailyFoodTotals(LocalDate.of(2026, 8, 1), 400, 20.0, 40.0, 10.0), rows[0])
         assertTrue(rows[0].id != rows[1].id)
     }
+
+    @Test
+    fun `aggregateFoodEntriesByDay sums fiber sugar sodium`() {
+        val entries = listOf(
+            food("a", "2026-08-01T12:00:00Z", fiber = 4.0, sugar = 8.0, sodium = 200.0),
+            food("b", "2026-08-01T18:00:00Z", calories = 300, fiber = 6.0, sugar = 2.0, sodium = 100.0),
+        )
+        val row = aggregateFoodEntriesByDay(entries, ZoneOffset.UTC).single()
+        assertEquals(10.0, row.fiber, 0.01)
+        assertEquals(10.0, row.sugar, 0.01)
+        assertEquals(300.0, row.sodium, 0.01)
+    }
+
 }

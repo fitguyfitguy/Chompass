@@ -510,6 +510,7 @@
     <string name="progress_no_food">Пока нет записей о еде</string>
 
     <string name="progress_macro_averages">Средние макросы</string>
+    <string name="progress_nutrient_averages">Средние нутриенты</string>
 
 
     <string name="progress_log_weight_title">Записать вес</string>
@@ -826,6 +827,9 @@
     <string name="cd_move_down">Переместить вниз</string>
     <string name="cd_unfavorite">Убрать из избранного</string>
     <string name="cd_edit_favorite">Изменить сохранённую еду</string>
+    <string name="cd_edit_meal_name">Изменить название приёма пищи</string>
+    <string name="cd_set_meal_start">Задать время начала</string>
+
     <string name="cd_log">Записать</string>
     <string name="cd_close">Закрыть</string>
     <string name="cd_clear_quantity">Очистить количество</string>
@@ -1529,6 +1533,8 @@
     <string name="recipe_ingredient_count_format">Ингредиентов: %1$d</string>
     <string name="saved_meals_no_recipes">Рецептов пока нет
 Нажми +, чтобы собрать его из нескольких ингредиентов</string>
+    <string name="saved_meal_review_hint">Запись добавляет это блюдо. Карандаш правит сохранённую еду.</string>
+
     <string name="saved_meals_tab_recipes">Рецепты</string>
     <string name="settings_ai_features_master">ИИ-функции</string>
     <string name="settings_ai_features_master_footer">Отключает всё, что отправляет данные ИИ-провайдеру: тренера, запись по фото/тексту/голосу, «А что если?» и ИИ-подсказки целей. Штрихкод, поиск еды, ручная запись, сохранённые приёмы пищи, вода, синхронизация и Health Connect продолжают работать.</string>

@@ -429,6 +429,7 @@
     <string name="progress_no_food">아직 기록된 음식이 없어요</string>
 
     <string name="progress_macro_averages">매크로 평균</string>
+    <string name="progress_nutrient_averages">영양소 평균</string>
 
     <string name="progress_log_weight_title">체중 기록</string>
 
@@ -829,6 +830,9 @@
     <string name="cd_share_meal">식사 공유</string>
     <string name="cd_unfavorite">즐겨찾기에서 제거</string>
     <string name="cd_edit_favorite">저장한 음식 편집</string>
+    <string name="cd_edit_meal_name">식사 이름 편집</string>
+    <string name="cd_set_meal_start">시작 시간 설정</string>
+
     <string name="coach_confirm_log_food_summary">%1$s: %2$s(단백질 %3$s, 탄수화물 %4$s, 지방 %5$s)</string>
     <string name="coach_confirm_log_food_title">이 음식을 기록할까요?</string>
     <string name="coach_confirm_log_water_title">이 물을 기록할까요?</string>
@@ -1199,6 +1203,8 @@
     <string name="recipe_builder_title_new">새 레시피</string>
     <string name="recipe_ingredient_count_format">재료 %1$d개</string>
     <string name="saved_meals_no_recipes">아직 레시피가 없어요\n+를 탭하여 여러 재료로 만드세요</string>
+    <string name="saved_meal_review_hint">기록하면 이 식사가 추가됩니다. 연필은 저장한 음식을 수정합니다.</string>
+
     <string name="saved_meals_tab_recipes">레시피</string>
     <string name="section_date_time">날짜 및 시간</string>
     <string name="section_share">공유</string>

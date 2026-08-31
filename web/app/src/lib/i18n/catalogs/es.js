@@ -131,6 +131,10 @@ export const es = Object.freeze({
 "progress.history_count_format": "{count} entradas · toca para ver o eliminar",
 "progress.avg_format": "Promedio: {avg} kcal",
 "progress.macro_averages": "Promedios de macronutrientes",
+  "progress.nutrient_averages": "Promedios de nutrientes",
+  "progress.fiber": "Fibra",
+  "progress.sugar": "Azúcar",
+  "progress.sodium": "Sodio",
 "progress.macro_progress_format": "{current}g / {goal}g",
 "progress.log_first_weight": "Registra tu primer peso para ver tendencias",
 "progress.log_first_body_fat": "Registra tu primer porcentaje de grasa corporal para ver tendencias",
@@ -434,4 +438,6 @@ export const es = Object.freeze({
   "measurements.confirm_log": '¿Registrar {pct}% de grasa corporal desde la cinta? Si usas grasa corporal en las calorías, esto lo actualiza.',
   "measurements.source_navy": 'US Navy',
   "measurements.source_rfm": 'RFM',
+  "entry.saved_meal_review_hint": "Registro añade esta comida. El lápiz edita el alimento guardado.",
+  "manual_active.delete": "Eliminar",
 });

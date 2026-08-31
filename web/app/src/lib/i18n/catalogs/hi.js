@@ -131,6 +131,10 @@ export const hi = Object.freeze({
 "progress.history_count_format": "{count} प्रविष्टियाँ · देखने या हटाने के लिए टैप करें",
 "progress.avg_format": "औसत: {avg} kcal",
 "progress.macro_averages": "मैक्रो औसत",
+  "progress.nutrient_averages": "पोषक औसत",
+  "progress.fiber": "फाइबर",
+  "progress.sugar": "चीनी",
+  "progress.sodium": "सोडियम",
 "progress.macro_progress_format": "{current}ग्रा / {goal}ग्रा",
 "progress.log_first_weight": "रुझान देखने के लिए अपना पहला वज़न लॉग करें",
 "progress.log_first_body_fat": "रुझान देखने के लिए अपना पहला बॉडी फैट लॉग करें",
@@ -434,4 +438,6 @@ export const hi = Object.freeze({
   "measurements.confirm_log": 'टेप से {pct}% शारीरिक वसा लॉग करें? यदि आप कैलोरी गणित में शारीरिक वसा उपयोग करते हैं, तो यह उसे अपडेट करता है।',
   "measurements.source_navy": 'US Navy',
   "measurements.source_rfm": 'RFM',
+  "entry.saved_meal_review_hint": "लॉग यह भोजन जोड़ता है। पेंसिल सहेजे भोजन को संपादित करती है।",
+  "manual_active.delete": "हटाएं",
 });

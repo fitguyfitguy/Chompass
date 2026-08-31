@@ -131,6 +131,10 @@ export const zh_CN = Object.freeze({
 "progress.history_count_format": "{count} 条记录 · 点按查看或删除",
 "progress.avg_format": "平均: {avg} 千卡",
 "progress.macro_averages": "宏量营养素平均值",
+  "progress.nutrient_averages": "营养素平均值",
+  "progress.fiber": "纤维",
+  "progress.sugar": "糖",
+  "progress.sodium": "钠",
 "progress.macro_progress_format": "{current}克 / {goal}克",
 "progress.log_first_weight": "记录首个体重以查看趋势",
 "progress.log_first_body_fat": "记录首个体脂率以查看趋势",
@@ -434,4 +438,6 @@ export const zh_CN = Object.freeze({
   "measurements.confirm_log": '从卷尺记录 {pct}% 体脂？如果你在热量计算中使用体脂，这会更新它。',
   "measurements.source_navy": 'US Navy',
   "measurements.source_rfm": 'RFM',
+  "entry.saved_meal_review_hint": "记录会添加这顿餐。铅笔会编辑已保存的食物。",
+  "manual_active.delete": "删除",
 });

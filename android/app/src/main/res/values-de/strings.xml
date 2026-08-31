@@ -1173,6 +1173,8 @@ für dich ein</string>
 
     <string name="saved_meals_no_recipes">Noch keine Rezepte\nTippe auf +, um aus mehreren Zutaten ein Rezept zu erstellen</string>
 
+    <string name="saved_meal_review_hint">Erfassen trägt diese Mahlzeit ein. Der Stift ändert das gespeicherte Essen.</string>
+
     <string name="recipe_builder_title_new">Neues Rezept</string>
 
     <string name="recipe_builder_title_edit">Rezept bearbeiten</string>
@@ -1364,6 +1366,8 @@ für dich ein</string>
     <string name="progress_no_food">Noch keine Mahlzeiten erfasst</string>
 
     <string name="progress_macro_averages">Makro-Durchschnittswerte</string>
+
+    <string name="progress_nutrient_averages">Nährstoff-Durchschnitt</string>
 
     <string name="progress_macro_progress_format">%1$dg / %2$dg</string>
 
@@ -2631,6 +2635,10 @@ für dich ein</string>
 
     <string name="cd_unfavorite">Als Favorit entfernen</string>
     <string name="cd_edit_favorite">Gespeichertes Lebensmittel bearbeiten</string>
+
+    <string name="cd_edit_meal_name">Mahlzeitnamen ändern</string>
+
+    <string name="cd_set_meal_start">Startzeit festlegen</string>
 
     <string name="cd_log">Protokoll</string>
 

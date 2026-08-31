@@ -429,6 +429,7 @@
     <string name="progress_no_food">لم يتم تسجيل أي طعام بعد</string>
 
     <string name="progress_macro_averages">متوسطات العناصر الكبرى</string>
+    <string name="progress_nutrient_averages">متوسطات المغذيات</string>
 
     <string name="progress_log_weight_title">تسجيل الوزن</string>
 
@@ -830,6 +831,9 @@
     <string name="cd_share_meal">مشاركة الوجبة</string>
     <string name="cd_unfavorite">إزالة من المفضلة</string>
     <string name="cd_edit_favorite">تحرير طعام محفوظ</string>
+    <string name="cd_edit_meal_name">تعديل اسم الوجبة</string>
+    <string name="cd_set_meal_start">تعيين وقت البداية</string>
+
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (بروتين %3$s، كربوهيدرات %4$s، دهون %5$s)</string>
     <string name="coach_confirm_log_food_title">تسجيل هذا الطعام؟</string>
     <string name="coach_confirm_log_water_title">تسجيل هذا الماء؟</string>
@@ -1200,6 +1204,8 @@
     <string name="recipe_builder_title_new">وصفة جديدة</string>
     <string name="recipe_ingredient_count_format">%1$d مكونات</string>
     <string name="saved_meals_no_recipes">لا وصفات بعد\nانقر + لبناء واحدة من مكونات متعددة</string>
+    <string name="saved_meal_review_hint">تسجيل يضيف هذه الوجبة. القلم يعدّل الطعام المحفوظ.</string>
+
     <string name="saved_meals_tab_recipes">وصفات</string>
     <string name="section_date_time">التاريخ والوقت</string>
     <string name="section_share">مشاركة</string>

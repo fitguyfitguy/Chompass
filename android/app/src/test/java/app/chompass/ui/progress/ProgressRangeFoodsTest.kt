@@ -75,6 +75,28 @@ class ProgressRangeFoodsTest {
     }
 
     @Test
+    fun nutrientAveragesExcludeToday() {
+        val today = LocalDate.of(2026, 8, 21)
+        val foods = listOf(
+            entry("A", today.minusDays(2), calories = 2000, fiber = 10.0, sugar = 20.0, sodium = 1000.0),
+            entry("B", today.minusDays(1), calories = 2200, fiber = 20.0, sugar = 40.0, sodium = 2000.0),
+            entry("C", today, calories = 500, fiber = 99.0, sugar = 99.0, sodium = 99.0),
+        )
+        val ui = buildProgressPreviewUiState(
+            profile = null,
+            weights = emptyList(),
+            bodyFatEntries = emptyList(),
+            foods = foods,
+            timeRange = TimeRange.ALL_TIME,
+            anchorDate = today,
+        )
+        assertEquals(15.0, ui.avgFiber, 0.01)
+        assertEquals(30.0, ui.avgSugar, 0.01)
+        assertEquals(1500.0, ui.avgSodium, 0.01)
+    }
+
+
+    @Test
     fun oneWeekDoesNotTouchTwoYearOldBuckets() {
         val today = LocalDate.of(2026, 8, 19)
         val (start, end) = TimeRange.WEEK.dateRange(today)
@@ -185,12 +207,22 @@ class ProgressRangeFoodsTest {
         assertEquals(150, ui.proteinGoal)
     }
 
-    private fun entry(name: String, day: LocalDate, calories: Int) = FoodEntry(
+    private fun entry(
+        name: String,
+        day: LocalDate,
+        calories: Int,
+        fiber: Double? = null,
+        sugar: Double? = null,
+        sodium: Double? = null,
+    ) = FoodEntry(
         name = name,
         calories = calories,
         protein = 10.0,
         carbs = 10.0,
         fat = 5.0,
+        fiber = fiber,
+        sugar = sugar,
+        sodium = sodium,
         timestamp = day.atTime(12, 0).toInstant(ZoneOffset.UTC),
         source = FoodSource.MANUAL,
         mealType = MealType.LUNCH.id,

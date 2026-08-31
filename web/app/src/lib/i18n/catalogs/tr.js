@@ -166,6 +166,10 @@ export const tr = Object.freeze({
   "progress.history_count_format": "{count} kayıt · görüntülemek veya silmek için dokunun",
   "progress.avg_format": "Ort: {avg} kcal",
   "progress.macro_averages": "Makro ortalamaları",
+  "progress.nutrient_averages": "Besin ortalamaları",
+  "progress.fiber": "Lif",
+  "progress.sugar": "Şeker",
+  "progress.sodium": "Sodyum",
   "progress.macro_progress_format": "{current}g / {goal}g",
   "progress.log_first_weight": "Trendleri görmek için ilk kilonuzu ekleyin",
   "progress.log_first_body_fat": "Trendleri görmek için ilk vücut yağı yüzdenizi ekleyin",
@@ -462,4 +466,6 @@ export const tr = Object.freeze({
   "measurements.confirm_log": 'Mezuradan %{pct} vücut yağı kaydedilsin mi? Kalori hesabında vücut yağı kullanıyorsan bu onu günceller.',
   "measurements.source_navy": 'US Navy',
   "measurements.source_rfm": 'RFM',
+  "entry.saved_meal_review_hint": "Ekle bu öğünü kaydeder. Kalem kayıtlı yiyeceği düzenler.",
+  "manual_active.delete": "Sil",
 });

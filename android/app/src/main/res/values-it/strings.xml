@@ -421,6 +421,7 @@
     <string name="progress_no_food">Nessun cibo ancora registrato</string>
 
     <string name="progress_macro_averages">Medie macro</string>
+    <string name="progress_nutrient_averages">Medie dei nutrienti</string>
 
     <string name="progress_log_weight_title">Registra peso</string>
 
@@ -817,6 +818,9 @@
     <string name="cd_share_meal">Condividi pasto</string>
     <string name="cd_unfavorite">Rimuovi dai preferiti</string>
     <string name="cd_edit_favorite">Modifica cibo salvato</string>
+    <string name="cd_edit_meal_name">Modifica nome pasto</string>
+    <string name="cd_set_meal_start">Imposta ora di inizio</string>
+
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (proteine %3$s, carboidrati %4$s, grassi %5$s)</string>
     <string name="coach_confirm_log_food_title">Registrare questo cibo?</string>
     <string name="coach_confirm_log_water_title">Registrare quest\'acqua?</string>
@@ -1159,6 +1163,8 @@
     <string name="recipe_builder_title_new">Nuova ricetta</string>
     <string name="recipe_ingredient_count_format">%1$d ingredienti</string>
     <string name="saved_meals_no_recipes">Ancora nessuna ricetta\nTocca + per crearne una con più ingredienti</string>
+    <string name="saved_meal_review_hint">Registra aggiunge questo pasto. La matita modifica il cibo salvato.</string>
+
     <string name="saved_meals_tab_recipes">Ricette</string>
     <string name="section_date_time">Data e ora</string>
     <string name="section_share">Condividi</string>

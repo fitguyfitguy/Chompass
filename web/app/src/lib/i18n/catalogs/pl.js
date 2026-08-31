@@ -166,6 +166,10 @@ export const pl = Object.freeze({
   "progress.history_count_format": "{count} wpisów · stuknij, aby wyświetlić lub usunąć",
   "progress.avg_format": "Średnio: {avg} kcal",
   "progress.macro_averages": "Średnie makroskładniki",
+  "progress.nutrient_averages": "Średnie składników",
+  "progress.fiber": "Błonnik",
+  "progress.sugar": "Cukier",
+  "progress.sodium": "Sód",
   "progress.macro_progress_format": "{current}g / {goal}g",
   "progress.log_first_weight": "Dodaj pierwszą wagę, aby zobaczyć trendy",
   "progress.log_first_body_fat": "Dodaj pierwszą tkankę tłuszczową (%), aby zobaczyć trendy",
@@ -462,4 +466,6 @@ export const pl = Object.freeze({
   "measurements.confirm_log": 'Zalogować {pct}% tkanki tłuszczowej z taśmy? Jeśli używasz tkanki tłuszczowej w kaloriach, to ją zaktualizuje.',
   "measurements.source_navy": 'US Navy',
   "measurements.source_rfm": 'RFM',
+  "entry.saved_meal_review_hint": "Dodaj zapisuje ten posiłek. Ołówek edytuje zapisane jedzenie.",
+  "manual_active.delete": "Usuń",
 });

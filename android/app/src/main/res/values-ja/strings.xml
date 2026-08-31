@@ -428,6 +428,7 @@
     <string name="progress_no_food">まだ食事が記録されていません</string>
 
     <string name="progress_macro_averages">マクロ平均</string>
+    <string name="progress_nutrient_averages">栄養素の平均</string>
 
     <string name="progress_log_weight_title">体重を記録</string>
 
@@ -829,6 +830,9 @@
     <string name="cd_share_meal">食事を共有</string>
     <string name="cd_unfavorite">お気に入りから削除</string>
     <string name="cd_edit_favorite">保存した食事を編集</string>
+    <string name="cd_edit_meal_name">食事名を編集</string>
+    <string name="cd_set_meal_start">開始時刻を設定</string>
+
     <string name="coach_confirm_log_food_summary">%1$s：%2$s（タンパク質 %3$s、炭水化物 %4$s、脂質 %5$s）</string>
     <string name="coach_confirm_log_food_title">この食品を記録しますか？</string>
     <string name="coach_confirm_log_water_title">この水を記録しますか？</string>
@@ -1199,6 +1203,8 @@
     <string name="recipe_builder_title_new">新しいレシピ</string>
     <string name="recipe_ingredient_count_format">材料 %1$d 点</string>
     <string name="saved_meals_no_recipes">レシピはまだありません\n+ をタップして複数の材料から作成</string>
+    <string name="saved_meal_review_hint">記録するとこの食事が追加されます。鉛筆は保存した食事を編集します。</string>
+
     <string name="saved_meals_tab_recipes">レシピ</string>
     <string name="section_date_time">日付と時刻</string>
     <string name="section_share">共有</string>

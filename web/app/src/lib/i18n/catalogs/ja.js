@@ -131,6 +131,10 @@ export const ja = Object.freeze({
 "progress.history_count_format": "{count}件 · タップして表示・削除",
 "progress.avg_format": "平均: {avg} kcal",
 "progress.macro_averages": "マクロ平均",
+  "progress.nutrient_averages": "栄養素の平均",
+  "progress.fiber": "食物繊維",
+  "progress.sugar": "糖質",
+  "progress.sodium": "ナトリウム",
 "progress.macro_progress_format": "{current}g / {goal}g",
 "progress.log_first_weight": "最初の体重を記録するとトレンドが表示されます",
 "progress.log_first_body_fat": "最初の体脂肪率を記録するとトレンドが表示されます",
@@ -434,4 +438,6 @@ export const ja = Object.freeze({
   "measurements.confirm_log": 'メジャーから体脂肪 {pct}% を記録しますか？カロリー計算に体脂肪を使っている場合、それが更新されます。',
   "measurements.source_navy": 'US Navy',
   "measurements.source_rfm": 'RFM',
+  "entry.saved_meal_review_hint": "記録するとこの食事が追加されます。鉛筆は保存した食事を編集します。",
+  "manual_active.delete": "削除",
 });
