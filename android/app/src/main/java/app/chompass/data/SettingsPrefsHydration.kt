@@ -27,6 +27,7 @@ internal data class SettingsPrefsHydration(
     val selectedAI: AIProvider,
     val selectedModelRaw: String?,
     val visionModelRaw: String?,
+    val customBaseUrl: String,
     val selectedSpeech: SpeechProvider,
     val selectedSpeechLanguage: SpeechLanguage,
     val heightUnit: String,
@@ -99,6 +100,7 @@ internal data class SettingsPrefsHydration(
     val fallbackEnabled: Boolean,
     val fallbackProvider: AIProvider,
     val fallbackModelRaw: String?,
+    val fallbackCustomBaseUrl: String,
     val geminiGoogleSearchEnabled: Boolean,
     val openRouterReasoningEffort: OpenRouterReasoningEffort,
     val mealConstituentsEnabled: Boolean,
@@ -141,6 +143,7 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
         selectedAI = provider,
         selectedModelRaw = this[Keys.SELECTED_AI_MODEL],
         visionModelRaw = this[Keys.visionModel(provider)],
+        customBaseUrl = this[Keys.customBaseUrl(provider)].orEmpty(),
         selectedSpeech = speech,
         selectedSpeechLanguage = SpeechLanguage.entries.firstOrNull {
             it.name == this[Keys.selectedSpeechLanguage(speech)]
@@ -226,6 +229,7 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
         fallbackEnabled = this[Keys.FALLBACK_ENABLED] ?: true,
         fallbackProvider = fallbackProvider,
         fallbackModelRaw = this[Keys.FALLBACK_MODEL],
+        fallbackCustomBaseUrl = this[Keys.fallbackCustomBaseUrl(fallbackProvider)].orEmpty(),
         geminiGoogleSearchEnabled = this[Keys.GEMINI_GOOGLE_SEARCH_ENABLED] ?: false,
         openRouterReasoningEffort = OpenRouterReasoningEffort.fromStorage(this[Keys.OPENROUTER_REASONING_EFFORT]),
         mealConstituentsEnabled = this[Keys.MEAL_CONSTITUENTS_ENABLED] ?: true,

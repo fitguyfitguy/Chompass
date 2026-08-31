@@ -44,6 +44,8 @@ class SettingsPrefsHydrationTest {
         assertTrue(snap.fastingAutoWindows)
         assertTrue(snap.fastingGoalNotificationEnabled)
         assertTrue(snap.fastingStartReminderEnabled)
+        assertEquals("", snap.customBaseUrl)
+        assertEquals("", snap.fallbackCustomBaseUrl)
     }
 
     @Test
@@ -82,5 +84,18 @@ class SettingsPrefsHydrationTest {
     fun legacyCaffeineLimit_default_leavesDefaultGoal() {
         val snap = preferencesOf(Keys.CAFFEINE_DAILY_LIMIT_MG to 400).toSettingsHydration(json)
         assertEquals(OptionalNutrientGoals.Default, snap.optionalNutrientGoals)
+    }
+
+    @Test
+    fun customBaseUrl_hydratesForSelectedAndFallbackProviders() {
+        val prefs = preferencesOf(
+            Keys.SELECTED_AI_PROVIDER to AIProvider.OLLAMA.name,
+            Keys.FALLBACK_PROVIDER to AIProvider.CUSTOM_OPENAI.name,
+            Keys.customBaseUrl(AIProvider.OLLAMA) to "http://192.168.1.10:11434",
+            Keys.fallbackCustomBaseUrl(AIProvider.CUSTOM_OPENAI) to "https://example.com/v1",
+        )
+        val snap = prefs.toSettingsHydration(json)
+        assertEquals("http://192.168.1.10:11434", snap.customBaseUrl)
+        assertEquals("https://example.com/v1", snap.fallbackCustomBaseUrl)
     }
 }

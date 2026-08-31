@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Fixed
+
+- **Saved AI server URL shows on the settings row** (Android): Settings → AI & Speech now shows the custom or Ollama URL you saved, and reopening the editor starts with that URL instead of a blank field. The fallback URL row does the same. Closes Codeberg [#52](https://codeberg.org/fitguy/Chompass/issues/52) by [@savionlee](https://codeberg.org/savionlee).
+
 ## [4.2.0] - 2026-08-28
 
 ### Added

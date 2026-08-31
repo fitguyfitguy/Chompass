@@ -105,7 +105,7 @@ internal fun SettingsAiSection(
                     HorizontalDivider()
                     SettingRow(
                         if (ui.selectedAI.requiresCustomEndpoint) stringResource(R.string.settings_base_url) else stringResource(R.string.settings_server_url),
-                        stringResource(R.string.settings_tap_to_edit),
+                        ui.customBaseUrl.ifEmpty { stringResource(R.string.settings_not_set) },
                         icon = Icons.Outlined.Link
                     ) { onOpenSheet(SettingsSheet.CUSTOM_BASE_URL) }
                     // Issue #8 follow-up: release builds allow cleartext only via this
