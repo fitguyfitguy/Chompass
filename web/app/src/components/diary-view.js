@@ -1365,24 +1365,29 @@ export class DiaryView extends HTMLElement {
         : `<div class="add-food-relog" role="list">
              ${entries.map((e, i) => relogChip(e, `${prefix}-${i}`)).join("")}
            </div>`;
-    const hasRelog = relogRows.recents.length > 0 || relogRows.frequents.length > 0;
-    const quickRelogBlock = hasRelog
-      ? `<button type="button" class="add-food-section add-food-section--action" data-add="log-again" aria-label="${t("add_food.open_logged_foods")}">
-           <span>${t("add_food.quick_relog")}</span>
-           ${chevronRight}
-         </button>
-           <div class="add-food-relog-stack">
+    const quickRelogBlock = `
+      <button type="button" class="add-food-section add-food-section--action" data-add="log-again" aria-label="${t("add_food.open_logged_foods")}">
+        <span class="add-food-section__text">
+          <strong>${t("diary.saved_meals")}</strong>
+          <span class="add-food-section__sub">${t("add_food.saved_meals_sub")}</span>
+        </span>
+        ${chevronRight}
+      </button>
+      ${
+        hasRelog
+          ? `<div class="add-food-relog-stack">
              ${relogRow(relogRows.recents, "r")}
              ${relogRow(relogRows.frequents, "f")}
            </div>`
-      : `<p class="add-food-hint add-food-hint--empty">${t("add_food.quick_relog_empty")}</p>`;
+          : `<p class="add-food-hint add-food-hint--empty">${t("add_food.quick_relog_empty")}</p>`
+      }`;
     const body = `
       <div class="add-food-heroes">
         ${tile("photo", t("add_food.hero_photo"), t("add_food.hero_photo_sub"), ICONS.photo, true)}
         ${tile("note", t("add_food.hero_note"), t("add_food.hero_note_sub"), ICONS.note, true)}
-        ${tile("recents", t("add_food.hero_recents"), t("add_food.hero_recents_sub"), ICONS.recents, true)}
       </div>
       ${quickRelogBlock}
+
       <p class="add-food-section">${t("add_food.more_section")}</p>
       <div class="add-food-grid">
         ${speech.supported ? tile("voice", t("add_food.voice"), "", ICONS.voice) : `<span class="add-food-tile add-food-tile--spacer" aria-hidden="true"></span>`}

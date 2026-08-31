@@ -8,12 +8,13 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Added
 
-- **Log again opens every logged food** (Android + web): tap Log again above the compact chips to open Saved Meals. Recents is now the full list of unique foods, with search and sort by recent, name, or size (kcal). The chips stay as they are. Closes Codeberg [#76](https://codeberg.org/fitguy/Chompass/issues/76) by [@BrassCat](https://codeberg.org/BrassCat).
-- **Progress averages for fiber, sugar, and sodium** (Android + web): off until you turn them on in Customize Progress. A warning explains that barcodes and photos often omit these values. Closes Codeberg [#75](https://codeberg.org/fitguy/Chompass/issues/75) by [@bluepostofficebox](https://codeberg.org/bluepostofficebox).
+- **Saved meals from Add Food** (Android + web): a Saved meals row opens Recents, favorites, and recipes. The compact chips stay. The extra Recents tile is gone. Closes Codeberg [#76](https://codeberg.org/fitguy/Chompass/issues/76) by [@BrassCat](https://codeberg.org/BrassCat).
+- **Progress averages for fiber, sugar, and sodium** (Android + web): off until you turn them on in Customize Progress. A warning explains that Open Food Facts often omits them and photo analysis can guess. Closes Codeberg [#75](https://codeberg.org/fitguy/Chompass/issues/75) by [@bluepostofficebox](https://codeberg.org/bluepostofficebox).
 - **Saved Meals review explains Log vs the pencil** (Android + web): a one-line hint says Log adds a diary meal, and the pencil on a favorite edits the saved food.
 - **Edit or delete a logged active burn** (Android + web): Add Food → Active burn now lists that day's named logs. Tap a row to change the name or calories, or delete it. Closes Codeberg [#74](https://codeberg.org/fitguy/Chompass/issues/74) by [@bluepostofficebox](https://codeberg.org/bluepostofficebox).
-- **Meal time uses a wheel you can type** (Android): tap Time on Edit Food to get the same wheel as other values. Tap the number to type. The last choice is remembered. Closes part of Codeberg [#77](https://codeberg.org/fitguy/Chompass/issues/77) by [@BitLicker000](https://codeberg.org/BitLicker000).
-- **System date and time pickers** (Android): Settings → App & Display has a toggle to use the phone's date and time dialogs when editing a meal. Off by default. Closes part of Codeberg [#77](https://codeberg.org/fitguy/Chompass/issues/77) by [@BitLicker000](https://codeberg.org/BitLicker000).
+- **Meal time uses a compact hour:minute wheel** (Android): tap Time on Edit Food for a small 00:00 wheel. Tap the number to type. The last choice is remembered. Closes part of Codeberg [#77](https://codeberg.org/fitguy/Chompass/issues/77) by [@BitLicker000](https://codeberg.org/BitLicker000).
+- **System date and time pickers** (Android): Settings → App & Display has a toggle to use the phone's date and time dialogs when editing a meal. Off by default. Those dialogs follow dark mode. Closes part of Codeberg [#77](https://codeberg.org/fitguy/Chompass/issues/77) by [@BitLicker000](https://codeberg.org/BitLicker000).
+
 - **Apply a new meal time to the rest of the slot** (Android): Edit Food can copy the new date and time onto the other items in that meal. Closes the rest of Codeberg [#77](https://codeberg.org/fitguy/Chompass/issues/77) by [@BitLicker000](https://codeberg.org/BitLicker000).
 
 

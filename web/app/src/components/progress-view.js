@@ -379,10 +379,10 @@ export class ProgressView extends HTMLElement {
         ${macroRow(t("progress.fiber"), macroAvg("fiberG"), nutrientGoals.fiberG, "var(--fiber)")}
         ${macroRow(t("progress.sugar"), macroAvg("sugarG"), nutrientGoals.sugarG, "#c47a3a")}
         ${macroRow(t("progress.sodium"), macroAvg("sodiumMg"), nutrientGoals.sodiumMg, "var(--water)", "mg")}
-        <p class="progress-empty">${t("progress.nutrient_averages_caption")}</p>
       </div>`
           : ""
       }
+
 
 
       ${

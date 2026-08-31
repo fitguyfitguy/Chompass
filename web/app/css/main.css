@@ -3909,17 +3909,16 @@ button.add-food-section--action {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.75rem;
   width: 100%;
   min-height: 48px;
-  margin: 0.2rem 0 0;
-  padding: 0;
+  margin: 0.35rem 0 0.15rem;
+  padding: 0.35rem 0;
   border: 0;
   background: none;
   cursor: pointer;
   font: inherit;
-  font-size: 0.75rem;
-  font-weight: 650;
-  color: var(--muted);
+  color: var(--text);
   text-align: left;
 }
 
@@ -3927,7 +3926,26 @@ button.add-food-section--action svg {
   width: 1.25rem;
   height: 1.25rem;
   flex-shrink: 0;
+  color: var(--accent, var(--text));
 }
+
+.add-food-section__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.add-food-section__text strong {
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.add-food-section__sub {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
 
 .add-food-water {
   display: flex;

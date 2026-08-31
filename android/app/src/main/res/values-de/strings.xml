@@ -703,13 +703,16 @@ für dich ein</string>
     <string name="add_food_hero_saved">Gespeichert</string>
 
     <string name="add_food_hero_saved_sub">Zuletzt verwendet &amp; Favoriten</string>
+    <string name="add_food_saved_meals_sub">Zuletzt, Favoriten, Rezepte</string>
+
 
 
     <string name="add_food_quick_relog">Erneut eintragen</string>
     <string name="saved_meals_sort_recent">Zuletzt</string>
     <string name="saved_meals_sort_name">A–Z</string>
     <string name="saved_meals_sort_size">Größe</string>
-    <string name="cd_open_logged_foods">Alle erfassten Lebensmittel</string>
+    <string name="cd_open_logged_foods">Gespeicherte Mahlzeiten: zuletzt, Favoriten und Rezepte</string>
+
 
     <string name="add_food_quick_relog_empty">Füge eine Mahlzeit zu den Favoriten hinzu oder erfasse sie einmal. Sie wird hier angezeigt, damit du sie mit einem Fingertipp erneut erfassen kannst.</string>
 
@@ -1372,7 +1375,6 @@ für dich ein</string>
     <string name="progress_macro_averages">Makro-Durchschnittswerte</string>
 
     <string name="progress_nutrient_averages">Nährstoff-Durchschnitt</string>
-    <string name="progress_nutrient_averages_caption">Ballaststoffe, Zucker und Natrium fehlen oft auf Barcodes und Fotos, daher können diese Durchschnitte zu niedrig ausfallen.</string>
 
 
     <string name="progress_macro_progress_format">%1$dg / %2$dg</string>
@@ -1766,9 +1768,10 @@ für dich ein</string>
 
     <string name="settings_progress_plots_latest">Aktuellste: %1$s %2$s</string>
     <string name="settings_progress_nutrient_averages">Durchschnitte für Ballaststoffe, Zucker und Natrium</string>
-    <string name="settings_progress_nutrient_averages_subtitle">Aus, bis du sie einschaltest. Barcodes und Fotos lassen diese Werte oft weg.</string>
-    <string name="settings_progress_nutrient_averages_warning_title">Diese Zahlen sind unvollständig</string>
-    <string name="settings_progress_nutrient_averages_warning_body">Ballaststoffe, Zucker und Natrium fehlen oft bei Barcodes und Fotoschätzungen. Durchschnitte zählen nur das Geloggte und können daher zu niedrig wirken.</string>
+    <string name="settings_progress_nutrient_averages_subtitle">Aus, bis du sie einschaltest. Open Food Facts und Fotos lassen diese Werte oft weg oder schätzen sie.</string>
+    <string name="settings_progress_nutrient_averages_warning_title">Kein vollständiges Bild</string>
+    <string name="settings_progress_nutrient_averages_warning_body">Open Food Facts lässt Ballaststoffe, Zucker oder Natrium oft weg, und die Fotoschätzung rät, wenn das Etikett sie nicht nennt. Der Durchschnitt zählt nur das Geloggte und kann daher danebenliegen.</string>
+
     <string name="settings_progress_nutrient_averages_confirm">Anzeigen</string>
 
 

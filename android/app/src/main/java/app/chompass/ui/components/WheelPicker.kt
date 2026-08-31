@@ -562,6 +562,94 @@ fun TimeWheelPicker(
 }
 
 /**
+ * Compact hour:minute wheels (00–23 : 00–59) with the same tap-to-type memory
+ * as [NumericWheelPicker]. Used for meal log time, not the 15-minute meal-start wheel.
+ */
+@Composable
+fun ClockTimeWheelPicker(
+    time: java.time.LocalTime,
+    onChange: (java.time.LocalTime) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val hours = remember { (0..23).toList() }
+    val minutes = remember { (0..59).toList() }
+    val locale = remember { java.util.Locale.getDefault() }
+    val (typed, setTyped) = rememberMagnitudePickerMode()
+    val typeCd = stringResource(R.string.picker_type_value)
+    if (typed) {
+        MagnitudeTypeField(
+            display = String.format(locale, "%02d:%02d", time.hour, time.minute),
+            decimal = true,
+            onCommitRaw = { raw ->
+                parseClockTime(raw)?.let { onChange(it); true } ?: false
+            },
+            onFlipToWheel = { setTyped(false) },
+            unit = null,
+            contentDescription = typeCd,
+            modifier = modifier,
+        )
+        return
+    }
+    MagnitudeWheelChrome(showHint = false, onType = { setTyped(true) }) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(ROW_HEIGHT),
+            contentAlignment = Alignment.Center,
+        ) {
+            WheelSelectionHighlight(
+                Modifier
+                    .align(Alignment.Center)
+                    .width(184.dp),
+            )
+            Row(
+                Modifier.width(184.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                WheelPicker(
+                    items = hours,
+                    selected = time.hour,
+                    onSelect = { onChange(java.time.LocalTime.of(it, time.minute)) },
+                    label = { String.format(locale, "%02d", it) },
+                    modifier = Modifier.weight(1f),
+                    showSelectionHighlight = false,
+                    onCenterTap = { setTyped(true) },
+                )
+                Text(
+                    ":",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
+                WheelPicker(
+                    items = minutes,
+                    selected = time.minute,
+                    onSelect = { onChange(java.time.LocalTime.of(time.hour, it)) },
+                    label = { String.format(locale, "%02d", it) },
+                    modifier = Modifier.weight(1f),
+                    showSelectionHighlight = false,
+                    onCenterTap = { setTyped(true) },
+                )
+            }
+        }
+    }
+}
+
+internal fun parseClockTime(raw: String): java.time.LocalTime? {
+    val digits = raw.filter { it.isDigit() }
+    val (hour, minute) = when (digits.length) {
+        1, 2 -> digits.toInt() to 0
+        3 -> digits.take(1).toInt() to digits.drop(1).toInt()
+        4 -> digits.take(2).toInt() to digits.drop(2).toInt()
+        else -> return null
+    }
+    if (hour !in 0..23 || minute !in 0..59) return null
+    return java.time.LocalTime.of(hour, minute)
+}
+
+
+/**
  * Macro wheel picker — NumericWheelPicker with an accent color for the unit label
  * and selected row highlight. Used in 2x2 grid for Calories/Protein/Carbs/Fat.
  */
