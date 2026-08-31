@@ -43,6 +43,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -314,8 +315,8 @@ fun MultiPhotoCaptureSheet(
     onDismiss: () -> Unit,
 ) {
     val state = rememberChompassSheetState()
-    var note by remember { mutableStateOf("") }
-    var weightText by remember { mutableStateOf("") }
+    var note by rememberSaveable { mutableStateOf("") }
+    var weightText by rememberSaveable { mutableStateOf("") }
     var tipExpanded by remember(requireNote) { mutableStateOf(requireNote) }
     var dontAskAgain by remember { mutableStateOf(false) }
     var pendingConfirm by remember { mutableStateOf(false) }

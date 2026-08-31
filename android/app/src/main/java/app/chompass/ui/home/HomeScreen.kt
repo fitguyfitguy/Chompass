@@ -382,6 +382,17 @@ fun HomeScreen(
         if (addFoodFlowActive) showAddFoodSheet = true
     }
 
+    /** After the first ingredient is in the draft, dismiss camera/note/review
+     *  back to the meal sheet, not the Add Food hub (chip would sit behind it). */
+    fun returnToDraftOrAddFoodGrid() {
+        val draft = ui.progressiveMeal
+        if (draft != null && draft.items.isNotEmpty()) {
+            vm.showProgressiveMealSheet(true)
+        } else {
+            returnToAddFoodGrid()
+        }
+    }
+
     // No topBar: the empty TopAppBar used to act as the status-bar spacer, but the
     // ad strip above this screen (TabWithBanner) now owns that inset.
     Scaffold(
@@ -1344,7 +1355,9 @@ fun HomeScreen(
                 appendReanalyzeNote = null
                 appendReanalyzeGrams = null
                 photoSession.openReviewIfStaged()
-                returnToAddFoodGrid()
+                if (stagedPhotoBytes.isEmpty()) {
+                    returnToDraftOrAddFoodGrid()
+                }
             }
         )
     }
@@ -1394,7 +1407,7 @@ fun HomeScreen(
             },
             onDismiss = {
                 photoSession.clear()
-                returnToAddFoodGrid()
+                returnToDraftOrAddFoodGrid()
             },
         )
     }
@@ -1572,7 +1585,11 @@ fun HomeScreen(
                     resumeCapture = resumeCapture,
                 )
             },
-            onDismiss = { vm.dismissPending() }
+            onDismiss = {
+                val hasDraft = ui.progressiveMeal?.items?.isNotEmpty() == true
+                vm.dismissPending()
+                if (hasDraft) vm.showProgressiveMealSheet(true)
+            }
         )
     }
 
