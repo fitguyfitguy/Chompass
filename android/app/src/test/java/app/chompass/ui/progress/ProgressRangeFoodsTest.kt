@@ -95,7 +95,6 @@ class ProgressRangeFoodsTest {
         assertEquals(1500.0, ui.avgSodium, 0.01)
     }
 
-
     @Test
     fun oneWeekDoesNotTouchTwoYearOldBuckets() {
         val today = LocalDate.of(2026, 8, 19)
