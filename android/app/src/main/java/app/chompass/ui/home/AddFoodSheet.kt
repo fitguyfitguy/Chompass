@@ -17,10 +17,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.History
@@ -71,6 +73,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
 import app.chompass.R
@@ -470,33 +475,36 @@ internal fun AddFoodSheetContent(
                 }
             }
         }
-        if (!relogRows.isEmpty) {
+        if (!relogRows.isEmpty || relogLoading) {
             Spacer(Modifier.height(22.dp))
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                if (relogRows.recents.isNotEmpty()) {
-                    AddFoodRelogRow(
-                        entries = relogRows.recents,
-                        onRelog = onRelogRecent,
-                        onReview = onReviewRecent,
-                    )
-                }
-                if (relogRows.frequents.isNotEmpty()) {
-                    AddFoodRelogRow(
-                        entries = relogRows.frequents,
-                        onRelog = onRelogRecent,
-                        onReview = onReviewRecent,
-                    )
+            Column(Modifier.fillMaxWidth()) {
+                AddFoodLogAgainHeading(onClick = onSavedRecents)
+                if (!relogRows.isEmpty) {
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        if (relogRows.recents.isNotEmpty()) {
+                            AddFoodRelogRow(
+                                entries = relogRows.recents,
+                                onRelog = onRelogRecent,
+                                onReview = onReviewRecent,
+                            )
+                        }
+                        if (relogRows.frequents.isNotEmpty()) {
+                            AddFoodRelogRow(
+                                entries = relogRows.frequents,
+                                onRelog = onRelogRecent,
+                                onReview = onReviewRecent,
+                            )
+                        }
+                    }
+                } else {
+                    AddFoodRelogPlaceholder()
                 }
             }
-            Spacer(Modifier.height(14.dp))
-        } else if (relogLoading) {
-            Spacer(Modifier.height(22.dp))
-            AddFoodRelogPlaceholder()
             Spacer(Modifier.height(14.dp))
         }
         if (waterTrackingEnabled) {
@@ -555,6 +563,31 @@ internal fun AddFoodSheetContent(
     }
 }
 
+@Composable
+private fun AddFoodLogAgainHeading(onClick: () -> Unit) {
+    val cd = stringResource(R.string.cd_open_logged_foods)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp)
+            .clickable(onClick = onClick, role = Role.Button)
+            .semantics { contentDescription = cd },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            stringResource(R.string.add_food_quick_relog),
+            fontSize = 13.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        )
+        Icon(
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
+        )
+    }
+}
 @Composable
 private fun AddFoodRelogPlaceholder() {
     val fill = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)

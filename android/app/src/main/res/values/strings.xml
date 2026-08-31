@@ -290,6 +290,9 @@
     <string name="progress_log_body_fat_title">Log Body Fat</string>
     <string name="saved_meals_search_placeholder">Search saved foods</string>
     <string name="saved_meals_no_match">No matching foods</string>
+    <string name="saved_meals_sort_recent">Recent</string>
+    <string name="saved_meals_sort_name">A–Z</string>
+    <string name="saved_meals_sort_size">Size</string>
 
     <string name="onboarding_pace_title_maintain">Your pace</string>
     <string name="onboarding_pace_subtitle_maintain">We\'ll set a balanced plan</string>
@@ -419,6 +422,7 @@
     <string name="add_food_quick_relog_empty">Favorite a meal or log one once. It will show up here for one-tap re-log.</string>
     <string name="add_food_relog_kcal">%1$d kcal</string>
     <string name="cd_relog_meal">Log %1$s again</string>
+    <string name="cd_open_logged_foods">All logged foods</string>
     <string name="water_amount_ml">%1$d ml</string>
     <string name="water_amount_fl_oz">%1$d fl oz</string>
     <string name="unit_fl_oz">fl oz</string>

@@ -435,6 +435,7 @@ export const profile = {
  * @property {number} [waterGoalMl]
  * @property {boolean} [adaptiveGoals]
  * @property {"RECENTS"|"FREQUENT"|"FAVORITES"|"RECIPES"} [lastSavedMealsSegment]
+ * @property {"recent"|"name"|"size"} [lastSavedMealsSort]
  * @property {boolean} [weekStartsOnMonday]
  * @property {"monday"|"sunday"|"saturday"} [weekStartDay]
  * @property {number} [mealBreakfastStart]
@@ -491,6 +492,7 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   waterGoalMl: ANDROID_PREF_DEFAULTS.waterGoalMl,
   adaptiveGoals: false,
   lastSavedMealsSegment: "RECENTS",
+  lastSavedMealsSort: "recent",
   weekStartsOnMonday: true,
   weekStartDay: "monday",
   mealBreakfastStart: 5 * 60,

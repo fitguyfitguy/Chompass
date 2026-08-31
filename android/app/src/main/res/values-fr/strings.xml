@@ -658,6 +658,10 @@
     <string name="error_unknown">Erreur inconnue</string>
     <string name="error_webdav_sync_failed">Échec de la synchronisation WebDAV</string>
     <string name="add_food_quick_relog">Enregistrer à nouveau</string>
+    <string name="saved_meals_sort_recent">Récent</string>
+    <string name="saved_meals_sort_name">A–Z</string>
+    <string name="saved_meals_sort_size">Taille</string>
+    <string name="cd_open_logged_foods">Tous les aliments enregistrés</string>
     <string name="add_food_quick_relog_empty">Ajoutez un repas aux favoris ou enregistrez-le une fois. Il apparaîtra ici pour une ré-enregistrement en un tap.</string>
     <string name="ai_provider_on_device_subtitle">Privé et hors ligne. Moins précis que l\'IA cloud ; ~2-4 Go de téléchargement</string>
     <string name="camera_scale_tip_message">Astuce : incluez une fourchette, une main ou une pièce à côté de votre repas. Cela aide à estimer la portion.</string>

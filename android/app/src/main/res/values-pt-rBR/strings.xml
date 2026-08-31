@@ -630,6 +630,10 @@
     <string name="whats_new_v30_restore">Reinstalou ou trocou de celular? Seu diário alimentar, peso e gordura corporal agora são restaurados automaticamente do Health Connect.</string>
 
     <string name="add_food_quick_relog">Registrar novamente</string>
+    <string name="saved_meals_sort_recent">Recente</string>
+    <string name="saved_meals_sort_name">A–Z</string>
+    <string name="saved_meals_sort_size">Tamanho</string>
+    <string name="cd_open_logged_foods">Todos os alimentos registrados</string>
     <string name="add_food_quick_relog_empty">Favorite uma refeição ou registre uma vez. Ela aparecerá aqui para registro com um toque.</string>
     <string name="ai_provider_on_device_subtitle">Privado e offline. Menos preciso que a IA na nuvem; download de ~2-4 GB</string>
     <string name="camera_scale_tip_message">Dica: inclua um garfo, a mão ou uma moeda ao lado da comida. Isso ajuda a estimar o tamanho da porção.</string>

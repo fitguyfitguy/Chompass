@@ -41,6 +41,7 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.ui.res.stringResource
 import app.chompass.R
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -67,8 +68,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextOverflow
 import app.chompass.AppContainer
 import app.chompass.data.FrequentFoodGroup
+import app.chompass.data.SavedMealsSort
+import app.chompass.data.filterHistoryTemplates
+import app.chompass.data.sortHistoryTemplates
 import app.chompass.models.FoodEntry
 import app.chompass.models.Recipe
 import app.chompass.services.FoodImageStore
@@ -131,18 +136,17 @@ fun SavedMealsSheet(
     // yank them back to the persisted one (bounce to "Zuletzt").
     var userPickedTab by remember { mutableStateOf(false) }
     var tab by remember { mutableStateOf(initialTab ?: SavedTab.RECENTS) }
+    var recentsSort by remember { mutableStateOf(SavedMealsSort.RECENT) }
     LaunchedEffect(Unit) {
+        recentsSort = SavedMealsSort.fromPref(container.prefs.lastSavedMealsSort.first())
         if (initialTab != null) return@LaunchedEffect
         val persisted = container.prefs.lastSavedMealsSegment.first()
         if (!userPickedTab) {
             tab = runCatching { SavedTab.valueOf(persisted) }.getOrDefault(SavedTab.RECENTS)
         }
     }
-    var recents by remember { mutableStateOf<List<FoodEntry>>(emptyList()) }
     var frequent by remember { mutableStateOf<List<FrequentFoodGroup>>(emptyList()) }
-    // All-time diary collapse for search — lets queries surface foods older
-    // than the 30/90-day recents/frequent windows (and re-logging them keeps
-    // the original name, so the identity merges instead of a "Name (2)").
+    // All-time diary collapse: Recents default list and Frequent search merge.
     var historyTemplates by remember { mutableStateOf<List<FoodEntry>>(emptyList()) }
 
     // Favorites are a reactive Flow now (ordered list of FoodEntry copies),
@@ -157,10 +161,6 @@ fun SavedMealsSheet(
     // three contexts and the empty list reads as "your data vanished".
     var searchQuery by remember(tab) { mutableStateOf("") }
     val isSearching = searchQuery.isNotBlank()
-    val filteredRecents = remember(recents, searchQuery) {
-        if (searchQuery.isBlank()) recents
-        else recents.filter { it.name.contains(searchQuery.trim(), ignoreCase = true) }
-    }
     val filteredFrequent = remember(frequent, searchQuery) {
         if (searchQuery.isBlank()) frequent
         else frequent.filter { it.template.name.contains(searchQuery.trim(), ignoreCase = true) }
@@ -173,19 +173,13 @@ fun SavedMealsSheet(
         if (searchQuery.isBlank()) recipes
         else recipes.filter { it.name.contains(searchQuery.trim(), ignoreCase = true) }
     }
-    // Full-history matches for the current query, merged into the window lists
-    // below (deduped by identity so a recent food isn't duplicated).
     val historyMatches = remember(historyTemplates, searchQuery) {
         val q = searchQuery.trim()
         if (q.isEmpty()) emptyList()
         else historyTemplates.filter { it.name.contains(q, ignoreCase = true) }
     }
-    val mergedFilteredRecents = remember(filteredRecents, historyMatches) {
-        if (historyMatches.isEmpty()) filteredRecents
-        else {
-            val seen = filteredRecents.mapTo(mutableSetOf()) { it.favoriteKey }
-            filteredRecents + historyMatches.filter { seen.add(it.favoriteKey) }
-        }
+    val displayedRecents = remember(historyTemplates, searchQuery, recentsSort) {
+        sortHistoryTemplates(filterHistoryTemplates(historyTemplates, searchQuery), recentsSort)
     }
     val mergedFilteredFrequent = remember(filteredFrequent, historyMatches) {
         if (historyMatches.isEmpty()) filteredFrequent
@@ -205,7 +199,6 @@ fun SavedMealsSheet(
     LaunchedEffect(tab, favKeys) {
         when (tab) {
             SavedTab.RECENTS -> {
-                recents = container.foodRepository.recent()
                 historyTemplates = withContext(Dispatchers.Default) {
                     container.foodRepository.historyTemplates()
                 }
@@ -282,16 +275,26 @@ fun SavedMealsSheet(
                     unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = if (isDark) 0.16f else 0.12f)
                 )
             )
+            if (tab == SavedTab.RECENTS) {
+                Spacer(Modifier.height(8.dp))
+                RecentsSortChips(
+                    selected = recentsSort,
+                    onSelect = { next ->
+                        recentsSort = next
+                        scope.launch { container.prefs.setLastSavedMealsSort(next.prefValue) }
+                    },
+                )
+            }
             Spacer(Modifier.height(16.dp))
 
             when (tab) {
                 SavedTab.RECENTS -> {
-                    if (mergedFilteredRecents.isEmpty()) {
+                    if (displayedRecents.isEmpty()) {
                         val msg = if (isSearching) stringResource(R.string.saved_meals_no_match)
                                   else stringResource(R.string.saved_meals_no_logs)
                         EmptyState(icon = if (isSearching) Icons.Outlined.Search else Icons.Outlined.Schedule, text = msg)
                     } else {
-                        SavedList(items = mergedFilteredRecents) { entry ->
+                        SavedList(items = displayedRecents) { entry ->
                             SavedMealRow(
                                 entry = entry,
                                 isFavorite = entry.favoriteKey in favKeys,
@@ -407,6 +410,38 @@ fun SavedMealsSheet(
                     }
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RecentsSortChips(selected: SavedMealsSort, onSelect: (SavedMealsSort) -> Unit) {
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        SavedMealsSort.entries.forEach { option ->
+            FilterChip(
+                selected = option == selected,
+                onClick = { onSelect(option) },
+                label = {
+                    Text(
+                        stringResource(
+                            when (option) {
+                                SavedMealsSort.RECENT -> R.string.saved_meals_sort_recent
+                                SavedMealsSort.NAME -> R.string.saved_meals_sort_name
+                                SavedMealsSort.SIZE -> R.string.saved_meals_sort_size
+                            },
+                        ),
+                        maxLines = 1,
+                        softWrap = false,
+                        overflow = TextOverflow.Clip,
+                        fontSize = 12.sp,
+                    )
+                },
+                modifier = Modifier.weight(1f),
+            )
         }
     }
 }
