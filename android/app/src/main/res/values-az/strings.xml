@@ -633,6 +633,10 @@ bilirsən?</string>
     <string name="whats_new_v30_restore">Yenidən quraşdırmısan və ya telefonu dəyişmisən? Yemək jurnalın, çək və bədən yağın indi Health Connect-dən avtomatik bərpa olunur.</string>
 
     <string name="add_food_quick_relog">Yenidən qeyd et</string>
+    <string name="saved_meals_sort_recent">Son</string>
+    <string name="saved_meals_sort_name">A–Z</string>
+    <string name="saved_meals_sort_size">Ölçü</string>
+    <string name="cd_open_logged_foods">Bütün qeyd edilmiş qidalar</string>
     <string name="add_food_quick_relog_empty">Bir yeməyi sevimlilərə əlavə et və ya bir dəfə qeyd et. Bir toxunuşla yenidən qeyd üçün burada görünəcək.</string>
     <string name="ai_provider_on_device_subtitle">Məxfi və oflayn. Bulud AI-dan daha az dəqiq; ~2-4 GB endirmə</string>
     <string name="camera_scale_tip_message">Məsləhət: yeməyin yanına çəngəl, əl və ya sikkə qoy. Porsiya ölçüsünü təxmin etməyə kömək edir.</string>

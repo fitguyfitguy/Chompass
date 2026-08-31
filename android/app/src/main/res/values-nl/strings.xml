@@ -611,6 +611,10 @@
     <string name="whats_new_v30_restore">Opnieuw geïnstalleerd of een nieuwe telefoon? Je voedingslogboek, gewicht en vetpercentage worden nu automatisch hersteld uit Health Connect.</string>
 
     <string name="add_food_quick_relog">Opnieuw loggen</string>
+    <string name="saved_meals_sort_recent">Nieuwste</string>
+    <string name="saved_meals_sort_name">A–Z</string>
+    <string name="saved_meals_sort_size">Grootte</string>
+    <string name="cd_open_logged_foods">Alle gelogde voedingsmiddelen</string>
     <string name="add_food_quick_relog_empty">Markeer een maaltijd als favoriet of log hem een keer. Hij verschijnt hier voor één-tik opnieuw loggen.</string>
     <string name="ai_provider_on_device_subtitle">Privé en offline. Minder nauwkeurig dan cloud-AI; ~2-4 GB download</string>
     <string name="camera_scale_tip_message">Tip: leg een vork, hand of munt naast je eten. Dat helpt de portiegrootte te schatten.</string>

@@ -152,6 +152,10 @@ internal suspend fun PreferencesStore.setProgressMeasurementSitesImpl(sites: Set
 internal val PreferencesStore.lastSavedMealsSegmentImpl: Flow<String> get() = dataStore.data.map { it[Keys.LAST_SAVED_MEALS_SEGMENT] ?: "RECENTS" }
 internal suspend fun PreferencesStore.setLastSavedMealsSegmentImpl(v: String) { dataStore.edit { it[Keys.LAST_SAVED_MEALS_SEGMENT] = v } }
 
+    /** "recent" | "name" | "size". Recents-tab sort; local only. */
+internal val PreferencesStore.lastSavedMealsSortImpl: Flow<String> get() = dataStore.data.map { it[Keys.LAST_SAVED_MEALS_SORT] ?: "recent" }
+internal suspend fun PreferencesStore.setLastSavedMealsSortImpl(v: String) { dataStore.edit { it[Keys.LAST_SAVED_MEALS_SORT] = v } }
+
     /** "standard" | "latestMealsFirst". Mirrors iOS @AppStorage("foodLogSortOrder"). */
 internal val PreferencesStore.foodLogSortOrderImpl: Flow<String> get() = dataStore.data.map { it[Keys.FOOD_LOG_SORT_ORDER] ?: "standard" }
 internal suspend fun PreferencesStore.setFoodLogSortOrderImpl(v: String) { dataStore.edit { it[Keys.FOOD_LOG_SORT_ORDER] = v } }

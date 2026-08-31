@@ -8,6 +8,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Added
 
+- **Log again opens every logged food** (Android + web): tap Log again above the compact chips to open Saved Meals. Recents is now the full list of unique foods, with search and sort by recent, name, or size (kcal). The chips stay as they are. Closes Codeberg [#76](https://codeberg.org/fitguy/Chompass/issues/76) by [@BrassCat](https://codeberg.org/BrassCat).
 - **Progress averages for fiber, sugar, and sodium** (Android + web): Progress shows those averages over the same complete days as calories and macros. Closes Codeberg [#75](https://codeberg.org/fitguy/Chompass/issues/75) by [@bluepostofficebox](https://codeberg.org/bluepostofficebox).
 - **Saved Meals review explains Log vs the pencil** (Android + web): a one-line hint says Log adds a diary meal, and the pencil on a favorite edits the saved food.
 - **Edit or delete a logged active burn** (Android + web): Add Food → Active burn now lists that day's named logs. Tap a row to change the name or calories, or delete it. Closes Codeberg [#74](https://codeberg.org/fitguy/Chompass/issues/74) by [@bluepostofficebox](https://codeberg.org/bluepostofficebox).

@@ -643,6 +643,10 @@
     <string name="whats_new_v30_restore">दोबारा इंस्टॉल किया या फ़ोन बदला? आपका फ़ूड लॉग, वज़न और बॉडी फ़ैट अब Health Connect से अपने आप बहाल हो जाते हैं।</string>
 
     <string name="add_food_quick_relog">फिर से लॉग करें</string>
+    <string name="saved_meals_sort_recent">हाल का</string>
+    <string name="saved_meals_sort_name">अ–ह</string>
+    <string name="saved_meals_sort_size">आकार</string>
+    <string name="cd_open_logged_foods">सभी लॉग किए गए खाद्य</string>
     <string name="add_food_quick_relog_empty">कोई भोजन पसंदीदा बनाएँ या एक बार लॉग करें। यह यहाँ एक-टैप पुनः-लॉग के लिए दिखेगा।</string>
     <string name="ai_provider_on_device_subtitle">निजी और ऑफ़लाइन। क्लाउड AI से कम सटीक; ~2-4 GB डाउनलोड</string>
     <string name="camera_scale_tip_message">सुझाव: भोजन के बगल में कांटा, हाथ या सिक्का रखें। यह हिस्से का अनुमान लगाने में मदद करता है।</string>

@@ -74,6 +74,46 @@ export async function recentFoodTemplates(days = 30, limit = 50) {
 }
 
 /**
+ * All-time diary collapse (newest row per favoriteKey) for Saved Meals Recents.
+ * @returns {Promise<import('./chompass-core/models.js').FoodEntry[]>}
+ */
+export async function historyTemplates() {
+  return recentTemplatesFrom(await foodEntries.all(), Number.POSITIVE_INFINITY);
+}
+
+/**
+ * Substring, case-insensitive name match. Blank query returns `list` as-is.
+ * @param {import('./chompass-core/models.js').FoodEntry[]} list
+ * @param {string} query
+ */
+export function filterHistoryTemplates(list, query) {
+  const q = String(query ?? "").trim().toLowerCase();
+  if (!q) return list;
+  return list.filter((e) => e.name.toLowerCase().includes(q));
+}
+
+/**
+ * Recents display order. `list` is already unique-by-favoriteKey.
+ * Filter first, then sort.
+ * @param {import('./chompass-core/models.js').FoodEntry[]} list
+ * @param {"recent"|"name"|"size"} [sort]
+ */
+export function sortHistoryTemplates(list, sort = "recent") {
+  const copy = list.slice();
+  if (sort === "name") {
+    return copy.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
+  }
+  if (sort === "size") {
+    return copy.sort(
+      (a, b) =>
+        (b.calories ?? 0) - (a.calories ?? 0) ||
+        a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
+    );
+  }
+  return copy.sort((a, b) => `${b.date}T${b.time}`.localeCompare(`${a.date}T${a.time}`));
+}
+
+/**
  * @param {import('./chompass-core/models.js').FoodEntry[]} entries
  * @returns {{template: import('./chompass-core/models.js').FoodEntry, count: number}[]}
  */

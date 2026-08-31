@@ -706,6 +706,10 @@ für dich ein</string>
 
 
     <string name="add_food_quick_relog">Erneut eintragen</string>
+    <string name="saved_meals_sort_recent">Zuletzt</string>
+    <string name="saved_meals_sort_name">A–Z</string>
+    <string name="saved_meals_sort_size">Größe</string>
+    <string name="cd_open_logged_foods">Alle erfassten Lebensmittel</string>
 
     <string name="add_food_quick_relog_empty">Füge eine Mahlzeit zu den Favoriten hinzu oder erfasse sie einmal. Sie wird hier angezeigt, damit du sie mit einem Fingertipp erneut erfassen kannst.</string>
 

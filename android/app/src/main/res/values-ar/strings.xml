@@ -643,6 +643,10 @@
     <string name="whats_new_v30_restore">أعدت التثبيت أو غيّرت هاتفك؟ يُستعاد الآن سجل طعامك ووزنك ودهون جسمك تلقائيًا من Health Connect.</string>
 
     <string name="add_food_quick_relog">تسجيل مرة أخرى</string>
+    <string name="saved_meals_sort_recent">الأحدث</string>
+    <string name="saved_meals_sort_name">أ–ي</string>
+    <string name="saved_meals_sort_size">الحجم</string>
+    <string name="cd_open_logged_foods">كل الأطعمة المسجلة</string>
     <string name="add_food_quick_relog_empty">أضِف وجبة إلى المفضّلة أو سجّلها مرة. ستظهر هنا لإعادة التسجيل بلمسة واحدة.</string>
     <string name="ai_provider_on_device_subtitle">خاص وبدون اتصال. أقل دقة من الذكاء الاصطناعي السحابي؛ تنزيل ~2-4 GB</string>
     <string name="camera_scale_tip_message">نصيحة: ضع شوكة أو يدًا أو عملة بجانب طعامك. يساعد في تقدير حجم الحصة.</string>

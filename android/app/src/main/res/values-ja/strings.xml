@@ -641,6 +641,10 @@
     <string name="whats_new_v30_restore">再インストールや機種変更をしても、食事記録・体重・体脂肪がHealth Connectから自動的に復元されるようになりました。</string>
 
     <string name="add_food_quick_relog">再ログ</string>
+    <string name="saved_meals_sort_recent">新しい順</string>
+    <string name="saved_meals_sort_name">A–Z</string>
+    <string name="saved_meals_sort_size">サイズ</string>
+    <string name="cd_open_logged_foods">記録したすべての食品</string>
     <string name="add_food_quick_relog_empty">食事をお気に入りに追加するか、一度記録してください。ワンタップで再ログできます。</string>
     <string name="ai_provider_on_device_subtitle">非公開・オフライン。クラウドAIより精度は低い。約2〜4 GBのダウンロード</string>
     <string name="camera_scale_tip_message">ヒント: フォーク、手、またはコインを食べ物の横に入れてください。分量の推定に役立ちます。</string>

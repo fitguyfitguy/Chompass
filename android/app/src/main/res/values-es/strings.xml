@@ -666,6 +666,10 @@
     <string name="error_unknown">Error desconocido</string>
     <string name="error_webdav_sync_failed">Falló la sincronización WebDAV</string>
     <string name="add_food_quick_relog">Registrar de nuevo</string>
+    <string name="saved_meals_sort_recent">Reciente</string>
+    <string name="saved_meals_sort_name">A–Z</string>
+    <string name="saved_meals_sort_size">Tamaño</string>
+    <string name="cd_open_logged_foods">Todos los alimentos registrados</string>
     <string name="add_food_quick_relog_empty">Marca una comida como favorita o regístrala una vez. Aparecerá aquí para volver a registrarla con un toque.</string>
     <string name="ai_provider_on_device_subtitle">Privado y sin conexión. Menos preciso que la IA en la nube; descarga de ~2-4 GB</string>
     <string name="camera_scale_tip_message">Consejo: incluye un tenedor, la mano o una moneda junto a la comida. Ayuda a estimar el tamaño de la porción.</string>

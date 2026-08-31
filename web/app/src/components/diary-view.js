@@ -7,10 +7,12 @@ import { computeFastingState, nextFastStartMillis, FastingPhase } from "../lib/c
 import { openSheet } from "../lib/ui/sheet.js";
 import { openConfirm, openInfo, openInput } from "../lib/ui/dialog.js";
 import {
-  recentFoodTemplates,
+  historyTemplates,
   frequentFoodGroups,
   listFavorites,
   quickRelogRows,
+  filterHistoryTemplates,
+  sortHistoryTemplates,
   toggleFavorite,
   isFavorite,
   duplicatedForLogging,
@@ -1365,7 +1367,10 @@ export class DiaryView extends HTMLElement {
            </div>`;
     const hasRelog = relogRows.recents.length > 0 || relogRows.frequents.length > 0;
     const quickRelogBlock = hasRelog
-      ? `<p class="add-food-section">${t("add_food.quick_relog")}</p>
+      ? `<button type="button" class="add-food-section add-food-section--action" data-add="log-again" aria-label="${t("add_food.open_logged_foods")}">
+           <span>${t("add_food.quick_relog")}</span>
+           ${chevronRight}
+         </button>
            <div class="add-food-relog-stack">
              ${relogRow(relogRows.recents, "r")}
              ${relogRow(relogRows.frequents, "f")}
@@ -1436,6 +1441,7 @@ export class DiaryView extends HTMLElement {
     });
     sheet.body.querySelector('[data-add="note"]')?.addEventListener("click", () => go(`#/analyze?date=${this.date}&mode=note`));
     sheet.body.querySelector('[data-add="recents"]')?.addEventListener("click", () => openSaved("RECENTS"));
+    sheet.body.querySelector('[data-add="log-again"]')?.addEventListener("click", () => openSaved("RECENTS"));
     sheet.body.querySelector('[data-add="frequent"]')?.addEventListener("click", () => openSaved("FREQUENT"));
     sheet.body.querySelector('[data-add="favorites"]')?.addEventListener("click", () => openSaved("FAVORITES"));
     sheet.body.querySelector('[data-add="manual"]')?.addEventListener("click", () => go(`#/entry/new?date=${this.date}`));
@@ -1553,8 +1559,8 @@ export class DiaryView extends HTMLElement {
         editingId = id;
         const nameEl = sheet.body.querySelector("#active-name");
         const kcalEl = sheet.body.querySelector("#active-kcal");
-        if (nameEl) nameEl.value = entry.name;
-        if (kcalEl) kcalEl.value = String(entry.calories);
+        if (nameEl instanceof HTMLInputElement) nameEl.value = entry.name;
+        if (kcalEl instanceof HTMLInputElement) kcalEl.value = String(entry.calories);
       });
     });
   }
@@ -1698,10 +1704,75 @@ export class DiaryView extends HTMLElement {
    */
   async openSavedMealsSheet(parentSheet, appPrefs, initialSegment) {
     let segment = initialSegment || appPrefs.lastSavedMealsSegment || "RECENTS";
+    const sortPref = appPrefs.lastSavedMealsSort;
+    /** @type {"recent"|"name"|"size"} */
+    let recentsSort = sortPref === "name" || sortPref === "size" ? sortPref : "recent";
+    let recentsQuery = "";
+    /** @type {import('../lib/chompass-core/models.js').FoodEntry[] | null} */
+    let recentsCache = null;
     const sheet = openSheet({
       title: t("diary.saved_meals"),
       body: `<div class="saved-meals" data-saved-root><p class="empty-state">${t("diary.loading")}</p></div>`,
     });
+
+    const tabsHtml = () => `
+        <div class="saved-tabs" role="tablist">
+          ${["RECENTS", "FREQUENT", "FAVORITES", "RECIPES"]
+            .map(
+              (s) =>
+                `<button type="button" role="tab" data-seg="${s}" aria-selected="${segment === s}">${t(SEGMENT_LABELS[s] ?? s)}</button>`,
+            )
+            .join("")}
+        </div>`;
+
+    const recentsMapped = (list) =>
+      sortHistoryTemplates(filterHistoryTemplates(list, recentsQuery), recentsSort).map((e) => ({
+        label: e.name,
+        meta: `${formatNumber(Math.round(e.calories))} kcal · ${Math.round(e.proteinG)}P / ${Math.round(e.carbsG)}C / ${Math.round(e.fatG)}F`,
+        entry: e,
+      }));
+
+    const foodRowsHtml = (rows, listAttr = "") =>
+      rows.length
+        ? `<div class="recents-list sheet-recents"${listAttr}>
+                ${rows
+                  .map(
+                    (r) => `
+                  <div class="saved-row">
+                    <button type="button" class="saved-row__main" data-prefill='${escapeAttr(JSON.stringify(toPrefill(r.entry)))}'>
+                      <strong>${escapeHtml(r.label)}</strong><br/>
+                      <span class="recents-meta">${escapeHtml(r.meta)}</span>
+                    </button>
+                    ${
+                      r.favEditId
+                        ? `<button type="button" class="saved-row__edit" data-edit-favorite="${escapeAttr(r.favEditId)}" aria-label="${t("diary.edit_saved_food")}" title="${t("diary.edit_saved_food")}">✎</button>`
+                        : ""
+                    }
+                  </div>`,
+                  )
+                  .join("")}
+              </div>`
+        : `<p class="empty-state" style="padding:1rem 0;"${listAttr}>${t("diary.nothing")}</p>`;
+
+    const bindPrefills = (root) => {
+      root.querySelectorAll("[data-prefill]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const raw = btn.getAttribute("data-prefill");
+          if (!raw) return;
+          const prefill = JSON.parse(raw);
+          sheet.close();
+          parentSheet.close();
+          location.hash = `#/entry/new?date=${this.date}&fromSaved=1&prefill=${encodeURIComponent(JSON.stringify(prefill))}`;
+        });
+      });
+    };
+
+    const paintRecentsList = (root) => {
+      const html = foodRowsHtml(recentsMapped(recentsCache ?? []), ` data-saved-list`);
+      const existing = root.querySelector("[data-saved-list]");
+      if (existing) existing.outerHTML = html;
+      bindPrefills(root);
+    };
 
     const renderTab = async () => {
       const root = sheet.body.querySelector("[data-saved-root]");
@@ -1709,11 +1780,8 @@ export class DiaryView extends HTMLElement {
       /** @type {Array<{label: string, meta: string, entry: import('../lib/chompass-core/models.js').FoodEntry, count?: number, favEditId?: string}>} */
       let rows = [];
       if (segment === "RECENTS") {
-        rows = (await recentFoodTemplates(30, 40)).map((e) => ({
-          label: e.name,
-          meta: `${formatNumber(Math.round(e.calories))} kcal · ${Math.round(e.proteinG)}P / ${Math.round(e.carbsG)}C / ${Math.round(e.fatG)}F`,
-          entry: e,
-        }));
+        if (!recentsCache) recentsCache = await historyTemplates();
+        rows = recentsMapped(recentsCache);
       } else if (segment === "FREQUENT") {
         rows = (await frequentFoodGroups(90)).map((g) => ({
           label: g.template.name,
@@ -1731,14 +1799,7 @@ export class DiaryView extends HTMLElement {
       } else {
         const recipeList = await listRecipes();
         root.innerHTML = `
-          <div class="saved-tabs" role="tablist">
-            ${["RECENTS", "FREQUENT", "FAVORITES", "RECIPES"]
-              .map(
-                (s) =>
-                  `<button type="button" role="tab" data-seg="${s}" aria-selected="${segment === s}">${t(SEGMENT_LABELS[s] ?? s)}</button>`
-              )
-              .join("")}
-          </div>
+          ${tabsHtml()}
           ${
             recipeList.length
               ? `<div class="recents-list sheet-recents">
@@ -1748,7 +1809,7 @@ export class DiaryView extends HTMLElement {
                     <button type="button" data-recipe-id="${r.id}">
                       <strong>${escapeHtml(r.name)}</strong><br/>
                       <span class="recents-meta">${t("diary.recipe_ingredients_kcal", { count: r.ingredients.length, kcal: r.ingredients.reduce((s, i) => s + Math.round(i.baseCalories * (i.quantityScale ?? 1)), 0) })}</span>
-                    </button>`
+                    </button>`,
                     )
                     .join("")}
                 </div>`
@@ -1776,37 +1837,23 @@ export class DiaryView extends HTMLElement {
         return;
       }
 
-      root.innerHTML = `
-        <div class="saved-tabs" role="tablist">
-          ${["RECENTS", "FREQUENT", "FAVORITES", "RECIPES"]
+      const recentsChrome =
+        segment === "RECENTS"
+          ? `<input type="search" class="saved-meals-search" data-saved-search placeholder="${t("saved_meals.search_placeholder")}" value="${escapeAttr(recentsQuery)}" />
+        <div class="saved-sort" role="group">
+          ${["recent", "name", "size"]
             .map(
               (s) =>
-                `<button type="button" role="tab" data-seg="${s}" aria-selected="${segment === s}">${t(SEGMENT_LABELS[s] ?? s)}</button>`
+                `<button type="button" data-sort="${s}" aria-pressed="${recentsSort === s}">${t(`saved_meals.sort_${s}`)}</button>`,
             )
             .join("")}
-        </div>
-        ${
-          rows.length
-            ? `<div class="recents-list sheet-recents">
-                ${rows
-                  .map(
-                    (r) => `
-                  <div class="saved-row">
-                    <button type="button" class="saved-row__main" data-prefill='${escapeAttr(JSON.stringify(toPrefill(r.entry)))}'>
-                      <strong>${escapeHtml(r.label)}</strong><br/>
-                      <span class="recents-meta">${escapeHtml(r.meta)}</span>
-                    </button>
-                    ${
-                      r.favEditId
-                        ? `<button type="button" class="saved-row__edit" data-edit-favorite="${escapeAttr(r.favEditId)}" aria-label="${t("diary.edit_saved_food")}" title="${t("diary.edit_saved_food")}">✎</button>`
-                        : ""
-                    }
-                  </div>`
-                  )
-                  .join("")}
-              </div>`
-            : `<p class="empty-state" style="padding:1rem 0;">${t("diary.nothing")}</p>`
-        }`;
+        </div>`
+          : "";
+
+      root.innerHTML = `
+        ${tabsHtml()}
+        ${recentsChrome}
+        ${foodRowsHtml(rows, segment === "RECENTS" ? ` data-saved-list` : "")}`;
 
       root.querySelectorAll("[data-seg]").forEach((btn) => {
         btn.addEventListener("click", async () => {
@@ -1815,14 +1862,21 @@ export class DiaryView extends HTMLElement {
           renderTab();
         });
       });
-      root.querySelectorAll("[data-prefill]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const raw = btn.getAttribute("data-prefill");
-          if (!raw) return;
-          const prefill = JSON.parse(raw);
-          sheet.close();
-          parentSheet.close();
-          location.hash = `#/entry/new?date=${this.date}&fromSaved=1&prefill=${encodeURIComponent(JSON.stringify(prefill))}`;
+      bindPrefills(root);
+      root.querySelector("[data-saved-search]")?.addEventListener("input", (ev) => {
+        recentsQuery = /** @type {HTMLInputElement} */ (ev.target).value;
+        paintRecentsList(root);
+      });
+      root.querySelectorAll("[data-sort]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const next = btn.getAttribute("data-sort");
+          if (next !== "recent" && next !== "name" && next !== "size") return;
+          recentsSort = next;
+          await prefs.save({ lastSavedMealsSort: recentsSort });
+          root.querySelectorAll("[data-sort]").forEach((el) => {
+            el.setAttribute("aria-pressed", el.getAttribute("data-sort") === recentsSort ? "true" : "false");
+          });
+          paintRecentsList(root);
         });
       });
       // Codeberg #66: edit the saved food itself (library semantics) instead
