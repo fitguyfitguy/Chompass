@@ -941,7 +941,6 @@ fun FoodResultSheet(
                 )
             }
 
-
             SheetStickyPrimaryBar(
                 primaryLabel = busyPrimaryLabel,
                 primaryEnabled = analysisReady && !isSaving && analysis != null,
