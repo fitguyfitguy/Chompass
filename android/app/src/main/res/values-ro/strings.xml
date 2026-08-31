@@ -424,6 +424,7 @@
     <string name="progress_no_food">Niciun aliment înregistrat încă</string>
 
     <string name="progress_macro_averages">Medii macronutrienți</string>
+    <string name="progress_nutrient_averages">Medii de nutrienți</string>
 
     <string name="progress_log_weight_title">Înregistrează greutatea</string>
 
@@ -822,6 +823,9 @@
     <string name="cd_share_meal">Partajează masa</string>
     <string name="cd_unfavorite">Elimină din favorite</string>
     <string name="cd_edit_favorite">Editează alimentul salvat</string>
+    <string name="cd_edit_meal_name">Editează numele mesei</string>
+    <string name="cd_set_meal_start">Setează ora de start</string>
+
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (proteine %3$s, carbohidrați %4$s, grăsimi %5$s)</string>
     <string name="coach_confirm_log_food_title">Înregistrezi această mâncare?</string>
     <string name="coach_confirm_log_water_title">Înregistrezi această apă?</string>
@@ -1194,6 +1198,8 @@
     <string name="recipe_builder_title_new">Rețetă nouă</string>
     <string name="recipe_ingredient_count_format">%1$d ingrediente</string>
     <string name="saved_meals_no_recipes">Încă fără rețete\nAtinge + pentru a construi una din mai multe ingrediente</string>
+    <string name="saved_meal_review_hint">Înregistrează adaugă această masă. Creionul editează alimentul salvat.</string>
+
     <string name="saved_meals_tab_recipes">Rețete</string>
     <string name="section_date_time">Dată și oră</string>
     <string name="section_share">Partajează</string>

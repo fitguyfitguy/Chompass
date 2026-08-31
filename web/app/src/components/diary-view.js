@@ -1822,7 +1822,7 @@ export class DiaryView extends HTMLElement {
           const prefill = JSON.parse(raw);
           sheet.close();
           parentSheet.close();
-          location.hash = `#/entry/new?date=${this.date}&prefill=${encodeURIComponent(JSON.stringify(prefill))}`;
+          location.hash = `#/entry/new?date=${this.date}&fromSaved=1&prefill=${encodeURIComponent(JSON.stringify(prefill))}`;
         });
       });
       // Codeberg #66: edit the saved food itself (library semantics) instead

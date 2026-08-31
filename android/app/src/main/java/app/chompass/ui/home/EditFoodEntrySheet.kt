@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.toMicronutrients
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.IosShare
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.UnfoldMore
@@ -953,7 +953,7 @@ fun EditFoodEntrySheet(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            Icons.Filled.IosShare,
+                            Icons.Filled.Share,
                             contentDescription = null,
                             tint = AppColors.Calorie,
                             modifier = Modifier.size(20.dp)

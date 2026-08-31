@@ -5,8 +5,9 @@ import java.time.LocalDate
 import java.util.UUID
 
 /**
- * One row per calendar day with food entries: the day's summed calories and
- * macros. This is the on-disk daily-aggregate cache (flippidity C.1) that
+ * One row per calendar day with food entries: the day's summed calories,
+ * macros, and the extra nutrients Progress averages (fiber, sugar, sodium).
+ * This is the on-disk daily-aggregate cache (flippidity C.1) that
  * Progress reads instead of decoding the year of [FoodEntry] rows, so
  * All-range compute never holds the full diary in memory.
  *
@@ -27,6 +28,9 @@ data class DailyFoodTotals(
     val protein: Double,
     val carbs: Double,
     val fat: Double,
+    val fiber: Double = 0.0,
+    val sugar: Double = 0.0,
+    val sodium: Double = 0.0,
 ) {
     /** Deterministic per-day id for [app.chompass.data.JsonBucketStore] upserts. */
     val id: UUID get() = UUID.nameUUIDFromBytes(date.toString().toByteArray())

@@ -131,6 +131,10 @@ export const ko = Object.freeze({
 "progress.history_count_format": "{count}개 항목 · 탭하여 보기 또는 삭제",
 "progress.avg_format": "평균: {avg} kcal",
 "progress.macro_averages": "매크로 평균",
+  "progress.nutrient_averages": "영양소 평균",
+  "progress.fiber": "식이섬유",
+  "progress.sugar": "당류",
+  "progress.sodium": "나트륨",
 "progress.macro_progress_format": "{current}g / {goal}g",
 "progress.log_first_weight": "추이를 보려면 첫 체중을 기록하세요",
 "progress.log_first_body_fat": "추이를 보려면 첫 체지방을 기록하세요",
@@ -434,4 +438,6 @@ export const ko = Object.freeze({
   "measurements.confirm_log": '줄자에서 체지방 {pct}%을 기록할까요? 칼로리 계산에 체지방을 쓰면 그게 업데이트돼요.',
   "measurements.source_navy": 'US Navy',
   "measurements.source_rfm": 'RFM',
+  "entry.saved_meal_review_hint": "기록하면 이 식사가 추가됩니다. 연필은 저장한 음식을 수정합니다.",
+  "manual_active.delete": "삭제",
 });

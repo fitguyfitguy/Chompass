@@ -446,6 +446,8 @@
     <string name="progress_avg_format">Середнє: %1$d ккал</string>
     <string name="progress_no_food">Їжу ще не внесено</string>
     <string name="progress_macro_averages">Середні макронутрієнти</string>
+    <string name="progress_nutrient_averages">Середні нутрієнти</string>
+
     <string name="progress_log_weight_title">Внести вагу</string>
     <string name="progress_goal_reached_title">Ціль досягнуто 🎉</string>
     <string name="progress_goal_reached_message">Цільової ваги досягнуто. Перейди в налаштування, щоб змінити ціль, і натисни «Перерахувати цілі» для оновлення цільових значень.</string>
@@ -806,6 +808,9 @@
     <string name="cd_share_meal">Поділитися стравою</string>
     <string name="cd_unfavorite">Прибрати з обраного</string>
     <string name="cd_edit_favorite">Редагувати збережену страву</string>
+    <string name="cd_edit_meal_name">Змінити назву прийому їжі</string>
+    <string name="cd_set_meal_start">Задати час початку</string>
+
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (білок %3$s, вуглеводи %4$s, жири %5$s)</string>
     <string name="coach_confirm_log_food_title">Записати цю їжу?</string>
     <string name="coach_confirm_log_water_title">Записати цю воду?</string>
@@ -1144,6 +1149,8 @@
     <string name="saved_meals_log_action">Записати</string>
     <string name="saved_meals_no_recipes">Рецептів ще немає
 Натисни +, щоб створити його з кількох інгредієнтів</string>
+    <string name="saved_meal_review_hint">Записати додає цю страву. Олівець змінює збережену їжу.</string>
+
     <string name="saved_meals_tab_recipes">Рецепти</string>
     <string name="section_date_time">Дата й час</string>
     <string name="section_share">Поділитися</string>

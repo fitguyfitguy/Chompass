@@ -419,6 +419,7 @@
     <string name="progress_no_food">Aún no hay comida registrada</string>
 
     <string name="progress_macro_averages">Promedios de macros</string>
+    <string name="progress_nutrient_averages">Promedios de nutrientes</string>
 
     <string name="progress_log_weight_title">Registrar peso</string>
 
@@ -888,6 +889,9 @@
     <string name="cd_share_meal">Compartir comida</string>
     <string name="cd_unfavorite">Quitar de favoritos</string>
     <string name="cd_edit_favorite">Editar alimento guardado</string>
+    <string name="cd_edit_meal_name">Editar nombre de comida</string>
+    <string name="cd_set_meal_start">Definir hora de inicio</string>
+
     <string name="coach_confirm_log_food_title">¿Registrar esta comida?</string>
     <string name="coach_confirm_log_water_title">¿Registrar esta agua?</string>
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (%3$s proteína, %4$s carbohidratos, %5$s grasas)</string>
@@ -1264,6 +1268,8 @@
     <string name="recipe_builder_title_new">Nueva receta</string>
     <string name="recipe_ingredient_count_format">%1$d ingredientes</string>
     <string name="saved_meals_no_recipes">Aún no hay recetas\nToca + para crear una con varios ingredientes</string>
+    <string name="saved_meal_review_hint">Registro añade esta comida. El lápiz edita el alimento guardado.</string>
+
     <string name="saved_meals_tab_recipes">Recetas</string>
     <string name="section_date_time">Fecha y hora</string>
     <string name="section_share">Compartir</string>

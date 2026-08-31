@@ -24,6 +24,7 @@ import app.chompass.models.FoodEntry
 import app.chompass.models.GoalJournalEntry
 import app.chompass.models.MacroPlanResolver
 import app.chompass.models.UserProfile
+import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.UnitFormat
 import app.chompass.models.WeightEntry
 import app.chompass.ui.components.splitDecimalParts
@@ -79,6 +80,13 @@ data class ProgressUiState(
     /** Per-day calorie targets for the logged bars (journal-first; live-resolve fallback). */
     val dailyCalorieGoals: Map<LocalDate, Int> = emptyMap(),
     val macroAverages: Triple<Double, Double, Double> = Triple(0.0, 0.0, 0.0),
+    /** Mean of complete days in the selected range (today excluded). */
+    val avgFiber: Double = 0.0,
+    val avgSugar: Double = 0.0,
+    val avgSodium: Double = 0.0,
+    val fiberGoal: Int = OptionalNutrientGoals.Default.fiber,
+    val sugarGoal: Int = OptionalNutrientGoals.Default.sugar,
+    val sodiumGoal: Int = OptionalNutrientGoals.Default.sodium,
     val weightStats: WeightSummaryStats = WeightSummaryStats(),
     val bodyFatStats: BodyFatSummaryStats = BodyFatSummaryStats(),
     val goalReached: Boolean = false
@@ -93,6 +101,7 @@ private data class BaseProgressData(
     val measurementSites: Set<String> = emptySet(),
     /** Per-day goal journal (#60): frozen actual targets behind the range goals + bars. */
     val goalJournal: List<GoalJournalEntry> = emptyList(),
+    val optionalGoals: OptionalNutrientGoals = OptionalNutrientGoals.Default,
 )
 
 class ProgressViewModel(private val container: AppContainer) : ViewModel() {
@@ -147,8 +156,8 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
                 measurementSites = measurementSites
             )
         }.let { base ->
-            combine(base, container.prefs.goalJournal) { b, journal ->
-                b.copy(goalJournal = journal)
+            combine(base, container.prefs.goalJournal, container.prefs.optionalNutrientGoals) { b, journal, goals ->
+                b.copy(goalJournal = journal, optionalGoals = goals)
             }
         }.let { baseData ->
             combine(
@@ -298,14 +307,24 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
         completeCalorieDays.sumOf { it.second } / completeCalorieDays.size
     }
     val completeFoodByDay = foodByDay.filterKeys { it < anchorDate }
-    val macroAverages = if (completeFoodByDay.isEmpty()) {
-        Triple(0.0, 0.0, 0.0)
+    val macroAverages: Triple<Double, Double, Double>
+    val avgFiber: Double
+    val avgSugar: Double
+    val avgSodium: Double
+    if (completeFoodByDay.isEmpty()) {
+        macroAverages = Triple(0.0, 0.0, 0.0)
+        avgFiber = 0.0
+        avgSugar = 0.0
+        avgSodium = 0.0
     } else {
         val days = completeFoodByDay.size.toDouble()
         val protein = completeFoodByDay.values.sumOf { it.protein } / days
         val carbs = completeFoodByDay.values.sumOf { it.carbs } / days
         val fat = completeFoodByDay.values.sumOf { it.fat } / days
-        Triple(protein, carbs, fat)
+        macroAverages = Triple(protein, carbs, fat)
+        avgFiber = completeFoodByDay.values.sumOf { it.fiber } / days
+        avgSugar = completeFoodByDay.values.sumOf { it.sugar } / days
+        avgSodium = completeFoodByDay.values.sumOf { it.sodium } / days
     }
     // #60 phase 3: range goals = journaled average (MACRO-CYCLE-D, gaps
     // skipped) with the current profile target as fallback — no more "current
@@ -339,6 +358,12 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
         fatGoal = rangeTargets?.fatG ?: 0,
         dailyCalorieGoals = dailyCalorieGoals,
         macroAverages = macroAverages,
+        avgFiber = avgFiber,
+        avgSugar = avgSugar,
+        avgSodium = avgSodium,
+        fiberGoal = base.optionalGoals.fiber,
+        sugarGoal = base.optionalGoals.sugar,
+        sodiumGoal = base.optionalGoals.sodium,
         weightStats = filteredWeights.toWeightStats(),
         bodyFatStats = filteredBodyFats.toBodyFatStats(),
         goalReached = showGoalReached

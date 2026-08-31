@@ -131,6 +131,10 @@ export const ru = Object.freeze({
 "progress.history_count_format": "{count} записей · нажмите, чтобы посмотреть или удалить",
 "progress.avg_format": "Среднее: {avg} ккал",
 "progress.macro_averages": "Средние макронутриенты",
+  "progress.nutrient_averages": "Средние нутриенты",
+  "progress.fiber": "Клетчатка",
+  "progress.sugar": "Сахар",
+  "progress.sodium": "Натрий",
 "progress.macro_progress_format": "{current}г / {goal}г",
 "progress.log_first_weight": "Запишите свой первый вес, чтобы увидеть динамику",
 "progress.log_first_body_fat": "Запишите первый процент жира, чтобы увидеть динамику",
@@ -434,4 +438,6 @@ export const ru = Object.freeze({
   "measurements.confirm_log": 'Записать {pct}% жира по замерам? Если жир используется в расчёте калорий, это его обновит.',
   "measurements.source_navy": 'US Navy',
   "measurements.source_rfm": 'RFM',
+  "entry.saved_meal_review_hint": "Запись добавляет это блюдо. Карандаш правит сохранённую еду.",
+  "manual_active.delete": "Удалить",
 });

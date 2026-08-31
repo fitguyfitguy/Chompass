@@ -800,6 +800,7 @@
     <string name="saved_meals_move_down">Move down</string>
     <string name="saved_meals_tab_recipes">Recipes</string>
     <string name="saved_meals_no_recipes">No recipes yet\nTap + to build one from multiple ingredients</string>
+    <string name="saved_meal_review_hint">Log adds this meal. The pencil edits the saved food.</string>
     <string name="recipe_builder_title_new">New Recipe</string>
     <string name="recipe_builder_title_edit">Edit Recipe</string>
     <string name="recipe_builder_name_placeholder">Recipe name</string>
@@ -907,6 +908,7 @@
     <string name="progress_no_food">No food logged yet</string>
 
     <string name="progress_macro_averages">Macro Averages</string>
+    <string name="progress_nutrient_averages">Nutrient averages</string>
     <string name="progress_macro_progress_format">%1$dg / %2$dg</string>
 
     <string name="progress_activity_section">Activity</string>
@@ -2052,6 +2054,8 @@
     <string name="cd_move_down">Move down</string>
     <string name="cd_unfavorite">Unfavorite</string>
     <string name="cd_edit_favorite">Edit saved food</string>
+    <string name="cd_edit_meal_name">Edit meal name</string>
+    <string name="cd_set_meal_start">Set start time</string>
     <string name="cd_log">Log</string>
     <string name="cd_close">Close</string>
     <string name="cd_clear_quantity">Clear quantity</string>

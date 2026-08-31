@@ -14,7 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.DeleteSweep
 import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.IosShare
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.MonitorWeight
@@ -167,7 +167,7 @@ internal fun SettingsHealthDataSection(
                         .padding(horizontal = 16.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    FudIconBubble(icon = Icons.Outlined.IosShare, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
+                    FudIconBubble(icon = Icons.Outlined.Share, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
                     Spacer(Modifier.width(14.dp))
                     Text(
                         stringResource(R.string.export_diary_title),

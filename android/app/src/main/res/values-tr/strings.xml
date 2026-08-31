@@ -671,6 +671,8 @@
     <string name="saved_meals_move_down">Aşağı taşı</string>
     <string name="saved_meals_tab_recipes">Tarifler</string>
     <string name="saved_meals_no_recipes">Henüz tarif yok\nBirden fazla malzemeden oluşturmak için + simgesine dokun</string>
+    <string name="saved_meal_review_hint">Ekle bu öğünü kaydeder. Kalem kayıtlı yiyeceği düzenler.</string>
+
     <string name="recipe_builder_title_new">Yeni Tarif</string>
     <string name="recipe_builder_title_edit">Tarifi Düzenle</string>
     <string name="recipe_builder_name_placeholder">Tarif adı</string>
@@ -778,6 +780,8 @@
     <string name="progress_no_food">Henüz yiyecek kaydedilmedi</string>
 
     <string name="progress_macro_averages">Makro Ortalamaları</string>
+    <string name="progress_nutrient_averages">Besin ortalamaları</string>
+
     <string name="progress_macro_progress_format">%1$dg / %2$dg</string>
 
     <string name="progress_activity_section">Aktivite</string>
@@ -1436,6 +1440,9 @@
     <string name="cd_move_down">Aşağı taşı</string>
     <string name="cd_unfavorite">Favoriden çıkar</string>
     <string name="cd_edit_favorite">Kaydedilen yiyeceği düzenle</string>
+    <string name="cd_edit_meal_name">Öğün adını düzenle</string>
+    <string name="cd_set_meal_start">Başlangıç saatini ayarla</string>
+
     <string name="cd_log">Ekle</string>
     <string name="cd_close">Kapat</string>
     <string name="cd_clear_quantity">Miktarı temizle</string>

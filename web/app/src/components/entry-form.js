@@ -81,6 +81,7 @@ export class EntryForm extends HTMLElement {
   connectedCallback() {
     const params = new URLSearchParams(location.hash.split("?")[1] ?? "");
     this.date = params.get("date") ?? todayIso();
+    this.fromSaved = params.get("fromSaved") === "1";
     // Codeberg #66: #/entry/favorite/<id> edits a stored favorite (saved-foods
     // library) instead of a diary row. Parsed first so the plain entry regex
     // doesn't swallow "favorite/<id>" as an entry id.
@@ -300,6 +301,11 @@ export class EntryForm extends HTMLElement {
 
     this.innerHTML = `
       ${subpageBar(title, { backHref: "#/home" })}
+      ${
+        this.fromSaved && !this.favoriteMode
+          ? `<p style="color:var(--muted);font-size:0.85rem;margin:0 1rem 0.75rem;">${escapeHtml(t("entry.saved_meal_review_hint"))}</p>`
+          : ""
+      }
       <form class="entry-form entry-form--review">
         <section class="entry-section">
           <h2 class="entry-section__title">${escapeHtml(t("entry.food_details"))}</h2>

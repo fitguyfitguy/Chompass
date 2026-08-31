@@ -10,6 +10,7 @@ import {
 import { lineChartSvg, barChartSvg } from "../lib/charts.js";
 import { openInput, openConfirm } from "../lib/ui/dialog.js";
 import { t, formatNumber } from "../lib/i18n/index.js";
+import { mergeOptionalGoals } from "../lib/home-nutrients.js";
 import { escapeHtml } from "../lib/ui/html.js";
 import { shiftDate, todayIso } from "../lib/date.js";
 import { chevronRight } from "../lib/icons.js";
@@ -31,13 +32,15 @@ const ICONS = {
 };
 
 /** Android MacroProgressRow: colored label + "63g / 75g" + 8dp progress bar. */
-function macroRow(label, currentG, goalG, accent) {
-  const pct = goalG > 0 ? Math.min(100, (currentG / goalG) * 100) : 0;
+function macroRow(label, current, goal, accent, unit = "g") {
+  const pct = goal > 0 ? Math.min(100, (current / goal) * 100) : 0;
+  const cur = Math.round(current);
+  const g = Math.round(goal);
   return `
     <div class="macro-progress">
       <div class="macro-progress__head">
         <span style="color:${accent}">${label}</span>
-        <span>${t("progress.macro_progress_format", { current: Math.round(currentG), goal: Math.round(goalG) })}</span>
+        <span>${cur}${unit} / ${g}${unit}</span>
       </div>
       <div class="macro-progress__track"><div class="macro-progress__fill" style="width:${Math.max(2, pct)}%;background:${accent}"></div></div>
     </div>`;
@@ -125,12 +128,16 @@ export class ProgressView extends HTMLElement {
         carbsG: 0,
         fatG: 0,
         fiberG: 0,
+        sugarG: 0,
+        sodiumMg: 0,
       };
       acc.calories += e.calories;
       acc.proteinG += e.proteinG;
       acc.carbsG += e.carbsG;
       acc.fatG += e.fatG;
       acc.fiberG += e.fiberG ?? 0;
+      acc.sugarG += e.sugarG ?? 0;
+      acc.sodiumMg += e.sodiumMg ?? 0;
       totalsByDate.set(e.date, acc);
     }
     // Match Android: one bar per logged non-zero day (no calendar zero-padding).
@@ -169,6 +176,8 @@ export class ProgressView extends HTMLElement {
       completeMacroDays.length
         ? completeMacroDays.reduce((s, d) => s + d[key], 0) / completeMacroDays.length
         : 0;
+    const nutrientGoals = mergeOptionalGoals(appPrefs.optionalNutrientGoals);
+
 
     // Chart + history only when logged BF entries exist (Android never draws an
     // empty BF plot). Profile body-fat alone is not enough to show this card.
@@ -360,6 +369,12 @@ export class ProgressView extends HTMLElement {
         ${macroRow(t("onboarding.plan.protein"), macroAvg("proteinG"), targets.proteinG, "var(--protein)")}
         ${macroRow(t("onboarding.plan.carbs"), macroAvg("carbsG"), targets.carbsG, "var(--carbs)")}
         ${macroRow(t("onboarding.plan.fat"), macroAvg("fatG"), targets.fatG, "var(--fat)")}
+      </div>
+      <div class="card card--glass">
+        <h2 class="progress-title">${t("progress.nutrient_averages")}</h2>
+        ${macroRow(t("progress.fiber"), macroAvg("fiberG"), nutrientGoals.fiberG, "var(--fiber)")}
+        ${macroRow(t("progress.sugar"), macroAvg("sugarG"), nutrientGoals.sugarG, "#c47a3a")}
+        ${macroRow(t("progress.sodium"), macroAvg("sodiumMg"), nutrientGoals.sodiumMg, "var(--water)", "mg")}
       </div>`
           : ""
       }

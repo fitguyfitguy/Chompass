@@ -429,6 +429,7 @@
     <string name="progress_no_food">अभी तक कोई भोजन लॉग नहीं किया गया</string>
 
     <string name="progress_macro_averages">मैक्रो औसत</string>
+    <string name="progress_nutrient_averages">पोषक औसत</string>
 
     <string name="progress_log_weight_title">वज़न लॉग करें</string>
 
@@ -830,6 +831,9 @@
     <string name="cd_share_meal">भोजन साझा करें</string>
     <string name="cd_unfavorite">पसंदीदा से हटाएं</string>
     <string name="cd_edit_favorite">सहेजा गया भोजन संपादित करें</string>
+    <string name="cd_edit_meal_name">भोजन का नाम संपादित करें</string>
+    <string name="cd_set_meal_start">शुरुआत समय सेट करें</string>
+
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (प्रोटीन %3$s, कार्ब्स %4$s, वसा %5$s)</string>
     <string name="coach_confirm_log_food_title">यह खाना लॉग करें?</string>
     <string name="coach_confirm_log_water_title">यह पानी लॉग करें?</string>
@@ -1200,6 +1204,8 @@
     <string name="recipe_builder_title_new">नई रेसिपी</string>
     <string name="recipe_ingredient_count_format">%1$d सामग्री</string>
     <string name="saved_meals_no_recipes">अभी कोई रेसिपी नहीं\nकई सामग्रियों से बनाने के लिए + टैप करें</string>
+    <string name="saved_meal_review_hint">लॉग यह भोजन जोड़ता है। पेंसिल सहेजे भोजन को संपादित करती है।</string>
+
     <string name="saved_meals_tab_recipes">रेसिपी</string>
     <string name="section_date_time">दिनांक और समय</string>
     <string name="section_share">साझा करें</string>

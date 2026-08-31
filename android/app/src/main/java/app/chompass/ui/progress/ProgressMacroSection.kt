@@ -23,9 +23,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.models.HomeTopNutrient
+import app.chompass.models.LocaleFormat
+import app.chompass.models.MacroValueFormatter
 import app.chompass.ui.components.macroGramsText
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
+import kotlin.math.roundToInt
 
 @Composable
 internal fun MacroAveragesSection(
@@ -41,14 +45,66 @@ internal fun MacroAveragesSection(
 }
 
 @Composable
-internal fun MacroProgressRow(label: String, current: Double, goal: Int, accentColor: Color) {
+internal fun NutrientAveragesSection(
+    avgFiber: Double,
+    avgSugar: Double,
+    avgSodium: Double,
+    fiberGoal: Int,
+    sugarGoal: Int,
+    sodiumGoal: Int,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(stringResource(R.string.progress_nutrient_averages), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+        MacroProgressRow(
+            stringResource(R.string.nutrition_label_fiber),
+            avgFiber,
+            fiberGoal,
+            AppColors.nutrientColor(HomeTopNutrient.FIBER),
+        )
+        MacroProgressRow(
+            stringResource(R.string.nutrition_label_sugar),
+            avgSugar,
+            sugarGoal,
+            AppColors.nutrientColor(HomeTopNutrient.SUGAR),
+        )
+        MacroProgressRow(
+            stringResource(R.string.nutrition_label_sodium),
+            avgSodium,
+            sodiumGoal,
+            AppColors.nutrientColor(HomeTopNutrient.SODIUM),
+            unitRes = R.string.unit_mg,
+            wholeNumbers = true,
+        )
+    }
+}
+
+@Composable
+internal fun MacroProgressRow(
+    label: String,
+    current: Double,
+    goal: Int,
+    accentColor: Color,
+    unitRes: Int = R.string.unit_g,
+    wholeNumbers: Boolean = false,
+) {
     val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
+    val unit = stringResource(unitRes)
+    val currentLabel = if (wholeNumbers) {
+        "${LocaleFormat.integer(current.roundToInt())}$unit"
+    } else {
+        "${MacroValueFormatter.string(current)}$unit"
+    }
+    val goalLabel = if (wholeNumbers) {
+        "${LocaleFormat.integer(goal)}$unit"
+    } else {
+        macroGramsText(goal.toDouble())
+    }
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(label, fontSize = 15.sp, fontWeight = FontWeight.Medium, color = accentColor)
             Spacer(Modifier.weight(1f))
             Text(
-                "${macroGramsText(current)} / ${macroGramsText(goal.toDouble())}",
+                "$currentLabel / $goalLabel",
                 fontSize = 15.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
             )

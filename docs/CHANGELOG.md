@@ -8,10 +8,17 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Added
 
+- **Progress averages for fiber, sugar, and sodium** (Android + web): Progress shows those averages over the same complete days as calories and macros. Closes Codeberg [#75](https://codeberg.org/fitguy/Chompass/issues/75) by [@bluepostofficebox](https://codeberg.org/bluepostofficebox).
+- **Saved Meals review explains Log vs the pencil** (Android + web): a one-line hint says Log adds a diary meal, and the pencil on a favorite edits the saved food.
 - **Edit or delete a logged active burn** (Android + web): Add Food → Active burn now lists that day's named logs. Tap a row to change the name or calories, or delete it. Closes Codeberg [#74](https://codeberg.org/fitguy/Chompass/issues/74) by [@bluepostofficebox](https://codeberg.org/bluepostofficebox).
 - **Number pad when editing meal time** (Android): hour and minute fields on Edit Food open the number keyboard. Closes part of Codeberg [#77](https://codeberg.org/fitguy/Chompass/issues/77) by [@BitLicker000](https://codeberg.org/BitLicker000).
 - **System date and time pickers** (Android): Settings → App & Display has a toggle to use the phone's date and time dialogs when editing a meal. Off by default. Closes part of Codeberg [#77](https://codeberg.org/fitguy/Chompass/issues/77) by [@BitLicker000](https://codeberg.org/BitLicker000).
 - **Log a past meal at one time** (Android): Add Food has a Log time row. Set 13:00 once and photo, barcode, note, relog, and manual all save at that time on the day you are viewing. Meal type follows that clock. Edit Food can copy the new date and time onto the other items in that meal. Closes the rest of Codeberg [#77](https://codeberg.org/fitguy/Chompass/issues/77) by [@BitLicker000](https://codeberg.org/BitLicker000).
+
+### Changed
+
+- **Share uses the Android glyph** (Android): Edit Food share and Settings export no longer use the iOS share icon.
+- **Meals editor meets 48 dp and TalkBack** (Android): move, name, and start-time controls are large enough to tap and have labels for the screen reader.
 
 ### Fixed
 
@@ -20,6 +27,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Manual protein, carbs, and fat save as grams** (Android): typing or scrolling 2 on Manual entry now logs 2 g, not 0.2 g. Calories were already correct. Closes Codeberg [#73](https://codeberg.org/fitguy/Chompass/issues/73) by [@swayevenly](https://codeberg.org/swayevenly).
 - **Add-another swipe returns to the in-progress meal** (Android): after the first ingredient is on the meal sheet, swiping down on the camera, photo note, or review goes back to that meal instead of the Add Food hub. The meal sheet also needs a firmer swipe to close, and a typed photo description survives rotation. Closes Codeberg [#80](https://codeberg.org/fitguy/Chompass/issues/80) by [@BrassCat](https://codeberg.org/BrassCat).
 - **Add another opens the full Add Food sheet** (Android + web): after the first ingredient, Add another and Add next ingredient open Photo, barcode, frequent, and note, not only the camera. Closes Codeberg [#78](https://codeberg.org/fitguy/Chompass/issues/78) by [@BitLicker000](https://codeberg.org/BitLicker000).
+
 
 ## [4.2.0] - 2026-08-28
 
@@ -34,6 +42,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Trackers have their own colors** (Android): water reads blue and caffeine amber. Nicotine keeps the caution color. Progress bars stay the app accent.
 - **The update prompt moved to the bottom** (web): the "new version is ready" prompt used to sit over the week pager, the first settings row and the coach headline. It now docks at the bottom like the install banner, and both reserve their space instead of covering content.
 - **Typing stays put while the app updates** (web): sending a coach message no longer throws you out of the coach text field, and the entry form keeps your cursor in place when it refreshes mid-edit (unit change, serving lock, AI correction) instead of rebuilding the form around you.
+
 
 ### Fixed
 

@@ -410,6 +410,8 @@
     <string name="progress_no_food">Aucun aliment enregistré pour le moment</string>
 
     <string name="progress_macro_averages">Moyennes des macros</string>
+    <string name="progress_nutrient_averages">Moyennes des nutriments</string>
+
     <string name="progress_macro_progress_format">%1$d g / %2$d g</string>
 
     <string name="progress_log_weight_title">Enregistrer le poids</string>
@@ -884,6 +886,9 @@
     <string name="cd_share_meal">Partager le repas</string>
     <string name="cd_unfavorite">Retirer des favoris</string>
     <string name="cd_edit_favorite">Modifier l\'aliment enregistré</string>
+    <string name="cd_edit_meal_name">Modifier le nom du repas</string>
+    <string name="cd_set_meal_start">Définir l\'heure de début</string>
+
     <string name="coach_confirm_log_food_title">Enregistrer cet aliment ?</string>
     <string name="coach_confirm_log_water_title">Enregistrer cette eau ?</string>
     <string name="coach_confirm_log_food_summary">%1$s : %2$s (%3$s protéines, %4$s glucides, %5$s lipides)</string>
@@ -1260,6 +1265,8 @@
     <string name="recipe_builder_title_new">Nouvelle recette</string>
     <string name="recipe_ingredient_count_format">%1$d ingrédients</string>
     <string name="saved_meals_no_recipes">Aucune recette pour le moment\nTouchez + pour en créer une avec plusieurs ingrédients</string>
+    <string name="saved_meal_review_hint">Journal ajoute ce repas. Le crayon modifie l\'aliment enregistré.</string>
+
     <string name="saved_meals_tab_recipes">Recettes</string>
     <string name="section_date_time">Date et heure</string>
     <string name="section_share">Partager</string>

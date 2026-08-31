@@ -215,6 +215,10 @@ internal object Keys {
             stringPreferencesKey("selectedSpeechLanguage_${provider.name}")
         val FOOD_ENTRIES = stringPreferencesKey("foodEntries") // legacy, kept only for one-time migration
         val FOOD_ENTRIES_MIGRATED = booleanPreferencesKey("foodEntriesMigrated")
+        /** Daily-aggregate cache shape. 2 = fiber/sugar/sodium (Codeberg #75). */
+        val FOOD_AGGREGATES_SCHEMA = intPreferencesKey("foodAggregatesSchema")
+        const val FOOD_AGGREGATES_SCHEMA_MICROS = 2
+
         fun foodEntriesBucket(month: YearMonth): Preferences.Key<String> =
             stringPreferencesKey(FOOD_ENTRIES_BUCKET_PREFIX + month.toString())
         val FAVORITE_KEYS = stringPreferencesKey("favorites")

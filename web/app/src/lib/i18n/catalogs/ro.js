@@ -131,6 +131,10 @@ export const ro = Object.freeze({
 "progress.history_count_format": "{count} înregistrări · atingeți pentru a vizualiza sau șterge",
 "progress.avg_format": "Medie: {avg} kcal",
 "progress.macro_averages": "Medii macronutrienți",
+  "progress.nutrient_averages": "Medii de nutrienți",
+  "progress.fiber": "Fibre",
+  "progress.sugar": "Zahăr",
+  "progress.sodium": "Sodiu",
 "progress.macro_progress_format": "{current}g / {goal}g",
 "progress.log_first_weight": "Înregistrează prima greutate pentru a vedea tendințele",
 "progress.log_first_body_fat": "Înregistrează primul procent de grăsime corporală pentru a vedea tendințele",
@@ -434,4 +438,6 @@ export const ro = Object.freeze({
   "measurements.confirm_log": 'Înregistrezi {pct}% grăsime din măsurători? Dacă folosești grăsimea în caloriile zilnice, aceasta se actualizează.',
   "measurements.source_navy": 'US Navy',
   "measurements.source_rfm": 'RFM',
+  "entry.saved_meal_review_hint": "Înregistrează adaugă această masă. Creionul editează alimentul salvat.",
+  "manual_active.delete": "Șterge",
 });

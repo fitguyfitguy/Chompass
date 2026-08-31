@@ -131,6 +131,10 @@ export const nl = Object.freeze({
 "progress.history_count_format": "{count} items · tik om te bekijken of te verwijderen",
 "progress.avg_format": "Gemiddelde: {avg} kcal",
 "progress.macro_averages": "Macro-gemiddelden",
+  "progress.nutrient_averages": "Voedingsgemiddelden",
+  "progress.fiber": "Vezels",
+  "progress.sugar": "Suiker",
+  "progress.sodium": "Natrium",
 "progress.macro_progress_format": "{current}g / {goal}g",
 "progress.log_first_weight": "Leg je eerste gewicht vast om trends te zien",
 "progress.log_first_body_fat": "Leg je eerste lichaamsvet vast om trends te zien",
@@ -434,4 +438,6 @@ export const nl = Object.freeze({
   "measurements.confirm_log": '{pct}% lichaamsvet van het meetlint loggen? Als je lichaamsvet in de calorieberekening gebruikt, wordt dat bijgewerkt.',
   "measurements.source_navy": 'US Navy',
   "measurements.source_rfm": 'RFM',
+  "entry.saved_meal_review_hint": "Loggen voegt deze maaltijd toe. Het potlood bewerkt het bewaarde eten.",
+  "manual_active.delete": "Verwijderen",
 });

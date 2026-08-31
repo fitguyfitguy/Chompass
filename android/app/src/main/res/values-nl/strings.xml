@@ -404,6 +404,7 @@
     <string name="progress_no_food">Nog geen eten geregistreerd</string>
 
     <string name="progress_macro_averages">Macro-gemiddelden</string>
+    <string name="progress_nutrient_averages">Voedingsgemiddelden</string>
 
     <string name="progress_log_weight_title">Gewicht loggen</string>
 
@@ -800,6 +801,9 @@
     <string name="cd_share_meal">Maaltijd delen</string>
     <string name="cd_unfavorite">Uit favorieten verwijderen</string>
     <string name="cd_edit_favorite">Bewaard eten bewerken</string>
+    <string name="cd_edit_meal_name">Maaltijdnaam wijzigen</string>
+    <string name="cd_set_meal_start">Starttijd instellen</string>
+
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (eiwit %3$s, koolhydraten %4$s, vet %5$s)</string>
     <string name="coach_confirm_log_food_title">Dit voedsel loggen?</string>
     <string name="coach_confirm_log_water_title">Dit water loggen?</string>
@@ -1180,6 +1184,8 @@
     <string name="recipe_ingredient_count_format">%1$d ingrediënten</string>
     <string name="saved_meals_log_action">Loggen</string>
     <string name="saved_meals_no_recipes">Nog geen recepten\nTik op + om er een te bouwen uit meerdere ingrediënten</string>
+    <string name="saved_meal_review_hint">Loggen voegt deze maaltijd toe. Het potlood bewerkt het bewaarde eten.</string>
+
     <string name="saved_meals_tab_recipes">Recepten</string>
     <string name="section_date_time">Datum en tijd</string>
     <string name="section_share">Delen</string>

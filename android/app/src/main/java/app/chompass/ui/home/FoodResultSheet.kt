@@ -932,6 +932,16 @@ fun FoodResultSheet(
             }
             } // WithoutOverscroll
 
+            if (mealTypeFromSavedMeal) {
+                Text(
+                    stringResource(R.string.saved_meal_review_hint),
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp),
+                )
+            }
+
+
             SheetStickyPrimaryBar(
                 primaryLabel = busyPrimaryLabel,
                 primaryEnabled = analysisReady && !isSaving && analysis != null,
