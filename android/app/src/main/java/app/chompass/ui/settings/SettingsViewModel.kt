@@ -895,7 +895,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         { copy(progressNutrientAverages = v) },
     )
 
-
     fun setMealSchedule(schedule: app.chompass.models.MealSchedule) {
         val validated = schedule.validatedOrDefault()
         updateUiPref(

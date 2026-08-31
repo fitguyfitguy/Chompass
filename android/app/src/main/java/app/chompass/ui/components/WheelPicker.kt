@@ -26,8 +26,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.ripple
 
-
-
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -80,7 +78,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-
 
 import kotlin.math.roundToInt
 
@@ -657,7 +654,6 @@ fun ClockTimeWheelPicker(
     }
 }
 
-
 /**
  * Typed-mode clock field: digits fill HH then MM left to right and the colon
  * is drawn automatically, so 1200 lands as 12:00 and 930 as 09:30.
@@ -737,7 +733,6 @@ private fun ClockTimeTypeField(
     }
 }
 
-
 /** Positional HHMM mask: 1200→"12:00", 930→"9:30", 12→"12" (Android time-entry style). */
 private fun formatClockDigits(digits: String): String = when (digits.length) {
     0, 1, 2 -> digits
@@ -756,9 +751,6 @@ internal fun parseClockDigits(digits: String): java.time.LocalTime? {
     if (hour !in 0..23 || minute !in 0..59) return null
     return java.time.LocalTime.of(hour, minute)
 }
-
-
-
 
 /**
  * Macro wheel picker — NumericWheelPicker with an accent color for the unit label

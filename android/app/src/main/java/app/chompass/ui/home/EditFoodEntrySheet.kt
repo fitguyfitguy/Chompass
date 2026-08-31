@@ -71,7 +71,6 @@ import app.chompass.models.ServingUnitOption
 import app.chompass.ui.components.ClockTimeWheelPicker
 import app.chompass.ui.components.DateWheelPicker
 
-
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.FudGlassPrimaryButton
@@ -1133,8 +1132,6 @@ internal fun FoodLogTimePicker(
     }
 }
 
-
-
 @Composable
 private fun EditFoodTimeDialog(
     initialTime: LocalTime,
@@ -1157,9 +1154,6 @@ private fun EditFoodTimeDialog(
         )
     }
 }
-
-
-
 
 /**
  * Pickable food emojis for the entry icon. Single-codepoint so they render

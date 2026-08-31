@@ -216,7 +216,6 @@ internal fun SheetToolbarPill(
     modifier: Modifier = Modifier,
 ) {
 
-
     val shape = CircleShape
     val isDark = isDarkTheme()
     val horizontalPadding = when {
