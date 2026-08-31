@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.ServingUnitOption
+import app.chompass.models.MacroValueFormatter
 import app.chompass.models.LocaleFormat
 import kotlinx.coroutines.flow.distinctUntilChanged
 import java.time.LocalDate
@@ -666,6 +667,90 @@ fun ExpandableMacroPicker(
                 max = max,
                 unit = unit,
                 step = step,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 18.dp)
+                    .padding(bottom = 16.dp)
+            )
+        }
+    }
+}
+
+/**
+ * Expandable gram picker for protein/carbs/fat. Summary prints real grams
+ * ([MacroValueFormatter]); the wheel is [DecimalWheelPicker] (0.1 g), not tenths-as-int.
+ */
+@Composable
+fun ExpandableDecimalMacroPicker(
+    label: String,
+    value: Double,
+    onValueChange: (Double) -> Unit,
+    min: Double,
+    max: Double,
+    unit: String,
+    accentColor: androidx.compose.ui.graphics.Color,
+    step: Double = 0.1,
+    expanded: Boolean,
+    onExpandChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp, vertical = 12.dp)
+                .clickable { onExpandChange(!expanded) }
+                .background(Color.Transparent, RoundedCornerShape(12.dp)),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .clip(CircleShape)
+                        .background(accentColor)
+                )
+                Spacer(Modifier.width(10.dp))
+                Text(
+                    label,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            Spacer(Modifier.weight(1f))
+            Text(
+                "${MacroValueFormatter.string(value)} $unit",
+                fontSize = 17.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = accentColor
+            )
+            Spacer(Modifier.width(8.dp))
+            val rotation by animateFloatAsState(
+                targetValue = if (expanded) 180f else 0f,
+                animationSpec = spring(dampingRatio = 0.75f)
+            )
+            Icon(
+                Icons.Filled.KeyboardArrowDown,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                modifier = Modifier
+                    .graphicsLayer { rotationZ = rotation }
+            )
+        }
+
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
+            exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f))
+        ) {
+            DecimalWheelPicker(
+                value = value,
+                onValueChange = onValueChange,
+                min = min,
+                max = max,
+                step = step,
+                unit = unit,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 18.dp)
