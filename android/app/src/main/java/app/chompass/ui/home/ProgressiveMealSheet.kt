@@ -91,8 +91,6 @@ fun ProgressiveMealSheet(
             onCancel = { if (!isSaving) onDismiss() },
         )
 
-
-
         ChompassSheetLazyColumn(
             listState = listState,
             modifier = Modifier

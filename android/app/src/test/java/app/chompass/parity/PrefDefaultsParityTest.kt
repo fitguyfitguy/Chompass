@@ -64,7 +64,6 @@ class PrefDefaultsParityTest {
         assertEquals(0, f.getJSONArray("progressMeasurementSites").length())
         assertFalse(f.getBoolean("progressNutrientAverages"))
 
-
         val goals = f.getJSONObject("optionalNutrientGoals")
         val d = OptionalNutrientGoals.Default
         assertEquals(goals.getInt("sugar"), d.sugar)

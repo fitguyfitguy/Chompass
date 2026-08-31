@@ -1365,6 +1365,7 @@ export class DiaryView extends HTMLElement {
         : `<div class="add-food-relog" role="list">
              ${entries.map((e, i) => relogChip(e, `${prefix}-${i}`)).join("")}
            </div>`;
+    const hasRelog = relogRows.recents.length > 0 || relogRows.frequents.length > 0;
     const quickRelogBlock = `
       <button type="button" class="add-food-section add-food-section--action" data-add="log-again" aria-label="${t("add_food.open_logged_foods")}">
         <span class="add-food-section__text">
