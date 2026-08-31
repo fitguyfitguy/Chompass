@@ -242,6 +242,8 @@ object OpenFoodFactsService {
                     ?: nutriments?.flexibleDouble("energy_100g")?.let { it * 0.23900573614 }
                 val protein100 = nutriments?.flexibleDouble("proteins_100g")
                 val carbs100 = nutriments?.flexibleDouble("carbohydrates_100g")
+                    ?: nutriments?.flexibleDouble("carbohydrates-total_100g")
+
                 val fat100 = nutriments?.flexibleDouble("fat_100g")
                 val servingGrams = maxOf(
                     product.flexibleDouble("serving_quantity")
