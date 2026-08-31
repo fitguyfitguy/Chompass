@@ -493,7 +493,10 @@ fun MultiPhotoCaptureSheet(
                                         color = AppColors.Calorie,
                                         fontSize = 13.sp,
                                         textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                        maxLines = 2,
+                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                                     )
+
                                 }
                             }
                         }
