@@ -50,7 +50,7 @@ export function mapProduct(product, barcode) {
     servingValue("energy-kcal") ??
     (servingValue("energy") != null ? servingValue("energy") * 0.23900573614 : null);
   const protein = servingValue("proteins");
-  const carbs = servingValue("carbohydrates");
+  const carbs = servingValue("carbohydrates") ?? servingValue("carbohydrates-total");
   const fat = servingValue("fat");
 
   if (calories == null && protein == null && carbs == null && fat == null) {

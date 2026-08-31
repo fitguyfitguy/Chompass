@@ -77,6 +77,33 @@ class OpenFoodFactsMappingTest {
     }
 
     @Test
+    fun analysis_usesCarbohydratesTotalWhenCarbsKeyMissing() {
+        val product = JSONObject(
+            """
+            {
+              "product_name": "Quick Cooking Rolled Oats",
+              "brands": "Bob's Red Mill",
+              "serving_quantity": 45,
+              "serving_size": "0.5 cup (45 g)",
+              "nutriments": {
+                "energy-kcal_serving": 180,
+                "proteins_serving": 6,
+                "fat_serving": 3,
+                "carbohydrates-total_serving": 31
+              }
+            }
+            """.trimIndent(),
+        )
+
+        val food = OpenFoodFactsService.analysis(product, "0039978033765")
+        assertEquals(180, food.calories)
+        assertEquals(31.0, food.carbs, 0.001)
+        assertEquals(6.0, food.protein, 0.001)
+        assertEquals(3.0, food.fat, 0.001)
+        assertEquals(45.0, food.servingSizeGrams!!, 0.001)
+    }
+
+    @Test
     fun analysis_parsesServingSizeStringWhenQuantityMissing() {
         val product = JSONObject(
             """
