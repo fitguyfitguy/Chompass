@@ -23,6 +23,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.material3.ripple
+
+
+
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -665,72 +670,78 @@ private fun ClockTimeTypeField(
     contentDescription: String,
     modifier: Modifier = Modifier,
 ) {
-    val initialDigits = String.format(java.util.Locale.US, "%02d%02d", time.hour, time.minute)
-    var digits by remember(time) { mutableStateOf(initialDigits) }
-    val display = formatClockDigits(digits)
-    var draft by remember(digits) { mutableStateOf(TextFieldValue(display, TextRange(display.length))) }
+    // Unkeyed: a live commit must NOT re-pad these digits (that froze re-entry
+    // at 00:00 — every keystroke overflowed the 4-digit cap). Fresh instance per
+    // dialog open / wheel flip gives the correct initial value from [time].
+    val initial = formatClockDigits(String.format(java.util.Locale.US, "%02d%02d", time.hour, time.minute))
+    var draft by remember { mutableStateOf(TextFieldValue(initial, TextRange(initial.length))) }
     val focus = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
     LaunchedEffect(Unit) {
         focus.requestFocus()
         keyboard?.show()
     }
-    val commit = {
-        parseClockDigits(digits)?.let(onChange)
-        keyboard?.hide()
-    }
-    BasicTextField(
-        value = draft,
-        onValueChange = { value ->
-            val next = value.text.filter { it.isDigit() }.take(4)
-            digits = next
-            val shown = formatClockDigits(next)
-            draft = TextFieldValue(shown, TextRange(shown.length))
-            parseClockDigits(next)?.let(onChange)
-        },
-        singleLine = true,
-        textStyle = MaterialTheme.typography.titleLarge.copy(
-            fontSize = 24.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSecondaryContainer,
-            textAlign = TextAlign.Center,
-        ),
-        cursorBrush = SolidColor(MaterialTheme.colorScheme.onSecondaryContainer),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = { commit() }),
-        modifier = modifier
+    Row(
+        modifier
             .fillMaxWidth()
-            .height(ROW_HEIGHT)
-            .focusRequester(focus),
-        decorationBox = { inner ->
-            Box(
-                Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center,
-            ) {
-                WheelSelectionHighlight(
-                    Modifier
-                        .align(Alignment.Center)
-                        .width(184.dp),
+            .height(ROW_HEIGHT),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+            WheelSelectionHighlight(
+                Modifier
+                    .align(Alignment.Center)
+                    .width(184.dp),
+            )
+            BasicTextField(
+                value = draft,
+                onValueChange = { value ->
+                    val digits = value.text.filter { it.isDigit() }.take(4)
+                    val shown = formatClockDigits(digits)
+                    draft = TextFieldValue(shown, TextRange(shown.length))
+                    // Live-commit only a complete, valid HHMM so partial digits
+                    // never bounce back into the field.
+                    if (digits.length == 4) parseClockDigits(digits)?.let(onChange)
+                },
+                singleLine = true,
+                textStyle = MaterialTheme.typography.titleLarge.copy(
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    textAlign = TextAlign.Center,
+                ),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.onSecondaryContainer),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = {
+                    parseClockDigits(draft.text)?.let(onChange)
+                    keyboard?.hide()
+                }),
+                modifier = Modifier
+                    .width(184.dp)
+                    .semantics { this.contentDescription = contentDescription }
+                    .focusRequester(focus),
+            )
+        }
+        val flipCd = stringResource(R.string.picker_use_wheel)
+        Box(
+            Modifier
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = ripple(bounded = false, radius = 18.dp),
+                    onClick = onFlipToWheel,
                 )
-                Row(
-                    Modifier
-                        .width(184.dp)
-                        .semantics { this.contentDescription = contentDescription },
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    inner()
-                }
-            }
-        },
-    )
+                .padding(4.dp),
+        ) {
+            MagnitudeHintIcon(typedMode = true)
+        }
+    }
 }
 
-/** 1200 -> 12:00, 930 -> 09:30, 9 -> 09 (minutes still open). */
+
+/** Positional HHMM mask: 1200→"12:00", 930→"9:30", 12→"12" (Android time-entry style). */
 private fun formatClockDigits(digits: String): String = when (digits.length) {
-    0 -> ""
-    1 -> "0${digits}"
-    2 -> digits
-    3 -> "0${digits.take(1)}:${digits.drop(1)}"
+    0, 1, 2 -> digits
+    3 -> "${digits.take(1)}:${digits.drop(1)}"
     else -> "${digits.take(2)}:${digits.drop(2)}"
 }
 
@@ -745,6 +756,7 @@ internal fun parseClockDigits(digits: String): java.time.LocalTime? {
     if (hour !in 0..23 || minute !in 0..59) return null
     return java.time.LocalTime.of(hour, minute)
 }
+
 
 
 
