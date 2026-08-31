@@ -383,7 +383,7 @@ object OpenFoodFactsService {
         val calories = servingValue("energy-kcal")
             ?: servingValue("energy")?.let { it * 0.23900573614 }
         val protein = servingValue("proteins")
-        val carbs = servingValue("carbohydrates")
+        val carbs = servingValue("carbohydrates") ?: servingValue("carbohydrates-total")
         val fat = servingValue("fat")
 
         if (calories == null && protein == null && carbs == null && fat == null) {
@@ -395,15 +395,16 @@ object OpenFoodFactsService {
         val validation = app.chompass.models.GroundingValidator.validateServing(
             analysisName = name,
             calories = (calories ?: 0.0).roundToInt(),
-            protein = protein ?: 0.0,
-            carbs = carbs ?: 0.0,
-            fat = fat ?: 0.0,
+            protein = protein,
+            carbs = carbs,
+            fat = fat,
             servingGrams = servingGrams,
             sodiumMg = milligrams(servingValue("sodium")),
             caloriesPer100g = nutriments.flexibleDouble("energy-kcal_100g")
                 ?: nutriments.flexibleDouble("energy_100g")?.let { it * 0.23900573614 },
             proteinPer100g = nutriments.flexibleDouble("proteins_100g"),
-            carbsPer100g = nutriments.flexibleDouble("carbohydrates_100g"),
+            carbsPer100g = nutriments.flexibleDouble("carbohydrates_100g")
+                ?: nutriments.flexibleDouble("carbohydrates-total_100g"),
             fatPer100g = nutriments.flexibleDouble("fat_100g"),
         )
         return FoodAnalysis(

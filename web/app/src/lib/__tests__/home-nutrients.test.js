@@ -188,3 +188,27 @@ test("offMapProduct_prefersServingKeys", () => {
   assert.equal(mapped.proteinG, 8);
   assert.equal(mapped.fiberG, 0.5);
 });
+
+test("offMapProduct_fallsBackToCarbohydratesTotal", () => {
+  const mapped = mapProduct(
+    {
+      product_name: "Quick Cooking Rolled Oats",
+      brands: "Bob's Red Mill",
+      serving_quantity: 45,
+      serving_size: "0.5 cup (45 g)",
+      nutriments: {
+        "energy-kcal_serving": 180,
+        proteins_serving: 6,
+        fat_serving: 3,
+        "carbohydrates-total_serving": 31,
+      },
+    },
+    "0039978033765"
+  );
+  assert.ok(mapped);
+  assert.equal(mapped.calories, 180);
+  assert.equal(mapped.carbsG, 31);
+  assert.equal(mapped.proteinG, 6);
+  assert.equal(mapped.fatG, 3);
+  assert.equal(mapped.quantityG, 45);
+});

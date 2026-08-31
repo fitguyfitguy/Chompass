@@ -42,6 +42,33 @@ class GroundingValidatorTest {
     }
 
     @Test
+    fun validateServing_skipsKjWhenAMacroIsMissing() {
+        // Bob's Red Mill oats shape: 180 kcal, P6, carbs omitted, F3 → Atwater 51, ratio 3.53.
+        val result = GroundingValidator.validateServing(
+            analysisName = "Rolled Oats",
+            calories = 180,
+            protein = 6.0,
+            carbs = null,
+            fat = 3.0,
+            servingGrams = 45.0,
+        )
+        assertNull(result.correctedCalories)
+    }
+
+    @Test
+    fun validateServing_kjStillFiresWhenCarbsAreZero() {
+        val result = GroundingValidator.validateServing(
+            analysisName = "Chicken",
+            calories = 418,
+            protein = 25.0,
+            carbs = 0.0,
+            fat = 0.0,
+            servingGrams = 100.0,
+        )
+        assertNotNull(result.correctedCalories)
+    }
+
+    @Test
     fun validateServing_detectsSodiumInGrams() {
         val result = GroundingValidator.validateServing(
             analysisName = "Soup",
