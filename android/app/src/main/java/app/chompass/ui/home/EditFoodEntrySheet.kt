@@ -38,8 +38,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Context
-import android.content.res.Configuration
 
 import android.text.format.DateFormat
 import androidx.compose.runtime.getValue
@@ -998,10 +996,16 @@ fun EditFoodEntrySheet(
 
     if (showDatePicker) {
         if (useSystemDateTimePickers) {
-            val ctx = LocalContext.current.withPickerNightMode(isDark)
+            val ctx = LocalContext.current
             LaunchedEffect(Unit) {
+                val theme = if (isDark) {
+                    android.R.style.Theme_DeviceDefault_Dialog
+                } else {
+                    android.R.style.Theme_DeviceDefault_Light_Dialog
+                }
                 DatePickerDialog(
                     ctx,
+                    theme,
                     { _, y, m, d ->
                         loggedDate = LocalDate.of(y, m + 1, d)
                         showDatePicker = false
@@ -1015,6 +1019,7 @@ fun EditFoodEntrySheet(
                     show()
                 }
             }
+
         } else {
 
             var pickedDate by remember(loggedDate) { mutableStateOf(loggedDate) }
@@ -1096,11 +1101,19 @@ internal fun FoodLogTimePicker(
     onDismiss: () -> Unit,
 ) {
     if (useSystem) {
+        // The Activity context is required for the dialog window token; a
+        // createConfigurationContext wrapper has no token and crashes (BadTokenException).
+        val ctx = LocalContext.current
         val dark = isDarkTheme()
-        val ctx = LocalContext.current.withPickerNightMode(dark)
         LaunchedEffect(Unit) {
+            val theme = if (dark) {
+                android.R.style.Theme_DeviceDefault_Dialog
+            } else {
+                android.R.style.Theme_DeviceDefault_Light_Dialog
+            }
             TimePickerDialog(
                 ctx,
+                theme,
                 { _, h, min -> onConfirm(LocalTime.of(h, min)) },
                 initialTime.hour,
                 initialTime.minute,
@@ -1119,6 +1132,7 @@ internal fun FoodLogTimePicker(
         )
     }
 }
+
 
 
 @Composable
@@ -1144,12 +1158,6 @@ private fun EditFoodTimeDialog(
     }
 }
 
-private fun Context.withPickerNightMode(dark: Boolean): Context {
-    val night = if (dark) Configuration.UI_MODE_NIGHT_YES else Configuration.UI_MODE_NIGHT_NO
-    val config = Configuration(resources.configuration)
-    config.uiMode = (config.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or night
-    return createConfigurationContext(config)
-}
 
 
 
