@@ -1,6 +1,7 @@
 package app.chompass.ui.home
 
-import app.chompass.ui.components.DecimalWheelPicker
+import app.chompass.ui.components.SplitDecimalWheelPicker
+
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.ChompassSheetLazyColumn
 import app.chompass.ui.components.ChompassBottomSheet
@@ -1239,22 +1240,22 @@ internal fun ReviewNutritionValueRow(
                         .padding(bottom = 16.dp),
                 )
             } else {
-                DecimalWheelPicker(
+                SplitDecimalWheelPicker(
                     value = currentValue,
                     onValueChange = { newVal ->
                         val formatted = String.format("%.1f", newVal)
                         draft = formatted
                         onEdit(formatted)
                     },
-                    min = 0.0,
-                    max = 999.9,
-                    step = 0.1,
+                    min = 0,
+                    max = 999,
                     unit = unit,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 18.dp)
                         .padding(bottom = 16.dp)
                 )
+
             }
         }
     }

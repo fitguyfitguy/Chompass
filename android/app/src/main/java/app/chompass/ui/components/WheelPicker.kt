@@ -877,7 +877,8 @@ fun ExpandableMacroPicker(
 
 /**
  * Expandable gram picker for protein/carbs/fat. Summary prints real grams
- * ([MacroValueFormatter]); the wheel is [DecimalWheelPicker] (0.1 g), not tenths-as-int.
+ * ([MacroValueFormatter]); the wheel is [SplitDecimalWheelPicker] — whole grams
+ * plus a tenths column — so 80 g is one flick, not 800 rows of 0.1.
  */
 @Composable
 fun ExpandableDecimalMacroPicker(
@@ -943,12 +944,11 @@ fun ExpandableDecimalMacroPicker(
             enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
             exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f))
         ) {
-            DecimalWheelPicker(
+            SplitDecimalWheelPicker(
                 value = value,
                 onValueChange = onValueChange,
-                min = min,
-                max = max,
-                step = step,
+                min = min.toInt(),
+                max = max.toInt(),
                 unit = unit,
                 modifier = Modifier
                     .fillMaxWidth()
