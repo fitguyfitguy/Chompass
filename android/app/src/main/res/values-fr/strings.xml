@@ -1345,6 +1345,10 @@
     <string name="settings_fixed_launcher_icon_subtitle">Garde l\'icône du lanceur en sarcelle. Elle ne suit plus la couleur du thème ni le fond d\'écran.</string>
     <string name="settings_system_date_time_pickers">Sélecteurs date et heure du système</string>
     <string name="settings_system_date_time_pickers_subtitle">Utiliser les dialogues date et heure du téléphone pour modifier un repas.</string>
+    <string name="add_food_log_time">Heure du journal</string>
+    <string name="add_food_log_time_now">Maintenant</string>
+    <string name="cd_clear_log_time">Utiliser l\'heure actuelle</string>
+    <string name="edit_food_apply_time">Appliquer aussi aux autres plats %1$s</string>
     <string name="settings_food_intro">Comment se comportent les entrées : unités, heures des repas, analyse photo et détection de la taille de portion.</string>
     <string name="settings_food_log_sort">Tri du journal alimentaire</string>
     <string name="settings_food_section_logging">Enregistrement</string>

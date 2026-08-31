@@ -1281,6 +1281,10 @@
     <string name="settings_fixed_launcher_icon_subtitle">Păstrează pictograma aplicației turcoaz. Nu mai urmează culoarea temei și a fundalului.</string>
     <string name="settings_system_date_time_pickers">Selectoare de dată și oră ale sistemului</string>
     <string name="settings_system_date_time_pickers_subtitle">Folosește dialogurile de dată și oră ale telefonului la editarea unei mese.</string>
+    <string name="add_food_log_time">Ora înregistrării</string>
+    <string name="add_food_log_time_now">Acum</string>
+    <string name="cd_clear_log_time">Folosește ora actuală</string>
+    <string name="edit_food_apply_time">Aplică și la celelalte elemente %1$s</string>
     <string name="settings_food_intro">Cum se comportă înregistrările: unități, orele meselor, analiza foto și detectarea mărimii porției.</string>
     <string name="settings_food_log_sort">Sortarea jurnalului alimentar</string>
     <string name="settings_food_section_logging">Înregistrare</string>

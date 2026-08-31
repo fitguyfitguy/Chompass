@@ -1348,6 +1348,10 @@
     <string name="settings_fixed_launcher_icon_subtitle">Mantiene el icono de inicio en turquesa. Deja de seguir el color del tema y el fondo de pantalla.</string>
     <string name="settings_system_date_time_pickers">Selectores de fecha y hora del sistema</string>
     <string name="settings_system_date_time_pickers_subtitle">Usa los diálogos de fecha y hora del teléfono al editar una comida.</string>
+    <string name="add_food_log_time">Hora del registro</string>
+    <string name="add_food_log_time_now">Ahora</string>
+    <string name="cd_clear_log_time">Usar la hora actual</string>
+    <string name="edit_food_apply_time">Aplicar también a otros platos de %1$s</string>
     <string name="settings_food_intro">Cómo se comportan las entradas: unidades, horarios de comida, análisis de fotos y detección del tamaño de porción.</string>
     <string name="settings_food_log_sort">Orden del registro de comida</string>
     <string name="settings_food_section_logging">Registro</string>

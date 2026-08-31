@@ -1571,6 +1571,10 @@ für dich ein</string>
     <string name="settings_fixed_launcher_icon_subtitle">Behält die Launcher-Ikone in Petrol. Sie folgt nicht mehr der Akzentfarbe oder dem Hintergrundbild.</string>
     <string name="settings_system_date_time_pickers">System-Datums- und Zeitwahl</string>
     <string name="settings_system_date_time_pickers_subtitle">Beim Bearbeiten einer Mahlzeit die Datums- und Zeitdialoge des Telefons nutzen.</string>
+    <string name="add_food_log_time">Log-Zeit</string>
+    <string name="add_food_log_time_now">Jetzt</string>
+    <string name="cd_clear_log_time">Aktuelle Uhrzeit verwenden</string>
+    <string name="edit_food_apply_time">Auch auf andere %1$s-Einträge anwenden</string>
 
     <string name="sheet_theme_color">Designfarbe</string>
 

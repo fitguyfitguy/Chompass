@@ -405,6 +405,10 @@
     <string name="shortcut_barcode_short">Barcode</string>
     <string name="shortcut_barcode_long">Scan a barcode</string>
     <string name="add_food_sheet_title">Add food</string>
+    <string name="add_food_log_time">Log time</string>
+    <string name="add_food_log_time_now">Now</string>
+    <string name="cd_clear_log_time">Use current time</string>
+    <string name="edit_food_apply_time">Also apply to other %1$s items</string>
     <string name="add_food_hero_photo">Photo</string>
     <string name="add_food_hero_photo_sub">Camera or gallery</string>
     <string name="add_food_hero_note">Note</string>

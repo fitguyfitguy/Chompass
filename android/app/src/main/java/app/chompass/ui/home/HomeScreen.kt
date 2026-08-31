@@ -74,6 +74,8 @@ import app.chompass.MainActivity
 import app.chompass.R
 import app.chompass.data.QuickRelogRows
 import app.chompass.models.FoodEntry
+import app.chompass.models.CurrentMealCatalog
+import app.chompass.models.MealType
 import app.chompass.models.FoodSource
 import app.chompass.models.CaffeineEntry
 import app.chompass.models.NicotineEntry
@@ -971,6 +973,9 @@ fun HomeScreen(
             onStopFast = vm::stopFast,
             onRelogRecent = { vm.relogMeal(it) },
             onReviewRecent = { vm.reviewSavedMeal(it) },
+            logTimeOverride = ui.logTimeOverride,
+            useSystemDateTimePickers = useSystemDateTimePickers,
+            onLogTimeOverride = vm::setLogTimeOverride,
             onDismiss = {
                 showAddFoodSheet = false
                 addFoodFlowActive = false
@@ -1177,6 +1182,8 @@ fun HomeScreen(
     if (showManual) {
         ManualEntryDialog(
             isSaving = ui.saving,
+            initialMealType = ui.logTimeOverride?.let { CurrentMealCatalog.value.mealIdAt(it) }
+                ?: MealType.currentMealId,
             onDismiss = {
                 showManual = false
                 returnToAddFoodGrid()
@@ -1455,11 +1462,12 @@ fun HomeScreen(
             preferGramsByDefault = ui.preferGramsByDefault,
             aiFeaturesEnabled = aiFeaturesEnabled,
             useSystemDateTimePickers = useSystemDateTimePickers,
+            dayEntries = ui.todayEntries,
             onReprocess = { updatedNote, onProgress ->
                 vm.reprocessFoodEntry(entry, updatedNote, onProgress)
             },
-            onSave = { updated ->
-                vm.updateEntry(entry, updated)
+            onSave = { updated, applyTimeToMeal ->
+                vm.updateEntry(entry, updated, applyTimeToMeal)
                 editingEntry = null
             },
             onDismiss = { editingEntry = null }
@@ -1559,7 +1567,12 @@ fun HomeScreen(
             // Codeberg #66: a Saved Meals review starts from the saved food's
             // meal slot (favorites as a library); fresh analyses keep the
             // time-of-day guess.
-            initialMealType = ui.pendingReviewSource?.mealType,
+            initialMealType = ui.pendingReviewSource?.mealType
+                ?: ui.logTimeOverride?.let { CurrentMealCatalog.value.mealIdAt(it) },
+            logTimeOverride = ui.logTimeOverride,
+            useSystemDateTimePickers = useSystemDateTimePickers,
+            onLogTimeOverride = vm::setLogTimeOverride,
+            mealTypeFromSavedMeal = ui.pendingReviewSource != null,
             onWhatIfSuggestion = if (aiFeaturesEnabled) vm::suggestMealWhatIf else null,
             onReanalyzeWithTip = if (
                 aiFeaturesEnabled &&
