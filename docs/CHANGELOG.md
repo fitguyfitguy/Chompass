@@ -10,6 +10,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **Saved AI server URL shows on the settings row** (Android): Settings → AI & Speech now shows the custom or Ollama URL you saved, and reopening the editor starts with that URL instead of a blank field. The fallback URL row does the same. Closes Codeberg [#52](https://codeberg.org/fitguy/Chompass/issues/52) by [@savionlee](https://codeberg.org/savionlee).
 - **Barcode calories stay in kcal when carbs are missing** (Android + web): scanning a product that lists calories but omits carbs no longer divides those calories by about 4. If Open Food Facts stores carbs under total carbohydrates, that value is used. Closes Codeberg [#71](https://codeberg.org/fitguy/Chompass/issues/71) by [@Melati-Pohan](https://codeberg.org/Melati-Pohan).
+- **Manual protein, carbs, and fat save as grams** (Android): typing or scrolling 2 on Manual entry now logs 2 g, not 0.2 g. Calories were already correct. Closes Codeberg [#73](https://codeberg.org/fitguy/Chompass/issues/73) by [@swayevenly](https://codeberg.org/swayevenly).
 
 ## [4.2.0] - 2026-08-28
 

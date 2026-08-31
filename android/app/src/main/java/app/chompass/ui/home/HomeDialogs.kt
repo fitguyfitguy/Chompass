@@ -69,6 +69,7 @@ import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.components.rememberDecodedBitmap
 import app.chompass.ui.components.ExpandableMacroPicker
+import app.chompass.ui.components.ExpandableDecimalMacroPicker
 
 // ── Dialogs (unchanged styling polish) ──────────────────────────────
 
@@ -628,37 +629,37 @@ internal fun ManualEntryDialog(
                         expanded = caloriesExpanded,
                         onExpandChange = { caloriesExpanded = it }
                     )
-                    ExpandableMacroPicker(
+                    ExpandableDecimalMacroPicker(
                         label = stringResource(R.string.manual_protein),
-                        value = (protein * 10).toInt(),
-                        onValueChange = { protein = it / 10.0 },
-                        min = 0,
-                        max = 5000,
-                        step = 1,
+                        value = protein,
+                        onValueChange = { protein = it },
+                        min = 0.0,
+                        max = 999.9,
+                        step = 0.1,
                         unit = stringResource(R.string.unit_g),
                         accentColor = AppColors.Protein,
                         expanded = proteinExpanded,
                         onExpandChange = { proteinExpanded = it }
                     )
-                    ExpandableMacroPicker(
+                    ExpandableDecimalMacroPicker(
                         label = stringResource(R.string.manual_carbs),
-                        value = (carbs * 10).toInt(),
-                        onValueChange = { carbs = it / 10.0 },
-                        min = 0,
-                        max = 5000,
-                        step = 1,
+                        value = carbs,
+                        onValueChange = { carbs = it },
+                        min = 0.0,
+                        max = 999.9,
+                        step = 0.1,
                         unit = stringResource(R.string.unit_g),
                         accentColor = AppColors.Carbs,
                         expanded = carbsExpanded,
                         onExpandChange = { carbsExpanded = it }
                     )
-                    ExpandableMacroPicker(
+                    ExpandableDecimalMacroPicker(
                         label = stringResource(R.string.manual_fat),
-                        value = (fat * 10).toInt(),
-                        onValueChange = { fat = it / 10.0 },
-                        min = 0,
-                        max = 5000,
-                        step = 1,
+                        value = fat,
+                        onValueChange = { fat = it },
+                        min = 0.0,
+                        max = 999.9,
+                        step = 0.1,
                         unit = stringResource(R.string.unit_g),
                         accentColor = AppColors.Fat,
                         expanded = fatExpanded,
