@@ -39,6 +39,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -58,6 +61,22 @@ import java.time.YearMonth
 import app.chompass.models.UnitFormat
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+
+
 import kotlin.math.roundToInt
 
 private val ITEM_HEIGHT = 44.dp
@@ -577,19 +596,16 @@ fun ClockTimeWheelPicker(
     val (typed, setTyped) = rememberMagnitudePickerMode()
     val typeCd = stringResource(R.string.picker_type_value)
     if (typed) {
-        MagnitudeTypeField(
-            display = String.format(locale, "%02d:%02d", time.hour, time.minute),
-            decimal = true,
-            onCommitRaw = { raw ->
-                parseClockTime(raw)?.let { onChange(it); true } ?: false
-            },
+        ClockTimeTypeField(
+            time = time,
+            onChange = onChange,
             onFlipToWheel = { setTyped(false) },
-            unit = null,
             contentDescription = typeCd,
             modifier = modifier,
         )
         return
     }
+
     MagnitudeWheelChrome(showHint = false, onType = { setTyped(true) }) {
         Box(
             modifier = modifier
@@ -636,17 +652,100 @@ fun ClockTimeWheelPicker(
     }
 }
 
-internal fun parseClockTime(raw: String): java.time.LocalTime? {
-    val digits = raw.filter { it.isDigit() }
-    val (hour, minute) = when (digits.length) {
-        1, 2 -> digits.toInt() to 0
-        3 -> digits.take(1).toInt() to digits.drop(1).toInt()
-        4 -> digits.take(2).toInt() to digits.drop(2).toInt()
+
+/**
+ * Typed-mode clock field: digits fill HH then MM left to right and the colon
+ * is drawn automatically, so 1200 lands as 12:00 and 930 as 09:30.
+ */
+@Composable
+private fun ClockTimeTypeField(
+    time: java.time.LocalTime,
+    onChange: (java.time.LocalTime) -> Unit,
+    onFlipToWheel: () -> Unit,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+) {
+    val initialDigits = String.format(java.util.Locale.US, "%02d%02d", time.hour, time.minute)
+    var digits by remember(time) { mutableStateOf(initialDigits) }
+    val display = formatClockDigits(digits)
+    var draft by remember(digits) { mutableStateOf(TextFieldValue(display, TextRange(display.length))) }
+    val focus = remember { FocusRequester() }
+    val keyboard = LocalSoftwareKeyboardController.current
+    LaunchedEffect(Unit) {
+        focus.requestFocus()
+        keyboard?.show()
+    }
+    val commit = {
+        parseClockDigits(digits)?.let(onChange)
+        keyboard?.hide()
+    }
+    BasicTextField(
+        value = draft,
+        onValueChange = { value ->
+            val next = value.text.filter { it.isDigit() }.take(4)
+            digits = next
+            val shown = formatClockDigits(next)
+            draft = TextFieldValue(shown, TextRange(shown.length))
+            parseClockDigits(next)?.let(onChange)
+        },
+        singleLine = true,
+        textStyle = MaterialTheme.typography.titleLarge.copy(
+            fontSize = 24.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
+            textAlign = TextAlign.Center,
+        ),
+        cursorBrush = SolidColor(MaterialTheme.colorScheme.onSecondaryContainer),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = { commit() }),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(ROW_HEIGHT)
+            .focusRequester(focus),
+        decorationBox = { inner ->
+            Box(
+                Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center,
+            ) {
+                WheelSelectionHighlight(
+                    Modifier
+                        .align(Alignment.Center)
+                        .width(184.dp),
+                )
+                Row(
+                    Modifier
+                        .width(184.dp)
+                        .semantics { this.contentDescription = contentDescription },
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    inner()
+                }
+            }
+        },
+    )
+}
+
+/** 1200 -> 12:00, 930 -> 09:30, 9 -> 09 (minutes still open). */
+private fun formatClockDigits(digits: String): String = when (digits.length) {
+    0 -> ""
+    1 -> "0${digits}"
+    2 -> digits
+    3 -> "0${digits.take(1)}:${digits.drop(1)}"
+    else -> "${digits.take(2)}:${digits.drop(2)}"
+}
+
+internal fun parseClockDigits(digits: String): java.time.LocalTime? {
+    val d = digits.filter { it.isDigit() }
+    val (hour, minute) = when (d.length) {
+        1, 2 -> d.toInt() to 0
+        3 -> d.take(1).toInt() to d.drop(1).toInt()
+        4 -> d.take(2).toInt() to d.drop(2).toInt()
         else -> return null
     }
     if (hour !in 0..23 || minute !in 0..59) return null
     return java.time.LocalTime.of(hour, minute)
 }
+
 
 
 /**
