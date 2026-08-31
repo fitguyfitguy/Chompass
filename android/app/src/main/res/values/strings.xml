@@ -1186,6 +1186,13 @@
         <item>app icon</item>
         <item>teal</item>
     </string-array>
+    <string-array name="settings_search_kw_system_date_time_pickers">
+        <item>date</item>
+        <item>time</item>
+        <item>picker</item>
+        <item>clock</item>
+        <item>calendar</item>
+    </string-array>
     <string-array name="settings_search_kw_customize_progress">
         <item>progress</item>
         <item>range</item>
@@ -1438,6 +1445,8 @@
     <string name="settings_theme_color">Theme Color</string>
     <string name="settings_fixed_launcher_icon">Fixed Launcher Icon</string>
     <string name="settings_fixed_launcher_icon_subtitle">Keeps the launcher icon teal. It stops following the theme color and wallpaper.</string>
+    <string name="settings_system_date_time_pickers">System date and time pickers</string>
+    <string name="settings_system_date_time_pickers_subtitle">Use the phone’s date and time dialogs when editing a meal.</string>
     <string name="sheet_theme_color">Theme Color</string>
     <string name="sheet_theme_color_footer">Changes the main accent used for buttons, charts, and progress indicators.</string>
     <string name="theme_color_system">System</string>
@@ -2016,6 +2025,9 @@
     <string name="manual_active_name_hint">Activity name (optional)</string>
     <string name="manual_active_kcal_hint">Calories burned</string>
     <string name="manual_active_save">Add to budget</string>
+    <string name="manual_active_edit_title">Edit active burn</string>
+    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="cd_delete_manual_active">Delete active burn</string>
     <string name="home_menu_manual_active">Active burn</string>
     <string name="home_calories_active_burn">%1$d active burned</string>
     <string name="home_calories_goal_plus_active">Goal %1$s + %2$s active</string>

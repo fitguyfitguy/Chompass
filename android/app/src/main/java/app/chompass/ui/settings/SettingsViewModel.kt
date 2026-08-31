@@ -178,6 +178,8 @@ data class SettingsUiState(
     val appThemeColor: AppThemeColor = AppThemeColor.SYSTEM,
     /** Opt-in: launcher icon stays the brand teal and never swaps aliases (#21). */
     val fixedLauncherIcon: Boolean = false,
+    /** Codeberg #77: meal date/time uses the system pickers. */
+    val useSystemDateTimePickers: Boolean = false,
     val foodLogSortOrder: FoodLogSortOrder = FoodLogSortOrder.STANDARD,
     val weekStartsOnMonday: Boolean = true,
     val weekStartDay: app.chompass.models.WeekStartDay = app.chompass.models.WeekStartDay.MONDAY,
@@ -454,6 +456,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     allowInsecureHttp = snap.allowInsecureHttp,
                     appThemeColor = AppThemeColor.fromKey(snap.appThemeColorKey),
                     fixedLauncherIcon = snap.fixedLauncherIcon,
+                    useSystemDateTimePickers = snap.useSystemDateTimePickers,
                     foodLogSortOrder = FoodLogSortOrder.fromStorage(snap.foodLogSortOrderRaw),
                     weekStartsOnMonday = snap.weekStartDay == app.chompass.models.WeekStartDay.MONDAY,
                     weekStartDay = snap.weekStartDay,
@@ -856,6 +859,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setFixedLauncherIcon(enabled: Boolean) = updateUiPref(
         { container.prefs.setFixedLauncherIcon(enabled) },
         { copy(fixedLauncherIcon = enabled) },
+    )
+
+    fun setUseSystemDateTimePickers(enabled: Boolean) = updateUiPref(
+        { container.prefs.setUseSystemDateTimePickers(enabled) },
+        { copy(useSystemDateTimePickers = enabled) },
     )
 
     fun setWeekStartsOnMonday(monday: Boolean) = setWeekStartDay(

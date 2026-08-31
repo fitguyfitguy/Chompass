@@ -146,6 +146,8 @@ internal object Keys {
         val GLASS_BLUR_ENABLED = booleanPreferencesKey("glassBlurEnabled")
         /** When ON the launcher icon stays the brand teal and never swaps activity aliases. */
         val FIXED_LAUNCHER_ICON = booleanPreferencesKey("fixedLauncherIcon")
+        /** Codeberg #77: meal date/time uses the system pickers instead of wheels. */
+        val USE_SYSTEM_DATE_TIME_PICKERS = booleanPreferencesKey("useSystemDateTimePickers")
         val WEEK_STARTS_MONDAY = booleanPreferencesKey("weekStartsOnMonday")
         /** monday | sunday | saturday. When unset, [WEEK_STARTS_MONDAY] is the fallback. */
         val WEEK_START_DAY = stringPreferencesKey("weekStartDay")

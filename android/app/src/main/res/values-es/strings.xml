@@ -689,6 +689,9 @@
     <string name="manual_active_kcal_hint">Calorías quemadas</string>
     <string name="manual_active_name_hint">Nombre de la actividad (opcional)</string>
     <string name="manual_active_save">Añadir al presupuesto</string>
+    <string name="manual_active_edit_title">Editar gasto activo</string>
+    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="cd_delete_manual_active">Eliminar gasto activo</string>
     <string name="manual_active_subtitle">Añade calorías quemadas de una caminata, paseo en bici o entrenamiento. Amplían el presupuesto de hoy cuando «Añadir gasto activo» está activado.</string>
     <string name="manual_active_title">Registrar gasto activo</string>
     <string name="meal_photos_add_label">Añadir etiqueta</string>
@@ -1343,6 +1346,8 @@
     <string name="settings_energy_goals">Objetivos de quema de energía</string>
     <string name="settings_fixed_launcher_icon">Icono de inicio fijo</string>
     <string name="settings_fixed_launcher_icon_subtitle">Mantiene el icono de inicio en turquesa. Deja de seguir el color del tema y el fondo de pantalla.</string>
+    <string name="settings_system_date_time_pickers">Selectores de fecha y hora del sistema</string>
+    <string name="settings_system_date_time_pickers_subtitle">Usa los diálogos de fecha y hora del teléfono al editar una comida.</string>
     <string name="settings_food_intro">Cómo se comportan las entradas: unidades, horarios de comida, análisis de fotos y detección del tamaño de porción.</string>
     <string name="settings_food_log_sort">Orden del registro de comida</string>
     <string name="settings_food_section_logging">Registro</string>

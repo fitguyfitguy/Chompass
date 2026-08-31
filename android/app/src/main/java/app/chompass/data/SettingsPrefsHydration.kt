@@ -87,6 +87,7 @@ internal data class SettingsPrefsHydration(
     val allowInsecureHttp: Boolean,
     val appThemeColorKey: String,
     val fixedLauncherIcon: Boolean,
+    val useSystemDateTimePickers: Boolean,
     val foodLogSortOrderRaw: String,
     val weekStartsOnMonday: Boolean,
     val weekStartDay: app.chompass.models.WeekStartDay,
@@ -209,6 +210,7 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
         allowInsecureHttp = this[Keys.ALLOW_INSECURE_HTTP] ?: false,
         appThemeColorKey = AppThemeColor.migrateKey(this[Keys.APP_THEME_COLOR] ?: AppThemeColor.DEFAULT_KEY),
         fixedLauncherIcon = this[Keys.FIXED_LAUNCHER_ICON] ?: false,
+        useSystemDateTimePickers = this[Keys.USE_SYSTEM_DATE_TIME_PICKERS] ?: false,
         foodLogSortOrderRaw = this[Keys.FOOD_LOG_SORT_ORDER] ?: "standard",
         weekStartsOnMonday = this[Keys.WEEK_STARTS_MONDAY] ?: true,
         weekStartDay = app.chompass.models.WeekStartDay.fromStorage(

@@ -251,6 +251,8 @@ data class HomeUiState(
     /** Show [ProgressiveMealSheet] when the draft has items and capture is idle. */
     val showProgressiveMealSheet: Boolean = false,
     val manualActiveKcal: Int = 0,
+    /** Manual active logs for the selected day, newest first. */
+    val manualActiveTodayEntries: List<ManualActiveEntry> = emptyList(),
     /**
      * Diary entries copied via the selection bar, waiting to be pasted onto
      * the viewed day (in-memory only, cleared on app restart). Empty when the
@@ -526,6 +528,7 @@ data class HomeUiState(
             resumeProgressiveCapture == other.resumeProgressiveCapture &&
             showProgressiveMealSheet == other.showProgressiveMealSheet &&
             manualActiveKcal == other.manualActiveKcal &&
+            manualActiveTodayEntries == other.manualActiveTodayEntries &&
             copiedEntries == other.copiedEntries
     }
 
@@ -608,6 +611,7 @@ data class HomeUiState(
         result = 31 * result + resumeProgressiveCapture.hashCode()
         result = 31 * result + showProgressiveMealSheet.hashCode()
         result = 31 * result + manualActiveKcal
+        result = 31 * result + manualActiveTodayEntries.hashCode()
         result = 31 * result + copiedEntries.hashCode()
         return result
     }
@@ -1282,11 +1286,17 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
         combine(container.manualActiveRepository.entries, _selectedDate) { entries, day ->
             val byDay = app.chompass.models.DayTypeActiveStats.sumManualByDay(entries)
-            val total = entries.filter { it.date == day.toString() }.sumOf { it.calories }
-            total to byDay
+            val today = entries.filter { it.date == day.toString() }.reversed()
+            Triple(today.sumOf { it.calories }, byDay, today)
         }
-            .onEach { (total, byDay) ->
-                _ui.update { it.copy(manualActiveKcal = total, manualActiveByDay = byDay) }
+            .onEach { (total, byDay, today) ->
+                _ui.update {
+                    it.copy(
+                        manualActiveKcal = total,
+                        manualActiveByDay = byDay,
+                        manualActiveTodayEntries = today,
+                    )
+                }
             }
             .launchIn(viewModelScope)
 
@@ -1472,6 +1482,21 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             container.manualActiveRepository.add(
                 ManualActiveEntry.forDay(_selectedDate.value, name, calories),
             )
+            container.widgetSnapshotWriter.refresh()
+        }
+    }
+
+    fun updateManualActive(id: String, name: String, calories: Int) {
+        if (calories <= 0) return
+        viewModelScope.launch {
+            container.manualActiveRepository.update(id, name, calories)
+            container.widgetSnapshotWriter.refresh()
+        }
+    }
+
+    fun deleteManualActive(id: String) {
+        viewModelScope.launch {
+            container.manualActiveRepository.delete(id)
             container.widgetSnapshotWriter.refresh()
         }
     }

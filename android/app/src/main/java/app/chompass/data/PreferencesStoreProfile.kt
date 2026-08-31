@@ -98,6 +98,12 @@ internal suspend fun PreferencesStore.setGlassBlurEnabledImpl(v: Boolean) { data
 internal val PreferencesStore.fixedLauncherIconImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.FIXED_LAUNCHER_ICON] ?: false }
 internal suspend fun PreferencesStore.setFixedLauncherIconImpl(v: Boolean) { dataStore.edit { it[Keys.FIXED_LAUNCHER_ICON] = v } }
 
+internal val PreferencesStore.useSystemDateTimePickersImpl: Flow<Boolean>
+    get() = dataStore.data.map { it[Keys.USE_SYSTEM_DATE_TIME_PICKERS] ?: false }
+internal suspend fun PreferencesStore.setUseSystemDateTimePickersImpl(v: Boolean) {
+    dataStore.edit { it[Keys.USE_SYSTEM_DATE_TIME_PICKERS] = v }
+}
+
     /** false = Sunday, true = Monday (default). Kept for backup/legacy; prefer [weekStartDayImpl]. */
 internal val PreferencesStore.weekStartsOnMondayImpl: Flow<Boolean> get() =
     weekStartDayImpl.map { it == app.chompass.models.WeekStartDay.MONDAY }

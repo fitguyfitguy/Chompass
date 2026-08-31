@@ -368,6 +368,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setGlassBlurEnabled(v: Boolean) = setGlassBlurEnabledImpl(v)
     val fixedLauncherIcon: Flow<Boolean> get() = fixedLauncherIconImpl
     suspend fun setFixedLauncherIcon(v: Boolean) = setFixedLauncherIconImpl(v)
+    val useSystemDateTimePickers: Flow<Boolean> get() = useSystemDateTimePickersImpl
+    suspend fun setUseSystemDateTimePickers(v: Boolean) = setUseSystemDateTimePickersImpl(v)
     val weekStartsOnMonday: Flow<Boolean> get() = weekStartsOnMondayImpl
     suspend fun setWeekStartsOnMonday(v: Boolean) = setWeekStartsOnMondayImpl(v)
     val weekStartDay: Flow<app.chompass.models.WeekStartDay> get() = weekStartDayImpl

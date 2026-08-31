@@ -665,6 +665,9 @@
     <string name="manual_active_kcal_hint">소모 칼로리</string>
     <string name="manual_active_name_hint">활동 이름(선택)</string>
     <string name="manual_active_save">예산에 추가</string>
+    <string name="manual_active_edit_title">활동 소모 수정</string>
+    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="cd_delete_manual_active">활동 소모 삭제</string>
     <string name="manual_active_subtitle">걷기, 자전거, 운동 등에서 소모한 칼로리를 추가해요. \"활동 소모를 예산에 추가\"가 켜져 있으면 오늘 예산이 늘어나요.</string>
     <string name="manual_active_title">활동 소모 기록</string>
     <string name="meal_photos_add_label">라벨 추가</string>
@@ -1280,6 +1283,8 @@
     <string name="settings_energy_goals">에너지 소비 목표</string>
     <string name="settings_fixed_launcher_icon">고정 런처 아이콘</string>
     <string name="settings_fixed_launcher_icon_subtitle">런처 아이콘을 청록색으로 유지해요. 테마 색상과 배경화면을 따르지 않아요.</string>
+    <string name="settings_system_date_time_pickers">시스템 날짜 및 시간 선택기</string>
+    <string name="settings_system_date_time_pickers_subtitle">식사를 편집할 때 휴대폰의 날짜와 시간 대화상자를 사용합니다.</string>
     <string name="settings_food_intro">기록 동작: 단위, 식사 시간, 사진 분석, 1인분 크기 감지.</string>
     <string name="settings_food_log_sort">음식 기록 정렬</string>
     <string name="settings_food_section_logging">기록</string>

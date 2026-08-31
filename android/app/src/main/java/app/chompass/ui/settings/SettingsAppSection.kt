@@ -7,6 +7,7 @@ import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -67,6 +68,13 @@ internal fun SettingsAppSection(
                     icon = Icons.Outlined.Star,
                     subtitle = stringResource(R.string.settings_fixed_launcher_icon_subtitle),
                 ) { vm.setFixedLauncherIcon(it) }
+                HorizontalDivider()
+                BusyToggleRow(
+                    label = stringResource(R.string.settings_system_date_time_pickers),
+                    checked = ui.useSystemDateTimePickers,
+                    icon = Icons.Outlined.Schedule,
+                    subtitle = stringResource(R.string.settings_system_date_time_pickers_subtitle),
+                ) { vm.setUseSystemDateTimePickers(it) }
                 HorizontalDivider()
                 SettingRow(
                     stringResource(R.string.settings_customize_progress),

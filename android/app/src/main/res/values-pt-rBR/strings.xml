@@ -653,6 +653,9 @@
     <string name="manual_active_kcal_hint">Calorias queimadas</string>
     <string name="manual_active_name_hint">Nome da atividade (opcional)</string>
     <string name="manual_active_save">Adicionar ao orçamento</string>
+    <string name="manual_active_edit_title">Editar queima ativa</string>
+    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="cd_delete_manual_active">Excluir queima ativa</string>
     <string name="manual_active_subtitle">Adicione calorias queimadas de uma caminhada, pedalada ou treino. Elas ampliam o orçamento de hoje quando «Adicionar queima ativa» está ativado.</string>
     <string name="manual_active_title">Registrar queima ativa</string>
     <string name="meal_photos_add_label">Adicionar rótulo</string>
@@ -1275,6 +1278,8 @@
     <string name="settings_energy_goals">Metas de gasto energético</string>
     <string name="settings_fixed_launcher_icon">Ícone fixo do app</string>
     <string name="settings_fixed_launcher_icon_subtitle">Mantém o ícone do app azul-petróleo. Ele deixa de seguir a cor do tema e do papel de parede.</string>
+    <string name="settings_system_date_time_pickers">Seletores de data e hora do sistema</string>
+    <string name="settings_system_date_time_pickers_subtitle">Use os diálogos de data e hora do telefone ao editar uma refeição.</string>
     <string name="settings_food_intro">Como os registros se comportam: unidades, horários de refeições, análise de fotos e detecção de tamanho de porção.</string>
     <string name="settings_food_log_sort">Ordem do diário alimentar</string>
     <string name="settings_food_section_logging">Registro</string>

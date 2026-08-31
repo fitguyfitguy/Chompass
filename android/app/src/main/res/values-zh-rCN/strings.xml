@@ -667,6 +667,9 @@
     <string name="manual_active_kcal_hint">消耗热量</string>
     <string name="manual_active_name_hint">活动名称（可选）</string>
     <string name="manual_active_save">加入预算</string>
+    <string name="manual_active_edit_title">编辑活动消耗</string>
+    <string name="manual_active_history_total">%1$s · %2$d 千卡</string>
+    <string name="cd_delete_manual_active">删除活动消耗</string>
     <string name="manual_active_subtitle">添加步行、骑行或锻炼消耗的热量。开启“将活动消耗加入预算”时，会延长今日预算。</string>
     <string name="manual_active_title">记录活动消耗</string>
     <string name="meal_photos_add_label">添加标签</string>
@@ -1282,6 +1285,8 @@
     <string name="settings_energy_goals">能量消耗目标</string>
     <string name="settings_fixed_launcher_icon">固定启动器图标</string>
     <string name="settings_fixed_launcher_icon_subtitle">保持启动器图标为青色，不再跟随主题色和壁纸。</string>
+    <string name="settings_system_date_time_pickers">系统日期和时间选择器</string>
+    <string name="settings_system_date_time_pickers_subtitle">编辑餐次时使用手机的日期和时间对话框。</string>
     <string name="settings_food_intro">条目的行为方式：单位、用餐时间、照片分析和份量大小检测。</string>
     <string name="settings_food_log_sort">食物记录排序</string>
     <string name="settings_food_section_logging">记录</string>

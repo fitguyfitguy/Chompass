@@ -116,6 +116,7 @@ fun HomeScreen(
     // Codeberg #20 phase 2: master AI-features switch — hides the AI entry tiles
     // and the What-if row, and ignores the camera/voice launcher shortcuts.
     val aiFeaturesEnabled by container.prefs.aiFeaturesEnabled.collectAsState(initial = true)
+    val useSystemDateTimePickers by container.prefs.useSystemDateTimePickers.collectAsState(initial = false)
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -162,6 +163,7 @@ fun HomeScreen(
     var showCaffeineHistory by rememberSaveable { mutableStateOf(false) }
     var editingCaffeineEntry by remember { mutableStateOf<CaffeineEntry?>(null) }
     var showManualActive by rememberSaveable { mutableStateOf(false) }
+    var editingManualActive by remember { mutableStateOf<app.chompass.models.ManualActiveEntry?>(null) }
     var showGroundedEntry by rememberSaveable { mutableStateOf(false) }
     var showFoodSearch by rememberSaveable { mutableStateOf(false) }
     var editingEntry by remember { mutableStateOf<FoodEntry?>(null) }
@@ -1119,6 +1121,18 @@ fun HomeScreen(
                 showManualActive = false
                 returnToAddFoodGrid()
             },
+            todayEntries = ui.manualActiveTodayEntries,
+            day = ui.date,
+            onEdit = { editingManualActive = it },
+            onDelete = { vm.deleteManualActive(it.id) },
+        )
+    }
+
+    editingManualActive?.let { entry ->
+        ManualActiveSheet(
+            initial = entry,
+            onSave = { name, kcal -> vm.updateManualActive(entry.id, name, kcal) },
+            onDismiss = { editingManualActive = null },
         )
     }
 
@@ -1435,12 +1449,12 @@ fun HomeScreen(
             },
         )
     }
-
     editingEntry?.let { entry ->
         EditFoodEntrySheet(
             entry = entry,
             preferGramsByDefault = ui.preferGramsByDefault,
             aiFeaturesEnabled = aiFeaturesEnabled,
+            useSystemDateTimePickers = useSystemDateTimePickers,
             onReprocess = { updatedNote, onProgress ->
                 vm.reprocessFoodEntry(entry, updatedNote, onProgress)
             },

@@ -666,6 +666,9 @@
     <string name="manual_active_kcal_hint">जली कैलोरी</string>
     <string name="manual_active_name_hint">गतिविधि का नाम (वैकल्पिक)</string>
     <string name="manual_active_save">बजट में जोड़ें</string>
+    <string name="manual_active_edit_title">सक्रिय बर्न संपादित करें</string>
+    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="cd_delete_manual_active">सक्रिय बर्न हटाएँ</string>
     <string name="manual_active_subtitle">चलने, सवारी या वर्कआउट से जली कैलोरी जोड़ें। "सक्रिय बर्न बजट में जोड़ें" चालू होने पर ये आज का बजट बढ़ाती हैं।</string>
     <string name="manual_active_title">सक्रिय बर्न लॉग करें</string>
     <string name="meal_photos_add_label">लेबल जोड़ें</string>
@@ -1281,6 +1284,8 @@
     <string name="settings_energy_goals">ऊर्जा व्यय लक्ष्य</string>
     <string name="settings_fixed_launcher_icon">स्थिर लॉन्चर आइकन</string>
     <string name="settings_fixed_launcher_icon_subtitle">लॉन्चर आइकन को टील रखता है। यह थीम रंग और वॉलपेपर का अनुसरण करना बंद कर देता है।</string>
+    <string name="settings_system_date_time_pickers">सिस्टम तारीख और समय चुनने वाले</string>
+    <string name="settings_system_date_time_pickers_subtitle">भोजन संपादित करते समय फ़ोन के तारीख और समय संवाद इस्तेमाल करें।</string>
     <string name="settings_food_intro">प्रविष्टियां कैसे व्यवहार करती हैं: इकाइयां, भोजन समय, फोटो विश्लेषण और सर्विंग आकार पहचान।</string>
     <string name="settings_food_log_sort">खाद्य लॉग क्रम</string>
     <string name="settings_food_section_logging">लॉगिंग</string>
