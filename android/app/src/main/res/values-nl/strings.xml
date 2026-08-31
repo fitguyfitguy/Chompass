@@ -634,6 +634,9 @@
     <string name="manual_active_kcal_hint">Verbrande calorieën</string>
     <string name="manual_active_name_hint">Activiteitsnaam (optioneel)</string>
     <string name="manual_active_save">Aan budget toevoegen</string>
+    <string name="manual_active_edit_title">Actieve verbranding bewerken</string>
+    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="cd_delete_manual_active">Actieve verbranding verwijderen</string>
     <string name="manual_active_subtitle">Voeg verbrande calorieën van een wandeling, rit of workout toe. Ze vergroten het budget van vandaag wanneer „Actieve verbranding toevoegen“ aan staat.</string>
     <string name="manual_active_title">Actieve verbranding loggen</string>
     <string name="meal_photos_add_label">Etiket toevoegen</string>
@@ -1261,6 +1264,8 @@
     <string name="settings_energy_goals">Energieverbruiksdoelen</string>
     <string name="settings_fixed_launcher_icon">Vast app-pictogram</string>
     <string name="settings_fixed_launcher_icon_subtitle">Houdt het app-pictogram teal. Het volgt de themakleur en achtergrond niet meer.</string>
+    <string name="settings_system_date_time_pickers">Systeemdatum- en tijdkiezers</string>
+    <string name="settings_system_date_time_pickers_subtitle">Gebruik de datum- en tijddialogen van de telefoon bij het bewerken van een maaltijd.</string>
     <string name="settings_food_intro">Hoe items zich gedragen: eenheden, maaltijdtijden, foto-analyse en portiegrootte-detectie.</string>
     <string name="settings_food_log_sort">Sortering voedingslogboek</string>
     <string name="settings_food_section_logging">Loggen</string>

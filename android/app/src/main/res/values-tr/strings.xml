@@ -886,6 +886,8 @@
     <string name="settings_theme_color">Tema Rengi</string>
     <string name="settings_fixed_launcher_icon">Sabit Başlatıcı Simgesi</string>
     <string name="settings_fixed_launcher_icon_subtitle">Başlatıcı simgesini turkuaz tutar. Tema rengini ve duvar kâğıdını takip etmeyi bırakır.</string>
+    <string name="settings_system_date_time_pickers">Sistem tarih ve saat seçicileri</string>
+    <string name="settings_system_date_time_pickers_subtitle">Öğün düzenlerken telefonun tarih ve saat pencerelerini kullan.</string>
     <string name="sheet_theme_color">Tema Rengi</string>
     <string name="sheet_theme_color_footer">Düğmeler, grafikler ve ilerleme göstergeleri için kullanılan ana vurgu rengini değiştirir.</string>
     <string name="theme_color_system">Sistem</string>
@@ -1407,6 +1409,9 @@
     <string name="manual_active_name_hint">Aktivite adı (isteğe bağlı)</string>
     <string name="manual_active_kcal_hint">Yakılan kalori</string>
     <string name="manual_active_save">Bütçeye ekle</string>
+    <string name="manual_active_edit_title">Aktif yakımı düzenle</string>
+    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="cd_delete_manual_active">Aktif yakımı sil</string>
     <string name="home_menu_manual_active">Aktif yakım</string>
     <string name="home_calories_active_burn">%1$d aktif yakıldı</string>
     <string name="home_calories_goal_plus_active">Hedef %1$s + %2$s aktif</string>

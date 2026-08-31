@@ -203,6 +203,8 @@ internal val SETTINGS_INDEX: List<SettingsIndexEntry> = listOf(
         R.array.settings_search_kw_language, ChompassRoutes.SETTINGS_APP, Icons.Outlined.Language),
     SettingsIndexEntry(R.string.settings_group_app_display, R.string.settings_fixed_launcher_icon,
         R.array.settings_search_kw_fixed_launcher_icon, ChompassRoutes.SETTINGS_APP, Icons.Outlined.Star),
+    SettingsIndexEntry(R.string.settings_group_app_display, R.string.settings_system_date_time_pickers,
+        R.array.settings_search_kw_system_date_time_pickers, ChompassRoutes.SETTINGS_APP, Icons.Outlined.Schedule),
     SettingsIndexEntry(R.string.settings_group_app_display, R.string.settings_customize_progress,
         R.array.settings_search_kw_customize_progress, ChompassRoutes.CUSTOMIZE_PROGRESS, Icons.AutoMirrored.Outlined.ShowChart),
     SettingsIndexEntry(R.string.settings_group_app_display, R.string.settings_week_starts,

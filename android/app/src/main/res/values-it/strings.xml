@@ -655,6 +655,9 @@
     <string name="manual_active_kcal_hint">Calorie bruciate</string>
     <string name="manual_active_name_hint">Nome attività (facoltativo)</string>
     <string name="manual_active_save">Aggiungi al budget</string>
+    <string name="manual_active_edit_title">Modifica consumo attivo</string>
+    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="cd_delete_manual_active">Elimina consumo attivo</string>
     <string name="manual_active_subtitle">Aggiungi calorie bruciate da una camminata, bici o allenamento. Estendono il budget di oggi quando «Aggiungi consumo attivo» è attivo.</string>
     <string name="manual_active_title">Registra consumo attivo</string>
     <string name="meal_photos_add_label">Aggiungi etichetta</string>
@@ -1239,6 +1242,8 @@
     <string name="settings_energy_goals">Obiettivi dispendio energetico</string>
     <string name="settings_fixed_launcher_icon">Icona fissa dell\'app</string>
     <string name="settings_fixed_launcher_icon_subtitle">Mantiene l\'icona dell\'app di colore teal. Smette di seguire il colore del tema e dello sfondo.</string>
+    <string name="settings_system_date_time_pickers">Selettori data e ora di sistema</string>
+    <string name="settings_system_date_time_pickers_subtitle">Usa i dialoghi data e ora del telefono quando modifichi un pasto.</string>
     <string name="settings_food_intro">Come si comportano le voci: unità, orari dei pasti, analisi foto e rilevamento della dimensione della porzione.</string>
     <string name="settings_food_log_sort">Ordine registro alimentare</string>
     <string name="settings_food_section_logging">Registrazione</string>

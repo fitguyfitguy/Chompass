@@ -886,6 +886,8 @@
     <string name="settings_theme_color">Kolor motywu</string>
     <string name="settings_fixed_launcher_icon">Stała ikona launchera</string>
     <string name="settings_fixed_launcher_icon_subtitle">Utrzymuje ikonę launchera w kolorze morskim. Przestaje podążać za kolorem motywu i tapetą.</string>
+    <string name="settings_system_date_time_pickers">Systemowe wybieranie daty i godziny</string>
+    <string name="settings_system_date_time_pickers_subtitle">Przy edycji posiłku używaj systemowych okien daty i godziny.</string>
     <string name="sheet_theme_color">Kolor motywu</string>
     <string name="sheet_theme_color_footer">Zmienia główny kolor akcentu używany do przycisków, wykresów i wskaźników postępu.</string>
     <string name="theme_color_system">Systemowy</string>
@@ -1407,6 +1409,9 @@
     <string name="manual_active_name_hint">Nazwa aktywności (opcjonalnie)</string>
     <string name="manual_active_kcal_hint">Spalone kalorie</string>
     <string name="manual_active_save">Dodaj do budżetu</string>
+    <string name="manual_active_edit_title">Edytuj spalone kalorie</string>
+    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="cd_delete_manual_active">Usuń spalone kalorie</string>
     <string name="home_menu_manual_active">Spalone kalorie</string>
     <string name="home_calories_active_burn">%1$d aktywnych spalonych</string>
     <string name="home_calories_goal_plus_active">Cel %1$s + %2$s aktywnych</string>

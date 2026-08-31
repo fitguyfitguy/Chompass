@@ -6,6 +6,12 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Added
+
+- **Edit or delete a logged active burn** (Android + web): Add Food → Active burn now lists that day's named logs. Tap a row to change the name or calories, or delete it. Closes Codeberg [#74](https://codeberg.org/fitguy/Chompass/issues/74) by [@bluepostofficebox](https://codeberg.org/bluepostofficebox).
+- **Number pad when editing meal time** (Android): hour and minute fields on Edit Food open the number keyboard. Closes part of Codeberg [#77](https://codeberg.org/fitguy/Chompass/issues/77) by [@BitLicker000](https://codeberg.org/BitLicker000).
+- **System date and time pickers** (Android): Settings → App & Display has a toggle to use the phone's date and time dialogs when editing a meal. Off by default. Closes part of Codeberg [#77](https://codeberg.org/fitguy/Chompass/issues/77) by [@BitLicker000](https://codeberg.org/BitLicker000).
+
 ### Fixed
 
 - **Saved AI server URL shows on the settings row** (Android): Settings → AI & Speech now shows the custom or Ollama URL you saved, and reopening the editor starts with that URL instead of a blank field. The fallback URL row does the same. Closes Codeberg [#52](https://codeberg.org/fitguy/Chompass/issues/52) by [@savionlee](https://codeberg.org/savionlee).

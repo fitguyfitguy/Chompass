@@ -61,6 +61,33 @@ export async function addManualActiveEntry(entry) {
 }
 
 /**
+ * @param {string} id
+ * @param {string} name
+ * @param {number} calories
+ */
+export async function updateManualActiveEntry(id, name, calories) {
+  const kcal = Math.max(0, Math.round(Number(calories) || 0));
+  if (!id || kcal <= 0) return;
+  const current = await loadManualActiveEntries();
+  await prefs.save({
+    manualActiveEntries: current.map((e) =>
+      e.id === id
+        ? { ...e, name: String(name || "").trim() || "Activity", calories: kcal }
+        : e
+    ),
+  });
+}
+
+/** @param {string} id */
+export async function deleteManualActiveEntry(id) {
+  if (!id) return;
+  const current = await loadManualActiveEntries();
+  await prefs.save({
+    manualActiveEntries: current.filter((e) => e.id !== id),
+  });
+}
+
+/**
  * Resolve ADD_ACTIVE burn without Health Connect (estimate + manual).
  * Mirrors Android HomeCalorieDisplay.resolveActiveBurn for the web path.
  * @param {number} estimatedDailyActive

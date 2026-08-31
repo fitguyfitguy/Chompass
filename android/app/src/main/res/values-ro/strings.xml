@@ -656,6 +656,9 @@
     <string name="manual_active_kcal_hint">Calorii arse</string>
     <string name="manual_active_name_hint">Nume activitate (opțional)</string>
     <string name="manual_active_save">Adaugă la buget</string>
+    <string name="manual_active_edit_title">Editează arderea activă</string>
+    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="cd_delete_manual_active">Șterge arderea activă</string>
     <string name="manual_active_subtitle">Adaugă calorii arse de la o plimbare, pedalare sau antrenament. Extind bugetul de azi când «Adaugă arderea activă» este activ.</string>
     <string name="manual_active_title">Înregistrează arderea activă</string>
     <string name="meal_photos_add_label">Adaugă etichetă</string>
@@ -1276,6 +1279,8 @@
     <string name="settings_energy_goals">Obiective de cheltuială energetică</string>
     <string name="settings_fixed_launcher_icon">Pictogramă fixă a aplicației</string>
     <string name="settings_fixed_launcher_icon_subtitle">Păstrează pictograma aplicației turcoaz. Nu mai urmează culoarea temei și a fundalului.</string>
+    <string name="settings_system_date_time_pickers">Selectoare de dată și oră ale sistemului</string>
+    <string name="settings_system_date_time_pickers_subtitle">Folosește dialogurile de dată și oră ale telefonului la editarea unei mese.</string>
     <string name="settings_food_intro">Cum se comportă înregistrările: unități, orele meselor, analiza foto și detectarea mărimii porției.</string>
     <string name="settings_food_log_sort">Sortarea jurnalului alimentar</string>
     <string name="settings_food_section_logging">Înregistrare</string>

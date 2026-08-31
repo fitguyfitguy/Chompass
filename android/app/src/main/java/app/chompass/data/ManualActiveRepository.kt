@@ -24,6 +24,17 @@ class ManualActiveRepository(private val prefs: PreferencesStore) {
         prefs.setManualActiveEntries(next)
     }
 
+    suspend fun update(id: String, name: String, calories: Int) {
+        val next = prefs.manualActiveEntries.first().map { entry ->
+            if (entry.id != id) entry
+            else entry.copy(
+                name = name.trim().ifEmpty { "Activity" },
+                calories = calories.coerceAtLeast(0),
+            )
+        }
+        prefs.setManualActiveEntries(next)
+    }
+
     suspend fun delete(id: String) {
         prefs.setManualActiveEntries(prefs.manualActiveEntries.first().filterNot { it.id == id })
     }

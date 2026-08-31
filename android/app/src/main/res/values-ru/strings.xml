@@ -1270,6 +1270,9 @@
     <string name="manual_active_kcal_hint">Сожжённые калории</string>
     <string name="manual_active_name_hint">Название активности (необязательно)</string>
     <string name="manual_active_save">Добавить к бюджету</string>
+    <string name="manual_active_edit_title">Изменить активный расход</string>
+    <string name="manual_active_history_total">%1$s · %2$d ккал</string>
+    <string name="cd_delete_manual_active">Удалить активный расход</string>
     <string name="manual_active_subtitle">Добавь сожжённые калории с прогулки, поездки или тренировки. Они расширяют сегодняшний бюджет, когда включено «Добавлять активный расход».</string>
     <string name="manual_active_title">Записать активный расход</string>
     <string name="meal_photos_add_label">Добавить этикетку</string>
@@ -1560,6 +1563,8 @@
     <string name="settings_danger_zone_caption">Эти действия безвозвратно удаляют данные.</string>
     <string name="settings_fixed_launcher_icon">Фиксированный значок приложения</string>
     <string name="settings_fixed_launcher_icon_subtitle">Значок остаётся бирюзовым и не меняется под цвет темы и обоев.</string>
+    <string name="settings_system_date_time_pickers">Системный выбор даты и времени</string>
+    <string name="settings_system_date_time_pickers_subtitle">При правке приёма пищи использовать системные окна даты и времени.</string>
     <string name="settings_food_intro">Как ведут себя записи: единицы, время приёмов пищи, анализ фото и определение размера порции.</string>
     <string name="settings_food_section_logging">Запись</string>
     <string name="settings_food_section_photo">Анализ фото</string>

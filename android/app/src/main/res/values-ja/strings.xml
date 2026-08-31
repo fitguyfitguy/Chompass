@@ -664,6 +664,9 @@
     <string name="manual_active_kcal_hint">消費カロリー</string>
     <string name="manual_active_name_hint">活動名（任意）</string>
     <string name="manual_active_save">予算に追加</string>
+    <string name="manual_active_edit_title">アクティブ消費を編集</string>
+    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="cd_delete_manual_active">アクティブ消費を削除</string>
     <string name="manual_active_subtitle">散歩、サイクリング、ワークアウトなどで消費したカロリーを追加。「アクティブ消費を予算に追加」がオンのとき、今日の予算が延長されます。</string>
     <string name="manual_active_title">アクティブ消費を記録</string>
     <string name="meal_photos_add_label">ラベルを追加</string>
@@ -1280,6 +1283,8 @@
     <string name="settings_energy_goals">エネルギー消費目標</string>
     <string name="settings_fixed_launcher_icon">ランチャーアイコンを固定</string>
     <string name="settings_fixed_launcher_icon_subtitle">ランチャーアイコンをティールに保ちます。テーマカラーと壁紙に追従しなくなります。</string>
+    <string name="settings_system_date_time_pickers">システムの日付と時刻ピッカー</string>
+    <string name="settings_system_date_time_pickers_subtitle">食事を編集するとき、端末の日付・時刻ダイアログを使う。</string>
     <string name="settings_food_intro">記録の動作：単位、食事時間、写真分析、分量サイズの検出。</string>
     <string name="settings_food_log_sort">食事記録の並び順</string>
     <string name="settings_food_section_logging">記録</string>

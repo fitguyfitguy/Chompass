@@ -656,6 +656,9 @@ bilirsən?</string>
     <string name="manual_active_kcal_hint">Yanan kalorilər</string>
     <string name="manual_active_name_hint">Fəaliyyət adı (istəyə bağlı)</string>
     <string name="manual_active_save">Büdcəyə əlavə et</string>
+    <string name="manual_active_edit_title">Aktiv yanmanı redaktə et</string>
+    <string name="manual_active_history_total">%1$s · %2$d kkal</string>
+    <string name="cd_delete_manual_active">Aktiv yanmanı sil</string>
     <string name="manual_active_subtitle">Gəzinti, sürmə və ya məşqdən yanan kaloriləri əlavə et. «Aktiv yanmanı büdcəyə əlavə et» aktiv olanda bu günkü büdcəni genişləndirir.</string>
     <string name="manual_active_title">Aktiv yanmanı qeyd et</string>
     <string name="meal_photos_add_label">Etiket əlavə et</string>
@@ -1280,6 +1283,8 @@ bilirsən?</string>
     <string name="settings_energy_goals">Enerji Xərci Məqsədləri</string>
     <string name="settings_fixed_launcher_icon">Sabit tətbiq ikonu</string>
     <string name="settings_fixed_launcher_icon_subtitle">Tətbiq ikonunu firuzəyi saxlayır. Tema rəngini və divar kağızını izləməyi dayandırır.</string>
+    <string name="settings_system_date_time_pickers">Sistem tarix və saat seçiciləri</string>
+    <string name="settings_system_date_time_pickers_subtitle">Yeməyi redaktə edərkən telefonun tarix və saat pəncərələrindən istifadə et.</string>
     <string name="settings_food_intro">Qeydlərin davranışı: vahidlər, yemək vaxtları, foto analizi və porsiya ölçüsü aşkarlanması.</string>
     <string name="settings_food_log_sort">Yemək jurnalının sıralanması</string>
     <string name="settings_food_section_logging">Qeyd</string>

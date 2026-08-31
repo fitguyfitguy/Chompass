@@ -34,6 +34,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import android.text.format.DateFormat
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -103,6 +109,7 @@ fun EditFoodEntrySheet(
      *  section is hidden and the stored note is a plain editable field (Save
      *  only — never Reprocess). */
     aiFeaturesEnabled: Boolean = true,
+    useSystemDateTimePickers: Boolean = false,
     onReprocess: suspend (
         updatedNote: String,
         onProgress: (FoodAnalysisProgress) -> Unit,
@@ -957,37 +964,77 @@ fun EditFoodEntrySheet(
     }
 
     if (showDatePicker) {
-        var pickedDate by remember(loggedDate) { mutableStateOf(loggedDate) }
-        FudGlassDialog(onDismissRequest = { showDatePicker = false }) {
-            Text(stringResource(R.string.label_date), fontSize = 21.sp, fontWeight = FontWeight.Bold)
-            DateWheelPicker(
-                selected = pickedDate,
-                onSelect = { pickedDate = it },
-                minYear = LocalDate.now().year - 10,
-                maxYear = LocalDate.now().year,
-                modifier = Modifier.fillMaxWidth()
-            )
-            FudGlassDialogActions(
-                primaryText = stringResource(R.string.action_done),
-                onPrimary = {
-                    loggedDate = pickedDate
-                    showDatePicker = false
-                },
-                dismissText = stringResource(R.string.action_cancel),
-                onDismiss = { showDatePicker = false }
-            )
+        if (useSystemDateTimePickers) {
+            val ctx = LocalContext.current
+            LaunchedEffect(Unit) {
+                DatePickerDialog(
+                    ctx,
+                    { _, y, m, d ->
+                        loggedDate = LocalDate.of(y, m + 1, d)
+                        showDatePicker = false
+                    },
+                    loggedDate.year,
+                    loggedDate.monthValue - 1,
+                    loggedDate.dayOfMonth,
+                ).apply {
+                    setOnCancelListener { showDatePicker = false }
+                    setOnDismissListener { showDatePicker = false }
+                    show()
+                }
+            }
+        } else {
+            var pickedDate by remember(loggedDate) { mutableStateOf(loggedDate) }
+            FudGlassDialog(onDismissRequest = { showDatePicker = false }) {
+                Text(stringResource(R.string.label_date), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+                DateWheelPicker(
+                    selected = pickedDate,
+                    onSelect = { pickedDate = it },
+                    minYear = LocalDate.now().year - 10,
+                    maxYear = LocalDate.now().year,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                FudGlassDialogActions(
+                    primaryText = stringResource(R.string.action_done),
+                    onPrimary = {
+                        loggedDate = pickedDate
+                        showDatePicker = false
+                    },
+                    dismissText = stringResource(R.string.action_cancel),
+                    onDismiss = { showDatePicker = false }
+                )
+            }
         }
     }
 
     if (showTimePicker) {
-        EditFoodTimeDialog(
-            initialTime = loggedTime,
-            onConfirm = {
-                loggedTime = it
-                showTimePicker = false
-            },
-            onDismiss = { showTimePicker = false }
-        )
+        if (useSystemDateTimePickers) {
+            val ctx = LocalContext.current
+            LaunchedEffect(Unit) {
+                TimePickerDialog(
+                    ctx,
+                    { _, h, min ->
+                        loggedTime = LocalTime.of(h, min)
+                        showTimePicker = false
+                    },
+                    loggedTime.hour,
+                    loggedTime.minute,
+                    DateFormat.is24HourFormat(ctx),
+                ).apply {
+                    setOnCancelListener { showTimePicker = false }
+                    setOnDismissListener { showTimePicker = false }
+                    show()
+                }
+            }
+        } else {
+            EditFoodTimeDialog(
+                initialTime = loggedTime,
+                onConfirm = {
+                    loggedTime = it
+                    showTimePicker = false
+                },
+                onDismiss = { showTimePicker = false }
+            )
+        }
     }
 
     if (showIconPicker) {
@@ -1043,6 +1090,7 @@ private fun EditFoodTimeDialog(
                 onValueChange = { hourText = it.filter(Char::isDigit).take(2) },
                 placeholder = stringResource(R.string.placeholder_hour),
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.weight(1f)
             )
             FudGlassTextField(
@@ -1050,6 +1098,7 @@ private fun EditFoodTimeDialog(
                 onValueChange = { minuteText = it.filter(Char::isDigit).take(2) },
                 placeholder = stringResource(R.string.placeholder_minute),
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.weight(1f)
             )
         }

@@ -50,10 +50,12 @@ import {
 import {
   addActiveGaugeTarget,
   addManualActiveEntry,
+  deleteManualActiveEntry,
   makeManualActiveEntry,
   manualActiveKcalForDate,
   loadManualActiveEntries,
   resolveWebActiveBurn,
+  updateManualActiveEntry,
 } from "../lib/manual-active.js";
 import {
   computeDayTypeActiveStats,
@@ -1489,7 +1491,20 @@ export class DiaryView extends HTMLElement {
     });
   }
 
-  openManualActiveSheet() {
+  async openManualActiveSheet() {
+    const all = await loadManualActiveEntries();
+    const today = all.filter((e) => e.date === this.date);
+    const rows = today
+      .map(
+        (e) => `
+      <div class="manual-active-row" data-id="${escapeHtml(e.id)}">
+        <button type="button" class="manual-active-row__edit" data-edit="${escapeHtml(e.id)}">
+          ${escapeHtml(e.name)} · ${e.calories} kcal
+        </button>
+        <button type="button" class="manual-active-row__del" data-del="${escapeHtml(e.id)}" aria-label="${escapeHtml(t("manual_active.delete"))}">×</button>
+      </div>`
+      )
+      .join("");
     const sheet = openSheet({
       title: t("manual_active.title"),
       body: `
@@ -1507,16 +1522,40 @@ export class DiaryView extends HTMLElement {
             <button type="submit" class="btn btn--primary">${escapeHtml(t("manual_active.save"))}</button>
           </div>
         </form>
+        ${today.length ? `<div class="manual-active-list">${rows}</div>` : ""}
       `,
     });
+    let editingId = null;
     sheet.body.querySelector("#manual-active-form")?.addEventListener("submit", async (ev) => {
       ev.preventDefault();
       const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
       const kcal = Number(fd.get("calories"));
       if (!(kcal > 0)) return;
-      await addManualActiveEntry(makeManualActiveEntry(this.date, String(fd.get("name") || ""), kcal));
+      const name = String(fd.get("name") || "");
+      if (editingId) await updateManualActiveEntry(editingId, name, kcal);
+      else await addManualActiveEntry(makeManualActiveEntry(this.date, name, kcal));
       sheet.close();
       this.render();
+    });
+    sheet.body.querySelectorAll("[data-del]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        await deleteManualActiveEntry(btn.getAttribute("data-del"));
+        sheet.close();
+        this.render();
+        this.openManualActiveSheet();
+      });
+    });
+    sheet.body.querySelectorAll("[data-edit]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-edit");
+        const entry = today.find((e) => e.id === id);
+        if (!entry) return;
+        editingId = id;
+        const nameEl = sheet.body.querySelector("#active-name");
+        const kcalEl = sheet.body.querySelector("#active-kcal");
+        if (nameEl) nameEl.value = entry.name;
+        if (kcalEl) kcalEl.value = String(entry.calories);
+      });
     });
   }
 

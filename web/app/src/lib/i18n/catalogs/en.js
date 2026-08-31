@@ -136,6 +136,7 @@ export const en = Object.freeze({
   "manual_active.name_hint": "Activity name (optional)",
   "manual_active.kcal_hint": "Calories burned",
   "manual_active.save": "Add to budget",
+  "manual_active.delete": "Delete",
 
   // Progress
   "progress.title": "Progress",

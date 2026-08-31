@@ -1569,6 +1569,8 @@ für dich ein</string>
     <string name="settings_fixed_launcher_icon">Feste Launcher-Ikone</string>
 
     <string name="settings_fixed_launcher_icon_subtitle">Behält die Launcher-Ikone in Petrol. Sie folgt nicht mehr der Akzentfarbe oder dem Hintergrundbild.</string>
+    <string name="settings_system_date_time_pickers">System-Datums- und Zeitwahl</string>
+    <string name="settings_system_date_time_pickers_subtitle">Beim Bearbeiten einer Mahlzeit die Datums- und Zeitdialoge des Telefons nutzen.</string>
 
     <string name="sheet_theme_color">Designfarbe</string>
 
@@ -2583,6 +2585,9 @@ für dich ein</string>
     <string name="manual_active_kcal_hint">Verbrannte Kalorien</string>
 
     <string name="manual_active_save">Zum Budget hinzufügen</string>
+    <string name="manual_active_edit_title">Aktiven Verbrauch bearbeiten</string>
+    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="cd_delete_manual_active">Aktiven Verbrauch löschen</string>
 
     <string name="home_menu_manual_active">Aktiver Kalorienverbrauch</string>
 

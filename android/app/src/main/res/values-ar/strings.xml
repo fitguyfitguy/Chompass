@@ -666,6 +666,9 @@
     <string name="manual_active_kcal_hint">السعرات المحروقة</string>
     <string name="manual_active_name_hint">اسم النشاط (اختياري)</string>
     <string name="manual_active_save">إضافة إلى الميزانية</string>
+    <string name="manual_active_edit_title">تعديل الحرق النشط</string>
+    <string name="manual_active_history_total">%1$s · %2$d سعرة</string>
+    <string name="cd_delete_manual_active">حذف الحرق النشط</string>
     <string name="manual_active_subtitle">أضِف السعرات المحروقة من مشي أو ركوب أو تمرين. تمتد ميزانية اليوم عند تفعيل «إضافة الحرق النشط».</string>
     <string name="manual_active_title">تسجيل الحرق النشط</string>
     <string name="meal_photos_add_label">إضافة ملصق</string>
@@ -1281,6 +1284,8 @@
     <string name="settings_energy_goals">أهداف إنفاق الطاقة</string>
     <string name="settings_fixed_launcher_icon">أيقونة ثابتة للتطبيق</string>
     <string name="settings_fixed_launcher_icon_subtitle">تبقي أيقونة التطبيق بلون تركوازي. تتوقف عن متابعة لون السمة والخلفية.</string>
+    <string name="settings_system_date_time_pickers">منتقي التاريخ والوقت للنظام</string>
+    <string name="settings_system_date_time_pickers_subtitle">استخدم نوافذ التاريخ والوقت في الهاتف عند تعديل وجبة.</string>
     <string name="settings_food_intro">كيف تتصرف السجلات: الوحدات وأوقات الوجبات وتحليل الصور واكتشاف حجم الحصة.</string>
     <string name="settings_food_log_sort">ترتيب سجل الطعام</string>
     <string name="settings_food_section_logging">التسجيل</string>
