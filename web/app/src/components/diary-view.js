@@ -899,7 +899,8 @@ export class DiaryView extends HTMLElement {
   /** @param {Awaited<ReturnType<typeof prefs.load>>} appPrefs */
   afterHomeRender(appPrefs) {
     if (consumeResumeProgressiveCapture()) {
-      openPhotoAiFlow(this.date);
+      // Codeberg #78: Add next ingredient opens the full Add Food sheet.
+      void this.openAddFoodSheet(appPrefs);
       return;
     }
     if (consumeShowProgressiveMealSheet()) {
@@ -1550,6 +1551,7 @@ export class DiaryView extends HTMLElement {
       })
       .join("");
 
+    let openAddFoodOnClose = false;
     const sheet = openSheet({
       title: t("progressive_meal.title"),
       body: `
@@ -1576,6 +1578,12 @@ export class DiaryView extends HTMLElement {
           <button type="button" class="btn btn--danger" data-pm-discard>${escapeHtml(t("progressive_meal.discard"))}</button>
         </form>
       `,
+      onClose: () => {
+        if (openAddFoodOnClose) {
+          openAddFoodOnClose = false;
+          void this.openAddFoodSheet(appPrefs);
+        }
+      },
     });
 
     const syncMeta = () => {
@@ -1620,8 +1628,8 @@ export class DiaryView extends HTMLElement {
 
     sheet.body.querySelector("[data-pm-add]")?.addEventListener("click", () => {
       syncMeta();
+      openAddFoodOnClose = true;
       sheet.close();
-      openPhotoAiFlow(this.date);
     });
 
     sheet.body.querySelector("[data-pm-discard]")?.addEventListener("click", () => {

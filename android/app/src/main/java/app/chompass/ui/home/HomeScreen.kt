@@ -299,7 +299,11 @@ fun HomeScreen(
     LaunchedEffect(ui.resumeProgressiveCapture) {
         if (ui.resumeProgressiveCapture) {
             vm.consumeResumeProgressiveCapture()
-            openCamera()
+            // Codeberg #78: Add another / Add next ingredient open the full
+            // Add Food hub (barcode, frequent, note, photo), not only camera.
+            vm.prefetchQuickRelog()
+            addFoodFlowActive = true
+            showAddFoodSheet = true
         }
     }
 
@@ -776,6 +780,7 @@ fun HomeScreen(
             draftForChip.items.isNotEmpty() &&
             !ui.showFoodResultSheet &&
             !ui.resumeProgressiveCapture &&
+            !showAddFoodSheet &&
             !showCameraCapture &&
             !showMultiPhotoCapture
         if (showProgressiveChip) {
