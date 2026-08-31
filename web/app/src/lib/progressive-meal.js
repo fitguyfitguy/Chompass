@@ -24,7 +24,7 @@
 /** @type {ProgressiveMealDraft|null} */
 let draft = null;
 
-/** When true, home should open the camera/photo flow after closing the meal sheet. */
+/** When true, home should open the Add Food sheet after Add another / Add next. */
 let resumeCapture = false;
 
 /** When true, home should show the progressive meal sheet once. */

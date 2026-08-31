@@ -1140,7 +1140,7 @@ export class EntryForm extends HTMLElement {
     });
     if (opts.resumeCapture) {
       location.hash = "#/home";
-      // DiaryView will open photo capture via consumeResumeProgressiveCapture.
+      // DiaryView opens the Add Food sheet via consumeResumeProgressiveCapture.
     } else {
       location.hash = "#/home";
     }

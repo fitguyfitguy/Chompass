@@ -12,6 +12,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Barcode calories stay in kcal when carbs are missing** (Android + web): scanning a product that lists calories but omits carbs no longer divides those calories by about 4. If Open Food Facts stores carbs under total carbohydrates, that value is used. Closes Codeberg [#71](https://codeberg.org/fitguy/Chompass/issues/71) by [@Melati-Pohan](https://codeberg.org/Melati-Pohan).
 - **Manual protein, carbs, and fat save as grams** (Android): typing or scrolling 2 on Manual entry now logs 2 g, not 0.2 g. Calories were already correct. Closes Codeberg [#73](https://codeberg.org/fitguy/Chompass/issues/73) by [@swayevenly](https://codeberg.org/swayevenly).
 - **Add-another swipe returns to the in-progress meal** (Android): after the first ingredient is on the meal sheet, swiping down on the camera, photo note, or review goes back to that meal instead of the Add Food hub. The meal sheet also needs a firmer swipe to close, and a typed photo description survives rotation. Closes Codeberg [#80](https://codeberg.org/fitguy/Chompass/issues/80) by [@BrassCat](https://codeberg.org/BrassCat).
+- **Add another opens the full Add Food sheet** (Android + web): after the first ingredient, Add another and Add next ingredient open Photo, barcode, frequent, and note, not only the camera. Closes Codeberg [#78](https://codeberg.org/fitguy/Chompass/issues/78) by [@BitLicker000](https://codeberg.org/BitLicker000).
 
 ## [4.2.0] - 2026-08-28
 

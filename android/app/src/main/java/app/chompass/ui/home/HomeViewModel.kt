@@ -246,7 +246,7 @@ data class HomeUiState(
     val fastingLastFastStartedAtMillis: Long? = null,
     /** In-progress weigh-as-you-go meal (photo-per-ingredient). Null when idle. */
     val progressiveMeal: ProgressiveMealDraft? = null,
-    /** HomeScreen consumes this once to reopen the camera after Add next ingredient. */
+    /** HomeScreen consumes this once to reopen the Add Food hub after Add another. */
     val resumeProgressiveCapture: Boolean = false,
     /** Show [ProgressiveMealSheet] when the draft has items and capture is idle. */
     val showProgressiveMealSheet: Boolean = false,
@@ -1898,7 +1898,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
     /**
      * Commits the current pending review into the weigh-as-you-go draft.
-     * When [resumeCapture] is true, HomeScreen reopens the camera; otherwise
+     * When [resumeCapture] is true, HomeScreen reopens the Add Food hub; otherwise
      * the progressive meal sheet is shown so the user can Log meal / Add another.
      */
     fun addToProgressiveMeal(
@@ -1986,7 +1986,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         _ui.update { it.copy(showProgressiveMealSheet = show) }
     }
 
-    /** Start another capture while keeping the draft; hides the meal sheet until review. */
+    /** Hide the meal sheet and reopen the Add Food hub for the next ingredient. */
     fun continueProgressiveCapture() {
         if (_ui.value.progressiveMeal?.items.isNullOrEmpty()) return
         _ui.update { it.copy(

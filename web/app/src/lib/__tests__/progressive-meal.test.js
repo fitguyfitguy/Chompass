@@ -3,6 +3,8 @@ import { describe, it, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import {
   addToProgressiveMeal,
+  consumeResumeProgressiveCapture,
+  consumeShowProgressiveMealSheet,
   discardProgressiveMeal,
   draftTotals,
   getProgressiveMeal,
@@ -75,4 +77,15 @@ describe("progressive meal draft", () => {
     removeProgressiveMealItem(id);
     assert.equal(getProgressiveMeal(), null);
   });
+
+  it("add-next sets resumeCapture for the Add Food sheet", () => {
+    addToProgressiveMeal({
+      analysis: analysis("A", 100, 10, 5, 2, 100),
+      resumeCapture: true,
+    });
+    assert.equal(consumeShowProgressiveMealSheet(), false);
+    assert.equal(consumeResumeProgressiveCapture(), true);
+    assert.equal(consumeResumeProgressiveCapture(), false);
+  });
+
 });
