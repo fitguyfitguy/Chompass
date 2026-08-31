@@ -206,13 +206,17 @@ internal fun SheetStickyPrimaryBar(
 }
 
 @Composable
-private fun SheetToolbarPill(
+internal fun SheetToolbarPill(
     label: String,
     bold: Boolean = false,
     compact: Boolean = false,
     enabled: Boolean = true,
-    onClick: () -> Unit
+    maxLines: Int = 1,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
+
+
     val shape = CircleShape
     val isDark = isDarkTheme()
     val horizontalPadding = when {
@@ -232,6 +236,7 @@ private fun SheetToolbarPill(
     }).alpha(if (enabled) 1f else 0.45f)
     Box(
         modifier
+            .then(Modifier)
             .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = horizontalPadding, vertical = 8.dp)
     ) {
@@ -239,8 +244,13 @@ private fun SheetToolbarPill(
             label,
             color = if (bold) AppColors.onCalorieGradient else AppColors.Calorie,
             fontSize = if (compact) 15.sp else 16.sp,
-            fontWeight = if (bold) FontWeight.SemiBold else FontWeight.Medium
+            fontWeight = if (bold) FontWeight.SemiBold else FontWeight.Medium,
+            maxLines = maxLines,
+            softWrap = maxLines > 1,
+            overflow = TextOverflow.Ellipsis,
+
         )
+
     }
 }
 

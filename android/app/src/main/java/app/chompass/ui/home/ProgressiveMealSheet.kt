@@ -88,17 +88,10 @@ fun ProgressiveMealSheet(
     ) {
         SheetReviewToolbar(
             title = stringResource(R.string.progressive_meal_title),
-            primaryLabel = if (isSaving) {
-                stringResource(R.string.action_logging)
-            } else {
-                stringResource(R.string.progressive_meal_log)
-            },
-            secondaryLabel = stringResource(R.string.progressive_meal_add_another),
-            primaryEnabled = canLog,
             onCancel = { if (!isSaving) onDismiss() },
-            onPrimary = { if (canLog) onLogMeal() },
-            onSecondary = { if (!isSaving) onAddAnother() },
         )
+
+
 
         ChompassSheetLazyColumn(
             listState = listState,
@@ -237,7 +230,32 @@ fun ProgressiveMealSheet(
                 }
             }
         }
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            SheetToolbarPill(
+                stringResource(R.string.progressive_meal_add_another),
+                compact = true,
+                enabled = !isSaving,
+                maxLines = 2,
+                onClick = { if (!isSaving) onAddAnother() },
+                modifier = Modifier.weight(1f),
+            )
+            SheetToolbarPill(
+                stringResource(R.string.progressive_meal_log),
+                bold = true,
+                compact = true,
+                enabled = !isSaving && canLog,
+                maxLines = 2,
+                onClick = { if (canLog) onLogMeal() },
+                modifier = Modifier.weight(1.2f),
+            )
+        }
     }
+
 }
 
 @Composable
