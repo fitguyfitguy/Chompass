@@ -34,6 +34,8 @@
   "mealSnackStart": 1260,
   "progressDefaultRangeId": "1W",
   "progressMeasurementSites": [],
+  "progressNutrientAverages": false,
+
   "optionalNutrientGoals": {
     "sugar": 50,
     "addedSugar": 25,

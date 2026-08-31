@@ -187,6 +187,9 @@ data class SettingsUiState(
     val progressDefaultRangeId: String = "1W",
     /** Body-measurement sites with a Progress-tab trend plot; empty = plots off. */
     val progressMeasurementSites: Set<String> = emptySet(),
+    /** Progress fiber/sugar/sodium averages; default off. */
+    val progressNutrientAverages: Boolean = false,
+
     val userContext: String = "",
     val fallbackEnabled: Boolean = true,
     val fallbackProvider: AIProvider = AIProvider.GEMINI,
@@ -462,6 +465,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     weekStartDay = snap.weekStartDay,
                     progressDefaultRangeId = snap.progressDefaultRangeId,
                     progressMeasurementSites = snap.progressMeasurementSites,
+                    progressNutrientAverages = snap.progressNutrientAverages,
+
                     userContext = snap.userContext,
                     fallbackEnabled = snap.fallbackEnabled,
                     fallbackProvider = fbProvider,
@@ -884,6 +889,12 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         { container.prefs.setProgressMeasurementSites(sites) },
         { copy(progressMeasurementSites = sites) },
     )
+
+    fun setProgressNutrientAverages(v: Boolean) = updateUiPref(
+        { container.prefs.setProgressNutrientAverages(v) },
+        { copy(progressNutrientAverages = v) },
+    )
+
 
     fun setMealSchedule(schedule: app.chompass.models.MealSchedule) {
         val validated = schedule.validatedOrDefault()

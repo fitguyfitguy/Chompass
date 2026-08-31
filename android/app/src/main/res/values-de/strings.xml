@@ -1372,6 +1372,8 @@ für dich ein</string>
     <string name="progress_macro_averages">Makro-Durchschnittswerte</string>
 
     <string name="progress_nutrient_averages">Nährstoff-Durchschnitt</string>
+    <string name="progress_nutrient_averages_caption">Ballaststoffe, Zucker und Natrium fehlen oft auf Barcodes und Fotos, daher können diese Durchschnitte zu niedrig ausfallen.</string>
+
 
     <string name="progress_macro_progress_format">%1$dg / %2$dg</string>
 
@@ -1763,6 +1765,12 @@ für dich ein</string>
     <string name="settings_progress_plots_no_data">Noch keine Messwerte</string>
 
     <string name="settings_progress_plots_latest">Aktuellste: %1$s %2$s</string>
+    <string name="settings_progress_nutrient_averages">Durchschnitte für Ballaststoffe, Zucker und Natrium</string>
+    <string name="settings_progress_nutrient_averages_subtitle">Aus, bis du sie einschaltest. Barcodes und Fotos lassen diese Werte oft weg.</string>
+    <string name="settings_progress_nutrient_averages_warning_title">Diese Zahlen sind unvollständig</string>
+    <string name="settings_progress_nutrient_averages_warning_body">Ballaststoffe, Zucker und Natrium fehlen oft bei Barcodes und Fotoschätzungen. Durchschnitte zählen nur das Geloggte und können daher zu niedrig wirken.</string>
+    <string name="settings_progress_nutrient_averages_confirm">Anzeigen</string>
+
 
     <string name="settings_meals">Mahlzeiten</string>
     <string name="settings_meals_description">Namen, Reihenfolge und Startzeiten</string>

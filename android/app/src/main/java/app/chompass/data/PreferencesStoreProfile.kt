@@ -148,6 +148,14 @@ internal suspend fun PreferencesStore.setProgressMeasurementSitesImpl(sites: Set
     dataStore.edit { it[Keys.PROGRESS_MEASUREMENT_SITES] = sites }
 }
 
+/** Progress fiber/sugar/sodium averages; default off (incomplete barcode/photo micros). */
+internal val PreferencesStore.progressNutrientAveragesImpl: Flow<Boolean> get() =
+    dataStore.data.map { it[Keys.PROGRESS_NUTRIENT_AVERAGES] ?: false }
+internal suspend fun PreferencesStore.setProgressNutrientAveragesImpl(v: Boolean) {
+    dataStore.edit { it[Keys.PROGRESS_NUTRIENT_AVERAGES] = v }
+}
+
+
     /** "RECENTS" | "FREQUENT" | "FAVORITES". Mirrors iOS @AppStorage("lastRecentsSegment"). */
 internal val PreferencesStore.lastSavedMealsSegmentImpl: Flow<String> get() = dataStore.data.map { it[Keys.LAST_SAVED_MEALS_SEGMENT] ?: "RECENTS" }
 internal suspend fun PreferencesStore.setLastSavedMealsSegmentImpl(v: String) { dataStore.edit { it[Keys.LAST_SAVED_MEALS_SEGMENT] = v } }

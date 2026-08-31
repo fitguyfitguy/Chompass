@@ -157,6 +157,9 @@ internal object Keys {
         val PROGRESS_LAST_RANGE_ID = stringPreferencesKey("progressLastRangeId")
         /** Body-measurement sites with a trend plot on the Progress tab; empty = plots off. */
         val PROGRESS_MEASUREMENT_SITES = stringSetPreferencesKey("progressMeasurementSites")
+        /** Codeberg #75: Progress fiber/sugar/sodium averages; default off. */
+        val PROGRESS_NUTRIENT_AVERAGES = booleanPreferencesKey("progressNutrientAverages")
+
         val MEAL_BREAKFAST_START = intPreferencesKey("mealBreakfastStart")
         val MEAL_LUNCH_START = intPreferencesKey("mealLunchStart")
         val MEAL_DINNER_START = intPreferencesKey("mealDinnerStart")

@@ -62,6 +62,8 @@ class PrefDefaultsParityTest {
         )
         // Body-measurement plots are off by default (empty enabled-site set).
         assertEquals(0, f.getJSONArray("progressMeasurementSites").length())
+        assertFalse(f.getBoolean("progressNutrientAverages"))
+
 
         val goals = f.getJSONObject("optionalNutrientGoals")
         val d = OptionalNutrientGoals.Default
