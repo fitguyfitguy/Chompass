@@ -48,7 +48,7 @@ internal fun SettingsFallbackSection(ui: SettingsUiState, vm: SettingsViewModel,
                         HorizontalDivider()
                         SettingRow(
                             if (ui.fallbackProvider.requiresCustomEndpoint) stringResource(R.string.settings_base_url) else stringResource(R.string.settings_server_url),
-                            stringResource(R.string.settings_tap_to_edit),
+                            ui.fallbackCustomBaseUrl.ifEmpty { stringResource(R.string.settings_not_set) },
                             icon = Icons.Outlined.Link
                         ) { onOpenSheet(SettingsSheet.FALLBACK_BASE_URL) }
                     }

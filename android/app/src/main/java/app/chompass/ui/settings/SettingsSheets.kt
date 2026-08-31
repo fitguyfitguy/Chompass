@@ -36,7 +36,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -173,17 +172,12 @@ internal fun SettingsSheets(
                     placeholder = stringResource(ui.selectedAI.apiKeyPlaceholderRes),
                     onSave = { vm.setApiKey(it); onDismiss() }
                 )
-                SettingsSheet.CUSTOM_BASE_URL -> {
-                    val existing by vm.container.prefs
-                        .customBaseUrl(ui.selectedAI)
-                        .collectAsState(initial = "")
-                    TextFieldSheet(
-                        title = stringResource(R.string.settings_custom_url_title),
-                        initial = existing.orEmpty(),
-                        placeholder = stringResource(R.string.settings_custom_url_placeholder),
-                        onSave = { vm.setCustomBaseUrl(ui.selectedAI, it); onDismiss() }
-                    )
-                }
+                SettingsSheet.CUSTOM_BASE_URL -> TextFieldSheet(
+                    title = stringResource(R.string.settings_custom_url_title),
+                    initial = ui.customBaseUrl,
+                    placeholder = stringResource(R.string.settings_custom_url_placeholder),
+                    onSave = { vm.setCustomBaseUrl(ui.selectedAI, it); onDismiss() }
+                )
                 SettingsSheet.ON_DEVICE_MODEL -> OnDeviceModelSheet(
                     container = vm.container,
                     selectedModelId = ui.selectedModel,
@@ -310,17 +304,12 @@ internal fun SettingsSheets(
                     placeholder = stringResource(ui.fallbackProvider.apiKeyPlaceholderRes),
                     onSave = { vm.setFallbackApiKey(it); onDismiss() }
                 )
-                SettingsSheet.FALLBACK_BASE_URL -> {
-                    val existing by vm.container.prefs
-                        .fallbackCustomBaseUrl(ui.fallbackProvider)
-                        .collectAsState(initial = "")
-                    TextFieldSheet(
-                        title = stringResource(R.string.settings_custom_url_title),
-                        initial = existing.orEmpty(),
-                        placeholder = stringResource(R.string.settings_custom_url_placeholder),
-                        onSave = { vm.setFallbackCustomBaseUrl(ui.fallbackProvider, it); onDismiss() }
-                    )
-                }
+                SettingsSheet.FALLBACK_BASE_URL -> TextFieldSheet(
+                    title = stringResource(R.string.settings_custom_url_title),
+                    initial = ui.fallbackCustomBaseUrl,
+                    placeholder = stringResource(R.string.settings_custom_url_placeholder),
+                    onSave = { vm.setFallbackCustomBaseUrl(ui.fallbackProvider, it); onDismiss() }
+                )
                 SettingsSheet.GENDER -> ListSheet(
                     title = stringResource(R.string.sheet_gender),
                     items = Gender.values().toList(),

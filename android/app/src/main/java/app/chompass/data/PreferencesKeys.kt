@@ -176,6 +176,11 @@ internal object Keys {
         /** Per-provider vision-model slot (upstream #195); empty = primary model handles images too. */
         fun visionModel(provider: AIProvider): Preferences.Key<String> =
             stringPreferencesKey("visionModel_${provider.name}")
+        fun customBaseUrl(provider: AIProvider): Preferences.Key<String> =
+            stringPreferencesKey("customBaseURL_${provider.name}")
+        /** Fallback-slot URL; separate from [customBaseUrl] so same-provider primary + fallback keep distinct endpoints. */
+        fun fallbackCustomBaseUrl(provider: AIProvider): Preferences.Key<String> =
+            stringPreferencesKey("customBaseURL_fallback_${provider.name}")
         val MAX_RESPONSE_TOKENS = intPreferencesKey("maxResponseTokens")
         val AI_READ_TIMEOUT_SECONDS = intPreferencesKey("aiReadTimeoutSeconds")
         val SERVING_UNIT_INFERENCE_MODE = stringPreferencesKey("servingUnitInferenceMode")

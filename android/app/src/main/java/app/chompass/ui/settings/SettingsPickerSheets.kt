@@ -203,7 +203,7 @@ internal fun TextFieldSheet(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     onSave: (String) -> Unit
 ) {
-    var value by remember { mutableStateOf(initial) }
+    var value by remember(initial) { mutableStateOf(initial) }
     Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(12.dp))
     FudGlassTextField(

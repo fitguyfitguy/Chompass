@@ -1,7 +1,7 @@
 package app.chompass.data
 
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
+
 import androidx.annotation.StringRes
 import app.chompass.R
 import app.chompass.models.AIProvider
@@ -11,12 +11,6 @@ import app.chompass.models.SpeechLanguage
 import app.chompass.models.SpeechProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-
-private const val CUSTOM_BASE_URL_PREFIX = "customBaseURL_"
-/** Fallback-slot base URLs live under their own prefix: a same-provider primary + fallback
- *  (e.g. two OpenAI-compatible endpoints with different models) must not share one key,
- *  or the last URL written wins and both slots hit the same server after restart. */
-private const val CUSTOM_BASE_URL_FALLBACK_PREFIX = "customBaseURL_fallback_"
 
 // -- Master AI-features switch (Codeberg #20 phase 2) -------------------
 /** When false, no data is sent to any LLM provider: AI entry points are hidden
@@ -57,7 +51,7 @@ internal suspend fun PreferencesStore.setSelectedAIModelImpl(model: String) {
     }
 
 internal fun PreferencesStore.customBaseUrlImpl(provider: AIProvider): Flow<String?> = dataStore.data.map {
-        it[stringPreferencesKey(CUSTOM_BASE_URL_PREFIX + provider.name)]
+        it[Keys.customBaseUrl(provider)]
     }
 
 /** Vision-model slot for [provider] (upstream #195); null/blank = use the primary model for images too. */
@@ -73,18 +67,18 @@ internal suspend fun PreferencesStore.setVisionModelImpl(provider: AIProvider, m
     }
 
 internal suspend fun PreferencesStore.setCustomBaseUrlImpl(provider: AIProvider, url: String?) {
-        val key = stringPreferencesKey(CUSTOM_BASE_URL_PREFIX + provider.name)
+        val key = Keys.customBaseUrl(provider)
         dataStore.edit {
             if (url.isNullOrEmpty()) it.remove(key) else it[key] = url
         }
     }
 
 internal fun PreferencesStore.fallbackCustomBaseUrlImpl(provider: AIProvider): Flow<String?> = dataStore.data.map {
-        it[stringPreferencesKey(CUSTOM_BASE_URL_FALLBACK_PREFIX + provider.name)]
+        it[Keys.fallbackCustomBaseUrl(provider)]
     }
 
 internal suspend fun PreferencesStore.setFallbackCustomBaseUrlImpl(provider: AIProvider, url: String?) {
-        val key = stringPreferencesKey(CUSTOM_BASE_URL_FALLBACK_PREFIX + provider.name)
+        val key = Keys.fallbackCustomBaseUrl(provider)
         dataStore.edit {
             if (url.isNullOrEmpty()) it.remove(key) else it[key] = url
         }

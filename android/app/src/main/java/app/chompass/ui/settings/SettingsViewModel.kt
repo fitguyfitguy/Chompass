@@ -160,6 +160,7 @@ data class SettingsUiState(
     /** Localized error for the "Estimate with AI" call; null = no alert shown. */
     val optionalNutrientEstimateAlertMessage: String? = null,
     val apiKeyMasked: String = "",
+    val customBaseUrl: String = "",
     val speechApiKeyMasked: String = "",
     /** Rollout gate + device capability — whether ON_DEVICE should appear as a selectable provider. */
     val onDeviceAvailable: Boolean = false,
@@ -189,6 +190,7 @@ data class SettingsUiState(
     val fallbackProvider: AIProvider = AIProvider.GEMINI,
     val fallbackModel: String = AIProvider.GEMINI.defaultFallbackModel,
     val fallbackApiKeyMasked: String = "",
+    val fallbackCustomBaseUrl: String = "",
     val geminiGoogleSearchEnabled: Boolean = false,
     val openRouterReasoningEffort: OpenRouterReasoningEffort = OpenRouterReasoningEffort.AUTO,
     val mealConstituentsEnabled: Boolean = true,
@@ -441,6 +443,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     healthBackgroundReadGranted = container.health.hasBackgroundRead(),
                     adaptiveGoalsEnabled = snap.adaptiveGoalsEnabled,
                     apiKeyMasked = masked,
+                    customBaseUrl = snap.customBaseUrl,
                     speechApiKeyMasked = speechMasked,
                     onDeviceAvailable = early.onDeviceAvailable,
                     onDeviceModels = early.onDeviceModels,
@@ -461,6 +464,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     fallbackProvider = fbProvider,
                     fallbackModel = fbModel,
                     fallbackApiKeyMasked = fbMasked,
+                    fallbackCustomBaseUrl = snap.fallbackCustomBaseUrl,
                     geminiGoogleSearchEnabled = snap.geminiGoogleSearchEnabled,
                     openRouterReasoningEffort = snap.openRouterReasoningEffort,
                     mealConstituentsEnabled = snap.mealConstituentsEnabled,
@@ -790,7 +794,13 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             }
             container.prefs.setSelectedFallbackModel(newModel)
             val masked = maskKey(container.keyStore.fallbackApiKey(p))
-            _ui.value = _ui.value.copy(fallbackProvider = p, fallbackModel = newModel, fallbackApiKeyMasked = masked)
+            val fallbackUrl = container.prefs.fallbackCustomBaseUrl(p).first().orEmpty()
+            _ui.value = _ui.value.copy(
+                fallbackProvider = p,
+                fallbackModel = newModel,
+                fallbackApiKeyMasked = masked,
+                fallbackCustomBaseUrl = fallbackUrl,
+            )
         }
     }
 
@@ -899,10 +909,12 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 ?.takeIf { it.isNotBlank() }
                 ?.let { p.supportedModelOrDefault(it) }
                 .orEmpty()
+            val customBaseUrl = container.prefs.customBaseUrl(p).first().orEmpty()
             _ui.value = _ui.value.copy(
                 selectedAI = p,
                 selectedModel = newModel,
                 apiKeyMasked = masked,
+                customBaseUrl = customBaseUrl,
                 visionModel = vision,
                 onDeviceModels = onDeviceModels,
             )
@@ -2018,15 +2030,27 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         it?.let { plan -> MacroPlanEdit.setDayAssignment(plan, date, profileId) }
     }
 
-    fun setCustomBaseUrl(provider: AIProvider, url: String) = launchPref {
-        container.prefs.setCustomBaseUrl(provider, url.takeIf { it.isNotBlank() })
+    fun setCustomBaseUrl(provider: AIProvider, url: String) {
+        viewModelScope.launch {
+            val stored = url.trim().takeIf { it.isNotBlank() }
+            container.prefs.setCustomBaseUrl(provider, stored)
+            if (provider == _ui.value.selectedAI) {
+                _ui.value = _ui.value.copy(customBaseUrl = stored.orEmpty())
+            }
+        }
     }
 
     /** Fallback-slot base URL: stored under its own key so a fallback that reuses the
      *  primary provider (e.g. a second OpenAI-compatible endpoint) can't clobber the
      *  primary's URL — see customBaseURL_fallback_* in PreferencesStoreAi. */
-    fun setFallbackCustomBaseUrl(provider: AIProvider, url: String) = launchPref {
-        container.prefs.setFallbackCustomBaseUrl(provider, url.takeIf { it.isNotBlank() })
+    fun setFallbackCustomBaseUrl(provider: AIProvider, url: String) {
+        viewModelScope.launch {
+            val stored = url.trim().takeIf { it.isNotBlank() }
+            container.prefs.setFallbackCustomBaseUrl(provider, stored)
+            if (provider == _ui.value.fallbackProvider) {
+                _ui.value = _ui.value.copy(fallbackCustomBaseUrl = stored.orEmpty())
+            }
+        }
     }
 
     private fun maskKey(key: String?): String =
