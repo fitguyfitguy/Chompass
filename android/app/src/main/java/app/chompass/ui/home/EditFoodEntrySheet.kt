@@ -36,13 +36,13 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.text.input.KeyboardType
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.text.format.DateFormat
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
+
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -69,10 +69,11 @@ import app.chompass.models.MicronutrientField
 import app.chompass.models.MicronutrientValues
 import app.chompass.models.ServingUnitOption
 import app.chompass.ui.components.DateWheelPicker
+import app.chompass.ui.components.NumericWheelPicker
+
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.FudGlassPrimaryButton
-import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.kcalText
 import app.chompass.ui.components.macroGramsText
 import app.chompass.ui.components.isDarkTheme
@@ -1120,36 +1121,32 @@ private fun EditFoodTimeDialog(
     onConfirm: (LocalTime) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var hourText by remember(initialTime) { mutableStateOf(initialTime.hour.toString().padStart(2, '0')) }
-    var minuteText by remember(initialTime) { mutableStateOf(initialTime.minute.toString().padStart(2, '0')) }
+    var hour by remember(initialTime) { mutableIntStateOf(initialTime.hour) }
+    var minute by remember(initialTime) { mutableIntStateOf(initialTime.minute) }
 
     FudGlassDialog(onDismissRequest = onDismiss) {
         Text(stringResource(R.string.label_time), fontSize = 21.sp, fontWeight = FontWeight.Bold)
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            FudGlassTextField(
-                value = hourText,
-                onValueChange = { hourText = it.filter(Char::isDigit).take(2) },
-                placeholder = stringResource(R.string.placeholder_hour),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.weight(1f)
+            NumericWheelPicker(
+                value = hour,
+                onValueChange = { hour = it },
+                min = 0,
+                max = 23,
+                unit = stringResource(R.string.placeholder_hour),
+                modifier = Modifier.weight(1f),
             )
-            FudGlassTextField(
-                value = minuteText,
-                onValueChange = { minuteText = it.filter(Char::isDigit).take(2) },
-                placeholder = stringResource(R.string.placeholder_minute),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.weight(1f)
+            NumericWheelPicker(
+                value = minute,
+                onValueChange = { minute = it },
+                min = 0,
+                max = 59,
+                unit = stringResource(R.string.placeholder_minute),
+                modifier = Modifier.weight(1f),
             )
         }
         FudGlassDialogActions(
             primaryText = stringResource(R.string.action_done),
-            onPrimary = {
-                val hour = hourText.toIntOrNull()?.coerceIn(0, 23) ?: initialTime.hour
-                val minute = minuteText.toIntOrNull()?.coerceIn(0, 59) ?: initialTime.minute
-                onConfirm(LocalTime.of(hour, minute))
-            },
+            onPrimary = { onConfirm(LocalTime.of(hour, minute)) },
             dismissText = stringResource(R.string.action_cancel),
             onDismiss = onDismiss
         )

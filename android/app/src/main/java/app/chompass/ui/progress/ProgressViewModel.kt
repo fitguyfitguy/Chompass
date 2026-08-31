@@ -87,6 +87,8 @@ data class ProgressUiState(
     val fiberGoal: Int = OptionalNutrientGoals.Default.fiber,
     val sugarGoal: Int = OptionalNutrientGoals.Default.sugar,
     val sodiumGoal: Int = OptionalNutrientGoals.Default.sodium,
+    val showNutrientAverages: Boolean = false,
+
     val weightStats: WeightSummaryStats = WeightSummaryStats(),
     val bodyFatStats: BodyFatSummaryStats = BodyFatSummaryStats(),
     val goalReached: Boolean = false
@@ -102,6 +104,8 @@ private data class BaseProgressData(
     /** Per-day goal journal (#60): frozen actual targets behind the range goals + bars. */
     val goalJournal: List<GoalJournalEntry> = emptyList(),
     val optionalGoals: OptionalNutrientGoals = OptionalNutrientGoals.Default,
+    val showNutrientAverages: Boolean = false,
+
 )
 
 class ProgressViewModel(private val container: AppContainer) : ViewModel() {
@@ -156,9 +160,19 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
                 measurementSites = measurementSites
             )
         }.let { base ->
-            combine(base, container.prefs.goalJournal, container.prefs.optionalNutrientGoals) { b, journal, goals ->
-                b.copy(goalJournal = journal, optionalGoals = goals)
+            combine(
+                base,
+                container.prefs.goalJournal,
+                container.prefs.optionalNutrientGoals,
+                container.prefs.progressNutrientAverages,
+            ) { b, journal, goals, showMicros ->
+                b.copy(
+                    goalJournal = journal,
+                    optionalGoals = goals,
+                    showNutrientAverages = showMicros,
+                )
             }
+
         }.let { baseData ->
             combine(
                 baseData,
@@ -364,6 +378,8 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
         fiberGoal = base.optionalGoals.fiber,
         sugarGoal = base.optionalGoals.sugar,
         sodiumGoal = base.optionalGoals.sodium,
+        showNutrientAverages = base.showNutrientAverages,
+
         weightStats = filteredWeights.toWeightStats(),
         bodyFatStats = filteredBodyFats.toBodyFatStats(),
         goalReached = showGoalReached

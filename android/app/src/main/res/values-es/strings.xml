@@ -420,6 +420,8 @@
 
     <string name="progress_macro_averages">Promedios de macros</string>
     <string name="progress_nutrient_averages">Promedios de nutrientes</string>
+    <string name="progress_nutrient_averages_caption">La fibra, el azúcar y el sodio a menudo faltan en códigos de barras y fotos, así que estos promedios pueden quedar bajos.</string>
+
 
     <string name="progress_log_weight_title">Registrar peso</string>
 
@@ -1467,6 +1469,12 @@
     <string name="settings_progress_plots">Gráficos de medidas corporales</string>
     <string name="settings_progress_plots_count">%1$d gráficos</string>
     <string name="settings_progress_plots_latest">Última: %1$s %2$s</string>
+    <string name="settings_progress_nutrient_averages">Promedios de fibra, azúcar y sodio</string>
+    <string name="settings_progress_nutrient_averages_subtitle">Desactivado hasta que lo actives. Los códigos de barras y las fotos suelen omitir estos valores.</string>
+    <string name="settings_progress_nutrient_averages_warning_title">Estos números están incompletos</string>
+    <string name="settings_progress_nutrient_averages_warning_body">La fibra, el azúcar y el sodio a menudo faltan en códigos de barras y en las estimaciones de fotos. Los promedios solo cuentan lo registrado, así que pueden quedar bajos.</string>
+    <string name="settings_progress_nutrient_averages_confirm">Mostrarlos</string>
+
     <string name="settings_progress_plots_no_data">Aún no hay medidas</string>
     <string name="settings_progress_plots_off">Gráficos desactivados</string>
     <string name="settings_progress_plots_subtitle">Muestra la evolución de las circunferencias por zona en la pestaña Progreso. Los datos vienen de Información personal → Medidas corporales.</string>

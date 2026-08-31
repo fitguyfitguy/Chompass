@@ -1027,6 +1027,14 @@ export class SettingsView extends HTMLElement {
               .join("")}
           </select>
         </div>
+        <div class="field">
+          <label class="checkbox-row">
+            <input type="checkbox" id="progressNutrientAverages" name="progressNutrientAverages" value="true" ${p.progressNutrientAverages ? "checked" : ""} />
+            <span>${escapeHtml(t("settings.progress_nutrient_averages"))}</span>
+          </label>
+          <p class="field-hint">${escapeHtml(t("settings.progress_nutrient_averages_subtitle"))}</p>
+
+        </div>
         <p class="section-label">${t("settings.units.meal_times")}</p>
         <div class="field-row field-row--2">
           <div class="field"><label for="mealBreakfastStart">${t("meal.breakfast")}</label><input id="mealBreakfastStart" name="mealBreakfastStart" type="time" value="${minutesToTimeInput(p.mealBreakfastStart ?? 300)}" /></div>
@@ -1049,6 +1057,8 @@ export class SettingsView extends HTMLElement {
         weekStartDay: /** @type {"monday"|"sunday"|"saturday"} */ (String(fd.get("weekStartDay") || "monday")),
         weekStartsOnMonday: String(fd.get("weekStartDay") || "monday") === "monday",
         progressDefaultRangeId: String(fd.get("progressDefaultRangeId") || "1W"),
+        progressNutrientAverages: fd.get("progressNutrientAverages") === "true",
+
         mealBreakfastStart: timeInputToMinutes(String(fd.get("mealBreakfastStart"))),
         mealLunchStart: timeInputToMinutes(String(fd.get("mealLunchStart"))),
         mealDinnerStart: timeInputToMinutes(String(fd.get("mealDinnerStart"))),
@@ -1057,6 +1067,17 @@ export class SettingsView extends HTMLElement {
       window.dispatchEvent(new Event("chompass-prefs-changed"));
       location.hash = SETTINGS_PARENT.units;
     });
+    this.querySelector("#progressNutrientAverages")?.addEventListener("change", async (ev) => {
+      const box = /** @type {HTMLInputElement} */ (ev.target);
+      if (!box.checked) return;
+      const ok = await openConfirm({
+        title: t("settings.progress_nutrient_averages_warning_title"),
+        message: t("settings.progress_nutrient_averages_warning_body"),
+        confirmLabel: t("settings.progress_nutrient_averages_confirm"),
+      });
+      if (!ok) box.checked = false;
+    });
+
     bindSubpageBack(this, SETTINGS_PARENT.units);
   }
 

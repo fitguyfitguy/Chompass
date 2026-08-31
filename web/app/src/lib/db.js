@@ -470,6 +470,8 @@ export const profile = {
  * @property {string} [speechLang] BCP-47 tag for Web Speech (browser STT)
  * @property {string} [uiLang] UI locale id from locales.json (empty = auto-detect browser)
  * @property {string} [progressDefaultRangeId] Settings default Progress range (1W…All)
+ * @property {boolean} [progressNutrientAverages] Progress fiber/sugar/sodium averages (off by default)
+
  * @property {string} [progressRangeId] Last Progress range chip selection (unset until first pick)
  * @property {Record<string, { updatedAt: string, deletedAt?: string|null, kind?: string }>} [syncRevisions]
  * @property {{ url?: string, username?: string, password?: string, etag?: string|null, lastSyncAt?: string|null, autoSync?: boolean, autoSyncDay?: string|null }} [webdav]
@@ -527,6 +529,8 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   speechLang: "",
   uiLang: "",
   progressDefaultRangeId: "1W",
+  progressNutrientAverages: false,
+
 });
 
 export const prefs = {

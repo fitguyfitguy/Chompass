@@ -411,6 +411,8 @@
 
     <string name="progress_macro_averages">Moyennes des macros</string>
     <string name="progress_nutrient_averages">Moyennes des nutriments</string>
+    <string name="progress_nutrient_averages_caption">Les fibres, le sucre et le sodium manquent souvent sur les codes-barres et les photos, donc ces moyennes peuvent sembler basses.</string>
+
 
     <string name="progress_macro_progress_format">%1$d g / %2$d g</string>
 
@@ -1457,6 +1459,12 @@
     <string name="settings_progress_plots">Graphiques des mesures corporelles</string>
     <string name="settings_progress_plots_count">%1$d graphiques</string>
     <string name="settings_progress_plots_latest">Dernière : %1$s %2$s</string>
+    <string name="settings_progress_nutrient_averages">Moyennes fibres, sucre et sodium</string>
+    <string name="settings_progress_nutrient_averages_subtitle">Désactivé tant que vous ne les activez pas. Les codes-barres et les photos omettent souvent ces valeurs.</string>
+    <string name="settings_progress_nutrient_averages_warning_title">Ces chiffres sont incomplets</string>
+    <string name="settings_progress_nutrient_averages_warning_body">Les fibres, le sucre et le sodium manquent souvent sur les codes-barres et dans les estimations photo. Les moyennes ne comptent que ce qui a été enregistré, donc elles peuvent sembler basses.</string>
+    <string name="settings_progress_nutrient_averages_confirm">Les afficher</string>
+
     <string name="settings_progress_plots_no_data">Aucune mesure pour le moment</string>
     <string name="settings_progress_plots_off">Graphiques désactivés</string>
     <string name="settings_progress_plots_subtitle">Affiche l\'évolution des circonférences par zone dans l\'onglet Progrès. Les données viennent d\'Infos personnelles → Mesures corporelles.</string>

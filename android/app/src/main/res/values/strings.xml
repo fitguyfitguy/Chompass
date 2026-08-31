@@ -913,6 +913,8 @@
 
     <string name="progress_macro_averages">Macro Averages</string>
     <string name="progress_nutrient_averages">Nutrient averages</string>
+    <string name="progress_nutrient_averages_caption">Fiber, sugar, and sodium are often missing from barcodes and photos, so these averages can read low.</string>
+
     <string name="progress_macro_progress_format">%1$dg / %2$dg</string>
 
     <string name="progress_activity_section">Activity</string>
@@ -1210,6 +1212,19 @@
         <item>plots</item>
         <item>trend</item>
         <item>default</item>
+        <item>fiber</item>
+        <item>sugar</item>
+        <item>sodium</item>
+        <item>nutrient</item>
+    </string-array>
+    <string-array name="settings_search_kw_progress_nutrient_averages">
+        <item>fiber</item>
+        <item>sugar</item>
+        <item>sodium</item>
+        <item>micro</item>
+        <item>nutrient</item>
+        <item>averages</item>
+
     </string-array>
     <string-array name="settings_search_kw_week_starts">
         <item>calendar</item>
@@ -1548,6 +1563,12 @@
     <string name="settings_progress_plots_count">%1$d plots</string>
     <string name="settings_progress_plots_no_data">No measurements yet</string>
     <string name="settings_progress_plots_latest">Latest: %1$s %2$s</string>
+    <string name="settings_progress_nutrient_averages">Fiber, sugar, and sodium averages</string>
+    <string name="settings_progress_nutrient_averages_subtitle">Off until you turn them on. Barcodes and photos often omit these values.</string>
+    <string name="settings_progress_nutrient_averages_warning_title">These numbers are incomplete</string>
+    <string name="settings_progress_nutrient_averages_warning_body">Fiber, sugar, and sodium are often missing from barcodes and photo estimates. Averages only count what was logged, so they can read low.</string>
+    <string name="settings_progress_nutrient_averages_confirm">Show them</string>
+
     <string name="settings_meals">Meals</string>
     <string name="settings_meals_description">Names, order, and start times</string>
     <string name="settings_meals_help">New food uses the meal whose start time is closest before now.</string>

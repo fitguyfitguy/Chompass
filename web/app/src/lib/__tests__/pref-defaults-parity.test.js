@@ -55,6 +55,9 @@ describe("pref defaults (parity fixture)", () => {
     assert.equal(DEFAULT_PREFS.mealDinnerStart, fixture.mealDinnerStart);
     assert.equal(DEFAULT_PREFS.mealSnackStart, fixture.mealSnackStart);
     assert.equal(DEFAULT_PREFS.progressDefaultRangeId, fixture.progressDefaultRangeId);
+    assert.equal(DEFAULT_PREFS.progressNutrientAverages, fixture.progressNutrientAverages);
+    assert.equal(DEFAULT_PREFS.progressNutrientAverages, false);
+
   });
 
   it("legacy caffeineDailyLimitMg is a migration-only alias, never written again", () => {

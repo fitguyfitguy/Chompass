@@ -93,6 +93,8 @@ internal data class SettingsPrefsHydration(
     val weekStartDay: app.chompass.models.WeekStartDay,
     val progressDefaultRangeId: String,
     val progressMeasurementSites: Set<String>,
+    val progressNutrientAverages: Boolean,
+
     val userContext: String,
     val maxResponseTokens: Int,
     val aiReadTimeoutSeconds: Int,
@@ -219,6 +221,8 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
         ),
         progressDefaultRangeId = this[Keys.PROGRESS_DEFAULT_RANGE_ID] ?: "1W",
         progressMeasurementSites = this[Keys.PROGRESS_MEASUREMENT_SITES] ?: emptySet(),
+        progressNutrientAverages = this[Keys.PROGRESS_NUTRIENT_AVERAGES] ?: false,
+
         userContext = this[Keys.USER_CONTEXT].orEmpty(),
         maxResponseTokens = clampMaxResponseTokens(this[Keys.MAX_RESPONSE_TOKENS] ?: 1024),
         aiReadTimeoutSeconds = clampAiReadTimeoutSeconds(

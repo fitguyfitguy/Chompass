@@ -973,9 +973,6 @@ fun HomeScreen(
             onStopFast = vm::stopFast,
             onRelogRecent = { vm.relogMeal(it) },
             onReviewRecent = { vm.reviewSavedMeal(it) },
-            logTimeOverride = ui.logTimeOverride,
-            useSystemDateTimePickers = useSystemDateTimePickers,
-            onLogTimeOverride = vm::setLogTimeOverride,
             onDismiss = {
                 showAddFoodSheet = false
                 addFoodFlowActive = false

@@ -178,11 +178,19 @@ export const en = Object.freeze({
   "progress.fiber": "Fiber",
   "progress.sugar": "Sugar",
   "progress.sodium": "Sodium",
+  "progress.nutrient_averages_caption": "Fiber, sugar, and sodium are often missing from barcodes and photos, so these averages can read low.",
+
 "progress.macro_progress_format": "{current}g / {goal}g",
 "progress.log_first_weight": "Log your first weight to see trends",
 "progress.log_first_body_fat": "Log your first body fat % to see trends",
 "progress.no_food": "No food logged yet",
   "settings.progress_default_range": "Progress default range",
+  "settings.progress_nutrient_averages": "Fiber, sugar, and sodium averages",
+  "settings.progress_nutrient_averages_subtitle": "Off until you turn them on. Barcodes and photos often omit these values.",
+  "settings.progress_nutrient_averages_warning_title": "These numbers are incomplete",
+  "settings.progress_nutrient_averages_warning_body": "Fiber, sugar, and sodium are often missing from barcodes and photo estimates. Averages only count what was logged, so they can read low.",
+  "settings.progress_nutrient_averages_confirm": "Show them",
+
 
   // Onboarding
   "onboarding.welcome_title": "Welcome to Chompass",

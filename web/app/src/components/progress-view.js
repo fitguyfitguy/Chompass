@@ -369,15 +369,21 @@ export class ProgressView extends HTMLElement {
         ${macroRow(t("onboarding.plan.protein"), macroAvg("proteinG"), targets.proteinG, "var(--protein)")}
         ${macroRow(t("onboarding.plan.carbs"), macroAvg("carbsG"), targets.carbsG, "var(--carbs)")}
         ${macroRow(t("onboarding.plan.fat"), macroAvg("fatG"), targets.fatG, "var(--fat)")}
-      </div>
-      <div class="card card--glass">
+      </div>`
+          : ""
+      }
+      ${
+        targets && appPrefs.progressNutrientAverages
+          ? `<div class="card card--glass">
         <h2 class="progress-title">${t("progress.nutrient_averages")}</h2>
         ${macroRow(t("progress.fiber"), macroAvg("fiberG"), nutrientGoals.fiberG, "var(--fiber)")}
         ${macroRow(t("progress.sugar"), macroAvg("sugarG"), nutrientGoals.sugarG, "#c47a3a")}
         ${macroRow(t("progress.sodium"), macroAvg("sodiumMg"), nutrientGoals.sodiumMg, "var(--water)", "mg")}
+        <p class="progress-empty">${t("progress.nutrient_averages_caption")}</p>
       </div>`
           : ""
       }
+
 
       ${
         forecast

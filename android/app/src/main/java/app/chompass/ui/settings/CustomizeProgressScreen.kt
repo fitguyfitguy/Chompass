@@ -30,6 +30,9 @@ import app.chompass.R
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.UnitFormat
 import app.chompass.ui.components.FudGlassSurface
+import app.chompass.ui.components.FudGlassDialog
+import app.chompass.ui.components.FudGlassDialogActions
+
 import app.chompass.ui.progress.TimeRange
 import java.util.Locale
 import app.chompass.ui.theme.AppRadii
@@ -52,6 +55,8 @@ fun CustomizeProgressScreen(
     val vm: SettingsViewModel = rememberSettingsViewModel(container, nav)
     val ui by vm.ui.collectAsState()
     var sheet by remember { mutableStateOf<SettingsSheet?>(null) }
+    var showNutrientAveragesWarning by remember { mutableStateOf(false) }
+
     val entries by container.bodyMeasurementRepository.entries.collectAsState(initial = emptyList())
     val heightUnit by container.prefs.heightUnit.collectAsState(initial = "cm")
     val heightMetric = heightUnit == "cm"
@@ -80,6 +85,26 @@ fun CustomizeProgressScreen(
                     value = stringResource(TimeRange.fromStorageId(ui.progressDefaultRangeId).labelRes),
                     onClick = { sheet = SettingsSheet.PROGRESS_DEFAULT_RANGE },
                 )
+                HorizontalDivider()
+                ToggleRow(
+                    label = stringResource(R.string.settings_progress_nutrient_averages),
+                    checked = ui.progressNutrientAverages,
+                    onChange = { on ->
+                        if (on) {
+                            showNutrientAveragesWarning = true
+                        } else {
+                            vm.setProgressNutrientAverages(false)
+                        }
+                    },
+                )
+                Text(
+                    stringResource(R.string.settings_progress_nutrient_averages_subtitle),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
+                )
+
+
             }
         }
 
@@ -138,6 +163,30 @@ fun CustomizeProgressScreen(
             onRebalanceBlocked = {},
         )
     }
+
+    if (showNutrientAveragesWarning) {
+        FudGlassDialog(onDismissRequest = { showNutrientAveragesWarning = false }) {
+            Text(
+                stringResource(R.string.settings_progress_nutrient_averages_warning_title),
+                fontSize = 21.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                stringResource(R.string.settings_progress_nutrient_averages_warning_body),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            )
+            FudGlassDialogActions(
+                primaryText = stringResource(R.string.settings_progress_nutrient_averages_confirm),
+                onPrimary = {
+                    vm.setProgressNutrientAverages(true)
+                    showNutrientAveragesWarning = false
+                },
+                dismissText = stringResource(R.string.action_cancel),
+                onDismiss = { showNutrientAveragesWarning = false },
+            )
+        }
+    }
+
 }
 
 @Composable
