@@ -34,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -70,9 +71,14 @@ fun ProgressiveMealSheet(
     onDiscard: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val state = rememberChompassSheetState(busy = isSaving)
+    val state = rememberChompassSheetState(
+        busy = isSaving,
+        positionalThreshold = 300.dp,
+        velocityThreshold = 1200.dp,
+    )
     val listState = rememberLazyListState()
     var mealMenuExpanded by remember { mutableStateOf(false) }
+    var inputFocused by remember { mutableStateOf(false) }
     val canLog = draft.items.isNotEmpty() && !isSaving
 
     ChompassBottomSheet(
@@ -98,7 +104,9 @@ fun ProgressiveMealSheet(
             listState = listState,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 28.dp),
+                .padding(bottom = 28.dp)
+                .onFocusChanged { inputFocused = it.isFocused },
+            blockTopEdge = inputFocused || draft.name.isNotBlank(),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             item {
