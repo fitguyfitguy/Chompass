@@ -25,7 +25,6 @@ import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.QrCodeScanner
@@ -268,11 +267,11 @@ internal fun AddFoodSheetContent(
         )
         Spacer(Modifier.height(14.dp))
 
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            if (aiFeaturesEnabled) {
+        if (aiFeaturesEnabled) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
                 AddFoodActionTile(
                     label = stringResource(R.string.add_food_hero_photo),
                     subtitle = stringResource(R.string.add_food_hero_photo_sub),
@@ -291,16 +290,39 @@ internal fun AddFoodSheetContent(
                     onClick = onNote,
                 )
             }
-            AddFoodActionTile(
-                label = stringResource(R.string.saved_meals_tab_recents),
-                subtitle = stringResource(R.string.add_food_hero_saved_sub),
-                icon = Icons.Filled.History,
-                size = AddFoodTileSize.Hero,
-                modifier = Modifier.weight(1f),
-                onClick = onSavedRecents,
-            )
+            Spacer(Modifier.height(8.dp))
         }
-        Spacer(Modifier.height(16.dp))
+
+        AddFoodSavedMealsHeading(onClick = onSavedRecents)
+        if (!relogRows.isEmpty || relogLoading) {
+            if (!relogRows.isEmpty) {
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    if (relogRows.recents.isNotEmpty()) {
+                        AddFoodRelogRow(
+                            entries = relogRows.recents,
+                            onRelog = onRelogRecent,
+                            onReview = onReviewRecent,
+                        )
+                    }
+                    if (relogRows.frequents.isNotEmpty()) {
+                        AddFoodRelogRow(
+                            entries = relogRows.frequents,
+                            onRelog = onRelogRecent,
+                            onReview = onReviewRecent,
+                        )
+                    }
+                }
+            } else {
+                AddFoodRelogPlaceholder()
+            }
+            Spacer(Modifier.height(14.dp))
+        }
+        Spacer(Modifier.height(8.dp))
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(
                 Modifier.fillMaxWidth(),
@@ -414,38 +436,6 @@ internal fun AddFoodSheetContent(
                 }
             }
         }
-        if (!relogRows.isEmpty || relogLoading) {
-            Spacer(Modifier.height(22.dp))
-            Column(Modifier.fillMaxWidth()) {
-                AddFoodLogAgainHeading(onClick = onSavedRecents)
-                if (!relogRows.isEmpty) {
-                    Column(
-                        Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        if (relogRows.recents.isNotEmpty()) {
-                            AddFoodRelogRow(
-                                entries = relogRows.recents,
-                                onRelog = onRelogRecent,
-                                onReview = onReviewRecent,
-                            )
-                        }
-                        if (relogRows.frequents.isNotEmpty()) {
-                            AddFoodRelogRow(
-                                entries = relogRows.frequents,
-                                onRelog = onRelogRecent,
-                                onReview = onReviewRecent,
-                            )
-                        }
-                    }
-                } else {
-                    AddFoodRelogPlaceholder()
-                }
-            }
-            Spacer(Modifier.height(14.dp))
-        }
         if (waterTrackingEnabled) {
             Spacer(Modifier.height(12.dp))
             AddFoodWaterQuickRow(
@@ -492,30 +482,39 @@ internal fun AddFoodSheetContent(
 }
 
 @Composable
-private fun AddFoodLogAgainHeading(onClick: () -> Unit) {
+private fun AddFoodSavedMealsHeading(onClick: () -> Unit) {
     val cd = stringResource(R.string.cd_open_logged_foods)
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 48.dp)
+            .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = onClick, role = Role.Button)
+            .padding(vertical = 6.dp)
             .semantics { contentDescription = cd },
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Text(
-            stringResource(R.string.add_food_quick_relog),
-            fontSize = 13.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-        )
+        Column(Modifier.weight(1f)) {
+            Text(
+                stringResource(R.string.home_menu_saved_meals),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                stringResource(R.string.add_food_saved_meals_sub),
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            )
+        }
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
+            tint = AppColors.Calorie,
         )
     }
 }
+
 @Composable
 private fun AddFoodRelogPlaceholder() {
     val fill = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)

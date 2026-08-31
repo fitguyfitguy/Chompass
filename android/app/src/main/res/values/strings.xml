@@ -418,11 +418,13 @@
     <string name="add_food_hero_note_sub">Describe what you ate</string>
     <string name="add_food_hero_saved">Saved</string>
     <string name="add_food_hero_saved_sub">Recents &amp; favorites</string>
+    <string name="add_food_saved_meals_sub">Recents, favorites, recipes</string>
     <string name="add_food_quick_relog">Log again</string>
     <string name="add_food_quick_relog_empty">Favorite a meal or log one once. It will show up here for one-tap re-log.</string>
     <string name="add_food_relog_kcal">%1$d kcal</string>
     <string name="cd_relog_meal">Log %1$s again</string>
-    <string name="cd_open_logged_foods">All logged foods</string>
+    <string name="cd_open_logged_foods">Saved meals: recents, favorites, and recipes</string>
+
     <string name="water_amount_ml">%1$d ml</string>
     <string name="water_amount_fl_oz">%1$d fl oz</string>
     <string name="unit_fl_oz">fl oz</string>
@@ -913,7 +915,6 @@
 
     <string name="progress_macro_averages">Macro Averages</string>
     <string name="progress_nutrient_averages">Nutrient averages</string>
-    <string name="progress_nutrient_averages_caption">Fiber, sugar, and sodium are often missing from barcodes and photos, so these averages can read low.</string>
 
     <string name="progress_macro_progress_format">%1$dg / %2$dg</string>
 
@@ -1564,10 +1565,11 @@
     <string name="settings_progress_plots_no_data">No measurements yet</string>
     <string name="settings_progress_plots_latest">Latest: %1$s %2$s</string>
     <string name="settings_progress_nutrient_averages">Fiber, sugar, and sodium averages</string>
-    <string name="settings_progress_nutrient_averages_subtitle">Off until you turn them on. Barcodes and photos often omit these values.</string>
-    <string name="settings_progress_nutrient_averages_warning_title">These numbers are incomplete</string>
-    <string name="settings_progress_nutrient_averages_warning_body">Fiber, sugar, and sodium are often missing from barcodes and photo estimates. Averages only count what was logged, so they can read low.</string>
+    <string name="settings_progress_nutrient_averages_subtitle">Off until you turn them on. Open Food Facts and photos often miss or guess these values.</string>
+    <string name="settings_progress_nutrient_averages_warning_title">Not a complete picture</string>
+    <string name="settings_progress_nutrient_averages_warning_body">Open Food Facts often omits fiber, sugar, or sodium, and photo analysis guesses when a label does not list them. The average only includes what was logged, so it can be off.</string>
     <string name="settings_progress_nutrient_averages_confirm">Show them</string>
+
 
     <string name="settings_meals">Meals</string>
     <string name="settings_meals_description">Names, order, and start times</string>

@@ -257,6 +257,8 @@
     <string name="add_food_hero_note_sub">Describe lo que comiste</string>
     <string name="add_food_hero_saved">Guardado</string>
     <string name="add_food_hero_saved_sub">Recientes y favoritos</string>
+    <string name="add_food_saved_meals_sub">Recientes, favoritos, recetas</string>
+
     <string name="add_food_photo_source_title">Añadir una foto</string>
     <string name="add_food_photo_camera">Tomar foto</string>
     <string name="add_food_photo_gallery">Elegir de la galería</string>
@@ -420,7 +422,6 @@
 
     <string name="progress_macro_averages">Promedios de macros</string>
     <string name="progress_nutrient_averages">Promedios de nutrientes</string>
-    <string name="progress_nutrient_averages_caption">La fibra, el azúcar y el sodio a menudo faltan en códigos de barras y fotos, así que estos promedios pueden quedar bajos.</string>
 
 
     <string name="progress_log_weight_title">Registrar peso</string>
@@ -671,7 +672,8 @@
     <string name="saved_meals_sort_recent">Reciente</string>
     <string name="saved_meals_sort_name">A–Z</string>
     <string name="saved_meals_sort_size">Tamaño</string>
-    <string name="cd_open_logged_foods">Todos los alimentos registrados</string>
+    <string name="cd_open_logged_foods">Comidas guardadas: recientes, favoritos y recetas</string>
+
     <string name="add_food_quick_relog_empty">Marca una comida como favorita o regístrala una vez. Aparecerá aquí para volver a registrarla con un toque.</string>
     <string name="ai_provider_on_device_subtitle">Privado y sin conexión. Menos preciso que la IA en la nube; descarga de ~2-4 GB</string>
     <string name="camera_scale_tip_message">Consejo: incluye un tenedor, la mano o una moneda junto a la comida. Ayuda a estimar el tamaño de la porción.</string>
@@ -1470,9 +1472,10 @@
     <string name="settings_progress_plots_count">%1$d gráficos</string>
     <string name="settings_progress_plots_latest">Última: %1$s %2$s</string>
     <string name="settings_progress_nutrient_averages">Promedios de fibra, azúcar y sodio</string>
-    <string name="settings_progress_nutrient_averages_subtitle">Desactivado hasta que lo actives. Los códigos de barras y las fotos suelen omitir estos valores.</string>
-    <string name="settings_progress_nutrient_averages_warning_title">Estos números están incompletos</string>
-    <string name="settings_progress_nutrient_averages_warning_body">La fibra, el azúcar y el sodio a menudo faltan en códigos de barras y en las estimaciones de fotos. Los promedios solo cuentan lo registrado, así que pueden quedar bajos.</string>
+    <string name="settings_progress_nutrient_averages_subtitle">Desactivado hasta que lo actives. Open Food Facts y las fotos suelen omitir o estimar estos valores.</string>
+    <string name="settings_progress_nutrient_averages_warning_title">No es un panorama completo</string>
+    <string name="settings_progress_nutrient_averages_warning_body">Open Food Facts suele omitir fibra, azúcar o sodio, y el análisis de fotos adivina cuando la etiqueta no los lista. El promedio solo incluye lo registrado, así que puede fallar.</string>
+
     <string name="settings_progress_nutrient_averages_confirm">Mostrarlos</string>
 
     <string name="settings_progress_plots_no_data">Aún no hay medidas</string>

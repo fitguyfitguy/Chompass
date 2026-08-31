@@ -38,10 +38,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
+import android.content.res.Configuration
+
 import android.text.format.DateFormat
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.mutableIntStateOf
 
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -68,8 +70,9 @@ import app.chompass.models.MacroValueFormatter
 import app.chompass.models.MicronutrientField
 import app.chompass.models.MicronutrientValues
 import app.chompass.models.ServingUnitOption
+import app.chompass.ui.components.ClockTimeWheelPicker
 import app.chompass.ui.components.DateWheelPicker
-import app.chompass.ui.components.NumericWheelPicker
+
 
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
@@ -995,7 +998,7 @@ fun EditFoodEntrySheet(
 
     if (showDatePicker) {
         if (useSystemDateTimePickers) {
-            val ctx = LocalContext.current
+            val ctx = LocalContext.current.withPickerNightMode(isDark)
             LaunchedEffect(Unit) {
                 DatePickerDialog(
                     ctx,
@@ -1013,6 +1016,7 @@ fun EditFoodEntrySheet(
                 }
             }
         } else {
+
             var pickedDate by remember(loggedDate) { mutableStateOf(loggedDate) }
             FudGlassDialog(onDismissRequest = { showDatePicker = false }) {
                 Text(stringResource(R.string.label_date), fontSize = 21.sp, fontWeight = FontWeight.Bold)
@@ -1092,7 +1096,8 @@ internal fun FoodLogTimePicker(
     onDismiss: () -> Unit,
 ) {
     if (useSystem) {
-        val ctx = LocalContext.current
+        val dark = isDarkTheme()
+        val ctx = LocalContext.current.withPickerNightMode(dark)
         LaunchedEffect(Unit) {
             TimePickerDialog(
                 ctx,
@@ -1115,43 +1120,38 @@ internal fun FoodLogTimePicker(
     }
 }
 
+
 @Composable
 private fun EditFoodTimeDialog(
     initialTime: LocalTime,
     onConfirm: (LocalTime) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var hour by remember(initialTime) { mutableIntStateOf(initialTime.hour) }
-    var minute by remember(initialTime) { mutableIntStateOf(initialTime.minute) }
-
+    var picked by remember(initialTime) { mutableStateOf(initialTime) }
     FudGlassDialog(onDismissRequest = onDismiss) {
         Text(stringResource(R.string.label_time), fontSize = 21.sp, fontWeight = FontWeight.Bold)
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            NumericWheelPicker(
-                value = hour,
-                onValueChange = { hour = it },
-                min = 0,
-                max = 23,
-                unit = stringResource(R.string.placeholder_hour),
-                modifier = Modifier.weight(1f),
-            )
-            NumericWheelPicker(
-                value = minute,
-                onValueChange = { minute = it },
-                min = 0,
-                max = 59,
-                unit = stringResource(R.string.placeholder_minute),
-                modifier = Modifier.weight(1f),
-            )
-        }
+        ClockTimeWheelPicker(
+            time = picked,
+            onChange = { picked = it },
+            modifier = Modifier.fillMaxWidth(),
+        )
         FudGlassDialogActions(
             primaryText = stringResource(R.string.action_done),
-            onPrimary = { onConfirm(LocalTime.of(hour, minute)) },
+            onPrimary = { onConfirm(picked) },
             dismissText = stringResource(R.string.action_cancel),
             onDismiss = onDismiss
         )
     }
 }
+
+private fun Context.withPickerNightMode(dark: Boolean): Context {
+    val night = if (dark) Configuration.UI_MODE_NIGHT_YES else Configuration.UI_MODE_NIGHT_NO
+    val config = Configuration(resources.configuration)
+    config.uiMode = (config.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or night
+    return createConfigurationContext(config)
+}
+
+
 
 /**
  * Pickable food emojis for the entry icon. Single-codepoint so they render

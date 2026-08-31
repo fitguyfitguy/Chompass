@@ -75,11 +75,6 @@ internal fun NutrientAveragesSection(
             unitRes = R.string.unit_mg,
             wholeNumbers = true,
         )
-        Text(
-            stringResource(R.string.progress_nutrient_averages_caption),
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-        )
 
     }
 }

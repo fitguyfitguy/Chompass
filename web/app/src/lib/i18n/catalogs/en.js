@@ -68,9 +68,11 @@ export const en = Object.freeze({
   "add_food.hero_note_sub": "Describe what you ate",
   "add_food.hero_recents": "Recents",
   "add_food.hero_recents_sub": "Recents & favorites",
+  "add_food.saved_meals_sub": "Recents, favorites, recipes",
   "add_food.quick_relog": "Log again",
   "add_food.quick_relog_empty": "Favorite a meal or log one once. It will show up here for one-tap re-log.",
-  "add_food.open_logged_foods": "All logged foods",
+  "add_food.open_logged_foods": "Saved meals: recents, favorites, and recipes",
+
   "add_food.more_section": "More ways to log",
   "add_food.voice": "Voice",
   "add_food.barcode": "Barcode",
@@ -178,18 +180,17 @@ export const en = Object.freeze({
   "progress.fiber": "Fiber",
   "progress.sugar": "Sugar",
   "progress.sodium": "Sodium",
-  "progress.nutrient_averages_caption": "Fiber, sugar, and sodium are often missing from barcodes and photos, so these averages can read low.",
-
-"progress.macro_progress_format": "{current}g / {goal}g",
-"progress.log_first_weight": "Log your first weight to see trends",
-"progress.log_first_body_fat": "Log your first body fat % to see trends",
-"progress.no_food": "No food logged yet",
+  "progress.macro_progress_format": "{current}g / {goal}g",
+  "progress.log_first_weight": "Log your first weight to see trends",
+  "progress.log_first_body_fat": "Log your first body fat % to see trends",
+  "progress.no_food": "No food logged yet",
   "settings.progress_default_range": "Progress default range",
   "settings.progress_nutrient_averages": "Fiber, sugar, and sodium averages",
-  "settings.progress_nutrient_averages_subtitle": "Off until you turn them on. Barcodes and photos often omit these values.",
-  "settings.progress_nutrient_averages_warning_title": "These numbers are incomplete",
-  "settings.progress_nutrient_averages_warning_body": "Fiber, sugar, and sodium are often missing from barcodes and photo estimates. Averages only count what was logged, so they can read low.",
+  "settings.progress_nutrient_averages_subtitle": "Off until you turn them on. Open Food Facts and photos often miss or guess these values.",
+  "settings.progress_nutrient_averages_warning_title": "Not a complete picture",
+  "settings.progress_nutrient_averages_warning_body": "Open Food Facts often omits fiber, sugar, or sodium, and photo analysis guesses when a label does not list them. The average only includes what was logged, so it can be off.",
   "settings.progress_nutrient_averages_confirm": "Show them",
+
 
 
   // Onboarding
