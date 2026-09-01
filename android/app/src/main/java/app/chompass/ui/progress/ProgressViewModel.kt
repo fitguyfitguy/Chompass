@@ -216,7 +216,7 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
             val parts = splitDecimalParts(kg, 30, 250)
             Log.i(
                 "ChompassWeight",
-                "save raw=$kg bits=${kg.toBits()} tenths=${UnitFormat.roundKgToTenths(kg)} wheel=${parts.first}.${parts.second} at=$at",
+                "save raw=$kg bits=${kg.toBits()} stored=${UnitFormat.roundKgToHundredths(kg)} wheel=${parts.first}.${parts.second} at=$at",
             )
             val event = container.weightRepository.addEntry(WeightEntry(weightKg = kg, date = at))
             if (event != null) {

@@ -65,9 +65,10 @@ class MagnitudeParseTest {
     }
 
     @Test
-    fun roundKgToTenthsMatchesWheel() {
-        assertEquals(80.3, UnitFormat.roundKgToTenths(80.3), 0.0)
-        assertEquals(80.2, UnitFormat.roundKgToTenths(80.2), 0.0)
-        assertEquals(80.1, UnitFormat.roundKgToTenths(80.1), 0.0)
+    fun storageGridKeepsKgWheelValues() {
+        // #63 invariant: a kg wheel pick must survive storage quantization unchanged.
+        assertEquals(80.3, UnitFormat.roundKgToHundredths(80.3), 0.0)
+        assertEquals(80.2, UnitFormat.roundKgToHundredths(80.2), 0.0)
+        assertEquals(80.1, UnitFormat.roundKgToHundredths(80.1), 0.0)
     }
 }
