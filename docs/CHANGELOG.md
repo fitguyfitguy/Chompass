@@ -10,6 +10,11 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **Choose which nutrients Progress averages** (Android + web): Customize Progress (web: Settings, App) now lists every nutrient with a goal, each with a switch. Turn on iron, saturated fat, or vitamins and the averages card on Progress shows those rows. The fiber, sugar, and sodium trio stays as the default, so nothing changes until you pick. Past months count these nutrients from your existing logs. Follows Codeberg [#75](https://codeberg.org/fitguy/Chompass/issues/75) by [@bluepostofficebox](https://codeberg.org/bluepostofficebox).
 
+### Fixed
+
+- **Weight keeps the pounds you picked** (Android): weight was stored rounded to a tenth of a kilogram, so a pounds pick could come back different: 275 lbs showed 274.9, and 151.6 or 171.6 could shift by 0.1. Storage now keeps finer detail, and every tenth of a pound reads back exactly. Kilogram entries are unchanged. Closes Codeberg [#82](https://codeberg.org/fitguy/Chompass/issues/82) by [@bluepostofficebox](https://codeberg.org/bluepostofficebox).
+- **Onboarding no longer wipes macro day types** (Android): finishing onboarding used to save a fresh default profile, which could drop settings onboarding doesn't ask about: macro day types, macro locks, the protein grams-per-kilo mode, and the name. Onboarding now keeps those and only writes the body stats and goal answers you entered.
+
 
 ## [4.3.0] - 2026-08-31
 
