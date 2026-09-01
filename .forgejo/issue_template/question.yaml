@@ -1,0 +1,20 @@
+name: Question or something else
+about: Usage question, or anything that is not a bug or a feature request
+title: "[Question]: "
+labels:
+  - question
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Questions are welcome. Check the
+        [documentation](https://codeberg.org/fitguy/Chompass/src/branch/main/docs/README.md)
+        first; questions about calculations are usually answered by
+        [docs/CALCULATION_METHODS.md](https://codeberg.org/fitguy/Chompass/src/branch/main/docs/CALCULATION_METHODS.md).
+    visible: [form]
+  - type: textarea
+    id: question
+    attributes:
+      label: What would you like to know?
+    validations:
+      required: true

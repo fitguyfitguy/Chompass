@@ -44,8 +44,10 @@ docs/local/
 AGENTS.md
 CLAUDE.md
 
-# Local Codeberg issue workflow (templates + label script, not published)
-.forgejo/
+# Local Codeberg workflow tooling (issue/PR templates ARE published from .forgejo/)
+.forgejo/*
+!.forgejo/issue_template/
+!.forgejo/pull_request_template.md
 scripts/setup_codeberg_labels.sh
 
 # Local agent/triage workflow scripts (stay unversioned; docs/local + .cursor reference them)

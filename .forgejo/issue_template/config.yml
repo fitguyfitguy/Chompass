@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://codeberg.org/fitguy/Chompass/src/branch/main/docs/README.md
+    about: Guides, calculation methods, and the feature matrix
+  - name: Already fixed? Check the changelog
+    url: https://codeberg.org/fitguy/Chompass/src/branch/main/docs/CHANGELOG.md
+    about: Fixes ship in batches; F-Droid can lag the newest release
+  - name: The math seems wrong
+    url: https://codeberg.org/fitguy/Chompass/src/branch/main/docs/CALCULATION_METHODS.md
+    about: Formula register and audit of every calculation
+  - name: Website
+    url: https://chompass.app/
+    about: Project website and web app
