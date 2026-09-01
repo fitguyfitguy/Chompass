@@ -413,6 +413,9 @@ open class MainActivity : ComponentActivity() {
             }
             // Write after splash dismiss so it does not contend with first paint.
             container.prefs.ensureFirstLaunchAt()
+            // #60: an auto-backup restore landing after a fresh install reverts the
+            // datastore wholesale; leave a logcat fingerprint when that happened.
+            logRestoredDataFingerprint(container)
         }
 
         setContent {
@@ -476,8 +479,30 @@ open class MainActivity : ComponentActivity() {
         }
     }
 
+    /**
+     * Codeberg #60 triage: an OS auto-backup restore can replace the whole datastore
+     * after a fresh install, silently reverting the profile (macro day types vanish,
+     * onboarding stays complete). Restored data carries the previous install's
+     * firstLaunchAt, which then predates this install's firstInstallTime — log that
+     * fingerprint so a report can be confirmed from a single logcat line.
+     */
+    private suspend fun logRestoredDataFingerprint(container: AppContainer) {
+        val firstLaunchAt = container.prefs.firstLaunchAt.first()
+        if (firstLaunchAt <= 0L) return
+        val installedAt = packageManager.getPackageInfo(packageName, 0).firstInstallTime
+        if (firstLaunchAt >= installedAt - RESTORE_FINGERPRINT_SLACK_MS) return
+        val profile = container.profileRepository.current()
+        Log.d(
+            "Chompass",
+            "restore-fingerprint: app data predates this install (firstLaunchAt=$firstLaunchAt " +
+                "firstInstallTime=$installedAt onboarded=${profile != null} " +
+                "macroPlan=${profile?.macroPlan != null})",
+        )
+    }
+
     private companion object {
         const val FOREGROUND_SYNC_MIN_INTERVAL_MS = 60_000L
+        const val RESTORE_FINGERPRINT_SLACK_MS = 60_000L
         const val PHOTO_IMPORT_TAG = "Chompass"
         /** Per-image ingest cap (bytes) for share-in / gallery photos. */
         const val MAX_IMPORT_IMAGE_BYTES = 25 * 1024 * 1024

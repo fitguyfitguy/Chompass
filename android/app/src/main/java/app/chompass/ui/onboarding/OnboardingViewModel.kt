@@ -463,7 +463,7 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
             _ui.value = _ui.value.copy(submitting = true)
             val state = _ui.value
             val profile = state.buildProfile()
-            container.profileRepository.save(profile)
+            container.profileRepository.saveFromOnboarding(profile)
             container.weightRepository.seedInitialWeightIfEmpty(profile.weightKg)
             // Only seed body fat when the user actually entered one in onboarding
             // (the "Yes I know my body fat %" branch); the "No" branch leaves
