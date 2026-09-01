@@ -90,20 +90,21 @@ internal suspend fun PreferencesStore.migrateBucketsToFilesIfNeeded() {
     // from a pre-aggregate build); rebuild is idempotent and self-healing — a
     // cache that is ever emptied rebuilds from the source files, and every
     // subsequent food write maintains it write-through.
-    // Schema 2 adds fiber/sugar/sodium (Codeberg #75). Old month files without
-    // those fields deserialize as 0, so a one-time rebuild is required.
+    // Schema 2 added fiber/sugar/sodium; 3 adds every optional nutrient
+    // (Codeberg #75). Old month files without a newer field deserialize it
+    // as 0, so each shape bump needs a one-time rebuild.
     val schema = prefs[Keys.FOOD_AGGREGATES_SCHEMA] ?: 0
     val foodMonths = foodBucketStore.monthsOnDisk()
     val cacheEmpty = foodAggregateBucketStore.monthsOnDisk().isEmpty()
-    if (foodMonths.isNotEmpty() && (cacheEmpty || schema < Keys.FOOD_AGGREGATES_SCHEMA_MICROS)) {
+    if (foodMonths.isNotEmpty() && (cacheEmpty || schema < Keys.FOOD_AGGREGATES_SCHEMA_LATEST)) {
         foodAggregateBucketStore.replaceAll(
             foodMonths.associateWith { month ->
                 aggregateFoodEntriesByDay(foodBucketStore.readMonth(month))
             }
         )
     }
-    if (schema < Keys.FOOD_AGGREGATES_SCHEMA_MICROS) {
-        dataStore.edit { it[Keys.FOOD_AGGREGATES_SCHEMA] = Keys.FOOD_AGGREGATES_SCHEMA_MICROS }
+    if (schema < Keys.FOOD_AGGREGATES_SCHEMA_LATEST) {
+        dataStore.edit { it[Keys.FOOD_AGGREGATES_SCHEMA] = Keys.FOOD_AGGREGATES_SCHEMA_LATEST }
     }
 }
 

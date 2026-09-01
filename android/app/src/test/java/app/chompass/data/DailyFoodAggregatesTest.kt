@@ -1,6 +1,7 @@
 package app.chompass.data
 
 import android.app.Application
+import androidx.datastore.preferences.core.edit
 import app.chompass.models.DailyFoodTotals
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
@@ -38,6 +39,10 @@ class DailyFoodAggregatesTest {
         fiber: Double? = null,
         sugar: Double? = null,
         sodium: Double? = null,
+        iron: Double? = null,
+        saturatedFat: Double? = null,
+        vitaminC: Double? = null,
+        caffeine: Double? = null,
     ) = FoodEntry(
         id = UUID.nameUUIDFromBytes(id.toByteArray()),
         name = id,
@@ -48,6 +53,10 @@ class DailyFoodAggregatesTest {
         fiber = fiber,
         sugar = sugar,
         sodium = sodium,
+        iron = iron,
+        saturatedFat = saturatedFat,
+        vitaminC = vitaminC,
+        caffeine = caffeine,
         timestamp = Instant.parse(ts),
         source = FoodSource.MANUAL,
         mealType = MealType.LUNCH.id,
@@ -265,4 +274,78 @@ class DailyFoodAggregatesTest {
         assertEquals(300.0, row.sodium, 0.01)
     }
 
+    @Test
+    fun `aggregateFoodEntriesByDay sums the broadened nutrient set`() {
+        val entries = listOf(
+            food(
+                "a", "2026-08-01T12:00:00Z",
+                fiber = 4.0, sugar = 8.0, sodium = 200.0,
+                iron = 2.0, saturatedFat = 5.0, vitaminC = 30.0, caffeine = 80.0,
+            ),
+            food(
+                "b", "2026-08-01T18:00:00Z", calories = 300,
+                fiber = 6.0, sugar = 2.0, sodium = 100.0,
+                iron = 3.0, saturatedFat = 7.0, vitaminC = 10.0, caffeine = 40.0,
+            ),
+        )
+        val row = aggregateFoodEntriesByDay(entries, ZoneOffset.UTC).single()
+        assertEquals(5.0, row.iron, 0.01)
+        assertEquals(12.0, row.saturatedFat, 0.01)
+        assertEquals(40.0, row.vitaminC, 0.01)
+        assertEquals(120.0, row.caffeine, 0.01)
+    }
+
+    @Test
+    fun `broadened sums survive write and replaceAll round trips`() = runBlocking {
+        val prefs = PreferencesStore(RuntimeEnvironment.getApplication())
+        val aug = food(
+            "aug", "2026-08-01T12:00:00Z", calories = 300,
+            iron = 6.0, saturatedFat = 9.0, vitaminC = 25.0, caffeine = 95.0,
+        )
+        prefs.applyFoodEntryBucketChanges(upsertsByMonth = mapOf(YearMonth.of(2026, 8) to listOf(aug)))
+
+        var row = totals(YearMonth.of(2026, 8), prefs).single()
+        assertEquals(6.0, row.iron, 0.01)
+        assertEquals(9.0, row.saturatedFat, 0.01)
+        assertEquals(25.0, row.vitaminC, 0.01)
+        assertEquals(95.0, row.caffeine, 0.01)
+
+        prefs.replaceAllFoodEntries(listOf(aug.copy(id = UUID.nameUUIDFromBytes("n".toByteArray()))))
+        row = totals(YearMonth.of(2026, 8), prefs).single()
+        assertEquals(6.0, row.iron, 0.01)
+        assertEquals(95.0, row.caffeine, 0.01)
+    }
+
+    @Test
+    fun `schema 2 aggregate cache rebuilds to the broadened shape without a food write`() = runBlocking {
+        val prefs = PreferencesStore(RuntimeEnvironment.getApplication())
+        // Simulate the on-device upgrade shape: the food month file exists and
+        // the aggregate cache holds old-schema rows (schema 2 — fiber/sugar/
+        // sodium only, iron and friends absent). Written directly, bypassing
+        val food = food("a", "2026-08-01T12:00:00Z", calories = 300, fiber = 4.0, iron = 6.0)
+        prefs.foodBucketStore.replaceAll(mapOf(YearMonth.of(2026, 8) to listOf(food)))
+        prefs.foodAggregateBucketStore.replaceAll(
+            mapOf(
+                YearMonth.of(2026, 8) to listOf(
+                    DailyFoodTotals(
+                        date = LocalDate.of(2026, 8, 1),
+                        calories = 300,
+                        protein = 10.0, carbs = 20.0, fat = 5.0,
+                        fiber = 4.0, sugar = 8.0, sodium = 200.0,
+                    )
+                )
+            )
+        )
+        prefs.dataStore.edit { it[Keys.FOOD_AGGREGATES_SCHEMA] = Keys.FOOD_AGGREGATES_SCHEMA_MICROS }
+
+        // First read after the update: the schema gate rebuilds the month
+        // from the food file — iron goes 0 → 6 with no food write in between.
+        val row = totals(YearMonth.of(2026, 8), prefs).single()
+        assertEquals(6.0, row.iron, 0.01)
+        assertEquals(4.0, row.fiber, 0.01)
+        // One-time: the flag now reads the latest schema, so a second read
+        // serves the rebuilt cache without another rebuild pass.
+        prefs.migrateBucketsToFilesIfNeeded()
+        assertEquals(6.0, totals(YearMonth.of(2026, 8), prefs).single().iron, 0.01)
+    }
 }

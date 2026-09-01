@@ -1767,10 +1767,10 @@ für dich ein</string>
     <string name="settings_progress_plots_no_data">Noch keine Messwerte</string>
 
     <string name="settings_progress_plots_latest">Aktuellste: %1$s %2$s</string>
-    <string name="settings_progress_nutrient_averages">Durchschnitte für Ballaststoffe, Zucker und Natrium</string>
-    <string name="settings_progress_nutrient_averages_subtitle">Aus, bis du sie einschaltest. Open Food Facts und Fotos lassen diese Werte oft weg oder schätzen sie.</string>
+    <string name="settings_progress_nutrient_averages">Nährstoff-Durchschnitte</string>
+    <string name="settings_progress_nutrient_averages_subtitle">Aus, bis du sie einschaltest. Wähle unten, welche Nährstoffe gemittelt werden. Open Food Facts und Fotos lassen diese Werte oft weg oder schätzen sie.</string>
     <string name="settings_progress_nutrient_averages_warning_title">Kein vollständiges Bild</string>
-    <string name="settings_progress_nutrient_averages_warning_body">Open Food Facts lässt Ballaststoffe, Zucker oder Natrium oft weg, und die Fotoschätzung rät, wenn das Etikett sie nicht nennt. Der Durchschnitt zählt nur das Geloggte und kann daher danebenliegen.</string>
+    <string name="settings_progress_nutrient_averages_warning_body">Open Food Facts und die Fotoanalyse lassen diese Werte oft weg oder schätzen sie, wenn das Etikett sie nicht nennt. Der Durchschnitt zählt nur das Geloggte und kann daher danebenliegen.</string>
 
     <string name="settings_progress_nutrient_averages_confirm">Anzeigen</string>
 

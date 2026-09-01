@@ -20,6 +20,7 @@ import app.chompass.data.aggregateFoodEntriesByDay
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.DailyFoodTotals
+import app.chompass.models.HomeTopNutrient
 import app.chompass.models.FoodEntry
 import app.chompass.models.GoalJournalEntry
 import app.chompass.models.MacroPlanResolver
@@ -47,6 +48,13 @@ data class BodyFatSummaryStats(
     val currentFraction: Double? = null,
     val netChangePercent: Double = 0.0,
     val averagePercent: Double = 0.0
+)
+
+/** #75: one Progress averages row — range mean of a selected non-macro nutrient. */
+data class NutrientAverage(
+    val nutrient: HomeTopNutrient,
+    val avg: Double,
+    val goal: Int,
 )
 
 data class ProgressUiState(
@@ -80,13 +88,11 @@ data class ProgressUiState(
     /** Per-day calorie targets for the logged bars (journal-first; live-resolve fallback). */
     val dailyCalorieGoals: Map<LocalDate, Int> = emptyMap(),
     val macroAverages: Triple<Double, Double, Double> = Triple(0.0, 0.0, 0.0),
-    /** Mean of complete days in the selected range (today excluded). */
-    val avgFiber: Double = 0.0,
-    val avgSugar: Double = 0.0,
-    val avgSodium: Double = 0.0,
-    val fiberGoal: Int = OptionalNutrientGoals.Default.fiber,
-    val sugarGoal: Int = OptionalNutrientGoals.Default.sugar,
-    val sodiumGoal: Int = OptionalNutrientGoals.Default.sodium,
+    /**
+     * #75: one row per nutrient selected in Customize Progress, canonical
+     * HomeTopNutrient order; empty when nothing is selected (card hidden).
+     */
+    val nutrientAverages: List<NutrientAverage> = emptyList(),
     val showNutrientAverages: Boolean = false,
 
     val weightStats: WeightSummaryStats = WeightSummaryStats(),
@@ -105,7 +111,9 @@ private data class BaseProgressData(
     val goalJournal: List<GoalJournalEntry> = emptyList(),
     val optionalGoals: OptionalNutrientGoals = OptionalNutrientGoals.Default,
     val showNutrientAverages: Boolean = false,
-
+    /** #75: nutrients the averages card shows, canonical order (macros excluded). */
+    val averagesSelection: List<HomeTopNutrient> =
+        HomeTopNutrient.averagesSelectionFromStorage(HomeTopNutrient.DefaultAveragesStorage),
 )
 
 class ProgressViewModel(private val container: AppContainer) : ViewModel() {
@@ -165,11 +173,14 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
                 container.prefs.goalJournal,
                 container.prefs.optionalNutrientGoals,
                 container.prefs.progressNutrientAverages,
-            ) { b, journal, goals, showMicros ->
+                container.prefs.progressNutrientAveragesSelection,
+            ) { b, journal, goals, showMicros, averagesSelection ->
                 b.copy(
                     goalJournal = journal,
                     optionalGoals = goals,
                     showNutrientAverages = showMicros,
+                    averagesSelection =
+                        HomeTopNutrient.averagesSelectionFromStorage(averagesSelection),
                 )
             }
 
@@ -322,23 +333,24 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
     }
     val completeFoodByDay = foodByDay.filterKeys { it < anchorDate }
     val macroAverages: Triple<Double, Double, Double>
-    val avgFiber: Double
-    val avgSugar: Double
-    val avgSodium: Double
     if (completeFoodByDay.isEmpty()) {
         macroAverages = Triple(0.0, 0.0, 0.0)
-        avgFiber = 0.0
-        avgSugar = 0.0
-        avgSodium = 0.0
     } else {
         val days = completeFoodByDay.size.toDouble()
         val protein = completeFoodByDay.values.sumOf { it.protein } / days
         val carbs = completeFoodByDay.values.sumOf { it.carbs } / days
         val fat = completeFoodByDay.values.sumOf { it.fat } / days
         macroAverages = Triple(protein, carbs, fat)
-        avgFiber = completeFoodByDay.values.sumOf { it.fiber } / days
-        avgSugar = completeFoodByDay.values.sumOf { it.sugar } / days
-        avgSodium = completeFoodByDay.values.sumOf { it.sodium } / days
+    }
+    // #75: per-nutrient range means over the same complete days the macro
+    // card uses, from the aggregate cache (never the per-entry diary).
+    val nutrientAverages = base.averagesSelection.map { nutrient ->
+        val avg = if (completeFoodByDay.isEmpty()) {
+            0.0
+        } else {
+            completeFoodByDay.values.sumOf { it.amountOf(nutrient) } / completeFoodByDay.size
+        }
+        NutrientAverage(nutrient, avg, nutrient.goal(null, base.profile, base.optionalGoals))
     }
     // #60 phase 3: range goals = journaled average (MACRO-CYCLE-D, gaps
     // skipped) with the current profile target as fallback — no more "current
@@ -372,12 +384,7 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
         fatGoal = rangeTargets?.fatG ?: 0,
         dailyCalorieGoals = dailyCalorieGoals,
         macroAverages = macroAverages,
-        avgFiber = avgFiber,
-        avgSugar = avgSugar,
-        avgSodium = avgSodium,
-        fiberGoal = base.optionalGoals.fiber,
-        sugarGoal = base.optionalGoals.sugar,
-        sodiumGoal = base.optionalGoals.sodium,
+        nutrientAverages = nutrientAverages,
         showNutrientAverages = base.showNutrientAverages,
 
         weightStats = filteredWeights.toWeightStats(),
@@ -427,6 +434,8 @@ internal fun buildProgressPreviewUiState(
     bodyMeasurements: List<BodyMeasurement> = emptyList(),
     measurementSites: Set<BodyMeasurement.Site> = emptySet(),
     goalJournal: List<GoalJournalEntry> = emptyList(),
+    /** #75: which nutrients the averages card shows; default = the original trio. */
+    averagesSelection: Collection<String> = HomeTopNutrient.DefaultAveragesStorage,
 ): ProgressUiState {
     // Same range filter the old per-entry grouping applied inside toUiState:
     // previews receive full-history lists and must not count days outside
@@ -440,6 +449,7 @@ internal fun buildProgressPreviewUiState(
             bodyMeasurements = bodyMeasurements,
             measurementSites = measurementSites.map { it.storageId }.toSet(),
             goalJournal = goalJournal,
+            averagesSelection = HomeTopNutrient.averagesSelectionFromStorage(averagesSelection),
         ),
         dailyTotals = aggregateFoodEntriesByDay(
             foods.filter { it.timestamp in rangeStart..rangeEnd }

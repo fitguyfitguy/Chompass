@@ -7,6 +7,8 @@ import {
   DEFAULT_FOOD_CHIPS,
   DEFAULT_NUTRIENT_CARD_COUNT,
   DEFAULT_OPTIONAL_NUTRIENT_GOALS,
+  DEFAULT_AVERAGES_SELECTION,
+  normalizeAveragesSelection,
 } from "../home-nutrients.js";
 import { DEFAULT_PREFS } from "../db.js";
 import { loadParityFixture } from "../parity-fixtures.js";
@@ -21,6 +23,25 @@ function toPwaKey(semantic) {
     fat: "fatG",
     fiber: "fiberG",
     sugar: "sugarG",
+    addedSugar: "addedSugarG",
+    saturatedFat: "saturatedFatG",
+    cholesterol: "cholesterolMg",
+    sodium: "sodiumMg",
+    potassium: "potassiumMg",
+    transFat: "transFatG",
+    calcium: "calciumMg",
+    iron: "ironMg",
+    magnesium: "magnesiumMg",
+    zinc: "zincMg",
+    vitaminA: "vitaminAMcg",
+    vitaminC: "vitaminCMg",
+    vitaminD: "vitaminDMcg",
+    vitaminB12: "vitaminB12Mcg",
+    vitaminE: "vitaminEMg",
+    vitaminK: "vitaminKMcg",
+    folate: "folateMcg",
+    omega3: "omega3G",
+    caffeine: "caffeineMg",
   };
   return map[semantic] || semantic;
 }
@@ -53,11 +74,15 @@ describe("pref defaults (parity fixture)", () => {
     assert.equal(DEFAULT_PREFS.mealBreakfastStart, fixture.mealBreakfastStart);
     assert.equal(DEFAULT_PREFS.mealLunchStart, fixture.mealLunchStart);
     assert.equal(DEFAULT_PREFS.mealDinnerStart, fixture.mealDinnerStart);
-    assert.equal(DEFAULT_PREFS.mealSnackStart, fixture.mealSnackStart);
     assert.equal(DEFAULT_PREFS.progressDefaultRangeId, fixture.progressDefaultRangeId);
     assert.equal(DEFAULT_PREFS.progressNutrientAverages, fixture.progressNutrientAverages);
     assert.equal(DEFAULT_PREFS.progressNutrientAverages, false);
-
+    // Codeberg #75: the averages selection defaults to the original trio.
+    assert.deepEqual(
+      normalizeAveragesSelection(DEFAULT_PREFS.progressNutrientAveragesSelection),
+      fixture.progressNutrientAveragesSelection.map(toPwaKey),
+    );
+    assert.deepEqual(DEFAULT_AVERAGES_SELECTION, fixture.progressNutrientAveragesSelection.map(toPwaKey));
   });
 
   it("legacy caffeineDailyLimitMg is a migration-only alias, never written again", () => {

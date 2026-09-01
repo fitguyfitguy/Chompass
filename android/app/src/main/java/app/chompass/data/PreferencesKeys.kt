@@ -157,8 +157,10 @@ internal object Keys {
         val PROGRESS_LAST_RANGE_ID = stringPreferencesKey("progressLastRangeId")
         /** Body-measurement sites with a trend plot on the Progress tab; empty = plots off. */
         val PROGRESS_MEASUREMENT_SITES = stringSetPreferencesKey("progressMeasurementSites")
-        /** Codeberg #75: Progress fiber/sugar/sodium averages; default off. */
+        /** Codeberg #75: Progress nutrient averages; default off. */
         val PROGRESS_NUTRIENT_AVERAGES = booleanPreferencesKey("progressNutrientAverages")
+        /** Codeberg #75: which nutrients Progress averages (HomeTopNutrient storage keys, macros excluded). */
+        val PROGRESS_NUTRIENT_AVERAGES_SELECTION = stringSetPreferencesKey("progressNutrientAveragesSelection")
 
         val MEAL_BREAKFAST_START = intPreferencesKey("mealBreakfastStart")
         val MEAL_LUNCH_START = intPreferencesKey("mealLunchStart")
@@ -220,9 +222,16 @@ internal object Keys {
             stringPreferencesKey("selectedSpeechLanguage_${provider.name}")
         val FOOD_ENTRIES = stringPreferencesKey("foodEntries") // legacy, kept only for one-time migration
         val FOOD_ENTRIES_MIGRATED = booleanPreferencesKey("foodEntriesMigrated")
-        /** Daily-aggregate cache shape. 2 = fiber/sugar/sodium (Codeberg #75). */
+        /**
+         * Daily-aggregate cache shape (one-time rebuild gate in
+         * [migrateBucketsToFilesIfNeeded]). 2 = fiber/sugar/sodium extras;
+         * 3 = all optional nutrients (Codeberg #75) — month files cached by
+         * older builds decode the new fields as 0 without the rebuild.
+         */
         val FOOD_AGGREGATES_SCHEMA = intPreferencesKey("foodAggregatesSchema")
         const val FOOD_AGGREGATES_SCHEMA_MICROS = 2
+        const val FOOD_AGGREGATES_SCHEMA_ALL_NUTRIENTS = 3
+        const val FOOD_AGGREGATES_SCHEMA_LATEST = FOOD_AGGREGATES_SCHEMA_ALL_NUTRIENTS
 
         fun foodEntriesBucket(month: YearMonth): Preferences.Key<String> =
             stringPreferencesKey(FOOD_ENTRIES_BUCKET_PREFIX + month.toString())

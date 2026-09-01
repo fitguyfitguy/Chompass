@@ -23,7 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
-import app.chompass.models.HomeTopNutrient
 import app.chompass.models.LocaleFormat
 import app.chompass.models.MacroValueFormatter
 import app.chompass.ui.components.macroGramsText
@@ -46,36 +45,25 @@ internal fun MacroAveragesSection(
 
 @Composable
 internal fun NutrientAveragesSection(
-    avgFiber: Double,
-    avgSugar: Double,
-    avgSodium: Double,
-    fiberGoal: Int,
-    sugarGoal: Int,
-    sodiumGoal: Int,
+    nutrientAverages: List<NutrientAverage>,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(stringResource(R.string.progress_nutrient_averages), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
-        MacroProgressRow(
-            stringResource(R.string.nutrition_label_fiber),
-            avgFiber,
-            fiberGoal,
-            AppColors.nutrientColor(HomeTopNutrient.FIBER),
-        )
-        MacroProgressRow(
-            stringResource(R.string.nutrition_label_sugar),
-            avgSugar,
-            sugarGoal,
-            AppColors.nutrientColor(HomeTopNutrient.SUGAR),
-        )
-        MacroProgressRow(
-            stringResource(R.string.nutrition_label_sodium),
-            avgSodium,
-            sodiumGoal,
-            AppColors.nutrientColor(HomeTopNutrient.SODIUM),
-            unitRes = R.string.unit_mg,
-            wholeNumbers = true,
-        )
-
+        nutrientAverages.forEach { row ->
+            val unitRes = when (row.nutrient.unit) {
+                "mg" -> R.string.unit_mg
+                "mcg" -> R.string.unit_mcg
+                else -> R.string.unit_g
+            }
+            MacroProgressRow(
+                stringResource(row.nutrient.displayNameRes),
+                row.avg,
+                row.goal,
+                AppColors.nutrientColor(row.nutrient),
+                unitRes = unitRes,
+                wholeNumbers = row.nutrient.unit != "g",
+            )
+        }
     }
 }
 

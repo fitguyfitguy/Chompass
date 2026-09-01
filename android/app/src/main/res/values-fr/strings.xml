@@ -1461,10 +1461,10 @@
     <string name="settings_progress_plots">Graphiques des mesures corporelles</string>
     <string name="settings_progress_plots_count">%1$d graphiques</string>
     <string name="settings_progress_plots_latest">Dernière : %1$s %2$s</string>
-    <string name="settings_progress_nutrient_averages">Moyennes fibres, sucre et sodium</string>
-    <string name="settings_progress_nutrient_averages_subtitle">Désactivé tant que vous ne les activez pas. Open Food Facts et les photos omettent ou estiment souvent ces valeurs.</string>
+    <string name="settings_progress_nutrient_averages">Moyennes des nutriments</string>
+    <string name="settings_progress_nutrient_averages_subtitle">Désactivé tant que vous ne les activez pas. Choisissez ci-dessous les nutriments à moyenner. Open Food Facts et les photos omettent ou estiment souvent ces valeurs.</string>
     <string name="settings_progress_nutrient_averages_warning_title">Pas une image complète</string>
-    <string name="settings_progress_nutrient_averages_warning_body">Open Food Facts omet souvent les fibres, le sucre ou le sodium, et l\'analyse photo devine quand l\'étiquette ne les indique pas. La moyenne ne compte que ce qui a été enregistré, donc elle peut être fausse.</string>
+    <string name="settings_progress_nutrient_averages_warning_body">Open Food Facts et l\'analyse photo omettent ou estiment souvent ces valeurs quand l\'étiquette ne les indique pas. La moyenne ne compte que ce qui a été enregistré, donc elle peut être fausse.</string>
 
     <string name="settings_progress_nutrient_averages_confirm">Les afficher</string>
 

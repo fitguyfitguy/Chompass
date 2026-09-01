@@ -10,7 +10,12 @@ import {
 import { lineChartSvg, barChartSvg } from "../lib/charts.js";
 import { openInput, openConfirm } from "../lib/ui/dialog.js";
 import { t, formatNumber } from "../lib/i18n/index.js";
-import { mergeOptionalGoals } from "../lib/home-nutrients.js";
+import {
+  mergeOptionalGoals,
+  nutrientDef,
+  normalizeAveragesSelection,
+  AVERAGES_CANDIDATES,
+} from "../lib/home-nutrients.js";
 import { escapeHtml } from "../lib/ui/html.js";
 import { shiftDate, todayIso } from "../lib/date.js";
 import { chevronRight } from "../lib/icons.js";
@@ -31,18 +36,23 @@ const ICONS = {
   chevron: chevronRight,
 };
 
-/** Android MacroProgressRow: colored label + "63g / 75g" + 8dp progress bar. */
-function macroRow(label, current, goal, accent, unit = "g") {
+/**
+ * Android MacroProgressRow: colored label + "63g / 75g" + 8dp progress bar.
+ * Accent comes from the shared `.macro-row--<tubeCss>` classes (main.css)
+ * via the `--tube-color` custom property, so every nutrient reuses the
+ * Home-tube palette.
+ */
+function macroRow(label, current, goal, tubeCss, unit = "g") {
   const pct = goal > 0 ? Math.min(100, (current / goal) * 100) : 0;
   const cur = Math.round(current);
   const g = Math.round(goal);
   return `
-    <div class="macro-progress">
+    <div class="macro-progress macro-row--${tubeCss}">
       <div class="macro-progress__head">
-        <span style="color:${accent}">${label}</span>
+        <span style="color:var(--tube-color)">${label}</span>
         <span>${cur}${unit} / ${g}${unit}</span>
       </div>
-      <div class="macro-progress__track"><div class="macro-progress__fill" style="width:${Math.max(2, pct)}%;background:${accent}"></div></div>
+      <div class="macro-progress__track"><div class="macro-progress__fill" style="width:${Math.max(2, pct)}%;background:var(--tube-color)"></div></div>
     </div>`;
 }
 
@@ -127,17 +137,16 @@ export class ProgressView extends HTMLElement {
         proteinG: 0,
         carbsG: 0,
         fatG: 0,
-        fiberG: 0,
-        sugarG: 0,
-        sodiumMg: 0,
       };
       acc.calories += e.calories;
       acc.proteinG += e.proteinG;
       acc.carbsG += e.carbsG;
       acc.fatG += e.fatG;
-      acc.fiberG += e.fiberG ?? 0;
-      acc.sugarG += e.sugarG ?? 0;
-      acc.sodiumMg += e.sodiumMg ?? 0;
+      // #75: every averages-candidate nutrient sums too, so the card can
+      // follow the Customize Progress selection (null micros count as zero).
+      for (const n of AVERAGES_CANDIDATES) {
+        acc[n.key] = (acc[n.key] ?? 0) + (e[n.key] ?? 0);
+      }
       totalsByDate.set(e.date, acc);
     }
     // Match Android: one bar per logged non-zero day (no calendar zero-padding).
@@ -172,11 +181,15 @@ export class ProgressView extends HTMLElement {
     const completeMacroDays = [...totalsByDate.entries()]
       .filter(([d]) => d < today)
       .map(([, t]) => t);
+    const nutrientGoals = mergeOptionalGoals(appPrefs.optionalNutrientGoals);
+    // #75: which non-macro nutrients the averages card shows (canonical order).
+    const averagesSelection = normalizeAveragesSelection(
+      appPrefs.progressNutrientAveragesSelection,
+    );
     const macroAvg = (key) =>
       completeMacroDays.length
         ? completeMacroDays.reduce((s, d) => s + d[key], 0) / completeMacroDays.length
         : 0;
-    const nutrientGoals = mergeOptionalGoals(appPrefs.optionalNutrientGoals);
 
 
     // Chart + history only when logged BF entries exist (Android never draws an
@@ -366,19 +379,22 @@ export class ProgressView extends HTMLElement {
         targets
           ? `<div class="card card--glass">
         <h2 class="progress-title">${t("progress.macro_averages")}</h2>
-        ${macroRow(t("onboarding.plan.protein"), macroAvg("proteinG"), targets.proteinG, "var(--protein)")}
-        ${macroRow(t("onboarding.plan.carbs"), macroAvg("carbsG"), targets.carbsG, "var(--carbs)")}
-        ${macroRow(t("onboarding.plan.fat"), macroAvg("fatG"), targets.fatG, "var(--fat)")}
+        ${macroRow(t("onboarding.plan.protein"), macroAvg("proteinG"), targets.proteinG, "protein")}
+        ${macroRow(t("onboarding.plan.carbs"), macroAvg("carbsG"), targets.carbsG, "carbs")}
+        ${macroRow(t("onboarding.plan.fat"), macroAvg("fatG"), targets.fatG, "fat")}
       </div>`
           : ""
       }
       ${
-        targets && appPrefs.progressNutrientAverages
+        targets && appPrefs.progressNutrientAverages && averagesSelection.length
           ? `<div class="card card--glass">
         <h2 class="progress-title">${t("progress.nutrient_averages")}</h2>
-        ${macroRow(t("progress.fiber"), macroAvg("fiberG"), nutrientGoals.fiberG, "var(--fiber)")}
-        ${macroRow(t("progress.sugar"), macroAvg("sugarG"), nutrientGoals.sugarG, "#c47a3a")}
-        ${macroRow(t("progress.sodium"), macroAvg("sodiumMg"), nutrientGoals.sodiumMg, "var(--water)", "mg")}
+        ${averagesSelection
+          .map((key) => {
+            const n = /** @type {NonNullable<ReturnType<typeof nutrientDef>>} */ (nutrientDef(key));
+            return macroRow(n.label, macroAvg(key), nutrientGoals[key], n.tubeCss, n.unit);
+          })
+          .join("")}
       </div>`
           : ""
       }

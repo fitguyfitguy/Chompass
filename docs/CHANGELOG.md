@@ -4,6 +4,13 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Added
+
+- **Choose which nutrients Progress averages** (Android + web): Customize Progress (web: Settings, App) now lists every nutrient with a goal, each with a switch. Turn on iron, saturated fat, or vitamins and the averages card on Progress shows those rows. The fiber, sugar, and sodium trio stays as the default, so nothing changes until you pick. Past months count these nutrients from your existing logs. Follows Codeberg [#75](https://codeberg.org/fitguy/Chompass/issues/75) by [@bluepostofficebox](https://codeberg.org/bluepostofficebox).
+
+
 ## [4.3.0] - 2026-08-31
 
 

@@ -5,6 +5,7 @@ import {
   DEFAULT_HOME_TOP,
   DEFAULT_FOOD_CHIPS,
   DEFAULT_NUTRIENT_CARD_COUNT,
+  DEFAULT_AVERAGES_SELECTION,
   ANDROID_PREF_DEFAULTS,
   migrateLegacyCaffeineLimit,
 } from "./home-nutrients.js";
@@ -470,7 +471,8 @@ export const profile = {
  * @property {string} [speechLang] BCP-47 tag for Web Speech (browser STT)
  * @property {string} [uiLang] UI locale id from locales.json (empty = auto-detect browser)
  * @property {string} [progressDefaultRangeId] Settings default Progress range (1W…All)
- * @property {boolean} [progressNutrientAverages] Progress fiber/sugar/sodium averages (off by default)
+ * @property {boolean} [progressNutrientAverages] Progress nutrient averages (off by default)
+ * @property {string[]} [progressNutrientAveragesSelection] Which non-macro nutrients Progress averages (#75)
 
  * @property {string} [progressRangeId] Last Progress range chip selection (unset until first pick)
  * @property {Record<string, { updatedAt: string, deletedAt?: string|null, kind?: string }>} [syncRevisions]
@@ -528,8 +530,10 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   fastingGoalNotified: false,
   speechLang: "",
   uiLang: "",
-  progressDefaultRangeId: "1W",
   progressNutrientAverages: false,
+  progressDefaultRangeId: "1W",
+  progressNutrientAveragesSelection: DEFAULT_AVERAGES_SELECTION,
+
 
 });
 

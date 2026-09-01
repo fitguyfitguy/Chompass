@@ -49,6 +49,8 @@ import {
   DEFAULT_NUTRIENT_CARD_COUNT,
   normalizeHomeTopNutrients,
   normalizeFoodLogChips,
+  normalizeAveragesSelection,
+  AVERAGES_CANDIDATES,
   nutrientDef,
   mergeOptionalGoals,
   MAX_CUSTOM_GOAL_BY_KEY,
@@ -1026,13 +1028,23 @@ export class SettingsView extends HTMLElement {
               )
               .join("")}
           </select>
-        </div>
-        <div class="field">
           <label class="checkbox-row">
             <input type="checkbox" id="progressNutrientAverages" name="progressNutrientAverages" value="true" ${p.progressNutrientAverages ? "checked" : ""} />
             <span>${escapeHtml(t("settings.progress_nutrient_averages"))}</span>
           </label>
           <p class="field-hint">${escapeHtml(t("settings.progress_nutrient_averages_subtitle"))}</p>
+          <fieldset class="nutrient-picker" id="averagesPicker" ${p.progressNutrientAverages ? "" : "disabled"}>
+            ${(() => {
+              const averagesSel = new Set(normalizeAveragesSelection(p.progressNutrientAveragesSelection));
+              return AVERAGES_CANDIDATES.map(
+                (n) => `
+                <label class="nutrient-picker__row">
+                  <input type="checkbox" name="progressNutrientAveragesSelection" value="${n.key}" ${averagesSel.has(n.key) ? "checked" : ""} />
+                  <span>${n.label}</span>
+                </label>`
+              ).join("");
+            })()}
+          </fieldset>
 
         </div>
         <p class="section-label">${t("settings.units.meal_times")}</p>
@@ -1058,7 +1070,13 @@ export class SettingsView extends HTMLElement {
         weekStartsOnMonday: String(fd.get("weekStartDay") || "monday") === "monday",
         progressDefaultRangeId: String(fd.get("progressDefaultRangeId") || "1W"),
         progressNutrientAverages: fd.get("progressNutrientAverages") === "true",
-
+        progressNutrientAveragesSelection: [
+          .../** @type {NodeListOf<HTMLInputElement>} */ (
+            (/** @type {HTMLFormElement} */ (ev.target)).querySelectorAll(
+              'input[name="progressNutrientAveragesSelection"]',
+            )
+          ),
+        ].filter((el) => el.checked).map((el) => el.value),
         mealBreakfastStart: timeInputToMinutes(String(fd.get("mealBreakfastStart"))),
         mealLunchStart: timeInputToMinutes(String(fd.get("mealLunchStart"))),
         mealDinnerStart: timeInputToMinutes(String(fd.get("mealDinnerStart"))),
@@ -1069,6 +1087,9 @@ export class SettingsView extends HTMLElement {
     });
     this.querySelector("#progressNutrientAverages")?.addEventListener("change", async (ev) => {
       const box = /** @type {HTMLInputElement} */ (ev.target);
+      // #75: the per-nutrient picker is inert while the master toggle is off.
+      const picker = this.querySelector("#averagesPicker");
+      if (picker) picker.toggleAttribute("disabled", !box.checked);
       if (!box.checked) return;
       const ok = await openConfirm({
         title: t("settings.progress_nutrient_averages_warning_title"),

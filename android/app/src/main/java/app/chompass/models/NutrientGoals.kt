@@ -118,6 +118,38 @@ enum class HomeTopNutrient(
         if (scale > 1f && grams > 0) (grams * scale).roundToInt() else grams
 
     companion object {
+        /** #75: P/C/F — never part of the Progress averages selection (the macro card covers them). */
+        val Macros = setOf(PROTEIN, CARBS, FAT)
+
+        /**
+         * #75: nutrients the Progress averages card can show, in canonical
+         * declaration order — every goal-bearing non-macro nutrient.
+         */
+        val AveragesCandidates: List<HomeTopNutrient> = entries.filterNot { it in Macros }
+
+        /** The original trio: pref unset renders exactly the pre-#75 rows. */
+        val DefaultAverages: Set<HomeTopNutrient> = setOf(FIBER, SUGAR, SODIUM)
+        val DefaultAveragesStorage: Set<String> = DefaultAverages.map { it.storageKey }.toSet()
+
+        /**
+         * Normalizes a stored/raw key set for the averages selection: known
+         * non-macro storage keys (or enum names) only. The empty set is kept —
+         * master toggle on with nothing selected hides the card.
+         */
+        fun normalizeAveragesSelectionStorage(raw: Iterable<String>): Set<String> =
+            raw.mapNotNull { key ->
+                values().firstOrNull { it.storageKey == key || it.name == key }
+            }
+                .filter { it !in Macros }
+                .map { it.storageKey }
+                .toSet()
+
+        /** Raw set → canonical-order non-macro selection. */
+        fun averagesSelectionFromStorage(raw: Collection<String>): List<HomeTopNutrient> {
+            val keys = normalizeAveragesSelectionStorage(raw)
+            return AveragesCandidates.filter { it.storageKey in keys }
+        }
+
         val DefaultSelection = listOf(PROTEIN, CARBS, FAT, FIBER)
         val DefaultStorageValue = DefaultSelection.joinToString(",") { it.storageKey }
 

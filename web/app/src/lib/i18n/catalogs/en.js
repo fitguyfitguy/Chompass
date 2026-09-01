@@ -185,10 +185,10 @@ export const en = Object.freeze({
   "progress.log_first_body_fat": "Log your first body fat % to see trends",
   "progress.no_food": "No food logged yet",
   "settings.progress_default_range": "Progress default range",
-  "settings.progress_nutrient_averages": "Fiber, sugar, and sodium averages",
-  "settings.progress_nutrient_averages_subtitle": "Off until you turn them on. Open Food Facts and photos often miss or guess these values.",
+  "settings.progress_nutrient_averages": "Nutrient averages",
+  "settings.progress_nutrient_averages_subtitle": "Off until you turn them on. Choose which nutrients to average below. Open Food Facts and photos often miss or guess these values.",
   "settings.progress_nutrient_averages_warning_title": "Not a complete picture",
-  "settings.progress_nutrient_averages_warning_body": "Open Food Facts often omits fiber, sugar, or sodium, and photo analysis guesses when a label does not list them. The average only includes what was logged, so it can be off.",
+  "settings.progress_nutrient_averages_warning_body": "Open Food Facts and photo analysis often omit or guess these values when the label does not list them. The average only includes what was logged, so it can be off.",
   "settings.progress_nutrient_averages_confirm": "Show them",
 
 

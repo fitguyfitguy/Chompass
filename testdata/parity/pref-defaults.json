@@ -35,6 +35,7 @@
   "progressDefaultRangeId": "1W",
   "progressMeasurementSites": [],
   "progressNutrientAverages": false,
+  "progressNutrientAveragesSelection": ["fiber", "sugar", "sodium"],
 
   "optionalNutrientGoals": {
     "sugar": 50,
