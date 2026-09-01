@@ -1,0 +1,54 @@
+name: Feature request
+about: An improvement or new capability
+title: "[Feature]: "
+labels:
+  - feature
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please describe the underlying need, not just the UI you imagine.
+        "Export my diary to PDF" is a solution; "I want to print my weekly
+        log" is the need. The maintainer picks the simplest way to serve the
+        need.
+
+        [Search the open and closed issues](https://codeberg.org/fitguy/Chompass/issues)
+        for the same need first.
+    visible: [form]
+  - type: textarea
+    id: need
+    attributes:
+      label: What are you trying to do that the app does not support?
+    validations:
+      required: true
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Current workaround
+      description: Optional. How do you live without it today?
+    validations:
+      required: false
+  - type: textarea
+    id: approach
+    attributes:
+      label: Suggested approach
+      description: Optional. Your idea of how it could work.
+    validations:
+      required: false
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Does this touch any of these?
+      description: These live in both the Android app and the web app and must change together.
+      options:
+        - label: Nutrition formulas (calories, macros, BMR, TDEE, goals)
+        - label: Diary export or import
+        - label: Meal sharing
+        - label: Health Connect data
+  - type: checkboxes
+    id: prior-work
+    attributes:
+      label: Before you submit
+      options:
+        - label: I searched the open and closed issues on this tracker for the same need
+          required: true
