@@ -1391,7 +1391,7 @@
     <string name="home_calorie_active_estimated_a11y">Aktywne kalorie oszacowane na podstawie poziomu aktywności</string>
     <string name="home_calorie_mode_static">Statyczny cel</string>
     <string name="home_calorie_mode_add_active">Dodawaj spalone kalorie do budżetu</string>
-    <string name="home_calorie_mode_static_desc">Twój cel kaloryczny pozostaje stały. Ruch nie zmienia dzisiejszego budżetu.</string>
+    <string name="home_calorie_mode_static_desc">Twój cel kaloryczny pozostaje stały. Ręcznie zapisane spalone kalorie nadal zwiększają budżet tego dnia.</string>
     <string name="home_calorie_mode_add_active_desc">Aktywne kalorie z Health Connect (lub szacunek z poziomu aktywności) są dodawane do dzisiejszego budżetu kalorii. Odzyskuj to, co spalasz. Ustaw poziom aktywności na codzienną bazę bez treningów, aby nie liczyć ćwiczeń podwójnie. Włącz Health Connect w Ustawienia → Zdrowie, aby mieć zmierzone spalanie.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Wskazówka: włącz Health Connect, aby używać aktywnych kalorii z zegarka/telefonu zamiast szacunku z poziomu aktywności.</string>
     <string name="home_nutrients_pick_count">Wybierz do %1$d składników odżywczych na ekran główny.</string>

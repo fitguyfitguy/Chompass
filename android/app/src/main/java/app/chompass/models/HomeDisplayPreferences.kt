@@ -138,7 +138,9 @@ object HomeCalorieDisplay {
      * debug) active wins even at 0: once a live measured-energy source exists,
      * a morning with no wearable data yet shows the sedentary budget plus 0
      * instead of substituting the whole estimated day. The PAL estimate is
-     * used only when no live measured source exists at all.
+     * used only when no live measured source exists at all. STATIC mode counts
+     * only manual burns (returned as [ActiveCalorieSource.MANUAL]); automatic
+     * sources never leak into it.
      */
     fun resolveActiveBurn(
         mode: HomeCalorieDisplayMode,
@@ -158,7 +160,13 @@ object HomeCalorieDisplay {
                 ?.let { ResolvedActiveBurn(it, ActiveCalorieSource.ESTIMATED) }
         }
         val manual = manualActiveCalories.coerceAtLeast(0)
-        if (mode == HomeCalorieDisplayMode.STATIC) return null
+        if (mode == HomeCalorieDisplayMode.STATIC) {
+            // Manual burns are deliberate "eat back" logs: they raise that
+            // day's goal even in STATIC mode, which only excludes automatic
+            // (Health Connect / PAL estimate) calories.
+            if (manual <= 0) return null
+            return ResolvedActiveBurn(manual, ActiveCalorieSource.MANUAL)
+        }
         val total = (core?.calories ?: 0) + manual
         // A measured 0 is a valid "no activity yet" burn: keep ADD_ACTIVE so
         // the gauge stays on the sedentary budget instead of jumping to the
@@ -188,10 +196,11 @@ object HomeCalorieDisplay {
         HomeCalorieDisplayMode.STATIC -> effectiveCalories
     }
 
-    fun effectiveGoal(mode: HomeCalorieDisplayMode, baseGoal: Int, activeCalories: Int): Int = when (mode) {
-        HomeCalorieDisplayMode.ADD_ACTIVE -> baseGoal + activeCalories.coerceAtLeast(0)
-        HomeCalorieDisplayMode.STATIC -> baseGoal
-    }
+    /** Base goal plus active calories. In STATIC mode callers pass manual-only
+     *  burn ([resolveActiveBurn] returns manual-only there), so a logged burn
+     *  raises that day's goal without turning on automatic estimates. */
+    fun effectiveGoal(mode: HomeCalorieDisplayMode, baseGoal: Int, activeCalories: Int): Int =
+        baseGoal + activeCalories.coerceAtLeast(0)
 
     fun progressRatio(
         mode: HomeCalorieDisplayMode,
@@ -199,11 +208,7 @@ object HomeCalorieDisplay {
         baseGoal: Int,
         activeCalories: Int,
     ): Float {
-        if (baseGoal <= 0) return 0f
-        val denominator = when (mode) {
-            HomeCalorieDisplayMode.ADD_ACTIVE -> effectiveGoal(mode, baseGoal, activeCalories)
-            HomeCalorieDisplayMode.STATIC -> baseGoal
-        }
+        val denominator = effectiveGoal(mode, baseGoal, activeCalories)
         if (denominator <= 0) return 0f
         return (eaten.toFloat() / denominator).coerceIn(0f, 1f)
     }
@@ -213,12 +218,7 @@ object HomeCalorieDisplay {
         eaten: Int,
         baseGoal: Int,
         activeCalories: Int,
-    ): Int = when (mode) {
-        HomeCalorieDisplayMode.ADD_ACTIVE ->
-            (effectiveGoal(mode, baseGoal, activeCalories) - eaten).coerceAtLeast(0)
-        HomeCalorieDisplayMode.STATIC ->
-            (baseGoal - eaten).coerceAtLeast(0)
-    }
+    ): Int = (effectiveGoal(mode, baseGoal, activeCalories) - eaten).coerceAtLeast(0)
 
     // ── Burn shade geometry (drawing only; never budget math) ─────────────
 

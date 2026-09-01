@@ -2028,7 +2028,7 @@
     <string name="home_calorie_active_estimated_a11y">Active calories estimated from your activity level</string>
     <string name="home_calorie_mode_static">Static goal</string>
     <string name="home_calorie_mode_add_active">Add active burn to budget</string>
-    <string name="home_calorie_mode_static_desc">Your calorie goal stays fixed. Movement does not change today’s budget.</string>
+    <string name="home_calorie_mode_static_desc">Your calorie goal stays fixed. A manually logged active burn still raises that day’s budget.</string>
     <string name="home_calorie_mode_add_active_desc">Active calories from Health Connect (or your activity-level estimate) are added to today’s calorie budget. Eat back what you burn. Set Activity Level to everyday baseline so workouts are not double-counted. Turn on Health Connect under Settings → Health for measured burn.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Tip: enable Health Connect to use watch/phone active calories instead of the activity-level estimate.</string>
     <string name="home_nutrients_pick_count">Pick up to %1$d nutrients for the home screen.</string>

@@ -685,7 +685,7 @@
     <string name="home_calorie_mode_add_active">Ajouter la dépense active au budget</string>
     <string name="home_calorie_mode_add_active_desc">Les calories actives de Health Connect (ou votre estimation de niveau d\'activité) sont ajoutées au budget calorique du jour. Mangez ce que vous brûlez. Réglez le niveau d\'activité sur la base quotidienne pour éviter de compter deux fois les entraînements. Connectez Health Connect dans Réglages → Santé pour une dépense mesurée.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Astuce : activez Health Connect pour utiliser les calories actives de la montre/téléphone au lieu de l\'estimation de niveau d\'activité.</string>
-    <string name="home_calorie_mode_static_desc">Votre objectif calorique reste fixe. L\'activité ne modifie pas le budget du jour.</string>
+    <string name="home_calorie_mode_static_desc">Votre objectif calorique reste fixe. Une dépense active saisie manuellement augmente le budget du jour.</string>
     <string name="home_menu_manual_active">Dépense active</string>
     <string name="manual_active_kcal_hint">Calories brûlées</string>
     <string name="manual_active_name_hint">Nom de l\'activité (facultatif)</string>

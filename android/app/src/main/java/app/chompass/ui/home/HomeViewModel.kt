@@ -332,9 +332,10 @@ data class HomeUiState(
     val displayActiveCalories: Int get() = resolvedActiveBurn?.calories ?: 0
     /**
      * Today's live active burn regardless of gauge mode: measured Health Connect
-     * burn (or debug data) plus manual entries. Mode-independent — unlike
-     * [displayActiveCalories], which is 0 in STATIC mode. Feeds the hero's
-     * "N active" caption so the toggle works in STATIC too.
+     * burn (or debug data) plus manual entries. Mode-independent — in STATIC
+     * mode [displayActiveCalories] carries manual burns only, so the measured
+     * part needs this separate sum. Feeds the hero's "N active" caption so the
+     * toggle works in STATIC too.
      */
     val liveActiveBurn: Int get() =
         activitySnapshot.activeCalories.coerceAtLeast(0) + manualActiveKcal.coerceAtLeast(0)

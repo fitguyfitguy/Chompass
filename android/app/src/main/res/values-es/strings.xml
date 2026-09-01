@@ -693,7 +693,7 @@
     <string name="home_calorie_mode_add_active">Añadir gasto activo al presupuesto</string>
     <string name="home_calorie_mode_add_active_desc">Las calorías activas de Health Connect (o tu estimación por nivel de actividad) se suman al presupuesto calórico de hoy. Come lo que quemas. Configura el nivel de actividad como referencia diaria para no contar dos veces los entrenamientos. Conecta Health Connect en Ajustes → Salud para usar el gasto medido.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Consejo: activa Health Connect para usar calorías activas del reloj o teléfono en lugar de la estimación por nivel de actividad.</string>
-    <string name="home_calorie_mode_static_desc">Tu objetivo calórico se mantiene fijo. El movimiento no cambia el presupuesto de hoy.</string>
+    <string name="home_calorie_mode_static_desc">Tu objetivo calórico se mantiene fijo. Un gasto activo registrado a mano sí aumenta el presupuesto de ese día.</string>
     <string name="home_menu_manual_active">Gasto activo</string>
     <string name="manual_active_kcal_hint">Calorías quemadas</string>
     <string name="manual_active_name_hint">Nombre de la actividad (opcional)</string>

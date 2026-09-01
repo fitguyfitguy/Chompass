@@ -314,7 +314,7 @@ export const ja = Object.freeze({
   "progressive_meal.meal_label": "食事",
   "manual_active.title": "アクティブ消費を記録",
   "manual_active.title_short": "アクティブ消費",
-  "manual_active.subtitle": "散歩、サイクリング、ワークアウトなどで消費したカロリーを追加。「アクティブ消費を予算に追加」がオンのとき、今日の予算が延長されます。",
+  "manual_active.subtitle": "散歩、サイクリング、ワークアウトなどで消費したカロリーを追加。今日の予算が延長されます。",
   "manual_active.name_hint": "アクティビティ名（任意）",
   "manual_active.kcal_hint": "消費カロリー",
   "manual_active.save": "予算に追加",

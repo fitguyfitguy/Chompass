@@ -653,7 +653,7 @@
     <string name="home_calorie_mode_add_active">Adicionar queima ativa ao orçamento</string>
     <string name="home_calorie_mode_add_active_desc">Calorias ativas do Health Connect (ou sua estimativa por nível de atividade) são adicionadas ao orçamento calórico de hoje. Compense o que você queima. Defina o nível de atividade como linha de base do dia a dia para não contar treinos em dobro. Conecte o Health Connect em Configurações → Saúde para usar a queima medida.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Dica: ative o Health Connect para usar calorias ativas do relógio ou celular em vez da estimativa por nível de atividade.</string>
-    <string name="home_calorie_mode_static_desc">Sua meta calórica permanece fixa. O movimento não altera o orçamento de hoje.</string>
+    <string name="home_calorie_mode_static_desc">Sua meta calórica permanece fixa. Uma queima ativa registrada manualmente ainda aumenta o orçamento desse dia.</string>
     <string name="home_menu_manual_active">Queima ativa</string>
     <string name="manual_active_kcal_hint">Calorias queimadas</string>
     <string name="manual_active_name_hint">Nome da atividade (opcional)</string>

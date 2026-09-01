@@ -8,6 +8,7 @@ import app.chompass.services.health.HomeActivitySnapshot
 import app.chompass.ui.home.HomeUiState
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.LocalDate
@@ -71,10 +72,48 @@ class HomeCalorieDisplayTest {
     }
 
     @Test
-    fun static_ignoresActive() {
+    fun static_automaticSourcesStillIgnored() {
+        val snapshot = HomeActivitySnapshot(
+            date = LocalDate.now(),
+            activeCalories = 500,
+            source = ActivityDataSource.HEALTH_CONNECT,
+            energyLive = true,
+        )
+        assertNull(
+            HomeCalorieDisplay.resolveActiveBurn(
+                HomeCalorieDisplayMode.STATIC,
+                snapshot,
+                estimatedDailyActive = 400,
+            )
+        )
+    }
+
+    @Test
+    fun static_manualBurn_raisesGoalForThatDay() {
         val mode = HomeCalorieDisplayMode.STATIC
-        assertEquals(2000, HomeCalorieDisplay.effectiveGoal(mode, 2000, 400))
-        assertEquals(500, HomeCalorieDisplay.remaining(mode, 1500, 2000, 400))
+        assertEquals(2000, HomeCalorieDisplay.effectiveGoal(mode, 2000, 0))
+        assertEquals(2300, HomeCalorieDisplay.effectiveGoal(mode, 2000, 300))
+        assertEquals(800, HomeCalorieDisplay.remaining(mode, eaten = 1500, baseGoal = 2000, activeCalories = 300))
+        assertEquals(1500f / 2300f, HomeCalorieDisplay.progressRatio(mode, 1500, 2000, 300), 0.001f)
+    }
+
+    @Test
+    fun resolveActiveBurn_static_returnsManualOnly() {
+        val snapshot = HomeActivitySnapshot(
+            date = LocalDate.now(),
+            activeCalories = 500,
+            source = ActivityDataSource.HEALTH_CONNECT,
+            energyLive = true,
+        )
+        val burn = HomeCalorieDisplay.resolveActiveBurn(
+            HomeCalorieDisplayMode.STATIC,
+            snapshot,
+            estimatedDailyActive = 400,
+            manualActiveCalories = 300,
+        )
+        assertEquals(ActiveCalorieSource.MANUAL, burn?.source)
+        assertEquals(300, burn?.calories)
+        assertEquals(null, HomeCalorieDisplay.resolveActiveBurn(HomeCalorieDisplayMode.STATIC, snapshot, 400, 0))
     }
 
     @Test
@@ -327,10 +366,23 @@ class HomeCalorieDisplayTest {
         val state = HomeUiState(
             profile = profile,
             homeDisplay = HomeDisplayPreferences(calorieDisplayMode = HomeCalorieDisplayMode.STATIC),
-            manualActiveKcal = 300,
         )
         assertEquals(2607, state.heroCalorieGoal)
         assertEquals(1f, state.macroGoalScale, 0.001f)
+    }
+
+    @Test
+    fun macroGoalScale_static_manualBurnScalesUp() {
+        // A manual burn is a deliberate eat-back: the day's goal grows by it
+        // and the macro cards scale with the ring.
+        val profile = UserProfile(customCalories = 2607)
+        val state = HomeUiState(
+            profile = profile,
+            homeDisplay = HomeDisplayPreferences(calorieDisplayMode = HomeCalorieDisplayMode.STATIC),
+            manualActiveKcal = 300,
+        )
+        assertEquals(2907, state.heroCalorieGoal)
+        assertEquals(2907f / 2607f, state.macroGoalScale, 0.001f)
     }
 
     @Test

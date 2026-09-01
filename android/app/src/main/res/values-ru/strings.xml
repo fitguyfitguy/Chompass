@@ -1098,7 +1098,7 @@
     <string name="home_calorie_mode_add_active">Добавлять активный расход к бюджету</string>
     <string name="home_calorie_mode_add_active_desc">Активные калории из Health Connect (или оценка по уровню активности) добавляются к сегодняшнему калорийному бюджету. Ешь столько, сколько сжигаешь. Установи уровень активности на обычную базу, чтобы тренировки не учитывались дважды. Подключи Health Connect в Настройки → Здоровье для измеренного расхода.</string>
     <string name="home_calorie_mode_static">Фиксированная цель</string>
-    <string name="home_calorie_mode_static_desc">Твоя цель по калориям остаётся фиксированной. Движение не меняет сегодняшний бюджет.</string>
+    <string name="home_calorie_mode_static_desc">Твоя цель по калориям остаётся фиксированной. Вручную добавленный активный расход увеличивает бюджет того дня.</string>
     <string name="home_calorie_of_goal">из %1$s</string>
     <string name="home_calories_active_burn">Сожжено активных %1$d</string>
     <string name="home_calories_goal_plus_active">Цель %1$s + %2$s активных</string>

@@ -656,7 +656,7 @@
     <string name="home_calorie_mode_add_active">Adaugă arderea activă la buget</string>
     <string name="home_calorie_mode_add_active_desc">Caloriile active din Health Connect (sau estimarea după nivelul de activitate) se adaugă la bugetul caloric de azi. Mănâncă înapoi ce arzi. Setează nivelul de activitate ca bază zilnică ca antrenamentele să nu fie numărate de două ori. Conectează Health Connect în Setări → Sănătate pentru arderea măsurată.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Sfat: activează Health Connect pentru calorii active de la ceas/telefon în loc de estimarea după nivelul de activitate.</string>
-    <string name="home_calorie_mode_static_desc">Obiectivul caloric rămâne fix. Mișcarea nu schimbă bugetul de azi.</string>
+    <string name="home_calorie_mode_static_desc">Obiectivul caloric rămâne fix. O ardere activă introdusă manual mărește bugetul acelei zile.</string>
     <string name="home_menu_manual_active">Ardere activă</string>
     <string name="manual_active_kcal_hint">Calorii arse</string>
     <string name="manual_active_name_hint">Nume activitate (opțional)</string>

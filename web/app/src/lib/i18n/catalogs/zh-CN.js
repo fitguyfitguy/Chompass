@@ -314,7 +314,7 @@ export const zh_CN = Object.freeze({
   "progressive_meal.meal_label": "餐食",
   "manual_active.title": "记录活动消耗",
   "manual_active.title_short": "活动消耗",
-  "manual_active.subtitle": "添加步行、骑行或锻炼消耗的热量。开启“将活动消耗加入预算”时，会延长今日预算。",
+  "manual_active.subtitle": "添加步行、骑行或锻炼消耗的热量。会延长今日预算。",
   "manual_active.name_hint": "活动名称（可选）",
   "manual_active.kcal_hint": "消耗热量",
   "manual_active.save": "加入预算",

@@ -634,7 +634,7 @@
     <string name="home_calorie_mode_add_active">Actieve verbranding aan budget toevoegen</string>
     <string name="home_calorie_mode_add_active_desc">Actieve calorieën uit Health Connect (of je schatting op activiteitsniveau) worden aan het caloriebudget van vandaag toegevoegd. Eet terug wat je verbrandt. Stel Activiteitsniveau in op dagelijkse basislijn zodat workouts niet dubbel worden geteld. Verbind Health Connect via Instellingen → Gezondheid voor gemeten verbranding.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Tip: schakel Health Connect in om actieve calorieën van horloge/telefoon te gebruiken in plaats van de schatting op activiteitsniveau.</string>
-    <string name="home_calorie_mode_static_desc">Je caloriedoel blijft vast. Beweging verandert het budget van vandaag niet.</string>
+    <string name="home_calorie_mode_static_desc">Je caloriedoel blijft vast. Een handmatig gelogde actieve verbranding verhoogt het budget van die dag.</string>
     <string name="home_menu_manual_active">Actieve verbranding</string>
     <string name="manual_active_kcal_hint">Verbrande calorieën</string>
     <string name="manual_active_name_hint">Activiteitsnaam (optioneel)</string>

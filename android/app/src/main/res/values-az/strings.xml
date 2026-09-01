@@ -656,7 +656,7 @@ bilirsən?</string>
     <string name="home_calorie_mode_add_active">Aktiv yanmanı büdcəyə əlavə et</string>
     <string name="home_calorie_mode_add_active_desc">Health Connect-dən (və ya fəaliyyət səviyyəsi təxminindən) aktiv kalorilər bu günkü kalori büdcəsinə əlavə olunur. Nə yandırsan, onu ye. Məşqlərin iki dəfə sayılmaması üçün Fəaliyyət Səviyyəsini gündəlik baza kimi təyin et. Ölçülü yanma üçün Parametrlər → Sağlamlıq altında Health Connect qoş.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Məsləhət: saat/telefon aktiv kalorilərini fəaliyyət səviyyəsi təxmininə görə istifadə etmək üçün Health Connect-i aktiv et.</string>
-    <string name="home_calorie_mode_static_desc">Kalori hədəfin sabit qalır. Hərəkət bu günkü büdcəni dəyişdirmir.</string>
+    <string name="home_calorie_mode_static_desc">Kalori hədəfin sabit qalır. Əl ilə qeyd edilən aktiv yanma həmin günün büdcəsini artırır.</string>
     <string name="home_menu_manual_active">Aktiv yanma</string>
     <string name="manual_active_kcal_hint">Yanan kalorilər</string>
     <string name="manual_active_name_hint">Fəaliyyət adı (istəyə bağlı)</string>

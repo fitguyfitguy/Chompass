@@ -314,7 +314,7 @@ export const ru = Object.freeze({
   "progressive_meal.meal_label": "Приём пищи",
   "manual_active.title": "Записать активный расход",
   "manual_active.title_short": "Активный расход",
-  "manual_active.subtitle": "Добавьте сожжённые калории с прогулки, поездки или тренировки. Они расширяют сегодняшний бюджет, когда включено «Добавлять активный расход».",
+  "manual_active.subtitle": "Добавьте сожжённые калории с прогулки, поездки или тренировки. Они расширяют сегодняшний бюджет.",
   "manual_active.name_hint": "Название активности (необязательно)",
   "manual_active.kcal_hint": "Сожжённые калории",
   "manual_active.save": "Добавить к бюджету",

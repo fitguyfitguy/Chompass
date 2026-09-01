@@ -655,7 +655,7 @@
     <string name="home_calorie_mode_add_active">Aggiungi consumo attivo al budget</string>
     <string name="home_calorie_mode_add_active_desc">Le calorie attive da Health Connect (o la stima dal livello di attività) vengono aggiunte al budget calorico di oggi. Recupera ciò che bruci. Imposta il livello di attività come baseline quotidiana per non contare due volte gli allenamenti. Collega Health Connect in Impostazioni → Salute per il consumo misurato.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Suggerimento: attiva Health Connect per usare le calorie attive da orologio/telefono invece della stima per livello di attività.</string>
-    <string name="home_calorie_mode_static_desc">Il tuo obiettivo calorico resta fisso. Il movimento non modifica il budget di oggi.</string>
+    <string name="home_calorie_mode_static_desc">Il tuo obiettivo calorico resta fisso. Un consumo attivo registrato manualmente aumenta il budget di quel giorno.</string>
     <string name="home_menu_manual_active">Consumo attivo</string>
     <string name="manual_active_kcal_hint">Calorie bruciate</string>
     <string name="manual_active_name_hint">Nome attività (facoltativo)</string>

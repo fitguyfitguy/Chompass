@@ -666,7 +666,7 @@
     <string name="home_calorie_mode_add_active">إضافة الحرق النشط إلى الميزانية</string>
     <string name="home_calorie_mode_add_active_desc">تُضاف السعرات النشطة من Health Connect (أو تقدير مستوى النشاط) إلى ميزانية السعرات اليوم. كُل ما تحرقه. اضبط مستوى النشاط على خط الأساس اليومي حتى لا تُحسب التمارين مرتين. اربط Health Connect من الإعدادات ← الصحة للحرق المقاس.</string>
     <string name="home_calorie_mode_add_active_hc_hint">نصيحة: فعّل Health Connect لاستخدام سعرات الساعة/الهاتف النشطة بدل تقدير مستوى النشاط.</string>
-    <string name="home_calorie_mode_static_desc">هدف السعرات يبقى ثابتًا. الحركة لا تغيّر ميزانية اليوم.</string>
+    <string name="home_calorie_mode_static_desc">هدف السعرات يبقى ثابتًا. الحرق النشط المسجَّل يدويًا يرفع ميزانية ذلك اليوم.</string>
     <string name="home_menu_manual_active">الحرق النشط</string>
     <string name="manual_active_kcal_hint">السعرات المحروقة</string>
     <string name="manual_active_name_hint">اسم النشاط (اختياري)</string>

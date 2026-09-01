@@ -314,7 +314,7 @@ export const ro = Object.freeze({
   "progressive_meal.meal_label": "Masă",
   "manual_active.title": "Înregistrează arderea activă",
   "manual_active.title_short": "Ardere activă",
-  "manual_active.subtitle": "Adaugă calorii arse de la o plimbare, pedalare sau antrenament. Extind bugetul de azi când «Adaugă arderea activă» este activ.",
+  "manual_active.subtitle": "Adaugă calorii arse de la o plimbare, pedalare sau antrenament. Extind bugetul de azi.",
   "manual_active.name_hint": "Nume activitate (opțional)",
   "manual_active.kcal_hint": "Calorii arse",
   "manual_active.save": "Adaugă la buget",

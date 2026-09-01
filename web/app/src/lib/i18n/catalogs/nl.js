@@ -314,7 +314,7 @@ export const nl = Object.freeze({
   "progressive_meal.meal_label": "Maaltijd",
   "manual_active.title": "Actieve verbranding loggen",
   "manual_active.title_short": "Actieve verbranding",
-  "manual_active.subtitle": "Voeg verbrande calorieën van een wandeling, rit of workout toe. Ze vergroten het budget van vandaag wanneer „Actieve verbranding toevoegen“ aan staat.",
+  "manual_active.subtitle": "Voeg verbrande calorieën van een wandeling, rit of workout toe. Ze vergroten het budget van vandaag.",
   "manual_active.name_hint": "Activiteitsnaam (optioneel)",
   "manual_active.kcal_hint": "Verbrande calorieën",
   "manual_active.save": "Aan budget toevoegen",

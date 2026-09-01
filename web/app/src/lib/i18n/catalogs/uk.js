@@ -138,7 +138,7 @@ export const uk = Object.freeze({
   // Manual active burn
   "manual_active.title": "Внести активні витрати",
   "manual_active.title_short": "Активні витрати",
-  "manual_active.subtitle": "Додайте спалені калорії з прогулянки, поїздки чи тренування. Вони розширюють сьогоднішній бюджет, коли ввімкнено «Додавати активні витрати».",
+  "manual_active.subtitle": "Додайте спалені калорії з прогулянки, поїздки чи тренування. Вони розширюють сьогоднішній бюджет.",
   "manual_active.name_hint": "Назва активності (необов'язково)",
   "manual_active.kcal_hint": "Спалено калорій",
   "manual_active.save": "Додати до бюджету",

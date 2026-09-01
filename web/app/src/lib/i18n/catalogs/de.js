@@ -316,7 +316,7 @@ export const de = Object.freeze({
   "progressive_meal.meal_label": "Mahlzeit",
   "manual_active.title": "Aktiven Verbrauch loggen",
   "manual_active.title_short": "Aktivverbrauch",
-  "manual_active.subtitle": "Verbrannte Kalorien von Spaziergang, Radfahrt oder Training hinzufügen. Sie erweitern das Tagesbudget, wenn „Aktiven Verbrauch addieren“ an ist.",
+  "manual_active.subtitle": "Verbrannte Kalorien von Spaziergang, Radfahrt oder Training hinzufügen. Sie erweitern das Tagesbudget.",
   "manual_active.name_hint": "Aktivitätsname (optional)",
   "manual_active.kcal_hint": "Verbrannte Kalorien",
   "manual_active.save": "Zum Budget addieren",

@@ -138,7 +138,7 @@ export const tr = Object.freeze({
   // Manual active burn
   "manual_active.title": "Aktif yakımı ekle",
   "manual_active.title_short": "Aktif yakım",
-  "manual_active.subtitle": "Yürüyüş, bisiklet veya antrenmandan yaktığınız kalorileri ekleyin. “Aktif yakım ekle” açıkken bugünün bütçesini genişletir.",
+  "manual_active.subtitle": "Yürüyüş, bisiklet veya antrenmandan yaktığınız kalorileri ekleyin. Bugünün bütçesini genişletir.",
   "manual_active.name_hint": "Aktivite adı (isteğe bağlı)",
   "manual_active.kcal_hint": "Yakılan kalori",
   "manual_active.save": "Bütçeye ekle",
