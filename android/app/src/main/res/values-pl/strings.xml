@@ -1758,7 +1758,7 @@
     <string name="nutrient_short_vit_e">Wit. E</string>
     <string name="nutrient_short_vit_k">Wit. K</string>
     <string name="nutrient_short_caffeine">Kofeina</string>
-    <string name="nutrient_short_omega">Omega</string>
+    <string name="nutrient_short_omega">Omega-3</string>
     <string name="sort_standard">Śniadanie → Obiad → Kolacja (najnowsze na końcu)</string>
     <string name="sort_latest_first">Najnowsze posiłki pierwsze</string>
     <string name="home_selected_count">Wybrano %1$d</string>

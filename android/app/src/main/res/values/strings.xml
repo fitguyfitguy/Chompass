@@ -2419,7 +2419,7 @@
     <string name="nutrient_short_b12">B12</string>
     <string name="nutrient_short_vit_e">Vit E</string>
     <string name="nutrient_short_vit_k">Vit K</string>
-    <string name="nutrient_short_omega">Omega</string>
+    <string name="nutrient_short_omega">Omega-3</string>
     <string name="nutrient_short_caffeine">Caffeine</string>
     <string name="sort_standard">Breakfast → Lunch → Dinner (latest last)</string>
     <string name="sort_latest_first">Latest Meals First</string>

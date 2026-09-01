@@ -1065,7 +1065,7 @@
     <string name="nutrient_potassium_format">Kalium: %1$smg</string>
     <string name="nutrient_sat_fat_format">Verzadigd vet: %1$sg</string>
     <string name="nutrient_short_caffeine">Cafeïne</string>
-    <string name="nutrient_short_omega">Omega</string>
+    <string name="nutrient_short_omega">Omega-3</string>
     <string name="nutrient_short_sat_fat">Verz. vet</string>
     <string name="nutrient_short_vit_a">Vit. A</string>
     <string name="nutrient_short_vit_c">Vit. C</string>

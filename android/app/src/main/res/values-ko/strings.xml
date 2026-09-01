@@ -1089,7 +1089,7 @@
     <string name="nutrient_potassium_format">칼륨: %1$smg</string>
     <string name="nutrient_sat_fat_format">포화지방: %1$sg</string>
     <string name="nutrient_short_caffeine">카페인</string>
-    <string name="nutrient_short_omega">오메가</string>
+    <string name="nutrient_short_omega">오메가-3</string>
     <string name="nutrient_short_sat_fat">포화지방</string>
     <string name="nutrient_short_vit_a">비타A</string>
     <string name="nutrient_short_vit_c">비타C</string>
