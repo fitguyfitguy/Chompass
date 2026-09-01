@@ -158,6 +158,9 @@ class FoodAnalysisWatchdogTest {
         runBlocking {
             prefs.setFallbackEnabled(true)
             prefs.setFallbackCustomBaseUrl(AIProvider.GEMINI, server.url("/").toString())
+            // Pin a non-lite primary so the fallback-model assertion below can
+            // distinguish the retry from a flash-lite fallback leg.
+            prefs.setSelectedAIModel("gemini-3.7-flash")
         }
         fallbackKey = "fallback-key"
         // Response 1: SSE stream cuts off mid-body after the full JSON line.
