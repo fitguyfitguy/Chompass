@@ -4,7 +4,7 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [Unreleased]
+## [4.4.0] - 2026-09-01
 
 ### Added
 
