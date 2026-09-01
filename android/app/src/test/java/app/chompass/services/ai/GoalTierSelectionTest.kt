@@ -144,6 +144,9 @@ class GoalTierSelectionTest {
             prefs.setSelectedAIProvider(AIProvider.GEMINI)
             prefs.setCustomBaseUrl(AIProvider.GEMINI, server.url("/").toString())
             prefs.setFallbackEnabled(false)
+            // Pin the primary model: debug builds default to flash-lite, which
+            // runs the SAFE goal tier — these tests plumb the SMART prompt.
+            prefs.setSelectedAIModel("gemini-3.7-flash")
         }
     }
 
