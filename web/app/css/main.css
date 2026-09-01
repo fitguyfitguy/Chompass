@@ -837,6 +837,7 @@ main.view {
 .macro-row--vit-k,
 .macro-row--folate,
 .macro-row--omega { --tube-color: #5a8a6a; }
+.macro-row--caffeine { --tube-color: #8a5a3a; }
 
 .macro-chip {
   font-weight: 650;

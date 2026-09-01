@@ -187,8 +187,11 @@ data class SettingsUiState(
     val progressDefaultRangeId: String = "1W",
     /** Body-measurement sites with a Progress-tab trend plot; empty = plots off. */
     val progressMeasurementSites: Set<String> = emptySet(),
-    /** Progress fiber/sugar/sodium averages; default off. */
+    /** Progress nutrient averages; default off. */
     val progressNutrientAverages: Boolean = false,
+    /** #75: which nutrients the Progress averages card shows (non-macro storage keys). */
+    val progressNutrientAveragesSelection: Set<String> =
+        app.chompass.models.HomeTopNutrient.DefaultAveragesStorage,
 
     val userContext: String = "",
     val fallbackEnabled: Boolean = true,
@@ -466,6 +469,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     progressDefaultRangeId = snap.progressDefaultRangeId,
                     progressMeasurementSites = snap.progressMeasurementSites,
                     progressNutrientAverages = snap.progressNutrientAverages,
+                    progressNutrientAveragesSelection = snap.progressNutrientAveragesSelection,
 
                     userContext = snap.userContext,
                     fallbackEnabled = snap.fallbackEnabled,
@@ -893,6 +897,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setProgressNutrientAverages(v: Boolean) = updateUiPref(
         { container.prefs.setProgressNutrientAverages(v) },
         { copy(progressNutrientAverages = v) },
+    )
+
+    fun setProgressNutrientAveragesSelection(keys: Set<String>) = updateUiPref(
+        { container.prefs.setProgressNutrientAveragesSelection(keys) },
+        { copy(progressNutrientAveragesSelection = keys) },
     )
 
     fun setMealSchedule(schedule: app.chompass.models.MealSchedule) {

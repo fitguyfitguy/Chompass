@@ -126,6 +126,25 @@ export const MIN_NUTRIENT_CARD_COUNT = 1;
 export const MAX_NUTRIENT_CARD_COUNT = 4;
 export const DEFAULT_NUTRIENT_CARD_COUNT = 4;
 
+/** Progress averages candidates (Android #75): every non-macro tube nutrient. */
+export const AVERAGES_CANDIDATES = HOME_TOP_NUTRIENTS.filter((n) => !n.isMacro);
+
+/** The original trio — Android DefaultAveragesStorage, so unset prefs render the pre-#75 rows. */
+export const DEFAULT_AVERAGES_SELECTION = ["fiberG", "sugarG", "sodiumMg"];
+
+/**
+ * Normalizes progressNutrientAveragesSelection: known non-macro keys only,
+ * canonical declaration order. Empty stays empty (master on + nothing
+ * picked = card hidden), mirroring Android.
+ * @param {string[]|null|undefined} selection
+ * @returns {string[]}
+ */
+export function normalizeAveragesSelection(selection) {
+  const allowed = new Set(AVERAGES_CANDIDATES.map((n) => n.key));
+  const picked = new Set((selection || []).map((k) => String(k)).filter((k) => allowed.has(k)));
+  return AVERAGES_CANDIDATES.map((n) => n.key).filter((k) => picked.has(k));
+}
+
 /** Android-aligned non-nutrient prefs used by db.js DEFAULT_PREFS. */
 export const ANDROID_PREF_DEFAULTS = {
   showWater: false,

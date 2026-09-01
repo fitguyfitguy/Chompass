@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.BodyMeasurement
+import app.chompass.models.HomeTopNutrient
 import app.chompass.models.UnitFormat
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.FudGlassDialog
@@ -103,6 +104,25 @@ fun CustomizeProgressScreen(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
                 )
+                // #75: pick which nutrients the Progress averages card shows.
+                // Inert while the master toggle is off; rows reuse the
+                // measurement-plot row pattern.
+                HomeTopNutrient.AveragesCandidates.forEachIndexed { index, nutrient ->
+                    NutrientToggleRow(
+                        label = stringResource(nutrient.displayNameRes),
+                        checked = nutrient.storageKey in ui.progressNutrientAveragesSelection,
+                        enabled = ui.progressNutrientAverages,
+                        onChange = { on ->
+                            val current = ui.progressNutrientAveragesSelection
+                            vm.setProgressNutrientAveragesSelection(
+                                if (on) current + nutrient.storageKey else current - nutrient.storageKey
+                            )
+                        },
+                    )
+                    if (index != HomeTopNutrient.AveragesCandidates.lastIndex) {
+                        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+                    }
+                }
 
             }
         }
@@ -237,5 +257,34 @@ private fun measurementSiteSubtitle(
             String.format(Locale.getDefault(), "%.0f", UnitFormat.cmToInches(cm)),
             context.getString(R.string.unit_in),
         )
+    }
+}
+
+@Composable
+private fun NutrientToggleRow(
+    label: String,
+    checked: Boolean,
+    enabled: Boolean,
+    onChange: (Boolean) -> Unit,
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            label,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
+            color = if (enabled) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+            },
+            modifier = Modifier.weight(1f),
+        )
+        Spacer(Modifier.padding(start = 8.dp))
+        Switch(checked = checked, onCheckedChange = onChange, enabled = enabled)
     }
 }

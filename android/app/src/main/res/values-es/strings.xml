@@ -1471,10 +1471,10 @@
     <string name="settings_progress_plots">Gráficos de medidas corporales</string>
     <string name="settings_progress_plots_count">%1$d gráficos</string>
     <string name="settings_progress_plots_latest">Última: %1$s %2$s</string>
-    <string name="settings_progress_nutrient_averages">Promedios de fibra, azúcar y sodio</string>
-    <string name="settings_progress_nutrient_averages_subtitle">Desactivado hasta que lo actives. Open Food Facts y las fotos suelen omitir o estimar estos valores.</string>
+    <string name="settings_progress_nutrient_averages">Promedios de nutrientes</string>
+    <string name="settings_progress_nutrient_averages_subtitle">Desactivado hasta que lo actives. Elige abajo qué nutrientes promediar. Open Food Facts y las fotos suelen omitir o estimar estos valores.</string>
     <string name="settings_progress_nutrient_averages_warning_title">No es un panorama completo</string>
-    <string name="settings_progress_nutrient_averages_warning_body">Open Food Facts suele omitir fibra, azúcar o sodio, y el análisis de fotos adivina cuando la etiqueta no los lista. El promedio solo incluye lo registrado, así que puede fallar.</string>
+    <string name="settings_progress_nutrient_averages_warning_body">Open Food Facts y el análisis de fotos suelen omitir o estimar estos valores cuando la etiqueta no los lista. El promedio solo incluye lo registrado, así que puede fallar.</string>
 
     <string name="settings_progress_nutrient_averages_confirm">Mostrarlos</string>
 

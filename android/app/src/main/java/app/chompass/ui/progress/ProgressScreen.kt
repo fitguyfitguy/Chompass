@@ -258,14 +258,7 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                     if (ui.showNutrientAverages) {
                         item {
                             CardSection {
-                                NutrientAveragesSection(
-                                    avgFiber = ui.avgFiber,
-                                    avgSugar = ui.avgSugar,
-                                    avgSodium = ui.avgSodium,
-                                    fiberGoal = ui.fiberGoal,
-                                    sugarGoal = ui.sugarGoal,
-                                    sodiumGoal = ui.sodiumGoal,
-                                )
+                                NutrientAveragesSection(nutrientAverages = ui.nutrientAverages)
                             }
                         }
                     }
@@ -454,14 +447,7 @@ internal fun ProgressScreenPreviewContent(
                 if (ui.showNutrientAverages) {
                     item {
                         CardSection {
-                            NutrientAveragesSection(
-                                avgFiber = ui.avgFiber,
-                                avgSugar = ui.avgSugar,
-                                avgSodium = ui.avgSodium,
-                                fiberGoal = ui.fiberGoal,
-                                sugarGoal = ui.sugarGoal,
-                                sodiumGoal = ui.sodiumGoal,
-                            )
+                            NutrientAveragesSection(nutrientAverages = ui.nutrientAverages)
                         }
                     }
                 }

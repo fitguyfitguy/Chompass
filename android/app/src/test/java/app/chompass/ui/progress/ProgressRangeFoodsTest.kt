@@ -4,10 +4,12 @@ import app.chompass.data.yearMonthsOverlapping
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.GoalJournalEntry
+import app.chompass.models.HomeTopNutrient
 import app.chompass.models.MacroDayProfile
 import app.chompass.models.MacroPlan
 import app.chompass.models.MacroPlanMode
 import app.chompass.models.MealType
+import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.UserProfile
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -90,9 +92,43 @@ class ProgressRangeFoodsTest {
             timeRange = TimeRange.ALL_TIME,
             anchorDate = today,
         )
-        assertEquals(15.0, ui.avgFiber, 0.01)
-        assertEquals(30.0, ui.avgSugar, 0.01)
-        assertEquals(1500.0, ui.avgSodium, 0.01)
+        // Default selection = the pre-#75 trio; same window, today excluded.
+        assertEquals(
+            listOf(HomeTopNutrient.FIBER, HomeTopNutrient.SUGAR, HomeTopNutrient.SODIUM),
+            ui.nutrientAverages.map { it.nutrient },
+        )
+        assertEquals(15.0, ui.nutrientAverages.first { it.nutrient == HomeTopNutrient.FIBER }.avg, 0.01)
+        assertEquals(30.0, ui.nutrientAverages.first { it.nutrient == HomeTopNutrient.SUGAR }.avg, 0.01)
+        assertEquals(1500.0, ui.nutrientAverages.first { it.nutrient == HomeTopNutrient.SODIUM }.avg, 0.01)
+        // Goals ride along from OptionalNutrientGoals defaults.
+        assertEquals(
+            OptionalNutrientGoals.Default.fiber,
+            ui.nutrientAverages.first { it.nutrient == HomeTopNutrient.FIBER }.goal,
+        )
+
+        // Selecting iron + saturated fat swaps the rows and excludes today's
+        // 99s the same way (iron logged only on complete days).
+        val selected = buildProgressPreviewUiState(
+            profile = null,
+            weights = emptyList(),
+            bodyFatEntries = emptyList(),
+            foods = foods + entry("D", today.minusDays(1), calories = 100, iron = 9.0, saturatedFat = 8.0),
+            timeRange = TimeRange.ALL_TIME,
+            anchorDate = today,
+            averagesSelection = setOf("iron", "saturatedFat"),
+        )
+        assertEquals(
+            listOf(HomeTopNutrient.SATURATED_FAT, HomeTopNutrient.IRON),
+            selected.nutrientAverages.map { it.nutrient },
+        )
+        // Two complete days: (0 + 8) / 2 and (0 + 9) / 2 — missing values
+        // average as 0; rows follow canonical declaration order.
+        assertEquals(4.0, selected.nutrientAverages[0].avg, 0.01)
+        assertEquals(4.5, selected.nutrientAverages[1].avg, 0.01)
+        assertEquals(
+            OptionalNutrientGoals.Default.iron,
+            selected.nutrientAverages[1].goal,
+        )
     }
 
     @Test
@@ -213,6 +249,8 @@ class ProgressRangeFoodsTest {
         fiber: Double? = null,
         sugar: Double? = null,
         sodium: Double? = null,
+        iron: Double? = null,
+        saturatedFat: Double? = null,
     ) = FoodEntry(
         name = name,
         calories = calories,
@@ -222,6 +260,8 @@ class ProgressRangeFoodsTest {
         fiber = fiber,
         sugar = sugar,
         sodium = sodium,
+        iron = iron,
+        saturatedFat = saturatedFat,
         timestamp = day.atTime(12, 0).toInstant(ZoneOffset.UTC),
         source = FoodSource.MANUAL,
         mealType = MealType.LUNCH.id,

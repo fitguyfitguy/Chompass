@@ -94,6 +94,7 @@ internal data class SettingsPrefsHydration(
     val progressDefaultRangeId: String,
     val progressMeasurementSites: Set<String>,
     val progressNutrientAverages: Boolean,
+    val progressNutrientAveragesSelection: Set<String>,
 
     val userContext: String,
     val maxResponseTokens: Int,
@@ -222,6 +223,10 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
         progressDefaultRangeId = this[Keys.PROGRESS_DEFAULT_RANGE_ID] ?: "1W",
         progressMeasurementSites = this[Keys.PROGRESS_MEASUREMENT_SITES] ?: emptySet(),
         progressNutrientAverages = this[Keys.PROGRESS_NUTRIENT_AVERAGES] ?: false,
+        progressNutrientAveragesSelection =
+            this[Keys.PROGRESS_NUTRIENT_AVERAGES_SELECTION]
+                ?.let(HomeTopNutrient::normalizeAveragesSelectionStorage)
+                ?: HomeTopNutrient.DefaultAveragesStorage,
 
         userContext = this[Keys.USER_CONTEXT].orEmpty(),
         maxResponseTokens = clampMaxResponseTokens(this[Keys.MAX_RESPONSE_TOKENS] ?: 1024),

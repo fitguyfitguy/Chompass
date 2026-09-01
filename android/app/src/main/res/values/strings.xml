@@ -1564,10 +1564,10 @@
     <string name="settings_progress_plots_count">%1$d plots</string>
     <string name="settings_progress_plots_no_data">No measurements yet</string>
     <string name="settings_progress_plots_latest">Latest: %1$s %2$s</string>
-    <string name="settings_progress_nutrient_averages">Fiber, sugar, and sodium averages</string>
-    <string name="settings_progress_nutrient_averages_subtitle">Off until you turn them on. Open Food Facts and photos often miss or guess these values.</string>
+    <string name="settings_progress_nutrient_averages">Nutrient averages</string>
+    <string name="settings_progress_nutrient_averages_subtitle">Off until you turn them on. Choose which nutrients to average below. Open Food Facts and photos often miss or guess these values.</string>
     <string name="settings_progress_nutrient_averages_warning_title">Not a complete picture</string>
-    <string name="settings_progress_nutrient_averages_warning_body">Open Food Facts often omits fiber, sugar, or sodium, and photo analysis guesses when a label does not list them. The average only includes what was logged, so it can be off.</string>
+    <string name="settings_progress_nutrient_averages_warning_body">Open Food Facts and photo analysis often omit or guess these values when the label does not list them. The average only includes what was logged, so it can be off.</string>
     <string name="settings_progress_nutrient_averages_confirm">Show them</string>
 
 

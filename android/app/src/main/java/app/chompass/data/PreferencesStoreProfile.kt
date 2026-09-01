@@ -155,6 +155,24 @@ internal suspend fun PreferencesStore.setProgressNutrientAveragesImpl(v: Boolean
     dataStore.edit { it[Keys.PROGRESS_NUTRIENT_AVERAGES] = v }
 }
 
+/**
+ * #75: which nutrients Progress averages — [HomeTopNutrient] storage keys,
+ * macros excluded. Unset = the original trio so existing toggle users see no
+ * change; an explicitly empty set is meaningful (master on, nothing shown).
+ */
+internal val PreferencesStore.progressNutrientAveragesSelectionImpl: Flow<Set<String>> get() =
+    dataStore.data.map { prefs ->
+        prefs[Keys.PROGRESS_NUTRIENT_AVERAGES_SELECTION]
+            ?.let(HomeTopNutrient::normalizeAveragesSelectionStorage)
+            ?: HomeTopNutrient.DefaultAveragesStorage
+    }
+internal suspend fun PreferencesStore.setProgressNutrientAveragesSelectionImpl(keys: Set<String>) {
+    dataStore.edit {
+        it[Keys.PROGRESS_NUTRIENT_AVERAGES_SELECTION] =
+            HomeTopNutrient.normalizeAveragesSelectionStorage(keys)
+    }
+}
+
     /** "RECENTS" | "FREQUENT" | "FAVORITES". Mirrors iOS @AppStorage("lastRecentsSegment"). */
 internal val PreferencesStore.lastSavedMealsSegmentImpl: Flow<String> get() = dataStore.data.map { it[Keys.LAST_SAVED_MEALS_SEGMENT] ?: "RECENTS" }
 internal suspend fun PreferencesStore.setLastSavedMealsSegmentImpl(v: String) { dataStore.edit { it[Keys.LAST_SAVED_MEALS_SEGMENT] = v } }
