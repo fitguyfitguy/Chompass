@@ -22,8 +22,15 @@ object UnitFormat {
 
     fun lbsToKg(lbs: Double): Double = lbs / LBS_PER_KG
 
-    /** One-decimal kg grid the weight wheel shows (Codeberg #63). */
-    fun roundKgToTenths(kg: Double): Double = (kg * 10.0).roundToInt() / 10.0
+    /**
+     * Storage grid for weight entries. Must stay fine enough that a 0.1 lbs
+     * wheel pick round-trips through kg storage and the one-decimal lbs display
+     * (Codeberg #82/#73): a tenth of a lb is 0.0454 kg, so on this grid the
+     * kg→lbs display error stays under 0.011 lbs — below the 0.05 lbs half-step
+     * of "%.1f". The old 0.1 kg grid snapped 275.0 lbs to 124.7 kg → 274.9.
+     * Metric picks sit on the 0.1 kg wheel, so they pass through unchanged.
+     */
+    fun roundKgToHundredths(kg: Double): Double = (kg * 100.0).roundToInt() / 100.0
 
     fun cmToInches(cm: Double): Double = cm / CM_PER_INCH
 

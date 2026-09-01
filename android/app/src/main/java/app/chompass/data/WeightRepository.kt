@@ -46,7 +46,7 @@ class WeightRepository(
     suspend fun addEntry(entry: WeightEntry): WeightGoalReachedEvent? {
         val current = prefs.weightEntries.first()
         val previousLatest = current.maxByOrNull { it.date }
-        val stored = entry.copy(weightKg = UnitFormat.roundKgToTenths(entry.weightKg))
+        val stored = entry.copy(weightKg = UnitFormat.roundKgToHundredths(entry.weightKg))
         prefs.applyWeightBucketChanges(upsertsByMonth = mapOf(stored.month() to listOf(stored)))
         sync?.touch(stored.id, "weight")
 
