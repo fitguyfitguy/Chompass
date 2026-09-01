@@ -1,12 +1,17 @@
 package app.chompass.models
 
+import app.chompass.BuildConfig
+
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class AIProviderFallbackTest {
     @Test
-    fun geminiDefaultModelIsFlash37() {
-        assertEquals("gemini-3.7-flash", AIProvider.GEMINI.defaultModel)
+    fun geminiDefaultModelMatchesVariant() {
+        // Debug defaults to Flash-Lite (3.7 Flash 503s on the free tier during
+        // device testing); release keeps the parity-locked 3.7 default.
+        val expected = if (BuildConfig.DEBUG) "gemini-3.5-flash-lite" else "gemini-3.7-flash"
+        assertEquals(expected, AIProvider.GEMINI.defaultModel)
     }
 
     @Test
