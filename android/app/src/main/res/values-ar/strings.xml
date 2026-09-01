@@ -1090,7 +1090,7 @@
     <string name="nutrient_potassium_format">البوتاسيوم: %1$s ملغ</string>
     <string name="nutrient_sat_fat_format">الدهون المشبعة: %1$s غ</string>
     <string name="nutrient_short_caffeine">كافيين</string>
-    <string name="nutrient_short_omega">أوميغا</string>
+    <string name="nutrient_short_omega">أوميغا-3</string>
     <string name="nutrient_short_sat_fat">دهون مشبعة</string>
     <string name="nutrient_short_vit_a">فيتامين أ</string>
     <string name="nutrient_short_vit_c">فيتامين ج</string>

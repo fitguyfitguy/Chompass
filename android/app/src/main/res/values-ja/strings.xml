@@ -1089,7 +1089,7 @@
     <string name="nutrient_potassium_format">カリウム：%1$smg</string>
     <string name="nutrient_sat_fat_format">飽和脂肪酸：%1$sg</string>
     <string name="nutrient_short_caffeine">カフェイン</string>
-    <string name="nutrient_short_omega">オメガ</string>
+    <string name="nutrient_short_omega">オメガ-3</string>
     <string name="nutrient_short_sat_fat">飽和脂肪</string>
     <string name="nutrient_short_vit_a">ビタA</string>
     <string name="nutrient_short_vit_c">ビタC</string>

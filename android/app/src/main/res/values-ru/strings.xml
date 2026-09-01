@@ -1030,7 +1030,7 @@
     <string name="nutrient_short_vit_e">Вит. E</string>
     <string name="nutrient_short_vit_k">Вит. K</string>
     <string name="nutrient_short_caffeine">Кофеин</string>
-    <string name="nutrient_short_omega">Омега</string>
+    <string name="nutrient_short_omega">Омега-3</string>
     <string name="sort_standard">Завтрак → Обед → Ужин (сначала ранние)</string>
     <string name="sort_latest_first">Сначала последние</string>
     <string name="copy_meal_format">Копировать: %1$s</string>

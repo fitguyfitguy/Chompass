@@ -1666,7 +1666,7 @@ LBM = вага × (1 − %жиру)</string>
         <item quantity="other">Додати %1$d спільних страв</item>
     </plurals>
     <string name="nutrient_short_caffeine">Кофеїн</string>
-    <string name="nutrient_short_omega">Омега</string>
+    <string name="nutrient_short_omega">Омега-3</string>
     <string name="fasting">Пост</string>
     <string name="fasting_idle">Немає активного посту</string>
     <string name="fasting_goal_reached">Мета досягнута</string>

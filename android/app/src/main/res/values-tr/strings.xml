@@ -1754,7 +1754,7 @@
     <string name="nutrient_short_vit_e">E Vit.</string>
     <string name="nutrient_short_vit_k">K Vit.</string>
     <string name="nutrient_short_caffeine">Kafein</string>
-    <string name="nutrient_short_omega">Omega</string>
+    <string name="nutrient_short_omega">Omega-3</string>
     <string name="sort_standard">Kahvaltı → Öğle → Akşam (en yeniler sonda)</string>
     <string name="sort_latest_first">Önce En Yeni Öğünler</string>
     <string name="home_selected_count">%1$d seçildi</string>

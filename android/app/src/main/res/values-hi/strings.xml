@@ -1090,7 +1090,7 @@
     <string name="nutrient_potassium_format">पोटेशियम: %1$smg</string>
     <string name="nutrient_sat_fat_format">संतृप्त वसा: %1$sg</string>
     <string name="nutrient_short_caffeine">कैफीन</string>
-    <string name="nutrient_short_omega">ओमेगा</string>
+    <string name="nutrient_short_omega">ओमेगा-3</string>
     <string name="nutrient_short_sat_fat">सं. वसा</string>
     <string name="nutrient_short_vit_a">विट. A</string>
     <string name="nutrient_short_vit_c">विट. C</string>

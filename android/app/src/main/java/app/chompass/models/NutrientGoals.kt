@@ -34,7 +34,7 @@ enum class HomeTopNutrient(
     VITAMIN_E("vitaminE", "Vit E", "mg", R.string.nutrient_short_vit_e, R.string.unit_mg),
     VITAMIN_K("vitaminK", "Vit K", "mcg", R.string.nutrient_short_vit_k, R.string.unit_mcg),
     FOLATE("folate", "Folate", "mcg", R.string.nutrition_label_folate, R.string.unit_mcg),
-    OMEGA3("omega3", "Omega", "g", R.string.nutrient_short_omega, R.string.unit_g),
+    OMEGA3("omega3", "Omega-3", "g", R.string.nutrient_short_omega, R.string.unit_g),
     CAFFEINE("caffeine", "Caffeine", "mg", R.string.nutrition_label_caffeine, R.string.unit_mg);
 
     fun current(entries: List<FoodEntry>): Double = when (this) {
