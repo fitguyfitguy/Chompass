@@ -1,6 +1,7 @@
 package app.chompass.models
 
 import androidx.annotation.StringRes
+import app.chompass.BuildConfig
 import app.chompass.R
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -157,7 +158,16 @@ enum class AIProvider {
         else -> emptyMap()
     }
 
-    val defaultModel: String get() = models.firstOrNull() ?: ""
+    /**
+     * Debug builds default Gemini to 3.5 Flash-Lite: 3.7 Flash intermittently
+     * returns 503 on the free tier during device testing (2026-09-01), and Lite
+     * is already the higher-quota fallback. Release keeps the 3.7 default that
+     * the parity fixture locks.
+     */
+    val defaultModel: String get() = when (this) {
+        GEMINI -> if (BuildConfig.DEBUG) "gemini-3.5-flash-lite" else models.first()
+        else -> models.firstOrNull() ?: ""
+    }
 
     /** Separate from [defaultModel] so Gemini fallback can use a higher-quota lite model. */
     val defaultFallbackModel: String get() = when (this) {

@@ -49,7 +49,7 @@ class AiModelRoutingTest {
     @Test
     fun unknownVisionId_onCuratedProvider_fallsBackToDefault() {
         assertEquals(
-            "gemini-3.7-flash",
+            AIProvider.GEMINI.defaultModel,
             resolveModelForRequest(AIProvider.GEMINI, "gemini-3.6-flash", "not-a-model", hasImages = true),
         )
     }

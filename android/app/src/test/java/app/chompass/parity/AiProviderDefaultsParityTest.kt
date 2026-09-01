@@ -1,5 +1,6 @@
 package app.chompass.parity
 
+import app.chompass.BuildConfig
 import app.chompass.models.AIProvider
 import org.json.JSONArray
 import org.junit.Assert.assertEquals
@@ -25,7 +26,16 @@ class AiProviderDefaultsParityTest {
         provider: AIProvider,
         expected: org.json.JSONObject,
     ) {
-        assertEquals("$label defaultModel", expected.getString("defaultModel"), provider.defaultModel)
+        // Debug builds default Gemini to Flash-Lite (free-tier 503s on 3.7
+        // during device testing); the fixture stays release-truth for the
+        // PWA, so only the Gemini defaultModel expectation is variant-aware.
+        val expectedDefaultModel =
+            if (BuildConfig.DEBUG && provider == AIProvider.GEMINI) {
+                "gemini-3.5-flash-lite"
+            } else {
+                expected.getString("defaultModel")
+            }
+        assertEquals("$label defaultModel", expectedDefaultModel, provider.defaultModel)
         assertEquals(
             "$label defaultFallbackModel",
             expected.getString("defaultFallbackModel"),
