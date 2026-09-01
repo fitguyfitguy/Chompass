@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Read this first
+    url: https://codeberg.org/fitguy/Chompass/issues/83
+    about: What to check before reporting, and what is out of scope
   - name: Documentation
     url: https://codeberg.org/fitguy/Chompass/src/branch/main/docs/README.md
     about: Guides, calculation methods, and the feature matrix
