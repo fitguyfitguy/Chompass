@@ -636,6 +636,12 @@ export class DiaryView extends HTMLElement {
           }
         : { goal: sedentaryBudget, awaiting: true };
     }
+    // Manual burns are deliberate "eat back" logs: they raise that day's
+    // target even in static mode, which only excludes automatic burn
+    // (Health Connect / activity estimate).
+    else if (targets && manualKcal > 0) {
+      calorieTarget = targets.calories + Math.round(manualKcal);
+    }
 
     const waterMl = waterLogs.reduce((s, w) => s + w.amountMl, 0);
     const waterGoal = appPrefs.waterGoalMl ?? 2000;

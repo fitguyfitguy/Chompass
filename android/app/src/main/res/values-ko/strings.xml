@@ -665,7 +665,7 @@
     <string name="home_calorie_mode_add_active">활동 소모를 예산에 추가</string>
     <string name="home_calorie_mode_add_active_desc">Health Connect(또는 활동 수준 추정치)의 활동 칼로리가 오늘 칼로리 예산에 더해져요. 소모한 만큼 먹으세요. 운동이 중복 계산되지 않도록 활동 수준을 일상 기준으로 설정하세요. 측정값을 쓰려면 설정 → 건강에서 Health Connect를 연결하세요.</string>
     <string name="home_calorie_mode_add_active_hc_hint">팁: Health Connect를 켜면 활동 수준 추정치 대신 시계/휴대폰의 활동 칼로리를 사용할 수 있어요.</string>
-    <string name="home_calorie_mode_static_desc">칼로리 목표는 고정돼요. 움직임이 오늘 예산을 바꾸지 않아요.</string>
+    <string name="home_calorie_mode_static_desc">칼로리 목표는 고정돼요. 직접 기록한 활동 소모는 그날의 예산을 늘려요.</string>
     <string name="home_menu_manual_active">활동 소모</string>
     <string name="manual_active_kcal_hint">소모 칼로리</string>
     <string name="manual_active_name_hint">활동 이름(선택)</string>

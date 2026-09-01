@@ -314,7 +314,7 @@ export const ko = Object.freeze({
   "progressive_meal.meal_label": "식사",
   "manual_active.title": "활동 소모 기록",
   "manual_active.title_short": "활동 소모",
-  "manual_active.subtitle": "걷기, 자전거, 운동 등에서 소모한 칼로리를 추가합니다. \"활동 소모를 예산에 추가\"가 켜져 있으면 오늘 예산이 늘어납니다.",
+  "manual_active.subtitle": "걷기, 자전거, 운동 등에서 소모한 칼로리를 추가합니다. 오늘 예산이 늘어납니다.",
   "manual_active.name_hint": "활동 이름 (선택)",
   "manual_active.kcal_hint": "소모 칼로리",
   "manual_active.save": "예산에 추가",

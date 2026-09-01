@@ -320,7 +320,7 @@ export const es = Object.freeze({
   "progressive_meal.meal_label": "Comida",
   "manual_active.title": "Registrar gasto activo",
   "manual_active.title_short": "Gasto activo",
-  "manual_active.subtitle": "Añade calorías quemadas de una caminata, paseo en bici o entrenamiento. Amplían el presupuesto de hoy cuando «Añadir gasto activo» está activado.",
+  "manual_active.subtitle": "Añade calorías quemadas de una caminata, paseo en bici o entrenamiento. Amplían el presupuesto de hoy.",
   "manual_active.name_hint": "Nombre de la actividad (opcional)",
   "manual_active.kcal_hint": "Calorías quemadas",
   "manual_active.save": "Añadir al presupuesto",

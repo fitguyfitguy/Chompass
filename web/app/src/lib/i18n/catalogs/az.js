@@ -314,7 +314,7 @@ export const az = Object.freeze({
   "progressive_meal.meal_label": "Yemək",
   "manual_active.title": "Aktiv yanmanı qeyd et",
   "manual_active.title_short": "Aktiv yanma",
-  "manual_active.subtitle": "Gəzinti, sürüş və ya məşqdən yanan kaloriləri əlavə edin. «Aktiv yanmanı büdcəyə əlavə et» aktiv olanda bu günkü büdcəni genişləndirir.",
+  "manual_active.subtitle": "Gəzinti, sürüş və ya məşqdən yanan kaloriləri əlavə edin. Bu günkü büdcəni genişləndirir.",
   "manual_active.name_hint": "Fəaliyyət adı (istəyə bağlı)",
   "manual_active.kcal_hint": "Yanan kalorilər",
   "manual_active.save": "Büdcəyə əlavə et",

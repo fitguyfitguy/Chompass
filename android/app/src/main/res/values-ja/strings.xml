@@ -664,7 +664,7 @@
     <string name="home_calorie_mode_add_active">アクティブ消費を予算に追加</string>
     <string name="home_calorie_mode_add_active_desc">Health Connect（または活動レベルの推定値）からのアクティブカロリーが今日のカロリー予算に加算されます。消費分を食べ返せます。運動の二重カウントを避けるため、活動レベルは日常の基準に設定してください。実測値を使うには、設定 → ヘルスで Health Connect を接続してください。</string>
     <string name="home_calorie_mode_add_active_hc_hint">ヒント: Health Connect を有効にすると、活動レベルの推定値の代わりにウォッチ/スマホのアクティブカロリーを使えます。</string>
-    <string name="home_calorie_mode_static_desc">カロリー目標は固定のまま。運動は今日の予算を変えません。</string>
+    <string name="home_calorie_mode_static_desc">カロリー目標は固定のまま。手動で記録した消費カロリーはその日の予算に加算されます。</string>
     <string name="home_menu_manual_active">アクティブ消費</string>
     <string name="manual_active_kcal_hint">消費カロリー</string>
     <string name="manual_active_name_hint">活動名（任意）</string>

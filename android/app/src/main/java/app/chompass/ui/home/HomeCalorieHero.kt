@@ -154,8 +154,7 @@ internal fun CalorieHero(
     var showBudgetSheet by remember { mutableStateOf(false) }
     val goalLabel = when {
         shadesActive -> target
-        displayMode == HomeCalorieDisplayMode.ADD_ACTIVE -> effectiveGoal
-        else -> baseGoal
+        else -> effectiveGoal
     }
     val epoch = LocalLaunchFillEpoch.current
     var lastEpoch by rememberSaveable { mutableIntStateOf(0) }

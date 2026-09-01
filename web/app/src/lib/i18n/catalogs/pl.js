@@ -138,7 +138,7 @@ export const pl = Object.freeze({
   // Manual active burn
   "manual_active.title": "Dodaj spalone kalorie",
   "manual_active.title_short": "Spalone kalorie",
-  "manual_active.subtitle": "Dodaj spalone kalorie ze spaceru, jazdy lub treningu. Zwiększają dzisiejszy budżet, gdy włączona jest opcja „Dodawaj spalone kalorie”.",
+  "manual_active.subtitle": "Dodaj spalone kalorie ze spaceru, jazdy lub treningu. Zwiększają dzisiejszy budżet.",
   "manual_active.name_hint": "Nazwa aktywności (opcjonalnie)",
   "manual_active.kcal_hint": "Spalone kalorie",
   "manual_active.save": "Dodaj do budżetu",

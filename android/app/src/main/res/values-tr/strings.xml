@@ -1391,7 +1391,7 @@
     <string name="home_calorie_active_estimated_a11y">Aktif kaloriler aktivite seviyene göre tahmin edilir</string>
     <string name="home_calorie_mode_static">Statik hedef</string>
     <string name="home_calorie_mode_add_active">Bütçeye aktif yakım ekle</string>
-    <string name="home_calorie_mode_static_desc">Kalori hedefin sabit kalır. Hareket bugünün bütçesini değiştirmez.</string>
+    <string name="home_calorie_mode_static_desc">Kalori hedefin sabit kalır. Elle kaydedilen aktif yanma o günün bütçesini yine de artırır.</string>
     <string name="home_calorie_mode_add_active_desc">Health Connect\'ten (veya aktivite seviyesi tahmininden) aktif kaloriler bugünün kalori bütçesine eklenir. Yaktığını geri ye. Aktivite Seviyesini günlük taban çizgisine ayarla ki egzersizler çift sayılmasın. Ölçülen yakım için Ayarlar → Sağlık bölümünden Health Connect\'i aç.</string>
     <string name="home_calorie_mode_add_active_hc_hint">İpucu: aktivite seviyesi tahmini yerine saat/telefon aktif kalorilerini kullanmak için Health Connect\'i etkinleştir.</string>
     <string name="home_nutrients_pick_count">Ana ekran için en fazla %1$d besin seç.</string>

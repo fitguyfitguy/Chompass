@@ -314,7 +314,7 @@ export const ar = Object.freeze({
   "progressive_meal.meal_label": "وجبة",
   "manual_active.title": "تسجيل الحرق النشط",
   "manual_active.title_short": "الحرق النشط",
-  "manual_active.subtitle": "أضِف السعرات المحروقة من مشي أو ركوب أو تمرين. تمتد ميزانية اليوم عند تفعيل «إضافة الحرق النشط».",
+  "manual_active.subtitle": "أضِف السعرات المحروقة من مشي أو ركوب أو تمرين. تمتد ميزانية اليوم.",
   "manual_active.name_hint": "اسم النشاط (اختياري)",
   "manual_active.kcal_hint": "السعرات المحروقة",
   "manual_active.save": "إضافة إلى الميزانية",

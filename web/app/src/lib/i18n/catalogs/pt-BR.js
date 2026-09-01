@@ -314,7 +314,7 @@ export const pt_BR = Object.freeze({
   "progressive_meal.meal_label": "Refeição",
   "manual_active.title": "Registrar queima ativa",
   "manual_active.title_short": "Queima ativa",
-  "manual_active.subtitle": "Adicione calorias queimadas de uma caminhada, pedalada ou treino. Elas ampliam o orçamento de hoje quando «Adicionar queima ativa» está ativado.",
+  "manual_active.subtitle": "Adicione calorias queimadas de uma caminhada, pedalada ou treino. Elas ampliam o orçamento de hoje.",
   "manual_active.name_hint": "Nome da atividade (opcional)",
   "manual_active.kcal_hint": "Calorias queimadas",
   "manual_active.save": "Adicionar ao orçamento",

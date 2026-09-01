@@ -314,7 +314,7 @@ export const it = Object.freeze({
   "progressive_meal.meal_label": "Pasto",
   "manual_active.title": "Registra consumo attivo",
   "manual_active.title_short": "Consumo attivo",
-  "manual_active.subtitle": "Aggiungi calorie bruciate da una camminata, bici o allenamento. Estendono il budget di oggi quando «Aggiungi consumo attivo» è attivo.",
+  "manual_active.subtitle": "Aggiungi calorie bruciate da una camminata, bici o allenamento. Estendono il budget di oggi.",
   "manual_active.name_hint": "Nome attività (facoltativo)",
   "manual_active.kcal_hint": "Calorie bruciate",
   "manual_active.save": "Aggiungi al budget",

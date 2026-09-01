@@ -314,7 +314,7 @@ export const hi = Object.freeze({
   "progressive_meal.meal_label": "भोजन",
   "manual_active.title": "सक्रिय बर्न लॉग करें",
   "manual_active.title_short": "सक्रिय बर्न",
-  "manual_active.subtitle": "चलने, सवारी या वर्कआउट से जली कैलोरी जोड़ें। «सक्रिय बर्न बजट में जोड़ें» चालू होने पर ये आज का बजट बढ़ाती हैं।",
+  "manual_active.subtitle": "चलने, सवारी या वर्कआउट से जली कैलोरी जोड़ें। ये आज का बजट बढ़ाती हैं।",
   "manual_active.name_hint": "गतिविधि का नाम (वैकल्पिक)",
   "manual_active.kcal_hint": "जली कैलोरी",
   "manual_active.save": "बजट में जोड़ें",

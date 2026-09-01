@@ -320,7 +320,7 @@ export const fr = Object.freeze({
   "progressive_meal.meal_label": "Repas",
   "manual_active.title": "Enregistrer la dépense active",
   "manual_active.title_short": "Dépense active",
-  "manual_active.subtitle": "Ajoutez les calories brûlées d'une marche, d'un trajet ou d'un entraînement. Elles étendent le budget du jour lorsque « Ajouter la dépense active » est activé.",
+  "manual_active.subtitle": "Ajoutez les calories brûlées d'une marche, d'un trajet ou d'un entraînement. Elles étendent le budget du jour.",
   "manual_active.name_hint": "Nom de l'activité (facultatif)",
   "manual_active.kcal_hint": "Calories brûlées",
   "manual_active.save": "Ajouter au budget",

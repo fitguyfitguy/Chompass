@@ -2552,7 +2552,7 @@ für dich ein</string>
 
     <string name="home_calorie_mode_add_active">Aktiven Kalorienverbrauch zum Budget hinzufügen</string>
 
-    <string name="home_calorie_mode_static_desc">Dein Kalorienziel bleibt unverändert. Bewegung hat keinen Einfluss auf das heutige Kalorienbudget.</string>
+    <string name="home_calorie_mode_static_desc">Dein Kalorienziel bleibt unverändert. Ein manuell erfasster aktiver Verbrauch erhöht weiterhin das Tagesbudget.</string>
 
     <string name="home_calorie_mode_add_active_desc">Aktive Kalorien aus Health Connect (oder deine geschätzte Aktivitätsstufe) werden zum heutigen Kalorienbudget hinzugefügt. Nimm so viel zu dir, wie du verbrennst. Stelle das Aktivitätsniveau auf den täglichen Grundwert ein, damit Trainingseinheiten nicht doppelt gezählt werden. Verbinde Health Connect unter „Einstellungen“ → „Gesundheit“, um den gemessenen Kalorienverbrauch zu erfassen.</string>
 

@@ -135,7 +135,7 @@ export const en = Object.freeze({
   // Manual active burn
   "manual_active.title": "Log active burn",
   "manual_active.title_short": "Active burn",
-  "manual_active.subtitle": "Add burned calories from a walk, ride, or workout. They extend today’s budget when “Add active burn” is on.",
+  "manual_active.subtitle": "Add burned calories from a walk, ride, or workout. They extend today’s budget.",
   "manual_active.name_hint": "Activity name (optional)",
   "manual_active.kcal_hint": "Calories burned",
   "manual_active.save": "Add to budget",
