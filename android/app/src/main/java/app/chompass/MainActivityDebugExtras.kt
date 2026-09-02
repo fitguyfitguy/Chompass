@@ -89,6 +89,8 @@ internal data class DebugIntentActions(
     val setOpenRouterKey: String = "",
     val diagnoseHealthConnect: Boolean = false,
     val previewDailySummary: Boolean = false,
+    /** Debug-only: open the meal-builder sheet seeded with 6 ingredients (Codeberg #84 repro). */
+    val seedProgressiveMeal: Boolean = false,
 ) {
     val hasSeedAction: Boolean
         get() = seedTestData || seedFull || seedBodyMetrics || seedBodyMetricsTwoYears ||
@@ -174,6 +176,8 @@ internal fun consumeDebugIntentExtras(
             intent.getBooleanExtra("diagnose_health_connect", false),
         previewDailySummary = BuildConfig.DEBUG &&
             intent.getBooleanExtra("preview_daily_summary", false),
+        seedProgressiveMeal = BuildConfig.DEBUG &&
+            intent.getBooleanExtra("seed_progressive_meal", false),
     )
     if (actions.resetOnboarding) intent.removeExtra("reset_onboarding")
     if (actions.seedTestData) intent.removeExtra("seed_test_data")
@@ -199,6 +203,7 @@ internal fun consumeDebugIntentExtras(
     if (actions.demoAi) intent.removeExtra("demo_ai")
     if (actions.demoAiFail) intent.removeExtra("demo_ai_fail")
     if (actions.clearPendingDraft) intent.removeExtra("clear_pending_draft")
+    if (actions.seedProgressiveMeal) intent.removeExtra("seed_progressive_meal")
     if (actions.runEntryBenchmark) {
         intent.removeExtra("run_entry_benchmark")
         intent.removeExtra("benchmark_count")

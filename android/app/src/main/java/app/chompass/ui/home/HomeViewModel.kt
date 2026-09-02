@@ -44,6 +44,7 @@ import app.chompass.models.ActivityLevel
 import app.chompass.models.WaterGoalCalculator
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WaterEntry
+import app.chompass.BuildConfig
 import app.chompass.services.FoodImageComposer
 import app.chompass.services.FastingAutoPlanner
 import app.chompass.services.nextFastingStartMillis
@@ -948,6 +949,16 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
     init {
         observePerfBench()
+        // Debug-only Codeberg #84 repro: seed the meal-builder sheet with
+        // canned ingredients so the pinned-footer layout is verifiable on
+        // device (consume-and-clear, same semantics as the perf-bench inbox).
+        container.progressiveSeedInbox
+            .onEach { count ->
+                if (count == null) return@onEach
+                container.progressiveSeedInbox.value = null
+                seedProgressiveMealDemo(count)
+            }
+            .launchIn(viewModelScope)
         // Analysis queue + prompt history (Codeberg #53): load once (with
         // retention pruning) and mirror mutations into ui state for the badge
         // and the queue sheet.
@@ -2010,6 +2021,32 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             progressiveMeal = null,
             showProgressiveMealSheet = false,
             resumeProgressiveCapture = false,
+        ) }
+    }
+
+    /**
+     * Debug-only (Codeberg #84 repro): open the meal-builder sheet with
+     * [count] canned ingredients. Not [addToProgressiveMeal] — that mutates
+     * pending-analysis state per call.
+     */
+    fun seedProgressiveMealDemo(count: Int) {
+        if (!BuildConfig.DEBUG) return
+        val items = (1..count).map { i ->
+            ProgressiveMealItem(
+                analysis = FoodAnalysis(
+                    name = "Demo ingredient $i",
+                    calories = 60 * i,
+                    protein = 4.0 * i,
+                    carbs = 5.0 * i,
+                    fat = 2.0 * i,
+                    servingSizeGrams = null,
+                    emoji = "🥗",
+                ),
+            )
+        }
+        _ui.update { it.copy(
+            progressiveMeal = ProgressiveMealDraft(items = items),
+            showProgressiveMealSheet = true,
         ) }
     }
 

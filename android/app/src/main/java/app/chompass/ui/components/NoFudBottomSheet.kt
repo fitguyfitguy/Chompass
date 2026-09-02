@@ -1,8 +1,13 @@
 package app.chompass.ui.components
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
@@ -49,6 +54,14 @@ import androidx.compose.ui.unit.dp
  * navigationBarsPadding/imePadding) should pass `WindowInsets(0, 0, 0, 0)`
  * to avoid the M3 consumeWindowInsets(0,0,0,max(0,offset)) layout feedback
  * loop (see EditFoodEntrySheet, Codeberg #6).
+ *
+ * **Content height is not managed by the sheet.** [ModalBottomSheet] bounds
+ * the content height but never scrolls it: Compose measures a `Column`'s
+ * children sequentially, so a control placed after an uncapped growing region
+ * (a list) is measured with no space left and laid out past the sheet clip —
+ * unreachable by any gesture (Codeberg #84). Growing bodies need
+ * [ChompassPinnedFooterSheet]/[ChompassPinnedFooterColumn] or an explicit
+ * `weight`/`heightIn` cap on the list.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,6 +83,82 @@ fun ChompassBottomSheet(
         contentWindowInsets = contentWindowInsets,
         content = content,
     )
+}
+
+/**
+ * Pinned-chrome sheet layout: [toolbar] and [footer] are measured first, the
+ * [body] yields (Codeberg #84).
+ *
+ * Mechanics: inside a `Column`, non-weighted children ([toolbar], [footer])
+ * claim their natural height first; the body Box gets `weight(1f,
+ * fill = false)` = min(body content, remaining space). A scrollable body root
+ * (`ChompassSheetLazyColumn` or a `verticalScroll` Column) scrolls when its
+ * content exceeds the remainder, while the sheet stays compact when content
+ * is short. `heightIn(max = maxHeight * [maxHeightFraction])` caps the sheet
+ * at 92% of the available height (FoodResultSheet's `fillMaxHeight(0.92f)`
+ * precedent) — the failure mode this prevents is a control placed after an
+ * uncapped growing region being measured with no space and laid out past the
+ * sheet clip, unreachable by any gesture (#84).
+ *
+ * New sheets with a pinned CTA use this instead of appending controls after a
+ * list.
+ */
+@Composable
+fun ChompassPinnedFooterColumn(
+    modifier: Modifier = Modifier,
+    maxHeightFraction: Float = 0.92f,
+    toolbar: (@Composable () -> Unit)? = null,
+    footer: @Composable () -> Unit,
+    body: @Composable () -> Unit,
+) {
+    BoxWithConstraints(modifier.fillMaxWidth()) {
+        Column(
+            Modifier.fillMaxWidth().heightIn(max = maxHeight * maxHeightFraction)
+        ) {
+            toolbar?.invoke()
+            Box(Modifier.fillMaxWidth().weight(1f, fill = false)) { body() }
+            footer()
+        }
+    }
+}
+
+/**
+ * [ChompassBottomSheet] hosting a [ChompassPinnedFooterColumn]: pinned
+ * toolbar/footer, scrolling body, height capped at [maxHeightFraction] of the
+ * available space. See [ChompassPinnedFooterColumn] for the layout invariant.
+ *
+ * The sheet host zeroes `contentWindowInsets`, so the footer must pad itself —
+ * `.navigationBarsPadding()`, plus `.imePadding()` when the body has text
+ * inputs (Codeberg #6/#14: default M3 insets plus a self-padding footer
+ * create the consumeWindowInsets feedback loop).
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ChompassPinnedFooterSheet(
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+    sheetState: SheetState = rememberChompassSheetState(),
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
+    maxHeightFraction: Float = 0.92f,
+    toolbar: (@Composable () -> Unit)? = null,
+    footer: @Composable () -> Unit,
+    body: @Composable () -> Unit,
+) {
+    ChompassBottomSheet(
+        onDismiss = onDismiss,
+        modifier = modifier,
+        sheetState = sheetState,
+        containerColor = containerColor,
+        contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
+    ) {
+        ChompassPinnedFooterColumn(
+            modifier = Modifier,
+            maxHeightFraction = maxHeightFraction,
+            toolbar = toolbar,
+            footer = footer,
+            body = body,
+        )
+    }
 }
 
 /**

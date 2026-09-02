@@ -626,6 +626,7 @@ open class MainActivity : ComponentActivity() {
                 else -> null
             }
             if (flipReq != null) container.perfBenchInbox.value = flipReq
+            if (actions.seedProgressiveMeal) container.progressiveSeedInbox.value = 6
             if (actions.runEntryBenchmark) {
                 lifecycleScope.launch {
                     EntryPerfBenchmark(container).run(actions.entryBenchmarkCount)
