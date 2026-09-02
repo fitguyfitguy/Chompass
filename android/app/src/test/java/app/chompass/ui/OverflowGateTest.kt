@@ -1,6 +1,9 @@
 package app.chompass.ui
 
 import android.app.Application
+import app.chompass.ui.home.EntryAnalysisTipStrip
+import app.chompass.ui.home.MealPhotoAddTile
+import app.chompass.ui.settings.SettingRow
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
@@ -57,10 +60,10 @@ class OverflowGateTest {
     private val dePrimary = "Mahlzeit protokollieren"
 
     /**
-     * Assert this node's text renders on exactly one line inside non-zero
-     * bounds. Requires a text layout (Text/TextButton semantics).
+     * Assert this node's text renders on at most [maxLines] lines inside
+     * non-zero bounds. Requires a text layout (Text/TextButton semantics).
      */
-    private fun SemanticsNodeInteraction.assertVisibleSingleLine(label: String) {
+    private fun SemanticsNodeInteraction.assertVisibleMaxLines(label: String, maxLines: Int) {
         val node = fetchSemanticsNode()
         val bounds = node.boundsInRoot
         assert(bounds.width > 0f && bounds.height > 0f) {
@@ -71,10 +74,13 @@ class OverflowGateTest {
             ?.action
             ?.invoke(layouts)
         val lineCount = layouts.firstOrNull()?.lineCount
-        assert(lineCount == 1) {
-            "$label rendered on $lineCount lines (bounds=$bounds); chrome text must stay single-line"
+        assert(lineCount in 1..maxLines) {
+            "$label rendered on $lineCount lines (bounds=$bounds); chrome text must stay within $maxLines lines"
         }
     }
+
+    private fun SemanticsNodeInteraction.assertVisibleSingleLine(label: String) =
+        assertVisibleMaxLines(label, maxLines = 1)
 
     private fun setContentToolbar(fontScale: Float? = null) {
         composeRule.setContent {
@@ -162,5 +168,83 @@ class OverflowGateTest {
         }
         composeRule.onNodeWithText(dePrimary).assertVisibleSingleLine("sticky primary")
         composeRule.onNodeWithText(deSecondary).assertVisibleSingleLine("sticky text action")
+    }
+
+    @Test
+    fun mealPhotoAddTile_germanLabel_staysWithinTwoLines() {
+        // "Beschriftung hinzufügen" (meal_photos_add_label) stacked
+        // letter-by-letter in the 4.3.0 device pass; the tile now wraps to at
+        // most its 2 designed lines and never collapses.
+        composeRule.setContent {
+            MaterialTheme {
+                MealPhotoAddTile(
+                    label = "Beschriftung hinzufügen",
+                    addsFromLibrary = false,
+                    onAddPhoto = {},
+                )
+            }
+        }
+        composeRule.onNodeWithText("Beschriftung hinzufügen")
+            .assertVisibleMaxLines("add-photo tile label", maxLines = 2)
+    }
+
+    /**
+     * The result-sheet tip strip's two side-by-side actions (3.19 letter-stack
+     * fix). Both buttons are resource-backed, so this leg runs with the de
+     * qualifier to resolve the real German strings ("Tipp für die KI
+     * hinzufügen (optional)" + "Foto hinzufügen").
+     */
+    @Test
+    @Config(sdk = [34], application = Application::class, qualifiers = "de-w340dp-h720dp")
+    fun entryAnalysisTipStrip_germanActions_stayVisibleSingleLine() {
+        composeRule.setContent {
+            MaterialTheme {
+                EntryAnalysisTipStrip(
+                    expanded = false,
+                    onExpandedChange = {},
+                    note = "",
+                    onNoteChange = {},
+                    weightText = "",
+                    onWeightChange = {},
+                    canOfferTip = true,
+                    canAddPhoto = true,
+                    onApplyTip = {},
+                    onAddPhoto = {},
+                )
+            }
+        }
+        composeRule.onNodeWithText("Tipp für die KI hinzufügen (optional)")
+            .assertVisibleSingleLine("tip strip CTA")
+        composeRule.onNodeWithText("Foto hinzufügen")
+            .assertVisibleSingleLine("tip strip add-photo")
+    }
+
+    @Test
+    fun settingRow_germanStressValues_stayVisible() {
+        // Mirrors SettingRowStressPreviewContent's worst row: long label +
+        // very long value. Labels wrap to 2 lines, values ellipsize on one
+        // line; neither may stack or collapse.
+        composeRule.setContent {
+            MaterialTheme {
+                SettingRow(
+                    label = "Sortierung des Ernährungsprotokolls",
+                    value = "Frühstück → Mittagessen → Abendessen (neueste zuletzt)",
+                    onClick = {},
+                )
+                SettingRow(
+                    label = "Kalorienanzeige",
+                    value = "Tipp: Aktiviere Health Connect, um die aktiven Kalorien der Uhr/des Smartphones anstelle der geschätzten Aktivität zu verwenden.",
+                    onClick = {},
+                )
+            }
+        }
+        // Unmerged tree: the row is clickable and merges label+value into one
+        // semantics node, whose first text layout would be the 2-line label.
+        composeRule.onNodeWithText("Sortierung des Ernährungsprotokolls", useUnmergedTree = true)
+            .assertVisibleMaxLines("settings sort label", maxLines = 2)
+        composeRule.onNodeWithText("Frühstück → Mittagessen → Abendessen (neueste zuletzt)", useUnmergedTree = true)
+            .assertVisibleSingleLine("settings sort value")
+        composeRule.onNodeWithText("Tipp: Aktiviere Health Connect, um die aktiven Kalorien der Uhr/des Smartphones anstelle der geschätzten Aktivität zu verwenden.", useUnmergedTree = true)
+            .assertVisibleSingleLine("settings calorie-mode value")
     }
 }
