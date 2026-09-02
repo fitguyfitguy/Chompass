@@ -107,12 +107,13 @@ internal fun SheetReviewToolbar(
     val outerPadding = if (compact) 8.dp else 14.dp
     val itemGap = if (compact) 6.dp else 8.dp
     val showPrimary = primaryLabel != null && onPrimary != null
+    val secondaryShown = secondaryLabel != null && onSecondary != null
     Row(
         Modifier.fillMaxWidth().padding(horizontal = outerPadding, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         SheetToolbarPill(stringResource(R.string.action_cancel), compact = compact, onClick = onCancel)
-        Spacer(Modifier.width(itemGap))
+        if (secondaryShown || showPrimary) Spacer(Modifier.width(itemGap))
         Text(
             title,
             fontSize = if (compact) 16.sp else 17.sp,
@@ -122,12 +123,22 @@ internal fun SheetReviewToolbar(
             textAlign = TextAlign.Center,
             modifier = Modifier.weight(1f)
         )
-        Spacer(Modifier.width(itemGap))
-        if (secondaryLabel != null && onSecondary != null) {
-            SheetToolbarPill(secondaryLabel, compact = compact, onClick = onSecondary)
-            if (showPrimary) Spacer(Modifier.width(itemGap))
+        if (secondaryShown) {
+            // Weighted (and fill=false) so the Row measures the non-weighted
+            // primary pill BEFORE this one: when font scale squeezes the row,
+            // the title yields first, then this secondary pill truncates,
+            // and the primary CTA can never be starved to 0x0 (it used to be
+            // the last-measured sibling and collapsed at 1.3x+).
+            Spacer(Modifier.width(itemGap))
+            SheetToolbarPill(
+                secondaryLabel,
+                compact = compact,
+                onClick = onSecondary,
+                modifier = Modifier.weight(1f, fill = false),
+            )
         }
         if (showPrimary) {
+            Spacer(Modifier.width(itemGap))
             SheetToolbarPill(
                 primaryLabel,
                 bold = true,
@@ -223,7 +234,7 @@ internal fun SheetToolbarPill(
         compact -> 10.dp
         else -> 16.dp
     }
-    val modifier = (if (bold) {
+    val pillContainer = (if (bold) {
         Modifier
             .clip(shape)
             .background(Brush.linearGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd)))
@@ -235,7 +246,7 @@ internal fun SheetToolbarPill(
     }).alpha(if (enabled) 1f else 0.45f)
     Box(
         modifier
-            .then(Modifier)
+            .then(pillContainer)
             .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = horizontalPadding, vertical = 8.dp)
     ) {
