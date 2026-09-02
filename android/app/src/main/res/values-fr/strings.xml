@@ -867,6 +867,10 @@
     <string name="camera_flash_off">Flash éteint</string>
     <string name="camera_flash_on">Flash allumé</string>
     <string name="camera_scale_tip_dismiss">Compris</string>
+
+    <!-- Auto-backup restore notice (Codeberg #60) -->
+    <string name="restore_notice_title">Sauvegarde restaurée</string>
+    <string name="restore_notice_message">Android a restauré vos données depuis une installation précédente de l\'appli. Ce que vous avez enregistré dans cette installation avant la restauration peut manquer, et des réglages ont pu revenir à leur état antérieur. Vérifiez vos entrées et objectifs récents.</string>
     <string name="cd_add_food">Ajouter un aliment</string>
     <string name="cd_add_image">Ajouter une image</string>
     <string name="cd_apply_serving_edit">Appliquer la modification de portion</string>

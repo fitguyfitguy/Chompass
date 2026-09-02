@@ -807,6 +807,10 @@
     <string name="camera_flash_off">フラッシュオフ</string>
     <string name="camera_flash_on">フラッシュオン</string>
     <string name="camera_scale_tip_dismiss">了解</string>
+
+    <!-- Auto-backup restore notice (Codeberg #60) -->
+    <string name="restore_notice_title">バックアップを復元しました</string>
+    <string name="restore_notice_message">Androidがアプリの以前のインストールからデータを復元しました。復元より前にこのインストールで記録した内容は失われている場合があり、設定も元に戻っている場合があります。最近の記録と目標をご確認ください。</string>
     <string name="cd_add_food">食品を追加</string>
     <string name="cd_add_image">画像を追加</string>
     <string name="cd_apply_serving_edit">分量の編集を適用</string>

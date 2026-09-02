@@ -785,6 +785,10 @@
     <string name="camera_error_open">Не вдалося відкрити камеру</string>
     <string name="camera_error_save">Не вдалося зберегти фото</string>
     <string name="camera_scale_tip_dismiss">Зрозуміло</string>
+
+    <!-- Auto-backup restore notice (Codeberg #60) -->
+    <string name="restore_notice_title">Резервну копію відновлено</string>
+    <string name="restore_notice_message">Android відновив дані з попередньої інсталяції застосунку. Записи, зроблені в цій інсталяції до відновлення, могли зникнути, а налаштування могли скинутися. Перевір свої нещодавні записи та цілі.</string>
     <string name="cd_add_food">Додати їжу</string>
     <string name="cd_add_image">Додати зображення</string>
     <string name="cd_apply_serving_edit">Застосувати правку порції</string>

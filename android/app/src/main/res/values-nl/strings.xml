@@ -778,6 +778,10 @@
     <string name="camera_flash_off">Flitser uit</string>
     <string name="camera_flash_on">Flitser aan</string>
     <string name="camera_scale_tip_dismiss">Begrepen</string>
+
+    <!-- Auto-backup restore notice (Codeberg #60) -->
+    <string name="restore_notice_title">Back-up hersteld</string>
+    <string name="restore_notice_message">Android heeft je gegevens van een eerdere installatie van de app teruggezet. Wat je in deze installatie vóór het herstel hebt vastgelegd, kan ontbreken, en instellingen kunnen zijn teruggedraaid. Controleer je recente items en doelen.</string>
     <string name="cd_add_food">Voedsel toevoegen</string>
     <string name="cd_add_image">Afbeelding toevoegen</string>
     <string name="cd_apply_serving_edit">Portiebewerking toepassen</string>

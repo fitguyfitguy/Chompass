@@ -52,6 +52,8 @@ internal val PreferencesStore.hasSeenCameraScaleTipImpl: Flow<Boolean> get() = d
 internal suspend fun PreferencesStore.setHasSeenCameraScaleTipImpl(value: Boolean) {
         dataStore.edit { it[Keys.HAS_SEEN_CAMERA_SCALE_TIP] = value }
     }
+internal val PreferencesStore.restoredBackupNoticeShownImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.RESTORED_BACKUP_NOTICE_SHOWN] ?: false }
+internal suspend fun PreferencesStore.setRestoredBackupNoticeShownImpl(v: Boolean) { dataStore.edit { it[Keys.RESTORED_BACKUP_NOTICE_SHOWN] = v } }
 
     // -- Units ------------------------------------------------------------
 internal val PreferencesStore.useMetricImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.USE_METRIC] ?: true }

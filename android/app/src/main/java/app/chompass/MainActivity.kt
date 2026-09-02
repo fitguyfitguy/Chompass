@@ -18,8 +18,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -28,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import app.chompass.models.FoodEntry
@@ -61,6 +65,8 @@ import kotlinx.coroutines.withContext
 open class MainActivity : ComponentActivity() {
     // Shared-meal deep link (issue #107). Non-empty -> the confirm sheet is shown over the app.
     private var pendingSharedMeals by mutableStateOf<List<FoodEntry>>(emptyList())
+    // #60: one-time notice when an OS auto-backup restore replaced this install's data.
+    private var pendingRestoredBackupNotice by mutableStateOf(false)
     private var foregroundSyncJob: Job? = null
     private var lastForegroundSyncAtMs: Long = 0L
     /** Bumped when Theme Color is System so Compose re-reads Material You schemes. */
@@ -473,6 +479,18 @@ open class MainActivity : ComponentActivity() {
                                 onDismiss = { pendingSharedMeals = emptyList() }
                             )
                         }
+                        if (pendingRestoredBackupNotice) {
+                            AlertDialog(
+                                onDismissRequest = { dismissRestoredBackupNotice(container) },
+                                title = { Text(stringResource(R.string.restore_notice_title)) },
+                                text = { Text(stringResource(R.string.restore_notice_message)) },
+                                confirmButton = {
+                                    TextButton(onClick = { dismissRestoredBackupNotice(container) }) {
+                                        Text(stringResource(R.string.action_ok))
+                                    }
+                                },
+                            )
+                        }
                     }
                 }
             }
@@ -485,6 +503,7 @@ open class MainActivity : ComponentActivity() {
      * onboarding stays complete). Restored data carries the previous install's
      * firstLaunchAt, which then predates this install's firstInstallTime — log that
      * fingerprint so a report can be confirmed from a single logcat line.
+     * Also raises the one-time "Backup restored" dialog when the user has not seen it yet.
      */
     private suspend fun logRestoredDataFingerprint(container: AppContainer) {
         val firstLaunchAt = container.prefs.firstLaunchAt.first()
@@ -498,6 +517,14 @@ open class MainActivity : ComponentActivity() {
                 "firstInstallTime=$installedAt onboarded=${profile != null} " +
                 "macroPlan=${profile?.macroPlan != null})",
         )
+        if (!container.prefs.restoredBackupNoticeShown.first()) {
+            pendingRestoredBackupNotice = true
+        }
+    }
+
+    private fun dismissRestoredBackupNotice(container: AppContainer) {
+        pendingRestoredBackupNotice = false
+        lifecycleScope.launch { container.prefs.setRestoredBackupNoticeShown(true) }
     }
 
     private companion object {

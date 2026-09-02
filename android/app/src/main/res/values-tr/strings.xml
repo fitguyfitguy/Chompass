@@ -599,6 +599,10 @@
     <string name="camera_scale_tip_message">İpucu: Yemeğinin yanına bir çatal, el veya bozuk para koy. Porsiyon boyutunu tahmin etmeye yardımcı olur.</string>
     <string name="camera_scale_tip_dismiss">Anlaşıldı</string>
 
+    <!-- Auto-backup restore notice (Codeberg #60) -->
+    <string name="restore_notice_title">Yedek geri yüklendi</string>
+    <string name="restore_notice_message">Android, uygulamanın önceki bir kurulumundan gelen verilerini geri yükledi. Geri yüklemeden önce bu kurulumda kaydettiklerin eksik olabilir ve ayarlar eski hâline dönmüş olabilir. Son kayıtlarını ve hedeflerini kontrol et.</string>
+
     <!-- Multi-photo capture sheet -->
     <string name="meal_photos_title">Analizden önce</string>
     <string name="meal_photos_subtitle">Kısa bir not ve isteğe bağlı ikinci bir fotoğraf (ör. besin etiketi) ekle, ardından Analiz Et\'e dokun. AI yalnızca sen onayladıktan sonra başlar.</string>

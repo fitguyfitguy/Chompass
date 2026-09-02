@@ -22,6 +22,8 @@ internal object Keys {
         /** Release cleartext opt-in for user-entered AI endpoints (issue #8 follow-up, design doc D2 Option B). */
         val ALLOW_INSECURE_HTTP = booleanPreferencesKey("allowInsecureHttp")
         val HAS_SEEN_CAMERA_SCALE_TIP = booleanPreferencesKey("hasSeenCameraScaleTip")
+        /** One-time "backup restored" notice after an auto-backup restore replaced the datastore (Codeberg #60). */
+        val RESTORED_BACKUP_NOTICE_SHOWN = booleanPreferencesKey("restoredBackupNoticeShown")
         /** Epoch-millis of first app launch; gates settings Suggestions so new users aren't nagged. */
         val FIRST_LAUNCH_AT = longPreferencesKey("firstLaunchAt")
         /** Dismissed settings-suggestion ids ("water_tracking", "adaptive_goals", ...). */

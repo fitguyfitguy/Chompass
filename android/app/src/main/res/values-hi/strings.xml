@@ -808,6 +808,10 @@
     <string name="camera_flash_off">फ्लैश बंद</string>
     <string name="camera_flash_on">फ्लैश चालू</string>
     <string name="camera_scale_tip_dismiss">समझ गया</string>
+
+    <!-- Auto-backup restore notice (Codeberg #60) -->
+    <string name="restore_notice_title">बैकअप रीस्टोर हो गया</string>
+    <string name="restore_notice_message">Android ने ऐप के पिछले इंस्टॉल से आपका डेटा रीस्टोर किया है। रीस्टोर से पहले इस इंस्टॉल पर दर्ज की गई चीज़ें गायब हो सकती हैं, और सेटिंग्स पहले जैसी हो सकती हैं। कृपया अपनी हाल की एंट्री और लक्ष्य जाँच लें।</string>
     <string name="cd_add_food">खाना जोड़ें</string>
     <string name="cd_add_image">छवि जोड़ें</string>
     <string name="cd_apply_serving_edit">सर्विंग संपादन लागू करें</string>

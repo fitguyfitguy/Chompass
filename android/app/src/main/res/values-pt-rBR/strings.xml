@@ -796,6 +796,10 @@
     <string name="camera_flash_off">Flash desligado</string>
     <string name="camera_flash_on">Flash ligado</string>
     <string name="camera_scale_tip_dismiss">Entendi</string>
+
+    <!-- Auto-backup restore notice (Codeberg #60) -->
+    <string name="restore_notice_title">Backup restaurado</string>
+    <string name="restore_notice_message">O Android restaurou seus dados de uma instalação anterior do app. O que você registrou nesta instalação antes da restauração pode estar faltando, e as configurações podem ter voltado ao que eram. Confira seus registros e objetivos recentes.</string>
     <string name="cd_add_food">Adicionar comida</string>
     <string name="cd_add_image">Adicionar imagem</string>
     <string name="cd_apply_serving_edit">Aplicar edição de porção</string>

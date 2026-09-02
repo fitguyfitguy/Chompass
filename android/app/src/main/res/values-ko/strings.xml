@@ -807,6 +807,10 @@
     <string name="camera_flash_off">플래시 끄기</string>
     <string name="camera_flash_on">플래시 켜기</string>
     <string name="camera_scale_tip_dismiss">알겠습니다</string>
+
+    <!-- Auto-backup restore notice (Codeberg #60) -->
+    <string name="restore_notice_title">백업을 복원했어요</string>
+    <string name="restore_notice_message">Android가 앱의 이전 설치에서 데이터를 복원했어요. 복원 전에 이 설치에서 기록한 항목은 사라졌을 수 있고, 설정도 원래대로 돌아갔을 수 있어요. 최근 기록과 목표를 확인해 주세요.</string>
     <string name="cd_add_food">음식 추가</string>
     <string name="cd_add_image">이미지 추가</string>
     <string name="cd_apply_serving_edit">1인분 편집 적용</string>

@@ -1372,6 +1372,10 @@
     <string name="camera_flash_off">Выкл</string>
     <string name="camera_flash_on">Вкл</string>
     <string name="camera_scale_tip_dismiss">Понятно</string>
+
+    <!-- Auto-backup restore notice (Codeberg #60) -->
+    <string name="restore_notice_title">Резервная копия восстановлена</string>
+    <string name="restore_notice_message">Android восстановил данные из прежней установки приложения. Записи, сделанные в этой установке до восстановления, могли пропасть, и настройки могли сброситься. Проверь свои недавние записи и цели.</string>
     <string name="cd_apply_serving_edit">Применить правку порции</string>
     <string name="cd_remove_serving_unit">Удалить эту единицу</string>
     <string name="cd_copy_entries">Копировать записи</string>
