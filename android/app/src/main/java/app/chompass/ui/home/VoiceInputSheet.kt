@@ -12,6 +12,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -286,10 +288,17 @@ fun VoiceInputSheet(
             // Always-visible transcript box (gray rounded surface). Shows placeholder
             // when empty, "Transcribing…" while remote upload is running, or the live
             // transcript otherwise.
+            // #84 class: an uncapped live transcript used to grow the sheet
+            // past the screen and push Analyze/Cancel out of reach. Cap the
+            // box at 200dp, scroll it, and auto-follow the dictation tail.
+            // (The REVIEW-phase field below already caps itself at maxLines=6.)
+            val transcriptScroll = rememberScrollState()
+            LaunchedEffect(transcript) { transcriptScroll.scrollTo(transcriptScroll.maxValue) }
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .heightIn(min = 100.dp)
+                    .heightIn(min = 100.dp, max = 200.dp)
+                    .verticalScroll(transcriptScroll)
                     .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
                     .padding(horizontal = 14.dp, vertical = 12.dp)

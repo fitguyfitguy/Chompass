@@ -153,9 +153,16 @@ fun ContextNoteSheet(
                 Spacer(Modifier.width(72.dp))
             }
 
+            // Photo + note + wheel stack used to grow the sheet past the
+            // screen and push the Add photo/Analyze footer out of reach (#84
+            // class; MultiPhotoCaptureSheet already does this). The column
+            // scrolls: weight = remaining height after toolbar + footer are
+            // measured, fill=false so the sheet stays compact (the
+            // WaterQuickPresetsSheet pattern).
             Column(
                 Modifier
                     .fillMaxWidth()
+                    .weight(1f, fill = false)
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(18.dp)

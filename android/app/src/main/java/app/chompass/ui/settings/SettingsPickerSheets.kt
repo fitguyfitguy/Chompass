@@ -385,76 +385,82 @@ internal fun FastingGoalSheet(
     var eat by remember(fastHours, eatHours) {
         mutableIntStateOf(if (eatHours > 0) eatHours else (24 - fastHours).coerceIn(0, MAX_FASTING_EAT_HOURS))
     }
-    Text(stringResource(R.string.settings_fasting_goal), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-    Spacer(Modifier.height(12.dp))
-    // Popular-protocol quick picks (12:12 … 23:1). Ratio labels are
-    // language-neutral; the detail line below explains the selected one.
-    FlowRow(
-        Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        FastingGoalPreset.Popular.forEach { preset ->
-            val selected = fast == preset.fastHours && eat == preset.eatHours
-            FilterChip(
-                selected = selected,
-                onClick = {
-                    fast = preset.fastHours
-                    eat = preset.eatHours
-                },
-                label = { Text(preset.label) },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                ),
-            )
+    // Tall fixed stack (presets + two wheels, ~550dp) exceeds the sheet on
+    // small screens / large font scale, which pushes Save off-screen (#84
+    // class). Whole-body scroll with the single CTA inside it — the
+    // CaffeineLimitSheet / NicotineLimitSheet pattern.
+    Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+        Text(stringResource(R.string.settings_fasting_goal), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Spacer(Modifier.height(12.dp))
+        // Popular-protocol quick picks (12:12 … 23:1). Ratio labels are
+        // language-neutral; the detail line below explains the selected one.
+        FlowRow(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            FastingGoalPreset.Popular.forEach { preset ->
+                val selected = fast == preset.fastHours && eat == preset.eatHours
+                FilterChip(
+                    selected = selected,
+                    onClick = {
+                        fast = preset.fastHours
+                        eat = preset.eatHours
+                    },
+                    label = { Text(preset.label) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    ),
+                )
+            }
         }
-    }
-    Spacer(Modifier.height(12.dp))
-    val selectedPreset = FastingGoalPreset.Popular.firstOrNull { it.fastHours == fast && it.eatHours == eat }
-    if (selectedPreset != null && fast > 0) {
+        Spacer(Modifier.height(12.dp))
+        val selectedPreset = FastingGoalPreset.Popular.firstOrNull { it.fastHours == fast && it.eatHours == eat }
+        if (selectedPreset != null && fast > 0) {
+            Text(
+                stringResource(R.string.fasting_preset_detail, selectedPreset.fastHours, selectedPreset.eatHours),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            )
+            Spacer(Modifier.height(8.dp))
+        }
         Text(
-            stringResource(R.string.fasting_preset_detail, selectedPreset.fastHours, selectedPreset.eatHours),
+            stringResource(R.string.fasting),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
+        NumericWheelPicker(
+            value = fast,
+            onValueChange = { fast = it },
+            min = 0,
+            max = MAX_FASTING_GOAL_HOURS,
+            unit = stringResource(R.string.fasting_goal_unit_h),
+            step = 1,
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            stringResource(R.string.settings_fasting_eat_window),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        )
+        NumericWheelPicker(
+            value = eat,
+            onValueChange = { eat = it },
+            min = 0,
+            max = MAX_FASTING_EAT_HOURS,
+            unit = stringResource(R.string.fasting_goal_unit_h),
+            step = 1,
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            stringResource(R.string.settings_fasting_goal_wheel_help),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        )
+        Spacer(Modifier.height(16.dp))
+        GradientSaveButton { onSave(fast, eat) }
         Spacer(Modifier.height(8.dp))
     }
-    Text(
-        stringResource(R.string.fasting),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-    )
-    NumericWheelPicker(
-        value = fast,
-        onValueChange = { fast = it },
-        min = 0,
-        max = MAX_FASTING_GOAL_HOURS,
-        unit = stringResource(R.string.fasting_goal_unit_h),
-        step = 1,
-    )
-    Spacer(Modifier.height(8.dp))
-    Text(
-        stringResource(R.string.settings_fasting_eat_window),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-    )
-    NumericWheelPicker(
-        value = eat,
-        onValueChange = { eat = it },
-        min = 0,
-        max = MAX_FASTING_EAT_HOURS,
-        unit = stringResource(R.string.fasting_goal_unit_h),
-        step = 1,
-    )
-    Spacer(Modifier.height(8.dp))
-    Text(
-        stringResource(R.string.settings_fasting_goal_wheel_help),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-    )
-    Spacer(Modifier.height(16.dp))
-    GradientSaveButton { onSave(fast, eat) }
-    Spacer(Modifier.height(8.dp))
 }
 
 /** Daily fast-start clock time; mirrors [DailySummaryTimeSheet]. */

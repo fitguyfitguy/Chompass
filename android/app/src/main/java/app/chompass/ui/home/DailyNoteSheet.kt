@@ -192,9 +192,15 @@ internal fun DailyNoteSheet(
                 Spacer(Modifier.width(72.dp))
             }
 
+            // A long note (or the open keyboard) used to grow the sheet past
+            // the screen and push the Clear/Save footer out of reach (#84
+            // class). The note column scrolls: weight = remaining height
+            // after toolbar + footer are measured, fill=false so the sheet
+            // stays compact for short notes (WaterQuickPresetsSheet pattern).
             Column(
                 Modifier
                     .fillMaxWidth()
+                    .weight(1f, fill = false)
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(18.dp)
