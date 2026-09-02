@@ -800,6 +800,10 @@
     <string name="camera_flash_off">Flash dezactivat</string>
     <string name="camera_flash_on">Flash activat</string>
     <string name="camera_scale_tip_dismiss">Am înțeles</string>
+
+    <!-- Auto-backup restore notice (Codeberg #60) -->
+    <string name="restore_notice_title">Copie de siguranță restaurată</string>
+    <string name="restore_notice_message">Android ți-a restaurat datele dintr-o instalare anterioară a aplicației. Ce ai înregistrat în această instalare înainte de restaurare poate lipsi, iar setările au putut reveni la valorile anterioare. Verifică-ți intrările și obiectivele recente.</string>
     <string name="cd_add_food">Adaugă mâncare</string>
     <string name="cd_add_image">Adaugă imagine</string>
     <string name="cd_apply_serving_edit">Aplică modificarea porției</string>

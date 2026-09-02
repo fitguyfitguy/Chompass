@@ -808,6 +808,10 @@
     <string name="camera_flash_off">إيقاف الفلاش</string>
     <string name="camera_flash_on">تشغيل الفلاش</string>
     <string name="camera_scale_tip_dismiss">حسنًا</string>
+
+    <!-- Auto-backup restore notice (Codeberg #60) -->
+    <string name="restore_notice_title">تمت استعادة النسخة الاحتياطية</string>
+    <string name="restore_notice_message">استعاد Android بياناتك من تثبيت سابق للتطبيق. قد تكون الإدخالات التي سجلتها في هذا التثبيت قبل الاستعادة مفقودة، وقد عادت الإعدادات إلى ما كانت عليه. يرجى التحقق من إدخالاتك وأهدافك الأخيرة.</string>
     <string name="cd_add_food">إضافة طعام</string>
     <string name="cd_add_image">إضافة صورة</string>
     <string name="cd_apply_serving_edit">تطبيق تعديل الحصة</string>

@@ -795,6 +795,10 @@
     <string name="camera_error_open">Impossibile aprire la fotocamera</string>
     <string name="camera_error_save">Impossibile salvare la foto</string>
     <string name="camera_scale_tip_dismiss">Ok</string>
+
+    <!-- Auto-backup restore notice (Codeberg #60) -->
+    <string name="restore_notice_title">Backup ripristinato</string>
+    <string name="restore_notice_message">Android ha ripristinato i dati di un\'installazione precedente dell\'app. Ciò che hai registrato in questa installazione prima del ripristino potrebbe mancare, e le impostazioni potrebbero essere tornate come prima. Controlla le voci e gli obiettivi recenti.</string>
     <string name="cd_add_food">Aggiungi cibo</string>
     <string name="cd_add_image">Aggiungi immagine</string>
     <string name="cd_apply_serving_edit">Applica modifica porzione</string>

@@ -800,6 +800,10 @@ bilirsən?</string>
     <string name="camera_flash_off">Flaş söndürülüb</string>
     <string name="camera_flash_on">Flaş yandırılıb</string>
     <string name="camera_scale_tip_dismiss">Başa düşdüm</string>
+
+    <!-- Auto-backup restore notice (Codeberg #60) -->
+    <string name="restore_notice_title">Ehtiyat nüsxə bərpa olundu</string>
+    <string name="restore_notice_message">Android tətbiqin əvvəlki quraşdırılmasından olan məlumatlarını bərpa etdi. Bərpadan əvvəl bu quraşdırmada əlavə etdiklərin çatışmaya bilər, parametrlər də köhnə vəziyyətinə qayıtmış ola bilər. Son qeydlərini və məqsədlərini yoxla.</string>
     <string name="cd_add_food">Yemək əlavə et</string>
     <string name="cd_add_image">Şəkil əlavə et</string>
     <string name="cd_apply_serving_edit">Porsiya dəyişikliyini tətbiq et</string>

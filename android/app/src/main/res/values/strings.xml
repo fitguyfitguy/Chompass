@@ -728,6 +728,10 @@
     <string name="camera_scale_tip_message">Tip: include a fork, hand, or coin next to your food. It helps estimate portion size.</string>
     <string name="camera_scale_tip_dismiss">Got it</string>
 
+    <!-- Auto-backup restore notice (Codeberg #60) -->
+    <string name="restore_notice_title">Backup restored</string>
+    <string name="restore_notice_message">Android restored your data from a previous install of the app. Anything you logged on this install before the restore may be missing, and settings may have reverted. Please double-check your recent entries and goals.</string>
+
     <!-- Multi-photo capture sheet -->
     <string name="meal_photos_title">Before analyzing</string>
     <string name="meal_photos_subtitle">Add a short note and optionally a second photo (e.g. nutrition label), then tap Analyze. AI starts only after you confirm.</string>

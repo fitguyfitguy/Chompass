@@ -599,6 +599,10 @@
     <string name="camera_scale_tip_message">Wskazówka: połóż widelec, dłoń lub monetę obok jedzenia. To pomaga oszacować wielkość porcji.</string>
     <string name="camera_scale_tip_dismiss">Rozumiem</string>
 
+    <!-- Auto-backup restore notice (Codeberg #60) -->
+    <string name="restore_notice_title">Przywrócono kopię zapasową</string>
+    <string name="restore_notice_message">Android przywrócił dane z poprzedniej instalacji aplikacji. Wpisy dodane w tej instalacji przed przywróceniem mogły zniknąć, a ustawienia mogły wrócić do poprzednich wartości. Sprawdź swoje ostatnie wpisy i cele.</string>
+
     <!-- Multi-photo capture sheet -->
     <string name="meal_photos_title">Przed analizą</string>
     <string name="meal_photos_subtitle">Dodaj krótką notatkę i opcjonalnie drugie zdjęcie (np. etykietę), a następnie stuknij Analizuj. AI startuje dopiero po Twoim potwierdzeniu.</string>

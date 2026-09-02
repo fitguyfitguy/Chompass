@@ -1067,6 +1067,10 @@ für dich ein</string>
 
     <string name="camera_scale_tip_dismiss">Verstanden</string>
 
+    <!-- Auto-backup restore notice (Codeberg #60) -->
+    <string name="restore_notice_title">Backup wiederhergestellt</string>
+    <string name="restore_notice_message">Android hat deine Daten aus einer früheren Installation der App wiederhergestellt. Was du vor der Wiederherstellung in dieser Installation erfasst hast, kann fehlen, und Einstellungen können zurückgesetzt sein. Wirf einen kurzen Blick auf deine letzten Einträge und Ziele.</string>
+
     <string name="meal_photos_title">Vor der Analyse</string>
 
     <string name="meal_photos_subtitle">Füge eine kurze Notiz und optional ein zweites Foto (z. B. Nährwertangaben) hinzu und tippe dann auf „Analysieren“. Die KI startet erst, nachdem du bestätigt hast.</string>

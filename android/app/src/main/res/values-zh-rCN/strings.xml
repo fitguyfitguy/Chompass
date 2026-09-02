@@ -809,6 +809,10 @@
     <string name="camera_flash_off">关闭闪光</string>
     <string name="camera_flash_on">开启闪光</string>
     <string name="camera_scale_tip_dismiss">知道了</string>
+
+    <!-- Auto-backup restore notice (Codeberg #60) -->
+    <string name="restore_notice_title">已恢复备份</string>
+    <string name="restore_notice_message">Android 已从应用的旧安装中恢复了数据。恢复之前在本次安装中记录的内容可能已丢失，设置也可能已还原。请检查最近的记录和目标。</string>
     <string name="cd_add_food">添加食物</string>
     <string name="cd_add_image">添加图片</string>
     <string name="cd_apply_serving_edit">应用份量修改</string>
