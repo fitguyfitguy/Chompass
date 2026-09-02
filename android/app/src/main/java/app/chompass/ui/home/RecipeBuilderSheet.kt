@@ -101,8 +101,11 @@ fun RecipeBuilderSheet(
             onSecondary = { if (canSave) onSave(current()) }
         )
 
+        // #84-class hardening: nothing follows this list today; the weight
+        // makes that explicit so a future trailing control cannot be pushed
+        // past the sheet clip.
         LazyColumn(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 28.dp),
+            modifier = Modifier.fillMaxWidth().weight(1f, fill = false).padding(bottom = 28.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             item {
