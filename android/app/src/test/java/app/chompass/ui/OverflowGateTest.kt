@@ -3,10 +3,13 @@ package app.chompass.ui
 import android.app.Application
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.test.DeviceConfigurationOverride
+import androidx.compose.ui.test.FontScale
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -73,23 +76,56 @@ class OverflowGateTest {
         }
     }
 
-    @Test
-    fun sheetReviewToolbar_germanActions_stayVisibleSingleLine() {
+    private fun setContentToolbar(fontScale: Float? = null) {
         composeRule.setContent {
             MaterialTheme {
-                SheetReviewToolbar(
-                    title = deTitle,
-                    onCancel = {},
-                    secondaryLabel = deSecondary,
-                    onSecondary = {},
-                    primaryLabel = dePrimary,
-                    onPrimary = {},
-                )
+                val toolbar: @Composable () -> Unit = {
+                    SheetReviewToolbar(
+                        title = deTitle,
+                        onCancel = {},
+                        secondaryLabel = deSecondary,
+                        onSecondary = {},
+                        primaryLabel = dePrimary,
+                        onPrimary = {},
+                    )
+                }
+                if (fontScale != null) {
+                    DeviceConfigurationOverride(
+                        DeviceConfigurationOverride.FontScale(fontScale)
+                    ) { toolbar() }
+                } else {
+                    toolbar()
+                }
             }
         }
+    }
+
+    @Test
+    fun sheetReviewToolbar_germanActions_stayVisibleSingleLine() {
+        setContentToolbar()
         composeRule.onNodeWithText("Cancel").assertVisibleSingleLine("toolbar cancel")
         composeRule.onNodeWithText(deSecondary).assertVisibleSingleLine("toolbar secondary")
         composeRule.onNodeWithText(dePrimary).assertVisibleSingleLine("toolbar primary")
+    }
+
+    /**
+     * 1.3x is the large-font repo bar (device-pass checks in
+     * PLAN_UI_STRING_FIT); 2.0x is the stress leg. The title and secondary
+     * pill are designed to yield at large font scale; the primary CTA and
+     * cancel must stay visible and single-line (the 0x0 collapse bug).
+     */
+    @Test
+    fun sheetReviewToolbar_germanActions_fontScale130_primaryStaysVisible() {
+        setContentToolbar(fontScale = 1.3f)
+        composeRule.onNodeWithText("Cancel").assertVisibleSingleLine("toolbar cancel 1.3x")
+        composeRule.onNodeWithText(dePrimary).assertVisibleSingleLine("toolbar primary 1.3x")
+    }
+
+    @Test
+    fun sheetReviewToolbar_germanActions_fontScale200_primaryStaysVisible() {
+        setContentToolbar(fontScale = 2f)
+        composeRule.onNodeWithText("Cancel").assertVisibleSingleLine("toolbar cancel 2.0x")
+        composeRule.onNodeWithText(dePrimary).assertVisibleSingleLine("toolbar primary 2.0x")
     }
 
     @Test
