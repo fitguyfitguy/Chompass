@@ -14,6 +14,7 @@ import app.chompass.ui.home.EntryAnalysisOverlay
 import app.chompass.ui.home.EntryAnalysisPhase
 import app.chompass.ui.home.HomeAddFoodScreenshotContent
 import app.chompass.ui.home.HomeMealComponentsScreenshotContent
+import app.chompass.ui.home.HomeProgressiveMealScreenshotContent
 import app.chompass.ui.home.HomeRecipesScreenshotContent
 import app.chompass.ui.home.HomeScreenPreviewContent
 import app.chompass.ui.home.WhatIfMealImpactDialog
@@ -159,6 +160,17 @@ fun ProgressPlotsDarkScreenshot() {
 fun AddFoodLightScreenshot() {
     ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = false) {
         HomeAddFoodScreenshotContent(ui = ScreenshotFixtures.homeUiState())
+    }
+}
+
+@PreviewTest
+@Preview(name = "progressive-meal-overflow", device = PHONE)
+@Composable
+fun ProgressiveMealOverflowScreenshot() {
+    // Codeberg #84: 6-ingredient meal-builder sheet — the pinned footer must
+    // keep Add another / Log meal reachable when the list overflows.
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = true, showNavBar = false) {
+        HomeProgressiveMealScreenshotContent(ui = ScreenshotFixtures.homeUiState())
     }
 }
 

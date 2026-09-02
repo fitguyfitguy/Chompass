@@ -55,6 +55,7 @@ class MainActivityDebugExtrasGateTest {
             putExtra("run_ondevice_llm_test", true)
             putExtra("diagnose_health_connect", true)
             putExtra("preview_daily_summary", true)
+            putExtra("seed_progressive_meal", true)
         }
         val actions = consumeDebugIntentExtras(intent, debugEnabled = false)
         // Every flag/extra comes back at its default: no seed, no restore, no reset.
@@ -83,6 +84,7 @@ class MainActivityDebugExtrasGateTest {
             putExtra("seed_busy_home", true)
             putExtra("restore_real_data", true)
             putExtra("reset_onboarding", true)
+            putExtra("seed_progressive_meal", true)
         }
         val actions = consumeDebugIntentExtras(intent, debugEnabled = true)
         assertTrue(actions.seedTestData)
@@ -90,12 +92,14 @@ class MainActivityDebugExtrasGateTest {
         assertTrue(actions.seedBusyHome)
         assertTrue(actions.restoreRealData)
         assertTrue(actions.resetOnboarding)
+        assertTrue(actions.seedProgressiveMeal)
         // Consumed so Activity.recreate() / onNewIntent re-delivery cannot re-fire.
         assertFalse(intent.hasExtra("seed_test_data"))
         assertFalse(intent.hasExtra("seed_full"))
         assertFalse(intent.hasExtra("seed_busy_home"))
         assertFalse(intent.hasExtra("restore_real_data"))
         assertFalse(intent.hasExtra("reset_onboarding"))
+        assertFalse(intent.hasExtra("seed_progressive_meal"))
     }
 
     @Test

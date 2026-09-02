@@ -362,6 +362,9 @@ class AppContainer(app: ChompassApp) {
     val perfBenchInbox: MutableStateFlow<app.chompass.services.PerfBenchRequest?> =
         MutableStateFlow(null)
 
+    /** Debug-only: HomeViewModel seeds the meal-builder sheet (Codeberg #84 repro). */
+    val progressiveSeedInbox: MutableStateFlow<Int?> = MutableStateFlow(null)
+
     /** See [HealthConnectReadSync.sync]. */
     suspend fun syncHealthConnectReads() = healthConnectReadSync.sync()
 
