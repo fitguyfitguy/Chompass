@@ -476,37 +476,15 @@ fun MultiPhotoCaptureSheet(
                     }
                     if (imageBytesList.size < FoodPhotoSession.MAX_IMAGES) {
                         item(key = "add-photo") {
-                            OutlinedButton(
-                                onClick = onAddPhoto,
-                                modifier = Modifier.size(width = 150.dp, height = 180.dp),
-
-                                shape = RoundedCornerShape(16.dp),
-                            ) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                                ) {
-                                    Icon(
-                                        if (addsFromLibrary) Icons.Filled.PhotoLibrary else Icons.Filled.AddAPhoto,
-                                        contentDescription = null,
-                                        tint = AppColors.Calorie,
-                                        modifier = Modifier.size(28.dp),
-                                    )
-                                    Text(
-                                        stringResource(
-                                            if (addsFromLibrary) R.string.meal_photos_add_from_library
-                                            else if (imageBytesList.size == 1) R.string.meal_photos_add_label
-                                            else R.string.meal_photos_add_photo,
-                                        ),
-                                        color = AppColors.Calorie,
-                                        fontSize = 13.sp,
-                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                                        maxLines = 2,
-                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                                    )
-
-                                }
-                            }
+                            MealPhotoAddTile(
+                                label = stringResource(
+                                    if (addsFromLibrary) R.string.meal_photos_add_from_library
+                                    else if (imageBytesList.size == 1) R.string.meal_photos_add_label
+                                    else R.string.meal_photos_add_photo,
+                                ),
+                                addsFromLibrary = addsFromLibrary,
+                                onAddPhoto = onAddPhoto,
+                            )
                         }
                     }
                 }
@@ -628,6 +606,44 @@ fun MultiPhotoCaptureSheet(
                         parsePositiveGrams(weightText),
                     )
                 },
+            )
+        }
+    }
+}
+
+/**
+ * Add-photo tile of the meal photo strip: fixed 150x180dp so the thumbnails
+ * and the tile line up. The label wraps to at most 2 lines and ellipsizes
+ * (the 4.3.0 letter-stacking fix widened this tile from a narrower squeeze).
+ */
+@Composable
+internal fun MealPhotoAddTile(
+    label: String,
+    addsFromLibrary: Boolean,
+    onAddPhoto: () -> Unit,
+) {
+    OutlinedButton(
+        onClick = onAddPhoto,
+        modifier = Modifier.size(width = 150.dp, height = 180.dp),
+        shape = RoundedCornerShape(16.dp),
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Icon(
+                if (addsFromLibrary) Icons.Filled.PhotoLibrary else Icons.Filled.AddAPhoto,
+                contentDescription = null,
+                tint = AppColors.Calorie,
+                modifier = Modifier.size(28.dp),
+            )
+            Text(
+                label,
+                color = AppColors.Calorie,
+                fontSize = 13.sp,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                maxLines = 2,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
             )
         }
     }
