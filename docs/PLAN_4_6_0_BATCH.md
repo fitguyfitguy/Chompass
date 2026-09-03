@@ -47,18 +47,20 @@ speech default follows. `modelTiers["gemini-3.8-flash"] = "varies"`.
   Not paid-only, so the release default stands; over-quota requests fall back
   to 3.5 Flash-Lite as designed. The `"varies"` tier tag stays accurate —
   Google still publishes no per-model free-tier table.
-- **Device goal-matrix sweep (SMART tier must not clamp, expect 19/19)** —
-  attempt recorded 2026-09-03: spot-check had passed the first 4/19 scenarios
-  (formula-anchored, no BMR clamp) before a USB disconnect; the re-run on the
-  freshly attached Pixel 9a hit the free-tier 429 on every scenario — at
-  roughly 10 requests/day, `gemini-3.8-flash` free quota cannot carry a
-  19-scenario (+fallback) sweep in one day at all. Closing this gate needs one
-  of: a paid-tier key for a single run, a scenario subset split across quota
-  days (`goal_matrix_scenarios` filter, clamping-prone cases first), or explicit
-  maintainer acceptance of the residual risk. Re-run command:
-  `adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez run_goal_matrix_test true --es goal_matrix_tier smart --es goal_matrix_provider gemini --es goal_matrix_model gemini-3.8-flash`
-  A clamping result would mean the tier regex picked up Lite-like behavior and
-  must be fixed before the model stays default.
+- **Device goal-matrix sweep (SMART tier must not clamp, expect 19/19) —
+  CLOSED 2026-09-03:** run on the Pixel 9a via the OpenRouter benchmark key
+  (`goal_matrix_provider openrouter`, `google/gemini-3.8-flash`, SMART tier)
+  after the free-tier Gemini key proved unusable for a full sweep (~10
+  requests/day). All 19 scenarios passed with zero BMR clamping: formula
+  anchors exact on the sparse/thin cases (sparse_up 1980, sparse_up_active
+  2131, maintain_sparse_up 2530, very_active_sparse_up 2429), measured 2500
+  anchor honored at 1950 exact, locked returned exactly 2400, keto carbs
+  27 g, gain 3090; worst deviation from formula 10 kcal (rich_consistent,
+  gain); the only floor hits are the two by-design cases
+  (rich_low_empirical, sedentary_sparse_up). The first pass went 14/14 with
+  5 transient failures (3 OpenRouter upstream aborts, 2 device DNS blips);
+  the scenario-filter re-run of those 5 was clean. The tier regex behaves
+  as designed for 3.8: the release default stands.
 
 ### 4. Review-fix pass (this work)
 
