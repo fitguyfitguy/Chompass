@@ -5,6 +5,8 @@
  * DiaryExporter.kt and DiaryImporter.kt.
  */
 
+import { microOrNull } from "./constituents.js";
+
 export const DIARY_FORMAT_VERSION = "1.5";
 
 /** Versions accepted on import. New exports always stamp [DIARY_FORMAT_VERSION]. */
@@ -179,7 +181,9 @@ function constituentsFromWire(arr) {
       selectedServingQuantity: c.selected_serving_quantity != null ? Number(c.selected_serving_quantity) : null,
     };
     for (const [wireKey, modelKey] of MICRO_FIELDS) {
-      row[modelKey] = c[wireKey] ?? null;
+      // Android InputSanitizer.micro parity: Number-coerce (string micros in
+      // hand-edited docs) and clamp instead of passing raw wire values through.
+      row[modelKey] = microOrNull(c[wireKey]);
     }
     out.push(row);
   }

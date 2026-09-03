@@ -52,16 +52,21 @@ const AI_MICRO_FIELDS = [
   ["omega_3", "omega3G"],
 ];
 
+/** Clamp ceiling for micronutrients — mirrors Android InputSanitizer.MAX_MICRO_UNITS. */
+export const MAX_MICRO_UNITS = 100_000;
+
 /**
- * Normalized micro value: null when absent, non-finite, or negative.
+ * Normalized micro value: null when absent or non-finite; otherwise clamped
+ * into [0, MAX_MICRO_UNITS]. Android InputSanitizer.micro parity: a negative
+ * estimate clamps to 0 instead of dropping the nutrient, absurd magnitudes cap.
  * @param {unknown} v
  * @returns {number|null}
  */
-function microOrNull(v) {
+export function microOrNull(v) {
   if (v == null) return null;
   const n = Number(v);
-  if (!Number.isFinite(n) || n < 0) return null;
-  return n;
+  if (!Number.isFinite(n)) return null;
+  return Math.min(Math.max(n, 0), MAX_MICRO_UNITS);
 }
 
 /**
@@ -80,7 +85,8 @@ function microFrom(c) {
 
 /**
  * Scale a row's present micros by a grams factor (per-100g semantics):
- * round to 1dp, clamp >= 0; absent micros stay absent.
+ * round to 1dp, clamp >= 0; absent micros stay absent. Factor 1 is the
+ * identity — no rounding drift (Android FoodConstituent.microsScaled parity).
  * @param {FoodConstituent} row
  * @param {number} factor
  * @returns {Partial<FoodConstituent>}
@@ -91,7 +97,7 @@ function scaledMicros(row, factor) {
   for (const key of ALL_MICRO_KEYS) {
     const v = row[key];
     if (v == null) continue;
-    out[key] = Math.max(0, round1(v * factor));
+    out[key] = factor === 1 ? v : Math.max(0, round1(v * factor));
   }
   return out;
 }

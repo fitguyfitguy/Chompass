@@ -7,6 +7,7 @@
  * android/.../export/SyncDocument.kt. Imports also accept 1.0/1.1/1.2.
  */
 import { goalJournalIdFor } from "./macro-plan.js";
+import { microOrNull } from "./constituents.js";
 
 export const SYNC_FORMAT_VERSION = "1.3";
 export const SYNC_KIND = "sync";
@@ -196,7 +197,9 @@ function constituentsFromWire(arr) {
       selectedServingQuantity: c.selected_serving_quantity != null ? Number(c.selected_serving_quantity) : null,
     };
     for (const [wireKey, modelKey] of MICRO_FIELDS) {
-      row[modelKey] = c[wireKey] ?? null;
+      // Android InputSanitizer.micro parity: Number-coerce (string micros in
+      // hand-edited docs) and clamp instead of passing raw wire values through.
+      row[modelKey] = microOrNull(c[wireKey]);
     }
     out.push(row);
   }
