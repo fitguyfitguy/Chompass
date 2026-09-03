@@ -15,6 +15,14 @@ RepoType: git
 Repo: https://codeberg.org/fitguy/chompass.git
 
 Builds:
+  - versionName: 4.5.0
+    versionCode: 72
+    commit: 17eb6758ffae2573eabacd1726f42edb2b6bbabe
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
   - versionName: 4.4.0
     versionCode: 70
     commit: e907abe3a7636e98ba0d0d39f42df72f47911bde
