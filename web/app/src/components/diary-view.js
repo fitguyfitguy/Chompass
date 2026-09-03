@@ -76,6 +76,21 @@ import { showToast, showUndoToast } from "../lib/ui/toast.js";
 function mealLabel(mealType) {
   return MEAL_ORDER.includes(mealType) ? t(`meal.${mealType}`) : mealType;
 }
+
+/** Percent of a daily goal. Null when the goal is missing or not positive. */
+function nutritionGoalPercent(value, goal) {
+  const v = Number(value);
+  const g = Number(goal);
+  if (!Number.isFinite(v) || !Number.isFinite(g) || g <= 0) return null;
+  return Math.round((v / g) * 100);
+}
+
+/** @param {number|string|null|undefined} goal */
+function nutritionGoalText(goal, percent) {
+  if (goal == null || goal === "") return "";
+  const shown = goal || "—";
+  return percent != null ? `/ ${shown} (${percent}%)` : `/ ${shown}`;
+}
 /** Saved-meals sheet tab labels (catalog key names). */
 const SEGMENT_LABELS = { RECENTS: "add_food.hero_recents", FREQUENT: "add_food.frequent", FAVORITES: "add_food.favorites", RECIPES: "diary.tab_recipes" };
 const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack", "other"];
@@ -475,8 +490,8 @@ function mealCard(mealType, mealEntries, chipKeys) {
   const icon = ICONS[mealType] || ICONS.snack;
   return `
     <section class="meal-card card card--glass">
-      <header class="meal-card__header">
-        <span class="meal-card__icon meal-card__icon--${mealType}">${icon}</span>
+      <button type="button" class="meal-card__header" data-meal-nutrition="${escapeAttr(mealType)}" aria-label="${escapeAttr(`${mealLabel(mealType)} · ${t("diary.nutrition_detail")}`)}">
+        <span class="meal-card__icon meal-card__icon--${escapeAttr(mealType)}">${icon}</span>
         <div class="meal-card__titles">
           <h2 class="meal-card__title">${mealLabel(mealType)}</h2>
           <p class="meal-card__summary">
@@ -484,7 +499,7 @@ function mealCard(mealType, mealEntries, chipKeys) {
             <span class="meal-card__summary-sep"> · </span>${formatMacroChipLine(totals, chipKeys)}
           </p>
         </div>
-      </header>
+      </button>
       <div class="meal-card__list">
         ${mealEntries
           .map((e) => {
@@ -971,6 +986,13 @@ export class DiaryView extends HTMLElement {
     this.querySelectorAll("[data-nutrition-detail]").forEach((el) => {
       el.addEventListener("click", () => {
         this.openNutritionDetail(entries, targets, optionalGoals);
+      });
+    });
+    this.querySelectorAll("[data-meal-nutrition]").forEach((el) => {
+      el.addEventListener("click", () => {
+        const mealType = el.getAttribute("data-meal-nutrition") || "";
+        const mealEntries = entries.filter((e) => e.mealType === mealType);
+        this.openNutritionDetail(mealEntries, targets, optionalGoals, mealLabel(mealType));
       });
     });
     // The desktop hero is a div (block content), not a <button>: give the
@@ -2039,12 +2061,13 @@ export class DiaryView extends HTMLElement {
   }
 
   /**
-   * Day nutrition detail — Android NutritionDetailSheet parity.
+   * Day or meal-slot nutrition detail — Android NutritionDetailSheet parity.
    * @param {import('../lib/chompass-core/models.js').FoodEntry[]} entries
    * @param {ReturnType<typeof dailyTargets>|null} targets
    * @param {import('../lib/db.js').OptionalNutrientGoals} optionalGoals
+   * @param {string} [title]
    */
-  openNutritionDetail(entries, targets, optionalGoals) {
+  openNutritionDetail(entries, targets, optionalGoals, title) {
     const fmt = (v) => (v === 0 ? "—" : v.toFixed(1));
     const cal = entries.reduce((s, e) => s + e.calories, 0);
     const macroRows = [
@@ -2060,33 +2083,36 @@ export class DiaryView extends HTMLElement {
     });
 
     const sheet = openSheet({
-      title: t("diary.nutrition_detail"),
+      title: title || t("diary.nutrition_detail"),
       body: `
         <section class="nutrition-detail">
           <h3 class="nutrition-detail__heading">${t("diary.macros")}</h3>
           <ul class="nutrition-detail__list">
             ${macroRows
-              .map(
-                ([label, value, goal, unit]) => `
+              .map(([label, value, goal, unit]) => {
+                const percent = nutritionGoalPercent(value, goal);
+                return `
               <li class="nutrition-detail__row">
                 <span class="nutrition-detail__label">${label}</span>
                 <span class="nutrition-detail__value">${Math.round(/** @type {number} */ (value))} ${unit}</span>
-                <span class="nutrition-detail__goal">/ ${goal || "—"}</span>
-              </li>`
-              )
+                <span class="nutrition-detail__goal">${nutritionGoalText(goal, percent)}</span>
+              </li>`;
+              })
               .join("")}
           </ul>
           <h3 class="nutrition-detail__heading">${t("diary.detailed_nutrition")}</h3>
           <ul class="nutrition-detail__list">
             ${microRows
-              .map(
-                ({ def, value, goal }) => `
+              .map(({ def, value, goal }) => {
+                const percent = goal != null && goal > 0 ? nutritionGoalPercent(value, goal) : null;
+                const goalText = goal != null && goal > 0 ? nutritionGoalText(goal, percent) : "";
+                return `
               <li class="nutrition-detail__row">
                 <span class="nutrition-detail__label">${def.label}</span>
                 <span class="nutrition-detail__value">${fmt(value)} ${def.unit}</span>
-                <span class="nutrition-detail__goal">${goal != null && goal > 0 ? `/ ${goal}` : ""}</span>
-              </li>`
-              )
+                <span class="nutrition-detail__goal">${goalText}</span>
+              </li>`;
+              })
               .join("")}
           </ul>
         </section>`,

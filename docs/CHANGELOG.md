@@ -7,6 +7,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Added
+
+- **Meal nutrition vs your daily goals** (Android + web): tap a meal name on Home (Lunch, Dinner, and the rest) to see that slot's totals the same way as the day sheet, now with a percent of each daily goal. View more still opens the whole day. Follows Codeberg [#87](https://codeberg.org/fitguy/Chompass/issues/87) by [@bergieberg](https://codeberg.org/bergieberg).
+
 ### Changed
 
 - **Gemini 3.8 Flash is the default AI model** (Android + web): new installs and anyone who never picked a model now get Google's newest Flash for photo and text analysis. The fallback model stays Gemini 3.5 Flash-Lite, and 3.7 Flash is still in the model list.

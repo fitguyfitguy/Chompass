@@ -1138,7 +1138,15 @@ main.view {
   display: flex;
   align-items: flex-start;
   gap: 0.65rem;
-  margin-bottom: 0.35rem;
+  width: 100%;
+  margin: 0 0 0.35rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  cursor: pointer;
 }
 
 .meal-card__icon {
