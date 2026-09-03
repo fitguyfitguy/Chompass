@@ -32,11 +32,12 @@ sealed class DiaryImportResult {
 /**
  * Parses the JSON structure emitted by [DiaryExporter] (and Fud AI / NoFUD) into [FoodEntry] rows.
  * Accepts format 1.0 (macros), 1.1 (macros + micros), 1.2 (serving units + constituents),
- * 1.3 (day notes, #58a), and 1.4 (custom meal types, #61). Exports always use 1.4.
+ * 1.3 (day notes, #58a), 1.4 (custom meal types, #61), and 1.5 (constituent
+ * micros, #86). Exports always use 1.5.
  */
 object DiaryImporter {
-    /** Versions accepted on import. New exports always stamp format 1.4. */
-    private val SUPPORTED_IMPORT_VERSIONS = setOf("1.0", "1.1", "1.2", "1.3", "1.4")
+    /** Versions accepted on import. New exports always stamp format 1.5. */
+    private val SUPPORTED_IMPORT_VERSIONS = setOf("1.0", "1.1", "1.2", "1.3", "1.4", "1.5")
 
     private val parser = Json {
         ignoreUnknownKeys = true
@@ -63,7 +64,7 @@ object DiaryImporter {
         val version = export["format_version"]?.asString()
         if (version == null || version !in SUPPORTED_IMPORT_VERSIONS) {
             return DiaryImportResult.UnsupportedFormat(
-                "unsupported format_version \"${version ?: ""}\" (need 1.0, 1.1, 1.2, 1.3, or 1.4)",
+                "unsupported format_version \"${version ?: ""}\" (need 1.0, 1.1, 1.2, 1.3, 1.4, or 1.5)",
             )
         }
 
@@ -206,6 +207,19 @@ object DiaryImporter {
                 servingUnitOptions = parseServingUnitOptions(o["serving_unit_options"]?.asArrayOrNull()),
                 selectedServingUnit = o["selected_serving_unit"]?.asString()?.takeIf { it.isNotBlank() },
                 selectedServingQuantity = o["selected_serving_quantity"]?.asDouble(),
+                sugar = o["sugar_g"]?.asDouble(), addedSugar = o["added_sugar_g"]?.asDouble(),
+                fiber = o["fiber_g"]?.asDouble(), saturatedFat = o["saturated_fat_g"]?.asDouble(),
+                monounsaturatedFat = o["monounsaturated_fat_g"]?.asDouble(),
+                polyunsaturatedFat = o["polyunsaturated_fat_g"]?.asDouble(),
+                cholesterol = o["cholesterol_mg"]?.asDouble(), sodium = o["sodium_mg"]?.asDouble(),
+                potassium = o["potassium_mg"]?.asDouble(), transFat = o["trans_fat_g"]?.asDouble(),
+                calcium = o["calcium_mg"]?.asDouble(), iron = o["iron_mg"]?.asDouble(),
+                magnesium = o["magnesium_mg"]?.asDouble(), zinc = o["zinc_mg"]?.asDouble(),
+                vitaminA = o["vitamin_a_mcg"]?.asDouble(), vitaminC = o["vitamin_c_mg"]?.asDouble(),
+                vitaminD = o["vitamin_d_mcg"]?.asDouble(), vitaminB12 = o["vitamin_b12_mcg"]?.asDouble(),
+                vitaminE = o["vitamin_e_mg"]?.asDouble(), vitaminK = o["vitamin_k_mcg"]?.asDouble(),
+                folate = o["folate_mcg"]?.asDouble(), omega3 = o["omega3_g"]?.asDouble(),
+                caffeine = o["caffeine_mg"]?.asDouble(),
             )
         }
     }

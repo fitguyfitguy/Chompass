@@ -50,6 +50,7 @@ import app.chompass.models.MacroValueFormatter
 import app.chompass.models.MicronutrientField
 import app.chompass.models.MicronutrientValues
 import app.chompass.models.ServingUnitOption
+import app.chompass.models.OptionalNutrientGoals
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
@@ -78,6 +79,8 @@ import kotlin.math.roundToInt
 fun EditFavoriteSheet(
     container: AppContainer,
     entry: FoodEntry,
+    /** #86: user's optional micro goals, shown as "(N%)" on ingredient micros. */
+    optionalGoals: OptionalNutrientGoals? = null,
     onSave: (FoodEntry) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -488,6 +491,7 @@ fun EditFavoriteSheet(
                                     editableConstituents,
                                     scale,
                                 ),
+                                optionalGoals = optionalGoals,
                                 expanded = constituentsExpanded,
                                 onExpandedChange = { constituentsExpanded = it },
                                 onRowsChange = { displayRows ->

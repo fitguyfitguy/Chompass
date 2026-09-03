@@ -23,7 +23,7 @@ class MealShareParityTest {
     @Test
     fun paritySampleRoundTripsThroughLinkPayload() {
         val sample = ParityFixtures.readJson("meal-share-sample.json")
-        assertEquals(2, sample.getInt("v"))
+        assertEquals(3, sample.getInt("v"))
         val meals = sample.getJSONArray("meals")
         assertTrue(meals.length() >= 1)
 
@@ -58,7 +58,7 @@ class MealShareParityTest {
         assertTrue(link.startsWith("${MealShare.SCHEME}://${MealShare.HOST}?d="))
         val encoded = link.substringAfter("d=")
         val decoded = JSONObject(String(Base64.getUrlDecoder().decode(encoded), Charsets.UTF_8))
-        assertEquals(2, decoded.getInt("v"))
+        assertEquals(3, decoded.getInt("v"))
         val out = decoded.getJSONArray("meals")
         assertEquals(meals.length(), out.length())
         for (i in 0 until meals.length()) {
@@ -87,8 +87,21 @@ class MealShareParityTest {
                     srcConst.getJSONObject(0).getInt("calories"),
                     gotConst.getJSONObject(0).getInt("calories"),
                 )
-            }
+                // #86: constituent micros survive the link payload (v3).
+                val srcMicro = srcConst.getJSONObject(0)
+                val gotMicro = gotConst.getJSONObject(0)
+                for (key in listOf(
+                    "sugar", "fiber", "saturatedFat", "cholesterol", "sodium",
+                    "potassium", "iron", "zinc", "magnesium", "vitaminB12", "caffeine",
+                )) {
+                    assertEquals(
+                        srcMicro.optDouble(key, Double.NaN),
+                        gotMicro.optDouble(key, Double.NaN),
+                        0.0,
+                    )
+                }
         }
+    }
     }
 
     private fun parseUnits(arr: JSONArray?): List<ServingUnitOption> {
@@ -121,14 +134,17 @@ class MealShareParityTest {
                 carbs = o.optDouble("carbs", 0.0),
                 fat = o.optDouble("fat", 0.0),
                 servingSizeGrams = o.optDouble("servingSizeGrams", 0.0),
-                emoji = o.optString("emoji").takeIf { it.isNotEmpty() },
-                servingUnitOptions = parseUnits(o.optJSONArray("servingUnitOptions")),
-                selectedServingUnit = o.optString("selectedServingUnit").takeIf { it.isNotEmpty() },
-                selectedServingQuantity = if (o.has("selectedServingQuantity")) {
-                    o.getDouble("selectedServingQuantity")
-                } else {
-                    null
-                },
+                sugar = if (o.has("sugar")) o.getDouble("sugar") else null,
+                fiber = if (o.has("fiber")) o.getDouble("fiber") else null,
+                saturatedFat = if (o.has("saturatedFat")) o.getDouble("saturatedFat") else null,
+                cholesterol = if (o.has("cholesterol")) o.getDouble("cholesterol") else null,
+                sodium = if (o.has("sodium")) o.getDouble("sodium") else null,
+                potassium = if (o.has("potassium")) o.getDouble("potassium") else null,
+                iron = if (o.has("iron")) o.getDouble("iron") else null,
+                zinc = if (o.has("zinc")) o.getDouble("zinc") else null,
+                magnesium = if (o.has("magnesium")) o.getDouble("magnesium") else null,
+                vitaminB12 = if (o.has("vitaminB12")) o.getDouble("vitaminB12") else null,
+                caffeine = if (o.has("caffeine")) o.getDouble("caffeine") else null,
             )
         }
         return out

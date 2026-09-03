@@ -41,17 +41,18 @@ import java.time.ZoneOffset
 import java.util.UUID
 
 /**
- * Sync-1.2 document parse/build. Mirrors web/.../sync-format.js.
- * 1.2 adds the day-granular `daily_notes` array (Codeberg #58a) and, since the
+ * Sync-1.3 document parse/build. Mirrors web/.../sync-format.js.
+ * 1.2 added the day-granular `daily_notes` array (Codeberg #58a) and, since the
  * #60 goal-journal phase, the optional `goal_journal` array (per-day frozen
  * targets; old docs parse with an empty array — daily_notes precedent).
- * Photos and API keys are intentionally excluded. Imports also accept 1.0/1.1.
+ * 1.3 adds per-constituent micronutrients (#86).
+ * Photos and API keys are intentionally excluded. Imports also accept 1.0-1.2.
  */
 object SyncDocument {
     const val APP_NAME = "Chompass"
     const val KIND = "sync"
-    const val FORMAT_VERSION = "1.2"
-    private val SUPPORTED_IMPORT_VERSIONS = setOf("1.0", "1.1", "1.2")
+    const val FORMAT_VERSION = "1.3"
+    private val SUPPORTED_IMPORT_VERSIONS = setOf("1.0", "1.1", "1.2", "1.3")
 
     private val json = Json {
         ignoreUnknownKeys = true
@@ -653,6 +654,29 @@ object SyncDocument {
         )
         putNullable("selected_serving_unit", c.selectedServingUnit)
         putNullableNumber("selected_serving_quantity", c.selectedServingQuantity)
+        putNullableNumber("sugar_g", c.sugar)
+        putNullableNumber("added_sugar_g", c.addedSugar)
+        putNullableNumber("fiber_g", c.fiber)
+        putNullableNumber("saturated_fat_g", c.saturatedFat)
+        putNullableNumber("monounsaturated_fat_g", c.monounsaturatedFat)
+        putNullableNumber("polyunsaturated_fat_g", c.polyunsaturatedFat)
+        putNullableNumber("cholesterol_mg", c.cholesterol)
+        putNullableNumber("sodium_mg", c.sodium)
+        putNullableNumber("potassium_mg", c.potassium)
+        putNullableNumber("trans_fat_g", c.transFat)
+        putNullableNumber("calcium_mg", c.calcium)
+        putNullableNumber("iron_mg", c.iron)
+        putNullableNumber("magnesium_mg", c.magnesium)
+        putNullableNumber("zinc_mg", c.zinc)
+        putNullableNumber("vitamin_a_mcg", c.vitaminA)
+        putNullableNumber("vitamin_c_mg", c.vitaminC)
+        putNullableNumber("vitamin_d_mcg", c.vitaminD)
+        putNullableNumber("vitamin_b12_mcg", c.vitaminB12)
+        putNullableNumber("vitamin_e_mg", c.vitaminE)
+        putNullableNumber("vitamin_k_mcg", c.vitaminK)
+        putNullableNumber("folate_mcg", c.folate)
+        putNullableNumber("omega3_g", c.omega3)
+        putNullableNumber("caffeine_mg", c.caffeine)
     }
 
     private fun parseFoodWire(el: JsonElement, zone: ZoneId): FoodWire? {
@@ -749,6 +773,19 @@ object SyncDocument {
                 servingUnitOptions = parseServingUnitOptions(row["serving_unit_options"]?.asArrayOrNull()),
                 selectedServingUnit = row["selected_serving_unit"]?.asString()?.takeIf { it.isNotBlank() },
                 selectedServingQuantity = row["selected_serving_quantity"]?.asDouble(),
+                sugar = row["sugar_g"]?.asDouble(), addedSugar = row["added_sugar_g"]?.asDouble(),
+                fiber = row["fiber_g"]?.asDouble(), saturatedFat = row["saturated_fat_g"]?.asDouble(),
+                monounsaturatedFat = row["monounsaturated_fat_g"]?.asDouble(),
+                polyunsaturatedFat = row["polyunsaturated_fat_g"]?.asDouble(),
+                cholesterol = row["cholesterol_mg"]?.asDouble(), sodium = row["sodium_mg"]?.asDouble(),
+                potassium = row["potassium_mg"]?.asDouble(), transFat = row["trans_fat_g"]?.asDouble(),
+                calcium = row["calcium_mg"]?.asDouble(), iron = row["iron_mg"]?.asDouble(),
+                magnesium = row["magnesium_mg"]?.asDouble(), zinc = row["zinc_mg"]?.asDouble(),
+                vitaminA = row["vitamin_a_mcg"]?.asDouble(), vitaminC = row["vitamin_c_mg"]?.asDouble(),
+                vitaminD = row["vitamin_d_mcg"]?.asDouble(), vitaminB12 = row["vitamin_b12_mcg"]?.asDouble(),
+                vitaminE = row["vitamin_e_mg"]?.asDouble(), vitaminK = row["vitamin_k_mcg"]?.asDouble(),
+                folate = row["folate_mcg"]?.asDouble(), omega3 = row["omega3_g"]?.asDouble(),
+                caffeine = row["caffeine_mg"]?.asDouble(),
             )
         }
     }

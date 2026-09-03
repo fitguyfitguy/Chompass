@@ -1,6 +1,7 @@
 package app.chompass.export
 
 import app.chompass.models.DailyNote
+import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.MealType
@@ -37,6 +38,19 @@ class SyncDocumentTest {
         assertEquals("bowl", salad.selectedServingUnit)
         assertEquals(2, salad.constituents.size)
         assertEquals(90.0, salad.constituents[0].servingUnitOptions.single().gramsPerUnit, 0.0)
+        // #86: the 1.3 fixture carries constituent micros; nulls stay null.
+        val chicken = salad.constituents[0]
+        assertEquals(0.0, chicken.sugar)
+        assertEquals(6.2, chicken.monounsaturatedFat)
+        assertEquals(145.0, chicken.cholesterol)
+        assertEquals(220.0, chicken.sodium)
+        assertEquals(640.0, chicken.potassium)
+        assertEquals(0.5, chicken.vitaminB12)
+        assertEquals(null, chicken.caffeine)
+        val rice = salad.constituents[1]
+        assertEquals(2.0, rice.sugar)
+        assertEquals(100.0, rice.vitaminK)
+        assertEquals(50.0, rice.folate)
         val coffee = parsed.foodEntries.first { it.entry?.name == "Black coffee" }.entry!!
         assertTrue(coffee.constituents.isEmpty())
         assertEquals(1, parsed.weights.count { it.entry != null })
@@ -201,6 +215,64 @@ class SyncDocumentTest {
     }
 
     @Test
+    fun buildRoundTripsConstituentMicros() {
+        // #86: constituent micros ride the sync wire (1.3); absent stays null.
+        val food = FoodEntry(
+            name = "Bowl",
+            calories = 520,
+            protein = 42.0,
+            carbs = 40.0,
+            fat = 18.0,
+            timestamp = Instant.parse("2026-08-15T12:00:00Z"),
+            source = FoodSource.MANUAL,
+            mealType = MealType.LUNCH.id,
+            constituents = listOf(
+                FoodConstituent(
+                    name = "Chicken",
+                    calories = 280,
+                    protein = 32.0,
+                    carbs = 0.0,
+                    fat = 12.0,
+                    servingSizeGrams = 150.0,
+                    saturatedFat = 4.5,
+                    cholesterol = 145.0,
+                    sodium = 320.0,
+                    vitaminB12 = 0.5,
+                ),
+            ),
+        )
+        val json = SyncDocument.buildJson(
+            foodEntries = listOf(food),
+            favorites = emptyList(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            measurements = emptyList(),
+            water = emptyList(),
+            recipes = emptyList(),
+            zone = ZoneOffset.UTC,
+        )
+        val root = Json.parseToJsonElement(json).jsonObject
+        val row = root["food_entries"]!!.jsonArray.single().jsonObject["constituents"]!!
+            .jsonArray.single().jsonObject
+        assertEquals(4.5, row["saturated_fat_g"]!!.jsonPrimitive.content.toDouble(), 0.0)
+        assertEquals(145.0, row["cholesterol_mg"]!!.jsonPrimitive.content.toDouble(), 0.0)
+        assertEquals(320.0, row["sodium_mg"]!!.jsonPrimitive.content.toDouble(), 0.0)
+        assertEquals(0.5, row["vitamin_b12_mcg"]!!.jsonPrimitive.content.toDouble(), 0.0)
+        assertTrue(row["caffeine_mg"] is kotlinx.serialization.json.JsonNull)
+
+        val result = SyncDocument.parse(json, ZoneOffset.UTC)
+        assertTrue("expected Success but was $result", result is SyncDocument.ParseResult.Success)
+        val got = (result as SyncDocument.ParseResult.Success).parsed
+            .foodEntries.single().entry!!.constituents.single()
+        assertEquals(4.5, got.saturatedFat)
+        assertEquals(145.0, got.cholesterol)
+        assertEquals(320.0, got.sodium)
+        assertEquals(0.5, got.vitaminB12)
+        assertEquals(null, got.caffeine)
+        assertEquals(null, got.sugar)
+    }
+
+    @Test
     fun buildRoundTripsNicotineEntries() {
         // Optional nicotine tracker rides its own sync array + revisions kind.
         val nicotine = NicotineEntry(
@@ -310,10 +382,10 @@ class SyncDocumentTest {
         )
         val root = Json.parseToJsonElement(json).jsonObject
         val notesWire = root["daily_notes"]!!.jsonArray
-        // Live note + tombstone, and the format stamped 1.2.
+        // Live note + tombstone, and the format stamped 1.3.
         assertEquals(2, notesWire.size)
         val export = root["export"]!!.jsonObject
-        assertEquals("1.2", export["format_version"]!!.jsonPrimitive.content)
+        assertEquals("1.3", export["format_version"]!!.jsonPrimitive.content)
 
         val result = SyncDocument.parse(json, ZoneOffset.UTC)
         assertTrue("expected Success but was $result", result is SyncDocument.ParseResult.Success)

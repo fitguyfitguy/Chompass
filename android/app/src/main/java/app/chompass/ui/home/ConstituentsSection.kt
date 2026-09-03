@@ -35,7 +35,11 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.FoodConstituent
 import app.chompass.models.MacroValueFormatter
+import app.chompass.models.MicronutrientField
+import app.chompass.models.MicronutrientValues
+import app.chompass.models.OptionalNutrient
 import app.chompass.models.ServingUnitOption
+import app.chompass.models.OptionalNutrientGoals
 import app.chompass.services.ai.ConstituentReconcile
 import app.chompass.ui.components.kcalText
 import app.chompass.ui.theme.AppColors
@@ -52,6 +56,8 @@ internal fun ConstituentsSection(
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     onRowsChange: (List<FoodConstituent>) -> Unit,
+    /** User's optional daily goals for the "(N%)" suffixes; null hides percents. */
+    optionalGoals: OptionalNutrientGoals? = null,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -69,6 +75,7 @@ internal fun ConstituentsSection(
         rows.forEachIndexed { index, row ->
             ConstituentRowCard(
                 row = row,
+                optionalGoals = optionalGoals,
                 onChange = { updated ->
                     onRowsChange(rows.toMutableList().also { it[index] = updated })
                 },
@@ -100,6 +107,7 @@ internal fun ConstituentsSection(
 @Composable
 private fun ConstituentRowCard(
     row: FoodConstituent,
+    optionalGoals: OptionalNutrientGoals?,
     onChange: (FoodConstituent) -> Unit,
     onRemove: () -> Unit,
 ) {
@@ -209,29 +217,152 @@ private fun ConstituentRowCard(
                     )
                 },
             )
-            val separatorColor = MaterialTheme.colorScheme.onSurfaceVariant
+            ConstituentMacroLine(row)
+            ConstituentMicrosDisclosure(row, optionalGoals)
+        }
+    }
+}
+
+/** kcal · P · C · F summary line shared by the editable row and the read-only ingredient row. */
+@Composable
+private fun ConstituentMacroLine(row: FoodConstituent, modifier: Modifier = Modifier) {
+    val separatorColor = MaterialTheme.colorScheme.onSurfaceVariant
+    Text(
+        text = buildAnnotatedString {
+            withStyle(SpanStyle(color = AppColors.Calorie, fontWeight = FontWeight.Medium)) {
+                append(kcalText(row.calories))
+            }
+            withStyle(SpanStyle(color = separatorColor)) { append(" · ") }
+            withStyle(SpanStyle(color = MacroKind.PROTEIN.color(), fontWeight = FontWeight.Medium)) {
+                append("${MacroKind.PROTEIN.glyph} ${MacroValueFormatter.string(row.protein)}")
+            }
+            withStyle(SpanStyle(color = separatorColor)) { append(" · ") }
+            withStyle(SpanStyle(color = MacroKind.CARBS.color(), fontWeight = FontWeight.Medium)) {
+                append("${MacroKind.CARBS.glyph} ${MacroValueFormatter.string(row.carbs)}")
+            }
+            withStyle(SpanStyle(color = separatorColor)) { append(" · ") }
+            withStyle(SpanStyle(color = MacroKind.FAT.color(), fontWeight = FontWeight.Medium)) {
+                append("${MacroKind.FAT.glyph} ${MacroValueFormatter.string(row.fat)}")
+            }
+        },
+        style = MaterialTheme.typography.bodySmall,
+        modifier = modifier,
+    )
+}
+
+/**
+ * Expandable read-only "Detailed Nutrition" block for a constituent row (#86):
+ * one line per present micro — "Label value unit (N%)" — with the percent
+ * against the user's optional daily goal. Zeroed / absent goal → no percent.
+ */
+@Composable
+internal fun ConstituentMicrosDisclosure(
+    row: FoodConstituent,
+    optionalGoals: OptionalNutrientGoals?,
+    modifier: Modifier = Modifier,
+) {
+    val present = constituentMicros(row)
+    if (present.isEmpty()) return
+    var expanded by remember(row) { mutableStateOf(false) }
+    Column(modifier = modifier.fillMaxWidth()) {
+        TextButton(onClick = { expanded = !expanded }) {
+            Icon(
+                imageVector = if (expanded) Icons.Filled.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+            )
             Text(
-                text = buildAnnotatedString {
-                    withStyle(SpanStyle(color = AppColors.Calorie, fontWeight = FontWeight.Medium)) {
-                        append(kcalText(row.calories))
-                    }
-                    withStyle(SpanStyle(color = separatorColor)) { append(" · ") }
-                    withStyle(SpanStyle(color = MacroKind.PROTEIN.color(), fontWeight = FontWeight.Medium)) {
-                        append("${MacroKind.PROTEIN.glyph} ${MacroValueFormatter.string(row.protein)}")
-                    }
-                    withStyle(SpanStyle(color = separatorColor)) { append(" · ") }
-                    withStyle(SpanStyle(color = MacroKind.CARBS.color(), fontWeight = FontWeight.Medium)) {
-                        append("${MacroKind.CARBS.glyph} ${MacroValueFormatter.string(row.carbs)}")
-                    }
-                    withStyle(SpanStyle(color = separatorColor)) { append(" · ") }
-                    withStyle(SpanStyle(color = MacroKind.FAT.color(), fontWeight = FontWeight.Medium)) {
-                        append("${MacroKind.FAT.glyph} ${MacroValueFormatter.string(row.fat)}")
-                    }
-                },
+                text = stringResource(R.string.nutrition_section_detailed),
                 style = MaterialTheme.typography.bodySmall,
             )
         }
+        if (expanded) {
+            present.forEach { (field, value) ->
+                val label = stringResource(field.labelRes)
+                val unit = stringResource(field.unitRes)
+                val percent = microGoal(field, optionalGoals)
+                    ?.let { nutritionGoalPercent(value, it.toDouble()) }
+                Text(
+                    text = buildString {
+                        append(label)
+                        append(' ')
+                        append(String.format("%.1f", value))
+                        append(' ')
+                        append(unit)
+                        if (percent != null) append(" ($percent%)")
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 8.dp),
+                )
+            }
+        }
     }
+}
+
+/**
+ * Read-only ingredient summary for NutritionDetailSheet's Ingredients section:
+ * emoji + name + kcal, the shared macro line, then the micros block when the
+ * row carries any.
+ */
+@Composable
+internal fun ConstituentSummaryRow(
+    row: FoodConstituent,
+    optionalGoals: OptionalNutrientGoals?,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 14.dp, vertical = 14.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (!row.emoji.isNullOrBlank()) {
+                Text(row.emoji!!, fontSize = 20.sp, modifier = Modifier.padding(end = 8.dp))
+            }
+            Text(row.name, fontSize = 17.sp, modifier = Modifier.weight(1f))
+            Text(
+                text = kcalText(row.calories),
+                fontSize = 17.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = AppColors.Calorie,
+            )
+        }
+        ConstituentMacroLine(row, modifier = Modifier.padding(top = 4.dp))
+        ConstituentMicrosDisclosure(row, optionalGoals)
+    }
+}
+
+/** Present (non-null) micros on a constituent row, in catalog order. */
+private fun constituentMicros(row: FoodConstituent): List<Pair<MicronutrientField, Double>> {
+    val values = MicronutrientValues.from(row)
+    return MicronutrientField.entries.mapNotNull { field -> values[field]?.let { field to it } }
+}
+
+/** Daily goal for a constituent micro; mono/poly fats have no optional goal → no percent. */
+private fun microGoal(field: MicronutrientField, goals: OptionalNutrientGoals?): Int? {
+    val nutrient = when (field) {
+        MicronutrientField.MONOUNSATURATED_FAT, MicronutrientField.POLYUNSATURATED_FAT -> return null
+        MicronutrientField.SUGAR -> OptionalNutrient.SUGAR
+        MicronutrientField.ADDED_SUGAR -> OptionalNutrient.ADDED_SUGAR
+        MicronutrientField.FIBER -> OptionalNutrient.FIBER
+        MicronutrientField.SATURATED_FAT -> OptionalNutrient.SATURATED_FAT
+        MicronutrientField.CHOLESTEROL -> OptionalNutrient.CHOLESTEROL
+        MicronutrientField.SODIUM -> OptionalNutrient.SODIUM
+        MicronutrientField.POTASSIUM -> OptionalNutrient.POTASSIUM
+        MicronutrientField.TRANS_FAT -> OptionalNutrient.TRANS_FAT
+        MicronutrientField.CALCIUM -> OptionalNutrient.CALCIUM
+        MicronutrientField.IRON -> OptionalNutrient.IRON
+        MicronutrientField.MAGNESIUM -> OptionalNutrient.MAGNESIUM
+        MicronutrientField.ZINC -> OptionalNutrient.ZINC
+        MicronutrientField.VITAMIN_A -> OptionalNutrient.VITAMIN_A
+        MicronutrientField.VITAMIN_C -> OptionalNutrient.VITAMIN_C
+        MicronutrientField.VITAMIN_D -> OptionalNutrient.VITAMIN_D
+        MicronutrientField.VITAMIN_B12 -> OptionalNutrient.VITAMIN_B12
+        MicronutrientField.VITAMIN_E -> OptionalNutrient.VITAMIN_E
+        MicronutrientField.VITAMIN_K -> OptionalNutrient.VITAMIN_K
+        MicronutrientField.FOLATE -> OptionalNutrient.FOLATE
+        MicronutrientField.OMEGA3 -> OptionalNutrient.OMEGA3
+        MicronutrientField.CAFFEINE -> OptionalNutrient.CAFFEINE
+    }
+    return goals?.valueFor(nutrient)
 }
 
 /** Apply display-space constituent edits: rebase bases and recompute meal totals. */

@@ -210,6 +210,32 @@ data class MicronutrientValues(
             caffeine = entry.caffeine,
         )
 
+        fun from(c: FoodConstituent) = MicronutrientValues(
+            sugar = c.sugar,
+            addedSugar = c.addedSugar,
+            fiber = c.fiber,
+            saturatedFat = c.saturatedFat,
+            monounsaturatedFat = c.monounsaturatedFat,
+            polyunsaturatedFat = c.polyunsaturatedFat,
+            cholesterol = c.cholesterol,
+            sodium = c.sodium,
+            potassium = c.potassium,
+            transFat = c.transFat,
+            calcium = c.calcium,
+            iron = c.iron,
+            magnesium = c.magnesium,
+            zinc = c.zinc,
+            vitaminA = c.vitaminA,
+            vitaminC = c.vitaminC,
+            vitaminD = c.vitaminD,
+            vitaminB12 = c.vitaminB12,
+            vitaminE = c.vitaminE,
+            vitaminK = c.vitaminK,
+            folate = c.folate,
+            omega3 = c.omega3,
+            caffeine = c.caffeine,
+        )
+
         fun fromJson(optDouble: (String) -> Double?) = MicronutrientValues(
             sugar = optDouble(MicronutrientField.SUGAR.jsonKey),
             addedSugar = optDouble(MicronutrientField.ADDED_SUGAR.jsonKey),

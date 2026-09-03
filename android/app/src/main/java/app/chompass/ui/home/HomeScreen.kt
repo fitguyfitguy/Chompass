@@ -1247,6 +1247,7 @@ fun HomeScreen(
         EditFavoriteSheet(
             container = container,
             entry = favorite,
+            optionalGoals = ui.optionalNutrientGoals,
             onSave = { updated ->
                 vm.updateFavorite(favorite, updated)
                 editingFavorite = null
@@ -1457,6 +1458,7 @@ fun HomeScreen(
     editingEntry?.let { entry ->
         EditFoodEntrySheet(
             entry = entry,
+            optionalGoals = ui.optionalNutrientGoals,
             preferGramsByDefault = ui.preferGramsByDefault,
             aiFeaturesEnabled = aiFeaturesEnabled,
             useSystemDateTimePickers = useSystemDateTimePickers,
@@ -1555,6 +1557,7 @@ fun HomeScreen(
             preferGramsByDefault = ui.preferGramsByDefault,
             profile = ui.profile,
             resolved = ui.resolvedDayTargets,
+            optionalGoals = ui.optionalNutrientGoals,
             dayEntries = ui.todayEntries,
             isSaving = ui.saving,
             inferringUnits = ui.inferringUnits,

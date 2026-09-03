@@ -81,6 +81,7 @@ import app.chompass.models.MicronutrientField
 import app.chompass.models.ResolvedDayTargets
 import app.chompass.models.ServingUnitOption
 import app.chompass.models.UserProfile
+import app.chompass.models.OptionalNutrientGoals
 import app.chompass.services.FoodPhotoSession
 import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.PartialFoodAnalysis
@@ -124,6 +125,8 @@ fun FoodResultSheet(
     profile: UserProfile? = null,
     /** #60: the viewed day's resolved targets for the What-if totals/goals. */
     resolved: ResolvedDayTargets? = null,
+    /** #86: user's optional micro goals, shown as "(N%)" on ingredient micros. */
+    optionalGoals: OptionalNutrientGoals? = null,
     dayEntries: List<FoodEntry> = emptyList(),
     source: FoodSource = FoodSource.TEXT_INPUT,
     /** True when the user already entered exact grams on tip strip / prior note. */
@@ -857,6 +860,7 @@ fun FoodResultSheet(
                         editableConstituents,
                         scale,
                     ),
+                    optionalGoals = optionalGoals,
                     expanded = constituentsExpanded,
                     onExpandedChange = { if (analysisReady) constituentsExpanded = it },
                     onRowsChange = { displayRows ->
