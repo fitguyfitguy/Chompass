@@ -242,6 +242,14 @@ fun NutritionDetailSheet(
             if (constituentRows.isNotEmpty()) {
                 item { NutritionSheetSectionHeader(stringResource(R.string.sheet_constituents)) }
                 item {
+                    Text(
+                        text = stringResource(R.string.sheet_constituents_estimates_note),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(start = 14.dp),
+                    )
+                }
+                item {
                     Card {
                         constituentRows.forEachIndexed { index, row ->
                             if (index > 0) Hairline()

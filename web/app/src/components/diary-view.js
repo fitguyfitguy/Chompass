@@ -4,6 +4,7 @@ import { dailyTargets, estimatedDailyActiveCalories } from "../lib/chompass-core
 import { dailyNoteIdFor } from "../lib/chompass-core/models.js";
 import { displayUnit, entryServingEcho, formatQuantity } from "../lib/chompass-core/serving-units.js";
 import { computeFastingState, nextFastStartMillis, FastingPhase } from "../lib/chompass-core/fasting-state.js";
+import { microOrNull } from "../lib/chompass-core/constituents.js";
 import { openSheet } from "../lib/ui/sheet.js";
 import { openConfirm, openInfo, openInput } from "../lib/ui/dialog.js";
 import {
@@ -2075,8 +2076,11 @@ export class DiaryView extends HTMLElement {
     const constituents = entries.flatMap((e) => e.constituents ?? []);
     /** Same expandable micros+% block as the entry-form constituent rows. */
     const constituentMicrosHtml = (c) => {
+      // #86 Android parity: normalize (string/negative/oversized) at render and
+      // always print a present value, including 0.0 — the meal-level em-dash
+      // for zero applies to meal totals only, not ingredient rows.
       const present = NUTRITION_DETAIL_MICROS
-        .map((def) => ({ def, value: /** @type {Record<string, unknown>} */ (c)[def.key] }))
+        .map((def) => ({ def, value: microOrNull(/** @type {Record<string, unknown>} */ (c)[def.key]) }))
         .filter((m) => m.value != null);
       if (!present.length) return "";
       const items = present
@@ -2087,7 +2091,7 @@ export class DiaryView extends HTMLElement {
           return `
             <li class="nutrition-detail__row">
               <span class="nutrition-detail__label">${def.label}</span>
-              <span class="nutrition-detail__value">${fmt(/** @type {number} */ (value))} ${def.unit}</span>
+              <span class="nutrition-detail__value">${/** @type {number} */ (value).toFixed(1)} ${def.unit}</span>
               <span class="nutrition-detail__goal">${pct}</span>
             </li>`;
         })
@@ -2136,6 +2140,7 @@ export class DiaryView extends HTMLElement {
             constituents.length
               ? `
           <h3 class="nutrition-detail__heading">${t("entry.constituents.title")}</h3>
+          <p class="nutrition-detail__note">${t("entry.constituents.estimates_note")}</p>
           <ul class="nutrition-detail__list">
             ${constituents
               .map(
