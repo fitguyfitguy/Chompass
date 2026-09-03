@@ -10,11 +10,18 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Added
 
 - **Meal nutrition vs your daily goals** (Android + web): tap a meal name on Home (Lunch, Dinner, and the rest) to see that slot's totals the same way as the day sheet, now with a percent of each daily goal. View more still opens the whole day. Follows Codeberg [#87](https://codeberg.org/fitguy/Chompass/issues/87) by [@bergieberg](https://codeberg.org/bergieberg).
-- **Vitamins and minerals for each ingredient** (Android + web): meals broken into ingredients (chicken, rice, and the rest) can now show each ingredient's estimated fiber, sugars, vitamins, and minerals, with a percent of your daily goal. Open a meal's nutrition on Home, or expand an ingredient in the review and edit sheets. Estimates arrive from the AI analysis when the meal's ingredient breakdown is on. Follows Codeberg [#86](https://codeberg.org/fitguy/Chompass/issues/86) by [@bergieberg](https://codeberg.org/bergieberg).
+- **Vitamins and minerals for each ingredient** (Android + web): meals broken into ingredients (chicken, rice, and the rest) can now show each ingredient's estimated fiber, sugars, vitamins, and minerals, with a percent of your daily goal. Open a meal's nutrition on Home, or expand an ingredient in the review and edit sheets. The ingredient values are labeled as estimates and may not add up exactly to the meal totals. Estimates arrive from the AI analysis when the meal's ingredient breakdown is on. Follows Codeberg [#86](https://codeberg.org/fitguy/Chompass/issues/86) by [@bergieberg](https://codeberg.org/bergieberg).
 
 ### Changed
 
 - **Gemini 3.8 Flash is the default AI model** (Android + web): new installs and anyone who never picked a model now get Google's newest Flash for photo and text analysis. The fallback model stays Gemini 3.5 Flash-Lite, and 3.7 Flash is still in the model list.
+
+### Fixed
+
+- **Changing an ingredient amount now scales its vitamins and minerals** (Android): in the review, edit, and favorite sheets, editing an ingredient's quantity updated only its calories and macros; the vitamin and mineral values now follow the new amount.
+- **Multi-ingredient meals no longer come back cut off on length-capped AI providers** (Android + web): with the default response length, Anthropic, OpenAI-compatible, and local Ollama models could return a truncated reply for meals broken into ingredients, which then failed with a truncation error. Those requests now get a higher response allowance while ingredient breakdown is on; your own response length setting still applies when it is higher.
+- **Ingredient nutrition now behaves the same on the web app as in the app** (web): negative or oversized vitamin and mineral values in an imported file are handled the same as on Android, present zero values show as 0 instead of a dash, and a file with text where a number belongs no longer breaks the nutrition sheet.
+- **Imported ingredient vitamins and minerals are cleaned** (Android): diary and sync imports now validate ingredient micro values, so a hand-edited file can no longer show a negative amount.
 
 ## [4.5.0] - 2026-09-03
 
