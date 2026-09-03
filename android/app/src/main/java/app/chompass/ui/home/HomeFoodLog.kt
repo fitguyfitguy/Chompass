@@ -3,6 +3,7 @@ package app.chompass.ui.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
@@ -71,6 +72,7 @@ import app.chompass.ui.util.clockTimePattern
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
 import java.time.ZoneId
+import androidx.compose.ui.semantics.Role
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -100,11 +102,20 @@ internal fun MealSectionHeader(
     totalFiber: Double = 0.0,
     totalSugar: Double = 0.0,
     macroChips: List<FoodLogMacroChip> = FoodLogMacroChip.DefaultSelection,
+    onClick: (() -> Unit)? = null,
 ) {
     // iOS layout: small dim icon + sentence-case label, regular weight ~17sp.
+    val nutritionCd = stringResource(R.string.nutrition_details_title)
     Row(
         Modifier
             .fillMaxWidth()
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(role = Role.Button, onClickLabel = nutritionCd, onClick = onClick)
+                } else {
+                    Modifier
+                },
+            )
             .padding(start = 22.dp, end = 24.dp, top = 12.dp, bottom = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

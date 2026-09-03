@@ -172,7 +172,7 @@ fun HomeScreen(
     var editingRecipe by remember { mutableStateOf<app.chompass.models.Recipe?>(null) }
     // Codeberg #66: favorite currently open in the saved-food editor.
     var editingFavorite by remember { mutableStateOf<FoodEntry?>(null) }
-    var showNutritionDetail by rememberSaveable { mutableStateOf(false) }
+    var nutritionDetailScope by rememberSaveable { mutableStateOf<String?>(null) }
     // #60: day-type quick-switch sheet (hero chip).
     var showDayTypeSheet by rememberSaveable { mutableStateOf(false) }
     // Codeberg #30: add-food flow. Tapping a tile (or the "+" FAB) marks the
@@ -611,7 +611,7 @@ fun HomeScreen(
                             .padding(vertical = 8.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Box(modifier = Modifier.clickable { showNutritionDetail = true }) {
+                        Box(modifier = Modifier.clickable { nutritionDetailScope = "day" }) {
                             ViewMoreButton()
                         }
                     }
@@ -657,6 +657,7 @@ fun HomeScreen(
                             totalFiber = group.totalFiber,
                             totalSugar = group.totalSugar,
                             macroChips = ui.foodLogMacroChips,
+                            onClick = { nutritionDetailScope = group.id },
                         )
                     }
                     // Group-scoped row keys (#56): an entry moving between meal
@@ -1471,16 +1472,23 @@ fun HomeScreen(
         )
     }
 
-    if (showNutritionDetail) {
+    if (nutritionDetailScope != null) {
+        val mealGroup = if (nutritionDetailScope != "day") {
+            mealGroups.find { it.id == nutritionDetailScope }
+        } else {
+            null
+        }
         NutritionDetailSheet(
-            entries = ui.todayEntries,
+            entries = if (nutritionDetailScope == "day") ui.todayEntries else mealGroup?.entries.orEmpty(),
             profile = ui.profile,
             resolved = ui.resolvedDayTargets,
             homeTopNutrients = ui.homeTopNutrients,
             optionalGoals = ui.optionalNutrientGoals,
             macroScale = ui.macroGoalScale,
+            title = mealGroup?.let { mealLabel(it.meal) },
+            showHomeCards = nutritionDetailScope == "day",
             onHomeTopNutrientsChange = vm::setHomeTopNutrients,
-            onDismiss = { showNutritionDetail = false }
+            onDismiss = { nutritionDetailScope = null },
         )
     }
 
