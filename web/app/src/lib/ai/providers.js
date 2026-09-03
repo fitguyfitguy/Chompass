@@ -52,6 +52,7 @@ export function messageImages(m) {
  * @property {AiTool[]} tools
  * @property {AbortSignal} [signal]
  * @property {(delta: string) => void} [onDelta] text fragments while streaming
+ * @property {number} [maxTokens] response cap for providers that require one (Anthropic); default 1024
  */
 
 /**
@@ -70,7 +71,7 @@ export async function anthropicSend(config, req) {
   }
   const body = {
     model: config.model || PROVIDERS.anthropic.defaultModel,
-    max_tokens: 1024,
+    max_tokens: req.maxTokens ?? 1024,
     system: req.systemPrompt,
     messages: req.messages.map(anthropicMessage),
   };
@@ -105,7 +106,7 @@ export async function anthropicSend(config, req) {
 async function anthropicSendStreaming(config, req) {
   const body = {
     model: config.model || PROVIDERS.anthropic.defaultModel,
-    max_tokens: 1024,
+    max_tokens: req.maxTokens ?? 1024,
     stream: true,
     system: req.systemPrompt,
     messages: req.messages.map(anthropicMessage),

@@ -33,6 +33,12 @@ const SYSTEM_CONSTITUENTS = `You estimate nutrition for a food diary app. Reply 
 Include micronutrients when you can estimate them confidently; use null when unsure. Prefer the meal type that fits the current local time if unclear. When multiple photos are provided, treat them as angles of the same meal and produce one estimate.
 constituents is optional. For multi-item meals, list each distinct edible item (egg, toast, butter, drink, side) with its own macros, serving_size_grams, and unit_options when a non-gram unit is obvious. Keep top-level fields as the meal total. Constituent grams MUST sum to quantityG within ±5%. Constituent calories/protein/carbs/fat MUST each sum to the matching meal total within ±5%. Each constituent micronutrient MUST sum to the matching meal total within ±20%. Include every named or clearly implied edible item; do not invent extras. Use [] for a single undivided food. unit_options entries look like {"unit":"slice","quantity":2,"grams_per_unit":180}; never use g/grams as a unit.`;
 
+/** #86 review fix: constituent rows carry 22 micro fields each, so a
+ * multi-item reply can exceed the default 1024-token response cap. Capped
+ * providers (Anthropic) get this floor while the constituents system prompt
+ * is active. Mirrors Android FoodAnalysisService CONSTITUENT_MIN_RESPONSE_TOKENS. */
+const CONSTITUENTS_MIN_RESPONSE_TOKENS = 4096;
+
 /** @param {import('../db.js').AppPrefs} appPrefs */
 function mealConstituentsEnabled(appPrefs) {
   return appPrefs.mealConstituentsEnabled !== false;
@@ -108,7 +114,8 @@ async function runAnalyze(providerId, config, text, productContext, imageList, a
   if (imageList.length) {
     config.model = resolveVisionModel(providerId, config.visionModel, config.model);
   }
-  let systemPrompt = mealConstituentsEnabled(appPrefs) ? SYSTEM_CONSTITUENTS : SYSTEM_BASE;
+  const constituentsOn = mealConstituentsEnabled(appPrefs);
+  let systemPrompt = constituentsOn ? SYSTEM_CONSTITUENTS : SYSTEM_BASE;
   if (appPrefs.userContext?.trim()) {
     systemPrompt += `\n\nUser preferences:\n${appPrefs.userContext.trim()}`;
   }
@@ -149,6 +156,7 @@ async function runAnalyze(providerId, config, text, productContext, imageList, a
     tools: [],
     signal,
     onDelta,
+    maxTokens: constituentsOn ? CONSTITUENTS_MIN_RESPONSE_TOKENS : undefined,
   });
 
   if (signal?.aborted) throw abortError();
@@ -193,7 +201,7 @@ async function runAnalyze(providerId, config, text, productContext, imageList, a
     carbsG,
     fatG,
     quantityG: units.quantityG > 0 ? units.quantityG : 100,
-    constituents: mealConstituentsEnabled(appPrefs)
+    constituents: constituentsOn
       ? parseConstituentsFromPrediction(parsed)
       : [],
   });

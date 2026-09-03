@@ -8,7 +8,7 @@ import {
   isAbortError,
   phaseLabel,
 } from "../ai/food-analyze.js";
-import { PROVIDERS, openRouterReasoningBody, resolveVisionModel } from "../ai/providers.js";
+import { PROVIDERS, anthropicSend, openRouterReasoningBody, resolveVisionModel } from "../ai/providers.js";
 
 test("analysisPhases_matchAndroidCloudEntry", () => {
   assert.deepEqual(
@@ -450,4 +450,65 @@ test("openaiCompatible_imageRequest_usesVisionModel", async () => {
   } finally {
     PROVIDERS.openai_compatible.send = original;
   }
+});
+
+test("analyzeFoodEntry_constituentsRaiseCappedProviderTokenFloor", async () => {
+  const original = PROVIDERS.anthropic.send;
+  /** @type {Array<number|undefined>} */
+  const maxTokensSeen = [];
+  PROVIDERS.anthropic.send = async (_config, req) => {
+    maxTokensSeen.push(req.maxTokens);
+    return {
+      text: JSON.stringify({ name: "Meal", calories: 100, proteinG: 1, carbsG: 1, fatG: 1 }),
+      toolCalls: [],
+    };
+  };
+  try {
+    await analyzeFoodEntry({
+      providerId: "anthropic",
+      config: { apiKey: "test-key" },
+      text: "meal",
+      prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false }),
+    });
+    await analyzeFoodEntry({
+      providerId: "anthropic",
+      config: { apiKey: "test-key" },
+      text: "meal",
+      prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false, mealConstituentsEnabled: false }),
+    });
+  } finally {
+    PROVIDERS.anthropic.send = original;
+  }
+  // #86 review fix: the constituents schema (22 micro fields per row) can
+  // exceed a 1024-token cap; capped providers get a 4096 floor while the
+  // constituents prompt is active, default cap otherwise.
+  assert.equal(maxTokensSeen[0], 4096);
+  assert.equal(maxTokensSeen[1], undefined);
+});
+
+test("anthropicSend_threadsMaxTokensIntoBody", async () => {
+  const originalFetch = globalThis.fetch;
+  /** @type {any[]} */
+  const bodies = [];
+  globalThis.fetch = /** @type {any} */ (async (_url, init) => {
+    bodies.push(JSON.parse(String(init.body)));
+    return {
+      ok: true,
+      json: async () => ({ content: [{ type: "text", text: "{}" }] }),
+    };
+  });
+  try {
+    await anthropicSend(
+      { apiKey: "k" },
+      { systemPrompt: "", messages: [{ role: "user", text: "hi" }], tools: [], maxTokens: 4096 },
+    );
+    await anthropicSend(
+      { apiKey: "k" },
+      { systemPrompt: "", messages: [{ role: "user", text: "hi" }], tools: [] },
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+  assert.equal(bodies[0].max_tokens, 4096);
+  assert.equal(bodies[1].max_tokens, 1024);
 });
