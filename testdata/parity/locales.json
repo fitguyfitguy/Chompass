@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "notes": "Shared UI locale contract for Android resource packs and the PWA i18n catalog. Speech recognition languages are independent (see speechLocales). Pref key: Android system/per-app language; PWA prefs.uiLang (empty = auto-detect browser). Fallback always English (en). maxMissing raised to 35 on 2026-08-24 for the nicotine-tracker strings; raised to 40 on 2026-02-13 for settings Units row + Trackers group + search; raised to 85 on 2026-08-24 for caffeine tracker + daily-notes toggle + prompt-history strings; raised to 90 on 2026-08-25 for the macro day-type strings (#60, en+de shipped, remaining locales batch before 4.0.0); raised to 130 on 2026-08-25 for the day-types Settings editor (#60 phase 2, en+de shipped, remaining locales batch before 4.0.0); dropped to 0 (de/es/fr) and 5 (all other packs, small buffer) on 2026-08-25 when the full batch landed: caffeine + nicotine + notes + search + units + prompt-history strings and all day-types strings incl. the phase-4 recalc-sheet + calculation-methods additions (#60 phase 4). Raised to 388 (es, fr) and 393 (all other non-de locales) on 2026-08-28 for the PWA UI-audit i18n sweep: 384 new en keys (entry form, settings body, diary menus/toasts/sheets, coach, analyze, add-meal, toasts, update prompt) shipped en+de, other locales fall back to EN until the next translation batch; the PWA i18n test now enforces maxMissing instead of demanding zero missing.",
+  "notes": "Shared UI locale contract for Android resource packs and the PWA i18n catalog. Speech recognition languages are independent (see speechLocales). Pref key: Android system/per-app language; PWA prefs.uiLang (empty = auto-detect browser). Fallback always English (en). maxMissing raised to 35 on 2026-08-24 for the nicotine-tracker strings; raised to 40 on 2026-02-13 for settings Units row + Trackers group + search; raised to 85 on 2026-08-24 for caffeine tracker + daily-notes toggle + prompt-history strings; raised to 90 on 2026-08-25 for the macro day-type strings (#60, en+de shipped, remaining locales batch before 4.0.0); raised to 130 on 2026-08-25 for the day-types Settings editor (#60 phase 2, en+de shipped, remaining locales batch before 4.0.0); dropped to 0 (de/es/fr) and 5 (all other packs, small buffer) on 2026-08-25 when the full batch landed: caffeine + nicotine + notes + search + units + prompt-history strings and all day-types strings incl. the phase-4 recalc-sheet + calculation-methods additions (#60 phase 4). Raised to 388 (es, fr) and 393 (all other non-de locales) on 2026-08-28 for the PWA UI-audit i18n sweep: 384 new en keys (entry form, settings body, diary menus/toasts/sheets, coach, analyze, add-meal, toasts, update prompt) shipped en+de, other locales fall back to EN until the next translation batch; the PWA i18n test now enforces maxMissing instead of demanding zero missing. Raised to 389 (es, fr) on 2026-09-03 for the #86 ingredient-estimates note (en+de shipped, remaining locales batch with the next translation sweep).",
   "defaultLocale": "en",
   "fallbackLocale": "en",
   "pwaPrefKey": "uiLang",
@@ -66,7 +66,7 @@
         "es",
         "es-ES"
       ],
-      "maxMissing": 388
+      "maxMissing": 389
     },
     {
       "id": "fr",
@@ -79,7 +79,7 @@
         "fr",
         "fr-FR"
       ],
-      "maxMissing": 388
+      "maxMissing": 389
     },
     {
       "id": "hi",

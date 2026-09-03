@@ -681,6 +681,7 @@
     <string name="sheet_constituents_count">Ingredients (%1$d)</string>
     <string name="sheet_constituents_add">Add ingredient</string>
     <string name="sheet_constituents_remove">Remove ingredient</string>
+    <string name="sheet_constituents_estimates_note">Ingredient vitamin and mineral values are independent estimates; they may not add up exactly to the meal totals above.</string>
     <string name="sheet_nutrition">Nutrition</string>
     <string name="sheet_meal">Meal</string>
     <string name="sheet_more_nutrition">More Nutrition</string>

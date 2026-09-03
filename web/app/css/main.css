@@ -892,6 +892,12 @@ main.view {
   color: var(--muted);
 }
 
+.nutrition-detail__note {
+  margin: -0.35rem 0 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
 .nutrition-detail__list {
   list-style: none;
   margin: 0;
