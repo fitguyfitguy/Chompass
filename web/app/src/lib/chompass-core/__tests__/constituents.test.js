@@ -290,7 +290,9 @@ test("parseConstituentsFromPrediction_readsConstituentMicros", () => {
     ],
   });
   assert.equal(bad[0].sugarG, null);
-  assert.equal(bad[0].sodiumMg, null);
+  // Negative estimates clamp to 0 (Android InputSanitizer.micro parity);
+  // garbage strings still parse as null.
+  assert.equal(bad[0].sodiumMg, 0);
 });
 
 test("scaleConstituent_scalesMicrosWithGramsFactor", () => {
