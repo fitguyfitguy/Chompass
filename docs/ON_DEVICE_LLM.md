@@ -168,6 +168,13 @@ adb logcat -s GoalMatrix
 ```
 
 **Measured 2026-08-22 (Pixel 9a):** SAFE tier on Gemma 4 E2B passed all 19 scenarios (formula anchors for thin/below-BMR/disagree, measured anchor 1950 exact, gain pace applied, keto/locked exact); SMART tier on `google/gemini-3.6-flash` (via OpenRouter) passed all 19 (no BMR anchoring, measured anchor honored). `gemini-3.5-flash-lite` with the SMART prompt FAILED 6/19 the same way the on-device model does (clamped to the BMR floor, ignored the measured anchor), which is why small cloud models (`flash-lite`/`nano`/`haiku`/`-mini`/`/free`) are now auto-classified to the SAFE tier — re-check with `--es goal_matrix_provider gemini --es goal_matrix_model gemini-3.5-flash-lite` (auto tier) and expect tier=SAFE with formula anchors.
+**Measured 2026-09-03 (Pixel 9a):** SMART tier on `google/gemini-3.8-flash`
+(via the OpenRouter benchmark key) passed all 19 the same way — formula
+anchors exact on every sparse/thin case (worst deviation 10 kcal), measured
+anchor 2500 honored at 1950 exact, locked returned exactly 2400, keto carbs
+27 g, and the only floor hits were the two by-design cases
+(rich_low_empirical, sedentary_sparse_up). No BMR clamping, so 3.8 Flash
+stays the release default.
 
 Warm-cache generations are ~5–7 s each, so a full 19-scenario run with repeat=2 takes under 5 minutes plus cold engine init (cloud legs add a round-trip each).
 
