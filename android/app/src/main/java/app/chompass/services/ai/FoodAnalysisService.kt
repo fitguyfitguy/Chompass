@@ -90,6 +90,24 @@ private const val ENTRY_CONSTITUENTS_RULE =
         "Include every named or clearly implied edible item; do not invent extras. Use [] " +
         "for a single undivided food."
 
+/**
+ * #86: constituent rows carry 22 micro fields each; a multi-item reply needs
+ * roughly 800-1400 tokens, past the default 1024 [maxResponseTokens] cap.
+ * Capped providers (Anthropic / OpenAI-compatible, incl. Ollama) get this
+ * floor for entry ops that embed the constituents schema; Gemini is never
+ * capped. A user cap above the floor wins. PWA twin: food-analyze.js
+ * CONSTITUENTS_MIN_RESPONSE_TOKENS.
+ */
+internal const val CONSTITUENT_MIN_RESPONSE_TOKENS = 4096
+
+/** Entry ops whose prompt embeds the constituents schema ([entryJsonSchema]). */
+internal val ENTRY_CONSTITUENT_OPS = setOf("analyzeText", "analyzeAuto", "analyzeFood", "analyzeFoodMulti")
+
+/** Effective response-token cap for an op: raised to the constituent floor only
+ *  when the op's schema requests per-row micros and constituents are enabled. */
+internal fun floorResponseTokensForOp(op: String, userCap: Int, constituentsRequested: Boolean): Int =
+    if (constituentsRequested && op in ENTRY_CONSTITUENT_OPS) maxOf(userCap, CONSTITUENT_MIN_RESPONSE_TOKENS) else userCap
+
 private const val ENTRY_EMOJI_NULL_RULE =
     "For \"emoji\" pick the single most specific food emoji for this dish. " +
         "Use null for any nutrient you cannot estimate."
@@ -1321,7 +1339,7 @@ class FoodAnalysisService(
         val primaryKey = keyLookup?.invoke(primary)
             ?: AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
         if (primary.requiresApiKey && primaryKey.isNullOrEmpty()) throw AiError.NoApiKey
-        val maxTokens = prefs.maxResponseTokens.first()
+        val maxTokens = floorResponseTokensForOp(op, prefs.maxResponseTokens.first(), mealConstituentsRequested())
         val readTimeoutSeconds = prefs.aiReadTimeoutSeconds.first()
         val geminiGoogleSearch = prefs.geminiGoogleSearchEnabled.first()
         val aiImages = if (imageBytesList.isEmpty()) {
