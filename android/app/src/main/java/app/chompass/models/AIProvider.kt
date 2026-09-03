@@ -61,11 +61,12 @@ enum class AIProvider {
 
     /**
      * Only models that are currently in service AND accept image input + return structured text.
-     * Lineups verified against provider docs on 2026-08-14 (Gemini 3.7 Flash added 2026-08-13;
-     * 3.5 Flash-Lite is still the newest lite model — 3.7 came without a lite bump). Mirrors iOS AIProvider.swift.
+     * Lineups verified against provider docs on 2026-09-03 (Gemini 3.8 Flash added 2026-09-02;
+     * 3.5 Flash-Lite is still the newest lite model). Mirrors iOS AIProvider.swift.
      */
     val models: List<String> get() = when (this) {
         GEMINI -> listOf(
+            "gemini-3.8-flash",
             "gemini-3.7-flash",
             "gemini-3.6-flash",
             "gemini-3.5-flash-lite",
@@ -146,11 +147,13 @@ enum class AIProvider {
     /**
      * BYOK free-tier availability per lineup model; values mirror the parity
      * fixture strings ("free" = missing). Gemini: Pro models left the API free
-     * tier on 2026-04-01; 3.7 Flash is on the free tier but availability varies
-     * by account/region (verify in AI Studio).
+     * tier on 2026-04-01; 3.7 Flash is confirmed on the free tier and 3.8 Flash
+     * is expected to follow, but availability varies by account/region (verify
+     * 3.8 in AI Studio).
      */
     val modelTiers: Map<String, String> get() = when (this) {
         GEMINI -> mapOf(
+            "gemini-3.8-flash" to "varies",
             "gemini-3.7-flash" to "varies",
             "gemini-3.1-pro-preview" to "paid",
             "gemini-2.5-pro" to "paid",
@@ -160,9 +163,9 @@ enum class AIProvider {
 
     /**
      * Debug builds default Gemini to 3.5 Flash-Lite: 3.7 Flash intermittently
-     * returns 503 on the free tier during device testing (2026-09-01), and Lite
-     * is already the higher-quota fallback. Release keeps the 3.7 default that
-     * the parity fixture locks.
+     * returns 503 on the free tier during device testing (2026-09-01), and 3.8
+     * Flash's free-tier behavior is unverified, while Lite is already the
+     * higher-quota fallback. Release keeps the parity-locked 3.8 default.
      */
     val defaultModel: String get() = when (this) {
         GEMINI -> if (BuildConfig.DEBUG) "gemini-3.5-flash-lite" else models.first()

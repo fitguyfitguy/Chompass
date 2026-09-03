@@ -4,6 +4,13 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+
+## [Unreleased]
+
+### Changed
+
+- **Gemini 3.8 Flash is the default AI model** (Android + web): new installs and anyone who never picked a model now get Google's newest Flash for photo and text analysis. The fallback model stays Gemini 3.5 Flash-Lite, and 3.7 Flash is still in the model list.
+
 ## [4.5.0] - 2026-09-03
 
 ### Added
