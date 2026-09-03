@@ -1,7 +1,7 @@
 {
   "export": {
     "app": "Chompass",
-    "format_version": "1.3",
+    "format_version": "1.5",
     "date_range": {
       "start": "2026-04-27",
       "end": "2026-04-29"
@@ -141,7 +141,30 @@
                     }
                   ],
                   "selected_serving_unit": "piece",
-                  "selected_serving_quantity": 2.0
+                  "selected_serving_quantity": 2.0,
+                  "sugar_g": 0.0,
+                  "added_sugar_g": null,
+                  "fiber_g": 0.0,
+                  "saturated_fat_g": 7.0,
+                  "monounsaturated_fat_g": 11.0,
+                  "polyunsaturated_fat_g": 5.0,
+                  "cholesterol_mg": 195.0,
+                  "sodium_mg": 330.0,
+                  "potassium_mg": 780.0,
+                  "trans_fat_g": null,
+                  "calcium_mg": null,
+                  "iron_mg": 1.2,
+                  "magnesium_mg": null,
+                  "zinc_mg": 4.2,
+                  "vitamin_a_mcg": null,
+                  "vitamin_c_mg": null,
+                  "vitamin_d_mcg": null,
+                  "vitamin_b12_mcg": 0.6,
+                  "vitamin_e_mg": null,
+                  "vitamin_k_mcg": null,
+                  "folate_mcg": null,
+                  "omega3_g": 0.6,
+                  "caffeine_mg": null
                 },
                 {
                   "name": "Rice",
@@ -159,7 +182,30 @@
                     }
                   ],
                   "selected_serving_unit": "cup",
-                  "selected_serving_quantity": 1.6
+                  "selected_serving_quantity": 1.6,
+                  "sugar_g": 0.0,
+                  "added_sugar_g": null,
+                  "fiber_g": 2.0,
+                  "saturated_fat_g": 1.0,
+                  "monounsaturated_fat_g": 1.0,
+                  "polyunsaturated_fat_g": 1.0,
+                  "cholesterol_mg": 0.0,
+                  "sodium_mg": 100.0,
+                  "potassium_mg": 100.0,
+                  "trans_fat_g": null,
+                  "calcium_mg": null,
+                  "iron_mg": 1.2,
+                  "magnesium_mg": 25.0,
+                  "zinc_mg": null,
+                  "vitamin_a_mcg": null,
+                  "vitamin_c_mg": null,
+                  "vitamin_d_mcg": null,
+                  "vitamin_b12_mcg": null,
+                  "vitamin_e_mg": null,
+                  "vitamin_k_mcg": null,
+                  "folate_mcg": null,
+                  "omega3_g": null,
+                  "caffeine_mg": null
                 },
                 {
                   "name": "Salad greens",
@@ -171,7 +217,30 @@
                   "emoji": null,
                   "serving_unit_options": [],
                   "selected_serving_unit": null,
-                  "selected_serving_quantity": null
+                  "selected_serving_quantity": null,
+                  "sugar_g": 9.0,
+                  "added_sugar_g": null,
+                  "fiber_g": 9.0,
+                  "saturated_fat_g": 6.0,
+                  "monounsaturated_fat_g": 6.0,
+                  "polyunsaturated_fat_g": 2.0,
+                  "cholesterol_mg": 120.0,
+                  "sodium_mg": 720.0,
+                  "potassium_mg": 570.0,
+                  "trans_fat_g": null,
+                  "calcium_mg": null,
+                  "iron_mg": 1.8,
+                  "magnesium_mg": null,
+                  "zinc_mg": null,
+                  "vitamin_a_mcg": 300.0,
+                  "vitamin_c_mg": 18.0,
+                  "vitamin_d_mcg": null,
+                  "vitamin_b12_mcg": null,
+                  "vitamin_e_mg": null,
+                  "vitamin_k_mcg": 120.0,
+                  "folate_mcg": 60.0,
+                  "omega3_g": null,
+                  "caffeine_mg": null
                 }
               ]
             }

@@ -11,11 +11,11 @@ from jsonschema import Draft202012Validator
 ROOT = Path(__file__).resolve().parents[1]
 
 PAIRS = [
-    ("contracts/diary-1.3.schema.json", "testdata/parity/diary-sample.json"),
+    ("contracts/diary-1.5.schema.json", "testdata/parity/diary-sample.json"),
     ("contracts/diary-1.4.schema.json", "testdata/parity/diary-custom-meal.json"),
     ("contracts/body-metrics-1.0.schema.json", "testdata/parity/body-metrics-sample.json"),
-    ("contracts/meal-share-v2.schema.json", "testdata/parity/meal-share-sample.json"),
-    ("contracts/sync-1.2.schema.json", "testdata/parity/sync-sample.json"),
+    ("contracts/meal-share-v3.schema.json", "testdata/parity/meal-share-sample.json"),
+    ("contracts/sync-1.3.schema.json", "testdata/parity/sync-sample.json"),
 ]
 
 
