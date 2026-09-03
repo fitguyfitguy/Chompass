@@ -94,6 +94,56 @@ Pre-tag review found two blockers plus parity drift; all fixed with tests:
   `entry.constituents.estimates_note`; en+de shipped, remaining locales ride
   the locale batch per the locales contract).
 
+### 5. Ingredient micros model-class gating (planned next session)
+
+Decision (maintainer, 2026-09-03 evening): per-row micros ship only for
+strong-class models; weak class gets the pre-#86 macros-only breakdown.
+Rationale (stored runs `results/gemini37_constituents_micro/`,
+`gemini35lite_constituents_micro/`, n=16 text meals / 41 rows): Gemini 3.7
+Flash partitions its meal totals exactly (0/15 meals with any micro row-sum
+off by >20%; rollup is moot on fresh logs), FNDDS micro WMAPE 35.8% (98%
+match); Flash-Lite drifts >20% on 6/15 meals (worst +80% added sugar),
+WMAPE 63.4%. The Settings hint already told users to disable the breakdown
+on weaker models; the app now does it automatically. The user toggle stays
+the master opt-out; display stays data-driven (rows logged under a strong
+model keep their micros under any current model).
+
+Implementation map (edit sites grounded 2026-09-03):
+
+- Android `FoodAnalysisService.kt`: rename `isSmallCloudGoalModel` (~1671)
+  to `isSmallCloudModel` and share it (goal tier + constituents). Keep
+  `mealConstituentsRequested()` (~862) as the breakdown-level gate; add
+  `constituentMicrosRequested()` = breakdown && !isSmallCloudModel(model
+  .ifBlank { provider.defaultModel }). Add
+  `ENTRY_JSON_SCHEMA_WITH_CONSTITUENT_MACROS` (rows without the 22 micro
+  fields; compose the three schemas from shared pieces instead of a third
+  700-char literal), make `entryJsonSchema()` three-way, split
+  `ENTRY_CONSTITUENTS_RULE` (~80) into base + micros appendix, and thread the
+  micros flag into the floor call (~1342) so weak models keep normal caps.
+  Debug-default caveat: Gemini debug defaultModel is 3.5-flash-lite, so
+  debug first-run gets macros-only; release default 3.8 gets micros.
+- No Android display change: `ConstituentMicrosDisclosure` early-returns on
+  absent micros (ConstituentsSection.kt:252) and `parseConstituents` maps
+  absent to null (FoodAnalysis.kt:727).
+- PWA `web/app/src/lib/ai/food-analyze.js`: split SYSTEM_CONSTITUENTS (~31)
+  into macros/micros variants, gate in `mealConstituentsEnabled` (~42),
+  apply `CONSTITUENTS_MIN_RESPONSE_TOKENS` (~159) only for the micros
+  variant; shared weak-model classifier in chompass-core with a test.
+- Copy: reword the breakdown hint en+de (PWA `settings.ai.meal_constituents_hint`
+  en.js:361 / de.js:302; Android string name still to locate). The other 14
+  locales keep the still-valid "turn off for weaker models" hint until the
+  translation sweep.
+- Tests: Android schema-selection gate test (strong / lite / toggle off);
+  PWA twin in `food-analyze.test.js`. `EntryConstituentTokenFloorTest`
+  unaffected (flag param unchanged).
+
+This is the last pre-tag item. Device regression pass already green 8/8
+(2026-09-03, `android/build/release-verify/20260903_173941`), 3.8 goal
+matrix 19/19 via OpenRouter, web E2E done. After gating lands: gradlew
+test, release:check-parity, then package. Device still holds seeded test
+data incl. the disposable "Verify Bowl" meal (customNote "4.6.0 device
+pass").
+ 
 ## Verification
 
 1. `devenv shell bash -lc 'cd android && ./gradlew test'` — full suite incl.
