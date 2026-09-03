@@ -87,6 +87,8 @@
 
 /**
  * One edible row inside a composite meal. Empty list = indivisible food.
+ * Optional micros (diary 1.5 / sync 1.3 / meal-share v3) mirror the FoodEntry
+ * micronutrient set 1:1 against ConstituentDto in DiaryExporter.kt; all nullable.
  * @typedef {Object} FoodConstituent
  * @property {string} name
  * @property {number} calories
@@ -98,6 +100,29 @@
  * @property {ServingUnitOption[]} [servingUnitOptions]
  * @property {string|null} [selectedServingUnit]
  * @property {number|null} [selectedServingQuantity]
+ * @property {number|null} [sugarG]
+ * @property {number|null} [addedSugarG]
+ * @property {number|null} [fiberG]
+ * @property {number|null} [saturatedFatG]
+ * @property {number|null} [monounsaturatedFatG]
+ * @property {number|null} [polyunsaturatedFatG]
+ * @property {number|null} [cholesterolMg]
+ * @property {number|null} [sodiumMg]
+ * @property {number|null} [potassiumMg]
+ * @property {number|null} [transFatG]
+ * @property {number|null} [calciumMg]
+ * @property {number|null} [ironMg]
+ * @property {number|null} [magnesiumMg]
+ * @property {number|null} [zincMg]
+ * @property {number|null} [vitaminAMcg]
+ * @property {number|null} [vitaminCMg]
+ * @property {number|null} [vitaminDMcg]
+ * @property {number|null} [vitaminB12Mcg]
+ * @property {number|null} [vitaminEMg]
+ * @property {number|null} [vitaminKMcg]
+ * @property {number|null} [folateMcg]
+ * @property {number|null} [omega3G]
+ * @property {number|null} [caffeineMg]
  */
 
 /**

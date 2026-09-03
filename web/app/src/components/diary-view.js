@@ -27,6 +27,8 @@ import {
   sumNutrient,
   nutrientGoal,
   nutrientDef,
+  nutritionGoalPercent,
+  nutritionGoalText,
   tubeStatus,
   formatMacroChipLine,
   formatFoodPills,
@@ -77,20 +79,8 @@ function mealLabel(mealType) {
   return MEAL_ORDER.includes(mealType) ? t(`meal.${mealType}`) : mealType;
 }
 
-/** Percent of a daily goal. Null when the goal is missing or not positive. */
-function nutritionGoalPercent(value, goal) {
-  const v = Number(value);
-  const g = Number(goal);
-  if (!Number.isFinite(v) || !Number.isFinite(g) || g <= 0) return null;
-  return Math.round((v / g) * 100);
-}
-
-/** @param {number|string|null|undefined} goal */
-function nutritionGoalText(goal, percent) {
-  if (goal == null || goal === "") return "";
-  const shown = goal || "—";
-  return percent != null ? `/ ${shown} (${percent}%)` : `/ ${shown}`;
-}
+// nutritionGoalPercent / nutritionGoalText live in lib/home-nutrients.js,
+// shared with entry-form constituent rows.
 /** Saved-meals sheet tab labels (catalog key names). */
 const SEGMENT_LABELS = { RECENTS: "add_food.hero_recents", FREQUENT: "add_food.frequent", FAVORITES: "add_food.favorites", RECIPES: "diary.tab_recipes" };
 const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack", "other"];
@@ -2081,6 +2071,33 @@ export class DiaryView extends HTMLElement {
       const goal = def.displayOnly ? null : nutrientGoal(def.key, targets, optionalGoals);
       return { def, value, goal };
     });
+    /** Constituent rows across the scoped entries (Codeberg #86). */
+    const constituents = entries.flatMap((e) => e.constituents ?? []);
+    /** Same expandable micros+% block as the entry-form constituent rows. */
+    const constituentMicrosHtml = (c) => {
+      const present = NUTRITION_DETAIL_MICROS
+        .map((def) => ({ def, value: /** @type {Record<string, unknown>} */ (c)[def.key] }))
+        .filter((m) => m.value != null);
+      if (!present.length) return "";
+      const items = present
+        .map(({ def, value }) => {
+          const goal = nutrientGoal(def.key, targets, optionalGoals);
+          const percent = nutritionGoalPercent(/** @type {number} */ (value), goal);
+          const pct = percent != null ? ` (${percent}%)` : "";
+          return `
+            <li class="nutrition-detail__row">
+              <span class="nutrition-detail__label">${def.label}</span>
+              <span class="nutrition-detail__value">${fmt(/** @type {number} */ (value))} ${def.unit}</span>
+              <span class="nutrition-detail__goal">${pct}</span>
+            </li>`;
+        })
+        .join("");
+      return `
+        <details class="nutrition-detail__micros">
+          <summary>${t("diary.detailed_nutrition")}</summary>
+          <ul class="nutrition-detail__list">${items}</ul>
+        </details>`;
+    };
 
     const sheet = openSheet({
       title: title || t("diary.nutrition_detail"),
@@ -2115,6 +2132,31 @@ export class DiaryView extends HTMLElement {
               })
               .join("")}
           </ul>
+          ${
+            constituents.length
+              ? `
+          <h3 class="nutrition-detail__heading">${t("entry.constituents.title")}</h3>
+          <ul class="nutrition-detail__list">
+            ${constituents
+              .map(
+                (c) => `
+              <li class="nutrition-detail__row nutrition-detail__row--stacked">
+                <span class="nutrition-detail__label">${escapeHtml(c.name)}</span>
+                <span class="nutrition-detail__value">${escapeHtml(
+                  t("entry.constituents.macros", {
+                    calories: Math.round(c.calories),
+                    protein: formatQuantity(c.proteinG),
+                    carbs: formatQuantity(c.carbsG),
+                    fat: formatQuantity(c.fatG),
+                  }),
+                )}</span>
+                ${constituentMicrosHtml(c)}
+              </li>`,
+              )
+              .join("")}
+          </ul>`
+              : ""
+          }
         </section>`,
     });
     void sheet;

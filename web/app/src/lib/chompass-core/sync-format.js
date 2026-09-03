@@ -1,15 +1,16 @@
 // @ts-check
 /**
- * Serializer/validator for the sync-1.2 JSON document (1.2 adds the day-
+ * Serializer/validator for the sync-1.3 JSON document (1.2 adds the day-
  * granular `daily_notes` array, Codeberg #58a, and the optional per-day
- * `goal_journal` array, Codeberg #60). Compatible with
- * android/.../export/SyncDocument.kt. Imports also accept 1.0/1.1.
+ * `goal_journal` array, Codeberg #60; 1.3 adds per-constituent micros,
+ * Codeberg #86). Compatible with
+ * android/.../export/SyncDocument.kt. Imports also accept 1.0/1.1/1.2.
  */
 import { goalJournalIdFor } from "./macro-plan.js";
 
-export const SYNC_FORMAT_VERSION = "1.2";
+export const SYNC_FORMAT_VERSION = "1.3";
 export const SYNC_KIND = "sync";
-export const SYNC_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2"]);
+export const SYNC_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2", "1.3"]);
 
 /** @param {import('./models.js').Grounding|null|undefined} g */
 function groundingToWire(g) {
@@ -153,18 +154,25 @@ function servingUnitsFromWire(arr) {
 /** @param {import('./models.js').FoodConstituent[]} rows */
 function constituentsToWire(rows) {
   if (!rows?.length) return [];
-  return rows.map((c) => ({
-    name: c.name,
-    calories: Math.round(c.calories),
-    protein_g: round1(c.proteinG),
-    carbs_g: round1(c.carbsG),
-    fat_g: round1(c.fatG),
-    quantity_g: round1(c.servingSizeGrams),
-    emoji: c.emoji ?? null,
-    serving_unit_options: servingUnitsToWire(c.servingUnitOptions ?? []),
-    selected_serving_unit: c.selectedServingUnit ?? null,
-    selected_serving_quantity: c.selectedServingQuantity != null ? round1(c.selectedServingQuantity) : null,
-  }));
+  return rows.map((c) => {
+    /** @type {Record<string, unknown>} */
+    const wire = {
+      name: c.name,
+      calories: Math.round(c.calories),
+      protein_g: round1(c.proteinG),
+      carbs_g: round1(c.carbsG),
+      fat_g: round1(c.fatG),
+      quantity_g: round1(c.servingSizeGrams),
+      emoji: c.emoji ?? null,
+      serving_unit_options: servingUnitsToWire(c.servingUnitOptions ?? []),
+      selected_serving_unit: c.selectedServingUnit ?? null,
+      selected_serving_quantity: c.selectedServingQuantity != null ? round1(c.selectedServingQuantity) : null,
+    };
+    for (const [wireKey, modelKey] of MICRO_FIELDS) {
+      wire[wireKey] = round1(c[modelKey] ?? null);
+    }
+    return wire;
+  });
 }
 
 /** @param {any} arr */
@@ -175,7 +183,7 @@ function constituentsFromWire(arr) {
   for (const c of arr) {
     const name = String(c?.name ?? "").trim();
     if (!name) continue;
-    out.push({
+    const row = {
       name,
       calories: Math.round(Number(c.calories) || 0),
       proteinG: Number(c.protein_g) || 0,
@@ -186,7 +194,11 @@ function constituentsFromWire(arr) {
       servingUnitOptions: servingUnitsFromWire(c.serving_unit_options),
       selectedServingUnit: c.selected_serving_unit ?? null,
       selectedServingQuantity: c.selected_serving_quantity != null ? Number(c.selected_serving_quantity) : null,
-    });
+    };
+    for (const [wireKey, modelKey] of MICRO_FIELDS) {
+      row[modelKey] = c[wireKey] ?? null;
+    }
+    out.push(row);
   }
   return out;
 }

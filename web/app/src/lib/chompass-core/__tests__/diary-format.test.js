@@ -1,7 +1,7 @@
 // @ts-check
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { importDiary, exportDiary, DIARY_FORMAT_VERSION, DIARY_IMPORT_VERSIONS } from "../diary-format.js";
+import { importDiary, exportDiary, DIARY_FORMAT_VERSION, DIARY_IMPORT_VERSIONS, UnsupportedFormatError } from "../diary-format.js";
 import { loadParityFixture } from "../../parity-fixtures.js";
 
 let seq = 0;
@@ -100,7 +100,7 @@ test("exportDiary emits note-only days and day notes", () => {
       { date: "2026-08-04", text: "Rest day, no food logged." },
     ],
   });
-  assert.equal(doc.export.format_version, "1.4");
+  assert.equal(doc.export.format_version, DIARY_FORMAT_VERSION);
   assert.equal(doc.days.length, 2);
   const foodDay = doc.days.find((d) => d.date === "2026-08-03");
   assert.equal(foodDay?.note, "Felt great after breakfast.");
@@ -278,6 +278,12 @@ test("round-trips constituents and serving units", () => {
               serving_unit_options: [{ unit: "piece", grams_per_unit: 100, quantity: 2 }],
               selected_serving_unit: "piece",
               selected_serving_quantity: 2,
+              sugar_g: 2.34, added_sugar_g: null, fiber_g: 1.8, saturated_fat_g: null,
+              monounsaturated_fat_g: null, polyunsaturated_fat_g: null, cholesterol_mg: 50,
+              sodium_mg: null, potassium_mg: null, trans_fat_g: null, calcium_mg: null,
+              iron_mg: null, magnesium_mg: null, zinc_mg: null, vitamin_a_mcg: null,
+              vitamin_c_mcg: null, vitamin_d_mcg: null, vitamin_b12_mcg: null, vitamin_e_mg: null,
+              vitamin_k_mcg: null, folate_mcg: null, omega3_g: null, caffeine_mg: 5,
             },
             {
               name: "B", calories: 200, protein_g: 10, carbs_g: 20, fat_g: 5, quantity_g: 200,
@@ -300,6 +306,27 @@ test("round-trips constituents and serving units", () => {
   assert.equal(item.constituents.length, 2);
   assert.equal(item.constituents[0].selected_serving_unit, "piece");
   assert.equal(item.constituents[0].serving_unit_options[0].grams_per_unit, 100);
+  // Constituent micros round-trip (diary 1.5); nulls stay null.
+  assert.equal(entries[0].constituents[0].sugarG, 2.34);
+  assert.equal(entries[0].constituents[0].fiberG, 1.8);
+  assert.equal(entries[0].constituents[0].cholesterolMg, 50);
+  assert.equal(entries[0].constituents[0].caffeineMg, 5);
+  assert.equal(entries[0].constituents[0].ironMg, null);
+  assert.equal(item.constituents[0].sugar_g, 2.3);
+  assert.equal(item.constituents[0].fiber_g, 1.8);
+  assert.equal(item.constituents[0].caffeine_mg, 5);
+  assert.equal(item.constituents[0].iron_mg, null);
+  assert.equal(item.constituents[1].sugar_g, null);
+  assert.equal(item.constituents[1].caffeine_mg, null);
+});
+
+test("diary 1.5 accepted, newer rejected", () => {
+  assert.equal(DIARY_FORMAT_VERSION, "1.5");
+  for (const v of ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5"]) {
+    assert.ok(DIARY_IMPORT_VERSIONS.has(v), v);
+  }
+  const doc = { export: { app: "Chompass", format_version: "1.6" }, days: [] };
+  assert.throws(() => importDiary(doc), UnsupportedFormatError);
 });
 
 test("accepts NoFUD app stamp with current format", () => {

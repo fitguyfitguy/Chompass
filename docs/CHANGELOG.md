@@ -10,6 +10,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Added
 
 - **Meal nutrition vs your daily goals** (Android + web): tap a meal name on Home (Lunch, Dinner, and the rest) to see that slot's totals the same way as the day sheet, now with a percent of each daily goal. View more still opens the whole day. Follows Codeberg [#87](https://codeberg.org/fitguy/Chompass/issues/87) by [@bergieberg](https://codeberg.org/bergieberg).
+- **Vitamins and minerals for each ingredient** (Android + web): meals broken into ingredients (chicken, rice, and the rest) can now show each ingredient's estimated fiber, sugars, vitamins, and minerals, with a percent of your daily goal. Open a meal's nutrition on Home, or expand an ingredient in the review and edit sheets. Estimates arrive from the AI analysis when the meal's ingredient breakdown is on. Follows Codeberg [#86](https://codeberg.org/fitguy/Chompass/issues/86) by [@bergieberg](https://codeberg.org/bergieberg).
 
 ### Changed
 

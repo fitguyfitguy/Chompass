@@ -302,6 +302,32 @@ export function nutrientGoal(key, targets, optionalGoals) {
 }
 
 /**
+ * Percent of a daily goal. Null when the goal is missing or not positive.
+ * Shared by the diary nutrition-detail sheet and entry-form constituent rows.
+ * @param {number} value
+ * @param {number} goal
+ * @returns {number|null}
+ */
+export function nutritionGoalPercent(value, goal) {
+  const v = Number(value);
+  const g = Number(goal);
+  if (!Number.isFinite(v) || !Number.isFinite(g) || g <= 0) return null;
+  return Math.round((v / g) * 100);
+}
+
+/**
+ * Goal suffix "/ goal (pct%)" for nutrition rows; empty when no goal is set.
+ * @param {number|string|null|undefined} goal
+ * @param {number|null} percent
+ * @returns {string}
+ */
+export function nutritionGoalText(goal, percent) {
+  if (goal == null || goal === "") return "";
+  const shown = goal || "—";
+  return percent != null ? `/ ${shown} (${percent}%)` : `/ ${shown}`;
+}
+
+/**
  * Status text for a tube (unit-aware; Android macro_status_left/over formats:
  * "64g left" / "24g over" — no space between value and unit).
  * @param {number} value

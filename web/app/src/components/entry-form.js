@@ -25,7 +25,12 @@ import {
   scaleAllConstituents,
   applyConstituentDisplayEdit,
 } from "../lib/chompass-core/constituents.js";
-import { ALL_MICRO_KEYS } from "../lib/home-nutrients.js";
+import {
+  ALL_MICRO_KEYS,
+  NUTRITION_DETAIL_MICROS,
+  nutrientGoal,
+  nutritionGoalPercent,
+} from "../lib/home-nutrients.js";
 import { ANALYSIS_PHASE, isAbortError } from "../lib/ai/analysis-phase.js";
 // The real AI request stack (food-analyze, key-storage, correct-diff) is
 // imported dynamically in onCorrectWithAi — the demo hero's review sheet
@@ -402,7 +407,7 @@ export class EntryForm extends HTMLElement {
           </div>
         </section>
 
-        ${this.renderConstituentsSection()}
+        ${this.renderConstituentsSection(appPrefs.optionalNutrientGoals)}
 
         <details class="micros-details">
           <summary>${escapeHtml(t("entry.more_nutrition"))}</summary>
@@ -501,7 +506,7 @@ export class EntryForm extends HTMLElement {
     rr.restore();
   }
 
-  renderConstituentsSection() {
+  renderConstituentsSection(optionalGoals) {
     const rows = this.displayConstituents();
     if (!rows.length) return "";
     const expanded = this.constituentsExpanded;
@@ -514,7 +519,7 @@ export class EntryForm extends HTMLElement {
         ${
           expanded
             ? `<div class="entry-constituents__list">
-                 ${rows.map((row, index) => this.renderConstituentRow(row, index)).join("")}
+                 ${rows.map((row, index) => this.renderConstituentRow(row, index, optionalGoals)).join("")}
                  <button type="button" class="btn btn--ghost btn--sm" data-constituent-add>
                    ${escapeHtml(t("entry.constituents.add"))}
                  </button>
@@ -528,8 +533,9 @@ export class EntryForm extends HTMLElement {
   /**
    * @param {import('../lib/chompass-core/models.js').FoodConstituent} row
    * @param {number} index
+   * @param {import('../lib/db.js').OptionalNutrientGoals|null|undefined} optionalGoals
    */
-  renderConstituentRow(row, index) {
+  renderConstituentRow(row, index, optionalGoals) {
     const ensured = ensureServingUnits({
       name: row.name || t("entry.constituents.item_fallback"),
       quantityG: row.servingSizeGrams,
@@ -611,7 +617,39 @@ export class EntryForm extends HTMLElement {
             }),
           )}
         </p>
+        ${this.renderConstituentMicros(row, optionalGoals)}
       </div>
+    `;
+  }
+
+  /**
+   * Read-only "detailed nutrition" block for a constituent row: each present
+   * micro as "Label value unit (pct%)" vs the user's daily goal (Codeberg #86).
+   * @param {import('../lib/chompass-core/models.js').FoodConstituent} row
+   * @param {import('../lib/db.js').OptionalNutrientGoals|null|undefined} optionalGoals
+   */
+  renderConstituentMicros(row, optionalGoals) {
+    const present = NUTRITION_DETAIL_MICROS
+      .map((def) => ({ def, value: /** @type {Record<string, unknown>} */ (row)[def.key] }))
+      .filter((m) => m.value != null);
+    if (!present.length) return "";
+    const items = present
+      .map(({ def, value }) => {
+        const goal = nutrientGoal(def.key, null, optionalGoals);
+        const percent = nutritionGoalPercent(/** @type {number} */ (value), goal);
+        return `
+          <li>
+            <span>${escapeHtml(def.label)}</span>
+            <span>${formatQuantity(/** @type {number} */ (value))} ${escapeHtml(def.unit)}</span>
+            <span class="entry-constituent-card__micro-goal">${percent != null ? `(${percent}%)` : ""}</span>
+          </li>`;
+      })
+      .join("");
+    return `
+      <details class="entry-constituent-card__micros">
+        <summary>${escapeHtml(t("diary.detailed_nutrition"))}</summary>
+        <ul>${items}</ul>
+      </details>
     `;
   }
 

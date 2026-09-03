@@ -214,7 +214,11 @@ test("analyzeFoodEntry_abortErrorFromSendSkipsFallback", async () => {
 
 test("analyzeFoodEntry_parsesAndReconcilesConstituents", async () => {
   const original = PROVIDERS.anthropic.send;
-  PROVIDERS.anthropic.send = async () => ({
+  /** @type {string|undefined} */
+  let systemSeen;
+  PROVIDERS.anthropic.send = async (_config, req) => {
+    systemSeen = req.systemPrompt;
+    return ({
     text: JSON.stringify({
       name: "Eggs and toast",
       mealType: "breakfast",
@@ -227,18 +231,22 @@ test("analyzeFoodEntry_parsesAndReconcilesConstituents", async () => {
       constituents: [
         {
           name: "Egg",
-          calories: 90,
+          calories: 100,
           protein: 8,
-          carbs: 1,
+          carbs: 2,
           fat: 6,
-          serving_size_grams: 55,
+          serving_size_grams: 60,
           emoji: "🥚",
-          unit_options: [{ unit: "piece", quantity: 1, grams_per_unit: 55 }],
+          sugar: 0.4,
+          cholesterol: 160,
+          omega_3: 0.5,
+          vitamin_b12: 0.4,
+          unit_options: [{ unit: "piece", quantity: 1, grams_per_unit: 60 }],
         },
         {
           name: "Toast",
           calories: 100,
-          protein: 5,
+          protein: 6,
           carbs: 16,
           fat: 2,
           serving_size_grams: 60,
@@ -248,6 +256,7 @@ test("analyzeFoodEntry_parsesAndReconcilesConstituents", async () => {
     }),
     toolCalls: [],
   });
+  };
   try {
     const result = await analyzeFoodEntry({
       providerId: "anthropic",
@@ -257,8 +266,19 @@ test("analyzeFoodEntry_parsesAndReconcilesConstituents", async () => {
     });
     assert.equal(result.name, "Eggs and toast");
     assert.equal(result.fiberG, 2);
+    // Constituents gate (enabled): the system prompt requests per-ingredient
+    // micros and the ±20% micro-sum rule (benchmark production_text_constituents_micro).
+    assert.ok(systemSeen);
+    assert.ok(systemSeen.includes("added_sugar"));
+    assert.ok(systemSeen.includes("vitamin_b12"));
+    assert.ok(systemSeen.includes("±20%"));
     assert.ok(Array.isArray(result.constituents));
     assert.equal(result.constituents.length, 2);
+    // Constituent rows sum exactly, so micros ride through unscaled.
+    assert.equal(result.constituents[0].sugarG, 0.4);
+    assert.equal(result.constituents[0].omega3G, 0.5);
+    assert.equal(result.constituents[0].vitaminB12Mcg, 0.4);
+    assert.equal(result.constituents[1].sugarG, null);
     const sumCal = result.constituents.reduce((a, c) => a + c.calories, 0);
     const sumG = result.constituents.reduce((a, c) => a + c.servingSizeGrams, 0);
     assert.equal(sumCal, 200);
@@ -318,6 +338,7 @@ test("analyzeFoodEntry_respectsMealConstituentsOptOut", async () => {
     });
     assert.ok(systemSeen);
     assert.equal(systemSeen.includes("constituents"), false);
+    assert.equal(systemSeen.includes("added_sugar"), false);
     assert.deepEqual(result.constituents, []);
   } finally {
     PROVIDERS.anthropic.send = original;

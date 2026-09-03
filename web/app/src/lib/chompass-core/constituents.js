@@ -4,6 +4,7 @@
  * docs/benchmarks/food_accuracy/reconcile_constituents.py and
  * android ConstituentReconcile.kt.
  */
+import { ALL_MICRO_KEYS } from "../home-nutrients.js";
 
 /** @typedef {import('./models.js').FoodConstituent} FoodConstituent */
 /** @typedef {import('./models.js').FoodEntry} FoodEntry */
@@ -19,6 +20,80 @@ export const MAX_CONSTITUENTS = 12;
  */
 function round1(value) {
   return Math.round(value * 10) / 10;
+}
+
+/**
+ * Constituent micro fields: AI short snake_case key ↔ model field. 22 keys —
+ * caffeine is entry-level only (benchmark CONSTITUENTS_MICRO_JSON_SCHEMA).
+ * @type {Array<[string, string]>}
+ */
+const AI_MICRO_FIELDS = [
+  ["sugar", "sugarG"],
+  ["added_sugar", "addedSugarG"],
+  ["fiber", "fiberG"],
+  ["saturated_fat", "saturatedFatG"],
+  ["monounsaturated_fat", "monounsaturatedFatG"],
+  ["polyunsaturated_fat", "polyunsaturatedFatG"],
+  ["cholesterol", "cholesterolMg"],
+  ["sodium", "sodiumMg"],
+  ["potassium", "potassiumMg"],
+  ["trans_fat", "transFatG"],
+  ["calcium", "calciumMg"],
+  ["iron", "ironMg"],
+  ["magnesium", "magnesiumMg"],
+  ["zinc", "zincMg"],
+  ["vitamin_a", "vitaminAMcg"],
+  ["vitamin_c", "vitaminCMg"],
+  ["vitamin_d", "vitaminDMcg"],
+  ["vitamin_b12", "vitaminB12Mcg"],
+  ["vitamin_e", "vitaminEMg"],
+  ["vitamin_k", "vitaminKMcg"],
+  ["folate", "folateMcg"],
+  ["omega_3", "omega3G"],
+];
+
+/**
+ * Normalized micro value: null when absent, non-finite, or negative.
+ * @param {unknown} v
+ * @returns {number|null}
+ */
+function microOrNull(v) {
+  if (v == null) return null;
+  const n = Number(v);
+  if (!Number.isFinite(n) || n < 0) return null;
+  return n;
+}
+
+/**
+ * Copy a row's micros with absent/invalid values normalized to null.
+ * @param {Partial<FoodConstituent>} c
+ * @returns {Partial<FoodConstituent>}
+ */
+function microFrom(c) {
+  /** @type {Partial<FoodConstituent>} */
+  const out = {};
+  for (const key of ALL_MICRO_KEYS) {
+    out[key] = microOrNull(c[key]);
+  }
+  return out;
+}
+
+/**
+ * Scale a row's present micros by a grams factor (per-100g semantics):
+ * round to 1dp, clamp >= 0; absent micros stay absent.
+ * @param {FoodConstituent} row
+ * @param {number} factor
+ * @returns {Partial<FoodConstituent>}
+ */
+function scaledMicros(row, factor) {
+  /** @type {Partial<FoodConstituent>} */
+  const out = {};
+  for (const key of ALL_MICRO_KEYS) {
+    const v = row[key];
+    if (v == null) continue;
+    out[key] = Math.max(0, round1(v * factor));
+  }
+  return out;
 }
 
 /**
@@ -112,6 +187,7 @@ export function scaleConstituent(row, factor) {
     servingSizeGrams: grams,
     selectedServingQuantity:
       row.selectedServingQuantity != null ? row.selectedServingQuantity * factor : null,
+    ...scaledMicros(row, factor),
   };
 }
 
@@ -173,6 +249,7 @@ export function reconcileConstituents(meal, maxRelError = MAX_REL_ERROR) {
     if (![grams, calories, proteinG, carbsG, fatG].every((n) => Number.isFinite(n))) continue;
     if (grams <= 0 || calories < 0 || proteinG < 0 || carbsG < 0 || fatG < 0) continue;
     rows.push({
+      ...microFrom(c),
       name: c.name.trim(),
       calories,
       proteinG,
@@ -240,6 +317,9 @@ export function reconcileConstituents(meal, maxRelError = MAX_REL_ERROR) {
     proteinG: round1(protein[i]),
     carbsG: round1(carbs[i]),
     fatG: round1(fat[i]),
+    // Micros ride the row's grams factor (per-100g semantics); no residual
+    // fixing — macros keep the last-row residual logic below.
+    ...scaledMicros(r, grams[i] / r.servingSizeGrams),
   }));
 
   const head = scaled.slice(0, -1);
@@ -335,12 +415,18 @@ export function parseConstituentsFromPrediction(prediction) {
       }
     }
     const selected = unitOptions[0] || null;
+    /** @type {Partial<FoodConstituent>} */
+    const micros = {};
+    for (const [aiKey, modelKey] of AI_MICRO_FIELDS) {
+      micros[modelKey] = microOrNull(c[aiKey]);
+    }
     out.push({
       name,
       calories: Math.round(calories),
       proteinG,
       carbsG,
       fatG,
+      ...micros,
       servingSizeGrams: grams,
       emoji: typeof c.emoji === "string" && c.emoji.trim() ? c.emoji.trim() : null,
       servingUnitOptions: unitOptions,
