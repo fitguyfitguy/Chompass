@@ -5,16 +5,28 @@ Versioned JSON Schemas for cross-app interchange. Fixtures in
 
 | Schema | Format | Consumers |
 |--------|--------|-----------|
-| [`diary-1.4.schema.json`](diary-1.4.schema.json) | Diary export `format_version` **1.4** | `DiaryExporter` / `DiaryImporter`, `web/.../diary-format.js` |
+| [`diary-1.5.schema.json`](diary-1.5.schema.json) | Diary export `format_version` **1.5** | `DiaryExporter` / `DiaryImporter`, `web/.../diary-format.js` |
+| [`diary-1.4.schema.json`](diary-1.4.schema.json) | Diary export **1.4** (legacy; still accepted on import) | same |
 | [`diary-1.3.schema.json`](diary-1.3.schema.json) | Diary export `format_version` **1.3** (legacy; still accepted on import) | same |
 | [`diary-1.2.schema.json`](diary-1.2.schema.json) | Diary export **1.2** (legacy; still accepted on import) | same |
 | [`diary-1.1.schema.json`](diary-1.1.schema.json) | Diary export **1.1** (legacy; still accepted on import) | same |
 | [`body-metrics-1.0.schema.json`](body-metrics-1.0.schema.json) | Body metrics `kind=body_metrics` **1.0** | `BodyMetricsExporter` / `BodyMetricsImporter`, `body-metrics-format.js` |
-| [`meal-share-v2.schema.json`](meal-share-v2.schema.json) | Meal share payload `v` **2** | `MealShare.kt`, `web/.../meal-share.js` |
+| [`meal-share-v3.schema.json`](meal-share-v3.schema.json) | Meal share payload `v` **3** | `MealShare.kt`, `web/.../meal-share.js` |
+| [`meal-share-v2.schema.json`](meal-share-v2.schema.json) | Meal share **v2** (legacy; still accepted on import) | same |
 | [`meal-share-v1.schema.json`](meal-share-v1.schema.json) | Meal share `v` **1** (legacy; still accepted on import) | same |
-| [`sync-1.2.schema.json`](sync-1.2.schema.json) | User-hosted sync `kind=sync` **1.2** | `SyncDocument` / `SyncRepository`, `web/.../sync-format.js` |
+| [`sync-1.3.schema.json`](sync-1.3.schema.json) | User-hosted sync `kind=sync` **1.3** | `SyncDocument` / `SyncRepository`, `web/.../sync-format.js` |
+| [`sync-1.2.schema.json`](sync-1.2.schema.json) | Sync **1.2** (legacy; still accepted on import) | same |
 | [`sync-1.1.schema.json`](sync-1.1.schema.json) | Sync **1.1** (legacy; still accepted on import) | same |
 | [`sync-1.0.schema.json`](sync-1.0.schema.json) | Sync **1.0** (legacy; still accepted on import) | same |
+
+## New in diary 1.5 / sync 1.3 / meal-share v3
+
+Optional per-constituent micronutrients on each `constituents[]` row
+(Codeberg #86). AI analysis requests 22 micros per row (no caffeine);
+the wire mirrors the item-level set (23 keys). Diary & sync use the
+unit-suffixed snake_case names (`sugar_g` … `caffeine_mg`); meal-share
+uses the camelCase short names (`sugar` … `caffeine`), omitted when
+null. Rows without micros stay exactly as in 1.4.
 
 ## New in diary 1.3 / sync 1.2
 

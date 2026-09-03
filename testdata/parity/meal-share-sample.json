@@ -1,5 +1,5 @@
 {
-  "v": 2,
+  "v": 3,
   "meals": [
     {
       "name": "Shared Oatmeal",
@@ -58,7 +58,16 @@
             }
           ],
           "selectedServingUnit": "piece",
-          "selectedServingQuantity": 2
+          "selectedServingQuantity": 2,
+          "sugar": 0,
+          "fiber": 0,
+          "saturatedFat": 4.5,
+          "cholesterol": 145,
+          "sodium": 320,
+          "potassium": 620,
+          "iron": 1.0,
+          "zinc": 3.4,
+          "vitaminB12": 0.5
         },
         {
           "name": "Rice",
@@ -75,7 +84,12 @@
             }
           ],
           "selectedServingUnit": "cup",
-          "selectedServingQuantity": 1.3
+          "selectedServingQuantity": 1.3,
+          "sugar": 0.5,
+          "fiber": 1.2,
+          "saturatedFat": 1.0,
+          "sodium": 160,
+          "magnesium": 20
         }
       ]
     }
