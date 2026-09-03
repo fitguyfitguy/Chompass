@@ -4,6 +4,19 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [4.5.0] - 2026-09-03
+
+### Added
+
+- **Notice when a backup replaces your data** (Android): after a reinstall, Android can restore an older backup over the profile you just set up. The app now shows a one-time Backup restored dialog so that replacement is visible. Dismissing it remembers the notice until another restore happens. Follows Codeberg [#60](https://codeberg.org/fitguy/Chompass/issues/60) by [@Ir0nhid3](https://codeberg.org/Ir0nhid3).
+
+### Fixed
+
+- **Log meal stays on screen in the meal builder** (Android): with five or more ingredients the Log meal and Add another row sat below the fold with no way to reach it. The sheet now caps its height, the ingredient list scrolls, and those buttons stay pinned. Closes Codeberg [#84](https://codeberg.org/fitguy/Chompass/issues/84) by [@BrassCat](https://codeberg.org/BrassCat).
+- **Save and Log stay visible at large font size** (Android): on a narrow screen with a large system font, long labels could hide the primary button on recipe builder and copy-from-day. The primary pill now keeps a visible single line; the title and secondary label yield first.
+- **Long sheets keep their action buttons reachable** (Android): importing a shared meal, a long daily or context note, the fasting goal sheet, and live voice transcript no longer push Save, Add, or Analyze off the screen.
+
+
 ## [4.4.0] - 2026-09-01
 
 ### Added
