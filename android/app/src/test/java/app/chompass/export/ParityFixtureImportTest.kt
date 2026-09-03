@@ -24,6 +24,15 @@ class ParityFixtureImportTest {
         assertEquals("piece", lunch.constituents[0].selectedServingUnit)
         assertEquals(2.0, lunch.constituents[0].selectedServingQuantity!!, 0.0)
         assertEquals(110.0, lunch.constituents[0].servingUnitOptions.single().gramsPerUnit, 0.0)
+        // Diary 1.5: constituent rows carry optional micros (null stays null).
+        val chicken = lunch.constituents[0]
+        assertEquals(0.0, chicken.sugar)
+        assertEquals(7.0, chicken.saturatedFat)
+        assertEquals(195.0, chicken.cholesterol)
+        assertEquals(330.0, chicken.sodium)
+        assertEquals(0.6, chicken.vitaminB12)
+        assertEquals(null, chicken.addedSugar)
+        assertEquals(null, chicken.caffeine)
         assertEquals("bowl", lunch.selectedServingUnit)
         assertEquals(1.0, lunch.selectedServingQuantity!!, 0.0)
 
@@ -43,6 +52,15 @@ class ParityFixtureImportTest {
         assertEquals("bowl", salad.selectedServingUnit)
         assertEquals(2, salad.constituents.size)
         assertEquals("piece", salad.constituents[0].selectedServingUnit)
+        val syncChicken = salad.constituents[0]
+        assertEquals(0.0, syncChicken.sugar)
+        assertEquals(6.2, syncChicken.monounsaturatedFat)
+        assertEquals(145.0, syncChicken.cholesterol)
+        assertEquals(0.5, syncChicken.vitaminB12)
+        val rice = salad.constituents[1]
+        assertEquals(2.0, rice.sugar)
+        assertEquals(100.0, rice.vitaminK)
+        assertEquals(50.0, rice.folate)
         val coffee = foods.first { it.name == "Black coffee" }
         assertTrue(coffee.constituents.isEmpty())
         assertEquals("cup", coffee.selectedServingUnit)

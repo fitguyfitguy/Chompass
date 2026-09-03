@@ -28,9 +28,9 @@ object MealShare {
     private const val LEGACY_WEB_HOST = "www.fud-ai.app"
     private const val LEGACY_WEB_HOST_ALT = "fud-ai.app"
     const val WEB_PATH = "/add-meal"
-    private const val VERSION = 2
+    private const val VERSION = 3
     /** Versions accepted on decode. New encodes always stamp [VERSION]. */
-    private val SUPPORTED_IMPORT_VERSIONS = setOf(1, 2)
+    private val SUPPORTED_IMPORT_VERSIONS = setOf(1, 2, 3)
 
     // Import caps: a `d` payload is attacker-controlled (any app / web page can
     // fire a VIEW intent), so bound decode size and row counts before parsing.
@@ -137,6 +137,16 @@ object MealShare {
             }
             c.selectedServingUnit?.let { d.put("selectedServingUnit", it) }
             c.selectedServingQuantity?.let { d.put("selectedServingQuantity", it) }
+            fun put(key: String, v: Double?) { if (v != null) d.put(key, v) }
+            put("sugar", c.sugar); put("addedSugar", c.addedSugar); put("fiber", c.fiber)
+            put("saturatedFat", c.saturatedFat); put("monounsaturatedFat", c.monounsaturatedFat)
+            put("polyunsaturatedFat", c.polyunsaturatedFat); put("cholesterol", c.cholesterol)
+            put("sodium", c.sodium); put("potassium", c.potassium); put("transFat", c.transFat)
+            put("calcium", c.calcium); put("iron", c.iron); put("magnesium", c.magnesium); put("zinc", c.zinc)
+            put("vitaminA", c.vitaminA); put("vitaminC", c.vitaminC); put("vitaminD", c.vitaminD)
+            put("vitaminB12", c.vitaminB12); put("vitaminE", c.vitaminE); put("vitaminK", c.vitaminK)
+            put("folate", c.folate); put("omega3", c.omega3)
+            put("caffeine", c.caffeine)
             arr.put(d)
         }
         return arr
@@ -214,6 +224,24 @@ object MealShare {
                     null
                 },
                 selectedServingQuantity = InputSanitizer.quantity(dbl("selectedServingQuantity")),
+                sugar = InputSanitizer.micro(dbl("sugar")), addedSugar = InputSanitizer.micro(dbl("addedSugar")),
+                fiber = InputSanitizer.micro(dbl("fiber")),
+                saturatedFat = InputSanitizer.micro(dbl("saturatedFat")),
+                monounsaturatedFat = InputSanitizer.micro(dbl("monounsaturatedFat")),
+                polyunsaturatedFat = InputSanitizer.micro(dbl("polyunsaturatedFat")),
+                cholesterol = InputSanitizer.micro(dbl("cholesterol")),
+                sodium = InputSanitizer.micro(dbl("sodium")), potassium = InputSanitizer.micro(dbl("potassium")),
+                transFat = InputSanitizer.micro(dbl("transFat")),
+                calcium = InputSanitizer.micro(dbl("calcium")), iron = InputSanitizer.micro(dbl("iron")),
+                magnesium = InputSanitizer.micro(dbl("magnesium")), zinc = InputSanitizer.micro(dbl("zinc")),
+                vitaminA = InputSanitizer.micro(dbl("vitaminA")),
+                vitaminC = InputSanitizer.micro(dbl("vitaminC")),
+                vitaminD = InputSanitizer.micro(dbl("vitaminD")),
+                vitaminB12 = InputSanitizer.micro(dbl("vitaminB12")),
+                vitaminE = InputSanitizer.micro(dbl("vitaminE")),
+                vitaminK = InputSanitizer.micro(dbl("vitaminK")),
+                folate = InputSanitizer.micro(dbl("folate")), omega3 = InputSanitizer.micro(dbl("omega3")),
+                caffeine = InputSanitizer.micro(dbl("caffeine")),
             )
         }.take(MAX_CONSTITUENTS)
     }

@@ -68,6 +68,7 @@ import app.chompass.models.MacroValueFormatter
 import app.chompass.models.MicronutrientField
 import app.chompass.models.MicronutrientValues
 import app.chompass.models.ServingUnitOption
+import app.chompass.models.OptionalNutrientGoals
 import app.chompass.ui.components.ClockTimeWheelPicker
 import app.chompass.ui.components.DateWheelPicker
 
@@ -106,6 +107,8 @@ import androidx.compose.foundation.layout.WindowInsets
 @Composable
 fun EditFoodEntrySheet(
     entry: FoodEntry,
+    /** #86: user's optional micro goals, shown as "(N%)" on ingredient micros. */
+    optionalGoals: OptionalNutrientGoals? = null,
     preferGramsByDefault: Boolean = false,
     /** Codeberg #20 phase 2: with the master AI switch off, the Ask-AI-to-correct
      *  section is hidden and the stored note is a plain editable field (Save
@@ -653,6 +656,7 @@ fun EditFoodEntrySheet(
                         editableConstituents,
                         scale,
                     ),
+                    optionalGoals = optionalGoals,
                     expanded = constituentsExpanded,
                     onExpandedChange = { constituentsExpanded = it },
                     onRowsChange = { displayRows ->

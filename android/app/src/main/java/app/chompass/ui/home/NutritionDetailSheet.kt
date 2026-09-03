@@ -236,6 +236,20 @@ fun NutritionDetailSheet(
                     DetailRow(Icons.Filled.Coffee, stringResource(R.string.nutrition_label_caffeine), fmt(caffeine), stringResource(R.string.unit_mg), goal = "${optionalGoals.caffeine}", percent = nutritionGoalPercent(caffeine, optionalGoals.caffeine.toDouble()))
                 }
             }
+            // #86: per-ingredient breakdown with the same micros +% block as
+            // the review sheets. Read-only; only when entries carry rows.
+            val constituentRows = entries.flatMap { it.constituents }
+            if (constituentRows.isNotEmpty()) {
+                item { NutritionSheetSectionHeader(stringResource(R.string.sheet_constituents)) }
+                item {
+                    Card {
+                        constituentRows.forEachIndexed { index, row ->
+                            if (index > 0) Hairline()
+                            ConstituentSummaryRow(row, optionalGoals)
+                        }
+                    }
+                }
+            }
         }
     }
 

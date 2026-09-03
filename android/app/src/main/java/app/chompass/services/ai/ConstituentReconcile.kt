@@ -101,6 +101,9 @@ object ConstituentReconcile {
             val selected = rows[i].selectedServingUnit?.let { id ->
                 ServingUnitOption.optionMatching(id, rows[i].servingUnitOptions)
             }
+            // Micros track the row's mass (per-100g semantics, #86): scale by
+            // the row's own grams factor — never rebalanced to a meal total.
+            val microFactor = if (rows[i].servingSizeGrams > 0) g / rows[i].servingSizeGrams else 1.0
             rows[i].copy(
                 servingSizeGrams = g,
                 calories = cals[i],
@@ -111,7 +114,7 @@ object ConstituentReconcile {
                     ?.takeUnless { it.isGramUnit }
                     ?.quantityFor(g)
                     ?: rows[i].selectedServingQuantity,
-            )
+            ).microsScaled(microFactor)
         }
     }
 

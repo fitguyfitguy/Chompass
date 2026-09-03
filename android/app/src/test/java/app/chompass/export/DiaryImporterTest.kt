@@ -1,5 +1,6 @@
 package app.chompass.export
 
+import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.MealType
@@ -244,6 +245,21 @@ class DiaryImporterTest {
             sodium = 50.0,
             vitaminD = 10.5,
             servingSizeGrams = 150.0,
+            constituents = listOf(
+                FoodConstituent(
+                    name = "Fillet",
+                    calories = 180,
+                    protein = 20.0,
+                    carbs = 0.0,
+                    fat = 8.0,
+                    servingSizeGrams = 120.0,
+                    saturatedFat = 2.5,
+                    cholesterol = 90.0,
+                    sodium = 60.0,
+                    vitaminD = 12.5,
+                    omega3 = 1.8,
+                ),
+            ),
         )
         val exported = DiaryExporter.build(
             entries = listOf(original),
@@ -254,7 +270,7 @@ class DiaryImporterTest {
             mealDisplay = { it },
         ) ?: error("expected export")
 
-        assertTrue(exported.second.contains("\"format_version\": \"1.4\""))
+        assertTrue(exported.second.contains("\"format_version\": \"1.5\""))
         val imported = DiaryImporter.parse(exported.second, ZoneId.systemDefault())
         assertTrue(imported is DiaryImportResult.Success)
         val entry = (imported as DiaryImportResult.Success).entries.single()
@@ -263,5 +279,14 @@ class DiaryImporterTest {
         assertEquals(50.0, entry.sodium)
         assertEquals(10.5, entry.vitaminD)
         assertEquals(FoodSource.MANUAL, entry.source)
+        val row = entry.constituents.single()
+        assertEquals("Fillet", row.name)
+        assertEquals(2.5, row.saturatedFat)
+        assertEquals(90.0, row.cholesterol)
+        assertEquals(60.0, row.sodium)
+        assertEquals(12.5, row.vitaminD)
+        assertEquals(1.8, row.omega3)
+        assertEquals(null, row.caffeine)
+        assertEquals(null, row.addedSugar)
     }
 }
