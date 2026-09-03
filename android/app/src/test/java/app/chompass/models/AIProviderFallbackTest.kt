@@ -9,8 +9,9 @@ class AIProviderFallbackTest {
     @Test
     fun geminiDefaultModelMatchesVariant() {
         // Debug defaults to Flash-Lite (3.7 Flash 503s on the free tier during
-        // device testing); release keeps the parity-locked 3.7 default.
-        val expected = if (BuildConfig.DEBUG) "gemini-3.5-flash-lite" else "gemini-3.7-flash"
+        // device testing; 3.8's free tier unverified); release keeps the
+        // parity-locked 3.8 default.
+        val expected = if (BuildConfig.DEBUG) "gemini-3.5-flash-lite" else "gemini-3.8-flash"
         assertEquals(expected, AIProvider.GEMINI.defaultModel)
     }
 

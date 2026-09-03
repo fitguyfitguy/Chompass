@@ -451,9 +451,10 @@ export const PROVIDERS = {
   gemini: {
     label: "Google (Gemini)",
     send: geminiSend,
-    defaultModel: "gemini-3.7-flash",
+    defaultModel: "gemini-3.8-flash",
     defaultFallbackModel: "gemini-3.5-flash-lite",
     models: [
+      "gemini-3.8-flash",
       "gemini-3.7-flash",
       "gemini-3.6-flash",
       "gemini-3.5-flash-lite",
@@ -464,6 +465,7 @@ export const PROVIDERS = {
       "gemini-2.5-pro",
     ],
     modelTiers: {
+      "gemini-3.8-flash": "varies",
       "gemini-3.7-flash": "varies",
       "gemini-3.1-pro-preview": "paid",
       "gemini-2.5-pro": "paid",
