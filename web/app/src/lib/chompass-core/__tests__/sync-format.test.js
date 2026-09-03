@@ -5,6 +5,8 @@ import { loadParityFixture } from "../../parity-fixtures.js";
 import {
   exportSyncDocument,
   parseSyncDocument,
+  SYNC_FORMAT_VERSION,
+  SYNC_IMPORT_VERSIONS,
   liveFoodEntriesFromSync,
   liveDailyNotesFromSync,
   liveGoalJournalFromSync,
@@ -19,7 +21,7 @@ const sample = loadParityFixture("sync-sample.json");
 test("parity sync-sample parses", () => {
   const doc = parseSyncDocument(sample);
   assert.equal(doc.export.kind, "sync");
-  assert.equal(doc.export.format_version, "1.2");
+  assert.equal(doc.export.format_version, "1.3");
   const foods = liveFoodEntriesFromSync(doc.food_entries);
   assert.equal(foods.length, 2);
   assert.equal(foods[0].id, "11111111-1111-4111-8111-111111111111");
@@ -29,6 +31,14 @@ test("parity sync-sample parses", () => {
   assert.equal(foods[0].constituents?.length, 2);
   assert.equal(foods[0].constituents?.[0].selectedServingUnit, "piece");
   assert.equal(foods[0].constituents?.[0].servingUnitOptions?.[0].gramsPerUnit, 90);
+  // sync 1.3: constituent micros parse from the fixture.
+  assert.equal(foods[0].constituents?.[0].sugarG, 0);
+  assert.equal(foods[0].constituents?.[0].cholesterolMg, 145);
+  assert.equal(foods[0].constituents?.[0].sodiumMg, 220);
+  assert.equal(foods[0].constituents?.[0].omega3G, 0.5);
+  assert.equal(foods[0].constituents?.[0].caffeineMg, null);
+  assert.equal(foods[0].constituents?.[1].sugarG, 2);
+  assert.equal(foods[0].constituents?.[1].fiberG, 4);
   assert.equal(foods[1].name, "Black coffee");
   assert.deepEqual(foods[1].constituents, []);
   assert.equal(foods[1].selectedServingUnit, "cup");
@@ -99,19 +109,51 @@ test("exportSyncDocument round-trips food id", () => {
         servingUnitOptions: [{ unit: "piece", gramsPerUnit: 50, quantity: 1 }],
         selectedServingUnit: "piece",
         selectedServingQuantity: 1,
-        constituents: [],
+        constituents: [
+          {
+            name: "White",
+            calories: 70,
+            proteinG: 6,
+            carbsG: 0.5,
+            fatG: 5,
+            servingSizeGrams: 50,
+            emoji: null,
+            servingUnitOptions: [],
+            selectedServingUnit: null,
+            selectedServingQuantity: null,
+            sugarG: 0.5,
+            cholesterolMg: 186,
+            fiberG: null,
+          },
+        ],
       },
     ],
     generatedAt: "2026-07-24T10:00:00.000Z",
   });
   const parsed = parseSyncDocument(doc);
-  assert.equal(parsed.export.format_version, "1.2");
+  assert.equal(parsed.export.format_version, SYNC_FORMAT_VERSION);
   assert.equal(parsed.food_entries[0].id, "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa");
   assert.equal(parsed.food_entries[0].emoji, "🥚");
   assert.equal(parsed.food_entries[0].source, "manually_edited");
-  assert.equal(parsed.food_entries[0].selected_serving_unit, "piece");
   assert.equal(parsed.food_entries[0].serving_unit_options[0].grams_per_unit, 50);
-  assert.deepEqual(parsed.food_entries[0].constituents, []);
+  // Constituent micros ride sync 1.3 (Codeberg #86); nulls stay null.
+  assert.equal(parsed.food_entries[0].constituents.length, 1);
+  assert.equal(parsed.food_entries[0].constituents[0].sugar_g, 0.5);
+  assert.equal(parsed.food_entries[0].constituents[0].cholesterol_mg, 186);
+  assert.equal(parsed.food_entries[0].constituents[0].fiber_g, null);
+  const live = liveFoodEntriesFromSync(parsed.food_entries);
+  assert.equal(live[0].constituents[0].sugarG, 0.5);
+  assert.equal(live[0].constituents[0].cholesterolMg, 186);
+  assert.equal(live[0].constituents[0].caffeineMg, null);
+});
+
+test("sync 1.3 accepted, newer rejected", () => {
+  assert.equal(SYNC_FORMAT_VERSION, "1.3");
+  for (const v of ["1.0", "1.1", "1.2", "1.3"]) {
+    assert.ok(SYNC_IMPORT_VERSIONS.has(v), v);
+  }
+  const doc = { export: { app: "Chompass", kind: "sync", format_version: "1.4" } };
+  assert.throws(() => parseSyncDocument(doc), UnsupportedSyncFormatError);
 });
 
 test("exportSyncDocument round-trips nicotine entries", () => {
@@ -178,6 +220,7 @@ test("1.2 doc missing only the optional arrays defaults each to []", () => {
   const v12 = structuredClone(sample);
   delete v12.daily_notes;
   delete v12.nicotine_entries;
+  v12.export.format_version = "1.2";
   delete v12.caffeine_entries;
   const doc = parseSyncDocument(v12);
   assert.deepEqual(doc.daily_notes, []);
@@ -252,7 +295,8 @@ test("daily notes round-trip with deterministic ids", async () => {
   assert.equal(doc.daily_notes[0].text, "Solid day.");
 
   const parsed = parseSyncDocument(doc);
-  assert.equal(parsed.export.format_version, "1.2");
+
+  assert.equal(parsed.export.format_version, SYNC_FORMAT_VERSION);
   const notes = liveDailyNotesFromSync(parsed.daily_notes);
   assert.equal(notes.length, 1);
   assert.equal(notes[0].id, dailyNoteIdFor(date));

@@ -5,10 +5,10 @@
  * DiaryExporter.kt and DiaryImporter.kt.
  */
 
-export const DIARY_FORMAT_VERSION = "1.4";
+export const DIARY_FORMAT_VERSION = "1.5";
 
 /** Versions accepted on import. New exports always stamp [DIARY_FORMAT_VERSION]. */
-export const DIARY_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2", "1.3", "1.4"]);
+export const DIARY_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2", "1.3", "1.4", "1.5"]);
 
 /** Micronutrient wire-key <-> model-field pairs, in ItemDto declaration order. */
 const MICRO_FIELDS = [
@@ -137,18 +137,25 @@ function servingUnitsFromWire(arr) {
 /** @param {import('./models.js').FoodConstituent[]} rows */
 function constituentsToWire(rows) {
   if (!rows?.length) return [];
-  return rows.map((c) => ({
-    name: c.name,
-    calories: Math.round(c.calories),
-    protein_g: round1(c.proteinG),
-    carbs_g: round1(c.carbsG),
-    fat_g: round1(c.fatG),
-    quantity_g: round1(c.servingSizeGrams),
-    emoji: c.emoji ?? null,
-    serving_unit_options: servingUnitsToWire(c.servingUnitOptions ?? []),
-    selected_serving_unit: c.selectedServingUnit ?? null,
-    selected_serving_quantity: c.selectedServingQuantity != null ? round1(c.selectedServingQuantity) : null,
-  }));
+  return rows.map((c) => {
+    /** @type {Record<string, unknown>} */
+    const wire = {
+      name: c.name,
+      calories: Math.round(c.calories),
+      protein_g: round1(c.proteinG),
+      carbs_g: round1(c.carbsG),
+      fat_g: round1(c.fatG),
+      quantity_g: round1(c.servingSizeGrams),
+      emoji: c.emoji ?? null,
+      serving_unit_options: servingUnitsToWire(c.servingUnitOptions ?? []),
+      selected_serving_unit: c.selectedServingUnit ?? null,
+      selected_serving_quantity: c.selectedServingQuantity != null ? round1(c.selectedServingQuantity) : null,
+    };
+    for (const [wireKey, modelKey] of MICRO_FIELDS) {
+      wire[wireKey] = round1(c[modelKey] ?? null);
+    }
+    return wire;
+  });
 }
 
 /** @param {any} arr */
@@ -159,7 +166,7 @@ function constituentsFromWire(arr) {
   for (const c of arr) {
     const name = String(c?.name ?? "").trim();
     if (!name) continue;
-    out.push({
+    const row = {
       name,
       calories: Math.round(Number(c.calories) || 0),
       proteinG: Number(c.protein_g) || 0,
@@ -170,7 +177,11 @@ function constituentsFromWire(arr) {
       servingUnitOptions: servingUnitsFromWire(c.serving_unit_options),
       selectedServingUnit: c.selected_serving_unit ?? null,
       selectedServingQuantity: c.selected_serving_quantity != null ? Number(c.selected_serving_quantity) : null,
-    });
+    };
+    for (const [wireKey, modelKey] of MICRO_FIELDS) {
+      row[modelKey] = c[wireKey] ?? null;
+    }
+    out.push(row);
   }
   return out;
 }
@@ -322,7 +333,7 @@ export function importDiary(doc, idGen = () => crypto.randomUUID()) {
   const app = exp.app.trim().toLowerCase();
   if (app !== "chompass" && app !== "nofud" && app !== "fud ai") throw new UnsupportedFormatError(`unrecognized app "${exp.app}"`);
   if (!DIARY_IMPORT_VERSIONS.has(exp.format_version)) {
-    throw new UnsupportedFormatError(`unsupported format_version "${exp.format_version}" (need 1.0, 1.1, 1.2, 1.3, or 1.4)`);
+    throw new UnsupportedFormatError(`unsupported format_version "${exp.format_version}" (need 1.0 through 1.5)`);
   }
 
   /** @type {import('./models.js').FoodEntry[]} */

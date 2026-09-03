@@ -922,6 +922,39 @@ main.view {
   text-align: right;
 }
 
+.nutrition-detail__row--stacked {
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "label value"
+    "micros micros";
+  row-gap: 0.25rem;
+}
+
+.nutrition-detail__row--stacked .nutrition-detail__label { grid-area: label; }
+.nutrition-detail__row--stacked .nutrition-detail__value { grid-area: value; }
+
+.nutrition-detail__micros {
+  grid-area: micros;
+  font-size: 0.85rem;
+}
+
+.nutrition-detail__micros summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 0.2rem 0;
+}
+
+.nutrition-detail__micros .nutrition-detail__list {
+  padding: 0.15rem 0 0.25rem 0.35rem;
+}
+
+.nutrition-detail__micros .nutrition-detail__row {
+  border-bottom: none;
+  padding: 0.15rem 0;
+  grid-template-columns: 1fr auto auto;
+}
+
 .nutrient-picker {
   display: grid;
   gap: 0.55rem;
@@ -4764,6 +4797,39 @@ body.camera-open {
   margin: 0.55rem 0 0;
   color: var(--muted);
   font-size: 0.85rem;
+}
+
+.entry-constituent-card__micros {
+  margin: 0.45rem 0 0;
+  font-size: 0.85rem;
+}
+
+.entry-constituent-card__micros summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 0.2rem 0;
+}
+
+.entry-constituent-card__micros ul {
+  list-style: none;
+  margin: 0.15rem 0 0;
+  padding: 0 0 0 0.35rem;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.entry-constituent-card__micros li {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.5rem;
+  align-items: baseline;
+  color: var(--text);
+}
+
+.entry-constituent-card__micros .entry-constituent-card__micro-goal {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
 }
 
 .serving-quantity-card--nested {

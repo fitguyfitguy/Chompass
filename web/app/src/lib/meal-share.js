@@ -2,12 +2,12 @@
 /**
  * Meal share encode/decode — Android MealShare.kt compatible payload.
  * Web bridge uses hash route `#/add-meal?d=…` (custom scheme is native-only).
- * Wire is camelCase (v1 convention). New encodes use v: 2; decode accepts 1 and 2.
+ * Wire is camelCase (v1 convention). New encodes use v: 3; decode accepts 1-3.
  */
 import { ALL_MICRO_KEYS } from "./home-nutrients.js";
 
-export const MEAL_SHARE_VERSION = 2;
-export const MEAL_SHARE_IMPORT_VERSIONS = new Set([1, 2]);
+export const MEAL_SHARE_VERSION = 3;
+export const MEAL_SHARE_IMPORT_VERSIONS = new Set([1, 2, 3]);
 
 /** Share wire key → FoodEntry field */
 const SHARE_TO_ENTRY = {
@@ -93,6 +93,12 @@ function constituentsToShare(rows) {
     if (units) d.servingUnitOptions = units;
     if (c.selectedServingUnit) d.selectedServingUnit = c.selectedServingUnit;
     if (c.selectedServingQuantity != null) d.selectedServingQuantity = c.selectedServingQuantity;
+    // Constituent micros (v3): same camelCase keys as entry micros, omit null.
+    for (const key of ALL_MICRO_KEYS) {
+      const shareKey = ENTRY_TO_SHARE[key];
+      const v = /** @type {Record<string, unknown>} */ (c)[key];
+      if (shareKey && v != null) d[shareKey] = v;
+    }
     return d;
   });
 }
@@ -108,7 +114,8 @@ function constituentsFromShare(arr) {
   for (const d of arr) {
     const name = String(d?.name ?? "").trim();
     if (!name) continue;
-    out.push({
+    /** @type {Record<string, unknown>} */
+    const entry = {
       name,
       calories: Math.round(Number(d.calories) || 0),
       proteinG: Number(d.protein) || 0,
@@ -119,7 +126,14 @@ function constituentsFromShare(arr) {
       servingUnitOptions: servingUnitsFromShare(d.servingUnitOptions),
       selectedServingUnit: d.selectedServingUnit ? String(d.selectedServingUnit) : null,
       selectedServingQuantity: d.selectedServingQuantity != null ? Number(d.selectedServingQuantity) : null,
-    });
+    };
+    // Constituent micros (v3): same clamp treatment as entry-level micros;
+    // absent keys decode to null.
+    for (const [shareKey, entryKey] of Object.entries(SHARE_TO_ENTRY)) {
+      const n = Number(d[shareKey]);
+      entry[entryKey] = d[shareKey] != null && Number.isFinite(n) ? Math.min(Math.max(n, 0), 100000) : null;
+    }
+    out.push(/** @type {import('./chompass-core/models.js').FoodConstituent} */ (entry));
     if (out.length >= 20) break; // parity: Android MealShare.MAX_CONSTITUENTS
   }
   return out;

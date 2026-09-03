@@ -130,9 +130,9 @@ Prompt variant `production_text_constituents_micro` asks each `constituents[]` r
 | strong | `google/gemini-3.7-flash` | **100%** (41/41) | **100%** | 98% | **35.8%** | 18.1% | 100% / 100% |
 | cheap | `google/gemini-3.5-flash-lite` | 93% (40/43) | 92% | 93% | 63.4% | 17.5% | 100% / 100% |
 
-**Excursory verdict:** the full micro breakdown is emission-reliable on both models (≥93% presence, ≥92% sums reconcile) and **does not regress the shipped macro-only gate**. Gemini 3.7 Flash is ~2× better at actual per-constituent micro accuracy (35.8% vs 63.4% blended WMAPE on FNDDS-matched items): if a future per-ingredient micro UI ever ships, the strong model carries it; Flash Lite micros are presence-plausible but quantitatively weak. Not a gate; no schema ship without a product decision on per-ingredient micros (per-ingredient micro GT from USDA matching remains an unstarted follow-up).
+**Excursory verdict:** the full micro breakdown is emission-reliable on both models (≥93% presence, ≥92% sums reconcile) and **does not regress the shipped macro-only gate**. Gemini 3.7 Flash is ~2× better at actual per-constituent micro accuracy (35.8% vs 63.4% blended WMAPE on FNDDS-matched items). Not a gate. **Shipped (Codeberg #86):** the per-ingredient micro UI + versioned diary 1.5 / sync 1.3 / meal-share v3 parity ride this prompt — micros scale with the row's grams factor in the shipped reconciler, with no micro-sum strip gate; estimates are labeled in the UI. Per-ingredient micro GT from USDA matching remains an unstarted follow-up.
 
-**Next work:** grouped-row result-sheet UX + g/unit + versioned diary/sync/meal-share parity.
+**Next work:** grouped-row result-sheet UX (shipped via #86, read-only).
 
 Reproduce:
 
