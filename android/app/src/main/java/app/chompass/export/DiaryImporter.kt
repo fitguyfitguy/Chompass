@@ -10,6 +10,7 @@ import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonObject
+import app.chompass.services.InputSanitizer
 import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodGroundingProvenance
@@ -207,19 +208,22 @@ object DiaryImporter {
                 servingUnitOptions = parseServingUnitOptions(o["serving_unit_options"]?.asArrayOrNull()),
                 selectedServingUnit = o["selected_serving_unit"]?.asString()?.takeIf { it.isNotBlank() },
                 selectedServingQuantity = o["selected_serving_quantity"]?.asDouble(),
-                sugar = o["sugar_g"]?.asDouble(), addedSugar = o["added_sugar_g"]?.asDouble(),
-                fiber = o["fiber_g"]?.asDouble(), saturatedFat = o["saturated_fat_g"]?.asDouble(),
-                monounsaturatedFat = o["monounsaturated_fat_g"]?.asDouble(),
-                polyunsaturatedFat = o["polyunsaturated_fat_g"]?.asDouble(),
-                cholesterol = o["cholesterol_mg"]?.asDouble(), sodium = o["sodium_mg"]?.asDouble(),
-                potassium = o["potassium_mg"]?.asDouble(), transFat = o["trans_fat_g"]?.asDouble(),
-                calcium = o["calcium_mg"]?.asDouble(), iron = o["iron_mg"]?.asDouble(),
-                magnesium = o["magnesium_mg"]?.asDouble(), zinc = o["zinc_mg"]?.asDouble(),
-                vitaminA = o["vitamin_a_mcg"]?.asDouble(), vitaminC = o["vitamin_c_mg"]?.asDouble(),
-                vitaminD = o["vitamin_d_mcg"]?.asDouble(), vitaminB12 = o["vitamin_b12_mcg"]?.asDouble(),
-                vitaminE = o["vitamin_e_mg"]?.asDouble(), vitaminK = o["vitamin_k_mcg"]?.asDouble(),
-                folate = o["folate_mcg"]?.asDouble(), omega3 = o["omega3_g"]?.asDouble(),
-                caffeine = o["caffeine_mg"]?.asDouble(),
+                // Constituent micros sanitize like the AI parse and meal-share
+                // decode (InputSanitizer.micro); entry-level fields keep the
+                // pre-existing raw policy.
+                sugar = InputSanitizer.micro(o["sugar_g"]?.asDouble()), addedSugar = InputSanitizer.micro(o["added_sugar_g"]?.asDouble()),
+                fiber = InputSanitizer.micro(o["fiber_g"]?.asDouble()), saturatedFat = InputSanitizer.micro(o["saturated_fat_g"]?.asDouble()),
+                monounsaturatedFat = InputSanitizer.micro(o["monounsaturated_fat_g"]?.asDouble()),
+                polyunsaturatedFat = InputSanitizer.micro(o["polyunsaturated_fat_g"]?.asDouble()),
+                cholesterol = InputSanitizer.micro(o["cholesterol_mg"]?.asDouble()), sodium = InputSanitizer.micro(o["sodium_mg"]?.asDouble()),
+                potassium = InputSanitizer.micro(o["potassium_mg"]?.asDouble()), transFat = InputSanitizer.micro(o["trans_fat_g"]?.asDouble()),
+                calcium = InputSanitizer.micro(o["calcium_mg"]?.asDouble()), iron = InputSanitizer.micro(o["iron_mg"]?.asDouble()),
+                magnesium = InputSanitizer.micro(o["magnesium_mg"]?.asDouble()), zinc = InputSanitizer.micro(o["zinc_mg"]?.asDouble()),
+                vitaminA = InputSanitizer.micro(o["vitamin_a_mcg"]?.asDouble()), vitaminC = InputSanitizer.micro(o["vitamin_c_mg"]?.asDouble()),
+                vitaminD = InputSanitizer.micro(o["vitamin_d_mcg"]?.asDouble()), vitaminB12 = InputSanitizer.micro(o["vitamin_b12_mcg"]?.asDouble()),
+                vitaminE = InputSanitizer.micro(o["vitamin_e_mg"]?.asDouble()), vitaminK = InputSanitizer.micro(o["vitamin_k_mcg"]?.asDouble()),
+                folate = InputSanitizer.micro(o["folate_mcg"]?.asDouble()), omega3 = InputSanitizer.micro(o["omega3_g"]?.asDouble()),
+                caffeine = InputSanitizer.micro(o["caffeine_mg"]?.asDouble()),
             )
         }
     }

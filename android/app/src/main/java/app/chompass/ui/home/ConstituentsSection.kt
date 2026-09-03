@@ -130,19 +130,7 @@ private fun ConstituentRowCard(
     fun applyQuantity(text: String) {
         quantityText = text
         val qty = ServingUnitOption.parseQuantity(text)?.takeIf { it > 0 } ?: return
-        val grams = qty * selected.gramsPerUnit
-        val factor = if (row.servingSizeGrams > 0) grams / row.servingSizeGrams else 1.0
-        onChange(
-            row.copy(
-                servingSizeGrams = grams,
-                calories = (row.calories * factor).roundToInt().coerceAtLeast(0),
-                protein = row.protein * factor,
-                carbs = row.carbs * factor,
-                fat = row.fat * factor,
-                selectedServingUnit = selected.unit,
-                selectedServingQuantity = qty,
-            ),
-        )
+        onChange(applyConstituentQuantity(row, qty, selected))
     }
 
     Surface(
@@ -263,7 +251,10 @@ internal fun ConstituentMicrosDisclosure(
 ) {
     val present = constituentMicros(row)
     if (present.isEmpty()) return
-    var expanded by remember(row) { mutableStateOf(false) }
+    // Deliberately not keyed on [row]: quantity/name edits rebuild the row
+    // object on every keystroke and must not collapse an open disclosure
+    // (rows never reorder in place, so slot identity is stable).
+    var expanded by remember { mutableStateOf(false) }
     Column(modifier = modifier.fillMaxWidth()) {
         TextButton(onClick = { expanded = !expanded }) {
             Icon(
@@ -363,6 +354,30 @@ private fun microGoal(field: MicronutrientField, goals: OptionalNutrientGoals?):
         MicronutrientField.CAFFEINE -> OptionalNutrient.CAFFEINE
     }
     return goals?.valueFor(nutrient)
+}
+
+/**
+ * Quantity-edit scaling for a constituent row: grams, macros, AND micros all
+ * follow the grams factor ([FoodConstituent.microsScaled]) — the same mass
+ * semantics as every other scaling path (#86 review fix: micros used to stay
+ * stale here while macros scaled).
+ */
+internal fun applyConstituentQuantity(
+    row: FoodConstituent,
+    qty: Double,
+    option: ServingUnitOption,
+): FoodConstituent {
+    val grams = qty * option.gramsPerUnit
+    val factor = if (row.servingSizeGrams > 0) grams / row.servingSizeGrams else 1.0
+    return row.copy(
+        servingSizeGrams = grams,
+        calories = (row.calories * factor).roundToInt().coerceAtLeast(0),
+        protein = row.protein * factor,
+        carbs = row.carbs * factor,
+        fat = row.fat * factor,
+        selectedServingUnit = option.unit,
+        selectedServingQuantity = qty,
+    ).microsScaled(factor)
 }
 
 /** Apply display-space constituent edits: rebase bases and recompute meal totals. */
