@@ -57,4 +57,14 @@ object PerfLog {
             // JVM unit tests run without a mocked android.util.Log.
         }
     }
+
+    /** [event] at warning level; same JVM-test guard. */
+    fun warn(line: String) {
+        if (!enabled) return
+        try {
+            Log.w(TAG, line)
+        } catch (_: RuntimeException) {
+            // JVM unit tests run without a mocked android.util.Log.
+        }
+    }
 }

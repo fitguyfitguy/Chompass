@@ -966,7 +966,7 @@ class FoodAnalysisService(
             },
         )
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
-        if (BuildConfig.DEBUG && raw.length < 200) Log.w(PerfLog.TAG, "op=analyzeText raw=$raw")
+        if (BuildConfig.DEBUG && raw.length < 200) PerfLog.warn("op=analyzeText raw=$raw")
         val analysis = PerfLog.measure("analyzeText", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
         return finalizeAnalysis(analysis, imageBytes = null, description = description, onProgress = onProgress)
     }
