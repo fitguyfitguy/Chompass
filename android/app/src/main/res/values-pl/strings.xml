@@ -1984,4 +1984,6 @@ makro rebalansowane do nowej sumy kalorii</string>
     <string name="settings_meals_hidden">%1$s (ukryty)</string>
     <string name="settings_meals_no_auto">Bez autodopasowania</string>
     <string name="settings_meals_save_error">Godziny muszą dzielić co najmniej 15 minut przerwy i mieścić się w ciągu jednego dnia.</string>
+  <string name="recovered_review_chip">Odzyskana analiza: %1$s</string>
+  <string name="cd_discard_recovered_review">Odrzuć odzyskaną analizę</string>
 </resources>

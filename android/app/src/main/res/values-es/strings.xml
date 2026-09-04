@@ -1977,4 +1977,6 @@ diario: media de los objetivos registrados en el rango, huecos omitidos</string>
 macros reequilibradas al nuevo total calórico</string>
     <string name="picker_type_value">Escribir valor</string>
     <string name="picker_use_wheel">Usar rueda</string>
+  <string name="recovered_review_chip">Análisis recuperado: %1$s</string>
+  <string name="cd_discard_recovered_review">Descartar el análisis recuperado</string>
 </resources>

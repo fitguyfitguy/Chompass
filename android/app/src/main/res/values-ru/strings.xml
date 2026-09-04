@@ -2034,4 +2034,6 @@
     <string name="settings_meals_hidden">%1$s (скрыт)</string>
     <string name="settings_meals_no_auto">Не для автовыбора</string>
     <string name="settings_meals_save_error">Время должно отличаться минимум на 15 минут и умещаться в одни сутки.</string>
+  <string name="recovered_review_chip">Восстановленный анализ: %1$s</string>
+  <string name="cd_discard_recovered_review">Отменить восстановленный анализ</string>
 </resources>

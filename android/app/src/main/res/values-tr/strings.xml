@@ -1980,4 +1980,6 @@ makrolar yeni kalori toplamına göre yeniden dengelenir</string>
     <string name="settings_meals_hidden">%1$s (gizli)</string>
     <string name="settings_meals_no_auto">Otomatik seçim yok</string>
     <string name="settings_meals_save_error">Saatler en az 15 dakika arayla olmalı ve bir güne sığmalıdır.</string>
+  <string name="recovered_review_chip">Kurtarılan analiz: %1$s</string>
+  <string name="cd_discard_recovered_review">Kurtarılan analizi at</string>
 </resources>

@@ -2648,6 +2648,9 @@ für dich ein</string>
 
     <string name="paste_busy">Einfügen…</string>
 
+    <string name="recovered_review_chip">Wiederhergestellte Analyse: %1$s</string>
+
+    <string name="cd_discard_recovered_review">Wiederhergestellte Analyse verwerfen</string>
     <string name="cd_favorited">Als Favorit markiert</string>
 
     <string name="cd_move_up">Nach oben verschieben</string>

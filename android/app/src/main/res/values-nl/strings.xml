@@ -1958,4 +1958,6 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
     <string name="settings_meals_hidden">%1$s (verborgen)</string>
     <string name="settings_meals_no_auto">Niet voor auto-gok</string>
     <string name="settings_meals_save_error">Tijden moeten minstens 15 minuten uit elkaar liggen en binnen één dag passen.</string>
+  <string name="recovered_review_chip">Teruggehaalde analyse: %1$s</string>
+  <string name="cd_discard_recovered_review">Teruggehaalde analyse verwijderen</string>
 </resources>

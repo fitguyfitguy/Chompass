@@ -1,8 +1,10 @@
 package app.chompass.ui.home
 
 import android.app.Application
+import app.chompass.models.PendingFoodAnalysisDraft
 import app.chompass.models.UserProfile
 import app.chompass.services.ai.GoalCalculation
+import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.RecalcSheetData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -64,5 +66,27 @@ class HomeUiStateWriteTest {
     fun equals_distinguishesSheetChanges() {
         val withSheet = HomeUiState().copy(lastRecalcSheet = sheet)
         assertTrue("custom equals must not treat sheet-only changes as equal", withSheet != HomeUiState())
+    }
+
+    @Test
+    fun copyAndWrite_preservesRecoveredReview() {
+        val draft = PendingFoodAnalysisDraft(
+            analysis = FoodAnalysis(
+                name = "Chicken rice",
+                calories = 520,
+                protein = 38.0,
+                carbs = 55.0,
+                fat = 12.0,
+                servingSizeGrams = null,
+            ),
+            awaitingReview = true,
+        )
+        val flow = MutableStateFlow(HomeUiState())
+        flow.update { it.copy(recoveredReview = draft) }
+        assertTrue("update must carry the recovered review", flow.value.recoveredReview != null)
+        assertTrue(
+            "custom equals must not treat recoveredReview-only changes as equal",
+            flow.value != HomeUiState(),
+        )
     }
 }

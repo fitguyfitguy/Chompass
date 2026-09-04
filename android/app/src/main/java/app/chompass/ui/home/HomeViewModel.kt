@@ -160,6 +160,12 @@ data class HomeUiState(
      * re-storing the image bytes as a new file on disk.
      */
     val pendingReviewSource: FoodEntry? = null,
+    /**
+     * Dismissed-but-not-logged review (recovered draft): shown as the Home
+     * "recovered analysis" chip. Restoring reopens the review sheet without a
+     * new AI call; discarding deletes the persisted draft for good.
+     */
+    val recoveredReview: PendingFoodAnalysisDraft? = null,
     val pendingInputImageBytes: ByteArray? = null,
     val pendingInputNote: String? = null,
     val pendingInputConfirmedPortionGrams: Double? = null,
@@ -480,7 +486,8 @@ data class HomeUiState(
             hasSeenCameraScaleTip == other.hasSeenCameraScaleTip &&
             weightMetric == other.weightMetric &&
             favoriteKeys == other.favoriteKeys &&
-            pendingAnalysis == other.pendingAnalysis &&
+            pendingReviewSource == other.pendingReviewSource &&
+            recoveredReview == other.recoveredReview &&
             pendingFoodSource == other.pendingFoodSource &&
             pendingDraftImageFilename == other.pendingDraftImageFilename &&
             pendingReviewSource == other.pendingReviewSource &&
@@ -563,7 +570,8 @@ data class HomeUiState(
         result = 31 * result + hasSeenCameraScaleTip.hashCode()
         result = 31 * result + weightMetric.hashCode()
         result = 31 * result + favoriteKeys.hashCode()
-        result = 31 * result + (pendingAnalysis?.hashCode() ?: 0)
+        result = 31 * result + (pendingReviewSource?.hashCode() ?: 0)
+        result = 31 * result + (recoveredReview?.hashCode() ?: 0)
         result = 31 * result + (pendingFoodSource?.hashCode() ?: 0)
         result = 31 * result + (pendingDraftImageFilename?.hashCode() ?: 0)
         result = 31 * result + (pendingReviewSource?.hashCode() ?: 0)
@@ -933,6 +941,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     ) {
         val start = beginAnalysis(phased = phased, configure = configure) ?: return
         discardPendingDraft(start.previousDraftImage)
+        // A fresh analysis supersedes any recovered review chip.
+        _ui.update { it.copy(recoveredReview = null) }
         try {
             block(start)
         } catch (e: AiError) {
@@ -1321,7 +1331,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             val analysisDraft = container.prefs.pendingFoodAnalysisDraft.first()
             if (analysisDraft != null) {
-                restorePendingDraft(analysisDraft)
+                if (analysisDraft.awaitingReview) {
+                    // Dismissed by the user: surface the recovered-review chip
+                    // instead of reopening the sheet uninvited.
+                    _ui.update { it.copy(recoveredReview = analysisDraft) }
+                } else {
+                    restorePendingDraft(analysisDraft)
+                }
             } else {
                 container.prefs.pendingFoodInputDraft.first()?.let { restorePendingInputDraft(it) }
             }
@@ -2186,7 +2202,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun dismissPending() {
-        val previousDraftImage = _ui.value.pendingDraftImageFilename
+        val snapshot = _ui.value
+        val previousDraftImage = snapshot.pendingDraftImageFilename
+        // A completed, unsaved AI review is worth an API call: keep the
+        // persisted draft for the recovered-review chip instead of discarding.
+        // Saved Meals / favorites reviews cost no AI call and stay dismissible.
+        val keepForRecovery = snapshot.analysisReadyForEdit && snapshot.pendingReviewSource == null
         synchronized(this) {
             ++analysisGeneration
             analysisInFlight = false
@@ -2209,7 +2230,14 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         ) }
         container.analyzingFood.value = false
         viewModelScope.launch {
-            discardPendingDraft(previousDraftImage)
+            if (keepForRecovery) {
+                val recovered = parkRecoveredDraft(snapshot)
+                if (recovered != null) {
+                    _ui.update { it.copy(recoveredReview = recovered) }
+                }
+            } else {
+                discardPendingDraft(previousDraftImage)
+            }
         }
     }
 
@@ -2892,6 +2920,51 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             pendingInputConfirmedPortionGrams = null,
             pendingInputDraftImageFilenames = emptyList()
         ) }
+    }
+
+    /**
+     * Marks the persisted draft of a dismissed completed review as awaiting
+     * review (the Home recovered-analysis chip). [snapshot] was captured
+     * before the dismiss cleared the pending fields.
+     */
+    private suspend fun parkRecoveredDraft(snapshot: HomeUiState): PendingFoodAnalysisDraft? {
+        val analysis = snapshot.pendingAnalysis ?: return null
+        val existing = container.prefs.pendingFoodAnalysisDraft.first()
+        val imageFilename = snapshot.pendingDraftImageFilename
+            ?: existing?.imageFilename
+            ?: snapshot.pendingImageBytes?.let { persistImage(it, UUID.randomUUID()) }
+        val draft = PendingFoodAnalysisDraft(
+            analysis = analysis,
+            imageFilename = imageFilename,
+            source = snapshot.pendingFoodSource,
+            targetDate = _selectedDate.value,
+            awaitingReview = true,
+        )
+        container.prefs.setPendingFoodAnalysisDraft(draft)
+        return draft
+    }
+
+    /** Chip tap: reopen the dismissed review sheet (no new AI call). */
+    fun restoreRecoveredReview() {
+        val draft = _ui.value.recoveredReview ?: return
+        _ui.update { it.copy(recoveredReview = null) }
+        viewModelScope.launch {
+            // Un-mark first so a process death while the restored sheet is
+            // open keeps the pre-recovery auto-restore behavior.
+            container.prefs.pendingFoodAnalysisDraft.first()
+                ?.takeIf { it.awaitingReview }
+                ?.let { container.prefs.setPendingFoodAnalysisDraft(it.copy(awaitingReview = false)) }
+        }
+        restorePendingDraft(draft)
+    }
+
+    /** Chip close: drop the recovered review and its photo for good. */
+    fun discardRecoveredReview() {
+        val draft = _ui.value.recoveredReview ?: return
+        _ui.update { it.copy(recoveredReview = null) }
+        viewModelScope.launch {
+            discardPendingDraft(draft.imageFilename)
+        }
     }
 
     private suspend fun discardPendingDraft(imageFilename: String? = _ui.value.pendingDraftImageFilename) {

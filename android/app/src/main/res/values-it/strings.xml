@@ -1958,4 +1958,6 @@ macro riequilibrate al nuovo totale calorico</string>
     <string name="settings_meals_hidden">%1$s (nascosto)</string>
     <string name="settings_meals_no_auto">Non per la scelta automatica</string>
     <string name="settings_meals_save_error">Gli orari devono distare almeno 15 minuti ed entrare in una giornata.</string>
+  <string name="recovered_review_chip">Analisi recuperata: %1$s</string>
+  <string name="cd_discard_recovered_review">Elimina analisi recuperata</string>
 </resources>
