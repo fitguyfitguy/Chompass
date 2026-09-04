@@ -17,4 +17,33 @@ describe("meal catalog", () => {
     const c = parseCatalog({ meals: [] });
     assert.equal(c.meals[0].id, "breakfast");
   });
+
+  it("keeps schedules that wrap midnight", () => {
+    const c = parseCatalog({
+      version: 1,
+      meals: [
+        { id: "breakfast", startMinutes: 20 * 60, enabled: true },
+        { id: "lunch", startMinutes: 60, enabled: true },
+        { id: "dinner", startMinutes: 5 * 60, enabled: true },
+        { id: "snack", startMinutes: 9 * 60, enabled: true },
+      ],
+    });
+    assert.equal(c.meals.length, 4); // kept, not replaced by the 5-meal default
+    const at = (h, m) => mealIdAt(c, new Date(2026, 0, 1, h, m));
+    assert.equal(at(2, 0), "lunch");
+    assert.equal(at(23, 0), "breakfast");
+    assert.equal(at(0, 30), "breakfast");
+  });
+
+  it("falls back when starts duplicate across the wrap", () => {
+    const c = parseCatalog({
+      version: 1,
+      meals: [
+        { id: "breakfast", startMinutes: 7 * 60, enabled: true },
+        { id: "lunch", startMinutes: 19 * 60, enabled: true },
+        { id: "dinner", startMinutes: 7 * 60, enabled: true },
+      ],
+    });
+    assert.equal(c.meals.length, 5); // default
+  });
 });

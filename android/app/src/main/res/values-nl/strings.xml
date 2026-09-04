@@ -1957,4 +1957,5 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
     <string name="settings_meals_remove_body">Bestaande items houden hun type tot je ze wijzigt. Ingebouwde maaltijden worden verborgen, niet verwijderd.</string>
     <string name="settings_meals_hidden">%1$s (verborgen)</string>
     <string name="settings_meals_no_auto">Niet voor auto-gok</string>
+    <string name="settings_meals_save_error">Tijden moeten minstens 15 minuten uit elkaar liggen en binnen één dag passen.</string>
 </resources>

@@ -2033,4 +2033,5 @@
     <string name="settings_meals_remove_body">Старые записи сохраняют тип, пока вы их не измените. Встроенные приёмы скрываются, а не удаляются.</string>
     <string name="settings_meals_hidden">%1$s (скрыт)</string>
     <string name="settings_meals_no_auto">Не для автовыбора</string>
+    <string name="settings_meals_save_error">Время должно отличаться минимум на 15 минут и умещаться в одни сутки.</string>
 </resources>

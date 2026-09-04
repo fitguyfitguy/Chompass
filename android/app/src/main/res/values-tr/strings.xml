@@ -1979,4 +1979,5 @@ makrolar yeni kalori toplamına göre yeniden dengelenir</string>
     <string name="settings_meals_remove_body">Mevcut kayıtlar siz düzenleyene kadar türünü korur. Yerleşik öğünler silinmez, gizlenir.</string>
     <string name="settings_meals_hidden">%1$s (gizli)</string>
     <string name="settings_meals_no_auto">Otomatik seçim yok</string>
+    <string name="settings_meals_save_error">Saatler en az 15 dakika arayla olmalı ve bir güne sığmalıdır.</string>
 </resources>

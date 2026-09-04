@@ -1957,4 +1957,5 @@
     <string name="settings_meals_remove_body">既存の記録は編集するまで種類を保ちます。標準の食事は削除せず非表示にします。</string>
     <string name="settings_meals_hidden">%1$s（非表示）</string>
     <string name="settings_meals_no_auto">自動推定なし</string>
+    <string name="settings_meals_save_error">時刻は15分以上空けて、1日の範囲内に収めてください。</string>
 </resources>

@@ -1958,4 +1958,5 @@ makrolar yeni kalori cəminə uyğun yenidən tarazlaşdırılır</string>
     <string name="settings_meals_remove_body">Mövcud qeydlər dəyişənə qədər növünü saxlayır. Daxili qəbullar silinmir, gizlədilir.</string>
     <string name="settings_meals_hidden">%1$s (gizli)</string>
     <string name="settings_meals_no_auto">Avto seçim yoxdur</string>
+    <string name="settings_meals_save_error">Vaxtlar ən azı 15 dəqiqə fərqli olmalı və bir günə sığmalıdır.</string>
 </resources>

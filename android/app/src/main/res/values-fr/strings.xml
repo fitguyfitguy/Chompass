@@ -1978,4 +1978,5 @@ macros rééquilibrées au nouveau total calorique</string>
     <string name="settings_meals_remove_body">Les entrées existantes gardent leur type jusqu\'à ce que vous les modifiez. Les repas intégrés sont masqués au lieu d\'être supprimés.</string>
     <string name="settings_meals_hidden">%1$s (masqué)</string>
     <string name="settings_meals_no_auto">Pas pour la détection auto</string>
+    <string name="settings_meals_save_error">Les heures doivent être espacées d\'au moins 15 minutes et tenir dans une journée.</string>
 </resources>

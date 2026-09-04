@@ -65,4 +65,48 @@ class MealCatalogTest {
         assertEquals(schedule, catalog.toLegacySchedule())
         assertFalse(catalog.def(MealType.OTHER.id)!!.enabled)
     }
+
+    @Test
+    fun tailWrapAfterMidnightIsValidAndClassifies() {
+        val catalog = MealCatalog.Default.withStart(MealType.SNACK.id, 60)
+
+        assertTrue(catalog.isValid)
+        assertEquals(catalog, catalog.validatedOrDefault())
+        assertEquals(MealType.DINNER.id, catalog.mealIdAt(LocalTime.of(0, 30)))
+        assertEquals(MealType.SNACK.id, catalog.mealIdAt(LocalTime.of(1, 0)))
+    }
+
+    @Test
+    fun rotatedNightShiftSchedulePersistsAndClassifies() {
+        val catalog = MealCatalog(
+            meals = listOf(
+                MealDef(MealType.BREAKFAST.id, startMinutes = 20 * 60),
+                MealDef(MealType.LUNCH.id, startMinutes = 60),
+                MealDef(MealType.DINNER.id, startMinutes = 5 * 60),
+                MealDef(MealType.SNACK.id, startMinutes = 9 * 60),
+            ),
+        )
+
+        assertTrue(catalog.isValid)
+        assertEquals(catalog, catalog.validatedOrDefault())
+        assertEquals(MealType.LUNCH.id, catalog.mealIdAt(LocalTime.of(2, 0)))
+        assertEquals(MealType.BREAKFAST.id, catalog.mealIdAt(LocalTime.of(23, 0)))
+        val legacy = catalog.toLegacySchedule()
+        assertTrue(legacy.isValid)
+        assertEquals(20 * 60, legacy.breakfastStartMinutes)
+        assertEquals(60, legacy.lunchStartMinutes)
+    }
+
+    @Test
+    fun duplicateStartsAcrossWrapStayInvalid() {
+        val catalog = MealCatalog(
+            meals = listOf(
+                MealDef(MealType.BREAKFAST.id, startMinutes = 7 * 60),
+                MealDef(MealType.LUNCH.id, startMinutes = 19 * 60),
+                MealDef(MealType.DINNER.id, startMinutes = 7 * 60),
+            ),
+        )
+
+        assertFalse(catalog.isValid)
+    }
 }

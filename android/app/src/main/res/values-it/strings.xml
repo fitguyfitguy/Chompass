@@ -1957,4 +1957,5 @@ macro riequilibrate al nuovo totale calorico</string>
     <string name="settings_meals_remove_body">Le voci esistenti tengono il tipo finché non le modifichi. I pasti predefiniti vengono nascosti, non eliminati.</string>
     <string name="settings_meals_hidden">%1$s (nascosto)</string>
     <string name="settings_meals_no_auto">Non per la scelta automatica</string>
+    <string name="settings_meals_save_error">Gli orari devono distare almeno 15 minuti ed entrare in una giornata.</string>
 </resources>

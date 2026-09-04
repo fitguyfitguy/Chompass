@@ -1957,4 +1957,5 @@
     <string name="settings_meals_remove_body">मौजूदा प्रविष्टियाँ संपादन तक अपना प्रकार रखती हैं. बिल्ट-इन भोजन मिटते नहीं, छिप जाते हैं.</string>
     <string name="settings_meals_hidden">%1$s (छिपा)</string>
     <string name="settings_meals_no_auto">ऑटो अनुमान नहीं</string>
+    <string name="settings_meals_save_error">समय कम से कम 15 मिनट अलग होने चाहिए और एक दिन में फिट होने चाहिए।</string>
 </resources>

@@ -5,6 +5,7 @@
 
 export const MAX_MEALS = 8;
 export const MIN_GAP_MINUTES = 15;
+const MINUTES_PER_DAY = 1440;
 export const CUSTOM_ID_RE = /^c_[0-9a-f]{4,16}$/;
 
 const DEFAULT_STARTS = {
@@ -70,9 +71,17 @@ export function isValid(catalog) {
   }
   const timed = meals.filter((m) => m.enabled && m.startMinutes != null);
   if (!timed.length) return false;
+  // Catalog order is a circular day rotation: starts must advance at least
+  // MIN_GAP_MINUTES around the clock, so a schedule may wrap past midnight
+  // once, and the whole rotation must fit in one day (also rejects duplicate
+  // starts). Mirrors Android MealCatalog.validate().
+  let span = 0;
   for (let i = 1; i < timed.length; i++) {
-    if ((timed[i].startMinutes ?? 0) < (timed[i - 1].startMinutes ?? 0) + MIN_GAP_MINUTES) return false;
+    const delta = (((timed[i].startMinutes - timed[i - 1].startMinutes) % MINUTES_PER_DAY) + MINUTES_PER_DAY) % MINUTES_PER_DAY;
+    if (delta < MIN_GAP_MINUTES) return false;
+    span += delta;
   }
+  if (span >= MINUTES_PER_DAY) return false;
   return true;
 }
 
@@ -84,14 +93,18 @@ export function mealIdAt(catalog, now = new Date()) {
   const windows = (catalog?.meals ?? []).filter((m) => m.enabled && m.startMinutes != null);
   if (!windows.length) return mealIdAt(defaultCatalog(), now);
   const minutes = now.getHours() * 60 + now.getMinutes();
-  const first = windows[0].startMinutes ?? 0;
-  if (minutes < first) return windows[windows.length - 1].id;
-  let current = windows[0].id;
+  // The window that started most recently around the clock owns the moment;
+  // mirrors Android MealCatalog.mealIdAt.
+  let best = windows[0];
+  let bestOffset = Infinity;
   for (const w of windows) {
-    if (minutes >= (w.startMinutes ?? 0)) current = w.id;
-    else break;
+    const offset = (((minutes - w.startMinutes) % MINUTES_PER_DAY) + MINUTES_PER_DAY) % MINUTES_PER_DAY;
+    if (offset < bestOffset) {
+      bestOffset = offset;
+      best = w;
+    }
   }
-  return current;
+  return best.id;
 }
 
 /** @param {{meals: MealDef[]}} catalog */

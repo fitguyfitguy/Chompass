@@ -9,20 +9,41 @@ data class MealSchedule(
     val snackStartMinutes: Int = DEFAULT_SNACK_START,
 ) {
     val isValid: Boolean
-        get() = breakfastStartMinutes in 0 until MINUTES_PER_DAY &&
-            breakfastStartMinutes < lunchStartMinutes &&
-            lunchStartMinutes < dinnerStartMinutes &&
-            dinnerStartMinutes < snackStartMinutes &&
-            snackStartMinutes < MINUTES_PER_DAY
+        get() {
+            val starts = listOf(breakfastStartMinutes, lunchStartMinutes, dinnerStartMinutes, snackStartMinutes)
+            if (starts.any { it !in 0 until MINUTES_PER_DAY }) return false
+            // Mirrors MealCatalog.validate(): slot order is a circular day rotation,
+            // so one midnight wrap is fine, but every step needs MealCatalog's gap
+            // and the rotation must fit in one day (also rejects duplicate starts).
+            var span = 0
+            for (i in 1 until starts.size) {
+                val delta = (starts[i] - starts[i - 1] + MINUTES_PER_DAY) % MINUTES_PER_DAY
+                if (delta < MealCatalog.MIN_GAP_MINUTES) return false
+                span += delta
+            }
+            return span < MINUTES_PER_DAY
+        }
 
     fun mealTypeAt(time: LocalTime): MealType {
         val minutes = time.hour * 60 + time.minute
-        return when {
-            minutes >= snackStartMinutes || minutes < breakfastStartMinutes -> MealType.SNACK
-            minutes >= dinnerStartMinutes -> MealType.DINNER
-            minutes >= lunchStartMinutes -> MealType.LUNCH
-            else -> MealType.BREAKFAST
+        // The slot that started most recently around the clock owns the moment;
+        // slot order is a rotation, so this covers schedules wrapping midnight.
+        var best = MealType.BREAKFAST
+        var bestOffset = (minutes - breakfastStartMinutes + MINUTES_PER_DAY) % MINUTES_PER_DAY
+        val lunchOffset = (minutes - lunchStartMinutes + MINUTES_PER_DAY) % MINUTES_PER_DAY
+        if (lunchOffset < bestOffset) {
+            best = MealType.LUNCH
+            bestOffset = lunchOffset
         }
+        val dinnerOffset = (minutes - dinnerStartMinutes + MINUTES_PER_DAY) % MINUTES_PER_DAY
+        if (dinnerOffset < bestOffset) {
+            best = MealType.DINNER
+            bestOffset = dinnerOffset
+        }
+        if ((minutes - snackStartMinutes + MINUTES_PER_DAY) % MINUTES_PER_DAY < bestOffset) {
+            best = MealType.SNACK
+        }
+        return best
     }
 
     fun validatedOrDefault(): MealSchedule = if (isValid) this else Default
