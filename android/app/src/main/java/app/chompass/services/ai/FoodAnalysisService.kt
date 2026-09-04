@@ -966,6 +966,7 @@ class FoodAnalysisService(
             },
         )
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
+        if (BuildConfig.DEBUG && raw.length < 200) Log.w(PerfLog.TAG, "op=analyzeText raw=$raw")
         val analysis = PerfLog.measure("analyzeText", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
         return finalizeAnalysis(analysis, imageBytes = null, description = description, onProgress = onProgress)
     }
@@ -1431,13 +1432,10 @@ class FoodAnalysisService(
         val primaryBaseUrl = prefs.customBaseUrl(primary).first()?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: primary.baseUrl
         val primaryKey = keyLookup?.invoke(primary)
             ?: AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
-        if (primary.requiresApiKey && primaryKey.isNullOrEmpty()) throw AiError.NoApiKey
         val userCap = prefs.maxResponseTokens.first()
-        val maxTokens = floorResponseTokensForOp(
-            op,
-            userCap,
-            entryKind(primary, primaryModel) == EntryConstituentPromptKind.MICROS,
-        )
+        val kind = entryKind(primary, primaryModel)
+        val maxTokens = floorResponseTokensForOp(op, userCap, kind == EntryConstituentPromptKind.MICROS)
+        if (PerfLog.enabled) PerfLog.event("op=$op tokens model=$primaryModel kind=$kind userCap=$userCap effective=$maxTokens")
         val readTimeoutSeconds = prefs.aiReadTimeoutSeconds.first()
         val geminiGoogleSearch = prefs.geminiGoogleSearchEnabled.first()
         val aiImages = if (imageBytesList.isEmpty()) {

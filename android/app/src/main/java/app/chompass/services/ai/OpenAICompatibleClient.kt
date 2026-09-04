@@ -109,6 +109,9 @@ object OpenAICompatibleClient {
         if (response.needsCompactRetry) {
             response = request(compactRetryPrompt(prompt, maxTokens), compactRetry = true)
             if (response.wasTruncated) {
+                if (PerfLog.enabled) {
+                    PerfLog.event("op=analyzeText finish=${response.finishReason} chars=${response.text?.length ?: -1} maxTokens=$maxTokens compact=true")
+                }
                 throw AiError.Api("The AI response was truncated twice. Try a shorter description or another model.", messageRes = R.string.ai_error_truncated_twice_description)
             }
         }
@@ -189,6 +192,7 @@ object OpenAICompatibleClient {
                     onDelta(piece)
                 }
             }
+            if (PerfLog.enabled) PerfLog.event("op=analyzeText stream finish=$finishReason chars=${assembled.length} maxTokens=$maxTokens compact=$compactRetry")
             return assembled.toString() to (finishReason == "length")
         }
 
