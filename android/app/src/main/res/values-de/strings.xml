@@ -1890,7 +1890,7 @@ für dich ein</string>
 
     <string name="settings_meal_constituents">Aufschlüsselung der Mahlzeitbestandteile</string>
 
-    <string name="settings_meal_constituents_footer">Wenn diese Funktion aktiviert ist, kann die KI zusammengesetzte Mahlzeiten in bearbeitbare Zutaten mit Grammangaben und Einheiten aufschlüsseln. Funktioniert am besten mit leistungsstärkeren Cloud-Modellen; deaktiviere die Funktion bei kostengünstigeren oder kleineren Modellen, wenn die Ergebnisse inkonsistent erscheinen.</string>
+    <string name="settings_meal_constituents_footer">Wenn diese Funktion aktiviert ist, kann die KI zusammengesetzte Mahlzeiten in bearbeitbare Zutaten mit Grammangaben und Einheiten aufschlüsseln. Mikronährstoffe je Zutat werden nur bei stärkeren Cloud-Modellen angefragt; kleinere Modelle liefern weiterhin die Zutatenliste mit Makros.</string>
 
     <string name="settings_meal_constituents_footer_on_device">Nicht verfügbar für Gemma auf dem Gerät: Die Aufschlüsselung der Zutaten erfordert ein leistungsfähigeres Modell. Wechsle zu einem Cloud-Anbieter, um diese Funktion zu aktivieren.</string>
 

@@ -11,6 +11,7 @@ import {
   parseConstituentsFromPrediction,
   reconcileConstituents,
 } from "../chompass-core/constituents.js";
+import { isSmallCloudModel } from "../chompass-core/weak-model.js";
 import { FoodPartialJsonAssembler } from "./partial-json.js";
 import { t } from "../i18n/index.js";
 import {
@@ -28,20 +29,47 @@ const SYSTEM_BASE = `You estimate nutrition for a food diary app. Reply with ONL
 {"name":"string","mealType":"breakfast"|"lunch"|"dinner"|"snack","calories":number,"proteinG":number,"carbsG":number,"fatG":number,"quantityG":number|null,"note":string|null,"fiberG":number|null,"sugarG":number|null,"addedSugarG":number|null,"saturatedFatG":number|null,"sodiumMg":number|null,"potassiumMg":number|null,"calciumMg":number|null,"ironMg":number|null,"vitaminCMg":number|null,"vitaminDMcg":number|null,"cholesterolMg":number|null,"omega3G":number|null,"caffeineMg":number|null}
 Include micronutrients when you can estimate them confidently; use null when unsure. Prefer the meal type that fits the current local time if unclear. When multiple photos are provided, treat them as angles of the same meal and produce one estimate.`;
 
-const SYSTEM_CONSTITUENTS = `You estimate nutrition for a food diary app. Reply with ONLY a single JSON object (no markdown), using this shape:
-{"name":"string","mealType":"breakfast"|"lunch"|"dinner"|"snack","calories":number,"proteinG":number,"carbsG":number,"fatG":number,"quantityG":number|null,"note":string|null,"fiberG":number|null,"sugarG":number|null,"addedSugarG":number|null,"saturatedFatG":number|null,"sodiumMg":number|null,"potassiumMg":number|null,"calciumMg":number|null,"ironMg":number|null,"vitaminCMg":number|null,"vitaminDMcg":number|null,"cholesterolMg":number|null,"omega3G":number|null,"caffeineMg":number|null,"constituents":[{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"emoji":"...","sugar":0.0,"added_sugar":0.0,"fiber":0.0,"saturated_fat":0.0,"monounsaturated_fat":0.0,"polyunsaturated_fat":0.0,"cholesterol":0.0,"sodium":0.0,"potassium":0.0,"trans_fat":0.0,"calcium":0.0,"iron":0.0,"magnesium":0.0,"zinc":0.0,"vitamin_a":0.0,"vitamin_c":0.0,"vitamin_d":0.0,"vitamin_b12":0.0,"vitamin_e":0.0,"vitamin_k":0.0,"folate":0.0,"omega_3":0.0,"unit_options":[]}]}
-Include micronutrients when you can estimate them confidently; use null when unsure. Prefer the meal type that fits the current local time if unclear. When multiple photos are provided, treat them as angles of the same meal and produce one estimate.
-constituents is optional. For multi-item meals, list each distinct edible item (egg, toast, butter, drink, side) with its own macros, serving_size_grams, and unit_options when a non-gram unit is obvious. Keep top-level fields as the meal total. Constituent grams MUST sum to quantityG within ±5%. Constituent calories/protein/carbs/fat MUST each sum to the matching meal total within ±5%. Each constituent micronutrient MUST sum to the matching meal total within ±20%. Include every named or clearly implied edible item; do not invent extras. Use [] for a single undivided food. unit_options entries look like {"unit":"slice","quantity":2,"grams_per_unit":180}; never use g/grams as a unit.`;
+const SYSTEM_CONSTITUENTS_PREFIX = `You estimate nutrition for a food diary app. Reply with ONLY a single JSON object (no markdown), using this shape:
+{"name":"string","mealType":"breakfast"|"lunch"|"dinner"|"snack","calories":number,"proteinG":number,"carbsG":number,"fatG":number,"quantityG":number|null,"note":string|null,"fiberG":number|null,"sugarG":number|null,"addedSugarG":number|null,"saturatedFatG":number|null,"sodiumMg":number|null,"potassiumMg":number|null,"calciumMg":number|null,"ironMg":number|null,"vitaminCMg":number|null,"vitaminDMcg":number|null,"cholesterolMg":number|null,"omega3G":number|null,"caffeineMg":number|null`;
+
+const CONSTITUENT_ROW_MACROS =
+  `"constituents":[{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"emoji":"...","unit_options":[]}]}`;
+
+const CONSTITUENT_ROW_MICROS =
+  `"constituents":[{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"emoji":"...","sugar":0.0,"added_sugar":0.0,"fiber":0.0,"saturated_fat":0.0,"monounsaturated_fat":0.0,"polyunsaturated_fat":0.0,"cholesterol":0.0,"sodium":0.0,"potassium":0.0,"trans_fat":0.0,"calcium":0.0,"iron":0.0,"magnesium":0.0,"zinc":0.0,"vitamin_a":0.0,"vitamin_c":0.0,"vitamin_d":0.0,"vitamin_b12":0.0,"vitamin_e":0.0,"vitamin_k":0.0,"folate":0.0,"omega_3":0.0,"unit_options":[]}]}`;
+
+const SYSTEM_CONSTITUENTS_RULE_MACROS = `Include micronutrients when you can estimate them confidently; use null when unsure. Prefer the meal type that fits the current local time if unclear. When multiple photos are provided, treat them as angles of the same meal and produce one estimate.
+constituents is optional. For multi-item meals, list each distinct edible item (egg, toast, butter, drink, side) with its own macros, serving_size_grams, and unit_options when a non-gram unit is obvious. Keep top-level fields as the meal total. Constituent grams MUST sum to quantityG within ±5%. Constituent calories/protein/carbs/fat MUST each sum to the matching meal total within ±5%. Include every named or clearly implied edible item; do not invent extras. Use [] for a single undivided food. unit_options entries look like {"unit":"slice","quantity":2,"grams_per_unit":180}; never use g/grams as a unit.`;
+
+const SYSTEM_CONSTITUENTS_RULE_MICROS =
+  SYSTEM_CONSTITUENTS_RULE_MACROS +
+  ` Each constituent micronutrient MUST sum to the matching meal total within ±20%.`;
+
+const SYSTEM_CONSTITUENTS_MACROS = `${SYSTEM_CONSTITUENTS_PREFIX},${CONSTITUENT_ROW_MACROS}
+${SYSTEM_CONSTITUENTS_RULE_MACROS}`;
+
+const SYSTEM_CONSTITUENTS_MICROS = `${SYSTEM_CONSTITUENTS_PREFIX},${CONSTITUENT_ROW_MICROS}
+${SYSTEM_CONSTITUENTS_RULE_MICROS}`;
 
 /** #86 review fix: constituent rows carry 22 micro fields each, so a
  * multi-item reply can exceed the default 1024-token response cap. Capped
- * providers (Anthropic) get this floor while the constituents system prompt
- * is active. Mirrors Android FoodAnalysisService CONSTITUENT_MIN_RESPONSE_TOKENS. */
+ * providers (Anthropic) get this floor while the micros constituents system
+ * prompt is active. Mirrors Android FoodAnalysisService CONSTITUENT_MIN_RESPONSE_TOKENS. */
 const CONSTITUENTS_MIN_RESPONSE_TOKENS = 4096;
 
 /** @param {import('../db.js').AppPrefs} appPrefs */
 function mealConstituentsEnabled(appPrefs) {
   return appPrefs.mealConstituentsEnabled !== false;
+}
+
+/**
+ * Per-row micros only for strong-class models. Weak class still gets the
+ * macros-only breakdown when the user toggle is on.
+ * @param {import('../db.js').AppPrefs} appPrefs
+ * @param {string} [model]
+ */
+function constituentMicrosEnabled(appPrefs, model) {
+  return mealConstituentsEnabled(appPrefs) && !isSmallCloudModel(model);
 }
 
 /**
@@ -115,7 +143,12 @@ async function runAnalyze(providerId, config, text, productContext, imageList, a
     config.model = resolveVisionModel(providerId, config.visionModel, config.model);
   }
   const constituentsOn = mealConstituentsEnabled(appPrefs);
-  let systemPrompt = constituentsOn ? SYSTEM_CONSTITUENTS : SYSTEM_BASE;
+  const microsOn = constituentMicrosEnabled(appPrefs, config.model);
+  let systemPrompt = !constituentsOn
+    ? SYSTEM_BASE
+    : microsOn
+      ? SYSTEM_CONSTITUENTS_MICROS
+      : SYSTEM_CONSTITUENTS_MACROS;
   if (appPrefs.userContext?.trim()) {
     systemPrompt += `\n\nUser preferences:\n${appPrefs.userContext.trim()}`;
   }
@@ -156,7 +189,7 @@ async function runAnalyze(providerId, config, text, productContext, imageList, a
     tools: [],
     signal,
     onDelta,
-    maxTokens: constituentsOn ? CONSTITUENTS_MIN_RESPONSE_TOKENS : undefined,
+    maxTokens: microsOn ? CONSTITUENTS_MIN_RESPONSE_TOKENS : undefined,
   });
 
   if (signal?.aborted) throw abortError();
