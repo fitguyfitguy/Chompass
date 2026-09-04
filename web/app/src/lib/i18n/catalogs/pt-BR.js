@@ -296,7 +296,7 @@ export const pt_BR = Object.freeze({
   "a11y.add_food": "Adicionar comida",
   "a11y.primary_nav": "Principal",
   "settings.ai.meal_constituents": "Detalhamento de ingredientes da refeição",
-  "settings.ai.meal_constituents_hint": "Peça à IA para dividir refeições compostas em ingredientes editáveis. Desligue para modelos mais fracos se os resultados parecerem inconsistentes.",
+  "settings.ai.meal_constituents_hint": "Peça à IA para dividir refeições compostas em ingredientes editáveis. Micronutrientes por ingrediente são solicitados apenas a modelos de nuvem mais fortes; modelos menores ainda retornam a lista de ingredientes com macros.",
   "settings.ai.ai_features_hint": "Desativa tudo o que envia dados a um provedor de IA: o Coach, registro por foto/texto/voz, 'E se...?' e sugestões de metas com IA. Código de barras, busca de alimentos, entrada manual, refeições salvas, água, sincronização e Health Connect continuam funcionando normalmente.",
   "settings.ai.ai_features": "Recursos de IA",
   "progressive_meal.title": "Montar refeição",

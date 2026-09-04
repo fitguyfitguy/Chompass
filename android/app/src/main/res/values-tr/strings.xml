@@ -1046,7 +1046,7 @@
     <string name="settings_show_coach_tab">Koç sekmesini göster</string>
     <string name="settings_show_coach_tab_footer">Koç sekmesini alt çubuktan gizler. Koç özelliği etkin kalır; yukarıdaki AI özellikleri anahtarı her şeyi kapatır.</string>
     <string name="settings_meal_constituents">Öğün malzemesi dökümü</string>
-    <string name="settings_meal_constituents_footer">Etkinken AI, karma öğünleri gram ve birimlerle düzenlenebilir malzemelere ayırabilir. Daha güçlü bulut modelleriyle en iyi çalışır; sonuçlar tutarsız görünüyorsa daha ucuz veya daha küçük modeller için kapat.</string>
+    <string name="settings_meal_constituents_footer">Etkinken AI, karma öğünleri gram ve birimlerle düzenlenebilir malzemelere ayırabilir. Malzeme başına mikro besinler yalnızca daha güçlü bulut modellerinden istenir; küçük modeller yine de makrolu malzeme listesini döndürür.</string>
     <string name="settings_meal_constituents_footer_on_device">Cihazdaki Gemma için kullanılamaz: malzeme dökümü daha güçlü bir model gerektirir. Bunu etkinleştirmek için bir bulut sağlayıcısına geç.</string>
     <string name="on_device_model_privacy_notice">Tamamen bu cihazda çalışır. Yazdığın veya fotoğrafladığın hiçbir şey bir sunucuya gönderilmez. İndirme, model dosyasını doğrudan Hugging Face\'ten (%1$s) getirir; bu, uygulamanın başka şekilde kullanmadığı üçüncü taraf bir barındırıcıdır.</string>
     <string name="on_device_model_device_notice">Pixel 9a (GrapheneOS) üzerinde test edildi. Diğer cihazlar, özellikle alt seviye veya Tensor olmayan donanımlar henüz doğrulanmadı ve daha yavaş olabilir veya desteklenmeyebilir; orada bir bulut sağlayıcısı daha güvenli bir varsayılandır.</string>

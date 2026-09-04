@@ -1415,7 +1415,7 @@
     <string name="settings_max_tokens_unit">tokens</string>
 
     <string name="settings_meal_constituents">Détail des ingrédients du repas</string>
-    <string name="settings_meal_constituents_footer">Quand c\'est activé, l\'IA peut diviser les repas composites en ingrédients modifiables avec grammes et unités. Fonctionne mieux avec des modèles cloud puissants ; désactivez pour les modèles moins chers ou plus petits si les résultats semblent incohérents.</string>
+    <string name="settings_meal_constituents_footer">Quand c\'est activé, l\'IA peut diviser les repas composites en ingrédients modifiables avec grammes et unités. Les micronutriments par ingrédient ne sont demandés qu\'aux modèles cloud puissants ; les modèles plus petits renvoient la liste des ingrédients avec les macros.</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
     <string name="settings_meal_times">Heures des repas</string>
     <string name="settings_meal_times_customize">Personnaliser</string>

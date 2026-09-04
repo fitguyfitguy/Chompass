@@ -296,7 +296,7 @@ export const az = Object.freeze({
   "a11y.add_food": "Yemək əlavə et",
   "a11y.primary_nav": "Əsas naviqasiya",
   "settings.ai.meal_constituents": "Yeməyin inqrediyentlərinin bölünməsi",
-  "settings.ai.meal_constituents_hint": "AI-dən mürəkkəb yeməkləri redaktə edilə bilən inqrediyentlərə bölməyi istəyin. Nəticələr uyğunsuz görünürsə, zəif modellər üçün söndürün.",
+  "settings.ai.meal_constituents_hint": "AI-dən mürəkkəb yeməkləri redaktə edilə bilən inqrediyentlərə bölməsini istəyin. İnqrediyent başına mikronutrisientlər yalnız daha güclü bulud modellərindən istənilir; kiçik modellər makrolarla inqrediyent siyahısını qaytarır.",
   "settings.ai.ai_features_hint": "Süni intellekt provayderinə məlumat göndərən hər şeyi söndürür: Coach, foto/mətn/səs qeydi, «Bəs əgər?» və AI məqsəd təklifləri. Barkod, qida axtarışı, əl ilə daxiletmə, saxlanmış yeməklər, su, sinxronizasiya və Health Connect normal işləməyə davam edir.",
   "settings.ai.ai_features": "Süni intellekt funksiyaları",
   "progressive_meal.title": "Yemək yığ",

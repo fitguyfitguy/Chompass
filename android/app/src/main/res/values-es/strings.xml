@@ -1418,7 +1418,7 @@
     <string name="settings_max_tokens_unit">tokens</string>
 
     <string name="settings_meal_constituents">Desglose de ingredientes de la comida</string>
-    <string name="settings_meal_constituents_footer">Cuando está activado, la IA puede dividir comidas compuestas en ingredientes editables con gramos y unidades. Funciona mejor con modelos en la nube potentes; desactívalo para modelos más baratos o pequeños si los resultados parecen inconsistentes.</string>
+    <string name="settings_meal_constituents_footer">Cuando está activado, la IA puede dividir comidas compuestas en ingredientes editables con gramos y unidades. Los micronutrientes por ingrediente solo se piden a modelos en la nube potentes; los modelos pequeños siguen devolviendo la lista de ingredientes con macros.</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
     <string name="settings_meals">Comidas</string>
     <string name="settings_meals_description">Nombres, orden y horarios</string>

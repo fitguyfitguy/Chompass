@@ -1754,7 +1754,6 @@ class FoodAnalysisService(
         }
     }
 
-
     private suspend fun currentFallbackConfig(
         primary: AIProvider,
         primaryModel: String

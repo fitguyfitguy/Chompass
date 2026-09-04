@@ -1299,7 +1299,7 @@
     <string name="settings_max_tokens">Lunghezza massima risposta</string>
     <string name="settings_max_tokens_unit">token</string>
     <string name="settings_meal_constituents">Suddivisione pasto in ingredienti</string>
-    <string name="settings_meal_constituents_footer">Quando attiva, l\'IA può dividere i pasti composti in ingredienti modificabili con grammi e unità. Funziona meglio con modelli cloud più forti; disattivala per modelli più economici o piccoli se i risultati sono incoerenti.</string>
+    <string name="settings_meal_constituents_footer">Quando attiva, l\'IA può dividere i pasti composti in ingredienti modificabili con grammi e unità. I micronutrienti per ingrediente vengono richiesti solo ai modelli cloud più potenti; i modelli piccoli restituiscono comunque l\'elenco degli ingredienti con i macro.</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
     <string name="settings_meal_times">Orari pasti</string>
     <string name="settings_meal_times_customize">Personalizza</string>

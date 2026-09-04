@@ -1350,7 +1350,7 @@
     <string name="settings_max_tokens">최대 응답 길이</string>
     <string name="settings_max_tokens_unit">토큰</string>
     <string name="settings_meal_constituents">식사 재료 내역</string>
-    <string name="settings_meal_constituents_footer">켜면 AI가 복합 식사를 그램과 단위가 있는 편집 가능한 재료로 분할할 수 있어요. 강력한 클라우드 모델에서 가장 잘 작동하며, 결과가 일관되지 않으면 저렴하거나 작은 모델에서는 끄세요.</string>
+    <string name="settings_meal_constituents_footer">켜면 AI가 복합 식사를 그램과 단위가 있는 편집 가능한 재료로 분할할 수 있어요. 재료별 미량 영양소는 더 강력한 클라우드 모델에만 요청하며, 작은 모델도 매크로가 포함된 재료 목록은 반환해요.</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
     <string name="settings_meal_times">식사 시간</string>
     <string name="settings_meal_times_customize">사용자 지정</string>

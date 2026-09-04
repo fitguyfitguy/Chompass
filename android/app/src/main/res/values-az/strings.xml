@@ -1350,7 +1350,7 @@ bilirsən?</string>
     <string name="settings_max_tokens">Maksimum cavab uzunluğu</string>
     <string name="settings_max_tokens_unit">token</string>
     <string name="settings_meal_constituents">Yeməyin inqrediyentlərə bölünməsi</string>
-    <string name="settings_meal_constituents_footer">Aktiv olduqda AI mürəkkəb yeməkləri qram və vahidlərlə redaktə edilə bilən inqrediyentlərə bölə bilər. Daha güclü bulud modelləri ilə ən yaxşı işləyir; nəticələr uyğunsuz görünürsə, ucuz və ya kiçik modellər üçün söndür.</string>
+    <string name="settings_meal_constituents_footer">Aktiv olduqda AI mürəkkəb yeməkləri qram və vahidlərlə redaktə edilə bilən inqrediyentlərə bölə bilər. İnqrediyent başına mikronutrisientlər yalnız daha güclü bulud modellərindən istənilir; kiçik modellər makrolarla inqrediyent siyahısını qaytarır.</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
     <string name="settings_meal_times">Yemək vaxtları</string>
     <string name="settings_meal_times_customize">Fərdiləşdir</string>

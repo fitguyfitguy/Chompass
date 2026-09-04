@@ -296,7 +296,7 @@ export const nl = Object.freeze({
   "a11y.add_food": "Eten toevoegen",
   "a11y.primary_nav": "Primair",
   "settings.ai.meal_constituents": "Ingrediëntenoverzicht van maaltijd",
-  "settings.ai.meal_constituents_hint": "Vraag de AI om samengestelde maaltijden op te splitsen in bewerkbare ingrediënten. Zet uit voor zwakkere modellen als resultaten inconsistent lijken.",
+  "settings.ai.meal_constituents_hint": "Vraag de AI om samengestelde maaltijden op te splitsen in bewerkbare ingrediënten. Micronutriënten per ingrediënt worden alleen aan sterkere cloudmodellen gevraagd; kleinere modellen geven alsnog de ingrediëntenlijst met macro's terug.",
   "settings.ai.ai_features_hint": "Zet alles uit dat gegevens naar een AI-provider stuurt: de Coach, loggen via foto/tekst/spraak, 'Wat als?' en AI-doelsuggesties. Barcode, voedsel zoeken, handmatige invoer, opgeslagen maaltijden, water, synchronisatie en Health Connect blijven normaal werken.",
   "settings.ai.ai_features": "AI-functies",
   "progressive_meal.title": "Maaltijd samenstellen",

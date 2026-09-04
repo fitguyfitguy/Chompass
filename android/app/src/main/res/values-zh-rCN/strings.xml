@@ -1352,7 +1352,7 @@
     <string name="settings_max_tokens">最大回复长度</string>
     <string name="settings_max_tokens_unit">令牌</string>
     <string name="settings_meal_constituents">餐食配料明细</string>
-    <string name="settings_meal_constituents_footer">开启后，AI 可将复合餐食拆分为带克数和单位的可编辑配料。与较强云端模型搭配效果最佳；结果不一致时可为较便宜或较小的模型关闭。</string>
+    <string name="settings_meal_constituents_footer">开启后，AI 可将复合餐食拆分为带克数和单位的可编辑配料。食材级微量营养素仅向更强的云端模型请求；较小的模型仍会返回含宏量营养的食材列表。</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
     <string name="settings_meal_times">用餐时间</string>
     <string name="settings_meal_times_customize">自定义</string>
