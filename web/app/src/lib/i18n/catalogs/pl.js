@@ -345,7 +345,7 @@ export const pl = Object.freeze({
   "settings.ai.ai_features": "Funkcje AI",
   "settings.ai.ai_features_hint": "Wyłącza wszystko, co wysyła dane do dostawcy AI: Trenera, dodawanie ze zdjęcia/tekstu/głosu, „A co gdyby?” i sugestie celów AI. Kod kreskowy, wyszukiwanie jedzenia, dodawanie ręczne, zapisane posiłki, woda, synchronizacja i Health Connect działają dalej normalnie.",
   "settings.ai.meal_constituents": "Rozbicie posiłku na składniki",
-  "settings.ai.meal_constituents_hint": "Poproś AI o rozbicie złożonych posiłków na edytowalne składniki. Wyłącz dla słabszych modeli, jeśli wyniki wyglądają niespójnie.",
+  "settings.ai.meal_constituents_hint": "Poproś AI o rozbicie złożonych posiłków na edytowalne składniki. Mikroskładniki dla poszczególnych składników są wymagane tylko od mocniejszych modeli chmurowych; mniejsze modele nadal zwracają listę składników z makroskładnikami.",
   "settings.ai.serving_unit_mode": "Określanie jednostki porcji",
   "settings.ai.serving_unit_mode_hint": "Jak uzupełnić jednostkę inną niż gramy, gdy model jej nie poda. Tylko gramy, najszybciej; heurystyka zgaduje z nazwy jedzenia; AI pyta o jednostkę w razie potrzeby.",
   "settings.ai.serving_unit_grams_only": "Tylko gramy",

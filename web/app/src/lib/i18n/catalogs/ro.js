@@ -296,7 +296,7 @@ export const ro = Object.freeze({
   "a11y.add_food": "Adaugă mâncare",
   "a11y.primary_nav": "Principal",
   "settings.ai.meal_constituents": "Descompunerea ingredientelor mesei",
-  "settings.ai.meal_constituents_hint": "Cere AI să împartă mesele compuse în ingrediente editabile. Dezactivează pentru modele mai slabe dacă rezultatele par inconsecvente.",
+  "settings.ai.meal_constituents_hint": "Cere AI să împartă mesele compuse în ingrediente editabile. Micronutrienții per ingredient sunt ceruți doar modelelor cloud mai puternice; modelele mai mici returnează oricum lista ingredientelor cu macronutrienți.",
   "settings.ai.ai_features_hint": "Oprește tot ce trimite date către un furnizor de AI: Coach, înregistrarea prin foto/text/voce, «Ce ar fi dacă...?» și sugestiile de obiective AI. Codul de bare, căutarea alimentelor, introducerea manuală, mesele salvate, apa, sincronizarea și Health Connect continuă să funcționeze normal.",
   "settings.ai.ai_features": "Funcții AI",
   "progressive_meal.title": "Compune masa",

@@ -1347,7 +1347,7 @@
     <string name="settings_max_tokens">Tamanho máximo da resposta</string>
     <string name="settings_max_tokens_unit">tokens</string>
     <string name="settings_meal_constituents">Divisão da refeição em ingredientes</string>
-    <string name="settings_meal_constituents_footer">Quando ativo, a IA pode dividir refeições compostas em ingredientes editáveis com gramas e unidades. Funciona melhor com modelos em nuvem mais fortes; desative para modelos mais baratos ou menores se os resultados ficarem inconsistentes.</string>
+    <string name="settings_meal_constituents_footer">Quando ativo, a IA pode dividir refeições compostas em ingredientes editáveis com gramas e unidades. Micronutrientes por ingrediente são solicitados apenas a modelos de nuvem mais fortes; modelos menores ainda retornam a lista de ingredientes com macros.</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
     <string name="settings_meal_times">Horários das refeições</string>
     <string name="settings_meal_times_customize">Personalizar</string>

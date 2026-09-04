@@ -1351,7 +1351,7 @@
     <string name="settings_max_tokens">أقصى طول للرد</string>
     <string name="settings_max_tokens_unit">رمز</string>
     <string name="settings_meal_constituents">تفصيل مكونات الوجبة</string>
-    <string name="settings_meal_constituents_footer">عند التفعيل، قد يقسم الذكاء الاصطناعي الوجبات المركبة إلى مكونات قابلة للتحرير بالجرام والوحدات. يعمل بشكل أفضل مع النماذج السحابية الأقوى؛ أوقفه للنماذج الأرخص أو الأصغر إذا بدت النتائج غير متسقة.</string>
+    <string name="settings_meal_constituents_footer">عند التفعيل، قد يقسم الذكاء الاصطناعي الوجبات المركبة إلى مكونات قابلة للتحرير بالجرام والوحدات. تُطلب المغذيات الدقيقة لكل مكوّن من النماذج السحابية الأقوى فقط؛ وتُعيد النماذج الأصغر قائمة المكونات مع المغذيات الكبرى.</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
     <string name="settings_meal_times">أوقات الوجبات</string>
     <string name="settings_meal_times_customize">تخصيص</string>

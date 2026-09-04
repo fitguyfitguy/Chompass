@@ -1608,7 +1608,7 @@
     <string name="settings_last_sync">Последняя синхронизация: %1$s</string>
     <string name="settings_max_tokens_unit">токенов</string>
     <string name="settings_meal_constituents">Разбивка приёма пищи на ингредиенты</string>
-    <string name="settings_meal_constituents_footer">Когда включено, ИИ может разделять составные блюда на редактируемые ингредиенты с граммами и единицами. Лучше всего работает с более сильными облачными моделями; отключи для дешёвых или маленьких моделей, если результаты непоследовательны.</string>
+    <string name="settings_meal_constituents_footer">Когда включено, ИИ может разделять составные блюда на редактируемые ингредиенты с граммами и единицами. Микронутриенты по ингредиентам запрашиваются только у более сильных облачных моделей; меньшие модели всё равно возвращают список ингредиентов с макросами.</string>
     <string name="settings_needs_water_tracking">Требуется отслеживание воды</string>
     <string name="settings_not_synced">Ещё не синхронизировано</string>
     <string name="settings_notifications_intro">Выбери, какие напоминания отправляет Chompass и когда они появляются.</string>

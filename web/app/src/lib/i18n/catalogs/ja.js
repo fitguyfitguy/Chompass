@@ -296,7 +296,7 @@ export const ja = Object.freeze({
   "a11y.add_food": "食事を追加",
   "a11y.primary_nav": "メイン",
   "settings.ai.meal_constituents": "食事の食材内訳",
-  "settings.ai.meal_constituents_hint": "複合料理を編集可能な食材に分解するようAIに依頼します。弱いモデルで結果に一貫性がない場合はオフにしてください。",
+  "settings.ai.meal_constituents_hint": "複合料理を編集可能な食材に分解するようAIに依頼します。食材ごとの微量栄養素はより強力なクラウドモデルにのみ要求され、小さなモデルでもマクロ付きの食材リストは返されます。",
   "settings.ai.ai_features_hint": "AIプロバイダーにデータを送信するすべての機能をオフにします：コーチ、写真・テキスト・音声の記録、「もしも？」、AI目標提案。バーコード、食品検索、手動入力、保存済みの食事、水分、同期、Health Connectは通常どおり動作します。",
   "settings.ai.ai_features": "AI機能",
   "progressive_meal.title": "食事を作成",

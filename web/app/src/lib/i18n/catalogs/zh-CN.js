@@ -296,7 +296,7 @@ export const zh_CN = Object.freeze({
   "a11y.add_food": "添加食物",
   "a11y.primary_nav": "主要",
   "settings.ai.meal_constituents": "餐食成分分解",
-  "settings.ai.meal_constituents_hint": "请 AI 将复合餐食拆分为可编辑的食材。若较弱的模型结果不一致，请关闭此选项。",
+  "settings.ai.meal_constituents_hint": "请 AI 将复合餐食拆分为可编辑的食材。食材级微量营养素仅向更强的云端模型请求；较小的模型仍会返回含宏量营养的食材列表。",
   "settings.ai.ai_features_hint": "关闭所有向 AI 服务商发送数据的功能：教练、照片/文字/语音记录、「如果……会怎样？」以及 AI 目标建议。条码、食物搜索、手动输入、已保存餐食、饮水、同步和 Health Connect 均照常工作。",
   "settings.ai.ai_features": "AI 功能",
   "progressive_meal.title": "组合餐食",

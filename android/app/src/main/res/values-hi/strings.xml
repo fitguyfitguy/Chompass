@@ -1351,7 +1351,7 @@
     <string name="settings_max_tokens">अधिकतम प्रतिक्रिया लंबाई</string>
     <string name="settings_max_tokens_unit">टोकन</string>
     <string name="settings_meal_constituents">भोजन सामग्री विवरण</string>
-    <string name="settings_meal_constituents_footer">सक्षम होने पर, AI जटिल भोजन को ग्राम और इकाइयों के साथ संपादन योग्य सामग्रियों में विभाजित कर सकता है। मजबूत क्लाउड मॉडल के साथ सर्वोत्तम काम करता है; परिणाम असंगत लगें तो सस्ते या छोटे मॉडल के लिए बंद करें।</string>
+    <string name="settings_meal_constituents_footer">सक्षम होने पर, AI जटिल भोजन को ग्राम और इकाइयों के साथ संपादन योग्य सामग्रियों में विभाजित कर सकता है। प्रति-सामग्री सूक्ष्मपोषक केवल मजबूत क्लाउड मॉडल से मांगे जाते हैं; छोटे मॉडल मैक्रोज़ के साथ सामग्री सूची लौटाते हैं।</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
     <string name="settings_meal_times">भोजन समय</string>
     <string name="settings_meal_times_customize">अनुकूलित करें</string>

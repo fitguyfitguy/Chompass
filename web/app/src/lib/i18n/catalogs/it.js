@@ -296,7 +296,7 @@ export const it = Object.freeze({
   "a11y.add_food": "Aggiungi cibo",
   "a11y.primary_nav": "Principale",
   "settings.ai.meal_constituents": "Scomposizione degli ingredienti del pasto",
-  "settings.ai.meal_constituents_hint": "Chiedi all'IA di suddividere i pasti composti in ingredienti modificabili. Disattivalo per modelli più deboli se i risultati sembrano incoerenti.",
+  "settings.ai.meal_constituents_hint": "Chiedi all'IA di suddividere i pasti composti in ingredienti modificabili. I micronutrienti per ingrediente vengono richiesti solo ai modelli cloud più potenti; i modelli piccoli restituiscono comunque l'elenco degli ingredienti con i macro.",
   "settings.ai.ai_features_hint": "Disattiva tutto ciò che invia dati a un provider AI: Coach, registrazione con foto/testo/voce, «E se...?» e suggerimenti di obiettivi AI. Codice a barre, ricerca alimenti, inserimento manuale, pasti salvati, acqua, sincronizzazione e Health Connect continuano a funzionare normalmente.",
   "settings.ai.ai_features": "Funzioni AI",
   "progressive_meal.title": "Componi pasto",

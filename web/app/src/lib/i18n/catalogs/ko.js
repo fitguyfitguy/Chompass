@@ -296,7 +296,7 @@ export const ko = Object.freeze({
   "a11y.add_food": "음식 추가",
   "a11y.primary_nav": "기본",
   "settings.ai.meal_constituents": "식사 재료 분석",
-  "settings.ai.meal_constituents_hint": "복합 식사를 편집 가능한 재료로 나누도록 AI에 요청합니다. 결과가 일관되지 않으면 약한 모델에서는 끄세요.",
+  "settings.ai.meal_constituents_hint": "복합 식사를 편집 가능한 재료로 나누도록 AI에 요청합니다. 재료별 미량 영양소는 더 강력한 클라우드 모델에만 요청하며, 작은 모델도 매크로가 포함된 재료 목록은 반환해요.",
   "settings.ai.ai_features_hint": "AI 제공업체로 데이터를 보내는 모든 기능을 끕니다: 코치, 사진/텍스트/음성 기록, 「만약...?」 및 AI 목표 제안. 바코드, 음식 검색, 수동 입력, 저장된 식사, 물, 동기화, Health Connect는 계속 정상 작동합니다.",
   "settings.ai.ai_features": "AI 기능",
   "progressive_meal.title": "식사 만들기",

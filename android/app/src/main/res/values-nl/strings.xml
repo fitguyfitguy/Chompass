@@ -1332,7 +1332,7 @@
     <string name="settings_max_tokens">Maximale antwoordlengte</string>
     <string name="settings_max_tokens_unit">tokens</string>
     <string name="settings_meal_constituents">Maaltijd opdelen in ingrediënten</string>
-    <string name="settings_meal_constituents_footer">Wanneer ingeschakeld kan AI samengestelde maaltijden splitsen in bewerkbare ingrediënten met grammen en eenheden. Werkt het best met sterkere cloudmodellen; zet uit voor goedkopere of kleinere modellen als resultaten inconsistent lijken.</string>
+    <string name="settings_meal_constituents_footer">Wanneer ingeschakeld kan AI samengestelde maaltijden splitsen in bewerkbare ingrediënten met grammen en eenheden. Micronutriënten per ingrediënt worden alleen aan sterkere cloudmodellen gevraagd; kleinere modellen geven alsnog de ingrediëntenlijst met macro\'s terug.</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
     <string name="settings_meal_times">Maaltijdtijden</string>
     <string name="settings_meal_times_customize">Aanpassen</string>

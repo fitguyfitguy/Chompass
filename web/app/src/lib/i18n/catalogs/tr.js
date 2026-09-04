@@ -345,7 +345,7 @@ export const tr = Object.freeze({
   "settings.ai.ai_features": "AI özellikleri",
   "settings.ai.ai_features_hint": "AI sağlayıcısına veri gönderen her şeyi kapatır: Koç, fotoğraf/metin/ses kaydı, “Ya şöyle olsaydı?” ve AI hedef önerileri. Barkod, yemek arama, manuel giriş, kayıtlı öğünler, su, senkronizasyon ve Health Connect normal şekilde çalışmaya devam eder.",
   "settings.ai.meal_constituents": "Öğün malzemesi dökümü",
-  "settings.ai.meal_constituents_hint": "AI'dan karma öğünleri düzenlenebilir malzemelere ayırmasını iste. Sonuçlar tutarsız görünüyorsa zayıf modeller için kapat.",
+  "settings.ai.meal_constituents_hint": "AI'dan karma öğünleri düzenlenebilir malzemelere ayırmasını iste. Malzeme başına mikro besinler yalnızca daha güçlü bulut modellerinden istenir; küçük modeller yine de makrolu malzeme listesini döndürür.",
   "settings.ai.serving_unit_mode": "Porsiyon birimi çıkarımı",
   "settings.ai.serving_unit_mode_hint": "Model bir birim belirtmediğinde gram dışı birimin nasıl doldurulacağı. Yalnızca gram en hızlısıdır; buluşsal yöntem yemek adından tahmin eder; AI çıkarımı gerektiğinde modelden birimi ister.",
   "settings.ai.serving_unit_grams_only": "Yalnızca gram",

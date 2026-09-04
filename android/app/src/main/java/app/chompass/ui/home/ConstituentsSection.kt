@@ -44,6 +44,7 @@ import app.chompass.services.ai.ConstituentReconcile
 import app.chompass.ui.components.kcalText
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
+import java.util.Locale
 import kotlin.math.roundToInt
 
 /**
@@ -276,7 +277,7 @@ internal fun ConstituentMicrosDisclosure(
                     text = buildString {
                         append(label)
                         append(' ')
-                        append(String.format("%.1f", value))
+                        append(String.format(Locale.getDefault(), "%.1f", value))
                         append(' ')
                         append(unit)
                         if (percent != null) append(" ($percent%)")

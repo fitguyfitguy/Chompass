@@ -1349,7 +1349,7 @@
     <string name="settings_max_tokens">Lungimea maximă a răspunsului</string>
     <string name="settings_max_tokens_unit">tokeni</string>
     <string name="settings_meal_constituents">Împărțirea mesei în ingrediente</string>
-    <string name="settings_meal_constituents_footer">Când este activ, IA poate împărți mesele compuse în ingrediente editabile cu grame și unități. Funcționează cel mai bine cu modele cloud mai puternice; dezactivează pentru modele mai ieftine sau mai mici dacă rezultatele par inconsistente.</string>
+    <string name="settings_meal_constituents_footer">Când este activ, IA poate împărți mesele compuse în ingrediente editabile cu grame și unități. Micronutrienții per ingredient sunt ceruți doar modelelor cloud mai puternice; modelele mai mici returnează oricum lista ingredientelor cu macronutrienți.</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
     <string name="settings_meal_times">Orele meselor</string>
     <string name="settings_meal_times_customize">Personalizează</string>

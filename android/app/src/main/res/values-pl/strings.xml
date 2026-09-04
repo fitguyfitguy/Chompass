@@ -1046,7 +1046,7 @@
     <string name="settings_show_coach_tab">Pokazuj kartę Trenera</string>
     <string name="settings_show_coach_tab_footer">Ukrywa kartę Trenera z dolnego paska. Sama funkcja Trenera pozostaje włączona; przełącznik funkcji AI powyżej wyłącza wszystko.</string>
     <string name="settings_meal_constituents">Rozbicie posiłku na składniki</string>
-    <string name="settings_meal_constituents_footer">Gdy włączone, AI może rozbić złożone posiłki na edytowalne składniki z gramami i jednostkami. Najlepiej działa z mocniejszymi modelami chmurowymi; wyłącz dla tańszych lub mniejszych modeli, jeśli wyniki wyglądają niespójnie.</string>
+    <string name="settings_meal_constituents_footer">Gdy włączone, AI może rozbić złożone posiłki na edytowalne składniki z gramami i jednostkami. Mikroskładniki dla poszczególnych składników są wymagane tylko od mocniejszych modeli chmurowych; mniejsze modele nadal zwracają listę składników z makroskładnikami.</string>
     <string name="settings_meal_constituents_footer_on_device">Niedostępne dla Gemma na urządzeniu: rozbicie składników wymaga mocniejszego modelu. Przełącz się na dostawcę chmurowego, aby to włączyć.</string>
     <string name="on_device_model_privacy_notice">Działa w całości na tym urządzeniu. Nic, co wpiszesz lub sfotografujesz, nie jest wysyłane na serwer. Pobieranie ściąga plik modelu bezpośrednio z Hugging Face (%1$s), hosta zewnętrznego, którego ta aplikacja poza tym nie używa.</string>
     <string name="on_device_model_device_notice">Testowane na Pixel 9a (GrapheneOS). Inne urządzenia, zwłaszcza niższe klasy lub bez układów Tensor, nie zostały jeszcze zweryfikowane i mogą być wolniejsze lub nieobsługiwane; tam bezpieczniejszym wyborem jest dostawca chmurowy.</string>

@@ -1350,7 +1350,7 @@
     <string name="settings_max_tokens">最大応答長</string>
     <string name="settings_max_tokens_unit">トークン</string>
     <string name="settings_meal_constituents">食事の材料内訳</string>
-    <string name="settings_meal_constituents_footer">オンの場合、AI は複合的な食事を、グラムと単位付きの編集可能な材料に分割できます。より強力なクラウドモデルで最適に動作し、結果が不安定な場合は安価・小型モデル向けにオフにしてください。</string>
+    <string name="settings_meal_constituents_footer">有効にすると、AI は複合的な食事を、グラムと単位付きの編集可能な材料に分割できます。食材ごとの微量栄養素はより強力なクラウドモデルにのみ要求され、小さなモデルでもマクロ付きの食材リストは返されます。</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
     <string name="settings_meal_times">食事時間</string>
     <string name="settings_meal_times_customize">カスタマイズ</string>
