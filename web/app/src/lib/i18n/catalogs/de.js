@@ -299,7 +299,7 @@ export const de = Object.freeze({
   "a11y.add_food": "Essen hinzufügen",
   "a11y.primary_nav": "Hauptnavigation",
   "settings.ai.meal_constituents": "Mahlzeiten-Zutatenaufschlüsselung",
-  "settings.ai.meal_constituents_hint": "Die KI kann zusammengesetzte Mahlzeiten in bearbeitbare Zutaten teilen. Bei schwächeren Modellen besser ausschalten.",
+  "settings.ai.meal_constituents_hint": "Die KI kann zusammengesetzte Mahlzeiten in bearbeitbare Zutaten teilen. Mikronährstoffe je Zutat nur bei stärkeren Cloud-Modellen; kleinere Modelle liefern die Zutatenliste mit Makros.",
   "settings.ai.ai_features_hint": "Schaltet alles aus, was Daten an einen KI-Anbieter sendet: Coach, Foto-/Text-/Sprachprotokollierung, „Was wäre wenn?“ und KI-Zielvorschläge. Barcode, Lebensmittelsuche, manuelle Eingabe, gespeicherte Mahlzeiten, Wasser, Synchronisierung und Health Connect funktionieren weiterhin normal.",
   "settings.ai.ai_features": "KI-Funktionen",
   "progressive_meal.title": "Mahlzeit zusammenstellen",

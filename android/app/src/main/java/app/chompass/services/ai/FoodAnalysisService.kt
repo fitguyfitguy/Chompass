@@ -60,11 +60,22 @@ import app.chompass.models.UnitFormat
 // Shared lines of the entry-analysis prompts ("lean" wording, A/B-validated in
 // docs/benchmarks/food_accuracy — lean_units2 variant). Keep in sync with the
 // production_* builders in docs/benchmarks/food_accuracy/prompts.py.
-private const val ENTRY_JSON_SCHEMA =
-    """{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"emoji":"<single specific food emoji>","sugar":0.0,"added_sugar":0.0,"fiber":0.0,"saturated_fat":0.0,"monounsaturated_fat":0.0,"polyunsaturated_fat":0.0,"cholesterol":0.0,"sodium":0.0,"potassium":0.0,"trans_fat":0.0,"calcium":0.0,"iron":0.0,"magnesium":0.0,"zinc":0.0,"vitamin_a":0.0,"vitamin_c":0.0,"vitamin_d":0.0,"vitamin_b12":0.0,"vitamin_e":0.0,"vitamin_k":0.0,"folate":0.0,"omega_3":0.0,"caffeine":0.0,"unit_options":[]}"""
+private const val ENTRY_JSON_SCHEMA_MEAL =
+    """{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"emoji":"<single specific food emoji>","sugar":0.0,"added_sugar":0.0,"fiber":0.0,"saturated_fat":0.0,"monounsaturated_fat":0.0,"polyunsaturated_fat":0.0,"cholesterol":0.0,"sodium":0.0,"potassium":0.0,"trans_fat":0.0,"calcium":0.0,"iron":0.0,"magnesium":0.0,"zinc":0.0,"vitamin_a":0.0,"vitamin_c":0.0,"vitamin_d":0.0,"vitamin_b12":0.0,"vitamin_e":0.0,"vitamin_k":0.0,"folate":0.0,"omega_3":0.0,"caffeine":0.0,"unit_options":[]"""
+
+private const val CONSTITUENT_ROW_MACROS =
+    """{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"emoji":"...","unit_options":[]}"""
+
+private const val CONSTITUENT_ROW_MICROS =
+    """{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"emoji":"...","sugar":0.0,"added_sugar":0.0,"fiber":0.0,"saturated_fat":0.0,"monounsaturated_fat":0.0,"polyunsaturated_fat":0.0,"cholesterol":0.0,"sodium":0.0,"potassium":0.0,"trans_fat":0.0,"calcium":0.0,"iron":0.0,"magnesium":0.0,"zinc":0.0,"vitamin_a":0.0,"vitamin_c":0.0,"vitamin_d":0.0,"vitamin_b12":0.0,"vitamin_e":0.0,"vitamin_k":0.0,"folate":0.0,"omega_3":0.0,"unit_options":[]}"""
+
+private const val ENTRY_JSON_SCHEMA = "$ENTRY_JSON_SCHEMA_MEAL}"
+
+private const val ENTRY_JSON_SCHEMA_WITH_CONSTITUENT_MACROS =
+    """$ENTRY_JSON_SCHEMA_MEAL,"constituents":[$CONSTITUENT_ROW_MACROS]}"""
 
 private const val ENTRY_JSON_SCHEMA_WITH_CONSTITUENTS =
-    """{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"emoji":"<single specific food emoji>","sugar":0.0,"added_sugar":0.0,"fiber":0.0,"saturated_fat":0.0,"monounsaturated_fat":0.0,"polyunsaturated_fat":0.0,"cholesterol":0.0,"sodium":0.0,"potassium":0.0,"trans_fat":0.0,"calcium":0.0,"iron":0.0,"magnesium":0.0,"zinc":0.0,"vitamin_a":0.0,"vitamin_c":0.0,"vitamin_d":0.0,"vitamin_b12":0.0,"vitamin_e":0.0,"vitamin_k":0.0,"folate":0.0,"omega_3":0.0,"caffeine":0.0,"unit_options":[],"constituents":[{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"emoji":"...","sugar":0.0,"added_sugar":0.0,"fiber":0.0,"saturated_fat":0.0,"monounsaturated_fat":0.0,"polyunsaturated_fat":0.0,"cholesterol":0.0,"sodium":0.0,"potassium":0.0,"trans_fat":0.0,"calcium":0.0,"iron":0.0,"magnesium":0.0,"zinc":0.0,"vitamin_a":0.0,"vitamin_c":0.0,"vitamin_d":0.0,"vitamin_b12":0.0,"vitamin_e":0.0,"vitamin_k":0.0,"folate":0.0,"omega_3":0.0,"unit_options":[]}]}"""
+    """$ENTRY_JSON_SCHEMA_MEAL,"constituents":[$CONSTITUENT_ROW_MICROS]}"""
 
 private const val ENTRY_NUTRIENT_UNITS =
     "Calories are integers; other nutrients are numbers (grams for protein/carbs/fat/sugars/fiber/fats/omega-3; " +
@@ -79,16 +90,18 @@ private const val ENTRY_UNIT_OPTIONS_RULE =
 
 private const val ENTRY_CONSTITUENTS_RULE =
     "constituents is optional. For multi-item meals, list each distinct edible item " +
-        "(egg, toast, butter, drink, side) with its own FULL macro and micronutrient " +
-        "breakdown (all the same fields as the meal level: protein, carbs, fat, sugars, " +
-        "fiber, fats, cholesterol, sodium, potassium, calcium, iron, magnesium, zinc, " +
-        "vitamins A/C/D/E/K/B12, folate, omega-3), serving_size_grams, and unit_options " +
-        "when a non-gram unit is obvious. Keep top-level fields as the meal total. " +
+        "(egg, toast, butter, drink, side) with its own macros, serving_size_grams, and " +
+        "unit_options when a non-gram unit is obvious. Keep top-level fields as the meal total. " +
         "Constituent grams MUST sum to serving_size_grams within ±5%. Constituent " +
         "calories/protein/carbs/fat MUST each sum to the matching meal total within ±5%. " +
-        "Each constituent micronutrient MUST sum to the matching meal total within ±20%. " +
         "Include every named or clearly implied edible item; do not invent extras. Use [] " +
         "for a single undivided food."
+
+private const val ENTRY_CONSTITUENTS_MICROS_RULE =
+    "Each constituent also includes the same micronutrient fields as the meal level " +
+        "(sugars, fiber, fats, cholesterol, sodium, potassium, calcium, iron, magnesium, " +
+        "zinc, vitamins A/C/D/E/K/B12, folate, omega-3). Each constituent micronutrient " +
+        "MUST sum to the matching meal total within ±20%."
 
 /**
  * #86: constituent rows carry 22 micro fields each; a multi-item reply needs
@@ -866,11 +879,26 @@ class FoodAnalysisService(
         return store.selectedAIProvider.first() != AIProvider.ON_DEVICE
     }
 
-    private suspend fun entryJsonSchema(): String =
-        if (mealConstituentsRequested()) ENTRY_JSON_SCHEMA_WITH_CONSTITUENTS else ENTRY_JSON_SCHEMA
+    private suspend fun constituentMicrosRequested(): Boolean {
+        if (!mealConstituentsRequested()) return false
+        val store = prefs ?: return true
+        val provider = store.selectedAIProvider.first()
+        val model = store.selectedAIModel.first()?.takeIf { it.isNotBlank() }
+            ?: provider.defaultModel
+        return !isSmallCloudModel(model)
+    }
 
-    private suspend fun entryConstituentsRuleOrEmpty(): String =
-        if (mealConstituentsRequested()) ENTRY_CONSTITUENTS_RULE else ""
+    private suspend fun entryJsonSchema(): String = when {
+        !mealConstituentsRequested() -> ENTRY_JSON_SCHEMA
+        constituentMicrosRequested() -> ENTRY_JSON_SCHEMA_WITH_CONSTITUENTS
+        else -> ENTRY_JSON_SCHEMA_WITH_CONSTITUENT_MACROS
+    }
+
+    private suspend fun entryConstituentsRuleOrEmpty(): String = when {
+        !mealConstituentsRequested() -> ""
+        constituentMicrosRequested() -> "$ENTRY_CONSTITUENTS_RULE $ENTRY_CONSTITUENTS_MICROS_RULE"
+        else -> ENTRY_CONSTITUENTS_RULE
+    }
 
     private suspend fun parseEntryFood(raw: String): FoodAnalysis {
         val parsed = FoodJsonParser.parseFood(raw)
@@ -1339,7 +1367,7 @@ class FoodAnalysisService(
         val primaryKey = keyLookup?.invoke(primary)
             ?: AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
         if (primary.requiresApiKey && primaryKey.isNullOrEmpty()) throw AiError.NoApiKey
-        val maxTokens = floorResponseTokensForOp(op, prefs.maxResponseTokens.first(), mealConstituentsRequested())
+        val maxTokens = floorResponseTokensForOp(op, prefs.maxResponseTokens.first(), constituentMicrosRequested())
         val readTimeoutSeconds = prefs.aiReadTimeoutSeconds.first()
         val geminiGoogleSearch = prefs.geminiGoogleSearchEnabled.first()
         val aiImages = if (imageBytesList.isEmpty()) {
@@ -1591,7 +1619,7 @@ class FoodAnalysisService(
         val answeringTier = when {
             overrideTier != null -> overrideTier
             provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE -> GoalRecalcTier.SAFE
-            isSmallCloudGoalModel(model) -> GoalRecalcTier.SAFE
+            isSmallCloudModel(model) -> GoalRecalcTier.SAFE
             else -> GoalRecalcTier.SMART
         }
         val effectivePrompt = when {
@@ -1663,12 +1691,13 @@ class FoodAnalysisService(
     }
 
     /**
-     * Small-cloud-model detection for the goal-recalc tier rule. Matches the
-     * lite/nano/haiku/mini tier of each vendor's catalog (plus OpenRouter's
-     * free endpoint); everything else counts as a capable cloud model.
+     * Small-cloud-model detection (goal-recalc SAFE tier + macros-only
+     * constituent rows). Matches the lite/nano/haiku/mini tier of each vendor's
+     * catalog (plus OpenRouter's free endpoint); everything else counts as a
+     * capable cloud model. PWA twin: chompass-core/weak-model.js.
      * Rationale + measured evidence: docs/CALCULATION_METHODS.md § AI-RECALC.
      */
-    private fun isSmallCloudGoalModel(model: String): Boolean {
+    private fun isSmallCloudModel(model: String): Boolean {
         val m = model.lowercase()
         // "mini" only matches as trailing "-mini" — a bare "mini-" would hit
         // every "gemini-*" id.

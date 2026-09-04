@@ -1637,7 +1637,7 @@
     <string name="settings_show_coach_tab">Show the coach tab</string>
     <string name="settings_show_coach_tab_footer">Hides the coach tab from the bottom bar. The coach feature itself stays enabled; the AI features switch above turns everything off.</string>
     <string name="settings_meal_constituents">Meal ingredient breakdown</string>
-    <string name="settings_meal_constituents_footer">When enabled, the AI may split composite meals into editable ingredients with grams and units. Works best with stronger cloud models; turn off for cheaper or smaller models if results look inconsistent.</string>
+    <string name="settings_meal_constituents_footer">When enabled, the AI may split composite meals into editable ingredients with grams and units. Per-ingredient micronutrients are asked only of stronger cloud models; smaller models still return the ingredient list with macros.</string>
     <string name="settings_meal_constituents_footer_on_device">Unavailable for on-device Gemma: ingredient breakdown needs a stronger model. Switch to a cloud provider to enable this.</string>
     <string name="on_device_model_privacy_notice">Runs entirely on this device. Nothing you type or photograph is sent to a server. Downloading fetches the model file directly from Hugging Face (%1$s), a third-party host not otherwise used by this app.</string>
     <string name="on_device_model_device_notice">Tested on Pixel 9a (GrapheneOS). Other devices, especially lower-tier or non-Tensor hardware, haven\'t been validated yet and may be slower or unsupported; a cloud provider is a safer default there.</string>

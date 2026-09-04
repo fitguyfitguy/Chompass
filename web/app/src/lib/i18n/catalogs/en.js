@@ -358,7 +358,7 @@ export const en = Object.freeze({
   "settings.ai.ai_features": "AI features",
   "settings.ai.ai_features_hint": "Turns off everything that sends data to an AI provider: the Coach, photo/text/voice logging, \"What if?\" and AI goal suggestions. Barcode, food search, manual entry, saved meals, water, sync and Health Connect keep working normally.",
   "settings.ai.meal_constituents": "Meal ingredient breakdown",
-  "settings.ai.meal_constituents_hint": "Ask the AI to split composite meals into editable ingredients. Turn off for weaker models if results look inconsistent.",
+  "settings.ai.meal_constituents_hint": "Ask the AI to split composite meals into editable ingredients. Per-ingredient micronutrients are requested only from stronger cloud models; smaller models still return the ingredient list with macros.",
   "settings.ai.serving_unit_mode": "Serving unit inference",
   "settings.ai.serving_unit_mode_hint": "How to fill a non-gram unit when the model omits one. Grams only is fastest; heuristic guesses from the food name; AI-inferred asks the model for the unit when needed.",
   "settings.ai.serving_unit_grams_only": "Grams only",

@@ -260,7 +260,7 @@ test("analyzeFoodEntry_parsesAndReconcilesConstituents", async () => {
   try {
     const result = await analyzeFoodEntry({
       providerId: "anthropic",
-      config: { apiKey: "test-key" },
+      config: { apiKey: "test-key", model: "claude-sonnet-5" },
       text: "eggs and toast",
       prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false }),
     });
@@ -344,6 +344,49 @@ test("analyzeFoodEntry_respectsMealConstituentsOptOut", async () => {
     PROVIDERS.anthropic.send = original;
   }
 });
+
+test("analyzeFoodEntry_gatesConstituentMicrosByModelClass", async () => {
+  const original = PROVIDERS.anthropic.send;
+  /** @type {string[]} */
+  const systems = [];
+  PROVIDERS.anthropic.send = async (_config, req) => {
+    systems.push(req.systemPrompt);
+    return {
+      text: JSON.stringify({ name: "Meal", calories: 100, proteinG: 1, carbsG: 1, fatG: 1 }),
+      toolCalls: [],
+    };
+  };
+  try {
+    await analyzeFoodEntry({
+      providerId: "anthropic",
+      config: { apiKey: "test-key", model: "claude-sonnet-5" },
+      text: "meal",
+      prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false }),
+    });
+    await analyzeFoodEntry({
+      providerId: "anthropic",
+      config: { apiKey: "test-key", model: "claude-haiku-4-5" },
+      text: "meal",
+      prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false }),
+    });
+    await analyzeFoodEntry({
+      providerId: "anthropic",
+      config: { apiKey: "test-key", model: "claude-sonnet-5" },
+      text: "meal",
+      prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false, mealConstituentsEnabled: false }),
+    });
+  } finally {
+    PROVIDERS.anthropic.send = original;
+  }
+  assert.equal(systems[0].includes("constituents"), true);
+  assert.equal(systems[0].includes("added_sugar"), true);
+  assert.equal(systems[0].includes("Each constituent micronutrient MUST sum"), true);
+  assert.equal(systems[1].includes("constituents"), true);
+  assert.equal(systems[1].includes("added_sugar"), false);
+  assert.equal(systems[1].includes("Each constituent micronutrient MUST sum"), false);
+  assert.equal(systems[2].includes("constituents"), false);
+});
+
 
 test("analyzeFoodEntry_dropsFarConstituentsKeepsMicros", async () => {
   const original = PROVIDERS.gemini.send;
@@ -466,24 +509,29 @@ test("analyzeFoodEntry_constituentsRaiseCappedProviderTokenFloor", async () => {
   try {
     await analyzeFoodEntry({
       providerId: "anthropic",
-      config: { apiKey: "test-key" },
+      config: { apiKey: "test-key", model: "claude-sonnet-5" },
       text: "meal",
       prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false }),
     });
     await analyzeFoodEntry({
       providerId: "anthropic",
-      config: { apiKey: "test-key" },
+      config: { apiKey: "test-key", model: "claude-haiku-4-5" },
+      text: "meal",
+      prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false }),
+    });
+    await analyzeFoodEntry({
+      providerId: "anthropic",
+      config: { apiKey: "test-key", model: "claude-sonnet-5" },
       text: "meal",
       prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false, mealConstituentsEnabled: false }),
     });
   } finally {
     PROVIDERS.anthropic.send = original;
   }
-  // #86 review fix: the constituents schema (22 micro fields per row) can
-  // exceed a 1024-token cap; capped providers get a 4096 floor while the
-  // constituents prompt is active, default cap otherwise.
+  // Floor applies only when the micros constituents schema is active.
   assert.equal(maxTokensSeen[0], 4096);
   assert.equal(maxTokensSeen[1], undefined);
+  assert.equal(maxTokensSeen[2], undefined);
 });
 
 test("anthropicSend_threadsMaxTokensIntoBody", async () => {
