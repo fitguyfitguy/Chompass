@@ -44,6 +44,7 @@ data class FoodConstituent(
     val vitaminK: Double? = null,
     val folate: Double? = null,
     val omega3: Double? = null,
+    /** Diary/sync/share wire only. AI constituent schema does not request or parse this. */
     val caffeine: Double? = null,
 ) {
     fun scaled(factor: Double): FoodConstituent {

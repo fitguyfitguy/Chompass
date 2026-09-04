@@ -725,7 +725,8 @@ internal object FoodJsonParser {
                 fat = fat,
                 servingSizeGrams = grams,
                 // Per-row micros (#86): same short snake_case keys as the meal
-                // level, minus caffeine. Absent/non-finite → null; negatives
+                // level, minus caffeine (entry-level / wire only; not in the
+                // constituent AI schema). Absent/non-finite → null; negatives
                 // clamp to 0 via InputSanitizer.micro.
                 sugar = InputSanitizer.micro(optDouble(row, "sugar")),
                 addedSugar = InputSanitizer.micro(optDouble(row, "added_sugar")),

@@ -5,6 +5,7 @@ import app.chompass.data.PreferencesStore
 import app.chompass.models.AIProvider
 import app.chompass.models.ServingUnitInferenceMode
 import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -68,6 +69,75 @@ class EntryConstituentSchemaGateTest {
         assertFalse(prompt.contains("Each constituent micronutrient MUST sum"))
     }
 
+    @Test
+    fun onDevice_omitsConstituentsSchema() = runBlocking {
+        prefs.setSelectedAIProvider(AIProvider.ON_DEVICE)
+        prefs.setSelectedAIModel(AIProvider.ON_DEVICE.defaultModel)
+        prefs.setMealConstituentsEnabled(true)
+        val prompt = captureAnalyzePrompt()
+        assertFalse(prompt.contains("\"constituents\""))
+        assertFalse(prompt.contains("Each constituent micronutrient MUST sum"))
+    }
+
+    @Test
+    fun photoWithLiteVisionOverride_requestsMacrosOnly() = runBlocking {
+        prefs.setSelectedAIProvider(AIProvider.GEMINI)
+        prefs.setSelectedAIModel("gemini-3.8-flash")
+        prefs.setVisionModel(AIProvider.GEMINI, "gemini-3.5-flash-lite")
+        prefs.setMealConstituentsEnabled(true)
+        val prompt = captureAnalyzeFoodPrompt()
+        assertTrue(prompt.contains("\"constituents\""))
+        assertFalse(prompt.contains("Each constituent micronutrient MUST sum"))
+        assertFalse(
+            prompt.contains("\"constituents\":[{\"name\":\"...\",\"calories\":0,\"protein\":0.0,\"carbs\":0.0,\"fat\":0.0,\"serving_size_grams\":0.0,\"emoji\":\"...\",\"sugar\""),
+        )
+    }
+
+    @Test
+    fun photoWithoutVisionOverride_keepsSelectedModelMicros() = runBlocking {
+        prefs.setSelectedAIProvider(AIProvider.GEMINI)
+        prefs.setSelectedAIModel("gemini-3.8-flash")
+        prefs.setVisionModel(AIProvider.GEMINI, null)
+        prefs.setMealConstituentsEnabled(true)
+        val prompt = captureAnalyzeFoodPrompt()
+        assertTrue(prompt.contains("Each constituent micronutrient MUST sum"))
+    }
+
+    @Test
+    fun promptKind_followsDispatchModelAndProvider() {
+        assertEquals(
+            EntryConstituentPromptKind.MICROS,
+            entryConstituentPromptKind(true, AIProvider.GEMINI, "gemini-3.8-flash"),
+        )
+        assertEquals(
+            EntryConstituentPromptKind.MACROS,
+            entryConstituentPromptKind(true, AIProvider.GEMINI, "gemini-3.5-flash-lite"),
+        )
+        assertEquals(
+            EntryConstituentPromptKind.NONE,
+            entryConstituentPromptKind(true, AIProvider.ON_DEVICE, AIProvider.ON_DEVICE.defaultModel),
+        )
+        assertEquals(
+            EntryConstituentPromptKind.NONE,
+            entryConstituentPromptKind(false, AIProvider.GEMINI, "gemini-3.8-flash"),
+        )
+        val primary = entryJsonSchemaFor(EntryConstituentPromptKind.MICROS)
+        val liteFallback = entryJsonSchemaFor(EntryConstituentPromptKind.MACROS)
+        val onDeviceFallback = entryJsonSchemaFor(EntryConstituentPromptKind.NONE)
+        assertTrue(primary.contains("Each constituent micronutrient MUST sum") || primary.contains("added_sugar"))
+        assertTrue(entryConstituentsRuleFor(EntryConstituentPromptKind.MICROS).contains("Each constituent micronutrient MUST sum"))
+        assertFalse(entryConstituentsRuleFor(EntryConstituentPromptKind.MACROS).contains("Each constituent micronutrient MUST sum"))
+        assertFalse(
+            liteFallback.contains("\"constituents\":[{\"name\":\"...\",\"calories\":0,\"protein\":0.0,\"carbs\":0.0,\"fat\":0.0,\"serving_size_grams\":0.0,\"emoji\":\"...\",\"sugar\""),
+        )
+        assertFalse(onDeviceFallback.contains("\"constituents\""))
+        assertEquals(
+            CONSTITUENT_MIN_RESPONSE_TOKENS,
+            floorResponseTokensForOp("analyzeText", 1024, true),
+        )
+        assertEquals(1024, floorResponseTokensForOp("analyzeText", 1024, false))
+    }
+
     private suspend fun captureAnalyzePrompt(): String {
         var captured: String? = null
         val service = FoodAnalysisService(
@@ -79,6 +149,20 @@ class EntryConstituentSchemaGateTest {
             inferenceModeForTest = ServingUnitInferenceMode.GRAMS_ONLY,
         )
         service.analyzeText("eggs and toast")
+        return captured!!
+    }
+
+    private suspend fun captureAnalyzeFoodPrompt(): String {
+        var captured: String? = null
+        val service = FoodAnalysisService(
+            prefs = prefs,
+            callAiDelegate = { prompt, _, _ ->
+                captured = prompt
+                foodJson
+            },
+            inferenceModeForTest = ServingUnitInferenceMode.GRAMS_ONLY,
+        )
+        service.analyzeFood(byteArrayOf(1, 2, 3, 4))
         return captured!!
     }
 }
