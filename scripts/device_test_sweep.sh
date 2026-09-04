@@ -46,12 +46,12 @@ if [ "$SKIP_INSTALL" = 0 ]; then
 fi
 
 launch() { # launch <extra>...
-  "$ADB_BIN" shell am force-stop "$PACKAGE"
+  # -S force-stops then starts in one call; a separate force-stop races and
+  # can leave the old task in front, dropping the extras (seen as a missing
+  # benchmark intent).
   "$ADB_BIN" logcat -c
-  "$ADB_BIN" shell am start -n "$ACTIVITY" "$@" >/dev/null
+  "$ADB_BIN" shell am start -S -n "$ACTIVITY" "$@" >/dev/null
 }
-
-perf_log() { "$ADB_BIN" logcat -d -s FudAIPerf:V 2>/dev/null || true; }
 
 wait_done() { # wait_done <op> <done-phase> <timeout-s> <label>
   local op="$1" phase="$2" tmo="$3" label="$4" n=0 out
