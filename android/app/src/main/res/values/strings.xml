@@ -2082,6 +2082,8 @@
     <string name="cd_dismiss_paste">Dismiss paste</string>
     <string name="paste_n_entries">Paste %1$d entries</string>
     <string name="paste_busy">Pasting…</string>
+    <string name="recovered_review_chip">Recovered analysis: %1$s</string>
+    <string name="cd_discard_recovered_review">Discard recovered analysis</string>
     <string name="cd_favorited">Favorited</string>
     <string name="cd_move_up">Move up</string>
     <string name="cd_move_down">Move down</string>

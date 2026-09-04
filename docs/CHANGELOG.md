@@ -11,6 +11,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **Meal nutrition vs your daily goals** (Android + web): tap a meal name on Home (Lunch, Dinner, and the rest) to see that slot's totals the same way as the day sheet, now with a percent of each daily goal. View more still opens the whole day. Follows Codeberg [#87](https://codeberg.org/fitguy/Chompass/issues/87) by [@bergieberg](https://codeberg.org/bergieberg).
 - **Vitamins and minerals for each ingredient** (Android + web): meals broken into ingredients (chicken, rice, and the rest) can now show each ingredient's estimated fiber, sugars, vitamins, and minerals, with a percent of your daily goal. Open a meal's nutrition on Home, or expand an ingredient in the review and edit sheets. The ingredient values are labeled as estimates and may not add up exactly to the meal totals. Estimates arrive from the AI analysis when the meal's ingredient breakdown is on. Follows Codeberg [#86](https://codeberg.org/fitguy/Chompass/issues/86) by [@bergieberg](https://codeberg.org/bergieberg).
+- **Accidentally dismissed meal reviews can be recovered** (Android): swiping the review sheet away before logging no longer throws the analysis away. Home shows a recovered analysis chip with the food's name; tap it to bring the review back without a new AI call, or close the chip to discard it for good.
 
 ### Changed
 

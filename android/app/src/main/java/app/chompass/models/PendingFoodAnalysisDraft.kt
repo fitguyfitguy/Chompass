@@ -20,5 +20,11 @@ data class PendingFoodAnalysisDraft(
     @Serializable(with = LocalDateSerializer::class)
     val targetDate: LocalDate = LocalDate.now(),
     @Serializable(with = InstantSerializer::class)
-    val createdAt: Instant = Instant.now()
+    val createdAt: Instant = Instant.now(),
+    /**
+     * Set when the user dismissed the review sheet without logging: the draft
+     * is kept for the Home "recovered analysis" chip instead of auto-restoring
+     * on the next launch. Legacy drafts default to false (auto-restore).
+     */
+    val awaitingReview: Boolean = false,
 )

@@ -1958,4 +1958,6 @@
     <string name="settings_meals_hidden">%1$s (숨김)</string>
     <string name="settings_meals_no_auto">자동 추정 없음</string>
     <string name="settings_meals_save_error">시각은 15분 이상 간격을 두고 하루 안에 들어와야 해요.</string>
+  <string name="recovered_review_chip">복원된 분석: %1$s</string>
+  <string name="cd_discard_recovered_review">복원된 분석 버리기</string>
 </resources>

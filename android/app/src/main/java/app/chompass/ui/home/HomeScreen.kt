@@ -56,6 +56,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -808,49 +809,108 @@ fun HomeScreen(
         // Paste chip: diary rows copied via the selection bar, ready to be
         // pasted onto the viewed day (same or another day). In-memory clipboard.
         val copied = ui.copiedEntries
-        if (copied.isNotEmpty() && !inSelectionMode && !showProgressiveChip) {
+        // Recovered review chip: a dismissed completed AI review, kept so the
+        // analysis is not wasted. Tap reopens the review sheet; X discards.
+        val recoveredReview = ui.recoveredReview
+        val showRecoveredChip = recoveredReview != null &&
+            !ui.showFoodResultSheet &&
+            !ui.showProgressiveMealSheet &&
+            !ui.showAnalysisQueue &&
+            !showAddFoodSheet &&
+            !showCameraCapture &&
+            !showMultiPhotoCapture &&
+            !inSelectionMode
+        if ((copied.isNotEmpty() && !inSelectionMode && !showProgressiveChip) || showRecoveredChip) {
             val pasteBusy = ui.saving
             val paste: () -> Unit = {
                 if (!pasteBusy) vm.copyEntriesToSelectedDay(copied)
             }
-            FudGlassSurface(
+            Column(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .navigationBarsPadding()
                     .padding(start = 16.dp, end = 16.dp, bottom = BottomOverlayPadding)
-                    .fillMaxWidth()
-                    .alpha(if (pasteBusy) 0.55f else 1f)
-                    .clickable(enabled = !pasteBusy, onClick = paste)
                     .zIndex(1f),
-                cornerRadius = AppRadii.SectionCard,
-                padding = 0.dp
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, end = 4.dp, top = 2.dp, bottom = 2.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        stringResource(
-                            if (pasteBusy) R.string.paste_busy else R.string.paste_n_entries,
-                            if (pasteBusy) 0 else copied.size
-                        ),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 15.sp,
-                    )
-                    IconButton(
-                        onClick = { vm.clearCopiedEntries() },
-                        modifier = Modifier.size(44.dp)
+                if (showRecoveredChip && recoveredReview != null) {
+                    FudGlassSurface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = vm::restoreRecoveredReview),
+                        cornerRadius = AppRadii.SectionCard,
+                        padding = 0.dp
                     ) {
-                        Icon(
-                            Icons.Filled.Close,
-                            contentDescription = stringResource(R.string.cd_dismiss_paste),
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                            modifier = Modifier.size(18.dp)
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, end = 4.dp, top = 2.dp, bottom = 2.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                stringResource(
+                                    R.string.recovered_review_chip,
+                                    recoveredReview.analysis.name
+                                ),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 15.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            IconButton(
+                                onClick = vm::discardRecoveredReview,
+                                modifier = Modifier.size(44.dp)
+                            ) {
+                                Icon(
+                                    Icons.Filled.Close,
+                                    contentDescription = stringResource(R.string.cd_discard_recovered_review),
+                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+                if (copied.isNotEmpty() && !inSelectionMode && !showProgressiveChip) {
+                    FudGlassSurface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .alpha(if (pasteBusy) 0.55f else 1f)
+                            .clickable(enabled = !pasteBusy, onClick = paste),
+                        cornerRadius = AppRadii.SectionCard,
+                        padding = 0.dp
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, end = 4.dp, top = 2.dp, bottom = 2.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                stringResource(
+                                    if (pasteBusy) R.string.paste_busy else R.string.paste_n_entries,
+                                    if (pasteBusy) 0 else copied.size
+                                ),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 15.sp,
+                            )
+                            IconButton(
+                                onClick = { vm.clearCopiedEntries() },
+                                modifier = Modifier.size(44.dp)
+                            ) {
+                                Icon(
+                                    Icons.Filled.Close,
+                                    contentDescription = stringResource(R.string.cd_dismiss_paste),
+                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
                     }
                 }
             }
