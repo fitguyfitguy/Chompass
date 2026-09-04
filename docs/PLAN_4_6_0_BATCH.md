@@ -94,7 +94,8 @@ Pre-tag review found two blockers plus parity drift; all fixed with tests:
   `entry.constituents.estimates_note`; en+de shipped, remaining locales ride
   the locale batch per the locales contract).
 
-### 5. Ingredient micros model-class gating (planned next session)
+### 5. Ingredient micros model-class gating — LANDED 2026-09-04 (d51a41ad,
+5b70ca16, 5212372a)
 
 Decision (maintainer, 2026-09-03 evening): per-row micros ship only for
 strong-class models; weak class gets the pre-#86 macros-only breakdown.
@@ -136,19 +137,34 @@ Implementation map (edit sites grounded 2026-09-03):
 - Tests: Android schema-selection gate test (strong / lite / toggle off);
   PWA twin in `food-analyze.test.js`. `EntryConstituentTokenFloorTest`
   unaffected (flag param unchanged).
+Gates after landing (2026-09-04): gradlew test green (1159, incl. the JVM-safe
+`PerfLog.warn` fix for the short-raw log), release:check-parity green.
 
-This is the last pre-tag item. Device regression pass already green 8/8
-(2026-09-03, `android/build/release-verify/20260903_173941`), 3.8 goal
-matrix 19/19 via OpenRouter, web E2E done. After gating lands: gradlew
-test, release:check-parity, then package. Device still holds seeded test
-data incl. the disposable "Verify Bowl" meal (customNote "4.6.0 device
-pass").
- 
+### 6. Recovered review chip (Android) — commit b1523578
+
+Dismissing a completed AI review no longer discards it: the persisted
+`PendingFoodAnalysisDraft` is kept with `awaitingReview = true` and Home shows
+a glass chip ("Recovered analysis: <name>"); tap restores the review sheet
+with the stored result (no new AI call), X discards draft + photo. Saved
+Meals / favorites reviews (no AI cost) still dismiss outright. Android-only
+for 4.6.0 (PARITY.md matrix row; PWA cancel still drops the analysis —
+follow-up twin). Strings en+de+16 locales. Tests:
+`PendingFoodAnalysisDraftRecoveryTest`, `HomeUiStateWriteTest` recoveredReview
+case. Device check: dismiss → chip → restore verified interactively by the
+maintainer on the Pixel 9a (2026-09-04).
+
+## Pre-tag status
+
+All items landed. Remaining for the tag: version bump (72/4.5.0 → 73/4.6.0),
+CHANGELOG date, `release:package`, tag + publish.
+
 ## Verification
 
-1. `devenv shell bash -lc 'cd android && ./gradlew test'` — full suite incl.
-   the two new test files.
-2. `devenv tasks run release:check-parity` — PWA tests + tsc + schema/fixture
-   validation.
-3. Device gate sweep (item 3) when a device is attached; record the result in
-   this section.
+1. `devenv shell bash -lc 'cd android && ./gradlew test'` — green 2026-09-04
+   (1159 tests, 0 failures).
+2. `devenv tasks run release:check-parity` — green 2026-09-04 (re-run after
+   the PARITY.md matrix edit).
+3. Device: 4.6.0 regression pass green 8/8 on 2026-09-03
+   (`android/build/release-verify/20260903_173941`); item 6 dismiss → chip →
+   restore verified interactively 2026-09-04. Formal sweep re-run optional
+   before packaging (item 5 gating also smoked by the interactive pass).
