@@ -1428,6 +1428,7 @@
     <string name="settings_meals_remove_body">Los registros existentes conservan su tipo hasta que los edites. Las comidas predefinidas se ocultan en lugar de borrarse.</string>
     <string name="settings_meals_hidden">%1$s (oculta)</string>
     <string name="settings_meals_no_auto">Sin selección automática</string>
+    <string name="settings_meals_save_error">Los horarios deben estar separados al menos 15 minutos y caber en un día.</string>
     <string name="settings_meal_times">Horarios de comida</string>
     <string name="settings_meal_times_customize">Personalizar</string>
     <string name="settings_meal_times_description">Define cuándo la selección automática de comida cambia a la siguiente.</string>

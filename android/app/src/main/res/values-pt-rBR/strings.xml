@@ -1957,4 +1957,5 @@ macros reequilibradas ao novo total calórico</string>
     <string name="settings_meals_remove_body">Itens existentes mantêm o tipo até você editá-los. Refeições padrão são ocultadas, não apagadas.</string>
     <string name="settings_meals_hidden">%1$s (oculta)</string>
     <string name="settings_meals_no_auto">Sem escolha automática</string>
+    <string name="settings_meals_save_error">Os horários devem ter pelo menos 15 minutos de diferença e caber em um dia.</string>
 </resources>

@@ -1788,6 +1788,7 @@ für dich ein</string>
     <string name="settings_meals_remove_body">Vorhandene Einträge behalten ihren Typ, bis du sie änderst. Eingebaute Mahlzeiten werden ausgeblendet statt gelöscht.</string>
     <string name="settings_meals_hidden">%1$s (ausgeblendet)</string>
     <string name="settings_meals_no_auto">Nicht für Auto-Auswahl</string>
+    <string name="settings_meals_save_error">Die Zeiten müssen mindestens 15 Minuten auseinanderliegen und in einen Tag passen.</string>
     <string name="settings_meal_times">Essenszeiten</string>
 
     <string name="settings_meal_times_customize">Anpassen</string>

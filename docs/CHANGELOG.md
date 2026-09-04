@@ -18,6 +18,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **Meal schedules that cross midnight now save** (Android + web): the meals editor used to quietly put every meal time back to the defaults when the start times did not run in a plain morning to night order, for example a night shift plan with a meal after 0:00. Start times may now wrap past midnight, and when a schedule still cannot be saved the editor says so instead of silently restoring defaults. Follows Codeberg [#88](https://codeberg.org/fitguy/Chompass/issues/88) by [@BrassCat](https://codeberg.org/BrassCat).
+
 - **Changing an ingredient amount now scales its vitamins and minerals** (Android): in the review, edit, and favorite sheets, editing an ingredient's quantity updated only its calories and macros; the vitamin and mineral values now follow the new amount.
 - **Multi-ingredient meals no longer come back cut off on length-capped AI providers** (Android + web): with the default response length, Anthropic, OpenAI-compatible, and local Ollama models could return a truncated reply for meals broken into ingredients, which then failed with a truncation error. Those requests now get a higher response allowance while ingredient breakdown is on; your own response length setting still applies when it is higher.
 - **Ingredient nutrition now behaves the same on the web app as in the app** (web): negative or oversized vitamin and mineral values in an imported file are handled the same as on Android, present zero values show as 0 instead of a dash, and a file with text where a number belongs no longer breaks the nutrition sheet.

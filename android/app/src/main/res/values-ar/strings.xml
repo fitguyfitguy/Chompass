@@ -1963,4 +1963,5 @@
     <string name="settings_meals_remove_body">السجلات الحالية تبقي نوعها حتى تعدّلها. الوجبات المدمجة تُخفى بدل الحذف.</string>
     <string name="settings_meals_hidden">%1$s (مخفية)</string>
     <string name="settings_meals_no_auto">بدون تخمين تلقائي</string>
+    <string name="settings_meals_save_error">يجب أن تكون الأوقات متباعدة 15 دقيقة على الأقل وأن تتسع في يوم واحد.</string>
 </resources>

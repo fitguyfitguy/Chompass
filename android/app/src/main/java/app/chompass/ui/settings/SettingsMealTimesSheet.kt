@@ -63,6 +63,7 @@ internal fun MealTimesSheet(current: MealCatalog, onSave: (MealCatalog) -> Unit)
     var catalog by remember(current) { mutableStateOf(current.validatedOrDefault()) }
     var editingId by remember { mutableStateOf<String?>(null) }
     var pendingRemove by remember { mutableStateOf<MealDef?>(null) }
+    var saveError by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val is24Hour = LocaleFormat.is24Hour(context)
 
@@ -137,7 +138,20 @@ internal fun MealTimesSheet(current: MealCatalog, onSave: (MealCatalog) -> Unit)
         )
         Spacer(Modifier.height(16.dp))
         GradientSaveButton {
-            onSave(catalog.validatedOrDefault())
+            if (catalog.isValid) {
+                saveError = false
+                onSave(catalog)
+            } else {
+                saveError = true
+            }
+        }
+        if (saveError) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                stringResource(R.string.settings_meals_save_error),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+            )
         }
         FudGlassTextButton(
             text = stringResource(R.string.settings_restore_default_times),

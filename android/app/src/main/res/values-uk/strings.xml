@@ -1885,4 +1885,5 @@ LBM = вага × (1 − %жиру)</string>
     <string name="settings_meals_remove_body">Існуючі записи зберігають тип, доки ви їх не зміните. Вбудовані прийоми ховаються, а не видаляються.</string>
     <string name="settings_meals_hidden">%1$s (сховано)</string>
     <string name="settings_meals_no_auto">Без автовибору</string>
+    <string name="settings_meals_save_error">Час має відрізнятися щонайменше на 15 хвилин і вміщатися в одну добу.</string>
 </resources>

@@ -3,6 +3,7 @@ package app.chompass.models
 import java.time.LocalTime
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class MealScheduleTest {
@@ -42,5 +43,20 @@ class MealScheduleTest {
 
         assertFalse(invalid.isValid)
         assertEquals(MealSchedule.Default, invalid.validatedOrDefault())
+    }
+
+    @Test
+    fun wrappedRotationIsValidAndClassifies() {
+        val schedule = MealSchedule(
+            breakfastStartMinutes = 20 * 60,
+            lunchStartMinutes = 60,
+            dinnerStartMinutes = 5 * 60,
+            snackStartMinutes = 9 * 60,
+        )
+
+        assertTrue(schedule.isValid)
+        assertEquals(MealType.LUNCH, schedule.mealTypeAt(LocalTime.of(2, 0)))
+        assertEquals(MealType.BREAKFAST, schedule.mealTypeAt(LocalTime.of(23, 0)))
+        assertEquals(MealType.SNACK, schedule.mealTypeAt(LocalTime.of(9, 0)))
     }
 }

@@ -38,10 +38,20 @@ data class MealCatalog(
         }
         val timed = meals.filter { it.enabled && it.startMinutes != null }
         if (timed.isEmpty()) return "no_windows"
-        val starts = timed.map { it.startMinutes!! }
-        for (i in 1 until starts.size) {
-            if (starts[i] < starts[i - 1] + MIN_GAP_MINUTES) return "gap"
+        // Catalog order is a circular day rotation: starts must advance at least
+        // MIN_GAP_MINUTES around the clock, so a schedule may wrap past midnight
+        // once, and the whole rotation must fit in one day (the span check also
+        // rejects duplicate starts).
+        var prevStart = timed.first().startMinutes!!
+        var span = 0
+        for (i in 1 until timed.size) {
+            val start = timed[i].startMinutes!!
+            val delta = (start - prevStart + MealSchedule.MINUTES_PER_DAY) % MealSchedule.MINUTES_PER_DAY
+            if (delta < MIN_GAP_MINUTES) return "gap"
+            span += delta
+            prevStart = start
         }
+        if (span >= MealSchedule.MINUTES_PER_DAY) return "span"
         return null
     }
 
@@ -55,15 +65,19 @@ data class MealCatalog(
         val windows = scheduleWindows()
         if (windows.isEmpty()) return Default.mealIdAt(time)
         val minutes = time.hour * 60 + time.minute
-        val firstStart = windows.first().startMinutes!!
-        // Overnight / pre-first window belongs to the last window (legacy snack).
-        if (minutes < firstStart) return windows.last().id
-        var current = windows.first().id
+        // The window that started most recently around the clock owns the moment;
+        // unlike the old first-start shortcut this also covers rotations whose
+        // later rows sit before the first start in day minutes.
+        var best = windows.first()
+        var bestOffset = Int.MAX_VALUE
         for (w in windows) {
-            val start = w.startMinutes!!
-            if (minutes >= start) current = w.id else break
+            val offset = (minutes - w.startMinutes!! + MealSchedule.MINUTES_PER_DAY) % MealSchedule.MINUTES_PER_DAY
+            if (offset < bestOffset) {
+                bestOffset = offset
+                best = w
+            }
         }
-        return current
+        return best.id
     }
 
     fun mealTypeAt(time: LocalTime): MealType =
