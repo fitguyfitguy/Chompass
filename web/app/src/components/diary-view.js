@@ -280,6 +280,8 @@ function servingEchoText(entry) {
     echo.quantity,
     t("unit.serving"),
     t("unit.serving_plural"),
+    t("unit.package"),
+    t("unit.package_plural"),
     culinaryUnitLabels()
   )}`;
 }

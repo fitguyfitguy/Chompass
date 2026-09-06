@@ -373,6 +373,7 @@ fun FoodResultSheet(
                 editableConstituents,
                 scale,
             ),
+            productMetadata = effectiveAnalysis.productMetadata,
         )
     )
     var whatIfEntry by remember { mutableStateOf<FoodEntry?>(null) }
@@ -940,6 +941,12 @@ fun FoodResultSheet(
                         )
                     }
                 }
+            }
+            // Product information (OFF barcode enrichment): after the Log path
+            // like the other informational sections above.
+            effectiveAnalysis.productMetadata?.takeIf { it.hasDisplayDetails }?.let { metadata ->
+                item { SheetSectionHeader(stringResource(R.string.product_information)) }
+                item { FoodProductMetadataCard(metadata) }
             }
             } // analysisReady || analysis != null || partial has fields
             }

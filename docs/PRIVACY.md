@@ -42,7 +42,7 @@ Chompass may contact external services only when you use a feature that requires
 | Feature | What is sent | Where |
 |---------|----------------|-------|
 | AI features (see [AI data sharing by feature](#ai-data-sharing-by-feature)) | Food photos, meal text, chat context, profile, and diary totals, depending on the feature | Your configured AI provider |
-| Barcode scan | Scanned barcode | Open Food Facts public API |
+| Barcode scan | Scanned barcode. When Open Food Facts has a front product photo, it is also fetched from Open Food Facts' image CDN for display on your device | Open Food Facts public API / image CDN |
 | Food photos (barcode hint) | Barcodes decoded from food photos are looked up on Open Food Facts | Open Food Facts public API |
 | Weather widget | Your chosen city name and its coordinates | Open-Meteo (openweather-style forecast API, no account) |
 | Voice entry (cloud STT providers) | The recorded audio clip, only when you select Whisper / Gemini / Deepgram / AssemblyAI in Settings | Your configured STT provider. **Default voice input is on-device and sends nothing.** |

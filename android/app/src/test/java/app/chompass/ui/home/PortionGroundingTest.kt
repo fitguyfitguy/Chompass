@@ -119,6 +119,83 @@ class PortionGroundingTest {
     }
 
     @Test
+    fun pendingFoodAnalysisDraft_roundTripsProductMetadata() {
+        val draft = PendingFoodAnalysisDraft(
+            analysis = FoodAnalysis(
+                name = "Nutella",
+                calories = 80,
+                protein = 1.0,
+                carbs = 9.0,
+                fat = 4.5,
+                servingSizeGrams = 15.0,
+                productMetadata = app.chompass.models.FoodProductMetadata(
+                    barcode = "3017620422003",
+                    packageQuantity = "1000 g",
+                    ingredientsText = "Sugar, palm oil, hazelnuts",
+                    allergens = listOf("Milk"),
+                    traces = listOf("Nuts"),
+                    nutriScore = "E",
+                    novaGroup = 4,
+                    ecoScore = "D",
+                    labels = listOf("Organic"),
+                    categories = listOf("Spreads"),
+                    imageUrl = "https://images.openfoodfacts.org/images/products/301/762/042/2003/front_en.4.400.jpg",
+                ),
+            ),
+            source = FoodSource.BARCODE,
+        )
+        val encoded = json.encodeToString(PendingFoodAnalysisDraft.serializer(), draft)
+        val decoded = json.decodeFromString(PendingFoodAnalysisDraft.serializer(), encoded)
+        val meta = decoded.analysis.productMetadata!!
+        assertEquals("3017620422003", meta.barcode)
+        assertEquals("1000 g", meta.packageQuantity)
+        assertEquals(listOf("Milk"), meta.allergens)
+        assertEquals(listOf("Nuts"), meta.traces)
+        assertEquals("E", meta.nutriScore)
+        assertEquals(4, meta.novaGroup)
+        assertEquals("D", meta.ecoScore)
+        assertEquals(listOf("Organic"), meta.labels)
+        assertEquals(listOf("Spreads"), meta.categories)
+        assertTrue(meta.hasDisplayDetails)
+    }
+
+    @Test
+    fun analysis_decodesLegacyJsonWithoutProductMetadata() {
+        val legacy =
+            """{"name":"Oats","calories":150,"protein":5.0,"carbs":27.0,"fat":3.0,"servingSizeGrams":50.0}"""
+        val analysis = json.decodeFromString(FoodAnalysis.serializer(), legacy)
+        assertEquals("Oats", analysis.name)
+        assertNull(analysis.productMetadata)
+    }
+
+    @Test
+    fun foodEntry_roundTripsProductMetadata_andLegacyDecodesNull() {
+        val entry = app.chompass.models.FoodEntry(
+            name = "Nutella",
+            calories = 80,
+            protein = 1.0,
+            carbs = 9.0,
+            fat = 4.5,
+            source = FoodSource.BARCODE,
+            productMetadata = app.chompass.models.FoodProductMetadata(
+                barcode = "3017620422003",
+                nutriScore = "E",
+                novaGroup = 4,
+                imageUrl = "https://images.openfoodfacts.org/x.jpg",
+            ),
+        )
+        val encoded = json.encodeToString(app.chompass.models.FoodEntry.serializer(), entry)
+        val decoded = json.decodeFromString(app.chompass.models.FoodEntry.serializer(), encoded)
+        assertEquals("E", decoded.productMetadata!!.nutriScore)
+        assertEquals(4, decoded.productMetadata!!.novaGroup)
+
+        val legacy =
+            """{"id":"8f2e7d8e-5f8d-4d8e-9a67-30e14a72e001","name":"Oats","calories":150,"protein":5.0,"carbs":27.0,"fat":3.0,"timestamp":1785571200000,"source":"barcode"}"""
+        val legacyEntry = json.decodeFromString(app.chompass.models.FoodEntry.serializer(), legacy)
+        assertNull(legacyEntry.productMetadata)
+    }
+
+    @Test
     fun pendingFoodAnalysisDraft_decodesLegacyJsonWithoutTargetDate() {
         val before = LocalDate.now()
         val legacy = """{"analysis":{"name":"Oats","calories":200,"protein":7,"carbs":35,"fat":3,"servingSizeGrams":100},"imageFilename":null,"source":"textInput","createdAt":1720000000000}"""

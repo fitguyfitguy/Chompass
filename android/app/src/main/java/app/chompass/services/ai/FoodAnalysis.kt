@@ -168,6 +168,11 @@ data class FoodAnalysis(
      * When non-empty, grams/macros sum to the meal totals after reconcile.
      */
     val constituents: List<FoodConstituent> = emptyList(),
+    /**
+     * Optional barcode-product enrichment (Open Food Facts). Null on legacy
+     * records and every non-barcode path; display-only.
+     */
+    val productMetadata: app.chompass.models.FoodProductMetadata? = null,
 )
 
 /**
@@ -194,9 +199,9 @@ fun FoodAnalysis.toFoodEntry(
             servingUnitOptions = servingUnitOptions,
             selectedServingUnit = selectedServingUnit,
             selectedServingQuantity = selectedServingQuantity,
-            customNote = customNote,
             grounding = grounding,
             constituents = constituents,
+            productMetadata = productMetadata,
         )
     )
 

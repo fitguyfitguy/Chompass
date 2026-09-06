@@ -30,6 +30,9 @@ const GRAM_UNITS = new Set(["g", "gram", "grams"]);
 /** App-generated "serving" unit ids (OFF barcode lookup / AI fallback). */
 const SERVING_UNITS = new Set(["serving", "servings"]);
 
+/** App-generated "package" unit ids (OFF barcode package size). */
+const PACKAGE_UNITS = new Set(["package", "packages"]);
+
 /** @param {ServingUnitOption} option */
 export function normalizedUnit(option) {
   return String(option.unit ?? "")
@@ -75,9 +78,19 @@ export function culinaryUnitKey(optionOrId) {
  * @param {number|null|undefined} quantity
  * @param {string} [servingLabel] localized "serving" label (app-generated unit)
  * @param {string} [servingPluralLabel] localized plural form
+ * @param {string} [packageLabel] localized "package" label (OFF package size)
+ * @param {string} [packagePluralLabel] localized plural form
  * @param {Record<string, string[]>} [culinaryLabels] cup/tbsp/tsp labels
  */
-export function displayUnit(option, quantity, servingLabel, servingPluralLabel, culinaryLabels) {
+export function displayUnit(
+  option,
+  quantity,
+  servingLabel,
+  servingPluralLabel,
+  packageLabel,
+  packagePluralLabel,
+  culinaryLabels
+) {
   const id = normalizedUnit(option);
   const singular = quantity == null || Math.abs(quantity - 1.0) <= 0.0001;
   const culinaryKey = culinaryUnitKey(id);
@@ -89,6 +102,10 @@ export function displayUnit(option, quantity, servingLabel, servingPluralLabel, 
   // string is English, so the UI passes the localized label(s).
   if (SERVING_UNITS.has(id) && servingLabel) {
     return singular ? servingLabel : (servingPluralLabel || servingLabel);
+  }
+  // App-generated "package" option (OFF barcode package size): same treatment.
+  if (PACKAGE_UNITS.has(id) && packageLabel) {
+    return singular ? packageLabel : (packagePluralLabel || packageLabel);
   }
   if (singular) return option.unit;
   if (GRAM_UNITS.has(id) || id === "kg" || id === "mg" || id === "ml" || id === "l" || id === "oz" || id === "fl oz" || id === "tbsp" || id === "tsp") {

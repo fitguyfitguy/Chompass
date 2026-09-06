@@ -2,6 +2,7 @@ package app.chompass.services
 
 import app.chompass.data.PreferencesStore
 import app.chompass.models.FoodGroundingProvenance
+import app.chompass.models.FoodProductMetadata
 import app.chompass.models.NutrientBasis
 import app.chompass.models.NutrientSourceKind
 import app.chompass.models.ServingUnitOption
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import okhttp3.Call
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -22,11 +24,12 @@ import java.net.URLEncoder
 import java.util.Locale
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.math.abs
 import kotlin.math.round
 import kotlin.math.roundToInt
 
 object OpenFoodFactsService {
-    private const val FIELDS = "product_name,generic_name,brands,quantity,serving_size,serving_quantity,nutriments"
+    private const val FIELDS = "product_name,generic_name,brands,quantity,product_quantity,product_quantity_unit,serving_size,serving_quantity,nutriments,ingredients_text,allergens_tags,traces_tags,nutriscore_grade,nova_group,ecoscore_grade,labels_tags,categories_tags,image_front_url"
     private const val SEARCH_FIELDS =
         "code,product_name,generic_name,brands,serving_size,serving_quantity,nutriments"
     private const val USER_AGENT = "Chompass/Android (https://chompass.app)"
@@ -50,6 +53,8 @@ object OpenFoodFactsService {
 
     /** Backoff between barcode-lookup retries (multiplied by 2^attempt: 200, 400, 800 ms). */
     private const val LOOKUP_RETRY_BASE_DELAY_MS = 200L
+    /** Max bytes accepted for a downloaded OFF product photo. */
+    private const val MAX_PRODUCT_IMAGE_BYTES = 5_000_000L
 
     private const val NOT_FOUND_MESSAGE =
         "Product not found in Open Food Facts. Scan the nutrition label instead."
@@ -96,6 +101,28 @@ object OpenFoodFactsService {
             ?: throw LookupException("That barcode could not be read. Try scanning it again.")
 
         lookupByCode(code, prefs, client, baseUrl)
+    }
+
+    /** Barcode lookup outcome plus the best-effort OFF front photo (null when unavailable). */
+    data class LookupResult(
+        val analysis: FoodAnalysis,
+        val productImageBytes: ByteArray?,
+    )
+
+    /**
+     * Barcode lookup plus a best-effort download of the OFF front product
+     * photo. The photo download never fails the lookup: any problem (offline,
+     * non-OFF host, non-image body, oversize) yields null bytes and the caller
+     * falls back to the emoji hero.
+     */
+    suspend fun lookupWithImage(
+        barcode: String,
+        prefs: PreferencesStore,
+        client: OkHttpClient = FoodAnalysisService.defaultClient,
+        baseUrl: String = OFF_BASE_URL,
+    ): LookupResult = withContext(Dispatchers.IO) {
+        val analysis = lookup(barcode, prefs, client, baseUrl)
+        LookupResult(analysis, productImageBytes(analysis.productMetadata?.imageUrl, client))
     }
 
     /**
@@ -393,6 +420,26 @@ object OpenFoodFactsService {
         }
 
         val servingOption = ServingUnitOption(unit = "serving", gramsPerUnit = servingGrams, quantity = 1.0)
+        val packageGramsValue = packageGrams(product)
+        val servingOptions = buildList {
+            add(servingOption)
+            if (packageGramsValue != null && abs(packageGramsValue - servingGrams) > 0.01) {
+                add(ServingUnitOption(unit = "package", gramsPerUnit = packageGramsValue, quantity = 1.0))
+            }
+        }
+        val metadata = FoodProductMetadata(
+            barcode = barcode,
+            packageQuantity = product.string("quantity"),
+            ingredientsText = product.string("ingredients_text"),
+            allergens = displayTags(product.stringList("allergens_tags"), 16),
+            traces = displayTags(product.stringList("traces_tags"), 16),
+            nutriScore = normalizedScore(product.string("nutriscore_grade")),
+            novaGroup = product.flexibleInt("nova_group")?.takeIf { it in 1..4 },
+            ecoScore = normalizedScore(product.string("ecoscore_grade")),
+            labels = displayTags(product.stringList("labels_tags"), 12),
+            categories = displayTags(product.stringList("categories_tags"), 8),
+            imageUrl = product.string("image_front_url"),
+        )
         val name = productName(product, barcode)
         val validation = app.chompass.models.GroundingValidator.validateServing(
             analysisName = name,
@@ -440,7 +487,7 @@ object OpenFoodFactsService {
             folate = micrograms(servingValue("folates")),
             omega3 = rounded(servingValue("omega-3-fat")),
             caffeine = milligrams(servingValue("caffeine")),
-            servingUnitOptions = listOf(servingOption),
+            servingUnitOptions = servingOptions,
             selectedServingUnit = servingOption.unit,
             selectedServingQuantity = 1.0,
             grounding = FoodGroundingProvenance(
@@ -455,6 +502,7 @@ object OpenFoodFactsService {
                 identityConfirmed = true,
                 validationNotes = validation.notes,
             ),
+            productMetadata = metadata,
         )
     }
 
@@ -502,6 +550,107 @@ object OpenFoodFactsService {
             "ml" -> value
             "l" -> value * 1000.0
             else -> value
+        }
+    }
+
+    /**
+     * Best-effort OFF product-photo download for the barcode review sheet:
+     * single attempt, never throws, never retries. Only
+     * `https://images.openfoodfacts.org` is allowed (matches the OFF API's
+     * `image_front_url` host); anything else keeps the emoji fallback.
+     */
+    internal fun productImageBytes(urlString: String?, client: OkHttpClient): ByteArray? {
+        val url = urlString?.toHttpUrlOrNull() ?: return null
+        if (!url.isHttps || url.host != "images.openfoodfacts.org") return null
+        val request = Request.Builder()
+            .url(url)
+            .addHeader("User-Agent", USER_AGENT)
+            .addHeader("Accept", "image/*")
+            .build()
+        return try {
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) return@use null
+                if (response.body?.contentType()?.type != "image") return@use null
+                val declared = response.body?.contentLength() ?: -1L
+                if (declared > MAX_PRODUCT_IMAGE_BYTES) return@use null
+                val bytes = response.body?.bytes() ?: return@use null
+                if (bytes.size > MAX_PRODUCT_IMAGE_BYTES) null else bytes
+            }
+        } catch (_: IOException) {
+            null
+        }
+    }
+
+    /** Package size in grams from structured quantity, else a strict display-string parse. */
+    private fun packageGrams(product: JSONObject): Double? {
+        val structured = product.flexibleDouble("product_quantity")?.takeIf { it > 0 }
+        if (structured != null) {
+            val unit = product.string("product_quantity_unit")?.lowercase(Locale.US)
+            val grams = when (unit) {
+                "kg" -> structured * 1000.0
+                "mg" -> structured / 1000.0
+                "g", null -> structured
+                "l" -> structured * 1000.0
+                "ml" -> structured
+                else -> null
+            }
+            if (grams != null) return grams
+        }
+        val display = product.string("quantity") ?: return null
+        if (!Regex("""^[0-9]+(?:[.,][0-9]+)?\s*(?:kg|mg|g|oz|ml|l)$""", RegexOption.IGNORE_CASE).matches(display)) {
+            return null
+        }
+        return gramsFrom(display)
+    }
+
+    private fun JSONObject.string(key: String): String? =
+        optString(key).trim().takeIf { it.isNotEmpty() }
+
+    private fun JSONObject.stringList(key: String): List<String> {
+        val array = optJSONArray(key) ?: return emptyList()
+        return buildList {
+            for (i in 0 until array.length()) {
+                val value = array.optString(i).trim()
+                if (value.isNotEmpty()) add(value)
+            }
+        }
+    }
+
+    /** OFF tag ids (`en:milk`, `en:high-protein`) turned into display names. */
+    private fun displayTags(tags: List<String>, limit: Int): List<String> {
+        if (tags.isEmpty()) return emptyList()
+        val seen = mutableSetOf<String>()
+        val displayed = mutableListOf<String>()
+        for (tag in tags) {
+            val cleaned = tag
+                .replaceFirst(Regex("^[a-z]{2}:"), "")
+                .replace("-", " ")
+                .replace("_", " ")
+                .trim()
+            if (cleaned.isEmpty() || !seen.add(cleaned.lowercase(Locale.US))) continue
+            displayed.add(cleaned.replaceFirstChar { it.uppercase(Locale.US) })
+            if (displayed.size >= limit) break
+        }
+        return displayed
+    }
+
+    /** Nutri-/Eco-Score grade letter, or null for `unknown` / `not-applicable`. */
+    private fun normalizedScore(value: String?): String? {
+        val trimmed = value?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+        if (trimmed.equals("unknown", ignoreCase = true) ||
+            trimmed.equals("not-applicable", ignoreCase = true)
+        ) {
+            return null
+        }
+        return trimmed.uppercase(Locale.US)
+    }
+
+    private fun JSONObject.flexibleInt(key: String): Int? {
+        if (!has(key) || isNull(key)) return null
+        return when (val value = opt(key)) {
+            is Number -> value.toInt()
+            is String -> value.trim().replace(",", ".").toDoubleOrNull()?.toInt()
+            else -> null
         }
     }
 

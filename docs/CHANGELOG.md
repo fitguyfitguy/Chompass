@@ -5,6 +5,13 @@ All notable changes to Chompass are documented here.
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
 
+## [Unreleased]
+
+### Added
+
+- **Product photos and an info card for barcode foods** (Android + web): scanning a barcode now shows the product's front photo from Open Food Facts in the review sheet instead of the generic tag emoji, and a product information card lists the package size, ingredient list, Nutri-Score, NOVA group, Eco-Score, allergens, labels, and categories. When the package size is known, the serving picker also offers the whole package as a unit. A "Data & photo: Open Food Facts (CC BY-SA)" line credits the source and opens the product page. If a product has no photo, the tag emoji stays as before. The photo and card stay on your device: they are not included in exports or sync.
+
+
 ## [4.6.1] - 2026-09-06
 
 ### Fixed

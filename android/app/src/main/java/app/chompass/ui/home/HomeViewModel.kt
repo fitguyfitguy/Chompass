@@ -1741,8 +1741,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 )
             },
         ) { start ->
-            val analysis = OpenFoodFactsService.lookup(barcode, container.prefs)
-            savePendingDraft(analysis, imageBytes = null, source = FoodSource.BARCODE, generation = start.generation)
+            val lookup = OpenFoodFactsService.lookupWithImage(barcode, container.prefs)
+            savePendingDraft(
+                analysis = lookup.analysis,
+                imageBytes = lookup.productImageBytes,
+                source = FoodSource.BARCODE,
+                generation = start.generation,
+            )
         }
     }
 
@@ -1932,6 +1937,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                                 effectiveScale,
                             )
                         },
+                        productMetadata = analysis.productMetadata,
                     )
                 )
                 // Commit the diary row and clear the consumed pending draft in
@@ -2132,6 +2138,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                             customNote = analysis.customNote,
                             grounding = analysis.grounding,
                             recipeLogId = recipeLogId,
+                            productMetadata = analysis.productMetadata,
                         )
                     )
                 }
@@ -3214,6 +3221,7 @@ private fun FoodEntry.toAnalysis(): FoodAnalysis = MicronutrientValues.from(this
         customNote = customNote,
         grounding = grounding,
         constituents = constituents,
+        productMetadata = productMetadata,
     )
 )
 

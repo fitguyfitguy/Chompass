@@ -42,10 +42,10 @@ test("displayUnit_localizesAppGeneratedServingUnit", () => {
 
 test("displayUnit_localizesCulinaryUnits", () => {
   const labels = { cup: ["Tasse", "Tassen"], tbsp: ["EL", "EL"], tsp: ["TL", "TL"] };
-  assert.equal(displayUnit({ unit: "cup", gramsPerUnit: 240 }, 1, undefined, undefined, labels), "Tasse");
-  assert.equal(displayUnit({ unit: "cup", gramsPerUnit: 240 }, 2.1, undefined, undefined, labels), "Tassen");
-  assert.equal(displayUnit({ unit: "tblsp", gramsPerUnit: 15 }, 2, undefined, undefined, labels), "EL");
-  assert.equal(displayUnit({ unit: "teaspoon", gramsPerUnit: 5 }, 3, undefined, undefined, labels), "TL");
+  assert.equal(displayUnit({ unit: "cup", gramsPerUnit: 240 }, 1, undefined, undefined, undefined, undefined, labels), "Tasse");
+  assert.equal(displayUnit({ unit: "cup", gramsPerUnit: 240 }, 2.1, undefined, undefined, undefined, undefined, labels), "Tassen");
+  assert.equal(displayUnit({ unit: "tblsp", gramsPerUnit: 15 }, 2, undefined, undefined, undefined, undefined, labels), "EL");
+  assert.equal(displayUnit({ unit: "teaspoon", gramsPerUnit: 5 }, 3, undefined, undefined, undefined, undefined, labels), "TL");
   assert.equal(displayUnit({ unit: "cup", gramsPerUnit: 240 }, 2), "cups");
   assert.equal(culinaryUnitKey("tblsp"), "tbsp");
   assert.equal(culinaryUnitKey("slice"), null);
@@ -281,4 +281,31 @@ test("displayUnit_flOzPassesThroughAtNonOneQuantities", () => {
   const echo = entryServingEcho({ selectedServingUnit: "fl oz", selectedServingQuantity: 2, quantityG: 59.14, servingUnitOptions: [{ unit: "fl oz", gramsPerUnit: 29.57 }] });
   assert.equal(echo?.quantity, 2);
   assert.equal(displayUnit(echo.option, echo.quantity), "fl oz");
+});
+
+// App-generated "package" option (OFF barcode package size) — mirrors the
+// Android ServingUnitDisplayTest package cases.
+
+test("displayUnit_localizesAppGeneratedPackageUnit", () => {
+  const pkg = { unit: "package", gramsPerUnit: 500, quantity: 1 };
+  assert.equal(displayUnit(pkg, 1, undefined, undefined, "Packung", "Packungen"), "Packung");
+  assert.equal(displayUnit(pkg, 2, undefined, undefined, "Packung", "Packungen"), "Packungen");
+  assert.equal(displayUnit(pkg, 1.5, undefined, undefined, "Packung", "Packungen"), "Packungen");
+  assert.equal(displayUnit(pkg, null, undefined, undefined, "Packung", "Packungen"), "Packung");
+  // "packages" id maps too.
+  const packages = { unit: "packages", gramsPerUnit: 500 };
+  assert.equal(displayUnit(packages, 3, undefined, undefined, "Packung", "Packungen"), "Packungen");
+});
+
+test("displayUnit_packageFallsBackToRawEnglishPluralWithoutLabels", () => {
+  const pkg = { unit: "package", gramsPerUnit: 500 };
+  assert.equal(displayUnit(pkg, 1), "package");
+  assert.equal(displayUnit(pkg, 2), "packages");
+});
+
+test("displayUnit_packageLabelDoesNotLeakIntoOtherUnits", () => {
+  const slice = { unit: "slice", gramsPerUnit: 30 };
+  assert.equal(displayUnit(slice, 2, undefined, undefined, "Packung", "Packungen"), "slices");
+  const serving = { unit: "serving", gramsPerUnit: 250 };
+  assert.equal(displayUnit(serving, 2, undefined, undefined, "Packung", "Packungen"), "servings");
 });

@@ -52,6 +52,42 @@ import {
 import { escapeHtml, escapeAttr } from "../lib/ui/html.js";
 import { todayIso } from "../lib/date.js";
 
+/**
+ * Collapsible Open Food Facts product-information card for barcode entries
+ * (package size, scores, allergens, labels, ingredients + attribution).
+ * Rows mirror the Android FoodProductMetadataCard.
+ * @param {Record<string, any>} meta
+ */
+function offDetailsCard(meta) {
+  /** @param {string} key @param {string} value */
+  const row = (key, value) =>
+    `<div class="entry-off-row"><span>${escapeHtml(t(key))}</span><strong>${escapeHtml(value)}</strong></div>`;
+  const rows = [
+    meta.barcode ? row("product.barcode", String(meta.barcode)) : "",
+    meta.packageQuantity ? row("product.package", String(meta.packageQuantity)) : "",
+    meta.nutriScore ? row("product.nutriScore", String(meta.nutriScore)) : "",
+    meta.novaGroup != null ? row("product.novaGroup", String(meta.novaGroup)) : "",
+    meta.ecoScore ? row("product.ecoScore", String(meta.ecoScore)) : "",
+    meta.allergens?.length ? row("product.allergens", meta.allergens.join(", ")) : "",
+    meta.traces?.length ? row("product.mayContain", meta.traces.join(", ")) : "",
+    meta.labels?.length ? row("product.labels", meta.labels.join(", ")) : "",
+    meta.categories?.length ? row("product.categories", meta.categories.join(", ")) : "",
+  ].join("");
+  return `
+    <details class="micros-details entry-off-details">
+      <summary>${escapeHtml(t("product.information"))}</summary>
+      <div class="entry-off-card">
+        ${rows}
+        ${
+          meta.ingredientsText
+            ? `<div class="entry-off-ingredients"><span>${escapeHtml(t("product.ingredientLabel"))}</span><p>${escapeHtml(meta.ingredientsText)}</p></div>`
+            : ""
+        }
+        <a class="entry-off-attribution" href="https://world.openfoodfacts.org/product/${encodeURIComponent(String(meta.barcode ?? ""))}" target="_blank" rel="noopener noreferrer">${escapeHtml(t("product.attribution"))}</a>
+      </div>
+    </details>`;
+}
+
 const MICRO_FIELDS = [
   ["sugarG", "entry.micro.sugar_g"],
   ["addedSugarG", "entry.micro.added_sugar_g"],
@@ -297,6 +333,9 @@ export class EntryForm extends HTMLElement {
     // model; display the localized label(s) instead (unit.serving / _plural).
     const servingLabel = t("unit.serving");
     const servingPluralLabel = t("unit.serving_plural");
+    const packageLabel = t("unit.package");
+    const packagePluralLabel = t("unit.package_plural");
+    const offMeta = e.productMetadata ?? null;
 
     const numVal = (v, step = false) => {
       if (v == null || v === "") return "";
@@ -324,6 +363,12 @@ export class EntryForm extends HTMLElement {
               ? `<p class="entry-ai-note">${escapeHtml(String(e.note))}</p>`
               : ""
           }
+          ${
+            offMeta?.imageUrl
+              ? `<img class="entry-off-thumb" src="${escapeAttr(offMeta.imageUrl)}" alt="" loading="lazy" onerror="this.remove()">`
+              : ""
+          }
+          ${offMeta?.hasDisplayDetails ? offDetailsCard(offMeta) : ""}
         </section>
 
         <section class="entry-section entry-section--serving">
@@ -346,7 +391,7 @@ export class EntryForm extends HTMLElement {
                   ${picker
                     .map((opt) => {
                       const id = optionId(opt);
-                      const label = displayUnit(opt, id === this.selectedServingUnit ? qtyNum : null, servingLabel, servingPluralLabel, culinaryUnitLabels());
+                      const label = displayUnit(opt, id === this.selectedServingUnit ? qtyNum : null, servingLabel, servingPluralLabel, packageLabel, packagePluralLabel, culinaryUnitLabels());
                       return `<option value="${escapeAttr(id)}" ${id === this.selectedServingUnit ? "selected" : ""}>${escapeHtml(label)}</option>`;
                     })
                     .join("")}
@@ -558,6 +603,8 @@ export class EntryForm extends HTMLElement {
     // model; display the localized label(s) instead (unit.serving / _plural).
     const servingLabel = t("unit.serving");
     const servingPluralLabel = t("unit.serving_plural");
+    const packageLabel = t("unit.package");
+    const packagePluralLabel = t("unit.package_plural");
     return `
       <div class="entry-constituent-card" data-constituent-index="${index}">
         <div class="entry-constituent-card__head">
@@ -591,7 +638,7 @@ export class EntryForm extends HTMLElement {
                 ${picker
                   .map((opt) => {
                     const id = optionId(opt);
-                    const label = displayUnit(opt, id === unitId ? qty : null, servingLabel, servingPluralLabel, culinaryUnitLabels());
+                    const label = displayUnit(opt, id === unitId ? qty : null, servingLabel, servingPluralLabel, packageLabel, packagePluralLabel, culinaryUnitLabels());
                     return `<option value="${escapeAttr(id)}" ${id === unitId ? "selected" : ""}>${escapeHtml(label)}</option>`;
                   })
                   .join("")}
@@ -1158,7 +1205,7 @@ export class EntryForm extends HTMLElement {
       source: this.existing?.source ?? this.prefill?.source ?? "manual",
       note: fd.get("note") ? String(fd.get("note")) : this.prefill?.note ?? null,
       grounding: this.existing?.grounding ?? null,
-      recipeLogId: this.existing?.recipeLogId ?? null,
+      productMetadata: this.existing?.productMetadata ?? this.prefill?.productMetadata ?? null,
     };
     for (const key of ALL_MICRO_KEYS) {
       if (key === "fiberG") continue;

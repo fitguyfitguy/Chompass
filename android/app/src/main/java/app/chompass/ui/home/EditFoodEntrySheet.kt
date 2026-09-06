@@ -690,6 +690,10 @@ fun EditFoodEntrySheet(
                     },
                 )
             }
+            currentBaseEntry.productMetadata?.takeIf { it.hasDisplayDetails }?.let { metadata ->
+                item { SheetSectionHeader(stringResource(R.string.product_information)) }
+                item { FoodProductMetadataCard(metadata) }
+            }
 
             if (aiFeaturesEnabled) {
                 item { SheetSectionHeader(stringResource(R.string.edit_reprocess_section)) }

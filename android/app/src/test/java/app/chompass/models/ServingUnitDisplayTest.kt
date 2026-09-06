@@ -75,4 +75,42 @@ class ServingUnitDisplayTest {
         assertEquals("tsp", ServingUnitOption.culinaryUnitKey("teaspoons"))
         assertEquals(null, ServingUnitOption.culinaryUnitKey("slice"))
     }
+
+    // App-generated "package" option (OFF barcode package size): same
+    // localized-label treatment as "serving", distinct params.
+
+    @Test
+    fun displayUnit_localizesAppGeneratedPackageUnit() {
+        val pkg = ServingUnitOption(unit = "package", gramsPerUnit = 500.0, quantity = 1.0)
+        assertEquals("Packung", pkg.displayUnit(1.0, packageLabel = "Packung", packagePluralLabel = "Packungen"))
+        assertEquals("Packungen", pkg.displayUnit(2.0, packageLabel = "Packung", packagePluralLabel = "Packungen"))
+        assertEquals("Packungen", pkg.displayUnit(1.5, packageLabel = "Packung", packagePluralLabel = "Packungen"))
+        assertEquals("Packung", pkg.displayUnit(null, packageLabel = "Packung", packagePluralLabel = "Packungen"))
+    }
+
+    @Test
+    fun displayUnit_mapsPackagesIdToo() {
+        val packages = ServingUnitOption(unit = "packages", gramsPerUnit = 500.0)
+        assertEquals(
+            "Packungen",
+            packages.displayUnit(3.0, packageLabel = "Packung", packagePluralLabel = "Packungen"),
+        )
+    }
+
+    @Test
+    fun displayUnit_packageFallsBackToRawEnglishPluralWithoutLabels() {
+        val pkg = ServingUnitOption(unit = "package", gramsPerUnit = 500.0)
+        assertEquals("package", pkg.displayUnit(1.0))
+        assertEquals("packages", pkg.displayUnit(2.0))
+    }
+
+    @Test
+    fun displayUnit_packageLabelDoesNotLeakIntoServingOrOtherUnits() {
+        val slice = ServingUnitOption(unit = "slice", gramsPerUnit = 30.0)
+        assertEquals("slices", slice.displayUnit(2.0, packageLabel = "Packung", packagePluralLabel = "Packungen"))
+        assertEquals(
+            "servings",
+            serving.displayUnit(2.0, packageLabel = "Packung", packagePluralLabel = "Packungen"),
+        )
+    }
 }

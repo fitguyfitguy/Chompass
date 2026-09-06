@@ -39,6 +39,8 @@ data class ServingUnitOption(
         quantity: Double?,
         servingLabel: String? = null,
         servingPluralLabel: String? = null,
+        packageLabel: String? = null,
+        packagePluralLabel: String? = null,
         culinaryLabels: Map<String, Pair<String, String>> = emptyMap(),
     ): String {
         val singular = quantity == null || kotlin.math.abs(quantity - 1.0) <= 0.0001
@@ -53,6 +55,11 @@ data class ServingUnitOption(
         if (normalizedUnit in SERVING_UNITS && servingLabel != null) {
             return if (singular) servingLabel else (servingPluralLabel ?: servingLabel)
         }
+        // App-generated "package" option (OFF barcode package size): localized
+        // label(s) like the serving branch above.
+        if (normalizedUnit in PACKAGE_UNITS && packageLabel != null) {
+            return if (singular) packageLabel else (packagePluralLabel ?: packageLabel)
+        }
         if (singular) return unit
         return when (normalizedUnit) {
             "g", "gram", "grams", "kg", "mg", "ml", "l", "oz", "fl oz", "tbsp", "tsp" -> unit
@@ -64,6 +71,8 @@ data class ServingUnitOption(
     companion object {
         /** App-generated "serving" unit ids (OFF barcode lookup / AI fallback). */
         private val SERVING_UNITS = setOf("serving", "servings")
+        /** App-generated "package" unit ids (OFF barcode package size). */
+        private val PACKAGE_UNITS = setOf("package", "packages")
 
         /** Unit ids that mean plain grams. */
         private val GRAM_UNITS = setOf("g", "gram", "grams")
