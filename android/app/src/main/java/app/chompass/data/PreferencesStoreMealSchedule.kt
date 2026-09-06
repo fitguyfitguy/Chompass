@@ -1,5 +1,6 @@
 package app.chompass.data
 
+import android.util.Log
 import androidx.datastore.preferences.core.edit
 import app.chompass.models.MealCatalog
 import app.chompass.models.MealSchedule
@@ -7,6 +8,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.decodeFromString
+
+private const val TAG = "FudMealSchedule"
 
 internal fun PreferencesStore.parseMealCatalog(
     raw: String?,
@@ -17,7 +20,16 @@ internal fun PreferencesStore.parseMealCatalog(
 ): MealCatalog {
     if (!raw.isNullOrBlank()) {
         val parsed = runCatching { json.decodeFromString<MealCatalog>(raw) }.getOrNull()
-        if (parsed != null) return parsed.validatedOrDefault()
+        if (parsed == null) {
+            Log.w(TAG, "Meal catalog JSON failed to parse; falling back to legacy keys")
+        }
+        if (parsed != null) {
+            val validated = parsed.validatedOrDefault()
+            if (validated != parsed) {
+                Log.w(TAG, "Meal catalog failed validation on read (${parsed.validate()}); restoring defaults")
+            }
+            return validated
+        }
     }
     return MealCatalog.fromLegacySchedule(
         MealSchedule(
@@ -44,6 +56,9 @@ internal val PreferencesStore.mealScheduleImpl: Flow<MealSchedule> get() =
 
 internal suspend fun PreferencesStore.setMealCatalogImpl(catalog: MealCatalog) {
     val validated = catalog.validatedOrDefault()
+    if (validated != catalog) {
+        Log.w(TAG, "Meal catalog failed validation on save (${catalog.validate()}); storing defaults instead")
+    }
     val legacy = validated.toLegacySchedule()
     dataStore.edit {
         it[Keys.MEAL_CATALOG] = json.encodeToString(validated)
