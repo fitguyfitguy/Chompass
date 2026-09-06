@@ -1429,6 +1429,9 @@
     <string name="settings_meals_hidden">%1$s (oculta)</string>
     <string name="settings_meals_no_auto">Sin selección automática</string>
     <string name="settings_meals_save_error">Los horarios deben estar separados al menos 15 minutos y caber en un día.</string>
+    <string name="settings_meals_unsaved_title">¿Descartar los cambios de las comidas?</string>
+    <string name="settings_meals_unsaved_body">Los cambios se guardan con el botón Guardar de la parte inferior de la lista.</string>
+    <string name="action_keep_editing">Seguir editando</string>
     <string name="settings_meal_times">Horarios de comida</string>
     <string name="settings_meal_times_customize">Personalizar</string>
     <string name="settings_meal_times_description">Define cuándo la selección automática de comida cambia a la siguiente.</string>

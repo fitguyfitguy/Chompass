@@ -1585,6 +1585,9 @@
     <string name="settings_meals_hidden">%1$s (hidden)</string>
     <string name="settings_meals_no_auto">Not used for auto-guess</string>
     <string name="settings_meals_save_error">Times must be at least 15 minutes apart and fit within one day.</string>
+    <string name="settings_meals_unsaved_title">Discard your meal changes?</string>
+    <string name="settings_meals_unsaved_body">Changes are saved with the Save button at the bottom of the list.</string>
+    <string name="action_keep_editing">Keep editing</string>
     <string name="settings_meal_times">Meal times</string>
     <string name="settings_meal_times_customize">Customize</string>
     <string name="settings_meal_times_description">Set when automatic meal selection switches to the next meal.</string>

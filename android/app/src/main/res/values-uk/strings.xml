@@ -1886,6 +1886,9 @@ LBM = вага × (1 − %жиру)</string>
     <string name="settings_meals_hidden">%1$s (сховано)</string>
     <string name="settings_meals_no_auto">Без автовибору</string>
     <string name="settings_meals_save_error">Час має відрізнятися щонайменше на 15 хвилин і вміщатися в одну добу.</string>
+    <string name="settings_meals_unsaved_title">Скасувати зміни в прийомах їжі?</string>
+    <string name="settings_meals_unsaved_body">Зміни зберігаються кнопкою «Зберегти» внизу списку.</string>
+    <string name="action_keep_editing">Продовжити редагування</string>
   <string name="recovered_review_chip">Відновлений аналіз: %1$s</string>
   <string name="cd_discard_recovered_review">Відхилити відновлений аналіз</string>
 </resources>

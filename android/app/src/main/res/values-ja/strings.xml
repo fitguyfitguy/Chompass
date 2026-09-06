@@ -1958,6 +1958,9 @@
     <string name="settings_meals_hidden">%1$s（非表示）</string>
     <string name="settings_meals_no_auto">自動推定なし</string>
     <string name="settings_meals_save_error">時刻は15分以上空けて、1日の範囲内に収めてください。</string>
+    <string name="settings_meals_unsaved_title">食事の変更を破棄しますか？</string>
+    <string name="settings_meals_unsaved_body">変更は一覧下部の「保存」ボタンで保存されます。</string>
+    <string name="action_keep_editing">編集を続ける</string>
   <string name="recovered_review_chip">復元した解析: %1$s</string>
   <string name="cd_discard_recovered_review">復元した解析を破棄</string>
 </resources>

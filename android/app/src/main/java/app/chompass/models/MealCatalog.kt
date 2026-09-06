@@ -92,12 +92,18 @@ data class MealCatalog(
     fun toLegacySchedule(): MealSchedule {
         fun start(id: String, fallback: Int): Int =
             def(id)?.startMinutes ?: fallback
+        // Lossy projection for the legacy four-slot view: custom meals are
+        // dropped and missing/disabled builtins fall back to default starts.
+        // Deliberately NOT re-validated — the fixed B→L→D→S order can fail
+        // on valid catalogs (e.g. disabled Snack injecting the default 21:00
+        // next to a 21:00 Dinner), which used to silently Default the
+        // projection (#88).
         return MealSchedule(
             breakfastStartMinutes = start(MealType.BREAKFAST.id, MealSchedule.DEFAULT_BREAKFAST_START),
             lunchStartMinutes = start(MealType.LUNCH.id, MealSchedule.DEFAULT_LUNCH_START),
             dinnerStartMinutes = start(MealType.DINNER.id, MealSchedule.DEFAULT_DINNER_START),
             snackStartMinutes = start(MealType.SNACK.id, MealSchedule.DEFAULT_SNACK_START),
-        ).validatedOrDefault()
+        )
     }
 
     fun withLabel(id: String, label: String): MealCatalog =

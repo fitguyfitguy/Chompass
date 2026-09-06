@@ -1964,6 +1964,9 @@
     <string name="settings_meals_hidden">%1$s (مخفية)</string>
     <string name="settings_meals_no_auto">بدون تخمين تلقائي</string>
     <string name="settings_meals_save_error">يجب أن تكون الأوقات متباعدة 15 دقيقة على الأقل وأن تتسع في يوم واحد.</string>
+    <string name="settings_meals_unsaved_title">هل تريد تجاهل تغييرات الوجبات؟</string>
+    <string name="settings_meals_unsaved_body">تُحفظ التغييرات عبر زر حفظ أسفل القائمة.</string>
+    <string name="action_keep_editing">متابعة التحرير</string>
   <string name="recovered_review_chip">تحليل مستعاد: %1$s</string>
   <string name="cd_discard_recovered_review">تجاهل التحليل المستعاد</string>
 </resources>

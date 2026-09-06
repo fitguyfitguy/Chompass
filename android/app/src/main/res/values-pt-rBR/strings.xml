@@ -1958,6 +1958,9 @@ macros reequilibradas ao novo total calórico</string>
     <string name="settings_meals_hidden">%1$s (oculta)</string>
     <string name="settings_meals_no_auto">Sem escolha automática</string>
     <string name="settings_meals_save_error">Os horários devem ter pelo menos 15 minutos de diferença e caber em um dia.</string>
+    <string name="settings_meals_unsaved_title">Descartar suas alterações nas refeições?</string>
+    <string name="settings_meals_unsaved_body">As alterações são salvas com o botão Salvar na parte inferior da lista.</string>
+    <string name="action_keep_editing">Continuar editando</string>
   <string name="recovered_review_chip">Análise recuperada: %1$s</string>
   <string name="cd_discard_recovered_review">Descartar análise recuperada</string>
 </resources>

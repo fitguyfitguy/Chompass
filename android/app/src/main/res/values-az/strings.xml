@@ -1959,6 +1959,9 @@ makrolar yeni kalori cəminə uyğun yenidən tarazlaşdırılır</string>
     <string name="settings_meals_hidden">%1$s (gizli)</string>
     <string name="settings_meals_no_auto">Avto seçim yoxdur</string>
     <string name="settings_meals_save_error">Vaxtlar ən azı 15 dəqiqə fərqli olmalı və bir günə sığmalıdır.</string>
+    <string name="settings_meals_unsaved_title">Yemək dəyişiklikləri ləğv edilsin?</string>
+    <string name="settings_meals_unsaved_body">Dəyişikliklər siyahının altındakı Yadda Saxla düyməsi ilə saxlanılır.</string>
+    <string name="action_keep_editing">Redaktəyə davam et</string>
   <string name="recovered_review_chip">Bərpa olunmuş analiz: %1$s</string>
   <string name="cd_discard_recovered_review">Bərpa olunmuş analizi ləğv et</string>
 </resources>
