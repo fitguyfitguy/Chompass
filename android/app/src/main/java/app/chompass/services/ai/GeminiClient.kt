@@ -32,6 +32,14 @@ object GeminiClient {
         return if (tools.length() > 0) tools else null
     }
 
+    /**
+     * Gemini 3 rejects requests that combine google_search with
+     * functionDeclarations unless the client opts into server-side tool
+     * invocations (#90). Harmless on Gemini 2.5 and older.
+     */
+    internal fun serverSideToolConfig(): JSONObject =
+        JSONObject().put("includeServerSideToolInvocations", true)
+
     suspend fun analyze(
         client: OkHttpClient,
         baseUrl: String,
