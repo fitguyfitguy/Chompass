@@ -189,11 +189,19 @@ fun FoodResultSheet(
     val listState = rememberLazyListState()
     var name by remember { mutableStateOf(effectiveAnalysis.name) }
     // The entry's recorded serving, if any: null means macros are absolute
-    // portion totals and weight edits must not scale them (Codeberg #10 follow-up).
-    val recordedServing = effectiveAnalysis.servingSizeGrams
+    // portion totals and weight edits must not scale them (Codeberg #10
+    // follow-up). Serving-less entries that still carry a unit quantity get a
+    // derived portion base so amount edits scale (Codeberg #89).
+    val recordedServing = ServingUnitOption.recordedPortionGrams(
+        recordedServingGrams = effectiveAnalysis.servingSizeGrams,
+        selectedUnit = effectiveAnalysis.selectedServingUnit,
+        selectedQuantity = effectiveAnalysis.selectedServingQuantity,
+        options = effectiveAnalysis.servingUnitOptions,
+    )
+    val entryBaseServing = recordedServing ?: 100.0
     // var so per-entry serving edits (custom unit name / grams) persist to save.
     var servingUnitOptions by remember(effectiveAnalysis.servingUnitOptions, effectiveAnalysis.servingSizeGrams) {
-        mutableStateOf(ServingUnitOption.normalizedOptions(effectiveAnalysis.servingUnitOptions, effectiveAnalysis.servingSizeGrams ?: 100.0))
+        mutableStateOf(ServingUnitOption.normalizedOptions(effectiveAnalysis.servingUnitOptions, entryBaseServing))
     }
     val initialServingUnit = if (preferGramsByDefault) {
         ServingUnitOption.grams.unit
@@ -210,8 +218,8 @@ fun FoodResultSheet(
     var selectedServingUnitId by remember(effectiveAnalysis, preferGramsByDefault) {
         mutableStateOf(ServingUnitOption.initialUnitId(initialServingUnit, servingUnitOptions))
     }
-    var servingGrams by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.servingSizeGrams ?: 100.0) }
-    var baseServingGrams by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.servingSizeGrams ?: 100.0) }
+    var servingGrams by remember(effectiveAnalysis) { mutableStateOf(entryBaseServing) }
+    var baseServingGrams by remember(effectiveAnalysis) { mutableStateOf(entryBaseServing) }
     // True once the user changed the serving (weight/quantity): on an entry
     // without a recorded serving the corrected weight then records as the new
     // serving without scaling macros (Codeberg #10 follow-up).
@@ -223,7 +231,7 @@ fun FoodResultSheet(
     var servingQuantityText by remember(effectiveAnalysis, servingUnitOptions, preferGramsByDefault) {
         mutableStateOf(
             ServingUnitOption.initialQuantityText(
-                totalGrams = effectiveAnalysis.servingSizeGrams ?: 100.0,
+                totalGrams = entryBaseServing,
                 selectedUnitId = selectedServingUnitId,
                 selectedQuantity = effectiveAnalysis.selectedServingQuantity,
                 options = servingUnitOptions
@@ -303,7 +311,7 @@ fun FoodResultSheet(
         if (!inferringUnits && effectiveAnalysis.servingUnitOptions.isNotEmpty()) {
             val options = ServingUnitOption.normalizedOptions(
                 effectiveAnalysis.servingUnitOptions,
-                effectiveAnalysis.servingSizeGrams ?: 100.0,
+                entryBaseServing,
             )
             if (selectedServingUnitId !in options.map { it.id }) {
                 selectedServingUnitId = ServingUnitOption.initialUnitId(effectiveAnalysis.selectedServingUnit, options)
