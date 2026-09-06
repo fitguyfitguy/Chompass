@@ -609,6 +609,8 @@ internal fun FoodRow(
                         qty,
                         stringResource(R.string.unit_serving),
                         stringResource(R.string.unit_serving_plural),
+                        stringResource(R.string.unit_package),
+                        stringResource(R.string.unit_package_plural),
                         culinaryUnitLabels(),
                     )
                 } ?: entry.servingSizeGrams?.takeIf { it > 0 }?.let { gramsText(it) }

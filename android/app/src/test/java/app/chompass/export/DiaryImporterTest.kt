@@ -260,6 +260,12 @@ class DiaryImporterTest {
                     omega3 = 1.8,
                 ),
             ),
+            // Display-only OFF enrichment: never serialized into the export.
+            productMetadata = app.chompass.models.FoodProductMetadata(
+                barcode = "9339687206605",
+                nutriScore = "A",
+                novaGroup = 2,
+            ),
         )
         val exported = DiaryExporter.build(
             entries = listOf(original),
@@ -271,6 +277,7 @@ class DiaryImporterTest {
         ) ?: error("expected export")
 
         assertTrue(exported.second.contains("\"format_version\": \"1.5\""))
+        assertTrue(!exported.second.contains("productMetadata"))
         val imported = DiaryImporter.parse(exported.second, ZoneId.systemDefault())
         assertTrue(imported is DiaryImportResult.Success)
         val entry = (imported as DiaryImportResult.Success).entries.single()

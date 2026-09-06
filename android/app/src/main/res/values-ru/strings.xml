@@ -47,6 +47,20 @@
     <string name="unit_kg">кг</string>
     <string name="unit_serving">порция</string>
     <string name="unit_serving_plural">порции</string>
+    <string name="unit_package">упаковка</string>
+    <string name="unit_package_plural">упаковки</string>
+    <string name="product_information">Информация о продукте</string>
+    <string name="product_barcode">Штрихкод</string>
+    <string name="product_package">Упаковка</string>
+    <string name="product_nutri_score">Nutri-Score</string>
+    <string name="product_nova_group">Группа NOVA</string>
+    <string name="product_eco_score">Eco-Score</string>
+    <string name="product_allergens">Аллергены</string>
+    <string name="product_may_contain">Может содержать</string>
+    <string name="product_labels">Метки</string>
+    <string name="product_categories">Категории</string>
+    <string name="product_ingredient_label">Состав</string>
+    <string name="off_attribution">Данные и фото: Open Food Facts (CC BY-SA)</string>
 
     <string name="unit_cup">чашка</string>
 

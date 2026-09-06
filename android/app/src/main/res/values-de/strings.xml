@@ -107,6 +107,20 @@
     <string name="unit_serving">Portion</string>
 
     <string name="unit_serving_plural">Portionen</string>
+    <string name="unit_package">Packung</string>
+    <string name="unit_package_plural">Packungen</string>
+    <string name="product_information">Produktinformationen</string>
+    <string name="product_barcode">Barcode</string>
+    <string name="product_package">Packung</string>
+    <string name="product_nutri_score">Nutri-Score</string>
+    <string name="product_nova_group">NOVA-Gruppe</string>
+    <string name="product_eco_score">Eco-Score</string>
+    <string name="product_allergens">Allergene</string>
+    <string name="product_may_contain">Kann enthalten</string>
+    <string name="product_labels">Labels</string>
+    <string name="product_categories">Kategorien</string>
+    <string name="product_ingredient_label">Zutatenliste</string>
+    <string name="off_attribution">Daten &amp; Foto: Open Food Facts (CC BY-SA)</string>
 
     <string name="unit_cup">Cup</string>
 

@@ -978,12 +978,23 @@ fun UnitWheelPicker(
     }
     val servingLabel = stringResource(R.string.unit_serving)
     val servingPluralLabel = stringResource(R.string.unit_serving_plural)
+    val packageLabel = stringResource(R.string.unit_package)
+    val packagePluralLabel = stringResource(R.string.unit_package_plural)
     val culinaryLabels = culinaryUnitLabels()
     WheelPicker(
         items = pickerOptions,
         selected = selectedOption,
         onSelect = { onSelect(it.id) },
-        label = { it.displayUnit(null, servingLabel, servingPluralLabel, culinaryLabels) },
+        label = {
+            it.displayUnit(
+                null,
+                servingLabel,
+                servingPluralLabel,
+                packageLabel,
+                packagePluralLabel,
+                culinaryLabels,
+            )
+        },
         modifier = modifier,
         showSelectionHighlight = showSelectionHighlight,
     )

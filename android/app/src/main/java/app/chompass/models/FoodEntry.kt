@@ -61,6 +61,11 @@ data class FoodEntry(
      * When non-empty, grams/macros sum to the meal totals.
      */
     val constituents: List<FoodConstituent> = emptyList(),
+    /**
+     * Optional barcode-product enrichment (Open Food Facts photo/metadata card).
+     * Display-only: never serialized into diary export / sync / meal-share.
+     */
+    val productMetadata: FoodProductMetadata? = null,
 ) {
     /**
      * Stable identity for Favorites / Frequent / Recents dedup.
@@ -124,5 +129,6 @@ data class FoodEntry(
         customNote = customNote,
         grounding = grounding,
         constituents = constituents,
+        productMetadata = productMetadata,
     )
 }

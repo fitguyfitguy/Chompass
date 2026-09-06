@@ -408,6 +408,8 @@ private fun ProgressiveIngredientRow(
                     qty,
                     stringResource(R.string.unit_serving),
                     stringResource(R.string.unit_serving_plural),
+                    stringResource(R.string.unit_package),
+                    stringResource(R.string.unit_package_plural),
                     culinaryUnitLabels(),
                 )
             } ?: gramsText((analysis.servingSizeGrams ?: 0.0).roundToIntSafe().toDouble())

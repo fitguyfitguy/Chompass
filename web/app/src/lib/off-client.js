@@ -14,7 +14,7 @@ import { normalizeBarcodeCode } from "./chompass-core/barcode-code.js";
 export async function lookupBarcode(barcode) {
   const code = normalizeBarcodeCode(barcode);
   if (!code) return null;
-  const fields = "product_name,generic_name,brands,quantity,serving_size,serving_quantity,nutriments";
+  const fields = "product_name,generic_name,brands,quantity,product_quantity,product_quantity_unit,serving_size,serving_quantity,nutriments,ingredients_text,allergens_tags,traces_tags,nutriscore_grade,nova_group,ecoscore_grade,labels_tags,categories_tags,image_front_url";
   const res = await fetch(
     `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json?fields=${fields}`
   );
@@ -71,6 +71,13 @@ export function mapProduct(product, barcode) {
     servingGrams > 1
       ? [{ unit: "serving", gramsPerUnit: servingGrams, quantity: 1 }]
       : [];
+  // OFF package size (structured quantity beats the display string): offered
+  // as a second unit only when it differs from the serving (mirrors Android).
+  const pkgGrams = packageGrams(product);
+  const packageOpt =
+    pkgGrams != null && Math.abs(pkgGrams - servingGrams) > 0.01
+      ? [{ unit: "package", gramsPerUnit: pkgGrams, quantity: 1 }]
+      : [];
   const units = ensureServingUnits({
     name,
     quantityG,
@@ -78,9 +85,9 @@ export function mapProduct(product, barcode) {
     selectedServingUnit: servingGrams > 1 ? "serving" : null,
     selectedServingQuantity: servingGrams > 1 ? 1 : null,
   });
-  // Merge OFF serving with name heuristics (slice/ml/etc.)
+  // Merge OFF serving + package with name heuristics (slice/ml/etc.)
   units.servingUnitOptions = normalizedOptions(
-    [...servingOpt, ...heuristicOptions(name, quantityG), ...units.servingUnitOptions],
+    [...servingOpt, ...packageOpt, ...heuristicOptions(name, quantityG), ...units.servingUnitOptions],
     quantityG
   );
   if (servingGrams > 1) {
@@ -122,6 +129,7 @@ export function mapProduct(product, barcode) {
     omega3G: round1(servingValue("omega-3-fat")),
     caffeineMg: round1(servingValue("caffeine")),
     note: `Open Food Facts · barcode ${barcode} · values for ${Math.round(servingGrams)}g serving; adjust if needed`,
+    productMetadata: buildProductMetadata(product, barcode),
     source: "barcode",
   };
 }
@@ -163,4 +171,115 @@ function firstNonEmpty(...parts) {
     if (s) return s;
   }
   return null;
+}
+
+/**
+ * Display-only product enrichment (mirrors Android FoodProductMetadata):
+ * package size, scores, allergens, labels, ingredients and the front photo URL.
+ * @param {Record<string, any>} product
+ * @param {string} barcode
+ */
+function buildProductMetadata(product, barcode) {
+  const meta = {
+    barcode,
+    packageQuantity: nonEmptyString(product.quantity),
+    ingredientsText: nonEmptyString(product.ingredients_text),
+    allergens: displayTags(product.allergens_tags, 16),
+    traces: displayTags(product.traces_tags, 16),
+    nutriScore: normalizedScore(product.nutriscore_grade),
+    novaGroup: normalizedNovaGroup(product.nova_group),
+    ecoScore: normalizedScore(product.ecoscore_grade),
+    labels: displayTags(product.labels_tags, 12),
+    categories: displayTags(product.categories_tags, 8),
+    imageUrl: nonEmptyString(product.image_front_url),
+  };
+  meta.hasDisplayDetails =
+    Boolean(barcode) ||
+    meta.packageQuantity != null ||
+    meta.ingredientsText != null ||
+    meta.allergens.length > 0 ||
+    meta.traces.length > 0 ||
+    meta.nutriScore != null ||
+    meta.novaGroup != null ||
+    meta.ecoScore != null ||
+    meta.labels.length > 0 ||
+    meta.categories.length > 0;
+  return meta;
+}
+
+/** OFF tag ids (`en:milk`) turned into display names, deduped + titlecased. */
+/** @param {unknown} tags @param {number} limit */
+function displayTags(tags, limit) {
+  if (!Array.isArray(tags)) return [];
+  const seen = new Set();
+  const out = [];
+  for (const raw of tags) {
+    const cleaned = String(raw).replace(/^[a-z]{2}:/, "").replace(/[-_]/g, " ").trim();
+    if (!cleaned) continue;
+    const key = cleaned.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(cleaned.charAt(0).toUpperCase() + cleaned.slice(1));
+    if (out.length >= limit) break;
+  }
+  return out;
+}
+
+/** Nutri-/Eco-Score grade letter; null for `unknown` / `not-applicable`. */
+/** @param {unknown} v */
+function normalizedScore(v) {
+  const s = nonEmptyString(v);
+  if (s == null) return null;
+  const lower = s.toLowerCase();
+  if (lower === "unknown" || lower === "not-applicable") return null;
+  return s.toUpperCase();
+}
+
+/** @param {unknown} v */
+function normalizedNovaGroup(v) {
+  const n = flexibleNumber(v);
+  if (n == null) return null;
+  const i = Math.round(n);
+  return i >= 1 && i <= 4 ? i : null;
+}
+
+/** Package size in grams: structured quantity, else a strict display-string parse. */
+/** @param {Record<string, any>} product */
+function packageGrams(product) {
+  const structured = flexibleNumber(product.product_quantity);
+  if (structured != null && structured > 0) {
+    const unit = nonEmptyString(product.product_quantity_unit)?.toLowerCase() ?? null;
+    if (unit === "kg") return structured * 1000;
+    if (unit === "mg") return structured / 1000;
+    if (unit === "g" || unit == null) return structured;
+    if (unit === "l") return structured * 1000;
+    if (unit === "ml") return structured;
+  }
+  const display = nonEmptyString(product.quantity);
+  if (display == null) return null;
+  const m = display.match(/^([0-9]+(?:[.,][0-9]+)?)\s*(kg|mg|g|oz|ml|l)$/i);
+  if (!m) return null;
+  const value = flexibleNumber(m[1]);
+  if (value == null) return null;
+  switch (m[2].toLowerCase()) {
+    case "kg":
+      return value * 1000;
+    case "mg":
+      return value / 1000;
+    case "oz":
+      return value * 28.3495;
+    case "ml":
+      return value;
+    case "l":
+      return value * 1000;
+    default:
+      return value;
+  }
+}
+
+/** @param {unknown} v */
+function nonEmptyString(v) {
+  if (v == null) return null;
+  const s = String(v).trim();
+  return s ? s : null;
 }

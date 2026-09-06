@@ -212,3 +212,102 @@ test("offMapProduct_fallsBackToCarbohydratesTotal", () => {
   assert.equal(mapped.fatG, 3);
   assert.equal(mapped.quantityG, 45);
 });
+
+// OFF productMetadata (photo + metadata card parity with Android).
+
+test("offMapProduct_buildsProductMetadata", () => {
+  const mapped = mapProduct(
+    {
+      product_name: "Spirals",
+      quantity: "250 g",
+      product_quantity: 250,
+      product_quantity_unit: "g",
+      serving_quantity: 100,
+      ingredients_text: "Durum wheat semolina.",
+      allergens_tags: ["en:milk"],
+      traces_tags: ["en:nuts"],
+      nutriscore_grade: "a",
+      nova_group: 2,
+      ecoscore_grade: "b",
+      labels_tags: ["en:organic"],
+      categories_tags: ["en:cereals"],
+      image_front_url: "https://images.openfoodfacts.org/x.jpg",
+      nutriments: { "energy-kcal_100g": 356, proteins_100g: 12, carbohydrates_100g: 70, fat_100g: 2 },
+    },
+    "9339687206605"
+  );
+  assert.ok(mapped);
+  const meta = mapped.productMetadata;
+  assert.equal(meta.barcode, "9339687206605");
+  assert.equal(meta.packageQuantity, "250 g");
+  assert.equal(meta.ingredientsText, "Durum wheat semolina.");
+  assert.deepEqual(meta.allergens, ["Milk"]);
+  assert.deepEqual(meta.traces, ["Nuts"]);
+  assert.equal(meta.nutriScore, "A");
+  assert.equal(meta.novaGroup, 2);
+  assert.equal(meta.ecoScore, "B");
+  assert.deepEqual(meta.labels, ["Organic"]);
+  assert.deepEqual(meta.categories, ["Cereals"]);
+  assert.equal(meta.imageUrl, "https://images.openfoodfacts.org/x.jpg");
+  assert.ok(meta.hasDisplayDetails);
+});
+
+test("offMapProduct_addsPackageUnitOption", () => {
+  const mapped = mapProduct(
+    {
+      product_name: "Spirals",
+      quantity: "250 g",
+      product_quantity: 250,
+      product_quantity_unit: "g",
+      serving_quantity: 100,
+      nutriments: { "energy-kcal_100g": 356, proteins_100g: 12, carbohydrates_100g: 70, fat_100g: 2 },
+    },
+    "9339687206605"
+  );
+  assert.ok(mapped);
+  const units = mapped.servingUnitOptions.map((o) => o.unit);
+  assert.ok(units.includes("serving"));
+  assert.ok(units.includes("package"));
+  const pkg = mapped.servingUnitOptions.find((o) => o.unit === "package");
+  assert.equal(pkg.gramsPerUnit, 250);
+  assert.equal(mapped.selectedServingUnit, "serving");
+});
+
+test("offMapProduct_skipsPackageOptionWhenEqualToServing", () => {
+  const mapped = mapProduct(
+    {
+      product_name: "Cereal bar",
+      product_quantity: 100,
+      product_quantity_unit: "g",
+      serving_quantity: 100,
+      nutriments: { "energy-kcal_100g": 100, proteins_100g: 3, carbohydrates_100g: 20, fat_100g: 2 },
+    },
+    "123"
+  );
+  assert.ok(mapped);
+  assert.ok(!mapped.servingUnitOptions.some((o) => o.unit === "package"));
+});
+
+test("offMapProduct_normalizesScoresAndClampsNova", () => {
+  const mapped = mapProduct(
+    {
+      product_name: "Bar",
+      quantity: "330 ml",
+      serving_quantity: 100,
+      nutriscore_grade: "unknown",
+      ecoscore_grade: "not-applicable",
+      nova_group: 7,
+      nutriments: { "energy-kcal_100g": 10, proteins_100g: 1, carbohydrates_100g: 2, fat_100g: 3 },
+    },
+    "123"
+  );
+  assert.ok(mapped);
+  const meta = mapped.productMetadata;
+  assert.equal(meta.nutriScore, null);
+  assert.equal(meta.ecoScore, null);
+  assert.equal(meta.novaGroup, null);
+  // 330 ml display quantity parses through the strict fallback.
+  const pkg = mapped.servingUnitOptions.find((o) => o.unit === "package");
+  assert.ok(pkg);
+  assert.equal(pkg.gramsPerUnit, 330);
+});

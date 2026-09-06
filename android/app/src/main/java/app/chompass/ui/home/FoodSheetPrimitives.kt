@@ -352,11 +352,15 @@ internal fun ServingQuantityCard(
     // model; display the localized label(s) instead (unit_serving / _plural).
     val servingLabel = stringResource(R.string.unit_serving)
     val servingPluralLabel = stringResource(R.string.unit_serving_plural)
+    val packageLabel = stringResource(R.string.unit_package)
+    val packagePluralLabel = stringResource(R.string.unit_package_plural)
     val culinaryLabels = culinaryUnitLabels()
     val selectedUnitLabel = selectedOption.displayUnit(
         parsedQuantity,
         servingLabel,
         servingPluralLabel,
+        packageLabel,
+        packagePluralLabel,
         culinaryLabels,
     )
     val focusManager = LocalFocusManager.current

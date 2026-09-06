@@ -137,10 +137,12 @@ export async function catalogDiff(localeId) {
   const extra = [...keys].filter((k) => !base.has(k));
   // Phrase-level verbatim English copies: identical to EN and likely untranslated.
   // Single words (loanwords), formats, URLs, and unit-like strings are allowed.
+  // Proper nouns kept verbatim in every locale (official score names).
+  const PROPER_NOUN_VALUES = new Set(["Nutri-Score", "Eco-Score"]);
   const copies = [...keys].filter((k) => {
     const v = cat[k];
     if (typeof v !== "string" || v !== base.get(k)) return false;
-    if (!v || v.includes("{") || v.includes("%") || v.includes("/") || v.startsWith("http")) return false;
+    if (!v || PROPER_NOUN_VALUES.has(v) || v.includes("{") || v.includes("%") || v.includes("/") || v.startsWith("http")) return false;
     const words = v.match(/[A-Za-z]{3,}/g) || [];
     return words.length >= 2;
   });

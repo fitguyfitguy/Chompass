@@ -6,7 +6,7 @@ Chompass is forked from [Fud AI](https://github.com/aopv/fud-ai) by Apoorv Darsh
 
 ## Barcode nutrition
 
-Barcode product lookups are powered by the [Open Food Facts](https://world.openfoodfacts.org) database, queried live via its public API. Open Food Facts data is available under the [Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/). Chompass does not bundle the database: nutrition facts are fetched per scanned barcode. The Add Food **Search food** sheet also queries Open Food Facts live by product/brand search string (same ODbL terms, query only: never diary data).
+Barcode product lookups are powered by the [Open Food Facts](https://world.openfoodfacts.org) database, queried live via its public API. Open Food Facts data is available under the [Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/). Chompass does not bundle the database: nutrition facts are fetched per scanned barcode. The Add Food **Search food** sheet also queries Open Food Facts live by product/brand search string (same ODbL terms, query only: never diary data). Product photos shown in the barcode review sheet are fetched per barcode from Open Food Facts' image CDN (`images.openfoodfacts.org`) and are CC BY-SA 3.0; Chompass displays them privately on your device with in-app attribution (the "Data & photo: Open Food Facts" line links to the product page) and never redistributes them.
 
 ## Food databases (offline search)
 
