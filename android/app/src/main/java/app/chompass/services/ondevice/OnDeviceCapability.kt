@@ -28,8 +28,24 @@ object OnDeviceCapability {
     /** E4B floor ≈ "8 GB marketed" — the class that validated E4B (Pixel 9a). */
     private const val E4B_MIN_RAM_BYTES = 7L * 1024 * 1024 * 1024
 
-    /** Fixed headroom required on top of the model file size before starting a vision call. */
-    private const val VISION_MEMORY_HEADROOM_BYTES = 1_500L * 1024 * 1024
+    /**
+     * Headroom required on top of the model file size before starting a vision
+     * call, scaled to the device's usable RAM: 10% of [ActivityManager.MemoryInfo.totalMem],
+     * clamped to [VISION_HEADROOM_MIN_BYTES]…[VISION_HEADROOM_MAX_BYTES].
+     *
+     * The old fixed 1.5 GiB was sized against 6 GB phones and blocked everyday
+     * 8 GB use: E2B (2.41 GiB) + 1.5 GiB ≈ 3.9 GiB free refused a OnePlus 6T
+     * at 3.2–3.5 GiB free where the call runs fine (#46 reboot test, 09-05).
+     * 10% keeps the floor proportional to what the device can spare and what
+     * zram/swap can absorb, while the min clamp preserves a real cushion on
+     * 6 GB devices and the max cap keeps the original conservatism where RAM
+     * is plentiful.
+     */
+    internal fun visionMemoryHeadroomBytes(totalMemBytes: Long): Long =
+        (totalMemBytes / 10).coerceIn(VISION_HEADROOM_MIN_BYTES, VISION_HEADROOM_MAX_BYTES)
+
+    private const val VISION_HEADROOM_MIN_BYTES = 512L * 1024 * 1024
+    private const val VISION_HEADROOM_MAX_BYTES = 1_500L * 1024 * 1024
 
     /**
      * Fixed headroom required on top of the model file size before loading the
@@ -85,13 +101,14 @@ object OnDeviceCapability {
      * [hasEnoughRamFor] total-RAM check at install time says nothing about
      * memory actually free at inference time, and a vision call on top of an
      * already-loaded model is the point where OOM kills have been observed.
+     * Headroom scales with the device (#46).
      */
     fun hasEnoughAvailableMemoryForVision(context: Context, entry: OnDeviceModelEntry): Boolean {
-        val am = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager ?: return false
+        val am = context.getSystemService(ActivityManager::class.java) ?: return false
         val info = ActivityManager.MemoryInfo()
         am.getMemoryInfo(info)
         if (info.lowMemory) return false
-        return info.availMem >= entry.sizeBytes + VISION_MEMORY_HEADROOM_BYTES
+        return info.availMem >= entry.sizeBytes + visionMemoryHeadroomBytes(info.totalMem)
     }
 
     /**
