@@ -1789,6 +1789,9 @@ für dich ein</string>
     <string name="settings_meals_hidden">%1$s (ausgeblendet)</string>
     <string name="settings_meals_no_auto">Nicht für Auto-Auswahl</string>
     <string name="settings_meals_save_error">Die Zeiten müssen mindestens 15 Minuten auseinanderliegen und in einen Tag passen.</string>
+    <string name="settings_meals_unsaved_title">Änderungen an den Mahlzeiten verwerfen?</string>
+    <string name="settings_meals_unsaved_body">Änderungen werden über die Schaltfläche Speichern am unteren Rand der Liste gespeichert.</string>
+    <string name="action_keep_editing">Weiter bearbeiten</string>
     <string name="settings_meal_times">Essenszeiten</string>
 
     <string name="settings_meal_times_customize">Anpassen</string>

@@ -67,6 +67,22 @@ class MealCatalogTest {
     }
 
     @Test
+    fun legacyProjectionKeepsValidCatalogStarts() {
+        // #88: a valid catalog whose disabled Snack injects the default 21:00
+        // next to a 21:00 Dinner used to make the fixed-order legacy check
+        // fail and silently Default the projection.
+        val catalog = MealCatalog.Default
+            .withStart(MealType.DINNER.id, 21 * 60)
+            .withEnabled(MealType.SNACK.id, false)
+            .addCustom("Late", 23 * 60)
+        assertTrue(catalog.isValid)
+        val legacy = catalog.toLegacySchedule()
+        assertEquals(21 * 60, legacy.dinnerStartMinutes)
+        assertEquals(MealSchedule.DEFAULT_SNACK_START, legacy.snackStartMinutes)
+        assertFalse(legacy.isValid)
+    }
+
+    @Test
     fun tailWrapAfterMidnightIsValidAndClassifies() {
         val catalog = MealCatalog.Default.withStart(MealType.SNACK.id, 60)
 

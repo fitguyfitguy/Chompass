@@ -33,6 +33,7 @@ import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -92,8 +93,38 @@ internal fun SettingsSheets(
     val invalidLoseMsg = stringResource(R.string.settings_invalid_goal_lose)
     val invalidGainMsg = stringResource(R.string.settings_invalid_goal_gain)
     val isDark = isDarkTheme()
+    // Meals edits persist only via the sheet's bottom Save (#88): guard the
+    // drag/back dismiss while there are unsaved changes instead of dropping
+    // them silently.
+    var mealsDirty by remember(sheet) { mutableStateOf(false) }
+    var confirmDiscardMeals by remember(sheet) { mutableStateOf(false) }
+    val guardedDismiss: () -> Unit = {
+        if (sheet == SettingsSheet.MEAL_TIMES && mealsDirty) {
+            confirmDiscardMeals = true
+        } else {
+            onDismiss()
+        }
+    }
+    if (confirmDiscardMeals) {
+        AlertDialog(
+            onDismissRequest = { confirmDiscardMeals = false },
+            title = { Text(stringResource(R.string.settings_meals_unsaved_title)) },
+            text = { Text(stringResource(R.string.settings_meals_unsaved_body)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmDiscardMeals = false
+                    onDismiss()
+                }) { Text(stringResource(R.string.action_discard)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmDiscardMeals = false }) {
+                    Text(stringResource(R.string.action_keep_editing))
+                }
+            },
+        )
+    }
     ChompassBottomSheet(
-        onDismiss = onDismiss,
+        onDismiss = guardedDismiss,
         sheetState = state,
     ) {
         Column(
@@ -569,7 +600,9 @@ internal fun SettingsSheets(
                 )
                 SettingsSheet.MEAL_TIMES -> MealTimesSheet(
                     current = ui.mealCatalog,
+                    onDirtyChange = { mealsDirty = it },
                     onSave = {
+                        mealsDirty = false
                         vm.setMealCatalog(it)
                         onDismiss()
                     },

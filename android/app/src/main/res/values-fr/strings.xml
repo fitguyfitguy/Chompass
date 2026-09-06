@@ -1979,6 +1979,9 @@ macros rééquilibrées au nouveau total calorique</string>
     <string name="settings_meals_hidden">%1$s (masqué)</string>
     <string name="settings_meals_no_auto">Pas pour la détection auto</string>
     <string name="settings_meals_save_error">Les heures doivent être espacées d\'au moins 15 minutes et tenir dans une journée.</string>
+    <string name="settings_meals_unsaved_title">Abandonner vos modifications des repas ?</string>
+    <string name="settings_meals_unsaved_body">Les modifications sont enregistrées avec le bouton Enregistrer en bas de la liste.</string>
+    <string name="action_keep_editing">Continuer la modification</string>
   <string name="recovered_review_chip">Analyse récupérée : %1$s</string>
   <string name="cd_discard_recovered_review">Effacer cette analyse récupérée</string>
 </resources>

@@ -1958,6 +1958,9 @@
     <string name="settings_meals_hidden">%1$s（已隐藏）</string>
     <string name="settings_meals_no_auto">不用于自动判断</string>
     <string name="settings_meals_save_error">时间间隔须至少 15 分钟，且需在一天之内。</string>
+    <string name="settings_meals_unsaved_title">放弃餐次更改？</string>
+    <string name="settings_meals_unsaved_body">更改需通过列表底部的“保存”按钮保存。</string>
+    <string name="action_keep_editing">继续编辑</string>
   <string name="recovered_review_chip">已恢复的分析：%1$s</string>
   <string name="cd_discard_recovered_review">丢弃已恢复的分析</string>
 </resources>

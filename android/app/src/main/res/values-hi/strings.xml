@@ -1958,6 +1958,9 @@
     <string name="settings_meals_hidden">%1$s (छिपा)</string>
     <string name="settings_meals_no_auto">ऑटो अनुमान नहीं</string>
     <string name="settings_meals_save_error">समय कम से कम 15 मिनट अलग होने चाहिए और एक दिन में फिट होने चाहिए।</string>
+    <string name="settings_meals_unsaved_title">अपने भोजन परिवर्तन हटाएं?</string>
+    <string name="settings_meals_unsaved_body">परिवर्तन सूची के नीचे दिए गए सहेजें बटन से सहेजे जाते हैं।</string>
+    <string name="action_keep_editing">संपादन जारी रखें</string>
   <string name="recovered_review_chip">पुनर्प्राप्त विश्लेषण: %1$s</string>
   <string name="cd_discard_recovered_review">पुनर्प्राप्त विश्लेषण हटाएँ</string>
 </resources>

@@ -1,6 +1,7 @@
 package app.chompass.ui.settings
 
 import androidx.compose.foundation.clickable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -59,11 +60,19 @@ import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
 
 @Composable
-internal fun MealTimesSheet(current: MealCatalog, onSave: (MealCatalog) -> Unit) {
+internal fun MealTimesSheet(
+    current: MealCatalog,
+    onDirtyChange: (Boolean) -> Unit = {},
+    onSave: (MealCatalog) -> Unit,
+) {
     var catalog by remember(current) { mutableStateOf(current.validatedOrDefault()) }
     var editingId by remember { mutableStateOf<String?>(null) }
     var pendingRemove by remember { mutableStateOf<MealDef?>(null) }
     var saveError by remember { mutableStateOf(false) }
+    // The bottom Save is the only persistence path; the host needs to know
+    // when edits would be lost to a drag/back dismiss (#88 second drop path).
+    val dirty = catalog != current.validatedOrDefault()
+    LaunchedEffect(dirty) { onDirtyChange(dirty) }
     val context = LocalContext.current
     val is24Hour = LocaleFormat.is24Hour(context)
 

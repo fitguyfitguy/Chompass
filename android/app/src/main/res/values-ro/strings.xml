@@ -1958,6 +1958,9 @@ macro-urile reechilibrate la noul total caloric</string>
     <string name="settings_meals_hidden">%1$s (ascunsă)</string>
     <string name="settings_meals_no_auto">Fără alegere automată</string>
     <string name="settings_meals_save_error">Orele trebuie să fie depărtate cu cel puțin 15 minute și să încapă într-o zi.</string>
+    <string name="settings_meals_unsaved_title">Renunți la modificările pentru mese?</string>
+    <string name="settings_meals_unsaved_body">Modificările se salvează cu butonul Salvează din partea de jos a listei.</string>
+    <string name="action_keep_editing">Continuă editarea</string>
   <string name="recovered_review_chip">Analiză recuperată: %1$s</string>
   <string name="cd_discard_recovered_review">Renunță la analiza recuperată</string>
 </resources>

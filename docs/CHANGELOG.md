@@ -10,6 +10,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Fixed
 
 - **On-device photo analysis no longer refuses healthy free memory** (Android): the free-memory check before a photo analysis asked for a fixed extra margin that was sized for smaller phones, so phones with more RAM could be told "not enough memory" even when the analysis would have run fine. The margin now scales with the phone's memory. Follows Codeberg [#46](https://codeberg.org/fitguy/Chompass/issues/46) by [@marcelklehr](https://codeberg.org/marcelklehr) and [@invisibleman](https://codeberg.org/invisibleman).
+- **The Meals editor no longer loses edits without a word** (Android): meal time edits made in the time picker looked saved, but closing the sheet without the Save button at the bottom threw them away silently. The sheet now asks before discarding unsaved changes. Follows Codeberg [#88](https://codeberg.org/fitguy/Chompass/issues/88) by [@BrassCat](https://codeberg.org/BrassCat).
 
 
 ## [4.6.0] - 2026-09-04
