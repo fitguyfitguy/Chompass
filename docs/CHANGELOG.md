@@ -5,13 +5,14 @@ All notable changes to Chompass are documented here.
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
 
-## [Unreleased]
+## [4.6.1] - 2026-09-06
 
 ### Fixed
 
 - **On-device photo analysis no longer refuses healthy free memory** (Android): the free-memory check before a photo analysis asked for a fixed extra margin that was sized for smaller phones, so phones with more RAM could be told "not enough memory" even when the analysis would have run fine. The margin now scales with the phone's memory. Follows Codeberg [#46](https://codeberg.org/fitguy/Chompass/issues/46) by [@marcelklehr](https://codeberg.org/marcelklehr) and [@invisibleman](https://codeberg.org/invisibleman).
 - **The Meals editor no longer loses edits without a word** (Android): meal time edits made in the time picker looked saved, but closing the sheet without the Save button at the bottom threw them away silently. The sheet now asks before discarding unsaved changes. Follows Codeberg [#88](https://codeberg.org/fitguy/Chompass/issues/88) by [@BrassCat](https://codeberg.org/BrassCat).
 - **Changing the amount on a relogged meal now scales its nutrition** (Android): reopening a saved meal before logging it ignored amount changes when the meal had no stored weight, so the values only updated after saving once. Amount edits now scale the nutrition right away whenever the meal's unit (slices, cups, and the like) says how much was originally eaten. Follows Codeberg [#89](https://codeberg.org/fitguy/Chompass/issues/89) by [@BrassCat](https://codeberg.org/BrassCat).
+- **Coach with Search Grounding works on Gemini 3 models again** (Android): asking the coach anything while Google Search grounding was on failed with a provider error on Gemini 3 models, because the request did not allow the search tool to run beside the app's own tools. The request now allows both together. Follows Codeberg [#90](https://codeberg.org/fitguy/Chompass/issues/90) by [@smg950u](https://codeberg.org/smg950u).
 
 
 ## [4.6.0] - 2026-09-04
