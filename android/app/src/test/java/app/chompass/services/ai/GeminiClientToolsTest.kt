@@ -52,4 +52,11 @@ class GeminiClientToolsTest {
         assertEquals(1, tools.length())
         assertTrue(tools.getJSONObject(0).has("functionDeclarations"))
     }
+
+    @Test
+    fun serverSideToolConfig_flagsServerSideInvocations() {
+        val config = GeminiClient.serverSideToolConfig()
+
+        assertTrue(config.getBoolean("includeServerSideToolInvocations"))
+    }
 }

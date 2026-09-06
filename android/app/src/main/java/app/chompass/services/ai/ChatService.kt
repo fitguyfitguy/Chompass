@@ -385,6 +385,9 @@ class ChatService(
                 put("systemInstruction", JSONObject().put("parts", JSONArray().put(JSONObject().put("text", systemPrompt))))
                 put("contents", contents)
                 GeminiClient.buildToolsArray(enableGoogleSearch, declarations)?.let { put("tools", it) }
+                if (enableGoogleSearch) {
+                    put("toolConfig", GeminiClient.serverSideToolConfig())
+                }
             }
             val raw = RetryPolicy.execute {
                 client.newCall(
