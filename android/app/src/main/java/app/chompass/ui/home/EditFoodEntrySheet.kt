@@ -153,7 +153,14 @@ fun EditFoodEntrySheet(
     // gesture cannot dismiss; only a decisive pull/flick can.
     val listState = rememberLazyListState()
 
-    val recordedServing = currentBaseEntry.servingSizeGrams
+    // Serving-less entries with a unit quantity carry an honest portion base
+    // (Codeberg #89); pure-gram entries keep null (Codeberg #10 follow-up).
+    val recordedServing = ServingUnitOption.recordedPortionGrams(
+        recordedServingGrams = currentBaseEntry.servingSizeGrams,
+        selectedUnit = currentBaseEntry.selectedServingUnit,
+        selectedQuantity = currentBaseEntry.selectedServingQuantity,
+        options = currentBaseEntry.servingUnitOptions,
+    )
     val entryBaseServing = recordedServing ?: 100.0
     // var so per-entry serving edits (custom unit name / grams) persist to save.
     var servingUnitOptions by remember(currentBaseEntry.servingUnitOptions, entryBaseServing) {

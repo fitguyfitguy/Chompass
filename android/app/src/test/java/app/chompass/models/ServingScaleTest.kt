@@ -70,4 +70,78 @@ class ServingScaleTest {
             0.0,
         )
     }
+
+    // --- recordedPortionGrams (Codeberg #89) ----------------------------------
+
+    @Test
+    fun portion_derivesFromUnitQuantity_whenServingless() {
+        val options = listOf(ServingUnitOption(unit = "slice", gramsPerUnit = 125.0))
+        assertEquals(
+            250.0,
+            ServingUnitOption.recordedPortionGrams(
+                recordedServingGrams = null,
+                selectedUnit = "slice",
+                selectedQuantity = 2.0,
+                options = options,
+            )!!,
+            0.0,
+        )
+    }
+
+    @Test
+    fun portion_prefersRecordedServing() {
+        val options = listOf(ServingUnitOption(unit = "slice", gramsPerUnit = 125.0))
+        assertEquals(
+            300.0,
+            ServingUnitOption.recordedPortionGrams(
+                recordedServingGrams = 300.0,
+                selectedUnit = "slice",
+                selectedQuantity = 2.0,
+                options = options,
+            )!!,
+            0.0,
+        )
+    }
+
+    @Test
+    fun portion_isNull_forPureGramEntries() {
+        // No unit selection, or a gram selection: no honest base exists, so
+        // the entry stays serving-less (Codeberg #10 follow-up).
+        assertNull(
+            ServingUnitOption.recordedPortionGrams(
+                recordedServingGrams = null,
+                selectedUnit = null,
+                selectedQuantity = 2.0,
+                options = listOf(ServingUnitOption(unit = "slice", gramsPerUnit = 125.0)),
+            )
+        )
+        assertNull(
+            ServingUnitOption.recordedPortionGrams(
+                recordedServingGrams = null,
+                selectedUnit = "g",
+                selectedQuantity = 2.0,
+                options = listOf(ServingUnitOption(unit = "g", gramsPerUnit = 125.0)),
+            )
+        )
+    }
+
+    @Test
+    fun portion_isNull_withoutQuantityOrMatchingOption() {
+        assertNull(
+            ServingUnitOption.recordedPortionGrams(
+                recordedServingGrams = null,
+                selectedUnit = "slice",
+                selectedQuantity = null,
+                options = listOf(ServingUnitOption(unit = "slice", gramsPerUnit = 125.0)),
+            )
+        )
+        assertNull(
+            ServingUnitOption.recordedPortionGrams(
+                recordedServingGrams = null,
+                selectedUnit = "slice",
+                selectedQuantity = 2.0,
+                options = listOf(ServingUnitOption(unit = "cup", gramsPerUnit = 240.0)),
+            )
+        )
+    }
 }

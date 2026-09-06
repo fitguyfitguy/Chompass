@@ -99,7 +99,14 @@ fun EditFavoriteSheet(
         }
     }
 
-    val recordedServing = currentBaseEntry.servingSizeGrams
+    // Serving-less entries with a unit quantity carry an honest portion base
+    // (Codeberg #89); pure-gram entries keep null (Codeberg #10 follow-up).
+    val recordedServing = ServingUnitOption.recordedPortionGrams(
+        recordedServingGrams = currentBaseEntry.servingSizeGrams,
+        selectedUnit = currentBaseEntry.selectedServingUnit,
+        selectedQuantity = currentBaseEntry.selectedServingQuantity,
+        options = currentBaseEntry.servingUnitOptions,
+    )
     val entryBaseServing = recordedServing ?: 100.0
     var servingUnitOptions by remember(currentBaseEntry.servingUnitOptions, entryBaseServing) {
         mutableStateOf(ServingUnitOption.normalizedOptions(currentBaseEntry.servingUnitOptions, entryBaseServing))

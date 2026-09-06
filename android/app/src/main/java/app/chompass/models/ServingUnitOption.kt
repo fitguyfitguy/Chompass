@@ -144,6 +144,28 @@ data class ServingUnitOption(
             else servingGrams / baseServingGrams
 
         /**
+         * Recorded-portion decision for serving-less entries (Codeberg #89):
+         * when the entry carries a valid non-gram unit selection with a
+         * positive quantity, quantity x grams-per-unit is an honest portion
+         * base, so amount edits scale the macros. Pure-gram and quantity-less
+         * entries keep null — no honest base exists there and macros stay
+         * absolute portion totals (Codeberg #10 follow-up).
+         */
+        fun recordedPortionGrams(
+            recordedServingGrams: Double?,
+            selectedUnit: String?,
+            selectedQuantity: Double?,
+            options: List<ServingUnitOption>,
+        ): Double? {
+            if (recordedServingGrams != null) return recordedServingGrams
+            val id = selectedUnit?.trim()?.lowercase(Locale.US)
+            if (id.isNullOrEmpty() || id in GRAM_UNITS) return null
+            val option = options.firstOrNull { it.isValid && !it.isGramUnit && it.id == id } ?: return null
+            val quantity = selectedQuantity?.takeIf { it > 0 } ?: return null
+            return quantity * option.gramsPerUnit
+        }
+
+        /**
          * Serving to persist (Codeberg #10 follow-up): correcting the weight on
          * an entry without a recorded serving records it (macros stay
          * untouched); leaving it alone keeps the entry serving-less, so a later
