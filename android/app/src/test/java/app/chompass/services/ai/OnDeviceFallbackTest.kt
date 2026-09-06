@@ -81,11 +81,13 @@ class OnDeviceFallbackTest {
         }
         // isDownloaded() only checks existence — stub files suffice (no native load).
         listOf(ModelCatalog.E2B, ModelCatalog.E4B).forEach { stubModel(it) }
-        // Free memory fits E2B vision (size + 1.5 GiB headroom ≈ 3.9 GiB) but
-        // not E4B vision (≈ 4.9 GiB) — the reporter's #54 memory state.
+        // Free memory fits E2B vision but not E4B vision under the
+        // device-scaled headroom (#46): 8 GiB total → 10% ≈ 0.8 GiB headroom,
+        // so E2B needs ≈3.4 GiB and E4B ≈4.5 GiB. avail ≈3.85 GiB sits
+        // between them — the reporter's #54 memory state.
         val mem = ActivityManager.MemoryInfo().apply {
             totalMem = 8L * 1024 * 1024 * 1024
-            availMem = ModelCatalog.E2B.sizeBytes + 2_000L * 1024 * 1024
+            availMem = ModelCatalog.E2B.sizeBytes + 1_200L * 1024 * 1024
         }
         shadowOf(app.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).setMemoryInfo(mem)
     }

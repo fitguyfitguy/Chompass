@@ -49,4 +49,36 @@ class OnDeviceCapabilityTest {
         assertEquals(4 * GB, OnDeviceCapability.ramFloorFor(ModelCatalog.E2B))
         assertEquals(7 * GB, OnDeviceCapability.ramFloorFor(ModelCatalog.E4B))
     }
+
+    @Test
+    fun visionHeadroom_scalesWithDeviceRam() {
+        // 8 GB marketed (OnePlus 6T reports ≈7.4 GiB usable): 10% ≈ 740 MiB,
+        val total = (7.4 * GB).toLong() // truncation, same as production input
+        assertEquals(total / 10, OnDeviceCapability.visionMemoryHeadroomBytes(total))
+    }
+
+    @Test
+    fun visionHeadroom_floorsAt512MiB_onSmallDevices() {
+        // 6 GB marketed (≈5.4 GiB usable): 10% would be ~550 MiB — just above
+        // the min clamp; a 4 GiB-usable device clamps up to the 512 MiB floor.
+        assertEquals(512L * 1024 * 1024, OnDeviceCapability.visionMemoryHeadroomBytes(4 * GB))
+    }
+
+    @Test
+    fun visionHeadroom_capsAt1_5GiB_onLargeDevices() {
+        // 16 GB class (Pixel 10): 10% would be 1.6 GiB — capped at the
+        // original conservative ceiling.
+        assertEquals(1_500L * 1024 * 1024, OnDeviceCapability.visionMemoryHeadroomBytes(16 * GB))
+    }
+
+    @Test
+    fun visionFloor_onePlus6t_everydayFreeMemoryNowPasses() {
+        // End-to-end pure decision the #46 reboot test pinned: 7.4 GiB total,
+        // 3.2 GiB free must pass; a starved 2 GiB free must still fail.
+        val total = (7.4 * GB).toLong()
+        val floor = ModelCatalog.E2B.sizeBytes + OnDeviceCapability.visionMemoryHeadroomBytes(total)
+        assertTrue((3.2 * GB).toLong() >= floor)
+        assertTrue((3.5 * GB).toLong() >= floor)
+        assertFalse((2.0 * GB).toLong() >= floor)
+    }
 }

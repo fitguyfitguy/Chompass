@@ -245,7 +245,10 @@ class OnDeviceLlmGatewayTest {
     @Test
     fun visionPreflight_rejectsE4B_whenFreeMemoryTooLowForE4B() = runBlocking {
         prefs.setSelectedAIModel(ModelCatalog.E4B.modelId)
-        setMemoryInfo(totalMem = 8L * GB, availMem = ModelCatalog.E2B.sizeBytes + 2_000L * MB)
+        // #46-scaled headroom: 8 GiB total → ≈0.8 GiB, so E4B vision needs
+        // ≈4.5 GiB while E2B vision needs ≈3.4 GiB; ≈3.85 GiB free rejects
+        // only the E4B primary.
+        setMemoryInfo(totalMem = 8L * GB, availMem = ModelCatalog.E2B.sizeBytes + 1_200L * MB)
         stubModel(ModelCatalog.E4B)
         val g = gateway(emptyList(), mutableListOf(), mutableListOf(), mutableListOf())
 

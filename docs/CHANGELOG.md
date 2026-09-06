@@ -5,6 +5,13 @@ All notable changes to Chompass are documented here.
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
 
+## [Unreleased]
+
+### Fixed
+
+- **On-device photo analysis no longer refuses healthy free memory** (Android): the free-memory check before a photo analysis asked for a fixed extra margin that was sized for smaller phones, so phones with more RAM could be told "not enough memory" even when the analysis would have run fine. The margin now scales with the phone's memory. Follows Codeberg [#46](https://codeberg.org/fitguy/Chompass/issues/46) by [@marcelklehr](https://codeberg.org/marcelklehr) and [@invisibleman](https://codeberg.org/invisibleman).
+
+
 ## [4.6.0] - 2026-09-04
 
 ### Added
