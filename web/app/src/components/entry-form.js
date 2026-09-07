@@ -160,7 +160,10 @@ export class EntryForm extends HTMLElement {
     const prefillRaw = params.get("prefill");
     if (prefillRaw && (!this.entryId || this.entryId === "new")) {
       try {
-        this.prefill = JSON.parse(decodeURIComponent(prefillRaw));
+        // URLSearchParams already decodes. A second decodeURIComponent throws
+        // URIError on OFF metadata (percent bytes in traces/image URLs) and
+        // the form opens empty.
+        this.prefill = JSON.parse(prefillRaw);
         this.nutritionLocked = Boolean(this.prefill?.source && this.prefill.source !== "manual");
       } catch {
         this.prefill = null;

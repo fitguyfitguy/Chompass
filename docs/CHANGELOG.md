@@ -14,6 +14,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Fixed
 
 - **A late-night dinner now saves** (Android + web): setting Dinner to a time after midnight, such as 2:00, used to fail the meals editor check because the slot list still ran breakfast, lunch, dinner, snack. Start times are checked around the clock, so a 2am dinner in the usual meal order saves. Follows Codeberg [#88](https://codeberg.org/fitguy/Chompass/issues/88) by [@BrassCat](https://codeberg.org/BrassCat).
+- **Barcode review keeps the product name and photo** (web): looking up a barcode with extra product details used to open a blank Log food form. The review now shows the name, photo, product card, and serving or package units.
+
 
 
 
