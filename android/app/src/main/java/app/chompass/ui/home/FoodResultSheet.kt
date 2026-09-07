@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -561,7 +562,10 @@ fun FoodResultSheet(
                             },
                             contentScale = if (packShot) ContentScale.Fit else ContentScale.Crop,
                             modifier = Modifier
-                                .size(if (packShot) 120.dp else 96.dp)
+                                .then(
+                                    if (packShot) Modifier.fillMaxWidth().height(160.dp)
+                                    else Modifier.size(96.dp),
+                                )
                                 .clip(RoundedCornerShape(AppRadii.Field))
                                 .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
                                 .then(
