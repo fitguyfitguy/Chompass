@@ -1215,7 +1215,10 @@ internal fun EditFoodEntryHero(
                 contentDescription = null,
                 contentScale = if (packShot) ContentScale.Fit else ContentScale.Crop,
                 modifier = Modifier
-                    .size(if (packShot) 120.dp else 96.dp)
+                    .then(
+                        if (packShot) Modifier.fillMaxWidth().height(160.dp)
+                        else Modifier.size(96.dp),
+                    )
                     .clip(RoundedCornerShape(AppRadii.Field))
                     .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
             )
