@@ -71,13 +71,12 @@ export function isValid(catalog) {
   }
   const timed = meals.filter((m) => m.enabled && m.startMinutes != null);
   if (!timed.length) return false;
-  // Catalog order is a circular day rotation: starts must advance at least
-  // MIN_GAP_MINUTES around the clock, so a schedule may wrap past midnight
-  // once, and the whole rotation must fit in one day (also rejects duplicate
-  // starts). Mirrors Android MealCatalog.validate().
+  // Display order is independent of wall-clock. Gaps run on clock-sorted
+  // starts so a 2am dinner in the default slot list is one wrap (#88).
+  const starts = timed.map((m) => m.startMinutes).slice().sort((a, b) => a - b);
   let span = 0;
-  for (let i = 1; i < timed.length; i++) {
-    const delta = (((timed[i].startMinutes - timed[i - 1].startMinutes) % MINUTES_PER_DAY) + MINUTES_PER_DAY) % MINUTES_PER_DAY;
+  for (let i = 1; i < starts.length; i++) {
+    const delta = (((starts[i] - starts[i - 1]) % MINUTES_PER_DAY) + MINUTES_PER_DAY) % MINUTES_PER_DAY;
     if (delta < MIN_GAP_MINUTES) return false;
     span += delta;
   }

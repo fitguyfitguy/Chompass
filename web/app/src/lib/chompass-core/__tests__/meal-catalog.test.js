@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { defaultCatalog, mealIdAt, parseCatalog } from "../meal-catalog.js";
+import { defaultCatalog, isValid, mealIdAt, parseCatalog } from "../meal-catalog.js";
 
 describe("meal catalog", () => {
   it("defaults match legacy four windows", () => {
@@ -46,4 +46,15 @@ describe("meal catalog", () => {
     });
     assert.equal(c.meals.length, 5); // default
   });
+
+  it("keeps a 2am dinner in default slot order", () => {
+    const c = defaultCatalog();
+    c.meals.find((m) => m.id === "dinner").startMinutes = 2 * 60;
+    assert.equal(isValid(c), true);
+    const at = (h, m) => mealIdAt(c, new Date(2026, 0, 1, h, m));
+    assert.equal(at(1, 59), "snack");
+    assert.equal(at(2, 0), "dinner");
+    assert.equal(at(4, 59), "dinner");
+  });
+
 });

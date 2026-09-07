@@ -11,6 +11,11 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **Product photos and an info card for barcode foods** (Android + web): scanning a barcode now shows the product's front photo from Open Food Facts in the review sheet instead of the generic tag emoji, and a product information card lists the package size, ingredient list, Nutri-Score, NOVA group, Eco-Score, allergens, labels, and categories. When the package size is known, the serving picker also offers the whole package as a unit. A "Data & photo: Open Food Facts (CC BY-SA)" line credits the source and opens the product page. If a product has no photo, the tag emoji stays as before. The photo and card stay on your device: they are not included in exports or sync.
 
+### Fixed
+
+- **A late-night dinner now saves** (Android + web): setting Dinner to a time after midnight, such as 2:00, used to fail the meals editor check because the slot list still ran breakfast, lunch, dinner, snack. Start times are checked around the clock, so a 2am dinner in the usual meal order saves. Follows Codeberg [#88](https://codeberg.org/fitguy/Chompass/issues/88) by [@BrassCat](https://codeberg.org/BrassCat).
+
+
 
 ## [4.6.1] - 2026-09-06
 

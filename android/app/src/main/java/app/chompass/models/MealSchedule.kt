@@ -12,12 +12,11 @@ data class MealSchedule(
         get() {
             val starts = listOf(breakfastStartMinutes, lunchStartMinutes, dinnerStartMinutes, snackStartMinutes)
             if (starts.any { it !in 0 until MINUTES_PER_DAY }) return false
-            // Mirrors MealCatalog.validate(): slot order is a circular day rotation,
-            // so one midnight wrap is fine, but every step needs MealCatalog's gap
-            // and the rotation must fit in one day (also rejects duplicate starts).
+            // Mirrors MealCatalog.validate(): gaps on clock-sorted starts.
+            val ordered = starts.sorted()
             var span = 0
-            for (i in 1 until starts.size) {
-                val delta = (starts[i] - starts[i - 1] + MINUTES_PER_DAY) % MINUTES_PER_DAY
+            for (i in 1 until ordered.size) {
+                val delta = (ordered[i] - ordered[i - 1] + MINUTES_PER_DAY) % MINUTES_PER_DAY
                 if (delta < MealCatalog.MIN_GAP_MINUTES) return false
                 span += delta
             }
