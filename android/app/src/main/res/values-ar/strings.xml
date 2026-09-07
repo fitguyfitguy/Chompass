@@ -1598,7 +1598,7 @@
     <string name="product_labels">الوسوم</string>
     <string name="product_categories">الفئات</string>
     <string name="product_ingredient_label">قائمة المكونات</string>
-    <string name="off_attribution">البيانات والصورة: Open Food Facts (CC BY-SA)</string>
+    <string name="off_attribution">الصورة والبيانات: مساهمو Open Food Facts (CC BY-SA 3.0)</string>
     <string name="unit_cup">كوب</string>
     <string name="unit_cup_plural">أكواب</string>
     <string name="unit_tbsp">ملعقة ك.</string>

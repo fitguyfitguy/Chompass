@@ -300,7 +300,7 @@ export const ja = Object.freeze({
   "product.labels": "ラベル",
   "product.categories": "カテゴリ",
   "product.ingredientLabel": "原材料",
-  "product.attribution": "データと写真： Open Food Facts (CC BY-SA)",
+  "product.attribution": "写真とデータ： Open Food Facts の貢献者 (CC BY-SA 3.0)",
   "unit.cup": "カップ",
   "unit.cup_plural": "カップ",
   "unit.tbsp": "大さじ",

@@ -300,7 +300,7 @@ export const ro = Object.freeze({
   "product.labels": "Etichete",
   "product.categories": "Categorii",
   "product.ingredientLabel": "Lista de ingrediente",
-  "product.attribution": "Date și foto: Open Food Facts (CC BY-SA)",
+  "product.attribution": "Foto și date: contribuitori Open Food Facts (CC BY-SA 3.0)",
   "unit.cup": "cană",
   "unit.cup_plural": "căni",
   "unit.tbsp": "ling.",

@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.FoodEntry
+import app.chompass.models.FoodSource
 import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.ServingUnitOption
 import app.chompass.ui.components.FudGlassSurface
@@ -535,7 +536,11 @@ internal fun FoodRow(
                 bitmap != null -> androidx.compose.foundation.Image(
                     bitmap = bitmap.asImageBitmap(),
                     contentDescription = entry.name,
-                    contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                    contentScale = if (entry.source == FoodSource.BARCODE) {
+                        androidx.compose.ui.layout.ContentScale.Fit
+                    } else {
+                        androidx.compose.ui.layout.ContentScale.Crop
+                    },
                     modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(AppRadii.Field))
                 )
                 entry.emoji != null -> Text(entry.emoji ?: "", fontSize = 36.sp)

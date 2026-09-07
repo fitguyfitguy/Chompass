@@ -4866,9 +4866,10 @@ body.camera-open {
 /* Open Food Facts product photo + metadata card (barcode entries) */
 .entry-off-thumb {
   display: block;
-  width: 72px;
-  height: 72px;
-  object-fit: cover;
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  background: color-mix(in srgb, var(--text) 6%, transparent);
   border-radius: 0.65rem;
   margin: 0.55rem 0 0;
 }

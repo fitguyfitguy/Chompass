@@ -343,7 +343,7 @@ export const uk = Object.freeze({
   "product.labels": "Мітки",
   "product.categories": "Категорії",
   "product.ingredientLabel": "Список інгредієнтів",
-  "product.attribution": "Дані та фото: Open Food Facts (CC BY-SA)",
+  "product.attribution": "Фото та дані: учасники Open Food Facts (CC BY-SA 3.0)",
   "unit.cup": "чашка",
   "unit.cup_plural": "чашки",
   "unit.tbsp": "ст. л.",

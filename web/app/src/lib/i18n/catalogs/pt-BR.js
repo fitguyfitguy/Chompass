@@ -300,7 +300,7 @@ export const pt_BR = Object.freeze({
   "product.labels": "Selos",
   "product.categories": "Categorias",
   "product.ingredientLabel": "Lista de ingredientes",
-  "product.attribution": "Dados e foto: Open Food Facts (CC BY-SA)",
+  "product.attribution": "Foto e dados: colaboradores do Open Food Facts (CC BY-SA 3.0)",
   "unit.cup": "xícara",
   "unit.cup_plural": "xícaras",
   "unit.tbsp": "col.",

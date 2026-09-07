@@ -303,7 +303,7 @@ export const de = Object.freeze({
   "product.labels": "Labels",
   "product.categories": "Kategorien",
   "product.ingredientLabel": "Zutatenliste",
-  "product.attribution": "Daten & Foto: Open Food Facts (CC BY-SA)",
+  "product.attribution": "Foto und Daten: Open Food Facts-Mitwirkende (CC BY-SA 3.0)",
   "unit.cup": "Cup",
   "unit.cup_plural": "Cups",
   "unit.tbsp": "EL",

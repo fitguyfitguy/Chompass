@@ -1597,7 +1597,7 @@
     <string name="product_labels">라벨</string>
     <string name="product_categories">카테고리</string>
     <string name="product_ingredient_label">성분 표시</string>
-    <string name="off_attribution">데이터 및 사진: Open Food Facts (CC BY-SA)</string>
+    <string name="off_attribution">사진 및 데이터: Open Food Facts 기여자 (CC BY-SA 3.0)</string>
     <string name="unit_cup">컵</string>
     <string name="unit_cup_plural">컵</string>
     <string name="unit_tbsp">큰술</string>

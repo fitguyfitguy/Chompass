@@ -76,7 +76,7 @@
     <string name="product_labels">Labels</string>
     <string name="product_categories">Categories</string>
     <string name="product_ingredient_label">Ingredient label</string>
-    <string name="off_attribution">Data &amp; photo: Open Food Facts (CC BY-SA)</string>
+    <string name="off_attribution">Photo and data: Open Food Facts contributors (CC BY-SA 3.0)</string>
     <string name="unit_cup">cup</string>
     <string name="unit_cup_plural">cups</string>
     <string name="unit_tbsp">tbsp</string>

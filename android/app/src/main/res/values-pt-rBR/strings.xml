@@ -1595,7 +1595,7 @@
     <string name="product_labels">Selos</string>
     <string name="product_categories">Categorias</string>
     <string name="product_ingredient_label">Lista de ingredientes</string>
-    <string name="off_attribution">Dados e foto: Open Food Facts (CC BY-SA)</string>
+    <string name="off_attribution">Foto e dados: colaboradores do Open Food Facts (CC BY-SA 3.0)</string>
     <string name="unit_cup">xícara</string>
     <string name="unit_cup_plural">xícaras</string>
     <string name="unit_tbsp">col.</string>

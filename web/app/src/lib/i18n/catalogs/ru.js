@@ -300,7 +300,7 @@ export const ru = Object.freeze({
   "product.labels": "Метки",
   "product.categories": "Категории",
   "product.ingredientLabel": "Состав",
-  "product.attribution": "Данные и фото: Open Food Facts (CC BY-SA)",
+  "product.attribution": "Фото и данные: участники Open Food Facts (CC BY-SA 3.0)",
   "unit.cup": "чашка",
   "unit.cup_plural": "чашки",
   "unit.tbsp": "ст. л.",

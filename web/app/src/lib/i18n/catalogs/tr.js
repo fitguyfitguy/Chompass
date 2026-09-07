@@ -345,7 +345,7 @@ export const tr = Object.freeze({
   "product.labels": "Etiketler",
   "product.categories": "Kategoriler",
   "product.ingredientLabel": "İçindekiler",
-  "product.attribution": "Veri ve fotoğraf: Open Food Facts (CC BY-SA)",
+  "product.attribution": "Fotoğraf ve veri: Open Food Facts katkıda bulunanlar (CC BY-SA 3.0)",
   "unit.cup": "fincan",
   "unit.cup_plural": "fincan",
   "unit.tbsp": "yk",

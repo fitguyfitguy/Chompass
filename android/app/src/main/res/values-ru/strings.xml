@@ -60,7 +60,7 @@
     <string name="product_labels">Метки</string>
     <string name="product_categories">Категории</string>
     <string name="product_ingredient_label">Состав</string>
-    <string name="off_attribution">Данные и фото: Open Food Facts (CC BY-SA)</string>
+    <string name="off_attribution">Фото и данные: участники Open Food Facts (CC BY-SA 3.0)</string>
 
     <string name="unit_cup">чашка</string>
 

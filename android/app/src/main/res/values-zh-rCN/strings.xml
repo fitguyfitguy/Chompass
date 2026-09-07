@@ -1598,7 +1598,7 @@
     <string name="product_labels">标签</string>
     <string name="product_categories">类别</string>
     <string name="product_ingredient_label">配料表</string>
-    <string name="off_attribution">数据与图片：Open Food Facts (CC BY-SA)</string>
+    <string name="off_attribution">照片与数据：Open Food Facts 贡献者 (CC BY-SA 3.0)</string>
     <string name="unit_cup">杯</string>
     <string name="unit_cup_plural">杯</string>
     <string name="unit_tbsp">汤匙</string>
