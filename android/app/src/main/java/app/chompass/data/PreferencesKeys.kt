@@ -84,6 +84,8 @@ internal object Keys {
         val NICOTINE_QUICK_KINDS = stringPreferencesKey("nicotineQuickKinds")
         // Optional daily notes (docs/local/PLAN_DAILY_NOTES.md); default off.
         val DAILY_NOTES_ENABLED = booleanPreferencesKey("dailyNotesEnabled")
+        // Suggest meals by time of day; default on. Off hides the Meals editor.
+        val MEAL_TIMES_ENABLED = booleanPreferencesKey("mealTimesEnabled")
         // Optional caffeine tracker (device-pass revision); default off.
         val CAFFEINE_TRACKING_ENABLED = booleanPreferencesKey("caffeineTrackingEnabled")
         val CAFFEINE_DAILY_LIMIT_MG = intPreferencesKey("caffeineDailyLimitMg")
@@ -203,8 +205,6 @@ internal object Keys {
         val GEMINI_GOOGLE_SEARCH_ENABLED = booleanPreferencesKey("geminiGoogleSearchEnabled")
         /** OpenRouter reasoning-effort setting; missing = AUTO (current behavior). */
         val OPENROUTER_REASONING_EFFORT = stringPreferencesKey("openrouterReasoningEffort")
-        /** Unused leftover: portion-clarify UI removed; stored value is ignored. */
-        val PORTION_CLARIFY_ENABLED = booleanPreferencesKey("portionClarifyEnabled")
         /**
          * When true, photo staging does not require a text note before Analyze
          * (user opted out after repeatedly skipping).

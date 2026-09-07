@@ -37,6 +37,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -105,6 +106,11 @@ internal fun SettingsSheets(
             onDismiss()
         }
     }
+    LaunchedEffect(sheet, ui.selectedAI) {
+        if (sheet == SettingsSheet.AI_MODEL && ui.selectedAI == AIProvider.OLLAMA) {
+            vm.fetchOllamaModels()
+        }
+    }
     if (confirmDiscardMeals) {
         AlertDialog(
             onDismissRequest = { confirmDiscardMeals = false },
@@ -150,15 +156,18 @@ internal fun SettingsSheets(
                 )
                 SettingsSheet.AI_MODEL -> ListSheet(
                     title = stringResource(R.string.sheet_model),
-                    // ON_DEVICE shows only the models this device can run
-                    // (SettingsUiState.onDeviceModels filters E4B on 6 GB phones).
-                    items = if (ui.selectedAI == AIProvider.ON_DEVICE && ui.onDeviceModels.isNotEmpty())
-                        ui.onDeviceModels
-                    else
-                        ui.selectedAI.models,
+                    items = when {
+                        ui.selectedAI == AIProvider.OLLAMA && !ui.ollamaModels.isNullOrEmpty() ->
+                            ui.ollamaModels!!.map { it.id }
+                        ui.selectedAI == AIProvider.ON_DEVICE && ui.onDeviceModels.isNotEmpty() ->
+                            ui.onDeviceModels
+                        else -> ui.selectedAI.models
+                    },
                     label = { it },
                     subtitle = { model ->
-                        when (ui.selectedAI.modelTiers[model]) {
+                        if (ui.selectedAI == AIProvider.OLLAMA) {
+                            ui.ollamaModels?.find { it.id == model }?.subtitle
+                        } else when (ui.selectedAI.modelTiers[model]) {
                             "paid" -> stringResource(R.string.ai_model_tier_paid)
                             "varies" -> stringResource(R.string.ai_model_tier_varies)
                             else -> null
@@ -166,7 +175,15 @@ internal fun SettingsSheets(
                     },
                     selected = { it == ui.selectedModel },
                     onSelect = { vm.selectModel(it); onDismiss() },
-                    footer = if (ui.selectedAI.supportsCustomModelName) stringResource(R.string.sheet_model_footer) else null,
+                    footer = when {
+                        ui.selectedAI == AIProvider.OLLAMA && ui.ollamaModelsLoading ->
+                            stringResource(R.string.settings_ollama_models_loading)
+                        ui.selectedAI == AIProvider.OLLAMA && ui.ollamaModelsError ->
+                            stringResource(R.string.settings_ollama_models_error)
+                        ui.selectedAI.supportsCustomModelName ->
+                            stringResource(R.string.sheet_model_footer)
+                        else -> null
+                    },
                     customField = if (ui.selectedAI.supportsCustomModelName) {
                         { m -> vm.selectModel(m); onDismiss() }
                     } else null

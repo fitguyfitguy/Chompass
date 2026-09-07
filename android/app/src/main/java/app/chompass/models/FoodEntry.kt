@@ -66,6 +66,13 @@ data class FoodEntry(
      * Display-only: never serialized into diary export / sync / meal-share.
      */
     val productMetadata: FoodProductMetadata? = null,
+    /**
+     * Fingerprint of the constituent mix the meal-level micros were estimated
+     * for. Null on legacy / manual entries — the stale-composition note is
+     * never shown when origin is unknown. Local DataStore only; not a diary
+     * / sync / meal-share field.
+     */
+    val microsCompositionSignature: String? = null,
 ) {
     /**
      * Stable identity for Favorites / Frequent / Recents dedup.
@@ -130,5 +137,6 @@ data class FoodEntry(
         grounding = grounding,
         constituents = constituents,
         productMetadata = productMetadata,
+        microsCompositionSignature = microsCompositionSignature,
     )
 }

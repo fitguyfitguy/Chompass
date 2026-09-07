@@ -578,6 +578,7 @@ internal fun GradientSaveButton(
     text: String? = null,
     enabled: Boolean = true,
     modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
     onClick: () -> Unit
 ) {
     val brush = Brush.linearGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd))
@@ -603,6 +604,12 @@ internal fun GradientSaveButton(
             .padding(vertical = 14.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(text ?: stringResource(R.string.action_save), color = AppColors.onCalorieGradient, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (icon != null) {
+                Icon(icon, contentDescription = null, tint = AppColors.onCalorieGradient, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(8.dp))
+            }
+            Text(text ?: stringResource(R.string.action_save), color = AppColors.onCalorieGradient, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+        }
     }
 }

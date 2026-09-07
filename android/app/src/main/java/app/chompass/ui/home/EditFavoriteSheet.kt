@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.FoodEntry
+import app.chompass.models.microsStaleFor
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.MicronutrientField
 import app.chompass.models.MicronutrientValues
@@ -423,8 +424,15 @@ fun EditFavoriteSheet(
                             if (moreNutritionExpanded) {
                                 item {
                                     SheetPillCard {
+                                        val stale = microsStaleFor(
+                                            currentBaseEntry.microsCompositionSignature,
+                                            editableConstituents,
+                                        )
+                                        if (stale) {
+                                            StaleCompositionNote()
+                                        }
                                         MicronutrientField.MoreNutrition.forEachIndexed { idx, field ->
-                                            if (idx > 0) SheetHairline()
+                                            if (idx > 0 || stale) SheetHairline()
                                             val value = math.scaledD(editableMicros[field])
                                             ReviewNutritionValueRow(
                                                 label = stringResource(field.labelRes),

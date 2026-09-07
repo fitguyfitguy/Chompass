@@ -34,8 +34,8 @@ import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Food & Entry settings: how logging behaves (units, sort, meal times) and how
- * photo analysis works (note prompt, portion clarify, constituents, serving
- * size detection). Provider wiring lives in AI & Speech.
+ * photo analysis works (note prompt, constituents, serving size detection).
+ * Provider wiring lives in AI & Speech.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,11 +74,20 @@ fun FoodEntrySettingsScreen(
                 icon = Icons.Filled.UnfoldMore
             ) { sheet = SettingsSheet.FOOD_LOG_SORT }
             HorizontalDivider()
-            SettingRow(
-                stringResource(R.string.settings_meals),
-                stringResource(R.string.settings_meals_description),
+            ToggleRow(
+                stringResource(R.string.settings_meal_times_enabled),
+                checked = ui.mealTimesEnabled,
                 icon = Icons.Outlined.Schedule,
-            ) { sheet = SettingsSheet.MEAL_TIMES }
+                onChange = vm::setMealTimesEnabled,
+            )
+            if (ui.mealTimesEnabled) {
+                HorizontalDivider()
+                SettingRow(
+                    stringResource(R.string.settings_meals),
+                    stringResource(R.string.settings_meals_description),
+                    icon = Icons.Outlined.Schedule,
+                ) { sheet = SettingsSheet.MEAL_TIMES }
+            }
         }
 
         SectionCard(title = stringResource(R.string.settings_food_section_photo)) {

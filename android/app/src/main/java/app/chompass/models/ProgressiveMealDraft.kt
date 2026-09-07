@@ -100,7 +100,9 @@ fun ProgressiveMealDraft.toFoodEntries(
                 customNote = analysis.customNote,
                 grounding = analysis.grounding,
                 recipeLogId = recipeLogId,
+                constituents = analysis.constituents,
                 productMetadata = analysis.productMetadata,
+                microsCompositionSignature = microsCompositionSignature(analysis.constituents),
             )
         )
     }

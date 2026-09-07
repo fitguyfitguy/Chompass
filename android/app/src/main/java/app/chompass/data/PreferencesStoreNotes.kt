@@ -13,6 +13,12 @@ internal val PreferencesStore.dailyNotesEnabledImpl: Flow<Boolean>
 internal suspend fun PreferencesStore.setDailyNotesEnabledImpl(v: Boolean) =
     setBoolPref(Keys.DAILY_NOTES_ENABLED, v)
 
+/** Suggest meals by clock time; default on. */
+internal val PreferencesStore.mealTimesEnabledImpl: Flow<Boolean>
+    get() = boolPref(Keys.MEAL_TIMES_ENABLED, true)
+internal suspend fun PreferencesStore.setMealTimesEnabledImpl(v: Boolean) =
+    setBoolPref(Keys.MEAL_TIMES_ENABLED, v)
+
 internal val PreferencesStore.noteEntriesImpl: Flow<List<DailyNote>>
     get() = flow {
         emitAll(noteBucketStore.allFlow())

@@ -70,6 +70,8 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
+import app.chompass.models.microsCompositionSignature
+import app.chompass.models.microsStaleFor
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.LocaleFormat
 import app.chompass.models.MealType
@@ -143,6 +145,7 @@ fun FoodResultSheet(
      * are unchanged. Matches the PWA entry-form prefill behavior.
      */
     initialMealType: String? = null,
+    mealTimesEnabled: Boolean = true,
     logTimeOverride: LocalTime? = null,
     useSystemDateTimePickers: Boolean = false,
     onLogTimeOverride: (LocalTime?) -> Unit = {},
@@ -228,6 +231,9 @@ fun FoodResultSheet(
     // serving without scaling macros (Codeberg #10 follow-up).
     var servingTouched by remember(effectiveAnalysis) { mutableStateOf(false) }
     var editableConstituents by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.constituents) }
+    val analysisMicrosSignature = remember(effectiveAnalysis) {
+        microsCompositionSignature(effectiveAnalysis.constituents)
+    }
     var constituentsExpanded by remember(effectiveAnalysis) {
         mutableStateOf(effectiveAnalysis.constituents.isNotEmpty())
     }
@@ -245,7 +251,10 @@ fun FoodResultSheet(
     val selectedServingQuantity = ServingUnitOption.parseQuantity(servingQuantityText)?.takeIf { it > 0 }
     val scale = ServingUnitOption.servingScale(recordedServing, servingGrams, baseServingGrams)
     var mealType by remember {
-        mutableStateOf(initialMealType?.takeIf { it.isNotBlank() } ?: MealType.currentMealId)
+        mutableStateOf(
+            initialMealType?.takeIf { it.isNotBlank() }
+                ?: if (mealTimesEnabled) MealType.currentMealId else MealType.OTHER.id,
+        )
     }
     var mealTypeTouched by remember { mutableStateOf(mealTypeFromSavedMeal) }
     var showLogTimePicker by remember { mutableStateOf(false) }
@@ -859,7 +868,7 @@ fun FoodResultSheet(
                             onDismissRequest = { mealMenuExpanded = false },
                             menuWidth = 184.dp
                         ) {
-                            for (m in pickerMealIds()) {
+                            for (m in pickerMealIds(includeOther = !mealTimesEnabled)) {
                                 SheetGlassDropdownMenuItem(
                                     label = mealLabel(m),
                                     leadingIcon = sheetMealIcon(m),
@@ -936,8 +945,12 @@ fun FoodResultSheet(
             if (moreNutritionExpanded && analysisReady) {
                 item {
                     SheetPillCard {
+                        val stale = microsStaleFor(analysisMicrosSignature, editableConstituents)
+                        if (stale) {
+                            StaleCompositionNote()
+                        }
                         MicronutrientField.MoreNutrition.forEachIndexed { idx, field ->
-                            if (idx > 0) SheetHairline()
+                            if (idx > 0 || stale) SheetHairline()
                             val value = math.scaledD(editableMicros[field])
                             ReviewNutritionValueRow(
                                 label = stringResource(field.labelRes),
@@ -1021,7 +1034,7 @@ fun FoodResultSheet(
             useSystem = useSystemDateTimePickers,
             onConfirm = { time ->
                 onLogTimeOverride(time)
-                if (!mealTypeFromSavedMeal && !mealTypeTouched) {
+                if (mealTimesEnabled && !mealTypeFromSavedMeal && !mealTypeTouched) {
                     mealType = CurrentMealCatalog.value.mealIdAt(time)
                 }
                 showLogTimePicker = false

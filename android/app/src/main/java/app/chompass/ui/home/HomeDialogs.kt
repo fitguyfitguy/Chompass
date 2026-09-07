@@ -531,6 +531,7 @@ internal fun AnalysisResultDialog(
 internal fun ManualEntryDialog(
     isSaving: Boolean = false,
     initialMealType: String = MealType.currentMealId,
+    mealTimesEnabled: Boolean = true,
     onDismiss: () -> Unit,
     onSave: (
         name: String,
@@ -555,7 +556,13 @@ internal fun ManualEntryDialog(
     var carbs by rememberSaveable { mutableStateOf(0.0) }
     var fat by rememberSaveable { mutableStateOf(0.0) }
     var micros by rememberSaveable { mutableStateOf(MicronutrientValues()) }
-    var mealType by rememberSaveable { mutableStateOf(initialMealType.ifBlank { MealType.currentMealId }) }
+    var mealType by rememberSaveable {
+        mutableStateOf(
+            initialMealType.ifBlank {
+                if (mealTimesEnabled) MealType.currentMealId else MealType.OTHER.id
+            },
+        )
+    }
     var mealMenuExpanded by remember { mutableStateOf(false) }
 
     // Serving: unit options suggested from the entered name (same heuristics as
@@ -768,7 +775,7 @@ internal fun ManualEntryDialog(
                             onDismissRequest = { mealMenuExpanded = false },
                             menuWidth = 184.dp
                         ) {
-                            for (m in pickerMealIds()) {
+                            for (m in pickerMealIds(includeOther = !mealTimesEnabled)) {
                                 SheetGlassDropdownMenuItem(
                                     label = mealLabel(m),
                                     leadingIcon = sheetMealIcon(m),

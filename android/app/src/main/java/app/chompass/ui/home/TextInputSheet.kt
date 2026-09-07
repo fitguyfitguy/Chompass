@@ -6,7 +6,6 @@ import app.chompass.ui.components.rememberChompassSheetState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -34,24 +33,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import app.chompass.R
 import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.isDarkTheme
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 
 /**
@@ -127,33 +120,10 @@ fun TextInputSheet(
                 // on the handle, the scrim and Cancel.
                 .blockSheetDragAtScrollEdges(scrollState)
         ) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextButton(onClick = { if (!busy) onDismiss() }) {
-                    Text(
-                        stringResource(R.string.action_cancel),
-                        color = AppColors.Calorie,
-                        fontSize = 16.sp,
-                        maxLines = 1
-                    )
-                }
-                Text(
-                    stringResource(R.string.text_input_title),
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 4.dp),
-                    textAlign = TextAlign.Center
-                )
-                Spacer(Modifier.width(72.dp))
-            }
+            SheetReviewToolbar(
+                title = stringResource(R.string.text_input_title),
+                onCancel = { if (!busy) onDismiss() },
+            )
 
             Column(
                 Modifier

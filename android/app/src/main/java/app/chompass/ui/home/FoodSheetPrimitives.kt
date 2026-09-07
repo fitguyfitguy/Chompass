@@ -150,6 +150,35 @@ internal fun SheetReviewToolbar(
     }
 }
 
+/** Dim note in More Nutrition when meal-level micros no longer match the constituent mix. */
+@Composable
+internal fun StaleCompositionNote(
+    onReestimate: (() -> Unit)? = null,
+) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 18.dp, vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(
+            stringResource(R.string.nutrition_stale_composition),
+            fontSize = 13.sp,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            lineHeight = 18.sp,
+        )
+        if (onReestimate != null) {
+            Text(
+                stringResource(R.string.nutrition_stale_reestimate),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.clickable(onClick = onReestimate),
+            )
+        }
+    }
+}
+
 /**
  * Sticky primary CTA for [FoodResultSheet] / [EditFoodEntrySheet].
  * Sits below the scroll body so Log/Save stays visible with the IME open.
@@ -859,9 +888,10 @@ internal fun mealLabel(mealId: String): String {
 }
 
 @Composable
-internal fun pickerMealIds(): List<String> {
+internal fun pickerMealIds(includeOther: Boolean = false): List<String> {
     val enabled = rememberedMealCatalog().enabledForPicker().map { it.id }
-    return enabled.ifEmpty { listOf(MealType.SNACK.id) }
+    val ids = enabled.ifEmpty { listOf(MealType.SNACK.id) }
+    return if (includeOther && MealType.OTHER.id !in ids) ids + MealType.OTHER.id else ids
 }
 
 internal fun sheetMealIcon(meal: MealType): ImageVector = when (meal) {

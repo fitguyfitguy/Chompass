@@ -203,7 +203,7 @@ enum class AIProvider {
     val requiresCustomModelName: Boolean get() = this == CUSTOM_OPENAI
     val usesConfigurableRequestTimeout: Boolean get() = this == OLLAMA || this == CUSTOM_OPENAI
     val supportsCustomModelName: Boolean
-        get() = this == OPENROUTER || this == HUGGING_FACE || this == CUSTOM_OPENAI
+        get() = this == OPENROUTER || this == HUGGING_FACE || this == CUSTOM_OPENAI || this == OLLAMA
 
     val apiFormat: ApiFormat get() = when (this) {
         GEMINI -> ApiFormat.GEMINI

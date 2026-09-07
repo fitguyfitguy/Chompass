@@ -7,6 +7,7 @@ import { todayIso } from "../lib/date.js";
 import { formatNumber, t } from "../lib/i18n/index.js";
 import { ALL_MICRO_KEYS } from "../lib/home-nutrients.js";
 import { escapeHtml } from "../lib/ui/html.js";
+import { mealLabel } from "../lib/meal-label.js";
 
 /** Import shared meals from `#/add-meal?d=` (Android MealShare bridge). */
 export class AddMealView extends HTMLElement {
@@ -39,7 +40,7 @@ export class AddMealView extends HTMLElement {
             <label class="copy-select__row">
               <input type="checkbox" data-idx="${i}" checked />
               <span><strong>${escapeHtml(m.name)}</strong><br/>
-              <span class="recents-meta">${formatNumber(Math.round(m.calories))} kcal · ${Math.round(m.proteinG)}P / ${Math.round(m.carbsG)}C / ${Math.round(m.fatG)}F · ${m.mealType}</span></span>
+              <span class="recents-meta">${formatNumber(Math.round(m.calories))} kcal · ${Math.round(m.proteinG)}P / ${Math.round(m.carbsG)}C / ${Math.round(m.fatG)}F · ${escapeHtml(mealLabel(m.mealType))}</span></span>
             </label>`
             )
             .join("")}

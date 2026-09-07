@@ -9,6 +9,10 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Mic
@@ -55,8 +60,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -436,47 +443,90 @@ internal fun AddFoodSheetContent(
             Spacer(Modifier.height(14.dp))
         }
         Spacer(Modifier.height(8.dp))
-        if (waterTrackingEnabled) {
-            Spacer(Modifier.height(12.dp))
-            AddFoodWaterQuickRow(
-                presetsMl = waterQuickPresetsMl,
-                useMetric = waterUseMetric,
-                onWater = onWater,
-                onWaterCustom = onWaterCustom,
-            )
-        }
-        if (nicotineTrackingEnabled) {
-            Spacer(Modifier.height(12.dp))
-            AddFoodNicotineQuickRow(
-                quickKinds = nicotineQuickKinds,
-                onNicotine = onNicotine,
-                onNicotineCustom = onNicotineCustom,
-            )
-        }
-        if (caffeineTrackingEnabled) {
-            Spacer(Modifier.height(12.dp))
-            AddFoodCaffeineQuickRow(
-                quickKinds = caffeineQuickKinds,
-                onCaffeine = onCaffeine,
-                onCaffeineCustom = onCaffeineCustom,
-            )
-        }
-        if (fastingEnabled) {
-            Spacer(Modifier.height(12.dp))
-            FastingHubControl(
-                phase = fastingPhase,
-                fastHours = fastingGoalHours,
-                eatHours = fastingEatHours,
-                fastElapsedMillis = fastingElapsedMillis,
-                eatElapsedMillis = fastingEatingElapsedMillis,
-                goalReached = fastingGoalReached,
-                autoStarted = fastingAutoStarted,
-                nextFastStartMillis = fastingNextFastStartMillis,
-                nowMillis = fastingNowMillis,
-                autoMode = fastingAutoWindows,
-                onStart = onStartFast,
-                onStop = onStopFast,
-            )
+        val enabledTrackerCount = listOf(
+            waterTrackingEnabled,
+            nicotineTrackingEnabled,
+            caffeineTrackingEnabled,
+            fastingEnabled,
+        ).count { it }
+        if (enabledTrackerCount > 0) {
+            var trackersExpanded by rememberSaveable { mutableStateOf(enabledTrackerCount <= 2) }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 48.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable(
+                        onClick = { trackersExpanded = !trackersExpanded },
+                        role = Role.Button,
+                    )
+                    .padding(vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    stringResource(R.string.add_food_trackers_section),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    modifier = Modifier.weight(1f),
+                )
+                Icon(
+                    if (trackersExpanded) Icons.Filled.KeyboardArrowDown
+                    else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                )
+            }
+            AnimatedVisibility(
+                visible = trackersExpanded,
+                enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
+                exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f)),
+            ) {
+                Column {
+                    if (waterTrackingEnabled) {
+                        Spacer(Modifier.height(12.dp))
+                        AddFoodWaterQuickRow(
+                            presetsMl = waterQuickPresetsMl,
+                            useMetric = waterUseMetric,
+                            onWater = onWater,
+                            onWaterCustom = onWaterCustom,
+                        )
+                    }
+                    if (nicotineTrackingEnabled) {
+                        Spacer(Modifier.height(12.dp))
+                        AddFoodNicotineQuickRow(
+                            quickKinds = nicotineQuickKinds,
+                            onNicotine = onNicotine,
+                            onNicotineCustom = onNicotineCustom,
+                        )
+                    }
+                    if (caffeineTrackingEnabled) {
+                        Spacer(Modifier.height(12.dp))
+                        AddFoodCaffeineQuickRow(
+                            quickKinds = caffeineQuickKinds,
+                            onCaffeine = onCaffeine,
+                            onCaffeineCustom = onCaffeineCustom,
+                        )
+                    }
+                    if (fastingEnabled) {
+                        Spacer(Modifier.height(12.dp))
+                        FastingHubControl(
+                            phase = fastingPhase,
+                            fastHours = fastingGoalHours,
+                            eatHours = fastingEatHours,
+                            fastElapsedMillis = fastingElapsedMillis,
+                            eatElapsedMillis = fastingEatingElapsedMillis,
+                            goalReached = fastingGoalReached,
+                            autoStarted = fastingAutoStarted,
+                            nextFastStartMillis = fastingNextFastStartMillis,
+                            nowMillis = fastingNowMillis,
+                            autoMode = fastingAutoWindows,
+                            onStart = onStartFast,
+                            onStop = onStopFast,
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -590,6 +640,13 @@ private fun AddFoodRelogChip(
                 entry.name,
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                mealLabel(entry.mealType),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

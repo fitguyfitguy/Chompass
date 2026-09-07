@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -176,7 +177,9 @@ fun FastingProgressRow(
                             containerColor = MaterialTheme.colorScheme.primary,
                         ),
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
-                        modifier = Modifier.heightIn(min = 48.dp),
+                        modifier = Modifier
+                            .minimumInteractiveComponentSize()
+                            .heightIn(min = 48.dp),
                     ) {
                         Text(stringResource(R.string.fasting_stop), fontSize = 13.sp)
                     }
@@ -190,7 +193,9 @@ fun FastingProgressRow(
                         containerColor = MaterialTheme.colorScheme.primary,
                     ),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
-                    modifier = Modifier.heightIn(min = 48.dp),
+                    modifier = Modifier
+                        .minimumInteractiveComponentSize()
+                        .heightIn(min = 48.dp),
                 ) {
                     Text(stringResource(R.string.fasting_start), fontSize = 13.sp)
                 }
@@ -289,7 +294,9 @@ fun FastingHubControl(
                             containerColor = MaterialTheme.colorScheme.primary,
                         ),
                         contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
-                        modifier = Modifier.heightIn(min = 48.dp),
+                        modifier = Modifier
+                            .minimumInteractiveComponentSize()
+                            .heightIn(min = 48.dp),
                     ) {
                         Text(stringResource(R.string.fasting_stop), fontSize = 13.sp)
                     }
@@ -301,7 +308,9 @@ fun FastingHubControl(
                         containerColor = MaterialTheme.colorScheme.primary,
                     ),
                     contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
-                    modifier = Modifier.heightIn(min = 48.dp),
+                    modifier = Modifier
+                        .minimumInteractiveComponentSize()
+                        .heightIn(min = 48.dp),
                 ) {
                     Text(stringResource(R.string.fasting_start), fontSize = 13.sp)
                 }

@@ -66,6 +66,7 @@ import app.chompass.R
 import app.chompass.models.LocaleFormat
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
+import app.chompass.models.microsStaleFor
 import app.chompass.services.MealShare
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.MicronutrientField
@@ -119,6 +120,7 @@ fun EditFoodEntrySheet(
     aiFeaturesEnabled: Boolean = true,
     useSystemDateTimePickers: Boolean = false,
     dayEntries: List<FoodEntry> = emptyList(),
+    mealTimesEnabled: Boolean = true,
     onReprocess: suspend (
         updatedNote: String,
         onProgress: (FoodAnalysisProgress) -> Unit,
@@ -335,6 +337,7 @@ fun EditFoodEntrySheet(
                     customNote = noteText.trim().takeIf { it.isNotEmpty() },
                     emoji = newAnalysis.emoji,
                     constituents = newAnalysis.constituents,
+                    microsCompositionSignature = app.chompass.models.microsCompositionSignature(newAnalysis.constituents),
                 ).let { newAnalysis.toMicronutrients().applyTo(it) }
                 editableCalories = newAnalysis.calories
                 editableProtein = newAnalysis.protein
@@ -589,8 +592,15 @@ fun EditFoodEntrySheet(
                 if (moreNutritionExpanded) {
                     item {
                         SheetPillCard {
+                            val stale = microsStaleFor(
+                                currentBaseEntry.microsCompositionSignature,
+                                editableConstituents,
+                            )
+                            if (stale) {
+                                StaleCompositionNote(onReestimate = { reprocess() })
+                            }
                             MicronutrientField.MoreNutrition.forEachIndexed { idx, field ->
-                                if (idx > 0) SheetHairline()
+                                if (idx > 0 || stale) SheetHairline()
                                 val value = math.scaledD(editableMicros[field])
                                 ReviewNutritionValueRow(
                                     label = stringResource(field.labelRes),
@@ -645,7 +655,7 @@ fun EditFoodEntrySheet(
                             onDismissRequest = { mealMenuExpanded = false },
                             menuWidth = 184.dp
                         ) {
-                            for (m in pickerMealIds()) {
+                            for (m in pickerMealIds(includeOther = !mealTimesEnabled)) {
                                 SheetGlassDropdownMenuItem(
                                     label = mealLabel(m),
                                     leadingIcon = sheetMealIcon(m),

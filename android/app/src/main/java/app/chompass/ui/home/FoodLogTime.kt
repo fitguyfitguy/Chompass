@@ -2,6 +2,7 @@ package app.chompass.ui.home
 
 import app.chompass.models.FoodEntry
 import app.chompass.models.MealCatalog
+import app.chompass.models.MealType
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -33,6 +34,24 @@ internal fun mealIdForLogging(
     timeOverride: LocalTime?,
     nowTime: LocalTime,
 ): String = catalog.mealIdAt(timeOverride ?: nowTime)
+
+/** Relog/copy keep [templateMealType] when meal-time suggestions are off. */
+internal fun loggingSlotFor(
+    templateMealType: String,
+    timesEnabled: Boolean,
+    catalog: MealCatalog,
+    timeOverride: LocalTime?,
+    nowTime: LocalTime,
+): String =
+    if (!timesEnabled) templateMealType else mealIdForLogging(catalog, timeOverride, nowTime)
+
+/** UI prefill: Other when suggestions are off, else catalog slot at [time]. */
+internal fun suggestedSlotFor(
+    timesEnabled: Boolean,
+    catalog: MealCatalog,
+    time: LocalTime,
+): String =
+    if (!timesEnabled) MealType.OTHER.id else catalog.mealIdAt(time)
 
 /**
  * Other rows in the same meal slot on [original]'s calendar day. Used by
