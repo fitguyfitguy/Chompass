@@ -237,5 +237,5 @@ Builds:
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[0-9.]+$
-CurrentVersion: 4.6.1
-CurrentVersionCode: 74
+CurrentVersion: 4.7.0
+CurrentVersionCode: 75

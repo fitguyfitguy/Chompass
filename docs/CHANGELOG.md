@@ -5,21 +5,17 @@ All notable changes to Chompass are documented here.
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
 
-## [Unreleased]
+## [4.7.0] - 2026-09-07
 
 ### Added
 
-- **Product photos and an info card for barcode foods** (Android + web): scanning a barcode now shows the product's front photo from Open Food Facts in the review sheet instead of the generic tag emoji, and a product information card lists the package size, ingredient list, Nutri-Score, NOVA group, Eco-Score, allergens, labels, and categories. When the package size is known, the serving picker also offers the whole package as a unit. A credit line names Open Food Facts contributors and CC BY-SA 3.0 and opens the product page. If a product has no photo, the tag emoji stays as before. The photo and card stay on your device: they are not included in exports or sync.
+- **Product photos and an info card for barcode foods** (Android + web): scanning a barcode now shows the product's front photo from Open Food Facts in the review sheet, plus an info card with package size, ingredients, Nutri-Score, NOVA group, Eco-Score, allergens, labels, and categories. When the package size is known, the serving picker offers the whole package as a unit. A credit line names Open Food Facts contributors and the CC BY-SA 3.0 license, and opens the product page. The photo and card stay on your device: they are not included in exports or sync.
 
 ### Fixed
 
 - **A late-night dinner now saves** (Android + web): setting Dinner to a time after midnight, such as 2:00, used to fail the meals editor check because the slot list still ran breakfast, lunch, dinner, snack. Start times are checked around the clock, so a 2am dinner in the usual meal order saves. Follows Codeberg [#88](https://codeberg.org/fitguy/Chompass/issues/88) by [@BrassCat](https://codeberg.org/BrassCat).
 - **Barcode review keeps the product name and photo** (web): looking up a barcode with extra product details used to open a blank Log food form. The review now shows the name, photo, product card, and serving or package units.
 - **Barcode product photos show the whole pack** (Android + web): the front photo sits in a wide letterbox instead of a cropped square, so a jar or bottle is not zoomed or squeezed. Tapping the photo opens the Open Food Facts product page.
-
-
-
-
 
 ## [4.6.1] - 2026-09-06
 
