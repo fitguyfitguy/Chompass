@@ -109,6 +109,7 @@ fun ProgressiveMealSheet(
             ProgressiveMealFooterRow(
                 isSaving = isSaving,
                 canLog = canLog,
+                named = draft.name.isNotBlank(),
                 onAddAnother = onAddAnother,
                 onLogMeal = onLogMeal,
             )
@@ -150,6 +151,7 @@ internal fun ProgressiveMealSheetBody(
             ProgressiveMealFooterRow(
                 isSaving = isSaving,
                 canLog = canLog,
+                named = draft.name.isNotBlank(),
                 onAddAnother = onAddAnother,
                 onLogMeal = onLogMeal,
             )
@@ -204,9 +206,15 @@ private fun ProgressiveMealContentList(
                     shape = RoundedCornerShape(AppRadii.Field),
                 )
                 Text(
-                    stringResource(R.string.progressive_meal_ingredient_count, draft.items.size),
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    stringResource(
+                        if (draft.name.isNotBlank()) {
+                            R.string.progressive_meal_name_hint_named
+                        } else {
+                            R.string.progressive_meal_name_hint_empty
+                        },
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -318,9 +326,10 @@ private fun ProgressiveMealContentList(
 }
 
 @Composable
-private fun ProgressiveMealFooterRow(
+internal fun ProgressiveMealFooterRow(
     isSaving: Boolean,
     canLog: Boolean,
+    named: Boolean,
     onAddAnother: () -> Unit,
     onLogMeal: () -> Unit,
 ) {
@@ -344,7 +353,9 @@ private fun ProgressiveMealFooterRow(
             modifier = Modifier.weight(1f),
         )
         SheetToolbarPill(
-            stringResource(R.string.progressive_meal_log),
+            stringResource(
+                if (named) R.string.progressive_meal_log else R.string.progressive_meal_log_items,
+            ),
             bold = true,
             compact = true,
             enabled = !isSaving && canLog,
@@ -456,7 +467,7 @@ private val ScreenshotProgressiveDraft = ProgressiveMealDraft(
 /**
  * Home with the seeded meal-builder sheet for release screenshots (no
  * ModalBottomSheet) — locks the Codeberg #84 pinned-footer layout: the
- * Add another / Log meal row must stay visible under a 6-ingredient list.
+ * Add another / Log items row must stay visible under a 6-ingredient list.
  */
 @Composable
 internal fun HomeProgressiveMealScreenshotContent(ui: HomeUiState) {

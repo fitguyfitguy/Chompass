@@ -119,7 +119,10 @@ export const en = Object.freeze({
 
   // Progressive meal draft
   "progressive_meal.title": "Building meal",
-  "progressive_meal.name_placeholder": "Meal name (optional)",
+  "progressive_meal.name_placeholder": "Meal name",
+  "progressive_meal.name_hint_empty": "Leave empty to log each ingredient.",
+  "progressive_meal.name_hint_named": "Logs as one food.",
+  "progressive_meal.log_items": "Log items",
   "progressive_meal.add_next": "Add next ingredient",
   "progressive_meal.add_to_meal": "Add to meal",
   "progressive_meal.add_another": "Add another",

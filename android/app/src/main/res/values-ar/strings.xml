@@ -1195,7 +1195,10 @@
     <string name="progressive_meal_empty">لا مكونات بعد</string>
     <string name="progressive_meal_ingredient_count">%1$d مكونات</string>
     <string name="progressive_meal_log">تسجيل الوجبة</string>
-    <string name="progressive_meal_name_placeholder">اسم الوجبة (اختياري)</string>
+    <string name="progressive_meal_name_placeholder">اسم الوجبة</string>
+    <string name="progressive_meal_name_hint_empty">اتركه فارغًا لتسجيل كل مكوّن.</string>
+    <string name="progressive_meal_name_hint_named">يُسجَّل كطعام واحد.</string>
+    <string name="progressive_meal_log_items">تسجيل المكوّنات</string>
     <string name="progressive_meal_remove">إزالة المكون</string>
     <string name="progressive_meal_scale_tip">نصيحة: دوّن وزن الميزان (مثلًا 180 غ) قبل التحليل</string>
     <string name="progressive_meal_title">جارٍ بناء الوجبة</string>

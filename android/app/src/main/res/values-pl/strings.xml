@@ -707,7 +707,10 @@
     <string name="recipe_builder_remove_ingredient">Usuń składnik</string>
     <string name="recipe_builder_scale_format">%1$.2fx</string>
     <string name="progressive_meal_title">Budowanie posiłku</string>
-    <string name="progressive_meal_name_placeholder">Nazwa posiłku (opcjonalnie)</string>
+    <string name="progressive_meal_name_placeholder">Nazwa posiłku</string>
+    <string name="progressive_meal_name_hint_empty">Zostaw puste, aby zapisać każdy składnik.</string>
+    <string name="progressive_meal_name_hint_named">Zapisuje się jako jedna żywność.</string>
+    <string name="progressive_meal_log_items">Zapisz składniki</string>
     <string name="progressive_meal_add_next">Dodaj kolejny składnik</string>
     <string name="progressive_meal_add_to_meal">Dodaj do posiłku</string>
     <string name="progressive_meal_add_another">Dodaj kolejny</string>

@@ -22,6 +22,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.chompass.ui.home.SheetReviewToolbar
 import app.chompass.ui.home.SheetStickyPrimaryBar
 import app.chompass.ui.home.SheetToolbarPill
+import app.chompass.ui.home.ProgressiveMealFooterRow
 import androidx.compose.ui.Modifier
 import org.junit.Rule
 import org.junit.Test
@@ -246,5 +247,26 @@ class OverflowGateTest {
             .assertVisibleSingleLine("settings sort value")
         composeRule.onNodeWithText("Tipp: Aktiviere Health Connect, um die aktiven Kalorien der Uhr/des Smartphones anstelle der geschätzten Aktivität zu verwenden.", useUnmergedTree = true)
             .assertVisibleSingleLine("settings calorie-mode value")
+    }
+
+    @Test
+    @Config(sdk = [34], application = Application::class, qualifiers = "de-w340dp-h720dp")
+    fun progressiveMealFooter_germanLogItems_staysVisible() {
+        composeRule.setContent {
+            MaterialTheme {
+                ProgressiveMealFooterRow(
+                    isSaving = false,
+                    canLog = true,
+                    named = false,
+                    onAddAnother = {},
+                    onLogMeal = {},
+                )
+            }
+        }
+        // Footer pills allow two lines (Codeberg #84). Gate collapse + stacking.
+        composeRule.onNodeWithText("Zutaten loggen")
+            .assertVisibleMaxLines("progressive log-items", maxLines = 2)
+        composeRule.onNodeWithText("Eine weitere hinzufügen")
+            .assertVisibleMaxLines("progressive add-another", maxLines = 2)
     }
 }

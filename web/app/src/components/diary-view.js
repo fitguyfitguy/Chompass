@@ -1626,6 +1626,7 @@ export class DiaryView extends HTMLElement {
           <div class="field">
             <label for="pm-name">${escapeHtml(t("progressive_meal.name_placeholder"))}</label>
             <input id="pm-name" name="name" type="text" value="${escapeAttr(draft.name)}" placeholder="${escapeAttr(t("progressive_meal.name_placeholder"))}" />
+            <p class="add-food-hint" id="pm-name-hint">${escapeHtml((draft.name || "").trim() ? t("progressive_meal.name_hint_named") : t("progressive_meal.name_hint_empty"))}</p>
           </div>
           <p class="add-food-hint">${escapeHtml(t("progressive_meal.ingredient_count", { count: String(draft.items.length) }))}</p>
           <div class="field">
@@ -1639,7 +1640,7 @@ export class DiaryView extends HTMLElement {
             <p>${Math.round(totals.proteinG)}P · ${Math.round(totals.carbsG)}C · ${Math.round(totals.fatG)}F</p>
           </div>
           <div class="btn-row">
-            <button type="button" class="btn btn--primary" data-pm-log>${escapeHtml(t("progressive_meal.log"))}</button>
+            <button type="button" class="btn btn--primary" data-pm-log>${escapeHtml((draft.name || "").trim() ? t("progressive_meal.log") : t("progressive_meal.log_items"))}</button>
             <button type="button" class="btn btn--ghost" data-pm-add>${escapeHtml(t("progressive_meal.add_another"))}</button>
           </div>
           <button type="button" class="btn btn--danger" data-pm-discard>${escapeHtml(t("progressive_meal.discard"))}</button>
@@ -1656,9 +1657,19 @@ export class DiaryView extends HTMLElement {
     const syncMeta = () => {
       const nameInput = /** @type {HTMLInputElement|null} */ (sheet.body.querySelector("#pm-name"));
       const mealSel = /** @type {HTMLSelectElement|null} */ (sheet.body.querySelector("#pm-meal"));
+      const named = Boolean((nameInput?.value ?? "").trim());
       updateProgressiveMealMeta(nameInput?.value ?? "", mealSel?.value || draft.mealType);
+      const hint = sheet.body.querySelector("#pm-name-hint");
+      if (hint) {
+        hint.textContent = named ? t("progressive_meal.name_hint_named") : t("progressive_meal.name_hint_empty");
+      }
+      const logBtn = sheet.body.querySelector("[data-pm-log]");
+      if (logBtn) {
+        logBtn.textContent = named ? t("progressive_meal.log") : t("progressive_meal.log_items");
+      }
     };
 
+    sheet.body.querySelector("#pm-name")?.addEventListener("input", syncMeta);
     sheet.body.querySelector("#pm-name")?.addEventListener("change", syncMeta);
     sheet.body.querySelector("#pm-meal")?.addEventListener("change", syncMeta);
 

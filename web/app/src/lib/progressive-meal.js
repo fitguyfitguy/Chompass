@@ -3,6 +3,9 @@
  * In-memory progressive meal draft (Android ProgressiveMealDraft parity).
  * Session-only — survives route changes within the tab, cleared on Log / Discard.
  */
+import { ALL_MICRO_KEYS } from "./home-nutrients.js";
+import { aggregatesFromConstituents } from "./chompass-core/constituents.js";
+
 
 /**
  * @typedef {Object} ProgressiveMealItem
@@ -129,7 +132,9 @@ export function draftTotals(d) {
 }
 
 /**
- * Build diary rows sharing one recipeLogId (Android ProgressiveMealDraft.toFoodEntries).
+ * Build diary rows (Android ProgressiveMealDraft.toFoodEntries).
+ * Named draft → one FoodEntry with constituents (Codeberg #91).
+ * Unnamed → one row per item sharing recipeLogId.
  * @param {ProgressiveMealDraft} d
  * @param {Object} opts
  * @param {string} opts.date
@@ -138,57 +143,141 @@ export function draftTotals(d) {
  * @returns {import('./chompass-core/models.js').FoodEntry[]}
  */
 export function progressiveMealToFoodEntries(d, opts) {
-  const recipeLogId = opts.recipeLogId || crypto.randomUUID();
   const mealType = /** @type {"breakfast"|"lunch"|"dinner"|"snack"} */ (d.mealType || "snack");
-  return d.items.map((item) => {
-    const a = item.analysis;
-    const options = a.servingUnitOptions ?? [];
-    /** @type {import('./chompass-core/models.js').FoodEntry} */
-    const entry = {
-      id: crypto.randomUUID(),
-      name: a.name,
-      mealType,
-      date: opts.date,
-      time: opts.time,
-      quantityG: a.quantityG ?? null,
-      servingUnitOptions: options,
-      selectedServingUnit: options.length === 0 ? null : item.selectedServingUnit ?? a.selectedServingUnit ?? null,
-      selectedServingQuantity:
-        options.length === 0 ? null : item.selectedServingQuantity ?? a.selectedServingQuantity ?? null,
-      constituents: a.constituents ?? [],
-      calories: Number(a.calories) || 0,
-      proteinG: Number(a.proteinG) || 0,
-      carbsG: Number(a.carbsG) || 0,
-      fatG: Number(a.fatG) || 0,
-      fiberG: a.fiberG ?? null,
-      sugarG: a.sugarG ?? null,
-      addedSugarG: a.addedSugarG ?? null,
-      saturatedFatG: a.saturatedFatG ?? null,
-      monounsaturatedFatG: a.monounsaturatedFatG ?? null,
-      polyunsaturatedFatG: a.polyunsaturatedFatG ?? null,
-      transFatG: a.transFatG ?? null,
-      cholesterolMg: a.cholesterolMg ?? null,
-      sodiumMg: a.sodiumMg ?? null,
-      potassiumMg: a.potassiumMg ?? null,
-      calciumMg: a.calciumMg ?? null,
-      ironMg: a.ironMg ?? null,
-      magnesiumMg: a.magnesiumMg ?? null,
-      zincMg: a.zincMg ?? null,
-      vitaminAMcg: a.vitaminAMcg ?? null,
-      vitaminCMg: a.vitaminCMg ?? null,
-      vitaminDMcg: a.vitaminDMcg ?? null,
-      vitaminB12Mcg: a.vitaminB12Mcg ?? null,
-      vitaminEMg: a.vitaminEMg ?? null,
-      vitaminKMcg: a.vitaminKMcg ?? null,
-      folateMcg: a.folateMcg ?? null,
-      omega3G: a.omega3G ?? null,
-      caffeineMg: a.caffeineMg ?? null,
-      source: item.source || a.source || "ai_estimated",
-      note: a.note ?? null,
-      emoji: a.emoji ?? null,
-      grounding: a.grounding ?? null,
-      recipeLogId,
-    };
-    return entry;
-  });
+  const trimmedName = (d.name || "").trim();
+  if (trimmedName) {
+    const composite = toCompositeEntry(d, opts, mealType, trimmedName);
+    return composite ? [composite] : [];
+  }
+  const recipeLogId = opts.recipeLogId || crypto.randomUUID();
+  return d.items.map((item) => itemToEntry(item, opts, mealType, recipeLogId));
+}
+
+/**
+ * @param {ProgressiveMealItem} item
+ * @param {{date: string, time: string}} opts
+ * @param {"breakfast"|"lunch"|"dinner"|"snack"} mealType
+ * @param {string|null} recipeLogId
+ * @returns {import('./chompass-core/models.js').FoodEntry}
+ */
+function itemToEntry(item, opts, mealType, recipeLogId) {
+  const a = item.analysis;
+  const options = a.servingUnitOptions ?? [];
+  /** @type {import('./chompass-core/models.js').FoodEntry} */
+  const entry = {
+    id: crypto.randomUUID(),
+    name: a.name,
+    mealType,
+    date: opts.date,
+    time: opts.time,
+    quantityG: a.quantityG ?? null,
+    servingUnitOptions: options,
+    selectedServingUnit: options.length === 0 ? null : item.selectedServingUnit ?? a.selectedServingUnit ?? null,
+    selectedServingQuantity:
+      options.length === 0 ? null : item.selectedServingQuantity ?? a.selectedServingQuantity ?? null,
+    constituents: a.constituents ?? [],
+    calories: Number(a.calories) || 0,
+    proteinG: Number(a.proteinG) || 0,
+    carbsG: Number(a.carbsG) || 0,
+    fatG: Number(a.fatG) || 0,
+    fiberG: a.fiberG ?? null,
+    sugarG: a.sugarG ?? null,
+    addedSugarG: a.addedSugarG ?? null,
+    saturatedFatG: a.saturatedFatG ?? null,
+    monounsaturatedFatG: a.monounsaturatedFatG ?? null,
+    polyunsaturatedFatG: a.polyunsaturatedFatG ?? null,
+    transFatG: a.transFatG ?? null,
+    cholesterolMg: a.cholesterolMg ?? null,
+    sodiumMg: a.sodiumMg ?? null,
+    potassiumMg: a.potassiumMg ?? null,
+    calciumMg: a.calciumMg ?? null,
+    ironMg: a.ironMg ?? null,
+    magnesiumMg: a.magnesiumMg ?? null,
+    zincMg: a.zincMg ?? null,
+    vitaminAMcg: a.vitaminAMcg ?? null,
+    vitaminCMg: a.vitaminCMg ?? null,
+    vitaminDMcg: a.vitaminDMcg ?? null,
+    vitaminB12Mcg: a.vitaminB12Mcg ?? null,
+    vitaminEMg: a.vitaminEMg ?? null,
+    vitaminKMcg: a.vitaminKMcg ?? null,
+    folateMcg: a.folateMcg ?? null,
+    omega3G: a.omega3G ?? null,
+    caffeineMg: a.caffeineMg ?? null,
+    source: item.source || a.source || "ai_estimated",
+    note: a.note ?? null,
+    emoji: a.emoji ?? null,
+    grounding: a.grounding ?? null,
+    recipeLogId,
+  };
+  return entry;
+}
+
+/**
+ * @param {ProgressiveMealItem} item
+ * @returns {import('./chompass-core/models.js').FoodConstituent}
+ */
+function itemToConstituent(item) {
+  const a = item.analysis;
+  const options = a.servingUnitOptions ?? [];
+  /** @type {import('./chompass-core/models.js').FoodConstituent} */
+  const row = {
+    name: a.name,
+    calories: Number(a.calories) || 0,
+    proteinG: Number(a.proteinG) || 0,
+    carbsG: Number(a.carbsG) || 0,
+    fatG: Number(a.fatG) || 0,
+    servingSizeGrams: Number(a.quantityG) || 0,
+    emoji: a.emoji ?? null,
+    servingUnitOptions: options,
+    selectedServingUnit: options.length === 0 ? null : item.selectedServingUnit ?? a.selectedServingUnit ?? null,
+    selectedServingQuantity:
+      options.length === 0 ? null : item.selectedServingQuantity ?? a.selectedServingQuantity ?? null,
+  };
+  for (const key of ALL_MICRO_KEYS) {
+    row[key] = a[key] ?? null;
+  }
+  return row;
+}
+
+/**
+ * @param {ProgressiveMealDraft} d
+ * @param {{date: string, time: string}} opts
+ * @param {"breakfast"|"lunch"|"dinner"|"snack"} mealType
+ * @param {string} mealName
+ * @returns {import('./chompass-core/models.js').FoodEntry|null}
+ */
+function toCompositeEntry(d, opts, mealType, mealName) {
+  if (!d.items.length) return null;
+  const constituents = d.items.map(itemToConstituent);
+  const agg = aggregatesFromConstituents(constituents);
+  if (!agg) return null;
+  const sources = [...new Set(d.items.map((it) => it.source || it.analysis.source || "ai_estimated"))];
+  const source = sources.length === 1 ? sources[0] : "manual";
+  /** @type {import('./chompass-core/models.js').FoodEntry} */
+  const entry = {
+    id: crypto.randomUUID(),
+    name: mealName,
+    mealType,
+    date: opts.date,
+    time: opts.time,
+    quantityG: agg.servingSizeGrams,
+    servingUnitOptions: [],
+    selectedServingUnit: null,
+    selectedServingQuantity: null,
+    constituents,
+    calories: agg.calories,
+    proteinG: agg.proteinG,
+    carbsG: agg.carbsG,
+    fatG: agg.fatG,
+    source,
+    note: null,
+    emoji: d.items.map((it) => it.analysis.emoji).find(Boolean) ?? null,
+    grounding: null,
+    recipeLogId: null,
+  };
+  for (const key of ALL_MICRO_KEYS) {
+    const present = constituents.map((c) => c[key]).filter((v) => v != null);
+    entry[key] = present.length === 0 ? null : present.reduce((s, v) => s + Number(v), 0);
+  }
+  return entry;
 }

@@ -841,7 +841,10 @@
     <string name="recipe_builder_remove_ingredient">Remove ingredient</string>
     <string name="recipe_builder_scale_format">%1$.2fx</string>
     <string name="progressive_meal_title">Building meal</string>
-    <string name="progressive_meal_name_placeholder">Meal name (optional)</string>
+    <string name="progressive_meal_name_placeholder">Meal name</string>
+    <string name="progressive_meal_name_hint_empty">Leave empty to log each ingredient.</string>
+    <string name="progressive_meal_name_hint_named">Logs as one food.</string>
+    <string name="progressive_meal_log_items">Log items</string>
     <string name="progressive_meal_add_next">Add next ingredient</string>
     <string name="progressive_meal_add_to_meal">Add to meal</string>
     <string name="progressive_meal_add_another">Add another</string>

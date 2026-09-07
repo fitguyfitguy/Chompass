@@ -35,6 +35,7 @@ import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.PendingFoodAnalysisDraft
 import app.chompass.models.PendingFoodInputDraft
 import app.chompass.models.ProgressiveMealDraft
+import app.chompass.models.toFoodEntries
 import app.chompass.models.ProgressiveMealItem
 import app.chompass.models.QueuedAnalysis
 import app.chompass.models.QueueStatus
@@ -2110,50 +2111,29 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             try {
                 val recipeLogId = UUID.randomUUID()
                 val timestamp = timestampForFoodLog()
-                val knownKeys = container.foodRepository.existingFoodIdentityKeys().toMutableSet()
-                val built = draft.items.map { item ->
-                    val entryId = UUID.randomUUID()
-                    val filename = item.imageBytes?.let { persistImage(it, entryId) }
-                    val analysis = item.analysis
-                    val resolvedName = run {
-                        val resolved = disambiguateFoodName(analysis.name, knownKeys)
-                        knownKeys.add(resolved.lowercase(Locale.ROOT))
-                        resolved
+                val named = draft.name.trim().isNotEmpty()
+                val filenames = LinkedHashMap<java.util.UUID, String?>()
+                var photoAssigned = false
+                for (item in draft.items) {
+                    val bytes = item.imageBytes
+                    if (bytes == null) {
+                        filenames[item.id] = null
+                        continue
                     }
-                    analysis.toMicronutrients().applyTo(
-                        FoodEntry(
-                            id = entryId,
-                            name = resolvedName,
-                            calories = analysis.calories,
-                            protein = analysis.protein,
-                            carbs = analysis.carbs,
-                            fat = analysis.fat,
-                            timestamp = timestamp,
-                            imageFilename = filename,
-                            emoji = analysis.emoji,
-                            source = item.source,
-                            mealType = draft.mealType,
-                            servingSizeGrams = analysis.servingSizeGrams,
-                            servingUnitOptions = analysis.servingUnitOptions,
-                            selectedServingUnit = if (analysis.servingUnitOptions.isEmpty()) {
-                                null
-                            } else {
-                                item.selectedServingUnit
-                            },
-                            selectedServingQuantity = if (analysis.servingUnitOptions.isEmpty()) {
-                                null
-                            } else {
-                                item.selectedServingQuantity
-                            },
-                            customNote = analysis.customNote,
-                            grounding = analysis.grounding,
-                            recipeLogId = recipeLogId,
-                            constituents = analysis.constituents,
-                            productMetadata = analysis.productMetadata,
-                            microsCompositionSignature = app.chompass.models.microsCompositionSignature(analysis.constituents),
-                        )
-                    )
+                    if (named && photoAssigned) {
+                        filenames[item.id] = null
+                        continue
+                    }
+                    if (named) photoAssigned = true
+                    filenames[item.id] = persistImage(bytes, item.id)
                 }
+                val knownKeys = container.foodRepository.existingFoodIdentityKeys()
+                val built = draft.toFoodEntries(
+                    recipeLogId = recipeLogId,
+                    timestamp = timestamp,
+                    imageFilenameFor = { item, _ -> filenames[item.id] },
+                    resolveName = { raw -> disambiguateFoodName(raw, knownKeys) },
+                )
                 // One batched DataStore edit for the whole meal instead of one
                 // full-file write per ingredient; Health Connect mirrors in the
                 // background so the sheet dismisses right after the local commit.

@@ -1174,7 +1174,10 @@
     <string name="progressive_meal_empty">Nog geen ingrediënten</string>
     <string name="progressive_meal_ingredient_count">%1$d ingrediënten</string>
     <string name="progressive_meal_log">Maaltijd loggen</string>
-    <string name="progressive_meal_name_placeholder">Naam maaltijd (optioneel)</string>
+    <string name="progressive_meal_name_placeholder">Naam maaltijd</string>
+    <string name="progressive_meal_name_hint_empty">Laat leeg om elk ingrediënt te loggen.</string>
+    <string name="progressive_meal_name_hint_named">Wordt als één voedingsmiddel gelogd.</string>
+    <string name="progressive_meal_log_items">Ingrediënten loggen</string>
     <string name="progressive_meal_remove">Ingrediënt verwijderen</string>
     <string name="progressive_meal_scale_tip">Tip: noteer het gewicht op de weegschaal (bijv. 180 g) vóór het analyseren</string>
     <string name="progressive_meal_title">Maaltijd samenstellen</string>

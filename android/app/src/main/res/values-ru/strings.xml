@@ -1537,7 +1537,10 @@
     <string name="progressive_meal_empty">Ингредиентов ещё нет</string>
     <string name="progressive_meal_ingredient_count">Ингредиентов: %1$d</string>
     <string name="progressive_meal_log">Записать приём пищи</string>
-    <string name="progressive_meal_name_placeholder">Название приёма пищи (необязательно)</string>
+    <string name="progressive_meal_name_placeholder">Название</string>
+    <string name="progressive_meal_name_hint_empty">Оставь пустым, чтобы записать каждый ингредиент.</string>
+    <string name="progressive_meal_name_hint_named">Записывается как один продукт.</string>
+    <string name="progressive_meal_log_items">Записать продукты</string>
     <string name="progressive_meal_remove">Убрать ингредиент</string>
     <string name="progressive_meal_scale_tip">Совет: зафиксируй вес на весах (например, 180 г) перед анализом</string>
     <string name="progressive_meal_title">Создание приёма пищи</string>

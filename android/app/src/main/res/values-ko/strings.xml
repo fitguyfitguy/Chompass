@@ -1194,7 +1194,10 @@
     <string name="progressive_meal_empty">아직 재료가 없어요</string>
     <string name="progressive_meal_ingredient_count">재료 %1$d개</string>
     <string name="progressive_meal_log">식사 기록</string>
-    <string name="progressive_meal_name_placeholder">식사 이름(선택 사항)</string>
+    <string name="progressive_meal_name_placeholder">식사 이름</string>
+    <string name="progressive_meal_name_hint_empty">비워 두면 재료마다 기록해요.</string>
+    <string name="progressive_meal_name_hint_named">음식 하나로 기록돼요.</string>
+    <string name="progressive_meal_log_items">재료 기록</string>
     <string name="progressive_meal_remove">재료 제거</string>
     <string name="progressive_meal_scale_tip">팁: 분석 전에 저울 무게(예: 180g)를 메모하세요</string>
     <string name="progressive_meal_title">식사 구성 중</string>

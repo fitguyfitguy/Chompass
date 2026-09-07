@@ -1262,7 +1262,10 @@
     <string name="progressive_meal_empty">Aún no hay ingredientes</string>
     <string name="progressive_meal_ingredient_count">%1$d ingredientes</string>
     <string name="progressive_meal_log">Registrar comida</string>
-    <string name="progressive_meal_name_placeholder">Nombre de la comida (opcional)</string>
+    <string name="progressive_meal_name_placeholder">Nombre de la comida</string>
+    <string name="progressive_meal_name_hint_empty">Déjalo vacío para registrar cada ingrediente.</string>
+    <string name="progressive_meal_name_hint_named">Se registra como un alimento.</string>
+    <string name="progressive_meal_log_items">Registrar ítems</string>
     <string name="progressive_meal_remove">Quitar ingrediente</string>
     <string name="progressive_meal_scale_tip">Consejo: anota el peso en la báscula (p. ej. 180 g) antes de analizar</string>
     <string name="progressive_meal_title">Creando comida</string>
