@@ -1193,7 +1193,10 @@ bilirsən?</string>
     <string name="progressive_meal_empty">Hələ inqrediyent yoxdur</string>
     <string name="progressive_meal_ingredient_count">%1$d inqrediyent</string>
     <string name="progressive_meal_log">Yeməyi qeyd et</string>
-    <string name="progressive_meal_name_placeholder">Yeməyin adı (istəyə bağlı)</string>
+    <string name="progressive_meal_name_placeholder">Yemək adı</string>
+    <string name="progressive_meal_name_hint_empty">Hər inqrediyenti qeyd etmək üçün boş burax.</string>
+    <string name="progressive_meal_name_hint_named">Bir qida kimi qeyd olunur.</string>
+    <string name="progressive_meal_log_items">İnqrediyentləri qeyd et</string>
     <string name="progressive_meal_remove">İnqrediyenti sil</string>
     <string name="progressive_meal_scale_tip">Məsləhət: analizdən əvvəl tərəzidəki çəkini qeyd et (məs. 180 q)</string>
     <string name="progressive_meal_title">Yemək hazırlanır</string>

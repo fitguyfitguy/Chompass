@@ -1189,7 +1189,10 @@
     <string name="progressive_meal_empty">Încă fără ingrediente</string>
     <string name="progressive_meal_ingredient_count">%1$d ingrediente</string>
     <string name="progressive_meal_log">Înregistrează masa</string>
-    <string name="progressive_meal_name_placeholder">Numele mesei (opțional)</string>
+    <string name="progressive_meal_name_placeholder">Numele mesei</string>
+    <string name="progressive_meal_name_hint_empty">Lasă gol ca să înregistrezi fiecare ingredient.</string>
+    <string name="progressive_meal_name_hint_named">Se înregistrează ca un aliment.</string>
+    <string name="progressive_meal_log_items">Înregistrează itemi</string>
     <string name="progressive_meal_remove">Elimină ingredientul</string>
     <string name="progressive_meal_scale_tip">Sfat: notează greutatea de pe cântar (ex.: 180 g) înainte de analiză</string>
     <string name="progressive_meal_title">Se construiește masa</string>

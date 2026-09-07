@@ -1195,7 +1195,10 @@
     <string name="progressive_meal_empty">अभी कोई सामग्री नहीं</string>
     <string name="progressive_meal_ingredient_count">%1$d सामग्री</string>
     <string name="progressive_meal_log">भोजन लॉग करें</string>
-    <string name="progressive_meal_name_placeholder">भोजन का नाम (वैकल्पिक)</string>
+    <string name="progressive_meal_name_placeholder">भोजन का नाम</string>
+    <string name="progressive_meal_name_hint_empty">हर सामग्री लॉग करने के लिए खाली छोड़ें.</string>
+    <string name="progressive_meal_name_hint_named">एक खाद्य के रूप में लॉग होता है.</string>
+    <string name="progressive_meal_log_items">सामग्री लॉग करें</string>
     <string name="progressive_meal_remove">सामग्री हटाएं</string>
     <string name="progressive_meal_scale_tip">टिप: विश्लेषण से पहले तराजू का वज़न नोट करें (जैसे 180 ग्राम)</string>
     <string name="progressive_meal_title">भोजन बन रहा है</string>

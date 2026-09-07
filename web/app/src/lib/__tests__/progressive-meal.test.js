@@ -50,10 +50,10 @@ describe("progressive meal draft", () => {
     assert.equal(totals.fatG, 10);
   });
 
-  it("toFoodEntries shares recipeLogId and meal type", () => {
+  it("unnamed toFoodEntries shares recipeLogId and meal type", () => {
     addToProgressiveMeal({ analysis: analysis("A", 100, 10, 5, 2, 100), mealType: "dinner" });
     addToProgressiveMeal({ analysis: analysis("B", 50, 1, 8, 1, 50) });
-    updateProgressiveMealMeta("Plate", "lunch");
+    updateProgressiveMealMeta("", "lunch");
     const d = getProgressiveMeal();
     assert.ok(d);
     const recipeLogId = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
@@ -68,6 +68,37 @@ describe("progressive meal draft", () => {
     assert.equal(entries[0].name, "A");
     assert.equal(entries[1].name, "B");
     assert.equal(entries[0].id === entries[1].id, false);
+  });
+
+  it("named toFoodEntries is one entry with constituents", () => {
+    addToProgressiveMeal({
+      analysis: { ...analysis("A", 100, 10, 5, 2, 100), fiberG: 4 },
+      mealType: "dinner",
+    });
+    addToProgressiveMeal({ analysis: analysis("B", 50, 1, 8, 1, 50) });
+    updateProgressiveMealMeta("Plate", "lunch");
+    const d = getProgressiveMeal();
+    assert.ok(d);
+    const entries = progressiveMealToFoodEntries(d, {
+      date: "2026-08-03",
+      time: "12:00",
+      recipeLogId: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+    });
+    assert.equal(entries.length, 1);
+    const entry = entries[0];
+    assert.equal(entry.name, "Plate");
+    assert.equal(entry.recipeLogId, null);
+    assert.equal(entry.mealType, "lunch");
+    assert.equal(entry.calories, 150);
+    assert.equal(entry.proteinG, 11);
+    assert.equal(entry.carbsG, 13);
+    assert.equal(entry.fatG, 3);
+    assert.equal(entry.quantityG, 150);
+    assert.equal(entry.constituents.length, 2);
+    assert.equal(entry.constituents[0].name, "A");
+    assert.equal(entry.constituents[1].name, "B");
+    assert.equal(entry.fiberG, 4);
+    assert.equal(entry.grounding, null);
   });
 
   it("remove last item clears draft", () => {

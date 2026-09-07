@@ -122,7 +122,10 @@ export const uk = Object.freeze({
 
   // Progressive meal draft
   "progressive_meal.title": "Створення страви",
-  "progressive_meal.name_placeholder": "Назва страви (необов'язково)",
+  "progressive_meal.name_placeholder": "Назва страви",
+  "progressive_meal.name_hint_empty": "Залиш порожнім, щоб записати кожен інгредієнт.",
+  "progressive_meal.name_hint_named": "Записується як одна страва.",
+  "progressive_meal.log_items": "Записати складники",
   "progressive_meal.add_next": "Додати наступний інгредієнт",
   "progressive_meal.add_to_meal": "Додати до страви",
   "progressive_meal.add_another": "Додати ще",

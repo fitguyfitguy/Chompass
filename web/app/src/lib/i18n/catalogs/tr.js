@@ -122,7 +122,10 @@ export const tr = Object.freeze({
 
   // Progressive meal draft
   "progressive_meal.title": "Öğün oluşturuluyor",
-  "progressive_meal.name_placeholder": "Öğün adı (isteğe bağlı)",
+  "progressive_meal.name_placeholder": "Öğün adı",
+  "progressive_meal.name_hint_empty": "Her malzemeyi kaydetmek için boş bırak.",
+  "progressive_meal.name_hint_named": "Tek bir yiyecek olarak kaydedilir.",
+  "progressive_meal.log_items": "Öğeleri kaydet",
   "progressive_meal.add_next": "Sonraki malzemeyi ekle",
   "progressive_meal.add_to_meal": "Öğüne ekle",
   "progressive_meal.add_another": "Başka ekle",

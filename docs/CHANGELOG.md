@@ -5,6 +5,13 @@ All notable changes to Chompass are documented here.
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
 
+## [Unreleased]
+
+### Changed
+
+- **A named meal in the builder now logs as one food** (Android + web): leave the name empty to log each ingredient, or type a name to save one food with those ingredients listed inside it. Relogging and scaling then apply to the whole meal. Follows Codeberg [#91](https://codeberg.org/fitguy/Chompass/issues/91) by [@vandelli](https://codeberg.org/vandelli).
+
+
 ## [4.7.0] - 2026-09-07
 
 ### Added

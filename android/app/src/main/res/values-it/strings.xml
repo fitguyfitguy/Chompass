@@ -1154,7 +1154,10 @@
     <string name="progressive_meal_empty">Ancora nessun ingrediente</string>
     <string name="progressive_meal_ingredient_count">%1$d ingredienti</string>
     <string name="progressive_meal_log">Registra pasto</string>
-    <string name="progressive_meal_name_placeholder">Nome pasto (facoltativo)</string>
+    <string name="progressive_meal_name_placeholder">Nome pasto</string>
+    <string name="progressive_meal_name_hint_empty">Lascia vuoto per registrare ogni ingrediente.</string>
+    <string name="progressive_meal_name_hint_named">Si registra come un alimento.</string>
+    <string name="progressive_meal_log_items">Registra voci</string>
     <string name="progressive_meal_remove">Rimuovi ingrediente</string>
     <string name="progressive_meal_scale_tip">Suggerimento: annota il peso sulla bilancia (es. 180 g) prima di analizzare</string>
     <string name="progressive_meal_title">Creazione pasto</string>

@@ -1194,7 +1194,10 @@
     <string name="progressive_meal_empty">材料がまだありません</string>
     <string name="progressive_meal_ingredient_count">材料 %1$d 点</string>
     <string name="progressive_meal_log">食事を記録</string>
-    <string name="progressive_meal_name_placeholder">食事名（任意）</string>
+    <string name="progressive_meal_name_placeholder">食事名</string>
+    <string name="progressive_meal_name_hint_empty">空欄のままだと材料ごとに記録します。</string>
+    <string name="progressive_meal_name_hint_named">1つの食品として記録します。</string>
+    <string name="progressive_meal_log_items">材料を記録</string>
     <string name="progressive_meal_remove">材料を削除</string>
     <string name="progressive_meal_scale_tip">ヒント：分析前に秤の重量（例：180 g）をメモしましょう</string>
     <string name="progressive_meal_title">食事を作成中</string>
