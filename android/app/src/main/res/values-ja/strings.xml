@@ -1597,7 +1597,7 @@
     <string name="product_labels">ラベル</string>
     <string name="product_categories">カテゴリ</string>
     <string name="product_ingredient_label">原材料</string>
-    <string name="off_attribution">データと写真： Open Food Facts (CC BY-SA)</string>
+    <string name="off_attribution">写真とデータ： Open Food Facts の貢献者 (CC BY-SA 3.0)</string>
     <string name="unit_cup">カップ</string>
     <string name="unit_cup_plural">カップ</string>
     <string name="unit_tbsp">大さじ</string>

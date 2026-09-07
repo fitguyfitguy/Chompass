@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,6 +49,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
@@ -63,6 +65,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.LocaleFormat
 import app.chompass.models.FoodEntry
+import app.chompass.models.FoodSource
 import app.chompass.services.MealShare
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.MicronutrientField
@@ -424,6 +427,7 @@ fun EditFoodEntrySheet(
                 EditFoodEntryHero(
                     emoji = editableEmoji,
                     imageFilename = editableImageFilename,
+                    packShot = entry.source == FoodSource.BARCODE,
                     enabled = !isReprocessing,
                     onClick = {
                         dismissKeyboard()
@@ -1188,6 +1192,7 @@ internal fun EditFoodEntryHero(
     imageFilename: String?,
     onClick: () -> Unit,
     enabled: Boolean = true,
+    packShot: Boolean = false,
 ) {
     val ctx = LocalContext.current
     // Safe-cast so previews (no ChompassApp application) render the emoji fallback.
@@ -1208,10 +1213,11 @@ internal fun EditFoodEntryHero(
             androidx.compose.foundation.Image(
                 bitmap = bitmap.asImageBitmap(),
                 contentDescription = null,
-                contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                contentScale = if (packShot) ContentScale.Fit else ContentScale.Crop,
                 modifier = Modifier
-                    .size(96.dp)
+                    .size(if (packShot) 120.dp else 96.dp)
                     .clip(RoundedCornerShape(AppRadii.Field))
+                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
             )
         } else {
             Text(emoji ?: "🍽", fontSize = 40.sp)

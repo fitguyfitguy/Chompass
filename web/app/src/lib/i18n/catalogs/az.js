@@ -300,7 +300,7 @@ export const az = Object.freeze({
   "product.labels": "Etiketlər",
   "product.categories": "Kateqoriyalar",
   "product.ingredientLabel": "Tərkib",
-  "product.attribution": "Məlumat və şəkil: Open Food Facts (CC BY-SA)",
+  "product.attribution": "Foto və məlumat: Open Food Facts iştirakçıları (CC BY-SA 3.0)",
   "unit.cup": "fincan",
   "unit.cup_plural": "fincan",
   "unit.tbsp": "x.q.",

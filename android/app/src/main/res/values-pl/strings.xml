@@ -72,7 +72,7 @@
     <string name="product_labels">Etykiety</string>
     <string name="product_categories">Kategorie</string>
     <string name="product_ingredient_label">Lista składników</string>
-    <string name="off_attribution">Dane i zdjęcie: Open Food Facts (CC BY-SA)</string>
+    <string name="off_attribution">Zdjęcie i dane: współtwórcy Open Food Facts (CC BY-SA 3.0)</string>
     <string name="unit_cup">filiżanka</string>
     <string name="unit_cup_plural">filiżanki</string>
     <string name="unit_tbsp">łyżka</string>

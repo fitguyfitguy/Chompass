@@ -300,7 +300,7 @@ export const ar = Object.freeze({
   "product.labels": "الوسوم",
   "product.categories": "الفئات",
   "product.ingredientLabel": "قائمة المكونات",
-  "product.attribution": "البيانات والصورة: Open Food Facts (CC BY-SA)",
+  "product.attribution": "الصورة والبيانات: مساهمو Open Food Facts (CC BY-SA 3.0)",
   "unit.cup": "كوب",
   "unit.cup_plural": "أكواب",
   "unit.tbsp": "ملعقة ك.",

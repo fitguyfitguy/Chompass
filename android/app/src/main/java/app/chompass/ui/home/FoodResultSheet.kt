@@ -74,6 +74,8 @@ import app.chompass.models.LocaleFormat
 import app.chompass.models.MealType
 import app.chompass.models.CurrentMealCatalog
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.layout.ContentScale
 import app.chompass.ui.util.clockTimePattern
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -537,7 +539,14 @@ fun FoodResultSheet(
             }
 
             // Compact hero so name / serving / macros fit the first viewport.
+            // Barcode pack shots use Fit (letterbox): Crop zooms a jar/bottle
+            // into a 96dp square and clips the label. Camera plates stay Crop.
             item {
+                val packShot = source == FoodSource.BARCODE
+                val productUrl = effectiveAnalysis.productMetadata?.barcode
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.let { "https://world.openfoodfacts.org/product/$it" }
+                val uriHandler = LocalUriHandler.current
                 Box(
                     Modifier.fillMaxWidth().padding(vertical = 2.dp),
                     contentAlignment = Alignment.Center
@@ -545,11 +554,23 @@ fun FoodResultSheet(
                     if (bitmap != null) {
                         androidx.compose.foundation.Image(
                             bitmap = bitmap.asImageBitmap(),
-                            contentDescription = null,
-                            contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                            contentDescription = if (packShot) {
+                                stringResource(R.string.off_attribution)
+                            } else {
+                                null
+                            },
+                            contentScale = if (packShot) ContentScale.Fit else ContentScale.Crop,
                             modifier = Modifier
-                                .size(96.dp)
+                                .size(if (packShot) 120.dp else 96.dp)
                                 .clip(RoundedCornerShape(AppRadii.Field))
+                                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
+                                .then(
+                                    if (packShot && productUrl != null) {
+                                        Modifier.clickable { uriHandler.openUri(productUrl) }
+                                    } else {
+                                        Modifier
+                                    },
+                                ),
                         )
                     } else {
                         Text(effectiveAnalysis.emoji ?: "🍽", fontSize = 40.sp)

@@ -72,7 +72,7 @@
     <string name="product_labels">Etiketler</string>
     <string name="product_categories">Kategoriler</string>
     <string name="product_ingredient_label">İçindekiler</string>
-    <string name="off_attribution">Veri ve fotoğraf: Open Food Facts (CC BY-SA)</string>
+    <string name="off_attribution">Fotoğraf ve veri: Open Food Facts katkıda bulunanlar (CC BY-SA 3.0)</string>
     <string name="unit_cup">fincan</string>
     <string name="unit_cup_plural">fincan</string>
     <string name="unit_tbsp">yk</string>

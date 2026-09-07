@@ -368,7 +368,7 @@ export class EntryForm extends HTMLElement {
           }
           ${
             offMeta?.imageUrl
-              ? `<img class="entry-off-thumb" src="${escapeAttr(offMeta.imageUrl)}" alt="" loading="lazy" onerror="this.remove()">`
+              ? `<a class="entry-off-thumb-link" href="https://world.openfoodfacts.org/product/${encodeURIComponent(String(offMeta.barcode ?? ""))}" target="_blank" rel="noopener noreferrer"><img class="entry-off-thumb" src="${escapeAttr(offMeta.imageUrl)}" alt="${escapeAttr(t("product.attribution"))}" loading="lazy" onerror="this.closest('a') ? this.closest('a').remove() : this.remove()"></a>`
               : ""
           }
           ${offMeta?.hasDisplayDetails ? offDetailsCard(offMeta) : ""}

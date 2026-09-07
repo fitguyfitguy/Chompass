@@ -300,7 +300,7 @@ export const hi = Object.freeze({
   "product.labels": "लेबल",
   "product.categories": "श्रेणियाँ",
   "product.ingredientLabel": "सामग्री सूची",
-  "product.attribution": "डेटा और फ़ोटो: Open Food Facts (CC BY-SA)",
+  "product.attribution": "फ़ोटो और डेटा: Open Food Facts योगदानकर्ता (CC BY-SA 3.0)",
   "unit.cup": "कप",
   "unit.cup_plural": "कप",
   "unit.tbsp": "बड़ा चम्मच",

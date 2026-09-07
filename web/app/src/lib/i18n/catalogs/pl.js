@@ -345,7 +345,7 @@ export const pl = Object.freeze({
   "product.labels": "Etykiety",
   "product.categories": "Kategorie",
   "product.ingredientLabel": "Lista składników",
-  "product.attribution": "Dane i zdjęcie: Open Food Facts (CC BY-SA)",
+  "product.attribution": "Zdjęcie i dane: współtwórcy Open Food Facts (CC BY-SA 3.0)",
   "unit.cup": "filiżanka",
   "unit.cup_plural": "filiżanki",
   "unit.tbsp": "łyżka",

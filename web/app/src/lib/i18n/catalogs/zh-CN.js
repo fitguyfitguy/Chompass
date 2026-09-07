@@ -300,7 +300,7 @@ export const zh_CN = Object.freeze({
   "product.labels": "标签",
   "product.categories": "类别",
   "product.ingredientLabel": "配料表",
-  "product.attribution": "数据与图片：Open Food Facts (CC BY-SA)",
+  "product.attribution": "照片与数据：Open Food Facts 贡献者 (CC BY-SA 3.0)",
   "unit.cup": "杯",
   "unit.cup_plural": "杯",
   "unit.tbsp": "汤匙",

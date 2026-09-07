@@ -358,7 +358,7 @@ export const en = Object.freeze({
   "product.labels": "Labels",
   "product.categories": "Categories",
   "product.ingredientLabel": "Ingredient label",
-  "product.attribution": "Data & photo: Open Food Facts (CC BY-SA)",
+  "product.attribution": "Photo and data: Open Food Facts contributors (CC BY-SA 3.0)",
   "unit.cup": "cup",
   "unit.cup_plural": "cups",
   "unit.tbsp": "tbsp",

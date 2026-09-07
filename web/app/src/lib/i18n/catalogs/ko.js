@@ -300,7 +300,7 @@ export const ko = Object.freeze({
   "product.labels": "라벨",
   "product.categories": "카테고리",
   "product.ingredientLabel": "성분 표시",
-  "product.attribution": "데이터 및 사진: Open Food Facts (CC BY-SA)",
+  "product.attribution": "사진 및 데이터: Open Food Facts 기여자 (CC BY-SA 3.0)",
   "unit.cup": "컵",
   "unit.cup_plural": "컵",
   "unit.tbsp": "큰술",

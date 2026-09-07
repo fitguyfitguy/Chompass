@@ -1698,7 +1698,7 @@
     <string name="product_labels">Labels</string>
     <string name="product_categories">Catégories</string>
     <string name="product_ingredient_label">Liste des ingrédients</string>
-    <string name="off_attribution">Données et photo : Open Food Facts (CC BY-SA)</string>
+    <string name="off_attribution">Photo et données : contributeurs Open Food Facts (CC BY-SA 3.0)</string>
     <string name="unit_cup">tasse</string>
     <string name="unit_cup_plural">tasses</string>
     <string name="unit_tbsp">c. à s.</string>

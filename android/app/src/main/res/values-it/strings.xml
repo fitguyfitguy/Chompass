@@ -1522,7 +1522,7 @@
     <string name="product_labels">Etichette</string>
     <string name="product_categories">Categorie</string>
     <string name="product_ingredient_label">Lista ingredienti</string>
-    <string name="off_attribution">Dati e foto: Open Food Facts (CC BY-SA)</string>
+    <string name="off_attribution">Foto e dati: collaboratori Open Food Facts (CC BY-SA 3.0)</string>
     <string name="unit_cup">tazza</string>
     <string name="unit_cup_plural">tazze</string>
     <string name="unit_tbsp">cucch.</string>

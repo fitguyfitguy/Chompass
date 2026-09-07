@@ -1598,7 +1598,7 @@
     <string name="product_labels">लेबल</string>
     <string name="product_categories">श्रेणियाँ</string>
     <string name="product_ingredient_label">सामग्री सूची</string>
-    <string name="off_attribution">डेटा और फ़ोटो: Open Food Facts (CC BY-SA)</string>
+    <string name="off_attribution">फ़ोटो और डेटा: Open Food Facts योगदानकर्ता (CC BY-SA 3.0)</string>
     <string name="unit_cup">कप</string>
     <string name="unit_cup_plural">कप</string>
     <string name="unit_tbsp">बड़ा चम्मच</string>

@@ -1709,7 +1709,7 @@
     <string name="product_labels">Etiquetas</string>
     <string name="product_categories">Categorías</string>
     <string name="product_ingredient_label">Lista de ingredientes</string>
-    <string name="off_attribution">Datos y foto: Open Food Facts (CC BY-SA)</string>
+    <string name="off_attribution">Foto y datos: colaboradores de Open Food Facts (CC BY-SA 3.0)</string>
     <string name="unit_cup">taza</string>
     <string name="unit_cup_plural">tazas</string>
     <string name="unit_tbsp">cda</string>
