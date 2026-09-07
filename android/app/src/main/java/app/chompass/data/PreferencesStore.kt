@@ -244,6 +244,8 @@ class PreferencesStore(private val appContext: Context) {
     /** Home note-card visibility (optional daily notes; default off). */
     val dailyNotesEnabled: Flow<Boolean> get() = dailyNotesEnabledImpl
     suspend fun setDailyNotesEnabled(v: Boolean) = setDailyNotesEnabledImpl(v)
+    val mealTimesEnabled: Flow<Boolean> get() = mealTimesEnabledImpl
+    suspend fun setMealTimesEnabled(v: Boolean) = setMealTimesEnabledImpl(v)
     /** Month-scoped daily-note write (one bucket file) — the note path. */
     suspend fun applyNoteBucketChanges(
         upsertsByMonth: Map<YearMonth, List<DailyNote>> = emptyMap(),

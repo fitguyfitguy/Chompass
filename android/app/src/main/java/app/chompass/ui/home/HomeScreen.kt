@@ -59,6 +59,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
@@ -68,6 +70,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneId
 import java.util.UUID
 import app.chompass.AppContainer
@@ -75,8 +78,8 @@ import app.chompass.MainActivity
 import app.chompass.R
 import app.chompass.data.QuickRelogRows
 import app.chompass.models.FoodEntry
+import app.chompass.models.LocaleFormat
 import app.chompass.models.CurrentMealCatalog
-import app.chompass.models.MealType
 import app.chompass.models.FoodSource
 import app.chompass.models.CaffeineEntry
 import app.chompass.models.NicotineEntry
@@ -488,6 +491,25 @@ fun HomeScreen(
                     }
                 ) {
                     Spacer(Modifier.height(4.dp))
+                    if (isToday) {
+                        Text(
+                            stringResource(R.string.home_today),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                        )
+                    } else {
+                        val jumpCd = stringResource(R.string.home_jump_to_today)
+                        Text(
+                            selectedDate.format(LocaleFormat.mediumDate()),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .clickable { vm.setSelectedDate(LocalDate.now()) }
+                                .semantics { contentDescription = jumpCd },
+                        )
+                    }
                     val baseGoal = ui.gaugeBaseCalorieGoal
                     val activeCalories = ui.displayActiveCalories
                     val calorieMode = ui.effectiveCalorieMode
@@ -1240,8 +1262,12 @@ fun HomeScreen(
     if (showManual) {
         ManualEntryDialog(
             isSaving = ui.saving,
-            initialMealType = ui.logTimeOverride?.let { CurrentMealCatalog.value.mealIdAt(it) }
-                ?: MealType.currentMealId,
+            initialMealType = suggestedSlotFor(
+                ui.mealTimesEnabled,
+                CurrentMealCatalog.value,
+                ui.logTimeOverride ?: LocalTime.now(),
+            ),
+            mealTimesEnabled = ui.mealTimesEnabled,
             onDismiss = {
                 showManual = false
                 returnToAddFoodGrid()
@@ -1523,6 +1549,7 @@ fun HomeScreen(
             aiFeaturesEnabled = aiFeaturesEnabled,
             useSystemDateTimePickers = useSystemDateTimePickers,
             dayEntries = ui.todayEntries,
+            mealTimesEnabled = ui.mealTimesEnabled,
             onReprocess = { updatedNote, onProgress ->
                 vm.reprocessFoodEntry(entry, updatedNote, onProgress)
             },
@@ -1636,7 +1663,10 @@ fun HomeScreen(
             // meal slot (favorites as a library); fresh analyses keep the
             // time-of-day guess.
             initialMealType = ui.pendingReviewSource?.mealType
-                ?: ui.logTimeOverride?.let { CurrentMealCatalog.value.mealIdAt(it) },
+                ?: ui.logTimeOverride?.let {
+                    suggestedSlotFor(ui.mealTimesEnabled, CurrentMealCatalog.value, it)
+                },
+            mealTimesEnabled = ui.mealTimesEnabled,
             logTimeOverride = ui.logTimeOverride,
             useSystemDateTimePickers = useSystemDateTimePickers,
             onLogTimeOverride = vm::setLogTimeOverride,
@@ -1749,6 +1779,12 @@ internal fun HomeScreenPreviewContent(
                 item {
                     Column {
                         Spacer(Modifier.height(4.dp))
+                        Text(
+                            stringResource(R.string.home_today),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                        )
                         CalorieHero(
                             current = ui.caloriesToday,
                             baseGoal = ui.gaugeBaseCalorieGoal,

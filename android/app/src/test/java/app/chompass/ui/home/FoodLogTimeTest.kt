@@ -58,6 +58,26 @@ class FoodLogTimeTest {
     }
 
     @Test
+    fun loggingSlotFor_keepsTemplateWhenTimesOff() {
+        val catalog = MealCatalog.Default
+        assertEquals(
+            "dinner",
+            loggingSlotFor("dinner", timesEnabled = false, catalog, LocalTime.of(8, 0), LocalTime.of(19, 30)),
+        )
+        assertEquals(
+            "breakfast",
+            loggingSlotFor("dinner", timesEnabled = true, catalog, LocalTime.of(8, 0), LocalTime.of(19, 30)),
+        )
+    }
+
+    @Test
+    fun suggestedSlotFor_otherWhenTimesOff() {
+        val catalog = MealCatalog.Default
+        assertEquals(MealType.OTHER.id, suggestedSlotFor(timesEnabled = false, catalog, LocalTime.of(13, 0)))
+        assertEquals("lunch", suggestedSlotFor(timesEnabled = true, catalog, LocalTime.of(13, 0)))
+    }
+
+    @Test
     fun siblings_sameMealSameDay_excludesSelfAndOtherSlots() {
         val lunch = Instant.parse("2026-08-31T13:00:00Z")
         val later = Instant.parse("2026-08-31T19:00:00Z")

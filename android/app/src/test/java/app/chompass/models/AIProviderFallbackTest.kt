@@ -47,4 +47,12 @@ class AIProviderFallbackTest {
             AIProvider.GEMINI.supportedFallbackModelOrDefault("gemini-does-not-exist"),
         )
     }
+
+    @Test
+    fun ollamaCustomModelNameIsPreserved() {
+        assertEquals(
+            "llama3.2:latest",
+            AIProvider.OLLAMA.supportedModelOrDefault("llama3.2:latest"),
+        )
+    }
 }

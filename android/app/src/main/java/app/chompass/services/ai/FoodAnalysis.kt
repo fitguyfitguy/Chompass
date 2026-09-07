@@ -202,6 +202,7 @@ fun FoodAnalysis.toFoodEntry(
             grounding = grounding,
             constituents = constituents,
             productMetadata = productMetadata,
+            microsCompositionSignature = app.chompass.models.microsCompositionSignature(constituents),
         )
     )
 

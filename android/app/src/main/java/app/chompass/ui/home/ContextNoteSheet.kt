@@ -125,33 +125,10 @@ fun ContextNoteSheet(
                 .fillMaxWidth()
                 .imePadding()
         ) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextButton(onClick = { if (!busy) onDismiss() }) {
-                    Text(
-                        stringResource(R.string.action_cancel),
-                        color = AppColors.Calorie,
-                        fontSize = 16.sp,
-                        maxLines = 1
-                    )
-                }
-                Text(
-                    stringResource(R.string.context_note_title),
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 4.dp),
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                )
-                Spacer(Modifier.width(72.dp))
-            }
+            SheetReviewToolbar(
+                title = stringResource(R.string.context_note_title),
+                onCancel = { if (!busy) onDismiss() },
+            )
 
             // Photo + note + wheel stack used to grow the sheet past the
             // screen and push the Add photo/Analyze footer out of reach (#84

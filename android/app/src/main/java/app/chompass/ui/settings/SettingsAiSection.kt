@@ -29,8 +29,8 @@ private fun leftoverGb(bytes: Long): String =
 
 /**
  * AI & Speech provider wiring: which service, model, key and endpoint are
- * used. Entry-flow behavior (serving sizes, photo note, portion clarify,
- * constituents) lives in Food & Entry — linked from here.
+ * used. Entry-flow behavior (serving sizes, photo note, constituents) lives
+ * in Food & Entry — linked from here.
  */
 @Composable
 internal fun SettingsAiSection(

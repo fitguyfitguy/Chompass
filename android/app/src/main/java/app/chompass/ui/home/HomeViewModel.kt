@@ -226,6 +226,8 @@ data class HomeUiState(
     val nicotineTodayEntries: List<NicotineEntry> = emptyList(),
     /** Optional daily notes (docs/local/PLAN_DAILY_NOTES.md); default off. */
     val dailyNotesEnabled: Boolean = false,
+    /** Suggest meals by time of day; default on. */
+    val mealTimesEnabled: Boolean = true,
     /** Optional caffeine tracker (device-pass revision); default off. */
     val caffeineTrackingEnabled: Boolean = false,
     val caffeineQuickKinds: List<CaffeineKind> = CaffeineKind.DefaultQuickKinds,
@@ -522,6 +524,7 @@ data class HomeUiState(
             nicotineTodayCount == other.nicotineTodayCount &&
             nicotineTodayEntries == other.nicotineTodayEntries &&
             dailyNotesEnabled == other.dailyNotesEnabled &&
+            mealTimesEnabled == other.mealTimesEnabled &&
             caffeineTrackingEnabled == other.caffeineTrackingEnabled &&
             caffeineQuickKinds == other.caffeineQuickKinds &&
             caffeineTodayMg == other.caffeineTodayMg &&
@@ -606,6 +609,7 @@ data class HomeUiState(
         result = 31 * result + nicotineTodayCount
         result = 31 * result + nicotineTodayEntries.hashCode()
         result = 31 * result + dailyNotesEnabled.hashCode()
+        result = 31 * result + mealTimesEnabled.hashCode()
         result = 31 * result + caffeineTrackingEnabled.hashCode()
         result = 31 * result + caffeineQuickKinds.hashCode()
         result = 31 * result + caffeineTodayMg.hashCode()
@@ -1191,6 +1195,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
         container.prefs.dailyNotesEnabled
             .onEach { enabled -> _ui.update { it.copy(dailyNotesEnabled = enabled) } }
+            .launchIn(viewModelScope)
+
+        container.prefs.mealTimesEnabled
+            .onEach { enabled -> _ui.update { it.copy(mealTimesEnabled = enabled) } }
             .launchIn(viewModelScope)
 
         container.prefs.nicotineDailyLimit
@@ -1910,6 +1918,14 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 } else {
                     resolveNewFoodName(rawName, relogTemplate = reviewSource)
                 }
+                val constituents = if (effectiveScale == 1.0) {
+                    analysis.constituents
+                } else {
+                    app.chompass.services.ai.ConstituentReconcile.scaleAll(
+                        analysis.constituents,
+                        effectiveScale,
+                    )
+                }
                 val entry = analysis.toMicronutrients().scaled(effectiveScale, round1 = false).applyTo(
                     FoodEntry(
                         id = id,
@@ -1929,15 +1945,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         selectedServingQuantity = if (analysis.servingUnitOptions.isEmpty()) null else selectedServingQuantity,
                         customNote = analysis.customNote,
                         grounding = analysis.grounding,
-                        constituents = if (effectiveScale == 1.0) {
-                            analysis.constituents
-                        } else {
-                            app.chompass.services.ai.ConstituentReconcile.scaleAll(
-                                analysis.constituents,
-                                effectiveScale,
-                            )
-                        },
+                        constituents = constituents,
                         productMetadata = analysis.productMetadata,
+                        microsCompositionSignature = app.chompass.models.microsCompositionSignature(constituents),
                     )
                 )
                 // Commit the diary row and clear the consumed pending draft in
@@ -2138,7 +2148,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                             customNote = analysis.customNote,
                             grounding = analysis.grounding,
                             recipeLogId = recipeLogId,
+                            constituents = analysis.constituents,
                             productMetadata = analysis.productMetadata,
+                            microsCompositionSignature = app.chompass.models.microsCompositionSignature(analysis.constituents),
                         )
                     )
                 }
@@ -2584,7 +2596,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             PerfLog.measure("relog", "addEntry", "name=${template.name}") {
                 container.foodRepository.addEntry(
-                    template.duplicatedForLogging(timestampForFoodLog(), loggingMealId()),
+                    template.duplicatedForLogging(timestampForFoodLog(), loggingMealId(template.mealType)),
                 )
             }
         }
@@ -2622,7 +2634,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 // DataStore edit instead of one full-file write per copied row;
                 // Health Connect mirrors in the background.
                 val duplicated = entries.map {
-                    it.duplicatedForLogging(timestampForFoodLog(targetDate), loggingMealId())
+                    it.duplicatedForLogging(timestampForFoodLog(targetDate), loggingMealId(it.mealType))
                 }
                 container.foodRepository.addEntries(duplicated, writeHealth = false)
                 viewModelScope.launch {
@@ -2709,8 +2721,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             _ui.value.logTimeOverride,
         )
 
-    private fun loggingMealId(): String =
-        mealIdForLogging(
+    private fun loggingMealId(templateMealType: String): String =
+        loggingSlotFor(
+            templateMealType,
+            _ui.value.mealTimesEnabled,
             CurrentMealCatalog.value,
             _ui.value.logTimeOverride,
             LocalTime.now(),
@@ -3095,7 +3109,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 viewModelScope.launch {
                     PerfLog.measure("entryLocal", "addEntry", "i=$i") {
                         container.foodRepository.addEntry(
-                            canned.duplicatedForLogging(timestampForFoodLog(), loggingMealId()),
+                            canned.duplicatedForLogging(timestampForFoodLog(), loggingMealId(canned.mealType)),
                         )
                     }
                 }

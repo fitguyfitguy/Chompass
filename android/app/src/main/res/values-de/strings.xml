@@ -652,6 +652,8 @@ für dich ein</string>
     <string name="onboarding_plan_field_fat">Fett</string>
 
     <string name="home_loading_sample_data">Beispieldaten werden geladen…</string>
+    <string name="home_today">Heute</string>
+    <string name="home_jump_to_today">Zu heute springen</string>
     <string name="home_add_food">Lebensmittel hinzufügen</string>
 
     <string name="home_menu_camera">Kamera</string>
@@ -705,6 +707,7 @@ für dich ein</string>
     <string name="shortcut_barcode_long">Barcode scannen</string>
 
     <string name="add_food_sheet_title">Essen hinzufügen</string>
+    <string name="add_food_trackers_section">Tracker</string>
 
     <string name="add_food_hero_photo">Foto</string>
 
@@ -1288,6 +1291,8 @@ für dich ein</string>
     <string name="nutrition_label_potassium">Kalium</string>
 
     <string name="nutrition_em_dash">-</string>
+    <string name="nutrition_stale_composition">Für die vorherige Zusammensetzung geschätzt. Die Werte passen möglicherweise nicht zu den geänderten Zutaten.</string>
+    <string name="nutrition_stale_reestimate">Neu schätzen</string>
 
     <string name="coach_title">Coach</string>
 
@@ -1794,6 +1799,7 @@ für dich ein</string>
     <string name="settings_progress_nutrient_averages_confirm">Anzeigen</string>
 
 
+    <string name="settings_meal_times_enabled">Mahlzeiten nach Tageszeit vorschlagen</string>
     <string name="settings_meals">Mahlzeiten</string>
     <string name="settings_meals_description">Namen, Reihenfolge und Startzeiten</string>
     <string name="settings_meals_help">Neues Essen nutzt die Mahlzeit, deren Startzeit am nächsten vor jetzt liegt.</string>
@@ -2104,6 +2110,8 @@ für dich ein</string>
     <string name="sheet_model">Modell</string>
 
     <string name="sheet_model_footer">Oder gib unten eine beliebige benutzerdefinierte Modell-ID ein.</string>
+    <string name="settings_ollama_models_loading">Modelle von Ollama werden geladen…</string>
+    <string name="settings_ollama_models_error">Ollama nicht erreichbar. Die Standardliste wird angezeigt.</string>
 
     <string name="sheet_any_model_id">Beliebige Modell-ID</string>
 

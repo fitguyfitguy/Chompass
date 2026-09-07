@@ -18,15 +18,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.WaterDrop
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.ui.settings.GradientSaveButton
 import app.chompass.models.WaterAmountFormat
 import app.chompass.models.WaterEntry
 import app.chompass.ui.theme.AppColors
@@ -172,17 +170,10 @@ fun WaterCustomAmountSheet(
                 .padding(horizontal = 20.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
-                Spacer(Modifier.weight(1f))
-                Text(
-                    stringResource(R.string.water_log_title),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                )
-                Spacer(Modifier.weight(1f))
-                Spacer(Modifier.padding(horizontal = 31.dp))
-            }
+            SheetReviewToolbar(
+                title = stringResource(R.string.water_log_title),
+                onCancel = onDismiss,
+            )
 
             Text(
                 stringResource(R.string.water_how_much),
@@ -211,23 +202,14 @@ fun WaterCustomAmountSheet(
                 )
             }
 
-            Button(
+            GradientSaveButton(
+                text = stringResource(R.string.water_add),
+                icon = Icons.Filled.WaterDrop,
                 onClick = {
                     onAdd(amountMl)
                     onDismiss()
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(54.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = AppColors.Calorie),
-            ) {
-                Icon(Icons.Filled.WaterDrop, contentDescription = null)
-                Text(
-                    stringResource(R.string.water_add),
-                    modifier = Modifier.padding(start = 8.dp),
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
+            )
             Spacer(Modifier.height(16.dp))
         }
     }
@@ -268,18 +250,10 @@ fun WaterHistorySheet(
                 .padding(horizontal = 20.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
-                Spacer(Modifier.weight(1f))
-                Text(
-                    stringResource(R.string.water_history_title),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.water,
-                )
-                Spacer(Modifier.weight(1f))
-                Spacer(Modifier.padding(horizontal = 31.dp))
-            }
+            SheetReviewToolbar(
+                title = stringResource(R.string.water_history_title),
+                onCancel = onDismiss,
+            )
 
             val dayLabel = remember(ctx) {
                 DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM)
@@ -407,17 +381,10 @@ fun WaterEditAmountSheet(
                 .padding(horizontal = 20.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
-                Spacer(Modifier.weight(1f))
-                Text(
-                    stringResource(R.string.water_edit_title),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                )
-                Spacer(Modifier.weight(1f))
-                Spacer(Modifier.padding(horizontal = 31.dp))
-            }
+            SheetReviewToolbar(
+                title = stringResource(R.string.water_edit_title),
+                onCancel = onDismiss,
+            )
 
             Text(
                 stringResource(R.string.water_how_much),
@@ -446,23 +413,14 @@ fun WaterEditAmountSheet(
                 )
             }
 
-            Button(
+            GradientSaveButton(
+                text = stringResource(R.string.action_save),
+                icon = Icons.Filled.WaterDrop,
                 onClick = {
                     onSave(amountMl)
                     onDismiss()
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(54.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = AppColors.Calorie),
-            ) {
-                Icon(Icons.Filled.WaterDrop, contentDescription = null)
-                Text(
-                    stringResource(R.string.action_save),
-                    modifier = Modifier.padding(start = 8.dp),
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
+            )
             Spacer(Modifier.height(16.dp))
         }
     }

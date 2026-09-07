@@ -395,6 +395,8 @@
 
     <!-- Home -->
     <string name="home_loading_sample_data">Loading sample data…</string>
+    <string name="home_today">Today</string>
+    <string name="home_jump_to_today">Jump to today</string>
     <string name="home_add_food">Add food</string>
     <string name="home_menu_camera">Camera</string>
     <string name="home_menu_camera_note">Camera + Note</string>
@@ -422,6 +424,7 @@
     <string name="shortcut_barcode_short">Barcode</string>
     <string name="shortcut_barcode_long">Scan a barcode</string>
     <string name="add_food_sheet_title">Add food</string>
+    <string name="add_food_trackers_section">Trackers</string>
     <string name="add_food_log_time">Log time</string>
     <string name="add_food_log_time_now">Now</string>
     <string name="cd_clear_log_time">Use current time</string>
@@ -872,6 +875,8 @@
     <string name="nutrition_label_sodium">Sodium</string>
     <string name="nutrition_label_potassium">Potassium</string>
     <string name="nutrition_em_dash">-</string>
+    <string name="nutrition_stale_composition">Estimated for the previous composition. Values may not match the edited ingredients.</string>
+    <string name="nutrition_stale_reestimate">Re-estimate</string>
 
     <!-- Coach -->
     <string name="coach_title">Coach</string>
@@ -1590,6 +1595,8 @@
     <string name="settings_progress_nutrient_averages_confirm">Show them</string>
 
 
+    <string name="settings_meal_times_enabled">Suggest meals by time of day</string>
+
     <string name="settings_meals">Meals</string>
     <string name="settings_meals_description">Names, order, and start times</string>
     <string name="settings_meals_help">New food uses the meal whose start time is closest before now.</string>
@@ -1771,6 +1778,8 @@
     <string name="sheet_ai_provider">AI Provider</string>
     <string name="sheet_model">Model</string>
     <string name="sheet_model_footer">Or type any custom model ID below.</string>
+    <string name="settings_ollama_models_loading">Loading models from Ollama…</string>
+    <string name="settings_ollama_models_error">Couldn\'t reach Ollama. Showing the default list.</string>
     <string name="sheet_any_model_id">Any model ID</string>
     <string name="sheet_api_key_format">API key: %1$s</string>
     <string name="sheet_speech_api_key_format">Speech API key: %1$s</string>

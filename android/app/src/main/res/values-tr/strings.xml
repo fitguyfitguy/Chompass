@@ -741,7 +741,6 @@
     <string name="nutrition_label_sodium">Sodyum</string>
     <string name="nutrition_label_potassium">Potasyum</string>
     <string name="nutrition_em_dash">-</string>
-
     <!-- Coach -->
     <string name="coach_title">Koç</string>
     <string name="coach_reset_chat_a11y">Sohbeti sıfırla</string>

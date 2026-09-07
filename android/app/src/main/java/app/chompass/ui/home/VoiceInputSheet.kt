@@ -1,4 +1,5 @@
 package app.chompass.ui.home
+import app.chompass.ui.settings.GradientSaveButton
 
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -29,8 +30,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.MicNone
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -398,9 +397,11 @@ fun VoiceInputSheet(
             // stop+transcribe, then Analyze on the reviewed transcript).
             val canAnalyze = transcript.trim().isNotEmpty() && phase != VoicePhase.TRANSCRIBING && !busy
             Spacer(Modifier.height(20.dp))
-            Button(
+            GradientSaveButton(
+                text = stringResource(R.string.action_analyze),
+                enabled = canAnalyze,
                 onClick = {
-                    if (busy) return@Button
+                    if (busy) return@GradientSaveButton
                     if (provider == SpeechProvider.NATIVE && phase == VoicePhase.RECORDING) {
                         nativeJob?.cancel()
                         phase = VoicePhase.REVIEWING
@@ -410,13 +411,7 @@ fun VoiceInputSheet(
                         onSubmit(transcript.trim())
                     }
                 },
-                enabled = canAnalyze,
-                colors = ButtonDefaults.buttonColors(containerColor = AppColors.Calorie),
-                shape = RoundedCornerShape(20.dp),
-                modifier = Modifier.fillMaxWidth().height(52.dp)
-            ) {
-                Text(stringResource(R.string.action_analyze), color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
-            }
+            )
 
             error?.let {
                 Spacer(Modifier.height(10.dp))

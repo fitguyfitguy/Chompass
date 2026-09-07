@@ -1,4 +1,5 @@
 package app.chompass.ui.home
+import app.chompass.ui.settings.GradientSaveButton
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,8 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -26,7 +25,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -147,17 +145,10 @@ fun CaffeineCustomSheet(
                 .padding(horizontal = 20.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
-                Spacer(Modifier.weight(1f))
-                Text(
-                    stringResource(R.string.caffeine_log_title),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                )
-                Spacer(Modifier.weight(1f))
-                Spacer(Modifier.padding(horizontal = 31.dp))
-            }
+            SheetReviewToolbar(
+                title = stringResource(R.string.caffeine_log_title),
+                onCancel = onDismiss,
+            )
 
             FlowRow(
                 Modifier.fillMaxWidth(),
@@ -190,23 +181,14 @@ fun CaffeineCustomSheet(
                 unit = stringResource(R.string.unit_mg),
             )
 
-            Button(
+            GradientSaveButton(
+                text = stringResource(R.string.caffeine_add),
+                enabled = mg > 0,
                 onClick = {
                     onAdd(kind, mg.toDouble())
                     onDismiss()
                 },
-                enabled = mg > 0,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(54.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-            ) {
-                Text(
-                    stringResource(R.string.caffeine_add),
-                    modifier = Modifier.padding(start = 8.dp),
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
+            )
             Spacer(Modifier.height(16.dp))
         }
     }
@@ -245,18 +227,10 @@ fun CaffeineHistorySheet(
                 .padding(horizontal = 20.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
-                Spacer(Modifier.weight(1f))
-                Text(
-                    stringResource(R.string.caffeine_history_title),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.caffeine,
-                )
-                Spacer(Modifier.weight(1f))
-                Spacer(Modifier.padding(horizontal = 31.dp))
-            }
+            SheetReviewToolbar(
+                title = stringResource(R.string.caffeine_history_title),
+                onCancel = onDismiss,
+            )
 
             val dayLabel = remember(ctx) {
                 DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM)
@@ -368,17 +342,10 @@ fun CaffeineEditSheet(
                 .padding(horizontal = 20.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
-                Spacer(Modifier.weight(1f))
-                Text(
-                    stringResource(R.string.caffeine_edit_title),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                )
-                Spacer(Modifier.weight(1f))
-                Spacer(Modifier.padding(horizontal = 31.dp))
-            }
+            SheetReviewToolbar(
+                title = stringResource(R.string.caffeine_edit_title),
+                onCancel = onDismiss,
+            )
 
             FlowRow(
                 Modifier.fillMaxWidth(),
@@ -411,23 +378,14 @@ fun CaffeineEditSheet(
                 unit = stringResource(R.string.unit_mg),
             )
 
-            Button(
+            GradientSaveButton(
+                text = stringResource(R.string.action_save),
+                enabled = mg > 0,
                 onClick = {
                     onSave(kind, mg.toDouble())
                     onDismiss()
                 },
-                enabled = mg > 0,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(54.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-            ) {
-                Text(
-                    stringResource(R.string.action_save),
-                    modifier = Modifier.padding(start = 8.dp),
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
+            )
             Spacer(Modifier.height(16.dp))
         }
     }

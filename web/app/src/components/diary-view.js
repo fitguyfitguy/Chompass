@@ -74,17 +74,12 @@ import { escapeHtml, escapeAttr } from "../lib/ui/html.js";
 import { shiftDate, todayIso } from "../lib/date.js";
 import { chevronLeft, chevronRight } from "../lib/icons.js";
 import { showToast, showUndoToast } from "../lib/ui/toast.js";
-
-/** Localized meal label; unknown ids fall back to the raw value. */
-function mealLabel(mealType) {
-  return MEAL_ORDER.includes(mealType) ? t(`meal.${mealType}`) : mealType;
-}
+import { MEAL_ORDER, mealLabel } from "../lib/meal-label.js";
 
 // nutritionGoalPercent / nutritionGoalText live in lib/home-nutrients.js,
 // shared with entry-form constituent rows.
 /** Saved-meals sheet tab labels (catalog key names). */
 const SEGMENT_LABELS = { RECENTS: "add_food.hero_recents", FREQUENT: "add_food.frequent", FAVORITES: "add_food.favorites", RECIPES: "diary.tab_recipes" };
-const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack", "other"];
 
 /** @param {Array<{mealType?: string}>} entries */
 function mealOrderFor(entries) {

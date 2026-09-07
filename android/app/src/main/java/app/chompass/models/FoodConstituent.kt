@@ -103,3 +103,20 @@ data class FoodConstituent(
         )
     }
 }
+
+/**
+ * Scale-invariant fingerprint of a meal's constituent mix (permille shares,
+ * sorted). Uniform serving scaling does not change it; add/remove/rename/
+ * quantity-edit does. Null when there are no constituents.
+ */
+fun microsCompositionSignature(constituents: List<FoodConstituent>): String? {
+    if (constituents.isEmpty()) return null
+    val total = constituents.sumOf { it.servingSizeGrams }.coerceAtLeast(1e-9)
+    return constituents
+        .map { "${it.name.trim().lowercase()}@${(it.servingSizeGrams / total * 1000).roundToInt()}" }
+        .sorted()
+        .joinToString("|")
+}
+
+fun microsStaleFor(storedSignature: String?, constituents: List<FoodConstituent>): Boolean =
+    storedSignature != null && microsCompositionSignature(constituents) != storedSignature

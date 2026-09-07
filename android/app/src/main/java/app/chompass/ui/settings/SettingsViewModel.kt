@@ -109,6 +109,7 @@ data class SettingsUiState(
     val nicotineDailyLimit: Int = 0,
     val nicotineQuickKinds: List<NicotineKind> = NicotineKind.DefaultQuickKinds,
     val dailyNotesEnabled: Boolean = false,
+    val mealTimesEnabled: Boolean = true,
     val caffeineTrackingEnabled: Boolean = false,
     val caffeineQuickKinds: List<CaffeineKind> = CaffeineKind.DefaultQuickKinds,
     val fastingEnabled: Boolean = false,
@@ -166,6 +167,9 @@ data class SettingsUiState(
     val onDeviceAvailable: Boolean = false,
     /** ON_DEVICE model ids this device can actually run (E4B gated by the 7 GiB usable-RAM floor). */
     val onDeviceModels: List<String> = emptyList(),
+    val ollamaModels: List<app.chompass.services.ai.OllamaModel>? = null,
+    val ollamaModelsLoading: Boolean = false,
+    val ollamaModelsError: Boolean = false,
     val appearanceMode: String = "system",
     /** "" = system default, or locale tag like "de", "zh-CN". */
     val appLanguage: String = "",
@@ -410,6 +414,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     nicotineDailyLimit = snap.nicotineDailyLimit,
                     nicotineQuickKinds = snap.nicotineQuickKinds,
                     dailyNotesEnabled = snap.dailyNotesEnabled,
+                    mealTimesEnabled = snap.mealTimesEnabled,
                     caffeineTrackingEnabled = snap.caffeineTrackingEnabled,
                     caffeineQuickKinds = snap.caffeineQuickKinds,
                     fastingEnabled = snap.fastingEnabled,
@@ -1000,6 +1005,36 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         }
     }
 
+    fun fetchOllamaModels() {
+        if (_ui.value.selectedAI != AIProvider.OLLAMA) return
+        viewModelScope.launch {
+            _ui.value = _ui.value.copy(ollamaModelsLoading = true, ollamaModelsError = false)
+            val result = withContext(Dispatchers.IO) {
+                runCatching {
+                    app.chompass.services.ai.OllamaClient.listModels(
+                        baseUrl = _ui.value.customBaseUrl.ifBlank { AIProvider.OLLAMA.baseUrl },
+                        allowInsecureHttp = _ui.value.allowInsecureHttp,
+                    )
+                }
+            }
+            _ui.value = result.fold(
+                onSuccess = { models ->
+                    _ui.value.copy(
+                        ollamaModels = models,
+                        ollamaModelsLoading = false,
+                        ollamaModelsError = false,
+                    )
+                },
+                onFailure = {
+                    _ui.value.copy(
+                        ollamaModelsLoading = false,
+                        ollamaModelsError = true,
+                    )
+                },
+            )
+        }
+    }
+
     /** Sets the per-provider vision-model slot; null/blank clears it back to "same as Model". */
     fun selectVisionModel(m: String?) {
         viewModelScope.launch {
@@ -1265,6 +1300,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setDailyNotesEnabled(v: Boolean) = updateUiPref(
         { container.prefs.setDailyNotesEnabled(v) },
         { copy(dailyNotesEnabled = v) },
+    )
+
+    fun setMealTimesEnabled(v: Boolean) = updateUiPref(
+        { container.prefs.setMealTimesEnabled(v) },
+        { copy(mealTimesEnabled = v) },
     )
 
     fun setCaffeineTrackingEnabled(v: Boolean) = updateUiPref(
