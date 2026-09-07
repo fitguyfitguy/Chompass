@@ -125,4 +125,17 @@ class MealCatalogTest {
 
         assertFalse(catalog.isValid)
     }
+
+    @Test
+    fun twoAmDinnerInDefaultOrderIsValidAndClassifies() {
+        val catalog = MealCatalog.Default.withStart(MealType.DINNER.id, 2 * 60)
+
+        assertTrue(catalog.isValid)
+        assertEquals(catalog, catalog.validatedOrDefault())
+        assertEquals(MealType.SNACK.id, catalog.mealIdAt(LocalTime.of(1, 59)))
+        assertEquals(MealType.DINNER.id, catalog.mealIdAt(LocalTime.of(2, 0)))
+        assertEquals(MealType.DINNER.id, catalog.mealIdAt(LocalTime.of(4, 59)))
+        assertTrue(catalog.toLegacySchedule().isValid)
+    }
+
 }

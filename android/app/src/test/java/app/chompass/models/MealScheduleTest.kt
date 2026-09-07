@@ -39,7 +39,7 @@ class MealScheduleTest {
 
     @Test
     fun invalidScheduleFallsBackToDefaults() {
-        val invalid = MealSchedule(lunchStartMinutes = 19 * 60, dinnerStartMinutes = 18 * 60)
+        val invalid = MealSchedule(lunchStartMinutes = 19 * 60, dinnerStartMinutes = 19 * 60 + 5)
 
         assertFalse(invalid.isValid)
         assertEquals(MealSchedule.Default, invalid.validatedOrDefault())
@@ -59,4 +59,14 @@ class MealScheduleTest {
         assertEquals(MealType.BREAKFAST, schedule.mealTypeAt(LocalTime.of(23, 0)))
         assertEquals(MealType.SNACK, schedule.mealTypeAt(LocalTime.of(9, 0)))
     }
+
+    @Test
+    fun twoAmDinnerIsValid() {
+        val schedule = MealSchedule(dinnerStartMinutes = 2 * 60)
+
+        assertTrue(schedule.isValid)
+        assertEquals(MealType.DINNER, schedule.mealTypeAt(LocalTime.of(2, 0)))
+        assertEquals(MealType.SNACK, schedule.mealTypeAt(LocalTime.of(1, 59)))
+    }
+
 }

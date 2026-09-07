@@ -38,18 +38,15 @@ data class MealCatalog(
         }
         val timed = meals.filter { it.enabled && it.startMinutes != null }
         if (timed.isEmpty()) return "no_windows"
-        // Catalog order is a circular day rotation: starts must advance at least
-        // MIN_GAP_MINUTES around the clock, so a schedule may wrap past midnight
-        // once, and the whole rotation must fit in one day (the span check also
-        // rejects duplicate starts).
-        var prevStart = timed.first().startMinutes!!
+        // Display order is independent of wall-clock. Gaps run on clock-sorted
+        // starts so a 2am dinner in the default slot list is one wrap, not a
+        // span failure (#88).
+        val starts = timed.map { it.startMinutes!! }.sorted()
         var span = 0
-        for (i in 1 until timed.size) {
-            val start = timed[i].startMinutes!!
-            val delta = (start - prevStart + MealSchedule.MINUTES_PER_DAY) % MealSchedule.MINUTES_PER_DAY
+        for (i in 1 until starts.size) {
+            val delta = (starts[i] - starts[i - 1] + MealSchedule.MINUTES_PER_DAY) % MealSchedule.MINUTES_PER_DAY
             if (delta < MIN_GAP_MINUTES) return "gap"
             span += delta
-            prevStart = start
         }
         if (span >= MealSchedule.MINUTES_PER_DAY) return "span"
         return null
