@@ -13,10 +13,10 @@ import org.robolectric.annotation.Config
 import java.util.Base64
 
 /**
- * Security regression (docs/SECURITY_HARDENING_PLAN.md P2-2): `chompass://add-meal`
- * payloads are attacker-controlled (any app or web page can fire a VIEW intent).
- * Decode must be bounded (payload size, row counts) and values sanitized before
- * they land in the user's diary.
+ * Security regression: `chompass://add-meal` payloads are attacker-controlled
+ * (any app or web page can fire a VIEW intent). Decode must be bounded
+ * (payload size, row counts) and values sanitized before they land in the
+ * user's diary.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [33], application = Application::class)

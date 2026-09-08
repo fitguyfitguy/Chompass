@@ -151,8 +151,24 @@
       mkdir -p "$DEST"
       OUT="$DEST/local-notes-$(date +%Y%m%d-%H%M%S).tar.gz"
       tar -czf "$OUT" \
-        docs/local .cursor .claude .opencode \
-        AGENTS.md CLAUDE.md opencode.json 2>/dev/null || true
+        docs/local docs/archive \
+        docs/PERFORMANCE.md docs/WEB_PRESENCE.md docs/DEMO_HERO_FIREFOX.md \
+        docs/SECURITY_HARDENING_PLAN.md docs/FOOD_ACCURACY_BENCHMARK_STATUS.md \
+        docs/UNCERTAINTY_DRIVEN_ENTRY.md \
+        .cursor .claude .opencode \
+        AGENTS.md CLAUDE.md opencode.json \
+        scripts/capture_android_perf_baseline.sh \
+        scripts/capture_entry_perf.sh scripts/capture_entry_perf.ps1 \
+        scripts/summarize_entry_perf.py scripts/perf_entry_benchmark.sh \
+        scripts/capture_ondevice_llm_daily.sh \
+        scripts/prepare_ondevice_llm_fixtures.py \
+        scripts/push_ondevice_model.sh \
+        scripts/device_test_sweep.sh scripts/release_verify_device.sh \
+        scripts/verify_upstream_bugfixes.sh scripts/scan_git_secrets.sh \
+        scripts/generate_blog_accuracy_charts.py \
+        scripts/generate_barcode_fixture.py \
+        scripts/hero_states.sh scripts/_hero_states_check.sh \
+        2>/dev/null || true
       ls -lh "$OUT"
       echo "Backup: $OUT (local-only state; never committed)"
     '';

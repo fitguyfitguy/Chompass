@@ -5,10 +5,9 @@ full pack gets reviewed before it ships. Written for community translators
 and for maintainers reviewing translation merges.
 
 Mechanics (keys, locale contract, the verbatim-EN-copy checker) live in
-[`LOCALIZATION.md`](LOCALIZATION.md). The house voice and the AI-ism ban
-lists live in `UI_COPY_STYLE.md` (§2 to §8). This guide
-is the entry point: it tells you what to translate, how to write it, and
-how to prove it fits.
+[`LOCALIZATION.md`](LOCALIZATION.md). House voice rules are in §2 below.
+This guide is the entry point: it tells you what to translate, how to write
+it, and how to prove it fits.
 
 ## 1. Parent languages: English and German
 
@@ -58,11 +57,9 @@ and what the user can do. It never performs.
   Check your connection and try again." Never "An unexpected error
   occurred".
 
-The full rules, the AI-ism ban list, and the string budgets are in
-`UI_COPY_STYLE.md` §2 to §5. The ban lists apply in
-**every** locale: a German string with "nahtlos" is as AI as an English one
-with "seamless". Keep a per-locale ban list in the same shape as §5 and §7
-of that guide.
+The ban lists apply in **every** locale: a German string with "nahtlos" is
+as AI as an English one with "seamless". Keep a per-locale ban list in the
+same shape as the German list in §3.
 
 ## 3. German specifics
 
@@ -78,7 +75,7 @@ German is the fit + voice parent, so its rules matter for the whole model:
   heutigen schnelllebigen Welt", "nahtlos", "fesselnd", "Tauchen wir ein
   in", "Zusammenfassend lässt sich sagen", "darüber hinaus" as an opener,
   English nouns where a German word exists ("Feature", "Update",
-  "Release"). Full list: `UI_COPY_STYLE.md` §7.
+  "Release").
 
 ## 4. Compact labels: the fit budget
 

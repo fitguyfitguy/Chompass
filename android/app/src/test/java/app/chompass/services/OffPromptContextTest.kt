@@ -6,10 +6,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Security regression (docs/SECURITY_HARDENING_PLAN.md P2-4): OFF product names
- * and brands are public, user-editable data that lands in the food-analysis
- * prompt. The block must be delimited as external data and hostile delimiter
- * tokens neutralized so a product name can't close the data region early.
+ * Security regression: OFF product names and brands are public, user-editable
+ * data that lands in the food-analysis prompt. The block must be delimited as
+ * external data and hostile delimiter tokens neutralized so a product name
+ * can't close the data region early.
  */
 class OffPromptContextTest {
     @Test

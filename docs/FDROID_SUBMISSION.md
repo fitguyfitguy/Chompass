@@ -13,7 +13,7 @@ Chompass is **live on F-Droid**: [f-droid.org/packages/app.chompass](https://f-d
 
 - Inclusion MR [fdroiddata!42984](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/42984) was **merged**; the listing is live and F-Droid clients install / auto-update `app.chompass` directly.
 - **Updates:** F-Droid's `checkupdates` opens update MRs automatically from the `Builds:` entry in [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml). No manual inclusion MR is needed, and **none should be opened** (duplicates review work).
-- **Maintainer:** update `docs/fdroid/app.chompass.yml` in this repo only; do **not** push to the fdroiddata repo. The maintainer may assist bot update MRs via the GitLab web GUI when needed. The submission-era `submit_fdroiddata_mr.sh` is archived locally (`docs/local/archive/`) and is no longer part of the release flow.
+- **Maintainer:** update `docs/fdroid/app.chompass.yml` in this repo only; do **not** push to the fdroiddata repo. The maintainer may assist bot update MRs via the GitLab web GUI when needed.
 - **Donate:** the live listing's `Donate:` field points at Ko-fi (`https://ko-fi.com/fitguy`), matching the mirror. See Codeberg issue #36.
 
 ## Per-release checklist (now that the listing is live)
@@ -56,6 +56,4 @@ Reads/writes nutrition, weight, body fat, height; reads steps, exercise, sleep, 
 
 **Delivery:** Android 13 and lower use the Play Store Health Connect APK; Android 14+ uses the system/Mainline module. Chompass talks to both through Jetpack `connect-client` and does not require sandboxed Play. De-Googled ROMs that omit the binder service will report HC unavailable: file import/export remains the fallback.
 
-## Archived
-
-The inclusion MR body (merged via fdroiddata!42984) and the submission-era `submit_fdroiddata_mr.sh` are archived locally in `docs/local/archive/` (gitignored, not published).
+The inclusion MR body was merged via fdroiddata!42984. Do not open a new inclusion or update MR.

@@ -59,5 +59,4 @@ Connect data, say so: those live in Kotlin **and** the PWA
 ## Do not
 
 - Commit secrets, keystores, diary exports, or release APKs
-- Add AI/Cursor attribution to git commits
 - Open F-Droid inclusion or update MRs (see [`docs/FDROID_SUBMISSION.md`](docs/FDROID_SUBMISSION.md); the listing is live: F-Droid `checkupdates` handles updates)

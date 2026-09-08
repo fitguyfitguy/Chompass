@@ -55,8 +55,8 @@ Codeberg uploads **universal only** (`Chompass-fdroid-<version>.apk` + `SHA256SU
 ## Tag and publish on Codeberg
 
 1. Bump `versionCode` / `versionName` in `android/app/build.gradle.kts`
-2. Update `docs/CHANGELOG.md` (`## [Unreleased]` → new `## [X.Y.Z] - YYYY-MM-DD` section), entries per the release-text style guide (maintainer-local, not published)
-3. **Update design-doc status lines** for features shipping in this release: `Status: shipped in <x.y.z> (date)` in the affected design docs (`docs/*_DESIGN.md`) (convention documented in [`docs/README.md`](README.md)); archive executed `docs/` root plans to `docs/archive/` leaving a stub
+2. Update `docs/CHANGELOG.md` (`## [Unreleased]` → new `## [X.Y.Z] - YYYY-MM-DD` section)
+3. **Update design-doc status lines** for features shipping in this release: `Status: shipped in <x.y.z> (date)` in the affected design docs (`docs/*_DESIGN.md`) (convention documented in [`docs/README.md`](README.md))
 4. Bump `website/hugo.toml` `params.version` (same as `versionName`)
 5. Optional: sync `docs/fdroid/app.chompass.yml` and run `devenv tasks run release:check-metadata`
 6. Commit, tag, push:
@@ -163,7 +163,7 @@ Reference images for regression live under `android/app/src/screenshotTestDebug/
 
 **Tier 2: headless Android emulator (no phone):** enable `emulator.enable` and a system image in `devenv.nix`, then capture from a running emulator with `adb exec-out screencap`. A dedicated `scripts/capture_release_screenshots_emulator.sh` can be added when needed.
 
-**Tier 3: physical device via Windows adb:** reuse existing seed intents from `MainActivity.kt` (`seed_test_data`, `seed_body_metrics`) and tab navigation, mirroring [`scripts/capture_android_perf_baseline.sh`](../scripts/capture_android_perf_baseline.sh):
+**Tier 3: physical device via Windows adb:** reuse existing seed intents from `MainActivity.kt` (`seed_test_data`, `seed_body_metrics`) and tab navigation:
 
 ```powershell
 adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_test_data true

@@ -63,7 +63,7 @@ Translations of **compact UI labels** (chips, tabs, status lines, buttons, meal
 slots, bottom-nav labels, widget cards) are systematically longer than English
 in several locales, and fixed-width elements truncate or overflow. The registry
 [`testdata/parity/compact_strings.json`](../testdata/parity/compact_strings.json)
-is the source of truth (see [`docs/local/PLAN_UI_STRING_FIT.md`](local/PLAN_UI_STRING_FIT.md)):
+is the source of truth:
 
 - **Budget:** value ≤ 12 Latin chars; CJK glyphs are narrow and count at 0.5
   (pure-CJK strings cap at 8 chars). `perKeyOverrides` widen the budget for
@@ -147,7 +147,7 @@ screenshot references if the labels changed.
 
 Status as of 2026-08: **all 18 Android packs have 0 missing keys, 0
 verbatim EN copies, empty compact fallback lists, and `maxMissing` caps of
-0** (see `PLAN_LOCALES_BROADENING.md` for the commit per locale). The
+0**. The
 second-phase sweep also fixed the checker to count `<plurals>` keys, so the
 reported numbers include both `<string>` and `<plurals>`.
 
@@ -162,7 +162,7 @@ per-locale exemption list for loanwords/proper nouns in
 received translations for the settings/water/safety/import keys that were
 previously English-only. German joined ru at full coverage 2026-08-16 (a
 community full-pack translation, normalized to the app's informal du voice
-and the shared Protein term, reviewed against `UI_COPY_STYLE.md`). All hardcoded Kotlin user-facing strings (speech
+and the shared Protein term). All hardcoded Kotlin user-facing strings (speech
 errors, camera flash labels, sync messages, AI provider errors) now live in
 `values/strings.xml`; `AiError` carries a `@StringRes` resolved at the UI
 layer, so provider errors show in the app language without threading a

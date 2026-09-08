@@ -7,10 +7,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Security regression (docs/SECURITY_HARDENING_PLAN.md P2-4): AI output is
- * untrusted (a hostile description / OFF product name / shared-meal note can
- * steer the model). Parsing must clamp absurd numbers, drop NaN/Infinity, and
- * scrub text before anything reaches the diary.
+ * Security regression: AI output is untrusted (a hostile description / OFF
+ * product name / shared-meal note can steer the model). Parsing must clamp
+ * absurd numbers, drop NaN/Infinity, and scrub text before anything reaches
+ * the diary.
  */
 class FoodJsonParserSecurityTest {
     @Test

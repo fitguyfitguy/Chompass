@@ -5,10 +5,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Security regression (docs/SECURITY_HARDENING_PLAN.md P2-1): only exactly-known
- * plain routes may be navigated via `chompass://go/<dest>`. `nav.navigate()`
- * throws for unknown destinations, so the whitelist is what keeps an unprivileged
- * app from crashing us with a crafted VIEW intent.
+ * Security regression: only exactly-known plain routes may be navigated via
+ * `chompass://go/<dest>`. `nav.navigate()` throws for unknown destinations,
+ * so the whitelist is what keeps an unprivileged app from crashing us with
+ * a crafted VIEW intent.
  */
 class ChompassRoutesTest {
     @Test

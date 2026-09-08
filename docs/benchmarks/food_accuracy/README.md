@@ -4,7 +4,7 @@ Python research harness for prompt and model comparison on food text/image entry
 
 Full documentation: [`docs/FOOD_ACCURACY_BENCHMARK.md`](../../docs/FOOD_ACCURACY_BENCHMARK.md)
 
-**Current results & defaults:** [`docs/FOOD_ACCURACY_BENCHMARK_STATUS.md`](../../docs/FOOD_ACCURACY_BENCHMARK_STATUS.md)
+Run outputs land in `results/` (gitignored).
 
 **Free-tier default: `--provider openrouter --model nofud/free`.** Do not use stock `openrouter/free` for accuracy benches (it routes to content-safety models). `nofud/free` rebuilds its pool from the live OpenRouter catalog on each process start (new free models appear; cancelled ones drop); the pool is cached for that run only.
 
@@ -233,7 +233,7 @@ uv run python docs/benchmarks/food_accuracy/compare_runs.py \
   docs/benchmarks/food_accuracy/results/image_text_ab/l1_meal_name/summary.csv
 ```
 
-**Latest results (2026-07-22):** Best plate so far: `google/gemini-3.6-flash` L0 **32.3%** WMAPE / **50%** ±20%. Then gpt-4o-mini **34.5%**, Gemini 3.5 Flash-Lite **35.9%**, free Gemma/nofud ~**41–42%**. No `3.6-flash-lite` on OpenRouter (Lite = 3.5). See [`FOOD_ACCURACY_BENCHMARK_STATUS.md`](../../docs/FOOD_ACCURACY_BENCHMARK_STATUS.md).
+**Latest results (2026-07-22):** Best plate so far: `google/gemini-3.6-flash` L0 **32.3%** WMAPE / **50%** ±20%. Then gpt-4o-mini **34.5%**, Gemini 3.5 Flash-Lite **35.9%**, free Gemma/nofud ~**41–42%**. No `3.6-flash-lite` on OpenRouter (Lite = 3.5).
 
 ## Image baseline
 

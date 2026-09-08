@@ -17,8 +17,7 @@ bands out, pre-registered kill criteria, no shipping from a single lucky run.
 [`BodyMeasurement.usNavyBodyFatPercent`](../../../android/app/src/main/java/app/chompass/models/BodyMeasurement.kt)
 and [`chompass-core/formulas.js`](../../../web/app/src/lib/chompass-core/formulas.js);
 register in [`CALCULATION_METHODS.md`](../../CALCULATION_METHODS.md) (USNAVY).
-Logged BF% feeds Katch-McArdle (`BMR-KM`). Food-photo lesson:
-[`UNCERTAINTY_DRIVEN_ENTRY.md`](../../UNCERTAINTY_DRIVEN_ENTRY.md).
+Logged BF% feeds Katch-McArdle (`BMR-KM`).
 
 ## The question
 
