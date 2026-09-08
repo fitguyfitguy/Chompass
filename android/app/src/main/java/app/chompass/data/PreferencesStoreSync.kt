@@ -38,6 +38,17 @@ internal suspend fun PreferencesStore.setWebDavUrlImpl(url: String) {
     dataStore.edit { it[Keys.WEBDAV_URL] = normalizeWebDavUrl(url) }
 }
 
+internal val PreferencesStore.mealieBaseUrlImpl: Flow<String>
+    get() = dataStore.data.map { it[Keys.MEALIE_BASE_URL].orEmpty() }
+
+internal suspend fun PreferencesStore.setMealieBaseUrlImpl(url: String) {
+    val trimmed = url.trim()
+    dataStore.edit {
+        if (trimmed.isEmpty()) it.remove(Keys.MEALIE_BASE_URL)
+        else it[Keys.MEALIE_BASE_URL] = app.chompass.services.ai.AiHttp.normalizeCustomBaseUrl(trimmed)
+    }
+}
+
 internal val PreferencesStore.webDavUsernameImpl: Flow<String>
     get() = dataStore.data.map { it[Keys.WEBDAV_USERNAME].orEmpty() }
 

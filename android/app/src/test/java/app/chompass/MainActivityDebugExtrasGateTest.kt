@@ -55,6 +55,7 @@ class MainActivityDebugExtrasGateTest {
             putExtra("diagnose_health_connect", true)
             putExtra("preview_daily_summary", true)
             putExtra("seed_progressive_meal", true)
+            putExtra("run_mealie_import_test", true)
         }
         val actions = consumeDebugIntentExtras(intent, debugEnabled = false)
         // Every flag/extra comes back at its default: no seed, no restore, no reset.
@@ -109,6 +110,7 @@ class MainActivityDebugExtrasGateTest {
         val actions = consumeDebugIntentExtras(intent, debugEnabled = true)
         assertFalse(actions.demoAi)
         assertFalse(actions.runOnDeviceLlmTest)
+        assertFalse(actions.runMealieImportTest)
         assertEquals(3, actions.entryBenchmarkCount)
     }
 

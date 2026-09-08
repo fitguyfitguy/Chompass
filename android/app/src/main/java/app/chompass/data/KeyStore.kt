@@ -53,6 +53,11 @@ class KeyStore(context: Context) {
         if (password.isNullOrEmpty()) delete(WEBDAV_PASSWORD_KEY) else save(WEBDAV_PASSWORD_KEY, password)
     }
 
+    fun mealieToken(): String? = load(MEALIE_TOKEN_KEY)
+    fun setMealieToken(token: String?) {
+        if (token.isNullOrEmpty()) delete(MEALIE_TOKEN_KEY) else save(MEALIE_TOKEN_KEY, token)
+    }
+
     fun clearAll() {
         prefs.edit().clear().apply()
     }
@@ -64,6 +69,7 @@ class KeyStore(context: Context) {
         private const val AI_FALLBACK_PREFIX = "apikey_fallback_"
         private const val STT_PREFIX = "speechApiKey_"
         private const val WEBDAV_PASSWORD_KEY = "webdav_password"
+        private const val MEALIE_TOKEN_KEY = "mealie_token"
 
         /**
          * Open EncryptedSharedPreferences. On Android 14/15 (and occasionally

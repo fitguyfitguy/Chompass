@@ -157,11 +157,20 @@ data class Recipe(
     val ingredients: List<RecipeIngredient> = emptyList(),
     @Serializable(with = InstantSerializer::class)
     val createdAt: Instant = Instant.now(),
+    /** Import stamp, e.g. `mealie:<slug>`. Null for hand-built recipes. */
+    val source: String? = null,
+    val nutritionCalories: Int? = null,
+    val nutritionProtein: Double? = null,
+    val nutritionCarbs: Double? = null,
+    val nutritionFat: Double? = null,
+    val nutritionFiber: Double? = null,
+    val nutritionSugar: Double? = null,
+    val nutritionSodium: Double? = null,
 ) {
-    val totalCalories: Int get() = ingredients.sumOf { it.calories }
-    val totalProtein: Double get() = ingredients.sumOf { it.protein }
-    val totalCarbs: Double get() = ingredients.sumOf { it.carbs }
-    val totalFat: Double get() = ingredients.sumOf { it.fat }
+    val totalCalories: Int get() = nutritionCalories ?: ingredients.sumOf { it.calories }
+    val totalProtein: Double get() = nutritionProtein ?: ingredients.sumOf { it.protein }
+    val totalCarbs: Double get() = nutritionCarbs ?: ingredients.sumOf { it.carbs }
+    val totalFat: Double get() = nutritionFat ?: ingredients.sumOf { it.fat }
 
     /** Sums a nullable per-ingredient nutrient — null only if every ingredient omitted it. */
     private fun sumOptional(selector: (RecipeIngredient) -> Double?): Double? {
@@ -169,7 +178,46 @@ data class Recipe(
         return ingredients.sumOf { selector(it) ?: 0.0 }
     }
 
-    val totalSugar: Double? get() = sumOptional { it.sugar }
-    val totalFiber: Double? get() = sumOptional { it.fiber }
-    val totalSodium: Double? get() = sumOptional { it.sodium }
+    val totalSugar: Double? get() = nutritionSugar ?: sumOptional { it.sugar }
+    val totalFiber: Double? get() = nutritionFiber ?: sumOptional { it.fiber }
+    val totalSodium: Double? get() = nutritionSodium ?: sumOptional { it.sodium }
+
+    val logsAsNamedMeal: Boolean get() = source?.startsWith(MEALIE_SOURCE_PREFIX) == true
+
+    fun toNamedMealEntry(logDate: Instant, mealType: String = this.mealType): FoodEntry {
+        val constituents = ingredients.map { ing ->
+            FoodConstituent(
+                name = ing.name,
+                calories = ing.calories,
+                protein = ing.protein,
+                carbs = ing.carbs,
+                fat = ing.fat,
+                servingSizeGrams = 0.0,
+                emoji = ing.emoji,
+                sugar = ing.sugar,
+                fiber = ing.fiber,
+                sodium = ing.sodium,
+            )
+        }
+        return FoodEntry(
+            name = name,
+            calories = totalCalories,
+            protein = totalProtein,
+            carbs = totalCarbs,
+            fat = totalFat,
+            timestamp = logDate,
+            emoji = emoji,
+            source = FoodSource.MANUAL,
+            mealType = mealType,
+            sugar = totalSugar,
+            fiber = totalFiber,
+            sodium = totalSodium,
+            recipeLogId = null,
+            constituents = constituents,
+        )
+    }
+
+    companion object {
+        const val MEALIE_SOURCE_PREFIX = "mealie:"
+    }
 }

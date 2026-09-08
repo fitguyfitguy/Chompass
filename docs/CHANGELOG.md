@@ -5,6 +5,12 @@ All notable changes to Chompass are documented here.
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
 
+## [Unreleased]
+
+### Added
+
+- **Import recipes from Mealie** (Android): Saved Meals → Recipes has an import button. Enter your self-hosted Mealie URL and an API token, pick recipes, and they land as named meals. Nutrition comes along when Mealie has it. Re-importing the same recipe updates it instead of duplicating. Follows Codeberg [#85](https://codeberg.org/fitguy/Chompass/issues/85) by [@voegly](https://codeberg.org/voegly).
+
 ## [4.8.0] - 2026-09-08
 
 ### Added

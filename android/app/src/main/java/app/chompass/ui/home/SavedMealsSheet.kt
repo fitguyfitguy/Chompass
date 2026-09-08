@@ -34,6 +34,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Refresh
@@ -138,6 +139,7 @@ fun SavedMealsSheet(
     var userPickedTab by remember { mutableStateOf(false) }
     var tab by remember { mutableStateOf(initialTab ?: SavedTab.RECENTS) }
     var recentsSort by remember { mutableStateOf(SavedMealsSort.RECENT) }
+    var showMealieImport by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         recentsSort = SavedMealsSort.fromPref(container.prefs.lastSavedMealsSort.first())
         if (initialTab != null) return@LaunchedEffect
@@ -387,6 +389,13 @@ fun SavedMealsSheet(
                         Modifier.fillMaxWidth().padding(bottom = 8.dp),
                         horizontalArrangement = Arrangement.End
                     ) {
+                        androidx.compose.material3.IconButton(onClick = { showMealieImport = true }) {
+                            Icon(
+                                Icons.Outlined.Download,
+                                contentDescription = stringResource(R.string.cd_import_mealie),
+                                tint = AppColors.Calorie
+                            )
+                        }
                         androidx.compose.material3.IconButton(onClick = onCreateRecipe) {
                             Icon(
                                 Icons.Filled.AddCircle,
@@ -413,7 +422,13 @@ fun SavedMealsSheet(
             }
         }
     }
-}
+    if (showMealieImport) {
+        MealieImportSheet(
+            container = container,
+            onDismiss = { showMealieImport = false },
+        )
+    }
+ }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

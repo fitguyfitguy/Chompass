@@ -40,6 +40,7 @@ import app.chompass.services.AndroidAppIconManager
 import app.chompass.debug.OnDeviceLlmDebugConfig
 import app.chompass.debug.OnDeviceLlmDebugLauncher
 import app.chompass.debug.GoalCalcMatrixDebugLauncher
+import app.chompass.debug.MealieImportDebugLauncher
 import app.chompass.services.EntryPerfBenchmark
 import app.chompass.services.PerfBenchRequest
 import app.chompass.services.PerfLog
@@ -674,6 +675,14 @@ open class MainActivity : ComponentActivity() {
             if (actions.previewDailySummary) {
                 runCatching { container.notifications.postDailySummaryNow() }
                     .onFailure { Log.e(PHOTO_IMPORT_TAG, "previewDailySummary failed", it) }
+            }
+            if (actions.runMealieImportTest) {
+                MealieImportDebugLauncher.launchIfRequested(
+                    scope = lifecycleScope,
+                    container = container,
+                    url = actions.mealieTestUrl,
+                    token = actions.mealieTestToken,
+                )
             }
             Log.d(PHOTO_IMPORT_TAG, "debug actions complete")
         }

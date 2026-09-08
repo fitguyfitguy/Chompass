@@ -1261,6 +1261,16 @@ für dich ein</string>
     <string name="cd_new_recipe">Neues Rezept</string>
 
     <string name="cd_edit_recipe">Rezept bearbeiten</string>
+    <string name="cd_import_mealie">Aus Mealie importieren</string>
+    <string name="mealie_import_title">Aus Mealie importieren</string>
+    <string name="mealie_host_label">Mealie-URL</string>
+    <string name="mealie_token_label">API-Token</string>
+    <string name="mealie_test_connection">Verbindung testen</string>
+    <string name="mealie_select_all">Alle auswählen</string>
+    <string name="mealie_select_none">Keine auswählen</string>
+    <string name="mealie_import_n_format">%1$d importieren</string>
+    <string name="mealie_importing">Importiere…</string>
+    <string name="mealie_imported_format">%1$d Rezepte importiert</string>
 
     <string name="nutrition_details_title">Nährwertangaben</string>
 
