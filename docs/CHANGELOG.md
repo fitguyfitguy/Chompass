@@ -10,6 +10,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Changed
 
 - **A named meal in the builder now logs as one food** (Android + web): leave the name empty to log each ingredient, or type a name to save one food with those ingredients listed inside it. Relogging and scaling then apply to the whole meal. Follows Codeberg [#91](https://codeberg.org/fitguy/Chompass/issues/91) by [@vandelli](https://codeberg.org/vandelli).
+- **On-device AI food analysis is faster and more reliable** (Android): the on-device model now returns the core nutrition for a food without the long micronutrient list, cutting its response roughly in half. This means fewer "Could not understand the AI response" errors on phones where the reply previously ran long. Micronutrient estimates remain available with cloud providers. Follows Codeberg [#68](https://codeberg.org/fitguy/Chompass/issues/68) by [@Ludisc](https://codeberg.org/Ludisc) and [@mbethke](https://codeberg.org/mbethke).
 
 
 ## [4.7.0] - 2026-09-07

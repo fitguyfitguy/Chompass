@@ -202,4 +202,27 @@ class FoodJsonParserTest {
             // expected; #68 logging fires via PerfLog.warnRelease before rethrow
         }
     }
+
+    @Test
+    fun parseFood_leanSchemaParsesWithNullMicros() {
+        // #68: on-device lean reply — core fields + unit options, no micronutrients.
+        val food = FoodJsonParser.parseFood(
+            """
+            {"name":"Banana","calories":105,"protein":1.3,"carbs":27.0,"fat":0.4,
+             "serving_size_grams":118.0,"emoji":"🍌",
+             "unit_options":[{"unit":"piece","quantity":1,"grams_per_unit":118}]}
+            """.trimIndent(),
+        )
+        assertEquals("Banana", food.name)
+        assertEquals(105, food.calories)
+        assertEquals(1.3, food.protein, 0.001)
+        assertEquals(27.0, food.carbs, 0.001)
+        assertEquals(0.4, food.fat, 0.001)
+        assertEquals(118.0, food.servingSizeGrams)
+        assertNull(food.sodium)
+        assertNull(food.vitaminA)
+        assertNull(food.caffeine)
+        assertEquals(1, food.servingUnitOptions.size)
+        assertEquals("piece", food.selectedServingUnit)
+    }
 }
