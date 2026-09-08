@@ -261,6 +261,7 @@ internal object Keys {
         val ON_DEVICE_FEATURE_VISIBLE = booleanPreferencesKey("onDeviceFeatureVisible")
         val SYNC_REVISIONS = stringPreferencesKey("syncRevisions")
         val WEBDAV_URL = stringPreferencesKey("webDavUrl")
+        val MEALIE_BASE_URL = stringPreferencesKey("mealieBaseUrl")
         val WEBDAV_USERNAME = stringPreferencesKey("webDavUsername")
         /** Opt-in: auto WebDAV sync once per day on app open. */
         val WEBDAV_ENABLED = booleanPreferencesKey("webDavEnabled")

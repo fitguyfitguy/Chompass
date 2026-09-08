@@ -91,6 +91,10 @@ internal data class DebugIntentActions(
     val previewDailySummary: Boolean = false,
     /** Debug-only: open the meal-builder sheet seeded with 6 ingredients (Codeberg #84 repro). */
     val seedProgressiveMeal: Boolean = false,
+    /** Debug-only: Mealie import device pass (list, import 3, log 1, re-import). */
+    val runMealieImportTest: Boolean = false,
+    val mealieTestUrl: String = "",
+    val mealieTestToken: String = "",
 ) {
     val hasSeedAction: Boolean
         get() = seedTestData || seedFull || seedBodyMetrics || seedBodyMetricsTwoYears ||
@@ -178,6 +182,10 @@ internal fun consumeDebugIntentExtras(
             intent.getBooleanExtra("preview_daily_summary", false),
         seedProgressiveMeal = BuildConfig.DEBUG &&
             intent.getBooleanExtra("seed_progressive_meal", false),
+        runMealieImportTest = BuildConfig.DEBUG &&
+            intent.getBooleanExtra("run_mealie_import_test", false),
+        mealieTestUrl = if (BuildConfig.DEBUG) intent.getStringExtra("mealie_url") ?: "" else "",
+        mealieTestToken = if (BuildConfig.DEBUG) intent.getStringExtra("mealie_token") ?: "" else "",
     )
     if (actions.resetOnboarding) intent.removeExtra("reset_onboarding")
     if (actions.seedTestData) intent.removeExtra("seed_test_data")
@@ -204,6 +212,11 @@ internal fun consumeDebugIntentExtras(
     if (actions.demoAiFail) intent.removeExtra("demo_ai_fail")
     if (actions.clearPendingDraft) intent.removeExtra("clear_pending_draft")
     if (actions.seedProgressiveMeal) intent.removeExtra("seed_progressive_meal")
+    if (actions.runMealieImportTest) {
+        intent.removeExtra("run_mealie_import_test")
+        intent.removeExtra("mealie_url")
+        intent.removeExtra("mealie_token")
+    }
     if (actions.runEntryBenchmark) {
         intent.removeExtra("run_entry_benchmark")
         intent.removeExtra("benchmark_count")

@@ -539,6 +539,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setSyncRevisions(revisions: Map<String, SyncRevision>) = setSyncRevisionsImpl(revisions)
     val webDavUrl: Flow<String> get() = webDavUrlImpl
     suspend fun setWebDavUrl(url: String) = setWebDavUrlImpl(url)
+    val mealieBaseUrl: Flow<String> get() = mealieBaseUrlImpl
+    suspend fun setMealieBaseUrl(url: String) = setMealieBaseUrlImpl(url)
     val webDavUsername: Flow<String> get() = webDavUsernameImpl
     suspend fun setWebDavUsername(username: String) = setWebDavUsernameImpl(username)
     val webDavEnabled: Flow<Boolean> get() = webDavEnabledImpl

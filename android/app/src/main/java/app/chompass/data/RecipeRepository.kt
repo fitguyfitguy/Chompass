@@ -29,6 +29,18 @@ class RecipeRepository(
         sync?.touch(recipe.id, "recipe")
     }
 
+    /** Upsert by id. Used by Mealie re-import so slugs replace instead of duplicating. */
+    suspend fun upsertRecipes(incoming: List<Recipe>) {
+        if (incoming.isEmpty()) return
+        val current = prefs.recipes.first().toMutableList()
+        for (recipe in incoming) {
+            val idx = current.indexOfFirst { it.id == recipe.id }
+            if (idx >= 0) current[idx] = recipe else current.add(recipe)
+            sync?.touch(recipe.id, "recipe")
+        }
+        prefs.setRecipes(current)
+    }
+
     suspend fun deleteRecipe(recipe: Recipe) {
         prefs.setRecipes(prefs.recipes.first().filterNot { it.id == recipe.id })
         sync?.tombstone(recipe.id, "recipe")
@@ -43,8 +55,17 @@ class RecipeRepository(
         prefs.setRecipes(list)
     }
 
-    /** Logs every ingredient as its own diary row, sharing a fresh [Recipe.recipeLogId]. */
+    /**
+     * Logs a recipe. Mealie imports (`source` starts with `mealie:`) write one
+     * named [app.chompass.models.FoodEntry] with constituents. Hand-built
+     * recipes still explode to one diary row per ingredient.
+     */
     suspend fun logRecipe(recipe: Recipe, logDate: Instant, mealType: String = recipe.mealType): List<UUID> {
+        if (recipe.logsAsNamedMeal) {
+            val entry = recipe.toNamedMealEntry(logDate, mealType)
+            foodRepository.addEntries(listOf(entry))
+            return listOf(entry.id)
+        }
         val recipeLogId = UUID.randomUUID()
         val entries = recipe.ingredients.map { it.toFoodEntry(logDate, mealType, recipeLogId) }
         // One batched DataStore edit instead of one full-file write per ingredient.

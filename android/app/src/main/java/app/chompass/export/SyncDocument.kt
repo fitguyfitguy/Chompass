@@ -380,6 +380,14 @@ object SyncDocument {
                                 put("name", r.name)
                                 put("meal_type", r.mealType)
                                 put("created_at", r.createdAt.toString())
+                                putNullable("source", r.source)
+                                putNullableNumber("nutrition_calories", r.nutritionCalories?.toDouble())
+                                putNullableNumber("nutrition_protein_g", r.nutritionProtein)
+                                putNullableNumber("nutrition_carbs_g", r.nutritionCarbs)
+                                putNullableNumber("nutrition_fat_g", r.nutritionFat)
+                                putNullableNumber("nutrition_fiber_g", r.nutritionFiber)
+                                putNullableNumber("nutrition_sugar_g", r.nutritionSugar)
+                                putNullableNumber("nutrition_sodium_mg", r.nutritionSodium)
                                 put(
                                     "ingredients",
                                     buildJsonArray {
@@ -965,6 +973,14 @@ object SyncDocument {
             mealType = parseMealType(o["meal_type"]?.asString()),
             ingredients = ingredients,
             createdAt = createdAt,
+            source = o["source"]?.asString(),
+            nutritionCalories = o["nutrition_calories"]?.asInt(),
+            nutritionProtein = o["nutrition_protein_g"]?.asDouble(),
+            nutritionCarbs = o["nutrition_carbs_g"]?.asDouble(),
+            nutritionFat = o["nutrition_fat_g"]?.asDouble(),
+            nutritionFiber = o["nutrition_fiber_g"]?.asDouble(),
+            nutritionSugar = o["nutrition_sugar_g"]?.asDouble(),
+            nutritionSodium = o["nutrition_sodium_mg"]?.asDouble(),
         )
         return RecipeWire(id, updatedAt, null, entry)
     }
