@@ -492,7 +492,7 @@ a:hover {
   user-select: none;
 }
 
-/* Explorable mode (Firefox): the phone is a live mini-PWA — real clicks. */
+/* Explorable mode (Firefox): the phone is a live mini-PWA; real clicks. */
 .hero-stage--explorable .hero-phone-canvas iframe {
   pointer-events: auto;
   cursor: pointer;
@@ -587,7 +587,7 @@ a:hover {
   transform: translateX(-50%) translateY(0);
 }
 
-/* Wide screens: split stage — the app left, live scene copy right. */
+/* Wide screens: split stage with the app left, live scene copy right. */
 .hero-copy-panel {
   display: none;
 }

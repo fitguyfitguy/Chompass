@@ -96,7 +96,7 @@
 
   if (typeof console !== "undefined" && console.info) {
     console.info(
-      "%cHungry?%c Run %cchompAss()%c — or type it on the page.",
+      "%cHungry?%c Run %cchompAss()%c, or type it on the page.",
       "color:#5cc48f;font-weight:700",
       "color:#a9a4ad",
       "font-family:ui-monospace,Menlo,monospace;color:#e6e1e5;background:#24232a;padding:0.1em 0.4em;border-radius:0.3em",

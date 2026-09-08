@@ -3,7 +3,7 @@
 
   // The stage embeds the PWA through absolute URLs. When the built page is
   // opened straight from disk (file://), those resolve to file:// references
-  // the browser blocks — so short-circuit with a plain-language hint instead
+  // the browser blocks, so short-circuit with a plain-language hint instead
   // of letting the iframe throw "may not load or link to file:///" errors.
   if (location.protocol === "file:") {
     var fileHost = document.querySelector("[data-live-hero]");
@@ -24,7 +24,7 @@
   // "camera" that zooms/crops into the app UI as the demo driver announces
   // scenes (chompass-hero postMessage). On wide screens the stage is a split
   // layout: the app on the left, a per-scene description panel on the right.
-  // All motion is WAAPI transform keyframes on a single layer — compositor-only,
+  // All motion is WAAPI transform keyframes on a single layer, compositor-only,
   // no rAF, no rasterization above 1:1 (canvas is laid out at 620px, zoom is
   // capped at devicePixelRatio). The video stays as the no-JS fallback with
   // preload="none" (poster only).
@@ -40,7 +40,7 @@
   var PHONE_H = 1330; // canvas height: the app's mobile layout only depends on width;
   // Hero-crop rest frames the app's top region (day nav + ring + macros) so the
   // rest view stays readable on wide desktop and mobile instead of shrinking the
-  // whole tall phone. The full phone frame is reserved for the intro — once per
+  // whole tall phone. The full phone frame is reserved for the intro, once per
   // page load, an exception rather than the norm.
   var HERO_CROP_H = 600;
   var REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -100,7 +100,7 @@
   // Scene key currently shown in the text layer (callout / side panel). Kept
   // separate from lastScene: the same scene is announced repeatedly (chart
   // warp steps, stream re-crops, target retries) and the copy must NOT
-  // re-animate for those — that flashing is what made the hero feel busy.
+  // re-animate for those: that flashing is what made the hero feel busy.
   var lastTextKey = null;
   var calloutSwapTimer = null;
 
@@ -251,7 +251,7 @@
 
   function transformString(t) {
     // translate3d forces a compositor layer in Firefox (2D transforms can
-    // run on the main thread there) — this is what keeps the camera pans
+    // run on the main thread there); this is what keeps the camera pans
     // smooth on Firefox instead of the jankier 2D form.
     return (
       "translate3d(" +
@@ -360,7 +360,7 @@
       return;
     }
     if (callout.classList.contains("is-visible")) {
-      // Gentle crossfade: fade the pill out, swap the words, fade back in —
+      // Gentle crossfade: fade the pill out, swap the words, fade back in,
       // no hard cut between captions.
       callout.classList.remove("is-visible");
       calloutSwapTimer = setTimeout(function () {
@@ -398,7 +398,7 @@
     if (revealed || !heroRoot) return;
     revealed = true;
     heroRoot.classList.add("is-ready");
-    heroLog("stage revealed — demo home painted");
+    heroLog("stage revealed: demo home painted");
   }
 
   /** Reveal on the first scene, the home having painted, or a hard fallback. */
@@ -427,8 +427,8 @@
   }
 
   // Realtime tracing: [hero] lines log what the camera is actually doing for
-  // each scene the demo announces — resolved zoom, retry, or fallback to rest
-  // — so the on-screen view can be matched against the demo timeline.
+  // each scene the demo announces (resolved zoom, retry, or fallback to rest)
+  // so the on-screen view can be matched against the demo timeline.
   // Debug tracing is disabled in production. Add ?debug=1 to the page URL to
   // surface camera/scene/diagnostics.
   var DEV = new URLSearchParams(location.search).has("debug");
@@ -447,7 +447,7 @@
       // Reduced motion: a short, subtle settle instead of a hard snap. The
       // snap read as a jumpy/broken camera on Firefox (which honors the
       // Windows "Show animations" setting); 450ms ease-in-out is minimal
-      // motion — calm, not teleporty — while still respecting the preference.
+      // motion, calm rather than teleporty, while still respecting the preference.
       animateTo(scene.target, null, Math.min(duration, 450));
       return;
     }
@@ -474,7 +474,7 @@
       heroLog(
         'scene "' +
           sceneLabel(key) +
-          '" — camera ' +
+          '": camera ' +
           scene.target.s.toFixed(2) +
           "x",
       );
@@ -484,7 +484,7 @@
     // The target was announced before it settled (sheet transition, slow first
     // render). Re-resolve on an interval; fall back to the hero-crop rest only
     // after the retry window so sheets never flash into an unreadable frame.
-    heroLog('scene "' + sceneLabel(key) + '" — target not ready, retrying…');
+    heroLog('scene "' + sceneLabel(key) + '": target not ready, retrying…');
     var tries = 0;
     retryTimer = setInterval(function () {
       tries += 1;
@@ -495,7 +495,7 @@
           heroLog(
             'scene "' +
               sceneLabel(key) +
-              '" — target missing after ' +
+              '": target missing after ' +
               tries +
               " tries, camera falls back to rest",
           );
@@ -546,7 +546,7 @@
     else if (data.type === "rest")
       onSceneMessage({ key: null, selector: "", index: 0 });
     else if (data.type === "hello") {
-      // A boot that reports completed loops proves the demo is healthy — the
+      // A boot that reports completed loops proves the demo is healthy: the
       // reload was a transient (visitor backgrounded the tab), so reset the
       // restart-loop counter instead of treating it as a broken loop.
       if (typeof data.loopsDone === "number" && data.loopsDone >= 1) {
@@ -580,23 +580,23 @@
   var diagEl = null;
   var diagTimer = null;
   // Restart-loop detection (Phase 3): count document loads after the first.
-  // A burst means the embedder (VS Code/Cursor preview) or browser keeps
+  // A burst means an embedded preview or the browser keeps
   // discarding/restoring the iframe. The counter resets when a boot reports
-  // completed loops (healthy demo — the reload was a transient) or after the
+  // completed loops (healthy demo: the reload was a transient) or after the
   // long window, so only demos that NEVER complete a loop accumulate toward
-  // static mode — this also catches slow reload loops (e.g. one reload per
+  // static mode; this also catches slow reload loops (e.g. one reload per
   // minute in real Firefox) that would slip under a short window.
   var restartCount = 0;
   var lastLoadAt = 0;
   var staticMode = false;
   // 2 reloads with no completed loop is enough to recognize an embedder that
-  // keeps discarding/restoring the iframe (VS Code/Cursor preview) — waiting
+  // keeps discarding/restoring the iframe; waiting
   // for 3 left the hero looking "stuck after the first scene" for ~15s.
   var STATIC_THRESHOLD = 2;
   var STATIC_WINDOW_MS = 600_000; // 10 min: long, because loopsDone resets handle healthy cases
 
   // Product decision (maintainer): Firefox gets a static hero showing the
-  // seeded logging view (home/diary) — no auto-playing usage demo; Chromium-
+  // seeded logging view (home/diary), no auto-playing usage demo; Chromium-
   // based browsers get the animated demo. Also: ?demo=static forces the
   // static frame anywhere (testing / flaky embeds).
   var isFirefox = /Firefox\//i.test(navigator.userAgent);
@@ -634,7 +634,7 @@
   /** Freeze the hero: tell the driver to render one frame and stop. */
   function enterStaticMode() {
     staticMode = true;
-    heroLog("static mode: demo restart loop detected — freezing one frame");
+    heroLog("static mode: demo restart loop detected, freezing one frame");
     try {
       iframe.contentWindow.postMessage(
         { source: "chompass-hero", type: "static" },
@@ -671,7 +671,7 @@
 
   // Bounded restart protocol (Phase 3): when the driver reports a stall
   // (watchdog: no loop advancement in ~150 s), recreate the iframe for a
-  // fresh start — but at most 3 times with a 30 s minimum gap, so a broken
+  // fresh start, but at most 3 times with a 30 s minimum gap, so a broken
   // loop turns into a bounded, observable recovery instead of an infinite
   // reload loop. The new document syncs pause state via hello → state.
   var restartCount = 0;
@@ -683,7 +683,7 @@
     var now = Date.now();
     if (now - lastRestartAt < RESTART_MIN_GAP_MS) return;
     if (restartCount >= RESTART_MAX) {
-      heroLog("demo restart cap reached — leaving as-is");
+      heroLog("demo restart cap reached: leaving as-is");
       return;
     }
     restartCount += 1;
@@ -759,7 +759,7 @@
       /* ignore */
     }
     pause();
-    heroLog("paused — hero out of view");
+    heroLog("paused: hero out of view");
   }
   function sendResume() {
     try {
