@@ -102,16 +102,31 @@ Material 3 dark theme (light theme also available). Images are in [`docs/screens
 
 On both the [PWA](https://chompass.app/app/) and the Android app unless noted:
 
+### Logging
+
 - **Food logging**: photo (up to 10), voice, barcode, text, manual entry, meal components, recipes, saved meals, draft recovery. Android also accepts a share into the app.
 - **Barcode**: [Open Food Facts](https://world.openfoodfacts.org/) lookup (4.6M+ products, cached offline). Reads EAN, QR, and Data Matrix. FOSS [zxing-cpp](https://github.com/zxing-cpp/zxing-cpp) on Android; browser scanner on the PWA.
 - **Food search** (Android): live Open Food Facts search plus offline USDA and Swiss Food Composition indexes.
+
+### AI
+
 - **AI**: your own cloud key (a free [Google AI Studio](https://aistudio.google.com/apikey) key is enough for casual use). Progress steps and a live field preview. Coach chat on both clients. You can turn all AI features off; barcode, search, and manual logging stay on.
 - **On-device AI** (Android): optional **On-Device (Private)** Gemma 4. See below.
+
+### Progress and trackers
+
 - **Progress**: weight, body fat, measurements, forecast. Keto and other diet modes. Water tracking.
+- **Optional trackers**: water, nicotine, caffeine, fasting timer, and daily notes. Each is off until you turn it on. Fasting stays on the device and is never exported or synced.
+
+### Data, export and sync
+
 - **Export and sync**: diary export (JSON / Markdown / CSV), weight and body-metrics import/export, bulk JSON import, meal share links. Optional user-hosted **WebDAV** sync (your server; no Chompass backend).
+
+### Languages and platforms
+
 - **Languages**: 18. The PWA covers core screens.
 
-Android only:
+### Android only
 
 - **Live calorie budget**: in Add Active mode the home ring grows the daily goal with the day's burn (Health Connect, a manual entry, or an estimate from your history). Widgets use the same budget.
 - **Health Connect**: steps, exercise, sleep, heart rate, hydration. Two-way with Gadgetbridge, openScale, and other Health Connect apps.
@@ -157,9 +172,18 @@ Accuracy depends on the model you pick. The app does not claim a single number. 
 
 Typed entry with a stated portion: **5.7% WMAPE, 90% within ±20%** of true calories. Photo estimation is hard for every vision model we tested (best paid model: **32.3% WMAPE, 50% within ±20%**). Full numbers: [`docs/ACCURACY.md`](docs/ACCURACY.md).
 
+
+## Documentation
+
+- [Settings guide](https://chompass.app/settings/): every setting on Android and the PWA
+- [`docs/ACCURACY.md`](docs/ACCURACY.md): what the AI numbers mean
+- [`docs/PRIVACY.md`](docs/PRIVACY.md): no ads, no analytics, local-first
+- [`docs/CALCULATION_METHODS.md`](docs/CALCULATION_METHODS.md): BMR, TDEE, goals, water
+- [`docs/README.md`](docs/README.md): full docs index
+
 ## Migrate from Fud AI
 
-Chompass is based on [Fud AI](https://github.com/aopv/fud-ai). Diary JSON from Fud AI imports here.
+Chompass is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai). Diary JSON from Fud AI imports here.
 
 | Path                  | Steps                                                                                                  |
 | --------------------- | ------------------------------------------------------------------------------------------------------ |
@@ -168,7 +192,7 @@ Chompass is based on [Fud AI](https://github.com/aopv/fud-ai). Diary JSON from F
 
 **Settings → Import Weight & Body Data** also accepts Chompass JSON/CSV, [openScale](https://f-droid.org/en/packages/com.health.openscale/) CSV, and common weight CSVs. Body-circumference sites have no Health Connect record type, so use file transfer for those.
 
-| Feature                 | [Fud AI](https://github.com/aopv/fud-ai) | Chompass Android                          | [Chompass PWA](https://chompass.app/app/) |
+| Feature                 | [Fud AI](https://github.com/apoorvdarshan/fud-ai) | Chompass Android                          | [Chompass PWA](https://chompass.app/app/) |
 | ----------------------- | ------------------------------------------------- | ----------------------------------------- | ----------------------------------------- |
 | Banner ads              | Brief AdMob; removed in 3.0.3                     | **Never shipped**                         | **Never shipped**                         |
 | On-device AI (Gemma 4)  | No                                                | **Yes** (opt-in)                          | No (cloud, your key)                      |
@@ -181,7 +205,7 @@ Chompass is based on [Fud AI](https://github.com/aopv/fud-ai). Diary JSON from F
 | Distribution            | Play-focused                                      | **F-Droid** / Obtainium / Codeberg        | **PWA**                                   |
 | Open diary / body JSON  | Upstream formats                                  | **Yes**                                   | **Same contracts as Android**             |
 
-Sources: [Fud AI releases](https://github.com/aopv/fud-ai/releases), [Chompass releases](https://codeberg.org/fitguy/chompass/releases). Maintainer matrix: [`docs/PARITY.md`](docs/PARITY.md). Release notes: [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
+Sources: [Fud AI releases](https://github.com/apoorvdarshan/fud-ai/releases), [Chompass releases](https://codeberg.org/fitguy/chompass/releases). Maintainer matrix: [`docs/PARITY.md`](docs/PARITY.md). Release notes: [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
 
 ## Privacy
 
@@ -195,7 +219,7 @@ Chompass is free, ad-free, and open source. If you'd like to say thanks, you can
 
 ## Attribution & license
 
-Chompass is based on [Fud AI](https://github.com/aopv/fud-ai).
+Chompass is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 
 - Copyright (c) 2026 Apoorv Darshan - [MIT License](LICENSE)
 - Modifications Copyright (c) 2026 fitguy - MIT License

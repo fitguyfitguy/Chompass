@@ -35,7 +35,7 @@ status is missing or stale, fix it (release checklist step 3).
 | [`PERFORMANCE.md`](PERFORMANCE.md) | Full-seed fixture + baseline (cold start, Progress ranges, Add Food, entry pipeline) |
 | [`WEB_PRESENCE.md`](WEB_PRESENCE.md) | chompass.app site + outreach checklist |
 | [`fdroid/`](fdroid/) | F-Droid build metadata (`app.chompass.yml`), mirror of the live listing |
-| [`screenshots/`](screenshots/README.md) | Published feature screenshots (README, dark only) |
+| [`screenshots/`](screenshots/) | Published feature screenshots (README, dark only) |
 
 ## Design & current state (read the Status line first)
 
@@ -48,7 +48,7 @@ status is missing or stale, fix it (release checklist step 3).
 | [`ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md) | Gemma on-device: production Tiers A/B + debug extras |
 | [`DEMO_HERO_FIREFOX.md`](DEMO_HERO_FIREFOX.md) | **OPEN**: Firefox/embedded demo reload loop |
 | [`SECURITY_HARDENING_PLAN.md`](SECURITY_HARDENING_PLAN.md) | Shipped 3.16.0: security/privacy audit + hardening (debug-extras gate, deep-link caps, image bounds, prompt-injection delimiters, PWA CSP); device rehearsal run 2026-08-16 |
-| [`SETTINGS_FINDABILITY_PLAN.md`](SETTINGS_FINDABILITY_PLAN.md) | **WIP**: settings findability pass — Display / Trackers & Reminders hub split, Units row, hub search, naming unification (Android) |
+| [`SETTINGS_FINDABILITY_PLAN.md`](SETTINGS_FINDABILITY_PLAN.md) | Shipped 3.24.0 (2026-08) |
 
 ## Benchmarks
 

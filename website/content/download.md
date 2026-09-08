@@ -86,6 +86,7 @@ Package ID: `app.chompass`
 1. Complete onboarding (profile and goals).
 2. For cloud AI: add a provider key under **Settings → AI & Speech** (a free [Google AI Studio](https://aistudio.google.com/apikey) key works for casual use).
 3. On the Android app, for private on-device analysis: **Settings → AI & Speech**, then **On-Device (Private)**, and download Gemma 4 once.
+4. Skim the [settings guide](https://chompass.app/settings/) to tune trackers, reminders, and AI.
 
 ## Migrate from Fud AI
 

@@ -1241,3 +1241,30 @@ a:hover {
     transition: none !important;
   }
 }
+
+/* -------------------------------------------------------------- shot-grid */
+
+.shot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 1.25rem;
+  margin: 1.75rem 0 2rem;
+}
+
+.shot {
+  margin: 0;
+}
+
+.shot img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+}
+
+.shot figcaption {
+  margin: 0.5rem 0 0;
+  color: var(--text-weak);
+  font-size: 0.85rem;
+  text-align: center;
+}

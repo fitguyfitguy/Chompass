@@ -6,9 +6,24 @@ layout: single
 
 Calorie and macro tracking as an [installable PWA](https://chompass.app/app/) in any modern browser and as an Android app. Log food, review meal components, save recipes, and export open JSON on both clients.
 
+<figure class="shot-grid">
+  <div class="shot"><img src="/screenshots/home.png" alt="Home screen in dark theme" width="200" height="433" loading="lazy" /><figcaption>Home: calorie ring, macros, meals</figcaption></div>
+  <div class="shot"><img src="/screenshots/add-food.png" alt="Add food sheet in dark theme" width="200" height="433" loading="lazy" /><figcaption>Add food: photo, voice, barcode, AI</figcaption></div>
+  <div class="shot"><img src="/screenshots/meal-components.png" alt="Meal components sheet in dark theme" width="200" height="433" loading="lazy" /><figcaption>Meal components: edit ingredients and grams</figcaption></div>
+  <div class="shot"><img src="/screenshots/progress.png" alt="Progress screen in dark theme" width="200" height="433" loading="lazy" /><figcaption>Progress: weight, steps, goals</figcaption></div>
+  <div class="shot"><img src="/screenshots/coach.png" alt="AI Coach chat in dark theme" width="200" height="433" loading="lazy" /><figcaption>Coach: chat with your own key</figcaption></div>
+  <div class="shot"><img src="/screenshots/settings.png" alt="Settings hub in dark theme" width="200" height="433" loading="lazy" /><figcaption>Settings: providers, goals, data</figcaption></div>
+</figure>
+
+
 ## Food logging
 
 Multi-photo capture (up to 10), share into the Android app, voice, barcode, text, manual entry, and saved meals. Draft recovery if analysis is interrupted. Barcode scans resolve against [Open Food Facts](https://world.openfoodfacts.org/) (4.6M+ products; results cached for offline use), and photo analysis can read codes from the image.
+
+## Food search (Android)
+
+Live Open Food Facts search plus offline USDA and Swiss Food Composition indexes.
+
 
 ## Meal components
 
@@ -36,7 +51,7 @@ The [Chompass PWA](https://chompass.app/app/) runs in any modern browser on phon
 
 Accuracy comes down to the model you pick, not a Chompass secret. We test against labeled datasets and publish the results instead of quoting a single accuracy number.
 
-Typed entry **with a stated portion** is close to solved: about 90% of estimates land within 20% of true calories. Photo entry is harder. Even the best AI models we tested land within 20% only about half the time, and that is true across the vision AI industry, not just here. A meal title or ingredient list without quantities is not the same as typed entry with grams. It may help identification on some models and datasets, but it does not close the portion gap. Full write-up: [How accurate is AI food logging?](/blog/ai-food-logging-accuracy/) (methodology and raw tables on [Codeberg](https://codeberg.org/fitguy/chompass/src/branch/main/docs/ACCURACY.md)).
+Typed entry **with a stated portion** is close to solved: about 90% of estimates land within 20% of true calories. Photo entry is harder. Even the best AI models we tested land within 20% only about half the time, and that is true across the vision AI industry, not just here. A meal title or ingredient list without quantities is not the same as typed entry with grams. It may help identification on some models and datasets, but it does not close the portion gap. Full write-up: [published accuracy notes](https://codeberg.org/fitguy/chompass/src/branch/main/docs/ACCURACY.md).
 
 ## AI Coach
 
@@ -58,11 +73,16 @@ The home ring runs on Add Active mode: the daily goal grows with the day's burn 
 
 Optional local water log. Android app: reminders and home-screen calorie, protein, metrics, and water widgets. Diary export (JSON / Markdown / CSV), weight and body-metrics import/export, meal sharing, and bulk JSON import on both clients.
 
+
+## Settings, explained
+
+Every toggle, from Adaptive Goals to on-device Gemma, is listed in the [settings guide](/settings/). Android and PWA rows sit side by side, with anything exclusive marked.
+
 ## Upstream credit
 
-Chompass is based on [Fud&nbsp;AI](https://github.com/aopv/fud-ai) by **Apoorv Darshan**. Huge thanks for the open, bring-your-own-key food logger. Prefer workouts and the full upstream set? Use [Fud&nbsp;AI](https://github.com/aopv/fud-ai).
+Chompass is based on [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai) by **Apoorv Darshan**. Huge thanks for the open, bring-your-own-key food logger. Prefer workouts and the full upstream set? Use [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai).
 
-| Feature                     | [Fud&nbsp;AI](https://github.com/aopv/fud-ai) | Chompass Android                           | [Chompass&nbsp;PWA](https://chompass.app/app/) |
+| Feature                     | [Fud&nbsp;AI](https://github.com/apoorvdarshan/fud-ai) | Chompass Android                           | [Chompass&nbsp;PWA](https://chompass.app/app/) |
 | --------------------------- | ------------------------------------------------------ | ------------------------------------------ | ---------------------------------------------- |
 | Banner ads                  | Brief AdMob; removed in 3.0.3                          | **Never shipped**                          | **Never shipped**                              |
 | On-device AI (Gemma&nbsp;4) | No                                                     | **Yes** (opt-in)                           | No (cloud, your key)                                |
@@ -81,4 +101,4 @@ Chompass is based on [Fud&nbsp;AI](https://github.com/aopv/fud-ai) by **Apoorv D
 - **Open data:** export diary and body metrics; import JSON, CSV, openScale, Health Connect (Android app)
 - **PWA + Android:** installable PWA in any modern browser; Material 3 Android app; shared JSON contracts
 
-Full comparison also lives in the [project README](https://codeberg.org/fitguy/chompass). Upstream: [Fud&nbsp;AI releases](https://github.com/aopv/fud-ai/releases).
+Full comparison also lives in the [project README](https://codeberg.org/fitguy/chompass). Upstream: [Fud&nbsp;AI releases](https://github.com/apoorvdarshan/fud-ai/releases).
