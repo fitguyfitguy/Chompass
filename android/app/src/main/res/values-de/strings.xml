@@ -1163,6 +1163,7 @@ für dich ein</string>
     <string name="voice_tap_to_start">Zum Starten auf das Mikrofon tippen</string>
 
     <string name="voice_transcribing_format">Transkription über %1$s...</string>
+    <string name="voice_transcribing">Wird transkribiert…</string>
 
     <string name="voice_mic_permission_denied">Mikrofonberechtigung verweigert. </string>
 
@@ -2695,6 +2696,8 @@ für dich ein</string>
     <string name="cd_log">Protokoll</string>
 
     <string name="cd_close">Schließen</string>
+    <string name="cd_increase">Erhöhen</string>
+    <string name="cd_decrease">Verringern</string>
 
     <string name="cd_clear_quantity">Menge löschen</string>
 

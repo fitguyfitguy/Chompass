@@ -64,6 +64,7 @@ import app.chompass.R
 import app.chompass.models.ServingUnitOption
 import app.chompass.services.FoodPhotoSession
 import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.rememberDecodedBitmap
 import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.theme.AppColors
@@ -106,9 +107,7 @@ fun ContextNoteSheet(
         keyboardController?.show()
     }
 
-    val bitmap = remember(imageBytes) {
-        android.graphics.BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-    }
+    val bitmap = rememberDecodedBitmap(imageBytes)
 
     ChompassBottomSheet(
         onDismiss = { if (!busy) onDismiss() },
