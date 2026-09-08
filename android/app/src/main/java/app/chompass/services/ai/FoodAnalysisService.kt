@@ -71,6 +71,15 @@ private const val CONSTITUENT_ROW_MICROS =
 
 private const val ENTRY_JSON_SCHEMA = "$ENTRY_JSON_SCHEMA_MEAL}"
 
+/**
+ * #68: on-device entry schema — core fields only (8 vs 34). The 21-micro
+ * meal schema pushes E2B replies past the litertlm output cap (truncated
+ * JSON → InvalidResponse); micros are a cloud-only ask there. Parse side
+ * is unchanged: missing keys parse as null micros.
+ */
+private const val ENTRY_JSON_SCHEMA_LEAN =
+    """{"name":"...","calories":0,"protein":0.0,"carbs":0.0,"fat":0.0,"serving_size_grams":0.0,"emoji":"<single specific food emoji>","unit_options":[]}"""
+
 private const val ENTRY_JSON_SCHEMA_WITH_CONSTITUENT_MACROS =
     """$ENTRY_JSON_SCHEMA_MEAL,"constituents":[$CONSTITUENT_ROW_MACROS]}"""
 
@@ -81,6 +90,10 @@ private const val ENTRY_NUTRIENT_UNITS =
     "Calories are integers; other nutrients are numbers (grams for protein/carbs/fat/sugars/fiber/fats/omega-3; " +
         "mg for cholesterol, sodium, potassium, calcium, iron, magnesium, zinc, vitamin C, vitamin E; " +
         "mcg for vitamins A, D, B12, K and folate). serving_size_grams is the estimated total weight in grams."
+
+private const val ENTRY_NUTRIENT_UNITS_LEAN =
+    "Calories are integers; protein/carbs/fat are grams. " +
+        "serving_size_grams is the estimated total weight in grams."
 
 private const val ENTRY_UNIT_OPTIONS_RULE =
     """unit_options entries look like {"unit":"slice","quantity":2,"grams_per_unit":180}: """ +
@@ -117,7 +130,7 @@ internal const val CONSTITUENT_MIN_RESPONSE_TOKENS = 4096
 internal val ENTRY_CONSTITUENT_OPS = setOf("analyzeText", "analyzeAuto", "analyzeFood", "analyzeFoodMulti")
 
 /** Constituents JSON requested for one dispatch leg (provider + model on the wire). */
-internal enum class EntryConstituentPromptKind { NONE, MACROS, MICROS }
+internal enum class EntryConstituentPromptKind { NONE, MACROS, MICROS, LEAN }
 
 /**
  * Small-cloud-model detection (goal-recalc SAFE tier + macros-only
@@ -132,13 +145,18 @@ internal fun isSmallCloudModel(model: String): Boolean {
     return listOf("flash-lite", "nano", "haiku", "-mini", "/free").any { m.contains(it) }
 }
 
+/**
+ * On-device always gets the lean entry schema (#68) — the constituents
+ * toggle does not apply there. Cloud keeps [EntryConstituentPromptKind.NONE]
+ * as the toggle-off full-micro schema.
+ */
 internal fun entryConstituentPromptKind(
     constituentsEnabled: Boolean,
     provider: AIProvider,
     model: String,
 ): EntryConstituentPromptKind {
+    if (provider == AIProvider.ON_DEVICE) return EntryConstituentPromptKind.LEAN
     if (!constituentsEnabled) return EntryConstituentPromptKind.NONE
-    if (provider == AIProvider.ON_DEVICE) return EntryConstituentPromptKind.NONE
     return if (isSmallCloudModel(model)) EntryConstituentPromptKind.MACROS
     else EntryConstituentPromptKind.MICROS
 }
@@ -147,13 +165,20 @@ internal fun entryJsonSchemaFor(kind: EntryConstituentPromptKind): String = when
     EntryConstituentPromptKind.NONE -> ENTRY_JSON_SCHEMA
     EntryConstituentPromptKind.MACROS -> ENTRY_JSON_SCHEMA_WITH_CONSTITUENT_MACROS
     EntryConstituentPromptKind.MICROS -> ENTRY_JSON_SCHEMA_WITH_CONSTITUENTS
+    EntryConstituentPromptKind.LEAN -> ENTRY_JSON_SCHEMA_LEAN
 }
 
 internal fun entryConstituentsRuleFor(kind: EntryConstituentPromptKind): String = when (kind) {
     EntryConstituentPromptKind.NONE -> ""
     EntryConstituentPromptKind.MACROS -> ENTRY_CONSTITUENTS_RULE
     EntryConstituentPromptKind.MICROS -> "$ENTRY_CONSTITUENTS_RULE $ENTRY_CONSTITUENTS_MICROS_RULE"
+    EntryConstituentPromptKind.LEAN -> ""
 }
+
+/** #68: the lean schema has no micro fields, so no mg/mcg units sentence. */
+internal fun entryNutrientUnitsFor(kind: EntryConstituentPromptKind): String =
+    if (kind == EntryConstituentPromptKind.LEAN) ENTRY_NUTRIENT_UNITS_LEAN else ENTRY_NUTRIENT_UNITS
+
 
 /** Effective response-token cap for an op: raised to the constituent floor only
  *  when the op's schema requests per-row micros and constituents are enabled. */
@@ -948,7 +973,7 @@ class FoodAnalysisService(
                     appendLine("Estimate the nutritional content for a food logging app.")
                     appendLine("Respond ONLY with JSON:")
                     appendLine(schema)
-                    appendLine(ENTRY_NUTRIENT_UNITS)
+                    appendLine(entryNutrientUnitsFor(kind))
                     appendLine(ENTRY_UNIT_OPTIONS_RULE)
                     if (constituentsRule.isNotEmpty()) appendLine(constituentsRule)
                     appendLine(ENTRY_EMOJI_NULL_RULE)
@@ -978,7 +1003,7 @@ class FoodAnalysisService(
         return buildString {
             appendLine("Respond ONLY with JSON:")
             appendLine(schema)
-            appendLine(ENTRY_NUTRIENT_UNITS)
+            appendLine(entryNutrientUnitsFor(kind))
             appendLine(ENTRY_UNIT_OPTIONS_RULE)
             if (constituentsRule.isNotEmpty()) appendLine(constituentsRule)
             append(ENTRY_EMOJI_NULL_RULE)

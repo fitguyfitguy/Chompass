@@ -77,6 +77,10 @@ class EntryConstituentSchemaGateTest {
         val prompt = captureAnalyzePrompt()
         assertFalse(prompt.contains("\"constituents\""))
         assertFalse(prompt.contains("Each constituent micronutrient MUST sum"))
+        // #68: lean entry schema — no micro fields, no mg/mcg units sentence.
+        assertFalse(prompt.contains("\"sodium\""))
+        assertFalse(prompt.contains("mg for cholesterol"))
+        assertTrue(prompt.contains("\"unit_options\""))
     }
 
     @Test
@@ -114,8 +118,13 @@ class EntryConstituentSchemaGateTest {
             entryConstituentPromptKind(true, AIProvider.GEMINI, "gemini-3.5-flash-lite"),
         )
         assertEquals(
-            EntryConstituentPromptKind.NONE,
+            EntryConstituentPromptKind.LEAN,
             entryConstituentPromptKind(true, AIProvider.ON_DEVICE, AIProvider.ON_DEVICE.defaultModel),
+        )
+        // On-device is lean regardless of the constituents toggle (#68).
+        assertEquals(
+            EntryConstituentPromptKind.LEAN,
+            entryConstituentPromptKind(false, AIProvider.ON_DEVICE, AIProvider.ON_DEVICE.defaultModel),
         )
         assertEquals(
             EntryConstituentPromptKind.NONE,
@@ -123,14 +132,24 @@ class EntryConstituentSchemaGateTest {
         )
         val primary = entryJsonSchemaFor(EntryConstituentPromptKind.MICROS)
         val liteFallback = entryJsonSchemaFor(EntryConstituentPromptKind.MACROS)
-        val onDeviceFallback = entryJsonSchemaFor(EntryConstituentPromptKind.NONE)
+        val cloudToggleOff = entryJsonSchemaFor(EntryConstituentPromptKind.NONE)
+        val lean = entryJsonSchemaFor(EntryConstituentPromptKind.LEAN)
         assertTrue(primary.contains("Each constituent micronutrient MUST sum") || primary.contains("added_sugar"))
         assertTrue(entryConstituentsRuleFor(EntryConstituentPromptKind.MICROS).contains("Each constituent micronutrient MUST sum"))
         assertFalse(entryConstituentsRuleFor(EntryConstituentPromptKind.MACROS).contains("Each constituent micronutrient MUST sum"))
+        assertEquals("", entryConstituentsRuleFor(EntryConstituentPromptKind.LEAN))
         assertFalse(
             liteFallback.contains("\"constituents\":[{\"name\":\"...\",\"calories\":0,\"protein\":0.0,\"carbs\":0.0,\"fat\":0.0,\"serving_size_grams\":0.0,\"emoji\":\"...\",\"sugar\""),
         )
-        assertFalse(onDeviceFallback.contains("\"constituents\""))
+        // Cloud toggle-off keeps the full-micro meal schema.
+        assertTrue(cloudToggleOff.contains("\"sodium\""))
+        assertFalse(cloudToggleOff.contains("\"constituents\""))
+        // Lean: core fields only, no micros, no constituents (#68).
+        assertTrue(lean.contains("\"calories\""))
+        assertTrue(lean.contains("\"unit_options\""))
+        assertFalse(lean.contains("\"sodium\""))
+        assertFalse(lean.contains("\"vitamin_a\""))
+        assertFalse(lean.contains("\"constituents\""))
         assertEquals(
             CONSTITUENT_MIN_RESPONSE_TOKENS,
             floorResponseTokensForOp("analyzeText", 1024, true),
