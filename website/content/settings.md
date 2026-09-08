@@ -1,6 +1,6 @@
 ---
 title: Settings guide
-description: Every Chompass setting explained: profile, goals and macros, food entry, trackers and reminders, AI providers, Health Connect, sync, and data export on Android and the PWA.
+description: "Every Chompass setting explained: profile, goals and macros, food entry, trackers and reminders, AI providers, Health Connect, sync, and data export on Android and the PWA."
 layout: single
 ---
 
