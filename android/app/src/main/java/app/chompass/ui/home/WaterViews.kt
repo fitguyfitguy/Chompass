@@ -41,7 +41,6 @@ import app.chompass.R
 import app.chompass.ui.settings.GradientSaveButton
 import app.chompass.models.WaterAmountFormat
 import app.chompass.models.WaterEntry
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.water
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.util.clockTimePattern
