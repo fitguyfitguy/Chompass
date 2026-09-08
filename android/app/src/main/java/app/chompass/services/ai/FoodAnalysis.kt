@@ -11,6 +11,7 @@ import app.chompass.models.ServingUnitOption
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.UserProfile
 import app.chompass.services.InputSanitizer
+import app.chompass.services.PerfLog
 import kotlinx.serialization.Serializable
 import org.json.JSONArray
 import org.json.JSONObject
@@ -449,8 +450,47 @@ internal object FoodJsonParser {
         }
         return trimmed
     }
+    /**
+     * One-line diagnostics for a reply whose JSON failed to parse (#68):
+     * reply length, whether the extracted JSON is brace-balanced (unbalanced
+     * ⇒ truncated output, the on-device token-cap signature), and newline-
+     * scrubbed head/tail snippets. Same depth-walk as [extractJson].
+     */
+    internal fun parseFailDiagnostics(raw: String): String {
+        val extracted = extractJson(raw)
+        var depth = 0
+        var inString = false
+        var escape = false
+        var balanced = false
+        for (ch in extracted) {
+            if (escape) { escape = false; continue }
+            if (ch == '\\') { escape = true; continue }
+            if (ch == '"') { inString = !inString; continue }
+            if (inString) continue
+            if (ch == '{') depth++
+            else if (ch == '}') {
+                depth--
+                if (depth == 0) { balanced = true; break }
+            }
+        }
+        fun snippet(s: String): String = s.replace('\n', ' ')
+        return "chars=${raw.length} balanced=$balanced" +
+            " head=${snippet(raw.take(40))}" +
+            " tail=${snippet(raw.takeLast(40))}"
+    }
 
-    fun parseFood(text: String): FoodAnalysis {
+    /**
+     * #68: log parse failures in release builds (FudAIPerf), then rethrow
+     * unchanged. Garbage vs truncation is settled by `balanced` in one line.
+     */
+    private inline fun <T> logParseFailure(raw: String, block: () -> T): T = try {
+        block()
+    } catch (e: AiError.InvalidResponse) {
+        PerfLog.warnRelease("op=entryParse phase=fail ${parseFailDiagnostics(raw)}")
+        throw e
+    }
+
+    fun parseFood(text: String): FoodAnalysis = logParseFailure(text) {
         val json = runCatching { JSONObject(extractJson(text)) }.getOrNull()
             ?: throw AiError.InvalidResponse
         // Sanitize BEFORE persistence: the model reply is untrusted output that a
@@ -486,7 +526,7 @@ internal object FoodJsonParser {
         return ConstituentReconcile.reconcile(parsed)
     }
 
-    fun parseRecognition(text: String): app.chompass.models.FoodRecognitionResult {
+    fun parseRecognition(text: String): app.chompass.models.FoodRecognitionResult = logParseFailure(text) {
         val json = runCatching { JSONObject(extractJson(text)) }.getOrNull()
             ?: throw AiError.InvalidResponse
         val mealName = InputSanitizer.text(
@@ -527,7 +567,7 @@ internal object FoodJsonParser {
         )
     }
 
-    fun parseLabel(text: String): NutritionLabelAnalysis {
+    fun parseLabel(text: String): NutritionLabelAnalysis = logParseFailure(text) {
         val json = runCatching { JSONObject(extractJson(text)) }.getOrNull()
             ?: throw AiError.InvalidResponse
         val name = InputSanitizer.text(
