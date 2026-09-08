@@ -74,9 +74,9 @@ The home ring runs on Add Active mode: the daily goal grows with the day's burn 
 Optional local water log. Android app: reminders and home-screen calorie, protein, metrics, and water widgets. Diary export (JSON / Markdown / CSV), weight and body-metrics import/export, meal sharing, and bulk JSON import on both clients.
 
 
-## Settings, explained
+## Settings
 
-Every toggle, from Adaptive Goals to on-device Gemma, is listed in the [settings guide](/settings/). Android and PWA rows sit side by side, with anything exclusive marked.
+The [settings guide](/settings/) lists every toggle on Android and the PWA. Exclusive rows are marked.
 
 ## Upstream credit
 

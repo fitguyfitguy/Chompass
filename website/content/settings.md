@@ -1,10 +1,10 @@
 ---
 title: Settings guide
-description: Every Chompass setting explained — profile, goals and macros, food entry, trackers and reminders, AI providers, Health Connect, sync, and data export on Android and the PWA.
+description: Every Chompass setting explained: profile, goals and macros, food entry, trackers and reminders, AI providers, Health Connect, sync, and data export on Android and the PWA.
 layout: single
 ---
 
-Every setting lives on your device. On Android the Settings hub has a search field; this page follows that app's group order and marks anything the PWA does not have (and the reverse). PWA hub names differ slightly: trackers sit under App & Display → Home display, and there are no reminders.
+Every setting lives on your device. On Android the Settings hub has a search field. This page follows that app's group order and marks PWA-only and Android-only rows. PWA hub names differ slightly: trackers sit under App & Display → Home display, and there are no reminders.
 
 ## Personal Info
 
@@ -81,7 +81,7 @@ How logging behaves. Android has this as its own hub group. On the PWA, meal tim
 
 ## Display
 
-Appearance, language, Home, and Progress. Android labels this Display. The PWA labels it App & Display and also parks trackers and Install app here. All of these exist on both clients unless marked.
+Appearance, language, Home, and Progress. Android labels this Display. The PWA labels it App & Display and also puts trackers and Install app here. All of these exist on both clients unless marked.
 
 | Setting | What it does |
 | --- | --- |
@@ -194,7 +194,7 @@ Providers, models, and speech. All of these exist on both clients unless marked.
 
 ## Health & Data
 
-Export, import, Health Connect, and the door to sync. All of these exist on both clients unless marked.
+Export, import, Health Connect, and sync. All of these exist on both clients unless marked.
 
 | Setting | What it does |
 | --- | --- |
