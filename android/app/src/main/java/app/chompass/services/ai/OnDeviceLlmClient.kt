@@ -11,6 +11,7 @@ import com.google.ai.edge.litertlm.Engine
 import com.google.ai.edge.litertlm.EngineConfig
 import com.google.ai.edge.litertlm.ExperimentalApi
 import com.google.ai.edge.litertlm.ExperimentalFlags
+import com.google.ai.edge.litertlm.SamplerConfig
 import com.google.ai.edge.litertlm.Message
 import com.google.ai.edge.litertlm.ToolSet
 import com.google.ai.edge.litertlm.tool
@@ -95,12 +96,18 @@ class OnDeviceLlmClient(
         Log.i(ON_DEVICE_LLM_TAG, "op=ondevice_llm phase=engineInit backend=$backendName cacheDir=$cacheDir ms=$loadMs")
         loadMs
     }
+    /** #68: raise the output cap now that 0.16.1 exposes it; low temperature for JSON. Double the cap when MTP is on (#2816). */
+    private fun entryConversationConfig(systemPrompt: String) = ConversationConfig(
+        systemInstruction = Contents.of(systemPrompt),
+        samplerConfig = SamplerConfig(topK = 40, topP = 0.95, temperature = 0.1),
+        maxOutputToken = if (enableMtp) 4096 else 2048,
+    )
 
     /** Single-shot prompt/response, no tool calling. Used for Tier A (`analyzeText`) scenarios. */
     override suspend fun generate(systemPrompt: String, userPrompt: String): String = withContext(Dispatchers.Default) {
         val active = engine ?: error("Engine not initialized — call ensureLoaded() first")
         active.createConversation(
-            ConversationConfig(systemInstruction = Contents.of(systemPrompt))
+            entryConversationConfig(systemPrompt),
         ).use { conversation -> conversation.sendMessage(userPrompt).plainText() }
     }
 
@@ -121,7 +128,7 @@ class OnDeviceLlmClient(
                 "imageBytes=${imageBytes.size} promptChars=${userPrompt.length}"
         )
         active.createConversation(
-            ConversationConfig(systemInstruction = Contents.of(systemPrompt))
+            entryConversationConfig(systemPrompt),
         ).use { conversation ->
             conversation.sendMessage(
                 Contents.of(
@@ -198,7 +205,7 @@ class OnDeviceLlmClient(
                     ON_DEVICE_LLM_TAG,
                     "op=ondevice_llm phase=engineConfig mtp=warning note=token_budget_bug_2816 " +
                         "draft+rejected tokens may count toward output limit; " +
-                        "double maxOutputToken when API supports it (not in litertlm 0.14.0 ConversationConfig)"
+                        "double maxOutputToken when MTP is on (entryConversationConfig uses 4096)",
                 )
             }.onFailure {
                 Log.w(ON_DEVICE_LLM_TAG, "op=ondevice_llm phase=engineConfig mtp=skipped err=${it.message}")
