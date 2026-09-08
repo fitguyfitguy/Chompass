@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Reject AI / Cursor attribution trailers that Cursor may inject into commit messages.
+# Reject non-human Co-authored-by / Generated-by trailers in commit messages.
 # Installed via scripts/install_git_hooks.sh (or devenv enterShell).
 set -euo pipefail
 
@@ -15,15 +15,13 @@ if grep -qiE \
   "$MSG_FILE"
 then
   cat >&2 <<'EOF'
-commit-msg: refusing AI attribution trailer in commit message.
+commit-msg: refusing a non-human attribution trailer in the commit message.
 
 Chompass commits must be authored as the maintainer only — no
-Co-authored-by/Assisted-by/Made-with/Generated-by trailers naming an AI
+Co-authored-by/Assisted-by/Made-with/Generated-by trailers naming a
 tool, no "Generated with <tool>" lines, no bot emoji.
 
 Fix: remove the trailer from the commit message and retry.
-Also turn off any agent attribution setting (e.g. Cursor Settings →
-Agents → Attribution) for commits and PRs.
 EOF
   exit 1
 fi

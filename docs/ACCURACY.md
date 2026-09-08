@@ -8,8 +8,8 @@ to Chompass. We measure accuracy against labeled datasets and publish the number
 instead of claiming a single accuracy percentage.
 
 All figures below come from an offline research harness against labeled datasets
-with known ground-truth calories and macros. Full methodology, every run, and raw
-result tables: [`FOOD_ACCURACY_BENCHMARK_STATUS.md`](FOOD_ACCURACY_BENCHMARK_STATUS.md).
+with known ground-truth calories and macros. Methodology:
+[`FOOD_ACCURACY_BENCHMARK.md`](FOOD_ACCURACY_BENCHMARK.md).
 
 ## Headline numbers
 
@@ -41,9 +41,7 @@ but do not beat Lq. The same Lq strings scored as **typed text only** (no photo)
 match image+Lq within noise on Flash Lite (**24.9%** / **52%**); a multi-model
 bake-off puts Gemini 3.6 Flash at **22.7%** / **68%** and DeepSeek (text-only
 model) at **23.5%** / **62%**. Quantity language is the lever; the photo adds
-almost nothing once it is present: still far from typed grams (~6% WMAPE). See
-[`FOOD_ACCURACY_BENCHMARK_STATUS.md`](FOOD_ACCURACY_BENCHMARK_STATUS.md)
-§ Photo-adjacent entry matrix and § Text-only vague-quantity bake-off.
+almost nothing once it is present: still far from typed grams (~6% WMAPE).
 Native video input on a Nutrition5k turntable subset also lost to a still image
 (WMAPE 25.6% → 37.2%); parked for now.
 
@@ -105,4 +103,4 @@ the input is what moves macros, whether typed grams or a tapped chip.
 - On-device Gemma 4 (Android, opt-in) is smaller than cloud models and generally
   less accurate. See the on-device note in [`ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md).
 - Numbers will move as models and prompts change. This page reflects the
-  snapshot dated in [`FOOD_ACCURACY_BENCHMARK_STATUS.md`](FOOD_ACCURACY_BENCHMARK_STATUS.md).
+  snapshot in the headline table above.

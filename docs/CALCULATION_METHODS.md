@@ -358,8 +358,7 @@ Derived only (not stored on `MacroDayProfile`, not synced). Adaptive's weekly de
 **Temperature input sources (since 2026-08-13):** `expectedHighC` resolves through
 `WeatherRepository` from the selected source: the manual °C wheel (default +
 universal fallback) or an Open-Meteo city forecast (cache valid while its date
-is today). Formula and factors are identical for every source; see
-[`docs/WEATHER_INTEGRATION_DESIGN.md`](WEATHER_INTEGRATION_DESIGN.md).
+is today). Formula and factors are identical for every source.
 (Weather-app broadcast input is parked.)
 
 ```

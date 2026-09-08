@@ -80,9 +80,6 @@ install-debug                         # same, inside devenv shell
 ./scripts/install_debug.sh --busy-home # full seed with extra Home cards
 ```
 
-After the seed is on disk (do not reseed), capture cold start, Progress ranges,
-Add Food, relog, and the analyze+save pipeline: [`PERFORMANCE.md`](PERFORMANCE.md).
-
 **Native Linux / macOS:** use host `adb` on the default port. The `ANDROID_ADB_SERVER_PORT=5038` setting and Windows `adb.exe` paths in this repo are only for the maintainer’s WSL2 + Windows USB split: ignore them if your device is visible to local `adb devices`.
 
 First launch walks through onboarding. A free Gemini key is available at https://aistudio.google.com/apikey - configure any supported provider under **Settings -> AI Access**.
@@ -90,8 +87,6 @@ First launch walks through onboarding. A free Gemini key is available at https:/
 ## Project website (Codeberg Pages)
 
 Hugo site sources live in [`website/`](../website/). Screenshots are mounted from [`screenshots/`](screenshots/) at build time. Live URL: [chompass.app](https://chompass.app/).
-
-Outreach checklist (AlternativeTo, Lemmy, etc.): [`WEB_PRESENCE.md`](WEB_PRESENCE.md).
 
 ### Codeberg repo settings (manual)
 
@@ -170,10 +165,6 @@ Requires `resvg` on `PATH`, or `nix` so the script can run `nix shell nixpkgs#re
 
 Edit the SVG (or regenerate it from the CC0 needle via `uv run python scripts/assets/build_icon_mark.py`) before running the command. See [ASSET_CREDITS.md](ASSET_CREDITS.md).
 
-## On-device LLM smoke test (debug only)
+## On-device LLM
 
-Proof-of-concept for **Gemma 4 E2B-it** via LiteRT-LM on real hardware (validated on Pixel 9a / GrapheneOS). Tier A (text) and Tier B (photo) are wired into production dispatch behind a default-off Settings toggle; Tier C (coach) stays debug-only.
-
-Full workflow: model push, intent extras, GPU/CPU backends, latency results, known issues:
-
-**[ON_DEVICE_LLM.md](ON_DEVICE_LLM.md)**
+Gemma 4 E2B-it via LiteRT-LM. Tier A (text) and Tier B (photo) are wired into production dispatch behind a default-off Settings toggle; the model is an in-app download, not bundled. See [`ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md).

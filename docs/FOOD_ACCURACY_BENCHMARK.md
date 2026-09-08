@@ -2,9 +2,7 @@
 
 Offline research harness for comparing **prompts** and **models** on food text and image entry. Measures macronutrient error (calories, protein, carbs, fat) against labeled datasets. Usable for Chompass prompt tuning and general food-AI research.
 
-**Status snapshot (results + defaults):** [`FOOD_ACCURACY_BENCHMARK_STATUS.md`](FOOD_ACCURACY_BENCHMARK_STATUS.md)
-
-**Related:** production prompts in [`FoodAnalysisService.kt`](../android/app/src/main/java/app/chompass/services/ai/FoodAnalysisService.kt); on-device smoke tests in [`docs/ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md) (latency/parse only, no GT scoring).
+**Related:** production prompts in [`FoodAnalysisService.kt`](../android/app/src/main/java/app/chompass/services/ai/FoodAnalysisService.kt); on-device notes in [`docs/ON_DEVICE_LLM.md`](ON_DEVICE_LLM.md) (latency/parse only, no GT scoring).
 
 ## Quick start
 
@@ -111,7 +109,7 @@ partial composite, not a true total).
 | `production_text` | Chompass `analyzeText` | Full JSON schema + unit_options |
 | `production_image` | Chompass `analyzeFood` | Vision + same schema |
 | `compact` | Research ablation | Macros + serving_size_grams only |
-| `compact_portion` | Research only | compact + portion/quantity rules; Flash-Lite JFB did not beat compact (see [STATUS § Failure modes](FOOD_ACCURACY_BENCHMARK_STATUS.md#failure-modes--portion-reasoning)) |
+| `compact_portion` | Research only | compact + portion/quantity rules; Flash-Lite JFB did not beat compact |
 | `fewshot_units` | On-device smoke `fewshot_units` | Full schema + pizza/soda/oatmeal unit examples |
 
 Image prompts append optional user context when `text` is set on an image sample (matches app `analyzeFood(description=…)`). `meal_name` is metadata only.
@@ -220,8 +218,7 @@ uv run python docs/benchmarks/food_accuracy/compare_runs.py \
 `results/*/samples.jsonl` under transformations that need no new model output:
 per-model bias calibration (leave-one-out cross-validated), self-consistency over
 repeated runs, cross-model median ensembling, and whether `serving_size_grams` or
-cross-model disagreement predict error. Free to run; results in
-[STATUS § Post-hoc calibration & ensembling](FOOD_ACCURACY_BENCHMARK_STATUS.md#post-hoc-calibration--ensembling-2026-07-29).
+cross-model disagreement predict error. Free to run; results land in `results/` (gitignored).
 
 ```bash
 uv run python docs/benchmarks/food_accuracy/posthoc_calibration.py

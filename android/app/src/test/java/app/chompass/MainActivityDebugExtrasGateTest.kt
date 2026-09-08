@@ -11,11 +11,10 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /**
- * Security regression (docs/SECURITY_HARDENING_PLAN.md P1-1): `MainActivity` is
- * exported for legitimate deep links, so ANY installed app can deliver intent
- * extras. Release builds must ignore the debug seed/restore/reset surface, or
- * an unprivileged app can overwrite the diary with sample data, reset
- * onboarding, or swap in the debug snapshot.
+ * Security regression: `MainActivity` is exported for legitimate deep links,
+ * so ANY installed app can deliver intent extras. Release builds must ignore
+ * the debug seed/restore/reset surface, or an unprivileged app can overwrite
+ * the diary with sample data, reset onboarding, or swap in the debug snapshot.
  *
  * `consumeDebugIntentExtras` takes an explicit `debugEnabled` so the release
  * path is testable here (unit tests compile against the debug variant).
