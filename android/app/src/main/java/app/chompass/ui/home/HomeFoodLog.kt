@@ -53,6 +53,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -129,13 +130,15 @@ internal fun MealSectionHeader(
         Spacer(Modifier.width(8.dp))
         Text(
             mealLabel(meal),
+            modifier = Modifier.weight(1f),
             fontSize = 17.sp,
             fontWeight = FontWeight.Medium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.85f)
         )
         // Combined nutrients for this meal (issue #103: chicken + pasta + sauce = one total)
         if (totalCalories != null) {
-            Spacer(Modifier.weight(1f))
             val summary = buildAnnotatedString {
                 append(kcalText(totalCalories))
                 if (macroChips.isNotEmpty()) {
@@ -158,6 +161,8 @@ internal fun MealSectionHeader(
                 summary,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.62f),
             )
         }
@@ -572,6 +577,7 @@ internal fun FoodRow(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false)
                     )
                     if (isFavorite) {
@@ -624,6 +630,8 @@ internal fun FoodRow(
                     Text(
                         servingText,
                         fontSize = 12.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                     )
                 }

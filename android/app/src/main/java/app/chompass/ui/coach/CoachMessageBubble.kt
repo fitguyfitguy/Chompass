@@ -457,12 +457,12 @@ internal fun MarkdownText(content: String, color: Color) {
                 is MdBlock.Bullet -> Row {
                     Text("•", color = color, fontSize = 17.sp, lineHeight = 22.sp)
                     Spacer(Modifier.width(8.dp))
-                    Text(inlineMarkdown(block.text, linkColor, codeBg), color = color, fontSize = 17.sp, lineHeight = 22.sp)
+                    Text(inlineMarkdown(block.text, linkColor, codeBg), color = color, fontSize = 17.sp, lineHeight = 22.sp, modifier = Modifier.weight(1f))
                 }
                 is MdBlock.Numbered -> Row {
                     Text("${block.number}.", color = color, fontSize = 17.sp, fontWeight = FontWeight.Medium, lineHeight = 22.sp)
                     Spacer(Modifier.width(8.dp))
-                    Text(inlineMarkdown(block.text, linkColor, codeBg), color = color, fontSize = 17.sp, lineHeight = 22.sp)
+                    Text(inlineMarkdown(block.text, linkColor, codeBg), color = color, fontSize = 17.sp, lineHeight = 22.sp, modifier = Modifier.weight(1f))
                 }
                 is MdBlock.Code -> Box(
                     Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).background(codeBg).padding(10.dp)

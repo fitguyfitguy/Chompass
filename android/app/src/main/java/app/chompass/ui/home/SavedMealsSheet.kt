@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -743,7 +744,9 @@ private fun SavedMealRow(
                     entry.name,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
-                    maxLines = 2
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false)
                 )
                 if (isFavorite) {
                     Icon(
@@ -769,6 +772,8 @@ private fun SavedMealRow(
                     Text(
                         subtitle,
                         fontSize = 12.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                     )
                 }
@@ -785,7 +790,7 @@ private fun SavedMealRow(
         } else if (onLog != null) {
             IconButton(
                 onClick = onLog,
-                modifier = Modifier.size(36.dp),
+                modifier = Modifier.minimumInteractiveComponentSize(),
             ) {
                 Icon(
                     Icons.Filled.AddCircle,
@@ -835,7 +840,7 @@ private fun RecipeRow(
         Thumbnail(emoji = recipe.emoji ?: recipe.ingredients.firstOrNull()?.emoji, imageFilename = null, imageStore = imageStore)
 
         Column(verticalArrangement = Arrangement.spacedBy(3.dp), modifier = Modifier.weight(1f)) {
-            Text(recipe.name, fontSize = 16.sp, fontWeight = FontWeight.Medium, maxLines = 2)
+            Text(recipe.name, fontSize = 16.sp, fontWeight = FontWeight.Medium, maxLines = 2, overflow = TextOverflow.Ellipsis)
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(kcalText(recipe.totalCalories), fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppColors.Calorie)
                 Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled))

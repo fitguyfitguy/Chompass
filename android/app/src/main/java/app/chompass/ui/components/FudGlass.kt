@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
@@ -264,7 +265,7 @@ fun FudGlassDialogActions(
     ) {
         if (dismissText != null && onDismiss != null) {
             TextButton(onClick = onDismiss) {
-                Text(dismissText)
+                Text(dismissText, maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
             Spacer(Modifier.width(6.dp))
         }
@@ -276,11 +277,11 @@ fun FudGlassDialogActions(
                     contentColor = MaterialTheme.colorScheme.error,
                 ),
             ) {
-                Text(primaryText)
+                Text(primaryText, maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
         } else {
             Button(onClick = onPrimary, enabled = primaryEnabled) {
-                Text(primaryText)
+                Text(primaryText, maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
         }
     }

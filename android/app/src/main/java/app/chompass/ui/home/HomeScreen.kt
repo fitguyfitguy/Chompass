@@ -876,6 +876,7 @@ fun HomeScreen(
                                     R.string.recovered_review_chip,
                                     recoveredReview.analysis.name
                                 ),
+                                modifier = Modifier.weight(1f, fill = false),
                                 color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 15.sp,
@@ -917,9 +918,12 @@ fun HomeScreen(
                                     if (pasteBusy) R.string.paste_busy else R.string.paste_n_entries,
                                     if (pasteBusy) 0 else copied.size
                                 ),
+                                modifier = Modifier.weight(1f, fill = false),
                                 color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 15.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
                             )
                             IconButton(
                                 onClick = { vm.clearCopiedEntries() },

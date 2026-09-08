@@ -3,6 +3,7 @@ package app.chompass.ui.settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -376,7 +377,11 @@ private fun DayTypesScheduleCard(
 ) {
     SectionCard(title = stringResource(R.string.settings_day_types_schedule)) {
         Column(Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlowRow(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
                 FilterChip(
                     selected = plan.mode == MacroPlanMode.MANUAL,
                     onClick = { onMode(MacroPlanMode.MANUAL) },

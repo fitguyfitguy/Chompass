@@ -1,6 +1,10 @@
 package app.chompass.ui
 
 import android.app.Application
+import app.chompass.models.ActivityLevel
+import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.home.MealSectionHeader
+import app.chompass.ui.settings.ActivityLevelSettingRow
 import app.chompass.ui.home.EntryAnalysisTipStrip
 import app.chompass.ui.home.MealPhotoAddTile
 import app.chompass.ui.settings.SettingRow
@@ -268,5 +272,67 @@ class OverflowGateTest {
             .assertVisibleMaxLines("progressive log-items", maxLines = 2)
         composeRule.onNodeWithText("Eine weitere hinzufügen")
             .assertVisibleMaxLines("progressive add-another", maxLines = 2)
+    }
+
+    @Test
+    fun activityLevelSettingRow_germanValue_stayVisible() {
+        // The unweighted value used to consume the row at 2.0x and starve the
+        // weighted label column to 0x0; both sides must stay visible now.
+        composeRule.setContent {
+            MaterialTheme {
+                DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(2f)) {
+                    ActivityLevelSettingRow(
+                        level = ActivityLevel.MODERATE,
+                        value = "Mäßig aktiv (tägliche Bewegung)",
+                        onClick = {},
+                    )
+                }
+            }
+        }
+        composeRule.onNodeWithText("Mäßig aktiv (tägliche Bewegung)", useUnmergedTree = true)
+            .assertVisibleSingleLine("activity level value 2.0x")
+        composeRule.onNodeWithText("Activity Level", useUnmergedTree = true)
+            .assertVisibleSingleLine("activity level label 2.0x")
+    }
+
+    @Test
+    fun fudGlassDialogActions_germanLabels_stayVisible() {
+        composeRule.setContent {
+            MaterialTheme {
+                DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(2f)) {
+                    FudGlassDialogActions(
+                        primaryText = "Erneut analysieren",
+                        dismissText = "Abbrechen",
+                        onPrimary = {},
+                        onDismiss = {},
+                    )
+                }
+            }
+        }
+        composeRule.onNodeWithText("Erneut analysieren")
+            .assertVisibleMaxLines("dialog primary 2.0x", maxLines = 2)
+        composeRule.onNodeWithText("Abbrechen")
+            .assertVisibleMaxLines("dialog dismiss 2.0x", maxLines = 2)
+    }
+
+    @Test
+    fun mealSectionHeader_longCustomName_staySingleLine() {
+        // Free-string custom meal names (#61) must ellipsize instead of
+        // pushing the macro summary off-row.
+        composeRule.setContent {
+            MaterialTheme {
+                MealSectionHeader(
+                    meal = "Zwischenmahlzeit am Nachmittag",
+                    totalCalories = 850,
+                    totalProtein = 12.0,
+                    totalCarbs = 40.0,
+                    totalFat = 9.0,
+                )
+            }
+        }
+        composeRule.onNodeWithText("Zwischenmahlzeit am Nachmittag")
+            .assertVisibleSingleLine("meal header custom name")
+        composeRule.onNodeWithText("850 kcal", substring = true)
+            .assertVisibleSingleLine("meal header kcal summary")
     }
 }
