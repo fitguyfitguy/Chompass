@@ -3,6 +3,7 @@ package app.chompass.services
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import app.chompass.R
 import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
@@ -54,7 +55,7 @@ object MealShare {
             type = "text/plain"
             putExtra(Intent.EXTRA_TEXT, shareText(entries))
         }
-        context.startActivity(Intent.createChooser(send, "Share meal"))
+        context.startActivity(Intent.createChooser(send, context.getString(R.string.share_meal)))
     }
 
     fun shareSeparately(context: Context, entries: List<FoodEntry>) {

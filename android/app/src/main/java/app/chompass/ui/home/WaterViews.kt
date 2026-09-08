@@ -117,7 +117,7 @@ fun WaterProgressRow(
                 Text(
                     stringResource(R.string.settings_water_auto_badge),
                     modifier = badgeModifier,
-                    color = AppColors.Calorie,
+                    color = MaterialTheme.colorScheme.water,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -135,13 +135,13 @@ fun WaterProgressRow(
                 .fillMaxWidth()
                 .height(5.dp)
                 .clip(RoundedCornerShape(3.dp)),
-            color = AppColors.Calorie,
-            trackColor = AppColors.Calorie.copy(alpha = 0.16f),
+            color = MaterialTheme.colorScheme.water,
+            trackColor = MaterialTheme.colorScheme.water.copy(alpha = 0.16f),
         )
         if (nextDrinkLabel != null) {
             Text(
                 nextDrinkLabel,
-                color = AppColors.Calorie,
+                color = MaterialTheme.colorScheme.water,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
             )

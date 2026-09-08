@@ -256,11 +256,11 @@ private fun CardCountRow(count: Int, onDecrement: () -> Unit, onIncrement: () ->
     ) {
         Text(stringResource(R.string.home_display_card_count), fontSize = 17.sp, modifier = Modifier.weight(1f))
         IconButton(onClick = onDecrement, enabled = count > HomeDisplayPreferences.MIN_NUTRIENT_CARD_COUNT) {
-            Icon(Icons.Filled.Remove, contentDescription = null)
+            Icon(Icons.Filled.Remove, contentDescription = stringResource(R.string.cd_decrease))
         }
         Text(count.toString(), fontWeight = FontWeight.SemiBold, fontSize = 17.sp)
         IconButton(onClick = onIncrement, enabled = count < HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT) {
-            Icon(Icons.Filled.Add, contentDescription = null)
+            Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.cd_increase))
         }
     }
 }
@@ -274,9 +274,9 @@ private fun StepGoalRow(goal: Int, onDecrement: () -> Unit, onIncrement: () -> U
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(stringResource(R.string.home_display_step_goal), fontSize = 17.sp, modifier = Modifier.weight(1f))
-        IconButton(onClick = onDecrement) { Icon(Icons.Filled.Remove, contentDescription = null) }
+        IconButton(onClick = onDecrement) { Icon(Icons.Filled.Remove, contentDescription = stringResource(R.string.cd_decrease)) }
         Text(goal.toString(), fontWeight = FontWeight.SemiBold, fontSize = 17.sp)
-        IconButton(onClick = onIncrement) { Icon(Icons.Filled.Add, contentDescription = null) }
+        IconButton(onClick = onIncrement) { Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.cd_increase)) }
     }
 }
 
