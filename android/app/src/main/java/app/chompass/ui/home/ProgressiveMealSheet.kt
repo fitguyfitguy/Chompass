@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -45,6 +46,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.ProgressiveMealDraft
@@ -405,7 +407,7 @@ private fun ProgressiveIngredientRow(
         }
 
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(analysis.name, fontSize = 15.sp, fontWeight = FontWeight.Medium, maxLines = 1)
+            Text(analysis.name, fontSize = 15.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
             // Same echo rule as saved rows (Codeberg #65): pending items keep
             // their analyzed unit when resolvable, else grams.
             val echo = ServingUnitOption.homeDisplaySelection(
@@ -434,7 +436,7 @@ private fun ProgressiveIngredientRow(
         IconButton(
             onClick = onRemove,
             enabled = enabled,
-            modifier = Modifier.size(28.dp),
+            modifier = Modifier.minimumInteractiveComponentSize(),
         ) {
             Icon(
                 Icons.Filled.Close,

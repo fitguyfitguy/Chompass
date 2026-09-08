@@ -87,7 +87,7 @@ internal fun SettingsGoalsSection(
                         ) { onOpenSheet(SettingsSheet.DIET_CARB_TARGET) }
                     }
                     HorizontalDivider()
-                    ActivityLevelSettingRow(p.activityLevel) { onOpenSheet(SettingsSheet.ACTIVITY) }
+                    ActivityLevelSettingRow(p.activityLevel, stringResource(p.activityLevel.displayNameRes)) { onOpenSheet(SettingsSheet.ACTIVITY) }
                     if (p.goal != WeightGoal.MAINTAIN) {
                         HorizontalDivider()
                         SettingRow(

@@ -398,8 +398,11 @@ internal fun CalorieHero(
                 )
                 Text(
                     stringResource(R.string.home_calories_left, LocaleFormat.integer(remaining)),
+                    modifier = Modifier.weight(1f, fill = false),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     color = MaterialTheme.colorScheme.primary
                 )
                 // Day-type chip rides the remaining caption's line (#60) — one

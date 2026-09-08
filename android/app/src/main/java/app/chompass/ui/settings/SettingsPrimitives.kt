@@ -211,6 +211,7 @@ internal fun SettingRow(
 @Composable
 internal fun ActivityLevelSettingRow(
     level: ActivityLevel,
+    value: String,
     onClick: () -> Unit
 ) {
     Row(
@@ -236,7 +237,8 @@ internal fun ActivityLevelSettingRow(
             )
         }
         Text(
-            stringResource(level.displayNameRes),
+            value,
+            modifier = Modifier.weight(1f, fill = false),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             maxLines = 1,
@@ -285,7 +287,9 @@ internal fun LockableGoalRow(
         Text(
             value,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
         Spacer(Modifier.width(10.dp))
         GoalStatusChip(locked = locked, onClick = onToggleLock)
