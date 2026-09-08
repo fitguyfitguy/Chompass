@@ -67,4 +67,17 @@ object PerfLog {
             // JVM unit tests run without a mocked android.util.Log.
         }
     }
+
+    /**
+     * Warning that also fires in RELEASE builds (#68 parse-failure diagnostics):
+     * unlike [warn]/[event] this is not debug-gated — the point is capturing why
+     * a release build's AI reply failed to parse. Same JVM-test guard.
+     */
+    fun warnRelease(line: String) {
+        try {
+            Log.w(TAG, line)
+        } catch (_: RuntimeException) {
+            // JVM unit tests run without a mocked android.util.Log.
+        }
+    }
 }

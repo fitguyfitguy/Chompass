@@ -166,4 +166,40 @@ class FoodJsonParserTest {
         assertEquals("Log a smaller slice.", FoodJsonParser.proseFromMaybeJson(raw))
         assertEquals("Just log it.", FoodJsonParser.proseFromMaybeJson("Just log it."))
     }
+
+    @Test
+    fun parseFailDiagnostics_truncatedJsonIsUnbalancedAndTailShowsCut() {
+        val truncated = """{"name":"Chicken soup","calories":150,"protein":8.0,"car"""
+        val d = FoodJsonParser.parseFailDiagnostics(truncated)
+        assertTrue(d.contains("chars=${truncated.length}"))
+        assertTrue(d.contains("balanced=false"))
+        assertTrue(d.contains("tail="))
+        assertTrue(d.endsWith("\"car"))
+    }
+
+    @Test
+    fun parseFailDiagnostics_fencedGarbageIsUnbalanced() {
+        val d = FoodJsonParser.parseFailDiagnostics("```json\nhere is no object at all\n```")
+        assertTrue(d.contains("balanced=false"))
+        assertTrue(d.contains("head=```json"))
+    }
+
+    @Test
+    fun parseFailDiagnostics_balancedHealthyJson() {
+        val d = FoodJsonParser.parseFailDiagnostics(
+            """{"name":"Oats","calories":150,"protein":5,"carbs":27,"fat":3}""",
+        )
+        assertTrue(d.contains("balanced=true"))
+    }
+
+    @Test
+    fun parseFood_truncatedEntryJsonStillThrowsInvalidResponse() {
+        val raw = """{"name":"Oats","calories":150,"protein":5,"carbs":27,"fat":3,"serv"""
+        try {
+            FoodJsonParser.parseFood(raw)
+            fail("expected InvalidResponse")
+        } catch (_: AiError.InvalidResponse) {
+            // expected; #68 logging fires via PerfLog.warnRelease before rethrow
+        }
+    }
 }
