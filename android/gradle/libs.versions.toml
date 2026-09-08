@@ -24,7 +24,7 @@ zxingCpp = "3.1.0"
 vico = "2.0.2"
 splashscreen = "1.0.1"
 screenshot = "0.0.1-alpha15"
-litertlm = "0.14.0"
+litertlm = "0.16.1"
 robolectric = "4.15.1"
 
 [libraries]
