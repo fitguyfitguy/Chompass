@@ -60,6 +60,41 @@ scripts/setup_gh_fitguyfitguy.sh
 scripts/sync_agent_configs.sh
 scripts/upstream_lookup.sh
 
+# Maintainer device/perf/on-device scripts (not needed to clone or build)
+scripts/capture_android_perf_baseline.sh
+scripts/capture_entry_perf.sh
+scripts/capture_entry_perf.ps1
+scripts/summarize_entry_perf.py
+scripts/perf_entry_benchmark.sh
+scripts/capture_ondevice_llm_daily.sh
+scripts/prepare_ondevice_llm_fixtures.py
+scripts/push_ondevice_model.sh
+scripts/device_test_sweep.sh
+scripts/release_verify_device.sh
+scripts/verify_upstream_bugfixes.sh
+scripts/scan_git_secrets.sh
+scripts/generate_blog_accuracy_charts.py
+scripts/generate_barcode_fixture.py
+scripts/hero_states.sh
+scripts/_hero_states_check.sh
+
+# Maintainer lab notebooks, executed plans, outreach (CHANGELOG is the shipped record)
+docs/archive/
+docs/PERFORMANCE.md
+docs/WEB_PRESENCE.md
+docs/DEMO_HERO_FIREFOX.md
+docs/SECURITY_HARDENING_PLAN.md
+docs/FOOD_ACCURACY_BENCHMARK_STATUS.md
+docs/UNCERTAINTY_DRIVEN_ENTRY.md
+docs/PLAN_4_6_0_BATCH.md
+docs/PLAN_DEMO_HERO_OPTIMIZATION.md
+docs/PROGRESS_PLOTS_PLAN.md
+docs/PWA_PARITY_PLAN_STATE.md
+docs/SETTINGS_FINDABILITY_PLAN.md
+docs/SETTINGS_OVERHAUL_PLAN.md
+docs/WEATHER_INTEGRATION_DESIGN.md
+docs/LOCAL_ENDPOINT_TRUST_DESIGN.md
+
 # Release artifacts (published on Codeberg Releases)
 NoFUD-*.apk
 Chompass-*.apk
