@@ -179,7 +179,6 @@ internal fun entryConstituentsRuleFor(kind: EntryConstituentPromptKind): String 
 internal fun entryNutrientUnitsFor(kind: EntryConstituentPromptKind): String =
     if (kind == EntryConstituentPromptKind.LEAN) ENTRY_NUTRIENT_UNITS_LEAN else ENTRY_NUTRIENT_UNITS
 
-
 /** Effective response-token cap for an op: raised to the constituent floor only
  *  when the op's schema requests per-row micros and constituents are enabled. */
 internal fun floorResponseTokensForOp(op: String, userCap: Int, constituentsRequested: Boolean): Int =
