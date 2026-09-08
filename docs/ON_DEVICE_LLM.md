@@ -216,7 +216,7 @@ MTP (multi-token / speculative decoding) can deliver ~1.6×–2.2× faster decod
 
 | Issue | Symptom | Workaround |
 |-------|---------|------------|
-| **Token budget bug** ([#2816](https://github.com/google-ai-edge/LiteRT-LM/issues/2816)) | Output stops early (~half the requested length): draft + rejected tokens count toward `max_output_tokens` | **Double** `maxOutputToken` when MTP is on. Newer LiteRT-LM Kotlin APIs expose `ConversationConfig.maxOutputToken`; **litertlm-android 0.14.0 does not:** workaround is documentation-only until upgrade. |
+| **Token budget bug** ([#2816](https://github.com/google-ai-edge/LiteRT-LM/issues/2816)) | Output stops early (~half the requested length): draft + rejected tokens count toward `max_output_tokens` | **Double** `maxOutputToken` when MTP is on. `ConversationConfig.maxOutputToken` exists from **0.15.0**; **0.16.1** is the latest that compiles on Kotlin 2.2 (project pin). **0.17.0** is compiled with Kotlin 2.4 metadata and cannot be consumed until the project Kotlin bump. Pin stays **0.14.0** until a device pass of 0.16.1 + `maxOutputToken=2048`. |
 | **Streaming stutter** | Token stream pauses briefly | Rejection sampling after bad draft guesses; expected; not fixable client-side. |
 | **Hardware locality** | Severe slowdown if drafter and main model split across CPU/GPU | Keep both on **GPU** (LiteRT-LM default when `Backend.GPU()` + MTP). Do not mix CPU backend with MTP. |
 | **Shared cache collisions** | “Access is denied” on engine startup (some cross-platform builds) | Point `EngineConfig.cacheDir` at a unique path per engine, or use a `:nocache` sentinel if upstream docs recommend it for your build; increases cold-init time. |
@@ -500,7 +500,7 @@ GPU is roughly **3× faster** than CPU on Tier A for this harness. Target of 2�
 1. **`unit_options` (Tier A, `full` prompt):** Baseline `full` prompt still returns `unit_options: []` (0/3). **`fewshot_units` prompt fixes this** (3/3 with units on Pixel 9a, 2026-07-14 evening run). Production would need inline few-shot examples or a two-pass `inferServingUnitOptions` call.
 2. **Tier A latency:** `compact` (~653 chars): **~7 s** (samples 1–2) / **~14 s** (multi-item sample 0). `fewshot_units` (~1494 chars): **~25–30 s** but keeps units. Baseline `full`: ~23–26 s, no units. Target of 2–5 s not reached on complex items.
 3. **GPU cold init:** First OpenCL compile takes 30–90 s (`mtp=false`); **~29–30 s** observed when compile cache is warm (Exp 1a/2c). **Several minutes** possible on a truly cold MTP first run (extra `verify` subgraph); Exp 2c MTP init was ~30 s after prior GPU sessions same evening.
-4. **GPU MTP (speculative decoding):** On Pixel 9a with `fewshot_units`, MTP delivers **~1.6× faster Tier A** (~15–17 s vs ~25–30 s) with **no JSON truncation** in Exp 2c (all `status=ok`, unitOptions preserved). Token-budget bug [#2816](https://github.com/google-ai-edge/LiteRT-LM/issues/2816) may still bite on longer outputs; `litertlm-android` **0.14.0** has no `ConversationConfig.maxOutputToken`. Default **MTP off** for smoke tests; enable when benchmarking decode speed.
+4. **GPU MTP (speculative decoding):** On Pixel 9a with `fewshot_units`, MTP delivers **~1.6× faster Tier A** (~15–17 s vs ~25–30 s) with **no JSON truncation** in Exp 2c (all `status=ok`, unitOptions preserved). Token-budget bug [#2816](https://github.com/google-ai-edge/LiteRT-LM/issues/2816) may still bite on longer outputs; `litertlm-android` **0.14.0** has no `ConversationConfig.maxOutputToken`. 0.15.0+ exposes it; 0.16.1 compiles on Kotlin 2.2; 0.17.0 needs Kotlin 2.4. Upgrade + `maxOutputToken=2048` pending a device pass. Default **MTP off** for smoke tests; enable when benchmarking decode speed.
 5. **LiteRT-LM maturity:** Library is beta; tool-calling and GPU paths have active upstream issues. Pin version deliberately when upgrading.
 6. **GrapheneOS:** No Play Services / AICore required; vendor GPU drivers + manifest `uses-native-library` entries are sufficient for OpenCL on Pixel 9a.
 7. **Not production:** No UI, no provider toggle, no model management; release APKs do not include LiteRT native libs.
@@ -512,7 +512,7 @@ GPU is roughly **3× faster** than CPU on Tier A for this harness. Target of 2�
 
 ## Upgrade / experiment notes
 
-- **Version pin:** [`android/gradle/libs.versions.toml`](../android/gradle/libs.versions.toml) → `litertlm = "0.14.0"`.
+- **Version pin:** [`android/gradle/libs.versions.toml`](../android/gradle/libs.versions.toml) → `litertlm = "0.14.0"`. Re-checked 2026-09-08: latest Google Maven is **0.17.0** (exposes `ConversationConfig.maxOutputToken` + `SamplerConfig.temperature`; `tool(ToolSet)` still returns `ToolProvider`). **Abort:** 0.17.0 metadata is Kotlin 2.4.0; the project compiler is 2.2.0. **0.16.1** is the latest that compiles (`:app:compileDebugKotlin` green) and already has `maxOutputToken`. Do not bump until a Windows-adb device pass (`run_ondevice_llm_test` + Tier B) against the 0.14.0 baseline.
 - **Other models (experiments closed):**
   - **Gemma 4 E4B-it:** optional quality rung; not run (E2B sufficient for Tier A/C smoke test)
   - **FunctionGemma-270m:** **skipped:** no OpenCL-compatible `.litertlm` with Coach-relevant fine-tuning (Tensor G5 build needs NPU; mobile-actions build is a different task/domain)
