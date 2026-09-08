@@ -54,7 +54,7 @@ status is missing or stale, fix it (release checklist step 3).
 
 | Doc | Contents |
 |-----|----------|
-| [`FOOD_ACCURACY_BENCHMARK_STATUS.md`](FOOD_ACCURACY_BENCHMARK_STATUS.md) | **Live state**: defaults, gates, findings log (append-only) |
+| [`FOOD_ACCURACY_BENCHMARK_STATUS.md`](FOOD_ACCURACY_BENCHMARK_STATUS.md) | **Live state**: defaults, gates, current findings; historical run tables + closed experiments in [`archive/FOOD_ACCURACY_BENCHMARK_FINDINGS.md`](archive/FOOD_ACCURACY_BENCHMARK_FINDINGS.md) |
 | [`FOOD_ACCURACY_BENCHMARK.md`](FOOD_ACCURACY_BENCHMARK.md) | Benchmark methodology + harness docs |
 | [`benchmarks/food_accuracy/`](benchmarks/food_accuracy/README.md) | Harness code (uv-run), manifests, scorers |
 | [`benchmarks/body_fat/`](benchmarks/body_fat/README.md) | **WIP**: BF% estimation research (formulas vs BYOK/local LLM; Track A first) |
