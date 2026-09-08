@@ -7,16 +7,27 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Added
+
+- **Home shows Today or the date you are viewing** (Android): a line above the calorie ring reads Today, or the selected date. Tap the date to jump back to today.
+- **Turn off meal suggestions by time of day** (Android): Settings → Food & Entry has a Suggest meals by time of day switch. When it is off, new logs start as Other instead of guessing Lunch or Dinner from the clock. Relog and Copy from day keep the original meal. Follows Codeberg [#88](https://codeberg.org/fitguy/Chompass/issues/88) by [@BrassCat](https://codeberg.org/BrassCat).
+- **Ollama lists the models on your computer** (Android): opening the model picker fetches names from your Ollama server. If the host cannot be reached, the default list stays, and you can still type any model ID.
+- **A note when ingredient edits leave vitamins stale** (Android): More Nutrition warns when the meal's ingredients no longer match the AI estimate. Re-estimate on the diary edit sheet runs a new analysis.
+
 ### Changed
 
 - **A named meal in the builder now logs as one food** (Android + web): leave the name empty to log each ingredient, or type a name to save one food with those ingredients listed inside it. Relogging and scaling then apply to the whole meal. Follows Codeberg [#91](https://codeberg.org/fitguy/Chompass/issues/91) by [@vandelli](https://codeberg.org/vandelli).
 - **On-device AI food analysis is faster and more reliable** (Android): the on-device model now returns the core nutrition for a food without the long micronutrient list, cutting its response roughly in half. This means fewer "Could not understand the AI response" errors on phones where the reply previously ran long. Micronutrient estimates remain available with cloud providers. Follows Codeberg [#68](https://codeberg.org/fitguy/Chompass/issues/68) by [@Ludisc](https://codeberg.org/Ludisc) and [@mbethke](https://codeberg.org/mbethke).
+- **Add Food recents show the meal type** (Android + web): each recent chip includes Lunch, Dinner, or the custom meal name. The web add-meal list uses the localized label.
+- **Trackers on Add Food collapse when several are on** (Android): with three or more of water, caffeine, nicotine, and fasting enabled, that section starts collapsed so Photo and barcode stay near the top. Tap Trackers to expand.
+- **Tracker and note sheets match other sheets** (Android): water, caffeine, nicotine, fasting, and note sheets use the same Cancel title bar and gradient Save as food sheets.
 
 ### Fixed
 
 - **Long names and large fonts no longer hide buttons** (Android): the recovered-analysis and paste chips on Home, meal headers, saved meal rows, the activity level row, and dialog buttons now truncate their label instead of pushing the close, log, or chevron controls off the row. The day type mode chips wrap to a second line instead of clipping.
 - **The water tracker uses one color** (Android): the water card's progress bar, Auto badge, and next-drink line now use the water color like its icon, instead of the app accent.
 - **Screen reader labels for the steppers** (Android): the plus and minus buttons for the Home nutrient card count and step goal now announce themselves.
+- **Fasting Start and Stop are easier to tap** (Android): those buttons meet the 48 dp touch target.
 
 
 ## [4.7.0] - 2026-09-07
