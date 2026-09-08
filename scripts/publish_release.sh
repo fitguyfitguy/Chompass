@@ -91,10 +91,17 @@ if [[ "$WITH_SCREENSHOTS" -eq 1 ]]; then
 fi
 
 run_tea() {
+  # When TEA_HOME is set, tea is pointed at the private ephemeral config
+  # (XDG_CONFIG_HOME) so the token never lands in process argv or in the
+  # maintainer's persistent tea config.
+  local -a prefix=()
+  if [[ -n "${TEA_HOME:-}" ]]; then
+    prefix=(env XDG_CONFIG_HOME="$TEA_HOME")
+  fi
   if command -v tea >/dev/null 2>&1; then
-    tea "$@"
+    "${prefix[@]}" tea "$@"
   else
-    nix shell nixpkgs#tea -c tea "$@"
+    "${prefix[@]}" nix shell nixpkgs#tea -c tea "$@"
   fi
 }
 
@@ -201,8 +208,21 @@ if [[ "$MISSING" -ne 0 ]]; then
   exit 1
 fi
 
-if [[ -n "$TOKEN" ]] && ! run_tea logins list 2>/dev/null | rg -q "$LOGIN"; then
-  run_tea logins add -n "$LOGIN" -u https://codeberg.org -t "$TOKEN"
+if [[ -n "$TOKEN" ]]; then
+  # No `tea logins add -t "$TOKEN"`: argv is visible in ps. tea 0.15 has no
+  # --config flag but persists logins under $XDG_CONFIG_HOME/tea, so write
+  # the login into a private ephemeral config dir instead.
+  TEA_HOME="$(mktemp -d)"
+  trap 'rm -rf "$TEA_HOME"' EXIT
+  mkdir -p "$TEA_HOME/tea"
+  {
+    printf 'logins:\n'
+    printf -- '- name: %s\n' "$LOGIN"
+    printf '  url: https://codeberg.org\n'
+    printf '  token: %s\n' "$TOKEN"
+    printf '  active: true\n'
+  } >"$TEA_HOME/tea/config.yml"
+  chmod 600 "$TEA_HOME/tea/config.yml"
 fi
 
 if ! run_tea logins list 2>/dev/null | rg -q "$LOGIN"; then
