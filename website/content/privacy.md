@@ -4,7 +4,7 @@ description: No ads, no analytics, no accounts. Food logs stay on your device. A
 layout: single
 ---
 
-Chompass is a private calorie tracker for the [installable browser PWA](https://chompass.app/app/) and Android. It is based on [Fud AI](https://github.com/aopv/fud-ai).
+Chompass is a private calorie tracker for the [installable browser PWA](https://chompass.app/app/) and Android. It is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 
 ## Summary
 
