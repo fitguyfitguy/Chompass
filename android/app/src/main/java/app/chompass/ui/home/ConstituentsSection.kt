@@ -415,4 +415,3 @@ internal fun commitConstituentDisplayEdit(
     val baseSum = baseAgg?.servingSizeGrams ?: bases.sumOf { it.servingSizeGrams }
     return ConstituentEditCommit(bases, baseAgg, displaySum, baseSum)
 }
-
