@@ -625,6 +625,8 @@ fun ClockTimeWheelPicker(
                     .align(Alignment.Center)
                     .width(184.dp),
             )
+            var hour by remember(time) { mutableStateOf(time.hour) }
+            var minute by remember(time) { mutableStateOf(time.minute) }
             Row(
                 Modifier.width(184.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -633,7 +635,10 @@ fun ClockTimeWheelPicker(
                 WheelPicker(
                     items = hours,
                     selected = time.hour,
-                    onSelect = { onChange(java.time.LocalTime.of(it, time.minute)) },
+                    onSelect = {
+                        hour = it
+                        onChange(java.time.LocalTime.of(hour, minute))
+                    },
                     label = { String.format(locale, "%02d", it) },
                     modifier = Modifier.weight(1f),
                     showSelectionHighlight = false,
@@ -648,7 +653,10 @@ fun ClockTimeWheelPicker(
                 WheelPicker(
                     items = minutes,
                     selected = time.minute,
-                    onSelect = { onChange(java.time.LocalTime.of(time.hour, it)) },
+                    onSelect = {
+                        minute = it
+                        onChange(java.time.LocalTime.of(hour, minute))
+                    },
                     label = { String.format(locale, "%02d", it) },
                     modifier = Modifier.weight(1f),
                     showSelectionHighlight = false,

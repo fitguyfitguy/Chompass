@@ -267,6 +267,10 @@ fun FoodResultSheet(
     var logTime by remember {
         mutableStateOf(logTimeOverride ?: LocalTime.now().withSecond(0).withNano(0))
     }
+    var logTimeTouched by remember { mutableStateOf(false) }
+    LaunchedEffect(logTimeOverride) {
+        logTime = reviewLogTimeAfterOverride(logTime, logTimeOverride, logTimeTouched)
+    }
     var moreNutritionExpanded by remember { mutableStateOf(false) }
     var nutritionUnlocked by remember { mutableStateOf(false) }
     var editableCalories by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.calories) }
@@ -1041,6 +1045,7 @@ fun FoodResultSheet(
             useSystem = useSystemDateTimePickers,
             onConfirm = { time ->
                 logTime = time
+                logTimeTouched = true
                 onLogTimeOverride(time)
                 if (mealTimesEnabled && !mealTypeFromSavedMeal && !mealTypeTouched) {
                     mealType = CurrentMealCatalog.value.mealIdAt(time)

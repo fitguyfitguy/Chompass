@@ -90,6 +90,26 @@ class FoodLogTimeTest {
         assertTrue(siblingEntriesForTimeApply(listOf(a), a, zone).isEmpty())
     }
 
+    @Test
+    fun reviewLogTimeAfterOverride_appliesOverrideWhenUntouched() {
+        val current = LocalTime.of(11, 0)
+        val override = LocalTime.of(13, 0, 30)
+        assertEquals(
+            LocalTime.of(13, 0),
+            reviewLogTimeAfterOverride(current, override, touched = false),
+        )
+    }
+
+    @Test
+    fun reviewLogTimeAfterOverride_keepsPickerWhenTouched() {
+        val current = LocalTime.of(11, 0)
+        val override = LocalTime.of(13, 0)
+        assertEquals(
+            current,
+            reviewLogTimeAfterOverride(current, override, touched = true),
+        )
+    }
+
     private fun entry(name: String, timestamp: Instant, mealType: String) = FoodEntry(
         id = UUID.nameUUIDFromBytes(name.toByteArray()),
         name = name,

@@ -247,6 +247,32 @@ private data class EarlyHydration(
     val onDeviceModels: List<String>,
 )
 
+internal fun commitSettingsHydrate(
+    current: SettingsUiState,
+    incoming: SettingsUiState,
+    writeGenAtStart: Int,
+    writeGenNow: Int,
+): SettingsUiState =
+    if (writeGenAtStart == writeGenNow) incoming
+    else current.copy(
+        healthConnectEnabled = incoming.healthConnectEnabled,
+        healthEnergyGoalsEnabled = incoming.healthEnergyGoalsEnabled,
+        healthBackgroundSyncEnabled = incoming.healthBackgroundSyncEnabled,
+        healthBackgroundReadAvailable = incoming.healthBackgroundReadAvailable,
+        healthBackgroundReadGranted = incoming.healthBackgroundReadGranted,
+        profile = current.profile ?: incoming.profile,
+        weatherSource = incoming.weatherSource,
+        weatherOmCity = incoming.weatherOmCity,
+        weatherOmHighC = incoming.weatherOmHighC,
+        weatherOmUpdatedAtMillis = incoming.weatherOmUpdatedAtMillis,
+        waterDynamicGoalPreview = incoming.waterDynamicGoalPreview,
+        apiKeyMasked = incoming.apiKeyMasked.ifEmpty { current.apiKeyMasked },
+        speechApiKeyMasked = incoming.speechApiKeyMasked.ifEmpty { current.speechApiKeyMasked },
+        fallbackApiKeyMasked = incoming.fallbackApiKeyMasked.ifEmpty { current.fallbackApiKeyMasked },
+        onDeviceAvailable = incoming.onDeviceAvailable,
+        onDeviceModels = incoming.onDeviceModels.ifEmpty { current.onDeviceModels },
+    )
+
 class SettingsViewModel(val container: AppContainer) : ViewModel() {
     private val _ui = MutableStateFlow(
         // Capability is cheap and sync. Defaulting this to false hid On-Device
@@ -264,6 +290,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
 
     /** Goal-input fingerprint captured at the last Recalculate (or seeded on first load). */
     private var lastRecalcSignature: String? = null
+
+    private var settingsWriteGen = 0
 
     /** True when [profile]'s goal inputs differ from the last-recalculated baseline. */
     private fun needsRecalc(profile: app.chompass.models.UserProfile?): Boolean =
@@ -283,6 +311,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         }
 
         viewModelScope.launch {
+            val hydrateGen = settingsWriteGen
             // Hydration touches the DataStore snapshot decode, the encrypted
             // KeyStore (synchronous AES file I/O), Health Connect IPC, and a
             // food-bucket read for the water preview. Run the whole chain
@@ -351,7 +380,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 }
             }
             val (state, sheet) = withContext(Dispatchers.IO) {
-                val snap = early.snap
+                val snap = container.prefs.readSettingsHydration()
                 val provider = early.provider
                 val speech = snap.selectedSpeech
                 val weather = container.weatherRepository.state.first()
@@ -499,8 +528,12 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 val sheet = runCatching { container.prefs.loadLastGoalChangeSheet() }.getOrNull()
                 state to sheet
             }
-            _ui.value = state
-            _ui.update { it.copy(lastRecalcSheet = sheet) }
+            _ui.value = commitSettingsHydrate(_ui.value, state, hydrateGen, settingsWriteGen)
+            if (hydrateGen == settingsWriteGen) {
+                _ui.update { it.copy(lastRecalcSheet = sheet) }
+            } else {
+                _ui.update { it.copy(lastRecalcSheet = it.lastRecalcSheet ?: sheet) }
+            }
         }
 
         container.prefs.homeDisplayPreferences
@@ -1217,55 +1250,61 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     )
 
     private suspend fun syncNotificationSchedules() {
-        val enabled = container.prefs.notificationsEnabled.first()
-        if (!enabled || !container.notifications.canPostNotifications()) {
-            container.notifications.cancelStreakReminder()
-            container.notifications.cancelDailySummary()
-            container.notifications.cancelWeightReminder()
-            container.notifications.cancelBodyFatReminder()
-            container.notifications.cancelWaterReminder()
-            return
-        }
+        withContext(Dispatchers.Default) {
+            try {
+                val enabled = container.prefs.notificationsEnabled.first()
+                if (!enabled || !container.notifications.canPostNotifications()) {
+                    container.notifications.cancelStreakReminder()
+                    container.notifications.cancelDailySummary()
+                    container.notifications.cancelWeightReminder()
+                    container.notifications.cancelBodyFatReminder()
+                    container.notifications.cancelWaterReminder()
+                    return@withContext
+                }
 
-        if (container.prefs.streakReminderEnabled.first()) {
-            container.notifications.scheduleStreakReminder(
-                container.prefs.streakReminderHour.first(),
-                container.prefs.streakReminderMinute.first()
-            )
-        } else {
-            container.notifications.cancelStreakReminder()
-        }
+                if (container.prefs.streakReminderEnabled.first()) {
+                    container.notifications.scheduleStreakReminder(
+                        container.prefs.streakReminderHour.first(),
+                        container.prefs.streakReminderMinute.first()
+                    )
+                } else {
+                    container.notifications.cancelStreakReminder()
+                }
 
-        if (container.prefs.dailySummaryEnabled.first()) {
-            container.notifications.scheduleDailySummary(
-                container.prefs.dailySummaryHour.first(),
-                container.prefs.dailySummaryMinute.first()
-            )
-        } else {
-            container.notifications.cancelDailySummary()
-        }
+                if (container.prefs.dailySummaryEnabled.first()) {
+                    container.notifications.scheduleDailySummary(
+                        container.prefs.dailySummaryHour.first(),
+                        container.prefs.dailySummaryMinute.first()
+                    )
+                } else {
+                    container.notifications.cancelDailySummary()
+                }
 
-        if (container.prefs.weightReminderEnabled.first()) {
-            container.notifications.scheduleWeightReminder(
-                container.prefs.weightReminderHour.first(),
-                container.prefs.weightReminderMinute.first(),
-            )
-        } else {
-            container.notifications.cancelWeightReminder()
-        }
+                if (container.prefs.weightReminderEnabled.first()) {
+                    container.notifications.scheduleWeightReminder(
+                        container.prefs.weightReminderHour.first(),
+                        container.prefs.weightReminderMinute.first(),
+                    )
+                } else {
+                    container.notifications.cancelWeightReminder()
+                }
 
-        val profile = container.profileRepository.current()
-        if (container.prefs.bodyFatReminderEnabled.first() && profile?.bodyFatPercentage != null) {
-            container.notifications.scheduleBodyFatReminder(
-                container.prefs.bodyFatReminderHour.first(),
-                container.prefs.bodyFatReminderMinute.first(),
-            )
-        } else {
-            container.notifications.cancelBodyFatReminder()
+                val profile = container.profileRepository.current()
+                if (container.prefs.bodyFatReminderEnabled.first() && profile?.bodyFatPercentage != null) {
+                    container.notifications.scheduleBodyFatReminder(
+                        container.prefs.bodyFatReminderHour.first(),
+                        container.prefs.bodyFatReminderMinute.first(),
+                    )
+                } else {
+                    container.notifications.cancelBodyFatReminder()
+                }
+                // Water uses the adaptive chain (interval from goal ÷ cup ÷ awake window,
+                // recomputed after every entry, issue #3). rearm cancels when off.
+                WaterReminderPlanner.rearm(container)
+            } catch (t: Throwable) {
+                android.util.Log.w("Chompass", "notification rearm failed", t)
+            }
         }
-        // Water uses the adaptive chain (interval from goal ÷ cup ÷ awake window,
-        // recomputed after every entry, issue #3). rearm cancels when off.
-        WaterReminderPlanner.rearm(container)
     }
 
     fun setWaterTrackingEnabled(v: Boolean) = updateUiPref(
@@ -1533,11 +1572,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             container.prefs.setWaterAwakeEndHour(endMinutes / 60)
             container.prefs.setWaterAwakeEndMinute(endMinutes % 60)
             container.prefs.setWaterCupSizeMl(cupMl)
-            try {
-                syncNotificationSchedules()
-            } catch (t: Throwable) {
-                android.util.Log.w("Chompass", "water reminder rearm failed", t)
-            }
+            syncNotificationSchedules()
         },
         {
             copy(
@@ -1993,8 +2028,13 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         crossinline reduce: SettingsUiState.() -> SettingsUiState,
     ) {
         viewModelScope.launch {
-            persist()
             _ui.value = _ui.value.reduce()
+            settingsWriteGen++
+            try {
+                persist()
+            } catch (t: Throwable) {
+                android.util.Log.w("Chompass", "settings persist failed", t)
+            }
         }
     }
 
