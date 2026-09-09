@@ -4,6 +4,7 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -363,6 +364,12 @@ fun ChompassSheetLazyColumn(
     blockBottomEdge: Boolean = true,
     verticalArrangement: androidx.compose.foundation.layout.Arrangement.Vertical = androidx.compose.foundation.layout.Arrangement.Top,
     horizontalAlignment: androidx.compose.ui.Alignment.Horizontal = androidx.compose.ui.Alignment.Start,
+    /**
+     * Space inside the scroll range rather than around it, so a trailing
+     * margin only appears once the list is scrolled to its end instead of
+     * permanently shortening the viewport.
+     */
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     content: LazyListScope.() -> Unit,
 ) {
     LazyColumn(
@@ -372,6 +379,7 @@ fun ChompassSheetLazyColumn(
             blockTopEdge = blockTopEdge,
             blockBottomEdge = blockBottomEdge,
         ),
+        contentPadding = contentPadding,
         verticalArrangement = verticalArrangement,
         horizontalAlignment = horizontalAlignment,
         content = content,

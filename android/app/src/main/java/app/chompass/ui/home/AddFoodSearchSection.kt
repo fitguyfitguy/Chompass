@@ -17,6 +17,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -75,6 +76,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -308,6 +310,12 @@ internal fun AddFoodSuggestionList(
     listIdentity: Any,
     /** Non-null lets scrolling expand the sheet itself. */
     sheetState: SheetState? = null,
+    /**
+     * Trailing space below the last row. Lives inside the scroll range, so it
+     * is only reached by scrolling to the end of the list — the pane itself
+     * still runs to the bottom edge of the sheet.
+     */
+    bottomSpace: Dp = 0.dp,
     modifier: Modifier = Modifier,
     onPick: (FoodSuggestion) -> Unit,
     onReview: (FoodSuggestion) -> Unit,
@@ -364,6 +372,7 @@ internal fun AddFoodSuggestionList(
             // move the search field, and switching between the saved list and
             // the search results cannot resize the sheet.
             modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = bottomSpace),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             if (searching) {
