@@ -171,6 +171,39 @@ class FoodSuggestionRankerTest {
     }
 
     @Test
+    fun deadOnlineLegStillLeavesSavedFoodsAndOfflineRows() {
+        // What the Add Food sheet sees when Open Food Facts is unreachable (or
+        // simply not opted into): the online leg contributes nothing, and the
+        // list is still the user's own foods followed by the bundled databases.
+        val saved = saved(entry("Greek yogurt"))
+        val offlineOnly = listOf(
+            db("Yogurt, greek, plain", NutrientSourceKind.USDA, id = "usda-1", score = 0.9),
+            db("Greek yogurt, natural", NutrientSourceKind.SWISS, id = "swiss-1", score = 0.7),
+        )
+        val out = FoodSuggestionRanker.rank("greek yogurt", saved, emptyList(), offlineOnly, now)
+
+        assertTrue("expected the saved food first", out.first() is FoodSuggestion.SavedFood)
+        // Both bundled sources survive. Their order between themselves is the
+        // ranker's business (lexical fit, then the source tie-break), not this
+        // test's — what matters is that neither went missing with the OFF leg.
+        val databaseKinds = out.filterIsInstance<FoodSuggestion.DatabaseHit>()
+            .map { it.result.sourceKind }
+            .toSet()
+        assertEquals(
+            setOf(NutrientSourceKind.USDA, NutrientSourceKind.SWISS),
+            databaseKinds,
+        )
+        // Identical to what the same query produces before the online leg would
+        // have landed: a dead OFF is indistinguishable from one still in flight.
+        assertEquals(
+            FoodSuggestionRanker.rank("greek yogurt", saved, emptyList(), emptyList(), now)
+                .filterIsInstance<FoodSuggestion.SavedFood>()
+                .map { it.key },
+            out.filterIsInstance<FoodSuggestion.SavedFood>().map { it.key },
+        )
+    }
+
+    @Test
     fun rankingIsDeterministicForIdenticalScores() {
         val database = listOf(
             db("Yogurt", NutrientSourceKind.SWISS, id = "swiss-1", score = 0.8),

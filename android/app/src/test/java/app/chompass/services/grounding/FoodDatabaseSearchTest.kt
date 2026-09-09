@@ -18,20 +18,28 @@ import org.robolectric.annotation.Config
  * (no network). Pins [FoodDatabaseSearch] merged/ranked behavior after the
  * Codeberg #26 hardening: both offline sources resolve through the shared
  * [Mutex] (serialized) and hits land on one normalized score scale. The
- * network source is intentionally excluded — the OFF path has its own
- * MockWebServer suite ([OpenFoodFactsSearchTest] et al.).
+ * network source is exercised only through the injected [FoodDatabaseSearch]
+ * seam — the real OFF client has its own MockWebServer suite
+ * ([OpenFoodFactsSearchTest] et al.).
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [33], application = Application::class)
 class FoodDatabaseSearchTest {
     private val context = RuntimeEnvironment.getApplication()
 
-    private fun newSearch(): FoodDatabaseSearch =
+    private fun newSearch(
+        prefs: PreferencesStore = PreferencesStore(context),
+        offSearch: suspend (String) -> List<DatabaseSearchResult> = { emptyList() },
+    ): FoodDatabaseSearch =
         FoodDatabaseSearch(
-            prefs = PreferencesStore(context),
+            prefs = prefs,
             usda = UsdaFoodIndex(context),
             swiss = SwissFoodIndex(context),
+            offSearch = offSearch,
         )
+
+    /** An Open Food Facts backend that is simply not answering. */
+    private class OffUnreachable : java.io.IOException("open food facts unreachable")
 
     @Test
     fun search_mergesUsdaAndSwiss_onOneScoreScale() = runBlocking {
@@ -66,11 +74,7 @@ class FoodDatabaseSearchTest {
     @Test
     fun search_dropsSourcesTurnedOffInSettings() = runBlocking {
         val prefs = PreferencesStore(context)
-        val search = FoodDatabaseSearch(
-            prefs = prefs,
-            usda = UsdaFoodIndex(context),
-            swiss = SwissFoodIndex(context),
-        )
+        val search = newSearch(prefs = prefs)
         val both = setOf(FoodDatabaseSearch.Source.USDA, FoodDatabaseSearch.Source.SWISS)
 
         prefs.setFoodSearchUsdaEnabled(false)
@@ -94,6 +98,55 @@ class FoodDatabaseSearchTest {
             sources = setOf(FoodDatabaseSearch.Source.USDA, FoodDatabaseSearch.Source.SWISS),
         )
         assertTrue(results.isEmpty())
+    }
+
+    @Test
+    fun search_deadOpenFoodFacts_stillReturnsOfflineRows() = runBlocking {
+        // The whole point of the per-source isolation: Open Food Facts being
+        // down is the common case (no signal, captive portal, OFF outage), and
+        // it must cost the user nothing but the packaged products. The bundled
+        // indexes are on-device, so their rows are unaffected.
+        var offCalls = 0
+        val search = newSearch(offSearch = { offCalls++; throw OffUnreachable() })
+        val results = search.search(
+            "pork ground",
+            sources = setOf(
+                FoodDatabaseSearch.Source.OPEN_FOOD_FACTS,
+                FoodDatabaseSearch.Source.USDA,
+                FoodDatabaseSearch.Source.SWISS,
+            ),
+        )
+        assertEquals("the OFF leg should still have been attempted", 1, offCalls)
+        assertTrue("expected offline hits despite a dead OFF, got ${results.size}", results.isNotEmpty())
+        assertTrue(
+            results.all {
+                it.sourceKind == NutrientSourceKind.USDA || it.sourceKind == NutrientSourceKind.SWISS
+            },
+        )
+        // Still ranked, not just concatenated: a failed leg must not leave the
+        // survivors in fan-out order.
+        val scores = results.map { it.matchScore }
+        assertEquals(scores.sortedDescending(), scores)
+    }
+
+    @Test
+    fun searchOffline_neverTouchesOpenFoodFacts() = runBlocking {
+        // The Add Food sheet's per-keystroke leg. It must stay on-device even
+        // with the OFF source enabled in Settings, or typing would reach the
+        // network before the user opted in.
+        var offCalls = 0
+        val search = newSearch(offSearch = { offCalls++; throw OffUnreachable() })
+        val results = search.searchOffline("pork ground")
+        assertEquals(0, offCalls)
+        assertTrue("expected offline hits, got ${results.size}", results.isNotEmpty())
+    }
+
+    @Test
+    fun searchOnline_deadOpenFoodFacts_isEmptyRatherThanThrowing() = runBlocking {
+        // The sheet merges this leg's result into a list that already has rows
+        // on screen; a throw here would take those down with it.
+        val search = newSearch(offSearch = { throw OffUnreachable() })
+        assertTrue(search.searchOnline("pork ground").isEmpty())
     }
 
     @Test
