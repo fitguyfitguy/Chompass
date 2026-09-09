@@ -109,6 +109,9 @@ internal data class SettingsPrefsHydration(
     val geminiGoogleSearchEnabled: Boolean,
     val openRouterReasoningEffort: OpenRouterReasoningEffort,
     val mealConstituentsEnabled: Boolean,
+    val foodSearchOpenFoodFactsEnabled: Boolean,
+    val foodSearchUsdaEnabled: Boolean,
+    val foodSearchSwissEnabled: Boolean,
     val skipPhotoNotePrompt: Boolean,
     val optionalNutrientGoals: OptionalNutrientGoals,
     val homeDisplay: HomeDisplayPreferences,
@@ -246,6 +249,9 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
         geminiGoogleSearchEnabled = this[Keys.GEMINI_GOOGLE_SEARCH_ENABLED] ?: false,
         openRouterReasoningEffort = OpenRouterReasoningEffort.fromStorage(this[Keys.OPENROUTER_REASONING_EFFORT]),
         mealConstituentsEnabled = this[Keys.MEAL_CONSTITUENTS_ENABLED] ?: true,
+        foodSearchOpenFoodFactsEnabled = this[Keys.FOOD_SEARCH_OFF_ENABLED] ?: true,
+        foodSearchUsdaEnabled = this[Keys.FOOD_SEARCH_USDA_ENABLED] ?: true,
+        foodSearchSwissEnabled = this[Keys.FOOD_SEARCH_SWISS_ENABLED] ?: true,
         skipPhotoNotePrompt = this[Keys.SKIP_PHOTO_NOTE_PROMPT] ?: false,
         optionalNutrientGoals = run {
             // WS5: the legacy tracker daily limit (caffeineDailyLimitMg) was an

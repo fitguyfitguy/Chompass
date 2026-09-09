@@ -34,6 +34,7 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SmartToy
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material.icons.outlined.Straighten
 import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material.icons.outlined.TrackChanges
@@ -187,6 +188,8 @@ internal val SETTINGS_INDEX: List<SettingsIndexEntry> = listOf(
         R.array.settings_search_kw_photo_note_prompt, ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.LocalDining),
     SettingsIndexEntry(R.string.settings_group_food, R.string.settings_meal_constituents,
         R.array.settings_search_kw_meal_constituents, ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.Restaurant),
+    SettingsIndexEntry(R.string.settings_group_food, R.string.food_search_sheet_title,
+        R.array.settings_search_kw_food_databases, ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.Storage),
     SettingsIndexEntry(R.string.settings_group_food, R.string.settings_serving_unit_mode,
         R.array.settings_search_kw_serving_unit_mode, ChompassRoutes.SETTINGS_FOOD, Icons.Outlined.Tune),
     SettingsIndexEntry(R.string.settings_group_food, R.string.settings_serving_unit_heuristics,

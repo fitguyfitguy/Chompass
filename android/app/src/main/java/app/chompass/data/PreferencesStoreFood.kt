@@ -238,3 +238,30 @@ internal suspend fun PreferencesStore.foodImageReferenceFilenamesImpl(): Set<Str
         inputDraft?.imageFilename?.let { add(it) }
     }
 }
+
+// -- Food database search sources -------------------------------------
+//
+// Three independent opt-outs for the Add Food "Search food" sources. All
+// default on; turning one off only removes it from search fan-out (see
+// FoodDatabaseSearch.enabledSources) — barcode lookups and already-logged
+// entries are untouched.
+internal val PreferencesStore.foodSearchOpenFoodFactsEnabledImpl: Flow<Boolean>
+    get() = dataStore.data.map { it[Keys.FOOD_SEARCH_OFF_ENABLED] ?: true }
+
+internal suspend fun PreferencesStore.setFoodSearchOpenFoodFactsEnabledImpl(v: Boolean) {
+    dataStore.edit { it[Keys.FOOD_SEARCH_OFF_ENABLED] = v }
+}
+
+internal val PreferencesStore.foodSearchUsdaEnabledImpl: Flow<Boolean>
+    get() = dataStore.data.map { it[Keys.FOOD_SEARCH_USDA_ENABLED] ?: true }
+
+internal suspend fun PreferencesStore.setFoodSearchUsdaEnabledImpl(v: Boolean) {
+    dataStore.edit { it[Keys.FOOD_SEARCH_USDA_ENABLED] = v }
+}
+
+internal val PreferencesStore.foodSearchSwissEnabledImpl: Flow<Boolean>
+    get() = dataStore.data.map { it[Keys.FOOD_SEARCH_SWISS_ENABLED] ?: true }
+
+internal suspend fun PreferencesStore.setFoodSearchSwissEnabledImpl(v: Boolean) {
+    dataStore.edit { it[Keys.FOOD_SEARCH_SWISS_ENABLED] = v }
+}

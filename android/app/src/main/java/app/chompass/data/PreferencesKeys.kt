@@ -220,6 +220,14 @@ internal object Keys {
         val PHOTO_ACCURACY_GUIDE_COUNT = intPreferencesKey("photoAccuracyGuideCount")
         /** Opt-in meal ingredient breakdown from AI (off for on-device / weak models). */
         val MEAL_CONSTITUENTS_ENABLED = booleanPreferencesKey("mealConstituentsEnabled")
+        /**
+         * Per-source opt-outs for the Add Food database search (all default on).
+         * They gate searching only — a scanned barcode still resolves through
+         * Open Food Facts, and an already-logged entry keeps its source badge.
+         */
+        val FOOD_SEARCH_OFF_ENABLED = booleanPreferencesKey("foodSearchOpenFoodFactsEnabled")
+        val FOOD_SEARCH_USDA_ENABLED = booleanPreferencesKey("foodSearchUsdaEnabled")
+        val FOOD_SEARCH_SWISS_ENABLED = booleanPreferencesKey("foodSearchSwissEnabled")
         val SELECTED_SPEECH_PROVIDER = stringPreferencesKey("selectedSpeechProvider")
         fun selectedSpeechLanguage(provider: SpeechProvider) =
             stringPreferencesKey("selectedSpeechLanguage_${provider.name}")

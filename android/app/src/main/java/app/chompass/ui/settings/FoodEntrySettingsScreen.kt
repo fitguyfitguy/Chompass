@@ -7,7 +7,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.UnfoldMore
 import androidx.compose.material.icons.outlined.LocalDining
 import androidx.compose.material.icons.outlined.Notes
+import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.outlined.Restaurant
+import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,9 +35,9 @@ import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.theme.AppTextOpacity
 
 /**
- * Food & Entry settings: how logging behaves (units, sort, meal times) and how
- * photo analysis works (note prompt, constituents, serving size detection).
- * Provider wiring lives in AI & Speech.
+ * Food & Entry settings: how logging behaves (units, sort, meal times), which
+ * food databases search looks in, and how photo analysis works (note prompt,
+ * constituents, serving size detection). Provider wiring lives in AI & Speech.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -115,6 +117,32 @@ fun FoodEntrySettingsScreen(
                         R.string.settings_meal_constituents_footer_on_device
                     },
                 ),
+            )
+        }
+
+        // Labels and the section title are the same resources the Add Food
+        // search sheet badges its rows with, so a toggle here reads as the exact
+        // source the user saw in the results list.
+        SectionCard(title = stringResource(R.string.food_search_sheet_title)) {
+            ToggleRow(
+                stringResource(R.string.food_search_source_off),
+                checked = ui.foodSearchOpenFoodFactsEnabled,
+                icon = Icons.Outlined.Public,
+                onChange = vm::setFoodSearchOpenFoodFactsEnabled,
+            )
+            HorizontalDivider()
+            ToggleRow(
+                stringResource(R.string.food_search_source_usda),
+                checked = ui.foodSearchUsdaEnabled,
+                icon = Icons.Outlined.Storage,
+                onChange = vm::setFoodSearchUsdaEnabled,
+            )
+            HorizontalDivider()
+            ToggleRow(
+                stringResource(R.string.food_search_source_swiss),
+                checked = ui.foodSearchSwissEnabled,
+                icon = Icons.Outlined.Storage,
+                onChange = vm::setFoodSearchSwissEnabled,
             )
         }
 
