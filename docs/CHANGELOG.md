@@ -7,8 +7,16 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [4.10.0] - 2026-09-14
 
+### Added
+
+- **Choose which food databases search looks in** (Android): Settings → Food & Entry → Search food databases now has a switch per source — Open Food Facts, USDA, Swiss. All three start on. Turning one off only removes it from search; scanning a barcode still looks the product up, and foods you already logged keep their source badge.
+
 ### Changed
 
+- **Adding food is one search field instead of a wall of buttons** (Android): the Add Food sheet used to ask which tool you wanted before you could say what you ate, and kept your own saved foods and the food databases behind two more sheets. Now you type once. Your recents, frequents, favorites and recipes appear as you type, alongside matching products from Open Food Facts, USDA and the Swiss database, in one ranked list with no duplicates across sources. Your own foods always come first. Photo and barcode sit under the field as buttons and voice moved into the field itself; the note sheet, saved meals, manual entry, copy from day, active burn and the analysis queue moved under "More options". With nothing typed the sheet still opens on your one-tap Log again chips.
+- **Your saved meals are on the Add Food sheet itself** (Android): the Recents, Frequent, Favorites and Recipes tabs now sit right in the sheet with their lists, instead of behind another tap. They occupy exactly the space the search results use, so typing swaps the list contents without resizing the sheet and shoving the input field around mid-word. Scrolling a long list grows the sheet to show more, and only when there is actually more worth showing.
+- **AI analysis is now something you ask for, not the only way in** (Android): the Analyze action sits in the search field itself, so a food you have already logged or one the databases know is a single tap and costs nothing, while free-text estimation is one tap on the field's Analyze button, or the Done/Send key on your keyboard.
+- **Food database results arrive without waiting for the network** (Android): the bundled USDA and Swiss results used to wait for the Open Food Facts request to finish, so on a plane or a bad connection you waited on a request that could not succeed. Local results now appear immediately and online ones join when they arrive. The online lookup also gives up after a few seconds instead of retrying for as long as a minute.
 - **Meal type and time sit under the food name** (Android): on add and edit, meal and time come right after the name, then serving. Edit also keeps date there. They used to sit below nutrition.
 - **Mealie import matches other sheets** (Android): Cancel is in the title bar, the API token is masked, long recipe names ellipsize, and an http:// host with Allow insecure HTTP off uses the same localized error as other AI calls.
 - **Nutrition details uses Cancel** (Android): the meal or day nutrition sheet no longer has a Done button. Cancel and swipe dismiss it like other read-only sheets.
@@ -77,6 +85,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **A late-night dinner now saves** (Android + web): setting Dinner to a time after midnight, such as 2:00, used to fail the meals editor check because the slot list still ran breakfast, lunch, dinner, snack. Start times are checked around the clock, so a 2am dinner in the usual meal order saves. Follows Codeberg [#88](https://codeberg.org/fitguy/Chompass/issues/88) by [@BrassCat](https://codeberg.org/BrassCat).
 - **Barcode review keeps the product name and photo** (web): looking up a barcode with extra product details used to open a blank Log food form. The review now shows the name, photo, product card, and serving or package units.
 - **Barcode product photos show the whole pack** (Android + web): the front photo sits in a wide letterbox instead of a cropped square, so a jar or bottle is not zoomed or squeezed. Tapping the photo opens the Open Food Facts product page.
+
 
 ## [4.6.1] - 2026-09-06
 
