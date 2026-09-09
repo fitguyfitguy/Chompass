@@ -159,7 +159,10 @@ fun ProgressPlotsDarkScreenshot() {
 @Composable
 fun AddFoodLightScreenshot() {
     ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = false) {
-        HomeAddFoodScreenshotContent(ui = ScreenshotFixtures.homeUiState())
+        HomeAddFoodScreenshotContent(
+            ui = ScreenshotFixtures.homeUiState(),
+            savedRows = ScreenshotFixtures.addFoodSavedRows,
+        )
     }
 }
 
@@ -249,11 +252,30 @@ private const val LONG_WHAT_IF_SUGGESTION =
     "you 1,350 kcal for dinner and still hit your protein target."
 
 @PreviewTest
+@Preview(name = "27-add-food-search-dark", device = PHONE)
+@Composable
+fun AddFoodSearchDarkScreenshot() {
+    // The search state is the primary Add Food surface now, and the zero-query
+    // shots never exercise it.
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = true) {
+        HomeAddFoodScreenshotContent(
+            ui = ScreenshotFixtures.homeUiState(),
+            savedRows = ScreenshotFixtures.addFoodSavedRows,
+            query = "yog",
+            suggestions = ScreenshotFixtures.addFoodSuggestions,
+        )
+    }
+}
+
+@PreviewTest
 @Preview(name = "10-add-food-dark", device = PHONE)
 @Composable
 fun AddFoodDarkScreenshot() {
     ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = true) {
-        HomeAddFoodScreenshotContent(ui = ScreenshotFixtures.homeUiState())
+        HomeAddFoodScreenshotContent(
+            ui = ScreenshotFixtures.homeUiState(),
+            savedRows = ScreenshotFixtures.addFoodSavedRows,
+        )
     }
 }
 
