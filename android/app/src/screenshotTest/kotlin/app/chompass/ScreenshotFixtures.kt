@@ -4,6 +4,10 @@ import app.chompass.models.ActivityLevel
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.ChatMessage
 import app.chompass.models.FoodConstituent
+import app.chompass.models.NutrientSourceKind
+import app.chompass.services.grounding.DatabaseSearchResult
+import app.chompass.services.grounding.FoodSuggestion
+import app.chompass.services.grounding.SuggestionKind
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.FoodSource
@@ -262,6 +266,55 @@ internal object ScreenshotFixtures {
         fat = 14.0,
         servingSizeGrams = 410.0,
         streaming = true,
+    )
+
+    /**
+     * Zero-query saved rows for the Add Food screenshot. The sheet groups them
+     * into labelled sections, so without them the shot is an empty search field.
+     */
+    val addFoodSavedRows: List<FoodSuggestion> = foodEntries.take(4).mapIndexed { i, entry ->
+        FoodSuggestion.SavedFood(
+            template = entry,
+            kind = if (i == 0) SuggestionKind.FAVORITE else SuggestionKind.RECENT,
+            logCount = 4 - i,
+            daysSince = i.toLong(),
+            score = 0.0,
+        )
+    }
+
+    /**
+     * Search state for the Add Food sheet: two of the user's own foods above a
+     * database hit, which is the ordering the ranker guarantees.
+     */
+    val addFoodSuggestions: List<FoodSuggestion> = listOf(
+        FoodSuggestion.SavedFood(
+            template = foodEntries[0],
+            kind = SuggestionKind.FAVORITE,
+            logCount = 12,
+            daysSince = 1,
+            score = 1.32,
+        ),
+        FoodSuggestion.SavedFood(
+            template = foodEntries[1],
+            kind = SuggestionKind.RECENT,
+            logCount = 2,
+            daysSince = 4,
+            score = 0.98,
+        ),
+        FoodSuggestion.DatabaseHit(
+            result = DatabaseSearchResult(
+                sourceKind = NutrientSourceKind.USDA,
+                sourceId = "171284",
+                name = "Yogurt, Greek, plain, nonfat",
+                servingGrams = 170.0,
+                caloriesPerServing = 100.0,
+                proteinPerServing = 17.3,
+                carbsPerServing = 6.1,
+                fatPerServing = 0.7,
+                matchScore = 0.82,
+            ),
+            score = 0.68,
+        ),
     )
 
     fun homeUiState(): HomeUiState = HomeUiState(
