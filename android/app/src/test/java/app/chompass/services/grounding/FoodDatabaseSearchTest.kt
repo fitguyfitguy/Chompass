@@ -64,6 +64,30 @@ class FoodDatabaseSearchTest {
     }
 
     @Test
+    fun search_dropsSourcesTurnedOffInSettings() = runBlocking {
+        val prefs = PreferencesStore(context)
+        val search = FoodDatabaseSearch(
+            prefs = prefs,
+            usda = UsdaFoodIndex(context),
+            swiss = SwissFoodIndex(context),
+        )
+        val both = setOf(FoodDatabaseSearch.Source.USDA, FoodDatabaseSearch.Source.SWISS)
+
+        prefs.setFoodSearchUsdaEnabled(false)
+        val withoutUsda = search.search("pork", sources = both)
+        assertTrue("expected Swiss hits to survive, got ${withoutUsda.size}", withoutUsda.isNotEmpty())
+        assertTrue(withoutUsda.none { it.sourceKind == NutrientSourceKind.USDA })
+
+        // Every source off is a valid state: search falls back to the user's own
+        // saved foods, which the ranker adds outside this class.
+        prefs.setFoodSearchSwissEnabled(false)
+        assertTrue(search.search("pork", sources = both).isEmpty())
+
+        prefs.setFoodSearchUsdaEnabled(true)
+        prefs.setFoodSearchSwissEnabled(true)
+    }
+
+    @Test
     fun search_emptyQuery_returnsEmptyWithoutTouchingIndexes() = runBlocking {
         val results = newSearch().search(
             "   ",

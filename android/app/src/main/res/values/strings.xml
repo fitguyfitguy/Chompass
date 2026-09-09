@@ -1194,6 +1194,15 @@
         <item>ingredients</item>
         <item>components</item>
     </string-array>
+    <string-array name="settings_search_kw_food_databases">
+        <item>database</item>
+        <item>search</item>
+        <item>source</item>
+        <item>open food facts</item>
+        <item>usda</item>
+        <item>swiss</item>
+        <item>offline</item>
+    </string-array>
     <string-array name="settings_search_kw_serving_unit_mode">
         <item>serving</item>
         <item>unit</item>

@@ -206,6 +206,10 @@ data class SettingsUiState(
     val geminiGoogleSearchEnabled: Boolean = false,
     val openRouterReasoningEffort: OpenRouterReasoningEffort = OpenRouterReasoningEffort.AUTO,
     val mealConstituentsEnabled: Boolean = true,
+    /** Per-source opt-outs for the Add Food database search (all default on). */
+    val foodSearchOpenFoodFactsEnabled: Boolean = true,
+    val foodSearchUsdaEnabled: Boolean = true,
+    val foodSearchSwissEnabled: Boolean = true,
     /** Inverted in UI: “Ask for a photo note” = !skipPhotoNotePrompt. */
     val skipPhotoNotePrompt: Boolean = false,
     val optionalNutrientGoals: OptionalNutrientGoals = OptionalNutrientGoals.Default,
@@ -514,6 +518,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     geminiGoogleSearchEnabled = snap.geminiGoogleSearchEnabled,
                     openRouterReasoningEffort = snap.openRouterReasoningEffort,
                     mealConstituentsEnabled = snap.mealConstituentsEnabled,
+                    foodSearchOpenFoodFactsEnabled = snap.foodSearchOpenFoodFactsEnabled,
+                    foodSearchUsdaEnabled = snap.foodSearchUsdaEnabled,
+                    foodSearchSwissEnabled = snap.foodSearchSwissEnabled,
                     skipPhotoNotePrompt = snap.skipPhotoNotePrompt,
                     optionalNutrientGoals = snap.optionalNutrientGoals,
                     homeDisplay = snap.homeDisplay,
@@ -788,6 +795,21 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setMealConstituentsEnabled(v: Boolean) = updateUiPref(
         { container.prefs.setMealConstituentsEnabled(v) },
         { copy(mealConstituentsEnabled = v) },
+    )
+
+    fun setFoodSearchOpenFoodFactsEnabled(v: Boolean) = updateUiPref(
+        { container.prefs.setFoodSearchOpenFoodFactsEnabled(v) },
+        { copy(foodSearchOpenFoodFactsEnabled = v) },
+    )
+
+    fun setFoodSearchUsdaEnabled(v: Boolean) = updateUiPref(
+        { container.prefs.setFoodSearchUsdaEnabled(v) },
+        { copy(foodSearchUsdaEnabled = v) },
+    )
+
+    fun setFoodSearchSwissEnabled(v: Boolean) = updateUiPref(
+        { container.prefs.setFoodSearchSwissEnabled(v) },
+        { copy(foodSearchSwissEnabled = v) },
     )
 
     fun setServingUnitInferenceMode(mode: ServingUnitInferenceMode) = updateUiPref(

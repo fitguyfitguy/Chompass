@@ -9,6 +9,7 @@ import app.chompass.services.ai.FoodAnalysis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -124,6 +125,27 @@ class FoodDatabaseSearch(
         SWISS,
     }
 
+    /**
+     * The sources the user still wants searched (Settings › Food & Entry ›
+     * Food databases). Every source defaults on; a disabled one is dropped
+     * from the fan-out in [search], so this gate covers the Add Food sheet and
+     * the review sheet's match strip alike. It gates *search* only — barcode
+     * lookups and [toAnalysis] on an already-picked hit stay available, or a
+     * disabled source would break rows the user is mid-way through logging.
+     */
+    suspend fun enabledSources(): Set<Source> = buildSet {
+        if (prefs.foodSearchOpenFoodFactsEnabled.first()) add(Source.OPEN_FOOD_FACTS)
+        if (prefs.foodSearchUsdaEnabled.first()) add(Source.USDA)
+        if (prefs.foodSearchSwissEnabled.first()) add(Source.SWISS)
+    }
+
+    /** Single-source form of [enabledSources], for callers gating one leg. */
+    suspend fun isSourceEnabled(source: Source): Boolean = when (source) {
+        Source.OPEN_FOOD_FACTS -> prefs.foodSearchOpenFoodFactsEnabled.first()
+        Source.USDA -> prefs.foodSearchUsdaEnabled.first()
+        Source.SWISS -> prefs.foodSearchSwissEnabled.first()
+    }
+
     /** Max results per source; the merged list is capped at [limit]. */
     suspend fun search(
         query: String,
@@ -132,10 +154,13 @@ class FoodDatabaseSearch(
     ): List<DatabaseSearchResult> {
         val q = query.trim()
         if (q.isEmpty()) return emptyList()
+        // Sources the user switched off in Settings never reach the fan-out.
+        val active = sources intersect enabledSources()
+        if (active.isEmpty()) return emptyList()
         // Phase logs ride logcat so a post-crash `adb logcat -d` shows which
         // source was in flight when the process died (Codeberg #26; logcat
         // survives process death). Same tag the per-source failure log uses.
-        Log.i("FoodSearch", "search start '$q' sources=$sources")
+        Log.i("FoodSearch", "search start '$q' sources=$active")
         return withContext(Dispatchers.IO) {
             coroutineScope {
                 val jobs = mutableListOf<kotlinx.coroutines.Deferred<List<DatabaseSearchResult>>>()
@@ -161,16 +186,16 @@ class FoodDatabaseSearch(
                         }
                     }
                 }
-                if (Source.OPEN_FOOD_FACTS in sources) {
+                if (Source.OPEN_FOOD_FACTS in active) {
                     launch("off") { offSearch(q) }
                 }
-                if (Source.USDA in sources) {
+                if (Source.USDA in active) {
                     launch("usda") {
                         val rows = offlineMutex.withLock { usda.search(q, limit = 6) }
                         rows.map(DatabaseSearchResult::fromUsda)
                     }
                 }
-                if (Source.SWISS in sources) {
+                if (Source.SWISS in active) {
                     launch("swiss") {
                         val rows = offlineMutex.withLock { swiss.searchScored(q, limit = 6) }
                         rows.map { (rec, score) -> DatabaseSearchResult.fromSwiss(rec, score) }
