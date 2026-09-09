@@ -101,13 +101,41 @@ object ConfirmedHistorySearch {
         )
     }
 
-    private fun lexicalScore(query: String, tokens: List<String>, name: String): Double {
-        if (name == query) return 8.0
+    /**
+     * Ceiling of [lexicalScore] (an exact normalized-name match). Callers that
+     * blend this with differently-scaled scores divide by it to land on 0..1 —
+     * the same normalize-by-ceiling trick [FoodDatabaseSearch] uses for its
+     * per-provider scores.
+     */
+    internal const val LEXICAL_MAX = 8.0
+
+    internal fun lexicalScore(query: String, tokens: List<String>, name: String): Double =
+        lexicalScore(query, tokens, name, QueryNormalizer.normalizeTokens(name).toSet())
+
+    /**
+     * Overload for callers that keep a precomputed token set per candidate
+     * (suggestion ranking scores the whole index on every keystroke, so
+     * re-tokenizing each name there would dominate the cost).
+     */
+    internal fun lexicalScore(
+        query: String,
+        tokens: List<String>,
+        name: String,
+        nameTokens: Set<String>,
+    ): Double {
+        if (name == query) return LEXICAL_MAX
         if (name.startsWith(query)) return 5.0
         if (name.contains(query)) return 3.0
-        val nameTokens = QueryNormalizer.normalizeTokens(name).toSet()
         val overlap = tokens.count { it in nameTokens }
         if (overlap == 0) return 0.0
+        // Every word the user typed is in the name, just not as one run of
+        // characters — "chicken bowl" against "chicken rice bowl", or the same
+        // two words in the other order. That is as good a match as a substring,
+        // so it scores the substring tier rather than sinking below
+        // FoodSuggestionRanker.MIN_LEXICAL, which is what used to drop the
+        // user's own foods from a multi-word search while the verbose database
+        // names (whose text does contain the phrase) survived.
+        if (overlap == tokens.size) return maxOf(3.0, overlap * 1.2)
         return overlap * 1.2
     }
 }
