@@ -212,6 +212,21 @@ class FoodDatabaseSearch(
     }
 
     /**
+     * Offline-only leg (bundled USDA + Swiss SQLite). Split out from [search]
+     * because that one fans every selected source into one `coroutineScope`
+     * and awaits them together: with Open Food Facts in the set, local rows
+     * are gated on the network leg finishing its retry chain, so an offline
+     * device waited on a request that could never succeed. The Add Food
+     * suggestion list paints these first, then merges the online leg.
+     */
+    suspend fun searchOffline(query: String, limit: Int = 12): List<DatabaseSearchResult> =
+        search(query, setOf(Source.USDA, Source.SWISS), limit)
+
+    /** Network-only leg (Open Food Facts). See [searchOffline]. */
+    suspend fun searchOnline(query: String, limit: Int = 6): List<DatabaseSearchResult> =
+        search(query, setOf(Source.OPEN_FOOD_FACTS), limit)
+
+    /**
      * Resolve a selected hit into a reviewable [FoodAnalysis] (full micronutrients):
      * OFF does a cached barcode lookup, USDA/Swiss scale the offline per-100g row.
      */
