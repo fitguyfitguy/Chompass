@@ -300,7 +300,11 @@ internal fun AddFoodSuggestionList(
     networkPending: Boolean,
     /** False renders the zero-query saved-meals rows. */
     searching: Boolean,
-    /** Resets the grow-on-scroll state when the list underneath changes. */
+    /**
+     * Disarms the grow-on-scroll gesture whenever the list underneath changes.
+     * Must vary with the query, not just with search-vs-saved, or editing a
+     * query collapses a sheet the user scrolled open.
+     */
     listIdentity: Any,
     /** Non-null lets scrolling expand the sheet itself. */
     sheetState: SheetState? = null,
@@ -322,17 +326,28 @@ internal fun AddFoodSuggestionList(
             listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
         }
     }
-    // Only the user's own scrolling moves the sheet. Switching tab or starting a
-    // query swaps the list underneath and resets its scroll to the top, which
-    // used to read as "scrolled back up" and collapsed a sheet the user had
-    // deliberately expanded — so a changed identity re-arms the gesture instead
-    // of acting on it.
+    // Only the user's own scrolling moves the sheet. Swapping the list
+    // underneath — switching tab, editing the query, results streaming in —
+    // parks the new list at the top, and a `scrolled == false` reading there is
+    // the list sitting where it was placed, not the user asking for the sheet
+    // back. So the gesture stays disarmed until the user actually scrolls this
+    // list, and every identity change disarms it again.
+    //
+    // Both halves matter. Without the arming flag, the first results to land
+    // after a keystroke re-run this effect and collapse the sheet; without the
+    // query in [listIdentity], only the first keystroke of a query disarms and
+    // every later one collapses a sheet the user had scrolled open.
     val lastIdentity = remember { mutableStateOf(listIdentity) }
+    val armed = remember { mutableStateOf(false) }
     LaunchedEffect(scrolled, worthExpanding, sheetState, listIdentity) {
         if (sheetState == null) return@LaunchedEffect
-        val identityChanged = lastIdentity.value != listIdentity
-        lastIdentity.value = listIdentity
-        if (identityChanged) return@LaunchedEffect
+        if (lastIdentity.value != listIdentity) {
+            lastIdentity.value = listIdentity
+            armed.value = false
+            return@LaunchedEffect
+        }
+        if (scrolled) armed.value = true
+        if (!armed.value) return@LaunchedEffect
         runCatching {
             if (scrolled && worthExpanding) sheetState.expand() else sheetState.partialExpand()
         }

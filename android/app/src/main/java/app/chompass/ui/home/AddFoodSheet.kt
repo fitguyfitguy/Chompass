@@ -400,7 +400,10 @@ internal fun AddFoodSheetContent(
             suggestions = if (searching) suggestions else savedRows,
             networkPending = suggestionsNetworkPending,
             searching = searching,
-            listIdentity = if (searching) "search" else savedTab,
+            // The query itself, not just "searching": every edit re-parks the
+            // list at the top, and each one has to disarm the grow-on-scroll
+            // gesture or it reads that as the user collapsing the sheet.
+            listIdentity = if (searching) query else savedTab,
             sheetState = sheetState,
             // Takes the space the fixed-height rows above and below leave over.
             modifier = if (fixedPaneHeight == null) {
