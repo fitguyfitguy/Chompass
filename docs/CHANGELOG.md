@@ -7,9 +7,17 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+## [4.9.0] - 2026-09-09
+
 ### Added
 
 - **Import recipes from Mealie** (Android): Saved Meals → Recipes has an import button. Enter your self-hosted Mealie URL and an API token, pick recipes, and they land as named meals. Nutrition comes along when Mealie has it. Re-importing the same recipe updates it instead of duplicating. Follows Codeberg [#85](https://codeberg.org/fitguy/Chompass/issues/85) by [@voegly](https://codeberg.org/voegly).
+
+### Fixed
+
+- **The time on a new food is the time you picked** (Android): changing Time on the review sheet after analysis now logs that clock time. Follows Codeberg [#93](https://codeberg.org/fitguy/Chompass/issues/93) by [@smg950u](https://codeberg.org/smg950u).
+- **Editing one ingredient no longer moves the others** (Android + web): changing an ingredient's grams updates that row and the meal total, and leaves the rest as they were. Follows Codeberg [#91](https://codeberg.org/fitguy/Chompass/issues/91) by [@vandelli](https://codeberg.org/vandelli).
+- **Water drink reminders open and keep the window you saved** (Android): Drink Reminders on the Water screen opens the drinking-window sheet in one tap when reminders are on. Saving start, end, and cup size writes them together, so the rows do not stick on the old values until you restart. Follows Codeberg [#92](https://codeberg.org/fitguy/Chompass/issues/92) by [@joe455555](https://codeberg.org/joe455555).
 
 ## [4.8.0] - 2026-09-08
 
