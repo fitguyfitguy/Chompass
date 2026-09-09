@@ -165,6 +165,14 @@
  * @property {"breakfast"|"lunch"|"dinner"|"snack"} mealType
  * @property {RecipeIngredient[]} ingredients
  * @property {string} createdAt
+ * @property {string|null} [source]
+ * @property {number|null} [nutritionCalories]
+ * @property {number|null} [nutritionProtein]
+ * @property {number|null} [nutritionCarbs]
+ * @property {number|null} [nutritionFat]
+ * @property {number|null} [nutritionFiber]
+ * @property {number|null} [nutritionSugar]
+ * @property {number|null} [nutritionSodium]
  */
 
 /**
