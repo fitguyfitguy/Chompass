@@ -510,25 +510,25 @@ fun EditFavoriteSheet(
                                 expanded = constituentsExpanded,
                                 onExpandedChange = { constituentsExpanded = it },
                                 onRowsChange = { displayRows ->
-                                    val (cleaned, agg, serving) = applyConstituentDisplayEdit(displayRows)
-                                    editableConstituents = cleaned
-                                    if (serving > 0) {
-                                        baseServingGrams = serving
-                                        servingGrams = serving
+                                    val commit = commitConstituentDisplayEdit(displayRows, scale)
+                                    editableConstituents = commit.bases
+                                    if (commit.baseAggregate != null) {
+                                        editableCalories = commit.baseAggregate.calories
+                                        editableProtein = commit.baseAggregate.protein
+                                        editableCarbs = commit.baseAggregate.carbs
+                                        editableFat = commit.baseAggregate.fat
+                                    }
+                                    if (commit.baseSum > 0) {
+                                        baseServingGrams = commit.baseSum
+                                        servingGrams = commit.displaySum
                                         servingTouched = true
                                         servingQuantityText = ServingUnitOption.formatQuantity(
                                             if (selectedServingOption.gramsPerUnit > 0) {
-                                                serving / selectedServingOption.gramsPerUnit
+                                                commit.displaySum / selectedServingOption.gramsPerUnit
                                             } else {
-                                                serving
+                                                commit.displaySum
                                             },
                                         )
-                                    }
-                                    if (agg != null) {
-                                        editableCalories = agg.calories
-                                        editableProtein = agg.protein
-                                        editableCarbs = agg.carbs
-                                        editableFat = agg.fat
                                     }
                                 },
                             )

@@ -392,3 +392,27 @@ internal fun applyConstituentDisplayEdit(
     val serving = agg?.servingSizeGrams ?: cleaned.sumOf { it.servingSizeGrams }
     return Triple(cleaned, agg, serving)
 }
+
+internal data class ConstituentEditCommit(
+    val bases: List<FoodConstituent>,
+    val baseAggregate: ConstituentReconcile.Aggregate?,
+    val displaySum: Double,
+    val baseSum: Double,
+)
+
+internal fun commitConstituentDisplayEdit(
+    displayRows: List<FoodConstituent>,
+    scale: Double,
+): ConstituentEditCommit {
+    val (cleaned, _, displaySum) = applyConstituentDisplayEdit(displayRows)
+    val bases = if (scale == 0.0 || kotlin.math.abs(scale - 1.0) < 1e-9) {
+        cleaned
+    } else {
+        ConstituentReconcile.scaleAll(cleaned, 1.0 / scale)
+    }
+    val named = bases.filter { it.name.isNotBlank() && it.servingSizeGrams > 0 }
+    val baseAgg = ConstituentReconcile.aggregatesFrom(named)
+    val baseSum = baseAgg?.servingSizeGrams ?: bases.sumOf { it.servingSizeGrams }
+    return ConstituentEditCommit(bases, baseAgg, displaySum, baseSum)
+}
+
