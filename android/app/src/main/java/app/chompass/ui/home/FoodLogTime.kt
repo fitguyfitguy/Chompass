@@ -69,3 +69,9 @@ internal fun siblingEntriesForTimeApply(
             sibling.timestamp.atZone(zone).toLocalDate() == originalDay
     }
 }
+
+internal fun reviewLogTimeAfterOverride(
+    current: LocalTime,
+    override: LocalTime?,
+    touched: Boolean,
+): LocalTime = if (!touched && override != null) override.withSecond(0).withNano(0) else current
