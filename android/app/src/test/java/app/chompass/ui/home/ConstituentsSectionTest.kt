@@ -98,4 +98,3 @@ class ConstituentsSectionTest {
         assertEquals(500.0, commit.displaySum, 0.001)
     }
 }
-

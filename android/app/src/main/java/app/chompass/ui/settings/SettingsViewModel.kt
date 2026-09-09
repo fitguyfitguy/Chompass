@@ -1548,7 +1548,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         },
     )
 
-
     /** Recomputes the Settings preview of today's dynamic goal after any input change. */
     private suspend fun refreshWaterDynamicPreview() {
         if (!container.prefs.waterDynamicEnabled.first()) {
