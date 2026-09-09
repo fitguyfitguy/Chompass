@@ -1,0 +1,7 @@
+• Home shows Today or the date you are viewing: a line above the calorie ring reads Today, or the selected date. Tap the date to jump back to today
+• Turn off meal suggestions by time of day: Settings → Food & Entry has a Suggest meals by time of day switch. When it is off, new logs start as Other. Relog and Copy from day keep the original meal
+• Ollama lists the models on your computer: opening the model picker fetches names from your Ollama server
+• A named meal in the builder now logs as one food: leave the name empty to log each ingredient, or type a name to save one food with those ingredients listed inside it
+• On-device AI food analysis is faster and more reliable: the on-device model now returns core nutrition without the long micronutrient list, which means fewer "Could not understand the AI response" errors
+• Add Food recents show the meal type, and trackers collapse when several are on
+• Fixed: long names and large fonts no longer hide buttons, the water tracker uses one color, stepper buttons have screen reader labels, and Fasting Start and Stop meet the 48 dp touch target

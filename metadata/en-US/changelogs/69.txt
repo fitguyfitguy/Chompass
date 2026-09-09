@@ -1,0 +1,6 @@
+• Pick the weigh-in reminder time: Settings → Trackers & Reminders lets you choose when the weight log reminder fires, instead of a fixed 8:00
+• Food and body-fat reminder times: both now have a time wheel in Settings → Trackers & Reminders. Defaults stay 19:00 and 8:00
+• Trackers have their own colors: water reads blue and caffeine amber. Nicotine keeps the caution color
+• The web app uses your language in more places: the entry form, Settings, diary menus, sheets, coach, and photo analysis follow the app language. German ships fully translated
+• The web update prompt moved to the bottom, and typing stays put while the app updates
+• Fixed on the web app: swipe or back closes sheets, typed notes survive picking photos, day notes survive the minute tick, shared meals land on the right day, and screen reader and keyboard behavior is cleaner

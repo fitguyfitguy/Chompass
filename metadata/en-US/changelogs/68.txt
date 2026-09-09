@@ -1,0 +1,5 @@
+• The diary shows what you logged, not grams: cups, ounces, slices, or a custom serving appear as "2 oz" or "1 slice" on the food card. Entries without a matching serving still show grams
+• Favorites are editable saved foods: change the meal type, name, serving, or macros and Save updates the saved food. Renaming is refused when another food already uses that name
+• Waist body-fat estimate without a neck measure: RFM sits next to the Navy tape estimate. Optional Use as my body fat logs it like a normal reading
+• Active burn follows the day type: with enough recent Training and Rest days, the Home ring's typical active burn is the average for that day type
+• Fixed: Saved Meals stays on the tab you picked, the weight wheel keeps the tenth you see, and water from food no longer double-counts slices
