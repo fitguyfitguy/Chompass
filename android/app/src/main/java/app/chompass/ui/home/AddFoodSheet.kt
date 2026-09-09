@@ -77,6 +77,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
 import app.chompass.R
@@ -253,6 +254,8 @@ internal fun AddFoodSheetContent(
     onReviewRecent: (FoodEntry) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
+    val expandedLabel = stringResource(R.string.cd_expanded)
+    val collapsedLabel = stringResource(R.string.cd_collapsed)
     Column(
         Modifier
             .fillMaxWidth()
@@ -460,6 +463,9 @@ internal fun AddFoodSheetContent(
                         onClick = { trackersExpanded = !trackersExpanded },
                         role = Role.Button,
                     )
+                    .semantics {
+                        stateDescription = if (trackersExpanded) expandedLabel else collapsedLabel
+                    }
                     .padding(vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {

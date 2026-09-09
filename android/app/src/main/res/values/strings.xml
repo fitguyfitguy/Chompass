@@ -2135,6 +2135,8 @@
     <string name="cd_close">Close</string>
     <string name="cd_increase">Increase</string>
     <string name="cd_decrease">Decrease</string>
+    <string name="cd_expanded">Expanded</string>
+    <string name="cd_collapsed">Collapsed</string>
     <string name="cd_clear_quantity">Clear quantity</string>
     <string name="cd_edit_serving">Edit serving</string>
     <string name="cd_apply_serving_edit">Apply serving edit</string>

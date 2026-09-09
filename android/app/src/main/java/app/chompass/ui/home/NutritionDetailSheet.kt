@@ -19,7 +19,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Coffee
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocalFireDepartment
@@ -29,7 +29,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -127,6 +126,10 @@ fun NutritionDetailSheet(
         sheetState = state,
         containerColor = sheetSurface,
     ) {
+        SheetReviewToolbar(
+            title = title ?: stringResource(R.string.nutrition_details_title),
+            onCancel = onDismiss,
+        )
         ChompassSheetLazyColumn(
             listState = listState,
             modifier = Modifier
@@ -140,18 +143,6 @@ fun NutritionDetailSheet(
             blockTopEdge = false,
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            item {
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        title ?: stringResource(R.string.nutrition_details_title),
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                    Spacer(Modifier.weight(1f))
-                    TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done), color = AppColors.Calorie) }
-                }
-            }
-
             if (showHomeCards) {
                 item { NutritionSheetSectionHeader(stringResource(R.string.nutrition_section_home_cards)) }
                 item {
@@ -319,7 +310,7 @@ private fun HomeCardsRow(
             )
         }
         Icon(
-            Icons.Filled.ChevronRight,
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
             modifier = Modifier.size(20.dp)

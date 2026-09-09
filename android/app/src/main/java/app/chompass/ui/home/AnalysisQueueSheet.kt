@@ -31,7 +31,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.ChevronLeft
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -634,7 +634,7 @@ private fun EditQueuedSheet(
                         enabled = targetDate.isBefore(LocalDate.now().plusDays(1)),
                     ) {
                         Icon(
-                            Icons.Filled.ChevronRight,
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = stringResource(R.string.analysis_queue_day_forward),
                         )
                     }

@@ -13,7 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -169,7 +169,7 @@ fun DayTypeSwitchSheet(
                         modifier = Modifier.weight(1f),
                     )
                     Icon(
-                        Icons.Filled.ChevronRight,
+                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
                         modifier = Modifier.size(18.dp),

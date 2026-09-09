@@ -21,7 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -239,7 +239,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                                 Text(stringResource(site.labelRes), modifier = Modifier.weight(1f), fontSize = 16.sp, fontWeight = FontWeight.Medium)
                                 Text(displayValue(site), fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
                                 Spacer(Modifier.width(6.dp))
-                                Icon(Icons.Filled.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled), modifier = Modifier.size(18.dp))
+                                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled), modifier = Modifier.size(18.dp))
                             }
                             if (index != BodyMeasurement.Site.values().lastIndex) {
                                 HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
@@ -291,7 +291,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                                 Text(stringResource(R.string.measurement_history), modifier = Modifier.weight(1f), fontSize = 16.sp, fontWeight = FontWeight.Medium)
                                 Text("${entries.size}", fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
                                 Spacer(Modifier.width(6.dp))
-                                Icon(Icons.Filled.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled), modifier = Modifier.size(18.dp))
+                                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled), modifier = Modifier.size(18.dp))
                             }
                         }
                     }
