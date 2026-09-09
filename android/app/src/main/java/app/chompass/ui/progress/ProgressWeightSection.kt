@@ -17,7 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -194,7 +194,7 @@ internal fun WeightHistoryLink(count: Int, onClick: () -> Unit) {
                 )
             }
             Icon(
-                Icons.Filled.ChevronRight,
+                Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 null,
                 tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
                 modifier = Modifier.size(18.dp)
@@ -228,7 +228,7 @@ internal fun BodyFatHistoryLink(count: Int, onClick: () -> Unit) {
                 )
             }
             Icon(
-                Icons.Filled.ChevronRight,
+                Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 null,
                 tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
                 modifier = Modifier.size(18.dp)

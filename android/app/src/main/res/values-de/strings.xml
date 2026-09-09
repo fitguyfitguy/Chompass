@@ -2708,6 +2708,8 @@ für dich ein</string>
     <string name="cd_close">Schließen</string>
     <string name="cd_increase">Erhöhen</string>
     <string name="cd_decrease">Verringern</string>
+    <string name="cd_expanded">Erweitert</string>
+    <string name="cd_collapsed">Eingeklappt</string>
 
     <string name="cd_clear_quantity">Menge löschen</string>
 

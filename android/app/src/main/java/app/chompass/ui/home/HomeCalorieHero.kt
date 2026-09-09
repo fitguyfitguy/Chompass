@@ -20,7 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.LocalFireDepartment
@@ -221,10 +221,19 @@ internal fun CalorieHero(
                 size = mainArcSize,
                 style = Stroke(width = stroke, cap = StrokeCap.Round)
             )
-            // Base-boundary notch angle (degrees from the arc's left origin),
-            // when a boundary exists. Drawn after the eaten fill so the boundary
-            // stays visible even when the fill covers it.
+            // Eaten fill first so live/typical shades (and the ADD_ACTIVE
+            // bonus tail) paint on top and stay readable when intake covers
+            // the active zone. Notch still last.
             var notchAngle: Float? = null
+            drawArc(
+                color = progressColor,
+                startAngle = 180f,
+                sweepAngle = 180f * (if (freezeProgress) fillRatio else animatedRatio.value),
+                useCenter = false,
+                topLeft = mainTopLeft,
+                size = mainArcSize,
+                style = Stroke(width = stroke, cap = StrokeCap.Round)
+            )
             if (shadesActive) {
                 // Single energy scale, one meaning per shade:
                 //  - estimated-active zone = fixed dim segment [base → base+typical].
@@ -273,16 +282,12 @@ internal fun CalorieHero(
                         style = Stroke(width = stroke, cap = StrokeCap.Round)
                     )
                 }
-                // The base boundary is drawn after the eaten fill (see below),
-                // so it stays visible even when the fill covers it.
                 notchAngle = 180f + baseAngle
             } else if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && activeCalories > 0 && effectiveGoal > 0) {
                 // Activity-earned zone: [baseGoal → effectiveGoal], a fixed-tint
-                // segment on the same budget axis. The teal progress fill sweeps
-                // over it, so eaten crossing the boundary notch = dipping into the
-                // calories you burned. Fixed alpha only — no burn thermometer, no
-                // success dot; the tick at the base-goal boundary marks where your
-                // static budget ends.
+                // segment on the same budget axis. Drawn after the eaten fill so
+                // the tail stays visible when intake covers it. The tick at the
+                // base-goal boundary marks where the static budget ends.
                 val baseSweep = 180f * (baseGoal.toFloat() / effectiveGoal.toFloat()).coerceIn(0f, 1f)
                 val tailSweep = (180f - baseSweep).coerceAtLeast(0f)
                 if (tailSweep > 0f) {
@@ -298,15 +303,6 @@ internal fun CalorieHero(
                     notchAngle = 180f + baseSweep
                 }
             }
-            drawArc(
-                color = progressColor,
-                startAngle = 180f,
-                sweepAngle = 180f * (if (freezeProgress) fillRatio else animatedRatio.value),
-                useCenter = false,
-                topLeft = mainTopLeft,
-                size = mainArcSize,
-                style = Stroke(width = stroke, cap = StrokeCap.Round)
-            )
             // Base-boundary notch, drawn on top of the eaten fill: where your
             // sedentary budget ends and the activity-earned zone begins. Riding
             // above the fill keeps the boundary readable even when eaten crosses
@@ -648,7 +644,7 @@ private fun BudgetExplanationDialog(
                     )
                     Spacer(Modifier.weight(1f))
                     Icon(
-                        Icons.Filled.ChevronRight,
+                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = null,
                         tint = muted,
                         modifier = Modifier.size(16.dp),
@@ -686,7 +682,7 @@ internal fun ViewMoreButton() {
         )
         Spacer(Modifier.width(5.dp))
         Icon(
-            Icons.Filled.ChevronRight,
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
             tint = AppColors.Calorie.copy(alpha = 0.6f),
             modifier = Modifier.size(11.dp)

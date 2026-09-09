@@ -30,8 +30,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.UnfoldMore
@@ -718,6 +718,69 @@ fun FoodResultSheet(
                 }
             }
 
+            item { SheetSectionHeader(stringResource(R.string.sheet_meal)) }
+            item {
+                SheetPillRow(onClick = { if (analysisReady) mealMenuExpanded = true }) {
+                    Text(stringResource(R.string.sheet_meal_type), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                    // Anchor the DropdownMenu inside the right-side cluster so
+                    // it pops open under the value, not the row's left edge.
+                    Box {
+                        androidx.compose.foundation.layout.Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                sheetMealIcon(mealType),
+                                contentDescription = null,
+                                tint = AppColors.Calorie,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(Modifier.width(6.dp))
+                            Text(
+                                mealLabel(mealType),
+                                fontSize = 17.sp,
+                                color = AppColors.Calorie,
+                                fontWeight = FontWeight.Medium
+                            )
+                            Spacer(Modifier.width(6.dp))
+                            Icon(
+                                Icons.Filled.UnfoldMore,
+                                contentDescription = null,
+                                tint = AppColors.Calorie
+                            )
+                        }
+                        SheetGlassDropdownMenu(
+                            expanded = mealMenuExpanded && analysisReady,
+                            onDismissRequest = { mealMenuExpanded = false },
+                            menuWidth = 184.dp
+                        ) {
+                            for (m in pickerMealIds(includeOther = !mealTimesEnabled)) {
+                                SheetGlassDropdownMenuItem(
+                                    label = mealLabel(m),
+                                    leadingIcon = sheetMealIcon(m),
+                                    selected = m == mealType,
+                                    onClick = {
+                                        mealType = m
+                                        mealTypeTouched = true
+                                        mealMenuExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            item {
+                SheetPillRow(onClick = { if (analysisReady) showLogTimePicker = true }) {
+                    Text(stringResource(R.string.label_time), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                    Text(
+                        logTime.format(logTimeFormatter),
+                        fontSize = 17.sp,
+                        color = AppColors.Calorie,
+                        fontWeight = FontWeight.Medium,
+                    )
+                }
+            }
+
             item { SheetSectionHeader(stringResource(R.string.sheet_serving)) }
             item {
                 ServingQuantityCard(
@@ -839,69 +902,6 @@ fun FoodResultSheet(
                 }
             }
 
-            item { SheetSectionHeader(stringResource(R.string.sheet_meal)) }
-            item {
-                SheetPillRow(onClick = { if (analysisReady) mealMenuExpanded = true }) {
-                    Text(stringResource(R.string.sheet_meal_type), fontSize = 17.sp, modifier = Modifier.weight(1f))
-                    // Anchor the DropdownMenu inside the right-side cluster so
-                    // it pops open under the value, not the row's left edge.
-                    Box {
-                        androidx.compose.foundation.layout.Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                sheetMealIcon(mealType),
-                                contentDescription = null,
-                                tint = AppColors.Calorie,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(Modifier.width(6.dp))
-                            Text(
-                                mealLabel(mealType),
-                                fontSize = 17.sp,
-                                color = AppColors.Calorie,
-                                fontWeight = FontWeight.Medium
-                            )
-                            Spacer(Modifier.width(6.dp))
-                            Icon(
-                                Icons.Filled.UnfoldMore,
-                                contentDescription = null,
-                                tint = AppColors.Calorie
-                            )
-                        }
-                        SheetGlassDropdownMenu(
-                            expanded = mealMenuExpanded && analysisReady,
-                            onDismissRequest = { mealMenuExpanded = false },
-                            menuWidth = 184.dp
-                        ) {
-                            for (m in pickerMealIds(includeOther = !mealTimesEnabled)) {
-                                SheetGlassDropdownMenuItem(
-                                    label = mealLabel(m),
-                                    leadingIcon = sheetMealIcon(m),
-                                    selected = m == mealType,
-                                    onClick = {
-                                        mealType = m
-                                        mealTypeTouched = true
-                                        mealMenuExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-            item {
-                SheetPillRow(onClick = { if (analysisReady) showLogTimePicker = true }) {
-                    Text(stringResource(R.string.label_time), fontSize = 17.sp, modifier = Modifier.weight(1f))
-                    Text(
-                        logTime.format(logTimeFormatter),
-                        fontSize = 17.sp,
-                        color = AppColors.Calorie,
-                        fontWeight = FontWeight.Medium,
-                    )
-                }
-            }
-
             // Secondary: ingredients, micros, what-if — after the Log path.
                         item {
                 ConstituentsSection(
@@ -943,7 +943,7 @@ fun FoodResultSheet(
                     Text(stringResource(R.string.sheet_more_nutrition), fontSize = 17.sp, modifier = Modifier.weight(1f))
                     Icon(
                         if (moreNutritionExpanded) Icons.Filled.KeyboardArrowDown
-                        else Icons.Filled.KeyboardArrowRight,
+                        else Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                     )
@@ -980,7 +980,7 @@ fun FoodResultSheet(
                     SheetPillRow(onClick = { whatIfEntry = previewEntry() }) {
                         Text(stringResource(R.string.action_what_if), fontSize = 17.sp, modifier = Modifier.weight(1f))
                         Icon(
-                            Icons.Filled.KeyboardArrowRight,
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                         )

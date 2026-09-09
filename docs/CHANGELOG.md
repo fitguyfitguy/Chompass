@@ -7,6 +7,19 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Changed
+
+- **Meal type and time sit under the food name** (Android): on add and edit, meal and time come right after the name, then serving. Edit also keeps date there. They used to sit below nutrition.
+- **Mealie import matches other sheets** (Android): Cancel is in the title bar, the API token is masked, long recipe names ellipsize, and an http:// host with Allow insecure HTTP off uses the same localized error as other AI calls.
+- **Nutrition details uses Cancel** (Android): the meal or day nutrition sheet no longer has a Done button. Cancel and swipe dismiss it like other read-only sheets.
+
+### Fixed
+
+- **The calorie ring still shows today's burn after you eat past the base budget** (Android): the live and typical burn shades stay on top of the eaten fill, so they do not disappear once intake covers that part of the arc.
+- **Trailing arrows flip in right-to-left languages** (Android): More Nutrition, What-if, View more, and similar carets point with the reading direction.
+- **Trackers and Customize Progress are clearer with TalkBack** (Android): the Add Food Trackers row announces Expanded or Collapsed. Customize Progress on the Progress tab is a 48 dp button and is read once.
+
+
 ## [4.9.0] - 2026-09-09
 
 ### Added

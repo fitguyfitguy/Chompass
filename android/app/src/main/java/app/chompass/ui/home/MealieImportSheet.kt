@@ -9,9 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -27,10 +28,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.services.ai.AiError
@@ -51,6 +54,7 @@ fun MealieImportSheet(
     container: AppContainer,
     onDismiss: () -> Unit,
 ) {
+    val ctx = LocalContext.current
     val state = rememberChompassSheetState()
     val scope = rememberCoroutineScope()
     var host by remember { mutableStateOf("") }
@@ -82,26 +86,22 @@ fun MealieImportSheet(
         onDismiss = onDismiss,
         sheetState = state,
     ) {
+        SheetReviewToolbar(
+            title = stringResource(R.string.mealie_import_title),
+            onCancel = onDismiss,
+        )
         Column(
             Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 16.dp),
         ) {
-            Text(
-                stringResource(R.string.mealie_import_title),
-                fontSize = 17.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp, bottom = 12.dp),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-            )
             OutlinedTextField(
                 value = host,
                 onValueChange = { host = it },
                 label = { Text(stringResource(R.string.mealie_host_label)) },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(AppRadii.Field),
             )
@@ -111,6 +111,8 @@ fun MealieImportSheet(
                 onValueChange = { token = it },
                 label = { Text(stringResource(R.string.mealie_token_label)) },
                 singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(AppRadii.Field),
             )
@@ -140,7 +142,11 @@ fun MealieImportSheet(
                             }.onFailure { err ->
                                 recipes = emptyList()
                                 selected = emptySet()
-                                status = mealieErrorMessage(err)
+                                status = if (err is AiError.InsecureHttpBlocked) {
+                                    ctx.getString(R.string.ai_error_insecure_http_blocked)
+                                } else {
+                                    err.message?.takeIf { it.isNotBlank() } ?: err::class.simpleName.orEmpty()
+                                }
                             }
                         }
                     },
@@ -198,7 +204,12 @@ fun MealieImportSheet(
                                     selected = if (it) selected + item.slug else selected - item.slug
                                 },
                             )
-                            Text(item.name, modifier = Modifier.weight(1f))
+                            Text(
+                                item.name,
+                                modifier = Modifier.weight(1f),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
                         }
                     }
                 }
@@ -229,7 +240,11 @@ fun MealieImportSheet(
                             result.onSuccess { count ->
                                 importedCount = count
                             }.onFailure { err ->
-                                status = mealieErrorMessage(err)
+                                status = if (err is AiError.InsecureHttpBlocked) {
+                                    ctx.getString(R.string.ai_error_insecure_http_blocked)
+                                } else {
+                                    err.message?.takeIf { it.isNotBlank() } ?: err::class.simpleName.orEmpty()
+                                }
                             }
                         }
                     },
@@ -240,7 +255,3 @@ fun MealieImportSheet(
     }
 }
 
-private fun mealieErrorMessage(err: Throwable): String = when (err) {
-    is AiError.InsecureHttpBlocked -> "HTTP is blocked. Turn on Allow insecure HTTP in AI settings, or use HTTPS."
-    else -> err.message?.takeIf { it.isNotBlank() } ?: err::class.simpleName.orEmpty()
-}

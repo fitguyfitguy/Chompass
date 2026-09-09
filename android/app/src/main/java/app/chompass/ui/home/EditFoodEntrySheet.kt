@@ -26,8 +26,8 @@ import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.toMicronutrients
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.UnfoldMore
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -460,6 +460,122 @@ fun EditFoodEntrySheet(
                 }
             }
 
+            item { SheetSectionHeader(stringResource(R.string.sheet_meal)) }
+            item {
+                SheetPillRow(onClick = { mealMenuExpanded = true }) {
+                    Text(stringResource(R.string.sheet_meal_type), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                    // Wrap only the right cluster in a Box so the DropdownMenu
+                    // anchors on the right side of the row (under the value),
+                    // not at the row's left edge.
+                    Box {
+                        androidx.compose.foundation.layout.Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                sheetMealIcon(mealType),
+                                contentDescription = null,
+                                tint = AppColors.Calorie,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(Modifier.width(6.dp))
+                            Text(
+                                mealLabel(mealType),
+                                fontSize = 17.sp,
+                                color = AppColors.Calorie,
+                                fontWeight = FontWeight.Medium
+                            )
+                            Spacer(Modifier.width(6.dp))
+                            Icon(
+                                Icons.Filled.UnfoldMore,
+                                contentDescription = null,
+                                tint = AppColors.Calorie
+                            )
+                        }
+                        SheetGlassDropdownMenu(
+                            expanded = mealMenuExpanded,
+                            onDismissRequest = { mealMenuExpanded = false },
+                            menuWidth = 184.dp
+                        ) {
+                            for (m in pickerMealIds(includeOther = !mealTimesEnabled)) {
+                                SheetGlassDropdownMenuItem(
+                                    label = mealLabel(m),
+                                    leadingIcon = sheetMealIcon(m),
+                                    selected = m == mealType,
+                                    onClick = {
+                                        mealType = m
+                                        mealMenuExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            item { SheetSectionHeader(stringResource(R.string.section_date_time)) }
+            item {
+                SheetPillCard {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                dismissKeyboard()
+                                showDatePicker = true
+                            }
+                            .padding(horizontal = 18.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(stringResource(R.string.label_date), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                        Text(
+                            loggedDate.format(dateFormatter),
+                            fontSize = 17.sp,
+                            color = AppColors.Calorie,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                    SheetHairline()
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                dismissKeyboard()
+                                showTimePicker = true
+                            }
+                            .padding(horizontal = 18.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(stringResource(R.string.label_time), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                        Text(
+                            loggedTime.format(timeFormatter),
+                            fontSize = 17.sp,
+                            color = AppColors.Calorie,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                    if (siblingCount > 0 && timeChanged) {
+                        SheetHairline()
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable { applyTimeToMeal = !applyTimeToMeal }
+                                .padding(horizontal = 10.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Checkbox(
+                                checked = applyTimeToMeal,
+                                onCheckedChange = { applyTimeToMeal = it },
+                            )
+                            Text(
+                                stringResource(R.string.edit_food_apply_time, mealLabel(entry.mealType)),
+                                fontSize = 15.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
+                                modifier = Modifier.padding(end = 8.dp),
+                            )
+                        }
+                    }
+                }
+            }
+
             item { SheetSectionHeader(stringResource(R.string.sheet_serving)) }
             item {
                 ServingQuantityCard(
@@ -584,7 +700,7 @@ fun EditFoodEntrySheet(
                         Text(stringResource(R.string.sheet_more_nutrition), fontSize = 17.sp, modifier = Modifier.weight(1f))
                         Icon(
                             if (moreNutritionExpanded) Icons.Filled.KeyboardArrowDown
-                            else Icons.Filled.KeyboardArrowRight,
+                            else Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                         )
@@ -612,58 +728,6 @@ fun EditFoodEntrySheet(
                                     dim = true,
                                     onEdit = {
                                         editableMicros = editableMicros.with(field, math.baseOptionalFromText(it))
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            item { SheetSectionHeader(stringResource(R.string.sheet_meal)) }
-            item {
-                SheetPillRow(onClick = { mealMenuExpanded = true }) {
-                    Text(stringResource(R.string.sheet_meal_type), fontSize = 17.sp, modifier = Modifier.weight(1f))
-                    // Wrap only the right cluster in a Box so the DropdownMenu
-                    // anchors on the right side of the row (under the value),
-                    // not at the row's left edge.
-                    Box {
-                        androidx.compose.foundation.layout.Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                sheetMealIcon(mealType),
-                                contentDescription = null,
-                                tint = AppColors.Calorie,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(Modifier.width(6.dp))
-                            Text(
-                                mealLabel(mealType),
-                                fontSize = 17.sp,
-                                color = AppColors.Calorie,
-                                fontWeight = FontWeight.Medium
-                            )
-                            Spacer(Modifier.width(6.dp))
-                            Icon(
-                                Icons.Filled.UnfoldMore,
-                                contentDescription = null,
-                                tint = AppColors.Calorie
-                            )
-                        }
-                        SheetGlassDropdownMenu(
-                            expanded = mealMenuExpanded,
-                            onDismissRequest = { mealMenuExpanded = false },
-                            menuWidth = 184.dp
-                        ) {
-                            for (m in pickerMealIds(includeOther = !mealTimesEnabled)) {
-                                SheetGlassDropdownMenuItem(
-                                    label = mealLabel(m),
-                                    leadingIcon = sheetMealIcon(m),
-                                    selected = m == mealType,
-                                    onClick = {
-                                        mealType = m
-                                        mealMenuExpanded = false
                                     }
                                 )
                             }
@@ -907,70 +971,6 @@ fun EditFoodEntrySheet(
                 }
             }
             } // aiFeaturesEnabled
-
-            item { SheetSectionHeader(stringResource(R.string.section_date_time)) }
-            item {
-                SheetPillCard {
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                dismissKeyboard()
-                                showDatePicker = true
-                            }
-                            .padding(horizontal = 18.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(stringResource(R.string.label_date), fontSize = 17.sp, modifier = Modifier.weight(1f))
-                        Text(
-                            loggedDate.format(dateFormatter),
-                            fontSize = 17.sp,
-                            color = AppColors.Calorie,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                    SheetHairline()
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                dismissKeyboard()
-                                showTimePicker = true
-                            }
-                            .padding(horizontal = 18.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(stringResource(R.string.label_time), fontSize = 17.sp, modifier = Modifier.weight(1f))
-                        Text(
-                            loggedTime.format(timeFormatter),
-                            fontSize = 17.sp,
-                            color = AppColors.Calorie,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                    if (siblingCount > 0 && timeChanged) {
-                        SheetHairline()
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .clickable { applyTimeToMeal = !applyTimeToMeal }
-                                .padding(horizontal = 10.dp, vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Checkbox(
-                                checked = applyTimeToMeal,
-                                onCheckedChange = { applyTimeToMeal = it },
-                            )
-                            Text(
-                                stringResource(R.string.edit_food_apply_time, mealLabel(entry.mealType)),
-                                fontSize = 15.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
-                                modifier = Modifier.padding(end = 8.dp),
-                            )
-                        }
-                    }
-                }
-            }
 
             // Share this meal as a fudai://add-meal link (issue #107)
             item { SheetSectionHeader(stringResource(R.string.section_share)) }
