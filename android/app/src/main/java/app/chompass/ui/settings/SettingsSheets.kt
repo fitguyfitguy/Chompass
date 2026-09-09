@@ -748,9 +748,7 @@ internal fun SettingsSheets(
                     currentCupMl = ui.waterCupSizeMl,
                     goalMl = ui.waterDynamicGoalPreview?.netGoalMl ?: ui.waterDailyGoalMl,
                     onSave = { start, end, cup ->
-                        vm.setWaterAwakeStartMinutes(start)
-                        vm.setWaterAwakeEndMinutes(end)
-                        vm.setWaterCupSizeMl(cup)
+                        vm.setWaterReminderPlan(start, end, cup)
                         onDismiss()
                     },
                 )
