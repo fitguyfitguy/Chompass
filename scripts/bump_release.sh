@@ -16,6 +16,10 @@
 #   - website/hugo.toml                   params.version
 #   - metadata/app.chompass.yml           CurrentVersion/Code + new Builds entry
 #
+# Not written (add by hand before tagging):
+#   - metadata/en-US/changelogs/<versionCode>.txt   F-Droid store changelog
+#     checkupdates copies this; without it the version ships with no changelog
+#
 # The F-Droid build-hash pin (docs/fdroid/app.chompass.yml Builds commit) is
 # set to the current HEAD: run this script right before tagging the release
 # commit so the pin matches the tag. After tagging, re-run with the tag hash if

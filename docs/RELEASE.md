@@ -55,7 +55,7 @@ Codeberg uploads **universal only** (`Chompass-fdroid-<version>.apk` + `SHA256SU
 ## Tag and publish on Codeberg
 
 1. Bump `versionCode` / `versionName` in `android/app/build.gradle.kts`
-2. Update `docs/CHANGELOG.md` (`## [Unreleased]` → new `## [X.Y.Z] - YYYY-MM-DD` section)
+2. Update `docs/CHANGELOG.md` (`## [Unreleased]` → new `## [X.Y.Z] - YYYY-MM-DD` section) and add `metadata/en-US/changelogs/<versionCode>.txt` (F-Droid `checkupdates` copies this; without it the version ships with no store changelog)
 3. **Update design-doc status lines** for features shipping in this release: `Status: shipped in <x.y.z> (date)` in the affected design docs (`docs/*_DESIGN.md`) (convention documented in [`docs/README.md`](README.md))
 4. Bump `website/hugo.toml` `params.version` (same as `versionName`)
 5. Optional: sync `docs/fdroid/app.chompass.yml` and run `devenv tasks run release:check-metadata`
@@ -179,7 +179,7 @@ Prefer the emulator over coordinate-based phone taps when automating; screen siz
 For each release:
 
 - Build release APKs (`assembleRelease`); no proprietary Play Core libraries. See [`DISTRIBUTION.md`](DISTRIBUTION.md)
-- Keep store metadata under `metadata/en-US/` (pushed to Codeberg `main` before F-Droid picks up the tag)
+- Add `metadata/en-US/changelogs/<versionCode>.txt` and keep the rest of `metadata/en-US/` on Codeberg `main` before F-Droid picks up the tag. `checkupdates` copies that file; without it the version ships with no store changelog
 - Keep `docs/fdroid/app.chompass.yml` in sync with `versionName` / `versionCode` (`devenv tasks run release:check-metadata`)
 - In the YAML `Builds:` block: **one** current version entry, `commit:` = **full git commit hash** of the release commit (not the tag name)
 - F-Droid `checkupdates` opens the version-update MR automatically; do **not** open inclusion/update MRs yourself. If a bot MR needs help, reply in the GitLab web GUI.
