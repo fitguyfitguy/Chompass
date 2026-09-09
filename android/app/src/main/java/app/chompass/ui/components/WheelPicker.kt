@@ -591,6 +591,7 @@ fun ClockTimeWheelPicker(
     time: java.time.LocalTime,
     onChange: (java.time.LocalTime) -> Unit,
     modifier: Modifier = Modifier,
+    onTypedDraftChange: (digits: String?) -> Unit = {},
 ) {
     val hours = remember { (0..23).toList() }
     val minutes = remember { (0..59).toList() }
@@ -601,12 +602,17 @@ fun ClockTimeWheelPicker(
         ClockTimeTypeField(
             time = time,
             onChange = onChange,
-            onFlipToWheel = { setTyped(false) },
+            onFlipToWheel = {
+                onTypedDraftChange(null)
+                setTyped(false)
+            },
+            onTypedDraftChange = onTypedDraftChange,
             contentDescription = typeCd,
             modifier = modifier,
         )
         return
     }
+
 
     MagnitudeWheelChrome(showHint = false, onType = { setTyped(true) }) {
         Box(
@@ -663,6 +669,7 @@ private fun ClockTimeTypeField(
     time: java.time.LocalTime,
     onChange: (java.time.LocalTime) -> Unit,
     onFlipToWheel: () -> Unit,
+    onTypedDraftChange: (digits: String?) -> Unit = {},
     contentDescription: String,
     modifier: Modifier = Modifier,
 ) {
@@ -674,6 +681,7 @@ private fun ClockTimeTypeField(
     val focus = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
     LaunchedEffect(Unit) {
+        onTypedDraftChange(initial.filter { it.isDigit() })
         focus.requestFocus()
         keyboard?.show()
     }
@@ -695,6 +703,7 @@ private fun ClockTimeTypeField(
                     val digits = value.text.filter { it.isDigit() }.take(4)
                     val shown = formatClockDigits(digits)
                     draft = TextFieldValue(shown, TextRange(shown.length))
+                    onTypedDraftChange(digits)
                     // Live-commit only a complete, valid HHMM so partial digits
                     // never bounce back into the field.
                     if (digits.length == 4) parseClockDigits(digits)?.let(onChange)
