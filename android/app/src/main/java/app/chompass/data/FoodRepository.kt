@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.time.Instant
+import java.util.Locale
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
@@ -89,6 +90,16 @@ internal fun yearMonthsForQuickRelog(
 ): List<YearMonth> {
     val today = now.atZone(zone).toLocalDate()
     return yearMonthsOverlapping(today.minusDays(frequentDays - 1), today)
+}
+
+/** Months that can contain the suggestion-index window ending at [now]. */
+internal fun yearMonthsForSavedFoodIndex(
+    now: Instant,
+    zone: ZoneId = ZoneId.systemDefault(),
+    days: Long = 365,
+): List<YearMonth> {
+    val today = now.atZone(zone).toLocalDate()
+    return yearMonthsOverlapping(today.minusDays(days - 1), today)
 }
 
 /**
@@ -704,6 +715,27 @@ class FoodRepository(
      *
      * Reads the diary snapshot once and reuses it for both windows.
      */
+    /**
+     * Index backing the Add Food suggestion list: every food logged in the last
+     * [days] plus all favorites, collapsed by identity with the ranker's text
+     * work precomputed.
+     *
+     * Reads only the calendar months overlapping the window — the same shape as
+     * [quickRelogRows], and deliberately **not** [historyTemplates], which walks
+     * every month bucket ever written. This runs on sheet open (and is cached by
+     * the caller), never per keystroke.
+     */
+    suspend fun savedFoodIndex(days: Long = 365, now: Instant = Instant.now()): List<SavedFoodIndexEntry> =
+        PerfLog.measure("hubOpen", "savedIndex", "days=$days") {
+            val months = yearMonthsForSavedFoodIndex(now, days = days)
+            val windowed = prefs.foodEntriesForMonths(months).first()
+            val cutoff = now.minus(days, ChronoUnit.DAYS)
+            buildSavedFoodIndex(
+                entries = windowed.filter { !it.timestamp.isBefore(cutoff) },
+                favorites = migratedFavorites(),
+            )
+        }
+
     suspend fun quickRelogRows(perRow: Int = 10): QuickRelogRows =
         PerfLog.measure("hubOpen", "quickRelog", "perRow=$perRow") {
             val now = Instant.now()
@@ -796,6 +828,20 @@ fun disambiguateFoodName(desired: String, existingKeys: Set<String>): String {
         n++
     }
     return "$stem ($n)"
+}
+
+/**
+ * Whether logging [rawName] should merge into [template] instead of being
+ * disambiguated away from it. True when the name *is* that saved food's
+ * identity — a re-log, or an AI estimate the user adopted a saved source for.
+ *
+ * Getting this wrong is how a food forks: miss the merge and
+ * [disambiguateFoodName] turns the second log of "Oatmeal" into "Oatmeal (2)",
+ * splitting one food's history across two identities for good.
+ */
+fun mergesWithSavedFood(rawName: String, template: FoodEntry?): Boolean {
+    if (template == null) return false
+    return rawName.trim().lowercase(Locale.ROOT) == template.favoriteKey
 }
 
 private val TRAILING_NUMERIC_SUFFIX = Regex("""\s+\((\d+)\)$""")
