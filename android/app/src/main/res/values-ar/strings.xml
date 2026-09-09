@@ -932,9 +932,6 @@
     <string name="export_sync_title">تصدير JSON المزامنة</string>
     <string name="export_to">إلى</string>
     <string name="finish_onboarding_hint">أكمل الإعداد أولًا لمقارنة هذه الوجبة بأهدافك اليومية.</string>
-    <string name="food_search_empty">اكتب للبحث عن الأطعمة المعلبة والعامة</string>
-    <string name="food_search_hint">أطعمة معلبة من Open Food Facts، بالإضافة إلى قاعدتي USDA والسويسرية دون اتصال. تحمل النتائج شارة المصدر.</string>
-    <string name="food_search_no_results">لم يُعثر على أطعمة. جرّب اسمًا مختلفًا.</string>
     <string name="food_search_placeholder">مثال: زبادي يوناني، حليب، جبن قريش</string>
     <string name="food_search_sheet_title">البحث في قواعد بيانات الأطعمة</string>
     <string name="food_search_source_swiss">سويسري</string>
@@ -1007,7 +1004,6 @@
     <string name="home_menu_copy_from_day">نسخ من يوم</string>
     <string name="home_menu_from_photos_note">من صورة + ملاحظة</string>
     <string name="home_menu_grounded">موثّق</string>
-    <string name="home_menu_search_food">البحث عن طعام</string>
     <string name="home_nutrient_cards">بطاقات عناصر الرئيسية</string>
     <string name="home_nutrients">عناصر الرئيسية</string>
     <string name="home_nutrients_pick_count">اختر حتى %1$d عناصر غذائية للشاشة الرئيسية.</string>

@@ -221,12 +221,8 @@
     <string name="home_menu_voice">Голос</string>
     <string name="home_menu_manual_entry">Вручну</string>
     <string name="home_menu_saved_meals">Збережені страви</string>
-    <string name="home_menu_search_food">Пошук їжі</string>
     <string name="food_search_sheet_title">Пошук у базах продуктів</string>
     <string name="food_search_placeholder">напр. грецький йогурт, Milch, quark</string>
-    <string name="food_search_hint">Продукти з Open Food Facts, а також офлайн-бази USDA та швейцарська. Результати мають позначку джерела.</string>
-    <string name="food_search_empty">Введи запит для пошуку продуктів</string>
-    <string name="food_search_no_results">Нічого не знайдено. Спробуй іншу назву.</string>
     <string name="food_search_source_swiss">Швейцарська</string>
     <string name="shortcut_camera_short">Камера</string>
     <string name="shortcut_camera_long">Внести їжу з камери</string>

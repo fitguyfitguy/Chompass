@@ -399,12 +399,8 @@
     <string name="home_menu_saved_meals">Kayıtlı Öğünler</string>
     <string name="home_menu_barcode">Barkod</string>
     <string name="home_menu_grounded">Doğrulanmış</string>
-    <string name="home_menu_search_food">Yemek ara</string>
     <string name="food_search_sheet_title">Yemek veritabanlarında ara</string>
     <string name="food_search_placeholder">ör. Yunan yoğurdu, süt, lor</string>
-    <string name="food_search_hint">Open Food Facts\'ten paketli gıdalar, ayrıca çevrimdışı USDA ve İsviçre veritabanları. Sonuçlar kaynak rozetini korur.</string>
-    <string name="food_search_empty">Paketli ve genel yiyecekleri aramak için yaz</string>
-    <string name="food_search_no_results">Yiyecek bulunamadı. Farklı bir ad deneyin.</string>
     <string name="food_search_source_off">Open Food Facts</string>
     <string name="food_search_source_usda">USDA</string>
     <string name="food_search_source_swiss">İsviçre</string>

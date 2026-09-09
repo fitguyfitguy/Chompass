@@ -676,17 +676,9 @@ für dich ein</string>
 
     <string name="home_menu_grounded">Geerdet</string>
 
-    <string name="home_menu_search_food">Lebensmittel suchen</string>
-
     <string name="food_search_sheet_title">Lebensmitteldatenbanken durchsuchen</string>
 
     <string name="food_search_placeholder">z. B. griechischer Joghurt, Milch, Quark</string>
-
-    <string name="food_search_hint">Verpackte Lebensmittel aus Open Food Facts sowie Offline-Datenbanken des USDA und der Schweiz. Die Ergebnisse sind mit einem Quellen-Symbol gekennzeichnet.</string>
-
-    <string name="food_search_empty">Gib einen Suchbegriff ein, um nach verpackten und generischen Lebensmitteln zu suchen</string>
-
-    <string name="food_search_no_results">Keine Lebensmittel gefunden. Versuche es mit einem anderen Namen.</string>
 
     <string name="food_search_source_off">Open Food Facts</string>
 

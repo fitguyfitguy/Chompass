@@ -76,7 +76,6 @@ import java.util.UUID
 import app.chompass.AppContainer
 import app.chompass.MainActivity
 import app.chompass.R
-import app.chompass.data.QuickRelogRows
 import app.chompass.models.FoodEntry
 import app.chompass.models.LocaleFormat
 import app.chompass.models.CurrentMealCatalog
@@ -155,8 +154,6 @@ fun HomeScreen(
     var showBarcodeScannerLocal by rememberSaveable { mutableStateOf(false) }
     var showCopyFromDay by rememberSaveable { mutableStateOf(false) }
     var showAddFoodSheet by rememberSaveable { mutableStateOf(false) }
-    var hubRelogRows by remember { mutableStateOf(vm.peekQuickRelogCache() ?: QuickRelogRows.Empty) }
-    var hubRelogLoading by remember { mutableStateOf(vm.peekQuickRelogCache() == null) }
     var hubOpenedAtNs by remember { mutableLongStateOf(0L) }
     var showCustomWaterLog by rememberSaveable { mutableStateOf(false) }
     var showWaterHistory by rememberSaveable { mutableStateOf(false) }
@@ -171,7 +168,6 @@ fun HomeScreen(
     var showManualActive by rememberSaveable { mutableStateOf(false) }
     var editingManualActive by remember { mutableStateOf<app.chompass.models.ManualActiveEntry?>(null) }
     var showGroundedEntry by rememberSaveable { mutableStateOf(false) }
-    var showFoodSearch by rememberSaveable { mutableStateOf(false) }
     var editingEntry by remember { mutableStateOf<FoodEntry?>(null) }
     var editingRecipe by remember { mutableStateOf<app.chompass.models.Recipe?>(null) }
     // Codeberg #66: favorite currently open in the saved-food editor.
@@ -309,7 +305,7 @@ fun HomeScreen(
             vm.consumeResumeProgressiveCapture()
             // Codeberg #78: Add another / Add next ingredient open the full
             // Add Food hub (barcode, frequent, note, photo), not only camera.
-            vm.prefetchQuickRelog()
+            vm.prefetchAddFoodIndex()
             addFoodFlowActive = true
             showAddFoodSheet = true
         }
@@ -783,7 +779,7 @@ fun HomeScreen(
             onClick = {
                 // Warm the hub recents while the sheet animates open.
                 if (PerfLog.enabled) hubOpenedAtNs = System.nanoTime()
-                vm.prefetchQuickRelog()
+                vm.prefetchAddFoodIndex()
                 // Codeberg #30: "+" always opens the grid (a last-tool restore
                 // was tried and removed on the maintainer device pass
                 // 2026-08-18); backing out of a destination returns here.
@@ -968,15 +964,7 @@ fun HomeScreen(
                 val ms = (System.nanoTime() - hubOpenedAtNs) / 1_000_000
                 PerfLog.event("op=hubOpen phase=sheetVisible ms=$ms")
             }
-            val cached = vm.peekQuickRelogCache()
-            if (cached != null) {
-                hubRelogRows = cached
-                hubRelogLoading = false
-            } else {
-                hubRelogLoading = true
-            }
-            hubRelogRows = vm.quickRelogRowsCached()
-            hubRelogLoading = false
+            vm.prefetchAddFoodSavedRows()
         }
     }
 
@@ -986,8 +974,9 @@ fun HomeScreen(
             waterTrackingEnabled = ui.waterTrackingEnabled,
             waterQuickPresetsMl = ui.waterQuickPresetsMl,
             waterUseMetric = ui.weightMetric,
-            relogRows = hubRelogRows,
-            relogLoading = hubRelogLoading,
+            savedTab = ui.addFoodSavedTab,
+            savedRows = ui.addFoodSavedRows,
+            onSavedTabChange = vm::selectAddFoodSavedTab,
             onPhoto = {
                 addFoodFlowActive = true
                 openCamera()
@@ -996,7 +985,7 @@ fun HomeScreen(
                 addFoodFlowActive = true
                 showText = true
             },
-            onSavedRecents = {
+            onSavedMeals = {
                 addFoodFlowActive = true
                 savedMealsTab = SavedTab.RECENTS
             },
@@ -1026,10 +1015,6 @@ fun HomeScreen(
                     showGroundedEntry = true
                 }
             },
-            onSearch = {
-                addFoodFlowActive = true
-                showFoodSearch = true
-            },
             onQueue = {
                 addFoodFlowActive = false
                 vm.openQueue()
@@ -1058,11 +1043,34 @@ fun HomeScreen(
             fastingAutoWindows = ui.fastingAutoWindows,
             onStartFast = vm::startFast,
             onStopFast = vm::stopFast,
-            onRelogRecent = { vm.relogMeal(it) },
-            onReviewRecent = { vm.reviewSavedMeal(it) },
+            query = ui.addFoodQuery,
+            onQueryChange = vm::onAddFoodQueryChange,
+            suggestions = ui.addFoodSuggestions,
+            suggestionsNetworkPending = ui.addFoodSuggestNetworkPending,
+            onPickSuggestion = {
+                addFoodFlowActive = false
+                vm.pickSuggestion(it)
+                vm.clearAddFoodQuery()
+            },
+            onReviewSuggestion = {
+                addFoodFlowActive = false
+                vm.reviewSuggestion(it)
+                vm.clearAddFoodQuery()
+            },
+            onAnalyzeQuery = { text ->
+                if (!ui.isEntryAnalysisBusy) {
+                    addFoodFlowActive = false
+                    vm.analyzeText(text)
+                    vm.clearAddFoodQuery()
+                }
+            },
             onDismiss = {
                 showAddFoodSheet = false
                 addFoodFlowActive = false
+                // Closing the flow drops the search; backing out of a
+                // sub-destination (returnToAddFoodGrid) deliberately does not,
+                // so a typed query survives a detour through Copy-from-day.
+                vm.clearAddFoodQuery()
             }
         )
     }
@@ -1095,21 +1103,6 @@ fun HomeScreen(
                 },
             )
         }
-    }
-
-    if (showFoodSearch) {
-        FoodDatabaseSearchSheet(
-            container = container,
-            onSelect = { result ->
-                showFoodSearch = false
-                addFoodFlowActive = false
-                vm.selectFoodSearchResult(result)
-            },
-            onDismiss = {
-                showFoodSearch = false
-                returnToAddFoodGrid()
-            },
-        )
     }
 
     if (showCustomWaterLog) {

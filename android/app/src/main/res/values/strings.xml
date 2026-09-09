@@ -408,12 +408,8 @@
     <string name="home_menu_saved_meals">Saved Meals</string>
     <string name="home_menu_barcode">Barcode</string>
     <string name="home_menu_grounded">Grounded</string>
-    <string name="home_menu_search_food">Search food</string>
     <string name="food_search_sheet_title">Search food databases</string>
     <string name="food_search_placeholder">e.g. Greek yogurt, Milch, quark</string>
-    <string name="food_search_hint">Packaged foods from Open Food Facts, plus offline USDA and Swiss databases. Results keep a source badge.</string>
-    <string name="food_search_empty">Type to search packaged and generic foods</string>
-    <string name="food_search_no_results">No foods found. Try a different name.</string>
     <string name="food_search_source_off">Open Food Facts</string>
     <string name="food_search_source_usda">USDA</string>
     <string name="food_search_source_swiss">Swiss</string>

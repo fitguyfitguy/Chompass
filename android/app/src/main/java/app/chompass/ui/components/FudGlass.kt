@@ -137,12 +137,17 @@ fun FudGlassTextField(
         color = MaterialTheme.colorScheme.onSurface,
     ),
     accentColor: Color? = null,
+    /** Optional field affordances (search glyph, clear button) — see AddFoodQueryRow. */
+    leadingIcon: (@Composable () -> Unit)? = null,
+    trailingIcon: (@Composable () -> Unit)? = null,
 ) {
     val fieldAccent = accentColor ?: MaterialTheme.colorScheme.primary
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier.fillMaxWidth(),
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
         placeholder = {
             if (placeholder.isNotBlank()) {
                 Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant)

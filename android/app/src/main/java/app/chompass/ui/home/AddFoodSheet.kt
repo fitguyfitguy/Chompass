@@ -1,5 +1,9 @@
 package app.chompass.ui.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -7,36 +11,25 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.PhotoCamera
-import androidx.compose.material.icons.filled.QrCodeScanner
-import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 
-import androidx.compose.material.icons.filled.Science
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.WaterDrop
 import app.chompass.services.grounding.GroundedEntryFeature
 import androidx.compose.foundation.layout.PaddingValues
@@ -46,6 +39,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Icon
@@ -62,32 +57,37 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import app.chompass.R
-import app.chompass.data.QuickRelogRows
+import app.chompass.services.grounding.FoodSuggestion
 import app.chompass.models.FoodEntry
 import app.chompass.models.CaffeineKind
 import app.chompass.models.FastingPhase
 import app.chompass.models.NicotineKind
-import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.blockSheetDragAtScrollEdges
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
@@ -98,24 +98,18 @@ import app.chompass.ui.theme.caffeine
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WaterAmountFormat
 
-private enum class AddFoodTileSize {
-    Hero,
-    Compact,
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddFoodSheet(
     onPhoto: () -> Unit,
     onNote: () -> Unit,
-    onSavedRecents: () -> Unit,
+    onSavedMeals: () -> Unit,
     onVoice: () -> Unit,
     onBarcode: () -> Unit,
     onManual: () -> Unit,
     onCopyFromDay: () -> Unit,
     onManualActive: () -> Unit = {},
     onGrounded: () -> Unit = {},
-    onSearch: () -> Unit = {},
     onQueue: () -> Unit = {},
     queuePendingCount: Int = 0,
     onDismiss: () -> Unit,
@@ -147,23 +141,45 @@ fun AddFoodSheet(
     fastingAutoWindows: Boolean = false,
     onStartFast: () -> Unit = {},
     onStopFast: () -> Unit = {},
-    relogRows: QuickRelogRows = QuickRelogRows.Empty,
-    relogLoading: Boolean = false,
-    onRelogRecent: (FoodEntry) -> Unit = {},
-    onReviewRecent: (FoodEntry) -> Unit = {},
+    savedTab: SavedTab = SavedTab.RECENTS,
+    savedRows: List<FoodSuggestion> = emptyList(),
+    onSavedTabChange: (SavedTab) -> Unit = {},
+    query: String = "",
+    onQueryChange: (String) -> Unit = {},
+    suggestions: List<FoodSuggestion> = emptyList(),
+    suggestionsNetworkPending: Boolean = false,
+    onPickSuggestion: (FoodSuggestion) -> Unit = {},
+    onReviewSuggestion: (FoodSuggestion) -> Unit = {},
+    onAnalyzeQuery: (String) -> Unit = {},
 ) {
-    ChompassBottomSheet(onDismiss = onDismiss) {
+    // Two anchors, and a content height that never changes. The sheet animates
+    // its own offset between them (expand/partialExpand), which is the only
+    // motion M3 actually animates: anchors are derived from content size and
+    // settled to, so growing the body made the sheet lag the content and then
+    // snap at the end of the tween.
+    val sheetState = rememberChompassSheetState(skipPartiallyExpanded = false)
+    ChompassBottomSheet(
+        onDismiss = onDismiss,
+        sheetState = sheetState,
+        // Codeberg #6: this sheet's content pads itself with imePadding, so
+        // the default chrome insets feed the M3 feedback loop — consumeWindowInsets(0,0,0,max(0,offset))
+        // changes as the sheet moves, which re-pads the content, which
+        // re-measures it, which moves the anchors and re-bases the offset. That
+        // is what made the grow-on-scroll expansion snap instead of glide.
+        // Every other self-padding sheet here zeroes these for the same reason.
+        contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
+    ) {
         AddFoodSheetContent(
+            sheetState = sheetState,
             onPhoto = { onDismiss(); onPhoto() },
             onNote = { onDismiss(); onNote() },
-            onSavedRecents = { onDismiss(); onSavedRecents() },
+            onSavedMeals = { onDismiss(); onSavedMeals() },
             onVoice = { onDismiss(); onVoice() },
             onBarcode = { onDismiss(); onBarcode() },
             onManual = { onDismiss(); onManual() },
             onCopyFromDay = { onDismiss(); onCopyFromDay() },
             onManualActive = { onDismiss(); onManualActive() },
             onGrounded = { onDismiss(); onGrounded() },
-            onSearch = { onDismiss(); onSearch() },
             onQueue = { onDismiss(); onQueue() },
             queuePendingCount = queuePendingCount,
             aiFeaturesEnabled = aiFeaturesEnabled,
@@ -194,27 +210,45 @@ fun AddFoodSheet(
             fastingAutoWindows = fastingAutoWindows,
             onStartFast = { onDismiss(); onStartFast() },
             onStopFast = { onDismiss(); onStopFast() },
-            relogRows = relogRows,
-            relogLoading = relogLoading,
-            onRelogRecent = { entry -> onDismiss(); onRelogRecent(entry) },
-            onReviewRecent = { entry -> onDismiss(); onReviewRecent(entry) },
+            savedTab = savedTab,
+            savedRows = savedRows,
+            // Switching tabs stays in the sheet, like typing does.
+            onSavedTabChange = onSavedTabChange,
+            // Typing must not close the sheet — unlike every other callback
+            // here, this one is not an action that leaves for a destination.
+            query = query,
+            onQueryChange = onQueryChange,
+            suggestions = suggestions,
+            suggestionsNetworkPending = suggestionsNetworkPending,
+            onPickSuggestion = { s -> onDismiss(); onPickSuggestion(s) },
+            onReviewSuggestion = { s -> onDismiss(); onReviewSuggestion(s) },
+            onAnalyzeQuery = { text -> onDismiss(); onAnalyzeQuery(text) },
         )
     }
 }
 
 /** Sheet body without ModalBottomSheet — used for JVM screenshot capture. */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AddFoodSheetContent(
+    /** Non-null lets the results pane expand the sheet itself. */
+    sheetState: SheetState? = null,
+    /**
+     * Fixed pane height for hosts that wrap their content instead of bounding
+     * it — the release screenshot harness draws this body in a plain Surface,
+     * where filling the height would stretch it over the whole screen and a
+     * weighted child has no remainder to divide.
+     */
+    fixedPaneHeight: Dp? = null,
     onPhoto: () -> Unit = {},
     onNote: () -> Unit = {},
-    onSavedRecents: () -> Unit = {},
+    onSavedMeals: () -> Unit = {},
     onVoice: () -> Unit = {},
     onBarcode: () -> Unit = {},
     onManual: () -> Unit = {},
     onCopyFromDay: () -> Unit = {},
     onManualActive: () -> Unit = {},
     onGrounded: () -> Unit = {},
-    onSearch: () -> Unit = {},
     /** Codeberg #53: open the analysis queue (pending badge in the label). */
     onQueue: () -> Unit = {},
     queuePendingCount: Int = 0,
@@ -248,427 +282,247 @@ internal fun AddFoodSheetContent(
     fastingAutoWindows: Boolean = false,
     onStartFast: () -> Unit = {},
     onStopFast: () -> Unit = {},
-    relogRows: QuickRelogRows = QuickRelogRows.Empty,
-    relogLoading: Boolean = false,
-    onRelogRecent: (FoodEntry) -> Unit = {},
-    onReviewRecent: (FoodEntry) -> Unit = {},
+    savedTab: SavedTab = SavedTab.RECENTS,
+    savedRows: List<FoodSuggestion> = emptyList(),
+    onSavedTabChange: (SavedTab) -> Unit = {},
+    query: String = "",
+    onQueryChange: (String) -> Unit = {},
+    suggestions: List<FoodSuggestion> = emptyList(),
+    suggestionsNetworkPending: Boolean = false,
+    onPickSuggestion: (FoodSuggestion) -> Unit = {},
+    onReviewSuggestion: (FoodSuggestion) -> Unit = {},
+    onAnalyzeQuery: (String) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     val expandedLabel = stringResource(R.string.cd_expanded)
     val collapsedLabel = stringResource(R.string.cd_collapsed)
+    val searching = query.isNotBlank()
+    val scope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
+    val dismissKeyboard = {
+        focusManager.clearFocus()
+        keyboard?.hide()
+        Unit
+    }
+    // Reaching the expanded anchor means the user wants to see the list, not
+    // type — the keyboard is covering half of what they just asked for.
+    // Keyed on targetValue so it fires as the sheet starts moving rather than
+    // after it settles.
+    val expanding = sheetState?.targetValue == SheetValue.Expanded
+    LaunchedEffect(expanding) { if (expanding) dismissKeyboard() }
+    val expandLabel = stringResource(R.string.home_view_more)
     Column(
         Modifier
             .fillMaxWidth()
-            .navigationBarsPadding()
-            .verticalScroll(scrollState)
-            // Device pass #2 (2026-08-24): the content outgrew the sheet on
-            // shorter screens (water + nicotine + caffeine + fasting rows), so
-            // the bottom rows were clipped below the sheet edge. Scrolling the
-            // column keeps every row reachable; like TextInputSheet, block
-            // drag-from-content dismissal (handle/scrim still dismiss).
-            .blockSheetDragAtScrollEdges(scrollState)
+            // Constant height, so the sheet's anchors are computed once and
+            // never move. Everything inside divides this space up; nothing
+            // changes the total.
+            .then(if (fixedPaneHeight == null) Modifier.fillMaxHeight() else Modifier)
+            // Bottom padding but no navigationBarsPadding: the content keeps a
+            // margin of its own while still drawing under the system navigation
+            // bar. imePadding stays, because the keyboard must not cover the
+            // field it is typing into.
+            .imePadding()
             .padding(horizontal = 20.dp)
             .padding(top = 4.dp, bottom = 20.dp)
     ) {
         Text(
             stringResource(R.string.add_food_sheet_title),
             style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(14.dp))
 
-        if (aiFeaturesEnabled) {
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                AddFoodActionTile(
-                    label = stringResource(R.string.add_food_hero_photo),
-                    subtitle = stringResource(R.string.add_food_hero_photo_sub),
-                    icon = Icons.Filled.PhotoCamera,
-                    size = AddFoodTileSize.Hero,
-                    emphasis = true,
-                    modifier = Modifier.weight(1.2f),
-                    onClick = onPhoto,
-                )
-                AddFoodActionTile(
-                    label = stringResource(R.string.add_food_hero_note),
-                    subtitle = stringResource(R.string.add_food_hero_note_sub),
-                    icon = Icons.Filled.Edit,
-                    size = AddFoodTileSize.Hero,
-                    modifier = Modifier.weight(1f),
-                    onClick = onNote,
+        AddFoodQueryRow(
+            query = query,
+            onQueryChange = onQueryChange,
+            onPhoto = onPhoto,
+            onVoice = onVoice,
+            onBarcode = onBarcode,
+            onAnalyze = onAnalyzeQuery,
+            onNote = onNote,
+            onSavedMeals = onSavedMeals,
+            onManual = onManual,
+            onCopyFromDay = onCopyFromDay,
+            onManualActive = onManualActive,
+            onQueue = onQueue,
+            onGrounded = onGrounded,
+            queuePendingCount = queuePendingCount,
+            groundedEnabled = GroundedEntryFeature.ENABLED,
+            aiFeaturesEnabled = aiFeaturesEnabled,
+            barcodeEnabled = barcodeEnabled,
+        )
+
+        // The tabs' slot out of search. In search it keeps only enough height
+        // to stay a tap target, because the band has nothing to say any more:
+        // the "still searching" signal moved into the database section's own
+        // label, down in the results. The results pane takes the height this
+        // gives up (it is the weighted child), so the sheet itself does not
+        // resize when a query starts — only the split inside it changes.
+        //
+        // It swallows the spacers that used to sit either side of it so the
+        // whole strip between the tool pills and the results is one target:
+        // tapping it expands the sheet. Children with their own click handler
+        // (the tabs) win, so only the dead space around them expands.
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(if (searching) 16.dp else 64.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    enabled = sheetState != null,
+                    onClickLabel = expandLabel,
+                    role = Role.Button,
+                ) {
+                    scope.launch { runCatching { sheetState?.expand() } }
+                },
+            contentAlignment = Alignment.Center,
+        ) {
+            if (!searching) {
+                SegmentedTabs(
+                    selected = savedTab,
+                    // The tabs are a "show me what I already have" gesture; the
+                    // keyboard has nothing left to contribute once it is made.
+                    onSelect = { tab -> dismissKeyboard(); onSavedTabChange(tab) },
                 )
             }
-            Spacer(Modifier.height(8.dp))
         }
 
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                if (aiFeaturesEnabled) {
-                    AddFoodActionTile(
-                        label = stringResource(R.string.home_menu_voice),
-                        icon = Icons.Filled.Mic,
-                        size = AddFoodTileSize.Compact,
-                        modifier = Modifier.weight(1f),
-                        onClick = onVoice,
-                    )
-                }
-                if (barcodeEnabled) {
-                    AddFoodActionTile(
-                        label = stringResource(R.string.home_menu_barcode),
-                        icon = Icons.Filled.QrCodeScanner,
-                        size = AddFoodTileSize.Compact,
-                        modifier = Modifier.weight(1f),
-                        onClick = onBarcode,
-                    )
-                }
-                AddFoodActionTile(
-                    label = stringResource(R.string.home_menu_manual_entry),
-                    icon = Icons.Filled.DriveFileRenameOutline,
-                    size = AddFoodTileSize.Compact,
-                    modifier = Modifier.weight(1f),
-                    onClick = onManual,
-                )
-                AddFoodActionTile(
-                    label = stringResource(R.string.home_menu_copy_from_day),
-                    icon = Icons.Filled.CalendarMonth,
-                    size = AddFoodTileSize.Compact,
-                    modifier = Modifier.weight(1f),
-                    onClick = onCopyFromDay,
-                )
-            }
-            if (GroundedEntryFeature.ENABLED) {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    AddFoodActionTile(
-                        label = stringResource(R.string.home_menu_grounded),
-                        icon = Icons.Filled.Science,
-                        size = AddFoodTileSize.Compact,
-                        modifier = Modifier.weight(1f),
-                        onClick = onGrounded,
-                    )
-                    AddFoodActionTile(
-                        label = stringResource(R.string.home_menu_search_food),
-                        icon = Icons.Filled.Search,
-                        size = AddFoodTileSize.Compact,
-                        modifier = Modifier.weight(1f),
-                        onClick = onSearch,
-                    )
-                    AddFoodActionTile(
-                        label = stringResource(R.string.home_menu_manual_active),
-                        icon = Icons.AutoMirrored.Filled.DirectionsRun,
-                        size = AddFoodTileSize.Compact,
-                        modifier = Modifier.weight(1f),
-                        onClick = onManualActive,
-                    )
-                    if (aiFeaturesEnabled) {
-                        AddFoodActionTile(
-                            label = if (queuePendingCount > 0) {
-                                stringResource(R.string.analysis_queue_tile_label_count, queuePendingCount)
-                            } else {
-                                stringResource(R.string.analysis_queue_tile_label)
-                            },
-                            icon = Icons.Filled.Schedule,
-                            size = AddFoodTileSize.Compact,
-                            modifier = Modifier.weight(1f),
-                            onClick = onQueue,
-                        )
-                    }
-                }
+        // One pane, two data sources, one reserved height. Showing the saved
+        // meals here rather than a shorter hub means the sheet is already the
+        // size the search results need, so the first keystroke swaps the rows
+        // without resizing the sheet and shoving the input field upward.
+        AddFoodSuggestionList(
+            suggestions = if (searching) suggestions else savedRows,
+            networkPending = suggestionsNetworkPending,
+            searching = searching,
+            listIdentity = if (searching) "search" else savedTab,
+            sheetState = sheetState,
+            // Takes the space the fixed-height rows above and below leave over.
+            modifier = if (fixedPaneHeight == null) {
+                Modifier.weight(1f)
             } else {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    AddFoodActionTile(
-                        label = stringResource(R.string.home_menu_search_food),
-                        icon = Icons.Filled.Search,
-                        size = AddFoodTileSize.Compact,
-                        modifier = Modifier.weight(1f),
-                        onClick = onSearch,
-                    )
-                    AddFoodActionTile(
-                        label = stringResource(R.string.home_menu_manual_active),
-                        icon = Icons.AutoMirrored.Filled.DirectionsRun,
-                        size = AddFoodTileSize.Compact,
-                        modifier = Modifier.weight(1f),
-                        onClick = onManualActive,
-                    )
-                    if (aiFeaturesEnabled) {
-                        AddFoodActionTile(
-                            label = if (queuePendingCount > 0) {
-                                stringResource(R.string.analysis_queue_tile_label_count, queuePendingCount)
-                            } else {
-                                stringResource(R.string.analysis_queue_tile_label)
-                            },
-                            icon = Icons.Filled.Schedule,
-                            size = AddFoodTileSize.Compact,
-                            modifier = Modifier.weight(1f),
-                            onClick = onQueue,
-                        )
-                    }
-                }
-            }
-        }
-        AddFoodSavedMealsHeading(onClick = onSavedRecents)
-        if (!relogRows.isEmpty || relogLoading) {
-            if (!relogRows.isEmpty) {
-                Column(
-                    Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    if (relogRows.recents.isNotEmpty()) {
-                        AddFoodRelogRow(
-                            entries = relogRows.recents,
-                            onRelog = onRelogRecent,
-                            onReview = onReviewRecent,
-                        )
-                    }
-                    if (relogRows.frequents.isNotEmpty()) {
-                        AddFoodRelogRow(
-                            entries = relogRows.frequents,
-                            onRelog = onRelogRecent,
-                            onReview = onReviewRecent,
-                        )
-                    }
-                }
-            } else {
-                AddFoodRelogPlaceholder()
-            }
-            Spacer(Modifier.height(14.dp))
-        }
-        Spacer(Modifier.height(8.dp))
+                Modifier.height(fixedPaneHeight)
+            },
+            onPick = onPickSuggestion,
+            onReview = onReviewSuggestion,
+        )
+
+        // Nothing below the pane unless a tracker is actually switched on.
+        // The scroll column used to emit its spacers regardless, which left a
+        // dead strip along the bottom of the sheet once More options moved out
+        // of here and into the pill row.
         val enabledTrackerCount = listOf(
             waterTrackingEnabled,
             nicotineTrackingEnabled,
             caffeineTrackingEnabled,
             fastingEnabled,
         ).count { it }
-        if (enabledTrackerCount > 0) {
-            var trackersExpanded by rememberSaveable { mutableStateOf(enabledTrackerCount <= 2) }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 48.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .clickable(
-                        onClick = { trackersExpanded = !trackersExpanded },
-                        role = Role.Button,
-                    )
-                    .semantics {
-                        stateDescription = if (trackersExpanded) expandedLabel else collapsedLabel
-                    }
-                    .padding(vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    stringResource(R.string.add_food_trackers_section),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                    modifier = Modifier.weight(1f),
-                )
-                Icon(
-                    if (trackersExpanded) Icons.Filled.KeyboardArrowDown
-                    else Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                )
-            }
-            AnimatedVisibility(
-                visible = trackersExpanded,
-                enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
-                exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f)),
-            ) {
-                Column {
-                    if (waterTrackingEnabled) {
-                        Spacer(Modifier.height(12.dp))
-                        AddFoodWaterQuickRow(
-                            presetsMl = waterQuickPresetsMl,
-                            useMetric = waterUseMetric,
-                            onWater = onWater,
-                            onWaterCustom = onWaterCustom,
-                        )
-                    }
-                    if (nicotineTrackingEnabled) {
-                        Spacer(Modifier.height(12.dp))
-                        AddFoodNicotineQuickRow(
-                            quickKinds = nicotineQuickKinds,
-                            onNicotine = onNicotine,
-                            onNicotineCustom = onNicotineCustom,
-                        )
-                    }
-                    if (caffeineTrackingEnabled) {
-                        Spacer(Modifier.height(12.dp))
-                        AddFoodCaffeineQuickRow(
-                            quickKinds = caffeineQuickKinds,
-                            onCaffeine = onCaffeine,
-                            onCaffeineCustom = onCaffeineCustom,
-                        )
-                    }
-                    if (fastingEnabled) {
-                        Spacer(Modifier.height(12.dp))
-                        FastingHubControl(
-                            phase = fastingPhase,
-                            fastHours = fastingGoalHours,
-                            eatHours = fastingEatHours,
-                            fastElapsedMillis = fastingElapsedMillis,
-                            eatElapsedMillis = fastingEatingElapsedMillis,
-                            goalReached = fastingGoalReached,
-                            autoStarted = fastingAutoStarted,
-                            nextFastStartMillis = fastingNextFastStartMillis,
-                            nowMillis = fastingNowMillis,
-                            autoMode = fastingAutoWindows,
-                            onStart = onStartFast,
-                            onStop = onStopFast,
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
+        if (enabledTrackerCount == 0) return@Column
+        // The trackers stay rendered in both states. They sit below a
+        // fixed-height results pane so they can never push results around, and
+        // keeping them is what makes the two states the same total height.
+        Spacer(Modifier.height(10.dp))
 
-@Composable
-private fun AddFoodSavedMealsHeading(onClick: () -> Unit) {
-    val cd = stringResource(R.string.cd_open_logged_foods)
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(min = 48.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick, role = Role.Button)
-            .padding(vertical = 6.dp)
-            .semantics { contentDescription = cd },
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(Modifier.weight(1f)) {
+        // Tracker content scrolls on its own. Device pass #2 (2026-08-24):
+        // the trackers outgrow the sheet on shorter screens, so this column has
+        // to scroll; like TextInputSheet it blocks drag-from-content dismissal
+        // (handle/scrim still dismiss). The scroller lives here rather than on
+        // the outer column so the search branch can host a lazy list.
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .verticalScroll(scrollState)
+                .blockSheetDragAtScrollEdges(scrollState)
+        ) {
+        // Four trackers at once bury the results pane, so the section folds.
+        // Two or fewer start open: at that size the rows are the reason the
+        // user pulled the sheet up, and hiding them costs a tap for nothing.
+        var trackersExpanded by rememberSaveable { mutableStateOf(enabledTrackerCount <= 2) }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .clickable(
+                    onClick = { trackersExpanded = !trackersExpanded },
+                    role = Role.Button,
+                )
+                .semantics {
+                    stateDescription = if (trackersExpanded) expandedLabel else collapsedLabel
+                }
+                .padding(vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Text(
-                stringResource(R.string.home_menu_saved_meals),
+                stringResource(R.string.add_food_trackers_section),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Text(
-                stringResource(R.string.add_food_saved_meals_sub),
-                fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                modifier = Modifier.weight(1f),
+            )
+            Icon(
+                if (trackersExpanded) Icons.Filled.KeyboardArrowDown
+                else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             )
         }
-        Icon(
-            Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = null,
-            tint = AppColors.Calorie,
-        )
-    }
-}
-
-@Composable
-private fun AddFoodRelogPlaceholder() {
-    val fill = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        repeat(2) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                repeat(5) {
-                    Box(
-                        Modifier
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(fill)
-                            .size(width = 96.dp, height = 36.dp),
+        AnimatedVisibility(
+            visible = trackersExpanded,
+            enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
+            exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f)),
+        ) {
+            Column {
+                if (waterTrackingEnabled) {
+                    Spacer(Modifier.height(12.dp))
+                    AddFoodWaterQuickRow(
+                        presetsMl = waterQuickPresetsMl,
+                        useMetric = waterUseMetric,
+                        onWater = onWater,
+                        onWaterCustom = onWaterCustom,
+                    )
+                }
+                if (nicotineTrackingEnabled) {
+                    Spacer(Modifier.height(12.dp))
+                    AddFoodNicotineQuickRow(
+                        quickKinds = nicotineQuickKinds,
+                        onNicotine = onNicotine,
+                        onNicotineCustom = onNicotineCustom,
+                    )
+                }
+                if (caffeineTrackingEnabled) {
+                    Spacer(Modifier.height(12.dp))
+                    AddFoodCaffeineQuickRow(
+                        quickKinds = caffeineQuickKinds,
+                        onCaffeine = onCaffeine,
+                        onCaffeineCustom = onCaffeineCustom,
+                    )
+                }
+                if (fastingEnabled) {
+                    Spacer(Modifier.height(12.dp))
+                    FastingHubControl(
+                        phase = fastingPhase,
+                        fastHours = fastingGoalHours,
+                        eatHours = fastingEatHours,
+                        fastElapsedMillis = fastingElapsedMillis,
+                        eatElapsedMillis = fastingEatingElapsedMillis,
+                        goalReached = fastingGoalReached,
+                        autoStarted = fastingAutoStarted,
+                        nextFastStartMillis = fastingNextFastStartMillis,
+                        nowMillis = fastingNowMillis,
+                        autoMode = fastingAutoWindows,
+                        onStart = onStartFast,
+                        onStop = onStopFast,
                     )
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun AddFoodRelogRow(
-    entries: List<FoodEntry>,
-    onRelog: (FoodEntry) -> Unit,
-    onReview: (FoodEntry) -> Unit,
-) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        entries.forEach { entry ->
-            AddFoodRelogChip(
-                entry = entry,
-                onRelog = { onRelog(entry) },
-                onReview = { onReview(entry) },
-            )
         }
-    }
-}
-
-@Composable
-private fun AddFoodRelogChip(
-    entry: FoodEntry,
-    onRelog: () -> Unit,
-    onReview: () -> Unit,
-) {
-    val isDark = isDarkTheme()
-    val shape = RoundedCornerShape(20.dp)
-    val fill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
-    val border = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
-    Row(
-        Modifier
-            .clip(shape)
-            .background(fill)
-            .border(0.5.dp, border, shape)
-            .combinedClickable(
-                // No ripple (the chip is a tinted surface, not a button) but
-                // click + long-press semantics so TalkBack can activate and
-                // discover the review action.
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onRelog,
-                onLongClick = onReview,
-            )
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        Text(
-            entry.emoji ?: "🍽",
-            style = MaterialTheme.typography.bodyMedium,
-        )
-        Column(Modifier.widthIn(max = 140.dp)) {
-            Text(
-                entry.name,
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Text(
-                mealLabel(entry.mealType),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Text(
-                stringResource(R.string.add_food_relog_kcal, entry.calories),
-                style = MaterialTheme.typography.labelSmall,
-                color = AppColors.Calorie,
-                maxLines = 1,
-            )
-        }
-        Icon(
-            Icons.Filled.Add,
-            contentDescription = stringResource(R.string.cd_relog_meal, entry.name),
-            tint = AppColors.Calorie,
-            modifier = Modifier.size(16.dp),
-        )
     }
 }
 
@@ -863,10 +717,17 @@ private fun AddFoodCaffeineQuickRow(
 }
 
 /** Home with a static add-food sheet overlay for release screenshots (no ModalBottomSheet). */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HomeAddFoodScreenshotContent(
     ui: HomeUiState,
     weekStartsOnMonday: Boolean = true,
+    savedRows: List<FoodSuggestion> = emptyList(),
+    /** Screenshot host wraps its content, so the pane needs a concrete height. */
+    fixedPaneHeight: Dp = 320.dp,
+    /** Non-blank renders the search state instead of the zero-query tabs. */
+    query: String = "",
+    suggestions: List<FoodSuggestion> = emptyList(),
 ) {
     Box(Modifier.fillMaxSize()) {
         HomeScreenPreviewContent(ui = ui, weekStartsOnMonday = weekStartsOnMonday)
@@ -882,94 +743,12 @@ internal fun HomeAddFoodScreenshotContent(
             shape = MaterialTheme.shapes.extraLarge,
             color = MaterialTheme.colorScheme.surfaceContainerLow,
         ) {
-            AddFoodSheetContent()
-        }
-    }
-}
-
-@Composable
-private fun AddFoodActionTile(
-    label: String,
-    icon: ImageVector,
-    size: AddFoodTileSize,
-    modifier: Modifier = Modifier,
-    subtitle: String? = null,
-    emphasis: Boolean = false,
-    onClick: () -> Unit
-) {
-    val isHero = size == AddFoodTileSize.Hero
-    val shape = if (isHero) MaterialTheme.shapes.large else MaterialTheme.shapes.medium
-    val bubbleSize = when {
-        isHero && emphasis -> 26.dp
-        isHero -> 22.dp
-        else -> 20.dp
-    }
-    val iconSize = when {
-        isHero && emphasis -> 16.dp
-        isHero -> 14.dp
-        else -> 12.dp
-    }
-    Column(
-        modifier
-            .height(if (isHero) 108.dp else 72.dp)
-            .clip(shape)
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-            .clickable(onClick = onClick)
-            .padding(
-                horizontal = if (isHero) 10.dp else 8.dp,
-                vertical = if (isHero) 10.dp else 8.dp
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        FudIconBubble(
-            icon = icon,
-            size = bubbleSize,
-            iconSize = iconSize,
-            tint = AppColors.Calorie
-        )
-        Spacer(Modifier.height(if (isHero) 8.dp else 4.dp))
-        if (isHero) {
-            Text(
-                label,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.Center
+            AddFoodSheetContent(
+                savedRows = savedRows,
+                fixedPaneHeight = fixedPaneHeight,
+                query = query,
+                suggestions = suggestions,
             )
-            Spacer(Modifier.height(2.dp))
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(32.dp),
-                contentAlignment = Alignment.TopCenter
-            ) {
-                Text(
-                    subtitle.orEmpty(),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center
-                )
-            }
-        } else {
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(32.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    label,
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center
-                )
-            }
         }
     }
 }

@@ -924,9 +924,6 @@
     <string name="export_sync_title">Exportă JSON de sincronizare</string>
     <string name="export_to">Până la</string>
     <string name="finish_onboarding_hint">Finalizează mai întâi onboarding-ul pentru a compara această masă cu obiectivele tale zilnice.</string>
-    <string name="food_search_empty">Scrie pentru a căuta alimente ambalate și generice</string>
-    <string name="food_search_hint">Alimente ambalate din Open Food Facts, plus baze de date USDA și elvețiene offline. Rezultatele au o insignă de sursă.</string>
-    <string name="food_search_no_results">Niciun aliment găsit. Încearcă alt nume.</string>
     <string name="food_search_placeholder">ex.: iaurt grecesc, lapte, quark</string>
     <string name="food_search_sheet_title">Caută în bazele de date alimentare</string>
     <string name="food_search_source_swiss">Elvețian</string>
@@ -999,7 +996,6 @@
     <string name="home_menu_copy_from_day">Copiază din ziua</string>
     <string name="home_menu_from_photos_note">Din foto + notă</string>
     <string name="home_menu_grounded">Fundamentat</string>
-    <string name="home_menu_search_food">Caută aliment</string>
     <string name="home_nutrient_cards">Carduri de nutrienți pe principal</string>
     <string name="home_nutrients">Nutrienți pe principal</string>
     <string name="home_nutrients_pick_count">Alege până la %1$d nutrienți pentru ecranul principal.</string>

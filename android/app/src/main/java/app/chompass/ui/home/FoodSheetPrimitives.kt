@@ -58,6 +58,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
@@ -738,6 +739,8 @@ internal fun SheetGlassDropdownMenu(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     menuWidth: Dp? = null,
+    /** Shift from the anchor's start edge — used to centre a menu on its anchor. */
+    offset: DpOffset = DpOffset(0.dp, 0.dp),
     content: @Composable ColumnScope.() -> Unit
 ) {
     val shape = RoundedCornerShape(AppRadii.Container)
@@ -749,6 +752,7 @@ internal fun SheetGlassDropdownMenu(
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
+        offset = offset,
         shape = shape,
         containerColor = menuContainer,
         tonalElevation = 0.dp,

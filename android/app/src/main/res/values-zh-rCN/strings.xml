@@ -933,9 +933,6 @@
     <string name="export_sync_title">导出同步 JSON</string>
     <string name="export_to">至</string>
     <string name="finish_onboarding_hint">请先完成引导，才能将此餐与你的每日目标比较。</string>
-    <string name="food_search_empty">输入以搜索包装食品和通用食物</string>
-    <string name="food_search_hint">Open Food Facts 的包装食品，以及离线 USDA 和瑞士数据库。结果带有来源徽标。</string>
-    <string name="food_search_no_results">未找到食物，请尝试其他名称。</string>
     <string name="food_search_placeholder">例如 希腊酸奶、牛奶、夸克奶酪</string>
     <string name="food_search_sheet_title">搜索食物数据库</string>
     <string name="food_search_source_swiss">瑞士</string>
@@ -1008,7 +1005,6 @@
     <string name="home_menu_copy_from_day">从某天复制</string>
     <string name="home_menu_from_photos_note">从照片 + 备注</string>
     <string name="home_menu_grounded">有据</string>
-    <string name="home_menu_search_food">搜索食物</string>
     <string name="home_nutrient_cards">主页营养素卡片</string>
     <string name="home_nutrients">主页营养素</string>
     <string name="home_nutrients_pick_count">为主页选择最多 %1$d 种营养素。</string>

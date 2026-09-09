@@ -921,9 +921,6 @@
     <string name="export_sync_title">Exportar JSON de sincronização</string>
     <string name="export_to">Até</string>
     <string name="finish_onboarding_hint">Conclua primeiro a integração para comparar esta refeição com suas metas diárias.</string>
-    <string name="food_search_empty">Digite para buscar alimentos embalados e genéricos</string>
-    <string name="food_search_hint">Alimentos embalados do Open Food Facts, mais bancos de dados USDA e suíços offline. Os resultados mostram um selo de origem.</string>
-    <string name="food_search_no_results">Nenhum alimento encontrado. Tente outro nome.</string>
     <string name="food_search_placeholder">ex.: iogurte grego, leite, quark</string>
     <string name="food_search_sheet_title">Buscar em bancos de alimentos</string>
     <string name="food_search_source_swiss">Suíço</string>
@@ -996,7 +993,6 @@
     <string name="home_menu_copy_from_day">Copiar do dia</string>
     <string name="home_menu_from_photos_note">De fotos + nota</string>
     <string name="home_menu_grounded">Fundamentado</string>
-    <string name="home_menu_search_food">Buscar alimento</string>
     <string name="home_nutrient_cards">Cartões de nutrientes da Home</string>
     <string name="home_nutrients">Nutrientes da Home</string>
     <string name="home_nutrients_pick_count">Escolha até %1$d nutrientes para a tela inicial.</string>

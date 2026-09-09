@@ -184,16 +184,24 @@ fun rememberChompassSheetState(
     busy: Boolean = false,
     positionalThreshold: Dp = 120.dp,
     velocityThreshold: Dp = 1200.dp,
+    /**
+     * False keeps the half-height anchor, so the sheet can animate between two
+     * heights on its own (`expand()` / `partialExpand()`). Sheets that grow do
+     * this instead of animating their content height: M3 derives its anchors
+     * from content size and settles to them, so a growing body lags the sheet
+     * and then snaps at the end.
+     */
+    skipPartiallyExpanded: Boolean = true,
 ): SheetState {
     // SheetState keeps the confirmValueChange from first remember; always read
     // the latest busy flag via rememberUpdatedState.
     val busyState = rememberUpdatedState(busy)
     val density = LocalDensity.current
-    return remember(busyState, density, positionalThreshold, velocityThreshold) {
+    return remember(busyState, density, positionalThreshold, velocityThreshold, skipPartiallyExpanded) {
         // rememberSheetState is internal in m3 1.4; the public SheetState
         // constructor takes the thresholds as px lambdas (dp converted here).
         SheetState(
-            skipPartiallyExpanded = true,
+            skipPartiallyExpanded = skipPartiallyExpanded,
             positionalThreshold = { with(density) { positionalThreshold.toPx() } },
             velocityThreshold = { with(density) { velocityThreshold.toPx() } },
             initialValue = SheetValue.Hidden,
