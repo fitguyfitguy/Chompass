@@ -319,13 +319,16 @@ internal fun AddFoodSheetContent(
             // never move. Everything inside divides this space up; nothing
             // changes the total.
             .then(if (fixedPaneHeight == null) Modifier.fillMaxHeight() else Modifier)
-            // Bottom padding but no navigationBarsPadding: the content keeps a
-            // margin of its own while still drawing under the system navigation
-            // bar. imePadding stays, because the keyboard must not cover the
-            // field it is typing into.
+            // No bottom padding and no navigationBarsPadding: the content runs
+            // to the bottom edge and draws under the system navigation bar, so
+            // the pane is never shortened by a margin the user cannot see past.
+            // The breathing room lives at the end of the scrolling content
+            // instead (ADD_FOOD_BOTTOM_SPACE), where it is only reached by
+            // scrolling all the way down. imePadding stays, because the
+            // keyboard must not cover the field it is typing into.
             .imePadding()
             .padding(horizontal = 20.dp)
-            .padding(top = 4.dp, bottom = 20.dp)
+            .padding(top = 4.dp)
     ) {
         Text(
             stringResource(R.string.add_food_sheet_title),
@@ -392,6 +395,17 @@ internal fun AddFoodSheetContent(
             }
         }
 
+        // Whether anything is rendered below the pane decides who carries the
+        // trailing space: the list when it is the last thing in the sheet, the
+        // tracker scroller when that is.
+        val enabledTrackerCount = listOf(
+            waterTrackingEnabled,
+            nicotineTrackingEnabled,
+            caffeineTrackingEnabled,
+            fastingEnabled,
+        ).count { it }
+        val hasTrackers = enabledTrackerCount > 0
+
         // One pane, two data sources, one reserved height. Showing the saved
         // meals here rather than a shorter hub means the sheet is already the
         // size the search results need, so the first keystroke swaps the rows
@@ -405,6 +419,7 @@ internal fun AddFoodSheetContent(
             // gesture or it reads that as the user collapsing the sheet.
             listIdentity = if (searching) query else savedTab,
             sheetState = sheetState,
+            bottomSpace = if (hasTrackers) 0.dp else ADD_FOOD_BOTTOM_SPACE,
             // Takes the space the fixed-height rows above and below leave over.
             modifier = if (fixedPaneHeight == null) {
                 Modifier.weight(1f)
@@ -419,13 +434,7 @@ internal fun AddFoodSheetContent(
         // The scroll column used to emit its spacers regardless, which left a
         // dead strip along the bottom of the sheet once More options moved out
         // of here and into the pill row.
-        val enabledTrackerCount = listOf(
-            waterTrackingEnabled,
-            nicotineTrackingEnabled,
-            caffeineTrackingEnabled,
-            fastingEnabled,
-        ).count { it }
-        if (enabledTrackerCount == 0) return@Column
+        if (!hasTrackers) return@Column
         // The trackers stay rendered in both states. They sit below a
         // fixed-height results pane so they can never push results around, and
         // keeping them is what makes the two states the same total height.
@@ -525,9 +534,21 @@ internal fun AddFoodSheetContent(
                 }
             }
         }
+        // Same trailing space the suggestion pane carries when nothing follows
+        // it: inside the scroller, so it is reached by scrolling to the end
+        // rather than shortening the visible tracker area.
+        Spacer(Modifier.height(ADD_FOOD_BOTTOM_SPACE))
         }
     }
 }
+
+/**
+ * Breathing room below the last row of whichever part of the sheet scrolls.
+ * The sheet draws under the system navigation bar, so this is what keeps the
+ * final row clear of it — but only once the user has scrolled that far, rather
+ * than costing the pane the same height at every scroll position.
+ */
+private val ADD_FOOD_BOTTOM_SPACE = 60.dp
 
 @Composable
 private fun AddFoodWaterQuickRow(
