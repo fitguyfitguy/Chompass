@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Chompass demo</title>
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="./fonts/fonts.css" />
+    <link rel="stylesheet" href="./css/main.css" />
+    <style>
+      /* Demo shell: same viewport rules as the real app shell, plus a wide
+       content column so the home (ring, macros, cards) fills the 620px hero
+       canvas exactly like the full-width sheets. The hero camera crops the
+       app; no scrollbars inside the phone.
+       Base font is bumped ~12% so the hero-crop rest view (camera at rest
+       frames the home top region) keeps readable text on wide and mobile
+       stages; --content-max is re-scaled so the column stays 620px. */
+      :root {
+        --content-max: 34.6rem;
+      }
+      html {
+        font-size: 112%;
+        scrollbar-width: none;
+      }
+      body {
+        background: #0f0e13;
+      }
+      html::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+    <!-- Must run before the module graph: db.js switches to the throwaway
+       "chompass-pwa-demo" database when this flag is set. The demo hero is a
+       dark stage, so pin the dark app theme regardless of OS preference. -->
+    <script>
+      document.documentElement.dataset.theme = "dark";
+      window.CHOMPASS_DEMO = true;
+    </script>
+    <!-- Demo diagnostics (Phase 0): forward fatal errors to the parent hero so
+       a failure is visible instead of a silent stuck stage, and (only with
+       ?debug=1) trace lifecycle events that distinguish a document reload
+       from a frozen / bfcache-restored frame — the missing evidence for the
+       open Firefox reload bug (docs/DEMO_HERO_FIREFOX.md). -->
+    <script>
+      (function () {
+        var debug = new URLSearchParams(location.search).has("debug");
+        function diagLog() {
+          if (!debug) return;
+          var args = Array.prototype.slice.call(arguments);
+          args.unshift("[demo-diag]");
+          (console.log || function () {}).apply(console, args);
+        }
+        function forward(kind, message) {
+          try {
+            parent.postMessage(
+              { source: "chompass-hero", type: kind, message: message, ts: Math.round(performance.now()) },
+              "*",
+            );
+          } catch (e) {
+            /* cross-origin or no parent — ignore */
+          }
+        }
+        window.addEventListener("error", function (ev) {
+          forward("error", "error: " + (ev.message || ev.error || "unknown error"));
+        });
+        window.addEventListener("unhandledrejection", function (ev) {
+          var reason = ev.reason;
+          var msg = reason && reason.message ? reason.message : String(reason);
+          forward("error", "unhandled rejection: " + msg);
+        });
+        ["pagehide", "pageshow", "visibilitychange"].forEach(function (name) {
+          window.addEventListener(name, function (ev) {
+            var extra =
+              name === "pagehide" || name === "pageshow"
+                ? " persisted=" + ev.persisted
+                : " hidden=" + document.hidden;
+            diagLog("lifecycle " + name + extra + " ts=" + Math.round(performance.now()));
+          });
+        });
+        window.__demoDiag = { debug: debug, forward: forward, log: diagLog };
+      })();
+    </script>
+  </head>
+  <body>
+    <main id="view" class="view"></main>
+
+    <!-- Bottom nav mirrors web/app/index.html; decorative in the demo
+         (Coach/Settings are not imported — their routes fall back home). -->
+    <nav class="bottom-nav" aria-label="Primary" id="bottom-nav">
+      <a href="#/home">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+        </svg>
+        Home
+      </a>
+      <a href="#/progress">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"
+          />
+        </svg>
+        Progress
+      </a>
+      <a href="#/coach">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"
+          />
+        </svg>
+        Coach
+      </a>
+      <a href="#/settings">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.07.63-.07.94s.02.63.07.94L2.86 14.5a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"
+          />
+        </svg>
+        Settings
+      </a>
+    </nav>
+
+    <!-- Version-aware module entry: demo.html loads with ?v=<site version>
+       (see website/layouts/index.html). Pass it down so the entry module is
+       cache-busted in lockstep with the page; inner imports revalidate by
+       ETag (Codeberg Pages: max-age=60, stale-while-revalidate=3600). -->
+    <script type="module">
+      const v = new URLSearchParams(location.search).get("v") || "dev";
+      await import(`./src/demo/demo-main.js?v=${encodeURIComponent(v)}`);
+    </script>
+  </body>
+</html>

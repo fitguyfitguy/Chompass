@@ -1,0 +1,1304 @@
+// @ts-check
+import { captureRerender } from "../lib/ui/rerender.js";
+import { foodEntries, prefs } from "../lib/db.js";
+import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
+import { openConfirm } from "../lib/ui/dialog.js";
+import { guessMealTypeFromPrefs } from "../lib/meal-schedule.js";
+import { toggleFavorite, isFavorite, listFavorites, updateFavorite, favoriteNameTaken } from "../lib/saved-meals.js";
+import {
+  ensureServingUnits,
+  pickerOptions,
+  optionMatching,
+  isGramUnit,
+  parseQuantity,
+  formatQuantity,
+  formatGramsDisplay,
+  scaleNutrition,
+  heuristicOptions,
+  normalizedOptions,
+  displayUnit,
+  optionId,
+  applyQuantityInput,
+  isQuantityExpression,
+} from "../lib/chompass-core/serving-units.js";
+import {
+  scaleAllConstituents,
+  commitConstituentDisplayEdit,
+} from "../lib/chompass-core/constituents.js";
+import {
+  ALL_MICRO_KEYS,
+  NUTRITION_DETAIL_MICROS,
+  nutrientGoal,
+  nutritionGoalPercent,
+} from "../lib/home-nutrients.js";
+import { ANALYSIS_PHASE, isAbortError } from "../lib/ai/analysis-phase.js";
+// The real AI request stack (food-analyze, key-storage, correct-diff) is
+// imported dynamically in onCorrectWithAi — the demo hero's review sheet
+// never triggers it. See demo/demo-main.js.
+import { progressiveCardHtml } from "../lib/ui/analyze-overlay.js";
+import { t } from "../lib/i18n/index.js";
+
+function culinaryUnitLabels() {
+  return {
+    cup: [t("unit.cup"), t("unit.cup_plural")],
+    tbsp: [t("unit.tbsp"), t("unit.tbsp")],
+    tsp: [t("unit.tsp"), t("unit.tsp")],
+  };
+}
+import {
+  addToProgressiveMeal,
+  hasProgressiveMealItems,
+} from "../lib/progressive-meal.js";
+import { escapeHtml, escapeAttr } from "../lib/ui/html.js";
+import { todayIso } from "../lib/date.js";
+
+/**
+ * Collapsible Open Food Facts product-information card for barcode entries
+ * (package size, scores, allergens, labels, ingredients + attribution).
+ * Rows mirror the Android FoodProductMetadataCard.
+ * @param {Record<string, any>} meta
+ */
+function offDetailsCard(meta) {
+  /** @param {string} key @param {string} value */
+  const row = (key, value) =>
+    `<div class="entry-off-row"><span>${escapeHtml(t(key))}</span><strong>${escapeHtml(value)}</strong></div>`;
+  const rows = [
+    meta.barcode ? row("product.barcode", String(meta.barcode)) : "",
+    meta.packageQuantity ? row("product.package", String(meta.packageQuantity)) : "",
+    meta.nutriScore ? row("product.nutriScore", String(meta.nutriScore)) : "",
+    meta.novaGroup != null ? row("product.novaGroup", String(meta.novaGroup)) : "",
+    meta.ecoScore ? row("product.ecoScore", String(meta.ecoScore)) : "",
+    meta.allergens?.length ? row("product.allergens", meta.allergens.join(", ")) : "",
+    meta.traces?.length ? row("product.mayContain", meta.traces.join(", ")) : "",
+    meta.labels?.length ? row("product.labels", meta.labels.join(", ")) : "",
+    meta.categories?.length ? row("product.categories", meta.categories.join(", ")) : "",
+  ].join("");
+  return `
+    <details class="micros-details entry-off-details">
+      <summary>${escapeHtml(t("product.information"))}</summary>
+      <div class="entry-off-card">
+        ${rows}
+        ${
+          meta.ingredientsText
+            ? `<div class="entry-off-ingredients"><span>${escapeHtml(t("product.ingredientLabel"))}</span><p>${escapeHtml(meta.ingredientsText)}</p></div>`
+            : ""
+        }
+        <a class="entry-off-attribution" href="https://world.openfoodfacts.org/product/${encodeURIComponent(String(meta.barcode ?? ""))}" target="_blank" rel="noopener noreferrer">${escapeHtml(t("product.attribution"))}</a>
+      </div>
+    </details>`;
+}
+
+const MICRO_FIELDS = [
+  ["sugarG", "entry.micro.sugar_g"],
+  ["addedSugarG", "entry.micro.added_sugar_g"],
+  ["saturatedFatG", "entry.micro.sat_fat_g"],
+  ["monounsaturatedFatG", "entry.micro.mono_fat_g"],
+  ["polyunsaturatedFatG", "entry.micro.poly_fat_g"],
+  ["transFatG", "entry.micro.trans_fat_g"],
+  ["cholesterolMg", "entry.micro.cholesterol_mg"],
+  ["sodiumMg", "entry.micro.sodium_mg"],
+  ["potassiumMg", "entry.micro.potassium_mg"],
+  ["calciumMg", "entry.micro.calcium_mg"],
+  ["ironMg", "entry.micro.iron_mg"],
+  ["magnesiumMg", "entry.micro.magnesium_mg"],
+  ["zincMg", "entry.micro.zinc_mg"],
+  ["vitaminAMcg", "entry.micro.vitamin_a_mcg"],
+  ["vitaminCMg", "entry.micro.vitamin_c_mg"],
+  ["vitaminDMcg", "entry.micro.vitamin_d_mcg"],
+  ["vitaminB12Mcg", "entry.micro.vitamin_b12_mcg"],
+  ["vitaminEMg", "entry.micro.vitamin_e_mg"],
+  ["vitaminKMcg", "entry.micro.vitamin_k_mcg"],
+  ["folateMcg", "entry.micro.folate_mcg"],
+  ["omega3G", "entry.micro.omega3_g"],
+  ["caffeineMg", "entry.micro.caffeine_mg"],
+];
+
+const NUTRITION_KEYS = ["calories", "proteinG", "carbsG", "fatG", "fiberG", ...ALL_MICRO_KEYS.filter((k) => k !== "fiberG")];
+
+/** Manual food entry review/edit form. Also the landing spot for AI/barcode
+ * prefill — those flows populate the same fields; the user always confirms
+ * before save (never auto-committed). Section order mirrors Android FoodResultSheet. */
+export class EntryForm extends HTMLElement {
+  connectedCallback() {
+    const params = new URLSearchParams(location.hash.split("?")[1] ?? "");
+    this.date = params.get("date") ?? todayIso();
+    this.fromSaved = params.get("fromSaved") === "1";
+    // Codeberg #66: #/entry/favorite/<id> edits a stored favorite (saved-foods
+    // library) instead of a diary row. Parsed first so the plain entry regex
+    // doesn't swallow "favorite/<id>" as an entry id.
+    this.favoriteId = location.hash.match(/#\/entry\/favorite\/([^/?]+)/)?.[1] ?? null;
+    this.favoriteMode = Boolean(this.favoriteId);
+    this.entryId = this.favoriteId
+      ? null
+      : (location.hash.match(/#\/entry\/([^/?]+)/)?.[1] ?? null);
+    this.existing = null;
+    this.prefill = null;
+    this.nameError = "";
+    this.nutritionLocked = false;
+    /** @type {Record<string, number|null>|null} */
+    this.baseNutrition = null;
+    this.baseGrams = 100;
+    /** @type {import('../lib/chompass-core/serving-units.js').ServingUnitOption[]} */
+    this.servingUnitOptions = [];
+    this.selectedServingUnit = "g";
+    this.quantityText = "100";
+    this.servingReady = false;
+    /** @type {import('../lib/chompass-core/models.js').FoodConstituent[]} */
+    this.constituents = [];
+    this.constituentsExpanded = false;
+    this.correctNote = "";
+    this.correcting = false;
+    /** @type {string|null} */
+    this.correctPhase = null;
+    /** @type {import('../lib/ai/partial-json.js').PartialFoodEstimate|null} */
+    this.correctPartial = null;
+    /** @type {{label: string, before: string, after: string}[]} */
+    this.correctDiff = [];
+    this.correctError = "";
+    /** @type {AbortController|null} */
+    this.correctAbort = null;
+    const prefillRaw = params.get("prefill");
+    if (prefillRaw && (!this.entryId || this.entryId === "new")) {
+      try {
+        // URLSearchParams already decodes. A second decodeURIComponent throws
+        // URIError on OFF metadata (percent bytes in traces/image URLs) and
+        // the form opens empty.
+        this.prefill = JSON.parse(prefillRaw);
+        this.nutritionLocked = Boolean(this.prefill?.source && this.prefill.source !== "manual");
+      } catch {
+        this.prefill = null;
+      }
+    }
+    this.render();
+  }
+
+  /**
+   * Snapshot base nutrition + serving state from a source entry/prefill.
+   * @param {Record<string, any>} e
+   */
+  initServingState(e) {
+    const ensured = ensureServingUnits({
+      name: e.name,
+      quantityG: e.quantityG,
+      servingUnitOptions: e.servingUnitOptions,
+      selectedServingUnit: e.selectedServingUnit,
+      selectedServingQuantity: e.selectedServingQuantity,
+    });
+    this.servingUnitOptions = ensured.servingUnitOptions;
+    this.selectedServingUnit = ensured.selectedServingUnit;
+    this.baseGrams = ensured.quantityG > 0 ? ensured.quantityG : 100;
+    this.quantityText = formatQuantity(
+      ensured.selectedServingQuantity != null && ensured.selectedServingQuantity > 0
+        ? ensured.selectedServingQuantity
+        : this.baseGrams / (optionMatching(this.selectedServingUnit, this.servingUnitOptions).gramsPerUnit || 1)
+    );
+    // Committed resolved serving grams — the source of truth that relative
+    // edits / expressions resolve against (mirrors Android servingGrams).
+    this.servingGrams = this.baseGrams;
+    /** @type {Record<string, number|null>} */
+    const base = {
+      calories: Number(e.calories ?? 0),
+      proteinG: Number(e.proteinG ?? 0),
+      carbsG: Number(e.carbsG ?? 0),
+      fatG: Number(e.fatG ?? 0),
+      fiberG: e.fiberG == null || e.fiberG === "" ? null : Number(e.fiberG),
+    };
+    for (const key of ALL_MICRO_KEYS) {
+      if (key === "fiberG") continue;
+      const v = e[key];
+      base[key] = v == null || v === "" ? null : Number(v);
+    }
+    this.baseNutrition = base;
+    this.constituents = cloneConstituents(e.constituents);
+    if (this.constituents.length > 0) this.constituentsExpanded = true;
+    this.servingReady = true;
+  }
+
+  /** Display-space constituent rows (scaled to current serving). */
+  displayConstituents() {
+    return scaleAllConstituents(this.constituents, this.currentScale());
+  }
+
+  currentServingGrams() {
+    // Committed resolved grams (updated on every quantity edit) are the
+    // source of truth; the fallback only covers the pre-initialisation state.
+    if (this.servingGrams != null && this.servingGrams > 0) return this.servingGrams;
+    const option = optionMatching(this.selectedServingUnit, this.servingUnitOptions);
+    const qty = parseQuantity(this.quantityText);
+    if (qty == null || qty <= 0) return this.baseGrams;
+    return qty * option.gramsPerUnit;
+  }
+
+  /**
+   * Resolve the current quantity text against the committed serving grams:
+   * deltas and expressions use the committed value as their base; plain
+   * numbers parse as-is. Mirrors Android ServingUnitOption.applyDeltaInput.
+   * @returns {number|null}
+   */
+  resolvedQuantity() {
+    const option = optionMatching(this.selectedServingUnit, this.servingUnitOptions);
+    const current = option.gramsPerUnit > 0 ? this.servingGrams / option.gramsPerUnit : this.servingGrams;
+    return applyQuantityInput(this.quantityText, current);
+  }
+
+  /**
+   * Apply a quantity-text edit: resolve against the committed grams, commit
+   * the resolved grams, refresh scale fields and the "=" preview. Deltas and
+   * expressions stay visible while typing and commit on blur (Android
+   * collapses deltas immediately; the PWA keeps them visible for parity of
+   * expression UX and to avoid mid-typing collapse swallowing digits).
+   * @param {string} text
+   * @returns {number|null}
+   */
+  applyQuantityText(text) {
+    this.quantityText = text;
+    const resolved = this.resolvedQuantity();
+    if (resolved != null && resolved > 0) {
+      const option = optionMatching(this.selectedServingUnit, this.servingUnitOptions);
+      this.servingGrams = resolved * option.gramsPerUnit;
+    }
+    this.applyScaleToNutritionFields();
+    this.updateQuantityPreview();
+    return resolved;
+  }
+
+  /** Live "= result" hint for pending deltas / expressions. */
+  updateQuantityPreview() {
+    const el = /** @type {HTMLElement|null} */ (this.querySelector("[data-qty-result]"));
+    if (!el) return;
+    const isDelta = /^[+\-−]/.test(this.quantityText.trim());
+    const resolved = this.resolvedQuantity();
+    if ((isQuantityExpression(this.quantityText) || isDelta) && resolved != null && resolved > 0) {
+      el.textContent = `= ${formatQuantity(resolved)}`;
+      el.hidden = false;
+    } else {
+      el.hidden = true;
+    }
+  }
+
+  /** Collapse a pending delta / expression to its resolved number on blur. */
+  commitQuantityExpression(qtyInput) {
+    const isDelta = /^[+\-−]/.test(this.quantityText.trim());
+    if (!isQuantityExpression(this.quantityText) && !isDelta) return;
+    const resolved = this.resolvedQuantity();
+    if (resolved == null || resolved <= 0) return;
+    const formatted = formatQuantity(resolved);
+    if (formatted === this.quantityText.trim()) return;
+    this.quantityText = formatted;
+    if (qtyInput) qtyInput.value = formatted;
+    this.applyScaleToNutritionFields();
+    this.updateQuantityPreview();
+  }
+
+  currentScale() {
+    return this.baseGrams > 0 ? this.currentServingGrams() / this.baseGrams : 1;
+  }
+
+  async render() {
+    const rr = captureRerender(this);
+    if (this.entryId && this.entryId !== "new" && !this.existing) {
+      const all = await foodEntries.byDate(this.date);
+      this.existing = all.find((e) => e.id === this.entryId) ?? null;
+    }
+    if (this.favoriteId && !this.existing) {
+      this.existing = (await listFavorites()).find((f) => f.id === this.favoriteId) ?? null;
+    }
+    const appPrefs = await prefs.load();
+    const e = this.existing ?? this.prefill ?? {};
+    if (!this.servingReady) this.initServingState(e);
+
+    const defaultMeal = e.mealType || guessMealTypeFromPrefs(appPrefs);
+    const isNew = !this.existing;
+    const title = this.favoriteMode
+      ? t("entry.title_edit_saved_food")
+      : this.existing
+        ? t("entry.title_edit_entry")
+        : this.prefill
+          ? t("entry.title_review_food")
+          : t("entry.title_log_food");
+    const progressiveActive = !this.existing && hasProgressiveMealItems();
+    const primaryLabel = this.existing
+      ? t("action.save")
+      : progressiveActive
+        ? t("progressive_meal.add_to_meal")
+        : t("action.log");
+    const fav = this.existing ? await isFavorite(this.existing) : false;
+    const scale = this.currentScale();
+    const scaled = scaleNutrition(/** @type {Record<string, unknown>} */ (this.baseNutrition ?? {}), scale);
+    const lockAttr = this.nutritionLocked ? "readonly" : "";
+    const lockClass = this.nutritionLocked ? "is-locked" : "";
+    const picker = pickerOptions(this.servingUnitOptions);
+    const selectedOption = optionMatching(this.selectedServingUnit, this.servingUnitOptions);
+    const qtyNum = parseQuantity(this.quantityText);
+    const showTotal = !isGramUnit(selectedOption);
+    const servingGrams = this.currentServingGrams();
+    // App-generated "serving" unit (OFF barcode / AI fallback) is English in the
+    // model; display the localized label(s) instead (unit.serving / _plural).
+    const servingLabel = t("unit.serving");
+    const servingPluralLabel = t("unit.serving_plural");
+    const packageLabel = t("unit.package");
+    const packagePluralLabel = t("unit.package_plural");
+    const offMeta = e.productMetadata ?? null;
+
+    const numVal = (v, step = false) => {
+      if (v == null || v === "") return "";
+      if (step) return formatQuantity(Number(v));
+      return String(Math.round(Number(v)));
+    };
+
+    this.innerHTML = `
+      ${subpageBar(title, { backHref: "#/home" })}
+      ${
+        this.fromSaved && !this.favoriteMode
+          ? `<p style="color:var(--muted);font-size:0.85rem;margin:0 1rem 0.75rem;">${escapeHtml(t("entry.saved_meal_review_hint"))}</p>`
+          : ""
+      }
+      <form class="entry-form entry-form--review">
+        <section class="entry-section">
+          <h2 class="entry-section__title">${escapeHtml(t("entry.food_details"))}</h2>
+          <div class="field">
+            <label for="name">${escapeHtml(t("entry.constituents.name"))}</label>
+            <input id="name" name="name" required value="${e.name ? escapeAttr(e.name) : ""}" />
+          </div>
+          ${this.nameError ? `<p class="entry-form__error" role="alert">${escapeHtml(this.nameError)}</p>` : ""}
+          ${
+            e.note && isNew
+              ? `<p class="entry-ai-note">${escapeHtml(String(e.note))}</p>`
+              : ""
+          }
+          ${
+            offMeta?.imageUrl
+              ? `<a class="entry-off-thumb-link" href="https://world.openfoodfacts.org/product/${encodeURIComponent(String(offMeta.barcode ?? ""))}" target="_blank" rel="noopener noreferrer"><img class="entry-off-thumb" src="${escapeAttr(offMeta.imageUrl)}" alt="${escapeAttr(t("product.attribution"))}" loading="lazy" onerror="this.closest('a') ? this.closest('a').remove() : this.remove()"></a>`
+              : ""
+          }
+          ${offMeta?.hasDisplayDetails ? offDetailsCard(offMeta) : ""}
+        </section>
+
+        <section class="entry-section entry-section--serving">
+          <h2 class="entry-section__title">${escapeHtml(t("entry.serving"))}</h2>
+          <div class="serving-quantity-card" data-serving-card>
+            <div class="serving-quantity-card__row">
+              <span class="serving-quantity-card__label">${escapeHtml(t("entry.constituents.quantity"))}</span>
+              <div class="serving-quantity-card__controls">
+                <input
+                  id="servingQuantity"
+                  name="servingQuantity"
+                  class="serving-quantity-card__qty"
+                  type="text"
+                  inputmode="decimal"
+                  autocomplete="off"
+                  value="${escapeAttr(this.quantityText)}"
+                  aria-label="${escapeAttr(t("entry.serving_quantity_aria"))}"
+                />
+                <select id="servingUnit" name="servingUnit" class="serving-quantity-card__unit" aria-label="${escapeAttr(t("entry.serving_unit_aria"))}">
+                  ${picker
+                    .map((opt) => {
+                      const id = optionId(opt);
+                      const label = displayUnit(opt, id === this.selectedServingUnit ? qtyNum : null, servingLabel, servingPluralLabel, packageLabel, packagePluralLabel, culinaryUnitLabels());
+                      return `<option value="${escapeAttr(id)}" ${id === this.selectedServingUnit ? "selected" : ""}>${escapeHtml(label)}</option>`;
+                    })
+                    .join("")}
+                </select>
+              </div>
+            </div>
+            <div class="serving-quantity-card__calc">
+              ${["+", "-", "×", "÷"]
+                .map(
+                  (op) =>
+                    `<button type="button" class="serving-quantity-card__op" data-qty-op="${op}" aria-label="${escapeAttr(t("entry.insert_op_aria", { op }))}">${op}</button>`
+                )
+                .join("")}
+              <span class="serving-quantity-card__result" data-qty-result hidden></span>
+            </div>
+            ${
+              showTotal
+                ? `<div class="serving-quantity-card__total">
+                     <span>${escapeHtml(t("entry.total"))}</span>
+                     <span data-serving-total>~${formatGramsDisplay(servingGrams)} g</span>
+                   </div>`
+                : ""
+            }
+          </div>
+          <input type="hidden" name="quantityG" id="quantityG" value="${servingGrams}" />
+        </section>
+
+        <section class="entry-section ${lockClass}">
+          <div class="entry-section__head">
+            <h2 class="entry-section__title">${escapeHtml(t("entry.nutrition"))}</h2>
+            ${
+              `<button type="button" class="btn btn--ghost btn--sm" data-toggle-lock>${escapeHtml(this.nutritionLocked ? t("entry.unlock") : t("entry.lock"))}</button>`
+            }
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="calories">${escapeHtml(t("diary.calories"))}</label>
+              <input id="calories" name="calories" type="number" min="0" required value="${numVal(scaled.calories)}" ${lockAttr} data-nutrition />
+            </div>
+            <div class="field">
+              <label for="proteinG">${escapeHtml(t("day_types.protein_g"))}</label>
+              <input id="proteinG" name="proteinG" type="number" min="0" step="0.1" value="${numVal(scaled.proteinG, true)}" ${lockAttr} data-nutrition />
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="carbsG">${escapeHtml(t("day_types.carbs_g"))}</label>
+              <input id="carbsG" name="carbsG" type="number" min="0" step="0.1" value="${numVal(scaled.carbsG, true)}" ${lockAttr} data-nutrition />
+            </div>
+            <div class="field">
+              <label for="fatG">${escapeHtml(t("day_types.fat_g"))}</label>
+              <input id="fatG" name="fatG" type="number" min="0" step="0.1" value="${numVal(scaled.fatG, true)}" ${lockAttr} data-nutrition />
+            </div>
+            <div class="field">
+              <label for="fiberG">${escapeHtml(t("entry.fiber_g"))}</label>
+              <input id="fiberG" name="fiberG" type="number" min="0" step="0.1" value="${scaled.fiberG == null ? "" : numVal(scaled.fiberG, true)}" ${lockAttr} data-nutrition />
+            </div>
+          </div>
+        </section>
+
+        ${this.renderConstituentsSection(appPrefs.optionalNutrientGoals)}
+
+        <details class="micros-details">
+          <summary>${escapeHtml(t("entry.more_nutrition"))}</summary>
+          <div class="field-row field-row--micros">
+            ${MICRO_FIELDS.map(([key, label]) => {
+              const v = scaled[key];
+              return `
+              <div class="field">
+                <label for="${key}">${t(label)}</label>
+                <input id="${key}" name="${key}" type="number" min="0" step="0.1" value="${v == null ? "" : numVal(v, true)}" ${lockAttr} data-nutrition />
+              </div>`;
+            }).join("")}
+          </div>
+        </details>
+
+        <section class="entry-section">
+          <h2 class="entry-section__title">${escapeHtml(t("progressive_meal.meal_label"))}</h2>
+          <div class="field-row">
+            <div class="field">
+              <label for="mealType">${escapeHtml(t("entry.meal_type"))}</label>
+              <select id="mealType" name="mealType">
+                ${["breakfast", "lunch", "dinner", "snack"]
+                  .map((m) => `<option value="${m}" ${defaultMeal === m ? "selected" : ""}>${escapeHtml(t(`meal.${m}`))}</option>`)
+                  .join("")}
+              </select>
+            </div>
+            ${
+              this.favoriteMode
+                ? ""
+                : `<div class="field">
+              <label for="time">${escapeHtml(t("entry.time"))}</label>
+              <input id="time" name="time" type="time" value="${e.time ?? nowHm()}" />
+            </div>`
+            }
+          </div>
+          <div class="field">
+            <label for="note">${escapeHtml(t("entry.note_optional"))}</label>
+            <textarea id="note" name="note" rows="2">${e.note && !isNew ? escapeHtml(String(e.note)) : isNew && e.note ? "" : e.note ?? ""}</textarea>
+          </div>
+        </section>
+
+        ${this.existing && !this.favoriteMode ? this.renderCorrectSection(e) : ""}
+
+        ${
+          this.existing && !this.favoriteMode
+            ? `<button type="button" class="btn btn--ghost" data-action="favorite">${escapeHtml(fav ? t("entry.unfavorite") : t("entry.favorite"))}</button>`
+            : ""
+        }
+        ${
+          this.favoriteMode
+            ? `<button type="button" class="btn btn--ghost" data-action="favorite">${escapeHtml(t("entry.remove_from_favorites"))}</button>`
+            : ""
+        }
+        ${this.existing && !this.favoriteMode ? `<button type="button" class="btn btn--danger" data-action="delete">${escapeHtml(t("action.delete"))}</button>` : ""}
+        <div class="subpage-cta btn-row">
+          <button type="submit" class="btn btn--primary" ${this.correcting ? "disabled" : ""}>${primaryLabel}</button>
+          ${
+            !this.existing
+              ? `<button type="button" class="btn btn--ghost" data-action="progressive-next" ${this.correcting ? "disabled" : ""}>${escapeHtml(t("progressive_meal.add_next"))}</button>`
+              : ""
+          }
+          <button type="button" class="btn btn--ghost" data-action="cancel">${escapeHtml(t("action.cancel"))}</button>
+        </div>
+      </form>
+    `;
+
+    bindSubpageBack(this, "#/home");
+    this.bindServingHandlers();
+    this.bindConstituentHandlers();
+    this.bindCorrectHandlers();
+    this.querySelector("form")?.addEventListener("submit", (ev) => this.onSubmit(ev));
+    this.querySelector('[data-action="cancel"]')?.addEventListener("click", () => {
+      location.hash = "#/home";
+    });
+    this.querySelector('[data-action="progressive-next"]')?.addEventListener("click", () => {
+      void this.commitToProgressiveMeal({ resumeCapture: true });
+    });
+    this.querySelector('[data-action="delete"]')?.addEventListener("click", () => this.onDelete());
+    this.querySelector('[data-action="favorite"]')?.addEventListener("click", async () => {
+      if (!this.existing) return;
+      await toggleFavorite(this.existing);
+      if (this.favoriteMode) {
+        // Library edit: removing the saved food ends the edit.
+        location.hash = "#/home";
+        return;
+      }
+      this.servingReady = false;
+      this.render();
+    });
+    this.querySelector("[data-toggle-lock]")?.addEventListener("click", () => {
+      this.captureFormIntoSource();
+      this.nutritionLocked = !this.nutritionLocked;
+      this.servingReady = true;
+      this.render();
+    });
+    rr.restore();
+  }
+
+  renderConstituentsSection(optionalGoals) {
+    const rows = this.displayConstituents();
+    if (!rows.length) return "";
+    const expanded = this.constituentsExpanded;
+    return `
+      <section class="entry-section entry-section--constituents">
+        <button type="button" class="entry-constituents__toggle" data-constituents-toggle aria-expanded="${expanded}">
+          <span class="entry-constituents__chevron" aria-hidden="true">${expanded ? "▾" : "▸"}</span>
+          <span>${escapeHtml(t("entry.constituents.count", { count: rows.length }))}</span>
+        </button>
+        ${
+          expanded
+            ? `<div class="entry-constituents__list">
+                 ${rows.map((row, index) => this.renderConstituentRow(row, index, optionalGoals)).join("")}
+                 <button type="button" class="btn btn--ghost btn--sm" data-constituent-add>
+                   ${escapeHtml(t("entry.constituents.add"))}
+                 </button>
+               </div>`
+            : ""
+        }
+      </section>
+    `;
+  }
+
+  /**
+   * @param {import('../lib/chompass-core/models.js').FoodConstituent} row
+   * @param {number} index
+   * @param {import('../lib/db.js').OptionalNutrientGoals|null|undefined} optionalGoals
+   */
+  renderConstituentRow(row, index, optionalGoals) {
+    const ensured = ensureServingUnits({
+      name: row.name || t("entry.constituents.item_fallback"),
+      quantityG: row.servingSizeGrams,
+      servingUnitOptions: row.servingUnitOptions,
+      selectedServingUnit: row.selectedServingUnit,
+      selectedServingQuantity: row.selectedServingQuantity,
+    });
+    const picker = pickerOptions(ensured.servingUnitOptions);
+    const unitId = ensured.selectedServingUnit;
+    const option = optionMatching(unitId, ensured.servingUnitOptions);
+    const qty =
+      ensured.selectedServingQuantity != null && ensured.selectedServingQuantity > 0
+        ? ensured.selectedServingQuantity
+        : option.gramsPerUnit > 0
+          ? row.servingSizeGrams / option.gramsPerUnit
+          : row.servingSizeGrams;
+    const qtyText = formatQuantity(qty);
+    const showTotal = !isGramUnit(option);
+    // App-generated "serving" unit (OFF barcode / AI fallback) is English in the
+    // model; display the localized label(s) instead (unit.serving / _plural).
+    const servingLabel = t("unit.serving");
+    const servingPluralLabel = t("unit.serving_plural");
+    const packageLabel = t("unit.package");
+    const packagePluralLabel = t("unit.package_plural");
+    return `
+      <div class="entry-constituent-card" data-constituent-index="${index}">
+        <div class="entry-constituent-card__head">
+          ${row.emoji ? `<span class="entry-constituent-card__emoji" aria-hidden="true">${escapeHtml(row.emoji)}</span>` : ""}
+          <div class="field entry-constituent-card__name">
+            <label class="visually-hidden" for="constituent-name-${index}">${escapeHtml(t("entry.constituents.name"))}</label>
+            <input
+              id="constituent-name-${index}"
+              type="text"
+              value="${escapeAttr(row.name || "")}"
+              placeholder="${escapeAttr(t("entry.constituents.item_fallback"))}"
+              data-constituent-name
+            />
+          </div>
+          <button type="button" class="btn btn--ghost btn--sm" data-constituent-remove aria-label="${escapeAttr(t("entry.constituents.remove"))}">×</button>
+        </div>
+        <div class="serving-quantity-card serving-quantity-card--nested">
+          <div class="serving-quantity-card__row">
+            <span class="serving-quantity-card__label">${escapeHtml(t("entry.constituents.quantity"))}</span>
+            <div class="serving-quantity-card__controls">
+              <input
+                class="serving-quantity-card__qty"
+                type="text"
+                inputmode="decimal"
+                autocomplete="off"
+                value="${escapeAttr(qtyText)}"
+                aria-label="${escapeAttr(t("entry.constituents.quantity"))}"
+                data-constituent-qty
+              />
+              <select class="serving-quantity-card__unit" aria-label="${escapeAttr(t("entry.constituents.unit"))}" data-constituent-unit>
+                ${picker
+                  .map((opt) => {
+                    const id = optionId(opt);
+                    const label = displayUnit(opt, id === unitId ? qty : null, servingLabel, servingPluralLabel, packageLabel, packagePluralLabel, culinaryUnitLabels());
+                    return `<option value="${escapeAttr(id)}" ${id === unitId ? "selected" : ""}>${escapeHtml(label)}</option>`;
+                  })
+                  .join("")}
+              </select>
+            </div>
+          </div>
+          ${
+            showTotal
+              ? `<div class="serving-quantity-card__total">
+                   <span>${escapeHtml(t("entry.total"))}</span>
+                   <span>~${formatGramsDisplay(row.servingSizeGrams)} g</span>
+                 </div>`
+              : ""
+          }
+        </div>
+        <p class="entry-constituent-card__macros" data-constituent-macros>
+          ${escapeHtml(
+            t("entry.constituents.macros", {
+              calories: Math.round(row.calories),
+              protein: formatQuantity(row.proteinG),
+              carbs: formatQuantity(row.carbsG),
+              fat: formatQuantity(row.fatG),
+            }),
+          )}
+        </p>
+        ${this.renderConstituentMicros(row, optionalGoals)}
+      </div>
+    `;
+  }
+
+  /**
+   * Read-only "detailed nutrition" block for a constituent row: each present
+   * micro as "Label value unit (pct%)" vs the user's daily goal (Codeberg #86).
+   * @param {import('../lib/chompass-core/models.js').FoodConstituent} row
+   * @param {import('../lib/db.js').OptionalNutrientGoals|null|undefined} optionalGoals
+   */
+  renderConstituentMicros(row, optionalGoals) {
+    const present = NUTRITION_DETAIL_MICROS
+      .map((def) => ({ def, value: /** @type {Record<string, unknown>} */ (row)[def.key] }))
+      .filter((m) => m.value != null);
+    if (!present.length) return "";
+    const items = present
+      .map(({ def, value }) => {
+        const goal = nutrientGoal(def.key, null, optionalGoals);
+        const percent = nutritionGoalPercent(/** @type {number} */ (value), goal);
+        return `
+          <li>
+            <span>${escapeHtml(def.label)}</span>
+            <span>${formatQuantity(/** @type {number} */ (value))} ${escapeHtml(def.unit)}</span>
+            <span class="entry-constituent-card__micro-goal">${percent != null ? `(${percent}%)` : ""}</span>
+          </li>`;
+      })
+      .join("");
+    return `
+      <details class="entry-constituent-card__micros">
+        <summary>${escapeHtml(t("diary.detailed_nutrition"))}</summary>
+        <ul>${items}</ul>
+      </details>
+    `;
+  }
+
+  bindConstituentHandlers() {
+    this.querySelector("[data-constituents-toggle]")?.addEventListener("click", () => {
+      this.captureFormIntoSource();
+      this.constituentsExpanded = !this.constituentsExpanded;
+      this.render();
+    });
+    this.querySelector("[data-constituent-add]")?.addEventListener("click", () => {
+      const display = this.displayConstituents();
+      display.push({
+        name: "",
+        calories: 0,
+        proteinG: 0,
+        carbsG: 0,
+        fatG: 0,
+        servingSizeGrams: 50,
+        emoji: null,
+        servingUnitOptions: [],
+        selectedServingUnit: "g",
+        selectedServingQuantity: 50,
+      });
+      this.applyConstituentRows(display);
+    });
+    this.querySelectorAll("[data-constituent-index]").forEach((card) => {
+      const index = Number(card.getAttribute("data-constituent-index"));
+      const nameInput = /** @type {HTMLInputElement|null} */ (card.querySelector("[data-constituent-name]"));
+      const qtyInput = /** @type {HTMLInputElement|null} */ (card.querySelector("[data-constituent-qty]"));
+      const unitSelect = /** @type {HTMLSelectElement|null} */ (card.querySelector("[data-constituent-unit]"));
+      const removeBtn = card.querySelector("[data-constituent-remove]");
+
+      nameInput?.addEventListener("change", () => {
+        const display = this.displayConstituents();
+        if (!display[index]) return;
+        display[index] = { ...display[index], name: nameInput.value };
+        this.applyConstituentRows(display);
+      });
+      qtyInput?.addEventListener("change", () => {
+        this.onConstituentQuantityChange(index, qtyInput.value);
+      });
+      unitSelect?.addEventListener("change", () => {
+        this.onConstituentUnitChange(index, unitSelect.value);
+      });
+      removeBtn?.addEventListener("click", () => {
+        const display = this.displayConstituents();
+        display.splice(index, 1);
+        this.applyConstituentRows(display);
+      });
+    });
+  }
+
+  /**
+   * @param {number} index
+   * @param {string} text
+   */
+  onConstituentQuantityChange(index, text) {
+    const display = this.displayConstituents();
+    const row = display[index];
+    if (!row) return;
+    const ensured = ensureServingUnits({
+      name: row.name,
+      quantityG: row.servingSizeGrams,
+      servingUnitOptions: row.servingUnitOptions,
+      selectedServingUnit: row.selectedServingUnit,
+      selectedServingQuantity: row.selectedServingQuantity,
+    });
+    const option = optionMatching(ensured.selectedServingUnit, ensured.servingUnitOptions);
+    const qty = parseQuantity(text);
+    if (qty == null || qty <= 0) return;
+    const grams = qty * option.gramsPerUnit;
+    const factor = row.servingSizeGrams > 0 ? grams / row.servingSizeGrams : 1;
+    display[index] = {
+      ...row,
+      servingSizeGrams: grams,
+      calories: Math.max(0, Math.round(row.calories * factor)),
+      proteinG: row.proteinG * factor,
+      carbsG: row.carbsG * factor,
+      fatG: row.fatG * factor,
+      selectedServingUnit: option.unit,
+      selectedServingQuantity: qty,
+      servingUnitOptions: ensured.servingUnitOptions,
+    };
+    this.applyConstituentRows(display);
+  }
+
+  /**
+   * @param {number} index
+   * @param {string} unitId
+   */
+  onConstituentUnitChange(index, unitId) {
+    const display = this.displayConstituents();
+    const row = display[index];
+    if (!row) return;
+    const ensured = ensureServingUnits({
+      name: row.name,
+      quantityG: row.servingSizeGrams,
+      servingUnitOptions: row.servingUnitOptions,
+      selectedServingUnit: row.selectedServingUnit,
+      selectedServingQuantity: row.selectedServingQuantity,
+    });
+    const option = optionMatching(unitId, ensured.servingUnitOptions);
+    const qty = option.gramsPerUnit > 0 ? row.servingSizeGrams / option.gramsPerUnit : row.servingSizeGrams;
+    display[index] = {
+      ...row,
+      selectedServingUnit: option.unit,
+      selectedServingQuantity: qty,
+      servingUnitOptions: ensured.servingUnitOptions,
+    };
+    this.applyConstituentRows(display);
+  }
+
+  /**
+   * Rebase meal totals from display-space constituent edits.
+   * @param {import('../lib/chompass-core/models.js').FoodConstituent[]} displayRows
+   */
+  applyConstituentRows(displayRows) {
+    const scale = this.currentScale();
+    const { bases, baseAggregate, displaySum, baseSum } =
+      commitConstituentDisplayEdit(displayRows, scale);
+    this.constituents = bases;
+    if (baseAggregate) {
+      this.baseNutrition = {
+        ...(this.baseNutrition || {}),
+        calories: baseAggregate.calories,
+        proteinG: baseAggregate.proteinG,
+        carbsG: baseAggregate.carbsG,
+        fatG: baseAggregate.fatG,
+      };
+      this.baseGrams = baseSum > 0 ? baseSum : this.baseGrams;
+      this.servingGrams = displaySum;
+      const option = optionMatching(this.selectedServingUnit, this.servingUnitOptions);
+      const qty = option.gramsPerUnit > 0 ? displaySum / option.gramsPerUnit : displaySum;
+      this.quantityText = formatQuantity(qty);
+    } else if (bases.length === 0) {
+      this.constituentsExpanded = false;
+    }
+    if (bases.length > 0) this.constituentsExpanded = true;
+    this.servingReady = true;
+    this.render();
+  }
+
+  /**
+   * @param {Record<string, any>} e
+   */
+  renderCorrectSection(e) {
+    const chips = ["entry.chip_smaller_portion", "entry.chip_larger_portion", "entry.chip_extra_oil", "entry.chip_different_brand", "entry.chip_different_cooking"].map((k) => t(k));
+    const diffHtml =
+      this.correctDiff.length > 0
+        ? `<div class="entry-correct-diff card">
+             <strong>${escapeHtml(t("entry.correct_diff_title"))}</strong>
+             <ul>${this.correctDiff
+               .map((row) => `<li><span>${escapeHtml(row.label)}</span>: ${escapeHtml(row.before)} → ${escapeHtml(row.after)}</li>`)
+               .join("")}</ul>
+             <p class="entry-correct-diff__hint">${escapeHtml(t("entry.correct_diff_hint"))}</p>
+           </div>`
+        : "";
+    const progressHtml = this.correcting
+      ? this.correctPartial?.hasAnyField
+        ? progressiveCardHtml(this.correctPartial)
+        : `<p class="entry-correct-status" role="status">${escapeHtml(
+            this.correctPhase === ANALYSIS_PHASE.CALLING_AI
+              ? t("analysis.phase.calling_ai")
+              : this.correctPhase === ANALYSIS_PHASE.PARSING
+                ? t("analysis.phase.parsing")
+                : t("entry.correcting")
+          )}</p>`
+      : "";
+    return `
+      <section class="entry-section entry-correct">
+        <h2 class="entry-section__title">${escapeHtml(t("entry.correct_title"))}</h2>
+        <div class="entry-correct-context card">
+          <strong>${escapeHtml(e.name || t("entry.fallback_name"))}</strong>
+          <p>${Math.round(Number(e.calories || 0))} kcal · ${formatQuantity(Number(e.proteinG || 0))}P /
+            ${formatQuantity(Number(e.carbsG || 0))}C / ${formatQuantity(Number(e.fatG || 0))}F</p>
+        </div>
+        <p class="field-hint">${escapeHtml(t("entry.correct_hint"))}</p>
+        <label class="field-label" for="correct-note">${escapeHtml(t("entry.correct_prompt"))}</label>
+        <div class="chip-row">
+          ${chips
+            .map(
+              (c) =>
+                `<button type="button" class="chip" data-correct-chip="${escapeAttr(c)}" ${this.correcting ? "disabled" : ""}>${escapeHtml(c)}</button>`
+            )
+            .join("")}
+        </div>
+        <textarea id="correct-note" rows="3" ${this.correcting ? "disabled" : ""} placeholder="${escapeAttr(t("entry.correct_note_placeholder"))}">${escapeHtml(this.correctNote)}</textarea>
+        <button type="button" class="btn btn--primary" data-action="correct" ${this.correcting || !this.correctNote.trim() ? "disabled" : ""}>
+          ${escapeHtml(this.correcting ? t("entry.correcting") : t("entry.correct_action"))}
+        </button>
+        ${progressHtml}
+        ${this.correctError ? `<p class="entry-correct-error">${escapeHtml(this.correctError)}</p>` : ""}
+        ${diffHtml}
+      </section>
+    `;
+  }
+
+  bindCorrectHandlers() {
+    const noteEl = /** @type {HTMLTextAreaElement|null} */ (this.querySelector("#correct-note"));
+    noteEl?.addEventListener("input", () => {
+      this.correctNote = noteEl.value;
+      this.correctDiff = [];
+      const btn = /** @type {HTMLButtonElement|null} */ (this.querySelector('[data-action="correct"]'));
+      if (btn) btn.disabled = this.correcting || !this.correctNote.trim();
+    });
+    this.querySelectorAll("[data-correct-chip]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const label = btn.getAttribute("data-correct-chip") || "";
+        if (!label || this.correcting) return;
+        const cur = this.correctNote.trim();
+        if (cur.toLowerCase().includes(label.toLowerCase())) return;
+        this.correctNote = cur ? `${cur}, ${label}` : label;
+        if (noteEl) noteEl.value = this.correctNote;
+        const correctBtn = /** @type {HTMLButtonElement|null} */ (this.querySelector('[data-action="correct"]'));
+        if (correctBtn) correctBtn.disabled = false;
+      });
+    });
+    this.querySelector('[data-action="correct"]')?.addEventListener("click", () => this.onCorrectWithAi());
+  }
+
+  async onCorrectWithAi() {
+    if (!this.existing || this.correcting) return;
+    const note = this.correctNote.trim();
+    if (!note) return;
+    this.captureFormIntoSource();
+    const before = { ...this.existing };
+
+    const { listConfiguredProviders, loadProviderKey } = await import(
+      "../lib/ai/key-storage.js"
+    );
+    const providers = await listConfiguredProviders();
+    if (!providers.length) {
+      location.hash = "#/settings?section=ai";
+      return;
+    }
+    const appPrefs = await prefs.load();
+    /** @type {import('../lib/ai/key-storage.js').ProviderId} */
+    let providerId = /** @type {import('../lib/ai/key-storage.js').ProviderId} */ (providers[0]);
+    if (
+      appPrefs.primaryAiProvider &&
+      providers.includes(/** @type {import('../lib/ai/key-storage.js').ProviderId} */ (appPrefs.primaryAiProvider))
+    ) {
+      providerId = /** @type {import('../lib/ai/key-storage.js').ProviderId} */ (appPrefs.primaryAiProvider);
+    }
+    const config = await loadProviderKey(providerId);
+    if (!config) {
+      this.correctError = t("entry.error_key_missing");
+      this.render();
+      return;
+    }
+
+    this.correctAbort?.abort();
+    const ac = new AbortController();
+    this.correctAbort = ac;
+    this.correcting = true;
+    this.correctError = "";
+    this.correctDiff = [];
+    this.correctPartial = null;
+    this.correctPhase = ANALYSIS_PHASE.PREPARING;
+    this.render();
+
+    const parts = [];
+    if (before.name) parts.push(String(before.name));
+    if (before.selectedServingQuantity && before.selectedServingUnit) {
+      parts.push(`${before.selectedServingQuantity} ${before.selectedServingUnit}`);
+    } else if (before.quantityG) {
+      parts.push(`${before.quantityG} g`);
+    }
+    const description = parts.length ? `${parts.join(", ")}. ${note}` : note;
+
+    try {
+      const { analyzeFoodEntry } = await import("../lib/ai/food-analyze.js");
+      const { buildCorrectDiff } = await import("../lib/ai/correct-diff.js");
+      const estimate = await analyzeFoodEntry({
+        providerId: /** @type {any} */ (providerId),
+        config,
+        text: description,
+        signal: ac.signal,
+        onPhase: (phase) => {
+          this.correctPhase = phase;
+          this.render();
+        },
+        onPartial: (partial) => {
+          this.correctPartial = partial;
+          this.correctPhase = ANALYSIS_PHASE.CALLING_AI;
+          this.render();
+        },
+      });
+      if (ac.signal.aborted) return;
+
+      this.existing = {
+        ...this.existing,
+        ...estimate,
+        id: this.existing.id,
+        date: this.existing.date,
+        time: this.existing.time,
+        note,
+        source: this.existing.source || "ai_estimated",
+      };
+      this.servingReady = false;
+      this.initServingState(this.existing);
+      this.nutritionLocked = true;
+      this.correctDiff = buildCorrectDiff(before, this.existing);
+      this.correcting = false;
+      this.correctPhase = null;
+      this.correctPartial = null;
+      this.render();
+    } catch (err) {
+      if (isAbortError(err) || ac.signal.aborted) {
+        this.correcting = false;
+        this.correctPhase = null;
+        return;
+      }
+      this.correctError = err instanceof Error ? err.message : String(err);
+      this.correcting = false;
+      this.correctPhase = null;
+      this.correctPartial = null;
+      this.render();
+    }
+  }
+
+  bindServingHandlers() {
+    const qtyInput = /** @type {HTMLInputElement|null} */ (this.querySelector("#servingQuantity"));
+    const unitSelect = /** @type {HTMLSelectElement|null} */ (this.querySelector("#servingUnit"));
+    const nameInput = /** @type {HTMLInputElement|null} */ (this.querySelector("#name"));
+
+    qtyInput?.addEventListener("input", () => {
+      this.applyQuantityText(qtyInput.value);
+    });
+
+    qtyInput?.addEventListener("focusout", () => this.commitQuantityExpression(qtyInput));
+
+    for (const chip of this.querySelectorAll("[data-qty-op]")) {
+      chip.addEventListener("click", () => {
+        const op = /** @type {string} */ (chip.getAttribute("data-qty-op"));
+        const next = this.quantityText + op;
+        this.applyQuantityText(next);
+        if (qtyInput) {
+          qtyInput.value = next;
+          qtyInput.focus();
+        }
+      });
+    }
+
+    unitSelect?.addEventListener("change", () => {
+      const grams = this.currentServingGrams();
+      this.selectedServingUnit = unitSelect.value;
+      const option = optionMatching(this.selectedServingUnit, this.servingUnitOptions);
+      const qty = option.gramsPerUnit > 0 ? grams / option.gramsPerUnit : grams;
+      this.quantityText = formatQuantity(qty);
+      if (qtyInput) qtyInput.value = this.quantityText;
+      // Re-render so unit labels / total row update
+      this.captureFormIntoSource();
+      this.render();
+    });
+
+    nameInput?.addEventListener("blur", () => {
+      const name = nameInput.value.trim();
+      if (!name) return;
+      const grams = this.currentServingGrams();
+      const heur = heuristicOptions(name, grams);
+      if (heur.length === 0) return;
+      const merged = normalizedOptions([...this.servingUnitOptions, ...heur], grams);
+      const before = JSON.stringify(this.servingUnitOptions.map(optionId));
+      const after = JSON.stringify(merged.map(optionId));
+      if (before === after) return;
+      this.servingUnitOptions = merged;
+      this.captureFormIntoSource();
+      this.render();
+    });
+
+    for (const input of this.querySelectorAll("[data-nutrition]")) {
+      input.addEventListener("change", () => this.onNutritionEdit(/** @type {HTMLInputElement} */ (input)));
+    }
+  }
+
+  /** When unlocked, user edits display values → write back into base / scale. */
+  onNutritionEdit(input) {
+    if (this.nutritionLocked || !this.baseNutrition) return;
+    const key = input.name;
+    if (!NUTRITION_KEYS.includes(key) && key !== "fiberG") return;
+    if (this.constituents.length) {
+      // Manual top-level edits invalidate the constituent breakdown.
+      this.constituents = [];
+    }
+    const scale = Math.max(this.currentScale(), 0.0001);
+    const raw = input.value.trim();
+    if (raw === "") {
+      this.baseNutrition[key] = null;
+      return;
+    }
+    const displayed = Number(raw);
+    if (!Number.isFinite(displayed)) return;
+    if (key === "calories") {
+      this.baseNutrition.calories = Math.round(displayed / scale);
+    } else {
+      this.baseNutrition[key] = displayed / scale;
+    }
+  }
+
+  applyScaleToNutritionFields() {
+    if (!this.baseNutrition) return;
+    const scale = this.currentScale();
+    const scaled = scaleNutrition(this.baseNutrition, scale);
+    const grams = this.currentServingGrams();
+    const hidden = /** @type {HTMLInputElement|null} */ (this.querySelector("#quantityG"));
+    if (hidden) hidden.value = String(grams);
+    const totalEl = this.querySelector("[data-serving-total]");
+    if (totalEl) totalEl.textContent = `~${formatGramsDisplay(grams)} g`;
+
+    const setVal = (name, value, asInt = false) => {
+      const el = /** @type {HTMLInputElement|null} */ (this.querySelector(`[name="${name}"]`));
+      if (!el) return;
+      if (value == null) {
+        el.value = "";
+        return;
+      }
+      el.value = asInt ? String(Math.round(Number(value))) : formatQuantity(Number(value));
+    };
+    setVal("calories", scaled.calories, true);
+    setVal("proteinG", scaled.proteinG);
+    setVal("carbsG", scaled.carbsG);
+    setVal("fatG", scaled.fatG);
+    setVal("fiberG", scaled.fiberG);
+    for (const [key] of MICRO_FIELDS) {
+      setVal(key, scaled[key]);
+    }
+
+    const scaledRows = scaleAllConstituents(this.constituents, scale);
+    this.querySelectorAll("[data-constituent-index]").forEach((card) => {
+      const index = Number(card.getAttribute("data-constituent-index"));
+      const row = scaledRows[index];
+      if (!row) return;
+      const macros = card.querySelector("[data-constituent-macros]");
+      if (macros) {
+        macros.textContent = t("entry.constituents.macros", {
+          calories: Math.round(row.calories),
+          protein: formatQuantity(row.proteinG),
+          carbs: formatQuantity(row.carbsG),
+          fat: formatQuantity(row.fatG),
+        });
+      }
+    });
+  }
+
+  /** Preserve in-progress form values into existing/prefill for re-render. */
+  captureFormIntoSource() {
+    const form = /** @type {HTMLFormElement|null} */ (this.querySelector("form"));
+    if (!form) return;
+    const fd = new FormData(form);
+    /** @type {Record<string, any>} */
+    const target = this.existing ?? this.prefill ?? (this.prefill = {});
+    target.name = String(fd.get("name") || target.name || "");
+    target.mealType = String(fd.get("mealType") || target.mealType || "snack");
+    target.time = String(fd.get("time") || target.time || nowHm());
+    target.note = fd.get("note") ? String(fd.get("note")) : target.note ?? null;
+    target.quantityG = this.currentServingGrams();
+    target.servingUnitOptions = this.servingUnitOptions;
+    target.selectedServingUnit = this.selectedServingUnit;
+    const resolvedQty = this.resolvedQuantity();
+    target.selectedServingQuantity = resolvedQty != null && resolvedQty > 0 ? resolvedQty : null;
+    target.constituents = scaleAllConstituents(this.constituents, this.currentScale());
+    if (this.baseNutrition) {
+      const scaled = scaleNutrition(this.baseNutrition, this.currentScale());
+      Object.assign(target, scaled);
+    }
+    if (!this.existing && !this.prefill) this.prefill = target;
+  }
+
+  /**
+   * Build a FoodEntry snapshot from the current review form (does not persist).
+   * @returns {import('../lib/chompass-core/models.js').FoodEntry|null}
+   */
+  buildEntryFromForm() {
+    const form = /** @type {HTMLFormElement|null} */ (this.querySelector("form"));
+    if (!form) return null;
+    for (const input of this.querySelectorAll("[data-nutrition]")) {
+      this.onNutritionEdit(/** @type {HTMLInputElement} */ (input));
+    }
+    const fd = new FormData(form);
+    const scale = this.currentScale();
+    const scaled = scaleNutrition(/** @type {Record<string, unknown>} */ (this.baseNutrition ?? {}), scale);
+    const servingGrams = this.currentServingGrams();
+    const qty = this.resolvedQuantity();
+    const constituents = scaleAllConstituents(this.constituents, scale).filter(
+      (c) => c.name.trim() && c.servingSizeGrams > 0,
+    );
+
+    /** @type {import('../lib/chompass-core/models.js').FoodEntry} */
+    const entry = {
+      id: this.existing?.id ?? crypto.randomUUID(),
+      name: String(fd.get("name") || "").trim() || "Food",
+      mealType: /** @type {any} */ (fd.get("mealType")),
+      date: this.date,
+      time: this.favoriteMode
+        ? (this.existing?.time ?? nowHm())
+        : String(fd.get("time") || nowHm()),
+      quantityG: servingGrams > 0 ? Math.round(servingGrams * 10) / 10 : null,
+      servingUnitOptions: this.servingUnitOptions,
+      selectedServingUnit: this.selectedServingUnit,
+      selectedServingQuantity: qty != null && qty > 0 ? qty : null,
+      constituents,
+      calories: Number(scaled.calories ?? 0),
+      proteinG: Number(scaled.proteinG ?? 0),
+      carbsG: Number(scaled.carbsG ?? 0),
+      fatG: Number(scaled.fatG ?? 0),
+      fiberG: scaled.fiberG,
+      source: this.existing?.source ?? this.prefill?.source ?? "manual",
+      note: fd.get("note") ? String(fd.get("note")) : this.prefill?.note ?? null,
+      grounding: this.existing?.grounding ?? null,
+      productMetadata: this.existing?.productMetadata ?? this.prefill?.productMetadata ?? null,
+    };
+    for (const key of ALL_MICRO_KEYS) {
+      if (key === "fiberG") continue;
+      entry[key] = scaled[key] ?? null;
+    }
+    return entry;
+  }
+
+  /**
+   * @param {{ resumeCapture: boolean }} opts
+   */
+  async commitToProgressiveMeal(opts) {
+    if (this.existing || this.correcting) return;
+    const entry = this.buildEntryFromForm();
+    if (!entry) return;
+    addToProgressiveMeal({
+      analysis: entry,
+      mealType: entry.mealType,
+      source: entry.source,
+      selectedServingUnit: entry.selectedServingUnit ?? null,
+      selectedServingQuantity: entry.selectedServingQuantity ?? null,
+      resumeCapture: opts.resumeCapture,
+    });
+    if (opts.resumeCapture) {
+      location.hash = "#/home";
+      // DiaryView opens the Add Food sheet via consumeResumeProgressiveCapture.
+    } else {
+      location.hash = "#/home";
+    }
+  }
+
+  async onSubmit(ev) {
+    ev.preventDefault();
+    if (!this.existing && hasProgressiveMealItems()) {
+      await this.commitToProgressiveMeal({ resumeCapture: false });
+      return;
+    }
+    const entry = this.buildEntryFromForm();
+    if (!entry) return;
+    if (this.favoriteMode) {
+      // Codeberg #66: the name is the identity key shared with diary rows and
+      // other favorites — a taken name blocks the library save (Android parity).
+      if (await favoriteNameTaken(entry.name, this.favoriteId)) {
+        this.captureFormIntoSource();
+        this.nameError = t("entry.error_name_taken");
+        this.servingReady = true;
+        this.render();
+        return;
+      }
+      await updateFavorite(entry);
+      location.hash = "#/home";
+      return;
+    }
+    await foodEntries.put(entry);
+    location.hash = "#/home";
+  }
+
+  async onDelete() {
+    if (!this.existing) return;
+    const ok = await openConfirm({
+      title: t("entry.delete_title"),
+      message: t("entry.delete_confirm", { name: this.existing.name }),
+      confirmLabel: t("action.delete"),
+      danger: true,
+    });
+    if (!ok) return;
+    await foodEntries.delete(this.existing.id);
+    location.hash = "#/home";
+  }
+}
+
+function nowHm() {
+  const d = new Date();
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
+/**
+ * @param {import('../lib/chompass-core/models.js').FoodConstituent[]|null|undefined} list
+ * @returns {import('../lib/chompass-core/models.js').FoodConstituent[]}
+ */
+function cloneConstituents(list) {
+  if (!Array.isArray(list)) return [];
+  return list.map((c) => ({
+    ...c,
+    servingUnitOptions: Array.isArray(c.servingUnitOptions)
+      ? c.servingUnitOptions.map((u) => ({ ...u }))
+      : [],
+  }));
+}
+
+customElements.define("entry-form", EntryForm);
