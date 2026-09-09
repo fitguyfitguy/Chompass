@@ -399,12 +399,8 @@
     <string name="home_menu_saved_meals">Zapisane posiłki</string>
     <string name="home_menu_barcode">Kod kreskowy</string>
     <string name="home_menu_grounded">Potwierdzone</string>
-    <string name="home_menu_search_food">Szukaj jedzenia</string>
     <string name="food_search_sheet_title">Przeszukaj bazy żywności</string>
     <string name="food_search_placeholder">np. jogurt grecki, mleko, twaróg</string>
-    <string name="food_search_hint">Produkty paczkowane z Open Food Facts oraz offline\'owe bazy USDA i szwajcarska. Wyniki mają oznaczenie źródła.</string>
-    <string name="food_search_empty">Wpisz, aby wyszukać produkty paczkowane i ogólne</string>
-    <string name="food_search_no_results">Nie znaleziono produktów. Spróbuj innej nazwy.</string>
     <string name="food_search_source_off">Open Food Facts</string>
     <string name="food_search_source_usda">USDA</string>
     <string name="food_search_source_swiss">Szwajcarska</string>

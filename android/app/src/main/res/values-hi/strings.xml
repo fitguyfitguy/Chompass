@@ -932,9 +932,6 @@
     <string name="export_sync_title">सिंक JSON निर्यात करें</string>
     <string name="export_to">तक</string>
     <string name="finish_onboarding_hint">इस भोजन की तुलना अपने दैनिक लक्ष्यों से करने के लिए पहले ऑनबोर्डिंग पूरी करें।</string>
-    <string name="food_search_empty">पैकेज्ड और सामान्य खाद्य पदार्थ खोजने के लिए लिखें</string>
-    <string name="food_search_hint">Open Food Facts के पैकेज्ड खाद्य पदार्थ, साथ ही ऑफ़लाइन USDA और स्विस डेटाबेस। परिणामों पर स्रोत बैज होता है।</string>
-    <string name="food_search_no_results">कोई खाद्य पदार्थ नहीं मिला। दूसरा नाम आज़माएं।</string>
     <string name="food_search_placeholder">जैसे ग्रीक दही, दूध, पनीर</string>
     <string name="food_search_sheet_title">खाद्य डेटाबेस खोजें</string>
     <string name="food_search_source_swiss">स्विस</string>
@@ -1007,7 +1004,6 @@
     <string name="home_menu_copy_from_day">दिन से कॉपी करें</string>
     <string name="home_menu_from_photos_note">फोटो + नोट से</string>
     <string name="home_menu_grounded">आधारित</string>
-    <string name="home_menu_search_food">खाना खोजें</string>
     <string name="home_nutrient_cards">होम पोषक तत्व कार्ड</string>
     <string name="home_nutrients">होम पोषक तत्व</string>
     <string name="home_nutrients_pick_count">होम स्क्रीन के लिए %1$d तक पोषक तत्व चुनें।</string>

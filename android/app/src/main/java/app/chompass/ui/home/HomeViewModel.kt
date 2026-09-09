@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import app.chompass.AppContainer
 import app.chompass.R
-import app.chompass.data.QuickRelogRows
+import app.chompass.data.SavedFoodIndexEntry
+import app.chompass.data.asSuggestion
 import app.chompass.data.disambiguateFoodName
+import app.chompass.data.mergesWithSavedFood
 import app.chompass.data.loadLastGoalChangeSheet
 import app.chompass.models.ActiveBurnShade
 import app.chompass.models.ActiveCalorieSource
@@ -54,6 +56,11 @@ import app.chompass.services.OpenFoodFactsService
 import app.chompass.services.PerfLog
 import app.chompass.services.WaterReminderPlanner
 import app.chompass.services.grounding.DatabaseSearchResult
+import app.chompass.services.grounding.FoodDatabaseSearch
+import app.chompass.services.grounding.FoodSuggestion
+import app.chompass.services.grounding.FoodSuggestionRanker
+import app.chompass.services.grounding.QueryNormalizer
+import app.chompass.services.grounding.SuggestionKind
 import app.chompass.services.grounding.GroundedEntryFeature
 import app.chompass.services.ai.AiError
 import app.chompass.services.health.ActivityDataSource
@@ -63,7 +70,12 @@ import app.chompass.services.ai.applyTo
 import app.chompass.services.ai.toMicronutrients
 import app.chompass.services.ai.userMessage
 import app.chompass.models.MicronutrientValues
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -188,6 +200,30 @@ data class HomeUiState(
      */
     val pendingPortionPreConfirmed: Boolean = false,
     val pendingInputDraftImageFilenames: List<String> = emptyList(),
+    /**
+     * Unified Add Food search: what the user typed, and the ranked suggestions
+     * for it. Owned by the ViewModel rather than the sheet because the search
+     * outlives sheet recomposition while a database leg is in flight, and
+     * because dismissing the sheet to run an analysis still needs the text.
+     */
+    val addFoodQuery: String = "",
+    val addFoodSuggestions: List<FoodSuggestion> = emptyList(),
+    /**
+     * Zero-query state: the Saved Meals tab shown inline in the Add Food sheet
+     * and its rows. They occupy the same reserved viewport the search results
+     * later fill, so typing swaps the list's contents without resizing the
+     * sheet and shoving the input field around.
+     */
+    val addFoodSavedTab: SavedTab = SavedTab.RECENTS,
+    val addFoodSavedRows: List<FoodSuggestion> = emptyList(),
+    /** True while the Open Food Facts leg is still outstanding for this query. */
+    val addFoodSuggestNetworkPending: Boolean = false,
+    /**
+     * Identity the pending entry keeps no matter which source supplies its
+     * nutrients. Set once when the draft is saved (already disambiguated) so a
+     * later source swap never re-enters disambiguation.
+     */
+    val pendingIdentityName: String? = null,
     /** Analysis queue + prompt history (Codeberg #53), newest first. */
     val queueEntries: List<QueuedAnalysis> = emptyList(),
     val queueRunningId: UUID? = null,
@@ -500,6 +536,12 @@ data class HomeUiState(
             pendingQueueEntryId == other.pendingQueueEntryId &&
             pendingPortionPreConfirmed == other.pendingPortionPreConfirmed &&
             pendingInputDraftImageFilenames == other.pendingInputDraftImageFilenames &&
+            addFoodQuery == other.addFoodQuery &&
+            addFoodSuggestions == other.addFoodSuggestions &&
+            addFoodSavedTab == other.addFoodSavedTab &&
+            addFoodSavedRows == other.addFoodSavedRows &&
+            addFoodSuggestNetworkPending == other.addFoodSuggestNetworkPending &&
+            pendingIdentityName == other.pendingIdentityName &&
             queueEntries == other.queueEntries &&
             queueRunningId == other.queueRunningId &&
             showAnalysisQueue == other.showAnalysisQueue &&
@@ -585,6 +627,12 @@ data class HomeUiState(
         result = 31 * result + (pendingQueueEntryId?.hashCode() ?: 0)
         result = 31 * result + pendingPortionPreConfirmed.hashCode()
         result = 31 * result + pendingInputDraftImageFilenames.hashCode()
+        result = 31 * result + addFoodQuery.hashCode()
+        result = 31 * result + addFoodSuggestions.hashCode()
+        result = 31 * result + addFoodSavedTab.hashCode()
+        result = 31 * result + addFoodSavedRows.hashCode()
+        result = 31 * result + addFoodSuggestNetworkPending.hashCode()
+        result = 31 * result + (pendingIdentityName?.hashCode() ?: 0)
         result = 31 * result + queueEntries.hashCode()
         result = 31 * result + (queueRunningId?.hashCode() ?: 0)
         result = 31 * result + showAnalysisQueue.hashCode()
@@ -672,6 +720,20 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         const val PHOTO_NOTE_SKIP_OFFER_THRESHOLD = 3
         /** Show the prominent accuracy tip card for the first N photo staging Analyzes. */
         const val PHOTO_ACCURACY_GUIDE_COUNT = 3
+
+        /**
+         * Add Food search pacing. The offline wait is short enough to feel like
+         * typeahead but long enough that a fast typist never queues work on the
+         * search's shared offline mutex; the online wait is the familiar 300 ms
+         * search debounce plus a little, since that leg costs a network round
+         * trip. Both are measured from the keystroke.
+         */
+        const val OFFLINE_SEARCH_DEBOUNCE_MS = 120L
+        const val ONLINE_SEARCH_DEBOUNCE_MS = 350L
+        /** Hard wall-clock cap on the Open Food Facts leg inside the sheet. */
+        const val ONLINE_SEARCH_BUDGET_MS = 4_000L
+        /** Rows rendered in the Add Food zero-query list before it stops growing. */
+        const val ADD_FOOD_SAVED_ROW_CAP = 60
     }
 
     @Volatile
@@ -681,17 +743,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     private val activitySnapshotGuard = ActivitySnapshotRefreshGuard()
 
     /**
-     * Same-day hub-chip cache so reopening the Log sheet is instant after the
-     * first open. Invalidated on every diary/favorites emission (see the init
-     * combine) so a fresh save always shows the new recents.
+     * Bumped on any diary/favorites change (see the init combine) so the Add
+     * Food saved-food index knows it is stale. Kept after the hub re-log chips
+     * were replaced by the inline Saved Meals tabs, because it is still the one
+     * signal that says "the user's foods changed".
      */
-    private var quickRelogCache: QuickRelogRows? = null
-    private var quickRelogCacheDay: LocalDate? = null
-    private var quickRelogCacheEpoch = 0
-    /** Bumped on any diary/favorites change (init combine) — invalidates the cache. */
     private var quickRelogEpoch = 0
-    /** Shared in-flight load so the FAB prefetch and the sheet LaunchedEffect never run twice. */
-    private var quickRelogLoad: CompletableDeferred<QuickRelogRows>? = null
     @Volatile private var daySwitchStartedAtNs = 0L
     @Volatile private var relogAckAtNs = 0L
     @Volatile private var relogAckPriorCount = -1
@@ -700,46 +757,56 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     @Volatile private var waterAckAtNs = 0L
     @Volatile private var waterAckPriorMl = -1
 
-    /** Warm hub recents while the Log sheet animates open (called from the FAB tap). */
-    fun prefetchQuickRelog() {
-        viewModelScope.launch { loadQuickRelogCached() }
-    }
+    /**
+     * Suggestion index for the unified Add Food search. A sibling of the hub
+     * chip cache rather than an extension of it: that one is two fixed rows
+     * scoped to the current day, this one is the whole searchable set and does
+     * not care what day is shown. Invalidation rides [quickRelogEpoch] — the
+     * same signal, so there is only one thing to keep correct.
+     */
+    private var savedIndexCache: List<SavedFoodIndexEntry>? = null
+    private var savedIndexCacheEpoch = -1
+    private var savedIndexLoad: CompletableDeferred<List<SavedFoodIndexEntry>>? = null
 
-    /** Instant chip row if the same-day cache is still valid; null means show placeholders. */
-    fun peekQuickRelogCache(): QuickRelogRows? {
-        val today = LocalDate.now()
-        return if (quickRelogCacheDay == today && quickRelogCacheEpoch == quickRelogEpoch) {
-            quickRelogCache
-        } else {
-            null
+    /** Monotonic guard: only the newest query may publish suggestions. */
+    private var suggestGeneration = 0
+    private var suggestJob: Job? = null
+
+    /** Warm the Add Food sheet's saved foods while it animates open (FAB tap). */
+    fun prefetchAddFoodIndex() {
+        viewModelScope.launch {
+            savedFoodIndexCached()
+            // Both offline indexes are `by lazy` in AppContainer and open their
+            // bundled SQLite asset on first touch. Doing that here keeps it off
+            // the first keystroke, where it would land inside the search's
+            // shared offline mutex.
+            runCatching {
+                withContext(Dispatchers.IO) {
+                    container.usdaFoodIndex
+                    container.swissFoodIndex
+                }
+            }
         }
     }
 
-    /** Hub chips for the AddFoodSheet; cached per day, refreshed after any diary change. */
-    suspend fun quickRelogRowsCached(): QuickRelogRows = loadQuickRelogCached()
-
-    private suspend fun loadQuickRelogCached(): QuickRelogRows {
-        val today = LocalDate.now()
-        if (quickRelogCacheDay == today && quickRelogCacheEpoch == quickRelogEpoch) {
-            quickRelogCache?.let { return it }
+    private suspend fun savedFoodIndexCached(): List<SavedFoodIndexEntry> {
+        if (savedIndexCacheEpoch == quickRelogEpoch) {
+            savedIndexCache?.let { return it }
         }
-        // Dedupe concurrent loads (FAB prefetch + sheet LaunchedEffect overlap).
-        quickRelogLoad?.let { return it.await() }
-        val deferred = CompletableDeferred<QuickRelogRows>()
-        quickRelogLoad = deferred
+        savedIndexLoad?.let { return it.await() }
+        val deferred = CompletableDeferred<List<SavedFoodIndexEntry>>()
+        savedIndexLoad = deferred
         val startEpoch = quickRelogEpoch
         viewModelScope.launch {
-            // Degrade to empty chip rows on failure — never hang the sheet.
+            // Degrade to an empty index rather than hanging the search: database
+            // hits and the Analyze row still work without it.
             val fresh = runCatching {
-                withContext(Dispatchers.Default) {
-                    container.foodRepository.quickRelogRows(perRow = 10)
-                }
-            }.getOrDefault(QuickRelogRows.Empty)
-            quickRelogLoad = null
+                withContext(Dispatchers.Default) { container.foodRepository.savedFoodIndex() }
+            }.getOrDefault(emptyList())
+            savedIndexLoad = null
             if (startEpoch == quickRelogEpoch) {
-                quickRelogCache = fresh
-                quickRelogCacheDay = today
-                quickRelogCacheEpoch = startEpoch
+                savedIndexCache = fresh
+                savedIndexCacheEpoch = startEpoch
             }
             deferred.complete(fresh)
         }
@@ -765,6 +832,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 _ui.value.copy(
                     error = null,
                     pendingAnalysis = null,
+                    pendingIdentityName = null,
                     pendingReviewSource = null,
                     pendingPortionPreConfirmed = false,
                     analyzing = true,
@@ -789,6 +857,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         container.analyzingFood.value = false
         _ui.update { it.copy(
             pendingAnalysis = null,
+            pendingIdentityName = null,
             pendingReviewSource = null,
             analyzing = false,
             analysisPhase = null,
@@ -1004,7 +1073,6 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             // stays instant instead of rescanning 90 days.
             if (day != _ui.value.date || favKeys != _ui.value.favoriteKeys) {
                 quickRelogEpoch++
-                quickRelogCache = null
             }
             _ui.value.copy(
                 profile = p,
@@ -1761,6 +1829,175 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /**
+     * Unified Add Food search. Publishes three times per query, widening the
+     * result set each time so the user is never waiting on a slower source:
+     *
+     *  1. immediately, from the cached local index;
+     *  2. after a short debounce, adding the bundled USDA / Swiss rows;
+     *  3. after a longer one, adding Open Food Facts.
+     *
+     * The ranker's score bands keep the local rows on top throughout, so later
+     * legs only ever append — the row under the user's finger never moves.
+     */
+    fun onAddFoodQueryChange(raw: String) {
+        _ui.update { it.copy(addFoodQuery = raw) }
+        val gen = ++suggestGeneration
+        suggestJob?.cancel()
+        val query = raw.trim()
+        if (query.isEmpty()) {
+            _ui.update {
+                it.copy(addFoodSuggestions = emptyList(), addFoodSuggestNetworkPending = false)
+            }
+            return
+        }
+        suggestJob = viewModelScope.launch {
+            val index = savedFoodIndexCached()
+            val recipes = runCatching { container.recipeRepository.recipes.first() }
+                .getOrDefault(emptyList())
+            var database = emptyList<DatabaseSearchResult>()
+
+            suspend fun publish(networkPending: Boolean) {
+                if (gen != suggestGeneration) return
+                val ranked = withContext(Dispatchers.Default) {
+                    FoodSuggestionRanker.rank(query, index, recipes, database)
+                }
+                // Both guards matter: cancel() stops the coroutine, and the
+                // generation check catches a cancelled-but-not-yet-suspended one
+                // trying to write state for a query the user has moved past.
+                if (gen != suggestGeneration) return
+                _ui.update {
+                    if (it.addFoodSuggestions == ranked &&
+                        it.addFoodSuggestNetworkPending == networkPending
+                    ) {
+                        it
+                    } else {
+                        it.copy(
+                            addFoodSuggestions = ranked,
+                            addFoodSuggestNetworkPending = networkPending,
+                        )
+                    }
+                }
+            }
+
+            // With Open Food Facts switched off in Settings the online leg never
+            // runs, so the list must not promise a pending network result either.
+            val offEnabled = runCatching {
+                container.foodDatabaseSearch.isSourceEnabled(FoodDatabaseSearch.Source.OPEN_FOOD_FACTS)
+            }.getOrDefault(true)
+
+            publish(networkPending = offEnabled)
+
+            delay(OFFLINE_SEARCH_DEBOUNCE_MS)
+            currentCoroutineContext().ensureActive()
+            database = database + runCatching {
+                container.foodDatabaseSearch.searchOffline(query)
+            }.getOrDefault(emptyList())
+            publish(networkPending = offEnabled)
+            if (!offEnabled) return@launch
+
+            delay(ONLINE_SEARCH_DEBOUNCE_MS - OFFLINE_SEARCH_DEBOUNCE_MS)
+            currentCoroutineContext().ensureActive()
+            // Open Food Facts walks a candidate-query chain with per-candidate
+            // backoff, so its own budget runs to tens of seconds. Acceptable in a
+            // dedicated search screen, not in the primary logging path.
+            val online = try {
+                withTimeoutOrNull(ONLINE_SEARCH_BUDGET_MS) {
+                    container.foodDatabaseSearch.searchOnline(query)
+                } ?: emptyList()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                emptyList()
+            }
+            database = database + online
+            publish(networkPending = false)
+        }
+    }
+
+    /**
+     * Fill the Add Food sheet's zero-query list from the saved-food index that
+     * the search already caches, so switching tabs costs no I/O and the rows
+     * are identical in shape to the search results that replace them.
+     */
+    fun selectAddFoodSavedTab(tab: SavedTab) {
+        _ui.update { it.copy(addFoodSavedTab = tab) }
+        viewModelScope.launch {
+            container.prefs.setLastSavedMealsSegment(tab.name)
+            refreshAddFoodSavedRows(tab)
+        }
+    }
+
+    /** Warm the zero-query list for whichever tab the user last used. */
+    fun prefetchAddFoodSavedRows() {
+        viewModelScope.launch {
+            val persisted = runCatching { container.prefs.lastSavedMealsSegment.first() }.getOrNull()
+            val tab = runCatching { SavedTab.valueOf(persisted.orEmpty()) }.getOrDefault(SavedTab.RECENTS)
+            _ui.update { it.copy(addFoodSavedTab = tab) }
+            refreshAddFoodSavedRows(tab)
+        }
+    }
+
+    private suspend fun refreshAddFoodSavedRows(tab: SavedTab) {
+        val index = savedFoodIndexCached()
+        val recipes = if (tab == SavedTab.RECIPES) {
+            runCatching { container.recipeRepository.recipes.first() }.getOrDefault(emptyList())
+        } else {
+            emptyList()
+        }
+        val rows = withContext(Dispatchers.Default) {
+            when (tab) {
+                // Score is unused when there is no query to score against; the
+                // explicit sort per tab is the ordering.
+                SavedTab.RECENTS -> index.sortedByDescending { it.lastLogged }.map { it.asSuggestion() }
+                SavedTab.FREQUENT -> index.filter { it.logCount > 0 }
+                    .sortedWith(compareByDescending<SavedFoodIndexEntry> { it.logCount }
+                        .thenBy { it.template.name.lowercase(Locale.ROOT) })
+                    .map { it.asSuggestion() }
+                SavedTab.FAVORITES -> index.filter { it.kind == SuggestionKind.FAVORITE }
+                    .map { it.asSuggestion() }
+                SavedTab.RECIPES -> recipes.map { FoodSuggestion.SavedRecipe(it, score = 0.0) }
+            }.take(ADD_FOOD_SAVED_ROW_CAP)
+        }
+        _ui.update { if (it.addFoodSavedTab == tab) it.copy(addFoodSavedRows = rows) else it }
+    }
+
+    /** Sheet dismissed / query cleared: drop the search and cancel any in-flight leg. */
+    fun clearAddFoodQuery() {
+        suggestGeneration++
+        suggestJob?.cancel()
+        suggestJob = null
+        _ui.update {
+            it.copy(
+                addFoodQuery = "",
+                addFoodSuggestions = emptyList(),
+                addFoodSuggestNetworkPending = false,
+            )
+        }
+    }
+
+    /**
+     * Tap on a suggestion row. Saved foods log straight away (the chips have
+     * always behaved that way); recipes log every ingredient; database rows go
+     * through the review sheet because their portion still needs confirming.
+     */
+    fun pickSuggestion(suggestion: FoodSuggestion) {
+        when (suggestion) {
+            is FoodSuggestion.SavedFood -> relogMeal(suggestion.template)
+            is FoodSuggestion.SavedRecipe -> logRecipe(suggestion.recipe)
+            is FoodSuggestion.DatabaseHit -> selectFoodSearchResult(suggestion.result)
+        }
+    }
+
+    /** Long-press on a suggestion row: review before logging instead of logging. */
+    fun reviewSuggestion(suggestion: FoodSuggestion) {
+        when (suggestion) {
+            is FoodSuggestion.SavedFood -> reviewSavedMeal(suggestion.template)
+            is FoodSuggestion.SavedRecipe -> logRecipe(suggestion.recipe)
+            is FoodSuggestion.DatabaseHit -> selectFoodSearchResult(suggestion.result)
+        }
+    }
+
+    /**
      * Add Food "Search food" database pick: resolve the hit to a full
      * [FoodAnalysis] (OFF barcode lookup for micros, or offline USDA/Swiss row)
      * and prefill the review sheet with its provenance badge.
@@ -1820,6 +2057,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         imageBytes = imageBytes,
                     ),
                     pendingAnalysis = null,
+                    pendingIdentityName = null,
                     analyzing = false,
                     analysisPhase = null,
                     inferringUnits = false,
@@ -1963,13 +2201,14 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 // no stale draft — strictly better than the old two-edit window
                 // that could restore a review which double-logs on re-save).
                 container.foodRepository.addEntry(entry, clearDraft = true, writeHealth = false)
-                promoteQuickRelog(entry)
+                promoteSavedIndex(entry)
                 // Health Connect mirroring is the slowest save step (IPC). Run it
                 // in the background so the review sheet can dismiss as soon as the
                 // diary row is on disk instead of after the HC round-trip.
                 viewModelScope.launch { container.foodRepository.mirrorEntryToHealth(entry) }
                 _ui.update { it.copy(
                     pendingAnalysis = null,
+                    pendingIdentityName = null,
                     pendingImageBytes = null,
                     pendingAnalysisImages = emptyList(),
                     pendingFoodSource = null,
@@ -2025,6 +2264,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         _ui.update { it.copy(
             progressiveMeal = draft,
             pendingAnalysis = null,
+            pendingIdentityName = null,
             pendingImageBytes = null,
             pendingAnalysisImages = emptyList(),
             pendingFoodSource = null,
@@ -2226,6 +2466,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
         _ui.update { it.copy(
             pendingAnalysis = null,
+            pendingIdentityName = null,
             pendingImageBytes = null,
             pendingAnalysisImages = emptyList(),
             pendingFoodSource = null,
@@ -2527,6 +2768,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             pendingDraftImageFilename = null,
             pendingReviewSource = template,
             pendingPortionPreConfirmed = false,
+            // A saved meal already is the source of record: nothing to offer,
+            // and any strip left over from a previous analysis is stale.
+            pendingIdentityName = template.name,
             error = null
         ) }
     }
@@ -2587,7 +2831,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             relogAckAtNs = System.nanoTime()
             relogAckPriorCount = _ui.value.todayEntries.size
         }
-        promoteQuickRelog(template)
+        promoteSavedIndex(template)
         viewModelScope.launch {
             PerfLog.measure("relog", "addEntry", "name=${template.name}") {
                 container.foodRepository.addEntry(
@@ -2769,7 +3013,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             pendingPromptText = null,
             pendingQueueEntryId = null,
             pendingPortionPreConfirmed = portionPreConfirmed,
-            pendingInputDraftImageFilenames = emptyList()
+            pendingInputDraftImageFilenames = emptyList(),
+            pendingIdentityName = uniqueAnalysis.name,
         ) }
     }
 
@@ -2856,7 +3101,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
      */
     private suspend fun resolveNewFoodName(rawName: String, relogTemplate: FoodEntry?): String {
         val trimmed = rawName.trim()
-        if (relogTemplate != null && trimmed.lowercase(Locale.ROOT) == relogTemplate.favoriteKey) {
+        if (mergesWithSavedFood(rawName, relogTemplate)) {
             return trimmed.ifEmpty { rawName }
         }
         return disambiguateFoodName(rawName, container.foodRepository.existingFoodIdentityKeys())
@@ -2996,12 +3241,30 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             }
         }
 
-    private fun promoteQuickRelog(template: FoodEntry) {
-        val cache = quickRelogCache ?: return
-        val recents = (listOf(template) +
-            cache.recents.filter { it.favoriteKey != template.favoriteKey }).take(10)
-        val frequents = cache.frequents.filter { it.favoriteKey != template.favoriteKey }
-        quickRelogCache = QuickRelogRows(recents, frequents)
+
+    /**
+     * Keep the search index in step with a same-day write, the same way
+     * the hub chips used to be kept in step. A plain food write does not
+     * bump [quickRelogEpoch] (rescanning a year of diary per save would be
+     * absurd), so without this a food logged a moment ago would not be findable
+     * until the next date or favorites change.
+     */
+    private fun promoteSavedIndex(template: FoodEntry) {
+        val cache = savedIndexCache ?: return
+        val key = template.favoriteKey
+        if (key.isEmpty()) return
+        val existing = cache.firstOrNull { it.template.favoriteKey == key }
+        val updated = SavedFoodIndexEntry(
+            template = template,
+            kind = existing?.kind ?: SuggestionKind.RECENT,
+            logCount = (existing?.logCount ?: 0) + 1,
+            lastLogged = template.timestamp,
+            normalizedName = existing?.normalizedName
+                ?: QueryNormalizer.normalizeQuery(template.name),
+            nameTokens = existing?.nameTokens
+                ?: QueryNormalizer.normalizeTokens(template.name).toSet(),
+        )
+        savedIndexCache = listOf(updated) + cache.filter { it.template.favoriteKey != key }
     }
 
     /** Hero ⓘ → recalc details: open the persisted goal-change sheet. */
@@ -3048,22 +3311,25 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
     private suspend fun benchHubOpen(count: Int) {
         repeat(count) { i ->
-            quickRelogCache = null
+            // Follows what the sheet actually loads on open: the saved-food
+            // index replaced the hub chip rows it used to measure.
+            savedIndexCache = null
             quickRelogEpoch++
             val rows = PerfLog.measure("hubOpen", "benchLoad", "i=$i") {
-                loadQuickRelogCached()
+                savedFoodIndexCached()
             }
             android.util.Log.i(
                 PerfLog.TAG,
-                "op=hubOpen phase=benchRows i=$i recents=${rows.recents.size} frequents=${rows.frequents.size}",
+                "op=hubOpen phase=benchRows i=$i foods=${rows.size}",
             )
         }
     }
 
     private suspend fun benchRelog(count: Int) {
         android.util.Log.i(PerfLog.TAG, "op=relogBench phase=start count=$count")
-        val rows = loadQuickRelogCached()
-        val template = rows.recents.firstOrNull() ?: rows.frequents.firstOrNull()
+        val template = savedFoodIndexCached()
+            .maxByOrNull { it.lastLogged }
+            ?.template
         if (template == null) {
             android.util.Log.w(PerfLog.TAG, "op=relogBench phase=done count=0 ok=0 fail=0 err=no-hub-rows")
             return
@@ -3100,7 +3366,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     relogAckAtNs = System.nanoTime()
                     relogAckPriorCount = _ui.value.todayEntries.size
                 }
-                promoteQuickRelog(canned)
+                promoteSavedIndex(canned)
                 viewModelScope.launch {
                     PerfLog.measure("entryLocal", "addEntry", "i=$i") {
                         container.foodRepository.addEntry(

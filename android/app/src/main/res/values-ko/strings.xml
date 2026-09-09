@@ -931,9 +931,6 @@
     <string name="export_sync_title">동기화 JSON 내보내기</string>
     <string name="export_to">종료</string>
     <string name="finish_onboarding_hint">이 식사를 일일 목표와 비교하려면 먼저 온보딩을 완료하세요.</string>
-    <string name="food_search_empty">입력하여 포장 식품 및 일반 음식 검색</string>
-    <string name="food_search_hint">Open Food Facts의 포장 식품과 오프라인 USDA 및 스위스 데이터베이스. 결과에는 출처 배지가 표시돼요.</string>
-    <string name="food_search_no_results">음식을 찾지 못했어요. 다른 이름을 시도해 보세요.</string>
     <string name="food_search_placeholder">예: 그릭 요거트, 우유, 코티지치즈</string>
     <string name="food_search_sheet_title">음식 데이터베이스 검색</string>
     <string name="food_search_source_swiss">스위스</string>
@@ -1006,7 +1003,6 @@
     <string name="home_menu_copy_from_day">날짜에서 복사</string>
     <string name="home_menu_from_photos_note">사진 + 메모에서</string>
     <string name="home_menu_grounded">근거 기반</string>
-    <string name="home_menu_search_food">음식 검색</string>
     <string name="home_nutrient_cards">홈 영양소 카드</string>
     <string name="home_nutrients">홈 영양소</string>
     <string name="home_nutrients_pick_count">홈 화면에 최대 %1$d개 영양소를 선택하세요.</string>

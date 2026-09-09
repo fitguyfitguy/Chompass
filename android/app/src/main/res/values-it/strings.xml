@@ -1697,15 +1697,11 @@
     <string name="error_search_food_failed">Impossibile caricare questo alimento. Riprova.</string>
     <string name="error_unknown">Errore sconosciuto</string>
     <string name="error_webdav_sync_failed">Sincronizzazione WebDAV non riuscita</string>
-    <string name="food_search_empty">Digita per cercare alimenti confezionati e generici</string>
-    <string name="food_search_hint">Alimenti confezionati da Open Food Facts, più database offline USDA e svizzeri. I risultati mostrano un badge della fonte.</string>
-    <string name="food_search_no_results">Nessun alimento trovato. Prova un altro nome.</string>
     <string name="food_search_placeholder">es. yogurt greco, latte, quark</string>
     <string name="food_search_sheet_title">Cerca nei database alimentari</string>
     <string name="food_search_source_swiss">Svizzero</string>
     <string name="grounding_badge_swiss">Verificato · database svizzero composizione alimenti</string>
     <string name="grounding_source_swiss">Svizzero</string>
-    <string name="home_menu_search_food">Cerca alimento</string>
     <string name="keto_carb_manual_hint">L\'obiettivo manuale è limitato tra 20 e 50 g/giorno di carboidrati netti.</string>
     <string name="keto_carb_mode_adaptive">Carboidrati adattivi</string>
     <string name="keto_carb_mode_adaptive_subtitle">Consigliati dal tuo profilo e obiettivo.</string>

@@ -931,9 +931,6 @@
     <string name="export_sync_title">同期 JSON をエクスポート</string>
     <string name="export_to">終了</string>
     <string name="finish_onboarding_hint">この食事を1日の目標と比較するには、先にオンボーディングを完了してください。</string>
-    <string name="food_search_empty">入力してパッケージ食品や一般食品を検索</string>
-    <string name="food_search_hint">Open Food Facts のパッケージ食品に加え、オフラインの USDA・スイスデータベース。結果には出典バッジが付きます。</string>
-    <string name="food_search_no_results">食品が見つかりません。別の名前を試してください。</string>
     <string name="food_search_placeholder">例：ギリシャヨーグルト、牛乳、カッテージチーズ</string>
     <string name="food_search_sheet_title">食品データベースを検索</string>
     <string name="food_search_source_swiss">スイス</string>
@@ -1006,7 +1003,6 @@
     <string name="home_menu_copy_from_day">日付からコピー</string>
     <string name="home_menu_from_photos_note">写真+メモから</string>
     <string name="home_menu_grounded">裏付け</string>
-    <string name="home_menu_search_food">食品を検索</string>
     <string name="home_nutrient_cards">ホーム栄養素カード</string>
     <string name="home_nutrients">ホーム栄養素</string>
     <string name="home_nutrients_pick_count">ホーム画面に最大 %1$d 種類の栄養素を選択してください。</string>

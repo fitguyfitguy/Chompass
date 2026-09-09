@@ -463,7 +463,7 @@ private fun RecentsSortChips(selected: SavedMealsSort, onSelect: (SavedMealsSort
 }
 
 @Composable
-private fun SegmentedTabs(selected: SavedTab, onSelect: (SavedTab) -> Unit) {
+internal fun SegmentedTabs(selected: SavedTab, onSelect: (SavedTab) -> Unit) {
     val isDark = isDarkTheme()
     val trackColor = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
     val trackBorder = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight

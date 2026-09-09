@@ -903,9 +903,6 @@
     <string name="export_sync_title">Sync-JSON exporteren</string>
     <string name="export_to">Naar</string>
     <string name="finish_onboarding_hint">Voltooi eerst de onboarding om deze maaltijd met je dagelijkse doelen te vergelijken.</string>
-    <string name="food_search_empty">Typ om verpakte en algemene voedingsmiddelen te zoeken</string>
-    <string name="food_search_hint">Verpakte voedingsmiddelen van Open Food Facts, plus offline USDA- en Zwitserse databases. Resultaten tonen een bronbadge.</string>
-    <string name="food_search_no_results">Geen voedingsmiddelen gevonden. Probeer een andere naam.</string>
     <string name="food_search_placeholder">bijv. Griekse yoghurt, melk, kwark</string>
     <string name="food_search_sheet_title">Voedingsdatabases doorzoeken</string>
     <string name="food_search_source_swiss">Zwitsers</string>
@@ -979,7 +976,6 @@
     <string name="home_menu_copy_from_day">Kopiëren van dag</string>
     <string name="home_menu_from_photos_note">Van foto\'s + notitie</string>
     <string name="home_menu_grounded">Gefundeerd</string>
-    <string name="home_menu_search_food">Voedsel zoeken</string>
     <string name="home_nutrient_cards">Home-voedingsstofkaarten</string>
     <string name="home_nutrients">Home-voedingsstoffen</string>
     <string name="home_nutrients_pick_count">Kies maximaal %1$d voedingsstoffen voor het startscherm.</string>

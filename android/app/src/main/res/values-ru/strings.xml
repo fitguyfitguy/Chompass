@@ -1335,12 +1335,8 @@
     <string name="settings_photo_note_prompt">Спрашивать заметку к фото</string>
     <string name="settings_photo_note_prompt_footer">Если включено, при записи по фото поле заметки выделяется перед «Анализ». Можно подтвердить и продолжить без заметки.</string>
     <string name="settings_progress_default_range">Диапазон по умолчанию в «Прогресс»</string>
-    <string name="home_menu_search_food">Поиск еды</string>
     <string name="food_search_sheet_title">Поиск в базах продуктов</string>
     <string name="food_search_placeholder">напр. греческий йогурт, Milch, quark</string>
-    <string name="food_search_hint">Продукты из Open Food Facts, а также офлайн-базы USDA и швейцарская. Результаты имеют пометку источника.</string>
-    <string name="food_search_empty">Введи запрос для поиска продуктов</string>
-    <string name="food_search_no_results">Ничего не найдено. Попробуй другое название.</string>
 
 
     <string name="food_search_source_swiss">Швейцарская</string>
