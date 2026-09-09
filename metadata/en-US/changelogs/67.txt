@@ -1,0 +1,8 @@
+• Custom meal names and extra meals: rename any slot, add extra meals, hide ones you do not use, reorder them, and set each start time. Names follow diary export, import, shared meals, and WebDAV. Settings → Meals
+• Type numbers on wheels: tap the number on a calorie, macro, weight, or limit wheel to type the value. The last choice is remembered
+• Day types: up to 7 named day types, each with its own calorie and macro targets. Switch today's type from a chip under the Home ring, map them to weekdays, or run a repeating cycle. Off by default under Settings → Goals & Nutrition → Day types
+• Goals history is frozen per day: Progress uses the target that was in effect on each day, and diary exports carry those targets
+• Coach sees your average intake: the last 7 and 30 logged days of calories and macros, without a lookup
+• Add Food is less wordy: extra section titles are gone; recent and frequent chips sit under voice, barcode, and search
+• Photo review no longer asks to confirm the portion: correct size with the tip note or by editing grams
+• Fixed: caffeine and nicotine limit sheets stay on screen, leftover serving units can be deleted, a just-logged weight stays in history while Health Connect or WebDAV catches up, and What if? shows the advice instead of JSON

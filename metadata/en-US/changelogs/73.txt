@@ -1,0 +1,6 @@
+• Meal nutrition vs your daily goals: tap a meal name on Home to see that slot's totals with a percent of each daily goal. View more still opens the whole day
+• Vitamins and minerals for each ingredient: meals broken into ingredients can show each ingredient's estimated fiber, sugars, vitamins, and minerals. Open a meal's nutrition on Home, or expand an ingredient in the review and edit sheets
+• Accidentally dismissed meal reviews can be recovered: Home shows a recovered analysis chip; tap it to bring the review back without a new AI call
+• Gemini 3.8 Flash is the default AI model: new installs and anyone who never picked a model now get it. The fallback stays Gemini 3.5 Flash-Lite
+• Meal schedules that cross midnight now save: start times may wrap past midnight, and when a schedule still cannot be saved the editor says so
+• Fixed: changing an ingredient amount now scales its vitamins and minerals, multi-ingredient meals no longer come back cut off on length-capped AI providers, and imported ingredient micros are cleaned

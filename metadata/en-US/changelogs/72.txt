@@ -1,0 +1,4 @@
+• Notice when a backup replaces your data: after a reinstall, Android can restore an older backup over the profile you just set up. The app now shows a one-time Backup restored dialog
+• Log meal stays on screen in the meal builder: with five or more ingredients the sheet caps its height, the list scrolls, and Log meal and Add another stay pinned
+• Save and Log stay visible at large font size: on a narrow screen with a large system font, the primary pill keeps a visible single line
+• Long sheets keep their action buttons reachable: importing a shared meal, a long daily or context note, the fasting goal sheet, and live voice transcript no longer push Save, Add, or Analyze off the screen

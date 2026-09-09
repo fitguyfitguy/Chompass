@@ -1,0 +1,4 @@
+• Choose which nutrients Progress averages: Customize Progress lists every nutrient with a goal. Turn on iron, saturated fat, or vitamins and the averages card shows those rows. Fiber, sugar, and sodium stay as the default
+• Weight keeps the pounds you picked: a pounds pick no longer comes back a tenth off. Kilogram entries are unchanged
+• Onboarding no longer wipes macro day types: finishing onboarding keeps day types, macro locks, the protein grams-per-kilo mode, and the name, and only writes the body stats and goal answers you entered
+• Logged active burns always count: Add Food → Active burn adds those calories to that day's goal even when the calorie gauge is set to Static goal

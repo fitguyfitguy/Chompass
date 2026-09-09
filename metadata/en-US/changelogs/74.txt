@@ -1,0 +1,4 @@
+• On-device photo analysis no longer refuses healthy free memory: the free-memory check before a photo analysis now scales with the phone's RAM, so phones with more memory are not told "not enough memory" when the analysis would have run
+• The Meals editor no longer loses edits without a word: closing the sheet without Save now asks before discarding unsaved meal time changes
+• Changing the amount on a relogged meal now scales its nutrition: amount edits scale right away whenever the meal's unit says how much was originally eaten
+• Coach with Search Grounding works on Gemini 3 models again: asking the coach with Google Search grounding on no longer fails with a provider error

@@ -1,0 +1,7 @@
+• Saved meals from Add Food: a Saved meals row opens Recents, favorites, and recipes. The compact chips stay
+• Progress averages for fiber, sugar, and sodium: off until you turn them on in Customize Progress
+• Edit or delete a logged active burn: Add Food → Active burn lists that day's named logs. Tap a row to change the name or calories, or delete it
+• Meal time uses a compact hour:minute wheel: tap Time on Edit Food. The last choice is remembered
+• System date and time pickers: Settings → App & Display has a toggle to use the phone's date and time dialogs when editing a meal. Off by default
+• Apply a new meal time to the rest of the slot: Edit Food can copy the new date and time onto the other items in that meal
+• Fixed: the saved AI server URL shows on the settings row, barcode calories stay in kcal when carbs are missing, Add another opens the full Add Food sheet, and add-another swipe returns to the in-progress meal

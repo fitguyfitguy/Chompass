@@ -1,0 +1,4 @@
+• Import recipes from Mealie: Saved Meals → Recipes has an import button. Enter your self-hosted Mealie URL and an API token, pick recipes, and they land as named meals. Nutrition comes along when Mealie has it. Re-importing the same recipe updates it instead of duplicating
+• The time on a new food is the time you picked: changing Time on the review sheet after analysis now logs that clock time
+• Editing one ingredient no longer moves the others: changing an ingredient's grams updates that row and the meal total, and leaves the rest as they were
+• Water drink reminders open and keep the window you saved: Drink Reminders on the Water screen opens the drinking-window sheet in one tap when reminders are on. Saving start, end, and cup size writes them together

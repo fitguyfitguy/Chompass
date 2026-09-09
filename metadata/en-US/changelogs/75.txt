@@ -1,0 +1,3 @@
+• Product photos and an info card for barcode foods: scanning a barcode shows the product's front photo from Open Food Facts, plus package size, ingredients, Nutri-Score, NOVA group, Eco-Score, allergens, labels, and categories. When the package size is known, the serving picker offers the whole package. The photo and card stay on your device
+• A late-night dinner now saves: setting Dinner to a time after midnight, such as 2:00, no longer fails the meals editor check
+• Barcode review keeps the product name and photo on the web app, and product photos show the whole pack in a wide letterbox instead of a cropped square
