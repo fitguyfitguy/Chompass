@@ -152,7 +152,8 @@ Packaging complete for Chompass ${VERSION}.
 
 Next steps:
   1. Bump versionCode / versionName in android/app/build.gradle.kts (if not done yet)
-  2. Update docs/CHANGELOG.md
+  2. Update docs/CHANGELOG.md and add metadata/en-US/changelogs/<versionCode>.txt
+     (F-Droid store changelog; checkupdates copies it, otherwise the version has none)
   3. Commit (include docs/screenshots/ if UI changed), tag, and push:
        git tag -a v${VERSION} -m "Chompass ${VERSION}"
        git push origin v${VERSION}
