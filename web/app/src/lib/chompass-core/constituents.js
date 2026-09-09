@@ -376,6 +376,27 @@ export function applyConstituentDisplayEdit(displayRows) {
 }
 
 /**
+ * Unscale display-space constituent edits back to base rows.
+ * @param {FoodConstituent[]} displayRows
+ * @param {number} scale
+ * @returns {{bases: FoodConstituent[], baseAggregate: ReturnType<typeof aggregatesFromConstituents>, displaySum: number, baseSum: number}}
+ */
+export function commitConstituentDisplayEdit(displayRows, scale) {
+  const { rows: cleaned, servingGrams: displaySum } = applyConstituentDisplayEdit(displayRows);
+  const bases =
+    scale === 0 || Math.abs(scale - 1) < 1e-9
+      ? cleaned
+      : scaleAllConstituents(cleaned, 1 / scale);
+  const named = bases.filter((r) => r.name?.trim() && r.servingSizeGrams > 0);
+  const baseAggregate = aggregatesFromConstituents(named);
+  const baseSum =
+    baseAggregate?.servingSizeGrams ??
+    bases.reduce((a, r) => a + (Number(r.servingSizeGrams) || 0), 0);
+  return { bases, baseAggregate, displaySum, baseSum };
+}
+
+
+/**
  * Parse provider JSON constituents (snake_case) into PWA FoodConstituent rows.
  * @param {any} prediction
  * @returns {FoodConstituent[]}

@@ -23,7 +23,7 @@ import {
 } from "../lib/chompass-core/serving-units.js";
 import {
   scaleAllConstituents,
-  applyConstituentDisplayEdit,
+  commitConstituentDisplayEdit,
 } from "../lib/chompass-core/constituents.js";
 import {
   ALL_MICRO_KEYS,
@@ -817,25 +817,27 @@ export class EntryForm extends HTMLElement {
    * @param {import('../lib/chompass-core/models.js').FoodConstituent[]} displayRows
    */
   applyConstituentRows(displayRows) {
-    const { rows, aggregate } = applyConstituentDisplayEdit(displayRows);
-    this.constituents = rows;
-    if (aggregate) {
+    const scale = this.currentScale();
+    const { bases, baseAggregate, displaySum, baseSum } =
+      commitConstituentDisplayEdit(displayRows, scale);
+    this.constituents = bases;
+    if (baseAggregate) {
       this.baseNutrition = {
         ...(this.baseNutrition || {}),
-        calories: aggregate.calories,
-        proteinG: aggregate.proteinG,
-        carbsG: aggregate.carbsG,
-        fatG: aggregate.fatG,
+        calories: baseAggregate.calories,
+        proteinG: baseAggregate.proteinG,
+        carbsG: baseAggregate.carbsG,
+        fatG: baseAggregate.fatG,
       };
-      this.baseGrams = aggregate.servingSizeGrams > 0 ? aggregate.servingSizeGrams : this.baseGrams;
+      this.baseGrams = baseSum > 0 ? baseSum : this.baseGrams;
+      this.servingGrams = displaySum;
       const option = optionMatching(this.selectedServingUnit, this.servingUnitOptions);
-      const qty = option.gramsPerUnit > 0 ? this.baseGrams / option.gramsPerUnit : this.baseGrams;
+      const qty = option.gramsPerUnit > 0 ? displaySum / option.gramsPerUnit : displaySum;
       this.quantityText = formatQuantity(qty);
-      this.servingGrams = this.baseGrams;
-    } else if (rows.length === 0) {
+    } else if (bases.length === 0) {
       this.constituentsExpanded = false;
     }
-    if (rows.length > 0) this.constituentsExpanded = true;
+    if (bases.length > 0) this.constituentsExpanded = true;
     this.servingReady = true;
     this.render();
   }

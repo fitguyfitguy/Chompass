@@ -8,6 +8,7 @@ import {
   scaleAllConstituents,
   aggregatesFromConstituents,
   applyConstituentDisplayEdit,
+  commitConstituentDisplayEdit,
   MAX_CONSTITUENTS,
 } from "../constituents.js";
 
@@ -401,3 +402,53 @@ test("reconcileConstituents_scalesMicrosWhenGramsShift", () => {
   assert.equal(meal.constituents[0].sugarG, 3.2);
   assert.equal(meal.constituents[1].sugarG, null);
 });
+
+function gramsRow(name, grams) {
+  return {
+    name,
+    calories: grams,
+    proteinG: 1,
+    carbsG: 1,
+    fatG: 1,
+    servingSizeGrams: grams,
+    servingUnitOptions: [],
+    selectedServingUnit: "g",
+    selectedServingQuantity: grams,
+  };
+}
+
+test("commit_scaleOne_updatesOnlyEditedRowAndMealSum", () => {
+  const commit = commitConstituentDisplayEdit(
+    [gramsRow("A", 250), gramsRow("B", 150)],
+    1,
+  );
+  assert.equal(commit.bases[0].servingSizeGrams, 250);
+  assert.equal(commit.bases[1].servingSizeGrams, 150);
+  assert.equal(commit.baseSum, 400);
+  assert.equal(commit.displaySum, 400);
+});
+
+test("commit_scaleTwo_unscalesEditedRow_othersStay", () => {
+  const commit = commitConstituentDisplayEdit(
+    [gramsRow("A", 500), gramsRow("B", 300)],
+    2,
+  );
+  assert.equal(commit.bases[0].servingSizeGrams, 250);
+  assert.equal(commit.bases[1].servingSizeGrams, 150);
+  assert.equal(commit.baseSum, 400);
+  assert.equal(commit.displaySum, 800);
+});
+
+test("commit_scaleTwo_decrease_doesNotLockDisplayIntoBase", () => {
+  const commit = commitConstituentDisplayEdit(
+    [gramsRow("A", 200), gramsRow("B", 300)],
+    2,
+  );
+  assert.equal(commit.bases[0].servingSizeGrams, 100);
+  assert.equal(commit.bases[1].servingSizeGrams, 150);
+  assert.notDeepEqual(
+    commit.bases.map((r) => r.servingSizeGrams),
+    [200, 300],
+  );
+});
+
