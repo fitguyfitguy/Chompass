@@ -1526,6 +1526,29 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         { copy(waterCupSizeMl = v) },
     )
 
+    fun setWaterReminderPlan(startMinutes: Int, endMinutes: Int, cupMl: Int) = updateUiPref(
+        {
+            container.prefs.setWaterAwakeStartHour(startMinutes / 60)
+            container.prefs.setWaterAwakeStartMinute(startMinutes % 60)
+            container.prefs.setWaterAwakeEndHour(endMinutes / 60)
+            container.prefs.setWaterAwakeEndMinute(endMinutes % 60)
+            container.prefs.setWaterCupSizeMl(cupMl)
+            try {
+                syncNotificationSchedules()
+            } catch (t: Throwable) {
+                android.util.Log.w("Chompass", "water reminder rearm failed", t)
+            }
+        },
+        {
+            copy(
+                waterAwakeStartMinutes = startMinutes,
+                waterAwakeEndMinutes = endMinutes,
+                waterCupSizeMl = cupMl,
+            )
+        },
+    )
+
+
     /** Recomputes the Settings preview of today's dynamic goal after any input change. */
     private suspend fun refreshWaterDynamicPreview() {
         if (!container.prefs.waterDynamicEnabled.first()) {

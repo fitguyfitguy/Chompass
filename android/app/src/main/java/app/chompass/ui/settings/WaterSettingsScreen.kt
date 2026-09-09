@@ -189,7 +189,13 @@ fun WaterSettingsScreen(
                 stringResource(R.string.settings_water_reminders),
                 waterRemindersSummary(ui),
                 icon = Icons.Outlined.Notifications,
-            ) { nav.navigate(ChompassRoutes.notificationsRoute("water")) }
+            ) {
+                if (ui.waterReminderEnabled) {
+                    sheet = SettingsSheet.WATER_REMINDER_PLAN
+                } else {
+                    nav.navigate(ChompassRoutes.notificationsRoute("water"))
+                }
+            }
         }
 
         RelatedLinks(
