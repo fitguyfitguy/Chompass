@@ -134,13 +134,22 @@ object GeminiClient {
                         .build()
                 )
             }
+            var finishReason: String? = null
             AiSse.read(response) { payload ->
-                val piece = parseStreamChunkText(payload) ?: return@read
-                if (piece.isNotEmpty()) {
-                    assembled.append(piece)
-                    onDelta(piece)
+                val chunk = parseStreamChunk(payload) ?: return@read
+                if (chunk.finishReason != null) finishReason = chunk.finishReason
+                if (chunk.text.isNotEmpty()) {
+                    assembled.append(chunk.text)
+                    onDelta(chunk.text)
                 }
             }
+            // Gemini ends the SSE stream with a chunk carrying finishReason.
+            // A stream without it was cut server-side mid-reply (observed on
+            // gemini-3.8-flash under load, #68), and MAX_TOKENS means the
+            // model's own budget cut the answer short. Both leave partial
+            // text that would parse as truncated JSON; fail this leg so the
+            // catch below retries the request as one shot.
+            if (finishReason == null || finishReason == "MAX_TOKENS") throw StreamIncomplete()
             assembled.toString().ifBlank { throw AiError.InvalidResponse }
         } catch (e: AiError) {
             throw e
@@ -223,28 +232,53 @@ object GeminiClient {
         }
     }
 
-    private fun parseText(body: String): String {
+    internal fun parseText(body: String): String {
         val json = runCatching { JSONObject(body) }.getOrNull() ?: throw AiError.InvalidResponse
         val candidates = json.optJSONArray("candidates") ?: throw AiError.InvalidResponse
         val first = candidates.optJSONObject(0) ?: throw AiError.InvalidResponse
+        // Surface an honest truncation error instead of handing a cut answer
+        // to the food-JSON parser (#68).
+        if (first.optString("finishReason") == "MAX_TOKENS") throw AiError.ResponseTruncated
         val content = first.optJSONObject("content") ?: throw AiError.InvalidResponse
         val parts = content.optJSONArray("parts") ?: throw AiError.InvalidResponse
-        val text = parts.optJSONObject(0)?.optString("text").orEmpty()
-        if (text.isEmpty()) throw AiError.InvalidResponse
-        return text
+        // Gemini 3 models can split the answer across several parts; join
+        // every text part instead of reading parts[0] only (#68).
+        val text = StringBuilder()
+        for (i in 0 until parts.length()) {
+            text.append(parts.optJSONObject(i)?.optString("text").orEmpty())
+        }
+        if (text.isBlank()) throw AiError.InvalidResponse
+        return text.toString()
     }
 
-    private fun parseStreamChunkText(payload: String): String? {
+    /** One parsed SSE chunk: concatenated text parts plus the candidate's finishReason, if set. */
+    internal data class GeminiStreamChunk(val text: String, val finishReason: String?)
+
+    /**
+     * Parses one `streamGenerateContent?alt=sse` payload. Returns null only for
+     * non-JSON payloads; chunks without candidate text (usage-only, thought
+     * parts) yield empty text so the caller can still read finishReason.
+     */
+    internal fun parseStreamChunk(payload: String): GeminiStreamChunk? {
         val json = runCatching { JSONObject(payload) }.getOrNull() ?: return null
-        val candidates = json.optJSONArray("candidates") ?: return null
-        val first = candidates.optJSONObject(0) ?: return null
-        val content = first.optJSONObject("content") ?: return null
-        val parts = content.optJSONArray("parts") ?: return null
+        val candidates = json.optJSONArray("candidates") ?: return GeminiStreamChunk("", null)
+        val first = candidates.optJSONObject(0) ?: return GeminiStreamChunk("", null)
+        val finishReason = first.optString("finishReason").takeIf { it.isNotEmpty() }
+        val parts = first.optJSONObject("content")?.optJSONArray("parts")
         val out = StringBuilder()
-        for (i in 0 until parts.length()) {
-            val text = parts.optJSONObject(i)?.optString("text").orEmpty()
-            if (text.isNotEmpty()) out.append(text)
+        if (parts != null) {
+            for (i in 0 until parts.length()) {
+                val text = parts.optJSONObject(i)?.optString("text").orEmpty()
+                if (text.isNotEmpty()) out.append(text)
+            }
         }
-        return out.toString().takeIf { it.isNotEmpty() }
+        return GeminiStreamChunk(out.toString(), finishReason)
     }
+
+    /**
+     * Signals an SSE stream that ended without finishReason (server-side cut).
+     * Deliberately not an [AiError]: analyzeStreaming rethrows AiErrors but
+     * falls back to one-shot [analyze] for anything else.
+     */
+    private class StreamIncomplete : Exception()
 }
