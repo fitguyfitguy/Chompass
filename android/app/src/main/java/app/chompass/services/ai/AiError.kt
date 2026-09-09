@@ -28,6 +28,8 @@ sealed class AiError(
         formatArgs = arrayOf(cause.localizedMessage.orEmpty()),
     )
     object InvalidResponse : AiError("Could not understand the AI response. Please try again.", messageRes = R.string.ai_error_invalid_response)
+    /** Reply arrived but was cut short at the provider (finishReason MAX_TOKENS and kin). */
+    object ResponseTruncated : AiError("The AI response was truncated. Try a shorter question or a different model.", messageRes = R.string.ai_error_truncated)
     object Timeout : AiError(
         "The AI provider took too long to answer. Try again, or raise the timeout in Settings → AI & Speech.",
         messageRes = R.string.ai_error_timeout,
