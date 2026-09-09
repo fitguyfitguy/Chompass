@@ -1697,7 +1697,7 @@ fun HomeScreen(
             } else {
                 null
             },
-            onSave = { name, grams, scale, mealType, selectedServingUnit, selectedServingQuantity, editedAnalysis ->
+            onSave = { name, grams, scale, mealType, selectedServingUnit, selectedServingQuantity, editedAnalysis, logTime ->
                 vm.saveAnalysis(
                     name = name,
                     servingGrams = grams,
@@ -1705,10 +1705,11 @@ fun HomeScreen(
                     mealType = mealType,
                     selectedServingUnit = selectedServingUnit,
                     selectedServingQuantity = selectedServingQuantity,
-                    editedAnalysis = editedAnalysis
+                    editedAnalysis = editedAnalysis,
+                    logTime = logTime,
                 )
             },
-            onAddToProgressiveMeal = { name, grams, _, mealType, selectedServingUnit, selectedServingQuantity, editedAnalysis, resumeCapture ->
+            onAddToProgressiveMeal = { name, grams, _, mealType, selectedServingUnit, selectedServingQuantity, editedAnalysis, resumeCapture, logTime ->
                 vm.addToProgressiveMeal(
                     name = name,
                     servingGrams = grams,
@@ -1717,6 +1718,7 @@ fun HomeScreen(
                     selectedServingQuantity = selectedServingQuantity,
                     editedAnalysis = editedAnalysis,
                     resumeCapture = resumeCapture,
+                    logTime = logTime,
                 )
             },
             onDismiss = {

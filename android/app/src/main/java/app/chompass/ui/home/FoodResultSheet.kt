@@ -166,7 +166,8 @@ fun FoodResultSheet(
         mealType: String,
         selectedServingUnit: String?,
         selectedServingQuantity: Double?,
-        editedAnalysis: FoodAnalysis
+        editedAnalysis: FoodAnalysis,
+        logTime: LocalTime,
     ) -> Unit,
     /**
      * Commit this review into the progressive meal draft.
@@ -181,6 +182,7 @@ fun FoodResultSheet(
         selectedServingQuantity: Double?,
         editedAnalysis: FoodAnalysis,
         resumeCapture: Boolean,
+        logTime: LocalTime,
     ) -> Unit)? = null,
     onDismiss: () -> Unit,
     isSaving: Boolean = false,
@@ -262,8 +264,9 @@ fun FoodResultSheet(
     val logTimeFormatter = remember(logTimeContext) {
         DateTimeFormatter.ofPattern(clockTimePattern(logTimeContext))
     }
-    val displayLogTime = logTimeOverride
-        ?: remember { LocalTime.now().withSecond(0).withNano(0) }
+    var logTime by remember {
+        mutableStateOf(logTimeOverride ?: LocalTime.now().withSecond(0).withNano(0))
+    }
     var moreNutritionExpanded by remember { mutableStateOf(false) }
     var nutritionUnlocked by remember { mutableStateOf(false) }
     var editableCalories by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.calories) }
@@ -443,6 +446,7 @@ fun FoodResultSheet(
                     if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
                     editedAnalysis(),
                     false,
+                    logTime,
                 )
             } else {
                 onSave(
@@ -452,7 +456,8 @@ fun FoodResultSheet(
                     mealType,
                     if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
                     if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
-                    editedAnalysis()
+                    editedAnalysis(),
+                    logTime,
                 )
             }
         }
@@ -467,6 +472,7 @@ fun FoodResultSheet(
                 if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
                 editedAnalysis(),
                 true,
+                logTime,
             )
         }
 
@@ -888,7 +894,7 @@ fun FoodResultSheet(
                 SheetPillRow(onClick = { if (analysisReady) showLogTimePicker = true }) {
                     Text(stringResource(R.string.label_time), fontSize = 17.sp, modifier = Modifier.weight(1f))
                     Text(
-                        displayLogTime.format(logTimeFormatter),
+                        logTime.format(logTimeFormatter),
                         fontSize = 17.sp,
                         color = AppColors.Calorie,
                         fontWeight = FontWeight.Medium,
@@ -1030,9 +1036,10 @@ fun FoodResultSheet(
 
     if (showLogTimePicker) {
         FoodLogTimePicker(
-            initialTime = displayLogTime,
+            initialTime = logTime,
             useSystem = useSystemDateTimePickers,
             onConfirm = { time ->
+                logTime = time
                 onLogTimeOverride(time)
                 if (mealTimesEnabled && !mealTypeFromSavedMeal && !mealTypeTouched) {
                     mealType = CurrentMealCatalog.value.mealIdAt(time)

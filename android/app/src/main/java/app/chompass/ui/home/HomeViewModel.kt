@@ -1878,7 +1878,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         mealType: String = MealType.currentMealId,
         selectedServingUnit: String? = null,
         selectedServingQuantity: Double? = null,
-        editedAnalysis: FoodAnalysis? = null
+        editedAnalysis: FoodAnalysis? = null,
+        logTime: LocalTime? = null,
     ) {
         val pendingAnalysis = _ui.value.pendingAnalysis
         val analysis = editedAnalysis ?: pendingAnalysis ?: return
@@ -1935,7 +1936,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         protein = macro(analysis.protein),
                         carbs = macro(analysis.carbs),
                         fat = macro(analysis.fat),
-                        timestamp = timestampForFoodLog(),
+                        timestamp = timestampForLogging(
+                            _selectedDate.value,
+                            Instant.now(),
+                            ZoneId.systemDefault(),
+                            logTime ?: _ui.value.logTimeOverride,
+                        ),
                         imageFilename = filename,
                         emoji = analysis.emoji,
                         source = entrySource,
@@ -1990,6 +1996,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         selectedServingQuantity: Double? = null,
         editedAnalysis: FoodAnalysis,
         resumeCapture: Boolean,
+        logTime: LocalTime? = null,
     ) {
         val imageBytes = _ui.value.pendingImageBytes
         val source = _ui.value.pendingReviewSource?.source
@@ -2012,6 +2019,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             name = existing?.name.orEmpty(),
             mealType = existing?.mealType ?: mealType,
             items = (existing?.items ?: emptyList()) + item,
+            logTime = logTime ?: existing?.logTime,
         )
         val previousDraftImage = _ui.value.pendingDraftImageFilename
         _ui.update { it.copy(
@@ -2110,7 +2118,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             _ui.update { it.copy(saving = true) }
             try {
                 val recipeLogId = UUID.randomUUID()
-                val timestamp = timestampForFoodLog()
+                val timestamp = timestampForLogging(
+                    _selectedDate.value,
+                    Instant.now(),
+                    ZoneId.systemDefault(),
+                    draft.logTime ?: _ui.value.logTimeOverride,
+                )
                 val named = draft.name.trim().isNotEmpty()
                 val filenames = LinkedHashMap<java.util.UUID, String?>()
                 var photoAssigned = false

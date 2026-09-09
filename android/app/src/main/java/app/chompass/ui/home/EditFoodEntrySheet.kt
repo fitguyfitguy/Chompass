@@ -74,6 +74,7 @@ import app.chompass.models.MicronutrientValues
 import app.chompass.models.ServingUnitOption
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.ui.components.ClockTimeWheelPicker
+import app.chompass.ui.components.parseClockDigits
 import app.chompass.ui.components.DateWheelPicker
 
 import app.chompass.ui.components.FudGlassDialog
@@ -1148,7 +1149,6 @@ internal fun FoodLogTimePicker(
                 DateFormat.is24HourFormat(ctx),
             ).apply {
                 setOnCancelListener { onDismiss() }
-                setOnDismissListener { onDismiss() }
                 show()
             }
         }
@@ -1168,16 +1168,26 @@ private fun EditFoodTimeDialog(
     onDismiss: () -> Unit
 ) {
     var picked by remember(initialTime) { mutableStateOf(initialTime) }
+    var typedDigits by remember { mutableStateOf<String?>(null) }
     FudGlassDialog(onDismissRequest = onDismiss) {
         Text(stringResource(R.string.label_time), fontSize = 21.sp, fontWeight = FontWeight.Bold)
         ClockTimeWheelPicker(
             time = picked,
             onChange = { picked = it },
+            onTypedDraftChange = { typedDigits = it },
             modifier = Modifier.fillMaxWidth(),
         )
         FudGlassDialogActions(
             primaryText = stringResource(R.string.action_done),
-            onPrimary = { onConfirm(picked) },
+            onPrimary = {
+                val digits = typedDigits?.filter { it.isDigit() }
+                val time = if (digits != null && digits.length == 4) {
+                    parseClockDigits(digits) ?: picked
+                } else {
+                    picked
+                }
+                onConfirm(time)
+            },
             dismissText = stringResource(R.string.action_cancel),
             onDismiss = onDismiss
         )

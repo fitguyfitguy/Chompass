@@ -49,6 +49,7 @@ data class ProgressiveMealDraft(
     val name: String = "",
     val mealType: String = MealType.currentMealId,
     val items: List<ProgressiveMealItem> = emptyList(),
+    val logTime: java.time.LocalTime? = null,
 ) {
     val totalCalories: Int get() = items.sumOf { it.analysis.calories }
     val totalProtein: Double get() = items.sumOf { it.analysis.protein }
