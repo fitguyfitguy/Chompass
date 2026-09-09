@@ -109,6 +109,15 @@ class FoodDatabaseSearch(
     private val prefs: PreferencesStore,
     private val usda: UsdaFoodIndex,
     private val swiss: SwissFoodIndex,
+    /**
+     * The Open Food Facts leg, injectable for the same reason [offToAnalysis]
+     * is: the Robolectric suite has no network seam, and "OFF is down" is a
+     * state the offline legs have to survive, so it needs to be reachable in a
+     * test without waiting out the real client's retry chain.
+     */
+    private val offSearch: suspend (String) -> List<DatabaseSearchResult> = { query ->
+        OpenFoodFactsService.search(query, limit = 6).map(DatabaseSearchResult::fromOff)
+    },
 ) {
     /**
      * Serializes the offline SQLite queries (USDA + Swiss). They run in
@@ -128,10 +137,14 @@ class FoodDatabaseSearch(
     /**
      * The sources the user still wants searched (Settings › Food & Entry ›
      * Food databases). Every source defaults on; a disabled one is dropped
-     * from the fan-out in [search], so this gate covers the Add Food sheet and
-     * the review sheet's match strip alike. It gates *search* only — barcode
-     * lookups and [toAnalysis] on an already-picked hit stay available, or a
-     * disabled source would break rows the user is mid-way through logging.
+     * from the fan-out in [search], so the gate covers every caller of this
+     * class at once. It gates *search* only — barcode lookups and [toAnalysis]
+     * on an already-picked hit stay available, or a disabled source would
+     * break rows the user is mid-way through logging.
+     *
+     * Open Food Facts has a second gate on top of this one: it is the only
+     * source that leaves the device, so the Add Food sheet also requires its
+     * own per-session opt-in before running that leg at all.
      */
     suspend fun enabledSources(): Set<Source> = buildSet {
         if (prefs.foodSearchOpenFoodFactsEnabled.first()) add(Source.OPEN_FOOD_FACTS)
@@ -160,7 +173,12 @@ class FoodDatabaseSearch(
         // Phase logs ride logcat so a post-crash `adb logcat -d` shows which
         // source was in flight when the process died (Codeberg #26; logcat
         // survives process death). Same tag the per-source failure log uses.
-        Log.i("FoodSearch", "search start '$q' sources=$active")
+        //
+        // None of these lines carry the query itself. What the user is typing
+        // into their food diary is not diagnostic data, and logcat is readable
+        // by anything holding READ_LOGS and lands in bug reports wholesale. The
+        // length is enough to correlate a phase log with a keystroke.
+        Log.i("FoodSearch", "search start len=${q.length} sources=$active")
         return withContext(Dispatchers.IO) {
             coroutineScope {
                 val jobs = mutableListOf<kotlinx.coroutines.Deferred<List<DatabaseSearchResult>>>()
@@ -174,20 +192,20 @@ class FoodDatabaseSearch(
                             val results = block()
                             Log.d(
                                 "FoodSearch",
-                                "$label: ${results.size} hits for '$q' in " +
+                                "$label: ${results.size} hits in " +
                                     "${SystemClock.elapsedRealtime() - t0} ms",
                             )
                             results
                         } catch (e: kotlinx.coroutines.CancellationException) {
                             throw e
                         } catch (e: Exception) {
-                            Log.w("FoodSearch", "$label search failed for '$q'", e)
+                            Log.w("FoodSearch", "$label search failed", e)
                             emptyList()
                         }
                     }
                 }
                 if (Source.OPEN_FOOD_FACTS in active) {
-                    launch("off") { offSearch(q) }
+                    launch("off") { withContext(Dispatchers.IO) { offSearch(q) } }
                 }
                 if (Source.USDA in active) {
                     launch("usda") {
@@ -205,7 +223,7 @@ class FoodDatabaseSearch(
                     .map { it.withNormalizedScore() }
                     .sortedByDescending { it.matchScore }
                     .take(limit)
-                Log.d("FoodSearch", "search end '$q': ${merged.size} results")
+                Log.d("FoodSearch", "search end: ${merged.size} results")
                 merged
             }
         }
@@ -256,11 +274,6 @@ class FoodDatabaseSearch(
         NutrientSourceKind.MODEL_ESTIMATE,
         -> error("Not a searchable database source: ${result.sourceKind}")
     }
-
-    private suspend fun offSearch(query: String): List<DatabaseSearchResult> =
-        withContext(Dispatchers.IO) {
-            OpenFoodFactsService.search(query, limit = 6).map(DatabaseSearchResult::fromOff)
-        }
 
     companion object {
         /**
