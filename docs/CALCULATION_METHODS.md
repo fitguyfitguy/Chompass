@@ -500,7 +500,7 @@ When changing any formula, constant, or guardrail:
 
 When changing **diary / body-metrics / meal-share / sync** wire formats: bump `format_version` / `v`, update both exporters/importers, extend [`contracts/`](../contracts/), refresh [`testdata/parity/`](../testdata/parity/) samples, then re-run `release:check-parity`. Feature imparity: [`docs/PARITY.md`](PARITY.md).
 
-**Meal constituents (#154):** top-level meal nutrition is authoritative at parse time. Optional `constituents[]` rows are scaled or dropped by `ConstituentReconcile` / `constituents.js` (`MAX_REL_ERROR=0.50`) so grams and macros sum to the meal totals. After the user edits rows in review, constituent sums become the meal totals; whole-meal serving scale multiplies every row.
+**Meal constituents (#154):** top-level meal nutrition is authoritative at parse time. Optional `constituents[]` rows are scaled or dropped by `ConstituentReconcile` / `constituents.js` (`MAX_REL_ERROR=0.50`) so grams and macros sum to the meal totals. After the user edits rows in review, constituent sums become the meal totals; whole-meal serving scale multiplies every row. Rows also carry optional per-ingredient micronutrients (#86; diary 1.5 / sync 1.3 / meal-share v3): each row's micros scale with its own grams factor (per-100 g semantics, 1-decimal rounding, absent stays absent) and never sum into the meal-level micros — the entry stays authoritative. When the edited mix no longer matches the AI estimate (`microsCompositionSignature`, a scale-invariant fingerprint), More Nutrition flags the meal micros stale and offers Re-estimate (Android).
 
 ---
 
