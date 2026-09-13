@@ -280,7 +280,7 @@ class ModelDownloadWorker(
             ctx.getString(R.string.on_device_model_downloading, percent)
         }
         val notification = NotificationCompat.Builder(ctx, NotificationService.CHANNEL_MODEL_DOWNLOAD)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.ic_launcher_monochrome)
             .setContentTitle(ctx.getString(R.string.notif_model_download_title))
             .setContentText(text)
             .setContentIntent(content)

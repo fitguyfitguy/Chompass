@@ -124,7 +124,7 @@ class NotificationService(private val context: Context) {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
         val notif = NotificationCompat.Builder(context, CHANNEL_WEIGHT_GOAL)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.ic_launcher_monochrome)
             .setContentTitle(context.getString(R.string.notif_goal_weight_title))
             .setContentText(context.getString(R.string.notif_goal_weight_text))
             .setContentIntent(content)
@@ -150,7 +150,7 @@ class NotificationService(private val context: Context) {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
         val notif = NotificationCompat.Builder(context, CHANNEL_APP_UPDATE)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.ic_launcher_monochrome)
             .setContentTitle(context.getString(R.string.notif_update_title))
             .setContentText(context.getString(R.string.notif_update_text))
             .setContentIntent(pi)
@@ -203,7 +203,7 @@ class NotificationService(private val context: Context) {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
         val builder = NotificationCompat.Builder(context, channel)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.ic_launcher_monochrome)
             .setContentTitle(title)
             .setContentText(text)
             .setContentIntent(open)
@@ -664,7 +664,7 @@ class ReminderReceiver : BroadcastReceiver() {
                     }
                     val notifTitle = dailyCopy?.title ?: title
                     val builder = NotificationCompat.Builder(context, channel)
-                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setSmallIcon(R.drawable.ic_launcher_monochrome)
                         .setContentTitle(notifTitle)
                         .setContentText(notifText)
                         .setContentIntent(open)
