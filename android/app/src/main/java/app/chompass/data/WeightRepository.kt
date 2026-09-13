@@ -144,11 +144,16 @@ class WeightRepository(
         if (entries.isEmpty()) return 0
         val existing = prefs.weightEntries.first()
         val (merged, changed) = mergeWeightsById(existing, entries)
-        if (changed == 0) return 0
+        // Persist an id-duplicate collapse even when nothing else changed,
+        // otherwise the duplicate survives and keeps skewing the trend math
+        // (upstream fud-ai 736f25fc).
+        if (changed == 0 && merged.size == existing.size) return 0
         val existingById = existing.associateBy { it.id }
+        val duplicateIds = existing.groupBy { it.id }.filterValues { it.size > 1 }.keys
         val upserts = merged.filter { row ->
             val prev = existingById[row.id]
-            prev == null || abs(prev.weightKg - row.weightKg) > 0.0001 || prev.date != row.date
+            prev == null || abs(prev.weightKg - row.weightKg) > 0.0001 || prev.date != row.date ||
+                row.id in duplicateIds
         }
         prefs.applyWeightBucketChanges(upsertsByMonth = upserts.groupBy { it.month() })
         syncProfileWeightToLatest()

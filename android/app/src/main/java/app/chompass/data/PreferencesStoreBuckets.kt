@@ -41,7 +41,10 @@ internal suspend fun PreferencesStore.migrateBucketsToFilesIfNeeded() {
         waterBucketStore.replaceAll(
             entries.groupBy { YearMonth.from(it.date.atZone(ZoneId.systemDefault())) }
         )
-        dataStore.edit { it.remove(Keys.WATER_ENTRIES) }
+        dataStore.edit {
+            preserveUnreadableList(it, Keys.WATER_ENTRIES, WaterEntry.serializer())
+            it.remove(Keys.WATER_ENTRIES)
+        }
     }
 
     val weightsRaw = prefs[Keys.WEIGHT_ENTRIES]
@@ -50,7 +53,10 @@ internal suspend fun PreferencesStore.migrateBucketsToFilesIfNeeded() {
         weightBucketStore.replaceAll(
             entries.groupBy { YearMonth.from(it.date.atZone(ZoneId.systemDefault())) }
         )
-        dataStore.edit { it.remove(Keys.WEIGHT_ENTRIES) }
+        dataStore.edit {
+            preserveUnreadableList(it, Keys.WEIGHT_ENTRIES, WeightEntry.serializer())
+            it.remove(Keys.WEIGHT_ENTRIES)
+        }
     }
 
     val bodyFatRaw = prefs[Keys.BODY_FAT_ENTRIES]
@@ -59,7 +65,10 @@ internal suspend fun PreferencesStore.migrateBucketsToFilesIfNeeded() {
         bodyFatBucketStore.replaceAll(
             entries.groupBy { YearMonth.from(it.date.atZone(ZoneId.systemDefault())) }
         )
-        dataStore.edit { it.remove(Keys.BODY_FAT_ENTRIES) }
+        dataStore.edit {
+            preserveUnreadableList(it, Keys.BODY_FAT_ENTRIES, BodyFatEntry.serializer())
+            it.remove(Keys.BODY_FAT_ENTRIES)
+        }
     }
 
     val measurementsRaw = prefs[Keys.BODY_MEASUREMENTS]
@@ -68,7 +77,10 @@ internal suspend fun PreferencesStore.migrateBucketsToFilesIfNeeded() {
         measurementBucketStore.replaceAll(
             entries.groupBy { YearMonth.from(it.date.atZone(ZoneId.systemDefault())) }
         )
-        dataStore.edit { it.remove(Keys.BODY_MEASUREMENTS) }
+        dataStore.edit {
+            preserveUnreadableList(it, Keys.BODY_MEASUREMENTS, BodyMeasurement.serializer())
+            it.remove(Keys.BODY_MEASUREMENTS)
+        }
     }
 
     val foodKeys = prefs.asMap().keys.filter { it.name.startsWith(FOOD_ENTRIES_BUCKET_PREFIX) }
@@ -80,6 +92,10 @@ internal suspend fun PreferencesStore.migrateBucketsToFilesIfNeeded() {
         }.toMap()
         foodBucketStore.replaceAll(byMonth)
         dataStore.edit { it ->
+            foodKeys.forEach { key ->
+                val raw = prefs[key] as? String ?: return@forEach
+                preserveUnreadableRaw(it, key.name, raw, FoodEntry.serializer())
+            }
             foodKeys.forEach { key -> it.remove(key) }
         }
     }
@@ -109,4 +125,4 @@ internal suspend fun PreferencesStore.migrateBucketsToFilesIfNeeded() {
 }
 
 private fun <T> PreferencesStore.decodeListOrEmpty(raw: String, serializer: KSerializer<T>): List<T> =
-    runCatching { json.decodeFromString(ListSerializer(serializer), raw) }.getOrNull().orEmpty()
+    LenientJsonList.decode(json, serializer, raw).itemsOrEmpty

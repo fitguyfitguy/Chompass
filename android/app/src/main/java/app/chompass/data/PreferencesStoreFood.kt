@@ -30,8 +30,7 @@ import kotlinx.serialization.builtins.serializer
     // then [migrateBucketsToFilesIfNeeded].
 
 internal fun PreferencesStore.decodeEntryListImpl(raw: String?): List<FoodEntry> =
-        raw?.let { runCatching { json.decodeFromString(ListSerializer(FoodEntry.serializer()), it) }.getOrNull() }
-            ?: emptyList()
+    LenientJsonList.decode(json, FoodEntry.serializer(), raw).itemsOrEmpty
 
 private fun PreferencesStore.encodeEntryListImpl(entries: List<FoodEntry>): String =
         json.encodeToString(ListSerializer(FoodEntry.serializer()), entries)
@@ -159,6 +158,9 @@ internal suspend fun PreferencesStore.migrateFoodEntriesToBucketsIfNeededImpl() 
                     val merged = (existing + monthEntries).distinctBy { it.id }.sortedBy { it.timestamp }
                     prefs[key] = encodeEntryListImpl(merged)
                 }
+            prefs[Keys.FOOD_ENTRIES]?.let { raw ->
+                preserveUnreadableRaw(prefs, Keys.FOOD_ENTRIES.name, raw, FoodEntry.serializer())
+            }
             prefs.remove(Keys.FOOD_ENTRIES)
             prefs[Keys.FOOD_ENTRIES_MIGRATED] = true
         }

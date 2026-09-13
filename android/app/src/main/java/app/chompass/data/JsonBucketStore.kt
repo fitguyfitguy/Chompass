@@ -33,8 +33,11 @@ import java.util.UUID
  * - Reads go through an in-memory cache; flows re-emit only when the month
  *   they observe actually changes (single-process app, every writer goes
  *   through this store, so the cache cannot go stale).
- * - Decode failures are lenient (empty month), matching listPref semantics —
- *   a corrupt file must not take the app down.
+ * - Decode failures are lenient (empty month, or the readable rows of a
+ *   partially unreadable one), matching listPref semantics — a corrupt file
+ *   must not take the app down. Before any write replaces or deletes a file
+ *   that could not be fully decoded, its raw bytes are copied aside
+ *   (PersistedJsonGuard), so leniency never turns into a silent wipe.
  */
 internal class JsonBucketStore<T>(
     private val root: File,
@@ -47,6 +50,15 @@ internal class JsonBucketStore<T>(
     private val mutex = Mutex()
     private val listSerializer = ListSerializer(serializer)
     private val cache = MutableStateFlow<Map<YearMonth, List<T>>>(emptyMap())
+
+    /**
+     * Months whose file could not be (fully) decoded. Reads serve the decoded
+     * subset (empty for a fully unreadable file), but the raw bytes must be
+     * copied aside before any write replaces or deletes the file. Guarded by
+     * [mutex].
+     */
+    private val needsPreservation = mutableSetOf<YearMonth>()
+    private val archive by lazy { CorruptBlobArchive(File(root, CorruptBlobArchive.DIRECTORY_NAME)) }
 
     private fun monthFile(month: YearMonth): File = File(root, "$month.json")
 
@@ -138,17 +150,29 @@ internal class JsonBucketStore<T>(
     }
 
     /** Full dataset replace: [byMonth] becomes the entire content. Months on
-     *  disk that are absent from [byMonth] are deleted. */
+     *  disk that are absent from [byMonth] are deleted. A month that could not
+     *  be (fully) decoded is preserved first — an import built from a lenient
+     *  read must not destroy the bytes it could not see. */
     suspend fun replaceAll(byMonth: Map<YearMonth, List<T>>) = mutex.withLock {
         val onDisk = monthsOnDiskLocked()
-        for (month in onDisk - byMonth.keys) monthFile(month).delete()
+        warmLocked(onDisk.toList())
+        for (month in onDisk - byMonth.keys) {
+            preserveIfNeededLocked(month)
+            monthFile(month).delete()
+        }
         for ((month, entries) in byMonth) writeFileLocked(month, entries)
         cache.value = byMonth.mapValues { if (order != null) it.value.sortedWith(order) else it.value }
     }
 
-    /** Deletes every month file; the dataset is empty afterwards. */
+    /** Deletes every month file; the dataset is empty afterwards. A month that
+     *  could not be (fully) decoded is preserved first, like [replaceAll]. */
     suspend fun clear() = mutex.withLock {
-        root.listFiles()?.forEach { it.delete() }
+        warmLocked(monthsOnDiskLocked())
+        root.listFiles()?.forEach { file ->
+            val month = runCatching { YearMonth.parse(file.name.removeSuffix(".json")) }.getOrNull()
+            if (month != null) preserveIfNeededLocked(month)
+            file.delete()
+        }
         cache.value = emptyMap()
     }
 
@@ -175,11 +199,21 @@ internal class JsonBucketStore<T>(
     private suspend fun decodeFile(month: YearMonth): List<T> = withContext(io) {
         val file = monthFile(month)
         if (!file.isFile) return@withContext emptyList()
-        runCatching { json.decodeFromString(listSerializer, file.readText()) }
-            .getOrElse { emptyList() }
+        when (val decoded = LenientJsonList.decode(json, serializer, file.readText())) {
+            is PersistedListDecode.Corrupt -> {
+                needsPreservation += month
+                emptyList()
+            }
+            is PersistedListDecode.Decoded -> {
+                if (decoded.dropped > 0) needsPreservation += month
+                decoded.items
+            }
+            PersistedListDecode.Missing -> emptyList()
+        }
     }
 
     private suspend fun writeFileLocked(month: YearMonth, entries: List<T>) = withContext(io) {
+        preserveIfNeededLocked(month)
         if (entries.isEmpty()) {
             monthFile(month).delete()
             return@withContext
@@ -193,5 +227,21 @@ internal class JsonBucketStore<T>(
         if (!tmp.renameTo(target)) {
             throw IOException("bucket write failed for $target")
         }
+    }
+
+    /**
+     * Preserves a flagged month's raw bytes before they are replaced or
+     * deleted. Fails closed: throws when no copy could be written, so the
+     * only copy is never destroyed (upstream fud-ai 736f25fc). Callers hold
+     * [mutex].
+     */
+    private suspend fun preserveIfNeededLocked(month: YearMonth) = withContext(io) {
+        if (month !in needsPreservation) return@withContext
+        val source = monthFile(month)
+        if (source.isFile) {
+            archive.preserveFile(source)
+                ?: throw IOException("refusing to replace unreadable ${source.name}: backup copy failed")
+        }
+        needsPreservation -= month
     }
 }

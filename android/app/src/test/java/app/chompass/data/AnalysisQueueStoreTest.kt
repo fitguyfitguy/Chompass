@@ -161,6 +161,25 @@ class AnalysisQueueStoreTest {
     }
 
     @Test
+    fun corruptFileIsPreservedBeforeBeingReplaced() = runBlocking {
+        val (s, s2) = storePair()
+        s.upsert(entry())
+        val target = File(tmp.root, "queue-pair/${AnalysisQueueStore.FILE_NAME}")
+        target.writeText("{not json!!")
+        s2.ensureLoaded()
+        assertTrue(s2.entries.value.isEmpty())
+
+        s2.upsert(entry())
+
+        // The unreadable bytes survive the rewrite in a sibling .corrupt- copy.
+        val backup = File(tmp.root, "queue-pair")
+            .listFiles()!!
+            .single { it.name.startsWith("${AnalysisQueueStore.FILE_NAME}.corrupt-") }
+        assertEquals("{not json!!", backup.readText())
+        assertEquals(1, s2.entries.value.size)
+    }
+
+    @Test
     fun persistedAcrossStoreInstances() = runBlocking {
         val (s, s2) = storePair()
         val a = entry()
