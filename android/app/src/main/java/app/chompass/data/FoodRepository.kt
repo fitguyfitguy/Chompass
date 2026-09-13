@@ -8,6 +8,7 @@ import app.chompass.services.FoodImageStore
 import app.chompass.services.PerfLog
 import app.chompass.services.ReviewPrompter
 import app.chompass.services.health.HealthConnectManager
+import app.chompass.services.health.NutritionWriteGate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -196,8 +197,8 @@ class FoodRepository(
             )
         }
         sync?.touch(resolved.id, "food")
-        if (writeHealth && shouldSyncHealth()) {
-            PerfLog.measure("save", "healthWrite") { health?.writeNutrition(resolved) }
+        if (writeHealth) {
+            PerfLog.measure("save", "healthWrite") { healthRetry.sync(resolved, isUpdate = false) }
         }
         // One-time organic review moment: the first successful food log (iOS parity).
         if (!prefs.reviewPromptedAfterFirstLog.first()) {
@@ -220,9 +221,9 @@ class FoodRepository(
             prefs.applyFoodEntryBucketChanges(upsertsByMonth = resolved.groupBy { it.month() })
         }
         sync?.touchMany(resolved.map { it.id to "food" })
-        if (writeHealth && shouldSyncHealth()) {
+        if (writeHealth) {
             PerfLog.measure("save", "healthWrite", "count=${resolved.size}") {
-                resolved.forEach { health?.writeNutrition(it) }
+                healthRetry.syncAll(resolved, isUpdate = false)
             }
         }
         // One-time organic review moment: the first successful food log (iOS parity).
@@ -250,13 +251,12 @@ class FoodRepository(
 
     /**
      * Health Connect mirror write for a row already committed locally, gated on
-     * the user's sync toggle. Safe to run in the background — failures are
-     * swallowed by the writer (best-effort mirror, same as the inline path).
+     * the user's sync toggle. Safe to run in the background — a write Health
+     * Connect never confirms is queued here and retried on the next sync
+     * instead of being dropped.
      */
     suspend fun mirrorEntryToHealth(entry: FoodEntry) {
-        if (shouldSyncHealth()) {
-            PerfLog.measure("save", "healthWrite") { health?.writeNutrition(entry) }
-        }
+        PerfLog.measure("save", "healthWrite") { healthRetry.sync(entry, isUpdate = false) }
     }
 
     suspend fun updateEntry(original: FoodEntry, updated: FoodEntry) {
@@ -280,16 +280,22 @@ class FoodRepository(
         PerfLog.event("op=editEntry phase=updateEntryDone id=${updated.id.toString().take(8)}")
         sync?.touch(updated.id, "food")
         if (shouldSyncHealth()) {
-            health?.updateNutrition(updated)
+            healthRetry.sync(updated, isUpdate = true)
         } else {
             // Sync off: still clean up the stale HC record for this entry (iOS
             // parity, best-effort) so the restore path can't resurrect the
-            // pre-edit version later.
+            // pre-edit version later. The queue key goes first, matching
+            // deleteEntry, so an in-flight retry cannot rewrite the record
+            // after the deliberate delete.
+            healthRetry.forget(updated.id)
             health?.deleteNutrition(updated.id)
         }
     }
 
     suspend fun deleteEntry(entry: FoodEntry) {
+        // Drop the queue key under the retry mutex, before the local row
+        // disappears, so an in-flight retry cannot recreate Health Connect data.
+        healthRetry.forget(entry.id)
         prefs.applyFoodEntryBucketChanges(removalIdsByMonth = mapOf(entry.month() to setOf(entry.id)))
         sync?.tombstone(entry.id, "food")
         pruneOrphanedImages()
@@ -299,6 +305,10 @@ class FoodRepository(
     }
 
     suspend fun replaceAll(entries: List<FoodEntry>) {
+        // The whole log is about to be replaced: keep queue keys only for rows
+        // that survive, before the local rows disappear (same ordering rule as
+        // deleteEntry).
+        healthRetry.retainAll(entries.map { it.id })
         prefs.replaceAllFoodEntries(entries)
         pruneOrphanedImages()
     }
@@ -318,6 +328,7 @@ class FoodRepository(
     }
 
     suspend fun clear() {
+        healthRetry.retainAll(emptyList())
         prefs.replaceAllFoodEntries(emptyList())
         pruneOrphanedImages()
     }
@@ -463,9 +474,36 @@ class FoodRepository(
         return namePart.isNotEmpty() && entry.favoriteKey == namePart
     }
 
+    /**
+     * Deferred retry for nutrition writes Health Connect never confirmed. The
+     * adapter keeps [HealthConnectManager] out of the retry's own type
+     * signature, so the queue logic is unit-testable without a live Health
+     * Connect service.
+     */
+    private val healthRetry = NutritionHealthRetry(
+        prefs,
+        health?.let { manager ->
+            object : NutritionHealthSync {
+                override suspend fun writeGate() = manager.nutritionWriteGate()
+                override suspend fun write(entry: FoodEntry) = manager.writeNutrition(entry)
+                override suspend fun update(entry: FoodEntry) = manager.updateNutrition(entry)
+                override suspend fun delete(entryId: UUID) = manager.deleteNutrition(entryId)
+            }
+        },
+    )
+
+    /** Re-attempt writes that were never confirmed. Called from the Health Connect read-sync. */
+    suspend fun retryPendingHealthWrites() = healthRetry.retryPending()
+
+    /**
+     * Whether the user has Health Connect sync switched on. Deliberately does not ask
+     * whether the nutrition-write permission is granted: that question is answered inside
+     * [NutritionHealthRetry] via [NutritionWriteGate], because a permission probe that
+     * fails must not be read as "no permission". Doing so silently discarded writes.
+     */
     private suspend fun shouldSyncHealth(): Boolean {
-        val manager = health ?: return false
-        return prefs.healthConnectEnabled.first() && manager.hasNutritionWrite()
+        if (health == null) return false
+        return prefs.healthConnectEnabled.first()
     }
 
     /** Drop on-disk JPEGs once no log row, favorite, or draft still references them. */

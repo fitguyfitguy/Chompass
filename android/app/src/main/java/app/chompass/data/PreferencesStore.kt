@@ -40,7 +40,7 @@ import kotlinx.serialization.json.Json
  * functions for writes. Complex values (profile, entries, history) are stored
  * as JSON strings via kotlinx.serialization.
  */
-class PreferencesStore(private val appContext: Context) {
+class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     internal val dataStore get() = appContext.fudaiDataStore
     // coerceInputValues: an enum value this build does not know (e.g. a meal
     // type added by a newer release) falls back to the property default
@@ -317,7 +317,7 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setFastingEndReminderLeadMinutes(v: Int) = setFastingEndReminderLeadMinutesImpl(v)
     val lastNotifiedUpdateVersion: Flow<String?> get() = lastNotifiedUpdateVersionImpl
     suspend fun setLastNotifiedUpdateVersion(v: String) = setLastNotifiedUpdateVersionImpl(v)
-    val healthConnectEnabled: Flow<Boolean> get() = healthConnectEnabledImpl
+    override val healthConnectEnabled: Flow<Boolean> get() = healthConnectEnabledImpl
     suspend fun setHealthConnectEnabled(v: Boolean) = setHealthConnectEnabledImpl(v)
     val healthPermissionsVersion: Flow<Int> get() = healthPermissionsVersionImpl
     suspend fun setHealthPermissionsVersion(v: Int) = setHealthPermissionsVersionImpl(v)
@@ -326,6 +326,8 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun clearHealthChangesToken() = clearHealthChangesTokenImpl()
     val healthChangesTokenTypes: Flow<Set<String>> get() = healthChangesTokenTypesImpl
     suspend fun setHealthChangesTokenTypes(types: Set<String>) = setHealthChangesTokenTypesImpl(types)
+    override val pendingNutritionHealthWrites: Flow<Set<String>> get() = pendingNutritionHealthWritesImpl
+    override suspend fun setPendingNutritionHealthWrites(ids: Set<String>) = setPendingNutritionHealthWritesImpl(ids)
     val healthFoodRestoreDone: Flow<Boolean> get() = healthFoodRestoreDoneImpl
     suspend fun setHealthFoodRestoreDone(v: Boolean) = setHealthFoodRestoreDoneImpl(v)
     val healthHydrationRestoreDone: Flow<Boolean> get() = healthHydrationRestoreDoneImpl
@@ -469,6 +471,7 @@ class PreferencesStore(private val appContext: Context) {
     suspend fun setSelectedSpeechProvider(p: SpeechProvider) = setSelectedSpeechProviderImpl(p)
     fun selectedSpeechLanguage(provider: SpeechProvider): Flow<SpeechLanguage> = selectedSpeechLanguageImpl(provider)
     suspend fun setSelectedSpeechLanguage(provider: SpeechProvider, language: SpeechLanguage) = setSelectedSpeechLanguageImpl(provider, language)
+
     val onDeviceModelDownloadedVersion: Flow<String?> get() = onDeviceModelDownloadedVersionImpl
     suspend fun setOnDeviceModelDownloadedVersion(version: String?) = setOnDeviceModelDownloadedVersionImpl(version)
     val onDeviceDownloadOverWifiOnly: Flow<Boolean> get() = onDeviceDownloadOverWifiOnlyImpl
@@ -476,6 +479,9 @@ class PreferencesStore(private val appContext: Context) {
     val onDeviceFeatureVisible: Flow<Boolean> get() = onDeviceFeatureVisibleImpl
     suspend fun setOnDeviceFeatureVisible(v: Boolean) = setOnDeviceFeatureVisibleImpl(v)
     val foodEntries: Flow<List<FoodEntry>> get() = foodEntriesImpl
+
+    /** Latest snapshot of one diary row by id, or null once the row is gone. */
+    override suspend fun foodEntryById(id: UUID): FoodEntry? = foodEntryByIdImpl(id)
     fun foodEntriesForMonth(month: YearMonth): Flow<List<FoodEntry>> = foodEntriesForMonthImpl(month)
     fun foodEntriesForMonths(months: Collection<YearMonth>): Flow<List<FoodEntry>> =
         foodEntriesForMonthsImpl(months)

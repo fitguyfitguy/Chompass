@@ -14,6 +14,18 @@ enum class HealthConnectSdkStatus {
     Unavailable,
 }
 
+/**
+ * Whether a nutrition write is permitted. [UNKNOWN] is deliberately distinct from
+ * [DENIED]: it means the permission probe failed, not that the user said no.
+ * Treating the two the same is what lets a transient Health Connect outage
+ * discard a food entry's mirror silently (upstream fud-ai #204).
+ */
+enum class NutritionWriteGate {
+    ALLOWED,
+    DENIED,
+    UNKNOWN
+}
+
 internal data class DailyEnergy(
     val date: java.time.LocalDate? = null,
     val active: Double,

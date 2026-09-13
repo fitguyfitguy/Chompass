@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.HealthConnectFeatures
@@ -185,8 +186,37 @@ class HealthConnectManager(private val context: Context) {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
 
-    private suspend fun granted(): Set<String> =
-        runCatching { client?.permissionController?.getGrantedPermissions() }.getOrNull() ?: emptySet()
+    /**
+     * Granted permissions, or null when the permission probe itself failed.
+     *
+     * Health Connect answers over IPC, and the service can be mid-update,
+     * cold-starting, or binder-timing-out — each of which throws here.
+     * Collapsing that into "nothing is granted" makes a transient outage
+     * indistinguishable from a permission the user actually revoked. That
+     * distinction matters on the write path: a revoked permission means there
+     * is nothing to do, while a failed probe means we do not yet know, and
+     * skipping the write is mirror divergence the user never sees.
+     */
+    private suspend fun grantedOrNull(): Set<String>? =
+        runCatching { client?.permissionController?.getGrantedPermissions() }
+            .onFailure { Log.w(TAG, "op=hc_perms phase=grantedFail err=${it.message}", it) }
+            .getOrNull()
+
+    /** Fail-closed view of [grantedOrNull] for the read paths, where "assume
+     *  nothing is granted" is the safe answer — a read that returns nothing
+     *  loses no data. */
+    private suspend fun granted(): Set<String> = grantedOrNull() ?: emptySet()
+
+    /**
+     * Whether a nutrition write may proceed. [NutritionWriteGate.UNKNOWN] means
+     * the permission probe failed, not that permission is missing — callers
+     * should attempt the write anyway and treat a failure as retryable rather
+     * than skipping silently.
+     */
+    suspend fun nutritionWriteGate(): NutritionWriteGate = when (val g = grantedOrNull()) {
+        null -> NutritionWriteGate.UNKNOWN
+        else -> if (nutritionWrite in g) NutritionWriteGate.ALLOWED else NutritionWriteGate.DENIED
+    }
 
     /** The "connected" state: at least one Fud AI permission granted. Partial grants
      *  are valid — a read-only user still syncs the read direction. */
@@ -197,6 +227,9 @@ class HealthConnectManager(private val context: Context) {
     suspend fun hasBodyFatRead(): Boolean = bodyFatRead in granted()
     suspend fun hasBodyFatWrite(): Boolean = bodyFatWrite in granted()
     suspend fun hasNutritionRead(): Boolean = nutritionRead in granted()
+    /** Fail-closed, like its siblings. Do NOT gate a nutrition write on this: a
+     *  failed probe reads as false here, which is how mirror writes went
+     *  missing. Use [nutritionWriteGate]. */
     suspend fun hasNutritionWrite(): Boolean = nutritionWrite in granted()
     suspend fun hasEnergyRead(): Boolean = granted().let { activeEnergyRead in it && totalEnergyRead in it }
     suspend fun hasActivityRead(): Boolean = granted().let { stepsRead in it || exerciseRead in it }
@@ -321,6 +354,7 @@ class HealthConnectManager(private val context: Context) {
         /** Play Store package for the standalone HC APK (API ≤33). Public constant is internal in Jetpack. */
         private const val HC_PROVIDER_PACKAGE = "com.google.android.apps.healthdata"
         internal const val CLIENT_PREFIX = "fudai_"
+        private const val TAG = "HealthConnectManager"
 
         /** Bump this when we add a new record type so users re-auth.
          *  v2 = added BodyFatRecord read+write permissions.
