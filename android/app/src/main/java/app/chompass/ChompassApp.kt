@@ -1,6 +1,7 @@
 package app.chompass
 
 import android.app.Application
+import android.util.Log
 import app.chompass.data.AnalysisQueueStore
 import app.chompass.data.BodyFatRepository
 import app.chompass.data.BodyMeasurementRepository
@@ -53,6 +54,7 @@ import app.chompass.services.ondevice.ModelDownloadManager
 import app.chompass.services.ondevice.OnDeviceLlmGateway
 import app.chompass.services.speech.SpeechService
 import app.chompass.services.weather.OpenMeteoClient
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -72,9 +74,19 @@ class ChompassApp : Application() {
     lateinit var container: AppContainer
         private set
 
-    /** Process-lifetime scope for work that must outlive a disposed Compose tree. */
+    /**
+     * Process-lifetime scope for work that must outlive a disposed Compose tree.
+     * Startup work (migrations, observers, reminder re-arming) must never take
+     * the process down: an uncaught exception here would otherwise crash on
+     * every launch until the user clears app data — and their diary with it
+     * (upstream fud-ai c278c64d).
+     */
     val applicationScope: CoroutineScope =
-        CoroutineScope(SupervisorJob() + Dispatchers.Default)
+        CoroutineScope(
+            SupervisorJob() + Dispatchers.Default + CoroutineExceptionHandler { _, throwable ->
+                Log.e("ChompassApp", "Background task failed", throwable)
+            }
+        )
 
     private val appScope get() = applicationScope
 

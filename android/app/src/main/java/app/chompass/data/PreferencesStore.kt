@@ -1,7 +1,6 @@
 package app.chompass.data
 
 import android.content.Context
-import androidx.datastore.preferences.preferencesDataStore
 import app.chompass.models.AIProvider
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.BodyMeasurement
@@ -35,8 +34,6 @@ import java.util.UUID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.Json
 
-val Context.fudaiDataStore by preferencesDataStore(name = "fudai_prefs")
-
 /**
  * Thin wrapper over DataStore Preferences for all app state except API keys
  * (which live in [KeyStore]). Exposes reactive Flows for reads and suspend
@@ -45,7 +42,17 @@ val Context.fudaiDataStore by preferencesDataStore(name = "fudai_prefs")
  */
 class PreferencesStore(private val appContext: Context) {
     internal val dataStore get() = appContext.fudaiDataStore
-    internal val json = Json { ignoreUnknownKeys = true }
+    // coerceInputValues: an enum value this build does not know (e.g. a meal
+    // type added by a newer release) falls back to the property default
+    // instead of failing the whole row (upstream fud-ai c278c64d).
+    internal val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+    }
+    /** Copies unreadable persisted blobs aside before they are replaced (PersistedJsonGuard). */
+    internal val corruptArchive by lazy {
+        CorruptBlobArchive(File(appContext.filesDir, CorruptBlobArchive.DIRECTORY_NAME))
+    }
 
     /**
      * File-backed month buckets for the unbounded datasets. Keeping them out of

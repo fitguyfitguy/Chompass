@@ -32,7 +32,8 @@ import kotlin.math.max
  *
  * Same discipline as [JsonBucketStore]: all I/O on [Dispatchers.IO], writes
  * tmp-file + atomic rename serialized by a [Mutex], in-memory cache, lenient
- * decode (corrupt file → empty, never a crash).
+ * decode (corrupt file → empty, never a crash) — and the unreadable bytes
+ * are copied aside before the next write replaces them (PersistedJsonGuard).
  *
  * Retention: DONE/FAILED history entries are pruned after
  * [HISTORY_RETENTION_DAYS]; PENDING entries (the user's intended work) are
@@ -41,11 +42,17 @@ import kotlin.math.max
 class AnalysisQueueStore internal constructor(private val filesDir: File) {
     constructor(context: Context) : this(context.applicationContext.filesDir)
 
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+    }
     private val listSerializer = ListSerializer(QueuedAnalysis.serializer())
     private val io = Dispatchers.IO
     private val mutex = Mutex()
     private var loaded = false
+    /** Set when the stored file could not be (fully) decoded; the raw bytes
+     *  are copied aside before the next write replaces them. Guarded by [mutex]. */
+    private var needsPreservation = false
     private val _entries = MutableStateFlow<List<QueuedAnalysis>>(emptyList())
     /** Entry-count LRU (no Android deps, so the store stays JVM-testable). */
     private val thumbnailCache = object : LinkedHashMap<String, Bitmap>(0, 0.75f, true) {
@@ -73,11 +80,11 @@ class AnalysisQueueStore internal constructor(private val filesDir: File) {
         loaded = true
         val decoded = withContext(io) {
             val f = file()
-            if (!f.isFile) emptyList()
-            else runCatching { json.decodeFromString(listSerializer, f.readText()) }
-                .getOrElse { emptyList() }
+            if (!f.isFile) PersistedListDecode.Missing
+            else LenientJsonList.decode(json, QueuedAnalysis.serializer(), f.readText())
         }
-        _entries.value = decoded.sortedByDescending { it.createdAt }
+        if (decoded.needsPreservation) needsPreservation = true
+        _entries.value = decoded.itemsOrEmpty.sortedByDescending { it.createdAt }
     }
 
     suspend fun item(id: UUID): QueuedAnalysis? {
@@ -213,6 +220,7 @@ class AnalysisQueueStore internal constructor(private val filesDir: File) {
     // -- Internals (callers hold the mutex) -------------------------------
 
     private suspend fun writeLocked(entries: List<QueuedAnalysis>) = withContext(io) {
+        preserveIfNeededLocked()
         val target = file()
         val tmp = File(filesDir, "$FILE_NAME.tmp")
         tmp.writeText(json.encodeToString(listSerializer, entries))
@@ -222,6 +230,20 @@ class AnalysisQueueStore internal constructor(private val filesDir: File) {
             throw IOException("analysis-queue write failed for $target")
         }
         _entries.value = entries.sortedByDescending { it.createdAt }
+    }
+
+    /**
+     * Preserves the unreadable queue file before it is replaced. Fails closed:
+     * throws when no copy could be written, so the only copy is never
+     * destroyed (upstream fud-ai 736f25fc). Callers hold [mutex].
+     */
+    private fun preserveIfNeededLocked() {
+        if (!needsPreservation) return
+        val source = file()
+        needsPreservation = false
+        if (!source.isFile) return
+        CorruptBlobArchive(File(filesDir, CorruptBlobArchive.DIRECTORY_NAME)).preserveFile(source)
+            ?: throw IOException("refusing to replace unreadable ${source.name}: backup copy failed")
     }
 
     private suspend fun deleteImageFilesLocked(filenames: List<String>) = withContext(io) {

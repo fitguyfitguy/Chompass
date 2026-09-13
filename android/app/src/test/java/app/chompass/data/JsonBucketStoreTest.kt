@@ -7,14 +7,17 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.File
+import java.io.IOException
 import java.time.Instant
 import java.time.YearMonth
 import java.util.UUID
@@ -241,5 +244,85 @@ class JsonBucketStoreTest {
         kept.applyChanges(upsertsByMonth = mapOf(month to listOf(today)))
         kept.applyChanges(upsertsByMonth = mapOf(month to listOf(yesterday)))
         assertEquals(setOf(yesterday.id, today.id), kept.readAll().map { it.id }.toSet())
+    }
+
+    @Test
+    fun `corrupt month file is preserved before it is overwritten`() = runBlocking {
+        val root = tmp.newFolder("buckets")
+        File(root, "2026-08.json").writeText("{not json")
+        val s = store(root)
+        assertTrue(s.readMonth(YearMonth.of(2026, 8)).isEmpty())
+
+        val a = entry("a", "2026-08-01T10:00:00Z")
+        s.applyChanges(upsertsByMonth = mapOf(YearMonth.of(2026, 8) to listOf(a)))
+
+        val backup = root.listFiles()!!.single { it.name.startsWith("2026-08.json.corrupt-") }
+        assertEquals("{not json", backup.readText())
+        assertEquals(listOf(a), s.readMonth(YearMonth.of(2026, 8)))
+    }
+
+    @Test
+    fun `one unreadable row drops the row not the month`() = runBlocking {
+        val root = tmp.newFolder("buckets")
+        val good1 = entry("a", "2026-08-01T10:00:00Z")
+        val good2 = entry("b", "2026-08-02T10:00:00Z")
+        val raw = """[${json.encodeToString(WaterEntry.serializer(), good1)}, {"broken": true}, """ +
+            """${json.encodeToString(WaterEntry.serializer(), good2)}]"""
+        File(root, "2026-08.json").writeText(raw)
+        val s = store(root)
+
+        assertEquals(listOf(good1, good2), s.readMonth(YearMonth.of(2026, 8)))
+
+        // A partial decode still preserves the raw bytes before the rewrite
+        // (the upsert must actually change the month to trigger one).
+        val good3 = entry("c", "2026-08-03T10:00:00Z")
+        s.applyChanges(upsertsByMonth = mapOf(YearMonth.of(2026, 8) to listOf(good3)))
+        assertEquals(listOf(good1, good2, good3), s.readMonth(YearMonth.of(2026, 8)))
+        assertEquals(raw, root.listFiles()!!.single { it.name.startsWith("2026-08.json.corrupt-") }.readText())
+    }
+
+    @Test
+    fun `replaceAll preserves a corrupt month it deletes`() = runBlocking {
+        val root = tmp.newFolder("buckets")
+        File(root, "2026-08.json").writeText("{not json")
+        val s = store(root)
+
+        s.replaceAll(emptyMap())
+
+        assertFalse(File(root, "2026-08.json").exists())
+        val backup = root.listFiles()!!.single { it.name.startsWith("2026-08.json.corrupt-") }
+        assertEquals("{not json", backup.readText())
+    }
+
+    @Test
+    fun `clear preserves a corrupt month file`() = runBlocking {
+        val root = tmp.newFolder("buckets")
+        File(root, "2026-08.json").writeText("{not json")
+        val s = store(root)
+
+        s.clear()
+
+        assertFalse(File(root, "2026-08.json").exists())
+        val backup = root.listFiles()!!.single { it.name.startsWith("2026-08.json.corrupt-") }
+        assertEquals("{not json", backup.readText())
+    }
+
+    @Test
+    fun `write to a corrupt month fails closed when no backup can be written`() = runBlocking {
+        val root = tmp.newFolder("buckets")
+        File(root, "2026-08.json").writeText("{not json")
+        val s = store(root)
+        assertTrue(s.readMonth(YearMonth.of(2026, 8)).isEmpty())
+        if (!root.setWritable(false) || root.canWrite()) return@runBlocking // running as root: cannot simulate
+
+        try {
+            s.applyChanges(upsertsByMonth = mapOf(YearMonth.of(2026, 8) to listOf(entry("a", "2026-08-01T10:00:00Z"))))
+            fail("expected IOException")
+        } catch (expected: IOException) {
+            // Fail closed: the only copy is never replaced.
+        } finally {
+            root.setWritable(true)
+        }
+        assertEquals("{not json", File(root, "2026-08.json").readText())
     }
 }

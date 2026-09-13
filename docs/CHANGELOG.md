@@ -14,8 +14,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Nutrition details uses Cancel** (Android): the meal or day nutrition sheet no longer has a Done button. Cancel and swipe dismiss it like other read-only sheets.
 
 ### Fixed
-- **Analysis no longer fails when the AI provider cuts its reply short** (Android): under heavy load, the default Gemini model sometimes stopped its answer midway, which showed as "Could not understand the AI response". The app now detects a cut answer and asks the model again in one request, and a reply the provider cut short now says so instead of the generic error. Follows Codeberg [#68](https://codeberg.org/fitguy/Chompass/issues/68) by [@Ludisc](https://codeberg.org/Ludisc) and [@mbethke](https://codeberg.org/mbethke).
-
+- **A damaged data file no longer risks erasing your history** (Android): if a stored month file or preference ever fails to read, the app keeps showing what it can and copies the unreadable bytes aside before saving anything over them, instead of silently replacing them with the next entry. A damaged settings file no longer crash-loops the app on launch. Ports the data-loss fix from upstream Fud AI (PR #296).
 - **The calorie ring still shows today's burn after you eat past the base budget** (Android): the live and typical burn shades stay on top of the eaten fill, so they do not disappear once intake covers that part of the arc.
 - **Trailing arrows flip in right-to-left languages** (Android): More Nutrition, What-if, View more, and similar carets point with the reading direction.
 - **Trackers and Customize Progress are clearer with TalkBack** (Android): the Add Food Trackers row announces Expanded or Collapsed. Customize Progress on the Progress tab is a 48 dp button and is read once.

@@ -111,9 +111,23 @@ class BodyFatRepository(
      */
     suspend fun importFromFile(entries: List<BodyFatEntry>): Int {
         if (entries.isEmpty()) return 0
-        val (merged, changed) = mergeBodyFatsById(prefs.bodyFatEntries.first(), entries)
-        if (changed == 0) return 0
-        prefs.setBodyFatEntries(merged)
+        val existing = prefs.bodyFatEntries.first()
+        val (merged, changed) = mergeBodyFatsById(existing, entries)
+        // Same duplicate-collapse persistence as WeightRepository (upstream
+        // fud-ai 736f25fc).
+        if (changed == 0 && merged.size == existing.size) return 0
+        // Upsert into month files. Do not replaceAll from a snapshot taken
+        // around a slow read: that wipe is #63 (a reading logged while the
+        // import is in flight would disappear with the stale list) — and a
+        // month that failed to decode would be deleted instead of preserved.
+        val existingById = existing.associateBy { it.id }
+        val duplicateIds = existing.groupBy { it.id }.filterValues { it.size > 1 }.keys
+        val upserts = merged.filter { row ->
+            val prev = existingById[row.id]
+            prev == null || abs(prev.bodyFatFraction - row.bodyFatFraction) > 0.0001 || prev.date != row.date ||
+                row.id in duplicateIds
+        }
+        prefs.applyBodyFatBucketChanges(upsertsByMonth = upserts.groupBy { it.month() })
         syncProfileBodyFatToLatest()
         return changed
     }
