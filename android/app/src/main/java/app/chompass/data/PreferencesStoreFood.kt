@@ -41,6 +41,13 @@ internal val PreferencesStore.foodEntriesImpl: Flow<List<FoodEntry>> get() = flo
         emitAll(foodBucketStore.allFlow())
     }
 
+/** Latest persisted snapshot of one diary row by id, or null when no log row
+ *  matches — the retry queue's read-back for "is this row still there / what
+ *  does it say now". Backed by the cached month buckets, so repeated lookups
+ *  cost list assembly, not file I/O. */
+internal suspend fun PreferencesStore.foodEntryByIdImpl(id: UUID): FoodEntry? =
+    foodEntriesImpl.first().firstOrNull { it.id == id }
+
     /** One calendar month's entries only, gated on migration — the fast path for date-scoped reads. */
 internal fun PreferencesStore.foodEntriesForMonthImpl(month: YearMonth): Flow<List<FoodEntry>> = flow {
         migrateBucketsToFilesIfNeeded()

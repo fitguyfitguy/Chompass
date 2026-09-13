@@ -38,6 +38,13 @@ class HealthConnectReadSync(
         if (inFlight) return
         if (!prefs.healthConnectEnabled.first()) return
         if (!health.isAvailable()) return
+
+        // Nutrition writes Health Connect never confirmed retry here. Deliberately ahead of
+        // the read-capability guard below: a user who granted write but no reads still has a
+        // queue to drain, and returning early would strand it forever. Outside the in-flight
+        // guard — the retry serializes on its own mutex (upstream fud-ai 51d9c2e1).
+        foodRepository.retryPendingHealthWrites()
+
         val caps = health.capabilities()
         if (!caps.weightRead && !caps.bodyFatRead && !caps.nutritionRead && !caps.hydrationRead) return
 

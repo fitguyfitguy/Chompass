@@ -49,6 +49,16 @@ internal val PreferencesStore.healthChangesTokenTypesImpl: Flow<Set<String>> get
 internal suspend fun PreferencesStore.setHealthChangesTokenTypesImpl(types: Set<String>) =
     setStringPref(Keys.HEALTH_CHANGES_TOKEN_TYPES, types.joinToString(","))
 
+/// Food entries whose Health Connect write was never confirmed, retried on the next
+/// foreground sync (upstream fud-ai #204). Comma-joined UUIDs, matching
+/// [healthChangesTokenTypesImpl] — UUIDs cannot contain a comma, so the encoding
+/// is unambiguous and needs no JSON decode.
+internal val PreferencesStore.pendingNutritionHealthWritesImpl: Flow<Set<String>> get() = dataStore.data.map {
+    it[Keys.PENDING_NUTRITION_HEALTH_WRITES]?.split(",")?.filter { s -> s.isNotBlank() }?.toSet() ?: emptySet()
+}
+internal suspend fun PreferencesStore.setPendingNutritionHealthWritesImpl(ids: Set<String>) =
+    setStringPref(Keys.PENDING_NUTRITION_HEALTH_WRITES, ids.joinToString(","))
+
 /// One-shot flag for the food-log restore from Health Connect. Cleared with the
 /// rest of the store on Delete All Data / fresh install, which is exactly when
 /// the restore should be allowed to run again.
