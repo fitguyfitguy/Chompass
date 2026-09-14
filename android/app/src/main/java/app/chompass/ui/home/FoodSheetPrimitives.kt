@@ -507,9 +507,8 @@ internal fun ServingQuantityCard(
             Text(
                 stringResource(R.string.sheet_quantity),
                 fontSize = 17.sp,
-                modifier = Modifier.padding(end = 8.dp),
+                modifier = Modifier.weight(1f).padding(end = 8.dp),
             )
-            Spacer(Modifier.weight(1f))
             if (isLoadingUnits && unitOptions.isEmpty()) {
                 CircularProgressIndicator(
                     color = AppColors.Calorie,
@@ -525,7 +524,6 @@ internal fun ServingQuantityCard(
                     color = AppColors.Calorie,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(2f, fill = false),
                 )
                 Spacer(Modifier.width(8.dp))
             }
