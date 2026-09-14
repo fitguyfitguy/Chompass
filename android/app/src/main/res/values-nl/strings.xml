@@ -1870,7 +1870,6 @@
     <string name="caffeine_preset_default_mg">Standaardhoeveelheid (mg)</string>
     <string name="nicotine_preset_default_count">Standaardaantal</string>
     <string name="nicotine_preset_default_dose">Standaard nicotine per dosis (mg, optioneel)</string>
-    <string name="settings_tracker_preset_builtin">Ingebouwd</string>
     <string name="settings_tracker_preset_delete_title">Voorinstelling verwijderen?</string>
     <string name="settings_tracker_preset_delete_named">\"%1$s\" wordt verwijderd.</string>
     <string name="settings_tracker_preset_amounts_kept">Hoeveelheden blijven ongewijzigd.</string>

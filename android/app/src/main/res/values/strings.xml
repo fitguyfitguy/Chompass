@@ -555,7 +555,6 @@
     <string name="caffeine_preset_default_mg">Default amount (mg)</string>
     <string name="nicotine_preset_default_count">Default count</string>
     <string name="nicotine_preset_default_dose">Default nicotine per dose (mg, optional)</string>
-    <string name="settings_tracker_preset_builtin">Built-in</string>
     <string name="settings_tracker_preset_delete_title">Delete preset?</string>
     <string name="settings_tracker_preset_delete_named">\"%1$s\" will be deleted.</string>
     <string name="settings_tracker_preset_amounts_kept">Amounts stay unchanged.</string>

@@ -1946,7 +1946,6 @@
     <string name="caffeine_preset_default_mg">Стандартное количество (мг)</string>
     <string name="nicotine_preset_default_count">Стандартное число</string>
     <string name="nicotine_preset_default_dose">Стандартный никотин на дозу (мг, необязательно)</string>
-    <string name="settings_tracker_preset_builtin">Встроенный</string>
     <string name="settings_tracker_preset_delete_title">Удалить пресет?</string>
     <string name="settings_tracker_preset_delete_named">«%1$s» будет удалён.</string>
     <string name="settings_tracker_preset_amounts_kept">Количество не изменится.</string>

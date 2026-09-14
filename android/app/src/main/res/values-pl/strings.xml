@@ -1894,7 +1894,6 @@
     <string name="caffeine_preset_default_mg">Domyślna ilość (mg)</string>
     <string name="nicotine_preset_default_count">Domyślna liczba</string>
     <string name="nicotine_preset_default_dose">Domyślna nikotyna na dawkę (mg, opcjonalnie)</string>
-    <string name="settings_tracker_preset_builtin">Wbudowany</string>
     <string name="settings_tracker_preset_delete_title">Usunąć ustawienie wstępne?</string>
     <string name="settings_tracker_preset_delete_named">\"%1$s\" zostanie usunięte.</string>
     <string name="settings_tracker_preset_amounts_kept">Ilości pozostaną bez zmian.</string>

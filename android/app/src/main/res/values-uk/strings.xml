@@ -1798,7 +1798,6 @@ LBM = вага × (1 − %жиру)</string>
     <string name="caffeine_preset_default_mg">Стандартна кількість (мг)</string>
     <string name="nicotine_preset_default_count">Стандартне число</string>
     <string name="nicotine_preset_default_dose">Стандартний нікотин на дозу (мг, необов\'язково)</string>
-    <string name="settings_tracker_preset_builtin">Вбудований</string>
     <string name="settings_tracker_preset_delete_title">Видалити пресет?</string>
     <string name="settings_tracker_preset_delete_named">«%1$s» буде видалено.</string>
     <string name="settings_tracker_preset_amounts_kept">Кількість не зміниться.</string>

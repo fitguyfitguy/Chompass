@@ -1891,7 +1891,6 @@
     <string name="caffeine_preset_default_mg">Quantité par défaut (mg)</string>
     <string name="nicotine_preset_default_count">Nombre par défaut</string>
     <string name="nicotine_preset_default_dose">Nicotine par défaut par dose (mg, facultatif)</string>
-    <string name="settings_tracker_preset_builtin">Intégré</string>
     <string name="settings_tracker_preset_delete_title">Supprimer le préréglage ?</string>
     <string name="settings_tracker_preset_delete_named">« %1$s » sera supprimé.</string>
     <string name="settings_tracker_preset_amounts_kept">Les quantités restent inchangées.</string>

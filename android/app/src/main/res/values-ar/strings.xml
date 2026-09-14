@@ -1876,7 +1876,6 @@
     <string name="caffeine_preset_default_mg">المقدار الافتراضي (ملغ)</string>
     <string name="nicotine_preset_default_count">العدد الافتراضي</string>
     <string name="nicotine_preset_default_dose">النيكوتين الافتراضي للجرعة (ملغ، اختياري)</string>
-    <string name="settings_tracker_preset_builtin">مدمج</string>
     <string name="settings_tracker_preset_delete_title">حذف الإعداد المسبق؟</string>
     <string name="settings_tracker_preset_delete_named">سيتم حذف \"%1$s\".</string>
     <string name="settings_tracker_preset_amounts_kept">تبقى المقادير دون تغيير.</string>

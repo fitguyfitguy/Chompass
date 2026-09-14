@@ -1870,7 +1870,6 @@
     <string name="caffeine_preset_default_mg">기본 양 (mg)</string>
     <string name="nicotine_preset_default_count">기본 개수</string>
     <string name="nicotine_preset_default_dose">회당 기본 니코틴 (mg, 선택)</string>
-    <string name="settings_tracker_preset_builtin">기본 제공</string>
     <string name="settings_tracker_preset_delete_title">프리셋을 삭제할까요?</string>
     <string name="settings_tracker_preset_delete_named">\"%1$s\"이(가) 삭제됩니다.</string>
     <string name="settings_tracker_preset_amounts_kept">양은 그대로 유지됩니다.</string>

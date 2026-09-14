@@ -1870,7 +1870,6 @@
     <string name="caffeine_preset_default_mg">默认量 (mg)</string>
     <string name="nicotine_preset_default_count">默认数量</string>
     <string name="nicotine_preset_default_dose">每份默认尼古丁 (mg，可选)</string>
-    <string name="settings_tracker_preset_builtin">内置</string>
     <string name="settings_tracker_preset_delete_title">删除预设？</string>
     <string name="settings_tracker_preset_delete_named">“%1$s”将被删除。</string>
     <string name="settings_tracker_preset_amounts_kept">数量保持不变。</string>

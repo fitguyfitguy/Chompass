@@ -3403,7 +3403,6 @@ für dich ein</string>
     <string name="caffeine_preset_default_mg">Standardmenge (mg)</string>
     <string name="nicotine_preset_default_count">Standardanzahl</string>
     <string name="nicotine_preset_default_dose">Standard-Nikotin pro Dosis (mg, optional)</string>
-    <string name="settings_tracker_preset_builtin">Eingebaut</string>
     <string name="settings_tracker_preset_delete_title">Voreinstellung löschen?</string>
     <string name="settings_tracker_preset_delete_named">„%1$s“ wird gelöscht.</string>
     <string name="settings_tracker_preset_amounts_kept">Mengen bleiben unverändert.</string>

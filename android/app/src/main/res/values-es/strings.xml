@@ -1902,7 +1902,6 @@
     <string name="caffeine_preset_default_mg">Cantidad predeterminada (mg)</string>
     <string name="nicotine_preset_default_count">Número predeterminado</string>
     <string name="nicotine_preset_default_dose">Nicotina predeterminada por dosis (mg, opcional)</string>
-    <string name="settings_tracker_preset_builtin">Integrado</string>
     <string name="settings_tracker_preset_delete_title">¿Eliminar el preajuste?</string>
     <string name="settings_tracker_preset_delete_named">Se eliminará «%1$s».</string>
     <string name="settings_tracker_preset_amounts_kept">Las cantidades no cambian.</string>
