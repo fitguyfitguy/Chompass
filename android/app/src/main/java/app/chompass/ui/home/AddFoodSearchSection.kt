@@ -47,6 +47,7 @@ import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.outlined.Public
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -423,6 +424,7 @@ internal fun AddFoodSuggestionList(
     /** State of the Open Food Facts opt-in under the databases heading. */
     packagedSearchEnabled: Boolean = false,
     onPackagedSearchChange: (Boolean) -> Unit = {},
+    onOpenFoodSettings: () -> Unit = {},
     /**
      * Trailing space below the last row. Lives inside the scroll range, so it
      * is only reached by scrolling to the end of the list — the pane itself
@@ -526,16 +528,44 @@ internal fun AddFoodSuggestionList(
                 }
                 // Always, matched or not. The label lands ahead of its rows so
                 // a wait has somewhere to show and the rows fill in underneath
-                // it, and the opt-in sits between the two: under the heading
-                // that says what it is for, above the rows it lengthens.
+                // it. With the opt-in off there is no row and no extra height:
+                // a hint on the heading links to the setting; on, the switch
+                // sits between the heading and the rows it lengthens.
                 item(key = "section:DATABASES") {
-                    AddFoodSectionLabel(AddFoodGroup.DATABASES, pending = networkPending)
-                }
-                item(key = "packaged-toggle") {
-                    PackagedSearchToggle(
-                        enabled = packagedSearchEnabled,
-                        onChange = onPackagedSearchChange,
+                    AddFoodSectionLabel(
+                        AddFoodGroup.DATABASES,
+                        pending = networkPending,
+                        trailing = if (packagedSearchEnabled) null else {
+                            {
+                                Row(
+                                    Modifier
+                                        .clickable(onClick = onOpenFoodSettings, role = Role.Button)
+                                        .padding(4.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Text(
+                                        stringResource(R.string.food_search_source_off),
+                                        fontSize = 11.sp,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                    )
+                                    Icon(
+                                        Icons.Outlined.Settings,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                        modifier = Modifier.size(14.dp),
+                                    )
+                                }
+                            }
+                        },
                     )
+                }
+                if (packagedSearchEnabled) {
+                    item(key = "packaged-toggle") {
+                        PackagedSearchToggle(
+                            enabled = packagedSearchEnabled,
+                            onChange = onPackagedSearchChange,
+                        )
+                    }
                 }
                 items(databaseRows, key = { it.key }) { suggestion ->
                     AddFoodSuggestionRow(
@@ -602,14 +632,18 @@ private fun AddFoodEmptyLine(@StringRes textRes: Int) {
  * asking the user to pick a source before seeing anything.
  */
 @Composable
-private fun AddFoodSectionLabel(group: AddFoodGroup, pending: Boolean = false) {
+private fun AddFoodSectionLabel(
+    group: AddFoodGroup,
+    pending: Boolean = false,
+    trailing: (@Composable () -> Unit)? = null,
+) {
     Row(
         // The clearance the track needs doubles as the label's own breathing
         // room, which is why the row itself no longer adds any: the heading
         // ends up a couple of dp taller than the padded text it replaces
-        // rather than the full inset taller.
+        // rather than the full inset taller. The weighted label keeps a
+        // narrow trailing element from shifting the heading.
         Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
@@ -617,6 +651,7 @@ private fun AddFoodSectionLabel(group: AddFoodGroup, pending: Boolean = false) {
             // so the heading sits at the same place and the sections keep the
             // same height whether or not something is circling them.
             Modifier
+                .weight(1f)
                 .pendingOrbit(pending)
                 .padding(horizontal = ORBIT_INSET_X, vertical = ORBIT_INSET_Y),
             contentAlignment = Alignment.Center,
@@ -629,6 +664,7 @@ private fun AddFoodSectionLabel(group: AddFoodGroup, pending: Boolean = false) {
                 textAlign = TextAlign.Center,
             )
         }
+        trailing?.invoke()
     }
 }
 

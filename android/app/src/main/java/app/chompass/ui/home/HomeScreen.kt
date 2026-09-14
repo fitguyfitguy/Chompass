@@ -115,6 +115,7 @@ fun HomeScreen(
     container: AppContainer,
     onOpenSettings: (() -> Unit)? = null,
     onOpenDayTypes: (() -> Unit)? = null,
+    onOpenFoodSettings: (() -> Unit)? = null,
 ) {
     val vm: HomeViewModel = viewModel(factory = HomeViewModel.Factory(container))
     val ui by vm.ui.collectAsState()
@@ -1070,6 +1071,7 @@ fun HomeScreen(
             suggestionsNetworkPending = ui.addFoodSuggestNetworkPending,
             packagedSearchEnabled = ui.addFoodPackagedSearchEnabled,
             onPackagedSearchChange = vm::setAddFoodPackagedSearch,
+            onOpenFoodSettings = { onOpenFoodSettings?.invoke() },
             onPickSuggestion = {
                 addFoodFlowActive = false
                 vm.pickSuggestion(it)
