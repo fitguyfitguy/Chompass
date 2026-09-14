@@ -2175,15 +2175,8 @@
     <string name="edit_icon_set_photo">Set photo</string>
     <string name="edit_icon_remove_photo">Remove photo</string>
     <string name="edit_icon_photo_failed">Couldn\'t read that photo</string>
-    <string name="edit_reprocess_label">What changed?</string>
     <string name="edit_reprocess_hint">Describe the correction, e.g. large bowl, cooked in butter, oat milk instead of dairy</string>
     <string name="edit_reprocess_explain">AI will recalculate name, serving, calories, and macros from your note. Review the changes, then tap Save.</string>
-    <string name="edit_reprocess_context">Current entry</string>
-    <string name="edit_reprocess_chip_portion">Smaller portion</string>
-    <string name="edit_reprocess_chip_larger">Larger portion</string>
-    <string name="edit_reprocess_chip_oil">Extra oil / butter</string>
-    <string name="edit_reprocess_chip_brand">Different brand</string>
-    <string name="edit_reprocess_chip_prep">Different cooking</string>
     <string name="edit_reprocess">Correct with AI</string>
     <string name="edit_reprocessing">Correcting…</string>
     <string name="edit_reprocessing_failed">Correction failed</string>

@@ -751,7 +751,8 @@
     <string name="analysis_queue_minutes_ago">%1$d min fa</string>
     <string name="analysis_queue_hours_ago">%1$d h fa</string>
     <string name="analysis_queue_days_ago">%1$d g fa</string>
-    <string name="analysis_queue_on_day">per</string>    <string name="action_retry">Riprova</string>
+    <string name="analysis_queue_on_day">per</string>
+    <string name="action_retry">Riprova</string>
     <string name="action_show">Mostra</string>
     <string name="action_undo">Ripristina</string>
     <string name="action_what_if">E se...?</string>
@@ -857,16 +858,9 @@
     <string name="edit_note_placeholder">Nota (facoltativa)</string>
     <string name="edit_note_section">Nota</string>
     <string name="edit_reprocess">Correggi con l\'IA</string>
-    <string name="edit_reprocess_chip_brand">Marchio diverso</string>
-    <string name="edit_reprocess_chip_larger">Porzione più grande</string>
-    <string name="edit_reprocess_chip_oil">Olio / burro extra</string>
-    <string name="edit_reprocess_chip_portion">Porzione più piccola</string>
-    <string name="edit_reprocess_chip_prep">Cottura diversa</string>
-    <string name="edit_reprocess_context">Voce attuale</string>
     <string name="edit_reprocess_diff_row">%1$s: %2$s → %3$s</string>
     <string name="edit_reprocess_diff_title">Cosa è cambiato</string>
     <string name="edit_reprocess_explain">L\'IA ricalcolerà nome, porzione, calorie e macro dalla tua nota. Controlla le modifiche, poi tocca Salva.</string>
-    <string name="edit_reprocess_label">Cosa è cambiato?</string>
     <string name="edit_reprocess_review_hint">Controlla i valori aggiornati sopra, poi tocca Salva per tenerli.</string>
     <string name="edit_reprocess_section">Chiedi all\'IA di correggere</string>
     <string name="edit_reprocessing">Correzione…</string>

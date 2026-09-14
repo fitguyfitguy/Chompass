@@ -1507,15 +1507,8 @@
     <string name="edit_icon_set_photo">Fotoğraf ayarla</string>
     <string name="edit_icon_remove_photo">Fotoğrafı kaldır</string>
     <string name="edit_icon_photo_failed">Bu fotoğraf okunamadı</string>
-    <string name="edit_reprocess_label">Ne değişti?</string>
     <string name="edit_reprocess_hint">Düzeltmeyi açıkla, ör. büyük kase, tereyağında pişirilmiş, süt yerine yulaf sütü</string>
     <string name="edit_reprocess_explain">AI, notundan adı, porsiyonu, kaloriyi ve makroları yeniden hesaplayacak. Değişiklikleri incele, ardından Kaydet\'e dokun.</string>
-    <string name="edit_reprocess_context">Geçerli kayıt</string>
-    <string name="edit_reprocess_chip_portion">Daha küçük porsiyon</string>
-    <string name="edit_reprocess_chip_larger">Daha büyük porsiyon</string>
-    <string name="edit_reprocess_chip_oil">Ekstra yağ / tereyağı</string>
-    <string name="edit_reprocess_chip_brand">Farklı marka</string>
-    <string name="edit_reprocess_chip_prep">Farklı pişirme</string>
     <string name="edit_reprocess">AI ile düzelt</string>
     <string name="edit_reprocessing">Düzeltiliyor…</string>
     <string name="edit_reprocessing_failed">Düzeltme başarısız</string>

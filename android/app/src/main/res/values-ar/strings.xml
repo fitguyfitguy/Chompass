@@ -761,7 +761,8 @@
     <string name="analysis_queue_minutes_ago">قبل %1$d د</string>
     <string name="analysis_queue_hours_ago">قبل %1$d س</string>
     <string name="analysis_queue_days_ago">قبل %1$d ي</string>
-    <string name="analysis_queue_on_day">لـ</string>    <string name="action_retry">أعد المحاولة</string>
+    <string name="analysis_queue_on_day">لـ</string>
+    <string name="action_retry">أعد المحاولة</string>
     <string name="action_show">إظهار</string>
     <string name="action_undo">تراجع</string>
     <string name="action_what_if">ماذا لو؟</string>
@@ -876,16 +877,9 @@
     <string name="edit_note_placeholder">ملاحظة (اختياري)</string>
     <string name="edit_note_section">ملاحظة</string>
     <string name="edit_reprocess">تصحيح بالذكاء الاصطناعي</string>
-    <string name="edit_reprocess_chip_brand">علامة تجارية مختلفة</string>
-    <string name="edit_reprocess_chip_larger">حصة أكبر</string>
-    <string name="edit_reprocess_chip_oil">زيت/زبدة إضافية</string>
-    <string name="edit_reprocess_chip_portion">حصة أصغر</string>
-    <string name="edit_reprocess_chip_prep">طهي مختلف</string>
-    <string name="edit_reprocess_context">السجل الحالي</string>
     <string name="edit_reprocess_diff_row">%1$s: %2$s ← %3$s</string>
     <string name="edit_reprocess_diff_title">ما الذي تغيّر</string>
     <string name="edit_reprocess_explain">سيعيد الذكاء الاصطناعي حساب الاسم والحصة والسعرات والمغذيات الكبرى من ملاحظتك. راجع التغييرات ثم انقر حفظ.</string>
-    <string name="edit_reprocess_label">ما الذي تغيّر؟</string>
     <string name="edit_reprocess_review_hint">راجع القيم المحدّثة أعلاه، ثم انقر حفظ للاحتفاظ بها.</string>
     <string name="edit_reprocess_section">طلب تصحيح من الذكاء الاصطناعي</string>
     <string name="edit_reprocessing">جارٍ التصحيح…</string>

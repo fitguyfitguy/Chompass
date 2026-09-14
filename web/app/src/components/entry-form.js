@@ -497,7 +497,7 @@ export class EntryForm extends HTMLElement {
           </div>
         </section>
 
-        ${this.existing && !this.favoriteMode ? this.renderCorrectSection(e) : ""}
+        ${this.existing && !this.favoriteMode ? this.renderCorrectSection() : ""}
 
         ${
           this.existing && !this.favoriteMode
@@ -842,11 +842,7 @@ export class EntryForm extends HTMLElement {
     this.render();
   }
 
-  /**
-   * @param {Record<string, any>} e
-   */
-  renderCorrectSection(e) {
-    const chips = ["entry.chip_smaller_portion", "entry.chip_larger_portion", "entry.chip_extra_oil", "entry.chip_different_brand", "entry.chip_different_cooking"].map((k) => t(k));
+  renderCorrectSection() {
     const diffHtml =
       this.correctDiff.length > 0
         ? `<div class="entry-correct-diff card">
@@ -868,24 +864,15 @@ export class EntryForm extends HTMLElement {
                 : t("entry.correcting")
           )}</p>`
       : "";
+    const open =
+      this.correcting || this.correctDiff.length > 0 || this.correctError || this.correctNote.trim()
+        ? " open"
+        : "";
     return `
-      <section class="entry-section entry-correct">
-        <h2 class="entry-section__title">${escapeHtml(t("entry.correct_title"))}</h2>
-        <div class="entry-correct-context card">
-          <strong>${escapeHtml(e.name || t("entry.fallback_name"))}</strong>
-          <p>${Math.round(Number(e.calories || 0))} kcal · ${formatQuantity(Number(e.proteinG || 0))}P /
-            ${formatQuantity(Number(e.carbsG || 0))}C / ${formatQuantity(Number(e.fatG || 0))}F</p>
-        </div>
+      <details class="entry-section entry-correct"${open}>
+        <summary class="entry-section__title">${escapeHtml(t("entry.correct_title"))}</summary>
         <p class="field-hint">${escapeHtml(t("entry.correct_hint"))}</p>
         <label class="field-label" for="correct-note">${escapeHtml(t("entry.correct_prompt"))}</label>
-        <div class="chip-row">
-          ${chips
-            .map(
-              (c) =>
-                `<button type="button" class="chip" data-correct-chip="${escapeAttr(c)}" ${this.correcting ? "disabled" : ""}>${escapeHtml(c)}</button>`
-            )
-            .join("")}
-        </div>
         <textarea id="correct-note" rows="3" ${this.correcting ? "disabled" : ""} placeholder="${escapeAttr(t("entry.correct_note_placeholder"))}">${escapeHtml(this.correctNote)}</textarea>
         <button type="button" class="btn btn--primary" data-action="correct" ${this.correcting || !this.correctNote.trim() ? "disabled" : ""}>
           ${escapeHtml(this.correcting ? t("entry.correcting") : t("entry.correct_action"))}
@@ -893,7 +880,7 @@ export class EntryForm extends HTMLElement {
         ${progressHtml}
         ${this.correctError ? `<p class="entry-correct-error">${escapeHtml(this.correctError)}</p>` : ""}
         ${diffHtml}
-      </section>
+      </details>
     `;
   }
 
@@ -904,18 +891,6 @@ export class EntryForm extends HTMLElement {
       this.correctDiff = [];
       const btn = /** @type {HTMLButtonElement|null} */ (this.querySelector('[data-action="correct"]'));
       if (btn) btn.disabled = this.correcting || !this.correctNote.trim();
-    });
-    this.querySelectorAll("[data-correct-chip]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const label = btn.getAttribute("data-correct-chip") || "";
-        if (!label || this.correcting) return;
-        const cur = this.correctNote.trim();
-        if (cur.toLowerCase().includes(label.toLowerCase())) return;
-        this.correctNote = cur ? `${cur}, ${label}` : label;
-        if (noteEl) noteEl.value = this.correctNote;
-        const correctBtn = /** @type {HTMLButtonElement|null} */ (this.querySelector('[data-action="correct"]'));
-        if (correctBtn) correctBtn.disabled = false;
-      });
     });
     this.querySelector('[data-action="correct"]')?.addEventListener("click", () => this.onCorrectWithAi());
   }

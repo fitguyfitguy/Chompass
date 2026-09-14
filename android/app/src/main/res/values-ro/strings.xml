@@ -752,7 +752,8 @@
     <string name="analysis_queue_minutes_ago">acum %1$d min</string>
     <string name="analysis_queue_hours_ago">acum %1$d h</string>
     <string name="analysis_queue_days_ago">acum %1$d zile</string>
-    <string name="analysis_queue_on_day">pentru</string>    <string name="action_retry">Reîncearcă</string>
+    <string name="analysis_queue_on_day">pentru</string>
+    <string name="action_retry">Reîncearcă</string>
     <string name="action_show">Arată</string>
     <string name="action_undo">Revocă</string>
     <string name="action_what_if">Ce-ar fi?</string>
@@ -868,16 +869,9 @@
     <string name="edit_note_placeholder">Notă (opțional)</string>
     <string name="edit_note_section">Notă</string>
     <string name="edit_reprocess">Corectează cu IA</string>
-    <string name="edit_reprocess_chip_brand">Alt brand</string>
-    <string name="edit_reprocess_chip_larger">Porție mai mare</string>
-    <string name="edit_reprocess_chip_oil">Ulei / unt în plus</string>
-    <string name="edit_reprocess_chip_portion">Porție mai mică</string>
-    <string name="edit_reprocess_chip_prep">Altă preparare</string>
-    <string name="edit_reprocess_context">Înregistrarea curentă</string>
     <string name="edit_reprocess_diff_row">%1$s: %2$s → %3$s</string>
     <string name="edit_reprocess_diff_title">Ce s-a schimbat</string>
     <string name="edit_reprocess_explain">IA va recalcula numele, porția, caloriile și macrourile din nota ta. Verifică modificările, apoi atinge Salvează.</string>
-    <string name="edit_reprocess_label">Ce s-a schimbat?</string>
     <string name="edit_reprocess_review_hint">Verifică valorile actualizate de mai sus, apoi atinge Salvează pentru a le păstra.</string>
     <string name="edit_reprocess_section">Cere IA să corecteze</string>
     <string name="edit_reprocessing">Se corectează…</string>

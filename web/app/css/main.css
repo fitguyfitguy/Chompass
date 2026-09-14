@@ -2773,15 +2773,9 @@ form.entry-form > button.btn--primary,
   margin-bottom: 0.35rem;
 }
 
-.entry-correct-context {
-  padding: 0.85rem 1rem;
-  margin-bottom: 0.65rem;
-}
-
-.entry-correct-context p {
-  margin: 0.25rem 0 0;
-  color: var(--muted);
-  font-size: 0.88rem;
+.entry-correct > summary {
+  cursor: pointer;
+  margin-bottom: 0.5rem;
 }
 
 .entry-correct textarea {
