@@ -277,6 +277,23 @@ export function openRouterReasoningBody(effort) {
 }
 
 /**
+ * Strips inline reasoning some local models embed in content
+ * (`<think>…</think>`; Qwen-class via LM Studio / Ollama — Codeberg #97).
+ * Blocks span streamed chunks, so this runs on the assembled text only.
+ * A trailing unterminated open tag is cut to the end: its content is
+ * reasoning, never the answer. Mirrors Android
+ * OpenAICompatibleClient.stripThinking.
+ * @param {string} text
+ * @returns {string}
+ */
+export function stripThinkBlocks(text) {
+  const closed = text.replace(/<think(?:ing)?>[\s\S]*?<\/think(?:ing)?>/gi, "");
+  const open = closed.search(/<think(?:ing)?>/i);
+  if (open < 0) return closed.trim();
+  return closed.slice(0, open).trim();
+}
+
+/**
  * @param {{apiKey: string, model?: string, baseUrl?: string, reasoningEffort?: string, visionModel?: string}} config
  * @param {AiRequest} req
  * @returns {Promise<AiResponse>}
@@ -308,7 +325,7 @@ export async function openAiCompatibleSend(config, req) {
   const data = await res.json();
   const msg = data.choices[0].message;
   const toolCalls = (msg.tool_calls ?? []).map((tc) => ({ id: tc.id, name: tc.function.name, input: JSON.parse(tc.function.arguments || "{}") }));
-  return { text: msg.content ?? "", toolCalls };
+  return { text: stripThinkBlocks(msg.content ?? ""), toolCalls };
 }
 
 /**
@@ -351,8 +368,11 @@ async function openAiCompatibleSendStreaming(config, req) {
       req.onDelta?.(piece);
     }
   });
-  if (!text) throw new Error("Empty streaming response");
-  return { text, toolCalls: [] };
+  // Thinking stripped after assembly (blocks span chunks); an empty result
+  // throws so openAiCompatibleSend falls back to the non-streaming path.
+  const cleaned = stripThinkBlocks(text);
+  if (!cleaned) throw new Error("Empty streaming response");
+  return { text: cleaned, toolCalls: [] };
 }
 
 /**

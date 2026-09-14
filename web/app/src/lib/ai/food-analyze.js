@@ -57,6 +57,12 @@ ${SYSTEM_CONSTITUENTS_RULE_MICROS}`;
  * prompt is active. Mirrors Android FoodAnalysisService CONSTITUENT_MIN_RESPONSE_TOKENS. */
 const CONSTITUENTS_MIN_RESPONSE_TOKENS = 4096;
 
+/** #97: macros-only constituent rows (small cloud models on capped
+ * providers) run ~100 tokens each; 12 rows plus the meal total land past the
+ * 1024 default and the truncated reply fails to parse. Mirrors Android
+ * FoodAnalysisService CONSTITUENT_MACROS_MIN_RESPONSE_TOKENS. */
+const CONSTITUENTS_MACROS_MIN_RESPONSE_TOKENS = 2048;
+
 /** @param {import('../db.js').AppPrefs} appPrefs */
 function mealConstituentsEnabled(appPrefs) {
   return appPrefs.mealConstituentsEnabled !== false;
@@ -189,7 +195,11 @@ async function runAnalyze(providerId, config, text, productContext, imageList, a
     tools: [],
     signal,
     onDelta,
-    maxTokens: microsOn ? CONSTITUENTS_MIN_RESPONSE_TOKENS : undefined,
+    maxTokens: constituentsOn
+      ? microsOn
+        ? CONSTITUENTS_MIN_RESPONSE_TOKENS
+        : CONSTITUENTS_MACROS_MIN_RESPONSE_TOKENS
+      : undefined,
   });
 
   if (signal?.aborted) throw abortError();
