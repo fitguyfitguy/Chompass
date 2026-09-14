@@ -325,8 +325,6 @@ internal fun AddFoodSheetContent(
     autoFocusQuery: Boolean = false,
 ) {
     val scrollState = rememberScrollState()
-    val expandedLabel = stringResource(R.string.cd_expanded)
-    val collapsedLabel = stringResource(R.string.cd_collapsed)
     val searching = query.isNotBlank()
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
@@ -377,6 +375,29 @@ internal fun AddFoodSheetContent(
         )
         Spacer(Modifier.height(14.dp))
 
+        // Empty chip sets are legal (MUST 2: every preset deleted or every
+        // quick kind deselected) and hide their row entirely — the Custom
+        // button goes with it; custom amounts stay reachable from the Home
+        // tracker sheet.
+        val nicotineChips = remember(nicotineQuickKinds, nicotinePresets) {
+            HabitPresetDomain.NICOTINE.hubPresets(nicotineQuickKinds, HabitPresetCatalog(nicotinePresets))
+        }
+        val caffeineChips = remember(caffeineQuickKinds, caffeinePresets) {
+            HabitPresetDomain.CAFFEINE.hubPresets(caffeineQuickKinds, HabitPresetCatalog(caffeinePresets))
+        }
+        val enabledTrackerCount = listOf(
+            waterTrackingEnabled,
+            nicotineTrackingEnabled && nicotineChips.isNotEmpty(),
+            caffeineTrackingEnabled && caffeineChips.isNotEmpty(),
+            fastingEnabled,
+        ).count { it }
+        val hasTrackers = enabledTrackerCount > 0
+        // Three or more trackers bury the results pane, so the pill starts
+        // collapsed; two or fewer start open — the rows are then the reason
+        // the user pulled the sheet up, and hiding them costs a tap for
+        // nothing.
+        var trackersExpanded by rememberSaveable { mutableStateOf(enabledTrackerCount <= 2) }
+
         AddFoodQueryRow(
             query = query,
             onQueryChange = onQueryChange,
@@ -396,6 +417,72 @@ internal fun AddFoodSheetContent(
             groundedEnabled = GroundedEntryFeature.ENABLED,
             aiFeaturesEnabled = aiFeaturesEnabled,
             barcodeEnabled = barcodeEnabled,
+            trackersPillVisible = hasTrackers,
+            trackersExpanded = trackersExpanded,
+            onTrackersToggle = { trackersExpanded = !trackersExpanded },
+            trackersContent = if (hasTrackers) {
+                {
+                    Spacer(Modifier.height(8.dp))
+                    // Tracker content scrolls on its own. Device pass #2
+                    // (2026-08-24): the trackers outgrow the sheet on shorter
+                    // screens, so this column has to scroll; like
+                    // TextInputSheet it blocks drag-from-content dismissal
+                    // (handle/scrim still dismiss).
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(scrollState)
+                            .blockSheetDragAtScrollEdges(scrollState)
+                    ) {
+                        if (waterTrackingEnabled) {
+                            Spacer(Modifier.height(12.dp))
+                            AddFoodWaterQuickRow(
+                                presetsMl = waterQuickPresetsMl,
+                                useMetric = waterUseMetric,
+                                onWater = onWater,
+                                onWaterCustom = onWaterCustom,
+                            )
+                        }
+                        if (nicotineTrackingEnabled && nicotineChips.isNotEmpty()) {
+                            Spacer(Modifier.height(12.dp))
+                            AddFoodNicotineQuickRow(
+                                chips = nicotineChips,
+                                presets = nicotinePresets,
+                                onNicotine = onNicotine,
+                                onNicotineCustom = onNicotineCustom,
+                            )
+                        }
+                        if (caffeineTrackingEnabled && caffeineChips.isNotEmpty()) {
+                            Spacer(Modifier.height(12.dp))
+                            AddFoodCaffeineQuickRow(
+                                chips = caffeineChips,
+                                presets = caffeinePresets,
+                                onCaffeine = onCaffeine,
+                                onCaffeineCustom = onCaffeineCustom,
+                            )
+                        }
+                        if (fastingEnabled) {
+                            Spacer(Modifier.height(12.dp))
+                            FastingHubControl(
+                                phase = fastingPhase,
+                                fastHours = fastingGoalHours,
+                                eatHours = fastingEatHours,
+                                fastElapsedMillis = fastingElapsedMillis,
+                                eatElapsedMillis = fastingEatingElapsedMillis,
+                                goalReached = fastingGoalReached,
+                                autoStarted = fastingAutoStarted,
+                                nextFastStartMillis = fastingNextFastStartMillis,
+                                nowMillis = fastingNowMillis,
+                                autoMode = fastingAutoWindows,
+                                onStart = onStartFast,
+                                onStop = onStopFast,
+                            )
+                        }
+                    }
+                }
+            } else {
+                null
+            },
         )
 
         // The tabs' slot out of search. In search it keeps only enough height
@@ -437,118 +524,6 @@ internal fun AddFoodSheetContent(
 
         // The list is the bottom-most element now, so it always carries the
         // trailing space.
-        val enabledTrackerCount = listOf(
-            waterTrackingEnabled,
-            nicotineTrackingEnabled,
-            caffeineTrackingEnabled,
-            fastingEnabled,
-        ).count { it }
-        val hasTrackers = enabledTrackerCount > 0
-
-        // The trackers lead: their +1 chips are the fastest path to a log, so
-        // they sit above the results pane instead of under it, visible without
-        // scrolling past results and still on screen with the keyboard up.
-        // Nothing renders unless a tracker is actually switched on.
-        if (hasTrackers) {
-            Spacer(Modifier.height(10.dp))
-            // Tracker content scrolls on its own. Device pass #2 (2026-08-24):
-            // the trackers outgrow the sheet on shorter screens, so this column has
-            // to scroll; like TextInputSheet it blocks drag-from-content dismissal
-            // (handle/scrim still dismiss). The scroller lives here rather than on
-            // the outer column so the search branch can host a lazy list.
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(scrollState)
-                    .blockSheetDragAtScrollEdges(scrollState)
-            ) {
-            // Four trackers at once bury the results pane, so the section folds.
-            // Two or fewer start open: at that size the rows are the reason the
-            // user pulled the sheet up, and hiding them costs a tap for nothing.
-            var trackersExpanded by rememberSaveable { mutableStateOf(enabledTrackerCount <= 2) }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 48.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .clickable(
-                        onClick = { trackersExpanded = !trackersExpanded },
-                        role = Role.Button,
-                    )
-                    .semantics {
-                        stateDescription = if (trackersExpanded) expandedLabel else collapsedLabel
-                    }
-                    .padding(vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    stringResource(R.string.add_food_trackers_section),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                    modifier = Modifier.weight(1f),
-                )
-                Icon(
-                    if (trackersExpanded) Icons.Filled.KeyboardArrowDown
-                    else Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                )
-            }
-            AnimatedVisibility(
-                visible = trackersExpanded,
-                enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
-                exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f)),
-            ) {
-                Column {
-                    if (waterTrackingEnabled) {
-                        Spacer(Modifier.height(12.dp))
-                        AddFoodWaterQuickRow(
-                            presetsMl = waterQuickPresetsMl,
-                            useMetric = waterUseMetric,
-                            onWater = onWater,
-                            onWaterCustom = onWaterCustom,
-                        )
-                    }
-                    if (nicotineTrackingEnabled) {
-                        Spacer(Modifier.height(12.dp))
-                        AddFoodNicotineQuickRow(
-                            quickKinds = nicotineQuickKinds,
-                            presets = nicotinePresets,
-                            onNicotine = onNicotine,
-                            onNicotineCustom = onNicotineCustom,
-                        )
-                    }
-                    if (caffeineTrackingEnabled) {
-                        Spacer(Modifier.height(12.dp))
-                        AddFoodCaffeineQuickRow(
-                            quickKinds = caffeineQuickKinds,
-                            presets = caffeinePresets,
-                            onCaffeine = onCaffeine,
-                            onCaffeineCustom = onCaffeineCustom,
-                        )
-                    }
-                    if (fastingEnabled) {
-                        Spacer(Modifier.height(12.dp))
-                        FastingHubControl(
-                            phase = fastingPhase,
-                            fastHours = fastingGoalHours,
-                            eatHours = fastingEatHours,
-                            fastElapsedMillis = fastingElapsedMillis,
-                            eatElapsedMillis = fastingEatingElapsedMillis,
-                            goalReached = fastingGoalReached,
-                            autoStarted = fastingAutoStarted,
-                            nextFastStartMillis = fastingNextFastStartMillis,
-                            nowMillis = fastingNowMillis,
-                            autoMode = fastingAutoWindows,
-                            onStart = onStartFast,
-                            onStop = onStopFast,
-                        )
-                    }
-                }
-            }
-            }
-        }
 
         // One pane, two data sources, one reserved height. Showing the saved
         // meals here rather than a shorter hub means the sheet is already the
@@ -688,17 +663,12 @@ private fun waterAmountLabel(ml: Int, useMetric: Boolean): String =
  */
 @Composable
 private fun AddFoodNicotineQuickRow(
-    quickKinds: List<String>,
+    chips: List<HabitPreset>,
     presets: List<HabitPreset>,
     onNicotine: (String) -> Unit,
     onNicotineCustom: () -> Unit,
 ) {
-    // Enabled presets in catalog order (custom ids survive the selection;
-    // empty selection falls back to the defaults via hubPresets).
-    val chips = remember(quickKinds, presets) {
-        HabitPresetDomain.NICOTINE.hubPresets(quickKinds, HabitPresetCatalog(presets))
-    }
-
+    // Enabled presets in catalog order; the caller hides the row when empty.
     FlowRow(
         Modifier
             .fillMaxWidth()
@@ -745,16 +715,13 @@ private fun AddFoodNicotineQuickRow(
  */
 @Composable
 private fun AddFoodCaffeineQuickRow(
-    quickKinds: List<String>,
+    chips: List<HabitPreset>,
     presets: List<HabitPreset>,
     onCaffeine: (String) -> Unit,
     onCaffeineCustom: () -> Unit,
 ) {
-    // Enabled presets in catalog order; +1 logs the preset default mg.
-    val chips = remember(quickKinds, presets) {
-        HabitPresetDomain.CAFFEINE.hubPresets(quickKinds, HabitPresetCatalog(presets))
-    }
-
+    // Enabled presets in catalog order; +1 logs the preset default mg. The
+    // caller hides the row when empty.
     FlowRow(
         Modifier
             .fillMaxWidth()

@@ -11,7 +11,10 @@ import app.chompass.ui.settings.SettingRow
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.getOrNull
@@ -334,5 +337,157 @@ class OverflowGateTest {
             .assertVisibleSingleLine("meal header custom name")
         composeRule.onNodeWithText("850 kcal", substring = true)
             .assertVisibleSingleLine("meal header kcal summary")
+    }
+
+    /**
+     * The Add Food pill row with all four pills (5.0.0 MUST 1: Trackers is
+     * the fourth). German is the stress locale; "Mehr anzeigen" is the
+     * longest label the row carries. Resource-backed, so these legs run with
+     * the de qualifier like the tip-strip leg above.
+     */
+    private fun setContentQueryRow(fontScale: Float? = null, trackersExpanded: Boolean = false) {
+        composeRule.setContent {
+            MaterialTheme {
+                val row: @Composable () -> Unit = {
+                    app.chompass.ui.home.AddFoodQueryRow(
+                        query = "",
+                        onQueryChange = {},
+                        onPhoto = {},
+                        onVoice = {},
+                        onBarcode = {},
+                        onAnalyze = {},
+                        onNote = {},
+                        onSavedMeals = {},
+                        onManual = {},
+                        onCopyFromDay = {},
+                        onManualActive = {},
+                        onQueue = {},
+                        onGrounded = {},
+                        queuePendingCount = 0,
+                        groundedEnabled = false,
+                        aiFeaturesEnabled = true,
+                        barcodeEnabled = true,
+                        trackersPillVisible = true,
+                        trackersExpanded = trackersExpanded,
+                        onTrackersToggle = {},
+                        trackersContent = {
+                            Text("+1 KaffeeKaffee (95 mg)")
+                            Text("+1 Energydrink (80 mg)")
+                        },
+                    )
+                }
+                if (fontScale != null) {
+                    DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(fontScale)) { row() }
+                } else {
+                    row()
+                }
+            }
+        }
+    }
+
+    @Test
+    @Config(sdk = [34], application = Application::class, qualifiers = "de-w340dp-h720dp")
+    fun addFoodQueryRow_fourPills_german_stayVisibleSingleLine() {
+        setContentQueryRow()
+        composeRule.onNodeWithText("Foto").assertVisibleSingleLine("photo pill")
+        composeRule.onNodeWithText("Mehr anzeigen").assertVisibleSingleLine("more pill")
+        composeRule.onNodeWithText("Barcode").assertVisibleSingleLine("barcode pill")
+        composeRule.onNodeWithText("Tracker").assertVisibleSingleLine("trackers pill")
+    }
+
+    @Test
+    @Config(sdk = [34], application = Application::class, qualifiers = "de-w340dp-h720dp")
+    fun addFoodQueryRow_fourPills_fontScale130_stayVisibleSingleLine() {
+        setContentQueryRow(fontScale = 1.3f)
+        composeRule.onNodeWithText("Foto").assertVisibleSingleLine("photo pill 1.3x")
+        composeRule.onNodeWithText("Mehr anzeigen").assertVisibleSingleLine("more pill 1.3x")
+        composeRule.onNodeWithText("Barcode").assertVisibleSingleLine("barcode pill 1.3x")
+        composeRule.onNodeWithText("Tracker").assertVisibleSingleLine("trackers pill 1.3x")
+    }
+
+    @Test
+    @Config(sdk = [34], application = Application::class, qualifiers = "de-w340dp-h720dp")
+    fun addFoodQueryRow_fourPills_fontScale200_stayVisibleSingleLine() {
+        setContentQueryRow(fontScale = 2f)
+        composeRule.onNodeWithText("Foto").assertVisibleSingleLine("photo pill 2.0x")
+        composeRule.onNodeWithText("Mehr anzeigen").assertVisibleSingleLine("more pill 2.0x")
+        composeRule.onNodeWithText("Barcode").assertVisibleSingleLine("barcode pill 2.0x")
+        composeRule.onNodeWithText("Tracker").assertVisibleSingleLine("trackers pill 2.0x")
+    }
+
+    @Test
+    fun addFoodQueryRow_trackersPill_expandedRevealsQuickLogRows() {
+        setContentQueryRow(trackersExpanded = true)
+        composeRule.onNodeWithText("+1 KaffeeKaffee (95 mg)").assertExists()
+        composeRule.onNodeWithText("+1 Energydrink (80 mg)").assertExists()
+    }
+
+    @Test
+    fun addFoodQueryRow_trackersPill_collapsedHidesQuickLogRows() {
+        setContentQueryRow(trackersExpanded = false)
+        composeRule.onNodeWithText("+1 KaffeeKaffee (95 mg)").assertDoesNotExist()
+    }
+
+    @Test
+    fun addFoodQueryRow_noTrackers_pillHiddenNoEmptyBlock() {
+        // No tracker renders → no pill and no leftover empty block (MUST 1/2).
+        composeRule.setContent {
+            MaterialTheme {
+                app.chompass.ui.home.AddFoodQueryRow(
+                    query = "",
+                    onQueryChange = {},
+                    onPhoto = {},
+                    onVoice = {},
+                    onBarcode = {},
+                    onAnalyze = {},
+                    onNote = {},
+                    onSavedMeals = {},
+                    onManual = {},
+                    onCopyFromDay = {},
+                    onManualActive = {},
+                    onQueue = {},
+                    onGrounded = {},
+                    queuePendingCount = 0,
+                    groundedEnabled = false,
+                    aiFeaturesEnabled = true,
+                    barcodeEnabled = true,
+                )
+            }
+        }
+        composeRule.onNodeWithText("Trackers").assertDoesNotExist()
+    }
+
+    /**
+     * The Open Food Facts on-state chip on the databases heading (5.0.0 MUST 4)
+     * shares the heading line with the section label: it must stay single-line
+     * and never collapse the heading, at the large-font bar and under stress.
+     */
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Test
+    @Config(sdk = [34], application = Application::class, qualifiers = "de-w340dp-h720dp")
+    fun databasesHeading_offChip_staysVisibleSingleLine() {
+        composeRule.setContent {
+            MaterialTheme {
+                DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(1.3f)) {
+                    Box(Modifier.size(340.dp, 420.dp)) {
+                        app.chompass.ui.home.AddFoodSuggestionList(
+                            suggestions = emptyList(),
+                            networkPending = false,
+                            searching = true,
+                            listIdentity = "test" to true,
+                            packagedSearchEnabled = true,
+                            onPackagedSearchChange = {},
+                            onOpenFoodSettings = {},
+                            onPick = {},
+                            onReview = {},
+                        )
+                    }
+                }
+            }
+        }
+        // de resolves food_search_source_off to "Open Food Facts" — the chip
+        // and the off-hint share the resource.
+        composeRule.onNodeWithText("Open Food Facts")
+            .assertVisibleSingleLine("databases heading OFF chip 1.3x")
     }
 }

@@ -8,6 +8,10 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -33,6 +37,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Bookmarks
@@ -40,6 +45,7 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.PhotoCamera
@@ -58,6 +64,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -134,6 +142,12 @@ internal fun AddFoodQueryRow(
     groundedEnabled: Boolean,
     aiFeaturesEnabled: Boolean,
     barcodeEnabled: Boolean,
+    /** Trackers pill (5.0.0 MUST 1): shown while any tracker row renders. */
+    trackersPillVisible: Boolean = false,
+    trackersExpanded: Boolean = false,
+    onTrackersToggle: () -> Unit = {},
+    /** Quick-log rows revealed by the pill; null when no tracker renders. */
+    trackersContent: (@Composable () -> Unit)? = null,
     fieldModifier: Modifier = Modifier,
 ) {
     val submit = { if (query.isNotBlank() && aiFeaturesEnabled) onAnalyze(query.trim()) }
@@ -257,6 +271,40 @@ internal fun AddFoodQueryRow(
                     onClick = onBarcode,
                     modifier = Modifier.weight(1f),
                 )
+            }
+            // Fourth pill (MUST 1): the trackers fold in here instead of a
+            // standalone section between the field and the results. The
+            // chevron is the header affordance the section used to carry;
+            // TalkBack reads the expanded/collapsed state.
+            if (trackersPillVisible) {
+                val expandedLabel = stringResource(R.string.cd_expanded)
+                val collapsedLabel = stringResource(R.string.cd_collapsed)
+                AddFoodToolButton(
+                    icon = if (trackersExpanded) Icons.Filled.KeyboardArrowDown
+                    else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    label = stringResource(R.string.add_food_trackers_section),
+                    onClick = onTrackersToggle,
+                    modifier = Modifier
+                        .weight(1f)
+                        .semantics {
+                            stateDescription = if (trackersExpanded) expandedLabel else collapsedLabel
+                        },
+                )
+            }
+        }
+
+        // The quick-log rows open directly under the pill that toggles them:
+        // one tap from the open sheet to a +1 log. Expanding changes the
+        // split inside the sheet's fixed-height pane, never the sheet's own
+        // height, so the anchors (and the grow-on-scroll logic below) stay
+        // put.
+        trackersContent?.let { content ->
+            AnimatedVisibility(
+                visible = trackersExpanded,
+                enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
+                exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f)),
+            ) {
+                content()
             }
         }
     }
