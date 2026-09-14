@@ -604,6 +604,19 @@ open class MainActivity : ComponentActivity() {
                 container.prefs.setDebugDemoAnalysis(true)
                 container.prefs.setDebugDemoAnalysisFail(true)
             }
+            if (actions.demoAiTruncate) {
+                // Same implication as demo_ai_fail: the truncated first leg and
+                // the macros retry are scripted, no real provider call (#97).
+                container.prefs.setDebugDemoAnalysis(true)
+                container.prefs.setDebugDemoAnalysisTruncate(true)
+            }
+            if (actions.demoAiOff) {
+                // Disarm scripted demo responses without wiping DataStore
+                // (capture teardown; returns the app to real provider calls).
+                container.prefs.setDebugDemoAnalysis(false)
+                container.prefs.setDebugDemoAnalysisFail(false)
+                container.prefs.setDebugDemoAnalysisTruncate(false)
+            }
             if (actions.clearPendingDraft) {
                 container.prefs.setPendingFoodAnalysisDraft(null)
                 container.prefs.setPendingFoodInputDraft(null)

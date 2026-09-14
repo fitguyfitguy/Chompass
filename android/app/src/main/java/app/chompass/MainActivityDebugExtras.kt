@@ -52,6 +52,10 @@ internal data class DebugIntentActions(
     val demoAi: Boolean = false,
     /** Debug-only: replay scripted progress, then fail (failure-path capture; needs demo_ai too). */
     val demoAiFail: Boolean = false,
+    /** Debug-only: first entry leg truncates mid-JSON, the downshift retry answers macros-only (#97). */
+    val demoAiTruncate: Boolean = false,
+    /** Debug-only: launch carried demo_ai=false — disarm all scripted demo responses. */
+    val demoAiOff: Boolean = false,
     /** Debug-only: drop any pending food-analysis draft so a fresh capture segment starts clean. */
     val clearPendingDraft: Boolean = false,
     val runEntryBenchmark: Boolean = false,
@@ -146,7 +150,8 @@ internal fun consumeDebugIntentExtras(
         restoreRealData = intent.getBooleanExtra("restore_real_data", false),
         demoAi = BuildConfig.DEBUG && intent.getBooleanExtra("demo_ai", false),
         demoAiFail = BuildConfig.DEBUG && intent.getBooleanExtra("demo_ai_fail", false),
-        clearPendingDraft = BuildConfig.DEBUG && intent.getBooleanExtra("clear_pending_draft", false),
+        demoAiTruncate = BuildConfig.DEBUG && intent.getBooleanExtra("demo_ai_truncate", false),
+        demoAiOff = BuildConfig.DEBUG && intent.hasExtra("demo_ai") && !intent.getBooleanExtra("demo_ai", false),
         runEntryBenchmark = BuildConfig.DEBUG && intent.getBooleanExtra("run_entry_benchmark", false),
         entryBenchmarkCount = intent.getIntExtra("benchmark_count", 3),
         runRelogBenchmark = BuildConfig.DEBUG && intent.getBooleanExtra("run_relog_benchmark", false),
@@ -210,7 +215,8 @@ internal fun consumeDebugIntentExtras(
     if (actions.restoreRealData) intent.removeExtra("restore_real_data")
     if (actions.demoAi) intent.removeExtra("demo_ai")
     if (actions.demoAiFail) intent.removeExtra("demo_ai_fail")
-    if (actions.clearPendingDraft) intent.removeExtra("clear_pending_draft")
+    if (actions.demoAiTruncate) intent.removeExtra("demo_ai_truncate")
+    if (actions.demoAiOff) intent.removeExtra("demo_ai")
     if (actions.seedProgressiveMeal) intent.removeExtra("seed_progressive_meal")
     if (actions.runMealieImportTest) {
         intent.removeExtra("run_mealie_import_test")
