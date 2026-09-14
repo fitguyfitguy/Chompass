@@ -3,6 +3,7 @@ package app.chompass.services.ai
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
@@ -65,6 +66,8 @@ object OpenAICompatibleClient {
         provider: AIProvider,
         maxTokens: Int,
         reasoningEffort: OpenRouterReasoningEffort = OpenRouterReasoningEffort.AUTO,
+        /** Flat PerfLog suffix for retry-attempt legs, e.g. "downshift=macros" (#97). */
+        perfTag: String? = null,
     ): String {
         val url = "$baseUrl/chat/completions"
 
@@ -110,7 +113,10 @@ object OpenAICompatibleClient {
             response = request(compactRetryPrompt(prompt, maxTokens), compactRetry = true)
             if (response.wasTruncated) {
                 if (PerfLog.enabled) {
-                    PerfLog.event("op=analyzeText finish=${response.finishReason} chars=${response.text?.length ?: -1} maxTokens=$maxTokens compact=true")
+                    PerfLog.event(
+                        "op=analyzeText finish=${response.finishReason} chars=${response.text?.length ?: -1} " +
+                            "maxTokens=$maxTokens compact=true" + perfSuffix(perfTag)
+                    )
                 }
                 throw AiError.Api("The AI response was truncated twice. Try a shorter description or another model.", messageRes = R.string.ai_error_truncated_twice_description)
             }
@@ -120,10 +126,14 @@ object OpenAICompatibleClient {
 
     /**
      * Streaming chat/completions. Invokes [onDelta] with each text fragment;
-     * returns the full concatenated assistant text when the stream ends.
-     * Falls back to non-streaming [analyze] when the endpoint rejects `stream`.
+     * returns the assembled text plus how the stream ended. Falls back to
+     * non-streaming [analyze] when the endpoint rejects `stream` or the reply
+     * truncated. A finish-less stream (non-blank text, no finish_reason) is
+     * returned flagged as [OpenAIStreamResult.streamIncomplete] — the caller
+     * retries non-streaming only when the text fails to parse (#97), so
+     * servers that omit finish_reason on success pay no double request.
      */
-    suspend fun analyzeStreaming(
+    internal suspend fun analyzeStreaming(
         client: OkHttpClient,
         baseUrl: String,
         model: String,
@@ -134,10 +144,12 @@ object OpenAICompatibleClient {
         maxTokens: Int,
         onDelta: (String) -> Unit,
         reasoningEffort: OpenRouterReasoningEffort = OpenRouterReasoningEffort.AUTO,
-    ): String {
+        /** Flat PerfLog suffix for retry-attempt legs, e.g. "downshift=macros" (#97). */
+        perfTag: String? = null,
+    ): OpenAIStreamResult {
         val url = "$baseUrl/chat/completions"
 
-        suspend fun streamOnce(requestPrompt: String, compactRetry: Boolean): Pair<String, Boolean> {
+        suspend fun streamOnce(requestPrompt: String, compactRetry: Boolean): Triple<String, Boolean, String?> {
             val content = JSONArray().apply {
                 imageBytesList.forEach {
                     put(
@@ -178,7 +190,12 @@ object OpenAICompatibleClient {
             AiSse.read(response) { payload ->
                 val chunk = runCatching { Json.parseToJsonElement(payload).jsonObject }.getOrNull() ?: return@read
                 val choice = chunk["choices"]?.jsonArray?.firstOrNull()?.jsonObject ?: return@read
-                finishReason = choice["finish_reason"]?.jsonPrimitive?.contentOrNull ?: finishReason
+                // JsonNull-safe: real streams carry "finish_reason":null on
+                // content chunks; only a non-null primitive says the stream ended.
+                val finishNode = choice["finish_reason"]
+                if (finishNode is JsonPrimitive && finishNode !is JsonNull) {
+                    finishReason = finishNode.content
+                }
                 val delta = choice["delta"]?.jsonObject ?: return@read
                 val piece = when (val contentNode = delta["content"]) {
                     is JsonPrimitive -> contentNode.contentOrNull
@@ -192,28 +209,46 @@ object OpenAICompatibleClient {
                     onDelta(piece)
                 }
             }
-            if (PerfLog.enabled) PerfLog.event("op=analyzeText stream finish=$finishReason chars=${assembled.length} maxTokens=$maxTokens compact=$compactRetry")
-            return assembled.toString() to (finishReason == "length")
+            if (PerfLog.enabled) {
+                PerfLog.event(
+                    "op=analyzeText stream finish=$finishReason chars=${assembled.length} " +
+                        "maxTokens=$maxTokens compact=$compactRetry" + perfSuffix(perfTag)
+                )
+            }
+            return Triple(assembled.toString(), finishReason == "length", finishReason)
         }
 
         return try {
-            var (text, truncated) = streamOnce(prompt, compactRetry = false)
+            val (streamedText, truncated, finishReason) = streamOnce(prompt, compactRetry = false)
             // Blocks span chunks, so thinking is stripped from the assembled
             // text only; raw deltas still reach the partial-JSON preview.
-            text = stripThinking(text)
+            val text = stripThinking(streamedText)
             if (text.isBlank() || truncated) {
                 // Compact retry uses the non-streaming path so partial UI state
                 // is not polluted by a truncated first attempt.
-                return analyze(client, baseUrl, model, apiKey, prompt, imageBytesList, provider, maxTokens)
+                return oneShotResult(
+                    analyze(client, baseUrl, model, apiKey, prompt, imageBytesList, provider, maxTokens, reasoningEffort, perfTag = perfTag)
+                )
             }
-            text
+            // Finish-less (no finish_reason, non-blank text): some local
+            // servers cut the stream mid-reply (#97), others omit
+            // finish_reason on success — flag it and let the caller decide.
+            OpenAIStreamResult(text, finishReason, streamIncomplete = finishReason == null)
         } catch (e: AiError) {
             throw e
         } catch (_: Throwable) {
             // Endpoint may not support streaming — fall back to the classic path.
-            analyze(client, baseUrl, model, apiKey, prompt, imageBytesList, provider, maxTokens)
+            oneShotResult(
+                analyze(client, baseUrl, model, apiKey, prompt, imageBytesList, provider, maxTokens, reasoningEffort, perfTag = perfTag)
+            )
         }
     }
+
+    /** A reply that already went through the non-streaming ladder is final. */
+    private fun oneShotResult(text: String) =
+        OpenAIStreamResult(text, finishReason = null, streamIncomplete = false)
+
+    private fun perfSuffix(tag: String?): String = tag?.let { " $it" } ?: ""
 
     private fun compactRetryPrompt(prompt: String, maxTokens: Int): String =
         "$prompt\n\nIMPORTANT: The previous response did not contain a complete answer. Return only the requested compact JSON object, with no reasoning, explanation, or markdown. Keep the complete response under $maxTokens tokens."
@@ -312,6 +347,19 @@ internal data class OpenAITextResponse(
     val needsCompactRetry: Boolean get() = wasTruncated || (text == null && hasReasoning)
     val toolCalls: JSONArray? get() = messageJson?.optJSONArray("tool_calls")?.takeIf { it.length() > 0 }
 }
+
+/**
+ * Streamed reply plus how the stream ended (#97). A finish-less stream
+ * (non-blank text, no finish_reason) is suspect — some local servers cut
+ * mid-reply while others omit finish_reason on success — so the client
+ * returns the text flagged instead of retrying blindly. Schema-agnostic:
+ * no knowledge of the reply's JSON shape lives here.
+ */
+internal data class OpenAIStreamResult(
+    val text: String,
+    val finishReason: String?,
+    val streamIncomplete: Boolean,
+)
 
 internal object OpenAIResponseParser {
     fun parse(body: String): OpenAITextResponse = parseBody(body)

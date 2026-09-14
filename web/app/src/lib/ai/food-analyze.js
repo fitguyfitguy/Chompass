@@ -150,14 +150,6 @@ async function runAnalyze(providerId, config, text, productContext, imageList, a
   }
   const constituentsOn = mealConstituentsEnabled(appPrefs);
   const microsOn = constituentMicrosEnabled(appPrefs, config.model);
-  let systemPrompt = !constituentsOn
-    ? SYSTEM_BASE
-    : microsOn
-      ? SYSTEM_CONSTITUENTS_MICROS
-      : SYSTEM_CONSTITUENTS_MACROS;
-  if (appPrefs.userContext?.trim()) {
-    systemPrompt += `\n\nUser preferences:\n${appPrefs.userContext.trim()}`;
-  }
 
   let userText =
     text?.trim() ||
@@ -168,7 +160,6 @@ async function runAnalyze(providerId, config, text, productContext, imageList, a
     userText += `\n\n${productContext.trim()}`;
   }
 
-  onPhase?.(ANALYSIS_PHASE.CALLING_AI);
   /** @type {import('./providers.js').AiMessage} */
   const userMessage = {
     role: "user",
@@ -180,32 +171,62 @@ async function runAnalyze(providerId, config, text, productContext, imageList, a
     userMessage.images = imageList;
   }
 
-  const assembler = new FoodPartialJsonAssembler();
-  /** @type {(delta: string) => void | undefined} */
-  const onDelta = onPartial
-    ? (delta) => {
-        const partial = assembler.push(delta);
-        if (partial) onPartial(partial);
-      }
-    : undefined;
+  /**
+   * One provider attempt at a constituent detail tier: system prompt, token
+   * floor, send, parse. Throws on send or parse failure.
+   * @param {boolean} withMicros
+   */
+  const attemptOnce = async (withMicros) => {
+    let systemPrompt = !constituentsOn
+      ? SYSTEM_BASE
+      : withMicros
+        ? SYSTEM_CONSTITUENTS_MICROS
+        : SYSTEM_CONSTITUENTS_MACROS;
+    if (appPrefs.userContext?.trim()) {
+      systemPrompt += `\n\nUser preferences:\n${appPrefs.userContext.trim()}`;
+    }
+    onPhase?.(ANALYSIS_PHASE.CALLING_AI);
+    // Fresh assembler per attempt: partials from a failed truncated attempt
+    // must not leak into the retry's preview.
+    const assembler = new FoodPartialJsonAssembler();
+    /** @type {(delta: string) => void | undefined} */
+    const onDelta = onPartial
+      ? (delta) => {
+          const partial = assembler.push(delta);
+          if (partial) onPartial(partial);
+        }
+      : undefined;
+    const response = await provider.send(config, {
+      systemPrompt,
+      messages: [userMessage],
+      tools: [],
+      signal,
+      onDelta,
+      maxTokens: constituentsOn
+        ? withMicros
+          ? CONSTITUENTS_MIN_RESPONSE_TOKENS
+          : CONSTITUENTS_MACROS_MIN_RESPONSE_TOKENS
+        : undefined,
+    });
+    if (signal?.aborted) throw abortError();
+    onPhase?.(ANALYSIS_PHASE.PARSING);
+    const parsed = parseJsonObject(response.text);
+    if (!parsed) throw new Error(t("errors.parse_estimate"));
+    return parsed;
+  };
 
-  const response = await provider.send(config, {
-    systemPrompt,
-    messages: [userMessage],
-    tools: [],
-    signal,
-    onDelta,
-    maxTokens: constituentsOn
-      ? microsOn
-        ? CONSTITUENTS_MIN_RESPONSE_TOKENS
-        : CONSTITUENTS_MACROS_MIN_RESPONSE_TOKENS
-      : undefined,
-  });
-
-  if (signal?.aborted) throw abortError();
-  onPhase?.(ANALYSIS_PHASE.PARSING);
-  const parsed = parseJsonObject(response.text);
-  if (!parsed) throw new Error(t("errors.parse_estimate"));
+  let parsed;
+  try {
+    parsed = await attemptOnce(microsOn);
+  } catch (primaryAttemptErr) {
+    // #97: a micros-constituents reply that fails to send or parse retries
+    // ONCE at the smaller macros-only prompt and its 2048-token floor (the
+    // PWA has no finish_reason visibility, so the retry is attempt-level).
+    // Abort errors and non-micros tiers surface unchanged; the caller's
+    // fallback-provider logic then applies.
+    if (!microsOn || isAbortError(primaryAttemptErr) || signal?.aborted) throw primaryAttemptErr;
+    parsed = await attemptOnce(false);
+  }
 
   const mealType = ["breakfast", "lunch", "dinner", "snack"].includes(parsed.mealType)
     ? parsed.mealType
