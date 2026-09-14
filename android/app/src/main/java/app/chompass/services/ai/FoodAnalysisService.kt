@@ -1548,6 +1548,18 @@ class FoodAnalysisService(
 
         if (reportPhases) onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Preparing))
         if (BuildConfig.DEBUG && prefs?.debugDemoAnalysis?.first() == true && op in DemoFoodAnalysis.ENTRY_OPS) {
+            if (BuildConfig.DEBUG && prefs.debugDemoAnalysisTruncate.first()) {
+                // Scripted #97 two-leg run: the first (MICROS) leg returns a cut
+                // reply, the downshift retry answers macros-only JSON.
+                // attemptState mirrors what the real dispatch would resolve so
+                // the recovery ladder sees a genuine MICROS attempt.
+                val scriptedKind = kindOverride ?: EntryConstituentPromptKind.MICROS
+                attemptState?.kind = scriptedKind
+                if (PerfLog.enabled) {
+                    PerfLog.event("op=$op demo=truncate kind=$scriptedKind" + if (kindOverride != null) " downshift=macros" else "")
+                }
+                return DemoFoodAnalysis.runTruncate(onProgress, macrosLeg = kindOverride == EntryConstituentPromptKind.MACROS)
+            }
             val demoJson = DemoFoodAnalysis.run(onProgress)
             if (BuildConfig.DEBUG && prefs.debugDemoAnalysisFail.first()) {
                 throw IOException("demo failure (demo_ai_fail)")

@@ -21,6 +21,18 @@ internal object DemoFoodAnalysis {
     private const val FIXTURE_JSON =
         """{"name":"$DEMO_FOOD_NAME","calories":640,"protein":42.0,"carbs":58.0,"fat":24.0,"serving_size_grams":420.0,"emoji":"🥙","sugar":4.0,"added_sugar":1.0,"fiber":9.0,"saturated_fat":5.0,"monounsaturated_fat":8.0,"polyunsaturated_fat":4.0,"sodium":880.0,"potassium":760.0,"unit_options":[{"unit":"bowl","quantity":1.0,"grams_per_unit":420.0}],"constituents":[]}"""
 
+    /**
+     * #97 scripted failure: a MICROS reply cut mid-constituent the way a
+     * token-capped local model does — unbalanced JSON, so the real parser
+     * throws InvalidResponse and the service downshifts to MACROS.
+     */
+    private const val TRUNCATED_MICROS_JSON =
+        """{"name":"$DEMO_FOOD_NAME","calories":640,"protein":42.0,"carbs":58.0,"fat":24.0,"serving_size_grams":420.0,"emoji":"🥙","constituents":[{"name":"grilled chicken","calories":260,"protein":36.0,"carbs":0.0,"fat":12.0,"serving_size_grams":150.0,"sodium":380.0,"potassium":420.0,"iron":1.2},{"name":"rice with avocado","calories":380,"protein":6.0,"carbs":58.0,"fat":12.0,"serving_size_grams":270.0,"sodi"""
+
+    /** #97 downshift retry: same meal, constituents with macros only. */
+    private const val MACROS_JSON =
+        """{"name":"$DEMO_FOOD_NAME","calories":640,"protein":42.0,"carbs":58.0,"fat":24.0,"serving_size_grams":420.0,"emoji":"🥙","unit_options":[{"unit":"bowl","quantity":1.0,"grams_per_unit":420.0}],"constituents":[{"name":"grilled chicken","calories":260,"protein":36.0,"carbs":0.0,"fat":12.0,"serving_size_grams":150.0,"emoji":"🍗","unit_options":[]},{"name":"rice with avocado","calories":380,"protein":6.0,"carbs":58.0,"fat":12.0,"serving_size_grams":270.0,"emoji":"🍚","unit_options":[]}]}"""
+
     suspend fun run(onProgress: (FoodAnalysisProgress) -> Unit): String {
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.CallingAi))
         delay(700)
@@ -76,5 +88,43 @@ internal object DemoFoodAnalysis {
         )
         delay(400)
         return FIXTURE_JSON
+    }
+
+    /**
+     * Two-leg #97 demo (`demo_ai_truncate`): the first (MICROS) leg returns
+     * [TRUNCATED_MICROS_JSON]; the downshift retry — recognized by the caller
+     * passing `macrosLeg = true` — replays partial progress and returns valid
+     * macros-only JSON. Parsed by the real parser either way.
+     */
+    suspend fun runTruncate(
+        onProgress: (FoodAnalysisProgress) -> Unit,
+        macrosLeg: Boolean,
+    ): String {
+        onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.CallingAi))
+        delay(500)
+        onProgress(
+            FoodAnalysisProgress.Partial(
+                partial = PartialFoodAnalysis(
+                    name = DEMO_FOOD_NAME,
+                    emoji = "🥙",
+                )
+            )
+        )
+        delay(400)
+        if (!macrosLeg) return TRUNCATED_MICROS_JSON
+        onProgress(
+            FoodAnalysisProgress.Partial(
+                partial = PartialFoodAnalysis(
+                    name = DEMO_FOOD_NAME,
+                    emoji = "🥙",
+                    calories = 640,
+                    protein = 42.0,
+                    carbs = 58.0,
+                    fat = 24.0,
+                )
+            )
+        )
+        delay(400)
+        return MACROS_JSON
     }
 }

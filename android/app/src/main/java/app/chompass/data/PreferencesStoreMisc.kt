@@ -71,6 +71,14 @@ internal suspend fun PreferencesStore.setDebugDemoAnalysisFailImpl(enabled: Bool
     dataStore.edit { it[Keys.DEBUG_DEMO_ANALYSIS_FAIL] = enabled }
 }
 
+// -- Debug demo-analysis-truncate flag (demo_ai_truncate extra; #97 downshift) --
+internal val PreferencesStore.debugDemoAnalysisTruncateImpl: Flow<Boolean>
+    get() = dataStore.data.map { it[Keys.DEBUG_DEMO_ANALYSIS_TRUNCATE] ?: false }
+
+internal suspend fun PreferencesStore.setDebugDemoAnalysisTruncateImpl(enabled: Boolean) {
+    dataStore.edit { it[Keys.DEBUG_DEMO_ANALYSIS_TRUNCATE] = enabled }
+}
+
 // -- Settings Suggestions (hub nudge card) ---------------------------------
 internal val PreferencesStore.firstLaunchAtImpl: Flow<Long>
     get() = dataStore.data.map { it[Keys.FIRST_LAUNCH_AT] ?: 0L }
