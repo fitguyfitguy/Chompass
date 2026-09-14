@@ -9,7 +9,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Changed
 
-- **More food emojis on the entry picker** (Android): tap the food icon on edit or a favorite to pick from a larger set, including cheese, rice, sandwiches, seafood, and tea.
+- **More food emojis on the entry picker** (Android): tap the food icon on edit or a favorite to pick from a larger set, including cheese, rice, sandwiches, seafood, tea, blueberries, and bubble tea. The grid only shows emojis your phone can draw.
 
 ## [4.10.0] - 2026-09-14
 
