@@ -92,6 +92,12 @@ data class HabitPresetCatalog(
 
     fun without(id: String): HabitPresetCatalog = copy(presets = presets.filterNot { it.id == id })
 
+    /** Custom ids present in this catalog but not in [previous] (add path only). */
+    fun addedCustomIds(previous: HabitPresetCatalog): List<String> {
+        val before = previous.presets.mapTo(mutableSetOf()) { it.id }
+        return presets.map { it.id }.filter { it.startsWith(CUSTOM_PREFIX) && it !in before }
+    }
+
     fun reordered(ids: List<String>): HabitPresetCatalog {
         val byId = presets.associateBy { it.id }
         val next = ids.mapNotNull { byId[it] } + presets.filter { it.id !in ids.toSet() }
