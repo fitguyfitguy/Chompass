@@ -58,6 +58,17 @@
 # survive R8, but defensively keep WeightRecord / NutritionRecord field access.
 -keep class androidx.health.connect.client.records.** { *; }
 
+# ─── LiteRT-LM (on-device AI) ─────────────────────────────────────────────────
+# The litertlm AAR ships no consumer rules, and its JNI layer looks up the
+# config/data classes and getters BY NAME (litertlm.cc: FindClass
+# "InputData$Text", GetMethodID "getTopK"/"getText"/…). R8 renamed Backend → uv
+# and stripped SamplerConfig's getters, so nativeCreateConversation aborted
+# with 'JNI DETECTED ERROR IN APPLICATION: mid == null' on every minified
+# build (Codeberg #101) — debug builds never minify, which is why device
+# passes stayed green. Keep the whole API surface: the library is small and
+# the native side reflects into all of it.
+-keep class com.google.ai.edge.litertlm.** { *; }
+
 # ─── Crash reporting ──────────────────────────────────────────────────────────
 # Keep line numbers so release crash reports stay readable, but rename
 # the original source file name so we don't leak internal file structure.
