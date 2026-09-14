@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,6 +44,7 @@ import app.chompass.R
 import app.chompass.models.NicotineEntry
 import app.chompass.models.NicotineKind
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.ChompassPinnedFooterSheet
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.theme.warning
@@ -125,76 +128,83 @@ fun NicotineCustomCountSheet(
     var count by remember { mutableStateOf(1) }
     var mg by remember { mutableStateOf(0) }
 
-    ChompassBottomSheet(
+    ChompassPinnedFooterSheet(
         onDismiss = onDismiss,
         sheetState = sheetState,
-    ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp),
-        ) {
+        toolbar = {
             SheetReviewToolbar(
                 title = stringResource(R.string.nicotine_log_title),
                 onCancel = onDismiss,
             )
-
-            FlowRow(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+        },
+        body = {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
-                NicotineKind.entries.forEach { option ->
-                    FilterChip(
-                        selected = kind == option,
-                        onClick = { kind = option },
-                        label = { Text(stringResource(option.labelRes)) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.warning.copy(alpha = 0.18f),
-                        ),
-                    )
+                FlowRow(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    NicotineKind.entries.forEach { option ->
+                        FilterChip(
+                            selected = kind == option,
+                            onClick = { kind = option },
+                            label = { Text(stringResource(option.labelRes)) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.warning.copy(alpha = 0.18f),
+                            ),
+                        )
+                    }
                 }
+
+                Text(
+                    stringResource(R.string.nicotine_count),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp,
+                )
+                NumericWheelPicker(
+                    value = count,
+                    onValueChange = { count = it },
+                    min = 1,
+                    max = 20,
+                    step = 1,
+                )
+
+                Text(
+                    stringResource(R.string.nicotine_mg_optional),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp,
+                )
+                NumericWheelPicker(
+                    value = mg,
+                    onValueChange = { mg = it },
+                    min = 0,
+                    max = 30,
+                    step = 1,
+                    unit = stringResource(R.string.unit_mg),
+                )
             }
-
-            Text(
-                stringResource(R.string.nicotine_count),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp,
-            )
-            NumericWheelPicker(
-                value = count,
-                onValueChange = { count = it },
-                min = 1,
-                max = 20,
-                step = 1,
-            )
-
-            Text(
-                stringResource(R.string.nicotine_mg_optional),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp,
-            )
-            NumericWheelPicker(
-                value = mg,
-                onValueChange = { mg = it },
-                min = 0,
-                max = 30,
-                step = 1,
-                unit = stringResource(R.string.unit_mg),
-            )
-
+        },
+        footer = {
             GradientSaveButton(
                 text = stringResource(R.string.nicotine_add),
                 enabled = count > 0,
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .imePadding()
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
                 onClick = {
                     onAdd(kind, count, mg.takeIf { it > 0 }?.toDouble())
                     onDismiss()
                 },
             )
-            Spacer(Modifier.height(16.dp))
-        }
-    }
+        },
+    )
 }
 
 /**
@@ -340,74 +350,81 @@ fun NicotineEditSheet(
     var count by remember { mutableStateOf(entry.count) }
     var mg by remember { mutableStateOf(entry.mg?.toInt() ?: 0) }
 
-    ChompassBottomSheet(
+    ChompassPinnedFooterSheet(
         onDismiss = onDismiss,
         sheetState = sheetState,
-    ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp),
-        ) {
+        toolbar = {
             SheetReviewToolbar(
                 title = stringResource(R.string.nicotine_edit_title),
                 onCancel = onDismiss,
             )
-
-            FlowRow(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+        },
+        body = {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
-                NicotineKind.entries.forEach { option ->
-                    FilterChip(
-                        selected = kind == option,
-                        onClick = { kind = option },
-                        label = { Text(stringResource(option.labelRes)) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.warning.copy(alpha = 0.18f),
-                        ),
-                    )
+                FlowRow(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    NicotineKind.entries.forEach { option ->
+                        FilterChip(
+                            selected = kind == option,
+                            onClick = { kind = option },
+                            label = { Text(stringResource(option.labelRes)) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.warning.copy(alpha = 0.18f),
+                            ),
+                        )
+                    }
                 }
+
+                Text(
+                    stringResource(R.string.nicotine_count),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp,
+                )
+                NumericWheelPicker(
+                    value = count,
+                    onValueChange = { count = it },
+                    min = 1,
+                    max = 20,
+                    step = 1,
+                )
+
+                Text(
+                    stringResource(R.string.nicotine_mg_optional),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp,
+                )
+                NumericWheelPicker(
+                    value = mg,
+                    onValueChange = { mg = it },
+                    min = 0,
+                    max = 30,
+                    step = 1,
+                    unit = stringResource(R.string.unit_mg),
+                )
             }
-
-            Text(
-                stringResource(R.string.nicotine_count),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp,
-            )
-            NumericWheelPicker(
-                value = count,
-                onValueChange = { count = it },
-                min = 1,
-                max = 20,
-                step = 1,
-            )
-
-            Text(
-                stringResource(R.string.nicotine_mg_optional),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp,
-            )
-            NumericWheelPicker(
-                value = mg,
-                onValueChange = { mg = it },
-                min = 0,
-                max = 30,
-                step = 1,
-                unit = stringResource(R.string.unit_mg),
-            )
-
+        },
+        footer = {
             GradientSaveButton(
                 text = stringResource(R.string.action_save),
                 enabled = count > 0,
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .imePadding()
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
                 onClick = {
                     onSave(kind, count, mg.takeIf { it > 0 }?.toDouble())
                     onDismiss()
                 },
             )
-            Spacer(Modifier.height(16.dp))
-        }
-    }
+        },
+    )
 }
