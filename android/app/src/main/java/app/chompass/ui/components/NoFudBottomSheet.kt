@@ -64,6 +64,13 @@ import androidx.compose.ui.unit.dp
  * [ChompassPinnedFooterSheet]/[ChompassPinnedFooterColumn] or an explicit
  * `weight`/`heightIn` cap on the list.
  */
+/**
+ * Top corner radius shared by every sheet. Sheets that can be dragged to cover
+ * the whole screen animate this down to zero at the expanded anchor, so the
+ * rounding does not carve notches out of the display's own corners.
+ */
+val ChompassSheetCornerRadius: Dp = 28.dp
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChompassBottomSheet(
@@ -71,7 +78,10 @@ fun ChompassBottomSheet(
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberChompassSheetState(),
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
-    shape: Shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+    shape: Shape = RoundedCornerShape(
+        topStart = ChompassSheetCornerRadius,
+        topEnd = ChompassSheetCornerRadius,
+    ),
     contentWindowInsets: @Composable () -> WindowInsets = { BottomSheetDefaults.windowInsets },
     content: @Composable ColumnScope.() -> Unit,
 ) {

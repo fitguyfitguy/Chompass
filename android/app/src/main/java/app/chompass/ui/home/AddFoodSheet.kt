@@ -1,7 +1,9 @@
 package app.chompass.ui.home
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
@@ -82,6 +84,7 @@ import app.chompass.models.CaffeineKind
 import app.chompass.models.FastingPhase
 import app.chompass.models.NicotineKind
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.ChompassSheetCornerRadius
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.blockSheetDragAtScrollEdges
 import app.chompass.ui.theme.AppColors
@@ -154,9 +157,21 @@ fun AddFoodSheet(
     // settled to, so growing the body made the sheet lag the content and then
     // snap at the end of the tween.
     val sheetState = rememberChompassSheetState(skipPartiallyExpanded = false)
+    // At the expanded anchor the sheet covers the screen, and rounded top
+    // corners then have nothing to sit against — they cut two notches out of
+    // the display's own corners. Flatten them as it settles there so the sheet
+    // reads as a screen, and round them back on the way down. Keyed on
+    // targetValue, so the corners travel with the sheet instead of squaring off
+    // after it has already landed.
+    val topCornerRadius by animateDpAsState(
+        targetValue = if (sheetState.targetValue == SheetValue.Expanded) 0.dp else ChompassSheetCornerRadius,
+        animationSpec = tween(durationMillis = 220),
+        label = "addFoodSheetCorner",
+    )
     ChompassBottomSheet(
         onDismiss = onDismiss,
         sheetState = sheetState,
+        shape = RoundedCornerShape(topStart = topCornerRadius, topEnd = topCornerRadius),
         // Codeberg #6: this sheet's content pads itself with imePadding, so
         // the default chrome insets feed the M3 feedback loop — consumeWindowInsets(0,0,0,max(0,offset))
         // changes as the sheet moves, which re-pads the content, which
