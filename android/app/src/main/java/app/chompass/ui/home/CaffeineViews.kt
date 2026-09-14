@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,6 +44,7 @@ import app.chompass.R
 import app.chompass.models.CaffeineEntry
 import app.chompass.models.CaffeineKind
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.ChompassPinnedFooterSheet
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.theme.caffeine
@@ -135,63 +138,70 @@ fun CaffeineCustomSheet(
         mg = (next.defaultMg ?: 0.0).toInt().coerceAtLeast(0)
     }
 
-    ChompassBottomSheet(
+    ChompassPinnedFooterSheet(
         onDismiss = onDismiss,
         sheetState = sheetState,
-    ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp),
-        ) {
+        toolbar = {
             SheetReviewToolbar(
                 title = stringResource(R.string.caffeine_log_title),
                 onCancel = onDismiss,
             )
-
-            FlowRow(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+        },
+        body = {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
-                CaffeineKind.entries.forEach { option ->
-                    FilterChip(
-                        selected = kind == option,
-                        onClick = { switchKind(option) },
-                        label = { Text(stringResource(option.labelRes)) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
-                        ),
-                    )
+                FlowRow(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    CaffeineKind.entries.forEach { option ->
+                        FilterChip(
+                            selected = kind == option,
+                            onClick = { switchKind(option) },
+                            label = { Text(stringResource(option.labelRes)) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+                            ),
+                        )
+                    }
                 }
+
+                Text(
+                    stringResource(R.string.caffeine_mg),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp,
+                )
+                NumericWheelPicker(
+                    value = mg,
+                    onValueChange = { mg = it },
+                    min = 0,
+                    max = 500,
+                    step = 5,
+                    unit = stringResource(R.string.unit_mg),
+                )
             }
-
-            Text(
-                stringResource(R.string.caffeine_mg),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp,
-            )
-            NumericWheelPicker(
-                value = mg,
-                onValueChange = { mg = it },
-                min = 0,
-                max = 500,
-                step = 5,
-                unit = stringResource(R.string.unit_mg),
-            )
-
+        },
+        footer = {
             GradientSaveButton(
                 text = stringResource(R.string.caffeine_add),
                 enabled = mg > 0,
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .imePadding()
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
                 onClick = {
                     onAdd(kind, mg.toDouble())
                     onDismiss()
                 },
             )
-            Spacer(Modifier.height(16.dp))
-        }
-    }
+        },
+    )
 }
 
 /**
@@ -332,61 +342,68 @@ fun CaffeineEditSheet(
     var kind by remember { mutableStateOf(entry.kind) }
     var mg by remember { mutableStateOf(entry.mg.toInt().coerceAtLeast(0)) }
 
-    ChompassBottomSheet(
+    ChompassPinnedFooterSheet(
         onDismiss = onDismiss,
         sheetState = sheetState,
-    ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp),
-        ) {
+        toolbar = {
             SheetReviewToolbar(
                 title = stringResource(R.string.caffeine_edit_title),
                 onCancel = onDismiss,
             )
-
-            FlowRow(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+        },
+        body = {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
-                CaffeineKind.entries.forEach { option ->
-                    FilterChip(
-                        selected = kind == option,
-                        onClick = { kind = option },
-                        label = { Text(stringResource(option.labelRes)) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
-                        ),
-                    )
+                FlowRow(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    CaffeineKind.entries.forEach { option ->
+                        FilterChip(
+                            selected = kind == option,
+                            onClick = { kind = option },
+                            label = { Text(stringResource(option.labelRes)) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+                            ),
+                        )
+                    }
                 }
+
+                Text(
+                    stringResource(R.string.caffeine_mg),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp,
+                )
+                NumericWheelPicker(
+                    value = mg,
+                    onValueChange = { mg = it },
+                    min = 0,
+                    max = 500,
+                    step = 5,
+                    unit = stringResource(R.string.unit_mg),
+                )
             }
-
-            Text(
-                stringResource(R.string.caffeine_mg),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp,
-            )
-            NumericWheelPicker(
-                value = mg,
-                onValueChange = { mg = it },
-                min = 0,
-                max = 500,
-                step = 5,
-                unit = stringResource(R.string.unit_mg),
-            )
-
+        },
+        footer = {
             GradientSaveButton(
                 text = stringResource(R.string.action_save),
                 enabled = mg > 0,
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .imePadding()
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
                 onClick = {
                     onSave(kind, mg.toDouble())
                     onDismiss()
                 },
             )
-            Spacer(Modifier.height(16.dp))
-        }
-    }
+        },
+    )
 }
