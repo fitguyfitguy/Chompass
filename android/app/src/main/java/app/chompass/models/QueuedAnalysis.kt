@@ -14,7 +14,15 @@ enum class QueueStatus {
     /** Ran successfully; kept in history with the AI result until retention prunes it. */
     DONE,
     /** Ran and failed; kept in history with the error until retention prunes it. */
-    FAILED,
+    FAILED;
+
+    /**
+     * Every persisted status is runnable (#99): the queue sheet's history tab
+     * offers Re-run on FAILED and DONE entries, not only PENDING. New
+     * statuses must opt in explicitly.
+     */
+    val reRunnable: Boolean
+        get() = this == PENDING || this == DONE || this == FAILED
 }
 
 /**

@@ -2392,10 +2392,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
      * dispatch + fallback, streaming partials, error mapping — identical to a
      * live analysis). A run result opens the FoodResultSheet review, logging
      * to the entry's target day. Returns true when the review is ready.
+     * History entries (FAILED/DONE) re-run too (#99); [runAllQueued] stays
+     * PENDING-only.
      */
     private suspend fun runQueuedItemInternal(id: UUID): Boolean {
         val item = container.analysisQueue.item(id) ?: return false
-        if (item.status != QueueStatus.PENDING) return false
+        if (!item.status.reRunnable) return false
         if (_ui.value.isEntryAnalysisBusy) return false
         _ui.update { it.copy(queueRunningId = id, showAnalysisQueue = false) }
         try {
