@@ -18,7 +18,6 @@ import org.junit.Test
  * fakes — no live Health Connect service.
  */
 class NutritionHealthRetryTest {
-
     @Test
     fun `failed write is queued and retried as an idempotent update`() = runBlocking {
         val entry = foodEntry("Spaghetti Bolognese")

@@ -19,7 +19,6 @@ import org.junit.Test
  * as incomplete and retry the request as one shot.
  */
 class GeminiClientStreamParseTest {
-
     private fun textChunk(text: String, finishReason: String? = null): String {
         val candidate = JSONObject()
             .put("content", JSONObject().put("parts", JSONArray().put(JSONObject().put("text", text))))

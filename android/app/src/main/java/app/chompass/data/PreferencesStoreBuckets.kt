@@ -8,7 +8,6 @@ import app.chompass.models.WaterEntry
 import app.chompass.models.WeightEntry
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.builtins.ListSerializer
 import java.time.YearMonth
 import java.time.ZoneId
 
