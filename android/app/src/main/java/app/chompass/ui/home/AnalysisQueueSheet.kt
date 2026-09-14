@@ -631,7 +631,7 @@ private fun EditQueuedSheet(
                     )
                     IconButton(
                         onClick = { targetDate = targetDate.plusDays(1) },
-                        enabled = targetDate.isBefore(LocalDate.now().plusDays(1)),
+                        enabled = canAdvanceDiaryDay(targetDate, LocalDate.now()),
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.KeyboardArrowRight,
