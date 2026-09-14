@@ -5,9 +5,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.verticalScroll
@@ -70,7 +67,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.semantics.Role
@@ -82,14 +78,12 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import app.chompass.R
 import app.chompass.services.grounding.FoodSuggestion
-import app.chompass.models.FoodEntry
 import app.chompass.models.CaffeineKind
 import app.chompass.models.FastingPhase
 import app.chompass.models.NicotineKind
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.blockSheetDragAtScrollEdges
-import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.warning
@@ -148,6 +142,8 @@ fun AddFoodSheet(
     onQueryChange: (String) -> Unit = {},
     suggestions: List<FoodSuggestion> = emptyList(),
     suggestionsNetworkPending: Boolean = false,
+    packagedSearchEnabled: Boolean = false,
+    onPackagedSearchChange: (Boolean) -> Unit = {},
     onPickSuggestion: (FoodSuggestion) -> Unit = {},
     onReviewSuggestion: (FoodSuggestion) -> Unit = {},
     onAnalyzeQuery: (String) -> Unit = {},
@@ -220,6 +216,9 @@ fun AddFoodSheet(
             onQueryChange = onQueryChange,
             suggestions = suggestions,
             suggestionsNetworkPending = suggestionsNetworkPending,
+            packagedSearchEnabled = packagedSearchEnabled,
+            // Toggling the opt-in re-runs the search; it must not dismiss.
+            onPackagedSearchChange = onPackagedSearchChange,
             onPickSuggestion = { s -> onDismiss(); onPickSuggestion(s) },
             onReviewSuggestion = { s -> onDismiss(); onReviewSuggestion(s) },
             onAnalyzeQuery = { text -> onDismiss(); onAnalyzeQuery(text) },
@@ -289,6 +288,8 @@ internal fun AddFoodSheetContent(
     onQueryChange: (String) -> Unit = {},
     suggestions: List<FoodSuggestion> = emptyList(),
     suggestionsNetworkPending: Boolean = false,
+    packagedSearchEnabled: Boolean = false,
+    onPackagedSearchChange: (Boolean) -> Unit = {},
     onPickSuggestion: (FoodSuggestion) -> Unit = {},
     onReviewSuggestion: (FoodSuggestion) -> Unit = {},
     onAnalyzeQuery: (String) -> Unit = {},
@@ -362,9 +363,10 @@ internal fun AddFoodSheetContent(
         // The tabs' slot out of search. In search it keeps only enough height
         // to stay a tap target, because the band has nothing to say any more:
         // the "still searching" signal moved into the database section's own
-        // label, down in the results. The results pane takes the height this
-        // gives up (it is the weighted child), so the sheet itself does not
-        // resize when a query starts — only the split inside it changes.
+        // label, down in the results, and so did the packaged-products opt-in.
+        // The results pane takes the height this gives up (it is the weighted
+        // child), so the sheet itself does not resize when a query starts —
+        // only the split inside it changes.
         //
         // It swallows the spacers that used to sit either side of it so the
         // whole strip between the tool pills and the results is one target:
@@ -416,9 +418,15 @@ internal fun AddFoodSheetContent(
             searching = searching,
             // The query itself, not just "searching": every edit re-parks the
             // list at the top, and each one has to disarm the grow-on-scroll
-            // gesture or it reads that as the user collapsing the sheet.
-            listIdentity = if (searching) query else savedTab,
+            // gesture or it reads that as the user collapsing the sheet. The
+            // opt-in rides along for a narrower reason: switching it off takes
+            // rows away, and a list that loses enough of them clamps its own
+            // scroll back toward the top. That clamp is not the user asking for
+            // the sheet back either.
+            listIdentity = if (searching) query to packagedSearchEnabled else savedTab,
             sheetState = sheetState,
+            packagedSearchEnabled = packagedSearchEnabled,
+            onPackagedSearchChange = onPackagedSearchChange,
             bottomSpace = if (hasTrackers) 0.dp else ADD_FOOD_BOTTOM_SPACE,
             // Takes the space the fixed-height rows above and below leave over.
             modifier = if (fixedPaneHeight == null) {
@@ -752,6 +760,8 @@ internal fun HomeAddFoodScreenshotContent(
     /** Non-blank renders the search state instead of the zero-query tabs. */
     query: String = "",
     suggestions: List<FoodSuggestion> = emptyList(),
+    /** Renders the packaged-products toggle in its on state. */
+    packagedSearchEnabled: Boolean = false,
 ) {
     Box(Modifier.fillMaxSize()) {
         HomeScreenPreviewContent(ui = ui, weekStartsOnMonday = weekStartsOnMonday)
@@ -772,6 +782,7 @@ internal fun HomeAddFoodScreenshotContent(
                 fixedPaneHeight = fixedPaneHeight,
                 query = query,
                 suggestions = suggestions,
+                packagedSearchEnabled = packagedSearchEnabled,
             )
         }
     }
