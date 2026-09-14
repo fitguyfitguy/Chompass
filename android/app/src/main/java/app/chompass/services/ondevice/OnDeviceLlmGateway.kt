@@ -113,7 +113,7 @@ class OnDeviceLlmGateway(
                 ON_DEVICE_LLM_TAG,
                 "op=ondevice_llm phase=loadBlocked reason=low_memory model=${entry.modelId} " +
                     "availMem=${info.availMem} totalMem=${info.totalMem} " +
-                    "need=${entry.sizeBytes + OnDeviceCapability.loadMemoryHeadroomBytes}"
+                    "need=${entry.sizeBytes + OnDeviceCapability.loadMemoryHeadroomBytes(info.totalMem)}"
             )
             throw AiError.OnDeviceLowMemory
         }
