@@ -5,13 +5,14 @@ All notable changes to Chompass are documented here.
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
 
-## [Unreleased]
+## [5.0.0] - 2026-09-14
 
 ### Added
 
 - **Choose which food databases search looks in** (Android): Settings → Food & Entry → Search food databases now has a switch per source — Open Food Facts, USDA, Swiss. USDA and Swiss start on: they are bundled with the app, so searching them never leaves your phone. Open Food Facts starts off, because it is a lookup over the internet. Turning a source off only removes it from search; scanning a barcode still looks the product up, and foods you already logged keep their source badge.
 - **Plan meals on future days** (Android + web): swipe or tap past today on Home, up to eight weeks ahead. Logging, Copy To, and the analysis-queue day arrows use that day. Empty future days say no meals planned. Health Connect still skips future-dated writes. Follows Codeberg [#96](https://codeberg.org/fitguy/Chompass/issues/96) by [@sbandoalleciance](https://codeberg.org/sbandoalleciance).
 - **Custom caffeine and nicotine drinks** (Android): rename the built-in drinks and products, or add your own with a default amount, like a 65 mg espresso or a pouch with its mg per dose. Presets drive the +1 chips on the Add food sheet. A caffeine drink can also carry milk (kind and ml); logging it writes the caffeine tracker row and a milk food in the current meal. Home caffeine totals include tracker mg. Deleting the caffeine row removes the milk food; deleting the milk food keeps the caffeine log. Nicotine stays habit-only. Presets stay on the device. Settings → Trackers → Caffeine or Nicotine. Codeberg [#55](https://codeberg.org/fitguy/Chompass/issues/55) by [@DontBlameMe](https://codeberg.org/DontBlameMe).
+- **Show energy in kilojoules** (Android + web): Settings → Personal on Android and App → Units on the web have an Energy setting: kcal or kJ. The default stays kcal. The Home ring, totals, pickers, widgets, and notifications follow the setting. Analysis and exports stay in kcal. Follows Codeberg [#100](https://codeberg.org/fitguy/Chompass/issues/100) by [@andyzukunft](https://codeberg.org/andyzukunft).
 
 
 ### Changed
@@ -20,7 +21,6 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Your saved meals are on the Add Food sheet itself** (Android): the Recents, Frequent, Favorites and Recipes tabs now sit right in the sheet with their lists, instead of behind another tap. They occupy exactly the space the search results use, so typing swaps the list contents without resizing the sheet and shoving the input field around mid-word. Scrolling a long list grows the sheet to show more, and only when there is actually more worth showing.
 - **AI analysis is now something you ask for, not the only way in** (Android): the Analyze action sits in the search field itself, so a food you have already logged or one the databases know is a single tap and costs nothing, while free-text estimation is one tap on the field's Analyze button, or the Done/Send key on your keyboard.
 - **Food database results arrive without waiting for the network** (Android): the bundled USDA and Swiss results used to wait for the Open Food Facts request to finish, so on a plane or a bad connection you waited on a request that could not succeed. Your saved foods and the bundled databases now appear immediately, and Open Food Facts results join when they arrive if you switched them on. A slow or unreachable Open Food Facts no longer holds anything else back, and the lookup gives up after a few seconds instead of retrying for as long as a minute.
-- **More food emojis on the entry picker** (Android): tap the food icon on edit or a favorite to pick from a larger set, including cheese, rice, sandwiches, seafood, tea, blueberries, and bubble tea. The grid only shows emojis your phone can draw.
 - **Food review and edit take less scrolling** (Android + web): serving on Android starts as one row; tap to open the quantity and unit wheels. Ask AI to correct is a compact prompt without the correction chips.
 
 - **Caffeine and nicotine Save stays on screen** (Android): custom, edit, and drink-editor sheets keep Save pinned when the keyboard is up, so tap-to-type on the wheels does not hide it.
