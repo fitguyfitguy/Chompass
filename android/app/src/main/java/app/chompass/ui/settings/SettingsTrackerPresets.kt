@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -16,8 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,10 +46,11 @@ import app.chompass.models.HabitPresetCatalog
 import app.chompass.models.HabitPresetDomain
 import app.chompass.models.builtinCaffeineDefaultMg
 import app.chompass.models.caffeineKindLabelRes
-import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.ChompassPinnedFooterSheet
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.rememberChompassSheetState
+import app.chompass.ui.home.SheetReviewToolbar
 import app.chompass.ui.home.formatMg
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.warning
@@ -59,7 +59,7 @@ import app.chompass.ui.theme.warning
  * Tracker preset manager pieces (custom / renamed caffeine + nicotine
  * presets, Codeberg #55 follow-up): resolved labels, the catalog list rows
  * with reorder handles, and the add/edit bottom sheets. Hosted pieces use
- * [ChompassBottomSheet] so they clamp correctly under the status bar.
+ * [ChompassPinnedFooterSheet] so Save stays measured under the IME.
  */
 
 /** Resolved display label: non-blank override wins, else builtin locale default. */
@@ -261,54 +261,62 @@ internal fun CaffeinePresetEditorSheet(
     // localized builtin default means "no override".
     val builtinDefaultLabel = existing?.id?.let { stringResource(caffeineKindLabelRes(it)) } ?: ""
 
-    ChompassBottomSheet(
+    ChompassPinnedFooterSheet(
         onDismiss = onDismiss,
         sheetState = sheetState,
-    ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .imePadding()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp),
-        ) {
-            EditorSheetHeader(
+        toolbar = {
+            SheetReviewToolbar(
                 title = stringResource(
                     if (isAdd) R.string.caffeine_preset_editor_title_add else R.string.caffeine_preset_editor_title_edit
                 ),
-                onDismiss = onDismiss,
+                onCancel = onDismiss,
             )
+        },
+        body = {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(18.dp),
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(
+                        stringResource(R.string.settings_tracker_preset_name),
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp,
+                    )
+                    FudGlassTextField(
+                        value = name,
+                        onValueChange = { name = it.take(HabitPresetCatalog.MAX_LABEL) },
+                        placeholder = stringResource(R.string.settings_tracker_preset_name),
+                        singleLine = true,
+                    )
+                }
 
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(
-                    stringResource(R.string.settings_tracker_preset_name),
+                    stringResource(R.string.caffeine_preset_default_mg),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
                 )
-                FudGlassTextField(
-                    value = name,
-                    onValueChange = { name = it.take(HabitPresetCatalog.MAX_LABEL) },
-                    placeholder = stringResource(R.string.settings_tracker_preset_name),
-                    singleLine = true,
+                NumericWheelPicker(
+                    value = mg,
+                    onValueChange = { mg = it },
+                    min = 5,
+                    max = 500,
+                    step = 5,
+                    unit = stringResource(R.string.unit_mg),
                 )
             }
-
-            Text(
-                stringResource(R.string.caffeine_preset_default_mg),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp,
-            )
-            NumericWheelPicker(
-                value = mg,
-                onValueChange = { mg = it },
-                min = 5,
-                max = 500,
-                step = 5,
-                unit = stringResource(R.string.unit_mg),
-            )
-
-            Button(
+        },
+        footer = {
+            GradientSaveButton(
+                text = stringResource(if (isAdd) R.string.settings_caffeine_preset_add else R.string.action_save),
+                enabled = (isAdd && name.isNotBlank()) || !isAdd,
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .imePadding()
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
                 onClick = {
                     val label = name.trim()
                     onSave(
@@ -317,20 +325,9 @@ internal fun CaffeinePresetEditorSheet(
                     )
                     onDismiss()
                 },
-                enabled = name.isNotBlank(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(54.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-            ) {
-                Text(
-                    stringResource(if (isAdd) R.string.settings_caffeine_preset_add else R.string.action_save),
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
-            Spacer(Modifier.height(16.dp))
-        }
-    }
+            )
+        },
+    )
 }
 
 /**
@@ -355,67 +352,75 @@ internal fun NicotinePresetEditorSheet(
         stringResource(app.chompass.models.nicotineKindLabelRes(it))
     } ?: ""
 
-    ChompassBottomSheet(
+    ChompassPinnedFooterSheet(
         onDismiss = onDismiss,
         sheetState = sheetState,
-    ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .imePadding()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp),
-        ) {
-            EditorSheetHeader(
+        toolbar = {
+            SheetReviewToolbar(
                 title = stringResource(
                     if (isAdd) R.string.nicotine_preset_editor_title_add else R.string.nicotine_preset_editor_title_edit
                 ),
-                onDismiss = onDismiss,
+                onCancel = onDismiss,
             )
+        },
+        body = {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(18.dp),
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(
+                        stringResource(R.string.settings_tracker_preset_name),
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp,
+                    )
+                    FudGlassTextField(
+                        value = name,
+                        onValueChange = { name = it.take(HabitPresetCatalog.MAX_LABEL) },
+                        placeholder = stringResource(R.string.settings_tracker_preset_name),
+                        singleLine = true,
+                    )
+                }
 
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(
-                    stringResource(R.string.settings_tracker_preset_name),
+                    stringResource(R.string.nicotine_preset_default_count),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
                 )
-                FudGlassTextField(
-                    value = name,
-                    onValueChange = { name = it.take(HabitPresetCatalog.MAX_LABEL) },
-                    placeholder = stringResource(R.string.settings_tracker_preset_name),
-                    singleLine = true,
+                NumericWheelPicker(
+                    value = count,
+                    onValueChange = { count = it },
+                    min = 1,
+                    max = 20,
+                    step = 1,
+                )
+
+                Text(
+                    stringResource(R.string.nicotine_preset_default_dose),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
+                )
+                NumericWheelPicker(
+                    value = doseMg,
+                    onValueChange = { doseMg = it },
+                    min = 0,
+                    max = 30,
+                    step = 1,
+                    unit = stringResource(R.string.unit_mg),
                 )
             }
-
-            Text(
-                stringResource(R.string.nicotine_preset_default_count),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp,
-            )
-            NumericWheelPicker(
-                value = count,
-                onValueChange = { count = it },
-                min = 1,
-                max = 20,
-                step = 1,
-            )
-
-            Text(
-                stringResource(R.string.nicotine_preset_default_dose),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp,
-            )
-            NumericWheelPicker(
-                value = doseMg,
-                onValueChange = { doseMg = it },
-                min = 0,
-                max = 30,
-                step = 1,
-                unit = stringResource(R.string.unit_mg),
-            )
-
-            Button(
+        },
+        footer = {
+            GradientSaveButton(
+                text = stringResource(if (isAdd) R.string.settings_nicotine_preset_add else R.string.action_save),
+                enabled = (isAdd && name.isNotBlank()) || !isAdd,
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .imePadding()
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
                 onClick = {
                     val label = name.trim()
                     onSave(
@@ -425,30 +430,8 @@ internal fun NicotinePresetEditorSheet(
                     )
                     onDismiss()
                 },
-                enabled = name.isNotBlank(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(54.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.warning),
-            ) {
-                Text(
-                    stringResource(if (isAdd) R.string.settings_nicotine_preset_add else R.string.action_save),
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
-            Spacer(Modifier.height(16.dp))
-        }
-    }
+            )
+        },
+    )
 }
 
-/** Cancel / title header row matching the home sheets. */
-@Composable
-private fun EditorSheetHeader(title: String, onDismiss: () -> Unit) {
-    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
-        Spacer(Modifier.weight(1f))
-        Text(title, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-        Spacer(Modifier.weight(1f))
-        Spacer(Modifier.padding(horizontal = 31.dp))
-    }
-}
