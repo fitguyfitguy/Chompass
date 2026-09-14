@@ -134,6 +134,7 @@ internal fun AddFoodQueryRow(
     groundedEnabled: Boolean,
     aiFeaturesEnabled: Boolean,
     barcodeEnabled: Boolean,
+    fieldModifier: Modifier = Modifier,
 ) {
     val submit = { if (query.isNotBlank() && aiFeaturesEnabled) onAnalyze(query.trim()) }
     Column(Modifier.fillMaxWidth()) {
@@ -204,7 +205,7 @@ internal fun AddFoodQueryRow(
                 onGo = { submit() },
                 onSearch = { submit() },
             ),
-            modifier = Modifier.onPreviewKeyEvent { event ->
+            modifier = fieldModifier.onPreviewKeyEvent { event ->
                 if (event.type != KeyEventType.KeyUp) {
                     false
                 } else {
