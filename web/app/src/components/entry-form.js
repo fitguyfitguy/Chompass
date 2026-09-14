@@ -589,7 +589,7 @@ export class EntryForm extends HTMLElement {
    */
   renderConstituentRow(row, index, optionalGoals) {
     const unit = energyUnitFromPrefs(this._appPrefs);
-    const ensured = ensureConstituentServingState(row, {
+    const ensured = ensureServingUnits({
       name: row.name || t("entry.constituents.item_fallback"),
       quantityG: row.servingSizeGrams,
       servingUnitOptions: row.servingUnitOptions,

@@ -430,6 +430,7 @@ export class SettingsView extends HTMLElement {
   async renderGoals() {
     const p = await this.loadProfile();
     const targets = dailyTargets(p);
+    const energyUnit = energyUnitFromPrefs(await prefs.load());
     this.innerHTML = `
       ${subpageBar(t("settings.hub.goals"), { backHref: SETTINGS_PARENT.goals })}
       <form class="entry-form card" id="goals-form">

@@ -182,6 +182,8 @@ export function barChartSvg(points, opts = {}) {
   const energyUnit = opts.energyUnit === "kj" ? "kj" : "kcal";
   const tipValue = (v) => `${formatNumber(energyQuantity(Math.round(v), energyUnit))} ${energyUnitLabel(energyUnit)}`;
   const series = points;
+  const target = opts.target;
+  const interactive = opts.interactive !== false;
 
   if (series.length === 0) {
     return `<svg viewBox="0 0 ${width} ${height}" class="chart-svg"><text x="${width / 2}" y="${height / 2}" text-anchor="middle" class="chart-empty">No data yet</text></svg>`;
