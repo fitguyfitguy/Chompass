@@ -2350,11 +2350,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     ?: pendingFoodSource
                     ?: if (imageBytes != null) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT
                 val rawName = name?.takeIf { it.isNotBlank() } ?: analysis.name
-                // The pending draft's name was already disambiguated against the
-                // diary when it was saved (savePendingDraft), so an unedited name
-                // is still unique — skip the O(history) existing-name lookup at
-                // confirm time. Saved-meals relogs keep resolveNewFoodName's
-                // relog short-circuit so servings still merge.
+                // The pending draft's name was already forked against the diary
+                // when it was saved (savePendingDraft): a re-encountered saved
+                // food keeps the raw name (identity reuse, #98), a new food was
+                // disambiguated — either way an unedited name needs no O(history)
+                // re-check at confirm time. Saved-meals relogs keep
+                // resolveNewFoodName's relog short-circuit so servings still merge.
                 val resolvedName = if (reviewSource == null && rawName == pendingAnalysis?.name) {
                     rawName
                 } else {
@@ -2397,6 +2398,18 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         microsCompositionSignature = app.chompass.models.microsCompositionSignature(constituents),
                     )
                 )
+                // Capture the saved identity this save merges into (if any)
+                // BEFORE the row lands — after it, the fresh row would be its
+                // own newest template. Scan / AI-analysis saves only (#98);
+                // saved-meals relogs merge by construction and are excluded.
+                val mergeTemplate = if (reviewSource == null) {
+                    container.foodRepository.savedTemplateFor(
+                        resolvedName,
+                        analysisBarcode(analysis, entrySource),
+                    )
+                } else {
+                    null
+                }
                 // Commit the diary row and clear the consumed pending draft in
                 // one DataStore edit (crash before the edit restores the review
                 // sheet from the pre-commit draft; crash after leaves the row and
@@ -2404,6 +2417,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 // that could restore a review which double-logs on re-save).
                 container.foodRepository.addEntry(entry, clearDraft = true, writeHealth = false)
                 promoteSavedIndex(entry)
+                // Keep a persisted favorite's macros in step with the newest
+                // serving snapshot when this save merged into it (#98) —
+                // placeholder favorites get filled, >25 % drift refreshes.
+                container.foodRepository.refreshFavoriteOnMerge(mergeTemplate, entry)
                 // Health Connect mirroring is the slowest save step (IPC). Run it
                 // in the background so the review sheet can dismiss as soon as the
                 // diary row is on disk instead of after the HC round-trip.
@@ -3180,10 +3197,15 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         portionPreConfirmed: Boolean = false,
     ) {
         if (generation != analysisGeneration) return
+        // Scan / AI-analysis identity reuse (#98): a re-encountered saved food
+        // (same barcode, or the name *is* a saved identity) keeps its raw name
+        // so the log merges into that identity instead of forking into
+        // "Name (2)". Manual entries keep disambiguating — different food,
+        // same name still gets a suffix there.
         val uniqueAnalysis = analysis.copy(
-            name = disambiguateFoodName(
+            name = container.foodRepository.savedOrDisambiguatedName(
                 analysis.name,
-                container.foodRepository.existingFoodIdentityKeys(),
+                analysisBarcode(analysis, source),
             )
         )
         val imageFilename = imageBytes?.let { persistImage(it, UUID.randomUUID()) }
@@ -3268,10 +3290,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             // without this the Log button would silently land on today (Codeberg
             // #16 family: "entry landed on today's log" after process death).
             _selectedDate.value = draft.targetDate
+            // Same reuse fork as savePendingDraft (#98): re-check against the
+            // grown diary, keeping the raw name when this draft re-encounters
+            // a saved food.
             val unique = draft.analysis.copy(
-                name = disambiguateFoodName(
+                name = container.foodRepository.savedOrDisambiguatedName(
                     draft.analysis.name,
-                    container.foodRepository.existingFoodIdentityKeys(),
+                    analysisBarcode(draft.analysis, draft.source),
                 )
             )
             _ui.update { it.copy(
@@ -3309,6 +3334,17 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
         return disambiguateFoodName(rawName, container.foodRepository.existingFoodIdentityKeys())
     }
+
+    /**
+     * Barcode a scan / AI-analysis save can reuse a saved identity by
+     * (Codeberg #98): the OFF product metadata when present, else the
+     * grounding source id — but only for barcode-grounded analyses, where the
+     * source id *is* the barcode (grounded / USDA ids must not masquerade as
+     * one). Text analyses return null and reuse by name only.
+     */
+    private fun analysisBarcode(analysis: FoodAnalysis, source: FoodSource?): String? =
+        analysis.productMetadata?.barcode
+            ?: analysis.grounding?.sourceId?.takeIf { source == FoodSource.BARCODE }
 
     private suspend fun savePendingInputDraft(
         imageBytesList: List<ByteArray>,
