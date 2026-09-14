@@ -268,6 +268,8 @@
     <string name="home_kcal_of_format">de %1$s %2$s</string>
     <string name="home_kcal_left_format">%1$s restantes</string>
     <string name="home_view_more">Ver más</string>
+    <string name="home_today">Hoy</string>
+    <string name="home_jump_to_today">Saltar a hoy</string>
     <string name="home_todays_food">Comida de hoy</string>
     <string name="home_no_foods_logged">No hay alimentos registrados</string>
     <string name="home_swipe_delete">Eliminar</string>
