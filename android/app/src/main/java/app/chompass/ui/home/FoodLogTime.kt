@@ -28,6 +28,15 @@ internal fun timestampForLogging(
     return day.atTime(clock).atZone(zone).toInstant()
 }
 
+/** Home / queue / week-strip forward window (Codeberg #96). Copy To wheels stay year-bounded only. */
+internal const val DIARY_FUTURE_WEEKS = 8
+
+internal fun maxDiaryNavDate(today: LocalDate): LocalDate =
+    today.plusWeeks(DIARY_FUTURE_WEEKS.toLong())
+
+internal fun canAdvanceDiaryDay(from: LocalDate, today: LocalDate): Boolean =
+    !from.plusDays(1).isAfter(maxDiaryNavDate(today))
+
 /** Meal slot for new logs: catalog at the stamped clock, else [nowTime]. */
 internal fun mealIdForLogging(
     catalog: MealCatalog,

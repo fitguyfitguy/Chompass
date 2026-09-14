@@ -7,6 +7,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Added
+
+- **Plan meals on future days** (Android + web): swipe or tap past today on Home, up to eight weeks ahead. Logging, Copy To, and the analysis-queue day arrows use that day. Empty future days say no meals planned. Health Connect still skips future-dated writes. Follows Codeberg [#96](https://codeberg.org/fitguy/Chompass/issues/96) by [@sbandoalleciance](https://codeberg.org/sbandoalleciance).
+
 ### Changed
 
 - **More food emojis on the entry picker** (Android): tap the food icon on edit or a favorite to pick from a larger set, including cheese, rice, sandwiches, seafood, tea, blueberries, and bubble tea. The grid only shows emojis your phone can draw.
