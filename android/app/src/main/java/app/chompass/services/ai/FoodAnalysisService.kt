@@ -231,6 +231,20 @@ internal class GoalCallTrace {
 }
 
 /**
+ * Out-param threaded through `callAi` → `dispatch` (#97): a streamed
+ * OpenAI-compatible leg reports whether the stream ended without
+ * finish_reason. Its text is suspect (possibly cut mid-reply) but not
+ * retried blindly — the entry path retries once, non-streaming, only when
+ * that text fails food-JSON parsing.
+ */
+internal class EntryAttemptState {
+    var finishlessStreamed: Boolean = false
+
+    /** Constituent prompt kind the dispatched leg actually used (null before dispatch). */
+    var kind: EntryConstituentPromptKind? = null
+}
+
+/**
  * App-side confidence gates for the SAFE tier's observed-data section and its
  * deterministic enforcement. See docs/CALCULATION_METHODS.md § AI-RECALC.
  */
@@ -968,6 +982,107 @@ class FoodAnalysisService(
     private suspend fun entryKind(provider: AIProvider, model: String): EntryConstituentPromptKind =
         entryConstituentPromptKind(mealConstituentsToggleOn(), provider, model)
 
+    /** One-shot recoveries the entry path may take after a failed attempt (#97). */
+    private enum class EntryRecovery {
+        /** Finish-less streamed text failed to parse: identical call, non-streaming. */
+        ONE_SHOT_RETRY,
+
+        /** MICROS-constituents attempt failed: retry with the macros-only schema. */
+        MACROS_DOWNSHIFT,
+    }
+
+    private fun entryRecoveryFor(
+        error: AiError,
+        op: String,
+        attempt: EntryAttemptState,
+        finishlessAvailable: Boolean,
+        downshiftAvailable: Boolean,
+    ): EntryRecovery? {
+        val invalid = error is AiError.InvalidResponse
+        val truncated = error is AiError.ResponseTruncated ||
+            (error is AiError.Api && error.messageRes == R.string.ai_error_truncated_twice_description)
+        if (!invalid && !truncated) return null
+        // L3a: suspect text from a finish-less stream retries the identical
+        // call non-streaming first — the compact-retry ladder applies and the
+        // schema is not downgraded while a same-shape answer may still work.
+        if (invalid && attempt.finishlessStreamed && finishlessAvailable) return EntryRecovery.ONE_SHOT_RETRY
+        // L2: a MICROS-constituents attempt that truncated (length cut, or
+        // truncated twice after the client's compact retry) or produced
+        // unparseable text retries once at the smaller macros-only schema.
+        val microsAttempt = op in ENTRY_CONSTITUENT_OPS && attempt.kind == EntryConstituentPromptKind.MICROS
+        if (downshiftAvailable && microsAttempt) return EntryRecovery.MACROS_DOWNSHIFT
+        return null
+    }
+
+    /**
+     * Entry fetch + parse with the #97 bounded recoveries, applied in this
+     * order and at most once each per analysis:
+     *  - [EntryRecovery.ONE_SHOT_RETRY]: a streamed OpenAI-compatible attempt
+     *    ended without finish_reason and its text fails food-JSON parsing —
+     *    retry the identical call non-streaming (the client's compact-retry
+     *    ladder then applies);
+     *  - [EntryRecovery.MACROS_DOWNSHIFT]: a MICROS-constituents attempt
+     *    truncated or still fails to parse — retry once with the macros-only
+     *    schema and its 2048-token floor.
+     * Anything else propagates unchanged, and a MICROS first-attempt success
+     * is byte-identical to the pre-#97 behavior (no extra request, same prompt).
+     */
+    private suspend fun analyzeEntryReply(
+        op: String,
+        imageBytesList: List<ByteArray>,
+        onProgress: (FoodAnalysisProgress) -> Unit,
+        rebuildPrompt: (suspend (AIProvider, String, EntryConstituentPromptKind) -> String),
+    ): FoodAnalysis {
+        var finishlessAvailable = true
+        var downshiftAvailable = true
+        var nonStreaming = false
+        var kindOverride: EntryConstituentPromptKind? = null
+        val applyRecovery: (EntryRecovery) -> Unit = { recovery ->
+            when (recovery) {
+                EntryRecovery.ONE_SHOT_RETRY -> {
+                    finishlessAvailable = false
+                    nonStreaming = true
+                }
+                EntryRecovery.MACROS_DOWNSHIFT -> {
+                    downshiftAvailable = false
+                    kindOverride = EntryConstituentPromptKind.MACROS
+                    nonStreaming = false
+                }
+            }
+            if (PerfLog.enabled) {
+                val retry = if (recovery == EntryRecovery.MACROS_DOWNSHIFT) "downshiftMacros" else "oneShot"
+                PerfLog.event("op=$op retry=$retry")
+            }
+        }
+        while (true) {
+            val attempt = EntryAttemptState()
+            val raw = try {
+                callAi(
+                    prompt = "",
+                    imageBytesList = imageBytesList,
+                    op = op,
+                    onProgress = onProgress,
+                    rebuildPrompt = rebuildPrompt,
+                    attemptState = attempt,
+                    nonStreaming = nonStreaming,
+                    kindOverride = kindOverride,
+                )
+            } catch (e: AiError) {
+                val recovery = entryRecoveryFor(e, op, attempt, finishlessAvailable, downshiftAvailable) ?: throw e
+                applyRecovery(recovery)
+                continue
+            }
+            onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
+            if (BuildConfig.DEBUG && raw.length < 200) PerfLog.warn("op=$op raw=$raw")
+            try {
+                return PerfLog.measure(op, "parse", "chars=${raw.length}") { parseEntryFood(raw) }
+            } catch (e: AiError.InvalidResponse) {
+                val recovery = entryRecoveryFor(e, op, attempt, finishlessAvailable, downshiftAvailable) ?: throw e
+                applyRecovery(recovery)
+            }
+        }
+    }
+
     private suspend fun parseEntryFood(raw: String): FoodAnalysis {
         val parsed = FoodJsonParser.parseFood(raw)
         return if (mealConstituentsRequested()) parsed else parsed.copy(constituents = emptyList())
@@ -977,13 +1092,11 @@ class FoodAnalysisService(
         description: String,
         onProgress: (FoodAnalysisProgress) -> Unit = {},
     ): FoodAnalysis {
-        val raw = callAi(
-            prompt = "",
-            imageBytes = null,
+        val analysis = analyzeEntryReply(
             op = "analyzeText",
+            imageBytesList = emptyList(),
             onProgress = onProgress,
-            rebuildPrompt = { provider, model ->
-                val kind = entryKind(provider, model)
+            rebuildPrompt = { _, _, kind ->
                 val schema = entryJsonSchemaFor(kind)
                 val constituentsRule = entryConstituentsRuleFor(kind)
                 buildString {
@@ -1007,14 +1120,10 @@ class FoodAnalysisService(
                 }.trimIndent()
             },
         )
-        onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
-        if (BuildConfig.DEBUG && raw.length < 200) PerfLog.warn("op=analyzeText raw=$raw")
-        val analysis = PerfLog.measure("analyzeText", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
         return finalizeAnalysis(analysis, imageBytes = null, description = description, onProgress = onProgress)
     }
 
-    private suspend fun entryResponseBlock(provider: AIProvider, model: String): String {
-        val kind = entryKind(provider, model)
+    private fun entryResponseBlock(kind: EntryConstituentPromptKind): String {
         val schema = entryJsonSchemaFor(kind)
         val constituentsRule = entryConstituentsRuleFor(kind)
         return buildString {
@@ -1033,25 +1142,22 @@ class FoodAnalysisService(
     ): FoodAnalysis {
         val off = collectOffBarcodeContext(listOf(imageBytes), onProgress)
         val analysis = try {
-            val raw = callAi(
-                prompt = "",
-                imageBytes = imageBytes,
+            analyzeEntryReply(
                 op = "analyzeAuto",
+                imageBytesList = listOf(imageBytes),
                 onProgress = onProgress,
-                rebuildPrompt = { provider, model ->
+                rebuildPrompt = { _, _, kind ->
                     var prompt = """
                         Analyze this image. It could be either a photo of food OR a nutrition facts label.
                         If it's a food photo: estimate the nutritional content of the visible food.
                         If a utensil, hand, coin, or common object is visible next to the food, use it as a size reference to refine your portion estimate.
                         If it's a nutrition label: read the values and calculate for one serving size as listed on the label.
-                        ${entryResponseBlock(provider, model)}
+                        ${entryResponseBlock(kind)}
                     """.trimIndent()
                     off?.promptBlock?.let { prompt = "$prompt\n\n$it" }
                     prompt
                 },
             )
-            onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
-            PerfLog.measure("analyzeAuto", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
         } catch (e: AiError) {
             off?.singleDistinctAnalysis?.let { return it }
             throw e
@@ -1068,13 +1174,12 @@ class FoodAnalysisService(
     ): FoodAnalysis {
         val off = collectOffBarcodeContext(listOf(imageBytes), onProgress)
         val analysis = try {
-            val raw = callAi(
-                prompt = "",
-                imageBytes = imageBytes,
+            analyzeEntryReply(
                 op = "analyzeFood",
+                imageBytesList = listOf(imageBytes),
                 onProgress = onProgress,
-                rebuildPrompt = { provider, model ->
-                    val responseBlock = entryResponseBlock(provider, model)
+                rebuildPrompt = { _, _, kind ->
+                    val responseBlock = entryResponseBlock(kind)
                     var prompt = if (singleIngredient) {
                         """
                         Analyze this food image. It is a single weighed ingredient being added to a meal.
@@ -1094,8 +1199,6 @@ class FoodAnalysisService(
                     prompt
                 },
             )
-            onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
-            PerfLog.measure("analyzeFood", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
         } catch (e: AiError) {
             off?.singleDistinctAnalysis?.let { return it }
             throw e
@@ -1124,13 +1227,12 @@ class FoodAnalysisService(
         if (images.isEmpty()) throw AiError.InvalidResponse
         val off = collectOffBarcodeContext(images, onProgress)
         val analysis = try {
-            val raw = callAi(
-                prompt = "",
-                imageBytesList = images,
+            analyzeEntryReply(
                 op = "analyzeFoodMulti",
+                imageBytesList = images,
                 onProgress = onProgress,
-                rebuildPrompt = { provider, model ->
-                    val responseBlock = entryResponseBlock(provider, model)
+                rebuildPrompt = { _, _, kind ->
+                    val responseBlock = entryResponseBlock(kind)
                     var prompt = if (singleIngredient) {
                         """
                         Analyze these food images. They show a single weighed ingredient being added to a meal.
@@ -1151,8 +1253,6 @@ class FoodAnalysisService(
                     prompt
                 },
             )
-            onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
-            PerfLog.measure("analyzeFoodMulti", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
         } catch (e: AiError) {
             off?.singleDistinctAnalysis?.let { return it }
             throw e
@@ -1390,7 +1490,7 @@ class FoodAnalysisService(
         reportPhases: Boolean = true,
         smartPrompt: String? = null,
         trace: GoalCallTrace? = null,
-        rebuildPrompt: (suspend (AIProvider, String) -> String)? = null,
+        rebuildPrompt: (suspend (AIProvider, String, EntryConstituentPromptKind) -> String)? = null,
     ): String {
         return callAi(
             prompt,
@@ -1412,7 +1512,12 @@ class FoodAnalysisService(
         reportPhases: Boolean = true,
         smartPrompt: String? = null,
         trace: GoalCallTrace? = null,
-        rebuildPrompt: (suspend (AIProvider, String) -> String)? = null,
+        rebuildPrompt: (suspend (AIProvider, String, EntryConstituentPromptKind) -> String)? = null,
+        attemptState: EntryAttemptState? = null,
+        /** Force the non-streaming clients (the #97 finish-less stream retry). */
+        nonStreaming: Boolean = false,
+        /** #97 downshift retry: run the entry legs with MACROS instead of the resolved kind. */
+        kindOverride: EntryConstituentPromptKind? = null,
     ): String {
         val hasImages = imageBytesList.any { it.isNotEmpty() }
         suspend fun modelFor(provider: AIProvider, selected: String?): String =
@@ -1431,7 +1536,8 @@ class FoodAnalysisService(
             val body = if (rebuildPrompt != null) {
                 val provider = prefs?.selectedAIProvider?.first() ?: AIProvider.GEMINI
                 val selected = prefs?.selectedAIModel?.first() ?: provider.defaultModel
-                rebuildPrompt(provider, modelFor(provider, selected))
+                val delegateModel = modelFor(provider, selected)
+                rebuildPrompt(provider, delegateModel, kindOverride ?: entryKind(provider, delegateModel))
             } else {
                 prompt
             }
@@ -1451,6 +1557,8 @@ class FoodAnalysisService(
 
         val primary = prefs!!.selectedAIProvider.first()
         val primaryModel = modelFor(primary, prefs.selectedAIModel.first())
+        val kind = kindOverride ?: entryKind(primary, primaryModel)
+        attemptState?.kind = kind
         var wrapPrompt: (String) -> String = { it }
         val (finalPrompt, finalSmartPrompt) = PerfLog.measure(op, "promptBuild") {
             val context = prefs.userContext.first()
@@ -1467,7 +1575,7 @@ class FoodAnalysisService(
                 ""
             }
             wrapPrompt = { p -> languageLine + contextLine + p }
-            val body = rebuildPrompt?.invoke(primary, primaryModel) ?: prompt
+            val body = rebuildPrompt?.invoke(primary, primaryModel, kind) ?: prompt
             wrapPrompt(body) to smartPrompt?.let(wrapPrompt)
         }
 
@@ -1475,9 +1583,13 @@ class FoodAnalysisService(
         val primaryKey = keyLookup?.invoke(primary)
             ?: AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
         val userCap = prefs.maxResponseTokens.first()
-        val kind = entryKind(primary, primaryModel)
         val maxTokens = floorResponseTokensForOp(op, userCap, kind)
-        if (PerfLog.enabled) PerfLog.event("op=$op tokens model=$primaryModel kind=$kind userCap=$userCap effective=$maxTokens")
+        if (PerfLog.enabled) {
+            PerfLog.event(
+                "op=$op tokens model=$primaryModel kind=$kind userCap=$userCap effective=$maxTokens" +
+                    if (kindOverride == EntryConstituentPromptKind.MACROS) " downshift=macros" else ""
+            )
+        }
         val readTimeoutSeconds = prefs.aiReadTimeoutSeconds.first()
         val geminiGoogleSearch = prefs.geminiGoogleSearchEnabled.first()
         val aiImages = if (imageBytesList.isEmpty()) {
@@ -1507,11 +1619,13 @@ class FoodAnalysisService(
                         primary, primaryModel, primaryBaseUrl, primaryKey, finalPrompt, aiImages,
                         maxTokens, geminiGoogleSearch, readTimeoutSeconds,
                         onProgress = trackedProgress,
-                        preferStreaming = reportPhases,
+                        preferStreaming = reportPhases && !nonStreaming,
                         reasoningEffort = reasoningEffort,
                         assembler = assembler,
                         smartPrompt = finalSmartPrompt,
                         trace = trace,
+                        attemptState = attemptState,
+                        perfTag = if (kindOverride == EntryConstituentPromptKind.MACROS) "downshift=macros" else null,
                     )
                 } catch (primaryError: Throwable) {
                     if (partialsEmitted) throw primaryError
@@ -1522,23 +1636,23 @@ class FoodAnalysisService(
                         it.primaryError = primaryError.message
                     }
                     val fallbackModel = modelFor(fallback.provider, fallback.model)
+                    val fallbackKind = kindOverride ?: entryKind(fallback.provider, fallbackModel)
+                    attemptState?.kind = fallbackKind
                     assembler.reset()
-                    val fallbackBody = rebuildPrompt?.invoke(fallback.provider, fallbackModel) ?: prompt
+                    val fallbackBody = rebuildPrompt?.invoke(fallback.provider, fallbackModel, fallbackKind) ?: prompt
                     val fallbackPrompt = if (rebuildPrompt != null) wrapPrompt(fallbackBody) else finalPrompt
-                    val fallbackMaxTokens = floorResponseTokensForOp(
-                        op,
-                        userCap,
-                        entryKind(fallback.provider, fallbackModel),
-                    )
+                    val fallbackMaxTokens = floorResponseTokensForOp(op, userCap, fallbackKind)
                     dispatch(
                         fallback.provider, fallbackModel, fallback.baseUrl, fallback.apiKey, fallbackPrompt, aiImages,
                         fallbackMaxTokens, geminiGoogleSearch, readTimeoutSeconds,
                         onProgress = trackedProgress,
-                        preferStreaming = reportPhases,
+                        preferStreaming = reportPhases && !nonStreaming,
                         reasoningEffort = reasoningEffort,
                         assembler = assembler,
                         smartPrompt = finalSmartPrompt,
                         trace = trace,
+                        attemptState = attemptState,
+                        perfTag = if (kindOverride == EntryConstituentPromptKind.MACROS) "downshift=macros" else null,
                     )
                 }
             }
@@ -1706,6 +1820,10 @@ class FoodAnalysisService(
         smartPrompt: String? = null,
         /** Out-param recording the leg that actually answers. */
         trace: GoalCallTrace? = null,
+        /** #97: a finish-less streamed OpenAI-compatible leg sets the flag. */
+        attemptState: EntryAttemptState? = null,
+        /** Flat PerfLog tag passed to the OpenAI-compatible clients (downshift legs). */
+        perfTag: String? = null,
     ): String {
         // Tier selection happens PER DISPATCH, at the moment of the actual call:
         // cloud legs run the SMART prompt (raw series, model-side judgment), the
@@ -1756,7 +1874,10 @@ class FoodAnalysisService(
                 AIProvider.ApiFormat.ANTHROPIC ->
                     AnthropicClient.analyze(httpClient, baseUrl, model, sanitizedKey!!, effectivePrompt, imageBytesList, maxTokens)
                 AIProvider.ApiFormat.OPENAI_COMPATIBLE ->
-                    OpenAICompatibleClient.analyze(httpClient, baseUrl, model, sanitizedKey, effectivePrompt, imageBytesList, provider, maxTokens, reasoningEffort)
+                    OpenAICompatibleClient.analyze(
+                        httpClient, baseUrl, model, sanitizedKey, effectivePrompt, imageBytesList, provider, maxTokens, reasoningEffort,
+                        perfTag = perfTag,
+                    )
                 AIProvider.ApiFormat.ON_DEVICE -> error("unreachable")
             }
         }
@@ -1786,10 +1907,16 @@ class FoodAnalysisService(
                 AnthropicClient.analyzeStreaming(
                     httpClient, baseUrl, model, sanitizedKey!!, effectivePrompt, imageBytesList, maxTokens, onDelta,
                 )
-            AIProvider.ApiFormat.OPENAI_COMPATIBLE ->
-                OpenAICompatibleClient.analyzeStreaming(
+            AIProvider.ApiFormat.OPENAI_COMPATIBLE -> {
+                val streamed = OpenAICompatibleClient.analyzeStreaming(
                     httpClient, baseUrl, model, sanitizedKey, effectivePrompt, imageBytesList, provider, maxTokens, onDelta, reasoningEffort,
+                    perfTag = perfTag,
                 )
+                // #97: flag finish-less streams; the entry caller decides
+                // whether a non-streaming retry is warranted (parse failure).
+                if (streamed.streamIncomplete) attemptState?.finishlessStreamed = true
+                streamed.text
+            }
             AIProvider.ApiFormat.ON_DEVICE -> error("unreachable")
         }
     }
