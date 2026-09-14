@@ -19,6 +19,8 @@ import java.time.YearMonth
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 import java.util.UUID
+import kotlin.math.abs
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 private fun FoodEntry.month(): YearMonth = YearMonth.from(timestamp.atZone(ZoneId.systemDefault()))
@@ -672,6 +674,65 @@ class FoodRepository(
     }
 
     /**
+     * Scan identity reuse (Codeberg #98): the saved template a fresh scan /
+     * AI-analysis save should merge into, or null for a brand-new food.
+     *
+     * Match priority: (1) [barcode] — the newest saved entry grounded in that
+     * exact product (grounding source id or OFF product metadata); (2) name —
+     * [mergesWithSavedFood]. Candidates are the same newest-per-favoriteKey
+     * diary ∪ favorites collapse every other saved-food surface uses (see
+     * [buildSavedFoodIndex]).
+     */
+    suspend fun savedTemplateFor(rawName: String, barcode: String?): FoodEntry? =
+        savedFoodTemplateFor(
+            templates = savedFoodTemplates(prefs.foodEntries.first(), prefs.favoriteFoodEntries.first()),
+            rawName = rawName,
+            barcode = barcode,
+        )
+
+    /**
+     * Draft-time name for scan / AI-analysis saves (Codeberg #98): keep
+     * [rawName] when it re-encounters a saved food — same barcode, or the name
+     * *is* a saved identity — so the log merges into that identity instead of
+     * forking into "Name (2)". Otherwise disambiguate as before. Manual
+     * entries keep pure disambiguation (different food, same name → suffix).
+     */
+    suspend fun savedOrDisambiguatedName(rawName: String, barcode: String?): String {
+        if (savedTemplateFor(rawName, barcode) != null) {
+            return rawName.trim().ifEmpty { rawName }
+        }
+        return disambiguateFoodName(rawName, existingFoodIdentityKeys())
+    }
+
+    /**
+     * Codeberg #98: after a scan / AI-analysis save merged into an existing
+     * saved identity ([template] from [savedTemplateFor], captured before the
+     * new row landed), bring a *persisted favorite* in step with the newest
+     * serving snapshot — but only when the stored macros are an empty
+     * placeholder (zero calories) or any of calories/protein/carbs/fat
+     * drifted by more than 25 % ([favoriteNeedsRefresh]), so estimation
+     * wobble never churns the saved library. Name and id are kept
+     * ([updateFavorite]). Favorites are the only persisted templates; a
+     * diary-only identity needs no action — the collapse already offers its
+     * newest row.
+     */
+    suspend fun refreshFavoriteOnMerge(template: FoodEntry?, fresh: FoodEntry): Boolean {
+        if (template == null) return false
+        val stored = migratedFavorites().firstOrNull { it.favoriteKey == template.favoriteKey } ?: return false
+        if (!favoriteNeedsRefresh(stored, fresh)) return false
+        updateFavorite(
+            stored,
+            stored.copy(
+                calories = fresh.calories,
+                protein = fresh.protein,
+                carbs = fresh.carbs,
+                fat = fresh.fat,
+            ),
+        )
+        return true
+    }
+
+    /**
      * Newest diary rows, collapsed by [FoodEntry.favoriteKey] so re-logging
      * the same food at a new serving does not stack duplicate picker rows.
      * Template for each food is the most recent log (latest grams/units).
@@ -842,6 +903,62 @@ fun disambiguateFoodName(desired: String, existingKeys: Set<String>): String {
 fun mergesWithSavedFood(rawName: String, template: FoodEntry?): Boolean {
     if (template == null) return false
     return rawName.trim().lowercase(Locale.ROOT) == template.favoriteKey
+}
+
+/**
+ * Newest-per-identity saved templates from diary ∪ favorites — the same
+ * collapse [buildSavedFoodIndex] performs: newest diary row per
+ * [FoodEntry.favoriteKey], then favorites that were never logged.
+ */
+internal fun savedFoodTemplates(entries: List<FoodEntry>, favorites: List<FoodEntry>): List<FoodEntry> {
+    val templates = LinkedHashMap<String, FoodEntry>()
+    for (entry in entries.sortedByDescending { it.timestamp }) {
+        val key = entry.favoriteKey
+        if (key.isEmpty()) continue
+        templates.putIfAbsent(key, entry)
+    }
+    for (favorite in favorites) {
+        val key = favorite.favoriteKey
+        if (key.isEmpty()) continue
+        templates.putIfAbsent(key, favorite)
+    }
+    return templates.values.toList()
+}
+
+/** Barcode match for [savedFoodTemplateFor]: grounding source id or OFF product metadata. */
+internal fun FoodEntry.matchesSavedBarcode(barcode: String): Boolean =
+    grounding?.sourceId == barcode || productMetadata?.barcode == barcode
+
+/**
+ * Pure core of [FoodRepository.savedTemplateFor]: the newest template
+ * grounded in [barcode] wins (a product renamed between scans still reuses
+ * one identity); otherwise the name identity via [mergesWithSavedFood].
+ */
+internal fun savedFoodTemplateFor(templates: List<FoodEntry>, rawName: String, barcode: String?): FoodEntry? {
+    if (!barcode.isNullOrBlank()) {
+        templates.filter { it.matchesSavedBarcode(barcode) }
+            .maxByOrNull { it.timestamp }
+            ?.let { return it }
+    }
+    return templates.firstOrNull { mergesWithSavedFood(rawName, it) }
+}
+
+/**
+ * Whether a merged save should refresh a stored favorite's macros from the
+ * newest serving snapshot (Codeberg #98): the stored values are an empty
+ * placeholder (zero calories) or any of calories/protein/carbs/fat drifted
+ * by more than 25 %. Symmetric relative drift (max of the two magnitudes as
+ * the denominator): zero against a value counts as full drift, both-zero
+ * does not.
+ */
+internal fun favoriteNeedsRefresh(stored: FoodEntry, fresh: FoodEntry): Boolean {
+    if (stored.calories == 0) return true
+    fun drifted(storedValue: Double, freshValue: Double) =
+        abs(storedValue - freshValue) > 0.25 * max(abs(storedValue), abs(freshValue))
+    return drifted(stored.calories.toDouble(), fresh.calories.toDouble()) ||
+        drifted(stored.protein, fresh.protein) ||
+        drifted(stored.carbs, fresh.carbs) ||
+        drifted(stored.fat, fresh.fat)
 }
 
 private val TRAILING_NUMERIC_SUFFIX = Regex("""\s+\((\d+)\)$""")
