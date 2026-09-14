@@ -17,7 +17,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Your saved meals are on the Add Food sheet itself** (Android): the Recents, Frequent, Favorites and Recipes tabs now sit right in the sheet with their lists, instead of behind another tap. They occupy exactly the space the search results use, so typing swaps the list contents without resizing the sheet and shoving the input field around mid-word. Scrolling a long list grows the sheet to show more, and only when there is actually more worth showing.
 - **AI analysis is now something you ask for, not the only way in** (Android): the Analyze action sits in the search field itself, so a food you have already logged or one the databases know is a single tap and costs nothing, while free-text estimation is one tap on the field's Analyze button, or the Done/Send key on your keyboard.
 - **Food database results arrive without waiting for the network** (Android): the bundled USDA and Swiss results used to wait for the Open Food Facts request to finish, so on a plane or a bad connection you waited on a request that could not succeed. Your saved foods and the bundled databases now appear immediately, and Open Food Facts results join when they arrive if you switched them on. A slow or unreachable Open Food Facts no longer holds anything else back, and the lookup gives up after a few seconds instead of retrying for as long as a minute.
-- **More food emojis on the entry picker** (Android): tap the food icon on edit or a favorite to pick from a larger set, including cheese, rice, sandwiches, seafood, and tea.
+- **More food emojis on the entry picker** (Android): tap the food icon on edit or a favorite to pick from a larger set, including cheese, rice, sandwiches, seafood, tea, blueberries, and bubble tea. The grid only shows emojis your phone can draw.
+
 
 ## [4.10.0] - 2026-09-14
 
