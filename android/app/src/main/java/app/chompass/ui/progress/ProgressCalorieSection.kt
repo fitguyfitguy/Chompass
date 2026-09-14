@@ -17,6 +17,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.models.EnergyFormat
+import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.navigation.LocalEnergyUnit
 import java.time.LocalDate
 import app.chompass.ui.theme.AppTextOpacity
 
@@ -33,7 +36,7 @@ internal fun CalorieSection(
             Spacer(Modifier.weight(1f))
             if (calorieAverage != null) {
                 Text(
-                    stringResource(R.string.progress_avg_format, calorieAverage),
+                    stringResource(R.string.progress_avg_format, EnergyFormat.quantity(calorieAverage, LocalEnergyUnit.current), energyUnitLabel()),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)

@@ -52,8 +52,12 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.AIProvider
 import app.chompass.models.CalorieSafety
+import app.chompass.models.EnergyFormat
 import app.chompass.models.ActivityLevel
 import app.chompass.models.AutoBalanceMacro
+import app.chompass.ui.components.energyText
+import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.models.DietMode
 import app.chompass.models.Gender
 import app.chompass.models.HeuristicRuleOverride
@@ -544,6 +548,16 @@ internal fun SettingsSheets(
                     },
                     icon = { if (it) Icons.Outlined.Straighten else Icons.Outlined.Speed },
                 )
+                SettingsSheet.ENERGY_UNIT -> ListSheet(
+                    title = stringResource(R.string.settings_energy_unit),
+                    items = listOf("kcal", "kj"),
+                    label = { raw ->
+                        stringResource(if (raw == "kj") R.string.unit_kj else R.string.unit_kcal)
+                    },
+                    selected = { it == ui.energyUnit },
+                    onSelect = { vm.setEnergyUnit(it); onDismiss() },
+                    icon = { _ -> Icons.Outlined.LocalFireDepartment },
+                )
                 SettingsSheet.APPEARANCE -> ListSheet(
                     title = stringResource(R.string.sheet_appearance),
                     items = listOf(
@@ -793,16 +807,18 @@ internal fun SettingsSheets(
                     val floor = p?.let { CalorieSafety.floorKcal(it.bmr) } ?: CalorieSafety.ABSOLUTE_FLOOR_KCAL
                     val ceiling = p?.let { CalorieSafety.ceilingKcal(it.tdee, floor) }
                         ?: CalorieSafety.PARSER_CEILING_KCAL
+                    val unit = LocalEnergyUnit.current
                     NutritionPickerSheet(
-                        label = stringResource(R.string.macro_calories), unit = stringResource(R.string.unit_kcal),
-                        currentValue = p?.effectiveCalories ?: 2000,
-                        range = floor..ceiling, step = 50,
-                        maxCustomGoal = ceiling,
-                        confirmBelow = floor,
+                        label = stringResource(R.string.macro_calories), unit = energyUnitLabel(),
+                        currentValue = EnergyFormat.quantity(p?.effectiveCalories ?: 2000, unit),
+                        range = EnergyFormat.quantity(floor, unit)..EnergyFormat.quantity(ceiling, unit),
+                        step = EnergyFormat.wheelStep(50, unit),
+                        maxCustomGoal = EnergyFormat.quantity(ceiling, unit),
+                        confirmBelow = EnergyFormat.quantity(floor, unit),
                         confirmBelowTitle = stringResource(R.string.settings_calorie_below_floor_title),
-                        confirmBelowMessage = stringResource(R.string.settings_calorie_below_floor_message),
+                        confirmBelowMessage = stringResource(R.string.settings_calorie_below_floor_message, energyText(1200)),
                         onSave = { v ->
-                            vm.editCaloriesGoal(v)
+                            vm.editCaloriesGoal(EnergyFormat.toKcal(v, unit))
                             onDismiss()
                         },
                         onResetToAuto = if (p?.caloriesLocked == true) {

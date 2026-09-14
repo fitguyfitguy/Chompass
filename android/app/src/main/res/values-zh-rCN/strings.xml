@@ -10,7 +10,7 @@
     <string name="widget_calories">卡路里</string>
     <string name="widget_carbs">碳水</string>
     <string name="widget_fat">脂肪</string>
-    <string name="widget_kcal_left_format">还剩 %1$d kcal</string>
+    <string name="widget_kcal_left_format">还剩 %1$d %2$s</string>
     <string name="widget_g_left_format">还剩 %1$dg</string>
     <string name="widget_protein_g">蛋白质 g</string>
 
@@ -181,7 +181,7 @@
     <string name="onboarding_pace_caption_slow">温和且可持续。适合养成长期习惯。</string>
     <string name="onboarding_pace_caption_fast">激进但可行。需要较强的自律。</string>
     <string name="onboarding_pace_caption_recommended">最平衡的节奏，既有动力又可持续。</string>
-    <string name="onboarding_pace_capped">以您的体型，此速度不可能不跌破估计的静息代谢。您的目标将是 %1$d 千卡。</string>
+    <string name="onboarding_pace_capped">以您的体型，此速度不可能不跌破估计的静息代谢。您的目标将是 %1$d 千卡。 %2$s</string>
 
     <string name="onboarding_notifications_title">提醒你\n记录餐食</string>
     <string name="onboarding_notifications_subtitle">在用餐时间获得温和提醒，\n让你不会忘记记录。</string>
@@ -226,7 +226,7 @@
     <string name="onboarding_plan_subtitle">点按任意数值进行编辑</string>
     <string name="onboarding_plan_daily_calories">每日卡路里</string>
     <string name="onboarding_plan_doctor_title">请咨询医生</string>
-    <string name="onboarding_plan_doctor_message">最低建议为每天 1,200 卡路里。</string>
+    <string name="onboarding_plan_doctor_message">最低建议为每天 %1$s卡路里。</string>
     <string name="onboarding_minor_title">仅限成人计算公式</string>
     <string name="onboarding_minor_message">此应用使用成人卡路里计算公式。如果您未满 18 岁，请在使用这些目标前咨询医疗专业人士。</string>
     <string name="onboarding_minor_continue">我明白了</string>
@@ -269,7 +269,7 @@
     <string name="add_food_add_photo">添加照片</string>
     <string name="progressive_meal_add_next">添加下一个配料</string>
     <string name="text_input_title">描述你的食物</string>
-    <string name="home_kcal_of_format">/ %1$s kcal</string>
+    <string name="home_kcal_of_format">/ %1$s %2$s</string>
     <string name="home_kcal_left_format">还剩 %1$s</string>
     <string name="home_view_more">查看更多</string>
     <string name="home_todays_food">今日饮食</string>
@@ -426,7 +426,7 @@
     <string name="progress_history_count_format">%1$d 条记录 · 点按以查看或删除</string>
 
     <string name="progress_calories_section">卡路里</string>
-    <string name="progress_avg_format">平均：%1$d kcal</string>
+    <string name="progress_avg_format">平均：%1$d %2$s</string>
     <string name="progress_no_food">尚未记录食物</string>
 
     <string name="progress_macro_averages">宏量平均值</string>
@@ -586,8 +586,8 @@
     <string name="notif_streak_text">保持连续记录。记录今天吃的内容。</string>
     <string name="notif_summary_title">今日摘要已就绪</string>
     <string name="notif_summary_text">点按查看今日宏量营养素的完成情况。</string>
-    <string name="notif_summary_deficit">缺口 %1$s 千卡</string>
-    <string name="notif_summary_surplus">盈余 %1$s 千卡</string>
+    <string name="notif_summary_deficit">缺口 %1$s 千卡 %2$s</string>
+    <string name="notif_summary_surplus">盈余 %1$s 千卡 %2$s</string>
     <string name="notif_summary_on_target">平衡</string>
     <string name="notif_summary_eaten_burned">摄入 %1$s · 消耗 %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
@@ -673,7 +673,7 @@
     <string name="manual_active_name_hint">活动名称（可选）</string>
     <string name="manual_active_save">加入预算</string>
     <string name="manual_active_edit_title">编辑活动消耗</string>
-    <string name="manual_active_history_total">%1$s · %2$d 千卡</string>
+    <string name="manual_active_history_total">%1$s · %2$d 千卡 %3$s</string>
     <string name="cd_delete_manual_active">删除活动消耗</string>
     <string name="manual_active_subtitle">添加步行、骑行或锻炼消耗的热量。开启“将活动消耗加入预算”时，会延长今日预算。</string>
     <string name="manual_active_title">记录活动消耗</string>
@@ -757,7 +757,7 @@
     <string name="analysis_queue_day_back">前一天</string>
     <string name="analysis_queue_day_forward">后一天</string>
     <string name="analysis_queue_failed">失败</string>
-    <string name="analysis_queue_result">%1$s · %2$d 千卡</string>
+    <string name="analysis_queue_result">%1$s · %2$d 千卡 %3$s</string>
     <string name="analysis_queue_just_now">刚刚</string>
     <string name="analysis_queue_minutes_ago">%1$d 分钟前</string>
     <string name="analysis_queue_hours_ago">%1$d 小时前</string>
@@ -767,7 +767,7 @@
     <string name="action_show">显示</string>
     <string name="action_undo">撤销</string>
     <string name="action_what_if">会怎样？</string>
-    <string name="add_food_relog_kcal">%1$d 千卡</string>
+    <string name="add_food_relog_kcal">%1$d 千卡 %2$s</string>
     <string name="ai_error_coach_on_device">教练暂不支持端侧提供商，请在设置 → AI 提供商中切换到云端提供商。</string>
     <string name="ai_error_coach_round_limit">教练无法回答，请尝试换个说法。</string>
     <string name="ai_error_disabled">AI 功能已在设置 → AI 与语音中关闭。</string>
@@ -941,7 +941,7 @@
     <string name="grounded_on_device_unavailable">有据可依的记录需要云端 AI 提供商。端侧模型使用照片/备注。</string>
     <string name="grounded_review_continue">继续审阅</string>
     <string name="grounded_review_grams">克</string>
-    <string name="grounded_review_per_100g">%1$d 千卡 / 100 克</string>
+    <string name="grounded_review_per_100g">%1$d 千卡 / 100 克 %2$s</string>
     <string name="grounded_review_subtitle">记录前为每种食物选择最佳数据库匹配和份量。</string>
     <string name="grounded_review_title">确认匹配</string>
     <string name="grounded_review_unit">单位</string>
@@ -967,17 +967,17 @@
     <string name="home_active_burn_over_a11y">主动消耗 %1$d，比平常一天多 %2$d</string>
     <string name="home_active_burn_progress_a11y">主动消耗 %1$d，平常 %2$d</string>
     <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
-    <string name="home_active_calories_label">主动千卡</string>
-    <string name="home_budget_burned_today">今日消耗：%1$d 千卡</string>
+    <string name="home_active_calories_label">主动千卡 %1$s</string>
+    <string name="home_budget_burned_today">今日消耗：%1$d 千卡 %2$s</string>
     <string name="home_calorie_active_estimated_a11y">主动热量根据你的活动水平估算</string>
-    <string name="home_calorie_budget_a11y">预算 %1$d：目标 %2$d 加主动消耗 %3$d</string>
+    <string name="home_calorie_budget_a11y">预算 %1$d %4$s：目标 %2$d %4$s 加主动消耗 %3$d %4$s</string>
     <string name="home_calorie_budget_info">今日预算的计算方式</string>
     <string name="home_calorie_budget_sheet_title">今日热量预算</string>
     <string name="home_calorie_budget_source_manual">你手动记录的热量</string>
     <string name="home_calorie_budget_source_measured">来自 Health Connect 的主动热量</string>
-    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d %4$s (14-day average is %3$d %4$s).</string>
     <string name="home_calorie_mode_static">固定目标</string>
-    <string name="home_calorie_of_goal">%1$s 中的</string>
+    <string name="home_calorie_of_goal">%1$s 中的 %2$s</string>
     <string name="home_calories_active_burn">主动消耗 %1$d</string>
     <string name="home_calories_goal_plus_active">目标 %1$s + 主动 %2$s</string>
     <string name="home_calories_label">热量</string>
@@ -1017,7 +1017,7 @@
     <string name="note_char_count">%1$d / %2$d</string>
 
     <string name="import_add_to_log">添加到记录</string>
-    <string name="import_add_to_log_many_format">将 %1$d 添加到记录 · %2$d 千卡</string>
+    <string name="import_add_to_log_many_format">将 %1$d 添加到记录 · %2$d 千卡 %3$s</string>
     <string name="import_body_metrics_empty">此文件没有可导入的体重或身体数据条目。</string>
     <string name="import_body_metrics_malformed">无法读取文件：%1$s</string>
     <string name="import_body_metrics_success">已导入 %1$d 条体重、%2$d 条体脂和 %3$d 条测量记录。</string>
@@ -1387,7 +1387,7 @@
     <string name="settings_picker_custom_placeholder">以 %1$s 为单位的值</string>
     <string name="settings_picker_enter_custom">输入自定义值…</string>
     <string name="settings_calorie_below_floor_title">低于安全下限</string>
-    <string name="settings_calorie_below_floor_message">这低于您估计的静息代谢或 1,200 千卡。仅在医疗专业人士开具处方时继续。</string>
+    <string name="settings_calorie_below_floor_message">这低于您估计的静息代谢或 %1$s千卡。仅在医疗专业人士开具处方时继续。</string>
     <string name="settings_calorie_below_floor_continue">仍然继续</string>
     <string name="settings_picker_use_wheel">使用滚轮</string>
     <string name="settings_picker_vitd_iu_hint">%1$d 微克 ≈ %2$d IU</string>
@@ -1597,7 +1597,7 @@
     <string name="unit_tbsp">汤匙</string>
     <string name="unit_tsp">茶匙</string>
     <string name="vm_adaptive_on_message">自适应目标已开启。当存在足够的食物和体重数据后，Chompass 将每周检查一次。</string>
-    <string name="vm_adaptive_updated">已根据你的最新数据更新为 %1$d 千卡。</string>
+    <string name="vm_adaptive_updated">已根据你的最新数据更新为 %1$d 千卡。 %2$s</string>
     <string name="vm_goals_recalculated">目标已重新计算</string>
         <string name="recalc_sheet_new_targets">新目标</string>
         <string name="recalc_sheet_macros_format">蛋白质 %1$d · 碳水 %2$d · 脂肪 %3$d</string>
@@ -1609,26 +1609,26 @@
         <string name="recalc_sheet_tier_measured">基于您实测的 Health Connect 消耗</string>
         <string name="recalc_sheet_tier_formula">内置公式</string>
         <string name="recalc_sheet_formula_baseline">公式基准</string>
-        <string name="recalc_sheet_bmr_row">BMR（静息消耗）：%1$s 千卡</string>
-        <string name="recalc_sheet_tdee_row">维持 × 活动 %1$s：%2$s 千卡</string>
-        <string name="recalc_sheet_pace_row">目标节奏：%1$s 千卡/天</string>
-        <string name="recalc_sheet_formula_target_row">公式目标：%1$s 千卡</string>
-        <string name="recalc_sheet_measured_row">实测 Health Connect 消耗：%1$s 千卡</string>
-    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
+        <string name="recalc_sheet_bmr_row">BMR（静息消耗）：%1$s 千卡 %2$s</string>
+        <string name="recalc_sheet_tdee_row">维持 × 活动 %1$s：%2$s 千卡 %3$s</string>
+        <string name="recalc_sheet_pace_row">目标节奏：%1$s 千卡/天 %2$s</string>
+        <string name="recalc_sheet_formula_target_row">公式目标：%1$s 千卡 %2$s</string>
+        <string name="recalc_sheet_measured_row">实测 Health Connect 消耗：%1$s 千卡 %2$s</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d %4$s active (%3$d of last 28 days)</string>
         <string name="recalc_sheet_data_used">使用的数据</string>
         <string name="recalc_sheet_data_weighins">%2$d 天内的 %1$d 次称重</string>
         <string name="recalc_sheet_data_no_weighins">暂无称重记录</string>
-        <string name="recalc_sheet_data_intake">平均记录摄入：%2$d 个记录日内 %1$s 千卡</string>
+        <string name="recalc_sheet_data_intake">平均记录摄入：%2$d 个记录日内 %1$s 千卡 %3$s</string>
         <string name="recalc_sheet_data_no_intake">暂无饮食记录</string>
-        <string name="recalc_sheet_data_implied">隐含维持：~%1$s 千卡</string>
+        <string name="recalc_sheet_data_implied">隐含维持：~%1$s 千卡 %2$s</string>
         <string name="recalc_sheet_data_implied_thin">隐含维持：未计算 — 数据太少</string>
         <string name="recalc_sheet_data_implied_below_floor">隐含维持：低于安全下限，已忽略</string>
         <string name="recalc_sheet_data_implied_disagree">隐含维持：已保留 — 记录与体重趋势不一致</string>
         <string name="recalc_sheet_change">变化</string>
-        <string name="recalc_sheet_previous">之前：%1$s 千卡</string>
-        <string name="recalc_sheet_new_with_delta">之后：%1$s 千卡（%2$s）</string>
+        <string name="recalc_sheet_previous">之前：%1$s 千卡 %2$s</string>
+        <string name="recalc_sheet_new_with_delta">之后：%1$s 千卡（%2$s） %3$s</string>
         <string name="recalc_sheet_reason">原因</string>
-    <string name="vm_goals_updated">已更新为 %1$d 千卡。</string>
+    <string name="vm_goals_updated">已更新为 %1$d 千卡。 %2$s</string>
     <string name="vm_health_connect_needed">需要 Health Connect</string>
     <string name="vm_health_connect_needed_msg">允许 Chompass 在 Health Connect 中读取你的主动和总热量，然后重新开启能量消耗。</string>
     <string name="vm_not_enough_energy">能量数据不足</string>
@@ -1706,7 +1706,7 @@
     <string name="height_cm_format">%1$d cm</string>
     <string name="home_macro_chip_format">%1$s %2$dg</string>
     <string name="in_label_format">%1$d in</string>
-    <string name="kcal_value_format">%1$s kcal</string>
+    <string name="energy_value_format">%1$s %2$s</string>
     <string name="keto_carb_grams_format">%1$d g/day</string>
     <string name="kg_value_format">%1$.1f kg</string>
     <string name="lbs_value_format">%1$.1f lbs</string>
@@ -1731,6 +1731,7 @@
     <string name="unit_g">g</string>
     <string name="unit_in">in</string>
     <string name="unit_kcal">kcal</string>
+    <string name="unit_kj">kJ</string>
     <string name="unit_kg">kg</string>
     <string name="unit_lbs">lbs</string>
     <string name="unit_mcg">mcg</string>
@@ -1811,6 +1812,7 @@
     <string name="settings_group_trackers">追踪与提醒</string>
     <string name="settings_group_trackers_summary">饮水、尼古丁、咖啡因、断食、提醒</string>
     <string name="settings_units">单位</string>
+    <string name="settings_energy_unit">能量</string>
     <string name="settings_search_hint">搜索设置</string>
     <string name="settings_search_empty">没有匹配的设置。试试“kg”、“kcal”或“ml”。</string>
     <string name="prompt_history_button">提示词历史</string>
@@ -1921,9 +1923,9 @@
     <string name="day_type_clear_override">清除今日覆盖</string>
     <string name="day_type_edit_settings">编辑日类型</string>
     <string name="day_type_plan_off_hint">日类型已关闭。要在不同日子使用不同目标，请在设置中开启。</string>
-    <string name="day_type_targets_summary">%1$s kcal · 蛋白 %2$d · 碳水 %3$d · 脂肪 %4$d</string>
-    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
-    <string name="day_type_tomorrow">明天：%1$s · %2$s kcal</string>
+    <string name="day_type_targets_summary">%1$s %5$s · 蛋白 %2$d · 碳水 %3$d · 脂肪 %4$d</string>
+    <string name="day_type_active_typical">≈ %1$d %2$s active typical</string>
+    <string name="day_type_tomorrow">明天：%1$s · %2$s %3$s</string>
     <string name="settings_day_types_title">日类型</string>
     <string name="settings_day_types_intro">在不同日子使用不同的热量和宏量目标，例如训练日和休息日。</string>
     <string name="settings_day_types_add">添加日类型</string>
@@ -1934,7 +1936,7 @@
     <string name="settings_day_types_delete_scrub">从日程移除</string>
     <string name="settings_day_types_delete_used_message">日程中正在使用它。请选择这些日期如何处理。</string>
     <string name="settings_day_types_delete_used_title">删除“%1$s”？</string>
-    <string name="settings_day_types_floor_warning">该目标已处于你的热量下限（%1$d kcal）。作为日类型比较激进。</string>
+    <string name="settings_day_types_floor_warning">该目标已处于你的热量下限（%1$d %2$s）。作为日类型比较激进。</string>
     <string name="settings_day_types_follow_schedule">跟随日程</string>
     <string name="settings_day_types_keto_paused">日类型在生酮模式下已暂停</string>
     <string name="settings_day_types_mode_cycle">循环</string>
@@ -1963,11 +1965,11 @@
     <string name="settings_day_types_summary_format">%1$d 种 · %2$s</string>
     <string name="settings_day_types_weekday_default">默认（%1$s）</string>
     <string name="recalc_sheet_day_types">日类型</string>
-    <string name="recalc_sheet_daytype_change">%1$s：%2$s → %3$s kcal</string>
-    <string name="recalc_sheet_daytype_value">%1$s：%2$s kcal</string>
+    <string name="recalc_sheet_daytype_change">%1$s：%2$s → %3$s %4$s</string>
+    <string name="recalc_sheet_daytype_value">%1$s：%2$s %3$s</string>
     <string name="recalc_sheet_daytype_macros_format">蛋白质 %1$d g · 碳水 %2$d g · 脂肪 %3$d g</string>
-    <string name="recalc_sheet_daytype_avg_change">周平均：%1$s → %2$s kcal</string>
-    <string name="recalc_sheet_daytype_avg_value">周平均：%1$s kcal</string>
+    <string name="recalc_sheet_daytype_avg_change">周平均：%1$s → %2$s %3$s</string>
+    <string name="recalc_sheet_daytype_avg_value">周平均：%1$s %2$s</string>
     <string name="settings_calc_sec_day_types">日类型</string>
     <string name="settings_calc_daytypes_resolve_name">日类型目标解析</string>
     <string name="settings_calc_daytypes_resolve_used">日类型开启时，每一天的热量和宏量目标来自计划，而不是单一目标集。单日的手动切换优先于日程，日程优先于默认，未解析的一切回落到你的基础目标。</string>

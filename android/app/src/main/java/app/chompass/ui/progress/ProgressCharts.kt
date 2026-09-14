@@ -1,6 +1,7 @@
 package app.chompass.ui.progress
 
 import app.chompass.models.LocaleFormat
+import app.chompass.models.EnergyFormat
 import app.chompass.R
 
 import androidx.compose.foundation.Canvas
@@ -46,6 +47,7 @@ import app.chompass.models.WeightEntry
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.success
+import app.chompass.ui.navigation.LocalEnergyUnit
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
@@ -779,7 +781,7 @@ internal fun CalorieBarChart(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 ticks.reversed().forEach { tick ->
-                    Text(formatTick(tick), fontSize = 11.sp, color = secondaryColor)
+                    Text(formatTick(EnergyFormat.quantity(tick.toInt(), LocalEnergyUnit.current).toDouble()), fontSize = 11.sp, color = secondaryColor)
                 }
             }
         }

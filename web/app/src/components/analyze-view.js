@@ -10,6 +10,7 @@ import { createSpeechCapture } from "../lib/speech.js";
 import { shouldUseNativeCaptureHint } from "../lib/media-devices.js";
 import { renderAnalyzeOverlayHtml } from "../lib/ui/analyze-overlay.js";
 import { formatNumber, t } from "../lib/i18n/index.js";
+import { energyUnitFromPrefs, formatEnergy } from "../lib/energy-format.js";
 import { DEMO_PLATE_ESTIMATE, runDemoAnalyze } from "../demo/mock-ai.js";
 import { escapeHtml, escapeAttr } from "../lib/ui/html.js";
 import { todayIso } from "../lib/date.js";
@@ -43,6 +44,7 @@ export class AnalyzeView extends HTMLElement {
     this.providers = await listConfiguredProviders();
     if (DEMO) this.providers = ["gemini"];
     const appPrefs = await prefs.load();
+    this._energyUnit = energyUnitFromPrefs(appPrefs);
     /** @type {keyof typeof import('../lib/ai/providers.js').PROVIDERS | null} */
     this.activeProvider = null;
     if (
@@ -212,8 +214,7 @@ export class AnalyzeView extends HTMLElement {
                  .map(
                    (r) => `
                  <button type="button" data-recent='${escapeAttr(JSON.stringify(r))}' ${inputsDisabled}>
-                   <strong>${escapeHtml(r.name)}</strong><br/>
-                   <span class="recents-meta">${formatNumber(Math.round(r.calories))} kcal · ${Math.round(r.proteinG)}P / ${Math.round(r.carbsG)}C / ${Math.round(r.fatG)}F</span>
+                  <span class="recents-meta">${formatEnergy(Math.round(r.calories), this._energyUnit)} · ${Math.round(r.proteinG)}P / ${Math.round(r.carbsG)}C / ${Math.round(r.fatG)}F</span>
                  </button>`,
                  )
                  .join("")}

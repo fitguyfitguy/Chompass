@@ -68,6 +68,7 @@ class WidgetSnapshotWriter(
         val appearance: String,
         val water: WaterInputs,
         val caffeineEntries: List<CaffeineEntry> = emptyList(),
+        val energyUnit: String = "kcal",
     )
 
     internal data class WaterDynamicInputs(
@@ -146,14 +147,15 @@ class WidgetSnapshotWriter(
                 entries = water.third,
             )
         },
-    ) { core, water ->
-        SnapshotInputs(core.first, core.second, core.third, water)
+        prefs.energyUnit,
+    ) { core, water, energyUnit ->
+        SnapshotInputs(core.first, core.second, core.third, water = water, energyUnit = energyUnit)
     }
         .combine(caffeineRepository.entries) { inputs, caffeine ->
             inputs.copy(caffeineEntries = caffeine)
         }
         .distinctUntilChanged()
-        .onEach { inputs -> publish(inputs.entries, inputs.profile, inputs.appearance, inputs.water, inputs.caffeineEntries) }
+        .onEach { inputs -> publish(inputs.entries, inputs.profile, inputs.appearance, inputs.water, inputs.caffeineEntries, inputs.energyUnit) }
 
     /**
      * Recompute and publish from current repos/prefs. Used when Theme Color is
@@ -182,7 +184,7 @@ class WidgetSnapshotWriter(
             ),
             entries = waterRepository.entries.first(),
         )
-        publish(entries, profile, appearance, water, caffeineRepository.entries.first())
+        publish(entries, profile, appearance, water, caffeineRepository.entries.first(), prefs.energyUnit.first())
     }
 
     private suspend fun publish(
@@ -191,6 +193,7 @@ class WidgetSnapshotWriter(
         appearance: String,
         water: WaterInputs,
         caffeineEntries: List<CaffeineEntry> = emptyList(),
+        energyUnit: String = "kcal",
     ) {
         val todaysEntries = entries.filter {
             it.timestamp.atZone(ZoneId.systemDefault()).toLocalDate() == LocalDate.now()
@@ -329,8 +332,8 @@ class WidgetSnapshotWriter(
                 waterGoalMl = waterGoalMl.coerceAtLeast(1),
                 waterUseMetric = weightUnit == "kg",
                 waterNextFireAtMillis = waterPlan?.nextFireMillis,
-                waterNextDrinkMl = waterPlan?.drinkMl ?: 0,
                 appearanceMode = appearance,
+                energyUnit = energyUnit,
             )
             prefs.setWidgetSnapshot(snapshot)
         }

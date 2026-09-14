@@ -54,12 +54,16 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.ActiveBurnShade
 import app.chompass.models.ActiveCalorieSource
+import app.chompass.models.EnergyFormat
+import app.chompass.models.EnergyUnit
 import app.chompass.models.HomeCalorieDisplay
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.LocaleFormat
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalLaunchFillEpoch
+import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.success
@@ -131,6 +135,7 @@ internal fun CalorieHero(
 ) {
     val ratio = HomeCalorieDisplay.progressRatio(displayMode, current, baseGoal, activeCalories)
     val effectiveGoal = HomeCalorieDisplay.effectiveGoal(displayMode, baseGoal, activeCalories)
+    val unit = LocalEnergyUnit.current
     val integratesBurn = activeCalories > 0 && displayMode != HomeCalorieDisplayMode.STATIC
     val shade = burnShade
     val shadesActive = shade != null && shade.typical > 0 &&
@@ -156,6 +161,7 @@ internal fun CalorieHero(
         shadesActive -> target
         else -> effectiveGoal
     }
+    val unitLabel = energyUnitLabel()
     val epoch = LocalLaunchFillEpoch.current
     var lastEpoch by rememberSaveable { mutableIntStateOf(0) }
     val animatedRatio = remember { Animatable(if (lastEpoch == epoch) fillRatio else 0f) }
@@ -337,7 +343,7 @@ internal fun CalorieHero(
                 color = muted
             )
             Text(
-                LocaleFormat.integer(current),
+                LocaleFormat.integer(EnergyFormat.quantity(current, unit)),
                 style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
@@ -351,14 +357,14 @@ internal fun CalorieHero(
             val goalDescription = when {
                 !explainsBudget -> null
                 integratesBurn && activeCalorieSource == ActiveCalorieSource.ESTIMATED ->
-                    stringResource(R.string.home_calorie_budget_a11y, effectiveGoal, baseGoal, activeCalories) +
+                    stringResource(R.string.home_calorie_budget_a11y, EnergyFormat.quantity(effectiveGoal, unit), EnergyFormat.quantity(baseGoal, unit), EnergyFormat.quantity(activeCalories, unit), unitLabel) +
                         ". " + stringResource(R.string.home_calorie_active_estimated_a11y)
                 else ->
-                    stringResource(R.string.home_calorie_budget_a11y, effectiveGoal, baseGoal, activeCalories)
+                    stringResource(R.string.home_calorie_budget_a11y, EnergyFormat.quantity(effectiveGoal, unit), EnergyFormat.quantity(baseGoal, unit), EnergyFormat.quantity(activeCalories, unit), unitLabel)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    stringResource(R.string.home_calorie_of_goal, LocaleFormat.integer(goalLabel)),
+                    stringResource(R.string.home_calorie_of_goal, LocaleFormat.integer(EnergyFormat.quantity(goalLabel, unit)), unitLabel),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     color = muted,
@@ -393,7 +399,7 @@ internal fun CalorieHero(
                     modifier = Modifier.size(13.dp)
                 )
                 Text(
-                    stringResource(R.string.home_calories_left, LocaleFormat.integer(remaining)),
+                    stringResource(R.string.home_calories_left, LocaleFormat.integer(EnergyFormat.quantity(remaining, unit))),
                     modifier = Modifier.weight(1f, fill = false),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -475,7 +481,8 @@ private fun DayTypeChip(label: String, onClick: () -> Unit) {
 @Composable
 private fun BurnCaption(active: Int) {
     val tertiary = MaterialTheme.colorScheme.tertiary
-    val a11y = stringResource(R.string.home_active_burn_a11y, active)
+    val activeQ = EnergyFormat.quantity(active, LocalEnergyUnit.current)
+    val a11y = stringResource(R.string.home_active_burn_a11y, activeQ)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -488,7 +495,7 @@ private fun BurnCaption(active: Int) {
             modifier = Modifier.size(11.dp)
         )
         Text(
-            stringResource(R.string.home_active_burn_caption, active),
+            stringResource(R.string.home_active_burn_caption, activeQ),
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
             color = tertiary,
@@ -501,14 +508,18 @@ private fun BurnCaption(active: Int) {
 private fun BurnShadeCaption(burn: ActiveBurnShade) {
     val tertiary = MaterialTheme.colorScheme.tertiary
     val success = MaterialTheme.colorScheme.success
+    val unit = LocalEnergyUnit.current
+    val liveQ = EnergyFormat.quantity(burn.live, unit)
+    val typicalQ = EnergyFormat.quantity(burn.typical, unit)
+    val overQ = EnergyFormat.quantity(burn.live - burn.typical, unit)
     val over = HomeCalorieDisplay.isActiveBurnOverTypical(burn.live, burn.typical)
     val dayType = burn.typicalDayTypeName.takeIf { burn.typicalIsDayType && !it.isNullOrBlank() }
     val a11y = if (over) {
-        stringResource(R.string.home_active_burn_over_a11y, burn.live, burn.live - burn.typical)
+        stringResource(R.string.home_active_burn_over_a11y, liveQ, overQ)
     } else if (dayType != null) {
-        stringResource(R.string.home_active_burn_progress_day_type_a11y, burn.live, burn.typical, dayType)
+        stringResource(R.string.home_active_burn_progress_day_type_a11y, liveQ, typicalQ, dayType)
     } else {
-        stringResource(R.string.home_active_burn_progress_a11y, burn.live, burn.typical)
+        stringResource(R.string.home_active_burn_progress_a11y, liveQ, typicalQ)
     }
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -523,9 +534,9 @@ private fun BurnShadeCaption(burn: ActiveBurnShade) {
         )
         Text(
             if (dayType != null) {
-                stringResource(R.string.home_active_burn_caption_progress_day_type, burn.live, burn.typical, dayType)
+                stringResource(R.string.home_active_burn_caption_progress_day_type, liveQ, typicalQ, dayType)
             } else {
-                stringResource(R.string.home_active_burn_caption_progress, burn.live, burn.typical)
+                stringResource(R.string.home_active_burn_caption_progress, liveQ, typicalQ)
             },
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
@@ -533,7 +544,7 @@ private fun BurnShadeCaption(burn: ActiveBurnShade) {
         )
         if (over) {
             Text(
-                stringResource(R.string.home_active_burn_over, burn.live - burn.typical),
+                stringResource(R.string.home_active_burn_over, overQ),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 color = success,
@@ -557,6 +568,8 @@ private fun BudgetExplanationDialog(
     onShowRecalcDetails: (() -> Unit)? = null,
 ) {
     val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+    val unit = LocalEnergyUnit.current
+    val unitLabel = energyUnitLabel()
     FudGlassDialog(onDismissRequest = onDismiss) {
         Text(
             stringResource(R.string.home_calorie_budget_sheet_title),
@@ -570,8 +583,8 @@ private fun BudgetExplanationDialog(
             Text(
                 stringResource(
                     R.string.home_calories_goal_plus_active,
-                    LocaleFormat.integer(goal),
-                    LocaleFormat.integer(typical ?: active),
+                    LocaleFormat.integer(EnergyFormat.quantity(goal, unit)),
+                    LocaleFormat.integer(EnergyFormat.quantity(typical ?: active, unit)),
                 ),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -600,8 +613,9 @@ private fun BudgetExplanationDialog(
                     stringResource(
                         R.string.home_calorie_budget_day_type_typical,
                         typicalDayTypeName,
-                        typical,
-                        blendedTypical,
+                        EnergyFormat.quantity(typical, unit),
+                        EnergyFormat.quantity(blendedTypical, unit),
+                        unitLabel,
                     ),
                     fontSize = 13.sp,
                     color = muted,
@@ -609,8 +623,7 @@ private fun BudgetExplanationDialog(
             }
             if (burnedToday != null) {
                 Text(
-                    stringResource(R.string.home_budget_burned_today, burnedToday),
-                    fontSize = 13.sp,
+                    stringResource(R.string.home_budget_burned_today, EnergyFormat.quantity(burnedToday, unit), unitLabel),
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,
                 )

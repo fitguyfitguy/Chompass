@@ -56,6 +56,7 @@ import {
   MAX_CUSTOM_GOAL_BY_KEY,
 } from "../lib/home-nutrients.js";
 import { LOCALES, t, formatNumber } from "../lib/i18n/index.js";
+import { energyToKcal, energyUnitFromPrefs, energyUnitLabel, energyQuantity, formatEnergy } from "../lib/energy-format.js";
 import {
   setPlanEnabled,
   upsertProfile,
@@ -358,6 +359,7 @@ export class SettingsView extends HTMLElement {
     const weightLabel = appPrefs.weightUnit === "lb" ? t("settings.personal.weight_lb") : t("settings.personal.weight_kg");
     const heightVal = appPrefs.heightUnit === "in" ? (p.heightCm / 2.54).toFixed(1) : p.heightCm;
     const weightVal = appPrefs.weightUnit === "lb" ? (p.weightKg * 2.20462).toFixed(1) : p.weightKg;
+    const energyUnit = energyUnitFromPrefs(appPrefs);
 
     this.innerHTML = `
       ${subpageBar(t("settings.hub.personal"), { backHref: SETTINGS_PARENT.personal })}
@@ -460,7 +462,7 @@ export class SettingsView extends HTMLElement {
             <input id="customCalories" name="customCalories" type="number" min="0" max="${CALORIE_PARSER_CEILING_KCAL}" value="${p.customCalories ?? ""}" placeholder="${targets.calories}" />
           </div>
         </div>
-        <p style="color:var(--muted);font-size:0.82rem;margin:0 0 0.5rem;">${t("settings.goals.formula_targets", { kcal: formatNumber(targets.calories), protein: Math.round(targets.proteinG), carbs: Math.round(targets.carbsG), fat: Math.round(targets.fatG) })}</p>
+        <p style="color:var(--muted);font-size:0.82rem;margin:0 0 0.5rem;">${t("settings.goals.formula_targets", { kcal: formatNumber(energyQuantity(targets.calories, energyUnit)), unit: energyUnitLabel(energyUnit), protein: Math.round(targets.proteinG), carbs: Math.round(targets.carbsG), fat: Math.round(targets.fatG) })}</p>
         <div class="field-row">
           <div class="field">
             <label for="proteinTargetMode">${t("settings.goals.protein_target")}</label>
@@ -496,7 +498,7 @@ export class SettingsView extends HTMLElement {
       <div class="card">
         <h2 class="chart-title">${t("settings.goals.calculated")}</h2>
         <p style="color:var(--muted);margin:0 0 0.6rem;font-size:0.85rem;">
-          ${t("settings.goals.bmr_tdee", { bmr: formatNumber(Math.round(bmr(p))), tdee: formatNumber(Math.round(tdee(p))) })}
+          ${t("settings.goals.bmr_tdee", { bmr: formatNumber(energyQuantity(Math.round(bmr(p)), energyUnit)), tdee: formatNumber(energyQuantity(Math.round(tdee(p)), energyUnit)), unit: energyUnitLabel(energyUnit) })}
         </p>
         <div class="stat-badges">
           <div class="stat-badge"><strong>${targets.calories}</strong>${t("diary.calories")}</div>
@@ -630,6 +632,7 @@ export class SettingsView extends HTMLElement {
       }
 
       const appPrefs = await prefs.load();
+      const energyUnit = energyUnitFromPrefs(appPrefs);
       const [foods, weightEntries] = await Promise.all([foodEntries.all(), weights.all()]);
       const forecast = computeWeightForecast({ weights: weightEntries, foods, profile });
       const result = await calculateGoalsWithAi({
@@ -647,7 +650,7 @@ export class SettingsView extends HTMLElement {
       const after = /** @type {HTMLElement | null} */ (this.querySelector("#recalc-status"));
       if (after) {
         after.hidden = false;
-        after.textContent = t("settings.goals.updated_format", { kcal: formatNumber(result.calories), reason });
+        after.textContent = t("settings.goals.updated_format", { kcal: formatNumber(energyQuantity(result.calories, energyUnit)), unit: energyUnitLabel(energyUnit), reason });
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -672,6 +675,8 @@ export class SettingsView extends HTMLElement {
     const today = todayIso();
     const base = dailyTargets(p);
     const floor = safetyFloorKcal(p);
+    const appPrefs = await prefs.load();
+    const energyUnit = energyUnitFromPrefs(appPrefs);
     const enabled = plan?.enabled === true;
     const countOk = profiles.length >= MIN_PROFILES && profiles.length <= MAX_PROFILES;
     const editingId = this._editingProfileId ?? null; // "new" | profile id | null
@@ -721,7 +726,7 @@ export class SettingsView extends HTMLElement {
           <div class="day-type-row">
             <div class="day-type-row__text">
               <strong>${escapeHtml(x.name)}</strong>
-              <span class="day-type-row__sub">${x.calories} kcal · ${x.proteinG}P / ${x.carbsG}C / ${x.fatG}F${x.calories <= floor ? ` · ${escapeHtml(t("day_types.at_floor"))}` : ""}</span>
+              <span class="day-type-row__sub">${formatEnergy(x.calories, energyUnit)} · ${x.proteinG}P / ${x.carbsG}C / ${x.fatG}F${x.calories <= floor ? ` · ${escapeHtml(t("day_types.at_floor"))}` : ""}</span>
             </div>
             <div class="day-type-row__actions">
               <button type="button" class="chip" data-dt-up="${x.id}" ${i === 0 ? "disabled" : ""} aria-label="${t("settings.daytype.move_up")}">↑</button>
@@ -743,12 +748,12 @@ export class SettingsView extends HTMLElement {
           <input id="dt-name" name="name" type="text" maxlength="40" value="${escapeHtml(editing?.name ?? "")}" required />
         </div>
         <div class="field-row field-row--2">
-          <div class="field"><label for="dt-kcal">${escapeHtml(t("day_types.calories"))}</label><input id="dt-kcal" name="calories" type="number" min="1200" max="6000" step="10" value="${editing?.calories ?? base.calories}" required /></div>
+          <div class="field"><label for="dt-kcal">${escapeHtml(t("day_types.calories", { unit: energyUnitLabel(energyUnit) }))}</label><input id="dt-kcal" name="calories" type="number" min="${energyQuantity(1200, energyUnit)}" max="${energyQuantity(6000, energyUnit)}" step="${energyUnit === "kj" ? "any" : "10"}" value="${energyQuantity(editing?.calories ?? base.calories, energyUnit)}" required /></div>
           <div class="field"><label for="dt-protein">${escapeHtml(t("day_types.protein_g"))}</label><input id="dt-protein" name="proteinG" type="number" min="0" max="500" value="${editing?.proteinG ?? base.proteinG}" required /></div>
           <div class="field"><label for="dt-carbs">${escapeHtml(t("day_types.carbs_g"))}</label><input id="dt-carbs" name="carbsG" type="number" min="0" max="1200" value="${editing?.carbsG ?? base.carbsG}" required /></div>
           <div class="field"><label for="dt-fat">${escapeHtml(t("day_types.fat_g"))}</label><input id="dt-fat" name="fatG" type="number" min="0" max="400" value="${editing?.fatG ?? base.fatG}" required /></div>
         </div>
-        <p class="field-hint">${escapeHtml(t("day_types.floor_hint", { floor: String(floor) }))}</p>
+        <p class="field-hint">${escapeHtml(t("day_types.floor_hint", { floor: formatNumber(energyQuantity(floor, energyUnit)), unit: energyUnitLabel(energyUnit) }))}</p>
         <div class="btn-row">
           <button type="submit" class="btn btn--primary">${escapeHtml(t("day_types.save_profile"))}</button>
           <button type="button" class="btn btn--ghost" id="dt-copy-current">${escapeHtml(t("day_types.copy_current"))}</button>
@@ -827,7 +832,7 @@ export class SettingsView extends HTMLElement {
             ({ iso, r }) => `
           <div class="day-type-row">
             <div class="day-type-row__text"><strong>${escapeHtml(iso)}${iso === today ? ` · ${escapeHtml(t("day_types.today"))}` : ""}</strong></div>
-            <div class="day-type-row__actions"><span class="day-type-row__sub">${escapeHtml(r.profileName ?? t("day_types.base"))} · ${r.targets.calories} kcal</span></div>
+            <div class="day-type-row__actions"><span class="day-type-row__sub">${escapeHtml(r.profileName ?? t("day_types.base"))} · ${formatEnergy(r.targets.calories, energyUnit)}</span></div>
           </div>`,
           )
           .join("")}
@@ -858,7 +863,7 @@ export class SettingsView extends HTMLElement {
         const el = /** @type {HTMLInputElement|null} */ (this.querySelector(id));
         if (el) el.value = String(Math.round(v));
       };
-      set("#dt-kcal", base.calories);
+      set("#dt-kcal", energyQuantity(base.calories, energyUnit));
       set("#dt-protein", base.proteinG);
       set("#dt-carbs", base.carbsG);
       set("#dt-fat", base.fatG);
@@ -879,7 +884,7 @@ export class SettingsView extends HTMLElement {
         {
           id,
           name,
-          calories: Number(fd.get("calories")),
+          calories: energyToKcal(Number(fd.get("calories")), energyUnit),
           proteinG: Number(fd.get("proteinG")),
           carbsG: Number(fd.get("carbsG")),
           fatG: Number(fd.get("fatG")),
@@ -964,7 +969,7 @@ export class SettingsView extends HTMLElement {
     this.innerHTML = `
       ${subpageBar(t("settings.app.units"), { backHref: SETTINGS_PARENT.units })}
       <form class="entry-form card" id="units-form">
-        <div class="field-row field-row--2">
+        <div class="field-row">
           <div class="field">
             <label for="weightUnit">${t("progress.weight")}</label>
             <select id="weightUnit" name="weightUnit">
@@ -977,6 +982,13 @@ export class SettingsView extends HTMLElement {
             <select id="heightUnit" name="heightUnit">
               <option value="cm" ${p.heightUnit === "cm" ? "selected" : ""}>cm</option>
               <option value="in" ${p.heightUnit === "in" ? "selected" : ""}>in</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="energyUnit">${t("settings.units.energy")}</label>
+            <select id="energyUnit" name="energyUnit">
+              <option value="kcal" ${energyUnitFromPrefs(p) === "kcal" ? "selected" : ""}>kcal</option>
+              <option value="kj" ${energyUnitFromPrefs(p) === "kj" ? "selected" : ""}>kJ</option>
             </select>
           </div>
         </div>
@@ -1062,6 +1074,7 @@ export class SettingsView extends HTMLElement {
       ev.preventDefault();
       const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
       await prefs.save({
+        energyUnit: /** @type {"kcal"|"kj"} */ (fd.get("energyUnit") || "kcal"),
         weightUnit: /** @type {any} */ (fd.get("weightUnit")),
         heightUnit: /** @type {any} */ (fd.get("heightUnit")),
         theme: /** @type {any} */ (fd.get("theme")),

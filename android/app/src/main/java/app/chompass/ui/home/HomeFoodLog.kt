@@ -66,7 +66,7 @@ import app.chompass.models.ServingUnitOption
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.rememberFoodThumbnail
 import app.chompass.ui.components.isDarkTheme
-import app.chompass.ui.components.kcalText
+import app.chompass.ui.components.energyText
 import app.chompass.ui.components.gramsText
 import app.chompass.ui.components.culinaryUnitLabels
 import app.chompass.ui.theme.AppColors
@@ -140,7 +140,7 @@ internal fun MealSectionHeader(
         // Combined nutrients for this meal (issue #103: chicken + pasta + sauce = one total)
         if (totalCalories != null) {
             val summary = buildAnnotatedString {
-                append(kcalText(totalCalories))
+                append(energyText(totalCalories))
                 if (macroChips.isNotEmpty()) {
                     append(" · ")
                     macroChips.forEachIndexed { index, chip ->
@@ -604,7 +604,7 @@ internal fun FoodRow(
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
-                    kcalText(entry.calories),
+                    energyText(entry.calories),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary

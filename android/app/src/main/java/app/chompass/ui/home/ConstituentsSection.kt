@@ -41,7 +41,7 @@ import app.chompass.models.OptionalNutrient
 import app.chompass.models.ServingUnitOption
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.services.ai.ConstituentReconcile
-import app.chompass.ui.components.kcalText
+import app.chompass.ui.components.energyText
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
 import java.util.Locale
@@ -219,7 +219,7 @@ private fun ConstituentMacroLine(row: FoodConstituent, modifier: Modifier = Modi
     Text(
         text = buildAnnotatedString {
             withStyle(SpanStyle(color = AppColors.Calorie, fontWeight = FontWeight.Medium)) {
-                append(kcalText(row.calories))
+                append(energyText(row.calories))
             }
             withStyle(SpanStyle(color = separatorColor)) { append(" · ") }
             withStyle(SpanStyle(color = MacroKind.PROTEIN.color(), fontWeight = FontWeight.Medium)) {
@@ -311,7 +311,7 @@ internal fun ConstituentSummaryRow(
             }
             Text(row.name, fontSize = 17.sp, modifier = Modifier.weight(1f))
             Text(
-                text = kcalText(row.calories),
+                text = energyText(row.calories),
                 fontSize = 17.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = AppColors.Calorie,

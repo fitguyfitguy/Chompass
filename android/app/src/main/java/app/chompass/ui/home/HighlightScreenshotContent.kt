@@ -36,7 +36,7 @@ import app.chompass.models.FoodConstituent
 import app.chompass.models.Recipe
 import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.isDarkTheme
-import app.chompass.ui.components.kcalText
+import app.chompass.ui.components.energyText
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
 import app.chompass.ui.theme.AppRadii
@@ -83,7 +83,7 @@ internal fun HomeMealComponentsScreenshotContent(
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
-                    kcalText(mealCalories),
+                    energyText(mealCalories),
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     color = AppColors.Calorie,
@@ -238,7 +238,7 @@ private fun ScreenshotRecipeRow(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 Text(
-                    kcalText(recipe.totalCalories),
+                    energyText(recipe.totalCalories),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = AppColors.Calorie,

@@ -18,13 +18,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.models.LocaleFormat
+import app.chompass.models.EnergyFormat
 import app.chompass.models.MacroPlanResolver
 import app.chompass.services.ai.GoalRecalcTier
 import app.chompass.services.ai.ImpliedWithheldReason
 import app.chompass.services.ai.RecalcSheetData
 import app.chompass.services.ai.RecalcSheetSource
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.energyText
 import app.chompass.ui.components.blockSheetDragAtScrollEdges
+import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 
@@ -46,6 +50,8 @@ internal fun RecalcResultSheet(
     val report = result.report
     val before = data.before
     val after = data.after
+    val unit = LocalEnergyUnit.current
+    val unitLabel = energyUnitLabel()
     val scroll = rememberScrollState()
     ChompassBottomSheet(onDismiss = onDismiss) {
         Column(
@@ -69,7 +75,7 @@ internal fun RecalcResultSheet(
             // 1. New targets
             SheetSectionHeader(stringResource(R.string.recalc_sheet_new_targets))
             Text(
-                stringResource(R.string.kcal_value_format, LocaleFormat.integer(result.calories)),
+                energyText(result.calories),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = AppColors.Calorie,
@@ -124,26 +130,28 @@ internal fun RecalcResultSheet(
             // 4. Formula baseline (checkable chain)
             if (report != null) {
                 SheetSectionHeader(stringResource(R.string.recalc_sheet_formula_baseline))
-                SheetInfoRow(stringResource(R.string.recalc_sheet_bmr_row, LocaleFormat.integer(report.bmr)))
+                SheetInfoRow(stringResource(R.string.recalc_sheet_bmr_row, LocaleFormat.integer(EnergyFormat.quantity(report.bmr, unit)), unitLabel))
                 SheetInfoRow(
                     stringResource(
                         R.string.recalc_sheet_tdee_row,
                         formatMultiplier(report.activityMultiplier),
-                        LocaleFormat.integer(report.tdee),
+                        LocaleFormat.integer(EnergyFormat.quantity(report.tdee, unit)),
+                        unitLabel,
                     ),
                 )
-                SheetInfoRow(stringResource(R.string.recalc_sheet_pace_row, signed(report.calorieAdjustment)))
-                SheetInfoRow(stringResource(R.string.recalc_sheet_formula_target_row, LocaleFormat.integer(report.formulaCalories)))
+                SheetInfoRow(stringResource(R.string.recalc_sheet_pace_row, signed(EnergyFormat.quantity(report.calorieAdjustment, unit)), unitLabel))
+                SheetInfoRow(stringResource(R.string.recalc_sheet_formula_target_row, LocaleFormat.integer(EnergyFormat.quantity(report.formulaCalories, unit)), unitLabel))
                 report.measuredTdee?.let {
-                    SheetInfoRow(stringResource(R.string.recalc_sheet_measured_row, LocaleFormat.integer(it)))
+                    SheetInfoRow(stringResource(R.string.recalc_sheet_measured_row, LocaleFormat.integer(EnergyFormat.quantity(it, unit)), unitLabel))
                 }
                 report.dayTypeActiveTypical.forEach { line ->
                     SheetInfoRow(
                         stringResource(
                             R.string.recalc_sheet_day_type_active,
                             line.name,
-                            line.kcal,
+                            EnergyFormat.quantity(line.kcal, unit),
                             line.samples,
+                            unitLabel,
                         ),
                     )
                 }
@@ -159,7 +167,7 @@ internal fun RecalcResultSheet(
                 }
                 val loggedAvg = report.loggedDayAvgCalories
                 if (report.foodDays > 0 && loggedAvg != null) {
-                    SheetInfoRow(stringResource(R.string.recalc_sheet_data_intake, LocaleFormat.integer(loggedAvg), report.foodDays))
+                    SheetInfoRow(stringResource(R.string.recalc_sheet_data_intake, LocaleFormat.integer(EnergyFormat.quantity(loggedAvg, unit)), report.foodDays, unitLabel))
                 } else {
                     SheetInfoRow(stringResource(R.string.recalc_sheet_data_no_intake))
                 }
@@ -171,20 +179,21 @@ internal fun RecalcResultSheet(
                     ImpliedWithheldReason.DISAGREE ->
                         SheetInfoRow(stringResource(R.string.recalc_sheet_data_implied_disagree))
                     null -> report.impliedMaintenance?.let {
-                        SheetInfoRow(stringResource(R.string.recalc_sheet_data_implied, LocaleFormat.integer(it)))
+                        SheetInfoRow(stringResource(R.string.recalc_sheet_data_implied, LocaleFormat.integer(EnergyFormat.quantity(it, unit)), unitLabel))
                     }
                 }
                 HorizontalDivider()
             }
             // 6. Before → after
             SheetSectionHeader(stringResource(R.string.recalc_sheet_change))
-            SheetInfoRow(stringResource(R.string.recalc_sheet_previous, LocaleFormat.integer(before.effectiveCalories)))
+            SheetInfoRow(stringResource(R.string.recalc_sheet_previous, LocaleFormat.integer(EnergyFormat.quantity(before.effectiveCalories, unit)), unitLabel))
             val delta = after.effectiveCalories - before.effectiveCalories
             SheetInfoRow(
                 stringResource(
                     R.string.recalc_sheet_new_with_delta,
-                    LocaleFormat.integer(after.effectiveCalories),
-                    signed(delta),
+                    LocaleFormat.integer(EnergyFormat.quantity(after.effectiveCalories, unit)),
+                    signed(EnergyFormat.quantity(delta, unit)),
+                    unitLabel,
                 ),
             )
             // 6b. Day types (#60 phase 4): per-profile before/after + the weekly
@@ -202,8 +211,9 @@ internal fun RecalcResultSheet(
                             stringResource(
                                 R.string.recalc_sheet_daytype_change,
                                 profile.name,
-                                LocaleFormat.integer(beforeKcal),
-                                LocaleFormat.integer(profile.calories),
+                                LocaleFormat.integer(EnergyFormat.quantity(beforeKcal, unit)),
+                                LocaleFormat.integer(EnergyFormat.quantity(profile.calories, unit)),
+                                unitLabel,
                             ),
                         )
                     } else {
@@ -211,7 +221,8 @@ internal fun RecalcResultSheet(
                             stringResource(
                                 R.string.recalc_sheet_daytype_value,
                                 profile.name,
-                                LocaleFormat.integer(profile.calories),
+                                LocaleFormat.integer(EnergyFormat.quantity(profile.calories, unit)),
+                                unitLabel,
                             ),
                         )
                     }
@@ -233,13 +244,14 @@ internal fun RecalcResultSheet(
                     SheetInfoRow(
                         stringResource(
                             R.string.recalc_sheet_daytype_avg_change,
-                            LocaleFormat.integer(averageBefore),
-                            LocaleFormat.integer(averageAfter),
+                            LocaleFormat.integer(EnergyFormat.quantity(averageBefore, unit)),
+                            LocaleFormat.integer(EnergyFormat.quantity(averageAfter, unit)),
+                            unitLabel,
                         ),
                     )
                 } else {
                     SheetInfoRow(
-                        stringResource(R.string.recalc_sheet_daytype_avg_value, LocaleFormat.integer(averageAfter)),
+                        stringResource(R.string.recalc_sheet_daytype_avg_value, LocaleFormat.integer(EnergyFormat.quantity(averageAfter, unit)), unitLabel),
                     )
                 }
             }

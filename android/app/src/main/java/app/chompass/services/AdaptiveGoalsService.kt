@@ -8,6 +8,8 @@ import app.chompass.data.ProfileRepository
 import app.chompass.data.WeightRepository
 import app.chompass.data.saveLastGoalChangeSheet
 import app.chompass.models.DayTypeActiveStats
+import app.chompass.models.EnergyFormat
+import app.chompass.models.EnergyUnit
 import app.chompass.models.UserProfile
 import app.chompass.services.ai.GoalCalculation
 import app.chompass.services.ai.RecalcSheetData
@@ -88,7 +90,9 @@ class AdaptiveGoalsService(
 
             prefs.saveAdaptiveGoalPreviousTargetsIfNeeded(profile)
             profileRepository.save(result.profile)
-            val message = strings(R.string.vm_adaptive_updated, arrayOf(result.updatedCalories)) +
+            val unit = EnergyUnit.fromStorage(prefs.energyUnit.first())
+            val unitLabel = strings(if (unit == EnergyUnit.KJ) R.string.unit_kj else R.string.unit_kcal, arrayOf())
+            val message = strings(R.string.vm_adaptive_updated, arrayOf(EnergyFormat.quantity(result.updatedCalories, unit), unitLabel)) +
                 " ${result.message}"
             // Record the change for the Goals transparency sheet (reopenable on demand):
             // deterministic, so tier/provider stay null and the sheet renders the

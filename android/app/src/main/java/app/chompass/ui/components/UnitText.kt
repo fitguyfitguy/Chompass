@@ -3,8 +3,11 @@ package app.chompass.ui.components
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import app.chompass.R
+import app.chompass.models.EnergyFormat
+import app.chompass.models.EnergyUnit
 import app.chompass.models.LocaleFormat
 import app.chompass.models.MacroValueFormatter
+import app.chompass.ui.navigation.LocalEnergyUnit
 
 /**
  * Display helpers for value + unit rows (UI-audit 2.2/2.3): group numbers with
@@ -13,8 +16,19 @@ import app.chompass.models.MacroValueFormatter
  * picker sheets.
  */
 @Composable
-internal fun kcalText(value: Int): String =
-    stringResource(R.string.kcal_value_format, LocaleFormat.integer(value))
+internal fun energyText(kcal: Int): String {
+    val unit = LocalEnergyUnit.current
+    return stringResource(
+        R.string.energy_value_format,
+        LocaleFormat.integer(EnergyFormat.quantity(kcal, unit)),
+        stringResource(if (unit == EnergyUnit.KJ) R.string.unit_kj else R.string.unit_kcal),
+    )
+}
+
+@Composable
+internal fun energyUnitLabel(): String =
+    stringResource(if (LocalEnergyUnit.current == EnergyUnit.KJ) R.string.unit_kj else R.string.unit_kcal)
+
 
 /** "150 g" / "1,234.5 g" — whole grams group; fractions keep one decimal. */
 @Composable

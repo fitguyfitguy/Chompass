@@ -99,13 +99,13 @@ private fun CalorieSmall(context: Context, snapshot: WidgetSnapshot) {
                 gaugeWidthDp = gaugeW,
                 startHex = snapshot.themeStartHex,
                 endHex = snapshot.themeEndHex,
-                centerLarge = snapshot.calories.toString(),
-                centerSmall = "/ ${snapshot.resolvedDisplayGoalTarget}",
+                centerLarge = snapshot.energyQuantity(snapshot.calories).toString(),
+                centerSmall = "/ ${snapshot.energyQuantity(snapshot.resolvedDisplayGoalTarget)}",
                 appearance = snapshot.appearanceMode
             )
         }
         Text(
-            text = context.getString(R.string.widget_kcal_left_format, snapshot.caloriesRemaining),
+            text = context.getString(R.string.widget_kcal_left_format, snapshot.energyQuantity(snapshot.caloriesRemaining), snapshot.energyUnitLabel(context)),
             style = TextStyle(
                 color = WidgetTheme.themeTextProvider(snapshot.themeStartHex),
                 fontWeight = FontWeight.Medium,
@@ -132,13 +132,13 @@ private fun CalorieMedium(context: Context, snapshot: WidgetSnapshot) {
                 gaugeWidthDp = gaugeW,
                 startHex = snapshot.themeStartHex,
                 endHex = snapshot.themeEndHex,
-                centerLarge = snapshot.calories.toString(),
-                centerSmall = "/ ${snapshot.resolvedDisplayGoalTarget}",
+                centerLarge = snapshot.energyQuantity(snapshot.calories).toString(),
+                centerSmall = "/ ${snapshot.energyQuantity(snapshot.resolvedDisplayGoalTarget)}",
                 appearance = snapshot.appearanceMode
             )
             Spacer(modifier = GlanceModifier.height(2.dp))
             Text(
-                text = context.getString(R.string.widget_kcal_left_format, snapshot.caloriesRemaining),
+                text = context.getString(R.string.widget_kcal_left_format, snapshot.energyQuantity(snapshot.caloriesRemaining), snapshot.energyUnitLabel(context)),
                 style = TextStyle(
                     color = WidgetTheme.themeTextProvider(snapshot.themeStartHex),
                     fontWeight = FontWeight.Medium,
@@ -151,8 +151,8 @@ private fun CalorieMedium(context: Context, snapshot: WidgetSnapshot) {
                 Text(
                     text = context.getString(
                         R.string.home_active_burn_caption_progress,
-                        snapshot.activeCaloriesToday ?: 0,
-                        typical,
+                        snapshot.energyQuantity(snapshot.activeCaloriesToday ?: 0),
+                        snapshot.energyQuantity(typical),
                     ),
                     style = TextStyle(
                         color = WidgetTheme.secondaryTextProvider,

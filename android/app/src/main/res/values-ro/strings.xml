@@ -10,7 +10,7 @@
     <string name="widget_calories">Calorii</string>
     <string name="widget_carbs">Carbohidrați</string>
     <string name="widget_fat">Grăsimi</string>
-    <string name="widget_kcal_left_format">%1$d kcal rămase</string>
+    <string name="widget_kcal_left_format">%1$d %2$s rămase</string>
     <string name="widget_g_left_format">%1$dg rămase</string>
     <string name="widget_protein_g">proteine g</string>
 
@@ -175,7 +175,7 @@
     <string name="onboarding_pace_caption_slow">Blând și sustenabil. Excelent pentru obiceiuri pe termen lung.</string>
     <string name="onboarding_pace_caption_fast">Agresiv, dar realizabil. Necesită disciplină puternică.</string>
     <string name="onboarding_pace_caption_recommended">Cel mai echilibrat ritm, motivant și sustenabil.</string>
-    <string name="onboarding_pace_capped">Acest ritm nu este posibil pentru fizicul tău fără să scadă sub metabolismul de repaus estimat. Obiectivul tău va fi de %1$d kcal.</string>
+    <string name="onboarding_pace_capped">Acest ritm nu este posibil pentru fizicul tău fără să scadă sub metabolismul de repaus estimat. Obiectivul tău va fi de %1$d %2$s.</string>
 
     <string name="onboarding_notifications_title">Fii notificat să\nînregistrezi mesele</string>
     <string name="onboarding_notifications_subtitle">Primește mementouri blânde la orele meselor\nca să nu uiți să urmărești.</string>
@@ -220,7 +220,7 @@
     <string name="onboarding_plan_subtitle">Atinge orice valoare pentru a o edita</string>
     <string name="onboarding_plan_daily_calories">calorii zilnice</string>
     <string name="onboarding_plan_doctor_title">Consultă un medic</string>
-    <string name="onboarding_plan_doctor_message">Recomandarea minimă este de 1.200 de calorii pe zi.</string>
+    <string name="onboarding_plan_doctor_message">Recomandarea minimă este de %1$sde calorii pe zi.</string>
     <string name="onboarding_minor_title">Doar formule pentru adulți</string>
     <string name="onboarding_minor_message">Această aplicație folosește formule de calorii pentru adulți. Dacă ai sub 18 ani, întreabă un specialist în sănătate înainte de a folosi aceste obiective.</string>
     <string name="onboarding_minor_continue">Am înțeles</string>
@@ -263,7 +263,7 @@
     <string name="add_food_add_photo">Adaugă foto</string>
     <string name="progressive_meal_add_next">Adaugă următorul ingredient</string>
     <string name="text_input_title">Descrie mâncarea</string>
-    <string name="home_kcal_of_format">din %1$s kcal</string>
+    <string name="home_kcal_of_format">din %1$s %2$s</string>
     <string name="home_kcal_left_format">%1$s rămase</string>
     <string name="home_view_more">Vezi mai multe</string>
     <string name="home_todays_food">Mâncarea de azi</string>
@@ -420,7 +420,7 @@
     <string name="progress_history_count_format">%1$d intrări · atinge pentru a vedea sau șterge</string>
 
     <string name="progress_calories_section">Calorii</string>
-    <string name="progress_avg_format">Med.: %1$d kcal</string>
+    <string name="progress_avg_format">Med.: %1$d %2$s</string>
     <string name="progress_no_food">Niciun aliment înregistrat încă</string>
 
     <string name="progress_macro_averages">Medii macronutrienți</string>
@@ -575,8 +575,8 @@
     <string name="notif_streak_text">Menține-ți seria. Înregistrează ceva din ziua de azi.</string>
     <string name="notif_summary_title">Rezumatul de azi e gata</string>
     <string name="notif_summary_text">Atinge pentru a vedea cum au ieșit macronutrienții azi.</string>
-    <string name="notif_summary_deficit">Deficit de %1$s kcal</string>
-    <string name="notif_summary_surplus">Excedent de %1$s kcal</string>
+    <string name="notif_summary_deficit">Deficit de %1$s %2$s</string>
+    <string name="notif_summary_surplus">Excedent de %1$s %2$s</string>
     <string name="notif_summary_on_target">În echilibru</string>
     <string name="notif_summary_eaten_burned">Ingerate %1$s · arse %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
@@ -662,7 +662,7 @@
     <string name="manual_active_name_hint">Nume activitate (opțional)</string>
     <string name="manual_active_save">Adaugă la buget</string>
     <string name="manual_active_edit_title">Editează arderea activă</string>
-    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="manual_active_history_total">%1$s · %2$d %3$s</string>
     <string name="cd_delete_manual_active">Șterge arderea activă</string>
     <string name="manual_active_subtitle">Adaugă calorii arse de la o plimbare, pedalare sau antrenament. Extind bugetul de azi când «Adaugă arderea activă» este activ.</string>
     <string name="manual_active_title">Înregistrează arderea activă</string>
@@ -747,7 +747,7 @@
     <string name="analysis_queue_day_back">Ziua anterioară</string>
     <string name="analysis_queue_day_forward">Ziua următoare</string>
     <string name="analysis_queue_failed">Eșuată</string>
-    <string name="analysis_queue_result">%1$s · %2$d kcal</string>
+    <string name="analysis_queue_result">%1$s · %2$d %3$s</string>
     <string name="analysis_queue_just_now">Chiar acum</string>
     <string name="analysis_queue_minutes_ago">acum %1$d min</string>
     <string name="analysis_queue_hours_ago">acum %1$d h</string>
@@ -757,7 +757,7 @@
     <string name="action_show">Arată</string>
     <string name="action_undo">Revocă</string>
     <string name="action_what_if">Ce-ar fi?</string>
-    <string name="add_food_relog_kcal">%1$d kcal</string>
+    <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="ai_error_coach_on_device">Antrenorul nu este încă disponibil cu furnizorul local. Comută la un furnizor cloud în Setări → Furnizor IA.</string>
     <string name="ai_error_coach_round_limit">Antrenorul nu a putut răspunde. Încearcă să reformulezi întrebarea.</string>
     <string name="ai_error_disabled">Funcțiile IA sunt dezactivate în Setări → IA și voce.</string>
@@ -932,7 +932,7 @@
     <string name="grounded_on_device_unavailable">Înregistrarea fundamentată necesită un furnizor IA cloud. Modelele locale folosesc Foto/Notă.</string>
     <string name="grounded_review_continue">Continuă la verificare</string>
     <string name="grounded_review_grams">Grame</string>
-    <string name="grounded_review_per_100g">%1$d kcal / 100 g</string>
+    <string name="grounded_review_per_100g">%1$d %2$s / 100 g</string>
     <string name="grounded_review_subtitle">Alege cea mai bună potrivire din bază și porția pentru fiecare aliment înainte de înregistrare.</string>
     <string name="grounded_review_title">Confirmă potrivirile</string>
     <string name="grounded_review_unit">Unitate</string>
@@ -958,17 +958,17 @@
     <string name="home_active_burn_over_a11y">Ars activ %1$d, %2$d peste o zi normală</string>
     <string name="home_active_burn_progress_a11y">Ars activ %1$d, normal %2$d</string>
     <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
-    <string name="home_active_calories_label">Kcal active</string>
-    <string name="home_budget_burned_today">Arse astăzi: %1$d kcal</string>
+    <string name="home_active_calories_label">Kcal active %1$s</string>
+    <string name="home_budget_burned_today">Arse astăzi: %1$d %2$s</string>
     <string name="home_calorie_active_estimated_a11y">Caloriile active estimate din nivelul tău de activitate</string>
-    <string name="home_calorie_budget_a11y">Buget %1$d: obiectiv %2$d plus %3$d active arse</string>
+    <string name="home_calorie_budget_a11y">Buget %1$d %4$s: obiectiv %2$d %4$s plus %3$d %4$s active arse</string>
     <string name="home_calorie_budget_info">Cum se calculează bugetul de azi</string>
     <string name="home_calorie_budget_sheet_title">Bugetul caloric de azi</string>
     <string name="home_calorie_budget_source_manual">Calorii înregistrate manual</string>
     <string name="home_calorie_budget_source_measured">Calorii active din Health Connect</string>
-    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d %4$s (14-day average is %3$d %4$s).</string>
     <string name="home_calorie_mode_static">Obiectiv fix</string>
-    <string name="home_calorie_of_goal">din %1$s</string>
+    <string name="home_calorie_of_goal">din %1$s %2$s</string>
     <string name="home_calories_active_burn">%1$d active arse</string>
     <string name="home_calories_goal_plus_active">Obiectiv %1$s + %2$s active</string>
     <string name="home_calories_label">CALORII</string>
@@ -1008,7 +1008,7 @@
     <string name="note_char_count">%1$d / %2$d</string>
 
     <string name="import_add_to_log">Adaugă la jurnal</string>
-    <string name="import_add_to_log_many_format">Adaugă %1$d la jurnal · %2$d kcal</string>
+    <string name="import_add_to_log_many_format">Adaugă %1$d la jurnal · %2$d %3$s</string>
     <string name="import_body_metrics_empty">Acest fișier nu are înregistrări de greutate sau date corporale de importat.</string>
     <string name="import_body_metrics_malformed">Fișierul nu a putut fi citit: %1$s</string>
     <string name="import_body_metrics_success">Importate %1$d înregistrări de greutate, %2$d de grăsime și %3$d măsurători.</string>
@@ -1384,7 +1384,7 @@
     <string name="settings_picker_custom_placeholder">Valoare în %1$s</string>
     <string name="settings_picker_enter_custom">Introdu valoare personalizată…</string>
     <string name="settings_calorie_below_floor_title">Sub limita de siguranță</string>
-    <string name="settings_calorie_below_floor_message">Această valoare este sub metabolismul de repaus estimat sau sub 1.200 kcal. Continuă doar dacă a fost prescris de un specialist în sănătate.</string>
+    <string name="settings_calorie_below_floor_message">Această valoare este sub metabolismul de repaus estimat sau sub %1$s. Continuă doar dacă a fost prescris de un specialist în sănătate.</string>
     <string name="settings_calorie_below_floor_continue">Continuă oricum</string>
     <string name="settings_picker_use_wheel">Folosește roata</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d UI</string>
@@ -1597,7 +1597,7 @@
     <string name="unit_tbsp">ling.</string>
     <string name="unit_tsp">ling.ț</string>
     <string name="vm_adaptive_on_message">Obiectivele adaptive sunt active. Chompass va verifica o dată pe săptămână după ce există suficiente date de mâncare și greutate.</string>
-    <string name="vm_adaptive_updated">Actualizat la %1$d kcal din cele mai recente date ale tale.</string>
+    <string name="vm_adaptive_updated">Actualizat la %1$d %2$s din cele mai recente date ale tale.</string>
     <string name="vm_goals_recalculated">Obiective recalculate</string>
         <string name="recalc_sheet_new_targets">Obiective noi</string>
         <string name="recalc_sheet_macros_format">P %1$d · C %2$d · G %3$d</string>
@@ -1609,26 +1609,26 @@
         <string name="recalc_sheet_tier_measured">Ancorat la arderea măsurată din Health Connect</string>
         <string name="recalc_sheet_tier_formula">Formule integrate</string>
         <string name="recalc_sheet_formula_baseline">Baza formulei</string>
-        <string name="recalc_sheet_bmr_row">BMR (ardere în repaus): %1$s kcal</string>
-        <string name="recalc_sheet_tdee_row">Întreținere × activitate %1$s: %2$s kcal</string>
-        <string name="recalc_sheet_pace_row">Ritmul obiectivului: %1$s kcal/zi</string>
-        <string name="recalc_sheet_formula_target_row">Ținta formulei: %1$s kcal</string>
-        <string name="recalc_sheet_measured_row">Ardere măsurată din Health Connect: %1$s kcal</string>
-    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
+        <string name="recalc_sheet_bmr_row">BMR (ardere în repaus): %1$s %2$s</string>
+        <string name="recalc_sheet_tdee_row">Întreținere × activitate %1$s: %2$s %3$s</string>
+        <string name="recalc_sheet_pace_row">Ritmul obiectivului: %1$s %2$s/zi</string>
+        <string name="recalc_sheet_formula_target_row">Ținta formulei: %1$s %2$s</string>
+        <string name="recalc_sheet_measured_row">Ardere măsurată din Health Connect: %1$s %2$s</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d %4$s active (%3$d of last 28 days)</string>
         <string name="recalc_sheet_data_used">Date utilizate</string>
         <string name="recalc_sheet_data_weighins">%1$d cântăriri din %2$d zile</string>
         <string name="recalc_sheet_data_no_weighins">Nicio cântărire înregistrată încă</string>
-        <string name="recalc_sheet_data_intake">Aport mediu înregistrat: %1$s kcal în %2$d zile înregistrate</string>
+        <string name="recalc_sheet_data_intake">Aport mediu înregistrat: %1$s %3$s în %2$d zile înregistrate</string>
         <string name="recalc_sheet_data_no_intake">Niciun aliment înregistrat încă</string>
-        <string name="recalc_sheet_data_implied">Întreținere estimată: ~%1$s kcal</string>
+        <string name="recalc_sheet_data_implied">Întreținere estimată: ~%1$s %2$s</string>
         <string name="recalc_sheet_data_implied_thin">Întreținere estimată: necalculată — prea puține date</string>
         <string name="recalc_sheet_data_implied_below_floor">Întreținere estimată: sub limita de siguranță, ignorată</string>
         <string name="recalc_sheet_data_implied_disagree">Întreținere estimată: reținută — jurnalul și tendința greutății nu coincid</string>
         <string name="recalc_sheet_change">Modificare</string>
-        <string name="recalc_sheet_previous">Anterior: %1$s kcal</string>
-        <string name="recalc_sheet_new_with_delta">Nou: %1$s kcal (%2$s)</string>
+        <string name="recalc_sheet_previous">Anterior: %1$s %2$s</string>
+        <string name="recalc_sheet_new_with_delta">Nou: %1$s %3$s (%2$s)</string>
         <string name="recalc_sheet_reason">De ce</string>
-    <string name="vm_goals_updated">Actualizat la %1$d kcal.</string>
+    <string name="vm_goals_updated">Actualizat la %1$d %2$s.</string>
     <string name="vm_health_connect_needed">Health Connect necesar</string>
     <string name="vm_health_connect_needed_msg">Permite Chompass să citească caloriile tale active și totale în Health Connect, apoi activează din nou Cheltuiala energetică.</string>
     <string name="vm_not_enough_energy">Date energetice insuficiente</string>
@@ -1707,7 +1707,7 @@
     <string name="height_cm_format">%1$d cm</string>
     <string name="home_macro_chip_format">%1$s %2$dg</string>
     <string name="in_label_format">%1$d in</string>
-    <string name="kcal_value_format">%1$s kcal</string>
+    <string name="energy_value_format">%1$s %2$s</string>
     <string name="keto_carb_grams_format">%1$d g/day</string>
     <string name="kg_value_format">%1$.1f kg</string>
     <string name="lbs_value_format">%1$.1f lbs</string>
@@ -1733,6 +1733,7 @@
     <string name="unit_g">g</string>
     <string name="unit_in">in</string>
     <string name="unit_kcal">kcal</string>
+    <string name="unit_kj">kJ</string>
     <string name="unit_kg">kg</string>
     <string name="unit_lbs">lbs</string>
     <string name="unit_mcg">mcg</string>
@@ -1811,6 +1812,7 @@
     <string name="settings_group_trackers">Urmăriri și memento-uri</string>
     <string name="settings_group_trackers_summary">Apă, nicotină, cofeină, post, memento-uri</string>
     <string name="settings_units">Unități</string>
+    <string name="settings_energy_unit">Energie</string>
     <string name="settings_search_hint">Caută în setări</string>
     <string name="settings_search_empty">Nicio potrivire. Încearcă «kg», «kcal» sau «ml».</string>
     <string name="prompt_history_button">Istoricul prompturilor</string>
@@ -1923,9 +1925,9 @@
     <string name="day_type_clear_override">Elimină excepția de azi</string>
     <string name="day_type_edit_settings">Editează tipurile de zi</string>
     <string name="day_type_plan_off_hint">Tipurile de zi sunt oprite. Activează-le în setări ca să folosești ținte diferite în zile diferite.</string>
-    <string name="day_type_targets_summary">%1$s kcal · %2$dP %3$dC %4$dG</string>
-    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
-    <string name="day_type_tomorrow">Mâine: %1$s · %2$s kcal</string>
+    <string name="day_type_targets_summary">%1$s %5$s · %2$dP %3$dC %4$dG</string>
+    <string name="day_type_active_typical">≈ %1$d %2$s active typical</string>
+    <string name="day_type_tomorrow">Mâine: %1$s · %2$s %3$s</string>
     <string name="settings_day_types_title">Tipuri de zi</string>
     <string name="settings_day_types_intro">Folosește ținte de calorii și macro diferite în zile diferite, de exemplu zile de antrenament și de odihnă.</string>
     <string name="settings_day_types_add">Adaugă un tip de zi</string>
@@ -1936,7 +1938,7 @@
     <string name="settings_day_types_delete_scrub">Scoate din program</string>
     <string name="settings_day_types_delete_used_message">Este folosit în programul tău. Alege ce se întâmplă cu acele zile.</string>
     <string name="settings_day_types_delete_used_title">Ștergi «%1$s»?</string>
-    <string name="settings_day_types_floor_warning">Această țintă este la pragul tău caloric (%1$d kcal). Agresiv pentru un tip de zi.</string>
+    <string name="settings_day_types_floor_warning">Această țintă este la pragul tău caloric (%1$d %2$s). Agresiv pentru un tip de zi.</string>
     <string name="settings_day_types_follow_schedule">Urmează programul</string>
     <string name="settings_day_types_keto_paused">Tipuri de zi puse în pauză în modul keto</string>
     <string name="settings_day_types_mode_cycle">Ciclu</string>
@@ -1965,11 +1967,11 @@
     <string name="settings_day_types_summary_format">%1$d tipuri · %2$s</string>
     <string name="settings_day_types_weekday_default">Implicit (%1$s)</string>
     <string name="recalc_sheet_day_types">Tipuri de zi</string>
-    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s kcal</string>
-    <string name="recalc_sheet_daytype_value">%1$s: %2$s kcal</string>
+    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s %4$s</string>
+    <string name="recalc_sheet_daytype_value">%1$s: %2$s %3$s</string>
     <string name="recalc_sheet_daytype_macros_format">%1$d g proteine · %2$d g carbohidrați · %3$d g grăsimi</string>
-    <string name="recalc_sheet_daytype_avg_change">Media săptămânală: %1$s → %2$s kcal</string>
-    <string name="recalc_sheet_daytype_avg_value">Media săptămânală: %1$s kcal</string>
+    <string name="recalc_sheet_daytype_avg_change">Media săptămânală: %1$s → %2$s %3$s</string>
+    <string name="recalc_sheet_daytype_avg_value">Media săptămânală: %1$s %2$s</string>
     <string name="settings_calc_sec_day_types">Tipuri de zi</string>
     <string name="settings_calc_daytypes_resolve_name">Rezolvarea țintelor pe tip de zi</string>
     <string name="settings_calc_daytypes_resolve_used">Când tipurile de zi sunt active, fiecare zi își ia țintele de calorii și macro din plan, nu din setul unic. O schimbare manuală pentru o zi prevalează asupra programului, programul prevalează asupra implicitului, iar ce nu se rezolvă revine la țintele tale de bază.</string>

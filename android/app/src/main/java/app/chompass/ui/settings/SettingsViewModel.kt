@@ -89,6 +89,8 @@ data class SettingsUiState(
     val heightUnit: String = "cm",
     /** "kg" | "lbs" — governs all mass display/input. */
     val weightUnit: String = "kg",
+    /** "kcal" | "kj" — display-only energy unit. Storage stays kcal. */
+    val energyUnit: String = "kcal",
     val preferGramsByDefault: Boolean = false,
     val profile: UserProfile? = null,
     val notificationsEnabled: Boolean = false,
@@ -434,6 +436,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     selectedSpeechLanguage = snap.selectedSpeechLanguage,
                     heightUnit = snap.heightUnit,
                     weightUnit = snap.weightUnit,
+                    energyUnit = snap.energyUnit,
                     preferGramsByDefault = snap.preferGramsByDefault,
                     profile = profile,
                     notificationsEnabled = snap.notificationsEnabled,
@@ -1172,6 +1175,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setWeightUnit(v: String) = updateUiPref(
         { container.prefs.setWeightUnit(v) },
         { copy(weightUnit = v) },
+    )
+
+    fun setEnergyUnit(v: String) = updateUiPref(
+        { container.prefs.setEnergyUnit(v) },
+        { copy(energyUnit = v) },
     )
 
     fun setDietMode(mode: DietMode) {

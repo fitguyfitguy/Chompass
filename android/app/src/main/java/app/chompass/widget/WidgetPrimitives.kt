@@ -1,6 +1,7 @@
 package app.chompass.widget
 
 import android.content.res.Resources
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -21,8 +22,18 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import app.chompass.models.MacroValueFormatter
+import app.chompass.models.EnergyFormat
+import app.chompass.models.EnergyUnit
+import app.chompass.R
 import app.chompass.models.WidgetNutrient
 import app.chompass.models.WidgetSnapshot
+
+/** Display-only kJ/kcal conversion for widget rendering; snapshot payloads stay kcal. */
+internal fun WidgetSnapshot.energyQuantity(kcal: Int): Int =
+    EnergyFormat.quantity(kcal, resolvedEnergyUnit)
+
+internal fun WidgetSnapshot.energyUnitLabel(context: Context): String =
+    context.getString(if (resolvedEnergyUnit == EnergyUnit.KJ) R.string.unit_kj else R.string.unit_kcal)
 
 // Building blocks shared by every Chompass Glance widget. They live here
 // rather than inside one widget's file so a new widget composes them

@@ -50,7 +50,7 @@ import app.chompass.models.Recipe
 import app.chompass.models.RecipeIngredient
 import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.isDarkTheme
-import app.chompass.ui.components.kcalText
+import app.chompass.ui.components.energyText
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
 import app.chompass.ui.theme.AppRadii
@@ -213,7 +213,7 @@ fun RecipeBuilderSheet(
                     ) {
                         val total = current()
                         Text(
-                            kcalText(total.totalCalories),
+                            energyText(total.totalCalories),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = AppColors.Calorie
@@ -292,7 +292,7 @@ private fun IngredientRow(
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(ingredient.name, fontSize = 15.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(
-                kcalText(ingredient.calories),
+                energyText(ingredient.calories),
                 fontSize = 13.sp,
                 color = AppColors.Calorie
             )
@@ -368,7 +368,7 @@ private fun FavoritesIngredientPickerSheet(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(entry.name, fontSize = 15.sp, modifier = Modifier.weight(1f))
-                        Text(kcalText(entry.calories), fontSize = 14.sp, color = AppColors.Calorie)
+                        Text(energyText(entry.calories), fontSize = 14.sp, color = AppColors.Calorie)
                     }
                 }
             }

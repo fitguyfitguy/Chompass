@@ -68,6 +68,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.style.TextOverflow
 import app.chompass.R
 import app.chompass.models.LocaleFormat
+import app.chompass.models.EnergyFormat
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.microsStaleFor
@@ -102,6 +103,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.WindowInsets
 
+import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.navigation.LocalEnergyUnit
 /**
  * Edit page for an existing FoodEntry. Visually identical to [FoodResultSheet]
  * (the first-time review page), so the edit experience matches the logging
@@ -151,8 +154,9 @@ fun EditFoodEntrySheet(
         fat = stringResource(R.string.macro_fat),
         serving = stringResource(R.string.sheet_serving),
     )
-    val reprocessKcalUnit = stringResource(R.string.unit_kcal)
     val reprocessGUnit = stringResource(R.string.unit_g)
+    val reprocessEnergyUnit = LocalEnergyUnit.current
+    val reprocessEnergyLabel = energyUnitLabel()
     // Long list: block overscroll at the BOTTOM edge always (the bottom edge
     // must not fight the sheet's drag-to-dismiss, visible as a shake when
     // scrolled to the bottom). The top edge is gated (Codeberg #30): blocked
@@ -358,9 +362,9 @@ fun EditFoodEntrySheet(
                     before,
                     currentBaseEntry,
                     reprocessLabels,
-                    reprocessKcalUnit,
+                    reprocessEnergyLabel,
                     reprocessGUnit,
-                )
+                ) { EnergyFormat.quantity(it, reprocessEnergyUnit) }
             } catch (e: Exception) {
                 errorText = e.localizedMessage ?: context.getString(R.string.edit_reprocessing_failed)
             } finally {
@@ -638,14 +642,15 @@ fun EditFoodEntrySheet(
             }
             item {
                 SheetPillCard {
+                    val unit = LocalEnergyUnit.current
                     ReviewNutritionValueRow(
                         label = stringResource(R.string.nutrition_label_calories),
-                        displayValue = "${math.scaledInt(editableCalories)}",
-                        editValue = "${math.scaledInt(editableCalories)}",
-                        unit = stringResource(R.string.unit_kcal),
+                        displayValue = "${math.scaledInt(EnergyFormat.quantity(editableCalories, unit))}",
+                        editValue = "${math.scaledInt(EnergyFormat.quantity(editableCalories, unit))}",
+                        unit = energyUnitLabel(),
                         unlocked = nutritionUnlocked,
                         accentColor = AppColors.Calorie,
-                        onEdit = { editableCalories = math.baseDoubleFromText(it).roundToInt() }
+                        onEdit = { editableCalories = EnergyFormat.toKcal(math.baseDoubleFromText(it).roundToInt(), unit) }
                     )
                     SheetHairline()
                     ReviewNutritionValueRow(
@@ -1321,6 +1326,7 @@ internal fun buildReprocessDiff(
     labels: ReprocessDiffLabels,
     kcalUnit: String,
     gUnit: String,
+    kcalToDisplay: (Int) -> Int = { it },
 ): List<ReprocessDiffRow> {
     val rows = mutableListOf<ReprocessDiffRow>()
     fun add(label: String, a: String, b: String) {
@@ -1328,7 +1334,7 @@ internal fun buildReprocessDiff(
     }
     fun macro(v: Double) = "${MacroValueFormatter.string(v)}$gUnit"
     add(labels.name, before.name, after.name)
-    add(labels.calories, "${LocaleFormat.integer(before.calories)} $kcalUnit", "${LocaleFormat.integer(after.calories)} $kcalUnit")
+    add(labels.calories, "${LocaleFormat.integer(kcalToDisplay(before.calories))} $kcalUnit", "${LocaleFormat.integer(kcalToDisplay(after.calories))} $kcalUnit")
     add(labels.protein, macro(before.protein), macro(after.protein))
     add(labels.carbs, macro(before.carbs), macro(after.carbs))
     add(labels.fat, macro(before.fat), macro(after.fat))

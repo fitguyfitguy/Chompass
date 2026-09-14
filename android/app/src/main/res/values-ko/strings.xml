@@ -10,7 +10,7 @@
     <string name="widget_calories">칼로리</string>
     <string name="widget_carbs">탄수화물</string>
     <string name="widget_fat">지방</string>
-    <string name="widget_kcal_left_format">%1$d kcal 남음</string>
+    <string name="widget_kcal_left_format">%1$d %2$s 남음</string>
     <string name="widget_g_left_format">%1$dg 남음</string>
     <string name="widget_protein_g">단백질 g</string>
 
@@ -180,7 +180,7 @@
     <string name="onboarding_pace_caption_slow">부드럽고 지속 가능해요. 장기적인 습관에 적합해요.</string>
     <string name="onboarding_pace_caption_fast">공격적이지만 가능해요. 강한 절제가 필요해요.</string>
     <string name="onboarding_pace_caption_recommended">가장 균형 잡힌 속도로 동기부여가 되고 지속 가능해요.</string>
-    <string name="onboarding_pace_capped">이 페이스는 추정 안정 시 대사량 아래로 내려가지 않고는 체격상 불가능합니다. 목표는 %1$dkcal입니다.</string>
+    <string name="onboarding_pace_capped">이 페이스는 추정 안정 시 대사량 아래로 내려가지 않고는 체격상 불가능합니다. 목표는 %1$dkcal입니다. %2$s</string>
 
     <string name="onboarding_notifications_title">식사 기록\n알림 받기</string>
     <string name="onboarding_notifications_subtitle">식사 시간에 부드러운 알림을 받아\n기록을 잊지 마세요.</string>
@@ -225,7 +225,7 @@
     <string name="onboarding_plan_subtitle">값을 탭하여 편집</string>
     <string name="onboarding_plan_daily_calories">하루 칼로리</string>
     <string name="onboarding_plan_doctor_title">의사와 상담하세요</string>
-    <string name="onboarding_plan_doctor_message">최소 권장량은 하루 1,200칼로리예요.</string>
+    <string name="onboarding_plan_doctor_message">최소 권장량은 하루 %1$s예요.</string>
     <string name="onboarding_minor_title">성인용 계산식만</string>
     <string name="onboarding_minor_message">이 앱은 성인용 칼로리 계산식을 사용합니다. 18세 미만이라면 이러한 목표를 사용하기 전에 의료 전문가에게 문의하세요.</string>
     <string name="onboarding_minor_continue">이해했습니다</string>
@@ -268,7 +268,7 @@
     <string name="add_food_add_photo">사진 추가</string>
     <string name="progressive_meal_add_next">다음 재료 추가</string>
     <string name="text_input_title">먹은 것을 설명하세요</string>
-    <string name="home_kcal_of_format">/ %1$s kcal</string>
+    <string name="home_kcal_of_format">/ %1$s %2$s</string>
     <string name="home_kcal_left_format">%1$s 남음</string>
     <string name="home_view_more">더 보기</string>
     <string name="home_todays_food">오늘의 음식</string>
@@ -425,7 +425,7 @@
     <string name="progress_history_count_format">%1$d개 항목 · 탭하여 보거나 삭제</string>
 
     <string name="progress_calories_section">칼로리</string>
-    <string name="progress_avg_format">평균: %1$d kcal</string>
+    <string name="progress_avg_format">평균: %1$d %2$s</string>
     <string name="progress_no_food">아직 기록된 음식이 없어요</string>
 
     <string name="progress_macro_averages">매크로 평균</string>
@@ -584,8 +584,8 @@
     <string name="notif_streak_text">연속 기록을 유지하세요. 오늘 먹은 음식을 기록해 보세요.</string>
     <string name="notif_summary_title">오늘의 요약이 준비되었어요</string>
     <string name="notif_summary_text">탭하여 오늘의 매크로 결과를 확인하세요.</string>
-    <string name="notif_summary_deficit">%1$s kcal 부족</string>
-    <string name="notif_summary_surplus">%1$s kcal 초과</string>
+    <string name="notif_summary_deficit">%1$s %2$s 부족</string>
+    <string name="notif_summary_surplus">%1$s %2$s 초과</string>
     <string name="notif_summary_on_target">균형</string>
     <string name="notif_summary_eaten_burned">섭취 %1$s · 소모 %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
@@ -671,7 +671,7 @@
     <string name="manual_active_name_hint">활동 이름(선택)</string>
     <string name="manual_active_save">예산에 추가</string>
     <string name="manual_active_edit_title">활동 소모 수정</string>
-    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="manual_active_history_total">%1$s · %2$d %3$s</string>
     <string name="cd_delete_manual_active">활동 소모 삭제</string>
     <string name="manual_active_subtitle">걷기, 자전거, 운동 등에서 소모한 칼로리를 추가해요. \"활동 소모를 예산에 추가\"가 켜져 있으면 오늘 예산이 늘어나요.</string>
     <string name="manual_active_title">활동 소모 기록</string>
@@ -755,7 +755,7 @@
     <string name="analysis_queue_day_back">이전 날</string>
     <string name="analysis_queue_day_forward">다음 날</string>
     <string name="analysis_queue_failed">실패</string>
-    <string name="analysis_queue_result">%1$s · %2$d kcal</string>
+    <string name="analysis_queue_result">%1$s · %2$d %3$s</string>
     <string name="analysis_queue_just_now">방금</string>
     <string name="analysis_queue_minutes_ago">%1$d분 전</string>
     <string name="analysis_queue_hours_ago">%1$d시간 전</string>
@@ -765,7 +765,7 @@
     <string name="action_show">표시</string>
     <string name="action_undo">실행 취소</string>
     <string name="action_what_if">어떻게 될까?</string>
-    <string name="add_food_relog_kcal">%1$d kcal</string>
+    <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="ai_error_coach_on_device">코치는 아직 온디바이스 제공자에서 지원되지 않아요. 설정 → AI 제공자에서 클라우드 제공자로 전환하세요.</string>
     <string name="ai_error_coach_round_limit">코치가 답변할 수 없어요. 질문을 바꿔서 다시 시도해 보세요.</string>
     <string name="ai_error_disabled">AI 기능이 설정 → AI 및 음성에서 꺼져 있어요.</string>
@@ -939,7 +939,7 @@
     <string name="grounded_on_device_unavailable">근거 기반 기록에는 클라우드 AI 제공자가 필요해요. 온디바이스 모델은 사진/메모를 사용해요.</string>
     <string name="grounded_review_continue">검토로 계속</string>
     <string name="grounded_review_grams">그램</string>
-    <string name="grounded_review_per_100g">%1$d kcal / 100g</string>
+    <string name="grounded_review_per_100g">%1$d %2$s / 100g</string>
     <string name="grounded_review_subtitle">기록하기 전에 각 음식에 가장 적합한 데이터베이스 일치 항목과 1인분을 선택하세요.</string>
     <string name="grounded_review_title">일치 항목 확인</string>
     <string name="grounded_review_unit">단위</string>
@@ -965,17 +965,17 @@
     <string name="home_active_burn_over_a11y">활동 소비 %1$d, 평소 하루보다 %2$d 초과</string>
     <string name="home_active_burn_progress_a11y">활동 소비 %1$d, 평소 %2$d</string>
     <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
-    <string name="home_active_calories_label">활동 kcal</string>
-    <string name="home_budget_burned_today">오늘 소비: %1$d kcal</string>
+    <string name="home_active_calories_label">활동 %1$s</string>
+    <string name="home_budget_burned_today">오늘 소비: %1$d %2$s</string>
     <string name="home_calorie_active_estimated_a11y">활동 칼로리는 활동 수준에서 추정</string>
-    <string name="home_calorie_budget_a11y">예산 %1$d: 목표 %2$d + 활동 소비 %3$d</string>
+    <string name="home_calorie_budget_a11y">예산 %1$d %4$s: 목표 %2$d %4$s + 활동 소비 %3$d %4$s</string>
     <string name="home_calorie_budget_info">오늘의 예산 계산 방식</string>
     <string name="home_calorie_budget_sheet_title">오늘의 칼로리 예산</string>
     <string name="home_calorie_budget_source_manual">수동으로 기록한 칼로리</string>
     <string name="home_calorie_budget_source_measured">Health Connect의 활동 칼로리</string>
-    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d %4$s (14-day average is %3$d %4$s).</string>
     <string name="home_calorie_mode_static">고정 목표</string>
-    <string name="home_calorie_of_goal">%1$s 중</string>
+    <string name="home_calorie_of_goal">%1$s 중 %2$s</string>
     <string name="home_calories_active_burn">활동 소비 %1$d</string>
     <string name="home_calories_goal_plus_active">목표 %1$s + 활동 %2$s</string>
     <string name="home_calories_label">칼로리</string>
@@ -1015,7 +1015,7 @@
     <string name="note_char_count">%1$d / %2$d</string>
 
     <string name="import_add_to_log">기록에 추가</string>
-    <string name="import_add_to_log_many_format">%1$d개 기록에 추가 · %2$d kcal</string>
+    <string name="import_add_to_log_many_format">%1$d개 기록에 추가 · %2$d %3$s</string>
     <string name="import_body_metrics_empty">이 파일에는 가져올 체중 또는 신체 데이터 기록이 없어요.</string>
     <string name="import_body_metrics_malformed">파일을 읽지 못했어요: %1$s</string>
     <string name="import_body_metrics_success">체중 %1$d개, 체지방 %2$d개, 측정 %3$d개를 가져왔어요.</string>
@@ -1385,7 +1385,7 @@
     <string name="settings_picker_custom_placeholder">%1$s 단위 값</string>
     <string name="settings_picker_enter_custom">사용자 지정 값 입력…</string>
     <string name="settings_calorie_below_floor_title">안전 하한선 미만</string>
-    <string name="settings_calorie_below_floor_message">이 값은 추정 안정 시 대사량 또는 1,200kcal 미만입니다. 의료 전문가가 처방한 경우에만 계속하세요.</string>
+    <string name="settings_calorie_below_floor_message">이 값은 추정 안정 시 대사량 또는 %1$s 미만입니다. 의료 전문가가 처방한 경우에만 계속하세요.</string>
     <string name="settings_calorie_below_floor_continue">그래도 계속</string>
     <string name="settings_picker_use_wheel">휠 사용</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d IU</string>
@@ -1596,7 +1596,7 @@
     <string name="unit_tbsp">큰술</string>
     <string name="unit_tsp">작은술</string>
     <string name="vm_adaptive_on_message">적응형 목표가 켜져 있어요. 충분한 음식과 체중 데이터가 쌓이면 Chompass가 주 1회 확인해요.</string>
-    <string name="vm_adaptive_updated">최신 데이터로 %1$d kcal에 업데이트했어요.</string>
+    <string name="vm_adaptive_updated">최신 데이터로 %1$d kcal에 업데이트했어요. %2$s</string>
     <string name="vm_goals_recalculated">목표 재계산됨</string>
         <string name="recalc_sheet_new_targets">새 목표</string>
         <string name="recalc_sheet_macros_format">P %1$d · C %2$d · F %3$d</string>
@@ -1608,26 +1608,26 @@
         <string name="recalc_sheet_tier_measured">측정된 Health Connect 소비량에 기반</string>
         <string name="recalc_sheet_tier_formula">내장 공식</string>
         <string name="recalc_sheet_formula_baseline">공식 기준</string>
-        <string name="recalc_sheet_bmr_row">BMR(휴식 소비): %1$s kcal</string>
-        <string name="recalc_sheet_tdee_row">유지 × 활동 %1$s: %2$s kcal</string>
-        <string name="recalc_sheet_pace_row">목표 속도: %1$s kcal/일</string>
-        <string name="recalc_sheet_formula_target_row">공식 목표: %1$s kcal</string>
-        <string name="recalc_sheet_measured_row">측정된 Health Connect 소비량: %1$s kcal</string>
-    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
+        <string name="recalc_sheet_bmr_row">BMR(휴식 소비): %1$s %2$s</string>
+        <string name="recalc_sheet_tdee_row">유지 × 활동 %1$s: %2$s %3$s</string>
+        <string name="recalc_sheet_pace_row">목표 속도: %1$s %2$s/일</string>
+        <string name="recalc_sheet_formula_target_row">공식 목표: %1$s %2$s</string>
+        <string name="recalc_sheet_measured_row">측정된 Health Connect 소비량: %1$s %2$s</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d %4$s active (%3$d of last 28 days)</string>
         <string name="recalc_sheet_data_used">사용된 데이터</string>
         <string name="recalc_sheet_data_weighins">%2$d일 동안 %1$d회 측정</string>
         <string name="recalc_sheet_data_no_weighins">아직 측정 기록 없음</string>
-        <string name="recalc_sheet_data_intake">기록된 평균 섭취: %2$d일 동안 %1$s kcal</string>
+        <string name="recalc_sheet_data_intake">기록된 평균 섭취: %2$d일 동안 %1$s %3$s</string>
         <string name="recalc_sheet_data_no_intake">아직 음식 기록 없음</string>
-        <string name="recalc_sheet_data_implied">추정 유지 칼로리: ~%1$s kcal</string>
+        <string name="recalc_sheet_data_implied">추정 유지 칼로리: ~%1$s %2$s</string>
         <string name="recalc_sheet_data_implied_thin">추정 유지 칼로리: 미계산 — 데이터 부족</string>
         <string name="recalc_sheet_data_implied_below_floor">추정 유지 칼로리: 안전 하한 미만, 무시됨</string>
         <string name="recalc_sheet_data_implied_disagree">추정 유지 칼로리: 보류 — 기록과 체중 추세가 불일치</string>
         <string name="recalc_sheet_change">변화</string>
-        <string name="recalc_sheet_previous">이전: %1$s kcal</string>
-        <string name="recalc_sheet_new_with_delta">새 값: %1$s kcal (%2$s)</string>
+        <string name="recalc_sheet_previous">이전: %1$s %2$s</string>
+        <string name="recalc_sheet_new_with_delta">새 값: %1$s %3$s (%2$s)</string>
         <string name="recalc_sheet_reason">이유</string>
-    <string name="vm_goals_updated">%1$d kcal에 업데이트했어요.</string>
+    <string name="vm_goals_updated">%1$d kcal에 업데이트했어요. %2$s</string>
     <string name="vm_health_connect_needed">Health Connect 필요</string>
     <string name="vm_health_connect_needed_msg">Chompass가 Health Connect에서 활동 및 총 칼로리를 읽도록 허용한 후 에너지 소비를 다시 켜세요.</string>
     <string name="vm_not_enough_energy">에너지 데이터 부족</string>
@@ -1705,7 +1705,7 @@
     <string name="height_cm_format">%1$d cm</string>
     <string name="home_macro_chip_format">%1$s %2$dg</string>
     <string name="in_label_format">%1$d in</string>
-    <string name="kcal_value_format">%1$s kcal</string>
+    <string name="energy_value_format">%1$s %2$s</string>
     <string name="keto_carb_grams_format">%1$d g/day</string>
     <string name="kg_value_format">%1$.1f kg</string>
     <string name="lbs_value_format">%1$.1f lbs</string>
@@ -1731,6 +1731,7 @@
     <string name="unit_g">g</string>
     <string name="unit_in">in</string>
     <string name="unit_kcal">kcal</string>
+    <string name="unit_kj">kJ</string>
     <string name="unit_kg">kg</string>
     <string name="unit_lbs">lbs</string>
     <string name="unit_mcg">mcg</string>
@@ -1811,6 +1812,7 @@
     <string name="settings_group_trackers">트래커 및 알림</string>
     <string name="settings_group_trackers_summary">물, 니코틴, 카페인, 공복, 알림</string>
     <string name="settings_units">단위</string>
+    <string name="settings_energy_unit">에너지</string>
     <string name="settings_search_hint">설정 검색</string>
     <string name="settings_search_empty">일치하는 설정이 없어요. \"kg\", \"kcal\" 또는 \"ml\"로 검색해 보세요.</string>
     <string name="prompt_history_button">프롬프트 기록</string>
@@ -1921,9 +1923,9 @@
     <string name="day_type_clear_override">오늘의 재정의 지우기</string>
     <string name="day_type_edit_settings">데이 타입 편집</string>
     <string name="day_type_plan_off_hint">데이 타입이 꺼져 있어요. 날마다 다른 목표를 쓰려면 설정에서 켜세요.</string>
-    <string name="day_type_targets_summary">%1$s kcal · P %2$d · C %3$d · F %4$d</string>
-    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
-    <string name="day_type_tomorrow">내일: %1$s · %2$s kcal</string>
+    <string name="day_type_targets_summary">%1$s %5$s · P %2$d · C %3$d · F %4$d</string>
+    <string name="day_type_active_typical">≈ %1$d %2$s active typical</string>
+    <string name="day_type_tomorrow">내일: %1$s · %2$s %3$s</string>
     <string name="settings_day_types_title">데이 타입</string>
     <string name="settings_day_types_intro">날마다 다른 칼로리와 매크로 목표를 사용해요. 예를 들어 훈련일과 휴식일이에요.</string>
     <string name="settings_day_types_add">데이 타입 추가</string>
@@ -1934,7 +1936,7 @@
     <string name="settings_day_types_delete_scrub">일정에서 제거</string>
     <string name="settings_day_types_delete_used_message">일정에서 사용 중이에요. 해당 날짜를 어떻게 할지 선택하세요.</string>
     <string name="settings_day_types_delete_used_title">\"%1$s\"을(를) 삭제할까요?</string>
-    <string name="settings_day_types_floor_warning">이 목표는 칼로리 하한(%1$d kcal)에 있어요. 데이 타입으로는 강해요.</string>
+    <string name="settings_day_types_floor_warning">이 목표는 칼로리 하한(%1$d %2$s)에 있어요. 데이 타입으로는 강해요.</string>
     <string name="settings_day_types_follow_schedule">일정 따르기</string>
     <string name="settings_day_types_keto_paused">케토 모드에서 데이 타입 일시 정지됨</string>
     <string name="settings_day_types_mode_cycle">사이클</string>
@@ -1963,11 +1965,11 @@
     <string name="settings_day_types_summary_format">%1$d종 · %2$s</string>
     <string name="settings_day_types_weekday_default">기본 (%1$s)</string>
     <string name="recalc_sheet_day_types">데이 타입</string>
-    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s kcal</string>
-    <string name="recalc_sheet_daytype_value">%1$s: %2$s kcal</string>
+    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s %4$s</string>
+    <string name="recalc_sheet_daytype_value">%1$s: %2$s %3$s</string>
     <string name="recalc_sheet_daytype_macros_format">단백질 %1$d g · 탄수화물 %2$d g · 지방 %3$d g</string>
-    <string name="recalc_sheet_daytype_avg_change">주 평균: %1$s → %2$s kcal</string>
-    <string name="recalc_sheet_daytype_avg_value">주 평균: %1$s kcal</string>
+    <string name="recalc_sheet_daytype_avg_change">주 평균: %1$s → %2$s %3$s</string>
+    <string name="recalc_sheet_daytype_avg_value">주 평균: %1$s %2$s</string>
     <string name="settings_calc_sec_day_types">데이 타입</string>
     <string name="settings_calc_daytypes_resolve_name">데이 타입별 목표 결정</string>
     <string name="settings_calc_daytypes_resolve_used">데이 타입이 켜져 있으면 각 날짜의 칼로리와 매크로 목표를 단일 세트가 아니라 플랜에서 가져와요. 하루만의 수동 전환은 일정보다 우선하고, 일정은 기본값보다 우선하며, 정해지지 않은 것은 기본 목표로 돌아가요.</string>

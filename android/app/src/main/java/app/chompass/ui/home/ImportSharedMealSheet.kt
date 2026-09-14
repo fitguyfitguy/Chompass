@@ -2,7 +2,10 @@ package app.chompass.ui.home
 
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.ChompassPinnedFooterSheet
-import app.chompass.ui.components.kcalText
+import app.chompass.ui.components.energyText
+import app.chompass.models.EnergyFormat
+import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.navigation.LocalEnergyUnit
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
@@ -82,7 +85,7 @@ fun ImportSharedMealSheet(
                             )
                         }
                         Text(
-                            kcalText(meal.calories),
+                            energyText(meal.calories),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = AppColors.Calorie,
@@ -115,7 +118,7 @@ fun ImportSharedMealSheet(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        if (meals.size == 1) stringResource(R.string.import_add_to_log) else stringResource(R.string.import_add_to_log_many_format, meals.size, totalCalories),
+                        if (meals.size == 1) stringResource(R.string.import_add_to_log) else stringResource(R.string.import_add_to_log_many_format, meals.size, EnergyFormat.quantity(totalCalories, LocalEnergyUnit.current), energyUnitLabel()),
                         color = AppColors.onCalorieGradient,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,

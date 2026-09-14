@@ -31,10 +31,13 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.LocaleFormat
 import app.chompass.models.MacroDayProfile
+import app.chompass.models.EnergyFormat
 import app.chompass.models.MacroPlan
 import app.chompass.models.MacroPlanResolver
 import app.chompass.models.UserProfile
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import java.time.LocalDate
@@ -141,7 +144,8 @@ fun DayTypeSwitchSheet(
                                 R.string.day_type_tomorrow,
                                 tomorrow.profileName
                                     ?: stringResource(R.string.day_type_base_goals),
-                                LocaleFormat.integer(tomorrow.targets.calories),
+                                LocaleFormat.integer(EnergyFormat.quantity(tomorrow.targets.calories, LocalEnergyUnit.current)),
+                                energyUnitLabel(),
                             ),
                             fontSize = 13.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
@@ -200,17 +204,18 @@ private fun DayTypeRow(
             Text(
                 stringResource(
                     R.string.day_type_targets_summary,
-                    LocaleFormat.integer(profile.calories),
+                    LocaleFormat.integer(EnergyFormat.quantity(profile.calories, LocalEnergyUnit.current)),
                     profile.proteinG,
                     profile.carbsG,
                     profile.fatG,
+                    energyUnitLabel(),
                 ),
                 fontSize = 13.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             )
             if (typicalActive != null && typicalActive > 0) {
                 Text(
-                    stringResource(R.string.day_type_active_typical, typicalActive),
+                    stringResource(R.string.day_type_active_typical, EnergyFormat.quantity(typicalActive, LocalEnergyUnit.current), energyUnitLabel()),
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 )

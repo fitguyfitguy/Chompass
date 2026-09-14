@@ -10,7 +10,7 @@
     <string name="widget_calories">Calorieën</string>
     <string name="widget_carbs">Koolhydraten</string>
     <string name="widget_fat">Vet</string>
-    <string name="widget_kcal_left_format">%1$d kcal over</string>
+    <string name="widget_kcal_left_format">%1$d %2$s over</string>
     <string name="widget_g_left_format">%1$dg over</string>
     <string name="widget_protein_g">eiwit g</string>
 
@@ -169,7 +169,7 @@
     <string name="onboarding_pace_caption_slow">Mild en duurzaam. Geweldig voor langetermijngewoonten.</string>
     <string name="onboarding_pace_caption_fast">Agressief maar haalbaar. Vereist sterke discipline.</string>
     <string name="onboarding_pace_caption_recommended">Het meest gebalanceerde tempo, motiverend en duurzaam.</string>
-    <string name="onboarding_pace_capped">Dit tempo is bij jouw postuur niet mogelijk zonder onder je geschatte rustverbruik te zakken. Je doel wordt %1$d kcal.</string>
+    <string name="onboarding_pace_capped">Dit tempo is bij jouw postuur niet mogelijk zonder onder je geschatte rustverbruik te zakken. Je doel wordt %1$d %2$s.</string>
 
     <string name="onboarding_notifications_title">Word herinnerd om\nmaaltijden te loggen</string>
     <string name="onboarding_notifications_subtitle">Krijg vriendelijke herinneringen op maaltijden\nzodat je nooit vergeet bij te houden.</string>
@@ -214,7 +214,7 @@
     <string name="onboarding_plan_subtitle">Tik op een waarde om te bewerken</string>
     <string name="onboarding_plan_daily_calories">dagelijkse calorieën</string>
     <string name="onboarding_plan_doctor_title">Raadpleeg een arts</string>
-    <string name="onboarding_plan_doctor_message">De minimale aanbeveling is 1.200 calorieën per dag.</string>
+    <string name="onboarding_plan_doctor_message">De minimale aanbeveling is %1$sën per dag.</string>
     <string name="onboarding_minor_title">Alleen formules voor volwassenen</string>
     <string name="onboarding_minor_message">Deze app gebruikt calorieformules voor volwassenen. Ben je jonger dan 18? Vraag dan eerst een zorgverlener voordat je deze doelen gebruikt.</string>
     <string name="onboarding_minor_continue">Ik begrijp het</string>
@@ -253,7 +253,7 @@
     <string name="add_food_add_photo">Foto toevoegen</string>
     <string name="progressive_meal_add_next">Volgende ingrediënt toevoegen</string>
     <string name="text_input_title">Beschrijf je maaltijd</string>
-    <string name="home_kcal_of_format">van %1$s kcal</string>
+    <string name="home_kcal_of_format">van %1$s %2$s</string>
     <string name="home_kcal_left_format">%1$s over</string>
     <string name="home_view_more">Meer bekijken</string>
     <string name="home_todays_food">Eten van vandaag</string>
@@ -400,7 +400,7 @@
     <string name="progress_history_count_format">%1$d invoeren · tik om te bekijken of verwijderen</string>
 
     <string name="progress_calories_section">Calorieën</string>
-    <string name="progress_avg_format">Gem.: %1$d kcal</string>
+    <string name="progress_avg_format">Gem.: %1$d %2$s</string>
     <string name="progress_no_food">Nog geen eten geregistreerd</string>
 
     <string name="progress_macro_averages">Macro-gemiddelden</string>
@@ -553,8 +553,8 @@
     <string name="notif_streak_text">Houd je streak gaande. Log iets van vandaag.</string>
     <string name="notif_summary_title">De samenvatting van vandaag is klaar</string>
     <string name="notif_summary_text">Tik om te zien hoe de macro\'s van vandaag uitkwamen.</string>
-    <string name="notif_summary_deficit">%1$s kcal tekort</string>
-    <string name="notif_summary_surplus">%1$s kcal overschot</string>
+    <string name="notif_summary_deficit">%1$s %2$s tekort</string>
+    <string name="notif_summary_surplus">%1$s %2$s overschot</string>
     <string name="notif_summary_on_target">In balans</string>
     <string name="notif_summary_eaten_burned">Gegeten %1$s · verbrand %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
@@ -640,7 +640,7 @@
     <string name="manual_active_name_hint">Activiteitsnaam (optioneel)</string>
     <string name="manual_active_save">Aan budget toevoegen</string>
     <string name="manual_active_edit_title">Actieve verbranding bewerken</string>
-    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="manual_active_history_total">%1$s · %2$d %3$s</string>
     <string name="cd_delete_manual_active">Actieve verbranding verwijderen</string>
     <string name="manual_active_subtitle">Voeg verbrande calorieën van een wandeling, rit of workout toe. Ze vergroten het budget van vandaag wanneer „Actieve verbranding toevoegen“ aan staat.</string>
     <string name="manual_active_title">Actieve verbranding loggen</string>
@@ -726,7 +726,7 @@
     <string name="analysis_queue_day_back">Vorige dag</string>
     <string name="analysis_queue_day_forward">Volgende dag</string>
     <string name="analysis_queue_failed">Mislukt</string>
-    <string name="analysis_queue_result">%1$s · %2$d kcal</string>
+    <string name="analysis_queue_result">%1$s · %2$d %3$s</string>
     <string name="analysis_queue_just_now">Zojuist</string>
     <string name="analysis_queue_minutes_ago">%1$d min geleden</string>
     <string name="analysis_queue_hours_ago">%1$d u geleden</string>
@@ -736,7 +736,7 @@
     <string name="action_show">Toon</string>
     <string name="action_undo">Herstel</string>
     <string name="action_what_if">Wat als?</string>
-    <string name="add_food_relog_kcal">%1$d kcal</string>
+    <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="ai_error_coach_on_device">Coach is nog niet beschikbaar met de on-device provider. Schakel over naar een cloudprovider in Instellingen → AI-provider.</string>
     <string name="ai_error_coach_round_limit">Coach kon niet antwoorden. Probeer je vraag anders te formuleren.</string>
     <string name="ai_error_disabled">AI-functies zijn uitgeschakeld in Instellingen → AI en spraak.</string>
@@ -911,7 +911,7 @@
     <string name="grounded_on_device_unavailable">Gefundeerde invoer vereist een cloud-AI-provider. On-device modellen gebruiken Foto/Notitie.</string>
     <string name="grounded_review_continue">Doorgaan naar controle</string>
     <string name="grounded_review_grams">Gram</string>
-    <string name="grounded_review_per_100g">%1$d kcal / 100 g</string>
+    <string name="grounded_review_per_100g">%1$d %2$s / 100 g</string>
     <string name="grounded_review_subtitle">Kies voor elk voedingsmiddel de beste database-match en portie voordat je logt.</string>
     <string name="grounded_review_title">Matches bevestigen</string>
     <string name="grounded_review_unit">Eenheid</string>
@@ -937,17 +937,17 @@
     <string name="home_active_burn_over_a11y">Actief verbruik %1$d, %2$d boven een normale dag</string>
     <string name="home_active_burn_progress_a11y">Actief verbruik %1$d, normaal %2$d</string>
     <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
-    <string name="home_active_calories_label">Actieve kcal</string>
-    <string name="home_budget_burned_today">Vandaag verbrand: %1$d kcal</string>
+    <string name="home_active_calories_label">Actieve %1$s</string>
+    <string name="home_budget_burned_today">Vandaag verbrand: %1$d %2$s</string>
     <string name="home_calorie_active_estimated_a11y">Actieve calorieën geschat op basis van je activiteitsniveau</string>
-    <string name="home_calorie_budget_a11y">Budget %1$d: doel %2$d plus %3$d actief verbrand</string>
+    <string name="home_calorie_budget_a11y">Budget %1$d %4$s: doel %2$d %4$s plus %3$d %4$s actief verbrand</string>
     <string name="home_calorie_budget_info">Hoe het budget van vandaag wordt berekend</string>
     <string name="home_calorie_budget_sheet_title">Caloriebudget van vandaag</string>
     <string name="home_calorie_budget_source_manual">Calorieën die je handmatig hebt gelogd</string>
     <string name="home_calorie_budget_source_measured">Actieve calorieën uit Health Connect</string>
-    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d %4$s (14-day average is %3$d %4$s).</string>
     <string name="home_calorie_mode_static">Vast doel</string>
-    <string name="home_calorie_of_goal">van %1$s</string>
+    <string name="home_calorie_of_goal">van %1$s %2$s</string>
     <string name="home_calories_active_burn">%1$d actief verbrand</string>
     <string name="home_calories_goal_plus_active">Doel %1$s + %2$s actief</string>
     <string name="home_calories_label">CALORIEËN</string>
@@ -988,7 +988,7 @@
     <string name="note_char_count">%1$d / %2$d</string>
 
     <string name="import_add_to_log">Toevoegen aan logboek</string>
-    <string name="import_add_to_log_many_format">%1$d toevoegen aan logboek · %2$d kcal</string>
+    <string name="import_add_to_log_many_format">%1$d toevoegen aan logboek · %2$d %3$s</string>
     <string name="import_body_metrics_empty">Dit bestand bevat geen gewichts- of lichaamsgegevens om te importeren.</string>
     <string name="import_body_metrics_malformed">Bestand lezen mislukt: %1$s</string>
     <string name="import_body_metrics_success">%1$d gewichts-, %2$d vet- en %3$d meetitems geïmporteerd.</string>
@@ -1367,7 +1367,7 @@
     <string name="settings_picker_custom_placeholder">Waarde in %1$s</string>
     <string name="settings_picker_enter_custom">Eigen waarde invoeren…</string>
     <string name="settings_calorie_below_floor_title">Onder de veilige ondergrens</string>
-    <string name="settings_calorie_below_floor_message">Dit ligt onder je geschatte rustverbruik of onder 1.200 kcal. Ga alleen verder als een zorgverlener het heeft voorgeschreven.</string>
+    <string name="settings_calorie_below_floor_message">Dit ligt onder je geschatte rustverbruik of onder %1$s. Ga alleen verder als een zorgverlener het heeft voorgeschreven.</string>
     <string name="settings_calorie_below_floor_continue">Toch doorgaan</string>
     <string name="settings_picker_use_wheel">Wiel gebruiken</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d IE</string>
@@ -1580,7 +1580,7 @@
     <string name="unit_tbsp">el</string>
     <string name="unit_tsp">tl</string>
     <string name="vm_adaptive_on_message">Adaptieve doelen staan aan. Chompass controleert één keer per week zodra er genoeg voedings- en gewichtsgegevens zijn.</string>
-    <string name="vm_adaptive_updated">Bijgewerkt naar %1$d kcal op basis van je laatste gegevens.</string>
+    <string name="vm_adaptive_updated">Bijgewerkt naar %1$d %2$s op basis van je laatste gegevens.</string>
     <string name="vm_goals_recalculated">Doelen herberekend</string>
         <string name="recalc_sheet_new_targets">Nieuwe doelen</string>
         <string name="recalc_sheet_macros_format">P %1$d · K %2$d · V %3$d</string>
@@ -1592,26 +1592,26 @@
         <string name="recalc_sheet_tier_measured">Verankerd aan je gemeten Health Connect-verbruik</string>
         <string name="recalc_sheet_tier_formula">Ingebouwde formules</string>
         <string name="recalc_sheet_formula_baseline">Formulebasis</string>
-        <string name="recalc_sheet_bmr_row">BMR (rustverbruik): %1$s kcal</string>
-        <string name="recalc_sheet_tdee_row">Onderhoud × activiteit %1$s: %2$s kcal</string>
-        <string name="recalc_sheet_pace_row">Doeltempo: %1$s kcal/dag</string>
-        <string name="recalc_sheet_formula_target_row">Formuledoel: %1$s kcal</string>
-        <string name="recalc_sheet_measured_row">Gemeten Health Connect-verbruik: %1$s kcal</string>
-    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
+        <string name="recalc_sheet_bmr_row">BMR (rustverbruik): %1$s %2$s</string>
+        <string name="recalc_sheet_tdee_row">Onderhoud × activiteit %1$s: %2$s %3$s</string>
+        <string name="recalc_sheet_pace_row">Doeltempo: %1$s %2$s/dag</string>
+        <string name="recalc_sheet_formula_target_row">Formuledoel: %1$s %2$s</string>
+        <string name="recalc_sheet_measured_row">Gemeten Health Connect-verbruik: %1$s %2$s</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d %4$s active (%3$d of last 28 days)</string>
         <string name="recalc_sheet_data_used">Gebruikte gegevens</string>
         <string name="recalc_sheet_data_weighins">%1$d wegingen over %2$d dagen</string>
         <string name="recalc_sheet_data_no_weighins">Nog geen wegingen geregistreerd</string>
-        <string name="recalc_sheet_data_intake">Gemiddelde geregistreerde inname: %1$s kcal over %2$d geregistreerde dagen</string>
+        <string name="recalc_sheet_data_intake">Gemiddelde geregistreerde inname: %1$s %3$s over %2$d geregistreerde dagen</string>
         <string name="recalc_sheet_data_no_intake">Nog geen eten geregistreerd</string>
-        <string name="recalc_sheet_data_implied">Impliciet onderhoud: ~%1$s kcal</string>
+        <string name="recalc_sheet_data_implied">Impliciet onderhoud: ~%1$s %2$s</string>
         <string name="recalc_sheet_data_implied_thin">Impliciet onderhoud: niet berekend — te weinig gegevens</string>
         <string name="recalc_sheet_data_implied_below_floor">Impliciet onderhoud: onder de veiligheidsgrens, genegeerd</string>
         <string name="recalc_sheet_data_implied_disagree">Impliciet onderhoud: achtergehouden — logboek en gewichtstrend spreken elkaar tegen</string>
         <string name="recalc_sheet_change">Verandering</string>
-        <string name="recalc_sheet_previous">Vorige: %1$s kcal</string>
-        <string name="recalc_sheet_new_with_delta">Nieuw: %1$s kcal (%2$s)</string>
+        <string name="recalc_sheet_previous">Vorige: %1$s %2$s</string>
+        <string name="recalc_sheet_new_with_delta">Nieuw: %1$s %3$s (%2$s)</string>
         <string name="recalc_sheet_reason">Waarom</string>
-    <string name="vm_goals_updated">Bijgewerkt naar %1$d kcal.</string>
+    <string name="vm_goals_updated">Bijgewerkt naar %1$d %2$s.</string>
     <string name="vm_health_connect_needed">Health Connect vereist</string>
     <string name="vm_health_connect_needed_msg">Sta Chompass toe je actieve en totale calorieën in Health Connect te lezen en zet Energieverbruik daarna weer aan.</string>
     <string name="vm_not_enough_energy">Niet genoeg energiegegevens</string>
@@ -1691,7 +1691,7 @@
     <string name="height_cm_format">%1$d cm</string>
     <string name="home_macro_chip_format">%1$s %2$dg</string>
     <string name="in_label_format">%1$d in</string>
-    <string name="kcal_value_format">%1$s kcal</string>
+    <string name="energy_value_format">%1$s %2$s</string>
     <string name="keto_carb_grams_format">%1$d g/day</string>
     <string name="kg_value_format">%1$.1f kg</string>
     <string name="lbs_value_format">%1$.1f lbs</string>
@@ -1717,6 +1717,7 @@
     <string name="unit_g">g</string>
     <string name="unit_in">in</string>
     <string name="unit_kcal">kcal</string>
+    <string name="unit_kj">kJ</string>
     <string name="unit_kg">kg</string>
     <string name="unit_lbs">lbs</string>
     <string name="unit_mcg">mcg</string>
@@ -1811,6 +1812,7 @@
     <string name="settings_group_trackers">Trackers en herinneringen</string>
     <string name="settings_group_trackers_summary">Water, nicotine, cafeïne, vasten, herinneringen</string>
     <string name="settings_units">Eenheden</string>
+    <string name="settings_energy_unit">Energie</string>
     <string name="settings_search_hint">Instellingen zoeken</string>
     <string name="settings_search_empty">Geen instellingen gevonden. Probeer \"kg\", \"kcal\" of \"ml\".</string>
     <string name="prompt_history_button">Promptgeschiedenis</string>
@@ -1922,9 +1924,9 @@
     <string name="day_type_clear_override">Uitzondering van vandaag wissen</string>
     <string name="day_type_edit_settings">Dagtypes bewerken</string>
     <string name="day_type_plan_off_hint">Dagtypes staan uit. Zet ze aan in de instellingen om per dag andere doelen te gebruiken.</string>
-    <string name="day_type_targets_summary">%1$s kcal · %2$dP %3$dC %4$dF</string>
-    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
-    <string name="day_type_tomorrow">Morgen: %1$s · %2$s kcal</string>
+    <string name="day_type_targets_summary">%1$s %5$s · %2$dP %3$dC %4$dF</string>
+    <string name="day_type_active_typical">≈ %1$d %2$s active typical</string>
+    <string name="day_type_tomorrow">Morgen: %1$s · %2$s %3$s</string>
     <string name="settings_day_types_title">Dagtypes</string>
     <string name="settings_day_types_intro">Gebruik op verschillende dagen andere calorie- en macrodoelen, bijvoorbeeld trainings- en rustdagen.</string>
     <string name="settings_day_types_add">Dagtype toevoegen</string>
@@ -1935,7 +1937,7 @@
     <string name="settings_day_types_delete_scrub">Uit schema halen</string>
     <string name="settings_day_types_delete_used_message">Het staat in je schema. Kies wat er met die dagen gebeurt.</string>
     <string name="settings_day_types_delete_used_title">\"%1$s\" verwijderen?</string>
-    <string name="settings_day_types_floor_warning">Deze doelstelling staat op je calorievloer (%1$d kcal). Agressief voor een dagtype.</string>
+    <string name="settings_day_types_floor_warning">Deze doelstelling staat op je calorievloer (%1$d %2$s). Agressief voor een dagtype.</string>
     <string name="settings_day_types_follow_schedule">Schema volgen</string>
     <string name="settings_day_types_keto_paused">Dagtypes gepauzeerd in ketomodus</string>
     <string name="settings_day_types_mode_cycle">Cyclus</string>
@@ -1964,11 +1966,11 @@
     <string name="settings_day_types_summary_format">%1$d types · %2$s</string>
     <string name="settings_day_types_weekday_default">Standaard (%1$s)</string>
     <string name="recalc_sheet_day_types">Dagtypes</string>
-    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s kcal</string>
-    <string name="recalc_sheet_daytype_value">%1$s: %2$s kcal</string>
+    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s %4$s</string>
+    <string name="recalc_sheet_daytype_value">%1$s: %2$s %3$s</string>
     <string name="recalc_sheet_daytype_macros_format">%1$d g eiwit · %2$d g koolhydraten · %3$d g vet</string>
-    <string name="recalc_sheet_daytype_avg_change">Weekgemiddelde: %1$s → %2$s kcal</string>
-    <string name="recalc_sheet_daytype_avg_value">Weekgemiddelde: %1$s kcal</string>
+    <string name="recalc_sheet_daytype_avg_change">Weekgemiddelde: %1$s → %2$s %3$s</string>
+    <string name="recalc_sheet_daytype_avg_value">Weekgemiddelde: %1$s %2$s</string>
     <string name="settings_calc_sec_day_types">Dagtypes</string>
     <string name="settings_calc_daytypes_resolve_name">Doelresolutie per dagtype</string>
     <string name="settings_calc_daytypes_resolve_used">Als dagtypes aanstaan, haalt elke dag zijn calorie- en macrodoelen uit het plan in plaats van uit de enkele doelset. Een handmatige wissel voor één dag wint van het schema, het schema wint van de standaard, en wat niet oplost valt terug op je basisdoelen.</string>

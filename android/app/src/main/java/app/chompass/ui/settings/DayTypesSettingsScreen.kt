@@ -39,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import app.chompass.models.EnergyFormat
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.LocaleFormat
@@ -48,6 +49,8 @@ import app.chompass.models.MacroPlanEdit
 import app.chompass.models.MacroPlanMode
 import app.chompass.models.MacroPlanResolver
 import app.chompass.models.UserProfile
+import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.models.GoalJournal
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
@@ -329,10 +332,11 @@ private fun DayTypeListRow(
             Text(
                 stringResource(
                     R.string.day_type_targets_summary,
-                    LocaleFormat.integer(profile.calories),
+                    LocaleFormat.integer(EnergyFormat.quantity(profile.calories, LocalEnergyUnit.current)),
                     profile.proteinG,
                     profile.carbsG,
                     profile.fatG,
+                    energyUnitLabel(),
                 ),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
@@ -525,7 +529,7 @@ private fun DayTypesOverridesCard(
                     )
                     resolved?.let {
                         Text(
-                            "${LocaleFormat.integer(it.targets.calories)} ${stringResource(R.string.unit_kcal)}",
+                            "${LocaleFormat.integer(EnergyFormat.quantity(it.targets.calories, LocalEnergyUnit.current))} ${energyUnitLabel()}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                         )

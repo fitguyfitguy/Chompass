@@ -7,6 +7,7 @@ import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
 import { maybeShowPostOnboardingInstallSheet } from "../lib/install-prompt.js";
 import { openInput, openConfirm } from "../lib/ui/dialog.js";
 import { t } from "../lib/i18n/index.js";
+import { energyQuantity, energyToKcal, energyUnitFromPrefs, energyUnitLabel, formatEnergy } from "../lib/energy-format.js";
 import { escapeAttr } from "../lib/ui/html.js";
 import { todayIso } from "../lib/date.js";
 
@@ -101,6 +102,8 @@ export class OnboardingView extends HTMLElement {
     super();
     this.step = 0;
     this.buildPct = 0;
+    /** Display energy unit (Codeberg #100); hydrated from prefs on connect. */
+    this._energyUnit = "kcal";
     /** @type {ReturnType<typeof setInterval>|null} */
     this._buildTimer = null;
     this.aiDraft = {
@@ -138,9 +141,11 @@ export class OnboardingView extends HTMLElement {
   disconnectedCallback() {
     if (this._buildTimer) clearInterval(this._buildTimer);
   }
-
   connectedCallback() {
-    this.render();
+    void prefs.load().then((p) => {
+      this._energyUnit = energyUnitFromPrefs(p);
+      this.render();
+    });
   }
 
   /** Progress fraction excluding welcome/building/done chrome steps for the bar. */
@@ -551,8 +556,8 @@ export class OnboardingView extends HTMLElement {
       return `
         <div class="onboarding-plan-ready">
           <button type="button" class="onboarding-plan-ready__cals-btn" data-edit-plan="customCalories" aria-label="${escapeAttr(t("onboarding.plan.edit_calories_a11y"))}">
-            <div class="onboarding-plan-ready__cals">${Math.round(targets.calories)}</div>
-            <p class="onboarding-plan-ready__unit">${t("onboarding.plan.kcal_day")}${pinned("customCalories") ? customMark : ""}</p>
+            <div class="onboarding-plan-ready__cals">${formatNumber(energyQuantity(Math.round(targets.calories), this._energyUnit))}</div>
+            <p class="onboarding-plan-ready__unit">${t("onboarding.plan.kcal_day", { unit: energyUnitLabel(this._energyUnit) })}${pinned("customCalories") ? customMark : ""}</p>
           </button>
           <div class="onboarding-plan-macros">
             <button type="button" class="onboarding-plan-macro onboarding-plan-macro--protein" data-edit-plan="customProtein">
@@ -568,8 +573,7 @@ export class OnboardingView extends HTMLElement {
               <span class="onboarding-plan-macro__label">${t("onboarding.plan.fat")}${pinned("customFat") ? " ·" : ""}</span>
             </button>
           </div>
-          <p style="color:var(--muted);margin:0;font-size:0.85rem;">${t("onboarding.plan.customize_hint")}</p>
-          ${planSafetyNote(this.draft, targets)}
+          ${planSafetyNote(this.draft, targets, this._energyUnit)}
           ${disclaimerCardsHtml()}
         </div>`;
     }
@@ -748,7 +752,7 @@ export class OnboardingView extends HTMLElement {
     const targets = dailyTargets(this.draft);
     /** @type {Record<string, {label: string, unit: string, current: number}>} */
     const meta = {
-      customCalories: { label: t("onboarding.plan.edit_calories_a11y"), unit: "kcal", current: targets.calories },
+      customCalories: { label: t("onboarding.plan.edit_calories_a11y"), unit: energyUnitLabel(this._energyUnit), current: targets.calories },
       customProtein: { label: t("onboarding.plan.protein"), unit: "g", current: targets.proteinG },
       customCarbs: { label: t("onboarding.plan.carbs"), unit: "g", current: targets.carbsG },
       customFat: { label: t("onboarding.plan.fat"), unit: "g", current: targets.fatG },
@@ -758,7 +762,7 @@ export class OnboardingView extends HTMLElement {
     const raw = await openInput({
       title: m.label,
       label: m.label,
-      value: String(Math.round(m.current)),
+      value: String(Math.round(energyQuantity(m.current, field === "customCalories" ? this._energyUnit : "kcal"))),
       type: "number",
       inputMode: "decimal",
       unit: m.unit,
@@ -770,14 +774,15 @@ export class OnboardingView extends HTMLElement {
     if (!trimmed) {
       this.draft[field] = null;
     } else {
-      const n = Number(trimmed);
+      let n = Number(trimmed);
       if (!Number.isFinite(n) || n < 0) return;
       if (field === "customCalories") {
+        n = energyToKcal(n, this._energyUnit);
         const floor = safetyFloorKcal(this.draft);
         if (n < floor) {
           const ok = await openConfirm({
             title: "Below the safety floor",
-            message: "This is below your estimated resting burn or 1,200 kcal. Only continue if a clinician prescribed it.",
+            message: `This is below your estimated resting burn or ${formatEnergy(1200, this._energyUnit)}. Only continue if a clinician prescribed it.`,
             confirmLabel: "Continue anyway",
           });
           if (!ok) return;
@@ -837,14 +842,14 @@ function choiceGrid(field, options, selected) {
 }
 
 /** @param {import('../lib/chompass-core/models.js').UserProfile} draft */
-function planSafetyNote(draft, targets) {
+function planSafetyNote(draft, targets, unit = "kcal") {
   const formulaDraft = { ...draft, customCalories: null };
   const raw = Math.trunc(tdee(formulaDraft)) + calorieAdjustment(formulaDraft);
   if (raw < targets.calories) {
-    return `<p style="color:var(--warning, #b45309);margin:0.6rem 0 0;font-size:0.85rem;">This pace isn't possible at your size without going below your estimated resting calories. Your target will be ${targets.calories} kcal.</p>`;
+    return `<p style="color:var(--warning, #b45309);margin:0.6rem 0 0;font-size:0.85rem;">This pace isn't possible at your size without going below your estimated resting calories. Your target will be ${formatEnergy(targets.calories, unit)}.</p>`;
   }
   if (targets.calories < safetyFloorKcal(draft)) {
-    return `<p style="color:var(--warning, #b45309);margin:0.6rem 0 0;font-size:0.85rem;">Please consult with a doctor. This is below your estimated resting calories or 1,200 kcal a day.</p>`;
+    return `<p style="color:var(--warning, #b45309);margin:0.6rem 0 0;font-size:0.85rem;">Please consult with a doctor. This is below your estimated resting calories or ${formatEnergy(1200, unit)} a day.</p>`;
   }
   return "";
 }

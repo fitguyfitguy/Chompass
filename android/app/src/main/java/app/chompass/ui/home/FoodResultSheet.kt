@@ -74,6 +74,7 @@ import app.chompass.models.microsCompositionSignature
 import app.chompass.models.microsStaleFor
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.LocaleFormat
+import app.chompass.models.EnergyFormat
 import app.chompass.models.MealType
 import app.chompass.models.CurrentMealCatalog
 import androidx.compose.ui.platform.LocalContext
@@ -100,7 +101,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.asImageBitmap
 import java.time.Instant
 import app.chompass.ui.components.rememberDecodedBitmap
-import app.chompass.ui.components.kcalText
+import app.chompass.ui.components.energyText
+import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.components.macroGramsText
 import app.chompass.ui.components.FudGlassTextField
 import androidx.compose.foundation.layout.heightIn
@@ -849,14 +852,15 @@ fun FoodResultSheet(
             }
             item {
                 SheetPillCard {
+                    val unit = LocalEnergyUnit.current
                     ReviewNutritionValueRow(
                         label = stringResource(R.string.nutrition_label_calories),
-                        displayValue = "${math.scaledInt(editableCalories)}",
-                        editValue = "${math.scaledInt(editableCalories)}",
-                        unit = stringResource(R.string.unit_kcal),
+                        displayValue = "${math.scaledInt(EnergyFormat.quantity(editableCalories, unit))}",
+                        editValue = "${math.scaledInt(EnergyFormat.quantity(editableCalories, unit))}",
+                        unit = energyUnitLabel(),
                         unlocked = nutritionUnlocked && analysisReady,
                         accentColor = AppColors.Calorie,
-                        onEdit = { editableCalories = math.baseDoubleFromText(it).roundToInt() }
+                        onEdit = { editableCalories = EnergyFormat.toKcal(math.baseDoubleFromText(it).roundToInt(), unit) }
                     )
                     SheetHairline()
                     ReviewNutritionValueRow(
@@ -1231,7 +1235,7 @@ internal fun ReviewNutritionValueRow(
     val valueColor = accentColor ?: MaterialTheme.colorScheme.onSurface
     val currentValue = draft.replace(',', '.').toDoubleOrNull() ?: 0.0
     // Use split integer wheel for calories (kcal) — faster for 0-5000 range
-    val isCalories = unit == stringResource(R.string.unit_kcal) || label.contains("Calorie", ignoreCase = true)
+    val isCalories = unit == stringResource(R.string.unit_kcal) || unit == stringResource(R.string.unit_kj) || label.contains("Calorie", ignoreCase = true)
 
     Column(Modifier.fillMaxWidth()) {
         // Summary row - tap to expand/collapse when unlocked
@@ -1416,12 +1420,12 @@ internal fun WhatIfMealImpactDialog(
                 SheetPillCard {
                     WhatIfImpactRow(
                         label = stringResource(R.string.nutrition_label_calories),
-                        added = "+${kcalText(entry.calories)}",
+                        added = "+${energyText(entry.calories)}",
                         total = resolved?.let {
-                            "${LocaleFormat.integer(after.calories)} / ${LocaleFormat.integer(it.targets.calories)} ${stringResource(R.string.unit_kcal)}"
+                            "${LocaleFormat.integer(EnergyFormat.quantity(after.calories, LocalEnergyUnit.current))} / ${LocaleFormat.integer(EnergyFormat.quantity(it.targets.calories, LocalEnergyUnit.current))} ${energyUnitLabel()}"
                         } ?: profile?.let {
-                            "${LocaleFormat.integer(after.calories)} / ${LocaleFormat.integer(it.effectiveCalories)} ${stringResource(R.string.unit_kcal)}"
-                        } ?: kcalText(after.calories),
+                            "${LocaleFormat.integer(EnergyFormat.quantity(after.calories, LocalEnergyUnit.current))} / ${LocaleFormat.integer(EnergyFormat.quantity(it.effectiveCalories, LocalEnergyUnit.current))} ${energyUnitLabel()}"
+                        } ?: energyText(after.calories),
                         accentColor = AppColors.Calorie
                     )
                     SheetHairline()

@@ -10,7 +10,7 @@
     <string name="widget_calories">السعرات الحرارية</string>
     <string name="widget_carbs">الكربوهيدرات</string>
     <string name="widget_fat">الدهون</string>
-    <string name="widget_kcal_left_format">%1$d kcal متبقية</string>
+    <string name="widget_kcal_left_format">%1$d %2$s متبقية</string>
     <string name="widget_g_left_format">%1$dg متبقية</string>
     <string name="widget_protein_g">بروتين g</string>
 
@@ -180,7 +180,7 @@
     <string name="onboarding_pace_caption_slow">لطيف ومستدام. رائع للعادات طويلة المدى.</string>
     <string name="onboarding_pace_caption_fast">حازم لكنه قابل للتنفيذ. يتطلب انضباطًا قويًا.</string>
     <string name="onboarding_pace_caption_recommended">الوتيرة الأكثر توازنًا، محفّزة ومستدامة.</string>
-    <string name="onboarding_pace_capped">هذا المعدل غير ممكن لجسمك دون النزول تحت معدل الأيض أثناء الراحة المقدر. سيكون هدفك %1$d سعرة حرارية.</string>
+    <string name="onboarding_pace_capped">هذا المعدل غير ممكن لجسمك دون النزول تحت معدل الأيض أثناء الراحة المقدر. سيكون هدفك %1$d سعرة حرارية. %2$s</string>
 
     <string name="onboarding_notifications_title">احصل على تذكيرات\nلتسجيل الوجبات</string>
     <string name="onboarding_notifications_subtitle">احصل على تذكيرات لطيفة في أوقات الوجبات\nحتى لا تنسى التتبع أبدًا.</string>
@@ -225,7 +225,7 @@
     <string name="onboarding_plan_subtitle">اضغط على أي قيمة لتعديلها</string>
     <string name="onboarding_plan_daily_calories">السعرات اليومية</string>
     <string name="onboarding_plan_doctor_title">يرجى استشارة طبيب</string>
-    <string name="onboarding_plan_doctor_message">الحد الأدنى الموصى به هو 1,200 سعرة حرارية يوميًا.</string>
+    <string name="onboarding_plan_doctor_message">الحد الأدنى الموصى به هو %1$s حرارية يوميًا.</string>
     <string name="onboarding_minor_title">صيغ للبالغين فقط</string>
     <string name="onboarding_minor_message">يستخدم هذا التطبيق صيغ سعرات حرارية للبالغين. إذا كان عمرك أقل من 18 عامًا، اسأل مختصًا صحيًا قبل استخدام هذه الأهداف.</string>
     <string name="onboarding_minor_continue">أفهم</string>
@@ -268,7 +268,7 @@
     <string name="add_food_add_photo">إضافة صورة</string>
     <string name="progressive_meal_add_next">إضافة المكوّن التالي</string>
     <string name="text_input_title">صف طعامك</string>
-    <string name="home_kcal_of_format">من %1$s kcal</string>
+    <string name="home_kcal_of_format">من %1$s %2$s</string>
     <string name="home_kcal_left_format">%1$s متبقية</string>
     <string name="home_view_more">عرض المزيد</string>
     <string name="home_todays_food">طعام اليوم</string>
@@ -425,7 +425,7 @@
     <string name="progress_history_count_format">%1$d إدخالات · اضغط للعرض أو الحذف</string>
 
     <string name="progress_calories_section">السعرات الحرارية</string>
-    <string name="progress_avg_format">المتوسط: %1$d kcal</string>
+    <string name="progress_avg_format">المتوسط: %1$d %2$s</string>
     <string name="progress_no_food">لم يتم تسجيل أي طعام بعد</string>
 
     <string name="progress_macro_averages">متوسطات العناصر الكبرى</string>
@@ -585,8 +585,8 @@
     <string name="notif_streak_text">حافظ على سلسلتك. سجّل شيئًا من اليوم.</string>
     <string name="notif_summary_title">ملخص اليوم جاهز</string>
     <string name="notif_summary_text">اضغط لرؤية كيف اتسقت ماكروهات اليوم.</string>
-    <string name="notif_summary_deficit">عجز %1$s سعرة</string>
-    <string name="notif_summary_surplus">فائض %1$s سعرة</string>
+    <string name="notif_summary_deficit">عجز %1$s سعرة %2$s</string>
+    <string name="notif_summary_surplus">فائض %1$s سعرة %2$s</string>
     <string name="notif_summary_on_target">متوازن</string>
     <string name="notif_summary_eaten_burned">مأكول %1$s · محروق %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
@@ -672,7 +672,7 @@
     <string name="manual_active_name_hint">اسم النشاط (اختياري)</string>
     <string name="manual_active_save">إضافة إلى الميزانية</string>
     <string name="manual_active_edit_title">تعديل الحرق النشط</string>
-    <string name="manual_active_history_total">%1$s · %2$d سعرة</string>
+    <string name="manual_active_history_total">%1$s · %2$d سعرة %3$s</string>
     <string name="cd_delete_manual_active">حذف الحرق النشط</string>
     <string name="manual_active_subtitle">أضِف السعرات المحروقة من مشي أو ركوب أو تمرين. تمتد ميزانية اليوم عند تفعيل «إضافة الحرق النشط».</string>
     <string name="manual_active_title">تسجيل الحرق النشط</string>
@@ -756,7 +756,7 @@
     <string name="analysis_queue_day_back">اليوم السابق</string>
     <string name="analysis_queue_day_forward">اليوم التالي</string>
     <string name="analysis_queue_failed">فشل</string>
-    <string name="analysis_queue_result">%1$s · %2$d سعرة</string>
+    <string name="analysis_queue_result">%1$s · %2$d سعرة %3$s</string>
     <string name="analysis_queue_just_now">الآن</string>
     <string name="analysis_queue_minutes_ago">قبل %1$d د</string>
     <string name="analysis_queue_hours_ago">قبل %1$d س</string>
@@ -766,7 +766,7 @@
     <string name="action_show">إظهار</string>
     <string name="action_undo">تراجع</string>
     <string name="action_what_if">ماذا لو؟</string>
-    <string name="add_food_relog_kcal">%1$d سعرة</string>
+    <string name="add_food_relog_kcal">%1$d سعرة %2$s</string>
     <string name="ai_error_coach_on_device">المدرب غير متاح بعد مع المزوّد المحلي. انتقل إلى مزوّد سحابي في الإعدادات ← مزوّد الذكاء الاصطناعي.</string>
     <string name="ai_error_coach_round_limit">تعذّر على المدرب الرد. حاول إعادة صياغة السؤال.</string>
     <string name="ai_error_disabled">ميزات الذكاء الاصطناعي معطّلة في الإعدادات ← الذكاء الاصطناعي والصوت.</string>
@@ -940,7 +940,7 @@
     <string name="grounded_on_device_unavailable">يتطلب الإدخال الموثّق مزوّد ذكاء اصطناعي سحابيًا. تستخدم النماذج المحلية صورة/ملاحظة.</string>
     <string name="grounded_review_continue">المتابعة إلى المراجعة</string>
     <string name="grounded_review_grams">جرام</string>
-    <string name="grounded_review_per_100g">%1$d سعرة / 100 غ</string>
+    <string name="grounded_review_per_100g">%1$d سعرة / 100 غ %2$s</string>
     <string name="grounded_review_subtitle">اختر أفضل تطابق في قاعدة البيانات والحصة لكل طعام قبل التسجيل.</string>
     <string name="grounded_review_title">تأكيد التطابقات</string>
     <string name="grounded_review_unit">الوحدة</string>
@@ -966,17 +966,17 @@
     <string name="home_active_burn_over_a11y">الحرق النشط %1$d، %2$d فوق اليوم المعتاد</string>
     <string name="home_active_burn_progress_a11y">الحرق النشط %1$d، المعتاد %2$d</string>
     <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
-    <string name="home_active_calories_label">سعرات نشطة</string>
-    <string name="home_budget_burned_today">المحروق اليوم: %1$d سعرة</string>
+    <string name="home_active_calories_label">سعرات نشطة %1$s</string>
+    <string name="home_budget_burned_today">المحروق اليوم: %1$d سعرة %2$s</string>
     <string name="home_calorie_active_estimated_a11y">السعرات النشطة مقدرة من مستوى نشاطك</string>
-    <string name="home_calorie_budget_a11y">الميزانية %1$d: الهدف %2$d زائد %3$d نشطة محروقة</string>
+    <string name="home_calorie_budget_a11y">الميزانية %1$d %4$s: الهدف %2$d %4$s زائد %3$d %4$s نشطة محروقة</string>
     <string name="home_calorie_budget_info">كيف تُحسب ميزانية اليوم</string>
     <string name="home_calorie_budget_sheet_title">ميزانية السعرات لليوم</string>
     <string name="home_calorie_budget_source_manual">سعرات سجلتها يدويًا</string>
     <string name="home_calorie_budget_source_measured">سعرات نشطة من Health Connect</string>
-    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d %4$s (14-day average is %3$d %4$s).</string>
     <string name="home_calorie_mode_static">هدف ثابت</string>
-    <string name="home_calorie_of_goal">من %1$s</string>
+    <string name="home_calorie_of_goal">من %1$s %2$s</string>
     <string name="home_calories_active_burn">%1$d نشطة محروقة</string>
     <string name="home_calories_goal_plus_active">الهدف %1$s + %2$s نشطة</string>
     <string name="home_calories_label">سعرات</string>
@@ -1016,7 +1016,7 @@
     <string name="note_char_count">%1$d / %2$d</string>
 
     <string name="import_add_to_log">إضافة إلى السجل</string>
-    <string name="import_add_to_log_many_format">إضافة %1$d إلى السجل · %2$d سعرة</string>
+    <string name="import_add_to_log_many_format">إضافة %1$d إلى السجل · %2$d سعرة %3$s</string>
     <string name="import_body_metrics_empty">لا يحتوي هذا الملف على سجلات وزن أو بيانات جسم للاستيراد.</string>
     <string name="import_body_metrics_malformed">تعذّرت قراءة الملف: %1$s</string>
     <string name="import_body_metrics_success">تم استيراد %1$d سجل وزن و%2$d دهون و%3$d قياسات.</string>
@@ -1386,7 +1386,7 @@
     <string name="settings_picker_custom_placeholder">قيمة بوحدة %1$s</string>
     <string name="settings_picker_enter_custom">إدخال قيمة مخصصة…</string>
     <string name="settings_calorie_below_floor_title">أقل من الحد الآمن</string>
-    <string name="settings_calorie_below_floor_message">هذا أقل من معدل الأيض أثناء الراحة المقدر أو 1,200 سعرة حرارية. استمر فقط إذا وصفه مختص صحي.</string>
+    <string name="settings_calorie_below_floor_message">هذا أقل من معدل الأيض أثناء الراحة المقدر أو %1$s حرارية. استمر فقط إذا وصفه مختص صحي.</string>
     <string name="settings_calorie_below_floor_continue">المتابعة على أي حال</string>
     <string name="settings_picker_use_wheel">استخدام العجلة</string>
     <string name="settings_picker_vitd_iu_hint">%1$d مكغ ≈ %2$d وحدة دولية</string>
@@ -1597,7 +1597,7 @@
     <string name="unit_tbsp">ملعقة ك.</string>
     <string name="unit_tsp">ملعقة ص.</string>
     <string name="vm_adaptive_on_message">الأهداف التكيفية مفعّلة. سيتحقق Chompass مرة أسبوعيًا بعد توفر بيانات كافية عن الطعام والوزن.</string>
-    <string name="vm_adaptive_updated">حُدّث إلى %1$d سعرة من أحدث بياناتك.</string>
+    <string name="vm_adaptive_updated">حُدّث إلى %1$d سعرة من أحدث بياناتك. %2$s</string>
     <string name="vm_goals_recalculated">تمت إعادة حساب الأهداف</string>
         <string name="recalc_sheet_new_targets">أهداف جديدة</string>
         <string name="recalc_sheet_macros_format">بروتين %1$d · كارب %2$d · دهون %3$d</string>
@@ -1609,26 +1609,26 @@
         <string name="recalc_sheet_tier_measured">مرتبط بحرق Health Connect المقاس</string>
         <string name="recalc_sheet_tier_formula">الصيغ المدمجة</string>
         <string name="recalc_sheet_formula_baseline">أساس الصيغة</string>
-        <string name="recalc_sheet_bmr_row">معدل الأيض الأساسي (الحرق أثناء الراحة): %1$s سعرة</string>
-        <string name="recalc_sheet_tdee_row">الصيانة × النشاط %1$s: %2$s سعرة</string>
-        <string name="recalc_sheet_pace_row">وتيرة الهدف: %1$s سعرة/يوم</string>
-        <string name="recalc_sheet_formula_target_row">هدف الصيغة: %1$s سعرة</string>
-        <string name="recalc_sheet_measured_row">حرق Health Connect المقاس: %1$s سعرة</string>
-    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
+        <string name="recalc_sheet_bmr_row">معدل الأيض الأساسي (الحرق أثناء الراحة): %1$s سعرة %2$s</string>
+        <string name="recalc_sheet_tdee_row">الصيانة × النشاط %1$s: %2$s سعرة %3$s</string>
+        <string name="recalc_sheet_pace_row">وتيرة الهدف: %1$s سعرة/يوم %2$s</string>
+        <string name="recalc_sheet_formula_target_row">هدف الصيغة: %1$s سعرة %2$s</string>
+        <string name="recalc_sheet_measured_row">حرق Health Connect المقاس: %1$s سعرة %2$s</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d %4$s active (%3$d of last 28 days)</string>
         <string name="recalc_sheet_data_used">البيانات المستخدمة</string>
         <string name="recalc_sheet_data_weighins">%1$d قياسات خلال %2$d يومًا</string>
         <string name="recalc_sheet_data_no_weighins">لا توجد قياسات مسجلة بعد</string>
-        <string name="recalc_sheet_data_intake">متوسط السعرات المسجلة: %1$s سعرة خلال %2$d أيام مسجلة</string>
+        <string name="recalc_sheet_data_intake">متوسط السعرات المسجلة: %1$s سعرة خلال %2$d أيام مسجلة %3$s</string>
         <string name="recalc_sheet_data_no_intake">لا يوجد طعام مسجل بعد</string>
-        <string name="recalc_sheet_data_implied">الصيانة الضمنية: ~%1$s سعرة</string>
+        <string name="recalc_sheet_data_implied">الصيانة الضمنية: ~%1$s سعرة %2$s</string>
         <string name="recalc_sheet_data_implied_thin">الصيانة الضمنية: غير محسوبة — البيانات قليلة جدًا</string>
         <string name="recalc_sheet_data_implied_below_floor">الصيانة الضمنية: أقل من الحد الآمن، تم تجاهلها</string>
         <string name="recalc_sheet_data_implied_disagree">الصيانة الضمنية: محجوبة — السجل واتجاه الوزن متعارضان</string>
         <string name="recalc_sheet_change">التغيير</string>
-        <string name="recalc_sheet_previous">السابق: %1$s سعرة</string>
-        <string name="recalc_sheet_new_with_delta">الجديد: %1$s سعرة (%2$s)</string>
+        <string name="recalc_sheet_previous">السابق: %1$s سعرة %2$s</string>
+        <string name="recalc_sheet_new_with_delta">الجديد: %1$s سعرة (%2$s) %3$s</string>
         <string name="recalc_sheet_reason">لماذا</string>
-    <string name="vm_goals_updated">حُدّث إلى %1$d سعرة.</string>
+    <string name="vm_goals_updated">حُدّث إلى %1$d سعرة. %2$s</string>
     <string name="vm_health_connect_needed">يلزم Health Connect</string>
     <string name="vm_health_connect_needed_msg">اسمح لـ Chompass بقراءة سعراتك النشطة والكلية في Health Connect، ثم أعد تشغيل إنفاق الطاقة.</string>
     <string name="vm_not_enough_energy">بيانات الطاقة غير كافية</string>
@@ -1706,7 +1706,7 @@
     <string name="height_cm_format">%1$d cm</string>
     <string name="home_macro_chip_format">%1$s %2$dg</string>
     <string name="in_label_format">%1$d in</string>
-    <string name="kcal_value_format">%1$s kcal</string>
+    <string name="energy_value_format">%1$s %2$s</string>
     <string name="keto_carb_grams_format">%1$d g/day</string>
     <string name="kg_value_format">%1$.1f kg</string>
     <string name="lbs_value_format">%1$.1f lbs</string>
@@ -1732,6 +1732,7 @@
     <string name="unit_g">g</string>
     <string name="unit_in">in</string>
     <string name="unit_kcal">kcal</string>
+    <string name="unit_kj">kJ</string>
     <string name="unit_kg">kg</string>
     <string name="unit_lbs">lbs</string>
     <string name="unit_mcg">mcg</string>
@@ -1817,6 +1818,7 @@
     <string name="settings_group_trackers">المتتبعات والتذكيرات</string>
     <string name="settings_group_trackers_summary">الماء، النيكوتين، الكافيين، الصيام، التذكيرات</string>
     <string name="settings_units">الوحدات</string>
+    <string name="settings_energy_unit">الطاقة</string>
     <string name="settings_search_hint">ابحث في الإعدادات</string>
     <string name="settings_search_empty">لا توجد إعدادات مطابقة. جرّب «kg» أو «kcal» أو «ml».</string>
     <string name="prompt_history_button">سجل الأوامر</string>
@@ -1932,9 +1934,9 @@
     <string name="day_type_clear_override">إزالة تجاوز اليوم</string>
     <string name="day_type_edit_settings">تعديل أنواع الأيام</string>
     <string name="day_type_plan_off_hint">أنواع الأيام مطفأة. شغّلها من الإعدادات لاستخدام أهداف مختلفة في أيام مختلفة.</string>
-    <string name="day_type_targets_summary">%1$s سعرة · %2$d بروتين %3$d كربوهيدرات %4$d دهون</string>
-    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
-    <string name="day_type_tomorrow">غدًا: %1$s · %2$s سعرة</string>
+    <string name="day_type_targets_summary">%1$s سعرة · %2$d بروتين %3$d كربوهيدرات %4$d دهون %5$s</string>
+    <string name="day_type_active_typical">≈ %1$d %2$s active typical</string>
+    <string name="day_type_tomorrow">غدًا: %1$s · %2$s سعرة %3$s</string>
     <string name="settings_day_types_title">أنواع الأيام</string>
     <string name="settings_day_types_intro">استخدم أهدافًا مختلفة للسعرات والمغذيات الكبرى في أيام مختلفة، مثل أيام التدريب وأيام الراحة.</string>
     <string name="settings_day_types_add">إضافة نوع يوم</string>
@@ -1945,7 +1947,7 @@
     <string name="settings_day_types_delete_scrub">إزالة من الجدول</string>
     <string name="settings_day_types_delete_used_message">مستخدم في جدولك. اختر ما يحدث لتلك الأيام.</string>
     <string name="settings_day_types_delete_used_title">حذف «%1$s»؟</string>
-    <string name="settings_day_types_floor_warning">هذا الهدف عند حدها الأدنى من السعرات (%1$d سعرة). قاسٍ كنوع يوم.</string>
+    <string name="settings_day_types_floor_warning">هذا الهدف عند حدها الأدنى من السعرات (%1$d سعرة). قاسٍ كنوع يوم. %2$s</string>
     <string name="settings_day_types_follow_schedule">اتبع الجدول</string>
     <string name="settings_day_types_keto_paused">أنواع الأيام متوقفة مؤقتًا في وضع الكيتو</string>
     <string name="settings_day_types_mode_cycle">دورة</string>
@@ -1974,11 +1976,11 @@
     <string name="settings_day_types_summary_format">%1$d أنواع · %2$s</string>
     <string name="settings_day_types_weekday_default">افتراضي (%1$s)</string>
     <string name="recalc_sheet_day_types">أنواع الأيام</string>
-    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s سعرة</string>
-    <string name="recalc_sheet_daytype_value">%1$s: %2$s سعرة</string>
+    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s سعرة %4$s</string>
+    <string name="recalc_sheet_daytype_value">%1$s: %2$s سعرة %3$s</string>
     <string name="recalc_sheet_daytype_macros_format">%1$d غ بروتين · %2$d غ كربوهيدرات · %3$d غ دهون</string>
-    <string name="recalc_sheet_daytype_avg_change">المتوسط الأسبوعي: %1$s → %2$s سعرة</string>
-    <string name="recalc_sheet_daytype_avg_value">المتوسط الأسبوعي: %1$s سعرة</string>
+    <string name="recalc_sheet_daytype_avg_change">المتوسط الأسبوعي: %1$s → %2$s سعرة %3$s</string>
+    <string name="recalc_sheet_daytype_avg_value">المتوسط الأسبوعي: %1$s سعرة %2$s</string>
     <string name="settings_calc_sec_day_types">أنواع الأيام</string>
     <string name="settings_calc_daytypes_resolve_name">تحديد الأهداف حسب نوع اليوم</string>
     <string name="settings_calc_daytypes_resolve_used">عند تفعيل أنواع الأيام، يأخذ كل يوم أهداف سعراته ومغذياته الكبرى من الخطة بدل المجموعة الواحدة. التبديل اليدوي ليوم واحد يتقدم على الجدول، والجدول يتقدم على الافتراضي، وكل ما لا يُحل يعود إلى أهدافك الأساسية.</string>

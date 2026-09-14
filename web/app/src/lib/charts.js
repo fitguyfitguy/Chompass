@@ -1,6 +1,8 @@
 // @ts-check
 // Minimal hand-rolled SVG charts — no canvas library.
 import { escapeHtml, escapeAttr } from "./ui/html.js";
+import { energyQuantity, energyUnitLabel } from "./energy-format.js";
+import { formatNumber } from "./i18n/index.js";
 
 /**
  * Downsample chronological points to at most maxPoints (keep ends).
@@ -170,15 +172,15 @@ export function lineChartSvg(points, opts = {}) {
 
 /**
  * @param {{label: string, value: number}[]} points
- * @param {{width?: number, height?: number, target?: number|null, interactive?: boolean}} [opts]
+ * @param {{width?: number, height?: number, target?: number|null, interactive?: boolean, energyUnit?: "kcal"|"kj"}} [opts]
  */
 export function barChartSvg(points, opts = {}) {
   const width = opts.width ?? 320;
   const height = opts.height ?? 120;
   const padding = 24;
-  const target = opts.target;
-  const interactive = opts.interactive !== false;
-  // No downsample — match Android (all logged days; bars get thinner).
+  // Energy tips/labels render in the display unit; bar heights stay kcal-scaled.
+  const energyUnit = opts.energyUnit === "kj" ? "kj" : "kcal";
+  const tipValue = (v) => `${formatNumber(energyQuantity(Math.round(v), energyUnit))} ${energyUnitLabel(energyUnit)}`;
   const series = points;
 
   if (series.length === 0) {
@@ -198,7 +200,7 @@ export function barChartSvg(points, opts = {}) {
       const y = height - padding - h;
       const over = target != null && p.value > target;
       const color = over ? "var(--over)" : "var(--teal)";
-      const tip = `${p.label}: ${Math.round(p.value)} kcal`;
+      const tip = `${p.label}: ${tipValue(p.value)}`;
       return `<rect class="chart-hit" data-tip="${escapeAttr(tip)}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(0, h).toFixed(1)}" fill="${color}" rx="2" opacity="${p.value ? 0.9 : 0.25}">${interactive ? `<title>${escapeHtml(tip)}</title>` : ""}</rect>`;
     })
     .join("");
@@ -211,7 +213,7 @@ export function barChartSvg(points, opts = {}) {
           : ""
       }
       ${bars}
-      <text x="${padding}" y="12" class="chart-label">${formatNum(max)}</text>
+      <text x="${padding}" y="12" class="chart-label">${formatNum(energyQuantity(max, energyUnit))}</text>
     </svg>`;
 }
 
