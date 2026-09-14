@@ -45,6 +45,7 @@ import app.chompass.models.HabitPreset
 import app.chompass.models.HabitPresetCatalog
 import app.chompass.models.HabitPresetDomain
 import app.chompass.models.builtinCaffeineDefaultMg
+import app.chompass.models.MilkKind
 import app.chompass.models.caffeineKindLabelRes
 import app.chompass.ui.components.ChompassPinnedFooterSheet
 import app.chompass.ui.components.FudGlassTextField
@@ -52,6 +53,7 @@ import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.home.SheetReviewToolbar
 import app.chompass.ui.home.formatMg
+import app.chompass.ui.home.CaffeineMilkSection
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.warning
 
@@ -248,7 +250,7 @@ internal fun TrackerPresetDeleteDialog(
 internal fun CaffeinePresetEditorSheet(
     existing: HabitPreset?,
     onDismiss: () -> Unit,
-    onSave: (label: String, defaultMg: Double) -> Unit,
+    onSave: (label: String, defaultMg: Double, milkKind: String?, milkMl: Int) -> Unit,
 ) {
     val sheetState = rememberChompassSheetState()
     var name by remember { mutableStateOf(existing?.label ?: "") }
@@ -256,6 +258,8 @@ internal fun CaffeinePresetEditorSheet(
         ?: existing?.id?.let { builtinCaffeineDefaultMg(it) }
         ?: 65.0
     var mg by remember { mutableStateOf(prefillMg.toInt().coerceIn(5, 500)) }
+    var milkKind by remember { mutableStateOf(MilkKind.fromStorage(existing?.milkKind)) }
+    var milkMl by remember { mutableStateOf((existing?.milkMl ?: 0).coerceIn(0, MilkKind.MAX_ML)) }
     val isAdd = existing == null
     // Renames keep locale-following behavior: storing the same text as the
     // localized builtin default means "no override".
@@ -307,6 +311,13 @@ internal fun CaffeinePresetEditorSheet(
                     step = 5,
                     unit = stringResource(R.string.unit_mg),
                 )
+
+                CaffeineMilkSection(
+                    milkKind = milkKind,
+                    milkMl = milkMl,
+                    onKindChange = { milkKind = it },
+                    onMlChange = { milkMl = it },
+                )
             }
         },
         footer = {
@@ -322,6 +333,8 @@ internal fun CaffeinePresetEditorSheet(
                     onSave(
                         if (!isAdd && existing?.isCustom == false && label == builtinDefaultLabel) "" else label,
                         mg.toDouble(),
+                        milkKind?.storageKey.takeIf { milkMl > 0 },
+                        milkMl,
                     )
                     onDismiss()
                 },

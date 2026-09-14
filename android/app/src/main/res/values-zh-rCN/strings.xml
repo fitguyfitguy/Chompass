@@ -1836,6 +1836,13 @@
     <string name="caffeine_kind_tea">茶</string>
     <string name="caffeine_kind_energy">能量饮料</string>
     <string name="caffeine_kind_other">其他</string>
+    <string name="milk_kind_whole">全脂</string>
+    <string name="milk_kind_semi">半脱脂</string>
+    <string name="milk_kind_skim">脱脂</string>
+    <string name="milk_kind_oat">燕麦</string>
+    <string name="milk_kind_almond">杏仁</string>
+    <string name="caffeine_milk_section">奶</string>
+    <string name="caffeine_milk_ml">用量</string>
     <string name="caffeine_history_total">%1$s · %2$s mg</string>
     <string name="cd_log_caffeine">记录咖啡因</string>
     <string name="cd_delete_caffeine">删除咖啡因记录</string>

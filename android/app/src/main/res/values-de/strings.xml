@@ -3367,6 +3367,13 @@ für dich ein</string>
     <string name="caffeine_kind_tea">Tee</string>
     <string name="caffeine_kind_energy">Energydrink</string>
     <string name="caffeine_kind_other">Sonstiges</string>
+    <string name="milk_kind_whole">Vollmilch</string>
+    <string name="milk_kind_semi">Fettarme Milch</string>
+    <string name="milk_kind_skim">Magermilch</string>
+    <string name="milk_kind_oat">Hafermilch</string>
+    <string name="milk_kind_almond">Mandelmilch</string>
+    <string name="caffeine_milk_section">Milch</string>
+    <string name="caffeine_milk_ml">Menge</string>
     <string name="caffeine_history_total">%1$s · %2$s mg</string>
     <string name="cd_log_caffeine">Koffein eintragen</string>
     <string name="cd_delete_caffeine">Koffein-Eintrag löschen</string>

@@ -31,6 +31,10 @@ data class HabitPreset(
     val defaultCount: Int = 1,
     /** Nicotine: optional per-dose mg prefill (wheel range 0..30). */
     val defaultDoseMg: Double? = null,
+    /** Caffeine: [MilkKind.storageKey] when [milkMl] > 0; else null. */
+    val milkKind: String? = null,
+    /** Caffeine: sidecar millilitres. 0 = no milk food. */
+    val milkMl: Int = 0,
 ) {
     val isCustom: Boolean get() = id.startsWith(HabitPresetCatalog.CUSTOM_PREFIX)
 }
@@ -57,6 +61,12 @@ data class HabitPresetCatalog(
             if (preset.defaultMg != null && preset.defaultMg !in 0.0..MAX_DEFAULT_MG) return "mg"
             if (preset.defaultCount !in 1..MAX_DEFAULT_COUNT) return "count"
             if (preset.defaultDoseMg != null && preset.defaultDoseMg !in 0.0..MAX_DOSE_MG) return "dose"
+            if (domain == HabitPresetDomain.NICOTINE) {
+                if (preset.milkMl != 0 || preset.milkKind != null) return "milk"
+            } else {
+                if (preset.milkMl !in 0..MilkKind.MAX_ML) return "milk_ml"
+                if (preset.milkMl > 0 && MilkKind.fromStorage(preset.milkKind) == null) return "milk_kind"
+            }
         }
         return null
     }
@@ -77,7 +87,7 @@ data class HabitPresetCatalog(
     /** Replaces one preset's defaults (label trimmed like withLabel). */
     fun withPreset(preset: HabitPreset): HabitPresetCatalog =
         copy(presets = presets.map {
-            if (it.id == preset.id) preset.copy(label = preset.label.trim().take(MAX_LABEL)) else it
+            if (it.id == preset.id) preset.copy(label = preset.label.trim().take(MAX_LABEL)).clampedMilk() else it
         })
 
     fun without(id: String): HabitPresetCatalog = copy(presets = presets.filterNot { it.id == id })
@@ -94,6 +104,8 @@ data class HabitPresetCatalog(
         defaultMg: Double? = null,
         defaultCount: Int = 1,
         defaultDoseMg: Double? = null,
+        milkKind: String? = null,
+        milkMl: Int = 0,
     ): HabitPresetCatalog {
         if (customCount >= MAX_CUSTOM) return this
         val preset = HabitPreset(
@@ -102,8 +114,16 @@ data class HabitPresetCatalog(
             defaultMg = if (domain.mgBased) defaultMg?.coerceIn(0.0, MAX_DEFAULT_MG) else null,
             defaultCount = if (domain.mgBased) 1 else defaultCount.coerceIn(1, MAX_DEFAULT_COUNT),
             defaultDoseMg = if (domain.mgBased) null else defaultDoseMg?.coerceIn(0.0, MAX_DOSE_MG),
-        )
+            milkKind = if (domain.mgBased) milkKind else null,
+            milkMl = if (domain.mgBased) milkMl else 0,
+        ).clampedMilk()
         return copy(presets = presets + preset)
+    }
+
+    private fun HabitPreset.clampedMilk(): HabitPreset {
+        val ml = milkMl.coerceIn(0, MilkKind.MAX_ML)
+        val kind = if (ml > 0) MilkKind.fromStorage(milkKind)?.storageKey else null
+        return copy(milkMl = if (kind == null) 0 else ml, milkKind = kind)
     }
 
     companion object {

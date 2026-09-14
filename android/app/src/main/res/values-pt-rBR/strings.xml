@@ -1836,6 +1836,13 @@
     <string name="caffeine_kind_tea">Chá</string>
     <string name="caffeine_kind_energy">Bebida energética</string>
     <string name="caffeine_kind_other">Outro</string>
+    <string name="milk_kind_whole">Integral</string>
+    <string name="milk_kind_semi">Semidesnatado</string>
+    <string name="milk_kind_skim">Desnatado</string>
+    <string name="milk_kind_oat">Aveia</string>
+    <string name="milk_kind_almond">Amêndoa</string>
+    <string name="caffeine_milk_section">Leite</string>
+    <string name="caffeine_milk_ml">Quantidade</string>
     <string name="caffeine_history_total">%1$s · %2$s mg</string>
     <string name="cd_log_caffeine">Registrar cafeína</string>
     <string name="cd_delete_caffeine">Excluir registro de cafeína</string>

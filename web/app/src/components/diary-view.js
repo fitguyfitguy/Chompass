@@ -443,13 +443,16 @@ function macroRow(key, label, value, target, unit = "g") {
  * @param {ReturnType<typeof dailyTargets>|null} targets
  * @param {import('../lib/db.js').OptionalNutrientGoals} optionalGoals
  * @param {"tube" | "row"} style
+ * @param {number} [trackerCaffeineMg]
  */
-function renderMacros(tubeKeys, entries, targets, optionalGoals, style) {
+function renderMacros(tubeKeys, entries, targets, optionalGoals, style, trackerCaffeineMg = 0) {
   return tubeKeys
     .map((key) => {
       const def = nutrientDef(key);
       if (!def) return "";
-      const value = sumNutrient(entries, key);
+      const value = key === "caffeineMg"
+        ? sumNutrient(entries, key) + trackerCaffeineMg
+        : sumNutrient(entries, key);
       const goal = nutrientGoal(key, targets, optionalGoals);
       return style === "row"
         ? macroRow(def.tubeCss, def.label, value, goal, def.unit)
@@ -655,8 +658,9 @@ export class DiaryView extends HTMLElement {
     const showNicotine = appPrefs.showNicotine === true;
     const showFasting = appPrefs.showFasting === true;
     // Caffeine hero total mirrors Android: tracker logs + food-entry caffeine.
+    const trackerCaffeineMg = caffeineLogs.reduce((s, c) => s + (Number(c.mg) || 0), 0);
     const caffeineMg =
-      caffeineLogs.reduce((s, c) => s + (Number(c.mg) || 0), 0) +
+      trackerCaffeineMg +
       entries.reduce((s, e) => s + (e.caffeineMg ?? 0), 0);
     const caffeineLimit = appPrefs.optionalNutrientGoals?.caffeineMg ?? 400;
     const caffeinePct = caffeineLimit > 0 ? Math.min(100, (caffeineMg / caffeineLimit) * 100) : 0;
@@ -702,13 +706,13 @@ export class DiaryView extends HTMLElement {
     const nextDisabled = this.date >= shiftDate(today, DIARY_FUTURE_WEEKS * 7) ? "disabled" : "";
     const macrosMobile = targets
       ? `<div class="macro-tubes macro-tubes--${tubeKeys.length}">
-          ${renderMacros(tubeKeys, entries, macroTargets, optionalGoals, "tube")}
+          ${renderMacros(tubeKeys, entries, macroTargets, optionalGoals, "tube", trackerCaffeineMg)}
         </div>
         <button type="button" class="home-hero__more" data-nutrition-detail>${t("diary.view_more")} ›</button>`
       : "";
     const macrosDesktop = targets
       ? `<div class="macro-rows macro-rows--${tubeKeys.length}">
-          ${renderMacros(tubeKeys, entries, macroTargets, optionalGoals, "row")}
+          ${renderMacros(tubeKeys, entries, macroTargets, optionalGoals, "row", trackerCaffeineMg)}
         </div>`
       : "";
     const gaugeInfoLabel = t("diary.calorie_budget_info");
@@ -972,14 +976,15 @@ export class DiaryView extends HTMLElement {
     this.querySelector("[data-fasting-stop]")?.addEventListener("click", () => this.fastingStop());
     this.querySelectorAll("[data-nutrition-detail]").forEach((el) => {
       el.addEventListener("click", () => {
-        this.openNutritionDetail(entries, targets, optionalGoals);
+        const trackerMg = caffeineLogs.reduce((s, c) => s + (Number(c.mg) || 0), 0);
+        this.openNutritionDetail(entries, targets, optionalGoals, undefined, trackerMg);
       });
     });
     this.querySelectorAll("[data-meal-nutrition]").forEach((el) => {
       el.addEventListener("click", () => {
         const mealType = el.getAttribute("data-meal-nutrition") || "";
         const mealEntries = entries.filter((e) => e.mealType === mealType);
-        this.openNutritionDetail(mealEntries, targets, optionalGoals, mealLabel(mealType));
+        this.openNutritionDetail(mealEntries, targets, optionalGoals, mealLabel(mealType), 0);
       });
     });
     // The desktop hero is a div (block content), not a <button>: give the
@@ -2064,8 +2069,9 @@ export class DiaryView extends HTMLElement {
    * @param {ReturnType<typeof dailyTargets>|null} targets
    * @param {import('../lib/db.js').OptionalNutrientGoals} optionalGoals
    * @param {string} [title]
+   * @param {number} [trackerCaffeineMg]
    */
-  openNutritionDetail(entries, targets, optionalGoals, title) {
+  openNutritionDetail(entries, targets, optionalGoals, title, trackerCaffeineMg = 0) {
     const fmt = (v) => (v === 0 ? "—" : v.toFixed(1));
     const cal = entries.reduce((s, e) => s + e.calories, 0);
     const macroRows = [
@@ -2075,7 +2081,9 @@ export class DiaryView extends HTMLElement {
       [t("onboarding.plan.fat"), sumNutrient(entries, "fatG"), targets?.fatG ?? 0, "g"],
     ];
     const microRows = NUTRITION_DETAIL_MICROS.map((def) => {
-      const value = sumNutrient(entries, def.key);
+      const value = def.key === "caffeineMg"
+        ? sumNutrient(entries, def.key) + trackerCaffeineMg
+        : sumNutrient(entries, def.key);
       const goal = def.displayOnly ? null : nutrientGoal(def.key, targets, optionalGoals);
       return { def, value, goal };
     });

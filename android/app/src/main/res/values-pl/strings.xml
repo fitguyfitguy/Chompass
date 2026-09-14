@@ -1860,6 +1860,13 @@
     <string name="caffeine_kind_tea">Herbata</string>
     <string name="caffeine_kind_energy">Napój energetyczny</string>
     <string name="caffeine_kind_other">Inne</string>
+    <string name="milk_kind_whole">Pełne</string>
+    <string name="milk_kind_semi">Półtłuste</string>
+    <string name="milk_kind_skim">Odłuszczone</string>
+    <string name="milk_kind_oat">Owsiane</string>
+    <string name="milk_kind_almond">Migdałowe</string>
+    <string name="caffeine_milk_section">Mleko</string>
+    <string name="caffeine_milk_ml">Ilość</string>
     <string name="caffeine_history_total">%1$s · %2$s mg</string>
     <string name="cd_log_caffeine">Zapisz kofeinę</string>
     <string name="cd_delete_caffeine">Usuń wpis kofeiny</string>

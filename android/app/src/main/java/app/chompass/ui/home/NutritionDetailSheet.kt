@@ -83,6 +83,7 @@ fun NutritionDetailSheet(
     macroScale: Float = 1f,
     title: String? = null,
     showHomeCards: Boolean = true,
+    trackerCaffeineMg: Double = 0.0,
     onHomeTopNutrientsChange: (List<HomeTopNutrient>) -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -115,7 +116,7 @@ fun NutritionDetailSheet(
     val vitaminK = entries.sumOf { it.vitaminK ?: 0.0 }
     val folate = entries.sumOf { it.folate ?: 0.0 }
     val omega3 = entries.sumOf { it.omega3 ?: 0.0 }
-    val caffeine = entries.sumOf { it.caffeine ?: 0.0 }
+    val caffeine = entries.sumOf { it.caffeine ?: 0.0 } + trackerCaffeineMg
     val isDark = isDarkTheme()
     val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
 

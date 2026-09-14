@@ -1856,6 +1856,13 @@
     <string name="caffeine_kind_tea">Çay</string>
     <string name="caffeine_kind_energy">Enerji içeceği</string>
     <string name="caffeine_kind_other">Diğer</string>
+    <string name="milk_kind_whole">Tam yağlı</string>
+    <string name="milk_kind_semi">Yarım yağlı</string>
+    <string name="milk_kind_skim">Yağsız</string>
+    <string name="milk_kind_oat">Yulaf</string>
+    <string name="milk_kind_almond">Badem</string>
+    <string name="caffeine_milk_section">Süt</string>
+    <string name="caffeine_milk_ml">Miktar</string>
     <string name="caffeine_history_total">%1$s · %2$s mg</string>
     <string name="cd_log_caffeine">Kafein kaydet</string>
     <string name="cd_delete_caffeine">Kafein kaydını sil</string>

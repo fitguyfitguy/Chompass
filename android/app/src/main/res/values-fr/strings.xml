@@ -1857,6 +1857,13 @@
     <string name="caffeine_kind_tea">Thé</string>
     <string name="caffeine_kind_energy">Boisson énergisante</string>
     <string name="caffeine_kind_other">Autre</string>
+    <string name="milk_kind_whole">Entier</string>
+    <string name="milk_kind_semi">Demi-écrémé</string>
+    <string name="milk_kind_skim">Écrémé</string>
+    <string name="milk_kind_oat">Avoine</string>
+    <string name="milk_kind_almond">Amande</string>
+    <string name="caffeine_milk_section">Lait</string>
+    <string name="caffeine_milk_ml">Quantité</string>
     <string name="caffeine_history_total">%1$s · %2$s mg</string>
     <string name="cd_log_caffeine">Consigner la caféine</string>
     <string name="cd_delete_caffeine">Supprimer l\'entrée de caféine</string>

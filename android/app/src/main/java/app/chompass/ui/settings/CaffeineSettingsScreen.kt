@@ -146,10 +146,16 @@ fun CaffeineSettingsScreen(
         CaffeinePresetEditorSheet(
             existing = editingPreset,
             onDismiss = { addingPreset = false; editingPreset = null },
-            onSave = { label, defaultMg ->
+            onSave = { label, defaultMg, milkKind, milkMl ->
                 if (addingPreset) {
                     vm.setCaffeinePresets(
-                        ui.caffeinePresets.addCustom(HabitPresetDomain.CAFFEINE, label, defaultMg = defaultMg)
+                        ui.caffeinePresets.addCustom(
+                            HabitPresetDomain.CAFFEINE,
+                            label,
+                            defaultMg = defaultMg,
+                            milkKind = milkKind,
+                            milkMl = milkMl,
+                        )
                     )
                 } else {
                     editingPreset?.let { preset ->
@@ -158,6 +164,8 @@ fun CaffeineSettingsScreen(
                                 preset.copy(
                                     label = label,
                                     defaultMg = defaultMg,
+                                    milkKind = milkKind,
+                                    milkMl = milkMl,
                                 )
                             )
                         )
