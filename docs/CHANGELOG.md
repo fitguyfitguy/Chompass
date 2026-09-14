@@ -5,7 +5,7 @@ All notable changes to Chompass are documented here.
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
 
-## [4.10.0] - 2026-09-14
+## [Unreleased]
 
 ### Added
 
@@ -13,10 +13,15 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Changed
 
-- **Adding food is one search field instead of a wall of buttons** (Android): the Add Food sheet used to ask which tool you wanted before you could say what you ate, and kept your own saved foods and the food databases behind two more sheets. Now you type once. Your recents, frequents, favorites and recipes appear as you type, alongside matches from the USDA and Swiss databases that ship with the app, in one ranked list with no duplicates across sources. Your own foods always come first. Typing stays on your phone: packaged products from Open Food Facts are a separate switch under the field, off until you turn it on, and nothing you type is sent anywhere in the meantime. That switch and the Open Food Facts one in Settings are the same setting, so you can turn packaged products on wherever you happen to be and it stays on. Photo and barcode sit under the field as buttons and voice moved into the field itself; the note sheet, saved meals, manual entry, copy from day, active burn and the analysis queue moved under "More options". With nothing typed the sheet still opens on your one-tap Log again chips.
+- **Adding food is one search field instead of a wall of buttons** (Android): the Add Food sheet used to ask which tool you wanted before you could say what you ate, and kept your own saved foods and the food databases behind two more sheets. Now you type once. Your recents, frequents, favorites and recipes appear as you type, alongside matches from the USDA and Swiss databases that ship with the app, in one ranked list with no duplicates across sources. Your own foods always come first. Typing stays on your phone: packaged products from Open Food Facts are a separate switch under the field, off until you turn it on, and nothing you type is sent anywhere in the meantime. That switch and the Open Food Facts one in Settings are the same setting, so you can turn packaged products on wherever you happen to be and it stays on. Photo and barcode sit under the field as buttons and voice moved into the field itself; the note sheet, saved meals, manual entry, copy from day, active burn and the analysis queue moved under "More options". Follows Codeberg [#94](https://codeberg.org/fitguy/Chompass/pulls/94) by [@armen-kocharyan](https://codeberg.org/armen-kocharyan).
 - **Your saved meals are on the Add Food sheet itself** (Android): the Recents, Frequent, Favorites and Recipes tabs now sit right in the sheet with their lists, instead of behind another tap. They occupy exactly the space the search results use, so typing swaps the list contents without resizing the sheet and shoving the input field around mid-word. Scrolling a long list grows the sheet to show more, and only when there is actually more worth showing.
 - **AI analysis is now something you ask for, not the only way in** (Android): the Analyze action sits in the search field itself, so a food you have already logged or one the databases know is a single tap and costs nothing, while free-text estimation is one tap on the field's Analyze button, or the Done/Send key on your keyboard.
 - **Food database results arrive without waiting for the network** (Android): the bundled USDA and Swiss results used to wait for the Open Food Facts request to finish, so on a plane or a bad connection you waited on a request that could not succeed. Your saved foods and the bundled databases now appear immediately, and Open Food Facts results join when they arrive if you switched them on. A slow or unreachable Open Food Facts no longer holds anything else back, and the lookup gives up after a few seconds instead of retrying for as long as a minute.
+
+## [4.10.0] - 2026-09-14
+
+### Changed
+
 - **Meal type and time sit under the food name** (Android): on add and edit, meal and time come right after the name, then serving. Edit also keeps date there. They used to sit below nutrition.
 - **Mealie import matches other sheets** (Android): Cancel is in the title bar, the API token is masked, long recipe names ellipsize, and an http:// host with Allow insecure HTTP off uses the same localized error as other AI calls.
 - **Nutrition details uses Cancel** (Android): the meal or day nutrition sheet no longer has a Done button. Cancel and swipe dismiss it like other read-only sheets.
