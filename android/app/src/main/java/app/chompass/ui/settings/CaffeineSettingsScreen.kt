@@ -107,7 +107,7 @@ fun CaffeineSettingsScreen(
                                 } else {
                                     ui.caffeineQuickKinds + preset.id
                                 }
-                                vm.setCaffeineQuickKinds(next.ifEmpty { HabitPresetDomain.CAFFEINE.defaultQuickKindIds })
+                                vm.setCaffeineQuickKinds(next)
                             },
                             label = { Text(presetLabel(preset, HabitPresetDomain.CAFFEINE)) },
                             colors = FilterChipDefaults.filterChipColors(

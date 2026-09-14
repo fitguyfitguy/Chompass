@@ -48,7 +48,6 @@ data class HabitPresetCatalog(
     val customCount: Int get() = presets.count { it.isCustom }
 
     fun validate(domain: HabitPresetDomain): String? {
-        if (presets.isEmpty()) return "empty"
         if (customCount > HabitPresetCatalog.MAX_CUSTOM) return "custom_cap"
         val ids = presets.map { it.id }
         if (ids.toSet().size != ids.size) return "duplicate_id"
@@ -198,16 +197,18 @@ enum class HabitPresetDomain(val mgBased: Boolean) {
 
     /**
      * Hub chip selection: builtin ids plus `t_` custom ids are retained
-     * (unknown garbage drops as before); blank/empty falls back to the
-     * defaults. A custom id whose preset was deleted simply stops rendering.
+     * (unknown garbage drops as before). Null (first run) falls back to the
+     * defaults; a present-but-empty string is an explicit empty selection —
+     * legal, zero chips. A custom id whose preset was deleted simply stops
+     * rendering.
      */
     fun quickKindIdsFromStorage(raw: String?): List<String> {
-        if (raw.isNullOrBlank()) return defaultQuickKindIds
-        val parsed = raw.split(',')
+        if (raw == null) return defaultQuickKindIds
+        return raw.split(',')
             .map { it.trim() }
             .filter { it.isNotEmpty() }
             .filter { it in builtinIds || it.startsWith(HabitPresetCatalog.CUSTOM_PREFIX) }
-        return parsed.distinct().ifEmpty { defaultQuickKindIds }
+            .distinct()
     }
 
     fun quickKindIdsToStorage(ids: List<String>): String =
@@ -215,11 +216,11 @@ enum class HabitPresetDomain(val mgBased: Boolean) {
 
     /**
      * Hub +1 chips: catalog presets in catalog (user) order, restricted to
-     * the quick-kind selection; an empty selection falls back to the
-     * defaults, ids without a preset (deleted custom) drop out.
+     * the quick-kind selection; an empty selection means zero chips, ids
+     * without a preset (deleted custom) drop out.
      */
     fun hubPresets(quickKindIds: List<String>, catalog: HabitPresetCatalog): List<HabitPreset> {
-        val selected = quickKindIds.ifEmpty { defaultQuickKindIds }.toHashSet()
+        val selected = quickKindIds.toHashSet()
         return catalog.presets.filter { it.id in selected }
     }
 }

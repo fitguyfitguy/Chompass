@@ -1433,11 +1433,12 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         launchPref {
             container.caffeineRepository.reassignKind(id, CaffeineKind.OTHER.storageKey)
             val nextCatalog = _ui.value.caffeinePresets.without(id)
-            val nextKinds = _ui.value.caffeineQuickKinds
-                .filterNot { it == id }
-                .ifEmpty { HabitPresetDomain.CAFFEINE.defaultQuickKindIds }
+            val nextKinds = _ui.value.caffeineQuickKinds.filterNot { it == id }
             container.prefs.setCaffeinePresets(nextCatalog)
             container.prefs.setCaffeineQuickKinds(nextKinds)
+            // Bump the write gen like updateUiPref so a racing settings
+            // hydrate cannot resurrect the delete (reseed storms).
+            settingsWriteGen++
             _ui.update { it.copy(caffeinePresets = nextCatalog, caffeineQuickKinds = nextKinds) }
         }
     }
@@ -1555,11 +1556,12 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         launchPref {
             container.nicotineRepository.reassignKind(id, NicotineKind.OTHER.storageKey)
             val nextCatalog = _ui.value.nicotinePresets.without(id)
-            val nextKinds = _ui.value.nicotineQuickKinds
-                .filterNot { it == id }
-                .ifEmpty { HabitPresetDomain.NICOTINE.defaultQuickKindIds }
+            val nextKinds = _ui.value.nicotineQuickKinds.filterNot { it == id }
             container.prefs.setNicotinePresets(nextCatalog)
             container.prefs.setNicotineQuickKinds(nextKinds)
+            // Bump the write gen like updateUiPref so a racing settings
+            // hydrate cannot resurrect the delete (reseed storms).
+            settingsWriteGen++
             _ui.update { it.copy(nicotinePresets = nextCatalog, nicotineQuickKinds = nextKinds) }
         }
     }

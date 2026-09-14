@@ -108,7 +108,7 @@ fun NicotineSettingsScreen(
                                 } else {
                                     ui.nicotineQuickKinds + preset.id
                                 }
-                                vm.setNicotineQuickKinds(next.ifEmpty { HabitPresetDomain.NICOTINE.defaultQuickKindIds })
+                                vm.setNicotineQuickKinds(next)
                             },
                             label = { Text(presetLabel(preset, HabitPresetDomain.NICOTINE)) },
                             colors = FilterChipDefaults.filterChipColors(
