@@ -18,19 +18,23 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -238,6 +242,8 @@ fun CaffeineHistorySheet(
     onDismiss: () -> Unit,
     onEdit: (CaffeineEntry) -> Unit,
     onDelete: (CaffeineEntry) -> Unit,
+    /** Custom-amount log: with every preset deleted this is the only path left (5.0.0 MUST 2). */
+    onCustom: () -> Unit = {},
 ) {
     val sheetState = rememberChompassSheetState()
     val ctx = LocalContext.current
@@ -299,7 +305,18 @@ fun CaffeineHistorySheet(
                     }
                 }
             }
-            Spacer(Modifier.height(16.dp))
+            TextButton(
+                onClick = onCustom,
+                modifier = Modifier.defaultMinSize(minHeight = 48.dp),
+            ) {
+                Icon(
+                    Icons.Filled.Edit,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.caffeine_custom_short))
+            }
         }
     }
 }
