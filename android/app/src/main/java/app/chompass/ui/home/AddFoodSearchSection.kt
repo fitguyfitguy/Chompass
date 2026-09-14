@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -45,8 +46,8 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.QrCodeScanner
@@ -58,7 +59,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SheetState
-import androidx.compose.material3.Switch
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -74,7 +74,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -142,13 +141,13 @@ internal fun AddFoodQueryRow(
     groundedEnabled: Boolean,
     aiFeaturesEnabled: Boolean,
     barcodeEnabled: Boolean,
+    fieldModifier: Modifier = Modifier,
     /** Trackers pill (5.0.0 MUST 1): shown while any tracker row renders. */
     trackersPillVisible: Boolean = false,
     trackersExpanded: Boolean = false,
     onTrackersToggle: () -> Unit = {},
     /** Quick-log rows revealed by the pill; null when no tracker renders. */
     trackersContent: (@Composable () -> Unit)? = null,
-    fieldModifier: Modifier = Modifier,
 ) {
     val submit = { if (query.isNotBlank() && aiFeaturesEnabled) onAnalyze(query.trim()) }
     Column(Modifier.fillMaxWidth()) {
@@ -350,98 +349,53 @@ private fun AddFoodToolButton(
 }
 
 /**
- * The Open Food Facts opt-in, sitting directly under the "Search food
- * databases" heading among the rows it governs.
+ * The Open Food Facts on-state chip on the "Search food databases" heading
+ * (5.0.0 MUST 4). With the search on, this is the fast privacy-off: one tap
+ * on the heading line turns the packaged-products feed back off — no full
+ * row, no detour into Settings. The Settings > Food & Entry switch keeps the
+ * authority; this only mirrors and flips it, so the two never disagree.
  *
- * Typing is otherwise entirely on-device: the saved foods come from the local
- * index and USDA / Swiss from the bundled SQLite files, so nothing the user
- * types reaches a third party until this is switched on. It defaults off, and
- * its heading renders whether or not the bundled sources matched — this is the
- * one row in the list that has to be findable when the list is empty.
- *
- * The heading above supplies the verb, so the row is one line carrying the
- * source's own name — the same resource the Settings row and the result badges
- * use, and nothing this branch had to invent and leave untranslated in
- * eighteen locales. A line of explanation under it would say what the heading
- * and the rows either side already say, at the price of a row's worth of a
- * sheet that is mostly list.
- *
- * This is the Settings > Food & Entry > Open Food Facts switch, not a copy of
- * it, so flipping it here moves the Settings row too and the choice survives
- * the sheet, the screen and the process. Barcode scanning is unaffected either
- * way: that is an explicit lookup of one product the user pointed the camera
- * at, not a feed of everything they type.
+ * The off state is the heading's existing inline hint (settings link), so
+ * both states occupy the same single heading line and the results list below
+ * never gains or loses a row to the toggle. Role.Switch lets TalkBack read
+ * the on/off state; the label is the source's own name — the same resource
+ * the Settings row, the off-hint and the result badges use.
  */
 @Composable
-private fun PackagedSearchToggle(
-    enabled: Boolean,
-    onChange: (Boolean) -> Unit,
-) {
-    val isDark = isDarkTheme()
-    // Shaped like the suggestion rows it sits above rather than like the tool
-    // pills up by the field: it belongs to this list, and it is the row that
-    // decides how long the list is.
-    val shape = RoundedCornerShape(AppRadii.Container)
-    val border = if (enabled) {
-        AppColors.Calorie.copy(alpha = 0.45f)
-    } else if (isDark) {
-        AppColors.HairlineBorderDark
-    } else {
-        AppColors.HairlineBorderLight
-    }
-    // Off is an outline over whatever the sheet already is, so an opt-in the
-    // user has not taken adds no weight to a list of their own foods.
-    val fill = if (enabled) AppColors.Calorie.copy(alpha = 0.10f) else Color.Transparent
+private fun PackagedSearchOffChip(onOff: () -> Unit) {
+    val shape = RoundedCornerShape(AppRadii.Field)
     Row(
         Modifier
-            .fillMaxWidth()
+            // 48dp touch target without a taller visual chip: the heading
+            // grows into its own tap area, the chip stays a one-line accent.
+            .heightIn(min = 48.dp)
             .clip(shape)
-            .background(fill)
-            .border(0.5.dp, border, shape)
-            // One target for the whole row, and Role.Switch so TalkBack reads
-            // the on/off state. The Switch below is decorative for that reason:
-            // its own handler would make a second, smaller target saying the
-            // same thing.
+            .background(AppColors.Calorie.copy(alpha = 0.10f))
+            .border(0.5.dp, AppColors.Calorie.copy(alpha = 0.45f), shape)
             .toggleable(
-                value = enabled,
+                value = true,
                 role = Role.Switch,
-                onValueChange = onChange,
+                onValueChange = { onOff() },
             )
-            .padding(start = 12.dp, end = 6.dp, top = 6.dp, bottom = 6.dp),
+            .padding(horizontal = 10.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Icon(
-            // The icon Settings gives this source, so the two rows read as one
-            // control seen twice.
+            // The icon Settings gives this source, so the two controls read
+            // as one seen twice.
             Icons.Outlined.Public,
             contentDescription = null,
-            tint = if (enabled) {
-                AppColors.Calorie
-            } else {
-                MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
-            },
-            modifier = Modifier.size(20.dp),
+            tint = AppColors.Calorie,
+            modifier = Modifier.size(14.dp),
         )
+        Spacer(Modifier.width(4.dp))
         Text(
             stringResource(R.string.food_search_source_off),
-            modifier = Modifier.weight(1f),
-            fontSize = 15.sp,
+            fontSize = 11.sp,
             fontWeight = FontWeight.Medium,
-            color = if (enabled) {
-                MaterialTheme.colorScheme.onSurface
-            } else {
-                MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
-            },
+            color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-        )
-        // Scaled down: a full-size M3 Switch is built for a settings list with
-        // 56dp rows and overpowers a suggestion row.
-        Switch(
-            checked = enabled,
-            onCheckedChange = null,
-            modifier = Modifier.scale(0.75f),
         )
     }
 }
@@ -577,14 +531,16 @@ internal fun AddFoodSuggestionList(
                 }
                 // Always, matched or not. The label lands ahead of its rows so
                 // a wait has somewhere to show and the rows fill in underneath
-                // it. With the opt-in off there is no row and no extra height:
-                // a hint on the heading links to the setting; on, the switch
-                // sits between the heading and the rows it lengthens.
+                // it. Either opt-in state stays on this one heading line (5.0.0
+                // MUST 4): off, a muted hint links to the setting; on, the
+                // Open Food Facts chip on the same line turns it back off.
                 item(key = "section:DATABASES") {
                     AddFoodSectionLabel(
                         AddFoodGroup.DATABASES,
                         pending = networkPending,
-                        trailing = if (packagedSearchEnabled) null else {
+                        trailing = if (packagedSearchEnabled) {
+                            { PackagedSearchOffChip(onOff = { onPackagedSearchChange(false) }) }
+                        } else {
                             {
                                 Row(
                                     Modifier
@@ -607,14 +563,6 @@ internal fun AddFoodSuggestionList(
                             }
                         },
                     )
-                }
-                if (packagedSearchEnabled) {
-                    item(key = "packaged-toggle") {
-                        PackagedSearchToggle(
-                            enabled = packagedSearchEnabled,
-                            onChange = onPackagedSearchChange,
-                        )
-                    }
                 }
                 items(databaseRows, key = { it.key }) { suggestion ->
                     AddFoodSuggestionRow(
