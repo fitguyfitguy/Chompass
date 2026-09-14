@@ -1505,15 +1505,8 @@
     <string name="edit_icon_set_photo">Ustaw zdjęcie</string>
     <string name="edit_icon_remove_photo">Usuń zdjęcie</string>
     <string name="edit_icon_photo_failed">Nie udało się odczytać tego zdjęcia</string>
-    <string name="edit_reprocess_label">Co się zmieniło?</string>
     <string name="edit_reprocess_hint">Opisz korektę, np. duża miska, smażone na maśle, mleko owsiane zamiast krowiego</string>
     <string name="edit_reprocess_explain">AI przeliczy nazwę, porcję, kalorie i makroskładniki z Twojej notatki. Przejrzyj zmiany, a następnie stuknij Zapisz.</string>
-    <string name="edit_reprocess_context">Obecny wpis</string>
-    <string name="edit_reprocess_chip_portion">Mniejsza porcja</string>
-    <string name="edit_reprocess_chip_larger">Większa porcja</string>
-    <string name="edit_reprocess_chip_oil">Dodatkowy olej / masło</string>
-    <string name="edit_reprocess_chip_brand">Inna marka</string>
-    <string name="edit_reprocess_chip_prep">Inne przygotowanie</string>
     <string name="edit_reprocess">Popraw z AI</string>
     <string name="edit_reprocessing">Poprawianie…</string>
     <string name="edit_reprocessing_failed">Korekta nie powiodła się</string>

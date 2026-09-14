@@ -194,8 +194,6 @@ export const en = Object.freeze({
   "settings.progress_nutrient_averages_warning_body": "Open Food Facts and photo analysis often omit or guess these values when the label does not list them. The average only includes what was logged, so it can be off.",
   "settings.progress_nutrient_averages_confirm": "Show them",
 
-
-
   // Onboarding
   "onboarding.welcome_title": "Welcome to Chompass",
   "onboarding.welcome_body": "Track food. Keep control.",
@@ -619,11 +617,7 @@ export const en = Object.freeze({
   "diary.week_of": "Week of {date}",
 
   // entry.* (PWA UI audit sweep, 2026-08)
-  "entry.chip_different_brand": "Different brand",
-  "entry.chip_different_cooking": "Different cooking",
-  "entry.chip_extra_oil": "Extra oil / butter",
-  "entry.chip_larger_portion": "Larger portion",
-  "entry.chip_smaller_portion": "Smaller portion",
+
   "entry.correct_action": "Correct with AI",
   "entry.correct_diff_hint": "Review the updated values above, then tap Save to keep them.",
   "entry.correct_diff_title": "What changed",

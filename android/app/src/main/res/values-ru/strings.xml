@@ -1100,7 +1100,8 @@
     <string name="analysis_queue_minutes_ago">%1$d мин назад</string>
     <string name="analysis_queue_hours_ago">%1$d ч назад</string>
     <string name="analysis_queue_days_ago">%1$d дн. назад</string>
-    <string name="analysis_queue_on_day">на</string>    <string name="action_retry">Повторить</string>
+    <string name="analysis_queue_on_day">на</string>
+    <string name="action_retry">Повторить</string>
     <string name="action_show">Показать</string>
     <string name="error_failed_input_missing">Сохранённый ввод не удалось восстановить. Сделай новое фото.</string>
     <string name="export_body_metrics_empty">Записей о весе, жире или измерениях для экспорта не найдено.</string>
@@ -1408,16 +1409,9 @@
     <string name="copy_to">Скопировать в</string>
     <string name="edit_note_placeholder">Заметка (необязательно)</string>
     <string name="edit_note_section">Заметка</string>
-    <string name="edit_reprocess_chip_brand">Другой бренд</string>
-    <string name="edit_reprocess_chip_larger">Порция больше</string>
-    <string name="edit_reprocess_chip_oil">Доп. масло / сливочное масло</string>
-    <string name="edit_reprocess_chip_portion">Порция меньше</string>
-    <string name="edit_reprocess_chip_prep">Другое приготовление</string>
-    <string name="edit_reprocess_context">Текущая запись</string>
     <string name="edit_reprocess_diff_row">%1$s: %2$s → %3$s</string>
     <string name="edit_reprocess_diff_title">Что изменилось</string>
     <string name="edit_reprocess_explain">ИИ пересчитает название, порцию, калории и макросы по твоей заметке. Проверь изменения и нажми «Сохранить».</string>
-    <string name="edit_reprocess_label">Что изменилось?</string>
     <string name="edit_reprocess_review_hint">Проверь значения выше и нажми «Сохранить», чтобы применить их.</string>
     <string name="entry_analysis_field_pending">Порция определяется…</string>
     <string name="entry_analysis_micros_found">Найдено ещё %d питательных веществ</string>

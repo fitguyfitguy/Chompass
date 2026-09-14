@@ -758,7 +758,8 @@
     <string name="analysis_queue_minutes_ago">%1$d хв тому</string>
     <string name="analysis_queue_hours_ago">%1$d год тому</string>
     <string name="analysis_queue_days_ago">%1$d дн. тому</string>
-    <string name="analysis_queue_on_day">на</string>    <string name="action_retry">Повторити</string>
+    <string name="analysis_queue_on_day">на</string>
+    <string name="action_retry">Повторити</string>
     <string name="action_show">Показати</string>
     <string name="action_undo">Скасувати</string>
     <string name="action_what_if">Що як?</string>
@@ -847,16 +848,9 @@
     <string name="edit_note_placeholder">Нотатка (необов\'язково)</string>
     <string name="edit_note_section">Нотатка</string>
     <string name="edit_reprocess">Виправити за допомогою ШІ</string>
-    <string name="edit_reprocess_chip_brand">Інший бренд</string>
-    <string name="edit_reprocess_chip_larger">Більша порція</string>
-    <string name="edit_reprocess_chip_oil">Додаткова олія / масло</string>
-    <string name="edit_reprocess_chip_portion">Менша порція</string>
-    <string name="edit_reprocess_chip_prep">Інше приготування</string>
-    <string name="edit_reprocess_context">Поточний запис</string>
     <string name="edit_reprocess_diff_row">%1$s: %2$s → %3$s</string>
     <string name="edit_reprocess_diff_title">Що змінилося</string>
     <string name="edit_reprocess_explain">ШІ перерахує назву, порцію, калорії та макроси за твоєю нотаткою. Переглянь зміни, потім натисни «Зберегти».</string>
-    <string name="edit_reprocess_label">Що змінилося?</string>
     <string name="edit_reprocess_review_hint">Переглянь оновлені значення вище, потім натисни «Зберегти», щоб застосувати їх.</string>
     <string name="edit_reprocess_section">Попросити ШІ виправити</string>
     <string name="edit_reprocessing">Виправлення…</string>

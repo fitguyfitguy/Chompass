@@ -1,6 +1,11 @@
 package app.chompass.ui.home
 
 import androidx.compose.foundation.LocalOverscrollFactory
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.OverscrollEffect
 import androidx.compose.foundation.OverscrollFactory
 import androidx.compose.foundation.background
@@ -46,6 +51,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
@@ -62,6 +68,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -352,6 +359,11 @@ internal fun SheetPillCard(content: @Composable ColumnScope.() -> Unit) {
     )
 }
 
+/**
+ * Quantity + unit for review/edit sheets. Collapsed by default to a summary
+ * row (same pattern as the macro pickers); tap expands the dual wheel.
+ * Last wheel-vs-numpad mode (#62) is honored when expanded.
+ */
 @Composable
 internal fun ServingQuantityCard(
     quantityText: String,
@@ -399,15 +411,7 @@ internal fun ServingQuantityCard(
         focusManager.clearFocus(force = true)
         keyboardController?.hide()
     }
-    // Base quantity for relative edits / expression previews: the committed
-    // serving grams converted back into the selected unit (mirrors the
-    // sheets' currentQuantity). Expressions ignore the base; only leading
-    // +/- deltas use it.
-    val currentQuantityForBase = if (selectedOption.gramsPerUnit > 0) {
-        servingSizeGrams / selectedOption.gramsPerUnit
-    } else {
-        servingSizeGrams
-    }
+    var expanded by remember { mutableStateOf(false) }
     // Per-entry custom serving: rename / re-weight the selected unit inline.
     // Available on any unit — including plain grams — so a dish without a
     // heuristic or analyzed unit (homemade curry, a stew, ...) can still get a
@@ -471,33 +475,61 @@ internal fun ServingQuantityCard(
         }
         val currentQty = parsedQuantity ?: 1.0
         val showUnitWheel = pickerOptions.size > 1
+        val summaryValue = buildString {
+            val qty = parsedQuantity
+            if (qty != null) {
+                append(ServingUnitOption.formatQuantity(qty))
+                append(' ')
+            } else if (quantityText.isNotBlank()) {
+                append(quantityText.trim())
+                append(' ')
+            }
+            append(selectedUnitLabel)
+        }
+        val rotation by animateFloatAsState(
+            targetValue = if (expanded) 180f else 0f,
+            animationSpec = spring(dampingRatio = 0.75f),
+        )
 
         Row(
-            Modifier.fillMaxWidth().padding(start = 18.dp, end = 18.dp, top = 12.dp, bottom = 4.dp),
-            verticalAlignment = Alignment.CenterVertically
+            Modifier
+                .fillMaxWidth()
+                .clickable(enabled = enabled) {
+                    expanded = !expanded
+                    if (!expanded) {
+                        dismissKeyboard()
+                        editingServing = false
+                    }
+                }
+                .padding(horizontal = 18.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 stringResource(R.string.sheet_quantity),
                 fontSize = 17.sp,
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .clickable { dismissKeyboard() }
+                modifier = Modifier.padding(end = 8.dp),
             )
-            Spacer(
-                Modifier
-                    .weight(1f)
-                    .clickable { dismissKeyboard() }
-            )
-            if (showUnitWheel) {
-                Text(
-                    stringResource(R.string.sheet_unit),
-                    fontSize = 17.sp,
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                        .clickable { dismissKeyboard() }
+            Spacer(Modifier.weight(1f))
+            if (isLoadingUnits && unitOptions.isEmpty()) {
+                CircularProgressIndicator(
+                    color = AppColors.Calorie,
+                    strokeWidth = 2.dp,
+                    modifier = Modifier.size(18.dp),
                 )
+                Spacer(Modifier.width(8.dp))
+            } else {
+                Text(
+                    summaryValue,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = AppColors.Calorie,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(2f, fill = false),
+                )
+                Spacer(Modifier.width(8.dp))
             }
-            if (canCustomizeServing && !editingServing) {
+            if (expanded && canCustomizeServing && !editingServing) {
                 Icon(
                     Icons.Filled.Edit,
                     contentDescription = stringResource(R.string.cd_edit_serving),
@@ -508,173 +540,188 @@ internal fun ServingQuantityCard(
                         .clickable {
                             dismissKeyboard()
                             editingServing = true
-                        }
-                )
-            }
-        }
-
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .padding(start = 18.dp, end = 18.dp, bottom = 12.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            if (showUnitWheel) {
-                WheelSelectionHighlight(Modifier.align(Alignment.Center))
-            }
-            Row(
-                Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                SplitDecimalWheelPicker(
-                    value = currentQty.coerceIn(0.1, maxQuantity),
-                    onValueChange = { newVal ->
-                        val formatted = ServingUnitOption.formatQuantity(newVal)
-                        onQuantityChange(formatted)
-                    },
-                    min = 0,
-                    max = maxQuantity.toInt(),
-                    unit = if (showUnitWheel) null else selectedUnitLabel,
-                    showSelectionHighlight = !showUnitWheel,
-                    modifier = if (showUnitWheel) Modifier.weight(1.4f) else Modifier.fillMaxWidth(),
-                )
-                if (showUnitWheel) {
-                    UnitWheelPicker(
-                        options = unitOptions,
-                        selectedId = selectedUnitId,
-                        onSelect = onSelectedUnitChange,
-                        showSelectionHighlight = false,
-                        modifier = Modifier.weight(1f),
-                    )
-                }
-            }
-        }
-
-        if (isLoadingUnits && unitOptions.isEmpty()) {
-            SheetHairline()
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 18.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                CircularProgressIndicator(
-                    color = AppColors.Calorie,
-                    strokeWidth = 2.dp,
-                    modifier = Modifier.size(18.dp),
-                )
-                Text(
-                    stringResource(R.string.entry_analysis_inferring_units),
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                )
-            }
-        }
-
-        if (canCustomizeServing && editingServing) {
-            SheetHairline()
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 18.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        stringResource(R.string.sheet_serving_custom_name),
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                        modifier = Modifier.width(92.dp)
-                    )
-                    BasicTextField(
-                        value = servingNameDraft,
-                        onValueChange = { servingNameDraft = it },
-                        singleLine = true,
-                        textStyle = TextStyle(
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontSize = 16.sp,
-                        ),
-                        cursorBrush = SolidColor(AppColors.Calorie),
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        stringResource(R.string.sheet_serving_custom_grams),
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                        modifier = Modifier.width(92.dp)
-                    )
-                    BasicTextField(
-                        value = servingGramsDraft,
-                        onValueChange = {
-                            servingGramsDraft = it.filter { c -> c.isDigit() || c == '.' || c == ',' }
                         },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        textStyle = TextStyle(
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontSize = 16.sp,
-                        ),
-                        cursorBrush = SolidColor(AppColors.Calorie),
-                        modifier = Modifier.weight(1f)
-                    )
-                    Spacer(Modifier.width(6.dp))
-                    Text(
-                        stringResource(R.string.unit_g),
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
-                    )
-                    Spacer(Modifier.width(10.dp))
-                    Icon(
-                        Icons.Filled.Check,
-                        contentDescription = stringResource(R.string.cd_apply_serving_edit),
-                        tint = AppColors.Calorie,
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clip(CircleShape)
-                            .clickable {
-                                dismissKeyboard()
-                                if (pushServingEdit()) editingServing = false
-                            }
-                    )
-                    if (!selectedOption.isGramUnit) {
-                        Spacer(Modifier.width(10.dp))
-                        Icon(
-                            Icons.Filled.Delete,
-                            contentDescription = stringResource(R.string.cd_remove_serving_unit),
-                            tint = AppColors.Calorie,
-                            modifier = Modifier
-                                .size(20.dp)
-                                .clip(CircleShape)
-                                .clickable {
-                                    dismissKeyboard()
-                                    ServingUnitOption.servingRemove(
-                                        selectedUnitId = selectedUnitId,
-                                        selectedOption = selectedOption,
-                                        unitOptions = unitOptions,
-                                    )?.let { result ->
-                                        onUnitOptionsChange?.invoke(result.options, result.updated.id)
-                                        editingServing = false
-                                    }
-                                }
+                )
+                Spacer(Modifier.width(8.dp))
+            }
+            Icon(
+                Icons.Filled.KeyboardArrowDown,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                modifier = Modifier.graphicsLayer { rotationZ = rotation },
+            )
+        }
+
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
+            exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f)),
+        ) {
+            Column {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(start = 18.dp, end = 18.dp, bottom = 12.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    if (showUnitWheel) {
+                        WheelSelectionHighlight(Modifier.align(Alignment.Center))
+                    }
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        SplitDecimalWheelPicker(
+                            value = currentQty.coerceIn(0.1, maxQuantity),
+                            onValueChange = { newVal ->
+                                val formatted = ServingUnitOption.formatQuantity(newVal)
+                                onQuantityChange(formatted)
+                            },
+                            min = 0,
+                            max = maxQuantity.toInt(),
+                            unit = if (showUnitWheel) null else selectedUnitLabel,
+                            showSelectionHighlight = !showUnitWheel,
+                            modifier = if (showUnitWheel) Modifier.weight(1.4f) else Modifier.fillMaxWidth(),
+                        )
+                        if (showUnitWheel) {
+                            UnitWheelPicker(
+                                options = unitOptions,
+                                selectedId = selectedUnitId,
+                                onSelect = onSelectedUnitChange,
+                                showSelectionHighlight = false,
+                                modifier = Modifier.weight(1f),
+                            )
+                        }
+                    }
+                }
+
+                if (isLoadingUnits && unitOptions.isEmpty()) {
+                    SheetHairline()
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 18.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    ) {
+                        CircularProgressIndicator(
+                            color = AppColors.Calorie,
+                            strokeWidth = 2.dp,
+                            modifier = Modifier.size(18.dp),
+                        )
+                        Text(
+                            stringResource(R.string.entry_analysis_inferring_units),
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                         )
                     }
                 }
-            }
-        } else if (!selectedOption.isGramUnit) {
-            SheetHairline()
-            Row(
-                Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(stringResource(R.string.label_total), fontSize = 17.sp, modifier = Modifier.weight(1f))
-                Text(
-                    "~${MacroValueFormatter.string(servingSizeGrams)} $gramUnit",
-                    fontSize = 17.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
-                )
+
+                if (canCustomizeServing && editingServing) {
+                    SheetHairline()
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 18.dp, vertical = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                stringResource(R.string.sheet_serving_custom_name),
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                modifier = Modifier.width(92.dp)
+                            )
+                            BasicTextField(
+                                value = servingNameDraft,
+                                onValueChange = { servingNameDraft = it },
+                                singleLine = true,
+                                textStyle = TextStyle(
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontSize = 16.sp,
+                                ),
+                                cursorBrush = SolidColor(AppColors.Calorie),
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                stringResource(R.string.sheet_serving_custom_grams),
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                modifier = Modifier.width(92.dp)
+                            )
+                            BasicTextField(
+                                value = servingGramsDraft,
+                                onValueChange = {
+                                    servingGramsDraft = it.filter { c -> c.isDigit() || c == '.' || c == ',' }
+                                },
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                                textStyle = TextStyle(
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontSize = 16.sp,
+                                ),
+                                cursorBrush = SolidColor(AppColors.Calorie),
+                                modifier = Modifier.weight(1f)
+                            )
+                            Spacer(Modifier.width(6.dp))
+                            Text(
+                                stringResource(R.string.unit_g),
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                            )
+                            Spacer(Modifier.width(10.dp))
+                            Icon(
+                                Icons.Filled.Check,
+                                contentDescription = stringResource(R.string.cd_apply_serving_edit),
+                                tint = AppColors.Calorie,
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .clip(CircleShape)
+                                    .clickable {
+                                        dismissKeyboard()
+                                        if (pushServingEdit()) editingServing = false
+                                    }
+                            )
+                            if (!selectedOption.isGramUnit) {
+                                Spacer(Modifier.width(10.dp))
+                                Icon(
+                                    Icons.Filled.Delete,
+                                    contentDescription = stringResource(R.string.cd_remove_serving_unit),
+                                    tint = AppColors.Calorie,
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                        .clip(CircleShape)
+                                        .clickable {
+                                            dismissKeyboard()
+                                            ServingUnitOption.servingRemove(
+                                                selectedUnitId = selectedUnitId,
+                                                selectedOption = selectedOption,
+                                                unitOptions = unitOptions,
+                                            )?.let { result ->
+                                                onUnitOptionsChange?.invoke(result.options, result.updated.id)
+                                                editingServing = false
+                                            }
+                                        }
+                                )
+                            }
+                        }
+                    }
+                } else if (!selectedOption.isGramUnit) {
+                    SheetHairline()
+                    Row(
+                        Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(stringResource(R.string.label_total), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                        Text(
+                            "~${MacroValueFormatter.string(servingSizeGrams)} $gramUnit",
+                            fontSize = 17.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                        )
+                    }
+                }
             }
         }
     }

@@ -761,7 +761,8 @@
     <string name="analysis_queue_minutes_ago">%1$d मिनट पहले</string>
     <string name="analysis_queue_hours_ago">%1$d घंटे पहले</string>
     <string name="analysis_queue_days_ago">%1$d दिन पहले</string>
-    <string name="analysis_queue_on_day">के लिए</string>    <string name="action_retry">पुनः प्रयास</string>
+    <string name="analysis_queue_on_day">के लिए</string>
+    <string name="action_retry">पुनः प्रयास</string>
     <string name="action_show">दिखाएं</string>
     <string name="action_undo">पूर्ववत</string>
     <string name="action_what_if">क्या होगा अगर?</string>
@@ -876,16 +877,9 @@
     <string name="edit_note_placeholder">नोट (वैकल्पिक)</string>
     <string name="edit_note_section">नोट</string>
     <string name="edit_reprocess">AI से सुधारें</string>
-    <string name="edit_reprocess_chip_brand">अलग ब्रांड</string>
-    <string name="edit_reprocess_chip_larger">बड़ी सर्विंग</string>
-    <string name="edit_reprocess_chip_oil">अतिरिक्त तेल / मक्खन</string>
-    <string name="edit_reprocess_chip_portion">छोटी सर्विंग</string>
-    <string name="edit_reprocess_chip_prep">अलग पकाना</string>
-    <string name="edit_reprocess_context">वर्तमान प्रविष्टि</string>
     <string name="edit_reprocess_diff_row">%1$s: %2$s → %3$s</string>
     <string name="edit_reprocess_diff_title">क्या बदला</string>
     <string name="edit_reprocess_explain">AI आपके नोट से नाम, सर्विंग, कैलोरी और मैक्रोज़ की पुनर्गणना करेगा। बदलाव देखें, फिर सहेजें पर टैप करें।</string>
-    <string name="edit_reprocess_label">क्या बदला?</string>
     <string name="edit_reprocess_review_hint">ऊपर अपडेट किए गए मान देखें, फिर उन्हें रखने के लिए सहेजें पर टैप करें।</string>
     <string name="edit_reprocess_section">AI से सुधारने को कहें</string>
     <string name="edit_reprocessing">सुधारा जा रहा है…</string>

@@ -65,6 +65,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextOverflow
 import app.chompass.R
 import app.chompass.models.LocaleFormat
 import app.chompass.models.FoodEntry
@@ -83,8 +84,6 @@ import app.chompass.ui.components.DateWheelPicker
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.FudGlassPrimaryButton
-import app.chompass.ui.components.kcalText
-import app.chompass.ui.components.macroGramsText
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import java.time.LocalDate
@@ -111,7 +110,7 @@ import androidx.compose.foundation.layout.WindowInsets
  *   - Initial values come from the existing entry; save mutates it via onSave.
  * Deletion is handled by swipe-to-delete on the Home food log list.
  */
-@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditFoodEntrySheet(
     entry: FoodEntry,
@@ -209,6 +208,7 @@ fun EditFoodEntrySheet(
     val scale = ServingUnitOption.servingScale(recordedServing, servingGrams, baseServingGrams)
     var mealType by remember(entry) { mutableStateOf(currentBaseEntry.mealType) }
     var moreNutritionExpanded by remember { mutableStateOf(false) }
+    var aiCorrectExpanded by remember { mutableStateOf(false) }
     var nutritionUnlocked by remember { mutableStateOf(false) }
     var editableCalories by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.calories) }
     var editableProtein by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.protein) }
@@ -778,7 +778,141 @@ fun EditFoodEntrySheet(
             }
 
             if (aiFeaturesEnabled) {
-                item { SheetSectionHeader(stringResource(R.string.edit_reprocess_section)) }
+                val showAiCorrectBody = aiCorrectExpanded ||
+                    isReprocessing ||
+                    changedFields.isNotEmpty() ||
+                    errorText != null
+                item {
+                    SheetPillRow(
+                        onClick = {
+                            if (!isReprocessing) aiCorrectExpanded = !aiCorrectExpanded
+                        },
+                    ) {
+                        Text(
+                            stringResource(R.string.edit_reprocess_section),
+                            fontSize = 17.sp,
+                            modifier = Modifier.weight(1f),
+                        )
+                        if (!showAiCorrectBody && noteText.isNotBlank()) {
+                            Text(
+                                noteText,
+                                fontSize = 15.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(end = 8.dp),
+                            )
+                        }
+                        Icon(
+                            if (showAiCorrectBody) Icons.Filled.KeyboardArrowDown
+                            else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        )
+                    }
+                }
+                if (showAiCorrectBody) {
+                    item {
+                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            Text(
+                                stringResource(R.string.edit_reprocess_explain),
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                lineHeight = 18.sp,
+                            )
+                            OutlinedTextField(
+                                value = noteText,
+                                onValueChange = {
+                                    noteText = it
+                                    changedFields = emptyList()
+                                },
+                                enabled = !isReprocessing,
+                                placeholder = {
+                                    Text(
+                                        stringResource(R.string.edit_reprocess_hint),
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled)
+                                    )
+                                },
+                                shape = RoundedCornerShape(20.dp),
+                                modifier = Modifier.fillMaxWidth().heightIn(min = 90.dp)
+                            )
+
+                            if (isReprocessing) {
+                                val phase = reprocessPhase
+                                if (phase != null && reprocessPartial?.hasAnyField == true) {
+                                    ProgressiveAnalysisCard(partial = reprocessPartial!!)
+                                } else {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                    ) {
+                                        androidx.compose.material3.CircularProgressIndicator(
+                                            modifier = Modifier.size(18.dp),
+                                            strokeWidth = 2.dp,
+                                            color = AppColors.Calorie,
+                                        )
+                                        Text(
+                                            when (phase) {
+                                                EntryAnalysisPhase.Preparing ->
+                                                    stringResource(R.string.entry_analysis_phase_preparing)
+                                                EntryAnalysisPhase.LookingUpBarcode ->
+                                                    stringResource(R.string.entry_analysis_phase_looking_up_barcode)
+                                                EntryAnalysisPhase.CallingAi ->
+                                                    stringResource(R.string.entry_analysis_phase_calling_ai)
+                                                EntryAnalysisPhase.Parsing ->
+                                                    stringResource(R.string.entry_analysis_phase_parsing)
+                                                else -> stringResource(R.string.edit_reprocessing)
+                                            },
+                                            fontSize = 13.sp,
+                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                        )
+                                    }
+                                }
+                            }
+
+                            if (!isReprocessing && changedFields.isNotEmpty()) {
+                                SheetPillCard {
+                                    Column(
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 18.dp, vertical = 12.dp),
+                                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                                    ) {
+                                        Text(
+                                            stringResource(R.string.edit_reprocess_diff_title),
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = AppColors.Calorie,
+                                        )
+                                        changedFields.forEach { row ->
+                                            Text(
+                                                stringResource(
+                                                    R.string.edit_reprocess_diff_row,
+                                                    row.label,
+                                                    row.before,
+                                                    row.after,
+                                                ),
+                                                fontSize = 13.sp,
+                                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.78f),
+                                            )
+                                        }
+                                        Text(
+                                            stringResource(R.string.edit_reprocess_review_hint),
+                                            fontSize = 12.sp,
+                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                        )
+                                    }
+                                }
+                            }
+
+                            errorText?.let {
+                                Text(it, color = Color.Red, fontSize = 13.sp, modifier = Modifier.padding(top = 4.dp))
+                            }
+                        }
+                    }
+                }
             } else {
                 // Master AI switch off (Codeberg #20): no Ask-AI-to-correct section.
                 // The stored note stays editable as a plain field so notes on
@@ -799,181 +933,6 @@ fun EditFoodEntrySheet(
                     )
                 }
             }
-            if (aiFeaturesEnabled) {
-            item {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text(
-                        stringResource(R.string.edit_reprocess_context),
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                    )
-                    SheetPillCard {
-                        Column(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 18.dp, vertical = 12.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
-                        ) {
-                            Text(
-                                "${currentBaseEntry.emoji ?: "🍽"}  ${currentBaseEntry.name}",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-                            Text(
-                                "${kcalText(currentBaseEntry.calories)} · " +
-                                    macroGramsText(currentBaseEntry.protein) + " P · " +
-                                    macroGramsText(currentBaseEntry.carbs) + " C · " +
-                                    macroGramsText(currentBaseEntry.fat) + " F",
-                                fontSize = 13.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
-                            )
-                            currentBaseEntry.servingSizeGrams?.takeIf { it > 0 }?.let { grams ->
-                                Text(
-                                    stringResource(R.string.home_serving_format, grams.toInt()),
-                                    fontSize = 12.sp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                                )
-                            }
-                        }
-                    }
-
-                    Text(
-                        stringResource(R.string.edit_reprocess_label),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                    Text(
-                        stringResource(R.string.edit_reprocess_explain),
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                        lineHeight = 18.sp,
-                    )
-
-                    val chipLabels = listOf(
-                        stringResource(R.string.edit_reprocess_chip_portion),
-                        stringResource(R.string.edit_reprocess_chip_larger),
-                        stringResource(R.string.edit_reprocess_chip_oil),
-                        stringResource(R.string.edit_reprocess_chip_brand),
-                        stringResource(R.string.edit_reprocess_chip_prep),
-                    )
-                    androidx.compose.foundation.layout.FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        chipLabels.forEach { label ->
-                            androidx.compose.material3.FilterChip(
-                                selected = noteText.contains(label, ignoreCase = true),
-                                enabled = !isReprocessing,
-                                onClick = {
-                                    noteText = if (noteText.isBlank()) label
-                                    else if (noteText.contains(label, ignoreCase = true)) noteText
-                                    else "$noteText, $label"
-                                },
-                                label = { Text(label, fontSize = 13.sp) },
-                                colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = AppColors.Calorie.copy(alpha = 0.18f),
-                                    selectedLabelColor = AppColors.Calorie,
-                                ),
-                            )
-                        }
-                    }
-
-                    OutlinedTextField(
-                        value = noteText,
-                        onValueChange = {
-                            noteText = it
-                            changedFields = emptyList()
-                        },
-                        enabled = !isReprocessing,
-                        placeholder = {
-                            Text(
-                                stringResource(R.string.edit_reprocess_hint),
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled)
-                            )
-                        },
-                        shape = RoundedCornerShape(20.dp),
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 90.dp)
-                    )
-
-                    if (isReprocessing) {
-                        val phase = reprocessPhase
-                        if (phase != null && reprocessPartial?.hasAnyField == true) {
-                            ProgressiveAnalysisCard(partial = reprocessPartial!!)
-                        } else {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                            ) {
-                                androidx.compose.material3.CircularProgressIndicator(
-                                    modifier = Modifier.size(18.dp),
-                                    strokeWidth = 2.dp,
-                                    color = AppColors.Calorie,
-                                )
-                                Text(
-                                    when (phase) {
-                                        EntryAnalysisPhase.Preparing ->
-                                            stringResource(R.string.entry_analysis_phase_preparing)
-                                        EntryAnalysisPhase.LookingUpBarcode ->
-                                            stringResource(R.string.entry_analysis_phase_looking_up_barcode)
-                                        EntryAnalysisPhase.CallingAi ->
-                                            stringResource(R.string.entry_analysis_phase_calling_ai)
-                                        EntryAnalysisPhase.Parsing ->
-                                            stringResource(R.string.entry_analysis_phase_parsing)
-                                        else -> stringResource(R.string.edit_reprocessing)
-                                    },
-                                    fontSize = 13.sp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                                )
-                            }
-                        }
-                    }
-
-                    if (!isReprocessing && changedFields.isNotEmpty()) {
-                        SheetPillCard {
-                            Column(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 18.dp, vertical = 12.dp),
-                                verticalArrangement = Arrangement.spacedBy(6.dp),
-                            ) {
-                                Text(
-                                    stringResource(R.string.edit_reprocess_diff_title),
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = AppColors.Calorie,
-                                )
-                                changedFields.forEach { row ->
-                                    Text(
-                                        stringResource(
-                                            R.string.edit_reprocess_diff_row,
-                                            row.label,
-                                            row.before,
-                                            row.after,
-                                        ),
-                                        fontSize = 13.sp,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.78f),
-                                    )
-                                }
-                                Text(
-                                    stringResource(R.string.edit_reprocess_review_hint),
-                                    fontSize = 12.sp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                                )
-                            }
-                        }
-                    } else if (!isReprocessing && noteText.trim() == (currentBaseEntry.customNote ?: "") &&
-                        changedFields.isEmpty() && errorText == null
-                    ) {
-                        // idle
-                    }
-
-                    errorText?.let {
-                        Text(it, color = Color.Red, fontSize = 13.sp, modifier = Modifier.padding(top = 4.dp))
-                    }
-                }
-            }
-            } // aiFeaturesEnabled
 
             // Share this meal as a fudai://add-meal link (issue #107)
             item { SheetSectionHeader(stringResource(R.string.section_share)) }
