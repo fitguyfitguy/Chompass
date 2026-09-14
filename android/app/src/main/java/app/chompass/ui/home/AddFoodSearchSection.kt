@@ -1,8 +1,8 @@
 package app.chompass.ui.home
 
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.StartOffset
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -30,7 +30,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun
@@ -65,6 +64,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.input.key.Key
@@ -72,8 +72,15 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathMeasure
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -597,76 +604,174 @@ private fun AddFoodEmptyLine(@StringRes textRes: Int) {
 @Composable
 private fun AddFoodSectionLabel(group: AddFoodGroup, pending: Boolean = false) {
     Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(top = 4.dp, bottom = 2.dp),
+        // The clearance the track needs doubles as the label's own breathing
+        // room, which is why the row itself no longer adds any: the heading
+        // ends up a couple of dp taller than the padded text it replaces
+        // rather than the full inset taller.
+        Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        // The dots get a mirrored slot on the other side of the label, so the
-        // label sits at the same x whether or not they are showing: the text
-        // must not slide sideways the moment the network settles.
-        if (pending) Spacer(Modifier.width(PENDING_DOTS_SLOT))
-        Text(
-            stringResource(group.labelRes),
-            fontSize = 12.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-            textAlign = TextAlign.Center,
-        )
-        if (pending) {
-            Box(Modifier.width(PENDING_DOTS_SLOT), contentAlignment = Alignment.Center) {
-                PendingDots()
-            }
+        Box(
+            // The track is inset from the text on every label, pending or not,
+            // so the heading sits at the same place and the sections keep the
+            // same height whether or not something is circling them.
+            Modifier
+                .pendingOrbit(pending)
+                .padding(horizontal = ORBIT_INSET_X, vertical = ORBIT_INSET_Y),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                stringResource(group.labelRes),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                textAlign = TextAlign.Center,
+            )
         }
     }
 }
 
-/** Three 5dp dots plus the gap that separates them from the label. */
-private val PENDING_DOTS_SLOT = 27.dp
+/**
+ * The clearance the orbit runs in, kept free of the label's text. Tight enough
+ * that the track reads as belonging to these words rather than as a ring drawn
+ * round the middle of the sheet — the ends clear the caps by about the width of
+ * the comet itself, which is all the separation a moving stroke needs.
+ */
+private val ORBIT_INSET_X = 8.dp
+private val ORBIT_INSET_Y = 3.dp
+
+/** How thick the comet's head is, and how much of the lap it trails behind it. */
+private val ORBIT_STROKE = 2.dp
+private const val ORBIT_TAIL_FRACTION = 0.3f
+
+/** Segments the tail is drawn in. Enough that the fade reads as a gradient. */
+private const val ORBIT_TAIL_STEPS = 16
+
+/** One lap, in milliseconds. Slow enough to read as travel, not as a spin. */
+private const val ORBIT_LAP_MILLIS = 1900
 
 /**
- * The only "still working" signal in the sheet: three dots breathing in
- * sequence beside the section whose rows are still arriving. A spinner in a
- * band of its own cost 64dp of empty sheet and read as a blocking wait; this
- * sits inside the label, so the rows already found stay the loudest thing on
- * screen and the dots simply stop when the network settles.
+ * How long the comet takes to arrive and to leave. It never blinks on or off:
+ * a wait that begins and ends on a single frame reads as a glitch beside the
+ * label, and the fade-out is the longer of the two so the results landing
+ * underneath are what the eye goes to, not the signal clearing away.
+ */
+private const val ORBIT_FADE_IN_MILLIS = 240
+private const val ORBIT_FADE_OUT_MILLIS = 420
+
+/**
+ * The only "still working" signal in the sheet: a comet lapping the heading of
+ * the section whose rows are still arriving. A spinner in a band of its own
+ * cost 64dp of empty sheet and read as a blocking wait, and dots parked beside
+ * the label only ever held one edge of it; circling the words ties the wait to
+ * the thing being waited on from every side, leaves the rows already found as
+ * the loudest thing on screen, and simply fades out when the network settles.
  */
 @Composable
-private fun PendingDots() {
-    val transition = rememberInfiniteTransition(label = "pendingDots")
-    Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-        repeat(3) { index ->
-            // One driver per dot, read as both fade and scale: a dot that only
-            // fades reads as a flicker, and one that only grows reads as a
-            // wobble. Together they breathe.
-            val phase by transition.animateFloat(
-                initialValue = 0f,
-                targetValue = 1f,
-                animationSpec = infiniteRepeatable(
-                    // Eased rather than linear, so each dot lingers at the ends
-                    // of its travel instead of sawtoothing between them, and
-                    // offset by a third of the cycle so the swell moves left to
-                    // right rather than the three pulsing as one blob.
-                    animation = tween(durationMillis = 620, easing = FastOutSlowInEasing),
-                    repeatMode = RepeatMode.Reverse,
-                    initialStartOffset = StartOffset(index * 170),
-                ),
-                label = "pendingDot$index",
-            )
-            Box(
-                Modifier
-                    .size(5.dp)
-                    .graphicsLayer {
-                        alpha = 0.22f + 0.68f * phase
-                        val scale = 0.62f + 0.38f * phase
-                        scaleX = scale
-                        scaleY = scale
-                    }
-                    .background(AppColors.Calorie, CircleShape),
+private fun Modifier.pendingOrbit(pending: Boolean): Modifier {
+    // Driven from a standing zero rather than from whatever `pending` says on
+    // the first frame, so the comet fades in even when the label enters the
+    // list already waiting — which is the common case, since the databases
+    // heading appears with its search already in flight.
+    val fadeIn = remember { Animatable(0f) }
+    LaunchedEffect(pending) {
+        fadeIn.animateTo(
+            targetValue = if (pending) 1f else 0f,
+            animationSpec = tween(
+                durationMillis = if (pending) ORBIT_FADE_IN_MILLIS else ORBIT_FADE_OUT_MILLIS,
+                easing = LinearEasing,
+            ),
+        )
+    }
+    val alpha = fadeIn.value
+    // Faded fully out is the same as never having been there: dropping the
+    // whole branch takes the infinite transition with it, so a settled sheet is
+    // not invalidating a draw every frame for something nobody can see.
+    if (alpha <= 0f) return this
+    val transition = rememberInfiniteTransition(label = "pendingOrbit")
+    // Linear, and restarting rather than reversing: an eased or reversing lap
+    // reads as something rocking back and forth, not as something going round.
+    val lap by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = ORBIT_LAP_MILLIS, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart,
+        ),
+        label = "pendingOrbitLap",
+    )
+    val color = AppColors.Calorie
+    val track = remember { Path() }
+    val arc = remember { Path() }
+    val measure = remember { PathMeasure() }
+    return drawBehind {
+        val stroke = ORBIT_STROKE.toPx()
+        val bounds = size.toRect().deflate(stroke / 2f)
+        if (bounds.width <= 0f || bounds.height <= 0f) return@drawBehind
+        track.rewind()
+        // Fully rounded ends, so the corners never catch the eye as corners and
+        // the comet keeps an even speed the whole way round the words.
+        track.addRoundRect(RoundRect(bounds, CornerRadius(bounds.height / 2f)))
+        measure.setPath(track, forceClosed = true)
+        val length = measure.length
+        if (length <= 0f) return@drawBehind
+        val head = lap * length
+        val tail = length * ORBIT_TAIL_FRACTION
+        // Drawn as a chain of short arcs rather than one stroke: each carries
+        // its own alpha and width, so the streak thins and fades out behind the
+        // head instead of ending on a hard edge.
+        repeat(ORBIT_TAIL_STEPS) { step ->
+            val fade = 1f - step.toFloat() / ORBIT_TAIL_STEPS
+            drawOrbitArc(
+                measure = measure,
+                arc = arc,
+                from = head - tail * (step + 1) / ORBIT_TAIL_STEPS,
+                to = head - tail * step / ORBIT_TAIL_STEPS,
+                length = length,
+                color = color.copy(alpha = fade * fade * alpha),
+                width = stroke * (0.4f + 0.6f * fade),
             )
         }
     }
+}
+
+/**
+ * One arc of the comet, wrapped onto the closed track: a tail that has run off
+ * the start of the path is drawn in two pieces rather than clamped, which is
+ * what keeps the streak whole as the head crosses the seam.
+ */
+private fun DrawScope.drawOrbitArc(
+    measure: PathMeasure,
+    arc: Path,
+    from: Float,
+    to: Float,
+    length: Float,
+    color: Color,
+    width: Float,
+) {
+    val start = ((from % length) + length) % length
+    val stop = start + (to - from)
+    if (stop <= length) {
+        strokeOrbitSegment(measure, arc, start, stop, color, width)
+    } else {
+        strokeOrbitSegment(measure, arc, start, length, color, width)
+        strokeOrbitSegment(measure, arc, 0f, stop - length, color, width)
+    }
+}
+
+private fun DrawScope.strokeOrbitSegment(
+    measure: PathMeasure,
+    arc: Path,
+    start: Float,
+    stop: Float,
+    color: Color,
+    width: Float,
+) {
+    if (stop <= start) return
+    arc.rewind()
+    measure.getSegment(start, stop, arc, startWithMoveTo = true)
+    drawPath(arc, color, style = Stroke(width = width, cap = StrokeCap.Round))
 }
 
 /**
