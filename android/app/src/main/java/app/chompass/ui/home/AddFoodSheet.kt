@@ -62,6 +62,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -185,6 +187,7 @@ fun AddFoodSheet(
         contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
     ) {
         AddFoodSheetContent(
+            autoFocusQuery = true,
             sheetState = sheetState,
             onPhoto = { onDismiss(); onPhoto() },
             onNote = { onDismiss(); onNote() },
@@ -318,6 +321,7 @@ internal fun AddFoodSheetContent(
     onPickSuggestion: (FoodSuggestion) -> Unit = {},
     onReviewSuggestion: (FoodSuggestion) -> Unit = {},
     onAnalyzeQuery: (String) -> Unit = {},
+    autoFocusQuery: Boolean = false,
 ) {
     val scrollState = rememberScrollState()
     val expandedLabel = stringResource(R.string.cd_expanded)
@@ -331,12 +335,17 @@ internal fun AddFoodSheetContent(
         keyboard?.hide()
         Unit
     }
-    // Reaching the expanded anchor means the user wants to see the list, not
-    // type — the keyboard is covering half of what they just asked for.
-    // Keyed on targetValue so it fires as the sheet starts moving rather than
-    // after it settles.
-    val expanding = sheetState?.targetValue == SheetValue.Expanded
-    LaunchedEffect(expanding) { if (expanding) dismissKeyboard() }
+    val queryFocus = remember { FocusRequester() }
+    // Modal open: arrive tall with the field focused and the keyboard up.
+    // The expand is fired without awaiting its settle so the IME and the
+    // sheet animation run together; keyboard dismissal returns to the user
+    // (back gesture or the field).
+    LaunchedEffect(autoFocusQuery) {
+        if (!autoFocusQuery) return@LaunchedEffect
+        scope.launch { sheetState?.expand() }
+        queryFocus.requestFocus()
+        keyboard?.show()
+    }
     val expandLabel = stringResource(R.string.home_view_more)
     Column(
         Modifier
@@ -368,6 +377,7 @@ internal fun AddFoodSheetContent(
         AddFoodQueryRow(
             query = query,
             onQueryChange = onQueryChange,
+            fieldModifier = Modifier.focusRequester(queryFocus),
             onPhoto = onPhoto,
             onVoice = onVoice,
             onBarcode = onBarcode,
