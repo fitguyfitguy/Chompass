@@ -5,6 +5,12 @@ All notable changes to Chompass are documented here.
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
 
+## [Unreleased]
+
+### Changed
+
+- **More food emojis on the entry picker** (Android): tap the food icon on edit or a favorite to pick from a larger set, including cheese, rice, sandwiches, seafood, and tea.
+
 ## [4.10.0] - 2026-09-14
 
 ### Changed
