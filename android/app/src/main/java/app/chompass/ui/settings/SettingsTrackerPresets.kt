@@ -55,7 +55,6 @@ import app.chompass.ui.home.SheetReviewToolbar
 import app.chompass.ui.home.formatMg
 import app.chompass.ui.home.CaffeineMilkSection
 import app.chompass.ui.theme.AppTextOpacity
-import app.chompass.ui.theme.warning
 
 /**
  * Tracker preset manager pieces (custom / renamed caffeine + nicotine
@@ -447,4 +446,3 @@ internal fun NicotinePresetEditorSheet(
         },
     )
 }
-

@@ -38,7 +38,6 @@ import app.chompass.R
 import app.chompass.models.AutoBalanceMacro
 import app.chompass.models.DietMode
 import app.chompass.models.KetoCarbMode
-import app.chompass.models.LocaleFormat
 import app.chompass.models.MacroPlanMode
 import app.chompass.models.WeightGoal
 import app.chompass.ui.components.FudIconBubble
