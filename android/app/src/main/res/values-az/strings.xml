@@ -752,7 +752,8 @@ bilirsən?</string>
     <string name="analysis_queue_minutes_ago">%1$d dəq əvvəl</string>
     <string name="analysis_queue_hours_ago">%1$d saat əvvəl</string>
     <string name="analysis_queue_days_ago">%1$d gün əvvəl</string>
-    <string name="analysis_queue_on_day">üçün</string>    <string name="action_retry">Yenidən</string>
+    <string name="analysis_queue_on_day">üçün</string>
+    <string name="action_retry">Yenidən</string>
     <string name="action_show">Göstər</string>
     <string name="action_undo">Geri al</string>
     <string name="action_what_if">Nə olardı?</string>
@@ -868,16 +869,9 @@ bilirsən?</string>
     <string name="edit_note_placeholder">Qeyd (istəyə bağlı)</string>
     <string name="edit_note_section">Qeyd</string>
     <string name="edit_reprocess">AI ilə düzəlt</string>
-    <string name="edit_reprocess_chip_brand">Fərqli brend</string>
-    <string name="edit_reprocess_chip_larger">Daha böyük porsiya</string>
-    <string name="edit_reprocess_chip_oil">Əlavə yağ / kərə yağı</string>
-    <string name="edit_reprocess_chip_portion">Daha kiçik porsiya</string>
-    <string name="edit_reprocess_chip_prep">Fərqli bişirmə</string>
-    <string name="edit_reprocess_context">Cari qeyd</string>
     <string name="edit_reprocess_diff_row">%1$s: %2$s → %3$s</string>
     <string name="edit_reprocess_diff_title">Nə dəyişdi</string>
     <string name="edit_reprocess_explain">AI qeydindən adı, porsiyanı, kaloriləri və makroları yenidən hesablayacaq. Dəyişiklikləri nəzərdən keçir, sonra Saxla düyməsinə toxun.</string>
-    <string name="edit_reprocess_label">Nə dəyişdi?</string>
     <string name="edit_reprocess_review_hint">Yuxarıdakı yenilənmiş dəyərləri nəzərdən keçir, saxlamaq üçün Saxla düyməsinə toxun.</string>
     <string name="edit_reprocess_section">AI-dən düzəltməyi xahiş et</string>
     <string name="edit_reprocessing">Düzəldilir…</string>

@@ -762,7 +762,8 @@
     <string name="analysis_queue_minutes_ago">%1$d 分钟前</string>
     <string name="analysis_queue_hours_ago">%1$d 小时前</string>
     <string name="analysis_queue_days_ago">%1$d 天前</string>
-    <string name="analysis_queue_on_day">目标日</string>    <string name="action_retry">重试</string>
+    <string name="analysis_queue_on_day">目标日</string>
+    <string name="action_retry">重试</string>
     <string name="action_show">显示</string>
     <string name="action_undo">撤销</string>
     <string name="action_what_if">会怎样？</string>
@@ -877,16 +878,9 @@
     <string name="edit_note_placeholder">备注（可选）</string>
     <string name="edit_note_section">备注</string>
     <string name="edit_reprocess">用 AI 修正</string>
-    <string name="edit_reprocess_chip_brand">不同品牌</string>
-    <string name="edit_reprocess_chip_larger">份量更大</string>
-    <string name="edit_reprocess_chip_oil">额外油/黄油</string>
-    <string name="edit_reprocess_chip_portion">份量更小</string>
-    <string name="edit_reprocess_chip_prep">不同做法</string>
-    <string name="edit_reprocess_context">当前条目</string>
     <string name="edit_reprocess_diff_row">%1$s：%2$s → %3$s</string>
     <string name="edit_reprocess_diff_title">变化内容</string>
     <string name="edit_reprocess_explain">AI 将根据你的备注重新计算名称、份量、热量和宏量营养素。请查看修改后点击保存。</string>
-    <string name="edit_reprocess_label">哪里变了？</string>
     <string name="edit_reprocess_review_hint">请查看上方更新后的数值，点击保存以保留。</string>
     <string name="edit_reprocess_section">请 AI 修正</string>
     <string name="edit_reprocessing">修正中…</string>

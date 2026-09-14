@@ -760,7 +760,8 @@
     <string name="analysis_queue_minutes_ago">%1$d 分前</string>
     <string name="analysis_queue_hours_ago">%1$d 時間前</string>
     <string name="analysis_queue_days_ago">%1$d 日前</string>
-    <string name="analysis_queue_on_day">対象日</string>    <string name="action_retry">再試行</string>
+    <string name="analysis_queue_on_day">対象日</string>
+    <string name="action_retry">再試行</string>
     <string name="action_show">表示</string>
     <string name="action_undo">戻す</string>
     <string name="action_what_if">どうなる？</string>
@@ -875,16 +876,9 @@
     <string name="edit_note_placeholder">メモ（任意）</string>
     <string name="edit_note_section">メモ</string>
     <string name="edit_reprocess">AI で修正</string>
-    <string name="edit_reprocess_chip_brand">別のブランド</string>
-    <string name="edit_reprocess_chip_larger">分量が多め</string>
-    <string name="edit_reprocess_chip_oil">油/バター追加</string>
-    <string name="edit_reprocess_chip_portion">分量が少なめ</string>
-    <string name="edit_reprocess_chip_prep">別の調理法</string>
-    <string name="edit_reprocess_context">現在の記録</string>
     <string name="edit_reprocess_diff_row">%1$s：%2$s → %3$s</string>
     <string name="edit_reprocess_diff_title">変更点</string>
     <string name="edit_reprocess_explain">AI がメモから名前、分量、カロリー、マクロを再計算します。変更を確認して保存をタップしてください。</string>
-    <string name="edit_reprocess_label">何が変わりましたか？</string>
     <string name="edit_reprocess_review_hint">上の更新値を確認し、保存をタップして適用してください。</string>
     <string name="edit_reprocess_section">AI に修正を依頼</string>
     <string name="edit_reprocessing">修正中…</string>
