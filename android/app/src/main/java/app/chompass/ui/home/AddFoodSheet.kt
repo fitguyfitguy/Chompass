@@ -78,6 +78,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 import app.chompass.R
 import app.chompass.services.grounding.FoodSuggestion
@@ -337,14 +338,16 @@ internal fun AddFoodSheetContent(
     }
     val queryFocus = remember { FocusRequester() }
     // Modal open: arrive tall with the field focused and the keyboard up.
-    // The expand is fired without awaiting its settle so the IME and the
-    // sheet animation run together; keyboard dismissal returns to the user
-    // (back gesture or the field).
+    // The expand waits out the sheet's own entrance settle to the partial
+    // anchor first — racing it head-on gets overridden by that settle — then
+    // animates past it. Keyboard dismissal returns to the user (back gesture
+    // or the field).
     LaunchedEffect(autoFocusQuery) {
         if (!autoFocusQuery) return@LaunchedEffect
-        scope.launch { sheetState?.expand() }
         queryFocus.requestFocus()
         keyboard?.show()
+        delay(250)
+        sheetState?.expand()
     }
     val expandLabel = stringResource(R.string.home_view_more)
     Column(
