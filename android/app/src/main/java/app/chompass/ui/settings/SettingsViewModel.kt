@@ -206,8 +206,9 @@ data class SettingsUiState(
     val geminiGoogleSearchEnabled: Boolean = false,
     val openRouterReasoningEffort: OpenRouterReasoningEffort = OpenRouterReasoningEffort.AUTO,
     val mealConstituentsEnabled: Boolean = true,
-    /** Per-source opt-outs for the Add Food database search (all default on). */
-    val foodSearchOpenFoodFactsEnabled: Boolean = true,
+    /** Per-source switches for the Add Food database search. Open Food Facts is
+     * the one that reaches the network, and the one that defaults off. */
+    val foodSearchOpenFoodFactsEnabled: Boolean = false,
     val foodSearchUsdaEnabled: Boolean = true,
     val foodSearchSwissEnabled: Boolean = true,
     /** Inverted in UI: “Ask for a photo note” = !skipPhotoNotePrompt. */

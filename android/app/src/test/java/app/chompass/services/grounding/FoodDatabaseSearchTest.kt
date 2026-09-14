@@ -101,21 +101,80 @@ class FoodDatabaseSearchTest {
     }
 
     @Test
+    fun openFoodFacts_isOffUntilTheUserOptsIn() = runBlocking {
+        // The default that keeps typing on-device: a fresh install asking for
+        // every source still gets only the two bundled ones, and the network
+        // leg is not even attempted.
+        var offCalls = 0
+        val search = newSearch(offSearch = { offCalls++; emptyList() })
+        val sources = setOf(
+            FoodDatabaseSearch.Source.OPEN_FOOD_FACTS,
+            FoodDatabaseSearch.Source.USDA,
+            FoodDatabaseSearch.Source.SWISS,
+        )
+        assertEquals(
+            setOf(FoodDatabaseSearch.Source.USDA, FoodDatabaseSearch.Source.SWISS),
+            search.enabledSources(),
+        )
+        val results = search.search("pork ground", sources = sources)
+        assertEquals(0, offCalls)
+        assertTrue(results.isNotEmpty())
+        assertTrue(results.none { it.sourceKind == NutrientSourceKind.OPEN_FOOD_FACTS })
+    }
+
+    @Test
+    fun searchOnline_readsThePreferenceOnEveryCall() = runBlocking {
+        // Why the Add Food switch writes this preference *before* it starts the
+        // Open Food Facts leg. The gate is re-read per call, so a request fired
+        // while the write is still in flight reads the old value and comes back
+        // empty — which is what made switching the opt-in off and straight back
+        // on return no packaged rows at all.
+        val prefs = PreferencesStore(context)
+        val hit = DatabaseSearchResult(
+            sourceKind = NutrientSourceKind.OPEN_FOOD_FACTS,
+            sourceId = "5449000000996",
+            name = "Cola",
+            caloriesPerServing = 42.0,
+            matchScore = 1.0,
+        )
+        val search = newSearch(prefs = prefs, offSearch = { listOf(hit) })
+
+        assertTrue("off by default, so nothing reaches the fan-out", search.searchOnline("cola").isEmpty())
+
+        prefs.setFoodSearchOpenFoodFactsEnabled(true)
+        try {
+            val results = search.searchOnline("cola")
+            assertEquals(1, results.size)
+            assertEquals(NutrientSourceKind.OPEN_FOOD_FACTS, results.single().sourceKind)
+        } finally {
+            prefs.setFoodSearchOpenFoodFactsEnabled(false)
+        }
+    }
+
+    @Test
     fun search_deadOpenFoodFacts_stillReturnsOfflineRows() = runBlocking {
         // The whole point of the per-source isolation: Open Food Facts being
         // down is the common case (no signal, captive portal, OFF outage), and
         // it must cost the user nothing but the packaged products. The bundled
         // indexes are on-device, so their rows are unaffected.
         var offCalls = 0
-        val search = newSearch(offSearch = { offCalls++; throw OffUnreachable() })
-        val results = search.search(
-            "pork ground",
-            sources = setOf(
-                FoodDatabaseSearch.Source.OPEN_FOOD_FACTS,
-                FoodDatabaseSearch.Source.USDA,
-                FoodDatabaseSearch.Source.SWISS,
-            ),
-        )
+        val prefs = PreferencesStore(context)
+        // Open Food Facts is off until the user opts in, and this test is about
+        // what happens to someone who did.
+        prefs.setFoodSearchOpenFoodFactsEnabled(true)
+        val search = newSearch(prefs = prefs, offSearch = { offCalls++; throw OffUnreachable() })
+        val results = try {
+            search.search(
+                "pork ground",
+                sources = setOf(
+                    FoodDatabaseSearch.Source.OPEN_FOOD_FACTS,
+                    FoodDatabaseSearch.Source.USDA,
+                    FoodDatabaseSearch.Source.SWISS,
+                ),
+            )
+        } finally {
+            prefs.setFoodSearchOpenFoodFactsEnabled(false)
+        }
         assertEquals("the OFF leg should still have been attempted", 1, offCalls)
         assertTrue("expected offline hits despite a dead OFF, got ${results.size}", results.isNotEmpty())
         assertTrue(
@@ -135,8 +194,14 @@ class FoodDatabaseSearchTest {
         // with the OFF source enabled in Settings, or typing would reach the
         // network before the user opted in.
         var offCalls = 0
-        val search = newSearch(offSearch = { offCalls++; throw OffUnreachable() })
-        val results = search.searchOffline("pork ground")
+        val prefs = PreferencesStore(context)
+        prefs.setFoodSearchOpenFoodFactsEnabled(true)
+        val search = newSearch(prefs = prefs, offSearch = { offCalls++; throw OffUnreachable() })
+        val results = try {
+            search.searchOffline("pork ground")
+        } finally {
+            prefs.setFoodSearchOpenFoodFactsEnabled(false)
+        }
         assertEquals(0, offCalls)
         assertTrue("expected offline hits, got ${results.size}", results.isNotEmpty())
     }
@@ -145,8 +210,14 @@ class FoodDatabaseSearchTest {
     fun searchOnline_deadOpenFoodFacts_isEmptyRatherThanThrowing() = runBlocking {
         // The sheet merges this leg's result into a list that already has rows
         // on screen; a throw here would take those down with it.
-        val search = newSearch(offSearch = { throw OffUnreachable() })
-        assertTrue(search.searchOnline("pork ground").isEmpty())
+        val prefs = PreferencesStore(context)
+        prefs.setFoodSearchOpenFoodFactsEnabled(true)
+        val search = newSearch(prefs = prefs, offSearch = { throw OffUnreachable() })
+        try {
+            assertTrue(search.searchOnline("pork ground").isEmpty())
+        } finally {
+            prefs.setFoodSearchOpenFoodFactsEnabled(false)
+        }
     }
 
     @Test
