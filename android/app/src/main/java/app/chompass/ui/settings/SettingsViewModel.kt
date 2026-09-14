@@ -1413,10 +1413,16 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     }
 
     /** Preset manager edits (rename, defaults, order, add) land as whole catalogs. */
-    fun setCaffeinePresets(catalog: HabitPresetCatalog) = updateUiPref(
-        { container.prefs.setCaffeinePresets(catalog) },
-        { copy(caffeinePresets = catalog.validatedOrDefault(HabitPresetDomain.CAFFEINE)) },
-    )
+    fun setCaffeinePresets(catalog: HabitPresetCatalog) {
+        val previous = _ui.value.caffeinePresets
+        updateUiPref(
+            { container.prefs.setCaffeinePresets(catalog) },
+            { copy(caffeinePresets = catalog.validatedOrDefault(HabitPresetDomain.CAFFEINE)) },
+        )
+        // Newly added customs join the hub chips without an extra toggle.
+        val added = catalog.addedCustomIds(previous)
+        if (added.isNotEmpty()) setCaffeineQuickKinds(_ui.value.caffeineQuickKinds + added)
+    }
 
     /**
      * Deletes a custom caffeine preset: entries logged with it move to Other
@@ -1529,10 +1535,16 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     }
 
     /** Preset manager edits (rename, defaults, order, add) land as whole catalogs. */
-    fun setNicotinePresets(catalog: HabitPresetCatalog) = updateUiPref(
-        { container.prefs.setNicotinePresets(catalog) },
-        { copy(nicotinePresets = catalog.validatedOrDefault(HabitPresetDomain.NICOTINE)) },
-    )
+    fun setNicotinePresets(catalog: HabitPresetCatalog) {
+        val previous = _ui.value.nicotinePresets
+        updateUiPref(
+            { container.prefs.setNicotinePresets(catalog) },
+            { copy(nicotinePresets = catalog.validatedOrDefault(HabitPresetDomain.NICOTINE)) },
+        )
+        // Newly added customs join the hub chips without an extra toggle.
+        val added = catalog.addedCustomIds(previous)
+        if (added.isNotEmpty()) setNicotineQuickKinds(_ui.value.nicotineQuickKinds + added)
+    }
 
     /**
      * Deletes a custom nicotine preset: entries logged with it move to Other

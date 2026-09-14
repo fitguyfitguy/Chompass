@@ -215,6 +215,29 @@ class TrackerPresetsTest {
     }
 
     @Test
+    fun addedCustomIdsReportOnlyNewCustoms() {
+        val domain = HabitPresetDomain.CAFFEINE
+        val base = caffeineWithCustoms(1)
+        val existingCustom = base.presets.last().id
+
+        // Id-identical catalogs and builtin (re)additions report nothing.
+        assertTrue(base.addedCustomIds(base).isEmpty())
+        assertTrue(
+            domain.defaultCatalog.addedCustomIds(domain.defaultCatalog.without("energy")).isEmpty(),
+        )
+
+        // Only the new custom id is reported; appending it to the quick-kind
+        // selection survives the storage round-trip (chip becomes visible).
+        val grown = base.addCustom(domain, "Espresso 1", defaultMg = 66.0)
+        val newCustom = grown.presets.last().id
+        assertEquals(listOf(newCustom), grown.addedCustomIds(base))
+        val kinds = domain.quickKindIdsFromStorage(
+            domain.quickKindIdsToStorage(domain.defaultQuickKindIds + newCustom + existingCustom),
+        )
+        assertTrue(newCustom in kinds && existingCustom in kinds)
+    }
+
+    @Test
     fun hubPresetsComposeChipsInCatalogOrder() {
         val domain = HabitPresetDomain.CAFFEINE
         var catalog = domain.defaultCatalog
