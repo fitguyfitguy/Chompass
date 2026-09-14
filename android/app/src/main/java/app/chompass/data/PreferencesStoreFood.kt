@@ -241,12 +241,18 @@ internal suspend fun PreferencesStore.foodImageReferenceFilenamesImpl(): Set<Str
 
 // -- Food database search sources -------------------------------------
 //
-// Three independent opt-outs for the Add Food "Search food" sources. All
-// default on; turning one off only removes it from search fan-out (see
-// FoodDatabaseSearch.enabledSources) — barcode lookups and already-logged
-// entries are untouched.
+// Three independent switches for the Add Food search sources. Turning one off
+// only removes it from the search fan-out (see FoodDatabaseSearch.enabledSources)
+// — barcode lookups and already-logged entries are untouched.
+//
+// The two bundled indexes default on: they are on-device SQLite, so searching
+// them costs a query nothing but milliseconds. Open Food Facts defaults OFF
+// because it is the only source that leaves the phone, and the Add Food sheet
+// runs it on what the user types. It is the same preference the sheet's own
+// packaged-products toggle writes, so the user can switch it on from either
+// place and it stays on until they switch it back.
 internal val PreferencesStore.foodSearchOpenFoodFactsEnabledImpl: Flow<Boolean>
-    get() = dataStore.data.map { it[Keys.FOOD_SEARCH_OFF_ENABLED] ?: true }
+    get() = dataStore.data.map { it[Keys.FOOD_SEARCH_OFF_ENABLED] ?: false }
 
 internal suspend fun PreferencesStore.setFoodSearchOpenFoodFactsEnabledImpl(v: Boolean) {
     dataStore.edit { it[Keys.FOOD_SEARCH_OFF_ENABLED] = v }

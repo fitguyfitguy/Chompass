@@ -27,6 +27,7 @@ import app.chompass.models.ResolvedActiveBurn
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.ManualActiveEntry
 import app.chompass.models.MealType
+import app.chompass.models.Recipe
 import app.chompass.models.CurrentMealCatalog
 import app.chompass.models.CaffeineEntry
 import app.chompass.models.CaffeineKind
@@ -56,7 +57,6 @@ import app.chompass.services.OpenFoodFactsService
 import app.chompass.services.PerfLog
 import app.chompass.services.WaterReminderPlanner
 import app.chompass.services.grounding.DatabaseSearchResult
-import app.chompass.services.grounding.FoodDatabaseSearch
 import app.chompass.services.grounding.FoodSuggestion
 import app.chompass.services.grounding.FoodSuggestionRanker
 import app.chompass.services.grounding.QueryNormalizer
@@ -218,6 +218,18 @@ data class HomeUiState(
     val addFoodSavedRows: List<FoodSuggestion> = emptyList(),
     /** True while the Open Food Facts leg is still outstanding for this query. */
     val addFoodSuggestNetworkPending: Boolean = false,
+    /**
+     * Whether the packaged-product (Open Food Facts) leg may run. Typing is
+     * on-device until it does: saved foods come from the local index, USDA and
+     * Swiss from bundled SQLite, and only this source leaves the phone.
+     *
+     * This is the Settings > Food & Entry > Open Food Facts switch itself, not
+     * a second copy of it: the sheet's toggle reads and writes the same
+     * preference, so flipping either one moves both and the choice survives the
+     * sheet, the screen and the process. It defaults off, so the first query a
+     * new install runs reaches nothing but the device.
+     */
+    val addFoodPackagedSearchEnabled: Boolean = false,
     /**
      * Identity the pending entry keeps no matter which source supplies its
      * nutrients. Set once when the draft is saved (already disambiguated) so a
@@ -541,6 +553,7 @@ data class HomeUiState(
             addFoodSavedTab == other.addFoodSavedTab &&
             addFoodSavedRows == other.addFoodSavedRows &&
             addFoodSuggestNetworkPending == other.addFoodSuggestNetworkPending &&
+            addFoodPackagedSearchEnabled == other.addFoodPackagedSearchEnabled &&
             pendingIdentityName == other.pendingIdentityName &&
             queueEntries == other.queueEntries &&
             queueRunningId == other.queueRunningId &&
@@ -632,6 +645,7 @@ data class HomeUiState(
         result = 31 * result + addFoodSavedTab.hashCode()
         result = 31 * result + addFoodSavedRows.hashCode()
         result = 31 * result + addFoodSuggestNetworkPending.hashCode()
+        result = 31 * result + addFoodPackagedSearchEnabled.hashCode()
         result = 31 * result + (pendingIdentityName?.hashCode() ?: 0)
         result = 31 * result + queueEntries.hashCode()
         result = 31 * result + (queueRunningId?.hashCode() ?: 0)
@@ -771,6 +785,37 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     /** Monotonic guard: only the newest query may publish suggestions. */
     private var suggestGeneration = 0
     private var suggestJob: Job? = null
+
+    /**
+     * The Open Food Facts leg of the current query, held apart from
+     * [suggestJob] so the packaged-products switch can start or stop it without
+     * restarting the search around it.
+     */
+    private var packagedJob: Job? = null
+
+    /**
+     * Everything the current Add Food query has gathered, kept by origin.
+     *
+     * Split rather than merged because the two halves have different
+     * lifetimes: the bundled rows belong to the query and change only when it
+     * does, while the packaged rows come and go with a switch the user can
+     * flip at any time. Keeping them apart is what lets that switch add or
+     * remove one source instead of re-running the whole search.
+     *
+     * Owned by the ViewModel rather than a coroutine local because it outlives
+     * the job that filled it — the switch reads it long after the query
+     * settled. Replaced wholesale on every new query, so no entry here ever
+     * belongs to a query the user has moved past.
+     */
+    private class AddFoodSearchState(
+        val query: String,
+        val index: List<SavedFoodIndexEntry>,
+        val recipes: List<Recipe>,
+        var offline: List<DatabaseSearchResult> = emptyList(),
+        var online: List<DatabaseSearchResult> = emptyList(),
+    )
+
+    private var addFoodSearch: AddFoodSearchState? = null
 
     /** Warm the Add Food sheet's saved foods while it animates open (FAB tap). */
     fun prefetchAddFoodIndex() {
@@ -1208,6 +1253,14 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
         container.prefs.waterTrackingEnabled
             .onEach { enabled -> _ui.update { it.copy(waterTrackingEnabled = enabled) } }
+            .launchIn(viewModelScope)
+
+        // The Add Food sheet's packaged-products toggle renders straight off
+        // this, so a change made on the Settings screen is already applied by
+        // the time the sheet opens — and a change made in the sheet comes back
+        // through the same flow.
+        container.prefs.foodSearchOpenFoodFactsEnabled
+            .onEach { enabled -> _ui.update { it.copy(addFoodPackagedSearchEnabled = enabled) } }
             .launchIn(viewModelScope)
 
         // Effective water goal: the stored manual goal, or the dynamic calculator's
@@ -1829,12 +1882,17 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /**
-     * Unified Add Food search. Publishes three times per query, widening the
-     * result set each time so the user is never waiting on a slower source:
+     * Unified Add Food search. Publishes up to three times per query, widening
+     * the result set each time so the user is never waiting on a slower source:
      *
      *  1. immediately, from the cached local index;
      *  2. after a short debounce, adding the bundled USDA / Swiss rows;
-     *  3. after a longer one, adding Open Food Facts.
+     *  3. only once the user opts in, adding Open Food Facts.
+     *
+     * Legs 1 and 2 are entirely on-device, which is why they may run on every
+     * keystroke. Leg 3 leaves the phone, so it is gated on
+     * [HomeUiState.addFoodPackagedSearchEnabled] — the packaged-products
+     * opt-in, which defaults off — and never runs from typing alone.
      *
      * The ranker's score bands keep the local rows on top throughout, so later
      * legs only ever append — the row under the user's finger never moves.
@@ -1843,74 +1901,116 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         _ui.update { it.copy(addFoodQuery = raw) }
         val gen = ++suggestGeneration
         suggestJob?.cancel()
+        packagedJob?.cancel()
         val query = raw.trim()
         if (query.isEmpty()) {
+            addFoodSearch = null
             _ui.update {
                 it.copy(addFoodSuggestions = emptyList(), addFoodSuggestNetworkPending = false)
             }
             return
         }
         suggestJob = viewModelScope.launch {
-            val index = savedFoodIndexCached()
-            val recipes = runCatching { container.recipeRepository.recipes.first() }
-                .getOrDefault(emptyList())
-            var database = emptyList<DatabaseSearchResult>()
+            val state = AddFoodSearchState(
+                query = query,
+                index = savedFoodIndexCached(),
+                recipes = runCatching { container.recipeRepository.recipes.first() }
+                    .getOrDefault(emptyList()),
+            )
+            addFoodSearch = state
 
-            suspend fun publish(networkPending: Boolean) {
-                if (gen != suggestGeneration) return
-                val ranked = withContext(Dispatchers.Default) {
-                    FoodSuggestionRanker.rank(query, index, recipes, database)
-                }
-                // Both guards matter: cancel() stops the coroutine, and the
-                // generation check catches a cancelled-but-not-yet-suspended one
-                // trying to write state for a query the user has moved past.
-                if (gen != suggestGeneration) return
-                _ui.update {
-                    if (it.addFoodSuggestions == ranked &&
-                        it.addFoodSuggestNetworkPending == networkPending
-                    ) {
-                        it
-                    } else {
-                        it.copy(
-                            addFoodSuggestions = ranked,
-                            addFoodSuggestNetworkPending = networkPending,
-                        )
-                    }
-                }
-            }
-
-            // With Open Food Facts switched off in Settings the online leg never
-            // runs, so the list must not promise a pending network result either.
-            val offEnabled = runCatching {
-                container.foodDatabaseSearch.isSourceEnabled(FoodDatabaseSearch.Source.OPEN_FOOD_FACTS)
-            }.getOrDefault(true)
-
-            publish(networkPending = offEnabled)
+            // The packaged-products opt-in, off until the user turns it on.
+            // Read from UI state rather than the store so a toggle flipped in
+            // the sheet applies to this very query instead of the one after the
+            // write lands. FoodDatabaseSearch re-checks the same preference on
+            // its own before it fans out, so a stale read here can only ever be
+            // too permissive by one query, never too permissive on the wire.
+            publishAddFoodSuggestions(state, gen, _ui.value.addFoodPackagedSearchEnabled)
 
             delay(OFFLINE_SEARCH_DEBOUNCE_MS)
             currentCoroutineContext().ensureActive()
-            database = database + runCatching {
+            state.offline = runCatching {
                 container.foodDatabaseSearch.searchOffline(query)
             }.getOrDefault(emptyList())
-            publish(networkPending = offEnabled)
-            if (!offEnabled) return@launch
+            // Re-read: the user may have flipped the opt-in during the debounce.
+            val optedIn = _ui.value.addFoodPackagedSearchEnabled
+            publishAddFoodSuggestions(state, gen, networkPending = optedIn)
+            if (!optedIn) return@launch
+            // Typing, so the network leg keeps the debounce that stops a
+            // request per keystroke. A deliberate flip of the switch does not
+            // (see [startPackagedLeg]).
+            startPackagedLeg(state, gen, debounceMs = ONLINE_SEARCH_DEBOUNCE_MS - OFFLINE_SEARCH_DEBOUNCE_MS)
+        }
+    }
 
-            delay(ONLINE_SEARCH_DEBOUNCE_MS - OFFLINE_SEARCH_DEBOUNCE_MS)
-            currentCoroutineContext().ensureActive()
+    /**
+     * Rank what the current query has gathered so far and hand it to the UI.
+     *
+     * Both guards matter: cancel() stops the coroutine, and the generation
+     * check catches a cancelled-but-not-yet-suspended one trying to write state
+     * for a query the user has moved past.
+     */
+    private suspend fun publishAddFoodSuggestions(
+        state: AddFoodSearchState,
+        gen: Int,
+        networkPending: Boolean,
+    ) {
+        if (gen != suggestGeneration) return
+        val database = state.offline + state.online
+        val ranked = withContext(Dispatchers.Default) {
+            FoodSuggestionRanker.rank(state.query, state.index, state.recipes, database)
+        }
+        if (gen != suggestGeneration) return
+        _ui.update {
+            if (it.addFoodSuggestions == ranked &&
+                it.addFoodSuggestNetworkPending == networkPending
+            ) {
+                it
+            } else {
+                it.copy(
+                    addFoodSuggestions = ranked,
+                    addFoodSuggestNetworkPending = networkPending,
+                )
+            }
+        }
+    }
+
+    /**
+     * The Open Food Facts leg, on its own job so it can start and stop without
+     * the rest of the search starting over. Everything already gathered stays
+     * on [AddFoodSearchState], so the rows on screen do not move while this
+     * runs: the packaged ones are appended when they land.
+     *
+     * [debounceMs] is the whole difference between the two callers. Typing pays
+     * it, so a query in progress makes one request rather than one per
+     * keystroke. Flipping the switch does not: the user has just asked for
+     * these rows and is watching for them.
+     */
+    private fun startPackagedLeg(state: AddFoodSearchState, gen: Int, debounceMs: Long) {
+        packagedJob?.cancel()
+        packagedJob = viewModelScope.launch {
+            if (debounceMs > 0) {
+                delay(debounceMs)
+                currentCoroutineContext().ensureActive()
+            }
             // Open Food Facts walks a candidate-query chain with per-candidate
             // backoff, so its own budget runs to tens of seconds. Acceptable in a
             // dedicated search screen, not in the primary logging path.
             val online = try {
                 withTimeoutOrNull(ONLINE_SEARCH_BUDGET_MS) {
-                    container.foodDatabaseSearch.searchOnline(query)
+                    container.foodDatabaseSearch.searchOnline(state.query)
                 } ?: emptyList()
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 emptyList()
             }
-            database = database + online
-            publish(networkPending = false)
+            // The switch may have gone off again while the request was out.
+            // Landing those rows now would put back exactly what the user just
+            // asked to remove.
+            if (!_ui.value.addFoodPackagedSearchEnabled) return@launch
+            state.online = online
+            publishAddFoodSuggestions(state, gen, networkPending = false)
         }
     }
 
@@ -1961,11 +2061,63 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         _ui.update { if (it.addFoodSavedTab == tab) it.copy(addFoodSavedRows = rows) else it }
     }
 
+    /**
+     * The sheet's packaged-products toggle was flipped. It is the Settings
+     * source switch under another skin, so this writes that preference — the
+     * flow above brings the new value back into [HomeUiState], and the Settings
+     * screen shows the same state next time it is opened.
+     *
+     * The UI state is updated here as well rather than waiting for the
+     * round-trip: the gate in [onAddFoodQueryChange] reads it, and the query is
+     * re-run immediately so switching on does not cost the user a retype and
+     * switching off drops both the packaged rows and the pending-network dots.
+     */
+    fun setAddFoodPackagedSearch(enabled: Boolean) {
+        if (_ui.value.addFoodPackagedSearchEnabled == enabled) return
+        _ui.update { it.copy(addFoodPackagedSearchEnabled = enabled) }
+        // Rows the switch takes away go now, before anything suspends: the
+        // cancel and the drop are the user's answer to the tap, and neither
+        // needs a preference written first.
+        if (!enabled) {
+            packagedJob?.cancel()
+            packagedJob = null
+            addFoodSearch?.online = emptyList()
+        }
+        // The switch adds or removes one source. It does not restart the
+        // search: re-running the query would drop every row for a frame, redo
+        // two SQLite queries that cannot have changed, and re-rank from
+        // nothing, all of which the user sees as the list flinching. What they
+        // asked for is the packaged rows to appear or go away.
+        val state = addFoodSearch
+        viewModelScope.launch {
+            // Repaint first, so the list answers the tap while the write is
+            // still in flight: dots by the databases heading on the way in,
+            // the packaged rows already gone on the way out.
+            if (state != null) {
+                publishAddFoodSuggestions(state, suggestGeneration, networkPending = enabled)
+            }
+            // Then the preference — and only then the leg that depends on it.
+            // This preference IS the gate FoodDatabaseSearch re-checks before
+            // it fans out, so starting the request first is a race the request
+            // loses: it reads the preference still sitting at false and comes
+            // back with nothing, which is why switching off and back on used to
+            // return no packaged rows at all. Typing never hit this because its
+            // debounce happened to outlast the write.
+            runCatching { container.prefs.setFoodSearchOpenFoodFactsEnabled(enabled) }
+            if (enabled && state != null) {
+                startPackagedLeg(state, suggestGeneration, debounceMs = 0)
+            }
+        }
+    }
+
     /** Sheet dismissed / query cleared: drop the search and cancel any in-flight leg. */
     fun clearAddFoodQuery() {
         suggestGeneration++
         suggestJob?.cancel()
         suggestJob = null
+        packagedJob?.cancel()
+        packagedJob = null
+        addFoodSearch = null
         _ui.update {
             it.copy(
                 addFoodQuery = "",
@@ -3240,7 +3392,6 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 container.imageStore.storeBytes(bytes, entryId)
             }
         }
-
 
     /**
      * Keep the search index in step with a same-day write, the same way
