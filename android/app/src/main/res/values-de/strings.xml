@@ -2767,23 +2767,9 @@ für dich ein</string>
 
     <string name="edit_icon_photo_failed">Das Foto konnte nicht gelesen werden</string>
 
-    <string name="edit_reprocess_label">Was hat sich geändert?</string>
-
     <string name="edit_reprocess_hint">Beschreibe die Korrektur, z. B. große Schüssel, in Butter gekocht, Hafermilch statt Kuhmilch</string>
 
     <string name="edit_reprocess_explain">Die KI berechnet anhand deiner Notiz den Namen, die Portionsgröße, die Kalorien und die Makronährstoffe neu. Überprüfe die Änderungen und tippe anschließend auf „Speichern“.</string>
-
-    <string name="edit_reprocess_context">Aktueller Eintrag</string>
-
-    <string name="edit_reprocess_chip_portion">Kleinere Portion</string>
-
-    <string name="edit_reprocess_chip_larger">Größere Portion</string>
-
-    <string name="edit_reprocess_chip_oil">Zusätzliches Öl/Butter</string>
-
-    <string name="edit_reprocess_chip_brand">Andere Marke</string>
-
-    <string name="edit_reprocess_chip_prep">Andere Zubereitung</string>
 
     <string name="edit_reprocess">Mit KI korrigieren</string>
 

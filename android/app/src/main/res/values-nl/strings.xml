@@ -731,7 +731,8 @@
     <string name="analysis_queue_minutes_ago">%1$d min geleden</string>
     <string name="analysis_queue_hours_ago">%1$d u geleden</string>
     <string name="analysis_queue_days_ago">%1$d d geleden</string>
-    <string name="analysis_queue_on_day">voor</string>    <string name="action_retry">Opnieuw</string>
+    <string name="analysis_queue_on_day">voor</string>
+    <string name="action_retry">Opnieuw</string>
     <string name="action_show">Toon</string>
     <string name="action_undo">Herstel</string>
     <string name="action_what_if">Wat als?</string>
@@ -847,16 +848,9 @@
     <string name="edit_note_placeholder">Notitie (optioneel)</string>
     <string name="edit_note_section">Notitie</string>
     <string name="edit_reprocess">Corrigeren met AI</string>
-    <string name="edit_reprocess_chip_brand">Ander merk</string>
-    <string name="edit_reprocess_chip_larger">Grotere portie</string>
-    <string name="edit_reprocess_chip_oil">Extra olie / boter</string>
-    <string name="edit_reprocess_chip_portion">Kleinere portie</string>
-    <string name="edit_reprocess_chip_prep">Andere bereiding</string>
-    <string name="edit_reprocess_context">Huidig item</string>
     <string name="edit_reprocess_diff_row">%1$s: %2$s → %3$s</string>
     <string name="edit_reprocess_diff_title">Wat is er veranderd</string>
     <string name="edit_reprocess_explain">AI herberekent naam, portie, calorieën en macro\'s op basis van je notitie. Bekijk de wijzigingen en tik op Opslaan.</string>
-    <string name="edit_reprocess_label">Wat is er veranderd?</string>
     <string name="edit_reprocess_review_hint">Bekijk de bijgewerkte waarden hierboven en tik op Opslaan om ze te behouden.</string>
     <string name="edit_reprocess_section">AI om correctie vragen</string>
     <string name="edit_reprocessing">Corrigeren…</string>

@@ -589,11 +589,7 @@ export const de = Object.freeze({
   "diary.week_of": "Woche vom {date}",
 
   // entry.* (PWA UI audit sweep, 2026-08)
-  "entry.chip_different_brand": "Andere Marke",
-  "entry.chip_different_cooking": "Andere Zubereitung",
-  "entry.chip_extra_oil": "Mehr Öl / Butter",
-  "entry.chip_larger_portion": "Größere Portion",
-  "entry.chip_smaller_portion": "Kleinere Portion",
+
   "entry.correct_action": "Mit KI korrigieren",
   "entry.correct_diff_hint": "Prüfe die aktualisierten Werte oben und tippe auf Speichern, um sie zu übernehmen.",
   "entry.correct_diff_title": "Was hat sich geändert",

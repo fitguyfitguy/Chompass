@@ -760,7 +760,8 @@
     <string name="analysis_queue_minutes_ago">%1$d분 전</string>
     <string name="analysis_queue_hours_ago">%1$d시간 전</string>
     <string name="analysis_queue_days_ago">%1$d일 전</string>
-    <string name="analysis_queue_on_day">대상일</string>    <string name="action_retry">다시 시도</string>
+    <string name="analysis_queue_on_day">대상일</string>
+    <string name="action_retry">다시 시도</string>
     <string name="action_show">표시</string>
     <string name="action_undo">실행 취소</string>
     <string name="action_what_if">어떻게 될까?</string>
@@ -875,16 +876,9 @@
     <string name="edit_note_placeholder">메모(선택 사항)</string>
     <string name="edit_note_section">메모</string>
     <string name="edit_reprocess">AI로 수정</string>
-    <string name="edit_reprocess_chip_brand">다른 브랜드</string>
-    <string name="edit_reprocess_chip_larger">더 큰 1인분</string>
-    <string name="edit_reprocess_chip_oil">기름/버터 추가</string>
-    <string name="edit_reprocess_chip_portion">더 작은 1인분</string>
-    <string name="edit_reprocess_chip_prep">다른 조리법</string>
-    <string name="edit_reprocess_context">현재 기록</string>
     <string name="edit_reprocess_diff_row">%1$s: %2$s → %3$s</string>
     <string name="edit_reprocess_diff_title">변경 사항</string>
     <string name="edit_reprocess_explain">AI가 메모에서 이름, 1인분, 칼로리, 매크로를 다시 계산해요. 변경 사항을 검토한 후 저장을 탭하세요.</string>
-    <string name="edit_reprocess_label">무엇이 바뀌었나요?</string>
     <string name="edit_reprocess_review_hint">위의 업데이트된 값을 검토한 후 저장을 탭하여 유지하세요.</string>
     <string name="edit_reprocess_section">AI 수정 요청</string>
     <string name="edit_reprocessing">수정 중…</string>
