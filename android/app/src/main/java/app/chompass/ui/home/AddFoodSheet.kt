@@ -150,6 +150,7 @@ fun AddFoodSheet(
     suggestionsNetworkPending: Boolean = false,
     packagedSearchEnabled: Boolean = false,
     onPackagedSearchChange: (Boolean) -> Unit = {},
+    onOpenFoodSettings: () -> Unit = {},
     onPickSuggestion: (FoodSuggestion) -> Unit = {},
     onReviewSuggestion: (FoodSuggestion) -> Unit = {},
     onAnalyzeQuery: (String) -> Unit = {},
@@ -239,6 +240,7 @@ fun AddFoodSheet(
             packagedSearchEnabled = packagedSearchEnabled,
             // Toggling the opt-in re-runs the search; it must not dismiss.
             onPackagedSearchChange = onPackagedSearchChange,
+            onOpenFoodSettings = onOpenFoodSettings,
             onPickSuggestion = { s -> onDismiss(); onPickSuggestion(s) },
             onReviewSuggestion = { s -> onDismiss(); onReviewSuggestion(s) },
             onAnalyzeQuery = { text -> onDismiss(); onAnalyzeQuery(text) },
@@ -312,6 +314,7 @@ internal fun AddFoodSheetContent(
     suggestionsNetworkPending: Boolean = false,
     packagedSearchEnabled: Boolean = false,
     onPackagedSearchChange: (Boolean) -> Unit = {},
+    onOpenFoodSettings: () -> Unit = {},
     onPickSuggestion: (FoodSuggestion) -> Unit = {},
     onReviewSuggestion: (FoodSuggestion) -> Unit = {},
     onAnalyzeQuery: (String) -> Unit = {},
@@ -449,6 +452,7 @@ internal fun AddFoodSheetContent(
             sheetState = sheetState,
             packagedSearchEnabled = packagedSearchEnabled,
             onPackagedSearchChange = onPackagedSearchChange,
+            onOpenFoodSettings = onOpenFoodSettings,
             bottomSpace = if (hasTrackers) 0.dp else ADD_FOOD_BOTTOM_SPACE,
             // Takes the space the fixed-height rows above and below leave over.
             modifier = if (fixedPaneHeight == null) {

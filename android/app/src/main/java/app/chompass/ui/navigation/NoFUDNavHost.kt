@@ -233,6 +233,13 @@ fun ChompassNavHost(
                                 restoreState = true
                             }
                         },
+                        onOpenFoodSettings = {
+                            nav.navigate(ChompassRoutes.SETTINGS_FOOD) {
+                                popUpTo(ChompassRoutes.HOME) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
                         onOpenDayTypes = {
                             nav.navigate(ChompassRoutes.SETTINGS_DAY_TYPES) {
                                 popUpTo(ChompassRoutes.HOME) { saveState = true }
