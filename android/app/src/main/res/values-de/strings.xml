@@ -807,6 +807,8 @@ für dich ein</string>
     <string name="home_todays_food">Das heutige Essen</string>
 
     <string name="home_no_foods_logged">Keine Mahlzeiten erfasst</string>
+    <string name="home_no_foods_planned">Keine Mahlzeiten geplant</string>
+
 
     <string name="home_swipe_delete">Löschen</string>
 
