@@ -1047,6 +1047,8 @@ fun HomeScreen(
             onQueryChange = vm::onAddFoodQueryChange,
             suggestions = ui.addFoodSuggestions,
             suggestionsNetworkPending = ui.addFoodSuggestNetworkPending,
+            packagedSearchEnabled = ui.addFoodPackagedSearchEnabled,
+            onPackagedSearchChange = vm::setAddFoodPackagedSearch,
             onPickSuggestion = {
                 addFoodFlowActive = false
                 vm.pickSuggestion(it)

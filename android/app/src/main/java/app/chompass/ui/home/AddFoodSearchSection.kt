@@ -6,6 +6,7 @@ import androidx.compose.animation.core.StartOffset
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.annotation.StringRes
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.text.KeyboardActions
@@ -13,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,10 +47,12 @@ import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Science
+import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -61,12 +65,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
@@ -287,6 +293,103 @@ private fun AddFoodToolButton(
 }
 
 /**
+ * The Open Food Facts opt-in, sitting directly under the "Search food
+ * databases" heading among the rows it governs.
+ *
+ * Typing is otherwise entirely on-device: the saved foods come from the local
+ * index and USDA / Swiss from the bundled SQLite files, so nothing the user
+ * types reaches a third party until this is switched on. It defaults off, and
+ * its heading renders whether or not the bundled sources matched — this is the
+ * one row in the list that has to be findable when the list is empty.
+ *
+ * The heading above supplies the verb, so the row is one line carrying the
+ * source's own name — the same resource the Settings row and the result badges
+ * use, and nothing this branch had to invent and leave untranslated in
+ * eighteen locales. A line of explanation under it would say what the heading
+ * and the rows either side already say, at the price of a row's worth of a
+ * sheet that is mostly list.
+ *
+ * This is the Settings > Food & Entry > Open Food Facts switch, not a copy of
+ * it, so flipping it here moves the Settings row too and the choice survives
+ * the sheet, the screen and the process. Barcode scanning is unaffected either
+ * way: that is an explicit lookup of one product the user pointed the camera
+ * at, not a feed of everything they type.
+ */
+@Composable
+private fun PackagedSearchToggle(
+    enabled: Boolean,
+    onChange: (Boolean) -> Unit,
+) {
+    val isDark = isDarkTheme()
+    // Shaped like the suggestion rows it sits above rather than like the tool
+    // pills up by the field: it belongs to this list, and it is the row that
+    // decides how long the list is.
+    val shape = RoundedCornerShape(AppRadii.Container)
+    val border = if (enabled) {
+        AppColors.Calorie.copy(alpha = 0.45f)
+    } else if (isDark) {
+        AppColors.HairlineBorderDark
+    } else {
+        AppColors.HairlineBorderLight
+    }
+    // Off is an outline over whatever the sheet already is, so an opt-in the
+    // user has not taken adds no weight to a list of their own foods.
+    val fill = if (enabled) AppColors.Calorie.copy(alpha = 0.10f) else Color.Transparent
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(fill)
+            .border(0.5.dp, border, shape)
+            // One target for the whole row, and Role.Switch so TalkBack reads
+            // the on/off state. The Switch below is decorative for that reason:
+            // its own handler would make a second, smaller target saying the
+            // same thing.
+            .toggleable(
+                value = enabled,
+                role = Role.Switch,
+                onValueChange = onChange,
+            )
+            .padding(start = 12.dp, end = 6.dp, top = 6.dp, bottom = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Icon(
+            // The icon Settings gives this source, so the two rows read as one
+            // control seen twice.
+            Icons.Outlined.Public,
+            contentDescription = null,
+            tint = if (enabled) {
+                AppColors.Calorie
+            } else {
+                MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+            },
+            modifier = Modifier.size(20.dp),
+        )
+        Text(
+            stringResource(R.string.food_search_source_off),
+            modifier = Modifier.weight(1f),
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Medium,
+            color = if (enabled) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+            },
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        // Scaled down: a full-size M3 Switch is built for a settings list with
+        // 56dp rows and overpowers a suggestion row.
+        Switch(
+            checked = enabled,
+            onCheckedChange = null,
+            modifier = Modifier.scale(0.75f),
+        )
+    }
+}
+
+/**
  * The unified result list. It fills whatever the fixed-height rows above and
  * below leave over and never changes size itself, so results streaming in
  * cannot move the search field. Scrolling a long list expands the sheet.
@@ -310,6 +413,9 @@ internal fun AddFoodSuggestionList(
     listIdentity: Any,
     /** Non-null lets scrolling expand the sheet itself. */
     sheetState: SheetState? = null,
+    /** State of the Open Food Facts opt-in under the databases heading. */
+    packagedSearchEnabled: Boolean = false,
+    onPackagedSearchChange: (Boolean) -> Unit = {},
     /**
      * Trailing space below the last row. Lives inside the scroll range, so it
      * is only reached by scrolling to the end of the list — the pane itself
@@ -322,6 +428,17 @@ internal fun AddFoodSuggestionList(
 ) {
     val sections = remember(suggestions, searching) {
         if (searching) groupSuggestions(suggestions) else emptyList()
+    }
+    // The databases block is pulled out of the ordered run because it is the
+    // only one that renders on an empty hand: it carries the Open Food Facts
+    // opt-in, and an opt-in the user cannot find when nothing matched is no
+    // opt-in at all. The ranker's score bands already sort it last, so pinning
+    // it there changes no order anyone has seen.
+    val localSections = remember(sections) {
+        sections.filterNot { it.group == AddFoodGroup.DATABASES }
+    }
+    val databaseRows = remember(sections) {
+        sections.firstOrNull { it.group == AddFoodGroup.DATABASES }?.rows.orEmpty()
     }
     val listState = rememberLazyListState()
     // Scrolling a long list asks the SHEET to expand, rather than growing this
@@ -344,7 +461,9 @@ internal fun AddFoodSuggestionList(
     // Both halves matter. Without the arming flag, the first results to land
     // after a keystroke re-run this effect and collapse the sheet; without the
     // query in [listIdentity], only the first keystroke of a query disarms and
-    // every later one collapses a sheet the user had scrolled open.
+    // every later one collapses a sheet the user had scrolled open. The
+    // packaged-products opt-in is in that identity for the same reason: it
+    // swaps the list without touching the query.
     val lastIdentity = remember { mutableStateOf(listIdentity) }
     val armed = remember { mutableStateOf(false) }
     LaunchedEffect(scrolled, worthExpanding, sheetState, listIdentity) {
@@ -357,7 +476,11 @@ internal fun AddFoodSuggestionList(
         if (scrolled) armed.value = true
         if (!armed.value) return@LaunchedEffect
         runCatching {
-            if (scrolled && worthExpanding) sheetState.expand() else sheetState.partialExpand()
+            when (sheetGrowAction(scrolled = scrolled, worthExpanding = worthExpanding)) {
+                SheetGrow.EXPAND -> sheetState.expand()
+                SheetGrow.COLLAPSE -> sheetState.partialExpand()
+                SheetGrow.KEEP -> Unit
+            }
         }
     }
 
@@ -376,13 +499,9 @@ internal fun AddFoodSuggestionList(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             if (searching) {
-                sections.forEach { section ->
+                localSections.forEach { section ->
                     item(key = "section:${section.group.name}") {
-                        AddFoodSectionLabel(
-                            section.group,
-                            pending = networkPending &&
-                                section.group == AddFoodGroup.DATABASES,
-                        )
+                        AddFoodSectionLabel(section.group)
                     }
                     items(section.rows, key = { it.key }) { suggestion ->
                         AddFoodSuggestionRow(
@@ -392,13 +511,31 @@ internal fun AddFoodSuggestionList(
                         )
                     }
                 }
-                // Nothing back from the databases yet: the label lands ahead of
-                // its rows so the wait has somewhere to show, and the rows fill
-                // in underneath it instead of pushing a spinner out of the way.
-                if (networkPending && sections.none { it.group == AddFoodGroup.DATABASES }) {
-                    item(key = "section:pending") {
-                        AddFoodSectionLabel(AddFoodGroup.DATABASES, pending = true)
-                    }
+                // Said before the databases block rather than after it, so the
+                // list reads "nothing of yours matched — here is another place
+                // to look" instead of trailing the verdict after the offer.
+                if (localSections.isEmpty() && databaseRows.isEmpty() && !networkPending) {
+                    item(key = "empty") { AddFoodEmptyLine(R.string.saved_meals_no_match) }
+                }
+                // Always, matched or not. The label lands ahead of its rows so
+                // a wait has somewhere to show and the rows fill in underneath
+                // it, and the opt-in sits between the two: under the heading
+                // that says what it is for, above the rows it lengthens.
+                item(key = "section:DATABASES") {
+                    AddFoodSectionLabel(AddFoodGroup.DATABASES, pending = networkPending)
+                }
+                item(key = "packaged-toggle") {
+                    PackagedSearchToggle(
+                        enabled = packagedSearchEnabled,
+                        onChange = onPackagedSearchChange,
+                    )
+                }
+                items(databaseRows, key = { it.key }) { suggestion ->
+                    AddFoodSuggestionRow(
+                        suggestion = suggestion,
+                        onClick = { onPick(suggestion) },
+                        onLongClick = { onReview(suggestion) },
+                    )
                 }
             } else {
                 items(suggestions, key = { it.key }) { suggestion ->
@@ -408,28 +545,48 @@ internal fun AddFoodSuggestionList(
                         onLongClick = { onReview(suggestion) },
                     )
                 }
-            }
-            if (suggestions.isEmpty() && !networkPending) {
-                item {
-                    Text(
-                        stringResource(
-                            if (searching) {
-                                R.string.saved_meals_no_match
-                            } else {
-                                R.string.add_food_quick_relog_empty
-                            },
-                        ),
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 6.dp, horizontal = 4.dp),
-                    )
+                if (suggestions.isEmpty()) {
+                    item(key = "empty") { AddFoodEmptyLine(R.string.add_food_quick_relog_empty) }
                 }
             }
         }
     }
+}
+
+/** What an armed scroll reading asks of the sheet. See [sheetGrowAction]. */
+internal enum class SheetGrow { EXPAND, COLLAPSE, KEEP }
+
+/**
+ * The grow-on-scroll decision, extracted from the effect that applies it so it
+ * can be reasoned about and tested without a sheet.
+ *
+ * [KEEP] is the case worth naming. The inputs change for two different reasons:
+ * the user scrolling, and the list underneath them growing or shrinking as
+ * legs of the search land, get switched off, or get switched on. Only the
+ * first is a request. A list that has just dropped below the expand threshold
+ * because its rows went away says nothing about whether the user still wants
+ * the sheet they opened — collapsing there is how toggling the packaged-product
+ * opt-in used to shut a sheet the user had scrolled up.
+ */
+internal fun sheetGrowAction(scrolled: Boolean, worthExpanding: Boolean): SheetGrow = when {
+    scrolled && worthExpanding -> SheetGrow.EXPAND
+    // Back at the top under their own finger: they are done with the list.
+    !scrolled -> SheetGrow.COLLAPSE
+    else -> SheetGrow.KEEP
+}
+
+/** The one-line "nothing here" note, in either of the list's two states. */
+@Composable
+private fun AddFoodEmptyLine(@StringRes textRes: Int) {
+    Text(
+        stringResource(textRes),
+        fontSize = 13.sp,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp, horizontal = 4.dp),
+    )
 }
 
 /**

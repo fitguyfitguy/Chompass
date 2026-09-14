@@ -263,6 +263,9 @@ fun AddFoodSearchDarkScreenshot() {
             savedRows = ScreenshotFixtures.addFoodSavedRows,
             query = "yog",
             suggestions = ScreenshotFixtures.addFoodSuggestions,
+            // Typing is on-device until this is switched on. Shot in its
+            // default state: off, the same as a fresh install.
+            packagedSearchEnabled = false,
         )
     }
 }
