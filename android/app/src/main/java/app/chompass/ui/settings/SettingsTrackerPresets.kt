@@ -252,17 +252,26 @@ internal fun CaffeinePresetEditorSheet(
     onSave: (label: String, defaultMg: Double, milkKind: String?, milkMl: Int) -> Unit,
 ) {
     val sheetState = rememberChompassSheetState()
-    var name by remember { mutableStateOf(existing?.label ?: "") }
+    val isAdd = existing == null
+    // Renames keep locale-following behavior: storing the same text as the
+    // localized builtin default means "no override"; blank builtin labels
+    // prefill that default so the sheet opens showing the current name.
+    val builtinDefaultLabel = existing?.id?.let { stringResource(caffeineKindLabelRes(it)) } ?: ""
+    var name by remember {
+        mutableStateOf(
+            when {
+                existing == null -> ""
+                existing.label.isNotBlank() -> existing.label
+                else -> builtinDefaultLabel
+            }
+        )
+    }
     val prefillMg = existing?.defaultMg
         ?: existing?.id?.let { builtinCaffeineDefaultMg(it) }
         ?: 65.0
     var mg by remember { mutableStateOf(prefillMg.toInt().coerceIn(5, 500)) }
     var milkKind by remember { mutableStateOf(MilkKind.fromStorage(existing?.milkKind)) }
     var milkMl by remember { mutableStateOf((existing?.milkMl ?: 0).coerceIn(0, MilkKind.MAX_ML)) }
-    val isAdd = existing == null
-    // Renames keep locale-following behavior: storing the same text as the
-    // localized builtin default means "no override".
-    val builtinDefaultLabel = existing?.id?.let { stringResource(caffeineKindLabelRes(it)) } ?: ""
 
     ChompassPinnedFooterSheet(
         onDismiss = onDismiss,
@@ -354,15 +363,24 @@ internal fun NicotinePresetEditorSheet(
     onSave: (label: String, defaultCount: Int, defaultDoseMg: Double?) -> Unit,
 ) {
     val sheetState = rememberChompassSheetState()
-    var name by remember { mutableStateOf(existing?.label ?: "") }
-    var count by remember { mutableStateOf(existing?.defaultCount ?: 1) }
-    var doseMg by remember { mutableStateOf(existing?.defaultDoseMg?.toInt() ?: 0) }
     val isAdd = existing == null
     // Renames keep locale-following behavior: storing the same text as the
-    // localized builtin default means "no override".
+    // localized builtin default means "no override"; blank builtin labels
+    // prefill that default so the sheet opens showing the current name.
     val builtinDefaultLabel = existing?.id?.let {
         stringResource(app.chompass.models.nicotineKindLabelRes(it))
     } ?: ""
+    var name by remember {
+        mutableStateOf(
+            when {
+                existing == null -> ""
+                existing.label.isNotBlank() -> existing.label
+                else -> builtinDefaultLabel
+            }
+        )
+    }
+    var count by remember { mutableStateOf(existing?.defaultCount ?: 1) }
+    var doseMg by remember { mutableStateOf(existing?.defaultDoseMg?.toInt() ?: 0) }
 
     ChompassPinnedFooterSheet(
         onDismiss = onDismiss,
