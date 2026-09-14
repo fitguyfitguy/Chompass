@@ -578,3 +578,151 @@ test("stripThinkBlocks_matchesAndroidStripThinking", () => {
   assert.equal(stripThinkBlocks("```json\n{\"calories\":200}\n```"), "```json\n{\"calories\":200}\n```");
   assert.equal(stripThinkBlocks('<think>a</think>{"a":1}<think>b</think>'), '{"a":1}');
 });
+
+test("analyzeFoodEntry_microsSendFailure_retriesOnceWithMacrosPrompt", async () => {
+  const original = PROVIDERS.anthropic.send;
+  /** @type {string[]} */
+  const systems = [];
+  /** @type {Array<number|undefined>} */
+  const maxTokens = [];
+  let calls = 0;
+  PROVIDERS.anthropic.send = async (_config, req) => {
+    calls += 1;
+    systems.push(req.systemPrompt);
+    maxTokens.push(req.maxTokens);
+    if (calls === 1) throw new Error("provider 500");
+    return {
+      text: JSON.stringify({
+        name: "Meal",
+        calories: 200,
+        proteinG: 14,
+        carbsG: 18,
+        fatG: 8,
+        quantityG: 120,
+        constituents: [
+          { name: "Egg", calories: 100, protein: 8, carbs: 2, fat: 6, serving_size_grams: 60 },
+        ],
+      }),
+      toolCalls: [],
+    };
+  };
+  try {
+    const result = await analyzeFoodEntry({
+      providerId: "anthropic",
+      config: { apiKey: "test-key", model: "claude-sonnet-5" },
+      text: "meal",
+      prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false }),
+    });
+    assert.equal(result.name, "Meal");
+    // #97: one micros attempt, one macros retry — never more.
+    assert.equal(calls, 2);
+    assert.ok(systems[0].includes("Each constituent micronutrient MUST sum"));
+    assert.ok(systems[1].includes("constituents"));
+    assert.ok(!systems[1].includes("Each constituent micronutrient MUST sum"));
+    assert.equal(maxTokens[0], 4096);
+    assert.equal(maxTokens[1], 2048);
+  } finally {
+    PROVIDERS.anthropic.send = original;
+  }
+});
+
+test("analyzeFoodEntry_microsParseFailure_retriesOnceWithMacros", async () => {
+  const original = PROVIDERS.anthropic.send;
+  let calls = 0;
+  PROVIDERS.anthropic.send = async () => {
+    calls += 1;
+    if (calls === 1) return { text: '{"name":"Meal","calories":200,', toolCalls: [] };
+    return {
+      text: JSON.stringify({ name: "Meal", calories: 200, proteinG: 14, carbsG: 18, fatG: 8 }),
+      toolCalls: [],
+    };
+  };
+  try {
+    const result = await analyzeFoodEntry({
+      providerId: "anthropic",
+      config: { apiKey: "test-key", model: "claude-sonnet-5" },
+      text: "meal",
+      prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false }),
+    });
+    assert.equal(result.name, "Meal");
+    assert.equal(calls, 2);
+  } finally {
+    PROVIDERS.anthropic.send = original;
+  }
+});
+
+test("analyzeFoodEntry_microsSuccess_singleSend", async () => {
+  const original = PROVIDERS.anthropic.send;
+  let calls = 0;
+  PROVIDERS.anthropic.send = async () => {
+    calls += 1;
+    return {
+      text: JSON.stringify({ name: "Meal", calories: 100, proteinG: 1, carbsG: 1, fatG: 1 }),
+      toolCalls: [],
+    };
+  };
+  try {
+    const result = await analyzeFoodEntry({
+      providerId: "anthropic",
+      config: { apiKey: "test-key", model: "claude-sonnet-5" },
+      text: "meal",
+      prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false }),
+    });
+    assert.equal(result.name, "Meal");
+    // Happy path stays byte-identical: no retry request.
+    assert.equal(calls, 1);
+  } finally {
+    PROVIDERS.anthropic.send = original;
+  }
+});
+
+test("analyzeFoodEntry_macrosTierFailure_doesNotRetryInRunAnalyze", async () => {
+  const original = PROVIDERS.anthropic.send;
+  let calls = 0;
+  PROVIDERS.anthropic.send = async () => {
+    calls += 1;
+    throw new Error("provider 500");
+  };
+  try {
+    await assert.rejects(
+      () =>
+        analyzeFoodEntry({
+          providerId: "anthropic",
+          config: { apiKey: "test-key", model: "claude-haiku-4-5" },
+          text: "meal",
+          prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false }),
+        }),
+      /provider 500/
+    );
+    // haiku already runs the macros tier — no second attempt.
+    assert.equal(calls, 1);
+  } finally {
+    PROVIDERS.anthropic.send = original;
+  }
+});
+
+test("analyzeFoodEntry_microsAbort_doesNotRetry", async () => {
+  const original = PROVIDERS.anthropic.send;
+  let calls = 0;
+  PROVIDERS.anthropic.send = async () => {
+    calls += 1;
+    const err = new Error("The operation was aborted");
+    err.name = "AbortError";
+    throw err;
+  };
+  try {
+    await assert.rejects(
+      () =>
+        analyzeFoodEntry({
+          providerId: "anthropic",
+          config: { apiKey: "test-key", model: "claude-sonnet-5" },
+          text: "meal",
+          prefsOverride: /** @type {any} */ ({ aiFallbackEnabled: false }),
+        }),
+      (err) => isAbortError(err)
+    );
+    assert.equal(calls, 1);
+  } finally {
+    PROVIDERS.anthropic.send = original;
+  }
+});
