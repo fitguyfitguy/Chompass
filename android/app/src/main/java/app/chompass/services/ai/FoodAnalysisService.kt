@@ -126,6 +126,17 @@ private const val ENTRY_CONSTITUENTS_MICROS_RULE =
  */
 internal const val CONSTITUENT_MIN_RESPONSE_TOKENS = 4096
 
+/**
+ * #97: macros-only constituent rows (small cloud models, and local
+ * OpenAI-compatible servers where the user cap stays the 1024 default) run
+ * ~100 tokens each; 12 rows plus the meal total land past that cap and the
+ * truncated reply reads as "Could not understand the AI response". Capped
+ * providers get this smaller floor for entry ops that embed the
+ * macros-constituents schema. PWA twin: food-analyze.js
+ * CONSTITUENTS_MACROS_MIN_RESPONSE_TOKENS.
+ */
+internal const val CONSTITUENT_MACROS_MIN_RESPONSE_TOKENS = 2048
+
 /** Entry ops whose prompt embeds the constituents schema. */
 internal val ENTRY_CONSTITUENT_OPS = setOf("analyzeText", "analyzeAuto", "analyzeFood", "analyzeFoodMulti")
 
@@ -179,10 +190,17 @@ internal fun entryConstituentsRuleFor(kind: EntryConstituentPromptKind): String 
 internal fun entryNutrientUnitsFor(kind: EntryConstituentPromptKind): String =
     if (kind == EntryConstituentPromptKind.LEAN) ENTRY_NUTRIENT_UNITS_LEAN else ENTRY_NUTRIENT_UNITS
 
-/** Effective response-token cap for an op: raised to the constituent floor only
- *  when the op's schema requests per-row micros and constituents are enabled. */
-internal fun floorResponseTokensForOp(op: String, userCap: Int, constituentsRequested: Boolean): Int =
-    if (constituentsRequested && op in ENTRY_CONSTITUENT_OPS) maxOf(userCap, CONSTITUENT_MIN_RESPONSE_TOKENS) else userCap
+/** Effective response-token cap for an op: raised to the constituent floor
+ *  when the op's schema embeds constituent rows — micros rows floor at
+ *  [CONSTITUENT_MIN_RESPONSE_TOKENS] (#86), macros-only rows at
+ *  [CONSTITUENT_MACROS_MIN_RESPONSE_TOKENS] (#97). */
+internal fun floorResponseTokensForOp(op: String, userCap: Int, kind: EntryConstituentPromptKind): Int =
+    if (op !in ENTRY_CONSTITUENT_OPS) userCap
+    else when (kind) {
+        EntryConstituentPromptKind.MICROS -> maxOf(userCap, CONSTITUENT_MIN_RESPONSE_TOKENS)
+        EntryConstituentPromptKind.MACROS -> maxOf(userCap, CONSTITUENT_MACROS_MIN_RESPONSE_TOKENS)
+        EntryConstituentPromptKind.NONE, EntryConstituentPromptKind.LEAN -> userCap
+    }
 
 private const val ENTRY_EMOJI_NULL_RULE =
     "For \"emoji\" pick the single most specific food emoji for this dish. " +
@@ -1458,7 +1476,7 @@ class FoodAnalysisService(
             ?: AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
         val userCap = prefs.maxResponseTokens.first()
         val kind = entryKind(primary, primaryModel)
-        val maxTokens = floorResponseTokensForOp(op, userCap, kind == EntryConstituentPromptKind.MICROS)
+        val maxTokens = floorResponseTokensForOp(op, userCap, kind)
         if (PerfLog.enabled) PerfLog.event("op=$op tokens model=$primaryModel kind=$kind userCap=$userCap effective=$maxTokens")
         val readTimeoutSeconds = prefs.aiReadTimeoutSeconds.first()
         val geminiGoogleSearch = prefs.geminiGoogleSearchEnabled.first()
@@ -1510,7 +1528,7 @@ class FoodAnalysisService(
                     val fallbackMaxTokens = floorResponseTokensForOp(
                         op,
                         userCap,
-                        entryKind(fallback.provider, fallbackModel) == EntryConstituentPromptKind.MICROS,
+                        entryKind(fallback.provider, fallbackModel),
                     )
                     dispatch(
                         fallback.provider, fallbackModel, fallback.baseUrl, fallback.apiKey, fallbackPrompt, aiImages,

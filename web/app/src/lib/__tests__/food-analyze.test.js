@@ -8,7 +8,13 @@ import {
   isAbortError,
   phaseLabel,
 } from "../ai/food-analyze.js";
-import { PROVIDERS, anthropicSend, openRouterReasoningBody, resolveVisionModel } from "../ai/providers.js";
+import {
+  PROVIDERS,
+  anthropicSend,
+  openRouterReasoningBody,
+  resolveVisionModel,
+  stripThinkBlocks,
+} from "../ai/providers.js";
 
 test("analysisPhases_matchAndroidCloudEntry", () => {
   assert.deepEqual(
@@ -528,9 +534,10 @@ test("analyzeFoodEntry_constituentsRaiseCappedProviderTokenFloor", async () => {
   } finally {
     PROVIDERS.anthropic.send = original;
   }
-  // Floor applies only when the micros constituents schema is active.
+  // Micros rows floor at 4096; macros-only rows (small model, #97) at 2048;
+  // constituents off keeps the caller default.
   assert.equal(maxTokensSeen[0], 4096);
-  assert.equal(maxTokensSeen[1], undefined);
+  assert.equal(maxTokensSeen[1], 2048);
   assert.equal(maxTokensSeen[2], undefined);
 });
 
@@ -559,4 +566,15 @@ test("anthropicSend_threadsMaxTokensIntoBody", async () => {
   }
   assert.equal(bodies[0].max_tokens, 4096);
   assert.equal(bodies[1].max_tokens, 1024);
+});
+
+test("stripThinkBlocks_matchesAndroidStripThinking", () => {
+  // #97: local reasoning models inline <think> in content; blocks span
+  // streamed chunks so the strip runs on assembled text only.
+  assert.equal(stripThinkBlocks('<think>reasoning</think>{"calories":200}'), '{"calories":200}');
+  assert.equal(stripThinkBlocks('<thinking>\nline one\nline two\n</thinking>\n{"name":"toast"}'), '{"name":"toast"}');
+  assert.equal(stripThinkBlocks('{"calories":200}<think>half-finished reasoning that never'), '{"calories":200}');
+  assert.equal(stripThinkBlocks("<think>only reasoning {\"calories\":9999} more"), "");
+  assert.equal(stripThinkBlocks("```json\n{\"calories\":200}\n```"), "```json\n{\"calories\":200}\n```");
+  assert.equal(stripThinkBlocks('<think>a</think>{"a":1}<think>b</think>'), '{"a":1}');
 });

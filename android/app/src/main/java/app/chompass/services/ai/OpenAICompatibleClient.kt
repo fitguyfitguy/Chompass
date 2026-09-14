@@ -115,7 +115,7 @@ object OpenAICompatibleClient {
                 throw AiError.Api("The AI response was truncated twice. Try a shorter description or another model.", messageRes = R.string.ai_error_truncated_twice_description)
             }
         }
-        return response.text ?: throw AiError.InvalidResponse
+        return stripThinking(response.text ?: throw AiError.InvalidResponse)
     }
 
     /**
@@ -198,6 +198,9 @@ object OpenAICompatibleClient {
 
         return try {
             var (text, truncated) = streamOnce(prompt, compactRetry = false)
+            // Blocks span chunks, so thinking is stripped from the assembled
+            // text only; raw deltas still reach the partial-JSON preview.
+            text = stripThinking(text)
             if (text.isBlank() || truncated) {
                 // Compact retry uses the non-streaming path so partial UI state
                 // is not polluted by a truncated first attempt.
@@ -214,6 +217,24 @@ object OpenAICompatibleClient {
 
     private fun compactRetryPrompt(prompt: String, maxTokens: Int): String =
         "$prompt\n\nIMPORTANT: The previous response did not contain a complete answer. Return only the requested compact JSON object, with no reasoning, explanation, or markdown. Keep the complete response under $maxTokens tokens."
+
+    /**
+     * Strips inline reasoning some local models embed in `content`
+     * (`<think>…</think>`, `<thinking>…</thinking>`; Qwen-class via LM
+     * Studio / Ollama / Unsloth — #97). Those servers inline it unless the
+     * client asks for structured reasoning, and the food-JSON parser cannot
+     * see past it. Blocks can span streamed chunks, so this runs on fully
+     * assembled text, never per delta. A trailing unterminated open tag is
+     * cut to the end: its content is reasoning, never the answer.
+     */
+    internal fun stripThinking(text: String): String {
+        val closed = THINK_BLOCK_REGEX.replace(text, "")
+        val open = THINK_OPEN_REGEX.find(closed) ?: return closed.trim()
+        return closed.substring(0, open.range.first).trim()
+    }
+
+    private val THINK_BLOCK_REGEX = Regex("(?si)<think(?:ing)?>.*?</think(?:ing)?>")
+    private val THINK_OPEN_REGEX = Regex("(?i)<think(?:ing)?>")
 
     suspend fun chat(
         client: OkHttpClient,
@@ -254,7 +275,7 @@ object OpenAICompatibleClient {
         if (response.wasTruncated) {
             throw AiError.Api("The AI response was truncated. Try a shorter question or a different model.", messageRes = R.string.ai_error_truncated)
         }
-        return response.text ?: throw AiError.InvalidResponse
+        return stripThinking(response.text ?: throw AiError.InvalidResponse)
     }
 
     fun tokenLimitParameter(provider: AIProvider, model: String): String {
