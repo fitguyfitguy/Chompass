@@ -40,7 +40,10 @@ import androidx.compose.runtime.LaunchedEffect
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 
+import android.graphics.Typeface
+import android.text.TextPaint
 import android.text.format.DateFormat
+
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 
@@ -1196,25 +1199,38 @@ private fun EditFoodTimeDialog(
 
 /**
  * Pickable food emojis for the entry icon. Single-codepoint so they render
- * uniformly across platforms.
+ * uniformly across platforms. The dialog shows only glyphs the device can
+ * draw; see [foodEntryEmojisSupported].
  */
 internal val FOOD_ENTRY_EMOJIS: List<String> = listOf(
     "🍽", "🍎", "🍏", "🍐", "🍊", "🍋",
     "🍌", "🍉", "🍇", "🍓", "🍒", "🍑",
-    "🥭", "🍍", "🥝", "🍈", "🥥", "🍅",
-    "🥑", "🥦", "🥬", "🥒", "🥕", "🌽",
-    "🥔", "🍠", "🧄", "🧅", "🍆", "🍄",
-    "🥜", "🧀", "🧈", "🍞", "🥐", "🥖",
-    "🥨", "🥯", "🥞", "🧇", "🥣", "🍳",
-    "🥚", "🥓", "🍗", "🍖", "🥩", "🍔",
-    "🍟", "🍕", "🌭", "🥪", "🌮", "🌯",
-    "🥙", "🥗", "🍜", "🍝", "🍲", "🥘",
-    "🍛", "🍱", "🍙", "🍚", "🍣", "🍤",
-    "🥟", "🐟", "🦐", "🦀", "🦞", "🦪",
-    "🍦", "🍪", "🍩", "🍫", "🍰", "🧁",
-    "🥧", "🍿", "🍯", "🥛", "☕", "🍵",
+    "🥭", "🍍", "🥝", "🍈", "🥥", "🫐",
+    "🍅", "🥑", "🥦", "🥬", "🥒", "🥕",
+    "🌽", "🥔", "🍠", "🧄", "🧅", "🍆",
+    "🫑", "🫒", "🍄", "🥜", "🫘", "🫛",
+    "🫚", "🧀", "🧈", "🍞", "🥐", "🥖",
+    "🥨", "🥯", "🫓", "🥞", "🧇", "🥣",
+    "🍳", "🥚", "🥓", "🍗", "🍖", "🥩",
+    "🍔", "🍟", "🍕", "🌭", "🥪", "🌮",
+    "🌯", "🥙", "🧆", "🫔", "🥗", "🍜",
+    "🍝", "🍲", "🥘", "🫕", "🍛", "🍱",
+    "🍙", "🍚", "🍣", "🍤", "🥟", "🐟",
+    "🦐", "🦀", "🦞", "🦪", "🍦", "🍪",
+    "🍩", "🍫", "🍰", "🧁", "🥧", "🍿",
+    "🍯", "🥛", "☕", "🍵", "🫖", "🧋",
     "🧃", "🥤", "🍺", "🍷", "🥃", "🍶",
 )
+
+/**
+ * Device-supported subset of [FOOD_ENTRY_EMOJIS]. If [hasGlyph] rejects most
+ * of the catalog (broken paint / missing emoji fallback), return the full
+ * list rather than an empty grid.
+ */
+internal fun foodEntryEmojisSupported(hasGlyph: (String) -> Boolean): List<String> {
+    val supported = FOOD_ENTRY_EMOJIS.filter(hasGlyph)
+    return if (supported.size >= FOOD_ENTRY_EMOJIS.size / 2) supported else FOOD_ENTRY_EMOJIS
+}
 
 /** Hero shown at the top of the edit sheet; tap to change the emoji / photo. */
 @Composable
@@ -1278,7 +1294,11 @@ internal fun EditFoodIconDialog(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
-            FOOD_ENTRY_EMOJIS.chunked(6).forEach { row ->
+            val emojis = remember {
+                val paint = TextPaint().apply { typeface = Typeface.DEFAULT }
+                foodEntryEmojisSupported(paint::hasGlyph)
+            }
+            emojis.chunked(6).forEach { row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                     row.forEach { emoji ->
                         Text(
