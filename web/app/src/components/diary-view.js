@@ -71,7 +71,7 @@ import { setDayAssignment } from "../lib/chompass-core/macro-plan-edit.js";
 import { resolveDay, resolveDayJournaled } from "../lib/chompass-core/macro-plan.js";
 import { refreshGoalJournal, recordManualSwitchGoalJournal } from "../lib/goal-journal-store.js";
 import { escapeHtml, escapeAttr } from "../lib/ui/html.js";
-import { shiftDate, todayIso } from "../lib/date.js";
+import { clampDiaryDate, DIARY_FUTURE_WEEKS, shiftDate, todayIso } from "../lib/date.js";
 import { chevronLeft, chevronRight } from "../lib/icons.js";
 import { showToast, showUndoToast } from "../lib/ui/toast.js";
 import { MEAL_ORDER, mealLabel } from "../lib/meal-label.js";
@@ -213,8 +213,7 @@ function weekDates(selectedIso, weekStart = true) {
 }
 
 function clampDate(iso) {
-  const today = todayIso();
-  return iso > today ? today : iso;
+  return clampDiaryDate(iso);
 }
 
 function loadHomeDate() {
@@ -700,7 +699,7 @@ export class DiaryView extends HTMLElement {
       );
     }
 
-    const nextDisabled = this.date >= today ? "disabled" : "";
+    const nextDisabled = this.date >= shiftDate(today, DIARY_FUTURE_WEEKS * 7) ? "disabled" : "";
     const macrosMobile = targets
       ? `<div class="macro-tubes macro-tubes--${tubeKeys.length}">
           ${renderMacros(tubeKeys, entries, macroTargets, optionalGoals, "tube")}
@@ -750,7 +749,7 @@ export class DiaryView extends HTMLElement {
                     const d = new Date(`${iso}T00:00:00`);
                     const selected = iso === this.date ? " is-selected" : "";
                     const isToday = iso === today ? " is-today" : "";
-                    const future = iso > today;
+                    const future = iso > shiftDate(today, DIARY_FUTURE_WEEKS * 7);
                     return `
                       <button type="button" class="week-day${selected}${isToday}" data-date="${iso}"
                         aria-pressed="${iso === this.date}" ${future ? "disabled" : ""}>

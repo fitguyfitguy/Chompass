@@ -74,8 +74,11 @@ import java.util.Locale
  *               }
  *   }.frame(maxWidth: .infinity)
  */
-private const val TOTAL_WEEKS = 53
-private val CURRENT_WEEK_INDEX = TOTAL_WEEKS - 1
+private const val PAST_WEEKS = 52
+/** Keep in lockstep with [app.chompass.ui.home.DIARY_FUTURE_WEEKS]. */
+private const val FUTURE_WEEKS = 8
+private const val TOTAL_WEEKS = PAST_WEEKS + 1 + FUTURE_WEEKS
+private const val CURRENT_WEEK_INDEX = PAST_WEEKS
 
 @Composable
 fun WeekEnergyStrip(

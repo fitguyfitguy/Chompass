@@ -427,8 +427,7 @@ fun HomeScreen(
                 bottom = BottomNavScrollPadding
             )
         ) {
-            // Week strip — verbatim port of WeekEnergyStrip in HomeComponents.swift,
-            // with horizontal pagination across 53 weeks of history.
+            // Week strip — 52 past weeks + current + 8 future (Codeberg #96).
             item {
                 Box(Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
                     WeekEnergyStrip(
@@ -482,7 +481,7 @@ fun HomeScreen(
                                     vm.setSelectedDate(selectedDate.minusDays(1))
                                 } else if (accum < -threshold) {
                                     val next = selectedDate.plusDays(1)
-                                    if (!next.isAfter(today)) vm.setSelectedDate(next)
+                                    if (canAdvanceDiaryDay(selectedDate, today)) vm.setSelectedDate(next)
                                 }
                                 accum = 0f
                                 horizontalLocked = false
@@ -644,7 +643,7 @@ fun HomeScreen(
             // Food log
             item { Spacer(Modifier.height(8.dp)) }
             // Daily note (Codeberg #58a): day-scoped like the water card, so it
-            // follows the selected day (today or any past day). Only when the
+            // follows the selected day (today, past, or planned future). Only when the
             // optional tracker is enabled (Settings → Trackers & Reminders).
             if (ui.dailyNotesEnabled) {
                 item(key = "daily-note-${selectedDate}") {
@@ -661,7 +660,10 @@ fun HomeScreen(
                     SectionCardWrapper(isFirst = true, isLast = true) {
                         Box(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 16.dp)) {
                             Text(
-                                stringResource(R.string.home_no_foods_logged),
+                                stringResource(
+                                    if (selectedDate.isAfter(today)) R.string.home_no_foods_planned
+                                    else R.string.home_no_foods_logged,
+                                ),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                             )

@@ -36,3 +36,18 @@ export function shiftDate(iso, days) {
   d.setDate(d.getDate() + days);
   return localIsoDate(d);
 }
+
+/** Home / week-strip forward window. Mirrors Android DIARY_FUTURE_WEEKS. */
+export const DIARY_FUTURE_WEEKS = 8;
+
+/**
+ * Keep past dates; cap future at today + 8 weeks. Invalid ISO falls back to today.
+ * @param {string} iso
+ * @param {string} [today]
+ * @returns {string}
+ */
+export function clampDiaryDate(iso, today = todayIso()) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return today;
+  const max = shiftDate(today, DIARY_FUTURE_WEEKS * 7);
+  return iso > max ? max : iso;
+}

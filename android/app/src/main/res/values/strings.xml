@@ -605,6 +605,7 @@
     <string name="home_view_more">View More</string>
     <string name="home_todays_food">Today\'s Food</string>
     <string name="home_no_foods_logged">No foods logged</string>
+    <string name="home_no_foods_planned">No meals planned</string>
     <string name="home_swipe_delete">Delete</string>
     <string name="home_swipe_favorite">Favorite</string>
     <string name="home_swipe_unfavorite">Unfavorite</string>

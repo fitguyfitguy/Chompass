@@ -50,6 +50,22 @@ class FoodLogTimeTest {
     }
 
     @Test
+    fun futureDayWithoutOverride_keepsWallClockOnThatDate() {
+        val tomorrow = today.plusDays(1)
+        val stamped = timestampForLogging(tomorrow, now, zone, timeOverride = null)
+        val zoned = stamped.atZone(zone)
+        assertEquals(tomorrow, zoned.toLocalDate())
+        assertEquals(LocalTime.of(19, 30, 45), zoned.toLocalTime())
+    }
+
+    @Test
+    fun canAdvanceDiaryDay_allowsEightWeeksThenStops() {
+        assertTrue(canAdvanceDiaryDay(today, today))
+        assertTrue(canAdvanceDiaryDay(today.plusWeeks(8).minusDays(1), today))
+        assertTrue(!canAdvanceDiaryDay(today.plusWeeks(8), today))
+    }
+
+    @Test
     fun mealId_followsCatalogAtOverride() {
         val catalog = MealCatalog.Default
         assertEquals("lunch", mealIdForLogging(catalog, LocalTime.of(13, 0), LocalTime.of(19, 30)))
