@@ -10,6 +10,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Added
 
 - **Choose which food databases search looks in** (Android): Settings → Food & Entry → Search food databases now has a switch per source — Open Food Facts, USDA, Swiss. USDA and Swiss start on: they are bundled with the app, so searching them never leaves your phone. Open Food Facts starts off, because it is a lookup over the internet. Turning a source off only removes it from search; scanning a barcode still looks the product up, and foods you already logged keep their source badge.
+- **Plan meals on future days** (Android + web): swipe or tap past today on Home, up to eight weeks ahead. Logging, Copy To, and the analysis-queue day arrows use that day. Empty future days say no meals planned. Health Connect still skips future-dated writes. Follows Codeberg [#96](https://codeberg.org/fitguy/Chompass/issues/96) by [@sbandoalleciance](https://codeberg.org/sbandoalleciance).
+
 
 ### Changed
 
