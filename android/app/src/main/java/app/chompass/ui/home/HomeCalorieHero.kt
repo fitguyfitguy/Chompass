@@ -55,7 +55,6 @@ import app.chompass.R
 import app.chompass.models.ActiveBurnShade
 import app.chompass.models.ActiveCalorieSource
 import app.chompass.models.EnergyFormat
-import app.chompass.models.EnergyUnit
 import app.chompass.models.HomeCalorieDisplay
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.LocaleFormat

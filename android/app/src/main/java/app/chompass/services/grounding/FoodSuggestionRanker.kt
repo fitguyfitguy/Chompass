@@ -16,7 +16,6 @@ import kotlin.math.min
  * Pure and clock-injected so the whole thing is testable on the JVM.
  */
 object FoodSuggestionRanker {
-
     /**
      * Score floor every saved food starts from. It is what guarantees a
      * lexically matching saved food outranks *any* database hit, which is both

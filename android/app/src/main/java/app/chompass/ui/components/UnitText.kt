@@ -29,7 +29,6 @@ internal fun energyText(kcal: Int): String {
 internal fun energyUnitLabel(): String =
     stringResource(if (LocalEnergyUnit.current == EnergyUnit.KJ) R.string.unit_kj else R.string.unit_kcal)
 
-
 /** "150 g" / "1,234.5 g" — whole grams group; fractions keep one decimal. */
 @Composable
 internal fun gramsText(value: Double): String {
