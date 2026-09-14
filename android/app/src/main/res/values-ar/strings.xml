@@ -1842,6 +1842,13 @@
     <string name="caffeine_kind_tea">شاي</string>
     <string name="caffeine_kind_energy">مشروب طاقة</string>
     <string name="caffeine_kind_other">غير ذلك</string>
+    <string name="milk_kind_whole">كامل الدسم</string>
+    <string name="milk_kind_semi">نصف دسم</string>
+    <string name="milk_kind_skim">منزوع الدسم</string>
+    <string name="milk_kind_oat">شوفان</string>
+    <string name="milk_kind_almond">لوز</string>
+    <string name="caffeine_milk_section">حليب</string>
+    <string name="caffeine_milk_ml">الكمية</string>
     <string name="caffeine_history_total">%1$s · %2$s ملغ</string>
     <string name="cd_log_caffeine">تسجيل الكافيين</string>
     <string name="cd_delete_caffeine">حذف سجل الكافيين</string>

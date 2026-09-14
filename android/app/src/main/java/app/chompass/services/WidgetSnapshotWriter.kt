@@ -5,9 +5,12 @@ import android.util.Log
 import androidx.compose.ui.graphics.toArgb
 import androidx.glance.appwidget.updateAll
 import app.chompass.data.FoodRepository
+import app.chompass.data.CaffeineRepository
 import app.chompass.data.PreferencesStore
 import app.chompass.data.ProfileRepository
 import app.chompass.models.FoodEntry
+import app.chompass.models.CaffeineEntry
+import app.chompass.models.HomeTopNutrient
 import app.chompass.models.HomeCalorieDisplay
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.MacroPlanResolver
@@ -47,6 +50,7 @@ class WidgetSnapshotWriter(
     private val homeActivityReader: HomeActivityReader,
     private val waterRepository: app.chompass.data.WaterRepository,
     private val weatherRepository: app.chompass.data.WeatherRepository,
+    private val caffeineRepository: CaffeineRepository,
 ) {
     /** Bundled water inputs flowing through [observe]/[publish]. */
     internal data class WaterInputs(
@@ -63,6 +67,7 @@ class WidgetSnapshotWriter(
         val profile: UserProfile?,
         val appearance: String,
         val water: WaterInputs,
+        val caffeineEntries: List<CaffeineEntry> = emptyList(),
     )
 
     internal data class WaterDynamicInputs(
@@ -144,8 +149,11 @@ class WidgetSnapshotWriter(
     ) { core, water ->
         SnapshotInputs(core.first, core.second, core.third, water)
     }
+        .combine(caffeineRepository.entries) { inputs, caffeine ->
+            inputs.copy(caffeineEntries = caffeine)
+        }
         .distinctUntilChanged()
-        .onEach { inputs -> publish(inputs.entries, inputs.profile, inputs.appearance, inputs.water) }
+        .onEach { inputs -> publish(inputs.entries, inputs.profile, inputs.appearance, inputs.water, inputs.caffeineEntries) }
 
     /**
      * Recompute and publish from current repos/prefs. Used when Theme Color is
@@ -174,7 +182,7 @@ class WidgetSnapshotWriter(
             ),
             entries = waterRepository.entries.first(),
         )
-        publish(entries, profile, appearance, water)
+        publish(entries, profile, appearance, water, caffeineRepository.entries.first())
     }
 
     private suspend fun publish(
@@ -182,6 +190,7 @@ class WidgetSnapshotWriter(
         profile: UserProfile?,
         appearance: String,
         water: WaterInputs,
+        caffeineEntries: List<CaffeineEntry> = emptyList(),
     ) {
         val todaysEntries = entries.filter {
             it.timestamp.atZone(ZoneId.systemDefault()).toLocalDate() == LocalDate.now()
@@ -288,7 +297,14 @@ class WidgetSnapshotWriter(
                         id = nutrient.storageKey,
                         label = context.getString(nutrient.displayNameRes),
                         unit = context.getString(nutrient.unitRes),
-                        value = nutrient.current(todaysEntries),
+                        value = if (nutrient == HomeTopNutrient.CAFFEINE) {
+                            val todayCaffeine = caffeineEntries.filter {
+                                it.date.atZone(ZoneId.systemDefault()).toLocalDate() == LocalDate.now()
+                            }
+                            CaffeineEntry.dayCaffeineMg(todaysEntries, todayCaffeine)
+                        } else {
+                            nutrient.current(todaysEntries)
+                        },
                         goal = nutrient.goal(resolvedToday, profile, optionalGoals).toDouble()
                     )
                 },

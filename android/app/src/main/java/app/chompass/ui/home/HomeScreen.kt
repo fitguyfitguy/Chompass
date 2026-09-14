@@ -84,6 +84,8 @@ import app.chompass.models.CaffeineEntry
 import app.chompass.models.NicotineEntry
 import app.chompass.models.WaterAmountFormat
 import app.chompass.models.builtinCaffeineDefaultMg
+import app.chompass.models.HomeTopNutrient
+import app.chompass.models.MilkKind
 import app.chompass.models.WaterEntry
 import app.chompass.services.FoodPhotoSession
 import app.chompass.services.MealShare
@@ -549,7 +551,7 @@ fun HomeScreen(
                         ui.homeTopNutrients.forEach { nutrient ->
                             MacroCard(
                                 label = stringResource(nutrient.displayNameRes),
-                                current = nutrient.current(ui.todayEntries),
+                                current = if (nutrient == HomeTopNutrient.CAFFEINE) ui.caffeineTodayMg else nutrient.current(ui.todayEntries),
                                 goal = nutrient.goal(ui.resolvedDayTargets, ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale),
                                 unit = stringResource(nutrient.unitRes),
                                 accentColor = nutrientAccentColor(nutrient),
@@ -1036,10 +1038,14 @@ fun HomeScreen(
             onCaffeine = { kind ->
                 // A chip without an effective default (e.g. the bare "Other"
                 // builtin) opens the custom sheet instead of logging 0 mg.
-                val presetMg = ui.caffeinePresets.firstOrNull { it.id == kind }?.defaultMg
-                    ?: builtinCaffeineDefaultMg(kind)
+                val preset = ui.caffeinePresets.firstOrNull { it.id == kind }
+                val presetMg = preset?.defaultMg ?: builtinCaffeineDefaultMg(kind)
                 if (presetMg != null && presetMg > 0) {
-                    vm.addCaffeine(kind)
+                    vm.addCaffeine(
+                        kind,
+                        milkKind = MilkKind.fromStorage(preset?.milkKind),
+                        milkMl = preset?.milkMl ?: 0,
+                    )
                 } else {
                     showCaffeineCustom = true
                 }
@@ -1192,7 +1198,7 @@ fun HomeScreen(
         CaffeineCustomSheet(
             presets = ui.caffeinePresets,
             onDismiss = { showCaffeineCustom = false },
-            onAdd = { kind, mg -> vm.addCaffeine(kind, mg) },
+            onAdd = { kind, mg, milkKind, milkMl -> vm.addCaffeine(kind, mg, milkKind, milkMl) },
         )
     }
 
@@ -1596,6 +1602,7 @@ fun HomeScreen(
             macroScale = ui.macroGoalScale,
             title = mealGroup?.let { mealLabel(it.meal) },
             showHomeCards = nutritionDetailScope == "day",
+            trackerCaffeineMg = if (nutritionDetailScope == "day") ui.caffeineTodayEntries.sumOf { it.mg } else 0.0,
             onHomeTopNutrientsChange = vm::setHomeTopNutrients,
             onDismiss = { nutritionDetailScope = null },
         )
@@ -1834,7 +1841,7 @@ internal fun HomeScreenPreviewContent(
                             ui.homeTopNutrients.forEach { nutrient ->
                                 MacroCard(
                                     label = stringResource(nutrient.displayNameRes),
-                                    current = nutrient.current(ui.todayEntries),
+                                    current = if (nutrient == HomeTopNutrient.CAFFEINE) ui.caffeineTodayMg else nutrient.current(ui.todayEntries),
                                     goal = nutrient.goal(ui.resolvedDayTargets, ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale),
                                     unit = stringResource(nutrient.unitRes),
                                     accentColor = nutrientAccentColor(nutrient),

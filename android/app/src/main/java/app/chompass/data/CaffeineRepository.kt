@@ -54,6 +54,17 @@ class CaffeineRepository(
         sync?.tombstone(id, "caffeine")
     }
 
+    /** Food-delete path: drop the sidecar link, keep the caffeine log. */
+    suspend fun clearLinkedFood(foodId: UUID) {
+        val hits = prefs.caffeineEntries.first().filter { it.linkedFoodEntryId == foodId }
+        if (hits.isEmpty()) return
+        val byMonth = hits.groupBy { it.month() }.mapValues { (_, list) ->
+            list.map { it.copy(linkedFoodEntryId = null) }
+        }
+        prefs.applyCaffeineBucketChanges(upsertsByMonth = byMonth)
+        hits.forEach { sync?.touch(it.id, "caffeine") }
+    }
+
     /**
      * Moves every log of kind [from] to [to] in place (preset delete: kind is
      * cosmetic grouping, "other" is the fallback semantic; mg preserved).

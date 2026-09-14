@@ -1836,6 +1836,13 @@
     <string name="caffeine_kind_tea">Ceai</string>
     <string name="caffeine_kind_energy">Băutură energizantă</string>
     <string name="caffeine_kind_other">Altceva</string>
+    <string name="milk_kind_whole">Integral</string>
+    <string name="milk_kind_semi">Semidegresat</string>
+    <string name="milk_kind_skim">Degresat</string>
+    <string name="milk_kind_oat">Ovăz</string>
+    <string name="milk_kind_almond">Migdale</string>
+    <string name="caffeine_milk_section">Lapte</string>
+    <string name="caffeine_milk_ml">Cantitate</string>
     <string name="caffeine_history_total">%1$s · %2$s mg</string>
     <string name="cd_log_caffeine">Înregistrează cofeină</string>
     <string name="cd_delete_caffeine">Șterge înregistrarea de cofeină</string>

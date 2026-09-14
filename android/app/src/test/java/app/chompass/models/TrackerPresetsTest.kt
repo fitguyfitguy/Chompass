@@ -68,6 +68,44 @@ class TrackerPresetsTest {
     }
 
     @Test
+    fun validateRejectsCaffeineMilkWithoutKindAndNicotineMilk() {
+        assertEquals(
+            "milk_kind",
+            HabitPresetCatalog(listOf(HabitPreset("t_00000001", milkMl = 50))).validate(HabitPresetDomain.CAFFEINE),
+        )
+        assertEquals(
+            "milk",
+            HabitPresetCatalog(listOf(HabitPreset("t_00000001", milkMl = 50, milkKind = "whole")))
+                .validate(HabitPresetDomain.NICOTINE),
+        )
+        assertNull(
+            HabitPresetCatalog(listOf(HabitPreset("t_00000001", milkMl = 0))).validate(HabitPresetDomain.CAFFEINE),
+        )
+        assertNull(
+            HabitPresetCatalog(listOf(HabitPreset("t_00000001", milkMl = 50, milkKind = "whole")))
+                .validate(HabitPresetDomain.CAFFEINE),
+        )
+    }
+
+    @Test
+    fun addCustomClampsMilkAndStripsNicotineMilk() {
+        val caffeine = HabitPresetDomain.CAFFEINE.defaultCatalog
+            .addCustom(HabitPresetDomain.CAFFEINE, "Latte", defaultMg = 80.0, milkKind = "whole", milkMl = 900)
+        assertEquals(MilkKind.MAX_ML, caffeine.presets.last().milkMl)
+        assertEquals("whole", caffeine.presets.last().milkKind)
+
+        val noKind = HabitPresetDomain.CAFFEINE.defaultCatalog
+            .addCustom(HabitPresetDomain.CAFFEINE, "Espresso", defaultMg = 80.0, milkMl = 50)
+        assertEquals(0, noKind.presets.last().milkMl)
+        assertNull(noKind.presets.last().milkKind)
+
+        val nicotine = HabitPresetDomain.NICOTINE.defaultCatalog
+            .addCustom(HabitPresetDomain.NICOTINE, "Zyn", milkKind = "whole", milkMl = 50)
+        assertEquals(0, nicotine.presets.last().milkMl)
+        assertNull(nicotine.presets.last().milkKind)
+    }
+
+    @Test
     fun validatedOrDefaultResetsCorruptCatalogs() {
         val corrupt = HabitPresetCatalog(presets = listOf(HabitPreset("cigarette")))
         assertEquals(

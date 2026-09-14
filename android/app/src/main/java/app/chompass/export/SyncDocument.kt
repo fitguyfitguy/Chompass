@@ -360,6 +360,7 @@ object SyncDocument {
                                 put("date", day)
                                 put("kind", c.kind)
                                 put("mg", c.mg)
+                                c.linkedFoodEntryId?.let { put("food_entry_id", it.toString()) }
                             },
                         )
                     }
@@ -944,6 +945,9 @@ object SyncDocument {
             // string); old clients degrade them to "other" on their side.
             kind = normalizeKindId(o["kind"]?.asString() ?: "coffee"),
             mg = mg,
+            linkedFoodEntryId = o["food_entry_id"]?.asString()?.takeIf { it.isNotBlank() }?.let {
+                runCatching { UUID.fromString(it) }.getOrNull()
+            },
         )
         return CaffeineWire(id, updatedAt, null, entry)
     }

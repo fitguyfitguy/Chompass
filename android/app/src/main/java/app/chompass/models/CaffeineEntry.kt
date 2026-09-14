@@ -47,6 +47,9 @@ data class CaffeineEntry(
     @Serializable(with = TrackerKindIdSerializer::class)
     val kind: String = CaffeineKind.COFFEE.storageKey,
     val mg: Double,
+    /** Milk sidecar food row; null on legacy buckets and caffeine-only logs. */
+    @Serializable(with = UuidSerializer::class)
+    val linkedFoodEntryId: UUID? = null,
 ) {
     companion object {
         /**
@@ -59,5 +62,9 @@ data class CaffeineEntry(
                 kind = normalizeKindId(kind),
                 mg = (mg ?: builtinCaffeineDefaultMg(kind) ?: 0.0).coerceAtLeast(0.0),
             )
+
+        /** Day caffeine micro: food-entry caffeine plus tracker logs. */
+        fun dayCaffeineMg(food: List<FoodEntry>, tracker: List<CaffeineEntry>): Double =
+            food.sumOf { it.caffeine ?: 0.0 } + tracker.sumOf { it.mg }
     }
 }

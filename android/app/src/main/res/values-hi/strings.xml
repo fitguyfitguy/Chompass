@@ -1836,6 +1836,13 @@
     <string name="caffeine_kind_tea">चाय</string>
     <string name="caffeine_kind_energy">एनर्जी ड्रिंक</string>
     <string name="caffeine_kind_other">अन्य</string>
+    <string name="milk_kind_whole">फुल क्रीम</string>
+    <string name="milk_kind_semi">सेमी-स्किम्ड</string>
+    <string name="milk_kind_skim">स्किम्ड</string>
+    <string name="milk_kind_oat">ओट</string>
+    <string name="milk_kind_almond">बादाम</string>
+    <string name="caffeine_milk_section">दूध</string>
+    <string name="caffeine_milk_ml">मात्रा</string>
     <string name="caffeine_history_total">%1$s · %2$s मि.ग्रा.</string>
     <string name="cd_log_caffeine">कैफीन दर्ज करें</string>
     <string name="cd_delete_caffeine">कैफीन प्रविष्टि मिटाएँ</string>

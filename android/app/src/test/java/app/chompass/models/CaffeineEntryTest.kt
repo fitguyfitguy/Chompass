@@ -83,4 +83,38 @@ class CaffeineEntryTest {
         // Non-builtin spellings pass through verbatim (custom ids are opaque).
         assertEquals("Espresso", normalizeKindId("Espresso"))
     }
+
+    @Test
+    fun dayCaffeineMgAddsFoodAndTracker() {
+        val food = listOf(
+            FoodEntry(
+                name = "Coffee",
+                calories = 5,
+                protein = 0.0,
+                carbs = 0.0,
+                fat = 0.0,
+                source = FoodSource.MANUAL,
+                caffeine = 95.0,
+            ),
+        )
+        val tracker = listOf(CaffeineEntry(kind = "tea", mg = 80.0))
+        assertEquals(175.0, CaffeineEntry.dayCaffeineMg(food, tracker), 0.001)
+        assertEquals(95.0, CaffeineEntry.dayCaffeineMg(food, emptyList()), 0.001)
+    }
+
+    @Test
+    fun decodesLegacyBucketWithoutLinkedFoodEntryId() {
+        val decoded = json.decodeFromString<CaffeineEntry>("""{"kind":"coffee","mg":95.0}""")
+        assertEquals("coffee", decoded.kind)
+        assertEquals(95.0, decoded.mg, 0.001)
+        assertEquals(null, decoded.linkedFoodEntryId)
+    }
+
+    @Test
+    fun roundTripsLinkedFoodEntryId() {
+        val foodId = java.util.UUID.fromString("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
+        val entry = CaffeineEntry(kind = "coffee", mg = 80.0, linkedFoodEntryId = foodId)
+        val decoded = json.decodeFromString<CaffeineEntry>(json.encodeToString(CaffeineEntry.serializer(), entry))
+        assertEquals(foodId, decoded.linkedFoodEntryId)
+    }
 }

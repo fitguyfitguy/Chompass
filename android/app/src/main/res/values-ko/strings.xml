@@ -1836,6 +1836,13 @@
     <string name="caffeine_kind_tea">차</string>
     <string name="caffeine_kind_energy">에너지 음료</string>
     <string name="caffeine_kind_other">기타</string>
+    <string name="milk_kind_whole">전유</string>
+    <string name="milk_kind_semi">저지방</string>
+    <string name="milk_kind_skim">무지방</string>
+    <string name="milk_kind_oat">오트</string>
+    <string name="milk_kind_almond">아몬드</string>
+    <string name="caffeine_milk_section">우유</string>
+    <string name="caffeine_milk_ml">양</string>
     <string name="caffeine_history_total">%1$s · %2$s mg</string>
     <string name="cd_log_caffeine">카페인 기록</string>
     <string name="cd_delete_caffeine">카페인 기록 삭제</string>

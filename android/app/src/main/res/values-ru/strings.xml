@@ -1912,6 +1912,13 @@
     <string name="caffeine_kind_tea">Чай</string>
     <string name="caffeine_kind_energy">Энергетик</string>
     <string name="caffeine_kind_other">Другое</string>
+    <string name="milk_kind_whole">Цельное</string>
+    <string name="milk_kind_semi">Полужирное</string>
+    <string name="milk_kind_skim">Обезжиренное</string>
+    <string name="milk_kind_oat">Овсяное</string>
+    <string name="milk_kind_almond">Миндальное</string>
+    <string name="caffeine_milk_section">Молоко</string>
+    <string name="caffeine_milk_ml">Количество</string>
     <string name="caffeine_history_total">%1$s · %2$s мг</string>
     <string name="cd_log_caffeine">Записать кофеин</string>
     <string name="cd_delete_caffeine">Удалить запись о кофеине</string>

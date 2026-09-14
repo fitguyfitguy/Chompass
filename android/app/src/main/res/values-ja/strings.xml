@@ -1836,6 +1836,13 @@
     <string name="caffeine_kind_tea">お茶</string>
     <string name="caffeine_kind_energy">エナジードリンク</string>
     <string name="caffeine_kind_other">その他</string>
+    <string name="milk_kind_whole">全乳</string>
+    <string name="milk_kind_semi">低脂肪乳</string>
+    <string name="milk_kind_skim">スキム</string>
+    <string name="milk_kind_oat">オーツ</string>
+    <string name="milk_kind_almond">アーモンド</string>
+    <string name="caffeine_milk_section">ミルク</string>
+    <string name="caffeine_milk_ml">量</string>
     <string name="caffeine_history_total">%1$s · %2$s mg</string>
     <string name="cd_log_caffeine">カフェインを記録</string>
     <string name="cd_delete_caffeine">カフェインの記録を削除</string>

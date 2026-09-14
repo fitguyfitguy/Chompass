@@ -45,6 +45,7 @@ import app.chompass.models.CaffeineEntry
 import app.chompass.models.CaffeineKind
 import app.chompass.models.HabitPreset
 import app.chompass.models.HabitPresetDomain
+import app.chompass.models.MilkKind
 import app.chompass.models.builtinCaffeineDefaultMg
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.ChompassPinnedFooterSheet
@@ -131,19 +132,23 @@ fun CaffeineProgressRow(
 fun CaffeineCustomSheet(
     presets: List<HabitPreset> = HabitPresetDomain.CAFFEINE.defaultCatalog.presets,
     onDismiss: () -> Unit,
-    onAdd: (String, Double) -> Unit,
+    onAdd: (String, Double, MilkKind?, Int) -> Unit,
 ) {
     val sheetState = rememberChompassSheetState()
     val initial = presets.firstOrNull()
         ?: HabitPreset(CaffeineKind.COFFEE.storageKey, defaultMg = CaffeineKind.COFFEE.defaultMg)
     var kind by remember { mutableStateOf(initial.id) }
     var mg by remember { mutableStateOf((initial.defaultMg ?: builtinCaffeineDefaultMg(initial.id) ?: 0.0).toInt().coerceAtLeast(0)) }
+    var milkKind by remember { mutableStateOf(MilkKind.fromStorage(initial.milkKind)) }
+    var milkMl by remember { mutableStateOf(initial.milkMl.coerceIn(0, MilkKind.MAX_ML)) }
 
     fun switchKind(next: HabitPreset) {
         kind = next.id
         mg = (next.defaultMg ?: builtinCaffeineDefaultMg(next.id) ?: 0.0)
             .toInt()
             .coerceIn(0, 500)
+        milkKind = MilkKind.fromStorage(next.milkKind)
+        milkMl = next.milkMl.coerceIn(0, MilkKind.MAX_ML)
     }
 
     ChompassPinnedFooterSheet(
@@ -193,6 +198,13 @@ fun CaffeineCustomSheet(
                     step = 5,
                     unit = stringResource(R.string.unit_mg),
                 )
+
+                CaffeineMilkSection(
+                    milkKind = milkKind,
+                    milkMl = milkMl,
+                    onKindChange = { milkKind = it },
+                    onMlChange = { milkMl = it },
+                )
             }
         },
         footer = {
@@ -204,7 +216,7 @@ fun CaffeineCustomSheet(
                     .imePadding()
                     .padding(horizontal = 20.dp, vertical = 10.dp),
                 onClick = {
-                    onAdd(kind, mg.toDouble())
+                    onAdd(kind, mg.toDouble(), milkKind.takeIf { milkMl > 0 }, milkMl)
                     onDismiss()
                 },
             )
@@ -422,5 +434,48 @@ fun CaffeineEditSheet(
                 },
             )
         },
+    )
+}
+
+@Composable
+internal fun CaffeineMilkSection(
+    milkKind: MilkKind?,
+    milkMl: Int,
+    onKindChange: (MilkKind) -> Unit,
+    onMlChange: (Int) -> Unit,
+) {
+    Text(
+        stringResource(R.string.caffeine_milk_section),
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 18.sp,
+    )
+    FlowRow(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        MilkKind.entries.forEach { option ->
+            FilterChip(
+                selected = milkKind == option,
+                onClick = { onKindChange(option) },
+                label = { Text(stringResource(option.labelRes)) },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+                ),
+            )
+        }
+    }
+    Text(
+        stringResource(R.string.caffeine_milk_ml),
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 18.sp,
+    )
+    NumericWheelPicker(
+        value = milkMl,
+        onValueChange = onMlChange,
+        min = 0,
+        max = MilkKind.MAX_ML,
+        step = 10,
+        unit = stringResource(R.string.unit_ml),
     )
 }

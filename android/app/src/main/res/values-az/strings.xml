@@ -1837,6 +1837,13 @@ bilirsən?</string>
     <string name="caffeine_kind_tea">Çay</string>
     <string name="caffeine_kind_energy">Enerji içkisi</string>
     <string name="caffeine_kind_other">Digər</string>
+    <string name="milk_kind_whole">Tam yağlı</string>
+    <string name="milk_kind_semi">Yarımyağlı</string>
+    <string name="milk_kind_skim">Yağsız</string>
+    <string name="milk_kind_oat">Yulaf</string>
+    <string name="milk_kind_almond">Badam</string>
+    <string name="caffeine_milk_section">Süd</string>
+    <string name="caffeine_milk_ml">Miqdar</string>
     <string name="caffeine_history_total">%1$s · %2$s mq</string>
     <string name="cd_log_caffeine">Kofeini qeyd et</string>
     <string name="cd_delete_caffeine">Kofein qeydini sil</string>

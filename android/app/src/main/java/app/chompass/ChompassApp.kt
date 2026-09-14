@@ -313,7 +313,7 @@ class AppContainer(app: ChompassApp) {
     val chatService = ChatService(prefs, keyStore, foodAnalysis, fastingRepository = fastingRepository)
     val speechService = SpeechService(prefs, keyStore)
 
-    val widgetSnapshotWriter = WidgetSnapshotWriter(app, prefs, foodRepository, profileRepository, homeActivityReader, waterRepository, weatherRepository)
+    val widgetSnapshotWriter = WidgetSnapshotWriter(app, prefs, foodRepository, profileRepository, homeActivityReader, waterRepository, weatherRepository, caffeineRepository)
     val testDataSeeder = TestDataSeeder(this)
 
     private val healthConnectReadSync = HealthConnectReadSync(

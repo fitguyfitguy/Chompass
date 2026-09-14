@@ -34,6 +34,8 @@ import app.chompass.models.FastingPhase
 import app.chompass.models.HabitPreset
 import app.chompass.models.HabitPresetDomain
 import app.chompass.models.NicotineEntry
+import app.chompass.models.MilkKind
+import app.chompass.models.toFoodEntry
 import app.chompass.models.builtinCaffeineDefaultMg
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.PendingFoodAnalysisDraft
@@ -1373,9 +1375,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         ) { entries, foodEntries, day ->
             val zone = ZoneId.systemDefault()
             val dayEntries = entries.filter { it.date.atZone(zone).toLocalDate() == day }
-            val trackedMg = dayEntries.sumOf { it.mg }
-            val foodMg = foodEntries.sumOf { it.caffeine ?: 0.0 }
-            (trackedMg + foodMg) to dayEntries
+            CaffeineEntry.dayCaffeineMg(foodEntries, dayEntries) to dayEntries
         }
             .onEach { (total, dayEntries) ->
                 _ui.update { it.copy(caffeineTodayMg = total, caffeineTodayEntries = dayEntries) }
@@ -1542,13 +1542,38 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
-    fun addCaffeine(kind: String, mg: Double? = null) {
+    fun addCaffeine(
+        kind: String,
+        mg: Double? = null,
+        milkKind: MilkKind? = null,
+        milkMl: Int = 0,
+    ) {
         val effective = mg
             ?: _ui.value.caffeinePresets.firstOrNull { it.id == kind }?.defaultMg
             ?: builtinCaffeineDefaultMg(kind)
         if (effective == null || effective <= 0) return
         viewModelScope.launch {
-            container.caffeineRepository.add(CaffeineEntry.forNow(kind = kind, mg = effective))
+            val at = Instant.now()
+            val linkedId = if (milkKind != null && milkMl > 0) {
+                val food = milkKind.toFoodEntry(
+                    ml = milkMl,
+                    at = at,
+                    mealId = MealType.currentMealId,
+                    name = container.appContext.getString(milkKind.labelRes),
+                )
+                container.foodRepository.addEntry(food)
+                food.id
+            } else {
+                null
+            }
+            container.caffeineRepository.add(
+                CaffeineEntry(
+                    kind = app.chompass.models.normalizeKindId(kind),
+                    mg = effective,
+                    date = at,
+                    linkedFoodEntryId = linkedId,
+                ),
+            )
         }
     }
 
@@ -1557,7 +1582,15 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun deleteCaffeine(id: UUID) {
-        viewModelScope.launch { container.caffeineRepository.delete(id) }
+        viewModelScope.launch {
+            val existing = container.caffeineRepository.entries.first().firstOrNull { it.id == id }
+            val linked = existing?.linkedFoodEntryId
+            if (linked != null) {
+                val food = container.foodRepository.entries.first().firstOrNull { it.id == linked }
+                if (food != null) container.foodRepository.deleteEntry(food)
+            }
+            container.caffeineRepository.delete(id)
+        }
     }
 
     // -- Intermittent fasting timer (local-only) -------------------------
@@ -2947,6 +2980,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     fun deleteEntry(entry: FoodEntry) {
         viewModelScope.launch {
             container.foodRepository.deleteEntry(entry)
+            container.caffeineRepository.clearLinkedFood(entry.id)
         }
     }
 
