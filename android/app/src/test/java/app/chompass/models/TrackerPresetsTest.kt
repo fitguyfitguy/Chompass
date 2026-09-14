@@ -197,9 +197,12 @@ class TrackerPresetsTest {
     @Test
     fun quickKindSelectionRetainsCustomIds() {
         val caffeine = HabitPresetDomain.CAFFEINE
+        // Null (first run) keeps the default chips.
         assertEquals(listOf("coffee", "tea", "energy"), caffeine.quickKindIdsFromStorage(null))
-        assertEquals(listOf("coffee", "tea", "energy"), caffeine.quickKindIdsFromStorage(""))
-        assertEquals(listOf("coffee", "tea", "energy"), caffeine.quickKindIdsFromStorage(" , , "))
+        // A present-but-empty string is an explicit empty selection: legal,
+        // zero chips (blank tokens filter to the same state).
+        assertEquals(emptyList<String>(), caffeine.quickKindIdsFromStorage(""))
+        assertEquals(emptyList<String>(), caffeine.quickKindIdsFromStorage(" , , "))
 
         val custom = caffeine.quickKindIdsFromStorage("tea,t_abcd1234,coffee,tea")
         assertEquals(listOf("tea", "t_abcd1234", "coffee"), custom)
@@ -207,9 +210,9 @@ class TrackerPresetsTest {
 
         // Garbage tokens drop; only builtins + t_ ids are retained.
         assertEquals(listOf("vape"), HabitPresetDomain.NICOTINE.quickKindIdsFromStorage("vape,snus_future"))
-        // Everything invalid falls back to the defaults.
+        // All tokens invalid is still an explicit empty selection.
         assertEquals(
-            HabitPresetDomain.NICOTINE.defaultQuickKindIds,
+            emptyList<String>(),
             HabitPresetDomain.NICOTINE.quickKindIdsFromStorage("snus_future, 9x"),
         )
     }
@@ -250,13 +253,9 @@ class TrackerPresetsTest {
         assertEquals(listOf("coffee", "tea", espressoId), chips.map { it.id })
         assertEquals("Doppio", chips.first().label)
         assertEquals(65.0, chips.last().defaultMg!!, 0.001)
-
-        // Empty selection falls back to the default quick kinds (the
-        // ifEmpty { Default } path keeps working with custom ids around).
-        assertEquals(
-            listOf("coffee", "tea", "energy"),
-            domain.hubPresets(emptyList(), catalog).map { it.id },
-        )
+        // An explicit empty selection means zero chips — the caller hides
+        // the row block (MUST 2's empty-catalog acceptance).
+        assertTrue(domain.hubPresets(emptyList(), catalog).isEmpty())
 
         // Deleted customs drop out of the chips without affecting the rest;
         // an "other" selection still resolves.
@@ -264,5 +263,41 @@ class TrackerPresetsTest {
             listOf("other"),
             domain.hubPresets(listOf("other", "t_gone000"), catalog).map { it.id },
         )
+    }
+
+    @Test
+    fun emptyCatalogIsValidAndSurvivesRoundTrips() {
+        val domain = HabitPresetDomain.CAFFEINE
+        val empty = HabitPresetCatalog(presets = emptyList())
+
+        // "No presets" validates, so validatedOrDefault passes it through
+        // instead of resetting to the builtin set (MUST 2).
+        assertNull(empty.validate(domain))
+        assertEquals(empty, empty.validatedOrDefault(domain))
+
+        // The store round-trip (encode → parse) keeps it empty; corrupt JSON
+        // still resets to the defaults (regression guard, unchanged).
+        val encoded = json.encodeToString(HabitPresetCatalog.serializer(), empty)
+        assertEquals(empty, parseHabitPresetCatalog(encoded, domain, json))
+        assertEquals(domain.defaultCatalog, parseHabitPresetCatalog("not json {", domain, json))
+    }
+
+    @Test
+    fun deleteLastPresetLeavesLegalEmptyState() {
+        val domain = HabitPresetDomain.NICOTINE
+        var catalog = domain.defaultCatalog
+        // Single deletes stick; the last one lands on the legal empty state.
+        while (catalog.presets.isNotEmpty()) {
+            catalog = catalog.without(catalog.presets.first().id).let {
+                it.validatedOrDefault(domain)
+            }
+        }
+        assertTrue(catalog.presets.isEmpty())
+
+        // Empty catalog + any selection renders zero chips; the deselected
+        // selection round-trips through storage as "".
+        assertTrue(domain.hubPresets(domain.defaultQuickKindIds, catalog).isEmpty())
+        assertEquals("", domain.quickKindIdsToStorage(emptyList()))
+        assertEquals(emptyList<String>(), domain.quickKindIdsFromStorage(""))
     }
 }
