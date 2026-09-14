@@ -1425,11 +1425,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     }
 
     /**
-     * Deletes a custom caffeine preset: entries logged with it move to Other
-     * (mg preserved), and the id drops from the catalog + hub chip selection.
+     * Deletes a caffeine preset (custom or built-in): entries logged with it
+     * move to Other (mg preserved), and the id drops from the catalog + hub
+     * chip selection.
      */
     fun deleteCaffeinePreset(id: String) {
-        if (!id.startsWith(HabitPresetCatalog.CUSTOM_PREFIX)) return
         launchPref {
             container.caffeineRepository.reassignKind(id, CaffeineKind.OTHER.storageKey)
             val nextCatalog = _ui.value.caffeinePresets.without(id)
@@ -1547,11 +1547,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     }
 
     /**
-     * Deletes a custom nicotine preset: entries logged with it move to Other
-     * (count/mg preserved), and the id drops from the catalog + hub chips.
+     * Deletes a nicotine preset (custom or built-in): entries logged with it
+     * move to Other (count/mg preserved), and the id drops from the catalog +
+     * hub chips.
      */
     fun deleteNicotinePreset(id: String) {
-        if (!id.startsWith(HabitPresetCatalog.CUSTOM_PREFIX)) return
         launchPref {
             container.nicotineRepository.reassignKind(id, NicotineKind.OTHER.storageKey)
             val nextCatalog = _ui.value.nicotinePresets.without(id)

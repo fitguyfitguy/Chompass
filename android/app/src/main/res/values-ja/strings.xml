@@ -1870,7 +1870,6 @@
     <string name="caffeine_preset_default_mg">デフォルト量 (mg)</string>
     <string name="nicotine_preset_default_count">デフォルト個数</string>
     <string name="nicotine_preset_default_dose">1回あたりのデフォルトニコチン (mg、任意)</string>
-    <string name="settings_tracker_preset_builtin">組み込み</string>
     <string name="settings_tracker_preset_delete_title">プリセットを削除しますか？</string>
     <string name="settings_tracker_preset_delete_named">「%1$s」を削除します。</string>
     <string name="settings_tracker_preset_amounts_kept">量は変更されません。</string>

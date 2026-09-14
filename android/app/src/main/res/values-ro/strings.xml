@@ -1870,7 +1870,6 @@
     <string name="caffeine_preset_default_mg">Cantitate implicită (mg)</string>
     <string name="nicotine_preset_default_count">Număr implicit</string>
     <string name="nicotine_preset_default_dose">Nicotină implicită pe doză (mg, opțional)</string>
-    <string name="settings_tracker_preset_builtin">Integrat</string>
     <string name="settings_tracker_preset_delete_title">Ștergi presetarea?</string>
     <string name="settings_tracker_preset_delete_named">\"%1$s\" va fi ștearsă.</string>
     <string name="settings_tracker_preset_amounts_kept">Cantitățile rămân neschimbate.</string>

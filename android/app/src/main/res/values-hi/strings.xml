@@ -1870,7 +1870,6 @@
     <string name="caffeine_preset_default_mg">डिफ़ॉल्ट मात्रा (मि.ग्रा.)</string>
     <string name="nicotine_preset_default_count">डिफ़ॉल्ट संख्या</string>
     <string name="nicotine_preset_default_dose">प्रति खुराक डिफ़ॉल्ट निकोटीन (मि.ग्रा., वैकल्पिक)</string>
-    <string name="settings_tracker_preset_builtin">बिल्ट-इन</string>
     <string name="settings_tracker_preset_delete_title">प्रीसेट हटाएं?</string>
     <string name="settings_tracker_preset_delete_named">\"%1$s\" हटा दिया जाएगा।</string>
     <string name="settings_tracker_preset_amounts_kept">मात्राएँ अपरिवर्तित रहती हैं।</string>

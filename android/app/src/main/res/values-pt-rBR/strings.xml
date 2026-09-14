@@ -1870,7 +1870,6 @@
     <string name="caffeine_preset_default_mg">Quantidade padrão (mg)</string>
     <string name="nicotine_preset_default_count">Contagem padrão</string>
     <string name="nicotine_preset_default_dose">Nicotina padrão por dose (mg, opcional)</string>
-    <string name="settings_tracker_preset_builtin">Integrado</string>
     <string name="settings_tracker_preset_delete_title">Excluir predefinição?</string>
     <string name="settings_tracker_preset_delete_named">\"%1$s\" será excluído.</string>
     <string name="settings_tracker_preset_amounts_kept">As quantidades permanecem inalteradas.</string>

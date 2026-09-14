@@ -1890,7 +1890,6 @@
     <string name="caffeine_preset_default_mg">Varsayılan miktar (mg)</string>
     <string name="nicotine_preset_default_count">Varsayılan sayı</string>
     <string name="nicotine_preset_default_dose">Doz başına varsayılan nikotin (mg, isteğe bağlı)</string>
-    <string name="settings_tracker_preset_builtin">Yerleşik</string>
     <string name="settings_tracker_preset_delete_title">Hazır ayar silinsin mi?</string>
     <string name="settings_tracker_preset_delete_named">\"%1$s\" silinecek.</string>
     <string name="settings_tracker_preset_amounts_kept">Miktarlar değişmeden kalır.</string>

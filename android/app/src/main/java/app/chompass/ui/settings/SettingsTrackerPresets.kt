@@ -187,16 +187,7 @@ private fun TrackerPresetRow(
             }
         }
         Spacer(Modifier.width(8.dp))
-        if (preset.isCustom) {
-            TextButton(onClick = onDelete) { Text(stringResource(R.string.action_delete)) }
-        } else {
-            // Built-ins stay toggle-hideable via the quick-kind chips; no delete.
-            Text(
-                stringResource(R.string.settings_tracker_preset_builtin),
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-            )
-        }
+        TextButton(onClick = onDelete) { Text(stringResource(R.string.action_delete)) }
     }
 }
 
