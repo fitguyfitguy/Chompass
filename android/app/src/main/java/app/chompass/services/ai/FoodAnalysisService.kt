@@ -231,6 +231,17 @@ internal class GoalCallTrace {
 }
 
 /**
+ * Out-param threaded through `callAi` → `dispatch` (#97): a streamed
+ * OpenAI-compatible leg reports whether the stream ended without
+ * finish_reason. Its text is suspect (possibly cut mid-reply) but not
+ * retried blindly — the entry path retries once, non-streaming, only when
+ * that text fails food-JSON parsing.
+ */
+internal class EntryAttemptState {
+    var finishlessStreamed: Boolean = false
+}
+
+/**
  * App-side confidence gates for the SAFE tier's observed-data section and its
  * deterministic enforcement. See docs/CALCULATION_METHODS.md § AI-RECALC.
  */
@@ -968,6 +979,53 @@ class FoodAnalysisService(
     private suspend fun entryKind(provider: AIProvider, model: String): EntryConstituentPromptKind =
         entryConstituentPromptKind(mealConstituentsToggleOn(), provider, model)
 
+    /**
+     * Entry fetch + parse with the #97 L3a recovery. A streamed
+     * OpenAI-compatible attempt that ends without finish_reason returns
+     * partial text that typically fails food-JSON parsing; when that
+     * happens, retry the identical call once non-streaming — the client's
+     * compact-retry ladder then applies — before surfacing
+     * [AiError.InvalidResponse]. Every other failure propagates unchanged.
+     * Max one retry per analysis.
+     */
+    private suspend fun analyzeEntryReply(
+        op: String,
+        imageBytesList: List<ByteArray>,
+        onProgress: (FoodAnalysisProgress) -> Unit,
+        rebuildPrompt: (suspend (AIProvider, String) -> String),
+    ): FoodAnalysis {
+        val attempt = EntryAttemptState()
+        val raw = callAi(
+            prompt = "",
+            imageBytesList = imageBytesList,
+            op = op,
+            onProgress = onProgress,
+            rebuildPrompt = rebuildPrompt,
+            attemptState = attempt,
+        )
+        onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
+        if (BuildConfig.DEBUG && raw.length < 200) PerfLog.warn("op=$op raw=$raw")
+        try {
+            return PerfLog.measure(op, "parse", "chars=${raw.length}") { parseEntryFood(raw) }
+        } catch (e: AiError.InvalidResponse) {
+            if (!attempt.finishlessStreamed) throw e
+        }
+        if (PerfLog.enabled) {
+            PerfLog.event("op=$op retry=oneShot reason=finishlessStream chars=${raw.length}")
+        }
+        val retried = callAi(
+            prompt = "",
+            imageBytesList = imageBytesList,
+            op = op,
+            onProgress = onProgress,
+            rebuildPrompt = rebuildPrompt,
+            nonStreaming = true,
+        )
+        onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
+        if (BuildConfig.DEBUG && retried.length < 200) PerfLog.warn("op=$op raw=$retried")
+        return PerfLog.measure(op, "parse", "chars=${retried.length}") { parseEntryFood(retried) }
+    }
+
     private suspend fun parseEntryFood(raw: String): FoodAnalysis {
         val parsed = FoodJsonParser.parseFood(raw)
         return if (mealConstituentsRequested()) parsed else parsed.copy(constituents = emptyList())
@@ -977,10 +1035,9 @@ class FoodAnalysisService(
         description: String,
         onProgress: (FoodAnalysisProgress) -> Unit = {},
     ): FoodAnalysis {
-        val raw = callAi(
-            prompt = "",
-            imageBytes = null,
+        val analysis = analyzeEntryReply(
             op = "analyzeText",
+            imageBytesList = emptyList(),
             onProgress = onProgress,
             rebuildPrompt = { provider, model ->
                 val kind = entryKind(provider, model)
@@ -1007,9 +1064,6 @@ class FoodAnalysisService(
                 }.trimIndent()
             },
         )
-        onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
-        if (BuildConfig.DEBUG && raw.length < 200) PerfLog.warn("op=analyzeText raw=$raw")
-        val analysis = PerfLog.measure("analyzeText", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
         return finalizeAnalysis(analysis, imageBytes = null, description = description, onProgress = onProgress)
     }
 
@@ -1033,10 +1087,9 @@ class FoodAnalysisService(
     ): FoodAnalysis {
         val off = collectOffBarcodeContext(listOf(imageBytes), onProgress)
         val analysis = try {
-            val raw = callAi(
-                prompt = "",
-                imageBytes = imageBytes,
+            analyzeEntryReply(
                 op = "analyzeAuto",
+                imageBytesList = listOf(imageBytes),
                 onProgress = onProgress,
                 rebuildPrompt = { provider, model ->
                     var prompt = """
@@ -1050,8 +1103,6 @@ class FoodAnalysisService(
                     prompt
                 },
             )
-            onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
-            PerfLog.measure("analyzeAuto", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
         } catch (e: AiError) {
             off?.singleDistinctAnalysis?.let { return it }
             throw e
@@ -1068,10 +1119,9 @@ class FoodAnalysisService(
     ): FoodAnalysis {
         val off = collectOffBarcodeContext(listOf(imageBytes), onProgress)
         val analysis = try {
-            val raw = callAi(
-                prompt = "",
-                imageBytes = imageBytes,
+            analyzeEntryReply(
                 op = "analyzeFood",
+                imageBytesList = listOf(imageBytes),
                 onProgress = onProgress,
                 rebuildPrompt = { provider, model ->
                     val responseBlock = entryResponseBlock(provider, model)
@@ -1094,8 +1144,6 @@ class FoodAnalysisService(
                     prompt
                 },
             )
-            onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
-            PerfLog.measure("analyzeFood", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
         } catch (e: AiError) {
             off?.singleDistinctAnalysis?.let { return it }
             throw e
@@ -1124,10 +1172,9 @@ class FoodAnalysisService(
         if (images.isEmpty()) throw AiError.InvalidResponse
         val off = collectOffBarcodeContext(images, onProgress)
         val analysis = try {
-            val raw = callAi(
-                prompt = "",
-                imageBytesList = images,
+            analyzeEntryReply(
                 op = "analyzeFoodMulti",
+                imageBytesList = images,
                 onProgress = onProgress,
                 rebuildPrompt = { provider, model ->
                     val responseBlock = entryResponseBlock(provider, model)
@@ -1151,8 +1198,6 @@ class FoodAnalysisService(
                     prompt
                 },
             )
-            onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.Parsing))
-            PerfLog.measure("analyzeFoodMulti", "parse", "chars=${raw.length}") { parseEntryFood(raw) }
         } catch (e: AiError) {
             off?.singleDistinctAnalysis?.let { return it }
             throw e
@@ -1413,6 +1458,9 @@ class FoodAnalysisService(
         smartPrompt: String? = null,
         trace: GoalCallTrace? = null,
         rebuildPrompt: (suspend (AIProvider, String) -> String)? = null,
+        attemptState: EntryAttemptState? = null,
+        /** Force the non-streaming clients (the #97 finish-less stream retry). */
+        nonStreaming: Boolean = false,
     ): String {
         val hasImages = imageBytesList.any { it.isNotEmpty() }
         suspend fun modelFor(provider: AIProvider, selected: String?): String =
@@ -1507,11 +1555,12 @@ class FoodAnalysisService(
                         primary, primaryModel, primaryBaseUrl, primaryKey, finalPrompt, aiImages,
                         maxTokens, geminiGoogleSearch, readTimeoutSeconds,
                         onProgress = trackedProgress,
-                        preferStreaming = reportPhases,
+                        preferStreaming = reportPhases && !nonStreaming,
                         reasoningEffort = reasoningEffort,
                         assembler = assembler,
                         smartPrompt = finalSmartPrompt,
                         trace = trace,
+                        attemptState = attemptState,
                     )
                 } catch (primaryError: Throwable) {
                     if (partialsEmitted) throw primaryError
@@ -1534,11 +1583,12 @@ class FoodAnalysisService(
                         fallback.provider, fallbackModel, fallback.baseUrl, fallback.apiKey, fallbackPrompt, aiImages,
                         fallbackMaxTokens, geminiGoogleSearch, readTimeoutSeconds,
                         onProgress = trackedProgress,
-                        preferStreaming = reportPhases,
+                        preferStreaming = reportPhases && !nonStreaming,
                         reasoningEffort = reasoningEffort,
                         assembler = assembler,
                         smartPrompt = finalSmartPrompt,
                         trace = trace,
+                        attemptState = attemptState,
                     )
                 }
             }
@@ -1706,6 +1756,8 @@ class FoodAnalysisService(
         smartPrompt: String? = null,
         /** Out-param recording the leg that actually answers. */
         trace: GoalCallTrace? = null,
+        /** #97: a finish-less streamed OpenAI-compatible leg sets the flag. */
+        attemptState: EntryAttemptState? = null,
     ): String {
         // Tier selection happens PER DISPATCH, at the moment of the actual call:
         // cloud legs run the SMART prompt (raw series, model-side judgment), the
@@ -1786,10 +1838,15 @@ class FoodAnalysisService(
                 AnthropicClient.analyzeStreaming(
                     httpClient, baseUrl, model, sanitizedKey!!, effectivePrompt, imageBytesList, maxTokens, onDelta,
                 )
-            AIProvider.ApiFormat.OPENAI_COMPATIBLE ->
-                OpenAICompatibleClient.analyzeStreaming(
+            AIProvider.ApiFormat.OPENAI_COMPATIBLE -> {
+                val streamed = OpenAICompatibleClient.analyzeStreaming(
                     httpClient, baseUrl, model, sanitizedKey, effectivePrompt, imageBytesList, provider, maxTokens, onDelta, reasoningEffort,
                 )
+                // #97: flag finish-less streams; the entry caller decides
+                // whether a non-streaming retry is warranted (parse failure).
+                if (streamed.streamIncomplete) attemptState?.finishlessStreamed = true
+                streamed.text
+            }
             AIProvider.ApiFormat.ON_DEVICE -> error("unreachable")
         }
     }
