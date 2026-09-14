@@ -11,7 +11,7 @@
     <string name="widget_calories">Kalori</string>
     <string name="widget_carbs">Karbonhidrat</string>
     <string name="widget_fat">Yağ</string>
-    <string name="widget_kcal_left_format">%1$d kcal kaldı</string>
+    <string name="widget_kcal_left_format">%1$d %2$s kaldı</string>
     <string name="widget_g_left_format">%1$dg kaldı</string>
     <string name="widget_kcal">kcal</string>
     <string name="widget_protein_g">g protein</string>
@@ -47,6 +47,7 @@
 
     <!-- Generic units / labels -->
     <string name="unit_kcal">kcal</string>
+    <string name="unit_kj">kJ</string>
     <string name="unit_g">g</string>
     <string name="unit_ml">ml</string>
     <string name="unit_mg">mg</string>
@@ -77,7 +78,7 @@
     <string name="unit_cup_plural">fincan</string>
     <string name="unit_tbsp">yk</string>
     <string name="unit_tsp">tk</string>
-    <string name="kcal_value_format">%1$s kcal</string>
+    <string name="energy_value_format">%1$s %2$s</string>
     <string name="grams_value_format">%1$sg</string>
     <string name="grams_value_decimal_format">%1$sg</string>
     <string name="kg_value_format">%1$.1f kg</string>
@@ -317,7 +318,7 @@
     <string name="onboarding_pace_caption_slow">Nazik ve sürdürülebilir. Uzun vadeli alışkanlıklar için harika.</string>
     <string name="onboarding_pace_caption_fast">Hırslı ama uygulanabilir. Güçlü disiplin gerektirir.</string>
     <string name="onboarding_pace_caption_recommended">En dengeli tempo, motive edici ve sürdürülebilir.</string>
-    <string name="onboarding_pace_capped">Bu tempo, tahmini dinlenme harcamanın altına inmeden senin yapın için mümkün değil. Hedefin %1$d kcal olacak.</string>
+    <string name="onboarding_pace_capped">Bu tempo, tahmini dinlenme harcamanın altına inmeden senin yapın için mümkün değil. Hedefin %1$d %2$s olacak.</string>
 
     <string name="onboarding_notifications_title">Öğün kaydı için\nhatırlat</string>
     <string name="onboarding_notifications_subtitle">Öğün saatlerinde nazik hatırlatmalar al,\nböylece takip etmeyi unutmazsın.</string>
@@ -372,7 +373,7 @@
     <string name="onboarding_plan_subtitle">Düzenlemek için bir değere dokun</string>
     <string name="onboarding_plan_daily_calories">günlük kalori</string>
     <string name="onboarding_plan_doctor_title">Lütfen bir doktora danışın</string>
-    <string name="onboarding_plan_doctor_message">Minimum öneri günde 1.200 kaloridir.</string>
+    <string name="onboarding_plan_doctor_message">Minimum öneri günde %1$skaloridir.</string>
     <string name="onboarding_minor_title">Yalnızca yetişkin formülleri</string>
     <string name="onboarding_minor_message">Bu uygulama yetişkin kalori formüllerini kullanır. 18 yaşından küçüksen, bu hedefleri kullanmadan önce bir sağlık uzmanına sor.</string>
     <string name="onboarding_minor_continue">Anladım</string>
@@ -423,7 +424,7 @@
     <string name="saved_meals_sort_size">Boyut</string>
     <string name="cd_open_logged_foods">Tüm kaydedilmiş yiyecekler</string>
     <string name="add_food_quick_relog_empty">Bir öğünü favorilere ekle veya bir kez kaydet. Tek dokunuşla tekrar eklemek için burada görünür.</string>
-    <string name="add_food_relog_kcal">%1$d kcal</string>
+    <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="cd_relog_meal">%1$s tekrar ekle</string>
     <string name="water_amount_ml">%1$d ml</string>
     <string name="water_amount_fl_oz">%1$d fl oz</string>
@@ -464,7 +465,7 @@
     <string name="camera_flash_auto">Flaş otomatik</string>
     <string name="camera_flash_off">Flaş kapalı</string>
     <string name="text_input_title">Yemeğini anlat</string>
-    <string name="home_kcal_of_format">%1$s kcal üzerinden</string>
+    <string name="home_kcal_of_format">%1$s %2$s üzerinden</string>
     <string name="home_kcal_left_format">%1$s kaldı</string>
     <string name="home_view_more">Daha fazla göster</string>
     <string name="home_todays_food">Bugünün Yiyecekleri</string>
@@ -494,7 +495,7 @@
     <string name="grounded_review_subtitle">Kaydetmeden önce her yiyecek için en iyi veritabanı eşleşmesini ve porsiyonu seç.</string>
     <string name="grounded_review_grams">Gram</string>
     <string name="grounded_review_continue">İncelemeye devam et</string>
-    <string name="grounded_review_per_100g">%1$d kcal / 100 g</string>
+    <string name="grounded_review_per_100g">%1$d %2$s / 100 g</string>
     <string name="grounding_source_usda">USDA</string>
     <string name="grounding_source_off">Open Food Facts</string>
     <string name="grounding_source_swiss">İsviçre</string>
@@ -658,7 +659,7 @@
     <string name="analysis_queue_day_back">Önceki gün</string>
     <string name="analysis_queue_day_forward">Sonraki gün</string>
     <string name="analysis_queue_failed">Başarısız</string>
-    <string name="analysis_queue_result">%1$s · %2$d kcal</string>
+    <string name="analysis_queue_result">%1$s · %2$d %3$s</string>
     <string name="analysis_queue_just_now">Az önce</string>
     <string name="analysis_queue_minutes_ago">%1$d dk önce</string>
     <string name="analysis_queue_hours_ago">%1$d sa önce</string>
@@ -796,7 +797,7 @@
     <string name="progress_history_count_format">%1$d kayıt · görüntülemek veya silmek için dokunun</string>
 
     <string name="progress_calories_section">Kalori</string>
-    <string name="progress_avg_format">Ort: %1$d kcal</string>
+    <string name="progress_avg_format">Ort: %1$d %2$s</string>
     <string name="progress_no_food">Henüz yiyecek kaydedilmedi</string>
 
     <string name="progress_macro_averages">Makro Ortalamaları</string>
@@ -1263,8 +1264,8 @@
     <string name="notif_streak_text">Serini sürdür. Bugünden bir şey kaydet.</string>
     <string name="notif_summary_title">Bugünün özeti hazır</string>
     <string name="notif_summary_text">Bugünün makrolarının nasıl gittiğini görmek için dokun.</string>
-    <string name="notif_summary_deficit">%1$s kcal açık</string>
-    <string name="notif_summary_surplus">%1$s kcal fazla</string>
+    <string name="notif_summary_deficit">%1$s %2$s açık</string>
+    <string name="notif_summary_surplus">%1$s %2$s fazla</string>
     <string name="notif_summary_on_target">Dengede</string>
     <string name="notif_summary_eaten_burned">Yenilen %1$s · yakılan %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
@@ -1403,7 +1404,7 @@
     <string name="home_display_food_log_chips">Yiyecek kaydı makroları</string>
     <string name="home_display_needs_health">Adım izniyle Health Connect gerektirir</string>
     <string name="home_calories_label">KALORİ</string>
-    <string name="home_calorie_of_goal">%1$s üzerinden</string>
+    <string name="home_calorie_of_goal">%1$s üzerinden %2$s</string>
     <string name="home_calorie_active_estimated_a11y">Aktif kaloriler aktivite seviyene göre tahmin edilir</string>
     <string name="home_calorie_mode_static">Statik hedef</string>
     <string name="home_calorie_mode_add_active">Bütçeye aktif yakım ekle</string>
@@ -1413,7 +1414,7 @@
     <string name="home_nutrients_pick_count">Ana ekran için en fazla %1$d besin seç.</string>
     <string name="home_steps_label">Adımlar</string>
     <string name="home_steps_goal_format">Hedef %1$s</string>
-    <string name="home_active_calories_label">Aktif kcal</string>
+    <string name="home_active_calories_label">Aktif %1$s</string>
     <string name="home_active_burn_caption">%1$d aktif</string>
     <string name="home_active_burn_a11y">Aktif yakım %1$d</string>
     <string name="home_active_burn_caption_progress">%1$d / %2$d aktif</string>
@@ -1422,23 +1423,23 @@
     <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
     <string name="home_active_burn_over">Tipikten +%1$d fazla</string>
     <string name="home_active_burn_over_a11y">Aktif yakım %1$d, tipik bir günden %2$d fazla</string>
-    <string name="home_budget_burned_today">Bugün yakılan: %1$d kcal</string>
+    <string name="home_budget_burned_today">Bugün yakılan: %1$d %2$s</string>
     <string name="home_display_show_active_calories">Aktif kalorileri göster</string>
     <string name="home_display_show_active_calories_desc">Kalori göstergesinde bugünün aktif yakımını göster.</string>
     <string name="home_calories_left">%1$s kaldı</string>
     <string name="home_calorie_budget_sheet_title">Bugünün kalori bütçesi</string>
     <string name="home_calorie_budget_source_measured">Health Connect\'ten aktif kaloriler</string>
-    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d %4$s (14-day average is %3$d %4$s).</string>
     <string name="home_calorie_budget_source_manual">Manuel eklediğin kaloriler</string>
     <string name="home_calorie_budget_info">Bugünün bütçesi nasıl hesaplanır</string>
-    <string name="home_calorie_budget_a11y">Bütçe %1$d: %2$d hedef artı %3$d aktif yakım</string>
+    <string name="home_calorie_budget_a11y">Bütçe %1$d %4$s: %2$d %4$s hedef artı %3$d %4$s aktif yakım</string>
     <string name="manual_active_title">Aktif yakımı kaydet</string>
     <string name="manual_active_subtitle">Yürüyüş, bisiklet veya antrenmandan yaktığın kalorileri ekle. “Aktif yakım ekle” açıkken bugünün bütçesini genişletir.</string>
     <string name="manual_active_name_hint">Aktivite adı (isteğe bağlı)</string>
     <string name="manual_active_kcal_hint">Yakılan kalori</string>
     <string name="manual_active_save">Bütçeye ekle</string>
     <string name="manual_active_edit_title">Aktif yakımı düzenle</string>
-    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="manual_active_history_total">%1$s · %2$d %3$s</string>
     <string name="cd_delete_manual_active">Aktif yakımı sil</string>
     <string name="home_menu_manual_active">Aktif yakım</string>
     <string name="home_calories_active_burn">%1$d aktif yakıldı</string>
@@ -1582,7 +1583,7 @@
     <string name="settings_reset_autobalance">Otomatik Dengelemeye Sıfırla</string>
     <string name="settings_picker_enter_custom">Özel değer gir…</string>
     <string name="settings_calorie_below_floor_title">Güvenli sınırın altında</string>
-    <string name="settings_calorie_below_floor_message">Bu, tahmini dinlenme harcamanın veya 1.200 kcal\'in altında. Yalnızca bir sağlık uzmanı önerdiyse devam et.</string>
+    <string name="settings_calorie_below_floor_message">Bu, tahmini dinlenme harcamanın veya %1$s\'in altında. Yalnızca bir sağlık uzmanı önerdiyse devam et.</string>
     <string name="settings_calorie_below_floor_continue">Yine de devam et</string>
     <string name="settings_picker_use_wheel">Çarkı kullan</string>
     <string name="settings_picker_custom_placeholder">%1$s cinsinden değer</string>
@@ -1595,8 +1596,8 @@
     <string name="vm_health_connect_needed">Health Connect Gerekli</string>
     <string name="vm_not_enough_energy">Yeterli Enerji Verisi Yok</string>
     <string name="vm_adaptive_on_message">Uyarlanabilir Hedefler açık. Chompass, yeterli yiyecek ve kilo verisi olduktan sonra haftada bir kontrol edecek.</string>
-    <string name="vm_adaptive_updated">En son verilerinle %1$d kcal olarak güncellendi.</string>
-    <string name="vm_goals_updated">%1$d kcal olarak güncellendi.</string>
+    <string name="vm_adaptive_updated">En son verilerinle %1$d %2$s olarak güncellendi.</string>
+    <string name="vm_goals_updated">%1$d %2$s olarak güncellendi.</string>
     <string name="vm_goals_recalculated">Hedefler Yeniden Hesaplandı</string>
         <string name="recalc_sheet_new_targets">Yeni hedefler</string>
         <string name="recalc_sheet_macros_format">P %1$d · K %2$d · Y %3$d</string>
@@ -1608,24 +1609,24 @@
         <string name="recalc_sheet_tier_measured">Health Connect\'ten ölçülen yakımınıza sabitlendi</string>
         <string name="recalc_sheet_tier_formula">Yerleşik formüller</string>
         <string name="recalc_sheet_formula_baseline">Formül tabanı</string>
-        <string name="recalc_sheet_bmr_row">BMR (dinlenme yakımı): %1$s kcal</string>
-        <string name="recalc_sheet_tdee_row">Bakım × aktivite %1$s: %2$s kcal</string>
-        <string name="recalc_sheet_pace_row">Hedef hızı: %1$s kcal/gün</string>
-        <string name="recalc_sheet_formula_target_row">Formül hedefi: %1$s kcal</string>
-        <string name="recalc_sheet_measured_row">Health Connect\'ten ölçülen yakım: %1$s kcal</string>
-    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
+        <string name="recalc_sheet_bmr_row">BMR (dinlenme yakımı): %1$s %2$s</string>
+        <string name="recalc_sheet_tdee_row">Bakım × aktivite %1$s: %2$s %3$s</string>
+        <string name="recalc_sheet_pace_row">Hedef hızı: %1$s %2$s/gün</string>
+        <string name="recalc_sheet_formula_target_row">Formül hedefi: %1$s %2$s</string>
+        <string name="recalc_sheet_measured_row">Health Connect\'ten ölçülen yakım: %1$s %2$s</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d %4$s active (%3$d of last 28 days)</string>
         <string name="recalc_sheet_data_used">Kullanılan veriler</string>
         <string name="recalc_sheet_data_weighins">%2$d gündeki %1$d tartım</string>
         <string name="recalc_sheet_data_no_weighins">Henüz tartım kaydedilmedi</string>
-        <string name="recalc_sheet_data_intake">Ortalama kayıtlı alım: %2$d kayıtlı günde %1$s kcal</string>
+        <string name="recalc_sheet_data_intake">Ortalama kayıtlı alım: %2$d kayıtlı günde %1$s %3$s</string>
         <string name="recalc_sheet_data_no_intake">Henüz yiyecek kaydedilmedi</string>
-        <string name="recalc_sheet_data_implied">Örtük bakım: ~%1$s kcal</string>
+        <string name="recalc_sheet_data_implied">Örtük bakım: ~%1$s %2$s</string>
         <string name="recalc_sheet_data_implied_thin">Örtük bakım: hesaplanmadı — veri çok az</string>
         <string name="recalc_sheet_data_implied_below_floor">Örtük bakım: güvenlik sınırının altında, yoksayıldı</string>
         <string name="recalc_sheet_data_implied_disagree">Örtük bakım: gizlendi — günlük ve kilo eğilimi çelişiyor</string>
         <string name="recalc_sheet_change">Değişim</string>
-        <string name="recalc_sheet_previous">Önceki: %1$s kcal</string>
-        <string name="recalc_sheet_new_with_delta">Yeni: %1$s kcal (%2$s)</string>
+        <string name="recalc_sheet_previous">Önceki: %1$s %2$s</string>
+        <string name="recalc_sheet_new_with_delta">Yeni: %1$s %3$s (%2$s)</string>
         <string name="recalc_sheet_reason">Neden</string>
     <plurals name="import_add_meals_title">
         <item quantity="one">Paylaşılan öğünü ekle</item>
@@ -1633,7 +1634,7 @@
     </plurals>
     <string name="import_note">Gönderenin tam besin değerleriyle kaydına ekler. Fotoğraf dahil edilmez.</string>
     <string name="import_add_to_log">Kayda Ekle</string>
-    <string name="import_add_to_log_many_format">Kayda %1$d ekle · %2$d kcal</string>
+    <string name="import_add_to_log_many_format">Kayda %1$d ekle · %2$d %3$s</string>
     <string name="voice_release_to_cancel">İptal etmek için bırak</string>
     <string name="voice_slide_to_cancel">‹ iptal etmek için kaydır</string>
     <string name="camera_error_open">Kamera açılamadı</string>
@@ -1831,6 +1832,7 @@
     <string name="settings_group_trackers">İzleyiciler ve hatırlatıcılar</string>
     <string name="settings_group_trackers_summary">Su, nikotin, kafein, oruç, hatırlatıcılar</string>
     <string name="settings_units">Birimler</string>
+    <string name="settings_energy_unit">Enerji</string>
     <string name="settings_search_hint">Ayarlarda ara</string>
     <string name="settings_search_empty">Eşleşen ayar yok. \"kg\", \"kcal\" veya \"ml\" deneyin.</string>
     <string name="prompt_history_button">İstem geçmişi</string>
@@ -1942,9 +1944,9 @@
     <string name="day_type_clear_override">Bugünün istisnasını kaldır</string>
     <string name="day_type_edit_settings">Gün tiplerini düzenle</string>
     <string name="day_type_plan_off_hint">Gün tipleri kapalı. Farklı günlerde farklı hedefler kullanmak için ayarlardan açın.</string>
-    <string name="day_type_targets_summary">%1$s kcal · %2$dP %3$dK %4$dY</string>
-    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
-    <string name="day_type_tomorrow">Yarın: %1$s · %2$s kcal</string>
+    <string name="day_type_targets_summary">%1$s %5$s · %2$dP %3$dK %4$dY</string>
+    <string name="day_type_active_typical">≈ %1$d %2$s active typical</string>
+    <string name="day_type_tomorrow">Yarın: %1$s · %2$s %3$s</string>
     <string name="settings_day_types_title">Gün tipleri</string>
     <string name="settings_day_types_intro">Farklı günlerde farklı kalori ve makro hedefleri kullanın, örneğin antrenman ve dinlenme günleri.</string>
     <string name="settings_day_types_add">Gün tipi ekle</string>
@@ -1955,7 +1957,7 @@
     <string name="settings_day_types_delete_scrub">Programdan çıkar</string>
     <string name="settings_day_types_delete_used_message">Programınızda kullanılıyor. Bu günlere ne olacağını seçin.</string>
     <string name="settings_day_types_delete_used_title">\"%1$s\" silinsin mi?</string>
-    <string name="settings_day_types_floor_warning">Bu hedef kalori tabanınızda (%1$d kcal). Bir gün tipi için agresif.</string>
+    <string name="settings_day_types_floor_warning">Bu hedef kalori tabanınızda (%1$d %2$s). Bir gün tipi için agresif.</string>
     <string name="settings_day_types_follow_schedule">Programı izle</string>
     <string name="settings_day_types_keto_paused">Keto modunda gün tipleri duraklatıldı</string>
     <string name="settings_day_types_mode_cycle">Döngü</string>
@@ -1984,11 +1986,11 @@
     <string name="settings_day_types_summary_format">%1$d tip · %2$s</string>
     <string name="settings_day_types_weekday_default">Varsayılan (%1$s)</string>
     <string name="recalc_sheet_day_types">Gün tipleri</string>
-    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s kcal</string>
-    <string name="recalc_sheet_daytype_value">%1$s: %2$s kcal</string>
+    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s %4$s</string>
+    <string name="recalc_sheet_daytype_value">%1$s: %2$s %3$s</string>
     <string name="recalc_sheet_daytype_macros_format">%1$d g protein · %2$d g karbonhidrat · %3$d g yağ</string>
-    <string name="recalc_sheet_daytype_avg_change">Haftalık ortalama: %1$s → %2$s kcal</string>
-    <string name="recalc_sheet_daytype_avg_value">Haftalık ortalama: %1$s kcal</string>
+    <string name="recalc_sheet_daytype_avg_change">Haftalık ortalama: %1$s → %2$s %3$s</string>
+    <string name="recalc_sheet_daytype_avg_value">Haftalık ortalama: %1$s %2$s</string>
     <string name="settings_calc_sec_day_types">Gün tipleri</string>
     <string name="settings_calc_daytypes_resolve_name">Gün tipine göre hedef çözümü</string>
     <string name="settings_calc_daytypes_resolve_used">Gün tipleri açıkken her gün hedeflerini tek küme yerine plandan alır. Bir gün için el ile değişiklik programdan, program varsayılandan üstün gelir ve çözülemeyen her şey temel hedeflerinize geri döner.</string>

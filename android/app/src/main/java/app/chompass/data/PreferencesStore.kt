@@ -364,6 +364,8 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setHeightUnit(v: String) = setHeightUnitImpl(v)
     val weightUnit: Flow<String> get() = weightUnitImpl
     suspend fun setWeightUnit(v: String) = setWeightUnitImpl(v)
+    val energyUnit: Flow<String> get() = energyUnitImpl
+    suspend fun setEnergyUnit(v: String) = setEnergyUnitImpl(v)
     val preferGramsByDefault: Flow<Boolean> get() = preferGramsByDefaultImpl
     suspend fun setPreferGramsByDefault(v: Boolean) = setPreferGramsByDefaultImpl(v)
     val appearanceMode: Flow<String> get() = appearanceModeImpl

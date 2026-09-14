@@ -43,6 +43,7 @@ import app.chompass.models.MacroPlanMode
 import app.chompass.models.WeightGoal
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.components.gramsText
+import app.chompass.ui.components.energyText
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
@@ -150,7 +151,7 @@ internal fun SettingsGoalsSection(
                     val openGoal = { target: SettingsSheet -> onOpenSheet(target) }
                     LockableGoalRow(
                         label = stringResource(R.string.settings_calories),
-                        value = stringResource(R.string.kcal_value_format, LocaleFormat.integer(p.effectiveCalories)),
+                        value = energyText(p.effectiveCalories),
                         icon = Icons.Outlined.LocalFireDepartment,
                         locked = p.caloriesLocked,
                         onClick = { openGoal(SettingsSheet.CALORIES) },

@@ -5,6 +5,7 @@ import { guessMealTypeFromPrefs } from "../lib/meal-schedule.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 import { todayIso } from "../lib/date.js";
 import { formatNumber, t } from "../lib/i18n/index.js";
+import { formatEnergy, energyUnitFromPrefs } from "../lib/energy-format.js";
 import { ALL_MICRO_KEYS } from "../lib/home-nutrients.js";
 import { escapeHtml } from "../lib/ui/html.js";
 import { mealLabel } from "../lib/meal-label.js";
@@ -19,6 +20,7 @@ export class AddMealView extends HTMLElement {
   }
 
   async render() {
+    const unit = energyUnitFromPrefs(await prefs.load());
     if (!this.meals?.length) {
       this.innerHTML = `
         ${subpageBar(t("add_meal.title"), { backHref: "#/home" })}
@@ -39,8 +41,7 @@ export class AddMealView extends HTMLElement {
               (m, i) => `
             <label class="copy-select__row">
               <input type="checkbox" data-idx="${i}" checked />
-              <span><strong>${escapeHtml(m.name)}</strong><br/>
-              <span class="recents-meta">${formatNumber(Math.round(m.calories))} kcal · ${Math.round(m.proteinG)}P / ${Math.round(m.carbsG)}C / ${Math.round(m.fatG)}F · ${escapeHtml(mealLabel(m.mealType))}</span></span>
+              <span class="recents-meta">${formatEnergy(Math.round(m.calories), unit)} · ${Math.round(m.proteinG)}P / ${Math.round(m.carbsG)}C / ${Math.round(m.fatG)}F · ${escapeHtml(mealLabel(m.mealType))}</span></span>
             </label>`
             )
             .join("")}

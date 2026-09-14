@@ -34,6 +34,7 @@ import app.chompass.MainActivity
 import app.chompass.R
 import app.chompass.models.WidgetSnapshot
 
+import app.chompass.models.LocaleFormat
 /**
  * Single "all today's metrics" widget — calories ring + protein / carbs / fat together, so users
  * can see everything at a glance from one widget instead of adding the separate Calorie and Protein
@@ -99,13 +100,13 @@ private fun AllMetricsWide(context: Context, snapshot: WidgetSnapshot) {
                 gaugeWidthDp = gaugeW,
                 startHex = snapshot.themeStartHex,
                 endHex = snapshot.themeEndHex,
-                centerLarge = snapshot.calories.toString(),
-                centerSmall = "/ ${snapshot.calorieGoal}",
+                centerLarge = snapshot.energyQuantity(snapshot.calories).toString(),
+                centerSmall = "/ ${snapshot.energyQuantity(snapshot.calorieGoal)}",
                 appearance = snapshot.appearanceMode
             )
             Spacer(modifier = GlanceModifier.height(2.dp))
             Text(
-                text = context.getString(R.string.home_calories_left, snapshot.caloriesRemaining),
+                text = context.getString(R.string.home_calories_left, LocaleFormat.integer(snapshot.energyQuantity(snapshot.caloriesRemaining))),
                 style = TextStyle(
                     color = WidgetTheme.themeTextProvider(snapshot.themeStartHex),
                     fontWeight = FontWeight.Medium,
@@ -145,8 +146,8 @@ private fun AllMetricsTall(context: Context, snapshot: WidgetSnapshot) {
                 gaugeWidthDp = gaugeW,
                 startHex = snapshot.themeStartHex,
                 endHex = snapshot.themeEndHex,
-                centerLarge = snapshot.calories.toString(),
-                centerSmall = "/ ${snapshot.calorieGoal}",
+                centerLarge = snapshot.energyQuantity(snapshot.calories).toString(),
+                centerSmall = "/ ${snapshot.energyQuantity(snapshot.calorieGoal)}",
                 appearance = snapshot.appearanceMode
             )
         }
@@ -155,7 +156,7 @@ private fun AllMetricsTall(context: Context, snapshot: WidgetSnapshot) {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = context.getString(R.string.widget_kcal_left_format, snapshot.caloriesRemaining),
+                text = context.getString(R.string.widget_kcal_left_format, snapshot.energyQuantity(snapshot.caloriesRemaining), snapshot.energyUnitLabel(context)),
                 style = TextStyle(
                     color = WidgetTheme.themeTextProvider(snapshot.themeStartHex),
                     fontWeight = FontWeight.Medium,

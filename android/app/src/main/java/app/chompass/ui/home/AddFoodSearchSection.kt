@@ -102,7 +102,7 @@ import app.chompass.services.grounding.SuggestionKind
 import app.chompass.ui.components.ChompassSheetLazyColumn
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.isDarkTheme
-import app.chompass.ui.components.kcalText
+import app.chompass.ui.components.energyText
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
@@ -821,7 +821,7 @@ private fun AddFoodSuggestionRow(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 Text(
-                    kcalText(suggestionCalories(suggestion)),
+                    energyText(suggestionCalories(suggestion)),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = AppColors.Calorie,

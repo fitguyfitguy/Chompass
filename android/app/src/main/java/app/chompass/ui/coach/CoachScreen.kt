@@ -67,7 +67,7 @@ import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.InAppCameraCaptureDialog
 import app.chompass.ui.components.gramsText
-import app.chompass.ui.components.kcalText
+import app.chompass.ui.components.energyText
 import app.chompass.ui.navigation.BottomNavDockedControlPadding
 import app.chompass.ui.theme.AppTextOpacity
 
@@ -288,7 +288,7 @@ fun CoachScreen(container: AppContainer) {
                 stringResource(
                     R.string.coach_confirm_log_food_summary,
                     entry.name,
-                    kcalText(entry.calories),
+                    energyText(entry.calories),
                     gramsText(entry.protein),
                     gramsText(entry.carbs),
                     gramsText(entry.fat),

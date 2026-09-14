@@ -26,9 +26,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.LocaleFormat
+import app.chompass.models.EnergyFormat
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
+import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.navigation.LocalEnergyUnit
 @Composable
 fun StepsCard(
     steps: Long,
@@ -93,13 +96,13 @@ fun ActiveCaloriesCard(
             modifier = Modifier.size(16.dp)
         )
         Text(
-            LocaleFormat.integer(activeCalories),
+            LocaleFormat.integer(EnergyFormat.quantity(activeCalories, LocalEnergyUnit.current)),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = accentColor,
         )
         Text(
-            stringResource(R.string.home_active_calories_label),
+            stringResource(R.string.home_active_calories_label, energyUnitLabel()),
             fontSize = 11.sp,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),

@@ -7,6 +7,8 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.data.disambiguateFoodName
 import app.chompass.models.ChatMessage
+import app.chompass.models.EnergyFormat
+import app.chompass.models.EnergyUnit
 import app.chompass.models.FoodEntry
 import app.chompass.models.LocaleFormat
 import app.chompass.models.WaterEntry
@@ -162,8 +164,10 @@ class CoachViewModel(private val container: AppContainer) : ViewModel() {
                 )
             )
             container.foodRepository.addEntry(unique)
+            val unit = EnergyUnit.fromStorage(container.prefs.energyUnit.first())
+            val unitLabel = container.appContext.getString(if (unit == EnergyUnit.KJ) R.string.unit_kj else R.string.unit_kcal)
             container.chatRepository.append(
-                ChatMessage(role = ChatMessage.Role.ASSISTANT, content = "Logged: ${unique.name} (${unique.calories} kcal).")
+                ChatMessage(role = ChatMessage.Role.ASSISTANT, content = "Logged: ${unique.name} (${EnergyFormat.quantity(unique.calories, unit)} $unitLabel).")
             )
             _ui.value = _ui.value.copy(pendingFood = null)
         }

@@ -29,6 +29,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import app.chompass.AppContainer
+import app.chompass.models.EnergyUnit
 import app.chompass.services.update.AndroidUpdateChecker
 import app.chompass.services.update.AndroidUpdateState
 import app.chompass.ui.coach.CoachScreen
@@ -64,6 +65,8 @@ import app.chompass.ui.settings.FastingSettingsScreen
  * NavHost, so tab switches (which recompose Home) never change it.
  */
 val LocalLaunchFillEpoch = compositionLocalOf { 1 }
+
+val LocalEnergyUnit = compositionLocalOf { EnergyUnit.KCAL }
 
 @Composable
 fun ChompassNavHost(
@@ -169,7 +172,11 @@ fun ChompassNavHost(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    CompositionLocalProvider(LocalLaunchFillEpoch provides launchFillEpoch) {
+    val energyUnitRaw by container.prefs.energyUnit.collectAsState(initial = "kcal")
+    CompositionLocalProvider(
+        LocalLaunchFillEpoch provides launchFillEpoch,
+        LocalEnergyUnit provides EnergyUnit.fromStorage(energyUnitRaw),
+    ) {
     // Codeberg #20: phase 1 hides the coach tab (View-only); phase 2's master
     // AI-off switch hides it too — with AI off the coach has nothing to say.
     val coachTabEnabled by container.prefs.coachTabEnabled.collectAsState(initial = true)

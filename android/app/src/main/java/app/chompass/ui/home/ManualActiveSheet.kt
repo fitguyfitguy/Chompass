@@ -34,9 +34,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.ManualActiveEntry
+import app.chompass.models.EnergyFormat
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.NumericWheelPicker
+import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.theme.AppTextOpacity
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -56,6 +59,7 @@ fun ManualActiveSheet(
 ) {
     var name by remember(initial?.id) { mutableStateOf(initial?.name.orEmpty()) }
     var calories by remember(initial?.id) { mutableStateOf(initial?.calories?.takeIf { it > 0 } ?: 100) }
+    val unit = LocalEnergyUnit.current
     val canSave = calories > 0
     val editing = initial != null
 
@@ -85,12 +89,12 @@ fun ManualActiveSheet(
             )
             Spacer(Modifier.height(10.dp))
             NumericWheelPicker(
-                value = calories,
-                onValueChange = { calories = it },
-                min = 10,
-                max = 2000,
-                step = 10,
-                unit = stringResource(R.string.unit_kcal),
+                value = EnergyFormat.quantity(calories, unit),
+                onValueChange = { calories = EnergyFormat.toKcal(it, unit) },
+                min = EnergyFormat.quantity(10, unit),
+                max = EnergyFormat.quantity(2000, unit),
+                step = EnergyFormat.wheelStep(10, unit),
+                unit = energyUnitLabel(),
             )
             Spacer(Modifier.height(16.dp))
             SheetStickyPrimaryBar(
@@ -115,7 +119,8 @@ fun ManualActiveSheet(
                     stringResource(
                         R.string.manual_active_history_total,
                         dayLabel,
-                        todayEntries.sumOf { it.calories },
+                        EnergyFormat.quantity(todayEntries.sumOf { it.calories }, unit),
+                        energyUnitLabel(),
                     ),
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
                     fontSize = 13.sp,
@@ -166,7 +171,7 @@ private fun ManualActiveHistoryRow(
             fontSize = 15.sp,
         )
         Text(
-            "${entry.calories} ${stringResource(R.string.unit_kcal)}",
+            "${EnergyFormat.quantity(entry.calories, LocalEnergyUnit.current)} ${energyUnitLabel()}",
             fontWeight = FontWeight.SemiBold,
             fontSize = 15.sp,
             color = MaterialTheme.colorScheme.tertiary,

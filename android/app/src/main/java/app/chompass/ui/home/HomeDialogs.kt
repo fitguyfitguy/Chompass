@@ -52,6 +52,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.models.EnergyFormat
+import app.chompass.models.LocaleFormat
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.MealType
 import app.chompass.models.MicronutrientField
@@ -70,6 +72,8 @@ import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.components.rememberDecodedBitmap
 import app.chompass.ui.components.ExpandableMacroPicker
 import app.chompass.ui.components.ExpandableDecimalMacroPicker
+import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.navigation.LocalEnergyUnit
 
 // ── Dialogs (unchanged styling polish) ──────────────────────────────
 
@@ -270,8 +274,8 @@ internal fun ProgressiveAnalysisCard(
             )
             ProgressiveNutritionRow(
                 label = stringResource(R.string.nutrition_label_calories),
-                displayValue = partial.calories?.toString(),
-                unit = stringResource(R.string.unit_kcal),
+                displayValue = partial.calories?.let { LocaleFormat.integer(EnergyFormat.quantity(it, LocalEnergyUnit.current)) },
+                unit = energyUnitLabel(),
                 accentColor = AppColors.Calorie,
                 animate = animate,
             )
@@ -625,14 +629,15 @@ internal fun ManualEntryDialog(
                 var carbsExpanded by remember { mutableStateOf(false) }
                 var fatExpanded by remember { mutableStateOf(false) }
                 Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    val unit = LocalEnergyUnit.current
                     ExpandableMacroPicker(
                         label = stringResource(R.string.manual_calories),
-                        value = calories,
-                        onValueChange = { calories = it },
-                        min = 0,
-                        max = 5000,
-                        step = 2,
-                        unit = stringResource(R.string.unit_kcal),
+                        value = EnergyFormat.quantity(calories, unit),
+                        onValueChange = { calories = EnergyFormat.toKcal(it, unit) },
+                        min = EnergyFormat.quantity(0, unit),
+                        max = EnergyFormat.quantity(5000, unit),
+                        step = EnergyFormat.wheelStep(2, unit),
+                        unit = energyUnitLabel(),
                         accentColor = AppColors.Calorie,
                         expanded = caloriesExpanded,
                         onExpandChange = { caloriesExpanded = it }

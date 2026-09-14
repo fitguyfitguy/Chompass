@@ -39,6 +39,7 @@ import {
 } from "../lib/home-nutrients.js";
 import { createSpeechCapture } from "../lib/speech.js";
 import { t, formatNumber } from "../lib/i18n/index.js";
+import { energyQuantity, energyToKcal, energyUnitFromPrefs, energyUnitLabel, formatEnergy } from "../lib/energy-format.js";
 import {
   consumeResumeProgressiveCapture,
   consumeShowProgressiveMealSheet,
@@ -294,8 +295,7 @@ function burnCaptionText(zoneActive, burn) {
 
 const GAUGE_INFO_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 7h2v2h-2V7zm0 4h2v6h-2v-6zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>`;
 
-/** Semicircle (~180°) calorie gauge — Android HomeCalorieHero shape (mobile). */
-function ringSvg(eaten, target, baseGoal = null, burn = null) {
+function ringSvg(eaten, target, baseGoal = null, burn = null, unit = "kcal") {
   const width = 260;
   const stroke = 16;
   const r = (width - stroke) / 2;
@@ -350,25 +350,22 @@ function ringSvg(eaten, target, baseGoal = null, burn = null) {
 
   return `
     <svg class="calorie-ring calorie-ring--semi" viewBox="0 0 ${width} ${height}" role="img"
-      aria-label="${t("diary.ring_aria", { eaten: Math.round(eaten), target: Math.round(target), left: leftLabel })}${ariaBurn}">
+      aria-label="${t("diary.ring_aria", { eaten: formatNumber(energyQuantity(Math.round(eaten), unit)), target: formatNumber(energyQuantity(Math.round(target), unit)), left: leftLabel })}${ariaBurn}">
       <path d="${arc}" fill="none" stroke="var(--surface)" stroke-width="${stroke}" stroke-linecap="round" />
       ${tailMarkup}
       <path class="calorie-ring__progress" d="${arc}" fill="none"
         stroke="var(--teal)" stroke-width="${stroke}" stroke-linecap="round"
         stroke-dasharray="0 ${halfC.toFixed(1)}"
         data-dash="${(pct * halfC).toFixed(1)} ${halfC.toFixed(1)}" />
-      <text x="50%" y="58" text-anchor="middle" class="calorie-ring__caption">${t("diary.calories")}</text>
-      <text x="50%" y="88" text-anchor="middle" class="calorie-ring__label">${Math.round(eaten)}</text>
-      <text x="50%" y="108" text-anchor="middle" class="calorie-ring__sub">${t("diary.calories_of", { amount: Math.round(target) })}</text>
+      <text x="50%" y="88" text-anchor="middle" class="calorie-ring__label">${formatNumber(energyQuantity(Math.round(eaten), unit))}</text>
+      <text x="50%" y="108" text-anchor="middle" class="calorie-ring__sub">${t("diary.calories_of", { amount: formatEnergy(Math.round(target), unit) })}</text>
       <text x="50%" y="128" text-anchor="middle" class="calorie-ring__left">🔥 ${leftLabel}</text>
       ${burnMarkup}
     </svg>`;
 }
 
-/** Horizontal calorie progress bar (desktop). */
-function calorieBar(eaten, target, baseGoal = null, burn = null) {
-  const pct = target > 0 ? Math.min(100, (eaten / target) * 100) : 0;
-  const leftLabel = t("diary.calories_left", { amount: Math.max(0, Math.round(target - eaten)) });
+function calorieBar(eaten, target, baseGoal = null, burn = null, unit = "kcal") {
+  const leftLabel = t("diary.calories_left", { amount: formatNumber(energyQuantity(Math.max(0, Math.round(target - eaten)), unit)) });
   const baseFrac = baseGoal && baseGoal > 0 && target > 0 ? Math.min(1, baseGoal / target) : 1;
   const showActive = baseFrac < 1;
   const active = baseGoal && baseGoal < target ? Math.round(target - baseGoal) : 0;
@@ -385,12 +382,12 @@ function calorieBar(eaten, target, baseGoal = null, burn = null) {
   }
   return `
     <div class="calorie-hero calorie-hero--bar" role="img"
-      aria-label="${t("diary.ring_aria", { eaten: Math.round(eaten), target: Math.round(target), left: leftLabel })}">
+      aria-label="${t("diary.ring_aria", { eaten: formatNumber(energyQuantity(Math.round(eaten), unit)), target: formatNumber(energyQuantity(Math.round(target), unit)), left: leftLabel })}">
       <div class="calorie-hero__top">
         <div class="calorie-hero__nums">
           <span class="calorie-hero__caption">${t("diary.calories")}</span>
-          <span class="calorie-hero__value">${Math.round(eaten)}</span>
-          <span class="calorie-hero__sub">${t("diary.calories_of", { amount: Math.round(target) })}</span>
+          <span class="calorie-hero__value">${formatNumber(energyQuantity(Math.round(eaten), unit))}</span>
+          <span class="calorie-hero__sub">${t("diary.calories_of", { amount: formatEnergy(Math.round(target), unit) })}</span>
         </div>
         <span class="calorie-hero__left">🔥 ${leftLabel}</span>
       </div>
@@ -475,7 +472,7 @@ function tile(action, label, sub, icon, hero = false) {
  * @param {string} mealType
  * @param {string[]} chipKeys
  */
-function mealCard(mealType, mealEntries, chipKeys) {
+function mealCard(mealType, mealEntries, chipKeys, unit = "kcal") {
   const totals = sumMealChipValues(mealEntries, chipKeys);
   const icon = ICONS[mealType] || ICONS.snack;
   return `
@@ -485,7 +482,7 @@ function mealCard(mealType, mealEntries, chipKeys) {
         <div class="meal-card__titles">
           <h2 class="meal-card__title">${mealLabel(mealType)}</h2>
           <p class="meal-card__summary">
-            <span class="meal-card__kcal">${Math.round(totals.calories)} kcal</span>
+            <span class="meal-card__kcal">${formatEnergy(Math.round(totals.calories), unit)}</span>
             <span class="meal-card__summary-sep"> · </span>${formatMacroChipLine(totals, chipKeys)}
           </p>
         </div>
@@ -507,7 +504,7 @@ function mealCard(mealType, mealEntries, chipKeys) {
                     ${e.time ? `<span class="food-item__meta-time">${formatEntryTime(e.time)}</span>` : ""}
                   </span>
                   <span class="food-item__kcalrow">
-                    <span class="food-item__cals">${Math.round(e.calories)} kcal</span>
+                    <span class="food-item__cals">${formatEnergy(Math.round(e.calories), unit)}</span>
                     ${serving != null ? `<span class="food-item__meta-sep"> · </span><span class="food-item__serving">${serving}</span>` : ""}
                   </span>
                   <span class="food-item__pills">${formatFoodPills(e, chipKeys)}</span>
@@ -649,6 +646,7 @@ export class DiaryView extends HTMLElement {
     }
 
     const waterMl = waterLogs.reduce((s, w) => s + w.amountMl, 0);
+    const energyUnit = energyUnitFromPrefs(appPrefs);
     const waterGoal = appPrefs.waterGoalMl ?? 2000;
     const waterPct = waterGoal > 0 ? Math.min(100, (waterMl / waterGoal) * 100) : 0;
     const showWater = appPrefs.showWater === true;
@@ -725,10 +723,10 @@ export class DiaryView extends HTMLElement {
         ? { live: gaugeInfo.live, typical: gaugeInfo.typical }
         : null;
     const gaugeMobile = targets
-      ? ringSvg(totals.calories, calorieTarget, gaugeBaseGoal, gaugeBurn)
+      ? ringSvg(totals.calories, calorieTarget, gaugeBaseGoal, gaugeBurn, energyUnit)
       : `<p class="empty-state">${t("diary.empty_no_profile")}</p>`;
     const gaugeDesktop = targets
-      ? calorieBar(totals.calories, calorieTarget, gaugeBaseGoal, gaugeBurn)
+      ? calorieBar(totals.calories, calorieTarget, gaugeBaseGoal, gaugeBurn, energyUnit)
       : `<p class="empty-state">${t("diary.empty_no_profile")}</p>`;
 
     const progressiveCount = progressiveMealItemCount();
@@ -896,7 +894,7 @@ export class DiaryView extends HTMLElement {
         entries.length === 0
           ? `<p class="empty-state">${t("diary.empty")}</p>`
           : mealOrderFor(entries)
-              .map((mealType) => mealCard(mealType, entries.filter((e) => e.mealType === mealType), chipKeys))
+              .map((mealType) => mealCard(mealType, entries.filter((e) => e.mealType === mealType), chipKeys, energyUnit))
               .join("")
       }
 
@@ -1058,12 +1056,13 @@ export class DiaryView extends HTMLElement {
   }
 
   openGaugeInfo() {
+    const unit = energyUnitFromPrefs(this._appPrefs);
     const info = this._gaugeInfo;
     if (!info) {
       // Static mode: plain daily goal breakdown.
       openInfo({
         title: t("diary.calorie_budget_title"),
-        message: t("diary.calorie_budget_goal", { goal: String(this._gaugeGoal ?? 0) }),
+        message: t("diary.calorie_budget_goal", { goal: formatEnergy(this._gaugeGoal ?? 0, unit) }),
         doneLabel: t("action.done"),
       });
       return;
@@ -1078,8 +1077,8 @@ export class DiaryView extends HTMLElement {
         bodyHtml: `
           <p class="dialog__message dialog__message--strong">${escapeHtml(
             t("diary.calorie_budget_goal_plus_active", {
-              goal: String(info.goal),
-              active: String(info.active),
+              goal: formatNumber(energyQuantity(info.goal, unit)),
+              active: formatNumber(energyQuantity(info.active, unit)),
             }),
           )}</p>
           <p class="dialog__message">${escapeHtml(sourceLine)}</p>`,
@@ -1215,6 +1214,7 @@ export class DiaryView extends HTMLElement {
   async openDayTypeSheet() {
     const prof = await profileStore.load();
     if (!prof) return;
+    const unit = energyUnitFromPrefs(await prefs.load());
     const plan = prof.macroPlan ?? null;
     const today = todayIso();
     const base = dailyTargets(prof);
@@ -1222,8 +1222,8 @@ export class DiaryView extends HTMLElement {
     const active = resolveDay(plan, base, today);
     const tomorrow = resolveDay(plan, base, shiftDate(today, 1));
     const tomorrowLabel = tomorrow.profileName
-      ? t("day_types.tomorrow_format", { name: tomorrow.profileName, kcal: String(tomorrow.targets.calories) })
-      : t("day_types.tomorrow_base", { kcal: String(base.calories) });
+      ? t("day_types.tomorrow_format", { name: tomorrow.profileName, kcal: formatNumber(energyQuantity(tomorrow.targets.calories, unit)), unit: energyUnitLabel(unit) })
+      : t("day_types.tomorrow_base", { kcal: formatNumber(energyQuantity(base.calories, unit)), unit: energyUnitLabel(unit) });
     const hasOverride = plan?.dayAssignments?.[today] != null;
     const allManual = await loadManualActiveEntries();
     const journal = await goalJournal.all();
@@ -1238,12 +1238,12 @@ export class DiaryView extends HTMLElement {
               const typLine =
                 typ && typ.sampleCount >= 3
                   ? `<span style="display:block;font-size:0.78rem;color:var(--muted);">${escapeHtml(
-                      t("day_types.active_typical", { kcal: String(typ.averageKcal) }),
+                      t("day_types.active_typical", { kcal: formatNumber(energyQuantity(typ.averageKcal, unit)), unit: energyUnitLabel(unit) }),
                     )}</span>`
                   : "";
               return `
             <button type="button" data-type-id="${escapeAttr(p.id)}" aria-pressed="${active.profileId === p.id}">
-              ${escapeHtml(p.name)} · ${p.calories} kcal
+              ${escapeHtml(p.name)} · ${formatEnergy(p.calories, unit)}
               <span style="display:block;font-size:0.8rem;color:var(--muted);">${p.proteinG}P / ${p.carbsG}C / ${p.fatG}F</span>
               ${typLine}
             </button>`;
@@ -1364,6 +1364,7 @@ export class DiaryView extends HTMLElement {
       return;
     }
 
+    const unit = energyUnitFromPrefs(appPrefs);
     this.fabOpen = true;
     this.querySelector(".fab")?.setAttribute("aria-expanded", "true");
 
@@ -1375,7 +1376,7 @@ export class DiaryView extends HTMLElement {
                  <span class="add-food-relog-chip__emoji" aria-hidden="true">${e.emoji ? escapeHtml(String(e.emoji)) : "🍽"}</span>
                  <span class="add-food-relog-chip__text">
                    <strong>${escapeHtml(e.name)}</strong>
-                   <span class="add-food-relog-chip__kcal">${Math.round(e.calories)} kcal</span>
+                   <span class="add-food-relog-chip__kcal">${formatEnergy(Math.round(e.calories), unit)}</span>
                  </span>
                  <span class="add-food-relog-chip__add" aria-hidden="true">+</span>
                </button>`;
@@ -1524,6 +1525,7 @@ export class DiaryView extends HTMLElement {
   }
 
   async openManualActiveSheet() {
+    const unit = energyUnitFromPrefs(await prefs.load());
     const all = await loadManualActiveEntries();
     const today = all.filter((e) => e.date === this.date);
     const rows = today
@@ -1531,7 +1533,7 @@ export class DiaryView extends HTMLElement {
         (e) => `
       <div class="manual-active-row" data-id="${escapeHtml(e.id)}">
         <button type="button" class="manual-active-row__edit" data-edit="${escapeHtml(e.id)}">
-          ${escapeHtml(e.name)} · ${e.calories} kcal
+          ${escapeHtml(e.name)} · ${formatEnergy(e.calories, unit)}
         </button>
         <button type="button" class="manual-active-row__del" data-del="${escapeHtml(e.id)}" aria-label="${escapeHtml(t("manual_active.delete"))}">×</button>
       </div>`
@@ -1547,8 +1549,8 @@ export class DiaryView extends HTMLElement {
             <input id="active-name" name="name" type="text" autocomplete="off" />
           </div>
           <div class="field">
-            <label for="active-kcal">${escapeHtml(t("manual_active.kcal_hint"))}</label>
-            <input id="active-kcal" name="calories" type="number" min="1" max="99999" inputmode="numeric" required />
+            <label for="active-kcal">${escapeHtml(t("manual_active.kcal_hint"))} (${energyUnitLabel(unit)})</label>
+            <input id="active-kcal" name="calories" type="number" min="1" max="999999" inputmode="numeric" required />
           </div>
           <div class="btn-row">
             <button type="submit" class="btn btn--primary">${escapeHtml(t("manual_active.save"))}</button>
@@ -1561,7 +1563,7 @@ export class DiaryView extends HTMLElement {
     sheet.body.querySelector("#manual-active-form")?.addEventListener("submit", async (ev) => {
       ev.preventDefault();
       const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
-      const kcal = Number(fd.get("calories"));
+      const kcal = energyToKcal(Number(fd.get("calories")), unit);
       if (!(kcal > 0)) return;
       const name = String(fd.get("name") || "");
       if (editingId) await updateManualActiveEntry(editingId, name, kcal);
@@ -1586,13 +1588,13 @@ export class DiaryView extends HTMLElement {
         const nameEl = sheet.body.querySelector("#active-name");
         const kcalEl = sheet.body.querySelector("#active-kcal");
         if (nameEl instanceof HTMLInputElement) nameEl.value = entry.name;
-        if (kcalEl instanceof HTMLInputElement) kcalEl.value = String(entry.calories);
+        if (kcalEl instanceof HTMLInputElement) kcalEl.value = String(energyQuantity(entry.calories, unit));
       });
     });
   }
 
-  /** @param {Awaited<ReturnType<typeof prefs.load>>} [appPrefs] */
   openProgressiveMealSheet(appPrefs) {
+    const unit = energyUnitFromPrefs(appPrefs);
     const draft = getProgressiveMeal();
     if (!draft || draft.items.length === 0) return;
     const totals = draftTotals(draft);
@@ -1608,8 +1610,7 @@ export class DiaryView extends HTMLElement {
         return `
         <div class="progressive-meal-row" data-item-id="${escapeAttr(item.id)}">
           <div class="progressive-meal-row__text">
-            <strong>${escapeHtml(item.analysis.name)}</strong>
-            <span>${Math.round(item.analysis.calories)} kcal${
+            <span>${formatEnergy(Math.round(item.analysis.calories), unit)}${
           serving != null
             ? ` · ${escapeHtml(serving)}`
             : item.analysis.quantityG != null
@@ -1640,7 +1641,7 @@ export class DiaryView extends HTMLElement {
           <div class="progressive-meal-list">${rows}</div>
           <div class="progressive-meal-totals">
             <p class="add-food-hint">${escapeHtml(t("progressive_meal.totals"))}</p>
-            <p><strong>${Math.round(totals.calories)} kcal</strong></p>
+            <p><strong>${formatEnergy(Math.round(totals.calories), unit)}</strong></p>
             <p>${Math.round(totals.proteinG)}P · ${Math.round(totals.carbsG)}C · ${Math.round(totals.fatG)}F</p>
           </div>
           <div class="btn-row">
@@ -1740,6 +1741,7 @@ export class DiaryView extends HTMLElement {
    * @param {"RECENTS"|"FREQUENT"|"FAVORITES"|"RECIPES"} [initialSegment]
    */
   async openSavedMealsSheet(parentSheet, appPrefs, initialSegment) {
+    const unit = energyUnitFromPrefs(appPrefs);
     let segment = initialSegment || appPrefs.lastSavedMealsSegment || "RECENTS";
     const sortPref = appPrefs.lastSavedMealsSort;
     /** @type {"recent"|"name"|"size"} */
@@ -1765,7 +1767,7 @@ export class DiaryView extends HTMLElement {
     const recentsMapped = (list) =>
       sortHistoryTemplates(filterHistoryTemplates(list, recentsQuery), recentsSort).map((e) => ({
         label: e.name,
-        meta: `${formatNumber(Math.round(e.calories))} kcal · ${Math.round(e.proteinG)}P / ${Math.round(e.carbsG)}C / ${Math.round(e.fatG)}F`,
+        meta: `${formatEnergy(Math.round(e.calories), unit)} · ${Math.round(e.proteinG)}P / ${Math.round(e.carbsG)}C / ${Math.round(e.fatG)}F`,
         entry: e,
       }));
 
@@ -1822,14 +1824,14 @@ export class DiaryView extends HTMLElement {
       } else if (segment === "FREQUENT") {
         rows = (await frequentFoodGroups(90)).map((g) => ({
           label: g.template.name,
-          meta: `${g.count}× · ${formatNumber(Math.round(g.template.calories))} kcal`,
+          meta: `${g.count}× · ${formatEnergy(Math.round(g.template.calories), unit)}`,
           entry: g.template,
           count: g.count,
         }));
       } else if (segment === "FAVORITES") {
         rows = (await listFavorites()).map((e) => ({
           label: e.name,
-          meta: `${formatNumber(Math.round(e.calories))} kcal · ${Math.round(e.proteinG)}P / ${Math.round(e.carbsG)}C / ${Math.round(e.fatG)}F`,
+          meta: `${formatEnergy(Math.round(e.calories), unit)} · ${Math.round(e.proteinG)}P / ${Math.round(e.carbsG)}C / ${Math.round(e.fatG)}F`,
           entry: e,
           favEditId: e.id,
         }));
@@ -1845,7 +1847,7 @@ export class DiaryView extends HTMLElement {
                       (r) => `
                     <button type="button" data-recipe-id="${r.id}">
                       <strong>${escapeHtml(r.name)}</strong><br/>
-                      <span class="recents-meta">${t("diary.recipe_ingredients_kcal", { count: r.ingredients.length, kcal: r.ingredients.reduce((s, i) => s + Math.round(i.baseCalories * (i.quantityScale ?? 1)), 0) })}</span>
+                      <span class="recents-meta">${t("diary.recipe_ingredients_kcal", { count: r.ingredients.length, kcal: formatNumber(energyQuantity(r.ingredients.reduce((s, i) => s + Math.round(i.baseCalories * (i.quantityScale ?? 1)), 0), unit)), unit: energyUnitLabel(unit) })}</span>
                     </button>`,
                     )
                     .join("")}
@@ -1954,8 +1956,7 @@ export class DiaryView extends HTMLElement {
         const date = btn.getAttribute("data-copy-date");
         if (!date) return;
         const dayEntries = await foodEntries.byDate(date);
-        sheet.close();
-        this.openCopySelectSheet(parentSheet, dayEntries);
+        void this.openCopySelectSheet(parentSheet, dayEntries);
       });
     });
   }
@@ -1964,7 +1965,8 @@ export class DiaryView extends HTMLElement {
    * @param {ReturnType<typeof openSheet>} parentSheet
    * @param {import('../lib/chompass-core/models.js').FoodEntry[]} dayEntries
    */
-  openCopySelectSheet(parentSheet, dayEntries) {
+  async openCopySelectSheet(parentSheet, dayEntries) {
+    const unit = energyUnitFromPrefs(await prefs.load());
     const sheet = openSheet({
       title: t("diary.select_foods"),
       body: `
@@ -1974,7 +1976,7 @@ export class DiaryView extends HTMLElement {
               (e) => `
             <label class="copy-select__row">
               <input type="checkbox" data-copy-id="${e.id}" checked />
-              <span><strong>${escapeHtml(e.name)}</strong><br/><span class="recents-meta">${Math.round(e.calories)} kcal · ${mealLabel(e.mealType)}</span></span>
+              <span><strong>${escapeHtml(e.name)}</strong><br/><span class="recents-meta">${formatEnergy(Math.round(e.calories), unit)} · ${mealLabel(e.mealType)}</span></span>
             </label>`
             )
             .join("")}
@@ -2073,9 +2075,10 @@ export class DiaryView extends HTMLElement {
    */
   openNutritionDetail(entries, targets, optionalGoals, title, trackerCaffeineMg = 0) {
     const fmt = (v) => (v === 0 ? "—" : v.toFixed(1));
+    const unit = energyUnitFromPrefs(this._appPrefs);
     const cal = entries.reduce((s, e) => s + e.calories, 0);
     const macroRows = [
-      [t("diary.calories"), cal, targets?.calories ?? 0, "kcal"],
+      [t("diary.calories"), energyQuantity(cal, unit), energyQuantity(targets?.calories ?? 0, unit), energyUnitLabel(unit)],
       [t("onboarding.plan.protein"), sumNutrient(entries, "proteinG"), targets?.proteinG ?? 0, "g"],
       [t("onboarding.plan.carbs"), sumNutrient(entries, "carbsG"), targets?.carbsG ?? 0, "g"],
       [t("onboarding.plan.fat"), sumNutrient(entries, "fatG"), targets?.fatG ?? 0, "g"],
@@ -2164,7 +2167,8 @@ export class DiaryView extends HTMLElement {
                 <span class="nutrition-detail__label">${escapeHtml(c.name)}</span>
                 <span class="nutrition-detail__value">${escapeHtml(
                   t("entry.constituents.macros", {
-                    calories: Math.round(c.calories),
+                    calories: formatNumber(energyQuantity(Math.round(c.calories), unit)),
+                    unit: energyUnitLabel(unit),
                     protein: formatQuantity(c.proteinG),
                     carbs: formatQuantity(c.carbsG),
                     fat: formatQuantity(c.fatG),

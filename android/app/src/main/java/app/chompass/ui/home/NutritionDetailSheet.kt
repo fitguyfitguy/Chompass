@@ -49,10 +49,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.FoodEntry
+import app.chompass.models.EnergyFormat
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.ResolvedDayTargets
+import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.models.UserProfile
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.isDarkTheme
@@ -168,7 +171,7 @@ fun NutritionDetailSheet(
                     val proteinGoal = HomeTopNutrient.PROTEIN.goal(resolved, profile, optionalGoals, macroScale)
                     val carbsGoal = HomeTopNutrient.CARBS.goal(resolved, profile, optionalGoals, macroScale)
                     val fatGoal = HomeTopNutrient.FAT.goal(resolved, profile, optionalGoals, macroScale)
-                    DetailRow(Icons.Filled.LocalFireDepartment, stringResource(R.string.nutrition_label_calories), "$calories", stringResource(R.string.unit_kcal), goal = "$calorieGoal", percent = nutritionGoalPercent(calories.toDouble(), calorieGoal.toDouble()), accentColor = AppColors.Calorie)
+                    DetailRow(Icons.Filled.LocalFireDepartment, stringResource(R.string.nutrition_label_calories), "${EnergyFormat.quantity(calories, LocalEnergyUnit.current)}", energyUnitLabel(), goal = "${EnergyFormat.quantity(calorieGoal, LocalEnergyUnit.current)}", percent = nutritionGoalPercent(calories.toDouble(), calorieGoal.toDouble()), accentColor = AppColors.Calorie)
                     Hairline()
                     DetailRow(null, stringResource(R.string.nutrition_label_protein), MacroValueFormatter.string(protein), stringResource(R.string.unit_g), goal = "$proteinGoal", percent = nutritionGoalPercent(protein, proteinGoal.toDouble()), labelGlyph = "P", accentColor = AppColors.Protein)
                     Hairline()

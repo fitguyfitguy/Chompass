@@ -10,6 +10,7 @@ import {
 import { lineChartSvg, barChartSvg } from "../lib/charts.js";
 import { openInput, openConfirm } from "../lib/ui/dialog.js";
 import { t, formatNumber } from "../lib/i18n/index.js";
+import { energyQuantity, energyUnitFromPrefs, energyUnitLabel, formatEnergy } from "../lib/energy-format.js";
 import {
   mergeOptionalGoals,
   nutrientDef,
@@ -92,6 +93,7 @@ export class ProgressView extends HTMLElement {
     const activeRange = RANGES.find((r) => r.id === this.rangeId) ?? RANGES[0];
     const startIso = shiftDate(todayIso(), -(activeRange.days - 1));
     const weightUnit = appPrefs.weightUnit === "lb" ? "lb" : "kg";
+    const energyUnit = energyUnitFromPrefs(appPrefs);
     const toDisplay = (kg) => (weightUnit === "lb" ? kg * 2.20462 : kg);
     const fromDisplay = (v) => (weightUnit === "lb" ? v / 2.20462 : v);
 
@@ -366,12 +368,12 @@ export class ProgressView extends HTMLElement {
       <div class="card card--glass">
         <div class="progress-head">
           <h2 class="progress-title">${t("diary.calories")}</h2>
-          ${avgCalories != null ? `<span class="progress-avg">${t("progress.avg_format", { avg: avgCalories })}</span>` : ""}
+          ${avgCalories != null ? `<span class="progress-avg">${t("progress.avg_format", { avg: formatNumber(energyQuantity(avgCalories, energyUnit)), unit: energyUnitLabel(energyUnit) })}</span>` : ""}
         </div>
         ${
           calorieBars.length === 0
             ? `<p class="progress-empty">${t("progress.no_food")}</p>`
-            : barChartSvg(calorieBars, { target: targets?.calories ?? null })
+            : barChartSvg(calorieBars, { target: targets?.calories ?? null, energyUnit })
         }
       </div>
 
@@ -419,7 +421,7 @@ export class ProgressView extends HTMLElement {
                   ? `<p style="margin:0.6rem 0 0;font-size:0.85rem;">${escapeHtml(adaptive.message)}</p>
                      ${
                        adaptive.changed && adaptive.updatedCalories != null
-                         ? `<button type="button" class="btn btn--primary" style="margin-top:0.5rem;" data-apply-adapt="${adaptive.updatedCalories}">Apply ${formatNumber(adaptive.updatedCalories)} kcal</button>`
+                         ? `<button type="button" class="btn btn--primary" style="margin-top:0.5rem;" data-apply-adapt="${adaptive.updatedCalories}">Apply ${formatEnergy(adaptive.updatedCalories, energyUnit)}</button>`
                          : ""
                      }`
                   : ""

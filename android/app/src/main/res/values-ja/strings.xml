@@ -10,7 +10,7 @@
     <string name="widget_calories">カロリー</string>
     <string name="widget_carbs">炭水化物</string>
     <string name="widget_fat">脂質</string>
-    <string name="widget_kcal_left_format">残り %1$d kcal</string>
+    <string name="widget_kcal_left_format">残り %1$d %2$s</string>
     <string name="widget_g_left_format">残り %1$dg</string>
     <string name="widget_protein_g">タンパク質 g</string>
 
@@ -179,7 +179,7 @@
     <string name="onboarding_pace_caption_slow">穏やかで持続可能。長期的な習慣に最適。</string>
     <string name="onboarding_pace_caption_fast">積極的だが実行可能。強い自制心が必要です。</string>
     <string name="onboarding_pace_caption_recommended">最もバランスの取れたペースで、モチベーションを保ち持続可能。</string>
-    <string name="onboarding_pace_capped">このペースは、推定安静時代謝を下回らずにあなたの体格では不可能です。目標は%1$d kcalになります。</string>
+    <string name="onboarding_pace_capped">このペースは、推定安静時代謝を下回らずにあなたの体格では不可能です。目標は%1$d kcalになります。 %2$s</string>
 
     <string name="onboarding_notifications_title">食事の記録を\nリマインド</string>
     <string name="onboarding_notifications_subtitle">食事の時間に優しくリマインドして\n記録を忘れないようサポートします。</string>
@@ -224,7 +224,7 @@
     <string name="onboarding_plan_subtitle">値をタップして編集</string>
     <string name="onboarding_plan_daily_calories">1日のカロリー</string>
     <string name="onboarding_plan_doctor_title">医師にご相談ください</string>
-    <string name="onboarding_plan_doctor_message">推奨される最低量は1日1,200カロリーです。</string>
+    <string name="onboarding_plan_doctor_message">推奨される最低量は1日%1$sです。</string>
     <string name="onboarding_minor_title">大人向けの計算式のみ</string>
     <string name="onboarding_minor_message">このアプリは大人向けのカロリー計算式を使用します。18歳未満の場合は、これらの目標を使う前に医療専門家に相談してください。</string>
     <string name="onboarding_minor_continue">理解しました</string>
@@ -267,7 +267,7 @@
     <string name="add_food_add_photo">写真を追加</string>
     <string name="progressive_meal_add_next">次の食材を追加</string>
     <string name="text_input_title">食べたものを説明</string>
-    <string name="home_kcal_of_format">/ %1$s kcal</string>
+    <string name="home_kcal_of_format">/ %1$s %2$s</string>
     <string name="home_kcal_left_format">残り %1$s</string>
     <string name="home_view_more">もっと見る</string>
     <string name="home_todays_food">今日の食事</string>
@@ -424,7 +424,7 @@
     <string name="progress_history_count_format">%1$d件 · タップして表示・削除</string>
 
     <string name="progress_calories_section">カロリー</string>
-    <string name="progress_avg_format">平均: %1$d kcal</string>
+    <string name="progress_avg_format">平均: %1$d %2$s</string>
     <string name="progress_no_food">まだ食事が記録されていません</string>
 
     <string name="progress_macro_averages">マクロ平均</string>
@@ -583,8 +583,8 @@
     <string name="notif_streak_text">連続記録を続けましょう。今日のものを記録してください。</string>
     <string name="notif_summary_title">今日のサマリーが準備できました</string>
     <string name="notif_summary_text">タップして今日のマクロの状況を確認。</string>
-    <string name="notif_summary_deficit">%1$s kcalの不足</string>
-    <string name="notif_summary_surplus">%1$s kcalの過剰</string>
+    <string name="notif_summary_deficit">%1$s kcalの不足 %2$s</string>
+    <string name="notif_summary_surplus">%1$s kcalの過剰 %2$s</string>
     <string name="notif_summary_on_target">バランス</string>
     <string name="notif_summary_eaten_burned">摂取 %1$s · 消費 %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
@@ -670,7 +670,7 @@
     <string name="manual_active_name_hint">活動名（任意）</string>
     <string name="manual_active_save">予算に追加</string>
     <string name="manual_active_edit_title">アクティブ消費を編集</string>
-    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="manual_active_history_total">%1$s · %2$d %3$s</string>
     <string name="cd_delete_manual_active">アクティブ消費を削除</string>
     <string name="manual_active_subtitle">散歩、サイクリング、ワークアウトなどで消費したカロリーを追加。「アクティブ消費を予算に追加」がオンのとき、今日の予算が延長されます。</string>
     <string name="manual_active_title">アクティブ消費を記録</string>
@@ -755,7 +755,7 @@
     <string name="analysis_queue_day_back">前の日</string>
     <string name="analysis_queue_day_forward">次の日</string>
     <string name="analysis_queue_failed">失敗</string>
-    <string name="analysis_queue_result">%1$s · %2$d kcal</string>
+    <string name="analysis_queue_result">%1$s · %2$d %3$s</string>
     <string name="analysis_queue_just_now">たった今</string>
     <string name="analysis_queue_minutes_ago">%1$d 分前</string>
     <string name="analysis_queue_hours_ago">%1$d 時間前</string>
@@ -765,7 +765,7 @@
     <string name="action_show">表示</string>
     <string name="action_undo">戻す</string>
     <string name="action_what_if">どうなる？</string>
-    <string name="add_food_relog_kcal">%1$d kcal</string>
+    <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="ai_error_coach_on_device">コーチはまだオンデバイスプロバイダーに対応していません。設定 → AI プロバイダーでクラウドプロバイダーに切り替えてください。</string>
     <string name="ai_error_coach_round_limit">コーチは回答できませんでした。質問の言い方を変えてみてください。</string>
     <string name="ai_error_disabled">AI 機能は設定 → AI と音声でオフになっています。</string>
@@ -939,7 +939,7 @@
     <string name="grounded_on_device_unavailable">裏付けのある記録にはクラウド AI プロバイダーが必要です。オンデバイスモデルは写真/メモを使用します。</string>
     <string name="grounded_review_continue">レビューへ進む</string>
     <string name="grounded_review_grams">グラム</string>
-    <string name="grounded_review_per_100g">%1$d kcal / 100 g</string>
+    <string name="grounded_review_per_100g">%1$d %2$s / 100 g</string>
     <string name="grounded_review_subtitle">記録する前に、各食品の最適なデータベース一致と分量を選んでください。</string>
     <string name="grounded_review_title">一致を確認</string>
     <string name="grounded_review_unit">単位</string>
@@ -965,17 +965,17 @@
     <string name="home_active_burn_over_a11y">活動消費 %1$d、通常の1日より %2$d 多い</string>
     <string name="home_active_burn_progress_a11y">活動消費 %1$d、通常 %2$d</string>
     <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
-    <string name="home_active_calories_label">活動 kcal</string>
-    <string name="home_budget_burned_today">今日の消費：%1$d kcal</string>
+    <string name="home_active_calories_label">活動 %1$s</string>
+    <string name="home_budget_burned_today">今日の消費：%1$d %2$s</string>
     <string name="home_calorie_active_estimated_a11y">活動カロリーは活動レベルから推定</string>
-    <string name="home_calorie_budget_a11y">予算 %1$d：目標 %2$d と活動消費 %3$d</string>
+    <string name="home_calorie_budget_a11y">予算 %1$d %4$s：目標 %2$d %4$s と活動消費 %3$d %4$s</string>
     <string name="home_calorie_budget_info">今日の予算の計算方法</string>
     <string name="home_calorie_budget_sheet_title">今日のカロリー予算</string>
     <string name="home_calorie_budget_source_manual">手動で記録したカロリー</string>
     <string name="home_calorie_budget_source_measured">Health Connect の活動カロリー</string>
-    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d %4$s (14-day average is %3$d %4$s).</string>
     <string name="home_calorie_mode_static">固定目標</string>
-    <string name="home_calorie_of_goal">%1$s 中</string>
+    <string name="home_calorie_of_goal">%1$s 中 %2$s</string>
     <string name="home_calories_active_burn">活動消費 %1$d</string>
     <string name="home_calories_goal_plus_active">目標 %1$s + 活動 %2$s</string>
     <string name="home_calories_label">カロリー</string>
@@ -1015,7 +1015,7 @@
     <string name="note_char_count">%1$d / %2$d</string>
 
     <string name="import_add_to_log">記録に追加</string>
-    <string name="import_add_to_log_many_format">%1$d 件を記録に追加 · %2$d kcal</string>
+    <string name="import_add_to_log_many_format">%1$d 件を記録に追加 · %2$d %3$s</string>
     <string name="import_body_metrics_empty">このファイルにはインポートできる体重・身体データの記録がありません。</string>
     <string name="import_body_metrics_malformed">ファイルを読み込めませんでした：%1$s</string>
     <string name="import_body_metrics_success">体重 %1$d 件、体脂肪 %2$d 件、測定 %3$d 件をインポートしました。</string>
@@ -1385,7 +1385,7 @@
     <string name="settings_picker_custom_placeholder">%1$s 単位の値</string>
     <string name="settings_picker_enter_custom">カスタム値を入力…</string>
     <string name="settings_calorie_below_floor_title">安全な下限を下回っています</string>
-    <string name="settings_calorie_below_floor_message">これは推定安静時代謝または1,200 kcalを下回っています。医療専門家が処方した場合のみ続けてください。</string>
+    <string name="settings_calorie_below_floor_message">これは推定安静時代謝または%1$sを下回っています。医療専門家が処方した場合のみ続けてください。</string>
     <string name="settings_calorie_below_floor_continue">それでも続ける</string>
     <string name="settings_picker_use_wheel">ホイールを使用</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d IU</string>
@@ -1596,7 +1596,7 @@
     <string name="unit_tbsp">大さじ</string>
     <string name="unit_tsp">小さじ</string>
     <string name="vm_adaptive_on_message">適応型目標がオンです。十分な食事と体重データが揃うと、Chompass は週1回確認します。</string>
-    <string name="vm_adaptive_updated">最新のデータに基づき %1$d kcal に更新しました。</string>
+    <string name="vm_adaptive_updated">最新のデータに基づき %1$d %2$s に更新しました。</string>
     <string name="vm_goals_recalculated">目標を再計算しました</string>
         <string name="recalc_sheet_new_targets">新しい目標</string>
         <string name="recalc_sheet_macros_format">P %1$d · C %2$d · F %3$d</string>
@@ -1608,26 +1608,26 @@
         <string name="recalc_sheet_tier_measured">Health Connect の実測消費量に基づく</string>
         <string name="recalc_sheet_tier_formula">内蔵の計算式</string>
         <string name="recalc_sheet_formula_baseline">計算式の基準</string>
-        <string name="recalc_sheet_bmr_row">BMR（安静時消費）: %1$s kcal</string>
-        <string name="recalc_sheet_tdee_row">維持 × 活動 %1$s: %2$s kcal</string>
-        <string name="recalc_sheet_pace_row">目標ペース: %1$s kcal/日</string>
-        <string name="recalc_sheet_formula_target_row">計算式の目標: %1$s kcal</string>
-        <string name="recalc_sheet_measured_row">Health Connect の実測消費量: %1$s kcal</string>
-    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
+        <string name="recalc_sheet_bmr_row">BMR（安静時消費）: %1$s %2$s</string>
+        <string name="recalc_sheet_tdee_row">維持 × 活動 %1$s: %2$s %3$s</string>
+        <string name="recalc_sheet_pace_row">目標ペース: %1$s %2$s/日</string>
+        <string name="recalc_sheet_formula_target_row">計算式の目標: %1$s %2$s</string>
+        <string name="recalc_sheet_measured_row">Health Connect の実測消費量: %1$s %2$s</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d %4$s active (%3$d of last 28 days)</string>
         <string name="recalc_sheet_data_used">使用したデータ</string>
         <string name="recalc_sheet_data_weighins">%2$d 日間で %1$d 回の計測</string>
         <string name="recalc_sheet_data_no_weighins">まだ計測の記録なし</string>
-        <string name="recalc_sheet_data_intake">記録済みの平均摂取: %2$d 日間で %1$s kcal</string>
+        <string name="recalc_sheet_data_intake">記録済みの平均摂取: %2$d 日間で %1$s %3$s</string>
         <string name="recalc_sheet_data_no_intake">まだ食事の記録なし</string>
-        <string name="recalc_sheet_data_implied">推定維持カロリー: ~%1$s kcal</string>
+        <string name="recalc_sheet_data_implied">推定維持カロリー: ~%1$s %2$s</string>
         <string name="recalc_sheet_data_implied_thin">推定維持カロリー: 未計算 — データが少なすぎる</string>
         <string name="recalc_sheet_data_implied_below_floor">推定維持カロリー: 安全下限未満のため無視</string>
         <string name="recalc_sheet_data_implied_disagree">推定維持カロリー: 保留 — 記録と体重トレンドが一致しない</string>
         <string name="recalc_sheet_change">変化</string>
-        <string name="recalc_sheet_previous">変更前: %1$s kcal</string>
-        <string name="recalc_sheet_new_with_delta">変更後: %1$s kcal (%2$s)</string>
+        <string name="recalc_sheet_previous">変更前: %1$s %2$s</string>
+        <string name="recalc_sheet_new_with_delta">変更後: %1$s %3$s (%2$s)</string>
         <string name="recalc_sheet_reason">理由</string>
-    <string name="vm_goals_updated">%1$d kcal に更新しました。</string>
+    <string name="vm_goals_updated">%1$d %2$s に更新しました。</string>
     <string name="vm_health_connect_needed">Health Connect が必要です</string>
     <string name="vm_health_connect_needed_msg">Chompass が Health Connect の活動・総カロリーを読み取れるようにしてから、エネルギー消費を再度オンにしてください。</string>
     <string name="vm_not_enough_energy">エネルギー・データが不足しています</string>
@@ -1705,7 +1705,7 @@
     <string name="height_cm_format">%1$d cm</string>
     <string name="home_macro_chip_format">%1$s %2$dg</string>
     <string name="in_label_format">%1$d in</string>
-    <string name="kcal_value_format">%1$s kcal</string>
+    <string name="energy_value_format">%1$s %2$s</string>
     <string name="keto_carb_grams_format">%1$d g/day</string>
     <string name="kg_value_format">%1$.1f kg</string>
     <string name="lbs_value_format">%1$.1f lbs</string>
@@ -1731,6 +1731,7 @@
     <string name="unit_g">g</string>
     <string name="unit_in">in</string>
     <string name="unit_kcal">kcal</string>
+    <string name="unit_kj">kJ</string>
     <string name="unit_kg">kg</string>
     <string name="unit_lbs">lbs</string>
     <string name="unit_mcg">mcg</string>
@@ -1811,6 +1812,7 @@
     <string name="settings_group_trackers">トラッカーとリマインダー</string>
     <string name="settings_group_trackers_summary">水分、ニコチン、カフェイン、断食、リマインダー</string>
     <string name="settings_units">単位</string>
+    <string name="settings_energy_unit">エネルギー</string>
     <string name="settings_search_hint">設定を検索</string>
     <string name="settings_search_empty">一致する設定がありません。「kg」「kcal」「ml」をお試しください。</string>
     <string name="prompt_history_button">プロンプト履歴</string>
@@ -1921,9 +1923,9 @@
     <string name="day_type_clear_override">今日の上書きを解除</string>
     <string name="day_type_edit_settings">デイタイプを編集</string>
     <string name="day_type_plan_off_hint">デイタイプはオフです。日ごとに違う目標を使うには設定でオンにしてください。</string>
-    <string name="day_type_targets_summary">%1$s kcal · %2$dP %3$dC %4$dF</string>
-    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
-    <string name="day_type_tomorrow">明日: %1$s · %2$s kcal</string>
+    <string name="day_type_targets_summary">%1$s %5$s · %2$dP %3$dC %4$dF</string>
+    <string name="day_type_active_typical">≈ %1$d %2$s active typical</string>
+    <string name="day_type_tomorrow">明日: %1$s · %2$s %3$s</string>
     <string name="settings_day_types_title">デイタイプ</string>
     <string name="settings_day_types_intro">日ごとに違うカロリーとマクロの目標を使えます。トレーニング日と休養日など。</string>
     <string name="settings_day_types_add">デイタイプを追加</string>
@@ -1934,7 +1936,7 @@
     <string name="settings_day_types_delete_scrub">スケジュールから外す</string>
     <string name="settings_day_types_delete_used_message">スケジュールで使われています。該当する日をどうするか選んでください。</string>
     <string name="settings_day_types_delete_used_title">「%1$s」を削除しますか？</string>
-    <string name="settings_day_types_floor_warning">この目標はカロリーの下限（%1$d kcal）にあります。デイタイプとしては強めです。</string>
+    <string name="settings_day_types_floor_warning">この目標はカロリーの下限（%1$d %2$s）にあります。デイタイプとしては強めです。</string>
     <string name="settings_day_types_follow_schedule">スケジュールに従う</string>
     <string name="settings_day_types_keto_paused">ケトモードではデイタイプは一時停止中</string>
     <string name="settings_day_types_mode_cycle">サイクル</string>
@@ -1963,11 +1965,11 @@
     <string name="settings_day_types_summary_format">%1$dタイプ · %2$s</string>
     <string name="settings_day_types_weekday_default">デフォルト（%1$s）</string>
     <string name="recalc_sheet_day_types">デイタイプ</string>
-    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s kcal</string>
-    <string name="recalc_sheet_daytype_value">%1$s: %2$s kcal</string>
+    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s %4$s</string>
+    <string name="recalc_sheet_daytype_value">%1$s: %2$s %3$s</string>
     <string name="recalc_sheet_daytype_macros_format">たんぱく質 %1$d g · 炭水化物 %2$d g · 脂質 %3$d g</string>
-    <string name="recalc_sheet_daytype_avg_change">週の平均: %1$s → %2$s kcal</string>
-    <string name="recalc_sheet_daytype_avg_value">週の平均: %1$s kcal</string>
+    <string name="recalc_sheet_daytype_avg_change">週の平均: %1$s → %2$s %3$s</string>
+    <string name="recalc_sheet_daytype_avg_value">週の平均: %1$s %2$s</string>
     <string name="settings_calc_sec_day_types">デイタイプ</string>
     <string name="settings_calc_daytypes_resolve_name">デイタイプごとの目標の決定</string>
     <string name="settings_calc_daytypes_resolve_used">デイタイプがオンのとき、各日のカロリーとマクロの目標は単一のセットではなくプランから取られます。1日だけの手動切り替えはスケジュールより優先され、スケジュールはデフォルトより優先され、決まらないものは基本の目標に戻ります。</string>

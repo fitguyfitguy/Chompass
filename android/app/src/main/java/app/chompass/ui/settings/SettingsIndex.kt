@@ -124,6 +124,8 @@ internal val SETTINGS_INDEX: List<SettingsIndexEntry> = listOf(
     // — Personal Info —
     SettingsIndexEntry(R.string.settings_section_personal, R.string.settings_units,
         R.array.settings_search_kw_units, ChompassRoutes.SETTINGS_PERSONAL, Icons.Outlined.Straighten),
+    SettingsIndexEntry(R.string.settings_section_personal, R.string.settings_energy_unit,
+        R.array.settings_search_kw_energy, ChompassRoutes.SETTINGS_PERSONAL, Icons.Outlined.LocalFireDepartment),
     SettingsIndexEntry(R.string.settings_section_personal, R.string.settings_gender,
         R.array.settings_search_kw_gender, ChompassRoutes.SETTINGS_PERSONAL, Icons.Outlined.Person),
     SettingsIndexEntry(R.string.settings_section_personal, R.string.settings_birthday,

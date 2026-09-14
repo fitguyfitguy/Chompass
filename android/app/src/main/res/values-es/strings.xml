@@ -10,7 +10,7 @@
     <string name="widget_calories">Calorías</string>
     <string name="widget_carbs">Carbohidratos</string>
     <string name="widget_fat">Grasas</string>
-    <string name="widget_kcal_left_format">%1$d kcal restantes</string>
+    <string name="widget_kcal_left_format">%1$d %2$s restantes</string>
     <string name="widget_g_left_format">%1$dg restantes</string>
     <string name="widget_protein_g">proteína g</string>
 
@@ -176,7 +176,7 @@
     <string name="onboarding_pace_caption_slow">Suave y sostenible. Ideal para hábitos a largo plazo.</string>
     <string name="onboarding_pace_caption_fast">Agresivo pero alcanzable. Requiere una fuerte disciplina.</string>
     <string name="onboarding_pace_caption_recommended">El ritmo más equilibrado, motivador y sostenible.</string>
-    <string name="onboarding_pace_capped">Este ritmo no es posible para tu complexión sin bajar de tu gasto en reposo estimado. Tu objetivo será de %1$d kcal.</string>
+    <string name="onboarding_pace_capped">Este ritmo no es posible para tu complexión sin bajar de tu gasto en reposo estimado. Tu objetivo será de %1$d %2$s.</string>
 
     <string name="onboarding_notifications_title">Recibe recordatorios\npara registrar comidas</string>
     <string name="onboarding_notifications_subtitle">Recibe avisos suaves a la hora de comer\npara que nunca olvides registrar.</string>
@@ -221,7 +221,7 @@
     <string name="onboarding_plan_subtitle">Toca cualquier valor para editarlo</string>
     <string name="onboarding_plan_daily_calories">calorías diarias</string>
     <string name="onboarding_plan_doctor_title">Consulta a un médico</string>
-    <string name="onboarding_plan_doctor_message">La recomendación mínima es de 1.200 calorías al día.</string>
+    <string name="onboarding_plan_doctor_message">La recomendación mínima es de %1$scalorías al día.</string>
     <string name="onboarding_minor_title">Solo fórmulas para adultos</string>
     <string name="onboarding_minor_message">Esta app usa fórmulas de calorías para adultos. Si eres menor de 18 años, pregunta a un profesional de la salud antes de usar estos objetivos.</string>
     <string name="onboarding_minor_continue">Entiendo</string>
@@ -265,7 +265,7 @@
     <string name="add_food_add_label_photo">Añadir foto de etiqueta</string>
     <string name="add_food_add_photo">Añadir foto</string>
     <string name="text_input_title">Describe tu comida</string>
-    <string name="home_kcal_of_format">de %1$s kcal</string>
+    <string name="home_kcal_of_format">de %1$s %2$s</string>
     <string name="home_kcal_left_format">%1$s restantes</string>
     <string name="home_view_more">Ver más</string>
     <string name="home_todays_food">Comida de hoy</string>
@@ -417,7 +417,7 @@
     <string name="progress_history_count_format">%1$d entradas · toca para ver o eliminar</string>
 
     <string name="progress_calories_section">Calorías</string>
-    <string name="progress_avg_format">Media: %1$d kcal</string>
+    <string name="progress_avg_format">Media: %1$d %2$s</string>
     <string name="progress_no_food">Aún no hay comida registrada</string>
 
     <string name="progress_macro_averages">Promedios de macros</string>
@@ -581,8 +581,8 @@
     <string name="notif_streak_text">Mantén tu racha. Registra algo de hoy.</string>
     <string name="notif_summary_title">El resumen de hoy está listo</string>
     <string name="notif_summary_text">Toca para ver cómo cuadraron los macros de hoy.</string>
-    <string name="notif_summary_deficit">Déficit de %1$s kcal</string>
-    <string name="notif_summary_surplus">Superávit de %1$s kcal</string>
+    <string name="notif_summary_deficit">Déficit de %1$s %2$s</string>
+    <string name="notif_summary_surplus">Superávit de %1$s %2$s</string>
     <string name="notif_summary_on_target">En equilibrio</string>
     <string name="notif_summary_eaten_burned">Ingeridas %1$s · quemadas %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
@@ -699,7 +699,7 @@
     <string name="manual_active_name_hint">Nombre de la actividad (opcional)</string>
     <string name="manual_active_save">Añadir al presupuesto</string>
     <string name="manual_active_edit_title">Editar gasto activo</string>
-    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="manual_active_history_total">%1$s · %2$d %3$s</string>
     <string name="cd_delete_manual_active">Eliminar gasto activo</string>
     <string name="manual_active_subtitle">Añade calorías quemadas de una caminata, paseo en bici o entrenamiento. Amplían el presupuesto de hoy cuando «Añadir gasto activo» está activado.</string>
     <string name="manual_active_title">Registrar gasto activo</string>
@@ -790,7 +790,7 @@
     <string name="analysis_queue_day_back">Día anterior</string>
     <string name="analysis_queue_day_forward">Día siguiente</string>
     <string name="analysis_queue_failed">Fallido</string>
-    <string name="analysis_queue_result">%1$s · %2$d kcal</string>
+    <string name="analysis_queue_result">%1$s · %2$d %3$s</string>
     <string name="analysis_queue_just_now">Ahora mismo</string>
     <string name="analysis_queue_minutes_ago">hace %1$d min</string>
     <string name="analysis_queue_hours_ago">hace %1$d h</string>
@@ -800,7 +800,7 @@
     <string name="action_show">Mostrar</string>
     <string name="action_undo">Deshacer</string>
     <string name="action_what_if">¿Y si…?</string>
-    <string name="add_food_relog_kcal">%1$d kcal</string>
+    <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="ai_error_coach_on_device">El Coach aún no está disponible con el proveedor en el dispositivo. Cambia a un proveedor en la nube en Ajustes → Proveedor de IA.</string>
     <string name="ai_error_coach_round_limit">El Coach no pudo responder. Intenta reformular tu pregunta.</string>
     <string name="ai_error_grounded_on_device">El bucle de herramientas de Entrada contrastada no está disponible para modelos en el dispositivo.</string>
@@ -998,7 +998,7 @@
     <string name="ft_label_format">%1$d ft</string>
     <string name="grams_value_decimal_format">%1$sg</string>
     <string name="grams_value_format">%1$sg</string>
-    <string name="grounded_review_per_100g">%1$d kcal / 100 g</string>
+    <string name="grounded_review_per_100g">%1$d %2$s / 100 g</string>
     <string name="grounding_source_off">Open Food Facts</string>
     <string name="grounding_source_usda">USDA</string>
     <string name="height_cm_format">%1$d cm</string>
@@ -1010,17 +1010,17 @@
     <string name="home_active_burn_over_a11y">Gasto activo %1$d, %2$d más que un día típico</string>
     <string name="home_active_burn_progress_a11y">Gasto activo %1$d, típico %2$d</string>
     <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
-    <string name="home_active_calories_label">kcal activas</string>
-    <string name="home_budget_burned_today">Quemado hoy: %1$d kcal</string>
+    <string name="home_active_calories_label">%1$s activas</string>
+    <string name="home_budget_burned_today">Quemado hoy: %1$d %2$s</string>
     <string name="home_calorie_active_estimated_a11y">Calorías activas estimadas según tu nivel de actividad</string>
-    <string name="home_calorie_budget_a11y">Presupuesto %1$d: objetivo %2$d más %3$d activas quemadas</string>
+    <string name="home_calorie_budget_a11y">Presupuesto %1$d %4$s: objetivo %2$d %4$s más %3$d %4$s activas quemadas</string>
     <string name="home_calorie_budget_info">Cómo se calcula el presupuesto de hoy</string>
     <string name="home_calorie_budget_sheet_title">Presupuesto de calorías de hoy</string>
     <string name="home_calorie_budget_source_manual">Calorías que registraste manualmente</string>
     <string name="home_calorie_budget_source_measured">Calorías activas de Health Connect</string>
-    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d %4$s (14-day average is %3$d %4$s).</string>
     <string name="home_calorie_mode_static">Objetivo estático</string>
-    <string name="home_calorie_of_goal">de %1$s</string>
+    <string name="home_calorie_of_goal">de %1$s %2$s</string>
     <string name="home_calories_active_burn">%1$d activas quemadas</string>
     <string name="home_calories_goal_plus_active">Objetivo %1$s + %2$s activas</string>
     <string name="home_calories_label">CALORÍAS</string>
@@ -1061,7 +1061,7 @@
     <string name="note_char_count">%1$d / %2$d</string>
 
     <string name="import_add_to_log">Añadir al registro</string>
-    <string name="import_add_to_log_many_format">Añadir %1$d al registro · %2$d kcal</string>
+    <string name="import_add_to_log_many_format">Añadir %1$d al registro · %2$d %3$s</string>
     <plurals name="import_add_meals_title">
         <item quantity="one">Añadir comida compartida</item>
         <item quantity="other">Añadir %1$d comidas compartidas</item>
@@ -1082,7 +1082,7 @@
     <string name="import_sync_success">Documento de sincronización importado.</string>
     <string name="import_sync_title">Importar JSON de sincronización</string>
     <string name="in_label_format">%1$d in</string>
-    <string name="kcal_value_format">%1$s kcal</string>
+    <string name="energy_value_format">%1$s %2$s</string>
     <string name="keto_carb_grams_format">%1$d g/día</string>
     <string name="keto_carb_manual_hint">El objetivo manual se limita entre 20 y 50 g/día de carbohidratos netos.</string>
     <string name="keto_carb_mode_adaptive">Carbohidratos adaptativos</string>
@@ -1465,7 +1465,7 @@
     <string name="settings_picker_custom_placeholder">Valor en %1$s</string>
     <string name="settings_picker_enter_custom">Introducir valor personalizado…</string>
     <string name="settings_calorie_below_floor_title">Por debajo del mínimo seguro</string>
-    <string name="settings_calorie_below_floor_message">Esto está por debajo de tu gasto en reposo estimado o de 1.200 kcal. Continúa solo si un profesional de la salud lo ha recetado.</string>
+    <string name="settings_calorie_below_floor_message">Esto está por debajo de tu gasto en reposo estimado o de %1$s. Continúa solo si un profesional de la salud lo ha recetado.</string>
     <string name="settings_calorie_below_floor_continue">Continuar de todos modos</string>
     <string name="settings_picker_use_wheel">Usar rueda</string>
     <string name="settings_picker_vitd_iu_hint">%1$d mcg ≈ %2$d UI</string>
@@ -1681,6 +1681,7 @@
     <string name="unit_g">g</string>
     <string name="unit_in">in</string>
     <string name="unit_kcal">kcal</string>
+    <string name="unit_kj">kJ</string>
     <string name="unit_kg">kg</string>
     <string name="unit_lbs">lbs</string>
     <string name="unit_mcg">mcg</string>
@@ -1710,8 +1711,8 @@
     <string name="value_unit_format">%1$d %2$s</string>
     <string name="vm_adaptive_on_message">Los Objetivos adaptativos están activados. Chompass hará la comprobación una vez por semana cuando existan suficientes datos de comida y peso.</string>
 
-    <string name="vm_adaptive_updated">Actualizado a %1$d kcal según tus datos más recientes.</string>
-    <string name="vm_goals_updated">Actualizado a %1$d kcal.</string>
+    <string name="vm_adaptive_updated">Actualizado a %1$d %2$s según tus datos más recientes.</string>
+    <string name="vm_goals_updated">Actualizado a %1$d %2$s.</string>
     <string name="progress_chart_loading">Cargando el gráfico…</string>
     <string name="vm_goals_recalculated">Objetivos recalculados</string>
         <string name="recalc_sheet_new_targets">Nuevos objetivos</string>
@@ -1724,24 +1725,24 @@
         <string name="recalc_sheet_tier_measured">Anclado a tu gasto medido de Health Connect</string>
         <string name="recalc_sheet_tier_formula">Fórmulas integradas</string>
         <string name="recalc_sheet_formula_baseline">Base de la fórmula</string>
-        <string name="recalc_sheet_bmr_row">BMR (gasto en reposo): %1$s kcal</string>
-        <string name="recalc_sheet_tdee_row">Mantenimiento × actividad %1$s: %2$s kcal</string>
-        <string name="recalc_sheet_pace_row">Ritmo del objetivo: %1$s kcal/día</string>
-        <string name="recalc_sheet_formula_target_row">Objetivo de la fórmula: %1$s kcal</string>
-        <string name="recalc_sheet_measured_row">Gasto medido de Health Connect: %1$s kcal</string>
-    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
+        <string name="recalc_sheet_bmr_row">BMR (gasto en reposo): %1$s %2$s</string>
+        <string name="recalc_sheet_tdee_row">Mantenimiento × actividad %1$s: %2$s %3$s</string>
+        <string name="recalc_sheet_pace_row">Ritmo del objetivo: %1$s %2$s/día</string>
+        <string name="recalc_sheet_formula_target_row">Objetivo de la fórmula: %1$s %2$s</string>
+        <string name="recalc_sheet_measured_row">Gasto medido de Health Connect: %1$s %2$s</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d %4$s active (%3$d of last 28 days)</string>
         <string name="recalc_sheet_data_used">Datos utilizados</string>
         <string name="recalc_sheet_data_weighins">%1$d pesajes en %2$d días</string>
         <string name="recalc_sheet_data_no_weighins">Aún no hay pesajes registrados</string>
-        <string name="recalc_sheet_data_intake">Ingesta media registrada: %1$s kcal en %2$d días registrados</string>
+        <string name="recalc_sheet_data_intake">Ingesta media registrada: %1$s %3$s en %2$d días registrados</string>
         <string name="recalc_sheet_data_no_intake">Aún no hay alimentos registrados</string>
-        <string name="recalc_sheet_data_implied">Mantenimiento implícito: ~%1$s kcal</string>
+        <string name="recalc_sheet_data_implied">Mantenimiento implícito: ~%1$s %2$s</string>
         <string name="recalc_sheet_data_implied_thin">Mantenimiento implícito: no calculado — datos insuficientes</string>
         <string name="recalc_sheet_data_implied_below_floor">Mantenimiento implícito: por debajo del mínimo de seguridad, ignorado</string>
         <string name="recalc_sheet_data_implied_disagree">Mantenimiento implícito: retenido — los registros y la tendencia de peso discrepan</string>
         <string name="recalc_sheet_change">Cambio</string>
-        <string name="recalc_sheet_previous">Anterior: %1$s kcal</string>
-        <string name="recalc_sheet_new_with_delta">Nuevo: %1$s kcal (%2$s)</string>
+        <string name="recalc_sheet_previous">Anterior: %1$s %2$s</string>
+        <string name="recalc_sheet_new_with_delta">Nuevo: %1$s %3$s (%2$s)</string>
         <string name="recalc_sheet_reason">Por qué</string>
     <string name="vm_health_connect_needed">Se necesita Health Connect</string>
     <string name="vm_health_connect_needed_msg">Permite que Chompass lea tus Calorías activas y totales en Health Connect y vuelve a activar Quema de energía.</string>
@@ -1843,6 +1844,7 @@
     <string name="settings_group_trackers">Seguimiento y recordatorios</string>
     <string name="settings_group_trackers_summary">Agua, nicotina, cafeína, ayuno, recordatorios</string>
     <string name="settings_units">Unidades</string>
+    <string name="settings_energy_unit">Energía</string>
     <string name="settings_search_hint">Buscar ajustes</string>
     <string name="settings_search_empty">Ningún ajuste coincide. Prueba con «kg», «kcal» o «ml».</string>
     <string name="prompt_history_button">Historial de prompts</string>
@@ -1955,9 +1957,9 @@
     <string name="day_type_clear_override">Quitar la excepción de hoy</string>
     <string name="day_type_edit_settings">Editar tipos de día</string>
     <string name="day_type_plan_off_hint">Los tipos de día están apagados. Actívalos en Ajustes para usar objetivos distintos según el día.</string>
-    <string name="day_type_targets_summary">%1$s kcal · %2$dP %3$dC %4$dF</string>
-    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
-    <string name="day_type_tomorrow">Mañana: %1$s · %2$s kcal</string>
+    <string name="day_type_targets_summary">%1$s %5$s · %2$dP %3$dC %4$dF</string>
+    <string name="day_type_active_typical">≈ %1$d %2$s active typical</string>
+    <string name="day_type_tomorrow">Mañana: %1$s · %2$s %3$s</string>
     <string name="settings_day_types_title">Tipos de día</string>
     <string name="settings_day_types_intro">Usa objetivos de calorías y macros distintos según el día, por ejemplo días de entrenamiento y de descanso.</string>
     <string name="settings_day_types_add">Añadir tipo de día</string>
@@ -1968,7 +1970,7 @@
     <string name="settings_day_types_delete_scrub">Quitar del horario</string>
     <string name="settings_day_types_delete_used_message">Se usa en tu horario. Elige qué pasa con esos días.</string>
     <string name="settings_day_types_delete_used_title">¿Eliminar «%1$s»?</string>
-    <string name="settings_day_types_floor_warning">Este objetivo está en tu suelo calórico (%1$d kcal). Agresivo para un tipo de día.</string>
+    <string name="settings_day_types_floor_warning">Este objetivo está en tu suelo calórico (%1$d %2$s). Agresivo para un tipo de día.</string>
     <string name="settings_day_types_follow_schedule">Seguir el horario</string>
     <string name="settings_day_types_keto_paused">Tipos de día en pausa en modo keto</string>
     <string name="settings_day_types_mode_cycle">Ciclo</string>
@@ -1997,11 +1999,11 @@
     <string name="settings_day_types_summary_format">%1$d tipos · %2$s</string>
     <string name="settings_day_types_weekday_default">Predeterminado (%1$s)</string>
     <string name="recalc_sheet_day_types">Tipos de día</string>
-    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s kcal</string>
-    <string name="recalc_sheet_daytype_value">%1$s: %2$s kcal</string>
+    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s %4$s</string>
+    <string name="recalc_sheet_daytype_value">%1$s: %2$s %3$s</string>
     <string name="recalc_sheet_daytype_macros_format">%1$d g de proteína · %2$d g de carbohidratos · %3$d g de grasa</string>
-    <string name="recalc_sheet_daytype_avg_change">Media semanal: %1$s → %2$s kcal</string>
-    <string name="recalc_sheet_daytype_avg_value">Media semanal: %1$s kcal</string>
+    <string name="recalc_sheet_daytype_avg_change">Media semanal: %1$s → %2$s %3$s</string>
+    <string name="recalc_sheet_daytype_avg_value">Media semanal: %1$s %2$s</string>
     <string name="settings_calc_sec_day_types">Tipos de día</string>
     <string name="settings_calc_daytypes_resolve_name">Resolución de objetivos por tipo de día</string>
     <string name="settings_calc_daytypes_resolve_used">Cuando los tipos de día están activos, cada día toma sus objetivos de calorías y macros del plan en lugar del conjunto único. Un cambio manual para un día prevalece sobre el horario, el horario prevalece sobre el predeterminado y lo no resuelto vuelve a tus objetivos base.</string>

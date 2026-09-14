@@ -48,6 +48,9 @@ import app.chompass.R
 import app.chompass.models.FoodEntry
 import app.chompass.models.microsStaleFor
 import app.chompass.models.MacroValueFormatter
+import app.chompass.models.EnergyFormat
+import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.models.MicronutrientField
 import app.chompass.models.MicronutrientValues
 import app.chompass.models.ServingUnitOption
@@ -352,14 +355,15 @@ fun EditFavoriteSheet(
                         }
                         item {
                             SheetPillCard {
+                                val unit = LocalEnergyUnit.current
                                 ReviewNutritionValueRow(
                                     label = stringResource(R.string.nutrition_label_calories),
-                                    displayValue = "${math.scaledInt(editableCalories)}",
-                                    editValue = "${math.scaledInt(editableCalories)}",
-                                    unit = stringResource(R.string.unit_kcal),
+                                    displayValue = "${math.scaledInt(EnergyFormat.quantity(editableCalories, unit))}",
+                                    editValue = "${math.scaledInt(EnergyFormat.quantity(editableCalories, unit))}",
+                                    unit = energyUnitLabel(),
                                     unlocked = nutritionUnlocked,
                                     accentColor = AppColors.Calorie,
-                                    onEdit = { editableCalories = math.baseDoubleFromText(it).roundToInt() }
+                                    onEdit = { editableCalories = EnergyFormat.toKcal(math.baseDoubleFromText(it).roundToInt(), unit) }
                                 )
                                 SheetHairline()
                                 ReviewNutritionValueRow(

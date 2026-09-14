@@ -11,7 +11,7 @@
     <string name="widget_calories">Calories</string>
     <string name="widget_carbs">Carbs</string>
     <string name="widget_fat">Fat</string>
-    <string name="widget_kcal_left_format">%1$d kcal left</string>
+    <string name="widget_kcal_left_format">%1$d %2$s left</string>
     <string name="widget_g_left_format">%1$dg left</string>
     <string name="widget_kcal">kcal</string>
     <string name="widget_protein_g">protein g</string>
@@ -51,6 +51,7 @@
 
     <!-- Generic units / labels -->
     <string name="unit_kcal">kcal</string>
+    <string name="unit_kj">kJ</string>
     <string name="unit_g">g</string>
     <string name="unit_ml">ml</string>
     <string name="unit_mg">mg</string>
@@ -81,7 +82,7 @@
     <string name="unit_cup_plural">cups</string>
     <string name="unit_tbsp">tbsp</string>
     <string name="unit_tsp">tsp</string>
-    <string name="kcal_value_format">%1$s kcal</string>
+    <string name="energy_value_format">%1$s %2$s</string>
     <string name="grams_value_format">%1$sg</string>
     <string name="grams_value_decimal_format">%1$sg</string>
     <string name="kg_value_format">%1$.1f kg</string>
@@ -381,8 +382,8 @@
     <string name="onboarding_minor_message">This app uses adult calorie formulas. If you are under 18, ask a clinician before using these targets.</string>
     <string name="onboarding_minor_continue">I understand</string>
     <string name="onboarding_plan_doctor_title">Please consult with a doctor</string>
-    <string name="onboarding_plan_doctor_message">This is below your estimated resting calories or 1,200 kcal a day.</string>
-    <string name="onboarding_pace_capped">This pace isn\'t possible at your size without going below your estimated resting calories. Your target will be %1$d kcal.</string>
+    <string name="onboarding_plan_doctor_message">This is below your estimated resting calories or %1$s a day.</string>
+    <string name="onboarding_pace_capped">This pace isn\'t possible at your size without going below your estimated resting calories. Your target will be %1$d %2$s.</string>
 
     <string name="onboarding_disclaimers_title">Before you start</string>
     <string name="onboarding_disclaimers_subtitle">Please read these important notices</string>
@@ -434,7 +435,7 @@
     <string name="add_food_saved_meals_sub">Recents, favorites, recipes</string>
     <string name="add_food_quick_relog">Log again</string>
     <string name="add_food_quick_relog_empty">Favorite a meal or log one once. It will show up here for one-tap re-log.</string>
-    <string name="add_food_relog_kcal">%1$d kcal</string>
+    <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="cd_relog_meal">Log %1$s again</string>
     <string name="cd_open_logged_foods">Saved meals: recents, favorites, and recipes</string>
 
@@ -625,7 +626,7 @@
     <string name="camera_flash_auto">Flash auto</string>
     <string name="camera_flash_off">Flash off</string>
     <string name="text_input_title">Describe your food</string>
-    <string name="home_kcal_of_format">of %1$s kcal</string>
+    <string name="home_kcal_of_format">of %1$s %2$s</string>
     <string name="home_kcal_left_format">%1$s left</string>
     <string name="home_view_more">View More</string>
     <string name="home_todays_food">Today\'s Food</string>
@@ -656,7 +657,7 @@
     <string name="grounded_review_subtitle">Pick the best database match and portion for each food before logging.</string>
     <string name="grounded_review_grams">Grams</string>
     <string name="grounded_review_continue">Continue to review</string>
-    <string name="grounded_review_per_100g">%1$d kcal / 100 g</string>
+    <string name="grounded_review_per_100g">%1$d %2$s / 100 g</string>
     <string name="grounding_source_usda">USDA</string>
     <string name="grounding_source_off">Open Food Facts</string>
     <string name="grounding_source_swiss">Swiss</string>
@@ -822,7 +823,7 @@
     <string name="analysis_queue_day_back">Previous day</string>
     <string name="analysis_queue_day_forward">Next day</string>
     <string name="analysis_queue_failed">Failed</string>
-    <string name="analysis_queue_result">%1$s · %2$d kcal</string>
+    <string name="analysis_queue_result">%1$s · %2$d %3$s</string>
     <string name="analysis_queue_just_now">Just now</string>
     <string name="analysis_queue_minutes_ago">%1$d min ago</string>
     <string name="analysis_queue_hours_ago">%1$d h ago</string>
@@ -974,7 +975,7 @@
     <string name="progress_history_count_format">%1$d entries · tap to view or delete</string>
 
     <string name="progress_calories_section">Calories</string>
-    <string name="progress_avg_format">Avg: %1$d kcal</string>
+    <string name="progress_avg_format">Avg: %1$d %2$s</string>
     <string name="progress_no_food">No food logged yet</string>
 
     <string name="progress_macro_averages">Macro Averages</string>
@@ -1059,6 +1060,14 @@
         <item>kg</item>
         <item>lbs</item>
         <item>measurement system</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy">
+        <item>energy</item>
+        <item>kJ</item>
+        <item>kj</item>
+        <item>kilojoule</item>
+        <item>kcal</item>
+        <item>calorie unit</item>
     </string-array>
     <string-array name="settings_search_kw_gender">
         <item>sex</item>
@@ -1559,6 +1568,7 @@
     <string name="theme_color_neutral">Neutral</string>
     <string name="settings_metric_units">Metric Units</string>
     <string name="settings_units">Units</string>
+    <string name="settings_energy_unit">Energy</string>
     <string name="settings_height_unit">Height Unit</string>
     <string name="settings_weight_unit">Weight Unit</string>
     <string name="settings_default_to_grams">Default to Grams</string>
@@ -1915,8 +1925,8 @@
     <string name="notif_streak_text">Keep your streak going. Log something from today.</string>
     <string name="notif_summary_title">Today\'s summary is ready</string>
     <string name="notif_summary_text">Tap to see how today\'s macros lined up.</string>
-    <string name="notif_summary_deficit">%1$s kcal deficit</string>
-    <string name="notif_summary_surplus">%1$s kcal surplus</string>
+    <string name="notif_summary_deficit">%1$s %2$s deficit</string>
+    <string name="notif_summary_surplus">%1$s %2$s surplus</string>
     <string name="notif_summary_on_target">On target</string>
     <string name="notif_summary_eaten_burned">Eaten %1$s · burned %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
@@ -2055,16 +2065,16 @@
     <string name="home_display_food_log_chips">Food log macros</string>
     <string name="home_display_needs_health">Requires Health Connect with steps permission</string>
     <string name="home_calories_label">CALORIES</string>
-    <string name="home_calorie_of_goal">of %1$s</string>
+    <string name="home_calorie_of_goal">of %1$s %2$s</string>
     <!-- Macro day types (#60): hero chip + quick-switch sheet. -->
     <string name="home_day_type_chip_a11y">Today’s day type: %1$s. Tap to switch.</string>
     <string name="day_type_sheet_title">Day type</string>
     <string name="day_type_sheet_subtitle">Switch today’s targets to another day type.</string>
-    <string name="day_type_targets_summary">%1$s kcal · %2$dP %3$dC %4$dF</string>
-    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
+    <string name="day_type_targets_summary">%1$s %5$s · %2$dP %3$dC %4$dF</string>
+    <string name="day_type_active_typical">≈ %1$d %2$s active typical</string>
     <string name="day_type_base_goals">Base goals</string>
     <string name="day_type_clear_override">Clear today’s override</string>
-    <string name="day_type_tomorrow">Tomorrow: %1$s · %2$s kcal</string>
+    <string name="day_type_tomorrow">Tomorrow: %1$s · %2$s %3$s</string>
     <string name="day_type_edit_settings">Edit day types</string>
     <string name="day_type_plan_off_hint">Day types are turned off. Turn them on in Settings to use different targets on different days.</string>
     <!-- Macro day types (#60) phase 2: Settings editor. -->
@@ -2078,7 +2088,7 @@
     <string name="settings_day_types_name_placeholder">e.g. Training day</string>
     <string name="settings_day_types_name_taken">This name is already used</string>
     <string name="settings_day_types_copy_current">Copy from current goals</string>
-    <string name="settings_day_types_floor_warning">This target sits at your calorie floor (%1$d kcal). Aggressive for a day type.</string>
+    <string name="settings_day_types_floor_warning">This target sits at your calorie floor (%1$d %2$s). Aggressive for a day type.</string>
     <string name="settings_day_types_delete">Delete day type</string>
     <string name="settings_day_types_delete_used_title">Delete “%1$s”?</string>
     <string name="settings_day_types_delete_used_message">It is used in your schedule. Choose what happens to those days.</string>
@@ -2115,7 +2125,7 @@
     <string name="home_nutrients_pick_count">Pick up to %1$d nutrients for the home screen.</string>
     <string name="home_steps_label">Steps</string>
     <string name="home_steps_goal_format">Goal %1$s</string>
-    <string name="home_active_calories_label">Active kcal</string>
+    <string name="home_active_calories_label">Active %1$s</string>
     <string name="home_active_burn_caption">%1$d active</string>
     <string name="home_active_burn_a11y">Active burn %1$d</string>
     <string name="home_active_burn_caption_progress">%1$d of %2$d active</string>
@@ -2124,23 +2134,23 @@
     <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
     <string name="home_active_burn_over">+%1$d over typical</string>
     <string name="home_active_burn_over_a11y">Active burn %1$d, %2$d over a typical day</string>
-    <string name="home_budget_burned_today">Burned today: %1$d kcal</string>
+    <string name="home_budget_burned_today">Burned today: %1$d %2$s</string>
     <string name="home_display_show_active_calories">Show active calories</string>
     <string name="home_display_show_active_calories_desc">Show today’s active burn in the calorie gauge.</string>
     <string name="home_calories_left">%1$s left</string>
     <string name="home_calorie_budget_sheet_title">Today’s calorie budget</string>
     <string name="home_calorie_budget_source_measured">Active calories from Health Connect</string>
-    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d %4$s (14-day average is %3$d %4$s).</string>
     <string name="home_calorie_budget_source_manual">Calories you logged manually</string>
     <string name="home_calorie_budget_info">How today’s budget is calculated</string>
-    <string name="home_calorie_budget_a11y">Budget %1$d: %2$d goal plus %3$d active burned</string>
+    <string name="home_calorie_budget_a11y">Budget %1$d %4$s: %2$d %4$s goal plus %3$d %4$s active burned</string>
     <string name="manual_active_title">Log active burn</string>
     <string name="manual_active_subtitle">Add burned calories from a walk, ride, or workout. They extend today’s budget when “Add active burn” is on.</string>
     <string name="manual_active_name_hint">Activity name (optional)</string>
     <string name="manual_active_kcal_hint">Calories burned</string>
     <string name="manual_active_save">Add to budget</string>
     <string name="manual_active_edit_title">Edit active burn</string>
-    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="manual_active_history_total">%1$s · %2$d %3$s</string>
     <string name="cd_delete_manual_active">Delete active burn</string>
     <string name="home_menu_manual_active">Active burn</string>
     <string name="home_calories_active_burn">%1$d active burned</string>
@@ -2289,7 +2299,7 @@
     <string name="settings_reset_autobalance">Reset to Auto-balance</string>
     <string name="settings_picker_enter_custom">Enter custom value…</string>
     <string name="settings_calorie_below_floor_title">Below the safety floor</string>
-    <string name="settings_calorie_below_floor_message">This is below your estimated resting burn or 1,200 kcal. Only continue if a clinician prescribed it.</string>
+    <string name="settings_calorie_below_floor_message">This is below your estimated resting burn or %1$s. Only continue if a clinician prescribed it.</string>
     <string name="settings_calorie_below_floor_continue">Continue anyway</string>
     <string name="settings_picker_use_wheel">Use wheel</string>
     <string name="settings_picker_custom_placeholder">Value in %1$s</string>
@@ -2302,8 +2312,8 @@
     <string name="vm_health_connect_needed">Health Connect Needed</string>
     <string name="vm_not_enough_energy">Not Enough Energy Data</string>
     <string name="vm_adaptive_on_message">Adaptive Goals is on. Chompass will check once per week after enough food and weight data exists.</string>
-    <string name="vm_adaptive_updated">Updated to %1$d kcal from your latest data.</string>
-    <string name="vm_goals_updated">Updated to %1$d kcal.</string>
+    <string name="vm_adaptive_updated">Updated to %1$d %2$s from your latest data.</string>
+    <string name="vm_goals_updated">Updated to %1$d %2$s.</string>
     <string name="vm_goals_recalculated">Goals Recalculated</string>
     <string name="recalc_sheet_new_targets">New targets</string>
     <string name="recalc_sheet_macros_format">P %1$d · C %2$d · F %3$d</string>
@@ -2315,30 +2325,30 @@
     <string name="recalc_sheet_tier_measured">Anchored to your measured Health Connect burn</string>
     <string name="recalc_sheet_tier_formula">Built-in formulas</string>
     <string name="recalc_sheet_formula_baseline">Formula baseline</string>
-    <string name="recalc_sheet_bmr_row">BMR (resting burn): %1$s kcal</string>
-    <string name="recalc_sheet_tdee_row">Maintenance × activity %1$s: %2$s kcal</string>
-    <string name="recalc_sheet_pace_row">Goal pace: %1$s kcal/day</string>
-    <string name="recalc_sheet_formula_target_row">Formula target: %1$s kcal</string>
-    <string name="recalc_sheet_measured_row">Measured Health Connect burn: %1$s kcal</string>
-    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
+    <string name="recalc_sheet_bmr_row">BMR (resting burn): %1$s %2$s</string>
+    <string name="recalc_sheet_tdee_row">Maintenance × activity %1$s: %2$s %3$s</string>
+    <string name="recalc_sheet_pace_row">Goal pace: %1$s %2$s/day</string>
+    <string name="recalc_sheet_formula_target_row">Formula target: %1$s %2$s</string>
+    <string name="recalc_sheet_measured_row">Measured Health Connect burn: %1$s %2$s</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d %4$s active (%3$d of last 28 days)</string>
     <string name="recalc_sheet_data_used">Data used</string>
     <string name="recalc_sheet_data_weighins">%1$d weigh-ins over %2$d days</string>
     <string name="recalc_sheet_data_no_weighins">No weigh-ins logged yet</string>
-    <string name="recalc_sheet_data_intake">Avg logged intake: %1$s kcal over %2$d logged days</string>
+    <string name="recalc_sheet_data_intake">Avg logged intake: %1$s %3$s over %2$d logged days</string>
     <string name="recalc_sheet_data_no_intake">No logged food yet</string>
-    <string name="recalc_sheet_data_implied">Implied maintenance: ~%1$s kcal</string>
+    <string name="recalc_sheet_data_implied">Implied maintenance: ~%1$s %2$s</string>
     <string name="recalc_sheet_data_implied_thin">Implied maintenance: not computed — too little data</string>
     <string name="recalc_sheet_data_implied_below_floor">Implied maintenance: below the safety floor, ignored</string>
     <string name="recalc_sheet_data_implied_disagree">Implied maintenance: withheld — logs and weight trend disagree</string>
     <string name="recalc_sheet_change">Change</string>
-    <string name="recalc_sheet_previous">Previous: %1$s kcal</string>
-    <string name="recalc_sheet_new_with_delta">New: %1$s kcal (%2$s)</string>
+    <string name="recalc_sheet_previous">Previous: %1$s %2$s</string>
+    <string name="recalc_sheet_new_with_delta">New: %1$s %3$s (%2$s)</string>
     <string name="recalc_sheet_day_types">Day types</string>
-    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s kcal</string>
-    <string name="recalc_sheet_daytype_value">%1$s: %2$s kcal</string>
+    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s %4$s</string>
+    <string name="recalc_sheet_daytype_value">%1$s: %2$s %3$s</string>
     <string name="recalc_sheet_daytype_macros_format">%1$d g protein · %2$d g carbs · %3$d g fat</string>
-    <string name="recalc_sheet_daytype_avg_change">Weekly average: %1$s → %2$s kcal</string>
-    <string name="recalc_sheet_daytype_avg_value">Weekly average: %1$s kcal</string>
+    <string name="recalc_sheet_daytype_avg_change">Weekly average: %1$s → %2$s %3$s</string>
+    <string name="recalc_sheet_daytype_avg_value">Weekly average: %1$s %2$s</string>
     <string name="recalc_sheet_reason">Why</string>
     <plurals name="import_add_meals_title">
         <item quantity="one">Add shared meal</item>
@@ -2346,7 +2356,7 @@
     </plurals>
     <string name="import_note">Adds to your log with the exact nutrients from the sender. No photo is included.</string>
     <string name="import_add_to_log">Add to Log</string>
-    <string name="import_add_to_log_many_format">Add %1$d to Log · %2$d kcal</string>
+    <string name="import_add_to_log_many_format">Add %1$d to Log · %2$d %3$s</string>
     <string name="voice_release_to_cancel">Release to cancel</string>
     <string name="voice_slide_to_cancel">‹ slide to cancel</string>
     <string name="camera_error_open">Could not open camera</string>

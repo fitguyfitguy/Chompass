@@ -28,6 +28,7 @@
   "calorieGaugeMode": "static",
   "weekStartsOnMonday": true,
   "weekStartDay": "monday",
+  "energyUnit": "kcal",
   "mealBreakfastStart": 300,
   "mealLunchStart": 660,
   "mealDinnerStart": 900,

@@ -62,9 +62,13 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.AIProvider
 import app.chompass.models.CalorieSafety
+import app.chompass.models.EnergyFormat
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.OptionPickerSheet
+import app.chompass.ui.components.energyText
+import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.warning
 import app.chompass.ui.theme.AppRadii
@@ -565,7 +569,7 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                "${profile.effectiveCalories}",
+                "${EnergyFormat.quantity(profile.effectiveCalories, LocalEnergyUnit.current)}",
                 fontSize = 64.sp,
                 fontWeight = FontWeight.Bold,
                 style = LocalTextStyle.current.copy(
@@ -589,21 +593,21 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
                 label = stringResource(R.string.macro_protein),
                 value = profile.effectiveProtein,
                 color = AppColors.Protein,
-                unitRes = PlanField.PROTEIN.unitRes,
+                unitRes = R.string.unit_g,
                 modifier = Modifier.weight(1f).clickable { editing = PlanField.PROTEIN }
             )
             MacroCard(
                 label = stringResource(R.string.macro_carbs),
                 value = profile.effectiveCarbs,
                 color = AppColors.Carbs,
-                unitRes = PlanField.CARBS.unitRes,
+                unitRes = R.string.unit_g,
                 modifier = Modifier.weight(1f).clickable { editing = PlanField.CARBS }
             )
             MacroCard(
                 label = stringResource(R.string.macro_fat),
                 value = profile.effectiveFat,
                 color = AppColors.Fat,
-                unitRes = PlanField.FAT.unitRes,
+                unitRes = R.string.unit_g,
                 modifier = Modifier.weight(1f).clickable { editing = PlanField.FAT }
             )
         }
@@ -678,8 +682,8 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
                             )
                         }
                         Text(
-                            if (paceCapped) stringResource(R.string.onboarding_pace_capped, profile.dailyCalories)
-                            else stringResource(R.string.onboarding_plan_doctor_message),
+                            if (paceCapped) stringResource(R.string.onboarding_pace_capped, EnergyFormat.quantity(profile.dailyCalories, LocalEnergyUnit.current), energyUnitLabel())
+                            else stringResource(R.string.onboarding_plan_doctor_message, energyText(1200)),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
                         )
@@ -899,11 +903,11 @@ private fun MacroCard(
     }
 }
 
-private enum class PlanField(@get:androidx.annotation.StringRes val titleRes: Int, @get:androidx.annotation.StringRes val unitRes: Int) {
-    CALORIES(R.string.onboarding_plan_field_calories, R.string.unit_kcal),
-    PROTEIN(R.string.onboarding_plan_field_protein, R.string.unit_g),
-    CARBS(R.string.onboarding_plan_field_carbs, R.string.unit_g),
-    FAT(R.string.onboarding_plan_field_fat, R.string.unit_g)
+private enum class PlanField(@get:androidx.annotation.StringRes val titleRes: Int) {
+    CALORIES(R.string.onboarding_plan_field_calories),
+    PROTEIN(R.string.onboarding_plan_field_protein),
+    CARBS(R.string.onboarding_plan_field_carbs),
+    FAT(R.string.onboarding_plan_field_fat)
 }
 
 @Composable
@@ -917,6 +921,7 @@ private fun PlanEditDialog(
 ) {
     // Match the in-app Settings nutrition pickers: range + step per field, scroll
     // to a value, no keyboard. Saves on the picker's currently-selected value.
+    val unit = LocalEnergyUnit.current
     val (min, max, step) = when (field) {
         PlanField.CALORIES -> Triple(calorieFloor, CalorieSafety.PARSER_CEILING_KCAL, 50)
         PlanField.PROTEIN  -> Triple(10, 500, 5)
@@ -937,12 +942,12 @@ private fun PlanEditDialog(
         title = { Text(stringResource(field.titleRes), color = accent) },
         text = {
             NumericWheelPicker(
-                value = picked,
-                onValueChange = { picked = it },
-                min = min,
-                max = max,
-                unit = stringResource(field.unitRes),
-                step = step,
+                value = EnergyFormat.quantity(picked, unit),
+                onValueChange = { picked = EnergyFormat.toKcal(it, unit) },
+                min = EnergyFormat.quantity(min, unit),
+                max = EnergyFormat.quantity(max, unit),
+                unit = if (field == PlanField.CALORIES) energyUnitLabel() else stringResource(R.string.unit_g),
+                step = EnergyFormat.wheelStep(step, unit),
                 modifier = Modifier.fillMaxWidth()
             )
         },

@@ -70,6 +70,9 @@ import app.chompass.R
 import app.chompass.models.QueuedAnalysis
 import app.chompass.models.QueueStatus
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.models.EnergyFormat
+import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.FudGlassTextField
@@ -440,7 +443,8 @@ private fun HistoryEntryRow(
                         stringResource(
                             R.string.analysis_queue_result,
                             queueTimeCaption(item, stringResource(R.string.analysis_queue_on_day)),
-                            result.calories,
+                            EnergyFormat.quantity(result.calories, LocalEnergyUnit.current),
+                            energyUnitLabel(),
                         ),
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),

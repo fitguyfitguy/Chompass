@@ -36,7 +36,8 @@ import { ANALYSIS_PHASE, isAbortError } from "../lib/ai/analysis-phase.js";
 // imported dynamically in onCorrectWithAi — the demo hero's review sheet
 // never triggers it. See demo/demo-main.js.
 import { progressiveCardHtml } from "../lib/ui/analyze-overlay.js";
-import { t } from "../lib/i18n/index.js";
+import { t, formatNumber } from "../lib/i18n/index.js";
+import { energyQuantity, energyToKcal, energyUnitFromPrefs, energyUnitLabel } from "../lib/energy-format.js";
 
 function culinaryUnitLabels() {
   return {
@@ -304,6 +305,7 @@ export class EntryForm extends HTMLElement {
       this.existing = (await listFavorites()).find((f) => f.id === this.favoriteId) ?? null;
     }
     const appPrefs = await prefs.load();
+    this._appPrefs = appPrefs;
     const e = this.existing ?? this.prefill ?? {};
     if (!this.servingReady) this.initServingState(e);
 
@@ -339,6 +341,8 @@ export class EntryForm extends HTMLElement {
     const packageLabel = t("unit.package");
     const packagePluralLabel = t("unit.package_plural");
     const offMeta = e.productMetadata ?? null;
+    const energyUnit = energyUnitFromPrefs(appPrefs);
+    const caloriesDisplay = energyQuantity(Math.round(Number(scaled.calories ?? 0)), energyUnit);
 
     const numVal = (v, step = false) => {
       if (v == null || v === "") return "";
@@ -431,8 +435,8 @@ export class EntryForm extends HTMLElement {
           </div>
           <div class="field-row">
             <div class="field">
-              <label for="calories">${escapeHtml(t("diary.calories"))}</label>
-              <input id="calories" name="calories" type="number" min="0" required value="${numVal(scaled.calories)}" ${lockAttr} data-nutrition />
+              <label for="calories">${escapeHtml(t("diary.calories"))} (${escapeHtml(energyUnitLabel(energyUnit))})</label>
+              <input id="calories" name="calories" type="number" min="0" required value="${numVal(caloriesDisplay)}" ${lockAttr} data-nutrition />
             </div>
             <div class="field">
               <label for="proteinG">${escapeHtml(t("day_types.protein_g"))}</label>
@@ -584,7 +588,8 @@ export class EntryForm extends HTMLElement {
    * @param {import('../lib/db.js').OptionalNutrientGoals|null|undefined} optionalGoals
    */
   renderConstituentRow(row, index, optionalGoals) {
-    const ensured = ensureServingUnits({
+    const unit = energyUnitFromPrefs(this._appPrefs);
+    const ensured = ensureConstituentServingState(row, {
       name: row.name || t("entry.constituents.item_fallback"),
       quantityG: row.servingSizeGrams,
       servingUnitOptions: row.servingUnitOptions,
@@ -660,7 +665,8 @@ export class EntryForm extends HTMLElement {
         <p class="entry-constituent-card__macros" data-constituent-macros>
           ${escapeHtml(
             t("entry.constituents.macros", {
-              calories: Math.round(row.calories),
+              calories: formatNumber(energyQuantity(Math.round(row.calories), unit)),
+              unit: energyUnitLabel(unit),
               protein: formatQuantity(row.proteinG),
               carbs: formatQuantity(row.carbsG),
               fat: formatQuantity(row.fatG),
@@ -1069,14 +1075,15 @@ export class EntryForm extends HTMLElement {
     const displayed = Number(raw);
     if (!Number.isFinite(displayed)) return;
     if (key === "calories") {
-      this.baseNutrition.calories = Math.round(displayed / scale);
+      const unit = energyUnitFromPrefs(this._appPrefs);
+      this.baseNutrition.calories = Math.round(energyToKcal(displayed, unit) / scale);
     } else {
       this.baseNutrition[key] = displayed / scale;
     }
   }
 
   applyScaleToNutritionFields() {
-    if (!this.baseNutrition) return;
+    const unit = energyUnitFromPrefs(this._appPrefs);
     const scale = this.currentScale();
     const scaled = scaleNutrition(this.baseNutrition, scale);
     const grams = this.currentServingGrams();
@@ -1094,7 +1101,11 @@ export class EntryForm extends HTMLElement {
       }
       el.value = asInt ? String(Math.round(Number(value))) : formatQuantity(Number(value));
     };
-    setVal("calories", scaled.calories, true);
+    setVal(
+      "calories",
+      scaled.calories == null ? null : energyQuantity(Math.round(Number(scaled.calories)), unit),
+      true,
+    );
     setVal("proteinG", scaled.proteinG);
     setVal("carbsG", scaled.carbsG);
     setVal("fatG", scaled.fatG);
@@ -1111,7 +1122,8 @@ export class EntryForm extends HTMLElement {
       const macros = card.querySelector("[data-constituent-macros]");
       if (macros) {
         macros.textContent = t("entry.constituents.macros", {
-          calories: Math.round(row.calories),
+          calories: formatNumber(energyQuantity(Math.round(row.calories), unit)),
+          unit: energyUnitLabel(unit),
           protein: formatQuantity(row.proteinG),
           carbs: formatQuantity(row.carbsG),
           fat: formatQuantity(row.fatG),

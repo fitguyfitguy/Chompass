@@ -85,9 +85,18 @@ data class WidgetSnapshot(
      * snapshots written by older builds → widgets follow the system dark mode.
      */
     val appearanceMode: String? = null,
+    /**
+     * Display-only energy unit ("kcal" | "kJ") the widgets render with. The
+     * default keeps decoding of snapshots written before the kJ toggle.
+     * Stored kcal values are never converted in the payload — only at render.
+     */
+    val energyUnit: String = "kcal",
 ) {
     val resolvedCalorieMode: HomeCalorieDisplayMode
         get() = HomeCalorieDisplayMode.fromStorage(calorieDisplayMode)
+
+    val resolvedEnergyUnit: EnergyUnit
+        get() = EnergyUnit.fromStorage(energyUnit)
 
     private val resolvedBurn: ResolvedActiveBurn?
         get() {

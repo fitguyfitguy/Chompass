@@ -54,7 +54,7 @@ import app.chompass.models.ProgressiveMealItem
 import app.chompass.models.ServingUnitOption
 import app.chompass.services.ai.FoodAnalysis
 import app.chompass.ui.components.MacroChip
-import app.chompass.ui.components.kcalText
+import app.chompass.ui.components.energyText
 import app.chompass.ui.components.gramsText
 import app.chompass.ui.components.culinaryUnitLabels
 import app.chompass.ui.components.isDarkTheme
@@ -299,7 +299,7 @@ private fun ProgressiveMealContentList(
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                     )
                     Text(
-                        kcalText(draft.totalCalories),
+                        energyText(draft.totalCalories),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = AppColors.Calorie,
@@ -427,7 +427,7 @@ private fun ProgressiveIngredientRow(
                 )
             } ?: gramsText((analysis.servingSizeGrams ?: 0.0).roundToIntSafe().toDouble())
             Text(
-                "${kcalText(analysis.calories)} · $servingText",
+                "${energyText(analysis.calories)} · $servingText",
                 fontSize = 13.sp,
                 color = AppColors.Calorie,
             )

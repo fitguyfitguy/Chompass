@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.ActivityLevel
 import app.chompass.models.DietMode
+import app.chompass.models.EnergyFormat
 import app.chompass.models.KetoCarbMode
 import app.chompass.models.LocaleFormat
 import app.chompass.models.WeightGoal
@@ -51,6 +52,8 @@ import app.chompass.services.KetoCarbRecommendationService
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.components.UnitToggle
+import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.theme.AppColors
 import app.chompass.models.UnitFormat
 import app.chompass.ui.theme.AppRadii
@@ -348,7 +351,7 @@ internal fun GoalSpeedStep(
                     Text(
                         when {
                             paceCappedTarget != null ->
-                                stringResource(R.string.onboarding_pace_capped, paceCappedTarget)
+                                stringResource(R.string.onboarding_pace_capped, EnergyFormat.quantity(paceCappedTarget, LocalEnergyUnit.current), energyUnitLabel())
                             idx == 0 -> stringResource(R.string.onboarding_pace_caption_slow)
                             idx == 2 -> stringResource(R.string.onboarding_pace_caption_fast)
                             else -> stringResource(R.string.onboarding_pace_caption_recommended)

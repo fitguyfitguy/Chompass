@@ -62,14 +62,14 @@ object GroundingValidator {
         checkPer100("Fat", fatPer100g, 100.0)
 
         // kJ-as-kcal only when P, C, and F are all present. A missing key is not 0:
-        // Atwater from P+F alone can land in the 3.5..5.0 band and falsely divide kcal by 4.184.
+        // Atwater from P+F alone can land in the 3.5..5.0 band and falsely divide kcal by EnergyFormat.KJ_PER_KCAL.
         if (protein != null && carbs != null && fat != null) {
             val atwater = atwaterKcal(protein, carbs, fat)
             if (calories > 0 && atwater > 0) {
                 val ratio = calories / atwater
-                // Classic kcal listed as kJ (~×4.184) — offer a correction hint.
+                // Classic kcal listed as kJ (~×EnergyFormat.KJ_PER_KCAL) — offer a correction hint.
                 if (ratio in 3.5..5.0) {
-                    val fixed = (calories / 4.184).roundToInt()
+                    val fixed = (calories / EnergyFormat.KJ_PER_KCAL).roundToInt()
                     notes += "Calories look like kilojoules (reported $calories vs Atwater ${atwater.roundToInt()} kcal)."
                     correctedCalories = fixed
                 } else if (abs(calories - atwater) / maxOf(atwater, 1.0) > 0.35 && servingGrams >= 5) {

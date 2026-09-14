@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.DayTargets
+import app.chompass.models.EnergyFormat
 import app.chompass.models.LocaleFormat
 import app.chompass.models.MacroDayProfile
 import app.chompass.ui.components.ChompassBottomSheet
@@ -45,6 +46,8 @@ import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.NumericWheelPicker
+import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
@@ -104,10 +107,11 @@ internal fun DayTypePickerSheet(
                     label = p.name,
                     subtitle = stringResource(
                         R.string.day_type_targets_summary,
-                        LocaleFormat.integer(p.calories),
+                        LocaleFormat.integer(EnergyFormat.quantity(p.calories, LocalEnergyUnit.current)),
                         p.proteinG,
                         p.carbsG,
                         p.fatG,
+                        energyUnitLabel(),
                     ),
                     selected = p.id == selectedId,
                     onClick = { onSelect(p) },
@@ -233,20 +237,20 @@ internal fun DayTypeProfileEditorSheet(
                 )
             }
             Spacer(Modifier.height(12.dp))
-            EditorWheelLabel(stringResource(R.string.macro_calories), unit = stringResource(R.string.unit_kcal))
+            val unit = LocalEnergyUnit.current
+            EditorWheelLabel(stringResource(R.string.macro_calories), unit = energyUnitLabel())
             NumericWheelPicker(
-                value = calories,
-                onValueChange = { calories = it },
-                min = calorieFloor,
-                max = calorieCeiling,
-                unit = stringResource(R.string.unit_kcal),
-                step = 50,
+                value = EnergyFormat.quantity(calories, unit),
+                onValueChange = { calories = EnergyFormat.toKcal(it, unit) },
+                min = EnergyFormat.quantity(calorieFloor, unit),
+                max = EnergyFormat.quantity(calorieCeiling, unit),
+                unit = energyUnitLabel(),
+                step = EnergyFormat.wheelStep(50, unit),
             )
             if (calories <= calorieFloor) {
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    stringResource(R.string.settings_day_types_floor_warning, calorieFloor),
-                    style = MaterialTheme.typography.bodySmall,
+                    stringResource(R.string.settings_day_types_floor_warning, EnergyFormat.quantity(calorieFloor, unit), energyUnitLabel()),
                     color = AppColors.Calorie,
                 )
             }

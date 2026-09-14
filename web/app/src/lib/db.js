@@ -424,6 +424,7 @@ export const profile = {
  * @property {string} [accent]
  * @property {"kg"|"lb"} [weightUnit]
  * @property {"cm"|"in"} [heightUnit]
+ * @property {"kcal"|"kj"} [energyUnit] Display-only energy unit (Codeberg #100); storage stays kcal, never synced
  * @property {boolean} [showWater]
  * @property {boolean} [showNicotine]
  * @property {number} [nicotineDailyLimit]
@@ -485,6 +486,7 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   accent: "system",
   weightUnit: "kg",
   heightUnit: "cm",
+  energyUnit: "kcal",
   showWater: ANDROID_PREF_DEFAULTS.showWater,
   showNicotine: ANDROID_PREF_DEFAULTS.showNicotine,
   nicotineDailyLimit: ANDROID_PREF_DEFAULTS.nicotineDailyLimit,

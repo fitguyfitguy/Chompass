@@ -144,6 +144,7 @@ internal object Keys {
         val USE_METRIC = booleanPreferencesKey("useMetric")
         val HEIGHT_UNIT = stringPreferencesKey("heightUnit")
         val WEIGHT_UNIT = stringPreferencesKey("weightUnit")
+        val ENERGY_UNIT = stringPreferencesKey("energyUnit")
         val PREFER_GRAMS_BY_DEFAULT = booleanPreferencesKey("foodMeasurementPreferGramsByDefault")
         val APPEARANCE_MODE = stringPreferencesKey("appearanceMode")
         val APP_LANGUAGE = stringPreferencesKey("appLanguage")

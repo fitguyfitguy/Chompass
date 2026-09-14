@@ -5,6 +5,8 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.ActiveCalorieSource
 import app.chompass.models.DietMode
+import app.chompass.models.EnergyFormat
+import app.chompass.models.EnergyUnit
 import app.chompass.models.MacroPlanResolver
 import app.chompass.models.UserProfile
 import app.chompass.models.WidgetSnapshot
@@ -61,6 +63,7 @@ internal suspend fun buildDailySummaryNotification(
         carbsTotal.roundToInt()
     }
     val goalKcal = summaryGoalKcal(widgetForDay, profile, day)
+    val energyUnit = container.prefs.energyUnit.first()
 
     val input = DailySummaryInput(
         eatenKcal = entries.sumOf { it.calories },
@@ -82,6 +85,7 @@ internal suspend fun buildDailySummaryNotification(
         fallbackText,
         goalKcal = goalKcal,
         carbsAreNet = keto,
+        energyUnit = energyUnit,
     )
 }
 
@@ -105,6 +109,7 @@ internal fun formatDailySummary(
     fallbackText: String,
     goalKcal: Int = 0,
     carbsAreNet: Boolean = false,
+    energyUnit: String = "kcal",
 ): DailySummaryNotification? {
     when (result.verdict) {
         DailySummaryVerdict.SKIP -> return null
@@ -116,19 +121,22 @@ internal fun formatDailySummary(
         else -> Unit
     }
     val nf = NumberFormat.getIntegerInstance()
+    val unit = EnergyUnit.fromStorage(energyUnit)
+    val unitLabel = context.getString(if (unit == EnergyUnit.KJ) R.string.unit_kj else R.string.unit_kcal)
+    fun q(v: Int): Int = EnergyFormat.quantity(v, unit)
     val title = when (result.verdict) {
         DailySummaryVerdict.DEFICIT ->
-            context.getString(R.string.notif_summary_deficit, nf.format(result.delta))
+            context.getString(R.string.notif_summary_deficit, nf.format(q(result.delta)), unitLabel)
         DailySummaryVerdict.SURPLUS ->
-            context.getString(R.string.notif_summary_surplus, nf.format(abs(result.delta)))
+            context.getString(R.string.notif_summary_surplus, nf.format(q(abs(result.delta))), unitLabel)
         DailySummaryVerdict.ON_TARGET ->
             context.getString(R.string.notif_summary_on_target)
         else -> fallbackTitle
     }
     val text = context.getString(
         R.string.notif_summary_eaten_burned,
-        nf.format(result.eaten),
-        nf.format(result.burned),
+        nf.format(q(result.eaten)),
+        nf.format(q(result.burned)),
     )
     val macros = context.getString(
         if (carbsAreNet) R.string.notif_summary_macros_net else R.string.notif_summary_macros,
@@ -143,8 +151,8 @@ internal fun formatDailySummary(
             append(
                 context.getString(
                     R.string.notif_summary_of_goal,
-                    nf.format(result.eaten),
-                    nf.format(goalKcal),
+                    nf.format(q(result.eaten)),
+                    nf.format(q(goalKcal)),
                 ),
             )
         }

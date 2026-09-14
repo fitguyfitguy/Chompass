@@ -32,6 +32,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.energyText
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
@@ -200,7 +201,7 @@ fun NutritionPickerSheet(
         AlertDialog(
             onDismissRequest = { pendingConfirm = false },
             title = { Text(confirmBelowTitle ?: stringResource(R.string.settings_calorie_below_floor_title)) },
-            text = { Text(confirmBelowMessage ?: stringResource(R.string.settings_calorie_below_floor_message)) },
+            text = { Text(confirmBelowMessage ?: stringResource(R.string.settings_calorie_below_floor_message, energyText(1200))) },
             confirmButton = {
                 TextButton(onClick = { pendingConfirm = false; onSave(saveValue) }) {
                     Text(stringResource(R.string.settings_calorie_below_floor_continue))

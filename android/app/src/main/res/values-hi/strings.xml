@@ -10,7 +10,7 @@
     <string name="widget_calories">कैलोरी</string>
     <string name="widget_carbs">कार्ब्स</string>
     <string name="widget_fat">फैट</string>
-    <string name="widget_kcal_left_format">%1$d kcal शेष</string>
+    <string name="widget_kcal_left_format">%1$d %2$s शेष</string>
     <string name="widget_g_left_format">%1$dg शेष</string>
     <string name="widget_protein_g">प्रोटीन g</string>
 
@@ -180,7 +180,7 @@
     <string name="onboarding_pace_caption_slow">सौम्य और टिकाऊ। दीर्घकालिक आदतों के लिए बढ़िया।</string>
     <string name="onboarding_pace_caption_fast">तीव्र लेकिन संभव। मज़बूत अनुशासन की ज़रूरत है।</string>
     <string name="onboarding_pace_caption_recommended">सबसे संतुलित गति, प्रेरक और टिकाऊ।</string>
-    <string name="onboarding_pace_capped">यह गति आपके शरीर के लिए अनुमानित आराम चयापचय से नीचे जाए बिना संभव नहीं है। आपका लक्ष्य %1$d किलो कैलोरी होगा।</string>
+    <string name="onboarding_pace_capped">यह गति आपके शरीर के लिए अनुमानित आराम चयापचय से नीचे जाए बिना संभव नहीं है। आपका लक्ष्य %1$d किलो कैलोरी होगा। %2$s</string>
 
     <string name="onboarding_notifications_title">भोजन लॉग करने के\nलिए याद दिलाया जाए</string>
     <string name="onboarding_notifications_subtitle">भोजन के समय हल्की याद दिलावटें पाएँ\nताकि आप ट्रैक करना न भूलें।</string>
@@ -225,7 +225,7 @@
     <string name="onboarding_plan_subtitle">संपादित करने के लिए किसी भी मान पर टैप करें</string>
     <string name="onboarding_plan_daily_calories">दैनिक कैलोरी</string>
     <string name="onboarding_plan_doctor_title">कृपया डॉक्टर से सलाह लें</string>
-    <string name="onboarding_plan_doctor_message">न्यूनतम अनुशंसा प्रतिदिन 1,200 कैलोरी है।</string>
+    <string name="onboarding_plan_doctor_message">न्यूनतम अनुशंसा प्रतिदिन %1$sकैलोरी है।</string>
     <string name="onboarding_minor_title">केवल वयस्कों के लिए फ़ॉर्मूले</string>
     <string name="onboarding_minor_message">यह ऐप वयस्कों के लिए कैलोरी फ़ॉर्मूले का उपयोग करता है। यदि आप 18 वर्ष से कम हैं, तो इन लक्ष्यों का उपयोग करने से पहले किसी स्वास्थ्य विशेषज्ञ से पूछें।</string>
     <string name="onboarding_minor_continue">मैं समझ गया</string>
@@ -268,7 +268,7 @@
     <string name="add_food_add_photo">फ़ोटो जोड़ें</string>
     <string name="progressive_meal_add_next">अगला घटक जोड़ें</string>
     <string name="text_input_title">अपना भोजन बताएं</string>
-    <string name="home_kcal_of_format">%1$s kcal में से</string>
+    <string name="home_kcal_of_format">%1$s %2$s में से</string>
     <string name="home_kcal_left_format">%1$s शेष</string>
     <string name="home_view_more">और देखें</string>
     <string name="home_todays_food">आज का भोजन</string>
@@ -425,7 +425,7 @@
     <string name="progress_history_count_format">%1$d प्रविष्टियाँ · देखने या हटाने के लिए टैप करें</string>
 
     <string name="progress_calories_section">कैलोरी</string>
-    <string name="progress_avg_format">औसत: %1$d kcal</string>
+    <string name="progress_avg_format">औसत: %1$d %2$s</string>
     <string name="progress_no_food">अभी तक कोई भोजन लॉग नहीं किया गया</string>
 
     <string name="progress_macro_averages">मैक्रो औसत</string>
@@ -585,8 +585,8 @@
     <string name="notif_streak_text">अपनी स्ट्रीक जारी रखें। आज का कुछ लॉग करें।</string>
     <string name="notif_summary_title">आज का सारांश तैयार है</string>
     <string name="notif_summary_text">देखने के लिए टैप करें कि आज के मैक्रो कैसे रहे।</string>
-    <string name="notif_summary_deficit">%1$s किलोकलरी घाटा</string>
-    <string name="notif_summary_surplus">%1$s किलोकलरी अधिशेष</string>
+    <string name="notif_summary_deficit">%1$s किलोकलरी घाटा %2$s</string>
+    <string name="notif_summary_surplus">%1$s किलोकलरी अधिशेष %2$s</string>
     <string name="notif_summary_on_target">संतुलित</string>
     <string name="notif_summary_eaten_burned">खाया %1$s · जलाया %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
@@ -672,7 +672,7 @@
     <string name="manual_active_name_hint">गतिविधि का नाम (वैकल्पिक)</string>
     <string name="manual_active_save">बजट में जोड़ें</string>
     <string name="manual_active_edit_title">सक्रिय बर्न संपादित करें</string>
-    <string name="manual_active_history_total">%1$s · %2$d kcal</string>
+    <string name="manual_active_history_total">%1$s · %2$d %3$s</string>
     <string name="cd_delete_manual_active">सक्रिय बर्न हटाएँ</string>
     <string name="manual_active_subtitle">चलने, सवारी या वर्कआउट से जली कैलोरी जोड़ें। "सक्रिय बर्न बजट में जोड़ें" चालू होने पर ये आज का बजट बढ़ाती हैं।</string>
     <string name="manual_active_title">सक्रिय बर्न लॉग करें</string>
@@ -756,7 +756,7 @@
     <string name="analysis_queue_day_back">पिछला दिन</string>
     <string name="analysis_queue_day_forward">अगला दिन</string>
     <string name="analysis_queue_failed">असफल</string>
-    <string name="analysis_queue_result">%1$s · %2$d किलोकैलोरी</string>
+    <string name="analysis_queue_result">%1$s · %2$d किलोकैलोरी %3$s</string>
     <string name="analysis_queue_just_now">अभी-अभी</string>
     <string name="analysis_queue_minutes_ago">%1$d मिनट पहले</string>
     <string name="analysis_queue_hours_ago">%1$d घंटे पहले</string>
@@ -766,7 +766,7 @@
     <string name="action_show">दिखाएं</string>
     <string name="action_undo">पूर्ववत</string>
     <string name="action_what_if">क्या होगा अगर?</string>
-    <string name="add_food_relog_kcal">%1$d kcal</string>
+    <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="ai_error_coach_on_device">कोच अभी ऑन-डिवाइस प्रदाता के साथ उपलब्ध नहीं है। सेटिंग्स → AI प्रदाता में क्लाउड प्रदाता पर स्विच करें।</string>
     <string name="ai_error_coach_round_limit">कोच जवाब नहीं दे सका। अपना प्रश्न दोबारा लिखकर देखें।</string>
     <string name="ai_error_disabled">AI सुविधाएं सेटिंग्स → AI और भाषण में बंद हैं।</string>
@@ -940,7 +940,7 @@
     <string name="grounded_on_device_unavailable">आधारित प्रविष्टि के लिए क्लाउड AI प्रदाता चाहिए। ऑन-डिवाइस मॉडल फोटो/नोट का उपयोग करते हैं।</string>
     <string name="grounded_review_continue">समीक्षा पर जारी रखें</string>
     <string name="grounded_review_grams">ग्राम</string>
-    <string name="grounded_review_per_100g">%1$d किलो कैलोरी / 100 ग्राम</string>
+    <string name="grounded_review_per_100g">%1$d किलो कैलोरी / 100 ग्राम %2$s</string>
     <string name="grounded_review_subtitle">लॉग करने से पहले प्रत्येक खाद्य पदार्थ के लिए सर्वश्रेष्ठ डेटाबेस मैच और सर्विंग चुनें।</string>
     <string name="grounded_review_title">मैच पुष्टि करें</string>
     <string name="grounded_review_unit">इकाई</string>
@@ -966,17 +966,17 @@
     <string name="home_active_burn_over_a11y">सक्रिय खर्च %1$d, सामान्य दिन से %2$d अधिक</string>
     <string name="home_active_burn_progress_a11y">सक्रिय खर्च %1$d, सामान्य %2$d</string>
     <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
-    <string name="home_active_calories_label">सक्रिय किलो कैलोरी</string>
-    <string name="home_budget_burned_today">आज खर्च: %1$d kcal</string>
+    <string name="home_active_calories_label">सक्रिय किलो कैलोरी %1$s</string>
+    <string name="home_budget_burned_today">आज खर्च: %1$d %2$s</string>
     <string name="home_calorie_active_estimated_a11y">सक्रिय कैलोरी आपके गतिविधि स्तर से अनुमानित</string>
-    <string name="home_calorie_budget_a11y">बजट %1$d: लक्ष्य %2$d और %3$d सक्रिय खर्च</string>
+    <string name="home_calorie_budget_a11y">बजट %1$d %4$s: लक्ष्य %2$d %4$s और %3$d %4$s सक्रिय खर्च</string>
     <string name="home_calorie_budget_info">आज का बजट कैसे परिकलित होता है</string>
     <string name="home_calorie_budget_sheet_title">आज का कैलोरी बजट</string>
     <string name="home_calorie_budget_source_manual">आपके द्वारा मैन्युअल रूप से लॉग की गई कैलोरी</string>
     <string name="home_calorie_budget_source_measured">Health Connect से सक्रिय कैलोरी</string>
-    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d %4$s (14-day average is %3$d %4$s).</string>
     <string name="home_calorie_mode_static">स्थिर लक्ष्य</string>
-    <string name="home_calorie_of_goal">%1$s में से</string>
+    <string name="home_calorie_of_goal">%1$s में से %2$s</string>
     <string name="home_calories_active_burn">%1$d सक्रिय खर्च</string>
     <string name="home_calories_goal_plus_active">लक्ष्य %1$s + %2$s सक्रिय</string>
     <string name="home_calories_label">कैलोरी</string>
@@ -1016,7 +1016,7 @@
     <string name="note_char_count">%1$d / %2$d</string>
 
     <string name="import_add_to_log">लॉग में जोड़ें</string>
-    <string name="import_add_to_log_many_format">%1$d लॉग में जोड़ें · %2$d kcal</string>
+    <string name="import_add_to_log_many_format">%1$d लॉग में जोड़ें · %2$d %3$s</string>
     <string name="import_body_metrics_empty">इस फ़ाइल में आयात करने के लिए कोई वज़न या शरीर डेटा प्रविष्टि नहीं है।</string>
     <string name="import_body_metrics_malformed">फ़ाइल पढ़ी नहीं जा सकी: %1$s</string>
     <string name="import_body_metrics_success">%1$d वज़न, %2$d वसा और %3$d माप प्रविष्टियां आयात हुईं।</string>
@@ -1386,7 +1386,7 @@
     <string name="settings_picker_custom_placeholder">%1$s में मान</string>
     <string name="settings_picker_enter_custom">कस्टम मान दर्ज करें…</string>
     <string name="settings_calorie_below_floor_title">सुरक्षित सीमा से नीचे</string>
-    <string name="settings_calorie_below_floor_message">यह आपके अनुमानित आराम चयापचय या 1,200 किलो कैलोरी से कम है। केवल तभी जारी रखें जब किसी स्वास्थ्य विशेषज्ञ ने इसे निर्धारित किया हो।</string>
+    <string name="settings_calorie_below_floor_message">यह आपके अनुमानित आराम चयापचय या %1$sकिलो कैलोरी से कम है। केवल तभी जारी रखें जब किसी स्वास्थ्य विशेषज्ञ ने इसे निर्धारित किया हो।</string>
     <string name="settings_calorie_below_floor_continue">फिर भी जारी रखें</string>
     <string name="settings_picker_use_wheel">व्हील उपयोग करें</string>
     <string name="settings_picker_vitd_iu_hint">%1$d एमसीजी ≈ %2$d IU</string>
@@ -1597,7 +1597,7 @@
     <string name="unit_tbsp">बड़ा चम्मच</string>
     <string name="unit_tsp">छोटा चम्मच</string>
     <string name="vm_adaptive_on_message">अनुकूली लक्ष्य चालू हैं। पर्याप्त भोजन और वज़न डेटा होने पर Chompass सप्ताह में एक बार जांचेगा।</string>
-    <string name="vm_adaptive_updated">आपके नवीनतम डेटा से %1$d किलो कैलोरी पर अपडेट हुआ।</string>
+    <string name="vm_adaptive_updated">आपके नवीनतम डेटा से %1$d किलो कैलोरी पर अपडेट हुआ। %2$s</string>
     <string name="vm_goals_recalculated">लक्ष्य पुनर्गणित</string>
         <string name="recalc_sheet_new_targets">नए लक्ष्य</string>
         <string name="recalc_sheet_macros_format">P %1$d · C %2$d · F %3$d</string>
@@ -1609,26 +1609,26 @@
         <string name="recalc_sheet_tier_measured">आपके मापे गए Health Connect बर्न से जुड़ा</string>
         <string name="recalc_sheet_tier_formula">अंतर्निहित फ़ॉर्मूले</string>
         <string name="recalc_sheet_formula_baseline">फ़ॉर्मूला आधार</string>
-        <string name="recalc_sheet_bmr_row">BMR (आराम में बर्न): %1$s kcal</string>
-        <string name="recalc_sheet_tdee_row">रखरखाव × गतिविधि %1$s: %2$s kcal</string>
-        <string name="recalc_sheet_pace_row">लक्ष्य गति: %1$s kcal/दिन</string>
-        <string name="recalc_sheet_formula_target_row">फ़ॉर्मूला लक्ष्य: %1$s kcal</string>
-        <string name="recalc_sheet_measured_row">मापा गया Health Connect बर्न: %1$s kcal</string>
-    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
+        <string name="recalc_sheet_bmr_row">BMR (आराम में बर्न): %1$s %2$s</string>
+        <string name="recalc_sheet_tdee_row">रखरखाव × गतिविधि %1$s: %2$s %3$s</string>
+        <string name="recalc_sheet_pace_row">लक्ष्य गति: %1$s %2$s/दिन</string>
+        <string name="recalc_sheet_formula_target_row">फ़ॉर्मूला लक्ष्य: %1$s %2$s</string>
+        <string name="recalc_sheet_measured_row">मापा गया Health Connect बर्न: %1$s %2$s</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d %4$s active (%3$d of last 28 days)</string>
         <string name="recalc_sheet_data_used">इस्तेमाल किया गया डेटा</string>
         <string name="recalc_sheet_data_weighins">%2$d दिनों में %1$d वज़न माप</string>
         <string name="recalc_sheet_data_no_weighins">अभी कोई वज़न माप दर्ज नहीं</string>
-        <string name="recalc_sheet_data_intake">औसत दर्ज किया गया सेवन: %2$d दर्ज दिनों में %1$s kcal</string>
+        <string name="recalc_sheet_data_intake">औसत दर्ज किया गया सेवन: %2$d दर्ज दिनों में %1$s %3$s</string>
         <string name="recalc_sheet_data_no_intake">अभी कोई भोजन दर्ज नहीं</string>
-        <string name="recalc_sheet_data_implied">अनुमानित रखरखाव: ~%1$s kcal</string>
+        <string name="recalc_sheet_data_implied">अनुमानित रखरखाव: ~%1$s %2$s</string>
         <string name="recalc_sheet_data_implied_thin">अनुमानित रखरखाव: गणना नहीं — बहुत कम डेटा</string>
         <string name="recalc_sheet_data_implied_below_floor">अनुमानित रखरखाव: सुरक्षा सीमा से नीचे, अनदेखा</string>
         <string name="recalc_sheet_data_implied_disagree">अनुमानित रखरखाव: छिपाया गया — लॉग और वज़न रुझान अलग हैं</string>
         <string name="recalc_sheet_change">बदलाव</string>
-        <string name="recalc_sheet_previous">पहले: %1$s kcal</string>
-        <string name="recalc_sheet_new_with_delta">अब: %1$s kcal (%2$s)</string>
+        <string name="recalc_sheet_previous">पहले: %1$s %2$s</string>
+        <string name="recalc_sheet_new_with_delta">अब: %1$s %3$s (%2$s)</string>
         <string name="recalc_sheet_reason">क्यों</string>
-    <string name="vm_goals_updated">%1$d किलो कैलोरी पर अपडेट हुआ।</string>
+    <string name="vm_goals_updated">%1$d किलो कैलोरी पर अपडेट हुआ। %2$s</string>
     <string name="vm_health_connect_needed">Health Connect आवश्यक</string>
     <string name="vm_health_connect_needed_msg">Chompass को Health Connect में आपकी सक्रिय और कुल कैलोरी पढ़ने दें, फिर ऊर्जा व्यय फिर चालू करें।</string>
     <string name="vm_not_enough_energy">पर्याप्त ऊर्जा डेटा नहीं</string>
@@ -1706,7 +1706,7 @@
     <string name="height_cm_format">%1$d cm</string>
     <string name="home_macro_chip_format">%1$s %2$dg</string>
     <string name="in_label_format">%1$d in</string>
-    <string name="kcal_value_format">%1$s kcal</string>
+    <string name="energy_value_format">%1$s %2$s</string>
     <string name="keto_carb_grams_format">%1$d g/day</string>
     <string name="kg_value_format">%1$.1f kg</string>
     <string name="lbs_value_format">%1$.1f lbs</string>
@@ -1732,6 +1732,7 @@
     <string name="unit_g">g</string>
     <string name="unit_in">in</string>
     <string name="unit_kcal">kcal</string>
+    <string name="unit_kj">kJ</string>
     <string name="unit_kg">kg</string>
     <string name="unit_lbs">lbs</string>
     <string name="unit_mcg">mcg</string>
@@ -1811,6 +1812,7 @@
     <string name="settings_group_trackers">ट्रैकर और रिमाइंडर</string>
     <string name="settings_group_trackers_summary">पानी, निकोटीन, कैफीन, उपवास, रिमाइंडर</string>
     <string name="settings_units">इकाइयाँ</string>
+    <string name="settings_energy_unit">ऊर्जा</string>
     <string name="settings_search_hint">सेटिंग में खोजें</string>
     <string name="settings_search_empty">कोई सेटिंग नहीं मिली। \"kg\", \"kcal\" या \"ml\" आज़माएँ।</string>
     <string name="prompt_history_button">प्रॉम्प्ट इतिहास</string>
@@ -1922,9 +1924,9 @@
     <string name="day_type_clear_override">आज का ओवरराइड हटाएँ</string>
     <string name="day_type_edit_settings">दिन-प्रकार संपादित करें</string>
     <string name="day_type_plan_off_hint">दिन-प्रकार बंद हैं। अलग-अलग दिनों पर अलग लक्ष्यों के लिए उन्हें सेटिंग में चालू करें।</string>
-    <string name="day_type_targets_summary">%1$s kcal · %2$dP %3$dC %4$dF</string>
-    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
-    <string name="day_type_tomorrow">कल: %1$s · %2$s kcal</string>
+    <string name="day_type_targets_summary">%1$s %5$s · %2$dP %3$dC %4$dF</string>
+    <string name="day_type_active_typical">≈ %1$d %2$s active typical</string>
+    <string name="day_type_tomorrow">कल: %1$s · %2$s %3$s</string>
     <string name="settings_day_types_title">दिन-प्रकार</string>
     <string name="settings_day_types_intro">अलग-अलग दिनों पर अलग कैलोरी और मैक्रो लक्ष्य इस्तेमाल करें, जैसे ट्रेनिंग और आराम के दिन।</string>
     <string name="settings_day_types_add">दिन-प्रकार जोड़ें</string>
@@ -1935,7 +1937,7 @@
     <string name="settings_day_types_delete_scrub">शेड्यूल से हटाएँ</string>
     <string name="settings_day_types_delete_used_message">यह आपके शेड्यूल में इस्तेमाल हो रहा है। चुनें कि उन दिनों का क्या होगा।</string>
     <string name="settings_day_types_delete_used_title">\"%1$s\" मिटाएँ?</string>
-    <string name="settings_day_types_floor_warning">यह लक्ष्य आपकी कैलोरी न्यूनतम सीमा (%1$d kcal) पर है। दिन-प्रकार के लिए बहुत कठोर।</string>
+    <string name="settings_day_types_floor_warning">यह लक्ष्य आपकी कैलोरी न्यूनतम सीमा (%1$d %2$s) पर है। दिन-प्रकार के लिए बहुत कठोर।</string>
     <string name="settings_day_types_follow_schedule">शेड्यूल का पालन करें</string>
     <string name="settings_day_types_keto_paused">कीटो मोड में दिन-प्रकार रुके हुए हैं</string>
     <string name="settings_day_types_mode_cycle">साइकल</string>
@@ -1964,11 +1966,11 @@
     <string name="settings_day_types_summary_format">%1$d प्रकार · %2$s</string>
     <string name="settings_day_types_weekday_default">डिफ़ॉल्ट (%1$s)</string>
     <string name="recalc_sheet_day_types">दिन-प्रकार</string>
-    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s kcal</string>
-    <string name="recalc_sheet_daytype_value">%1$s: %2$s kcal</string>
+    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s %4$s</string>
+    <string name="recalc_sheet_daytype_value">%1$s: %2$s %3$s</string>
     <string name="recalc_sheet_daytype_macros_format">%1$d ग्राम प्रोटीन · %2$d ग्राम कार्ब्स · %3$d ग्राम फैट</string>
-    <string name="recalc_sheet_daytype_avg_change">साप्ताहिक औसत: %1$s → %2$s kcal</string>
-    <string name="recalc_sheet_daytype_avg_value">साप्ताहिक औसत: %1$s kcal</string>
+    <string name="recalc_sheet_daytype_avg_change">साप्ताहिक औसत: %1$s → %2$s %3$s</string>
+    <string name="recalc_sheet_daytype_avg_value">साप्ताहिक औसत: %1$s %2$s</string>
     <string name="settings_calc_sec_day_types">दिन-प्रकार</string>
     <string name="settings_calc_daytypes_resolve_name">दिन-प्रकार अनुसार लक्ष्य निर्धारण</string>
     <string name="settings_calc_daytypes_resolve_used">जब दिन-प्रकार चालू होते हैं, तो हर दिन अपने कैलोरी और मैक्रो लक्ष्य एक ही सेट के बजाय प्लान से लेता है। किसी एक दिन का मैनुअल बदलाव शेड्यूल से, शेड्यूल डिफ़ॉल्ट से ऊपर रहता है, और जो तय न हो वह आपके मूल लक्ष्यों पर लौटता है।</string>

@@ -71,6 +71,12 @@ internal val PreferencesStore.weightUnitImpl: Flow<String> get() = dataStore.dat
     }
 internal suspend fun PreferencesStore.setWeightUnitImpl(v: String) { dataStore.edit { it[Keys.WEIGHT_UNIT] = v } }
 
+    /** "kcal" | "kj". Display-only; storage and formulas stay in kcal. Default kcal. */
+internal val PreferencesStore.energyUnitImpl: Flow<String> get() = dataStore.data.map {
+        it[Keys.ENERGY_UNIT] ?: "kcal"
+    }
+internal suspend fun PreferencesStore.setEnergyUnitImpl(v: String) { dataStore.edit { it[Keys.ENERGY_UNIT] = v } }
+
 internal val PreferencesStore.preferGramsByDefaultImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.PREFER_GRAMS_BY_DEFAULT] ?: false }
 internal suspend fun PreferencesStore.setPreferGramsByDefaultImpl(v: Boolean) { dataStore.edit { it[Keys.PREFER_GRAMS_BY_DEFAULT] = v } }
 

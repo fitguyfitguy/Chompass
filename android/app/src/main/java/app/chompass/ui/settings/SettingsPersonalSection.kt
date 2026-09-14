@@ -1,6 +1,7 @@
 package app.chompass.ui.settings
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.Cake
 import androidx.compose.material.icons.outlined.Height
 import androidx.compose.material.icons.outlined.MonitorWeight
@@ -39,6 +40,15 @@ internal fun SettingsPersonalSection(
                     ),
                     icon = Icons.Outlined.Straighten,
                 ) { onOpenSheet(SettingsSheet.UNITS) }
+                HorizontalDivider()
+                SettingRow(
+                    stringResource(R.string.settings_energy_unit),
+                    stringResource(
+                        if (ui.energyUnit.equals("kj", ignoreCase = true)) R.string.unit_kj
+                        else R.string.unit_kcal
+                    ),
+                    icon = Icons.Outlined.LocalFireDepartment,
+                ) { onOpenSheet(SettingsSheet.ENERGY_UNIT) }
                 HorizontalDivider()
                 profile?.let { p ->
                     SettingRow(stringResource(R.string.settings_gender), stringResource(p.gender.displayNameRes), icon = Icons.Outlined.Person, inlineMenu = true) { onOpenSheet(SettingsSheet.GENDER) }

@@ -12,7 +12,7 @@
     <string name="widget_calories">Калории</string>
     <string name="widget_carbs">Углеводы</string>
     <string name="widget_fat">Жиры</string>
-    <string name="widget_kcal_left_format">осталось %1$d ккал</string>
+    <string name="widget_kcal_left_format">осталось %1$d %2$s</string>
     <string name="widget_g_left_format">осталось %1$d г</string>
     <string name="widget_kcal">ккал</string>
     <string name="widget_protein_g">белок g</string>
@@ -40,6 +40,7 @@
 
     
     <string name="unit_kcal">ккал</string>
+    <string name="unit_kj">кДж</string>
     <string name="unit_g">г</string>
     <string name="unit_mg">мг</string>
 
@@ -73,7 +74,7 @@
 
 
 
-    <string name="kcal_value_format">%1$s ккал</string>
+    <string name="energy_value_format">%1$s %2$s</string>
     <string name="grams_value_format">%1$s г</string>
     <string name="grams_value_decimal_format">%1$s г</string>
     <string name="kg_value_format">%1$.1f кг</string>
@@ -261,7 +262,7 @@
     <string name="onboarding_pace_caption_slow">Мягко и устойчиво. Отлично для долгосрочных привычек.</string>
     <string name="onboarding_pace_caption_fast">Агрессивно, но реально. Требует строгой дисциплины.</string>
     <string name="onboarding_pace_caption_recommended">Самый сбалансированный темп, мотивирующий и устойчивый.</string>
-    <string name="onboarding_pace_capped">Такой темп невозможен для вашего телосложения без снижения ниже расчетного расхода в покое. Ваша цель составит %1$d ккал.</string>
+    <string name="onboarding_pace_capped">Такой темп невозможен для вашего телосложения без снижения ниже расчетного расхода в покое. Ваша цель составит %1$d %2$s.</string>
 
     <string name="onboarding_notifications_title">Получать напоминания\nо записи блюд</string>
     <string name="onboarding_notifications_subtitle">Получай мягкие напоминания во время еды,\nчтобы не забыть отслеживать.</string>
@@ -308,7 +309,7 @@
     <string name="onboarding_plan_subtitle">Коснись любого значения, чтобы изменить</string>
     <string name="onboarding_plan_daily_calories">калории в день</string>
     <string name="onboarding_plan_doctor_title">Пожалуйста, проконсультируйся с врачом</string>
-    <string name="onboarding_plan_doctor_message">Минимальная рекомендация: 1 200 калорий в день.</string>
+    <string name="onboarding_plan_doctor_message">Минимальная рекомендация: %1$s в день.</string>
     <string name="onboarding_minor_title">Только формулы для взрослых</string>
     <string name="onboarding_minor_message">Это приложение использует формулы калорий для взрослых. Если вам меньше 18 лет, спросите специалиста в области здравоохранения, прежде чем использовать эти цели.</string>
     <string name="onboarding_minor_continue">Понимаю</string>
@@ -351,7 +352,7 @@
     <string name="add_food_add_photo">Добавить фото</string>
     <string name="progressive_meal_add_next">Добавить следующий ингредиент</string>
     <string name="text_input_title">Опиши свою еду</string>
-    <string name="home_kcal_of_format">из %1$s ккал</string>
+    <string name="home_kcal_of_format">из %1$s %2$s</string>
     <string name="home_kcal_left_format">осталось %1$s</string>
     <string name="home_view_more">Показать больше</string>
     <string name="home_todays_food">Еда за сегодня</string>
@@ -520,7 +521,7 @@
     <string name="progress_history_count_format">%1$d записей · коснись, чтобы посмотреть или удалить</string>
 
     <string name="progress_calories_section">Калории</string>
-    <string name="progress_avg_format">Сред.: %1$d ккал</string>
+    <string name="progress_avg_format">Сред.: %1$d %2$s</string>
     <string name="progress_no_food">Пока нет записей о еде</string>
 
     <string name="progress_macro_averages">Средние макросы</string>
@@ -685,8 +686,8 @@
     <string name="notif_streak_text">Поддержи свою серию. Добавь запись за сегодня.</string>
     <string name="notif_summary_title">Сводка за сегодня готова</string>
     <string name="notif_summary_text">Коснись, чтобы увидеть, как сложились макросы за день.</string>
-    <string name="notif_summary_deficit">Дефицит %1$s ккал</string>
-    <string name="notif_summary_surplus">Профицит %1$s ккал</string>
+    <string name="notif_summary_deficit">Дефицит %1$s %2$s</string>
+    <string name="notif_summary_surplus">Профицит %1$s %2$s</string>
     <string name="notif_summary_on_target">В балансе</string>
     <string name="notif_summary_eaten_burned">Съедено %1$s · сожжено %2$s</string>
     <string name="notif_summary_macros">P %1$d · C %2$d · F %3$d</string>
@@ -942,24 +943,24 @@
         <string name="recalc_sheet_tier_measured">Опирается на измеренный расход Health Connect</string>
         <string name="recalc_sheet_tier_formula">Встроенные формулы</string>
         <string name="recalc_sheet_formula_baseline">База формулы</string>
-        <string name="recalc_sheet_bmr_row">BMR (расход в покое): %1$s ккал</string>
-        <string name="recalc_sheet_tdee_row">Поддержание × активность %1$s: %2$s ккал</string>
-        <string name="recalc_sheet_pace_row">Темп цели: %1$s ккал/день</string>
-        <string name="recalc_sheet_formula_target_row">Цель по формуле: %1$s ккал</string>
-        <string name="recalc_sheet_measured_row">Измеренный расход Health Connect: %1$s ккал</string>
-    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d kcal active (%3$d of last 28 days)</string>
+        <string name="recalc_sheet_bmr_row">BMR (расход в покое): %1$s %2$s</string>
+        <string name="recalc_sheet_tdee_row">Поддержание × активность %1$s: %2$s %3$s</string>
+        <string name="recalc_sheet_pace_row">Темп цели: %1$s %2$s/день</string>
+        <string name="recalc_sheet_formula_target_row">Цель по формуле: %1$s %2$s</string>
+        <string name="recalc_sheet_measured_row">Измеренный расход Health Connect: %1$s %2$s</string>
+    <string name="recalc_sheet_day_type_active">%1$s: typically %2$d %4$s active (%3$d of last 28 days)</string>
         <string name="recalc_sheet_data_used">Использованные данные</string>
         <string name="recalc_sheet_data_weighins">%1$d взвешиваний за %2$d дней</string>
         <string name="recalc_sheet_data_no_weighins">Взвешиваний пока нет</string>
-        <string name="recalc_sheet_data_intake">Среднее зарегистрированное потребление: %1$s ккал за %2$d зарегистрированных дней</string>
+        <string name="recalc_sheet_data_intake">Среднее зарегистрированное потребление: %1$s %3$s за %2$d зарегистрированных дней</string>
         <string name="recalc_sheet_data_no_intake">Еды пока нет</string>
-        <string name="recalc_sheet_data_implied">Подразумеваемое поддержание: ~%1$s ккал</string>
+        <string name="recalc_sheet_data_implied">Подразумеваемое поддержание: ~%1$s %2$s</string>
         <string name="recalc_sheet_data_implied_thin">Подразумеваемое поддержание: не рассчитано — мало данных</string>
         <string name="recalc_sheet_data_implied_below_floor">Подразумеваемое поддержание: ниже безопасного минимума, проигнорировано</string>
         <string name="recalc_sheet_data_implied_disagree">Подразумеваемое поддержание: скрыто — журнал и тренд веса расходятся</string>
         <string name="recalc_sheet_change">Изменение</string>
-        <string name="recalc_sheet_previous">Было: %1$s ккал</string>
-        <string name="recalc_sheet_new_with_delta">Стало: %1$s ккал (%2$s)</string>
+        <string name="recalc_sheet_previous">Было: %1$s %2$s</string>
+        <string name="recalc_sheet_new_with_delta">Стало: %1$s %3$s (%2$s)</string>
         <string name="recalc_sheet_reason">Почему</string>
     <plurals name="import_add_meals_title">
         <item quantity="one">Добавить блюдо</item>
@@ -969,7 +970,7 @@
     </plurals>
     <string name="import_note">Добавит в журнал точные нутриенты от отправителя. Фото не передаётся.</string>
     <string name="import_add_to_log">Добавить в журнал</string>
-    <string name="import_add_to_log_many_format">Добавить %1$d · %2$d ккал</string>
+    <string name="import_add_to_log_many_format">Добавить %1$d · %2$d %3$s</string>
     <string name="voice_release_to_cancel">Отпусти, чтобы отменить</string>
     <string name="voice_slide_to_cancel">‹ смахни, чтобы отменить</string>
     <string name="camera_error_open">Не удалось открыть камеру</string>
@@ -1095,7 +1096,7 @@
     <string name="analysis_queue_day_back">Предыдущий день</string>
     <string name="analysis_queue_day_forward">Следующий день</string>
     <string name="analysis_queue_failed">Не удалось</string>
-    <string name="analysis_queue_result">%1$s · %2$d ккал</string>
+    <string name="analysis_queue_result">%1$s · %2$d %3$s</string>
     <string name="analysis_queue_just_now">Только что</string>
     <string name="analysis_queue_minutes_ago">%1$d мин назад</string>
     <string name="analysis_queue_hours_ago">%1$d ч назад</string>
@@ -1108,13 +1109,13 @@
     <string name="export_body_metrics_format">Формат</string>
     <string name="export_body_metrics_subtitle">Экспортирует историю веса, жира и измерений тела в виде файла.</string>
     <string name="export_body_metrics_title">Экспорт веса и данных тела</string>
-    <string name="home_active_calories_label">Активные ккал</string>
+    <string name="home_active_calories_label">Активные %1$s</string>
     <string name="home_calorie_active_estimated_a11y">Активные калории оценены по твоему уровню активности</string>
     <string name="home_calorie_mode_add_active">Добавлять активный расход к бюджету</string>
     <string name="home_calorie_mode_add_active_desc">Активные калории из Health Connect (или оценка по уровню активности) добавляются к сегодняшнему калорийному бюджету. Ешь столько, сколько сжигаешь. Установи уровень активности на обычную базу, чтобы тренировки не учитывались дважды. Подключи Health Connect в Настройки → Здоровье для измеренного расхода.</string>
     <string name="home_calorie_mode_static">Фиксированная цель</string>
     <string name="home_calorie_mode_static_desc">Твоя цель по калориям остаётся фиксированной. Вручную добавленный активный расход увеличивает бюджет того дня.</string>
-    <string name="home_calorie_of_goal">из %1$s</string>
+    <string name="home_calorie_of_goal">из %1$s %2$s</string>
     <string name="home_calories_active_burn">Сожжено активных %1$d</string>
     <string name="home_calories_goal_plus_active">Цель %1$s + %2$s активных</string>
     <string name="home_calories_label">КАЛОРИИ</string>
@@ -1272,7 +1273,7 @@
     <string name="saved_meals_sort_size">Размер</string>
     <string name="cd_open_logged_foods">Все записанные продукты</string>
     <string name="add_food_quick_relog_empty">Добавь приём пищи в избранное или запиши его один раз. Он появится здесь для повторной записи одним касанием.</string>
-    <string name="add_food_relog_kcal">%1$d ккал</string>
+    <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="ai_provider_on_device_subtitle">Приватно и офлайн. Менее точно, чем облачный ИИ; загрузка ~2-4 ГБ</string>
     <string name="camera_scale_tip_message">Совет: положи рядом с едой вилку, руку или монету. Это помогает оценить размер порции.</string>
     <string name="cd_relog_meal">Записать %1$s снова</string>
@@ -1294,7 +1295,7 @@
     <string name="manual_active_name_hint">Название активности (необязательно)</string>
     <string name="manual_active_save">Добавить к бюджету</string>
     <string name="manual_active_edit_title">Изменить активный расход</string>
-    <string name="manual_active_history_total">%1$s · %2$d ккал</string>
+    <string name="manual_active_history_total">%1$s · %2$d %3$s</string>
     <string name="cd_delete_manual_active">Удалить активный расход</string>
     <string name="manual_active_subtitle">Добавь сожжённые калории с прогулки, поездки или тренировки. Они расширяют сегодняшний бюджет, когда включено «Добавлять активный расход».</string>
     <string name="manual_active_title">Записать активный расход</string>
@@ -1432,7 +1433,7 @@
     <string name="grounded_on_device_unavailable">Обоснованный ввод требует облачного ИИ-провайдера. Локальные модели используют «Фото/Заметка».</string>
     <string name="grounded_review_continue">Перейти к проверке</string>
     <string name="grounded_review_grams">Граммы</string>
-    <string name="grounded_review_per_100g">%1$d ккал / 100 г</string>
+    <string name="grounded_review_per_100g">%1$d %2$s / 100 г</string>
     <string name="grounded_review_subtitle">Выбери лучшее совпадение из базы и порцию для каждого продукта перед записью.</string>
     <string name="grounded_review_title">Подтверждение совпадений</string>
     <string name="grounded_review_unit">Единица</string>
@@ -1456,13 +1457,13 @@
     <string name="home_active_burn_over_a11y">Активный расход %1$d, на %2$d больше обычного дня</string>
     <string name="home_active_burn_progress_a11y">Активный расход %1$d, обычно %2$d</string>
     <string name="home_active_burn_progress_day_type_a11y">Active burn %1$d, %2$d typical for %3$s days</string>
-    <string name="home_budget_burned_today">Сожжено сегодня: %1$d ккал</string>
-    <string name="home_calorie_budget_a11y">Бюджет %1$d: цель %2$d плюс активные %3$d</string>
+    <string name="home_budget_burned_today">Сожжено сегодня: %1$d %2$s</string>
+    <string name="home_calorie_budget_a11y">Бюджет %1$d %4$s: цель %2$d %4$s плюс активные %3$d %4$s</string>
     <string name="home_calorie_budget_info">Как рассчитывается сегодняшний бюджет</string>
     <string name="home_calorie_budget_sheet_title">Сегодняшний бюджет калорий</string>
     <string name="home_calorie_budget_source_manual">Калории, записанные вручную</string>
     <string name="home_calorie_budget_source_measured">Активные калории из Health Connect</string>
-    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d kcal (14-day average is %3$d).</string>
+    <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d %4$s (14-day average is %3$d %4$s).</string>
     <string name="home_display_show_active_calories">Показывать активные калории</string>
     <string name="home_display_show_active_calories_desc">Показывать сегодняшний активный расход на шкале калорий.</string>
     <string name="home_food_removed">Продукт удалён</string>
@@ -1629,7 +1630,7 @@
     <string name="settings_picker_custom_placeholder">Значение в %1$s</string>
     <string name="settings_picker_enter_custom">Своё значение…</string>
     <string name="settings_calorie_below_floor_title">Ниже безопасного минимума</string>
-    <string name="settings_calorie_below_floor_message">Это ниже вашего расчетного расхода в покое или 1 200 ккал. Продолжайте, только если это назначил специалист в области здравоохранения.</string>
+    <string name="settings_calorie_below_floor_message">Это ниже вашего расчетного расхода в покое или 1 200 %1$s. Продолжайте, только если это назначил специалист в области здравоохранения.</string>
     <string name="settings_calorie_below_floor_continue">Всё равно продолжить</string>
     <string name="settings_picker_use_wheel">Использовать колесо</string>
     <string name="settings_picker_vitd_iu_hint">%1$d мкг ≈ %2$d МЕ</string>
@@ -1756,8 +1757,8 @@
     <string name="sync_error_unsupported_file">Неподдерживаемый файл синхронизации</string>
     <string name="sync_success_applied">Документ синхронизации применён</string>
     <string name="sync_success_synced">Синхронизировано с WebDAV</string>
-    <string name="vm_adaptive_updated">Обновлено до %1$d ккал по твоим последним данным.</string>
-    <string name="vm_goals_updated">Обновлено до %1$d ккал.</string>
+    <string name="vm_adaptive_updated">Обновлено до %1$d %2$s по твоим последним данным.</string>
+    <string name="vm_goals_updated">Обновлено до %1$d %2$s.</string>
     <string name="voice_native_unavailable">В этом профиле нет доступного сервиса распознавания речи. Выбери облачный движок речи в настройках (Whisper, Groq, Gemini, …) или установи приложение распознавания речи с Android RecognitionService.</string>
     <string name="water_amount_ml">%1$d мл</string>
     <string name="water_custom_short">Своё</string>
@@ -1887,6 +1888,7 @@
     <string name="settings_group_trackers">Трекеры и напоминания</string>
     <string name="settings_group_trackers_summary">Вода, никотин, кофеин, голодание, напоминания</string>
     <string name="settings_units">Единицы</string>
+    <string name="settings_energy_unit">Энергия</string>
     <string name="settings_search_hint">Поиск по настройкам</string>
     <string name="settings_search_empty">Ничего не найдено. Попробуйте «kg», «kcal» или «ml».</string>
     <string name="prompt_history_button">История промптов</string>
@@ -2000,9 +2002,9 @@
     <string name="day_type_clear_override">Убрать исключение на сегодня</string>
     <string name="day_type_edit_settings">Изменить типы дней</string>
     <string name="day_type_plan_off_hint">Типы дней выключены. Включите их в настройках, чтобы использовать разные цели в разные дни.</string>
-    <string name="day_type_targets_summary">%1$s ккал · %2$dБ %3$dУ %4$dЖ</string>
-    <string name="day_type_active_typical">≈ %1$d kcal active typical</string>
-    <string name="day_type_tomorrow">Завтра: %1$s · %2$s ккал</string>
+    <string name="day_type_targets_summary">%1$s %5$s · %2$dБ %3$dУ %4$dЖ</string>
+    <string name="day_type_active_typical">≈ %1$d %2$s active typical</string>
+    <string name="day_type_tomorrow">Завтра: %1$s · %2$s %3$s</string>
     <string name="settings_day_types_title">Типы дней</string>
     <string name="settings_day_types_intro">Используйте разные цели по калориям и макросам в разные дни, например дни тренировок и отдыха.</string>
     <string name="settings_day_types_add">Добавить тип дня</string>
@@ -2013,7 +2015,7 @@
     <string name="settings_day_types_delete_scrub">Убрать из расписания</string>
     <string name="settings_day_types_delete_used_message">Он используется в расписании. Выберите, что произойдёт с этими днями.</string>
     <string name="settings_day_types_delete_used_title">Удалить «%1$s»?</string>
-    <string name="settings_day_types_floor_warning">Эта цель находится на вашем минимальном пороге калорий (%1$d ккал). Агрессивно для типа дня.</string>
+    <string name="settings_day_types_floor_warning">Эта цель находится на вашем минимальном пороге калорий (%1$d %2$s). Агрессивно для типа дня.</string>
     <string name="settings_day_types_follow_schedule">Следовать расписанию</string>
     <string name="settings_day_types_keto_paused">Типы дней приостановлены в кето-режиме</string>
     <string name="settings_day_types_mode_cycle">Цикл</string>
@@ -2042,11 +2044,11 @@
     <string name="settings_day_types_summary_format">%1$d типов · %2$s</string>
     <string name="settings_day_types_weekday_default">По умолчанию (%1$s)</string>
     <string name="recalc_sheet_day_types">Типы дней</string>
-    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s ккал</string>
-    <string name="recalc_sheet_daytype_value">%1$s: %2$s ккал</string>
+    <string name="recalc_sheet_daytype_change">%1$s: %2$s → %3$s %4$s</string>
+    <string name="recalc_sheet_daytype_value">%1$s: %2$s %3$s</string>
     <string name="recalc_sheet_daytype_macros_format">%1$d г белка · %2$d г углеводов · %3$d г жира</string>
-    <string name="recalc_sheet_daytype_avg_change">Среднее за неделю: %1$s → %2$s ккал</string>
-    <string name="recalc_sheet_daytype_avg_value">Среднее за неделю: %1$s ккал</string>
+    <string name="recalc_sheet_daytype_avg_change">Среднее за неделю: %1$s → %2$s %3$s</string>
+    <string name="recalc_sheet_daytype_avg_value">Среднее за неделю: %1$s %2$s</string>
     <string name="settings_calc_sec_day_types">Типы дней</string>
     <string name="settings_calc_daytypes_resolve_name">Расчёт целей по типу дня</string>
     <string name="settings_calc_daytypes_resolve_used">Когда типы дней включены, каждый день берёт цели по калориям и макросам из плана, а не из единого набора. Ручное переключение одного дня важнее расписания, расписание важнее значения по умолчанию, а всё неразрешённое возвращается к базовым целям.</string>
