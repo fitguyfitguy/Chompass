@@ -1216,6 +1216,11 @@ fun HomeScreen(
             onDismiss = { showNicotineHistory = false },
             onEdit = { editingNicotineEntry = it },
             onDelete = { vm.deleteNicotine(it.id) },
+            // Dismiss-then-open keeps one sheet on screen (AddFoodSheet custom path).
+            onCustom = {
+                showNicotineHistory = false
+                showNicotineCustom = true
+            },
         )
     }
 
@@ -1244,6 +1249,11 @@ fun HomeScreen(
             onDismiss = { showCaffeineHistory = false },
             onEdit = { editingCaffeineEntry = it },
             onDelete = { vm.deleteCaffeine(it.id) },
+            // Dismiss-then-open keeps one sheet on screen (AddFoodSheet custom path).
+            onCustom = {
+                showCaffeineHistory = false
+                showCaffeineCustom = true
+            },
         )
     }
 
