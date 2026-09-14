@@ -1,11 +1,7 @@
 package app.chompass.ui.home
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -21,14 +17,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-
 import androidx.compose.material.icons.filled.WaterDrop
 import app.chompass.services.grounding.GroundedEntryFeature
 import androidx.compose.foundation.layout.PaddingValues
@@ -74,9 +66,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
-import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
