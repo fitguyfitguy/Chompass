@@ -151,13 +151,18 @@ class OpenAIStreamFinishlessRetryTest {
     }
 
     @Test
-    fun finishlessStream_retryAlsoFails_surfacesInvalidResponseWithoutFurtherRetries() {
+    fun finishlessStream_allRecoveriesFail_surfaceInvalidResponseBounded() {
+        // Finish-less one-shot retry fails to parse, then the MACROS
+        // downshift also fails to parse: exactly one of each recovery,
+        // then the error surfaces (no third attempt).
         server.enqueue(MockResponse().setBody(chunk("{\"name\":\"Eggs\"")))
         server.enqueue(MockResponse().setBody(completion("total garbage, no json object")))
+        // The downshift leg streams again, so the third response is SSE.
+        server.enqueue(MockResponse().setBody(chunk("still not json") + chunk(null, finishReason = "stop")))
 
         val ex = runCatching { runBlocking { newService().analyzeText("eggs") } }.exceptionOrNull()
 
         assertTrue("expected InvalidResponse, got $ex", ex is AiError.InvalidResponse)
-        assertEquals(2, server.requestCount)
+        assertEquals(3, server.requestCount)
     }
 }

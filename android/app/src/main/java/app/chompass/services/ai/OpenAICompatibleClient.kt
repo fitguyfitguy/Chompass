@@ -66,6 +66,8 @@ object OpenAICompatibleClient {
         provider: AIProvider,
         maxTokens: Int,
         reasoningEffort: OpenRouterReasoningEffort = OpenRouterReasoningEffort.AUTO,
+        /** Flat PerfLog suffix for retry-attempt legs, e.g. "downshift=macros" (#97). */
+        perfTag: String? = null,
     ): String {
         val url = "$baseUrl/chat/completions"
 
@@ -111,7 +113,10 @@ object OpenAICompatibleClient {
             response = request(compactRetryPrompt(prompt, maxTokens), compactRetry = true)
             if (response.wasTruncated) {
                 if (PerfLog.enabled) {
-                    PerfLog.event("op=analyzeText finish=${response.finishReason} chars=${response.text?.length ?: -1} maxTokens=$maxTokens compact=true")
+                    PerfLog.event(
+                        "op=analyzeText finish=${response.finishReason} chars=${response.text?.length ?: -1} " +
+                            "maxTokens=$maxTokens compact=true" + perfSuffix(perfTag)
+                    )
                 }
                 throw AiError.Api("The AI response was truncated twice. Try a shorter description or another model.", messageRes = R.string.ai_error_truncated_twice_description)
             }
@@ -139,6 +144,8 @@ object OpenAICompatibleClient {
         maxTokens: Int,
         onDelta: (String) -> Unit,
         reasoningEffort: OpenRouterReasoningEffort = OpenRouterReasoningEffort.AUTO,
+        /** Flat PerfLog suffix for retry-attempt legs, e.g. "downshift=macros" (#97). */
+        perfTag: String? = null,
     ): OpenAIStreamResult {
         val url = "$baseUrl/chat/completions"
 
@@ -202,7 +209,12 @@ object OpenAICompatibleClient {
                     onDelta(piece)
                 }
             }
-            if (PerfLog.enabled) PerfLog.event("op=analyzeText stream finish=$finishReason chars=${assembled.length} maxTokens=$maxTokens compact=$compactRetry")
+            if (PerfLog.enabled) {
+                PerfLog.event(
+                    "op=analyzeText stream finish=$finishReason chars=${assembled.length} " +
+                        "maxTokens=$maxTokens compact=$compactRetry" + perfSuffix(perfTag)
+                )
+            }
             return Triple(assembled.toString(), finishReason == "length", finishReason)
         }
 
@@ -215,7 +227,7 @@ object OpenAICompatibleClient {
                 // Compact retry uses the non-streaming path so partial UI state
                 // is not polluted by a truncated first attempt.
                 return oneShotResult(
-                    analyze(client, baseUrl, model, apiKey, prompt, imageBytesList, provider, maxTokens, reasoningEffort)
+                    analyze(client, baseUrl, model, apiKey, prompt, imageBytesList, provider, maxTokens, reasoningEffort, perfTag = perfTag)
                 )
             }
             // Finish-less (no finish_reason, non-blank text): some local
@@ -227,7 +239,7 @@ object OpenAICompatibleClient {
         } catch (_: Throwable) {
             // Endpoint may not support streaming — fall back to the classic path.
             oneShotResult(
-                analyze(client, baseUrl, model, apiKey, prompt, imageBytesList, provider, maxTokens, reasoningEffort)
+                analyze(client, baseUrl, model, apiKey, prompt, imageBytesList, provider, maxTokens, reasoningEffort, perfTag = perfTag)
             )
         }
     }
@@ -235,6 +247,8 @@ object OpenAICompatibleClient {
     /** A reply that already went through the non-streaming ladder is final. */
     private fun oneShotResult(text: String) =
         OpenAIStreamResult(text, finishReason = null, streamIncomplete = false)
+
+    private fun perfSuffix(tag: String?): String = tag?.let { " $it" } ?: ""
 
     private fun compactRetryPrompt(prompt: String, maxTokens: Int): String =
         "$prompt\n\nIMPORTANT: The previous response did not contain a complete answer. Return only the requested compact JSON object, with no reasoning, explanation, or markdown. Keep the complete response under $maxTokens tokens."
