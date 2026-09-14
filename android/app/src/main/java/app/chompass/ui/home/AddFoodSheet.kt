@@ -432,9 +432,8 @@ internal fun AddFoodSheetContent(
             }
         }
 
-        // Whether anything is rendered below the pane decides who carries the
-        // trailing space: the list when it is the last thing in the sheet, the
-        // tracker scroller when that is.
+        // The list is the bottom-most element now, so it always carries the
+        // trailing space.
         val enabledTrackerCount = listOf(
             waterTrackingEnabled,
             nicotineTrackingEnabled,
@@ -442,6 +441,111 @@ internal fun AddFoodSheetContent(
             fastingEnabled,
         ).count { it }
         val hasTrackers = enabledTrackerCount > 0
+
+        // The trackers lead: their +1 chips are the fastest path to a log, so
+        // they sit above the results pane instead of under it, visible without
+        // scrolling past results and still on screen with the keyboard up.
+        // Nothing renders unless a tracker is actually switched on.
+        if (hasTrackers) {
+            Spacer(Modifier.height(10.dp))
+            // Tracker content scrolls on its own. Device pass #2 (2026-08-24):
+            // the trackers outgrow the sheet on shorter screens, so this column has
+            // to scroll; like TextInputSheet it blocks drag-from-content dismissal
+            // (handle/scrim still dismiss). The scroller lives here rather than on
+            // the outer column so the search branch can host a lazy list.
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
+                    .blockSheetDragAtScrollEdges(scrollState)
+            ) {
+            // Four trackers at once bury the results pane, so the section folds.
+            // Two or fewer start open: at that size the rows are the reason the
+            // user pulled the sheet up, and hiding them costs a tap for nothing.
+            var trackersExpanded by rememberSaveable { mutableStateOf(enabledTrackerCount <= 2) }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 48.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable(
+                        onClick = { trackersExpanded = !trackersExpanded },
+                        role = Role.Button,
+                    )
+                    .semantics {
+                        stateDescription = if (trackersExpanded) expandedLabel else collapsedLabel
+                    }
+                    .padding(vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    stringResource(R.string.add_food_trackers_section),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    modifier = Modifier.weight(1f),
+                )
+                Icon(
+                    if (trackersExpanded) Icons.Filled.KeyboardArrowDown
+                    else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                )
+            }
+            AnimatedVisibility(
+                visible = trackersExpanded,
+                enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
+                exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f)),
+            ) {
+                Column {
+                    if (waterTrackingEnabled) {
+                        Spacer(Modifier.height(12.dp))
+                        AddFoodWaterQuickRow(
+                            presetsMl = waterQuickPresetsMl,
+                            useMetric = waterUseMetric,
+                            onWater = onWater,
+                            onWaterCustom = onWaterCustom,
+                        )
+                    }
+                    if (nicotineTrackingEnabled) {
+                        Spacer(Modifier.height(12.dp))
+                        AddFoodNicotineQuickRow(
+                            quickKinds = nicotineQuickKinds,
+                            presets = nicotinePresets,
+                            onNicotine = onNicotine,
+                            onNicotineCustom = onNicotineCustom,
+                        )
+                    }
+                    if (caffeineTrackingEnabled) {
+                        Spacer(Modifier.height(12.dp))
+                        AddFoodCaffeineQuickRow(
+                            quickKinds = caffeineQuickKinds,
+                            presets = caffeinePresets,
+                            onCaffeine = onCaffeine,
+                            onCaffeineCustom = onCaffeineCustom,
+                        )
+                    }
+                    if (fastingEnabled) {
+                        Spacer(Modifier.height(12.dp))
+                        FastingHubControl(
+                            phase = fastingPhase,
+                            fastHours = fastingGoalHours,
+                            eatHours = fastingEatHours,
+                            fastElapsedMillis = fastingElapsedMillis,
+                            eatElapsedMillis = fastingEatingElapsedMillis,
+                            goalReached = fastingGoalReached,
+                            autoStarted = fastingAutoStarted,
+                            nextFastStartMillis = fastingNextFastStartMillis,
+                            nowMillis = fastingNowMillis,
+                            autoMode = fastingAutoWindows,
+                            onStart = onStartFast,
+                            onStop = onStopFast,
+                        )
+                    }
+                }
+            }
+            }
+        }
 
         // One pane, two data sources, one reserved height. Showing the saved
         // meals here rather than a shorter hub means the sheet is already the
@@ -463,7 +567,7 @@ internal fun AddFoodSheetContent(
             packagedSearchEnabled = packagedSearchEnabled,
             onPackagedSearchChange = onPackagedSearchChange,
             onOpenFoodSettings = onOpenFoodSettings,
-            bottomSpace = if (hasTrackers) 0.dp else ADD_FOOD_BOTTOM_SPACE,
+            bottomSpace = ADD_FOOD_BOTTOM_SPACE,
             // Takes the space the fixed-height rows above and below leave over.
             modifier = if (fixedPaneHeight == null) {
                 Modifier.weight(1f)
@@ -474,117 +578,6 @@ internal fun AddFoodSheetContent(
             onReview = onReviewSuggestion,
         )
 
-        // Nothing below the pane unless a tracker is actually switched on.
-        // The scroll column used to emit its spacers regardless, which left a
-        // dead strip along the bottom of the sheet once More options moved out
-        // of here and into the pill row.
-        if (!hasTrackers) return@Column
-        // The trackers stay rendered in both states. They sit below a
-        // fixed-height results pane so they can never push results around, and
-        // keeping them is what makes the two states the same total height.
-        Spacer(Modifier.height(10.dp))
-
-        // Tracker content scrolls on its own. Device pass #2 (2026-08-24):
-        // the trackers outgrow the sheet on shorter screens, so this column has
-        // to scroll; like TextInputSheet it blocks drag-from-content dismissal
-        // (handle/scrim still dismiss). The scroller lives here rather than on
-        // the outer column so the search branch can host a lazy list.
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .verticalScroll(scrollState)
-                .blockSheetDragAtScrollEdges(scrollState)
-        ) {
-        // Four trackers at once bury the results pane, so the section folds.
-        // Two or fewer start open: at that size the rows are the reason the
-        // user pulled the sheet up, and hiding them costs a tap for nothing.
-        var trackersExpanded by rememberSaveable { mutableStateOf(enabledTrackerCount <= 2) }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 48.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .clickable(
-                    onClick = { trackersExpanded = !trackersExpanded },
-                    role = Role.Button,
-                )
-                .semantics {
-                    stateDescription = if (trackersExpanded) expandedLabel else collapsedLabel
-                }
-                .padding(vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                stringResource(R.string.add_food_trackers_section),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                modifier = Modifier.weight(1f),
-            )
-            Icon(
-                if (trackersExpanded) Icons.Filled.KeyboardArrowDown
-                else Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-            )
-        }
-        AnimatedVisibility(
-            visible = trackersExpanded,
-            enter = expandVertically(animationSpec = spring(dampingRatio = 0.75f)),
-            exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f)),
-        ) {
-            Column {
-                if (waterTrackingEnabled) {
-                    Spacer(Modifier.height(12.dp))
-                    AddFoodWaterQuickRow(
-                        presetsMl = waterQuickPresetsMl,
-                        useMetric = waterUseMetric,
-                        onWater = onWater,
-                        onWaterCustom = onWaterCustom,
-                    )
-                }
-                if (nicotineTrackingEnabled) {
-                    Spacer(Modifier.height(12.dp))
-                    AddFoodNicotineQuickRow(
-                        quickKinds = nicotineQuickKinds,
-                        presets = nicotinePresets,
-                        onNicotine = onNicotine,
-                        onNicotineCustom = onNicotineCustom,
-                    )
-                }
-                if (caffeineTrackingEnabled) {
-                    Spacer(Modifier.height(12.dp))
-                    AddFoodCaffeineQuickRow(
-                        quickKinds = caffeineQuickKinds,
-                        presets = caffeinePresets,
-                        onCaffeine = onCaffeine,
-                        onCaffeineCustom = onCaffeineCustom,
-                    )
-                }
-                if (fastingEnabled) {
-                    Spacer(Modifier.height(12.dp))
-                    FastingHubControl(
-                        phase = fastingPhase,
-                        fastHours = fastingGoalHours,
-                        eatHours = fastingEatHours,
-                        fastElapsedMillis = fastingElapsedMillis,
-                        eatElapsedMillis = fastingEatingElapsedMillis,
-                        goalReached = fastingGoalReached,
-                        autoStarted = fastingAutoStarted,
-                        nextFastStartMillis = fastingNextFastStartMillis,
-                        nowMillis = fastingNowMillis,
-                        autoMode = fastingAutoWindows,
-                        onStart = onStartFast,
-                        onStop = onStopFast,
-                    )
-                }
-            }
-        }
-        // Same trailing space the suggestion pane carries when nothing follows
-        // it: inside the scroller, so it is reached by scrolling to the end
-        // rather than shortening the visible tracker area.
-        Spacer(Modifier.height(ADD_FOOD_BOTTOM_SPACE))
-        }
     }
 }
 
