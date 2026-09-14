@@ -187,6 +187,7 @@ function renderBubble(m) {
   return `<div class="coach-bubble coach-bubble--${m.role}"><strong>${who}</strong><p>${escapeHtml(m.text || "")}</p></div>`;
 }
 
+/** @param {"kcal"|"kj"} [unit] */
 function renderProposalCard(tc, index, unit = "kcal") {
   const label =
     {

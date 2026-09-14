@@ -6,7 +6,7 @@ import { saveProviderKey } from "../lib/ai/key-storage.js";
 import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
 import { maybeShowPostOnboardingInstallSheet } from "../lib/install-prompt.js";
 import { openInput, openConfirm } from "../lib/ui/dialog.js";
-import { t } from "../lib/i18n/index.js";
+import { t, formatNumber } from "../lib/i18n/index.js";
 import { energyQuantity, energyToKcal, energyUnitFromPrefs, energyUnitLabel, formatEnergy } from "../lib/energy-format.js";
 import { escapeAttr } from "../lib/ui/html.js";
 import { todayIso } from "../lib/date.js";
@@ -102,7 +102,7 @@ export class OnboardingView extends HTMLElement {
     super();
     this.step = 0;
     this.buildPct = 0;
-    /** Display energy unit (Codeberg #100); hydrated from prefs on connect. */
+    /** @type {"kcal"|"kj"} Display energy unit (Codeberg #100); hydrated from prefs on connect. */
     this._energyUnit = "kcal";
     /** @type {ReturnType<typeof setInterval>|null} */
     this._buildTimer = null;
@@ -841,7 +841,7 @@ function choiceGrid(field, options, selected) {
   </div>`;
 }
 
-/** @param {import('../lib/chompass-core/models.js').UserProfile} draft */
+/** @param {"kcal"|"kj"} [unit] */
 function planSafetyNote(draft, targets, unit = "kcal") {
   const formulaDraft = { ...draft, customCalories: null };
   const raw = Math.trunc(tdee(formulaDraft)) + calorieAdjustment(formulaDraft);

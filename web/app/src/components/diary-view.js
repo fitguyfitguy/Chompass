@@ -294,7 +294,7 @@ function burnCaptionText(zoneActive, burn) {
 }
 
 const GAUGE_INFO_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 7h2v2h-2V7zm0 4h2v6h-2v-6zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>`;
-
+/** @param {"kcal"|"kj"} [unit] */
 function ringSvg(eaten, target, baseGoal = null, burn = null, unit = "kcal") {
   const width = 260;
   const stroke = 16;
@@ -364,7 +364,11 @@ function ringSvg(eaten, target, baseGoal = null, burn = null, unit = "kcal") {
     </svg>`;
 }
 
+/**
+ * @param {"kcal"|"kj"} [unit]
+ */
 function calorieBar(eaten, target, baseGoal = null, burn = null, unit = "kcal") {
+  const pct = target > 0 ? Math.min(100, (eaten / target) * 100) : 0;
   const leftLabel = t("diary.calories_left", { amount: formatNumber(energyQuantity(Math.max(0, Math.round(target - eaten)), unit)) });
   const baseFrac = baseGoal && baseGoal > 0 && target > 0 ? Math.min(1, baseGoal / target) : 1;
   const showActive = baseFrac < 1;
@@ -471,6 +475,7 @@ function tile(action, label, sub, icon, hero = false) {
  * @param {import('../lib/chompass-core/models.js').FoodEntry[]} mealEntries
  * @param {string} mealType
  * @param {string[]} chipKeys
+ * @param {"kcal"|"kj"} [unit]
  */
 function mealCard(mealType, mealEntries, chipKeys, unit = "kcal") {
   const totals = sumMealChipValues(mealEntries, chipKeys);
