@@ -60,9 +60,11 @@ export async function lookupBarcode(barcode) {
 
   const fields = "product_name,generic_name,brands,quantity,product_quantity,product_quantity_unit,serving_size,serving_quantity,nutriments,ingredients_text,allergens_tags,traces_tags,nutriscore_grade,nova_group,ecoscore_grade,labels_tags,categories_tags,image_front_url";
   const res = await fetchOffProduct(code, fields);
-  const data = await res.json();
-  const product =
-    (data.status === 1 && data.product && mapProduct(data.product, code)) || null;
+  let product = null;
+  if (res !== null) {
+    const data = await res.json();
+    product = (data.status === 1 && data.product && mapProduct(data.product, code)) || null;
+  }
   cache[code] = { product, ts: Date.now() };
   writeLookupCache(cache);
   return product;
@@ -74,7 +76,7 @@ export async function lookupBarcode(barcode) {
  * seconds when present, else 60 s, capped at 120 s.
  * @param {string} code
  * @param {string} fields
- * @returns {Promise<Response>}
+ * @returns {Promise<Response|null>} null when the product is not in OFF (HTTP 404)
  */
 async function fetchOffProduct(code, fields) {
   const url = `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json?fields=${fields}`;
@@ -89,6 +91,7 @@ async function fetchOffProduct(code, fields) {
       throw err;
     }
     if (res.ok) return res;
+    if (res.status === 404) return null; // absent product — a definitive not-found
     if (res.status === 429) {
       cooldownUntilMs = Math.max(
         cooldownUntilMs,

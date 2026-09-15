@@ -378,14 +378,46 @@ test("lookupBarcode_nonRetryableStatusThrowsImmediately", async () => {
   globalThis.fetch = /** @type {typeof fetch} */ (
     async () => {
       calls++;
-      return new Response(null, { status: 404 });
+      return new Response(null, { status: 403 });
     }
   );
   try {
-    await assert.rejects(lookupBarcode("9339687206605"), /Open Food Facts lookup failed \(404\)/);
+    await assert.rejects(lookupBarcode("9339687206605"), /Open Food Facts lookup failed \(403\)/);
     assert.equal(calls, 1);
   } finally {
     globalThis.fetch = originalFetch;
+  }
+});
+
+test("lookupBarcode_404ReturnsNullAndCachesNegative", async () => {
+  const originalFetch = globalThis.fetch;
+  const ls = stubLocalStorage();
+  let calls = 0;
+  globalThis.fetch = /** @type {typeof fetch} */ (
+    async () => {
+      calls++;
+      // Live OFF answers an absent product with HTTP 404 and this body.
+      return new Response(
+        JSON.stringify({ code: "9339687206605", status: 0, status_verbose: "product not found" }),
+        { status: 404 }
+      );
+    }
+  );
+  try {
+    assert.equal(await lookupBarcode("9339687206605"), null);
+    // The not-found is cached: a second lookup never touches the network.
+    globalThis.fetch = /** @type {typeof fetch} */ (
+      async () => {
+        throw new Error("fetch must not be called for a cached not-found");
+      }
+    );
+    assert.equal(await lookupBarcode("9339687206605"), null);
+    assert.equal(calls, 1);
+    const stored = JSON.parse(ls.store.get("chompass.offLookupCache.v1") ?? "{}");
+    assert.equal(stored["9339687206605"].product, null);
+  } finally {
+    globalThis.fetch = originalFetch;
+    ls.restore();
   }
 });
 
