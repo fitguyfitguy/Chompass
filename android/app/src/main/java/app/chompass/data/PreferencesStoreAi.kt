@@ -264,6 +264,10 @@ internal suspend fun PreferencesStore.setOnDeviceModelDownloadedVersionImpl(vers
 internal val PreferencesStore.onDeviceDownloadOverWifiOnlyImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.ON_DEVICE_DOWNLOAD_OVER_WIFI_ONLY] ?: true }
 internal suspend fun PreferencesStore.setOnDeviceDownloadOverWifiOnlyImpl(v: Boolean) { dataStore.edit { it[Keys.ON_DEVICE_DOWNLOAD_OVER_WIFI_ONLY] = v } }
 
+// -- On-device memory headroom (release-visible dev setting, Codeberg #46) --
+internal val PreferencesStore.onDeviceHeadroomPercentImpl: Flow<Int> get() = dataStore.data.map { it[Keys.ON_DEVICE_HEADROOM_PERCENT] ?: 0 }
+internal suspend fun PreferencesStore.setOnDeviceHeadroomPercentImpl(v: Int) { dataStore.edit { it[Keys.ON_DEVICE_HEADROOM_PERCENT] = v.coerceIn(0, 20) } }
+
     /** Rollout gate: whether ON_DEVICE appears as a selectable provider. Default on since 1.14.0. */
 internal val PreferencesStore.onDeviceFeatureVisibleImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.ON_DEVICE_FEATURE_VISIBLE] ?: true }
 internal suspend fun PreferencesStore.setOnDeviceFeatureVisibleImpl(v: Boolean) { dataStore.edit { it[Keys.ON_DEVICE_FEATURE_VISIBLE] = v } }

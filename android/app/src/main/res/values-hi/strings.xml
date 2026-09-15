@@ -1116,6 +1116,8 @@
     <string name="on_device_model_delete">डाउनलोड किया गया मॉडल हटाएं</string>
     <string name="on_device_model_clear">इस डिवाइस से हटाएं</string>
     <string name="on_device_model_clear_footer">%1$s मॉडल फ़ाइलें और अधूरा डाउनलोड हटाता है, और मेमोरी से भी हटाता है।</string>
+    <string name="settings_on_device_headroom">ऑन-डिवाइस AI के लिए मेमोरी हेडरूम</string>
+    <string name="settings_on_device_headroom_footer">ऑन-डिवाइस मॉडल चलने से पहले अतिरिक्त मेमोरी आरक्षित रखी जाती है: %1$s। इसे केवल तब कम करें जब आपके फ़ोन में खाली मेमोरी होने पर भी विश्लेषण अस्वीकार हो जाए।</string>
     <string name="on_device_model_leftover_footer">इस डिवाइस पर पहले के लोकल डाउनलोड से %1$s बचा है। जारी रखने या हटाने के लिए खोलें।</string>
     <string name="on_device_model_download">डाउनलोड करें</string>
     <string name="on_device_model_downloading">डाउनलोड हो रहा है… %1$d%%</string>

@@ -40,8 +40,8 @@ object OnDeviceCapability {
      * worked). 5% floors E2B at ≈2.78 GiB ≈ 3.0 GB decimal; the
      * lowMemory flag remains the emergency brake.
      */
-    internal fun visionMemoryHeadroomBytes(totalMemBytes: Long): Long =
-        (totalMemBytes / 20).coerceIn(VISION_HEADROOM_MIN_BYTES, VISION_HEADROOM_MAX_BYTES)
+    internal fun visionMemoryHeadroomBytes(totalMemBytes: Long, headroomPercentOverride: Int? = null): Long =
+        scaledHeadroomBytes(totalMemBytes, headroomPercentOverride, VISION_HEADROOM_MIN_BYTES, VISION_HEADROOM_MAX_BYTES)
 
     private const val VISION_HEADROOM_MIN_BYTES = 256L * 1024 * 1024
     private const val VISION_HEADROOM_MAX_BYTES = 1_000L * 1024 * 1024
@@ -56,11 +56,27 @@ object OnDeviceCapability {
      * can OOM-kill the process, so the load is refused below this floor
      * instead of degrading the whole phone.
      */
-    internal fun loadMemoryHeadroomBytes(totalMemBytes: Long): Long =
-        (totalMemBytes / 20).coerceIn(LOAD_HEADROOM_MIN_BYTES, LOAD_HEADROOM_MAX_BYTES)
+    internal fun loadMemoryHeadroomBytes(totalMemBytes: Long, headroomPercentOverride: Int? = null): Long =
+        scaledHeadroomBytes(totalMemBytes, headroomPercentOverride, LOAD_HEADROOM_MIN_BYTES, LOAD_HEADROOM_MAX_BYTES)
 
     private const val LOAD_HEADROOM_MIN_BYTES = 128L * 1024 * 1024
     private const val LOAD_HEADROOM_MAX_BYTES = 512L * 1024 * 1024
+
+    /**
+     * Percent-of-usable-RAM reserve, #46's release-visible dev setting: the
+     * model sheet exposes a stepper (pref 0 = shipped default 5%). The clamp
+     * floors stay — zero or a tiny percent never drops the reserve below
+     * 256 MiB vision / 128 MiB load.
+     */
+    private fun scaledHeadroomBytes(
+        totalMemBytes: Long,
+        headroomPercentOverride: Int?,
+        minBytes: Long,
+        maxBytes: Long,
+    ): Long {
+        val percent = (headroomPercentOverride ?: 5).coerceIn(0, 20)
+        return (totalMemBytes * percent / 100).coerceIn(minBytes, maxBytes)
+    }
 
     private val SUPPORTED_ABIS = setOf("arm64-v8a", "x86_64")
 
@@ -109,12 +125,16 @@ object OnDeviceCapability {
      * already-loaded model is the point where OOM kills have been observed.
      * Headroom scales with the device (#46).
      */
-    fun hasEnoughAvailableMemoryForVision(context: Context, entry: OnDeviceModelEntry): Boolean {
+    fun hasEnoughAvailableMemoryForVision(
+        context: Context,
+        entry: OnDeviceModelEntry,
+        headroomPercentOverride: Int? = null,
+    ): Boolean {
         val am = context.getSystemService(ActivityManager::class.java) ?: return false
         val info = ActivityManager.MemoryInfo()
         am.getMemoryInfo(info)
         if (info.lowMemory) return false
-        return info.availMem >= entry.sizeBytes + visionMemoryHeadroomBytes(info.totalMem)
+        return info.availMem >= entry.sizeBytes + visionMemoryHeadroomBytes(info.totalMem, headroomPercentOverride)
     }
 
     /**
@@ -125,11 +145,15 @@ object OnDeviceCapability {
      * swap thrash (3 GB swapped on a Pixel 9a with Telegram/YouTube/Instagram
      * resident) and stall every app, so the gateway refuses the load instead.
      */
-    fun hasEnoughAvailableMemoryForLoad(context: Context, entry: OnDeviceModelEntry): Boolean {
+    fun hasEnoughAvailableMemoryForLoad(
+        context: Context,
+        entry: OnDeviceModelEntry,
+        headroomPercentOverride: Int? = null,
+    ): Boolean {
         val am = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager ?: return false
         val info = ActivityManager.MemoryInfo()
         am.getMemoryInfo(info)
         if (info.lowMemory) return false
-        return info.availMem >= entry.sizeBytes + loadMemoryHeadroomBytes(info.totalMem)
+        return info.availMem >= entry.sizeBytes + loadMemoryHeadroomBytes(info.totalMem, headroomPercentOverride)
     }
 }

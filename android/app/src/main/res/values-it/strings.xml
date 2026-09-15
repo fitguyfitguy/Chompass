@@ -1078,6 +1078,8 @@
     <string name="on_device_model_delete">Elimina modello scaricato</string>
     <string name="on_device_model_clear">Rimuovi da questo dispositivo</string>
     <string name="on_device_model_clear_footer">Elimina %1$s di file del modello e download incompleti, e lo scarica dalla memoria.</string>
+    <string name="settings_on_device_headroom">Riserva di memoria per l’IA sul dispositivo</string>
+    <string name="settings_on_device_headroom_footer">Memoria extra tenuta in riserva prima che il modello sul dispositivo venga eseguito: %1$s. Abbassala solo se l’analisi viene rifiutata anche se il telefono ha memoria libera.</string>
     <string name="on_device_model_leftover_footer">Su questo dispositivo restano %1$s di un download locale precedente. Apri per riprendere o cancellarli.</string>
     <string name="on_device_model_download">Scarica</string>
     <string name="on_device_model_downloading">Download… %1$d%%</string>

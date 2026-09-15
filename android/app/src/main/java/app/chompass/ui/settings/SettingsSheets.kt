@@ -238,6 +238,7 @@ internal fun SettingsSheets(
                     onStartDownload = vm::startOnDeviceModelDownload,
                     onCancelDownload = vm::cancelOnDeviceModelDownload,
                     onSetOverWifiOnly = vm::setOnDeviceDownloadOverWifiOnly,
+                    onSetHeadroomPercent = vm::setOnDeviceHeadroomPercent,
                 )
                 SettingsSheet.MAX_TOKENS -> {
                     var value by remember(ui.maxResponseTokens) { mutableIntStateOf(ui.maxResponseTokens) }
