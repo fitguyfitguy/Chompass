@@ -136,16 +136,16 @@ class FoodDatabaseSearch(
 
     /**
      * The sources the user still wants searched (Settings › Food & Entry ›
-     * Food databases). USDA and Swiss default on — bundled SQLite, so
-     * searching them never leaves the phone. Open Food Facts defaults off,
-     * being the one source that does. A disabled source is dropped from the
+     * Food databases). All three default on: USDA and Swiss are bundled
+     * SQLite, so searching them never leaves the phone, and Open Food Facts is
+     * the one source that does. A disabled source is dropped from the
      * fan-out in [search], so the gate covers every caller of this class at
      * once. It gates *search* only — barcode lookups and [toAnalysis] on an
      * already-picked hit stay available, or a disabled source would break rows
      * the user is mid-way through logging.
      *
-     * The Add Food sheet's packaged-products toggle is not a second gate on
-     * top of this one: it reads and writes this same preference, so the opt-in
+     * The Add Food sheet's packaged-products chip is not a second gate on top
+     * of this one: it reads and writes this same preference, so the choice
      * outlives the sheet, the screen and the process.
      */
     suspend fun enabledSources(): Set<Source> = buildSet {

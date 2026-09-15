@@ -222,17 +222,19 @@ data class HomeUiState(
     /** True while the Open Food Facts leg is still outstanding for this query. */
     val addFoodSuggestNetworkPending: Boolean = false,
     /**
-     * Whether the packaged-product (Open Food Facts) leg may run. Typing is
-     * on-device until it does: saved foods come from the local index, USDA and
-     * Swiss from bundled SQLite, and only this source leaves the phone.
+     * Whether the packaged-product (Open Food Facts) leg may run. Saved foods
+     * come from the local index and USDA / Swiss from bundled SQLite on every
+     * keystroke; this is the only leg that leaves the phone.
      *
      * This is the Settings > Food & Entry > Open Food Facts switch itself, not
      * a second copy of it: the sheet's toggle reads and writes the same
      * preference, so flipping either one moves both and the choice survives the
-     * sheet, the screen and the process. It defaults off, so the first query a
-     * new install runs reaches nothing but the device.
+     * sheet, the screen and the process. It defaults on (maintainer call
+     * 2026-09-15), so a brand name typed into Add Food finds the packaged
+     * product without a detour through Settings; switching it off is one tap on
+     * the databases heading.
      */
-    val addFoodPackagedSearchEnabled: Boolean = false,
+    val addFoodPackagedSearchEnabled: Boolean = true,
     /**
      * Identity the pending entry keeps no matter which source supplies its
      * nutrients. Set once when the draft is saved (already disambiguated) so a
@@ -1944,12 +1946,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
      *
      *  1. immediately, from the cached local index;
      *  2. after a short debounce, adding the bundled USDA / Swiss rows;
-     *  3. only once the user opts in, adding Open Food Facts.
+     *  3. after the network leg's own debounce, adding Open Food Facts.
      *
      * Legs 1 and 2 are entirely on-device, which is why they may run on every
      * keystroke. Leg 3 leaves the phone, so it is gated on
      * [HomeUiState.addFoodPackagedSearchEnabled] — the packaged-products
-     * opt-in, which defaults off — and never runs from typing alone.
+     * switch, on out of the box and one tap off on the databases heading.
      *
      * The ranker's score bands keep the local rows on top throughout, so later
      * legs only ever append — the row under the user's finger never moves.
@@ -1976,7 +1978,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             )
             addFoodSearch = state
 
-            // The packaged-products opt-in, off until the user turns it on.
+            // The packaged-products switch, on unless the user turns it off.
             // Read from UI state rather than the store so a toggle flipped in
             // the sheet applies to this very query instead of the one after the
             // write lands. FoodDatabaseSearch re-checks the same preference on

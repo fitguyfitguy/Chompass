@@ -217,8 +217,9 @@ data class SettingsUiState(
     val openRouterReasoningEffort: OpenRouterReasoningEffort = OpenRouterReasoningEffort.AUTO,
     val mealConstituentsEnabled: Boolean = true,
     /** Per-source switches for the Add Food database search. Open Food Facts is
-     * the one that reaches the network, and the one that defaults off. */
-    val foodSearchOpenFoodFactsEnabled: Boolean = false,
+     * the one that reaches the network; it ships on like the bundled indexes,
+     * and either this row or the sheet's databases chip turns it off. */
+    val foodSearchOpenFoodFactsEnabled: Boolean = true,
     val foodSearchUsdaEnabled: Boolean = true,
     val foodSearchSwissEnabled: Boolean = true,
     /** Inverted in UI: “Ask for a photo note” = !skipPhotoNotePrompt. */

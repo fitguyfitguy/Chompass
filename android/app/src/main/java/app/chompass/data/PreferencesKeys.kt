@@ -227,11 +227,12 @@ internal object Keys {
         /** Opt-in meal ingredient breakdown from AI (off for on-device / weak models). */
         val MEAL_CONSTITUENTS_ENABLED = booleanPreferencesKey("mealConstituentsEnabled")
         /**
-         * Per-source switches for the Add Food database search. The two bundled
-         * indexes default on; Open Food Facts defaults off, since it is the one
-         * source a keystroke would put on the network. They gate searching only
-         * — a scanned barcode still resolves through Open Food Facts, and an
-         * already-logged entry keeps its source badge.
+         * Per-source switches for the Add Food database search. All three
+         * default on: Open Food Facts is the one source a keystroke can put on
+         * the network, and switching it off is one tap on the databases
+         * heading. They gate searching only — a scanned barcode still resolves
+         * through Open Food Facts, and an already-logged entry keeps its source
+         * badge.
          */
         val FOOD_SEARCH_OFF_ENABLED = booleanPreferencesKey("foodSearchOpenFoodFactsEnabled")
         val FOOD_SEARCH_USDA_ENABLED = booleanPreferencesKey("foodSearchUsdaEnabled")
