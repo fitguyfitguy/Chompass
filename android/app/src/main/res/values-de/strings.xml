@@ -2832,6 +2832,7 @@ für dich ein</string>
     <string name="error_failed_input_missing">Die gespeicherte Eingabe konnte nicht wiederhergestellt werden. Bitte mache ein neues Foto.</string>
 
     <string name="error_barcode_lookup_failed">Barcode-Suche fehlgeschlagen</string>
+    <string name="barcode_add_to_off">Zu Open Food Facts hinzufügen</string>
 
     <string name="error_search_food_failed">Dieses Lebensmittel konnte nicht geladen werden. Bitte versuche es erneut.</string>
 

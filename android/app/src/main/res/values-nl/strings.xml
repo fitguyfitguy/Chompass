@@ -872,6 +872,7 @@
     <string name="error_ai_suggestion">AI-suggestie laden mislukt.</string>
     <string name="error_analysis_failed">Analyse mislukt</string>
     <string name="error_barcode_lookup_failed">Barcode-opzoeking mislukt</string>
+    <string name="barcode_add_to_off">Toevoegen aan Open Food Facts</string>
     <string name="error_failed_input_missing">Opgeslagen invoer kon niet worden hersteld. Maak een nieuwe foto.</string>
     <string name="error_invalid_json">Ongeldige JSON</string>
     <string name="error_search_food_failed">Dit voedsel kon niet worden geladen. Probeer het opnieuw.</string>

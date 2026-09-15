@@ -970,6 +970,7 @@
     <string name="error_ai_suggestion">No se pudo cargar la sugerencia de IA.</string>
     <string name="error_analysis_failed">El análisis falló</string>
     <string name="error_barcode_lookup_failed">La búsqueda de código de barras falló</string>
+    <string name="barcode_add_to_off">Añadir a Open Food Facts</string>
     <string name="error_failed_input_missing">No se pudo restaurar la entrada guardada. Toma una foto nueva.</string>
     <string name="export_action">Exportar</string>
     <string name="export_body_metrics_empty">No se encontraron entradas de peso, grasa corporal o medidas para exportar.</string>

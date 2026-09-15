@@ -902,6 +902,7 @@
     <string name="error_ai_suggestion">无法加载 AI 建议。</string>
     <string name="error_analysis_failed">分析失败</string>
     <string name="error_barcode_lookup_failed">条码查询失败</string>
+    <string name="barcode_add_to_off">添加到 Open Food Facts</string>
     <string name="error_failed_input_missing">无法恢复已保存的输入，请重新拍照。</string>
     <string name="error_invalid_json">JSON 无效</string>
     <string name="error_search_food_failed">无法加载该食物，请重试。</string>

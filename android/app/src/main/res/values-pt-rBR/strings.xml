@@ -890,6 +890,7 @@
     <string name="error_ai_suggestion">Não foi possível carregar a sugestão da IA.</string>
     <string name="error_analysis_failed">Falha na análise</string>
     <string name="error_barcode_lookup_failed">Falha na consulta do código de barras</string>
+    <string name="barcode_add_to_off">Adicionar ao Open Food Facts</string>
     <string name="error_failed_input_missing">Não foi possível restaurar a entrada salva. Tire uma nova foto.</string>
     <string name="error_invalid_json">JSON inválido</string>
     <string name="error_search_food_failed">Não foi possível carregar este alimento. Tente novamente.</string>

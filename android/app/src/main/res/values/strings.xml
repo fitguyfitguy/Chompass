@@ -2251,6 +2251,7 @@
     <string name="error_analysis_failed">Analysis failed</string>
     <string name="error_failed_input_missing">Saved input could not be restored. Please take a new photo.</string>
     <string name="error_barcode_lookup_failed">Barcode lookup failed</string>
+    <string name="barcode_add_to_off">Add to Open Food Facts</string>
     <string name="error_search_food_failed">Could not load this food. Please try again.</string>
     <string name="error_ai_suggestion">Could not load AI suggestion.</string>
     <string name="finish_onboarding_hint">Finish onboarding first to compare this meal against your daily goals.</string>

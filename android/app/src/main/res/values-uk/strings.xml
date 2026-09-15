@@ -867,6 +867,7 @@
     <string name="error_ai_suggestion">Не вдалося завантажити підказку ШІ.</string>
     <string name="error_analysis_failed">Аналіз не вдався</string>
     <string name="error_barcode_lookup_failed">Не вдалося знайти штрих-код</string>
+    <string name="barcode_add_to_off">Додати до Open Food Facts</string>
     <string name="error_failed_input_missing">Збережене введення не вдалося відновити. Зроби нове фото.</string>
     <string name="export_action">Експорт</string>
     <string name="export_body_metrics_empty">Не знайдено записів ваги, жиру чи вимірювань для експорту.</string>
