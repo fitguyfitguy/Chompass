@@ -780,9 +780,9 @@
     <string name="ai_error_provider_overloaded">Furnizorul IA este suprasolicitat acum. Am încercat de câteva ori. Încearcă din nou într-un minut sau schimbă furnizorul/modelul în Setări → Furnizor IA.</string>
     <string name="ai_error_rate_limit">Limită de cereri atinsă pentru cheia ta API. Așteaptă un minut sau schimbă furnizorul în Setări → Furnizor IA. Pe planul gratuit, modelul Flash-Lite are cea mai mare cotă.</string>
     <string name="ai_error_timeout">Furnizorul IA a durat prea mult să răspundă. Încearcă din nou sau mărește timeout-ul în Setări → IA și voce.</string>
-    <string name="ai_error_truncated">Răspunsul IA a fost trunchiat. Încearcă o întrebare mai scurtă sau alt model.</string>
-    <string name="ai_error_truncated_twice">Răspunsul IA a fost trunchiat de două ori. Încearcă o întrebare mai scurtă sau alt model.</string>
-    <string name="ai_error_truncated_twice_description">Răspunsul IA a fost trunchiat de două ori. Încearcă o descriere mai scurtă sau alt model.</string>
+    <string name="ai_error_truncated">Răspunsul IA a fost tăiat la limita de lungime a răspunsului. Mărește lungimea maximă a răspunsului în Setări → IA și voce, sau încearcă o întrebare mai scurtă.</string>
+    <string name="ai_error_truncated_twice">Răspunsul IA a fost tăiat de două ori la limita de lungime a răspunsului. Mărește lungimea maximă a răspunsului în Setări → IA și voce, sau încearcă o întrebare mai scurtă.</string>
+    <string name="ai_error_truncated_twice_description">Modelul a atins limita de lungime a răspunsului înainte să termine, iar raționamentul se numără la această limită. Mărește lungimea maximă a răspunsului în Setări → IA și voce, sau limitează raționamentul modelului, apoi încearcă din nou.</string>
     <string name="ai_model_tier_paid">Doar model plătit (planul gratuit nu mai include Pro)</string>
     <string name="ai_model_tier_varies">Disponibilitatea pe planul gratuit variază după cont și regiune</string>
     <string name="ai_provider_ollama">Ollama (local)</string>

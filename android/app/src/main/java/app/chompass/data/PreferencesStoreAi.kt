@@ -132,10 +132,10 @@ internal suspend fun PreferencesStore.setOpenRouterReasoningEffortImpl(e: OpenRo
 }
 
 internal const val MIN_MAX_RESPONSE_TOKENS = 256
-internal const val MAX_MAX_RESPONSE_TOKENS = 8192
+internal const val MAX_MAX_RESPONSE_TOKENS = 16384
 internal const val DEFAULT_AI_READ_TIMEOUT_SECONDS = 180
 internal const val MIN_AI_READ_TIMEOUT_SECONDS = 30
-internal const val MAX_AI_READ_TIMEOUT_SECONDS = 600
+internal const val MAX_AI_READ_TIMEOUT_SECONDS = 900
 
 internal fun clampMaxResponseTokens(v: Int): Int =
     v.coerceIn(MIN_MAX_RESPONSE_TOKENS, MAX_MAX_RESPONSE_TOKENS)

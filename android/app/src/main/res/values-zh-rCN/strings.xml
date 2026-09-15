@@ -790,9 +790,9 @@
     <string name="ai_error_provider_overloaded">AI 提供商当前过载。我们已重试数次。请一分钟后重试，或在设置 → AI 提供商中更换提供商/模型。</string>
     <string name="ai_error_rate_limit">API 密钥已达请求上限。请等待一分钟，或在设置 → AI 提供商中更换提供商。免费层中 Flash-Lite 模型的配额最高。</string>
     <string name="ai_error_timeout">AI 提供商响应超时。请重试，或在设置 → AI 与语音中调高超时时间。</string>
-    <string name="ai_error_truncated">AI 回复被截断。请尝试更短的问题或其他模型。</string>
-    <string name="ai_error_truncated_twice">AI 回复两次被截断。请尝试更短的问题或其他模型。</string>
-    <string name="ai_error_truncated_twice_description">AI 回复两次被截断。请尝试更短的描述或其他模型。</string>
+    <string name="ai_error_truncated">AI 回复在回复长度上限处被截断。请在设置 → AI 与语音中调高最大回复长度，或尝试更短的问题。</string>
+    <string name="ai_error_truncated_twice">AI 回复两次在回复长度上限处被截断。请在设置 → AI 与语音中调高最大回复长度，或尝试更短的问题。</string>
+    <string name="ai_error_truncated_twice_description">模型在回答完成前达到了回复长度上限，思考也计入该上限。请在设置 → AI 与语音中调高最大回复长度，或限制模型的思考，然后重试。</string>
     <string name="ai_model_tier_paid">仅限付费模型（免费层不再包含 Pro）</string>
     <string name="ai_model_tier_varies">免费层可用性因账户和地区而异</string>
     <string name="ai_provider_on_device">设备端（私密）</string>

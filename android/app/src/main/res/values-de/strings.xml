@@ -2370,11 +2370,11 @@ für dich ein</string>
 
     <string name="ai_error_coach_round_limit">Der Coach hat das Limit für die Anzahl der Tool-Aufrufe überschritten. Formuliere deine Frage bitte um.</string>
 
-    <string name="ai_error_truncated_twice">Die KI-Antwort wurde zweimal gekürzt. Versuche es mit einer kürzeren Frage oder einem anderen Modell.</string>
+    <string name="ai_error_truncated_twice">Die KI-Antwort wurde zweimal am Limit der Antwortlänge abgeschnitten. Erhöhe die maximale Antwortlänge unter Einstellungen → KI &amp; Sprache oder frag kürzer.</string>
 
-    <string name="ai_error_truncated_twice_description">Die KI-Antwort wurde zweimal gekürzt. Versuche es mit einer kürzeren Beschreibung oder einem anderen Modell.</string>
+    <string name="ai_error_truncated_twice_description">Das Modell hat das Limit der Antwortlänge erreicht, bevor es fertig war; auch Denken zählt dazu. Erhöhe die maximale Antwortlänge unter Einstellungen → KI &amp; Sprache oder begrenze das Denken des Modells, und versuch es dann erneut.</string>
 
-    <string name="ai_error_truncated">Die KI-Antwort wurde gekürzt. Versuche es mit einer kürzeren Frage oder einem anderen Modell.</string>
+    <string name="ai_error_truncated">Die KI-Antwort wurde am Limit der Antwortlänge abgeschnitten. Erhöhe die maximale Antwortlänge unter Einstellungen → KI &amp; Sprache oder frag kürzer.</string>
 
     <string name="ai_error_provider_error">Der KI-Anbieter hat einen Fehler zurückgegeben. </string>
 

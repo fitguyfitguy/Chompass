@@ -780,9 +780,9 @@ bilirsən?</string>
     <string name="ai_error_provider_overloaded">AI provayderi hazırda həddindən artıq yüklənib. Bir neçə dəfə cəhd etdik. Bir dəqiqədən sonra yenidən cəhd et və ya Parametrlər → AI Provayderi bölməsində provayderi/modeli dəyiş.</string>
     <string name="ai_error_rate_limit">API açarın üçün sorğu limiti dolub. Bir dəqiqə gözlə və ya Parametrlər → AI Provayderi bölməsində başqa provayderə keç. Pulsuz planda ən yüksək kvota Flash-Lite modelindədir.</string>
     <string name="ai_error_timeout">AI provayderi cavab vermək üçün çox gecikdi. Yenidən cəhd et və ya Parametrlər → AI və Nitq bölməsində vaxt limitini artır.</string>
-    <string name="ai_error_truncated">AI cavabı qısaldıldı. Daha qısa sual və ya başqa model sına.</string>
-    <string name="ai_error_truncated_twice">AI cavabı iki dəfə qısaldıldı. Daha qısa sual və ya başqa model sına.</string>
-    <string name="ai_error_truncated_twice_description">AI cavabı iki dəfə qısaldıldı. Daha qısa təsvir və ya başqa model sına.</string>
+    <string name="ai_error_truncated">AI cavabı cavab uzunluğu həddində qısaldıldı. Parametrlər → AI və Nitq bölməsində maksimum cavab uzunluğunu artır ya da daha qısa sual ver.</string>
+    <string name="ai_error_truncated_twice">AI cavabı cavab uzunluğu həddində iki dəfə qısaldıldı. Parametrlər → AI və Nitq bölməsində maksimum cavab uzunluğunu artır ya da daha qısa sual ver.</string>
+    <string name="ai_error_truncated_twice_description">Model cavabı bitirməzdən əvvəl cavab uzunluğu həddinə çatdı, düşüncə də bu həddə sayılır. Parametrlər → AI və Nitq bölməsində maksimum cavab uzunluğunu artır ya da modelin düşüncəsini məhdudlaşdır, sonra yenidən cəhd et.</string>
     <string name="ai_model_tier_paid">Yalnız ödənişli model (pulsuz plan artıq Pro daxil etmir)</string>
     <string name="ai_model_tier_varies">Pulsuz planda mövcudluq hesab və regiona görə dəyişir</string>
     <string name="ai_provider_on_device">Cihazda (özəl)</string>
