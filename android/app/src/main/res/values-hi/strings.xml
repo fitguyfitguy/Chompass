@@ -797,6 +797,7 @@
     <string name="ai_provider_on_device">ऑन-डिवाइस (निजी)</string>
     <string name="ai_reasoning_effort_auto">ऑटो</string>
     <string name="ai_reasoning_effort_high">उच्च</string>
+    <string name="ai_reasoning_effort_disabled">बंद (सोच बंद)</string>
     <string name="ai_reasoning_effort_low">निम्न</string>
     <string name="ai_reasoning_effort_medium">मध्यम</string>
     <string name="barcode_hint">कैमरे को बारकोड पर इंगित करें</string>
@@ -1232,7 +1233,7 @@
     <string name="settings_ai_read_timeout_unit">से</string>
     <string name="settings_ai_read_timeout_value">%1$d से</string>
     <string name="settings_ai_reasoning_effort">तर्क प्रयास</string>
-    <string name="settings_ai_reasoning_effort_footer">तर्क-क्षम OpenRouter मॉडल के लिए सोच बजट नियंत्रित करता है। ऑटो ऐप डिफ़ॉल्ट रखता है; अधिक प्रयास धीमा और अधिक टोकन खर्च करने वाला है।</string>
+    <string name="settings_ai_reasoning_effort_footer">OpenRouter मॉडल: सोच बजट तय करता है। कस्टम और Ollama सर्वर: सर्वर समर्थन करे तो reasoning_effort भेजता है। अगर सर्वर अनुरोध अस्वीकार करे, तो ऑटो चुनें।</string>
     <string name="settings_ai_vision_model">विज़न मॉडल</string>
     <string name="settings_ai_vision_model_footer">फ़ोटो के लिए यह मॉडल उपयोग होता है; टेक्स्ट के लिए मुख्य मॉडल। सब कुछ के लिए मुख्य मॉडल उपयोग करने हेतु खाली छोड़ें।</string>
     <string name="settings_ai_vision_model_unset">(मॉडल के समान)</string>

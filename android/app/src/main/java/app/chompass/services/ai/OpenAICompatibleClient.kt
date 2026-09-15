@@ -39,7 +39,8 @@ object OpenAICompatibleClient {
      * OpenRouter `reasoning` request body (upstream #194). Returns null when the
      * caller is not on OpenRouter. AUTO preserves the historical behavior:
      * reasoning is excluded from the response always, with a low effort budget on
-     * compact retries only. Explicit efforts apply to every request.
+     * compact retries only. Explicit efforts apply to every request. DISABLED
+     * stays exclude-only: no effort budget, not even on compact retries.
      */
     internal fun reasoningBody(
         effort: OpenRouterReasoningEffort?,
@@ -47,13 +48,48 @@ object OpenAICompatibleClient {
     ): JSONObject? {
         if (effort == null) return null
         val body = JSONObject().put("exclude", true)
-        val effortValue = if (effort == OpenRouterReasoningEffort.AUTO) {
-            if (compactRetry) "low" else null
-        } else {
-            effort.requestValue
+        val effortValue = when (effort) {
+            OpenRouterReasoningEffort.AUTO -> if (compactRetry) "low" else null
+            OpenRouterReasoningEffort.DISABLED -> null
+            else -> effort.requestValue
         }
         if (effortValue != null) body.put("effort", effortValue)
         return body
+    }
+
+    /** Providers that offer the user-facing reasoning-effort lever: OpenRouter
+     *  (#194 reasoning object) plus Custom OpenAI-compatible and Ollama hosts
+     *  (#97 flat `reasoning_effort` field). */
+    internal fun usesReasoningEffort(provider: AIProvider): Boolean =
+        provider == AIProvider.OPENROUTER || usesFlatReasoningEffort(provider)
+
+    /** Providers whose chat endpoint takes the flat `reasoning_effort` field (#97). */
+    internal fun usesFlatReasoningEffort(provider: AIProvider): Boolean =
+        provider == AIProvider.CUSTOM_OPENAI || provider == AIProvider.OLLAMA
+
+    /**
+     * Flat `reasoning_effort` value for Custom OpenAI-compatible and Ollama hosts.
+     * Null = omit the field (AUTO, or a provider that does not take it); omitting
+     * keeps requests byte-identical for existing users.
+     */
+    internal fun flatReasoningEffort(provider: AIProvider, effort: OpenRouterReasoningEffort?): String? {
+        if (!usesFlatReasoningEffort(provider) || effort == null) return null
+        return if (effort == OpenRouterReasoningEffort.AUTO) null else effort.requestValue
+    }
+
+    /** Puts the provider's reasoning fields onto a chat/completions body (null effort = none). */
+    private fun putReasoningFields(
+        body: JSONObject,
+        provider: AIProvider,
+        effort: OpenRouterReasoningEffort?,
+        compactRetry: Boolean,
+    ) {
+        when {
+            provider == AIProvider.OPENROUTER ->
+                reasoningBody(effort, compactRetry)?.let { body.put("reasoning", it) }
+            usesFlatReasoningEffort(provider) ->
+                flatReasoningEffort(provider, effort)?.let { body.put("reasoning_effort", it) }
+        }
     }
 
     suspend fun analyze(
@@ -71,7 +107,7 @@ object OpenAICompatibleClient {
     ): String {
         val url = "$baseUrl/chat/completions"
 
-        suspend fun request(requestPrompt: String, compactRetry: Boolean): OpenAITextResponse {
+        suspend fun request(requestPrompt: String, compactRetry: Boolean, sendReasoning: Boolean): OpenAITextResponse {
             val content = JSONArray().apply {
                 imageBytesList.forEach {
                     put(
@@ -90,9 +126,7 @@ object OpenAICompatibleClient {
                 .put("model", model)
                 .put("messages", JSONArray().put(JSONObject().put("role", "user").put("content", content)))
                 .put(tokenLimitParameter(provider, model), maxTokens)
-            if (provider == AIProvider.OPENROUTER) {
-                reasoningBody(reasoningEffort, compactRetry)?.let { body.put("reasoning", it) }
-            }
+            putReasoningFields(body, provider, reasoningEffort.takeIf { sendReasoning }, compactRetry)
 
             val builder = Request.Builder()
                 .url(url)
@@ -108,20 +142,39 @@ object OpenAICompatibleClient {
             return OpenAIResponseParser.parse(bodyStr)
         }
 
-        var response = request(prompt, compactRetry = false)
-        if (response.needsCompactRetry) {
-            response = request(compactRetryPrompt(prompt, maxTokens), compactRetry = true)
-            if (response.wasTruncated) {
-                if (PerfLog.enabled) {
-                    PerfLog.event(
-                        "op=analyzeText finish=${response.finishReason} chars=${response.text?.length ?: -1} " +
-                            "maxTokens=$maxTokens compact=true" + perfSuffix(perfTag)
-                    )
+        suspend fun ladder(sendReasoning: Boolean): String {
+            var response = request(prompt, compactRetry = false, sendReasoning)
+            if (response.needsCompactRetry) {
+                response = request(compactRetryPrompt(prompt, maxTokens), compactRetry = true, sendReasoning)
+                if (response.wasTruncated) {
+                    if (PerfLog.enabled) {
+                        PerfLog.event(
+                            "op=analyzeText finish=${response.finishReason} chars=${response.text?.length ?: -1} " +
+                                "maxTokens=$maxTokens compact=true" + perfSuffix(perfTag)
+                        )
+                    }
+                    throw AiError.Api("The AI response was truncated twice. Try a shorter description or another model.", messageRes = R.string.ai_error_truncated_twice_description)
                 }
-                throw AiError.Api("The AI response was truncated twice. Try a shorter description or another model.", messageRes = R.string.ai_error_truncated_twice_description)
+            }
+            return stripThinking(response.text ?: throw AiError.InvalidResponse)
+        }
+
+        // #97: a selfhosted server may 400 on the reasoning_effort field it does
+        // not know. When the rejection text points at reasoning, drop every
+        // reasoning field and run the ladder once more.
+        if (flatReasoningEffort(provider, reasoningEffort) == null) return ladder(sendReasoning = true)
+        return try {
+            ladder(sendReasoning = true)
+        } catch (e: AiError.Api) {
+            if (e.httpStatus == 400 && e.message.orEmpty().contains("reasoning", ignoreCase = true)) {
+                if (PerfLog.enabled) {
+                    PerfLog.event("op=analyzeText reasoningEffortDropped=1" + perfSuffix(perfTag))
+                }
+                ladder(sendReasoning = false)
+            } else {
+                throw e
             }
         }
-        return stripThinking(response.text ?: throw AiError.InvalidResponse)
     }
 
     /**
@@ -169,9 +222,7 @@ object OpenAICompatibleClient {
                 .put("messages", JSONArray().put(JSONObject().put("role", "user").put("content", content)))
                 .put(tokenLimitParameter(provider, model), maxTokens)
                 .put("stream", true)
-            if (provider == AIProvider.OPENROUTER) {
-                reasoningBody(reasoningEffort, compactRetry)?.let { body.put("reasoning", it) }
-            }
+            putReasoningFields(body, provider, reasoningEffort, compactRetry)
 
             val builder = Request.Builder()
                 .url(url)
@@ -234,6 +285,22 @@ object OpenAICompatibleClient {
             // servers cut the stream mid-reply (#97), others omit
             // finish_reason on success — flag it and let the caller decide.
             OpenAIStreamResult(text, finishReason, streamIncomplete = finishReason == null)
+        } catch (e: AiError.Api) {
+            if (e.httpStatus == 400 && flatReasoningEffort(provider, reasoningEffort) != null &&
+                e.message.orEmpty().contains("reasoning", ignoreCase = true)
+            ) {
+                // Same #97 400 net as [analyze]: the stream request was rejected
+                // over reasoning_effort, so answer non-streaming without any
+                // reasoning field instead of re-running the ladder with it.
+                if (PerfLog.enabled) {
+                    PerfLog.event("op=analyzeText reasoningEffortDropped=1 stream=1" + perfSuffix(perfTag))
+                }
+                oneShotResult(
+                    analyze(client, baseUrl, model, apiKey, prompt, imageBytesList, provider, maxTokens, OpenRouterReasoningEffort.AUTO, perfTag = perfTag)
+                )
+            } else {
+                throw e
+            }
         } catch (e: AiError) {
             throw e
         } catch (_: Throwable) {

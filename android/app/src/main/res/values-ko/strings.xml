@@ -796,6 +796,7 @@
     <string name="ai_provider_on_device">온디바이스(비공개)</string>
     <string name="ai_reasoning_effort_auto">자동</string>
     <string name="ai_reasoning_effort_high">높음</string>
+    <string name="ai_reasoning_effort_disabled">끔 (사고 없음)</string>
     <string name="ai_reasoning_effort_low">낮음</string>
     <string name="ai_reasoning_effort_medium">중간</string>
     <string name="barcode_hint">카메라를 바코드에 맞추세요</string>
@@ -1231,7 +1232,7 @@
     <string name="settings_ai_read_timeout_unit">초</string>
     <string name="settings_ai_read_timeout_value">%1$d초</string>
     <string name="settings_ai_reasoning_effort">추론 수준</string>
-    <string name="settings_ai_reasoning_effort_footer">추론 지원 OpenRouter 모델의 사고 예산을 제어해요. 자동은 앱 기본값을 유지하며, 높을수록 느리고 토큰 소모가 많아요.</string>
+    <string name="settings_ai_reasoning_effort_footer">OpenRouter 모델: 사고 예산을 정해요. 커스텀 및 Ollama 서버: 서버가 지원하면 reasoning_effort를 보내요. 서버가 요청을 거부하면 자동을 선택하세요.</string>
     <string name="settings_ai_vision_model">비전 모델</string>
     <string name="settings_ai_vision_model_footer">사진은 이 모델, 텍스트는 기본 모델을 사용해요. 모두 기본 모델을 사용하려면 비워 두세요.</string>
     <string name="settings_ai_vision_model_unset">(모델과 동일)</string>

@@ -787,6 +787,7 @@
     <string name="ai_provider_on_device">Sul dispositivo (privato)</string>
     <string name="ai_reasoning_effort_auto">Auto</string>
     <string name="ai_reasoning_effort_high">Alto</string>
+    <string name="ai_reasoning_effort_disabled">Disattivato (senza ragionamento)</string>
     <string name="ai_reasoning_effort_low">Basso</string>
     <string name="ai_reasoning_effort_medium">Medio</string>
     <string name="barcode_hint">Inquadra il codice a barre</string>
@@ -1195,7 +1196,7 @@
     <string name="settings_ai_read_timeout_unit">s</string>
     <string name="settings_ai_read_timeout_value">%1$d s</string>
     <string name="settings_ai_reasoning_effort">Sforzo di ragionamento</string>
-    <string name="settings_ai_reasoning_effort_footer">Controlla il budget di ragionamento per i modelli OpenRouter che lo supportano. Auto mantiene il valore predefinito dell\'app; uno sforzo maggiore è più lento e costa più token.</string>
+    <string name="settings_ai_reasoning_effort_footer">Modelli OpenRouter: imposta il budget di ragionamento. Server personalizzati e Ollama: invia reasoning_effort se il server lo supporta. Se il tuo server rifiuta la richiesta, scegli Auto.</string>
     <string name="settings_ai_vision_model">Modello per foto</string>
     <string name="settings_ai_vision_model_footer">Le foto usano questo modello; il testo usa il modello principale. Lascia vuoto per usare il modello principale per tutto.</string>
     <string name="settings_ai_vision_model_unset">(come Modello)</string>

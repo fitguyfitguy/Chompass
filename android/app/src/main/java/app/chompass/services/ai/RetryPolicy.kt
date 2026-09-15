@@ -65,7 +65,7 @@ object RetryPolicy {
                 delay(delays[attempt])
                 continue
             }
-            throw AiError.Api(lastMessage, messageRes = friendlyMessageRes(code, raw))
+            throw AiError.Api(lastMessage, messageRes = friendlyMessageRes(code, raw), httpStatus = code)
         }
         throw AiError.Api(lastMessage)
     }

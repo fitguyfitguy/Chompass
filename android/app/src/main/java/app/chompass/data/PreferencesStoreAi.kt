@@ -101,14 +101,18 @@ internal suspend fun PreferencesStore.setAiReadTimeoutSecondsImpl(v: Int) {
         dataStore.edit { it[Keys.AI_READ_TIMEOUT_SECONDS] = clampAiReadTimeoutSeconds(v) }
     }
 
-/** Reasoning-effort control for OpenRouter reasoning-capable models (upstream #194).
- *  AUTO keeps the app's historical behavior: `exclude: true` always, `effort: "low"`
- *  on compact retries only. Explicit efforts are sent with every OpenRouter request. */
+/** Reasoning-effort control for OpenRouter reasoning-capable models (upstream #194)
+ *  and selfhosted OpenAI-compatible hosts (#97). AUTO keeps the app's historical
+ *  behavior: `exclude: true` always with `effort: "low"` on compact retries only
+ *  (OpenRouter), and no reasoning field at all (Custom/Ollama). DISABLED asks for
+ *  no thinking: `reasoning_effort: "none"` on Custom/Ollama, exclude-only on
+ *  OpenRouter. Explicit efforts are sent with every request. */
 enum class OpenRouterReasoningEffort(val storageKey: String, val requestValue: String?) {
     AUTO("auto", null),
     LOW("low", "low"),
     MEDIUM("medium", "medium"),
-    HIGH("high", "high");
+    HIGH("high", "high"),
+    DISABLED("disabled", "none");
 
     @get:StringRes
     val displayNameRes: Int get() = when (this) {
@@ -116,6 +120,7 @@ enum class OpenRouterReasoningEffort(val storageKey: String, val requestValue: S
         LOW -> R.string.ai_reasoning_effort_low
         MEDIUM -> R.string.ai_reasoning_effort_medium
         HIGH -> R.string.ai_reasoning_effort_high
+        DISABLED -> R.string.ai_reasoning_effort_disabled
     }
 
     companion object {

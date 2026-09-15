@@ -789,6 +789,7 @@
     <string name="ai_provider_on_device">Pe dispozitiv (privat)</string>
     <string name="ai_reasoning_effort_auto">Auto</string>
     <string name="ai_reasoning_effort_high">Ridicat</string>
+    <string name="ai_reasoning_effort_disabled">Oprit (fără raționament)</string>
     <string name="ai_reasoning_effort_low">Scăzut</string>
     <string name="ai_reasoning_effort_medium">Mediu</string>
     <string name="barcode_hint">Îndreaptă camera spre codul de bare</string>
@@ -1227,7 +1228,7 @@
     <string name="settings_ai_read_timeout_unit">s</string>
     <string name="settings_ai_read_timeout_value">%1$d s</string>
     <string name="settings_ai_reasoning_effort">Efort de raționare</string>
-    <string name="settings_ai_reasoning_effort_footer">Controlează bugetul de raționare pentru modelele OpenRouter cu suport de raționare. Auto păstrează implicitul aplicației; un efort mai mare este mai lent și costă mai mulți tokeni.</string>
+    <string name="settings_ai_reasoning_effort_footer">Modelele OpenRouter: setează bugetul de raționare. Servere proprii și Ollama: trimite reasoning_effort dacă serverul îl acceptă. Dacă serverul refuză cererea, alege Auto.</string>
     <string name="settings_ai_vision_model">Model de viziune</string>
     <string name="settings_ai_vision_model_footer">Fotografiile folosesc acest model; textul folosește modelul principal. Lasă gol pentru a folosi modelul principal pentru tot.</string>
     <string name="settings_ai_vision_model_unset">(la fel ca Model)</string>

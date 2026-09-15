@@ -796,6 +796,7 @@
     <string name="ai_provider_on_device">オンデバイス（プライベート）</string>
     <string name="ai_reasoning_effort_auto">自動</string>
     <string name="ai_reasoning_effort_high">高</string>
+    <string name="ai_reasoning_effort_disabled">オフ（思考なし）</string>
     <string name="ai_reasoning_effort_low">低</string>
     <string name="ai_reasoning_effort_medium">中</string>
     <string name="barcode_hint">カメラをバーコードに向けてください</string>
@@ -1231,7 +1232,7 @@
     <string name="settings_ai_read_timeout_unit">秒</string>
     <string name="settings_ai_read_timeout_value">%1$d 秒</string>
     <string name="settings_ai_reasoning_effort">推論の深さ</string>
-    <string name="settings_ai_reasoning_effort_footer">推論対応の OpenRouter モデルの思考予算を制御します。自動はアプリのデフォルトを維持し、深いほど遅くトークン消費が増えます。</string>
+    <string name="settings_ai_reasoning_effort_footer">OpenRouter モデル：思考予算を設定します。カスタムサーバーと Ollama：サーバーが対応していれば reasoning_effort を送信します。サーバーがリクエストを拒否する場合は自動を選んでください。</string>
     <string name="settings_ai_vision_model">ビジョンモデル</string>
     <string name="settings_ai_vision_model_footer">写真はこのモデル、テキストはメインモデルを使用します。すべてにメインモデルを使うには空のままにします。</string>
     <string name="settings_ai_vision_model_unset">（モデルと同じ）</string>

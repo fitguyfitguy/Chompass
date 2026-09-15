@@ -798,6 +798,7 @@
     <string name="ai_provider_on_device">设备端（私密）</string>
     <string name="ai_reasoning_effort_auto">自动</string>
     <string name="ai_reasoning_effort_high">高</string>
+    <string name="ai_reasoning_effort_disabled">关闭（不思考）</string>
     <string name="ai_reasoning_effort_low">低</string>
     <string name="ai_reasoning_effort_medium">中</string>
     <string name="barcode_hint">将相机对准条码</string>
@@ -1233,7 +1234,7 @@
     <string name="settings_ai_read_timeout_unit">秒</string>
     <string name="settings_ai_read_timeout_value">%1$d 秒</string>
     <string name="settings_ai_reasoning_effort">推理力度</string>
-    <string name="settings_ai_reasoning_effort_footer">控制支持推理的 OpenRouter 模型的思考预算。自动保持应用默认；力度更高更慢且消耗更多令牌。</string>
+    <string name="settings_ai_reasoning_effort_footer">OpenRouter 模型：设定思考预算。自定义服务器和 Ollama：服务器支持时发送 reasoning_effort。如果服务器拒绝请求，请选择自动。</string>
     <string name="settings_ai_vision_model">视觉模型</string>
     <string name="settings_ai_vision_model_footer">照片使用此模型，文字使用主模型。留空则一律使用主模型。</string>
     <string name="settings_ai_vision_model_unset">（同模型）</string>

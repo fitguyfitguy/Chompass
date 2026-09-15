@@ -797,6 +797,7 @@
     <string name="ai_provider_on_device">على الجهاز (خاص)</string>
     <string name="ai_reasoning_effort_auto">تلقائي</string>
     <string name="ai_reasoning_effort_high">عالي</string>
+    <string name="ai_reasoning_effort_disabled">إيقاف (بلا تفكير)</string>
     <string name="ai_reasoning_effort_low">منخفض</string>
     <string name="ai_reasoning_effort_medium">متوسط</string>
     <string name="barcode_hint">وجّه الكاميرا نحو الرمز الشريطي</string>
@@ -1232,7 +1233,7 @@
     <string name="settings_ai_read_timeout_unit">ث</string>
     <string name="settings_ai_read_timeout_value">%1$d ث</string>
     <string name="settings_ai_reasoning_effort">مستوى الاستدلال</string>
-    <string name="settings_ai_reasoning_effort_footer">يتحكم في ميزانية التفكير لنماذج OpenRouter القادرة على الاستدلال. التلقائي يحافظ على إعداد التطبيق الافتراضي؛ المستوى الأعلى أبطأ ويكلف رموزًا أكثر.</string>
+    <string name="settings_ai_reasoning_effort_footer">نماذج OpenRouter: تحدد ميزانية التفكير. خوادم مخصصة وخوادم Ollama: ترسل reasoning_effort عندما يدعمها الخادم. إذا رفض الخادم الطلب، اختر تلقائي.</string>
     <string name="settings_ai_vision_model">نموذج الرؤية</string>
     <string name="settings_ai_vision_model_footer">تستخدم الصور هذا النموذج، والنص يستخدم النموذج الرئيسي. اتركه فارغًا لاستخدام النموذج الرئيسي لكل شيء.</string>
     <string name="settings_ai_vision_model_unset">(مثل النموذج)</string>

@@ -785,6 +785,7 @@
     <string name="ai_provider_on_device">No dispositivo (privado)</string>
     <string name="ai_reasoning_effort_auto">Auto</string>
     <string name="ai_reasoning_effort_high">Alto</string>
+    <string name="ai_reasoning_effort_disabled">Desativado (sem raciocínio)</string>
     <string name="ai_reasoning_effort_low">Baixo</string>
     <string name="ai_reasoning_effort_medium">Médio</string>
     <string name="barcode_hint">Aponte a câmera para o código de barras</string>
@@ -1226,7 +1227,7 @@
     <string name="settings_ai_read_timeout_unit">s</string>
     <string name="settings_ai_read_timeout_value">%1$d s</string>
     <string name="settings_ai_reasoning_effort">Esforço de raciocínio</string>
-    <string name="settings_ai_reasoning_effort_footer">Controla o orçamento de raciocínio para modelos OpenRouter com suporte a raciocínio. Auto mantém o padrão do app; esforço maior é mais lento e custa mais tokens.</string>
+    <string name="settings_ai_reasoning_effort_footer">Modelos OpenRouter: define o orçamento de raciocínio. Servidores personalizados e Ollama: envia reasoning_effort se o servidor aceitar. Se o servidor recusar a solicitação, escolha Auto.</string>
     <string name="settings_ai_vision_model">Modelo de visão</string>
     <string name="settings_ai_vision_model_footer">Fotos usam este modelo; texto usa o modelo principal. Deixe vazio para usar o modelo principal em tudo.</string>
     <string name="settings_ai_vision_model_unset">(igual ao Modelo)</string>
