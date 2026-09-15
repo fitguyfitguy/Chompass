@@ -29,11 +29,21 @@ class OpenFoodFactsSearchTest {
         server = MockWebServer()
         server.start()
         client = OkHttpClient.Builder().build()
+        OpenFoodFactsService.resetRateLimitForTest()
     }
 
     @After
     fun tearDown() {
         server.shutdown()
+        OpenFoodFactsService.resetRateLimitForTest()
+    }
+
+    /** Fake wall clock for rate-limit breaker tests. */
+    private var nowMs = 0L
+
+    private fun useFakeClock() {
+        nowMs = 1_000_000L
+        OpenFoodFactsService.rateLimitNowMs = { nowMs }
     }
 
     private fun jsonResponse(body: String): MockResponse =
@@ -41,6 +51,9 @@ class OpenFoodFactsSearchTest {
 
     private val serviceUnavailable: MockResponse =
         MockResponse().setResponseCode(503).setBody("<!DOCTYPE html><html><body>unavailable</body></html>")
+
+    private val garbage: MockResponse =
+        MockResponse().setResponseCode(200).setBody("<!DOCTYPE html><html><body>not json</body></html>")
 
     private fun productsJson(vararg names: Pair<String, String>): String {
         val items = names.map { (name, brand) ->
@@ -70,8 +83,8 @@ class OpenFoodFactsSearchTest {
     }
 
     @Test
-    fun search_retriesAfter503_andReturnsHits() {
-        server.enqueue(serviceUnavailable)
+    fun search_retries503Once_andReturnsHits() {
+        // 503 = OFF's global request limit: one retry is allowed...
         server.enqueue(serviceUnavailable)
         server.enqueue(jsonResponse(productsJson("Laugen Brezen" to "Aldi")))
 
@@ -79,19 +92,19 @@ class OpenFoodFactsSearchTest {
 
         assertEquals(1, hits.size)
         assertEquals("Laugen Brezen", hits[0].name)
-        assertEquals(3, server.requestCount)
+        assertEquals(2, server.requestCount)
     }
 
     @Test
-    fun search_returnsEmpty_onPersistent503() {
-        // Every candidate (full, drop-first, drop-last) gets its own retries;
-        // when the backend never answers, the search gives up empty.
-        repeat(3 * 3) { server.enqueue(serviceUnavailable) }
+    fun search_stopsWalk_when503PersistsAfterRetry() {
+        // ...a second 503 means the shared endpoint is saturated: the whole
+        // candidate walk stops instead of pushing more queries at it.
+        repeat(6) { server.enqueue(serviceUnavailable) }
 
         val hits = search("Aldi Laugen")
 
         assertTrue(hits.isEmpty())
-        assertEquals(9, server.requestCount)
+        assertEquals(2, server.requestCount)
     }
 
     @Test
@@ -128,12 +141,12 @@ class OpenFoodFactsSearchTest {
 
     @Test
     fun search_advancesToShorterQuery_whenBackendFails() {
-        // A 503-ing full query must not end the search: the shorter
-        // "Laugen" candidate still gets a chance (OFF often answers shorter
-        // queries while the longer one fails).
-        server.enqueue(serviceUnavailable)
-        server.enqueue(serviceUnavailable)
-        server.enqueue(serviceUnavailable)
+        // Non-JSON 200s are ordinary backend failures (not a 503 global
+        // limit): candidate 1 burns its retries, then the shorter "Laugen"
+        // candidate still gets its chance within the attempt budget.
+        server.enqueue(garbage)
+        server.enqueue(garbage)
+        server.enqueue(garbage)
         server.enqueue(jsonResponse(productsJson("Laugen Brezen" to "Aldi")))
 
         val hits = search("Aldi Laugen")
@@ -145,20 +158,18 @@ class OpenFoodFactsSearchTest {
     }
 
     @Test
-    fun search_dropsLastToken_afterFirstTokenMiss() {
-        // "aldi laugen" → "laugen" (miss) → "aldi" (brand-only flood, still
-        // better than nothing when OFF has no matching products at all).
-        server.enqueue(jsonResponse("""{"count":0,"products":[]}"""))
-        server.enqueue(jsonResponse("""{"count":0,"products":[]}"""))
-        server.enqueue(jsonResponse("""{"count":0,"products":[]}"""))
-        server.enqueue(jsonResponse("""{"count":0,"products":[]}"""))
-        server.enqueue(jsonResponse(productsJson("Mini Brezen" to "Aldi")))
+    fun search_capsTotalNetworkAttempts_atFour() {
+        // Budget: at most 4 network attempts per search() call across all
+        // candidates and retries. "Aldi Laugen" would walk three candidates
+        // (2 attempts each on empty: one try + the empty retry) — the cap
+        // stops it before the third candidate ("Aldi") is ever asked.
+        repeat(6) { server.enqueue(jsonResponse("""{"count":0,"products":[]}""")) }
 
         val hits = search("Aldi Laugen")
 
-        assertEquals(1, hits.size)
-        assertEquals("Mini Brezen", hits[0].name)
-        assertEquals("Aldi", lastQueryParameter("search_terms"))
+        assertTrue(hits.isEmpty())
+        assertEquals(4, server.requestCount)
+        assertEquals("Laugen", lastQueryParameter("search_terms"))
     }
 
     @Test
@@ -236,5 +247,73 @@ class OpenFoodFactsSearchTest {
         assertEquals("Aldi", result.brand)
         assertNotNull(result.caloriesPerServing)
         assertNull(result.lang)
+    }
+
+    @Test
+    fun search_429_tripsBreaker_nextSearchMakesNoRequest() {
+        server.enqueue(MockResponse().setResponseCode(429).setHeader("Retry-After", "60"))
+
+        val tripped = search("Aldi Laugen")
+
+        assertTrue(tripped.isEmpty())
+        assertEquals(1, server.requestCount)
+
+        // While the cooldown lasts, a fresh search answers empty without
+        // touching the network at all.
+        val shortCircuited = search("Aldi Laugen")
+        assertTrue(shortCircuited.isEmpty())
+        assertEquals(1, server.requestCount)
+    }
+
+    @Test
+    fun search_breakerHonorsRetryAfterHeader() {
+        useFakeClock()
+        server.enqueue(MockResponse().setResponseCode(429).setHeader("Retry-After", "30"))
+        assertTrue(search("Aldi Laugen").isEmpty())
+
+        // One second before the 30 s cooldown ends: still blocked.
+        nowMs += 29_000
+        assertTrue(search("Aldi Laugen").isEmpty())
+        assertEquals(1, server.requestCount)
+
+        // Past the cooldown: the breaker is open again and the request goes out.
+        nowMs += 2_000
+        server.enqueue(jsonResponse(productsJson("Laugen Brezen" to "Aldi")))
+        assertEquals(1, search("Aldi Laugen").size)
+        assertEquals(2, server.requestCount)
+    }
+
+    @Test
+    fun search_breakerExpires_afterDefaultCooldown() {
+        useFakeClock()
+        // No Retry-After header: the default 60 s cooldown applies.
+        server.enqueue(MockResponse().setResponseCode(429))
+        assertTrue(search("Aldi Laugen").isEmpty())
+
+        nowMs += 59_000
+        assertTrue(search("Aldi Laugen").isEmpty())
+        assertEquals(1, server.requestCount)
+
+        nowMs += 2_000
+        server.enqueue(jsonResponse(productsJson("Laugen Brezen" to "Aldi")))
+        assertEquals(1, search("Aldi Laugen").size)
+        assertEquals(2, server.requestCount)
+    }
+
+    @Test
+    fun search_breakerCooldown_isCappedAt120Seconds() {
+        useFakeClock()
+        // A hostile/huge Retry-After must not lock searches out for hours.
+        server.enqueue(MockResponse().setResponseCode(429).setHeader("Retry-After", "9999"))
+        assertTrue(search("Aldi Laugen").isEmpty())
+
+        nowMs += 119_000
+        assertTrue(search("Aldi Laugen").isEmpty())
+        assertEquals(1, server.requestCount)
+
+        nowMs += 2_000
+        server.enqueue(jsonResponse(productsJson("Laugen Brezen" to "Aldi")))
+        assertEquals(1, search("Aldi Laugen").size)
+        assertEquals(2, server.requestCount)
     }
 }
