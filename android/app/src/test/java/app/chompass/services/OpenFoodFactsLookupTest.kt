@@ -174,7 +174,7 @@ class OpenFoodFactsLookupTest {
         lookup()
 
         assertEquals(
-            "Chompass/Android/${app.chompass.BuildConfig.VERSION_NAME} (fitguy@mailfence.com)",
+            "Chompass/Android/${app.chompass.BuildConfig.VERSION_NAME} (fitguy@chompass.app)",
             server.takeRequest().getHeader("User-Agent"),
         )
     }
