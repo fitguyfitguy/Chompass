@@ -21,6 +21,16 @@ class AiPreferencesTest {
     }
 
     @Test
+    fun clampMaxResponseTokens_capsAt16384() {
+        assertEquals(16384, clampMaxResponseTokens(20000))
+    }
+
+    @Test
+    fun clampAiReadTimeoutSeconds_capsAt900() {
+        assertEquals(900, clampAiReadTimeoutSeconds(1000))
+    }
+
+    @Test
     fun clampAiReadTimeoutSeconds_withinRange() {
         assertEquals(120, clampAiReadTimeoutSeconds(120))
     }
@@ -32,7 +42,7 @@ class AiPreferencesTest {
 
     @Test
     fun clampAiReadTimeoutSeconds_aboveMaximum() {
-        assertEquals(MAX_AI_READ_TIMEOUT_SECONDS, clampAiReadTimeoutSeconds(600))
+        assertEquals(MAX_AI_READ_TIMEOUT_SECONDS, clampAiReadTimeoutSeconds(1000))
     }
 
     @Test

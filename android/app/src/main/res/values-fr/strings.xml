@@ -821,9 +821,9 @@
     <string name="ai_error_rate_limit">Limite de débit atteinte sur votre clé API. Attendez une minute ou changez de fournisseur dans Réglages → Fournisseur d\'IA. Dans l\'offre gratuite, le modèle Flash-Lite a le quota le plus élevé.</string>
     <string name="ai_error_timeout">Le fournisseur d\'IA a mis trop de temps à répondre. Réessayez ou augmentez le délai dans Réglages → IA et voix.</string>
     <string name="ai_error_disabled">Les fonctions IA sont désactivées dans Réglages → IA et voix.</string>
-    <string name="ai_error_truncated">La réponse de l\'IA a été tronquée. Essayez une question plus courte ou un autre modèle.</string>
-    <string name="ai_error_truncated_twice">La réponse de l\'IA a été tronquée deux fois. Essayez une question plus courte ou un autre modèle.</string>
-    <string name="ai_error_truncated_twice_description">La réponse de l\'IA a été tronquée deux fois. Essayez une description plus courte ou un autre modèle.</string>
+    <string name="ai_error_truncated">La réponse de l\'IA a été coupée à la limite de longueur de réponse. Augmentez la longueur maximale de réponse dans Réglages → IA et voix, ou posez une question plus courte.</string>
+    <string name="ai_error_truncated_twice">La réponse de l\'IA a été coupée deux fois à la limite de longueur de réponse. Augmentez la longueur maximale de réponse dans Réglages → IA et voix, ou posez une question plus courte.</string>
+    <string name="ai_error_truncated_twice_description">Le modèle a atteint la limite de longueur de réponse avant de finir, et le raisonnement compte dans cette limite. Augmentez la longueur maximale de réponse dans Réglages → IA et voix, ou limitez le raisonnement du modèle, puis réessayez.</string>
     <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
     <string name="ai_key_placeholder_deepinfra">...</string>
     <string name="ai_key_placeholder_fireworks">fw_...</string>

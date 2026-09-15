@@ -777,9 +777,9 @@
     <string name="ai_error_provider_overloaded">O provedor de IA está sobrecarregado agora. Tentamos algumas vezes. Tente de novo em um minuto ou troque de provedor/modelo em Configurações → Provedor de IA.</string>
     <string name="ai_error_rate_limit">Limite de solicitações atingido na sua chave de API. Espere um minuto ou troque de provedor em Configurações → Provedor de IA. No plano gratuito, o modelo Flash-Lite tem a maior cota.</string>
     <string name="ai_error_timeout">O provedor de IA demorou demais para responder. Tente novamente ou aumente o tempo limite em Configurações → IA e fala.</string>
-    <string name="ai_error_truncated">A resposta da IA foi truncada. Tente uma pergunta mais curta ou outro modelo.</string>
-    <string name="ai_error_truncated_twice">A resposta da IA foi truncada duas vezes. Tente uma pergunta mais curta ou outro modelo.</string>
-    <string name="ai_error_truncated_twice_description">A resposta da IA foi truncada duas vezes. Tente uma descrição mais curta ou outro modelo.</string>
+    <string name="ai_error_truncated">A resposta da IA foi cortada no limite de tamanho da resposta. Aumente o tamanho máximo da resposta em Configurações → IA e fala, ou tente uma pergunta mais curta.</string>
+    <string name="ai_error_truncated_twice">A resposta da IA foi cortada duas vezes no limite de tamanho da resposta. Aumente o tamanho máximo da resposta em Configurações → IA e fala, ou tente uma pergunta mais curta.</string>
+    <string name="ai_error_truncated_twice_description">O modelo atingiu o limite de tamanho da resposta antes de terminar, e o raciocínio conta nesse limite. Aumente o tamanho máximo da resposta em Configurações → IA e fala, ou limite o raciocínio do modelo, e tente novamente.</string>
     <string name="ai_model_tier_paid">Somente modelo pago (o plano gratuito não inclui mais o Pro)</string>
     <string name="ai_model_tier_varies">A disponibilidade no plano gratuito varia por conta e região</string>
     <string name="ai_provider_on_device">No dispositivo (privado)</string>

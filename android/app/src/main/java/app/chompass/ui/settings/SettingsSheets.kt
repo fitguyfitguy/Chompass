@@ -247,7 +247,7 @@ internal fun SettingsSheets(
                         value = value,
                         onValueChange = { value = it },
                         min = 50,
-                        max = 8000,
+                        max = 16000,
                         step = 50,
                         unit = stringResource(R.string.settings_max_tokens_unit),
                     )
@@ -263,7 +263,7 @@ internal fun SettingsSheets(
                         value = value,
                         onValueChange = { value = it },
                         min = 1,
-                        max = 300,
+                        max = 900,
                         step = 1,
                         unit = stringResource(R.string.settings_ai_read_timeout_unit),
                     )

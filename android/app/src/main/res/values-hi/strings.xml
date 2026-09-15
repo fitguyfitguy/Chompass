@@ -789,9 +789,9 @@
     <string name="ai_error_provider_overloaded">AI प्रदाता अभी अतिभारित है। हमने कुछ बार प्रयास किया। एक मिनट में फिर प्रयास करें, या सेटिंग्स → AI प्रदाता में प्रदाता/मॉडल बदलें।</string>
     <string name="ai_error_rate_limit">आपकी API कुंजी की अनुरोध सीमा पूरी हो गई। एक मिनट प्रतीक्षा करें या सेटिंग्स → AI प्रदाता में दूसरा प्रदाता चुनें। मुफ्त टियर पर Flash-Lite मॉडल की कोटा सबसे अधिक है।</string>
     <string name="ai_error_timeout">AI प्रदाता ने जवाब देने में बहुत समय लिया। फिर प्रयास करें, या सेटिंग्स → AI और भाषण में टाइमआउट बढ़ाएं।</string>
-    <string name="ai_error_truncated">AI प्रतिक्रिया छोटी कर दी गई। छोटा प्रश्न या दूसरा मॉडल आज़माएं।</string>
-    <string name="ai_error_truncated_twice">AI प्रतिक्रिया दो बार छोटी की गई। छोटा प्रश्न या दूसरा मॉडल आज़माएं।</string>
-    <string name="ai_error_truncated_twice_description">AI प्रतिक्रिया दो बार छोटी की गई। छोटा विवरण या दूसरा मॉडल आज़माएं।</string>
+    <string name="ai_error_truncated">AI की प्रतिक्रिया लंबाई की सीमा पर कट गई। सेटिंग्स → AI और भाषण में अधिकतम प्रतिक्रिया लंबाई बढ़ाएं, या छोटा प्रश्न आज़माएं।</string>
+    <string name="ai_error_truncated_twice">AI की प्रतिक्रिया लंबाई की सीमा पर दो बार कट गई। सेटिंग्स → AI और भाषण में अधिकतम प्रतिक्रिया लंबाई बढ़ाएं, या छोटा प्रश्न आज़माएं।</string>
+    <string name="ai_error_truncated_twice_description">मॉडल जवाब पूरा करने से पहले ही प्रतिक्रिया लंबाई की सीमा तक पहुंच गया, और सोच भी इसी सीमा में गिनी जाती है। सेटिंग्स → AI और भाषण में अधिकतम प्रतिक्रिया लंबाई बढ़ाएं, या मॉडल की सोच सीमित करें, फिर दोबारा कोशिश करें।</string>
     <string name="ai_model_tier_paid">केवल-भुगतान मॉडल (मुफ्त टियर में अब Pro शामिल नहीं है)</string>
     <string name="ai_model_tier_varies">मुफ्त टियर पर उपलब्धता खाते और क्षेत्र के अनुसार भिन्न होती है</string>
     <string name="ai_provider_on_device">ऑन-डिवाइस (निजी)</string>

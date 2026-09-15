@@ -788,9 +788,9 @@
     <string name="ai_error_provider_overloaded">AI 제공자가 현재 과부하 상태예요. 몇 번 재시도했어요. 1분 후 다시 시도하거나 설정 → AI 제공자에서 제공자/모델을 변경하세요.</string>
     <string name="ai_error_rate_limit">API 키의 요청 한도에 도달했어요. 1분 기다리거나 설정 → AI 제공자에서 다른 제공자로 전환하세요. 무료 티어에서는 Flash-Lite 모델의 할당량이 가장 높아요.</string>
     <string name="ai_error_timeout">AI 제공자의 응답이 너무 늦었어요. 다시 시도하거나 설정 → AI 및 음성에서 시간 제한을 늘리세요.</string>
-    <string name="ai_error_truncated">AI 응답이 잘렸어요. 더 짧은 질문이나 다른 모델을 시도하세요.</string>
-    <string name="ai_error_truncated_twice">AI 응답이 두 번 잘렸어요. 더 짧은 질문이나 다른 모델을 시도하세요.</string>
-    <string name="ai_error_truncated_twice_description">AI 응답이 두 번 잘렸어요. 더 짧은 설명이나 다른 모델을 시도하세요.</string>
+    <string name="ai_error_truncated">AI 응답이 응답 길이 한도에서 잘렸어요. 설정 → AI 및 음성에서 최대 응답 길이를 늘리거나 더 짧은 질문을 시도하세요.</string>
+    <string name="ai_error_truncated_twice">AI 응답이 응답 길이 한도에서 두 번 잘렸어요. 설정 → AI 및 음성에서 최대 응답 길이를 늘리거나 더 짧은 질문을 시도하세요.</string>
+    <string name="ai_error_truncated_twice_description">모델이 답을 마치기 전에 응답 길이 한도에 걸렸어요. 사고도 이 한도에 포함돼요. 설정 → AI 및 음성에서 최대 응답 길이를 늘리거나 모델의 사고를 제한한 뒤 다시 시도하세요.</string>
     <string name="ai_model_tier_paid">유료 전용 모델(무료 티어에 Pro가 더 이상 포함되지 않음)</string>
     <string name="ai_model_tier_varies">무료 티어 가용성은 계정 및 지역에 따라 달라요</string>
     <string name="ai_provider_on_device">온디바이스(비공개)</string>

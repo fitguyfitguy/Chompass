@@ -1979,9 +1979,9 @@
     <string name="ai_error_model_unavailable">Your provider couldn\'t find this model. It may be paid-only on the free tier, restricted in your region, or the endpoint may be wrong. Switch to the default Flash model in Settings → AI Provider, or enable billing on your AI Studio project.</string>
     <string name="ai_error_coach_on_device">Coach isn\'t available with the on-device provider yet. Switch to a cloud provider in Settings → AI Provider.</string>
     <string name="ai_error_coach_round_limit">Coach could not answer. Try rephrasing your question.</string>
-    <string name="ai_error_truncated_twice">The AI response was truncated twice. Try a shorter question or another model.</string>
-    <string name="ai_error_truncated_twice_description">The AI response was truncated twice. Try a shorter description or another model.</string>
-    <string name="ai_error_truncated">The AI response was truncated. Try a shorter question or a different model.</string>
+    <string name="ai_error_truncated_twice">The AI response was cut off at the response length limit twice. Raise the max response length in Settings → AI &amp; Speech, or try a shorter question.</string>
+    <string name="ai_error_truncated_twice_description">The model hit the response length limit before finishing, and thinking counts toward it. Raise the max response length in Settings → AI &amp; Speech, or limit the model\'s thinking, then try again.</string>
+    <string name="ai_error_truncated">The AI response was cut off at the response length limit. Raise the max response length in Settings → AI &amp; Speech, or try a shorter question.</string>
     <string name="ai_error_provider_error">The AI provider returned an error.</string>
     <string name="ai_error_grounded_requires_provider">Grounded tool loop requires a live AI provider.</string>
     <string name="ai_error_grounded_on_device">Grounded tool loop is not available for on-device models.</string>

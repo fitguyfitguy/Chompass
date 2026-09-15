@@ -825,9 +825,9 @@
     <string name="ai_error_rate_limit">Se alcanzó el límite de uso de tu clave API. Espera un minuto o cambia a otro proveedor en Ajustes → Proveedor de IA. En el plan gratuito, el modelo Flash-Lite tiene la cuota más alta.</string>
     <string name="ai_error_timeout">El proveedor de IA tardó demasiado en responder. Inténtalo de nuevo o aumenta el tiempo de espera en Ajustes → IA y voz.</string>
     <string name="ai_error_disabled">Las funciones de IA están desactivadas en Ajustes → IA y voz.</string>
-    <string name="ai_error_truncated">La respuesta de la IA se truncó. Prueba con una pregunta más corta o un modelo distinto.</string>
-    <string name="ai_error_truncated_twice">La respuesta de la IA se truncó dos veces. Prueba con una pregunta más corta u otro modelo.</string>
-    <string name="ai_error_truncated_twice_description">La respuesta de la IA se truncó dos veces. Prueba con una descripción más corta u otro modelo.</string>
+    <string name="ai_error_truncated">La respuesta de la IA se cortó en el límite de longitud de respuesta. Sube la longitud máxima de respuesta en Ajustes → IA y voz, o prueba con una pregunta más corta.</string>
+    <string name="ai_error_truncated_twice">La respuesta de la IA se cortó dos veces en el límite de longitud de respuesta. Sube la longitud máxima de respuesta en Ajustes → IA y voz, o prueba con una pregunta más corta.</string>
+    <string name="ai_error_truncated_twice_description">El modelo alcanzó el límite de longitud de respuesta antes de terminar, y el razonamiento cuenta en ese límite. Sube la longitud máxima de respuesta en Ajustes → IA y voz, o limita el razonamiento del modelo, y vuelve a intentarlo.</string>
     <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
     <string name="ai_key_placeholder_deepinfra">...</string>
     <string name="ai_key_placeholder_fireworks">fw_...</string>

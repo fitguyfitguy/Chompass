@@ -1319,9 +1319,9 @@
     <string name="ai_error_model_unavailable">Twój dostawca nie znalazł tego modelu. Może być płatny w darmowym poziomie, ograniczony w Twoim regionie albo punkt końcowy może być błędny. Przełącz się na domyślny model Flash w Ustawienia → Dostawca AI albo włącz płatności w projekcie AI Studio.</string>
     <string name="ai_error_coach_on_device">Trener nie jest jeszcze dostępny z dostawcą na urządzeniu. Przełącz się na dostawcę chmurowego w Ustawienia → Dostawca AI.</string>
     <string name="ai_error_coach_round_limit">Trener nie mógł odpowiedzieć. Spróbuj przeformułować pytanie.</string>
-    <string name="ai_error_truncated_twice">Odpowiedź AI została dwukrotnie przycięta. Spróbuj krótszego pytania lub innego modelu.</string>
-    <string name="ai_error_truncated_twice_description">Odpowiedź AI została dwukrotnie przycięta. Spróbuj krótszego opisu lub innego modelu.</string>
-    <string name="ai_error_truncated">Odpowiedź AI została przycięta. Spróbuj krótszego pytania lub innego modelu.</string>
+    <string name="ai_error_truncated_twice">Odpowiedź AI została dwa razy ucięta na limicie długości odpowiedzi. Zwiększ maksymalną długość odpowiedzi w Ustawienia → AI i mowa albo zadaj krótsze pytanie.</string>
+    <string name="ai_error_truncated_twice_description">Model osiągnął limit długości odpowiedzi, zanim skończył, a myślenie też liczy się do tego limitu. Zwiększ maksymalną długość odpowiedzi w Ustawienia → AI i mowa albo ogranicz myślenie modelu, a potem spróbuj ponownie.</string>
+    <string name="ai_error_truncated">Odpowiedź AI została ucięta na limicie długości odpowiedzi. Zwiększ maksymalną długość odpowiedzi w Ustawienia → AI i mowa albo zadaj krótsze pytanie.</string>
     <string name="ai_error_provider_error">Dostawca AI zwrócił błąd.</string>
     <string name="ai_error_grounded_requires_provider">Pętla narzędziowa Grounded wymaga aktywnego dostawcy AI.</string>
     <string name="ai_error_grounded_on_device">Pętla narzędziowa Grounded nie jest dostępna dla modeli na urządzeniu.</string>

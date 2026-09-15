@@ -1319,9 +1319,9 @@
     <string name="ai_error_model_unavailable">Sağlayıcın bu modeli bulamadı. Ücretsiz katmanda yalnızca ücretli olabilir, bölgende kısıtlı olabilir veya uç nokta yanlış olabilir. Ayarlar → AI Sağlayıcısı bölümünden varsayılan Flash modeline geç veya AI Studio projende faturalandırmayı etkinleştir.</string>
     <string name="ai_error_coach_on_device">Koç, cihazdaki sağlayıcıyla henüz kullanılamıyor. Ayarlar → AI Sağlayıcısı bölümünden bir bulut sağlayıcısına geç.</string>
     <string name="ai_error_coach_round_limit">Koç yanıtlayamadı. Sorunu farklı şekilde ifade etmeyi dene.</string>
-    <string name="ai_error_truncated_twice">AI yanıtı iki kez kesildi. Daha kısa bir soru veya başka bir model dene.</string>
-    <string name="ai_error_truncated_twice_description">AI yanıtı iki kez kesildi. Daha kısa bir açıklama veya başka bir model dene.</string>
-    <string name="ai_error_truncated">AI yanıtı kesildi. Daha kısa bir soru veya farklı bir model dene.</string>
+    <string name="ai_error_truncated_twice">AI yanıtı yanıt uzunluğu sınırında iki kez kesildi. Ayarlar → AI ve Ses bölümünden maksimum yanıt uzunluğunu artır ya da daha kısa bir soru dene.</string>
+    <string name="ai_error_truncated_twice_description">Model cevabı bitirmeden yanıt uzunluğu sınırına ulaştı ve düşünme de bu sınıra dahil. Ayarlar → AI ve Ses bölümünden maksimum yanıt uzunluğunu artır ya da modelin düşünmesini sınırla, sonra tekrar dene.</string>
+    <string name="ai_error_truncated">AI yanıtı yanıt uzunluğu sınırında kesildi. Ayarlar → AI ve Ses bölümünden maksimum yanıt uzunluğunu artır ya da daha kısa bir soru dene.</string>
     <string name="ai_error_provider_error">AI sağlayıcısı bir hata döndürdü.</string>
     <string name="ai_error_grounded_requires_provider">Doğrulanmış araç döngüsü canlı bir AI sağlayıcısı gerektirir.</string>
     <string name="ai_error_grounded_on_device">Doğrulanmış araç döngüsü cihazdaki modeller için kullanılamaz.</string>

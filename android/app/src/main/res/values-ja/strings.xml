@@ -788,9 +788,9 @@
     <string name="ai_error_provider_overloaded">AI プロバイダーが現在過負荷です。数回再試行しました。1分後に再度お試しいただくか、設定 → AI プロバイダーでプロバイダー/モデルを変更してください。</string>
     <string name="ai_error_rate_limit">API キーのリクエスト上限に達しました。1分待つか、設定 → AI プロバイダーで別のプロバイダーに切り替えてください。無料プランでは Flash-Lite モデルの割り当てが最も多いです。</string>
     <string name="ai_error_timeout">AI プロバイダーの応答が遅すぎました。再試行するか、設定 → AI と音声でタイムアウトを延ばしてください。</string>
-    <string name="ai_error_truncated">AI の応答が切り詰められました。短い質問か別のモデルを試してください。</string>
-    <string name="ai_error_truncated_twice">AI の応答が2回切り詰められました。短い質問か別のモデルを試してください。</string>
-    <string name="ai_error_truncated_twice_description">AI の応答が2回切り詰められました。短い説明か別のモデルを試してください。</string>
+    <string name="ai_error_truncated">AI の応答が応答長の上限で途切れました。設定 → AI と音声で最大応答長を増やすか、もっと短い質問を試してください。</string>
+    <string name="ai_error_truncated_twice">AI の応答が応答長の上限で2回途切れました。設定 → AI と音声で最大応答長を増やすか、もっと短い質問を試してください。</string>
+    <string name="ai_error_truncated_twice_description">モデルは回答を終える前に応答長の上限に達しました。思考もこの上限に含まれます。設定 → AI と音声で最大応答長を増やすか、モデルの思考を制限して、もう一度試してください。</string>
     <string name="ai_model_tier_paid">有料のみのモデル（無料プランには Pro は含まれなくなりました）</string>
     <string name="ai_model_tier_varies">無料プランでの利用可否はアカウントと地域によって異なります</string>
     <string name="ai_provider_on_device">オンデバイス（プライベート）</string>

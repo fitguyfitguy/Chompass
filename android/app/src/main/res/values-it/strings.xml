@@ -779,9 +779,9 @@
     <string name="ai_error_provider_overloaded">Il fornitore IA è sovraccarico in questo momento. Abbiamo riprovato più volte. Riprova tra un minuto o cambia fornitore/modello in Impostazioni → Fornitore IA.</string>
     <string name="ai_error_rate_limit">Raggiunto il limite di richieste per la tua chiave API. Attendi un minuto o cambia fornitore in Impostazioni → Fornitore IA. Sul piano gratuito, il modello Flash-Lite ha la quota più alta.</string>
     <string name="ai_error_timeout">Il fornitore IA ha impiegato troppo tempo a rispondere. Riprova oppure aumenta il timeout in Impostazioni → IA e voce.</string>
-    <string name="ai_error_truncated">La risposta dell\'IA è stata troncata. Prova una domanda più breve o un altro modello.</string>
-    <string name="ai_error_truncated_twice">La risposta dell\'IA è stata troncata due volte. Prova una domanda più breve o un altro modello.</string>
-    <string name="ai_error_truncated_twice_description">La risposta dell\'IA è stata troncata due volte. Prova una descrizione più breve o un altro modello.</string>
+    <string name="ai_error_truncated">La risposta dell\'IA è stata tagliata al limite di lunghezza della risposta. Aumenta la lunghezza massima della risposta in Impostazioni → IA e voce, oppure prova una domanda più breve.</string>
+    <string name="ai_error_truncated_twice">La risposta dell\'IA è stata tagliata due volte al limite di lunghezza della risposta. Aumenta la lunghezza massima della risposta in Impostazioni → IA e voce, oppure prova una domanda più breve.</string>
+    <string name="ai_error_truncated_twice_description">Il modello ha raggiunto il limite di lunghezza della risposta prima di finire, e il ragionamento conta in quel limite. Aumenta la lunghezza massima della risposta in Impostazioni → IA e voce, oppure limita il ragionamento del modello, poi riprova.</string>
     <string name="ai_model_tier_paid">Solo modello a pagamento (il piano gratuito non include più Pro)</string>
     <string name="ai_model_tier_varies">La disponibilità sul piano gratuito varia in base ad account e regione</string>
     <string name="ai_provider_on_device">Sul dispositivo (privato)</string>

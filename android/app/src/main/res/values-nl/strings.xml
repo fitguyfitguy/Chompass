@@ -759,9 +759,9 @@
     <string name="ai_error_provider_overloaded">De AI-provider is nu overbelast. We hebben een paar keer opnieuw geprobeerd. Probeer het over een minuut nog eens of wissel van provider/model in Instellingen → AI-provider.</string>
     <string name="ai_error_rate_limit">Limiet bereikt voor je API-sleutel. Wacht een minuut of wissel van provider in Instellingen → AI-provider. Op de gratis laag heeft het Flash-Lite-model de hoogste quota.</string>
     <string name="ai_error_timeout">De AI-provider deed te lang over het antwoord. Probeer het opnieuw of verhoog de timeout in Instellingen → AI en spraak.</string>
-    <string name="ai_error_truncated">Het AI-antwoord is afgekapt. Probeer een kortere vraag of een ander model.</string>
-    <string name="ai_error_truncated_twice">Het AI-antwoord is twee keer afgekapt. Probeer een kortere vraag of een ander model.</string>
-    <string name="ai_error_truncated_twice_description">Het AI-antwoord is twee keer afgekapt. Probeer een kortere beschrijving of een ander model.</string>
+    <string name="ai_error_truncated">Het AI-antwoord is afgekapt bij de limiet voor de antwoordlengte. Verhoog de maximale antwoordlengte in Instellingen → AI en spraak, of stel een kortere vraag.</string>
+    <string name="ai_error_truncated_twice">Het AI-antwoord is twee keer afgekapt bij de limiet voor de antwoordlengte. Verhoog de maximale antwoordlengte in Instellingen → AI en spraak, of stel een kortere vraag.</string>
+    <string name="ai_error_truncated_twice_description">Het model bereikte de limiet voor de antwoordlengte voordat het af was; denken telt daarin mee. Verhoog de maximale antwoordlengte in Instellingen → AI en spraak, of beperk het denken van het model, en probeer het daarna opnieuw.</string>
     <string name="ai_model_tier_paid">Alleen betaald model (gratis laag bevat Pro niet meer)</string>
     <string name="ai_model_tier_varies">Beschikbaarheid op de gratis laag verschilt per account en regio</string>
     <string name="ai_provider_on_device">Op apparaat (privé)</string>
