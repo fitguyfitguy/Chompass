@@ -53,6 +53,16 @@ object OpenFoodFactsService {
 
     /** Backoff between barcode-lookup retries (multiplied by 2^attempt: 200, 400, 800 ms). */
     private const val LOOKUP_RETRY_BASE_DELAY_MS = 200L
+
+    /** Hard cap on total network attempts per search() call, across candidates and retries. */
+    private const val MAX_SEARCH_ATTEMPTS = 4
+
+    /** Rate-limit breaker cooldown when a 429 carries no Retry-After. */
+    private const val RATE_LIMIT_DEFAULT_COOLDOWN_SECONDS = 60L
+
+    /** Rate-limit breaker: longest cooldown honored from a Retry-After header. */
+    private const val RATE_LIMIT_MAX_COOLDOWN_SECONDS = 120L
+
     /** Max bytes accepted for a downloaded OFF product photo. */
     private const val MAX_PRODUCT_IMAGE_BYTES = 5_000_000L
 
@@ -64,6 +74,33 @@ object OpenFoodFactsService {
         "Open Food Facts returned an unexpected response."
 
     class LookupException(message: String) : Exception(message)
+
+    /**
+     * Rate-limit circuit breaker, tripped by any 429 from search or lookup:
+     * while the cooldown lasts, [search] returns empty without touching the
+     * network and barcode lookup fails fast with [TROUBLE_MESSAGE].
+     * Module-level on purpose — OFF rate-limits the app as a whole, not per
+     * call site, so every path shares one breaker.
+     */
+    @Volatile
+    private var rateLimitCooldownUntilMs = 0L
+
+    /** Wall clock for the breaker cooldown; swappable in tests. */
+    internal var rateLimitNowMs: () -> Long = { System.currentTimeMillis() }
+
+    private fun rateLimitActive(): Boolean = rateLimitNowMs() < rateLimitCooldownUntilMs
+
+    private fun tripRateLimit(retryAfterSeconds: Long?) {
+        val cooldownSeconds = (retryAfterSeconds ?: RATE_LIMIT_DEFAULT_COOLDOWN_SECONDS)
+            .coerceIn(0L, RATE_LIMIT_MAX_COOLDOWN_SECONDS)
+        rateLimitCooldownUntilMs = rateLimitNowMs() + cooldownSeconds * 1000L
+    }
+
+    /** Test hook: clears the breaker and restores the real clock. */
+    internal fun resetRateLimitForTest() {
+        rateLimitCooldownUntilMs = 0L
+        rateLimitNowMs = { System.currentTimeMillis() }
+    }
 
     /**
      * One Open Food Facts search hit with per-100g macros for grounding candidates.
@@ -159,6 +196,12 @@ object OpenFoodFactsService {
      * candidate chain — full query, without the separately-passed brand,
      * then shorter token drops (brand-ish first token first) — so "Aldi
      * Laugen" still surfaces Laugen products when the AND query misses.
+     *
+     * Spending is bounded: at most [MAX_SEARCH_ATTEMPTS] network attempts per
+     * call across all candidates and retries, a 503 (OFF's global request
+     * limit) is retried once and then stops the whole walk, and any 429
+     * trips the rate-limit breaker so subsequent searches and lookups back
+     * off for the cooldown instead of hammering the shared endpoint.
      */
     suspend fun search(
         query: String,
@@ -169,6 +212,10 @@ object OpenFoodFactsService {
     ): List<SearchHit> = withContext(Dispatchers.IO) {
         val q = query.trim()
         if (q.isEmpty()) return@withContext emptyList()
+        // Rate-limit breaker: while OFF has 429-ed us, answer from nothing
+        // rather than adding more load (cached hits come from the callers'
+        // local indexes; search has no cache of its own).
+        if (rateLimitActive()) return@withContext emptyList()
         val capped = limit.coerceIn(1, 8)
         val brandToken = brand?.trim()?.takeIf { it.isNotEmpty() }
         val terms = listOfNotNull(brandToken, q).distinct().joinToString(" ")
@@ -176,7 +223,7 @@ object OpenFoodFactsService {
         // Candidate queries in order of preference: the full AND query, the
         // query without the separately-passed brand, then progressively
         // shorter token drops (brand-ish first token first, then the last
-        // token). Backend failures (null) and successful-but-empty responses
+        // token). Backend failures and successful-but-empty responses
         // both advance to the next candidate — OFF often answers a shorter
         // query while the longer one 503s or AND-misses.
         val candidates = buildList {
@@ -190,14 +237,34 @@ object OpenFoodFactsService {
         }.distinct()
 
         var hits: List<SearchHit>? = null
+        var attemptsLeft = MAX_SEARCH_ATTEMPTS
+        var stopWalk = false
+        var retriedGlobalLimit = false
         for (candidate in candidates) {
             var attempt = 0
-            while (attempt < MAX_QUERY_ATTEMPTS) {
-                hits = searchOnce(candidate, capped, client, baseUrl)
+            while (attempt < MAX_QUERY_ATTEMPTS && attemptsLeft > 0 && !stopWalk) {
+                attemptsLeft--
+                when (val outcome = searchOnce(candidate, capped, client, baseUrl)) {
+                    is SearchOutcome.Hits -> hits = outcome.hits
+                    is SearchOutcome.RateLimited -> {
+                        tripRateLimit(outcome.retryAfterSeconds)
+                        stopWalk = true
+                    }
+                    is SearchOutcome.GlobalLimit -> if (retriedGlobalLimit) {
+                        // A second 503 after the one allowed retry means OFF's
+                        // global request limit: stop the walk entirely rather
+                        // than pushing more candidates at a saturated backend.
+                        stopWalk = true
+                    } else {
+                        retriedGlobalLimit = true
+                    }
+                    SearchOutcome.Unavailable -> Unit
+                }
+                if (stopWalk) break
                 if (!hits.isNullOrEmpty()) break
                 if (hits != null && attempt >= EMPTY_RETRY_ATTEMPTS) break
                 attempt++
-                if (attempt < MAX_QUERY_ATTEMPTS) {
+                if (attempt < MAX_QUERY_ATTEMPTS && attemptsLeft > 0) {
                     delay(QUERY_RETRY_BASE_DELAY_MS * (1 shl attempt))
                 }
             }
@@ -211,16 +278,32 @@ object OpenFoodFactsService {
             .sortedByDescending { it.score }
     }
 
+    /** One search attempt, classified so the walk can react per failure kind. */
+    private sealed interface SearchOutcome {
+        /** Usable response; empty means OFF authoritatively found nothing. */
+        data class Hits(val hits: List<SearchHit>) : SearchOutcome
+
+        /** HTTP 429 — rate limited; carries Retry-After when the server sent one. */
+        data class RateLimited(val retryAfterSeconds: Long?) : SearchOutcome
+
+        /** HTTP 503 — OFF's global request limit. */
+        data object GlobalLimit : SearchOutcome
+
+        /** Any other failure (network error, timeout, non-JSON, HTTP error). */
+        data object Unavailable : SearchOutcome
+    }
+
     /**
-     * One search request. Returns null when the response was not usable (HTTP
-     * error / non-JSON), empty when OFF found nothing.
+     * One search request. Returns [SearchOutcome.Unavailable] when the response
+     * was not usable (HTTP error / non-JSON), [SearchOutcome.Hits] with an empty
+     * list when OFF found nothing.
      */
     private suspend fun searchOnce(
         terms: String,
         capped: Int,
         client: OkHttpClient,
         baseUrl: String,
-    ): List<SearchHit>? {
+    ): SearchOutcome {
         val encoded = URLEncoder.encode(terms, "UTF-8")
         val url = "$baseUrl/cgi/search.pl" +
             "?search_terms=$encoded&search_simple=1&action=process&json=1" +
@@ -237,13 +320,27 @@ object OpenFoodFactsService {
         // CancellationException from the caller's next suspension point (the
         // retry backoff `delay`), stopping the candidate/attempt loops.
         val call = client.newCall(request)
-        val raw = try {
+        val reply = try {
             cancellableExecute(call)
         } catch (e: IOException) {
-            return null
-        } ?: return null
-        val json = runCatching { JSONObject(raw) }.getOrNull() ?: return null
-        val products = json.optJSONArray("products") ?: return emptyList()
+            return SearchOutcome.Unavailable
+        }
+        return when {
+            reply.code == 429 -> SearchOutcome.RateLimited(reply.retryAfterSeconds)
+            reply.code == 503 -> SearchOutcome.GlobalLimit
+            reply.body == null -> SearchOutcome.Unavailable
+            else -> {
+                val json = runCatching { JSONObject(reply.body) }.getOrNull()
+                    ?: return SearchOutcome.Unavailable
+                val products = json.optJSONArray("products")
+                    ?: return SearchOutcome.Hits(emptyList())
+                SearchOutcome.Hits(searchHitsFrom(products, capped))
+            }
+        }
+    }
+
+    /** Maps a cgi `products` array into [SearchHit]s, capped at [capped]. */
+    private fun searchHitsFrom(products: org.json.JSONArray, capped: Int): List<SearchHit> {
         return buildList {
             for (i in 0 until products.length()) {
                 if (size >= capped) break
@@ -296,9 +393,13 @@ object OpenFoodFactsService {
         }
     }
 
+    /** Cancellable response summary: status code, Retry-After hint, body of a 2xx. */
+    private class HttpReply(val code: Int, val retryAfterSeconds: Long?, val body: String?)
+
     /**
-     * Executes [call] and reads its body as a string; null when the HTTP
-     * status was not successful. Cancellation-aware (Codeberg #26): [Call.cancel]
+     * Executes [call] and reads a successful body as a string; [HttpReply.body]
+     * is null when the HTTP status was not successful (the status code itself
+     * is still reported). Cancellation-aware (Codeberg #26): [Call.cancel]
      * is registered on the continuation, so an abandoned search (new keystroke,
      * sheet closed) closes the socket and the blocking read aborts promptly
      * instead of occupying an IO thread for the full 20 s connect / 60 s read
@@ -306,16 +407,19 @@ object OpenFoodFactsService {
      * executes on [Dispatchers.IO]. Network failures throw [IOException];
      * cancellation completes the caller with CancellationException.
      */
-    private suspend fun cancellableExecute(call: Call): String? =
+    private suspend fun cancellableExecute(call: Call): HttpReply =
         suspendCancellableCoroutine { cont ->
             cont.invokeOnCancellation { call.cancel() }
             try {
                 val response = call.execute()
-                val raw = response.use {
-                    if (!it.isSuccessful) return@use null
-                    it.body?.string().orEmpty()
+                val reply = response.use {
+                    HttpReply(
+                        code = it.code,
+                        retryAfterSeconds = it.header("Retry-After")?.trim()?.toLongOrNull(),
+                        body = if (it.isSuccessful) it.body?.string().orEmpty() else null,
+                    )
                 }
-                cont.resume(raw)
+                cont.resume(reply)
             } catch (e: IOException) {
                 cont.resumeWithException(e)
             }
@@ -331,16 +435,17 @@ object OpenFoodFactsService {
 
     /**
      * Live barcode lookup against Open Food Facts (ODbL). Retries transient
-     * failures (429/5xx, network) with backoff; a 404 (product not in the
+     * failures (5xx, network) with backoff; a 404 (product not in the
      * database) and other 4xx are definitive and fail immediately with a
      * distinct message, so "not found" no longer reads as a generic error
-     * (Codeberg #24).
+     * (Codeberg #24). A 429 trips the rate-limit breaker and fails fast.
      */
     internal suspend fun lookupNetwork(
         code: String,
         client: OkHttpClient,
         baseUrl: String = OFF_BASE_URL,
     ): FoodAnalysis = run {
+        if (rateLimitActive()) throw LookupException(TROUBLE_MESSAGE)
         val encodedCode = URLEncoder.encode(code, "UTF-8")
         val url = "$baseUrl/api/v2/product/$encodedCode.json?fields=$FIELDS"
         val request = Request.Builder()
@@ -354,8 +459,16 @@ object OpenFoodFactsService {
             val outcome = runCatching { client.newCall(request).execute() }
             val error = outcome.exceptionOrNull()
             if (error == null) {
-                val parsed = outcome.getOrThrow().use { response -> parseLookupResponse(response, code) }
-                if (parsed != null) return@run parsed
+                outcome.getOrThrow().use { response ->
+                    if (response.code == 429) {
+                        // Rate limited: trip the shared breaker and stop instead
+                        // of burning the retry budget against a 429 backend.
+                        tripRateLimit(response.header("Retry-After")?.trim()?.toLongOrNull())
+                        throw LookupException(TROUBLE_MESSAGE)
+                    }
+                    val parsed = parseLookupResponse(response, code)
+                    if (parsed != null) return@run parsed
+                }
             } else {
                 lastNetworkError = error.localizedMessage ?: "network error"
             }
@@ -372,7 +485,7 @@ object OpenFoodFactsService {
 
     /**
      * One lookup response. Returns the analysis on success, null when the
-     * response was transiently unusable (429/5xx, retry). 404 and other 4xx
+     * response was transiently unusable (5xx, retry). 404 and other 4xx
      * are definitive errors.
      */
     private fun parseLookupResponse(response: Response, code: String): FoodAnalysis? {

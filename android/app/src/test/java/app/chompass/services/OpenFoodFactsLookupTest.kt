@@ -27,11 +27,13 @@ class OpenFoodFactsLookupTest {
         server = MockWebServer()
         server.start()
         client = OkHttpClient.Builder().build()
+        OpenFoodFactsService.resetRateLimitForTest()
     }
 
     @After
     fun tearDown() {
         server.shutdown()
+        OpenFoodFactsService.resetRateLimitForTest()
     }
 
     private val productJson =
@@ -165,11 +167,31 @@ class OpenFoodFactsLookupTest {
     }
 
     @Test
-    fun lookup_retries429_thenSucceeds() {
-        server.enqueue(MockResponse().setResponseCode(429))
-        server.enqueue(MockResponse().setResponseCode(200).setBody(productJson))
-        assertNotNull(lookup())
-        assertEquals(2, server.requestCount)
+    fun lookup_429_tripsBreaker_andFailsFastWithTroubleMessage() {
+        // A 429 is OFF rate-limiting the app: trip the shared breaker and
+        // stop immediately instead of burning the retry budget against it.
+        server.enqueue(MockResponse().setResponseCode(429).setHeader("Retry-After", "60"))
+        assertLookupFails("Open Food Facts is having trouble right now. Try again in a moment.")
+        assertEquals(1, server.requestCount)
+    }
+
+    @Test
+    fun lookup_failsFastWithoutRequest_whileBreakerActive() {
+        // The breaker is module-level and shared with search: once search got
+        // a 429, a barcode lookup must not add more load either.
+        server.enqueue(MockResponse().setResponseCode(429).setHeader("Retry-After", "60"))
+        runBlocking {
+            OpenFoodFactsService.search(
+                "Aldi Laugen",
+                client = client,
+                baseUrl = server.url("/").toString(),
+            )
+        }
+        assertEquals(1, server.requestCount)
+
+        // No response enqueued: any network attempt would hang the test.
+        assertLookupFails("Open Food Facts is having trouble right now. Try again in a moment.")
+        assertEquals(1, server.requestCount)
     }
 
     @Test
