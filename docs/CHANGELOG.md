@@ -13,6 +13,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **Photos upload as real JPEGs** (Android): a shared HEIC, PNG or WebP photo used to be sent to the AI labeled as JPEG, which could stall the analysis, and sideways portrait photos stayed sideways. Photos are converted to JPEG before upload with the rotation applied, and a photo that cannot be converted now shows a clear error instead of hanging.
 - **A failed multi-photo scan keeps all its photos after a restart** (Android): retrying a scan that failed while the app was killed in the background used to lose every photo but the first.
 - **Back out of Settings opened from the Add Food search** (Android): the databases heading link used to leave the Add Food sheet open behind the settings screen, so the back button flickered the sheet up and left you in Settings. The sheet closes on the way out now, and back leaves the screen the way the back arrow does.
 
