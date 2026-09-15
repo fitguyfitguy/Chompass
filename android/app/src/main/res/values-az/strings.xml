@@ -894,6 +894,7 @@ bilirsən?</string>
     <string name="error_ai_suggestion">AI təklifi yüklənə bilmədi.</string>
     <string name="error_analysis_failed">Analiz alınmadı</string>
     <string name="error_barcode_lookup_failed">Ştrix-kod axtarışı alınmadı</string>
+    <string name="barcode_add_to_off">Open Food Facts-a əlavə et</string>
     <string name="error_failed_input_missing">Saxlanılmış daxiletmə bərpa oluna bilmədi. Yeni şəkil çək.</string>
     <string name="error_invalid_json">Yanlış JSON</string>
     <string name="error_search_food_failed">Bu qida yüklənə bilmədi. Yenidən cəhd et.</string>

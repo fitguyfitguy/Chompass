@@ -8,7 +8,6 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
@@ -27,11 +26,13 @@ class OpenFoodFactsLookupTest {
         server = MockWebServer()
         server.start()
         client = OkHttpClient.Builder().build()
+        OpenFoodFactsService.resetRateLimitForTest()
     }
 
     @After
     fun tearDown() {
         server.shutdown()
+        OpenFoodFactsService.resetRateLimitForTest()
     }
 
     private val productJson =
@@ -142,17 +143,40 @@ class OpenFoodFactsLookupTest {
     }
 
     @Test
-    fun lookup_404_throwsProductNotFound_withoutRetry() {
+    fun lookup_404_throwsTypedNotFound_withoutRetry() {
         server.enqueue(MockResponse().setResponseCode(404))
-        assertLookupFails("Product not found in Open Food Facts. Scan the nutrition label instead.")
+        assertTypedNotFound()
         assertEquals(1, server.requestCount)
     }
 
     @Test
-    fun lookup_200_status0_throwsProductNotFound() {
+    fun lookup_200_status0_throwsTypedNotFound() {
         server.enqueue(MockResponse().setResponseCode(200).setBody("""{"code":"9421011990608","status":0}"""))
-        assertLookupFails("Product not found in Open Food Facts. Scan the nutrition label instead.")
+        assertTypedNotFound()
         assertEquals(1, server.requestCount)
+    }
+
+    /** Both not-found sites throw the typed exception carrying the code. */
+    private fun assertTypedNotFound() {
+        try {
+            lookup()
+            fail("expected LookupException.NotFound")
+        } catch (e: LookupException.NotFound) {
+            assertEquals("Product not found in Open Food Facts. Scan the nutrition label instead.", e.message)
+            assertEquals("9339687206605", e.code)
+        }
+    }
+
+    @Test
+    fun lookup_sendsContactUserAgent() {
+        server.enqueue(MockResponse().setResponseCode(200).setBody(productJson))
+
+        lookup()
+
+        assertEquals(
+            "Chompass/Android/${app.chompass.BuildConfig.VERSION_NAME} (fitguy@mailfence.com)",
+            server.takeRequest().getHeader("User-Agent"),
+        )
     }
 
     @Test
@@ -165,11 +189,32 @@ class OpenFoodFactsLookupTest {
     }
 
     @Test
-    fun lookup_retries429_thenSucceeds() {
-        server.enqueue(MockResponse().setResponseCode(429))
-        server.enqueue(MockResponse().setResponseCode(200).setBody(productJson))
-        assertNotNull(lookup())
-        assertEquals(2, server.requestCount)
+    fun lookup_429_tripsBreaker_andFailsFastWithTroubleMessage() {
+        // A 429 is OFF rate-limiting the app: trip the shared breaker and
+        // stop immediately instead of burning the retry budget against it.
+        server.enqueue(MockResponse().setResponseCode(429).setHeader("Retry-After", "60"))
+        assertLookupFails("Open Food Facts is having trouble right now. Try again in a moment.")
+        assertEquals(1, server.requestCount)
+    }
+
+    @Test
+    fun lookup_failsFastWithoutRequest_whileBreakerActive() {
+        // The breaker is module-level and shared with search: once search got
+        // a 429, a barcode lookup must not add more load either.
+        server.enqueue(MockResponse().setResponseCode(429).setHeader("Retry-After", "60"))
+        runBlocking {
+            OpenFoodFactsService.search(
+                "Aldi Laugen",
+                client = client,
+                baseUrl = server.url("/").toString(),
+                searchBaseUrl = server.url("/").toString(),
+            )
+        }
+        assertEquals(1, server.requestCount)
+
+        // No response enqueued: any network attempt would hang the test.
+        assertLookupFails("Open Food Facts is having trouble right now. Try again in a moment.")
+        assertEquals(1, server.requestCount)
     }
 
     @Test

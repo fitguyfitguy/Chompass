@@ -902,6 +902,7 @@
     <string name="error_ai_suggestion">AI सुझाव लोड नहीं हो सका।</string>
     <string name="error_analysis_failed">विश्लेषण विफल</string>
     <string name="error_barcode_lookup_failed">बारकोड खोज विफल</string>
+    <string name="barcode_add_to_off">Open Food Facts में जोड़ें</string>
     <string name="error_failed_input_missing">सहेजा गया इनपुट पुनर्स्थापित नहीं हो सका। कृपया नई फोटो लें।</string>
     <string name="error_invalid_json">अमान्य JSON</string>
     <string name="error_search_food_failed">यह खाद्य पदार्थ लोड नहीं हो सका। कृपया फिर प्रयास करें।</string>

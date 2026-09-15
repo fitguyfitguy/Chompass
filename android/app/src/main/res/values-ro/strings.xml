@@ -894,6 +894,7 @@
     <string name="error_ai_suggestion">Sugestia IA nu a putut fi încărcată.</string>
     <string name="error_analysis_failed">Analiza a eșuat</string>
     <string name="error_barcode_lookup_failed">Căutarea codului de bare a eșuat</string>
+    <string name="barcode_add_to_off">Adaugă la Open Food Facts</string>
     <string name="error_failed_input_missing">Intrarea salvată nu a putut fi restaurată. Fă o fotografie nouă.</string>
     <string name="error_invalid_json">JSON nevalid</string>
     <string name="error_search_food_failed">Acest aliment nu a putut fi încărcat. Încearcă din nou.</string>

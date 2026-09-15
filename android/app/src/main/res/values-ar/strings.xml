@@ -902,6 +902,7 @@
     <string name="error_ai_suggestion">تعذّر تحميل اقتراح الذكاء الاصطناعي.</string>
     <string name="error_analysis_failed">فشل التحليل</string>
     <string name="error_barcode_lookup_failed">فشل البحث عن الرمز الشريطي</string>
+    <string name="barcode_add_to_off">أضف إلى Open Food Facts</string>
     <string name="error_failed_input_missing">تعذّرت استعادة الإدخال المحفوظ. يرجى التقاط صورة جديدة.</string>
     <string name="error_invalid_json">JSON غير صالح</string>
     <string name="error_search_food_failed">تعذّر تحميل هذا الطعام. حاول مرة أخرى.</string>

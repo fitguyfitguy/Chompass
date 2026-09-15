@@ -968,6 +968,7 @@
     <string name="error_ai_suggestion">Impossible de charger la suggestion IA.</string>
     <string name="error_analysis_failed">Échec de l\'analyse</string>
     <string name="error_barcode_lookup_failed">Échec de la recherche de code-barres</string>
+    <string name="barcode_add_to_off">Ajouter à Open Food Facts</string>
     <string name="error_failed_input_missing">La saisie enregistrée n\'a pas pu être restaurée. Prenez une nouvelle photo.</string>
     <string name="export_action">Exporter</string>
     <string name="export_body_metrics_empty">Aucune entrée de poids, masse grasse ou mesure à exporter.</string>
