@@ -1539,6 +1539,7 @@
     <string name="error_analysis_failed">Analiza nie powiodła się</string>
     <string name="error_failed_input_missing">Nie udało się przywrócić zapisanego wejścia. Zrób nowe zdjęcie.</string>
     <string name="error_barcode_lookup_failed">Wyszukiwanie kodu kreskowego nie powiodło się</string>
+    <string name="barcode_add_to_off">Dodaj do Open Food Facts</string>
     <string name="error_search_food_failed">Nie udało się wczytać tego produktu. Spróbuj ponownie.</string>
     <string name="error_ai_suggestion">Nie udało się wczytać sugestii AI.</string>
     <string name="finish_onboarding_hint">Najpierw ukończ onboarding, aby porównać ten posiłek z dziennymi celami.</string>
