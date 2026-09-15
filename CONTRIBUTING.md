@@ -56,6 +56,28 @@ Connect data, say so: those live in Kotlin **and** the PWA
 (`web/app/src/lib/chompass-core/`) and must change together
 ([docs/PARITY.md](docs/PARITY.md)).
 
+## Submitting changes
+
+Open a pull request on Codeberg (draft is fine); rebase onto `main` before
+asking for review. Opening a PR licenses your contribution under the
+project's [MIT license](LICENSE). Review depth scales with the diff: small
+changes are reviewed inline on the PR, large ones get a written findings
+round. Review checks:
+
+- Tier A: `./gradlew :app:testDebugUnitTest` green on your branch — run it and
+  say so; do not leave the checklist box unchecked.
+- User-facing strings in `res/values/strings.xml` with locale files updated;
+  the locale contract checks fail release on EN-only keys.
+- No user content (search queries, food names, API keys) written to logs.
+- New network calls: name the endpoint and its on/off default, add a
+  `docs/PRIVACY.md` network-table row, default the source off unless there is
+  a strong reason, and keep one source failing from blanking the feature.
+- Tier B (formulas, export JSON): the parity gates from the tier table above.
+
+The maintainer runs device passes and lands changes with linear history.
+Your commits keep your authorship; user-visible work gets a
+`docs/CHANGELOG.md` credit.
+
 ## Do not
 
 - Commit secrets, keystores, diary exports, or release APKs
