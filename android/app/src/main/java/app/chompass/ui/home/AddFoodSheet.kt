@@ -233,7 +233,12 @@ fun AddFoodSheet(
             packagedSearchEnabled = packagedSearchEnabled,
             // Toggling the opt-in re-runs the search; it must not dismiss.
             onPackagedSearchChange = onPackagedSearchChange,
-            onOpenFoodSettings = onOpenFoodSettings,
+            // Leaves for a destination like every callback above, so it
+            // dismisses first: a sheet left open behind the settings screen is
+            // recomposed the moment a back gesture starts bringing Home back,
+            // and its window taking focus cancels that gesture. The user then
+            // sees the sheet flash up and the settings screen stay put.
+            onOpenFoodSettings = { onDismiss(); onOpenFoodSettings() },
             onPickSuggestion = { s -> onDismiss(); onPickSuggestion(s) },
             onReviewSuggestion = { s -> onDismiss(); onReviewSuggestion(s) },
             onAnalyzeQuery = { text -> onDismiss(); onAnalyzeQuery(text) },
