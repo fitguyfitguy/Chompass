@@ -35,6 +35,17 @@ object OpenFoodFactsService {
     private const val USER_AGENT = "Chompass/Android (https://chompass.app)"
     private const val OFF_BASE_URL = "https://world.openfoodfacts.org"
 
+    /** search-a-licious (Sal) full-text search endpoint. */
+    private const val SAL_BASE_URL = "https://search.openfoodfacts.org"
+
+    private const val SAL_SEARCH_FIELDS =
+        "code,product_name,generic_name,brands,serving_quantity,nutriments"
+
+    /** Search backend selector; the cgi path stays for rollback. */
+    private enum class SearchBackend { SAL, CGI }
+
+    private val SEARCH_BACKEND = SearchBackend.SAL
+
     /** Max attempts per candidate query before trying a shorter one. */
     private const val MAX_QUERY_ATTEMPTS = 3
 
@@ -197,6 +208,10 @@ object OpenFoodFactsService {
      * then shorter token drops (brand-ish first token first) — so "Aldi
      * Laugen" still surfaces Laugen products when the AND query misses.
      *
+     * Queries run against OFF's search-a-licious (Sal) service, which ranks
+     * multi-token and typo'd queries far better than the legacy cgi endpoint;
+     * on a Sal transport failure a single automatic cgi attempt covers the
+     * gap, and Sal's empty answers are authoritative.
      * Spending is bounded: at most [MAX_SEARCH_ATTEMPTS] network attempts per
      * call across all candidates and retries, a 503 (OFF's global request
      * limit) is retried once and then stops the whole walk, and any 429
@@ -209,6 +224,7 @@ object OpenFoodFactsService {
         limit: Int = 6,
         client: OkHttpClient = FoodAnalysisService.defaultClient,
         baseUrl: String = OFF_BASE_URL,
+        searchBaseUrl: String = SAL_BASE_URL,
     ): List<SearchHit> = withContext(Dispatchers.IO) {
         val q = query.trim()
         if (q.isEmpty()) return@withContext emptyList()
@@ -244,7 +260,7 @@ object OpenFoodFactsService {
             var attempt = 0
             while (attempt < MAX_QUERY_ATTEMPTS && attemptsLeft > 0 && !stopWalk) {
                 attemptsLeft--
-                when (val outcome = searchOnce(candidate, capped, client, baseUrl)) {
+                when (val outcome = backendSearch(candidate, capped, client, baseUrl, searchBaseUrl)) {
                     is SearchOutcome.Hits -> hits = outcome.hits
                     is SearchOutcome.RateLimited -> {
                         tripRateLimit(outcome.retryAfterSeconds)
@@ -339,6 +355,132 @@ object OpenFoodFactsService {
         }
     }
 
+    /**
+     * One walk step against the configured backend. With [SearchBackend.SAL]
+     * (the default), a Sal failure that is not a rate/global-limit signal gets
+     * exactly one automatic `cgi/search.pl` attempt before giving the step up
+     * as [SearchOutcome.Unavailable]; Sal's successful-but-empty answer is
+     * authoritative and never falls back to cgi.
+     */
+    private suspend fun backendSearch(
+        terms: String,
+        capped: Int,
+        client: OkHttpClient,
+        baseUrl: String,
+        searchBaseUrl: String,
+    ): SearchOutcome {
+        if (SEARCH_BACKEND != SearchBackend.SAL) {
+            return searchOnce(terms, capped, client, baseUrl)
+        }
+        return when (val sal = searchSalOnce(terms, capped, client, searchBaseUrl)) {
+            is SearchOutcome.Hits -> sal
+            SearchOutcome.Unavailable -> searchOnce(terms, capped, client, baseUrl)
+            // 429/503 are OFF-side signals about the app as a whole, not Sal
+            // being broken: pass them to the walk untouched.
+            else -> sal
+        }
+    }
+
+    /**
+     * One search-a-licious request (`GET /search`). Envelope: `hits` array,
+     * `count`/`page`/`page_size` metadata. Each hit carries `brands` as an
+     * array of strings (or null) and flat per-100g nutriments named exactly
+     * like the v2 API's; `serving_quantity` is requested but typically null,
+     * leaving the caller's 100 g fallback in place.
+     */
+    private suspend fun searchSalOnce(
+        terms: String,
+        capped: Int,
+        client: OkHttpClient,
+        searchBaseUrl: String,
+    ): SearchOutcome {
+        val encoded = URLEncoder.encode(terms, "UTF-8")
+        val url = "$searchBaseUrl/search?q=$encoded&fields=$SAL_SEARCH_FIELDS&page_size=$capped"
+        val request = Request.Builder()
+            .url(url)
+            .addHeader("User-Agent", USER_AGENT)
+            .build()
+        val reply = try {
+            cancellableExecute(client.newCall(request))
+        } catch (e: IOException) {
+            return SearchOutcome.Unavailable
+        }
+        return when {
+            reply.code == 429 -> SearchOutcome.RateLimited(reply.retryAfterSeconds)
+            reply.code == 503 -> SearchOutcome.GlobalLimit
+            reply.body == null -> SearchOutcome.Unavailable
+            else -> {
+                val json = runCatching { JSONObject(reply.body) }.getOrNull()
+                    ?: return SearchOutcome.Unavailable
+                val hits = json.optJSONArray("hits")
+                    ?: return SearchOutcome.Hits(emptyList())
+                SearchOutcome.Hits(salHitsFrom(hits, capped))
+            }
+        }
+    }
+
+    /** Maps a Sal `hits` array into [SearchHit]s, capped at [capped]. */
+    private fun salHitsFrom(hits: org.json.JSONArray, capped: Int): List<SearchHit> {
+        return buildList {
+            for (i in 0 until hits.length()) {
+                if (size >= capped) break
+                val hit = hits.optJSONObject(i) ?: continue
+                val code = hit.optString("code").trim()
+                if (code.isEmpty()) continue
+                val name = firstNonEmpty(
+                    hit.optString("product_name"),
+                    hit.optString("generic_name"),
+                ) ?: "Barcode $code"
+                // Sal's brands is an array of strings (or null/absent): the
+                // first entry is the display brand, same as cgi's first term.
+                val brandName = hit.optJSONArray("brands")
+                    ?.optString(0)
+                    ?.trim()
+                    ?.takeIf { it.isNotEmpty() }
+                val macros = macrosPer100g(hit.optJSONObject("nutriments"))
+                val servingGrams = hit.flexibleDouble("serving_quantity")
+                    ?.takeIf { it > 0 }
+                add(searchHit(code, name, brandName, macros, servingGrams))
+            }
+        }
+    }
+
+    /** Per-100g macro values shared by every search backend's hit shape. */
+    private class MacroPer100g(
+        val calories: Double?,
+        val protein: Double?,
+        val carbs: Double?,
+        val fat: Double?,
+    )
+
+    private fun macrosPer100g(nutriments: JSONObject?): MacroPer100g = MacroPer100g(
+        calories = nutriments?.flexibleDouble("energy-kcal_100g")
+            ?: nutriments?.flexibleDouble("energy_100g")?.let { it * 0.23900573614 },
+        protein = nutriments?.flexibleDouble("proteins_100g"),
+        carbs = nutriments?.flexibleDouble("carbohydrates_100g")
+            ?: nutriments?.flexibleDouble("carbohydrates-total_100g"),
+        fat = nutriments?.flexibleDouble("fat_100g"),
+    )
+
+    private fun searchHit(
+        code: String,
+        name: String,
+        brandName: String?,
+        macros: MacroPer100g,
+        servingGrams: Double?,
+    ) = SearchHit(
+        barcode = code,
+        name = name,
+        brand = brandName,
+        caloriesPer100g = macros.calories,
+        proteinPer100g = macros.protein,
+        carbsPer100g = macros.carbs,
+        fatPer100g = macros.fat,
+        servingGrams = servingGrams,
+        incompleteEnergy = macros.calories == null,
+        score = 0.0,
+    )
+
     /** Maps a cgi `products` array into [SearchHit]s, capped at [capped]. */
     private fun searchHitsFrom(products: org.json.JSONArray, capped: Int): List<SearchHit> {
         return buildList {
@@ -362,33 +504,14 @@ object OpenFoodFactsService {
                     ?.trim()
                     ?.takeIf { it.isNotEmpty() }
                 val nutriments = product.optJSONObject("nutriments")
-                val cal100 = nutriments?.flexibleDouble("energy-kcal_100g")
-                    ?: nutriments?.flexibleDouble("energy_100g")?.let { it * 0.23900573614 }
-                val protein100 = nutriments?.flexibleDouble("proteins_100g")
-                val carbs100 = nutriments?.flexibleDouble("carbohydrates_100g")
-                    ?: nutriments?.flexibleDouble("carbohydrates-total_100g")
-
-                val fat100 = nutriments?.flexibleDouble("fat_100g")
+                val macros = macrosPer100g(nutriments)
                 val servingGrams = maxOf(
                     product.flexibleDouble("serving_quantity")
                         ?: gramsFrom(product.optString("serving_size").takeIf { it.isNotBlank() })
                         ?: 0.0,
                     0.0,
                 ).takeIf { it > 0 }
-                add(
-                    SearchHit(
-                        barcode = code,
-                        name = name,
-                        brand = brandName,
-                        caloriesPer100g = cal100,
-                        proteinPer100g = protein100,
-                        carbsPer100g = carbs100,
-                        fatPer100g = fat100,
-                        servingGrams = servingGrams,
-                        incompleteEnergy = cal100 == null,
-                        score = 0.0,
-                    ),
-                )
+                add(searchHit(code, name, brandName, macros, servingGrams))
             }
         }
     }
