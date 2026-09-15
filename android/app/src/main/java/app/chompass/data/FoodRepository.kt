@@ -533,7 +533,7 @@ class FoodRepository(
         if (prefs.foodEntries.first().any { it.imageFilename == filename }) return
         if (prefs.favoriteFoodEntries.first().any { it.imageFilename == filename }) return
         if (prefs.pendingFoodAnalysisDraft.first()?.imageFilename == filename) return
-        if (prefs.pendingFoodInputDraft.first()?.imageFilename == filename) return
+        if (prefs.pendingFoodInputDraft.first()?.resolvedImageFilenames?.contains(filename) == true) return
         store.delete(filename)
     }
 

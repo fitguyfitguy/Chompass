@@ -235,7 +235,7 @@ internal suspend fun PreferencesStore.foodImageReferenceFilenamesImpl(): Set<Str
         foods.forEach { entry -> entry.imageFilename?.let { add(it) } }
         favorites.forEach { entry -> entry.imageFilename?.let { add(it) } }
         analysisDraft?.imageFilename?.let { add(it) }
-        inputDraft?.imageFilename?.let { add(it) }
+        inputDraft?.resolvedImageFilenames?.forEach { if (it.isNotBlank()) add(it) }
     }
 }
 
