@@ -1024,11 +1024,12 @@
     <string name="settings_ai_provider">Dostawca</string>
     <string name="settings_ai_model">Model</string>
     <string name="settings_ai_reasoning_effort">Poziom myślenia</string>
-    <string name="settings_ai_reasoning_effort_footer">Kontroluje budżet myślenia dla modeli OpenRouter z trybem rozumowania. Auto zachowuje domyślne ustawienie aplikacji; wyższy poziom jest wolniejszy i zużywa więcej tokenów.</string>
+    <string name="settings_ai_reasoning_effort_footer">Modele OpenRouter: ustawia budżet myślenia. Własne serwery i Ollama: wysyła reasoning_effort, jeśli serwer to obsługuje. Jeśli serwer odrzuca żądanie, wybierz Auto.</string>
     <string name="ai_reasoning_effort_auto">Automatycznie</string>
     <string name="ai_reasoning_effort_low">Niski</string>
     <string name="ai_reasoning_effort_medium">Średni</string>
     <string name="ai_reasoning_effort_high">Wysoki</string>
+    <string name="ai_reasoning_effort_disabled">Wyłączone (bez myślenia)</string>
     <string name="settings_ai_vision_model">Model wizyjny</string>
     <string name="settings_ai_vision_model_unset">(jak Model)</string>
     <string name="settings_ai_vision_model_footer">Zdjęcia używają tego modelu; tekst używa głównego modelu. Pozostaw puste, aby używać głównego modelu do wszystkiego.</string>

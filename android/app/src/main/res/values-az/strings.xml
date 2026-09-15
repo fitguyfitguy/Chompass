@@ -788,6 +788,7 @@ bilirsən?</string>
     <string name="ai_provider_on_device">Cihazda (özəl)</string>
     <string name="ai_reasoning_effort_auto">Avto</string>
     <string name="ai_reasoning_effort_high">Yüksək</string>
+    <string name="ai_reasoning_effort_disabled">Bağlı (düşüncə yoxdur)</string>
     <string name="ai_reasoning_effort_low">Aşağı</string>
     <string name="ai_reasoning_effort_medium">Orta</string>
     <string name="autobalance_protein">Protein</string>
@@ -1231,7 +1232,7 @@ bilirsən?</string>
     <string name="settings_ai_read_timeout_unit">san</string>
     <string name="settings_ai_read_timeout_value">%1$d san</string>
     <string name="settings_ai_reasoning_effort">Düşünmə səviyyəsi</string>
-    <string name="settings_ai_reasoning_effort_footer">Düşünmə qabiliyyətli OpenRouter modelləri üçün düşünmə büdcəsini idarə edir. Avto tətbiq standartını saxlayır; daha yüksək səviyyə daha yavaşdır və daha çox token xərcləyir.</string>
+    <string name="settings_ai_reasoning_effort_footer">OpenRouter modelləri: düşünmə büdcəsini təyin edir. Xüsusi və Ollama serverləri: server dəstəklədiyi halda reasoning_effort göndərir. Server sorğunu rədd edərsə, Avto seç.</string>
     <string name="settings_ai_vision_model">Görmə modeli</string>
     <string name="settings_ai_vision_model_footer">Şəkillər bu modeli, mətn əsas modeli istifadə edir. Hər şey üçün əsas modeli istifadə etmək üçün boş burax.</string>
     <string name="settings_ai_vision_model_unset">(Model ilə eyni)</string>

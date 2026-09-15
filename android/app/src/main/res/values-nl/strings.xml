@@ -767,6 +767,7 @@
     <string name="ai_provider_on_device">Op apparaat (privé)</string>
     <string name="ai_reasoning_effort_auto">Auto</string>
     <string name="ai_reasoning_effort_high">Hoog</string>
+    <string name="ai_reasoning_effort_disabled">Uit (geen denken)</string>
     <string name="ai_reasoning_effort_low">Laag</string>
     <string name="ai_reasoning_effort_medium">Gemiddeld</string>
     <string name="barcode_hint">Richt de camera op de barcode</string>
@@ -1212,7 +1213,7 @@
     <string name="settings_ai_read_timeout_unit">s</string>
     <string name="settings_ai_read_timeout_value">%1$d s</string>
     <string name="settings_ai_reasoning_effort">Redeneerinspanning</string>
-    <string name="settings_ai_reasoning_effort_footer">Bepaalt het denkbudget voor redenerende OpenRouter-modellen. Auto houdt de appstandaard; meer inspanning is langzamer en kost meer tokens.</string>
+    <string name="settings_ai_reasoning_effort_footer">OpenRouter-modellen: stelt het denkbudget in. Eigen servers en Ollama: stuurt reasoning_effort als de server dat ondersteunt. Weigert je server het verzoek, kies dan Auto.</string>
     <string name="settings_ai_vision_model">Visiemodel</string>
     <string name="settings_ai_vision_model_footer">Foto\'s gebruiken dit model; tekst gebruikt het hoofdmodel. Laat leeg om voor alles het hoofdmodel te gebruiken.</string>
     <string name="settings_ai_vision_model_unset">(zelfde als Model)</string>

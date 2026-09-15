@@ -1024,11 +1024,12 @@
     <string name="settings_ai_provider">Sağlayıcı</string>
     <string name="settings_ai_model">Model</string>
     <string name="settings_ai_reasoning_effort">Akıl yürütme çabası</string>
-    <string name="settings_ai_reasoning_effort_footer">Akıl yürütme destekli OpenRouter modelleri için düşünme bütçesini kontrol eder. Otomatik, uygulama varsayılanını korur; daha yüksek çaba daha yavaştır ve daha fazla token harcar.</string>
+    <string name="settings_ai_reasoning_effort_footer">OpenRouter modelleri: düşünme bütçesini ayarlar. Özel sunucular ve Ollama: sunucu destekliyorsa reasoning_effort gönderir. Sunucu isteği reddederse Otomatik seç.</string>
     <string name="ai_reasoning_effort_auto">Otomatik</string>
     <string name="ai_reasoning_effort_low">Düşük</string>
     <string name="ai_reasoning_effort_medium">Orta</string>
     <string name="ai_reasoning_effort_high">Yüksek</string>
+    <string name="ai_reasoning_effort_disabled">Kapalı (düşünme kapalı)</string>
     <string name="settings_ai_vision_model">Görüş modeli</string>
     <string name="settings_ai_vision_model_unset">(Model ile aynı)</string>
     <string name="settings_ai_vision_model_footer">Fotoğraflar bu modeli kullanır; metin ana modeli kullanır. Her şey için ana modeli kullanmak üzere boş bırak.</string>

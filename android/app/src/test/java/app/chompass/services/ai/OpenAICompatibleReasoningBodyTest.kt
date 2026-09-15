@@ -1,6 +1,7 @@
 package app.chompass.services.ai
 
 import app.chompass.data.OpenRouterReasoningEffort
+import app.chompass.models.AIProvider
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -39,5 +40,28 @@ class OpenAICompatibleReasoningBodyTest {
                 assertEquals(true, body.getBoolean("exclude"))
             }
         }
+    }
+
+    @Test
+    fun disabled_excludeOnly_neverBudgeted() {
+        for (compactRetry in listOf(false, true)) {
+            val body = OpenAICompatibleClient.reasoningBody(OpenRouterReasoningEffort.DISABLED, compactRetry)!!
+            assertEquals("{\"exclude\":true}", body.toString())
+        }
+    }
+
+    @Test
+    fun flatEffort_nullForAutoNullEffortAndForeignProviders() {
+        assertNull(OpenAICompatibleClient.flatReasoningEffort(AIProvider.CUSTOM_OPENAI, null))
+        assertNull(OpenAICompatibleClient.flatReasoningEffort(AIProvider.CUSTOM_OPENAI, OpenRouterReasoningEffort.AUTO))
+        assertNull(OpenAICompatibleClient.flatReasoningEffort(AIProvider.OPENROUTER, OpenRouterReasoningEffort.LOW))
+        assertNull(OpenAICompatibleClient.flatReasoningEffort(AIProvider.OPENAI, OpenRouterReasoningEffort.HIGH))
+    }
+
+    @Test
+    fun flatEffort_explicitValuesForCustomAndOllama() {
+        assertEquals("low", OpenAICompatibleClient.flatReasoningEffort(AIProvider.CUSTOM_OPENAI, OpenRouterReasoningEffort.LOW))
+        assertEquals("high", OpenAICompatibleClient.flatReasoningEffort(AIProvider.OLLAMA, OpenRouterReasoningEffort.HIGH))
+        assertEquals("none", OpenAICompatibleClient.flatReasoningEffort(AIProvider.OLLAMA, OpenRouterReasoningEffort.DISABLED))
     }
 }

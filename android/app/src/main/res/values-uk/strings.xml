@@ -772,6 +772,7 @@
     <string name="ai_provider_on_device">На пристрої (приватно)</string>
     <string name="ai_reasoning_effort_auto">Авто</string>
     <string name="ai_reasoning_effort_high">Високий</string>
+    <string name="ai_reasoning_effort_disabled">Вимк. (без роздумів)</string>
     <string name="ai_reasoning_effort_low">Низький</string>
     <string name="ai_reasoning_effort_medium">Середній</string>
     <string name="autobalance_protein">Білок</string>
@@ -1177,7 +1178,7 @@
     <string name="settings_ai_read_timeout_unit">с</string>
     <string name="settings_ai_read_timeout_value">%1$d с</string>
     <string name="settings_ai_reasoning_effort">Рівень міркувань</string>
-    <string name="settings_ai_reasoning_effort_footer">Керує бюджетом міркувань моделей OpenRouter із підтримкою міркувань. Auto зберігає стандарт застосунку; вищий рівень повільніший і потребує більше токенів.</string>
+    <string name="settings_ai_reasoning_effort_footer">Моделі OpenRouter: задають бюджет роздумів. Власні сервери та Ollama: надсилають reasoning_effort, якщо сервер це підтримує. Якщо сервер відхиляє запит, обери Авто.</string>
     <string name="settings_ai_vision_model">Модель для фото</string>
     <string name="settings_ai_vision_model_footer">Фото використовують цю модель, текст використовує основну. Залиш порожнім, щоб для всього використовувалася основна модель.</string>
     <string name="settings_ai_vision_model_unset">(як основна модель)</string>

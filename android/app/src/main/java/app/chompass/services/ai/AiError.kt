@@ -34,7 +34,7 @@ sealed class AiError(
         "The AI provider took too long to answer. Try again, or raise the timeout in Settings → AI & Speech.",
         messageRes = R.string.ai_error_timeout,
     )
-    class Api(raw: String, @StringRes messageRes: Int = 0) : AiError(raw, messageRes = messageRes)
+    class Api(raw: String, @StringRes messageRes: Int = 0, val httpStatus: Int? = null) : AiError(raw, messageRes = messageRes)
     class InvalidUrl(val url: String) : AiError("Invalid API URL. Check your provider settings.", messageRes = R.string.ai_error_invalid_url)
     /** Issue #8 follow-up: user-entered http:// URL with the "Allow insecure HTTP" toggle off. */
     object InsecureHttpBlocked : AiError(

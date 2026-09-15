@@ -1853,7 +1853,7 @@ für dich ein</string>
 
     <string name="settings_ai_reasoning_effort">Denkaufwand</string>
 
-    <string name="settings_ai_reasoning_effort_footer">Steuert das Denkbudget für reasoning-fähige OpenRouter-Modelle. Automatisch behält die App-Standardeinstellung; höherer Aufwand ist langsamer und kostet mehr Token.</string>
+    <string name="settings_ai_reasoning_effort_footer">OpenRouter-Modelle: legt das Denkbudget fest. Eigene Server und Ollama: sendet reasoning_effort, sofern der Server es unterstützt. Lehnt dein Server die Anfrage ab, wähl Automatisch.</string>
 
     <string name="ai_reasoning_effort_auto">Automatisch</string>
 
@@ -1862,6 +1862,7 @@ für dich ein</string>
     <string name="ai_reasoning_effort_medium">Mittel</string>
 
     <string name="ai_reasoning_effort_high">Hoch</string>
+    <string name="ai_reasoning_effort_disabled">Aus (kein Denken)</string>
 
     <string name="settings_ai_vision_model">Vision-Modell</string>
 

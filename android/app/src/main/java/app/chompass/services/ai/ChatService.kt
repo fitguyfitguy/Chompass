@@ -197,6 +197,8 @@ class ChatService(
                     put(OpenAICompatibleClient.tokenLimitParameter(provider, model), maxTokens)
                     if (provider == AIProvider.OPENROUTER) {
                         OpenAICompatibleClient.reasoningBody(reasoningEffort, compactRetry)?.let { put("reasoning", it) }
+                    } else if (OpenAICompatibleClient.usesFlatReasoningEffort(provider)) {
+                        OpenAICompatibleClient.flatReasoningEffort(provider, reasoningEffort)?.let { put("reasoning_effort", it) }
                     }
                 }
                 val builder = Request.Builder()

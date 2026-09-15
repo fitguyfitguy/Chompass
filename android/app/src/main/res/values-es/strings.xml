@@ -855,6 +855,7 @@
     <string name="ai_provider_xai">xAI Grok</string>
     <string name="ai_reasoning_effort_auto">Automático</string>
     <string name="ai_reasoning_effort_high">Alto</string>
+    <string name="ai_reasoning_effort_disabled">Desactivado (sin razonamiento)</string>
     <string name="ai_reasoning_effort_low">Bajo</string>
     <string name="ai_reasoning_effort_medium">Medio</string>
     <string name="app_name">Chompass</string>
@@ -1300,7 +1301,7 @@
     <string name="settings_ai_read_timeout_unit">s</string>
     <string name="settings_ai_read_timeout_value">%1$d s</string>
     <string name="settings_ai_reasoning_effort">Esfuerzo de razonamiento</string>
-    <string name="settings_ai_reasoning_effort_footer">Controla el presupuesto de pensamiento de los modelos OpenRouter con razonamiento. Automático mantiene el valor predeterminado de la app; más esfuerzo es más lento y cuesta más tokens.</string>
+    <string name="settings_ai_reasoning_effort_footer">Modelos de OpenRouter: fija el presupuesto de razonamiento. Servidores personalizados y Ollama: envía reasoning_effort si el servidor lo admite. Si tu servidor rechaza la petición, elige Automático.</string>
     <string name="settings_ai_vision_model">Modelo de visión</string>
     <string name="settings_ai_vision_model_footer">Las fotos usan este modelo; el texto usa el modelo principal. Déjalo sin definir para usar el modelo principal en todo.</string>
     <string name="settings_ai_vision_model_unset">(igual que Modelo)</string>

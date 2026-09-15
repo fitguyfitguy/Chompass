@@ -21,6 +21,7 @@ import androidx.navigation.NavHostController
 import app.chompass.R
 import app.chompass.models.AIProvider
 import app.chompass.models.LocaleFormat
+import app.chompass.services.ai.OpenAICompatibleClient
 import app.chompass.services.ondevice.OnDeviceDownloadState
 import app.chompass.ui.navigation.ChompassRoutes
 
@@ -87,8 +88,8 @@ internal fun SettingsAiSection(
                         icon = Icons.Outlined.Tune,
                     ) { onOpenSheet(SettingsSheet.VISION_MODEL) }
                 }
-                val showReasoningEffort = ui.selectedAI == AIProvider.OPENROUTER ||
-                    (ui.fallbackEnabled && ui.fallbackProvider == AIProvider.OPENROUTER)
+                val showReasoningEffort = OpenAICompatibleClient.usesReasoningEffort(ui.selectedAI) ||
+                    (ui.fallbackEnabled && OpenAICompatibleClient.usesReasoningEffort(ui.fallbackProvider))
                 if (showReasoningEffort) {
                     HorizontalDivider()
                     SettingRow(
