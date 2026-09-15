@@ -2017,7 +2017,7 @@ class FoodAnalysisService(
         if (!preferStreaming) {
             return when (provider.apiFormat) {
                 AIProvider.ApiFormat.GEMINI ->
-                    GeminiClient.analyze(httpClient, baseUrl, model, sanitizedKey!!, effectivePrompt, imageBytesList, enableGoogleSearch)
+                    GeminiClient.analyze(httpClient, baseUrl, model, sanitizedKey!!, effectivePrompt, imageBytesList, enableGoogleSearch, maxTokens, jsonResponse = !enableGoogleSearch)
                 AIProvider.ApiFormat.ANTHROPIC ->
                     AnthropicClient.analyze(httpClient, baseUrl, model, sanitizedKey!!, effectivePrompt, imageBytesList, maxTokens)
                 AIProvider.ApiFormat.OPENAI_COMPATIBLE ->
@@ -2048,7 +2048,7 @@ class FoodAnalysisService(
             AIProvider.ApiFormat.GEMINI ->
                 GeminiClient.analyzeStreaming(
                     httpClient, baseUrl, model, sanitizedKey!!, effectivePrompt, imageBytesList,
-                    enableGoogleSearch, onDelta,
+                    enableGoogleSearch, maxTokens, jsonResponse = !enableGoogleSearch, onDelta,
                 )
             AIProvider.ApiFormat.ANTHROPIC ->
                 AnthropicClient.analyzeStreaming(
