@@ -1119,6 +1119,8 @@
     <string name="on_device_model_clear_footer">删除 %1$s 的模型文件和未完成的下载，并从内存中卸载。</string>
     <string name="settings_on_device_headroom">端上 AI 的内存预留</string>
     <string name="settings_on_device_headroom_footer">端上模型运行前额外预留的内存：%1$s。仅当手机明明有剩余内存却仍拒绝分析时，才调低此项。</string>
+    <string name="settings_custom_models_loading">正在从你的服务器加载模型…</string>
+    <string name="settings_custom_models_error">无法连接服务器，已显示默认列表。</string>
     <string name="on_device_model_leftover_footer">此设备上还留有先前本地下载的 %1$s。打开后可继续或清除。</string>
     <string name="on_device_model_download">下载</string>
     <string name="on_device_model_downloading">下载中… %1$d%%</string>

@@ -13,6 +13,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **Custom endpoints list their models** (Android): the model picker for a custom OpenAI-compatible endpoint now fetches the server's model list; typing an ID still works. Follows Codeberg [#103](https://codeberg.org/fitguy/Chompass/issues/103) by [@alzari555](https://codeberg.org/alzari555).
 - **The on-device memory reserve can be tuned** (Android): when analysis is refused on a phone with little free memory, the model sheet has an advanced setting to lower the reserve. Follows Codeberg [#46](https://codeberg.org/fitguy/Chompass/issues/46) by [@invisibleman](https://codeberg.org/invisibleman) and [@marcelklehr](https://codeberg.org/marcelklehr).
 - **Photo scans stop wandering and hanging on Gemini** (Android): requests to Gemini now ask for a JSON answer, tell the model how much it may think, and carry your response-length limit, so scans come back as an answer instead of stalling until the timeout. Ports the reliability fix from upstream Fud AI.
 - **Photos upload as real JPEGs** (Android): a shared HEIC, PNG or WebP photo used to be sent to the AI labeled as JPEG, which could stall the analysis, and sideways portrait photos stayed sideways. Photos are converted to JPEG before upload with the rotation applied, and a photo that cannot be converted now shows a clear error instead of hanging.

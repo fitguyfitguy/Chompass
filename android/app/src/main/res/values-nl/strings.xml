@@ -1093,6 +1093,8 @@
     <string name="on_device_model_clear_footer">Verwijdert %1$s aan modelbestanden en onvolledige downloads, en haalt het model uit het geheugen.</string>
     <string name="settings_on_device_headroom">Geheugenreserve voor on-device AI</string>
     <string name="settings_on_device_headroom_footer">Extra geheugen dat in reserve blijft voordat het on-device model draait: %1$s. Verlaag dit alleen als analyse wordt geweigerd terwijl je telefoon vrij geheugen heeft.</string>
+    <string name="settings_custom_models_loading">Modellen worden van je server geladen…</string>
+    <string name="settings_custom_models_error">Kan de server niet bereiken. De standaardlijst wordt getoond.</string>
     <string name="on_device_model_leftover_footer">%1$s van een eerdere lokale download staat nog op dit apparaat. Open om te hervatten of te wissen.</string>
     <string name="on_device_model_download">Downloaden</string>
     <string name="on_device_model_downloading">Downloaden… %1$d%%</string>

@@ -1178,6 +1178,8 @@
     <string name="on_device_model_clear_footer">Supprime %1$s de fichiers modèle et de téléchargements inachevés, et libère la mémoire.</string>
     <string name="settings_on_device_headroom">Réserve mémoire pour l’IA sur l’appareil</string>
     <string name="settings_on_device_headroom_footer">Mémoire supplémentaire gardée en réserve avant l’exécution du modèle sur l’appareil : %1$s. Ne baissez cette valeur que si l’analyse est refusée alors que votre téléphone a de la mémoire libre.</string>
+    <string name="settings_custom_models_loading">Chargement des modèles depuis votre serveur…</string>
+    <string name="settings_custom_models_error">Impossible de joindre le serveur. Affichage de la liste par défaut.</string>
     <string name="on_device_model_leftover_footer">%1$s d’un ancien téléchargement local sont encore sur cet appareil. Ouvrez pour reprendre ou les effacer.</string>
     <string name="on_device_model_download">Télécharger</string>
     <string name="on_device_model_downloading">Téléchargement… %1$d%%</string>

@@ -1488,6 +1488,8 @@
     <string name="on_device_model_clear_footer">Удаляет %1$s файлов модели и незавершённых загрузок и выгружает модель из памяти.</string>
     <string name="settings_on_device_headroom">Резерв памяти для ИИ на устройстве</string>
     <string name="settings_on_device_headroom_footer">Дополнительная память, резервируемая перед запуском модели на устройстве: %1$s. Снижайте только если анализ отклоняется, хотя на телефоне есть свободная память.</string>
+    <string name="settings_custom_models_loading">Загрузка моделей с вашего сервера…</string>
+    <string name="settings_custom_models_error">Не удалось связаться с сервером. Показан список по умолчанию.</string>
     <string name="on_device_model_leftover_footer">На устройстве осталось %1$s от прежней локальной загрузки. Откройте, чтобы продолжить или удалить.</string>
     <string name="on_device_model_download">Загрузить</string>
     <string name="on_device_model_downloading">Загрузка… %1$d%%</string>
