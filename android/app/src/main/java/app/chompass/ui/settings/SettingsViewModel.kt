@@ -1075,6 +1075,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         viewModelScope.launch { container.prefs.setOnDeviceDownloadOverWifiOnly(v) }
     }
 
+    fun setOnDeviceHeadroomPercent(v: Int) {
+        viewModelScope.launch { container.prefs.setOnDeviceHeadroomPercent(v) }
+    }
+
     fun selectModel(m: String) {
         viewModelScope.launch {
             val prev = _ui.value.selectedModel

@@ -67,7 +67,8 @@ class OnDeviceLlmGateway(
         modelId: String? = null,
     ): String {
         val entry = selectedEntry(modelId)
-        if (!OnDeviceCapability.hasEnoughAvailableMemoryForVision(context, entry)) {
+        val headroomOverride = prefs.onDeviceHeadroomPercent.first().takeIf { it > 0 }
+        if (!OnDeviceCapability.hasEnoughAvailableMemoryForVision(context, entry, headroomPercentOverride = headroomOverride)) {
             throw AiError.OnDeviceLowMemory
         }
         val loaded = ensureEngine(vision = true, modelId = modelId)
@@ -105,7 +106,8 @@ class OnDeviceLlmGateway(
         // refuse the load while availMem is below the floor and surface a
         // catchable error instead (vision calls already carry their own
         // stricter preflight in generateWithImage).
-        if (!OnDeviceCapability.hasEnoughAvailableMemoryForLoad(context, entry)) {
+        val headroomOverride = prefs.onDeviceHeadroomPercent.first().takeIf { it > 0 }
+        if (!OnDeviceCapability.hasEnoughAvailableMemoryForLoad(context, entry, headroomPercentOverride = headroomOverride)) {
             val am = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
             val info = ActivityManager.MemoryInfo()
             am?.getMemoryInfo(info)
@@ -113,7 +115,7 @@ class OnDeviceLlmGateway(
                 ON_DEVICE_LLM_TAG,
                 "op=ondevice_llm phase=loadBlocked reason=low_memory model=${entry.modelId} " +
                     "availMem=${info.availMem} totalMem=${info.totalMem} " +
-                    "need=${entry.sizeBytes + OnDeviceCapability.loadMemoryHeadroomBytes(info.totalMem)}"
+                    "need=${entry.sizeBytes + OnDeviceCapability.loadMemoryHeadroomBytes(info.totalMem, headroomOverride)}"
             )
             throw AiError.OnDeviceLowMemory
         }

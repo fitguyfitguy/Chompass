@@ -487,6 +487,9 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setOnDeviceModelDownloadedVersion(version: String?) = setOnDeviceModelDownloadedVersionImpl(version)
     val onDeviceDownloadOverWifiOnly: Flow<Boolean> get() = onDeviceDownloadOverWifiOnlyImpl
     suspend fun setOnDeviceDownloadOverWifiOnly(v: Boolean) = setOnDeviceDownloadOverWifiOnlyImpl(v)
+    /** #46: percent of usable RAM kept in reserve before on-device runs; 0 = shipped default 5%. */
+    val onDeviceHeadroomPercent: Flow<Int> get() = onDeviceHeadroomPercentImpl
+    suspend fun setOnDeviceHeadroomPercent(v: Int) = setOnDeviceHeadroomPercentImpl(v)
     val onDeviceFeatureVisible: Flow<Boolean> get() = onDeviceFeatureVisibleImpl
     suspend fun setOnDeviceFeatureVisible(v: Boolean) = setOnDeviceFeatureVisibleImpl(v)
     val foodEntries: Flow<List<FoodEntry>> get() = foodEntriesImpl

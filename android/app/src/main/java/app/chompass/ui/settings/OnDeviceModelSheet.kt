@@ -1,5 +1,7 @@
 package app.chompass.ui.settings
 
+import android.app.ActivityManager
+import android.content.Context
 import android.os.StatFs
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,12 +22,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.services.ondevice.ModelCatalog
+import app.chompass.services.ondevice.OnDeviceCapability
 import app.chompass.services.ondevice.OnDeviceDownloadState
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
@@ -51,6 +55,7 @@ internal fun OnDeviceModelSheet(
     onStartDownload: () -> Unit,
     onCancelDownload: () -> Unit,
     onSetOverWifiOnly: (Boolean) -> Unit,
+    onSetHeadroomPercent: (Int) -> Unit,
 ) {
     val manager = container.onDeviceModelDownloadManager
     val entry = remember(selectedModelId) { ModelCatalog.forModelId(selectedModelId) }
@@ -180,6 +185,49 @@ internal fun OnDeviceModelSheet(
                 )
             }
         }
+        Spacer(Modifier.height(12.dp))
+        HorizontalDivider()
+        Spacer(Modifier.height(8.dp))
+        val context = LocalContext.current
+        val headroomPercent by container.prefs.onDeviceHeadroomPercent.collectAsState(initial = 0)
+        val totalMemBytes = remember {
+            val am = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+            val info = ActivityManager.MemoryInfo()
+            am?.getMemoryInfo(info)
+            info.totalMem
+        }
+        val effectivePercent = headroomPercent.takeIf { it in 1..20 } ?: 5
+        val reserveBytes = OnDeviceCapability.visionMemoryHeadroomBytes(
+            totalMemBytes,
+            headroomPercentOverride = headroomPercent.takeIf { it > 0 },
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                stringResource(R.string.settings_on_device_headroom),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(1f),
+            )
+            TextButton(onClick = { onSetHeadroomPercent((effectivePercent - 1).coerceAtLeast(1)) }) {
+                Text("−")
+            }
+            Text(
+                "$effectivePercent%",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(horizontal = 4.dp),
+            )
+            TextButton(onClick = { onSetHeadroomPercent((effectivePercent + 1).coerceAtMost(20)) }) {
+                Text("+")
+            }
+        }
+        Text(
+            stringResource(R.string.settings_on_device_headroom_footer, gb(reserveBytes)),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
+        )
 
         if (isLoaded || occupiedBytes > 0L) {
             Spacer(Modifier.height(12.dp))

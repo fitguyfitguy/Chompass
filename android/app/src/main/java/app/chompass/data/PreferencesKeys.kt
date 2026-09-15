@@ -278,6 +278,8 @@ internal object Keys {
         val BARCODE_CACHE = stringPreferencesKey("barcodeLookupCache")
         val ON_DEVICE_MODEL_DOWNLOADED_VERSION = stringPreferencesKey("onDeviceModelDownloadedVersion")
         val ON_DEVICE_DOWNLOAD_OVER_WIFI_ONLY = booleanPreferencesKey("onDeviceDownloadOverWifiOnly")
+        /** #46: adjustable on-device memory reserve percent (0 = default 5%, clamped 0..20 at the setter). */
+        val ON_DEVICE_HEADROOM_PERCENT = intPreferencesKey("onDeviceHeadroomPercent")
         val ON_DEVICE_FEATURE_VISIBLE = booleanPreferencesKey("onDeviceFeatureVisible")
         val SYNC_REVISIONS = stringPreferencesKey("syncRevisions")
         val WEBDAV_URL = stringPreferencesKey("webDavUrl")
