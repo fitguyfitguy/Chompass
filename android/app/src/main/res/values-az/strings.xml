@@ -1114,6 +1114,8 @@ bilirsən?</string>
     <string name="on_device_model_clear_footer">%1$s model faylını və yarımçıq endirməni silir, yaddaşdan da çıxarır.</string>
     <string name="settings_on_device_headroom">On-device süni intellekt üçün yaddaş ehtiyatı</string>
     <string name="settings_on_device_headroom_footer">Cihazdaki model işləməzdən əvvəl saxlanılan əlavə yaddaş: %1$s. Telefonunuzda boş yaddaş olsa da analiz rədd edilirsə, bunu yalnız o zaman aşağı salın.</string>
+    <string name="settings_custom_models_loading">Modellər serverinizdən yüklənir…</string>
+    <string name="settings_custom_models_error">Serverə qoşulmaq mümkün olmadı. Standart siyahı göstərilir.</string>
     <string name="on_device_model_leftover_footer">Bu cihazda əvvəlki yerli endirmədən %1$s qalıb. Davam etmək və ya silmək üçün açın.</string>
     <string name="on_device_model_download">Endir</string>
     <string name="on_device_model_downloading">Endirilir… %1$d%%</string>

@@ -114,6 +114,9 @@ internal fun SettingsSheets(
         if (sheet == SettingsSheet.AI_MODEL && ui.selectedAI == AIProvider.OLLAMA) {
             vm.fetchOllamaModels()
         }
+        if (sheet == SettingsSheet.AI_MODEL && ui.selectedAI == AIProvider.CUSTOM_OPENAI) {
+            vm.fetchCustomModels()
+        }
     }
     if (confirmDiscardMeals) {
         AlertDialog(
@@ -163,6 +166,8 @@ internal fun SettingsSheets(
                     items = when {
                         ui.selectedAI == AIProvider.OLLAMA && !ui.ollamaModels.isNullOrEmpty() ->
                             ui.ollamaModels!!.map { it.id }
+                        ui.selectedAI == AIProvider.CUSTOM_OPENAI && !ui.customModels.isNullOrEmpty() ->
+                            ui.customModels!!
                         ui.selectedAI == AIProvider.ON_DEVICE && ui.onDeviceModels.isNotEmpty() ->
                             ui.onDeviceModels
                         else -> ui.selectedAI.models
@@ -184,6 +189,10 @@ internal fun SettingsSheets(
                             stringResource(R.string.settings_ollama_models_loading)
                         ui.selectedAI == AIProvider.OLLAMA && ui.ollamaModelsError ->
                             stringResource(R.string.settings_ollama_models_error)
+                        ui.selectedAI == AIProvider.CUSTOM_OPENAI && ui.customModelsLoading ->
+                            stringResource(R.string.settings_custom_models_loading)
+                        ui.selectedAI == AIProvider.CUSTOM_OPENAI && ui.customModelsError ->
+                            stringResource(R.string.settings_custom_models_error)
                         ui.selectedAI.supportsCustomModelName ->
                             stringResource(R.string.sheet_model_footer)
                         else -> null

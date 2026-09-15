@@ -180,6 +180,10 @@ data class SettingsUiState(
     val ollamaModels: List<app.chompass.services.ai.OllamaModel>? = null,
     val ollamaModelsLoading: Boolean = false,
     val ollamaModelsError: Boolean = false,
+    /** #103: model ids fetched from a custom OpenAI-compatible endpoint; null = never fetched. */
+    val customModels: List<String>? = null,
+    val customModelsLoading: Boolean = false,
+    val customModelsError: Boolean = false,
     val appearanceMode: String = "system",
     /** "" = system default, or locale tag like "de", "zh-CN". */
     val appLanguage: String = "",
@@ -1117,6 +1121,31 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                         ollamaModelsError = true,
                     )
                 },
+            )
+        }
+    }
+
+    fun fetchCustomModels() {
+        if (_ui.value.selectedAI != AIProvider.CUSTOM_OPENAI) return
+        viewModelScope.launch {
+            val baseUrl = _ui.value.customBaseUrl.takeIf { it.isNotBlank() }
+            if (baseUrl == null) {
+                _ui.value = _ui.value.copy(customModels = null, customModelsLoading = false, customModelsError = true)
+                return@launch
+            }
+            _ui.value = _ui.value.copy(customModelsLoading = true, customModelsError = false)
+            val result = withContext(Dispatchers.IO) {
+                runCatching {
+                    app.chompass.services.ai.OpenAiModelsClient.listModels(
+                        baseUrl = baseUrl,
+                        apiKey = container.keyStore.apiKey(AIProvider.CUSTOM_OPENAI),
+                        allowInsecureHttp = _ui.value.allowInsecureHttp,
+                    )
+                }
+            }
+            _ui.value = result.fold(
+                onSuccess = { models -> _ui.value.copy(customModels = models, customModelsLoading = false) },
+                onFailure = { _ui.value.copy(customModels = null, customModelsLoading = false, customModelsError = true) },
             )
         }
     }

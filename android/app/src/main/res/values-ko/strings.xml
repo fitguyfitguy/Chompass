@@ -1117,6 +1117,8 @@
     <string name="on_device_model_clear_footer">모델 파일과 미완료 다운로드 %1$s를 삭제하고 메모리에서도 내립니다.</string>
     <string name="settings_on_device_headroom">온디바이스 AI 메모리 여유분</string>
     <string name="settings_on_device_headroom_footer">온디바이스 모델이 실행되기 전에 확보되는 추가 메모리입니다: %1$s. 메모리가 충분한데도 분석이 거부될 때만 낮추세요.</string>
+    <string name="settings_custom_models_loading">서버에서 모델을 불러오는 중…</string>
+    <string name="settings_custom_models_error">서버에 연결할 수 없습니다. 기본 목록을 표시합니다.</string>
     <string name="on_device_model_leftover_footer">이전 온디바이스 다운로드에서 %1$s가 이 기기에 남아 있습니다. 열어 이어받거나 지우세요.</string>
     <string name="on_device_model_download">다운로드</string>
     <string name="on_device_model_downloading">다운로드 중… %1$d%%</string>

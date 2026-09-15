@@ -1118,6 +1118,8 @@
     <string name="on_device_model_clear_footer">يحذف %1$s من ملفات النموذج والتنزيلات غير المكتملة، ويُخرجه من الذاكرة.</string>
     <string name="settings_on_device_headroom">ذاكرة احتياطية للذكاء الاصطناعي على الجهاز</string>
     <string name="settings_on_device_headroom_footer">ذاكرة إضافية تُحجز قبل تشغيل النموذج على الجهاز: %1$s. اخفضها فقط إذا كان التحليل مرفوضًا رغم توفّر ذاكرة حرة في هاتفك.</string>
+    <string name="settings_custom_models_loading">جارٍ تحميل النماذج من خادمك…</string>
+    <string name="settings_custom_models_error">تعذّر الوصول إلى الخادم. يتم عرض القائمة الافتراضية.</string>
     <string name="on_device_model_leftover_footer">ما زال على هذا الجهاز %1$s من تنزيل محلي سابق. افتح للمتابعة أو المسح.</string>
     <string name="on_device_model_download">تنزيل</string>
     <string name="on_device_model_downloading">جارٍ التنزيل… %1$d%%</string>
