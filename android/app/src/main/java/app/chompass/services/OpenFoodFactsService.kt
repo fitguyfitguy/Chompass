@@ -1,5 +1,6 @@
 package app.chompass.services
 
+import app.chompass.BuildConfig
 import app.chompass.data.PreferencesStore
 import app.chompass.models.FoodGroundingProvenance
 import app.chompass.models.FoodProductMetadata
@@ -32,7 +33,9 @@ object OpenFoodFactsService {
     private const val FIELDS = "product_name,generic_name,brands,quantity,product_quantity,product_quantity_unit,serving_size,serving_quantity,nutriments,ingredients_text,allergens_tags,traces_tags,nutriscore_grade,nova_group,ecoscore_grade,labels_tags,categories_tags,image_front_url"
     private const val SEARCH_FIELDS =
         "code,product_name,generic_name,brands,serving_size,serving_quantity,nutriments"
-    private const val USER_AGENT = "Chompass/Android (https://chompass.app)"
+    // Contact address per OFF's API usage policy (product page asks who is
+    // hitting them); version identifies the app release in their logs.
+    private val USER_AGENT = "Chompass/Android/${BuildConfig.VERSION_NAME} (fitguy@mailfence.com)"
     private const val OFF_BASE_URL = "https://world.openfoodfacts.org"
 
     /** search-a-licious (Sal) full-text search endpoint. */
@@ -84,7 +87,14 @@ object OpenFoodFactsService {
     private const val UNEXPECTED_RESPONSE_MESSAGE =
         "Open Food Facts returned an unexpected response."
 
-    class LookupException(message: String) : Exception(message)
+    open class LookupException(message: String) : Exception(message) {
+        /**
+         * The barcode is not in OFF (HTTP 404 or status 0). Typed so the UI
+         * can offer the "Add to Open Food Facts" action with [code]; the
+         * message stays the plain not-found copy.
+         */
+        class NotFound(val code: String) : LookupException(NOT_FOUND_MESSAGE)
+    }
 
     /**
      * Rate-limit circuit breaker, tripped by any 429 from search or lookup:
@@ -613,7 +623,7 @@ object OpenFoodFactsService {
      */
     private fun parseLookupResponse(response: Response, code: String): FoodAnalysis? {
         when {
-            response.code == 404 -> throw LookupException(NOT_FOUND_MESSAGE)
+            response.code == 404 -> throw LookupException.NotFound(code)
             response.code == 429 || response.code >= 500 -> return null
             !response.isSuccessful -> throw LookupException(UNEXPECTED_RESPONSE_MESSAGE)
         }
@@ -622,10 +632,19 @@ object OpenFoodFactsService {
             ?: throw LookupException(UNEXPECTED_RESPONSE_MESSAGE)
         val product = json.optJSONObject("product")
         if (json.optInt("status", 0) == 0 || product == null) {
-            throw LookupException(NOT_FOUND_MESSAGE)
+            throw LookupException.NotFound(code)
         }
         return analysis(product, code)
     }
+
+    /**
+     * OFF's "add a product" form for a missing barcode (logged-out works):
+     * the user types or scans the code there. Probe-pinned URL — the
+     * `?type=add&code=` variant 404s, do not use it.
+     */
+    internal fun addProductUrl(code: String): String =
+        "https://world.openfoodfacts.org/cgi/product.pl?code=" +
+            URLEncoder.encode(code, "UTF-8")
 
     /** Maps an Open Food Facts `product` object to [FoodAnalysis] (serving-scaled). */
     internal fun analysis(product: JSONObject, barcode: String): FoodAnalysis {

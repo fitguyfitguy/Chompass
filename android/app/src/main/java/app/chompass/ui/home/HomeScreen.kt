@@ -58,6 +58,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -93,6 +94,7 @@ import app.chompass.models.MilkKind
 import app.chompass.models.WaterEntry
 import app.chompass.services.FoodPhotoSession
 import app.chompass.services.MealShare
+import app.chompass.services.OpenFoodFactsService
 import app.chompass.services.PerfLog
 import app.chompass.services.ShortcutEntryAction
 import app.chompass.services.grounding.GroundedEntryFeature
@@ -1671,6 +1673,7 @@ fun HomeScreen(
         val hasRetryableInput = ui.pendingInputImageBytes != null ||
             ui.pendingInputDraftImageFilenames.isNotEmpty()
         val autoSavedToQueue = ui.pendingQueueEntryId != null
+        val uriHandler = LocalUriHandler.current
         FudGlassDialog(onDismissRequest = { vm.clearError() }) {
             Text(stringResource(R.string.error_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(err, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f))
@@ -1687,6 +1690,18 @@ fun HomeScreen(
                     primaryText = stringResource(R.string.action_ok),
                     onPrimary = { vm.clearError() }
                 )
+            }
+            ui.errorNotFoundBarcode?.let { barcode ->
+                // The barcode is not in OFF yet: offer to add the product
+                // there. No account needed; the user types or scans the code
+                // into OFF's form (the URL param does not prefill it).
+                TextButton(
+                    onClick = {
+                        uriHandler.openUri(OpenFoodFactsService.addProductUrl(barcode))
+                    },
+                ) {
+                    Text(stringResource(R.string.barcode_add_to_off))
+                }
             }
             if (autoSavedToQueue) {
                 // Codeberg #53: the failed photos + description are already in

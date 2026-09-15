@@ -898,6 +898,7 @@
     <string name="home_nutrients_pick_four">Выбери ровно четыре нутриента для сводки на главном экране.</string>
     <string name="error_analysis_failed">Не удалось выполнить анализ</string>
     <string name="error_barcode_lookup_failed">Не удалось найти штрихкод</string>
+    <string name="barcode_add_to_off">Добавить в Open Food Facts</string>
     <string name="error_ai_suggestion">Не удалось загрузить подсказку ИИ.</string>
     <string name="finish_onboarding_hint">Сначала заверши настройку, чтобы сравнивать блюда с дневными целями.</string>
     <string name="export_from">С</string>

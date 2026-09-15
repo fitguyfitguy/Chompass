@@ -143,17 +143,40 @@ class OpenFoodFactsLookupTest {
     }
 
     @Test
-    fun lookup_404_throwsProductNotFound_withoutRetry() {
+    fun lookup_404_throwsTypedNotFound_withoutRetry() {
         server.enqueue(MockResponse().setResponseCode(404))
-        assertLookupFails("Product not found in Open Food Facts. Scan the nutrition label instead.")
+        assertTypedNotFound()
         assertEquals(1, server.requestCount)
     }
 
     @Test
-    fun lookup_200_status0_throwsProductNotFound() {
+    fun lookup_200_status0_throwsTypedNotFound() {
         server.enqueue(MockResponse().setResponseCode(200).setBody("""{"code":"9421011990608","status":0}"""))
-        assertLookupFails("Product not found in Open Food Facts. Scan the nutrition label instead.")
+        assertTypedNotFound()
         assertEquals(1, server.requestCount)
+    }
+
+    /** Both not-found sites throw the typed exception carrying the code. */
+    private fun assertTypedNotFound() {
+        try {
+            lookup()
+            fail("expected LookupException.NotFound")
+        } catch (e: LookupException.NotFound) {
+            assertEquals("Product not found in Open Food Facts. Scan the nutrition label instead.", e.message)
+            assertEquals("9339687206605", e.code)
+        }
+    }
+
+    @Test
+    fun lookup_sendsContactUserAgent() {
+        server.enqueue(MockResponse().setResponseCode(200).setBody(productJson))
+
+        lookup()
+
+        assertEquals(
+            "Chompass/Android/${app.chompass.BuildConfig.VERSION_NAME} (fitguy@mailfence.com)",
+            server.takeRequest().getHeader("User-Agent"),
+        )
     }
 
     @Test
