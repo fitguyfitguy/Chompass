@@ -338,8 +338,7 @@ export class BarcodeScanner extends HTMLElement {
         ? { ...DEMO_PRODUCT }
         : await (await import("../lib/off-client.js")).lookupBarcode(barcode);
       if (!prefill) {
-        if (status)
-          status.textContent = `No product found for ${barcode}. Try manual entry, or edit portions after saving.`;
+        if (status) renderNotFoundStatus(status, notFoundStatus(barcode));
         return;
       }
       const q = encodeURIComponent(JSON.stringify({ ...prefill, mealType: "snack", source: "barcode" }));
@@ -348,6 +347,36 @@ export class BarcodeScanner extends HTMLElement {
       if (status) status.textContent = `Lookup failed: ${err.message}`;
     }
   }
+}
+
+/**
+ * The "No product found" status: manual-entry hint plus a link to add the
+ * product on Open Food Facts. The logged-out add form at
+ * https://world.openfoodfacts.org/cgi/product.pl?code=<code> opens without a
+ * login; the user types or scans the code into the OFF form (verified
+ * logged-out, 2026-09). Returned as plain data — renderNotFoundStatus turns it
+ * into nodes so decoded barcode text is never parsed as HTML.
+ * @param {string} barcode decoded text as shown to the user
+ */
+export function notFoundStatus(barcode) {
+  return {
+    text: `No product found for ${barcode}. Try manual entry, or edit portions after saving.`,
+    linkText: "Add to Open Food Facts",
+    linkHref: `https://world.openfoodfacts.org/cgi/product.pl?code=${encodeURIComponent(barcode)}`,
+  };
+}
+
+/**
+ * @param {Element} status
+ * @param {{text: string, linkText: string, linkHref: string}} nf
+ */
+function renderNotFoundStatus(status, nf) {
+  const link = document.createElement("a");
+  link.href = nf.linkHref;
+  link.target = "_blank";
+  link.rel = "noopener";
+  link.textContent = nf.linkText;
+  status.replaceChildren(`${nf.text} `, link);
 }
 
 customElements.define("barcode-scanner", BarcodeScanner);
