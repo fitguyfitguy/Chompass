@@ -256,7 +256,7 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
         geminiGoogleSearchEnabled = this[Keys.GEMINI_GOOGLE_SEARCH_ENABLED] ?: false,
         openRouterReasoningEffort = OpenRouterReasoningEffort.fromStorage(this[Keys.OPENROUTER_REASONING_EFFORT]),
         mealConstituentsEnabled = this[Keys.MEAL_CONSTITUENTS_ENABLED] ?: true,
-        foodSearchOpenFoodFactsEnabled = this[Keys.FOOD_SEARCH_OFF_ENABLED] ?: false,
+        foodSearchOpenFoodFactsEnabled = this[Keys.FOOD_SEARCH_OFF_ENABLED] ?: true,
         foodSearchUsdaEnabled = this[Keys.FOOD_SEARCH_USDA_ENABLED] ?: true,
         foodSearchSwissEnabled = this[Keys.FOOD_SEARCH_SWISS_ENABLED] ?: true,
         skipPhotoNotePrompt = this[Keys.SKIP_PHOTO_NOTE_PROMPT] ?: false,

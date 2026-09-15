@@ -5,6 +5,12 @@ All notable changes to Chompass are documented here.
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
 
+## [Unreleased]
+
+### Changed
+
+- **Open Food Facts search starts on** (Android): the Add Food search now looks in Open Food Facts by default, alongside the foods on your phone and the bundled USDA and Swiss databases, so a brand name finds the packaged product without a detour into Settings. What you type stays on the phone until that source is on. Switching it off is one tap on the databases heading in the search, or the switch in Settings → Food & Entry → Search food databases. Foods you already logged keep their source badge either way.
+
 ## [5.0.0] - 2026-09-15
 
 ### Added
