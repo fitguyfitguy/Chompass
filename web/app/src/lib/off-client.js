@@ -2,9 +2,35 @@
 // Open Food Facts product lookup for barcode scanning.
 // Prefers per-serving nutriments when present, else scales per-100g by serving
 // size — mirrors Android OpenFoodFactsService.
+//
+// Lookup hardening (mirrors the Android service): a localStorage LRU cache
+// makes repeat scans instant and works offline, a not-found code is negatively
+// cached for 24 h, 429/5xx get two retries, any 429 trips a module-level
+// cooldown (the breaker) so further lookups fail fast without network, and
+// every request is capped at 8 s.
 
 import { ensureServingUnits, normalizedOptions, heuristicOptions } from "./chompass-core/serving-units.js";
 import { normalizeBarcodeCode } from "./chompass-core/barcode-code.js";
+
+const LOOKUP_CACHE_KEY = "chompass.offLookupCache.v1";
+const LOOKUP_CACHE_MAX_ENTRIES = 200;
+const NOT_FOUND_TTL_MS = 24 * 60 * 60 * 1000;
+const REQUEST_TIMEOUT_MS = 8000;
+/** Backoff before retry 1 and retry 2 of a 429/5xx. */
+const RETRY_DELAYS_MS = [300, 600];
+// A Retry-After longer than this ends the lookup instead of parking the
+// scanner on it; the cooldown breaker already covers the wait.
+const MAX_RETRY_WAIT_MS = 2000;
+const COOLDOWN_DEFAULT_MS = 60 * 1000;
+const COOLDOWN_MAX_MS = 120 * 1000;
+
+/** Module-level 429 cooldown until-timestamp (Android calls it the breaker). */
+let cooldownUntilMs = 0;
+
+/** Test hook: clear the 429 cooldown between tests. */
+export function resetLookupCooldown() {
+  cooldownUntilMs = 0;
+}
 
 /**
  * @param {string} barcode raw decoded text (may be a GS1 / QR / URL form)
@@ -14,14 +40,131 @@ import { normalizeBarcodeCode } from "./chompass-core/barcode-code.js";
 export async function lookupBarcode(barcode) {
   const code = normalizeBarcodeCode(barcode);
   if (!code) return null;
+
+  const cache = readLookupCache();
+  const cached = cache[code];
+  if (cached) {
+    if (cached.product != null) {
+      cached.ts = Date.now(); // LRU touch
+      writeLookupCache(cache);
+      return cached.product;
+    }
+    if (Date.now() - cached.ts < NOT_FOUND_TTL_MS) return null;
+    delete cache[code];
+    writeLookupCache(cache);
+  }
+
+  if (Date.now() < cooldownUntilMs) {
+    throw new Error("Open Food Facts asked to slow down. Try again in a minute.");
+  }
+
   const fields = "product_name,generic_name,brands,quantity,product_quantity,product_quantity_unit,serving_size,serving_quantity,nutriments,ingredients_text,allergens_tags,traces_tags,nutriscore_grade,nova_group,ecoscore_grade,labels_tags,categories_tags,image_front_url";
-  const res = await fetch(
-    `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json?fields=${fields}`
-  );
-  if (!res.ok) throw new Error(`Open Food Facts lookup failed (${res.status})`);
+  const res = await fetchOffProduct(code, fields);
   const data = await res.json();
-  if (data.status !== 1 || !data.product) return null;
-  return mapProduct(data.product, code);
+  const product =
+    (data.status === 1 && data.product && mapProduct(data.product, code)) || null;
+  cache[code] = { product, ts: Date.now() };
+  writeLookupCache(cache);
+  return product;
+}
+
+/**
+ * Fetch the v2 product payload with the 8 s request timeout, 429/5xx retries,
+ * and the cooldown breaker: any 429 trips a module cooldown — Retry-After
+ * seconds when present, else 60 s, capped at 120 s.
+ * @param {string} code
+ * @param {string} fields
+ * @returns {Promise<Response>}
+ */
+async function fetchOffProduct(code, fields) {
+  const url = `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json?fields=${fields}`;
+  for (let attempt = 0; ; attempt++) {
+    let res;
+    try {
+      res = await fetch(url, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
+    } catch (err) {
+      if (/** @type {any} */ (err)?.name === "TimeoutError") {
+        throw new Error("Open Food Facts timed out. Check your connection and try again.");
+      }
+      throw err;
+    }
+    if (res.ok) return res;
+    if (res.status === 429) {
+      cooldownUntilMs = Math.max(
+        cooldownUntilMs,
+        Date.now() + Math.min(retryAfterMs(res) ?? COOLDOWN_DEFAULT_MS, COOLDOWN_MAX_MS)
+      );
+    }
+    const retryable = res.status === 429 || res.status >= 500;
+    if (retryable && attempt < RETRY_DELAYS_MS.length) {
+      const delay = retryAfterMs(res) ?? RETRY_DELAYS_MS[attempt];
+      if (delay <= MAX_RETRY_WAIT_MS) {
+        await sleep(delay);
+        continue;
+      }
+    }
+    if (res.status === 429) {
+      throw new Error("Open Food Facts asked to slow down. Try again in a minute.");
+    }
+    throw new Error(`Open Food Facts lookup failed (${res.status})`);
+  }
+}
+
+/** @param {Response} res */
+function retryAfterMs(res) {
+  const seconds = Number(res.headers.get("retry-after"));
+  return Number.isFinite(seconds) && seconds > 0 ? seconds * 1000 : null;
+}
+
+/** @param {number} ms */
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * @returns {Record<string, {product: Record<string, unknown> | null, ts: number}>}
+ */
+function readLookupCache() {
+  try {
+    const raw = localStorage.getItem(LOOKUP_CACHE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+    for (const key of Object.keys(parsed)) {
+      const entry = parsed[key];
+      if (
+        !entry ||
+        typeof entry !== "object" ||
+        typeof entry.ts !== "number" ||
+        (entry.product != null && typeof entry.product !== "object")
+      ) {
+        delete parsed[key];
+      }
+    }
+    return parsed;
+  } catch {
+    // Missing / blocked / corrupted storage — behave as an empty cache.
+    return {};
+  }
+}
+
+/**
+ * Persist the cache, evicting the least-recently-used entries past the cap.
+ * @param {Record<string, {product: Record<string, unknown> | null, ts: number}>} cache
+ */
+function writeLookupCache(cache) {
+  const entries = Object.entries(cache);
+  if (entries.length > LOOKUP_CACHE_MAX_ENTRIES) {
+    entries.sort((a, b) => a[1].ts - b[1].ts);
+    for (let i = 0; i < entries.length - LOOKUP_CACHE_MAX_ENTRIES; i++) {
+      delete cache[entries[i][0]];
+    }
+  }
+  try {
+    localStorage.setItem(LOOKUP_CACHE_KEY, JSON.stringify(cache));
+  } catch {
+    // Private mode / quota exceeded — caching stays disabled for this session.
+  }
 }
 
 /**
