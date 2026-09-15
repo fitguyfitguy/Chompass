@@ -5,7 +5,7 @@ All notable changes to Chompass are documented here.
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
 
-## [5.0.0] - 2026-09-14
+## [5.0.0] - 2026-09-15
 
 ### Added
 
@@ -18,7 +18,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Changed
 
 - **Adding food is one search field instead of a wall of buttons** (Android): the Add Food sheet used to ask which tool you wanted before you could say what you ate, and kept your own saved foods and the food databases behind two more sheets. Now you type once. Your recents, frequents, favorites and recipes appear as you type, alongside matches from the USDA and Swiss databases that ship with the app, in one ranked list with no duplicates across sources. Your own foods always come first. Typing stays on your phone: packaged products from Open Food Facts stay off until you turn them on, and nothing you type is sent anywhere in the meantime. While they are off, a small hint under the databases heading links to the setting. Once on, an Open Food Facts chip on the databases heading turns them back off in one tap, and it is the same setting as the one in Settings, so it stays on wherever you turned it on. Photo and barcode sit under the field as buttons and voice moved into the field itself; the note sheet, saved meals, manual entry, copy from day, active burn and the analysis queue moved under "More options". Follows Codeberg [#94](https://codeberg.org/fitguy/Chompass/pulls/94) by [@armen-kocharyan](https://codeberg.org/armen-kocharyan).
-- **The Add Food sheet opens ready to type** (Android): it comes up tall with the search field focused and the keyboard already out, so logging by name starts at the first keystroke instead of a tap to raise the keyboard. The back gesture or tapping outside the field puts it away again.
+- **Tracker quick-entries live behind a Trackers button** (Android): water, caffeine and nicotine +1 chips open from a fourth button next to Photo and Barcode, replacing the standalone Trackers section above the results. Turning a tracker off, or deleting all of its presets, hides its row instead of leaving an empty block.
 - **Your saved meals are on the Add Food sheet itself** (Android): the Recents, Frequent, Favorites and Recipes tabs now sit right in the sheet with their lists, instead of behind another tap. They occupy exactly the space the search results use, so typing swaps the list contents without resizing the sheet and shoving the input field around mid-word. Scrolling a long list grows the sheet to show more, and only when there is actually more worth showing.
 - **AI analysis is now something you ask for, not the only way in** (Android): the Analyze action sits in the search field itself, so a food you have already logged or one the databases know is a single tap and costs nothing, while free-text estimation is one tap on the field's Analyze button, or the Done/Send key on your keyboard.
 - **Food database results arrive without waiting for the network** (Android): the bundled USDA and Swiss results used to wait for the Open Food Facts request to finish, so on a plane or a bad connection you waited on a request that could not succeed. Your saved foods and the bundled databases now appear immediately, and Open Food Facts results join when they arrive if you switched them on. A slow or unreachable Open Food Facts no longer holds anything else back, and the lookup gives up after a few seconds instead of retrying for as long as a minute.
@@ -26,6 +26,11 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **Caffeine and nicotine Save stays on screen** (Android): custom, edit, and drink-editor sheets keep Save pinned when the keyboard is up, so tap-to-type on the wheels does not hide it.
 
+### Fixed
+
+- **Scanning the same product twice no longer forks its saved entry** (Android): relogging a packaged product, or analyzing the same meal by name twice, now reuses the existing saved food, so its history stays in one place. Each log still gets its own diary row. Manually logging two different foods that share a name still gets numbered to keep them apart. Closes Codeberg [#98](https://codeberg.org/fitguy/Chompass/issues/98) by [@mik112](https://codeberg.org/mik112).
+- **Long meal lists no longer fail on local AI models** (Android): an entry with many ingredients asked for the largest answer schema, and models that spend much of their token budget on hidden reasoning came back cut off mid-answer, so the whole entry failed. The analysis now retries once with a smaller macros-only schema, and an answer that ends without a finish signal gets one clean retry. Models that handle the full schema keep their micros. Closes Codeberg [#97](https://codeberg.org/fitguy/Chompass/issues/97) by [@mik112](https://codeberg.org/mik112).
+- **Deleted caffeine and nicotine presets stay deleted** (Android): deleting a tracker's last preset brought the whole built-in list back, and deselecting the last quick-entry chip snapped the selection back to defaults. Empty is now a valid state for both, and it survives restarts and reseeds.
 
 ## [4.10.0] - 2026-09-14
 
