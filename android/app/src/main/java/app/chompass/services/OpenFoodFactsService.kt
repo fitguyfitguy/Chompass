@@ -35,7 +35,7 @@ object OpenFoodFactsService {
         "code,product_name,generic_name,brands,serving_size,serving_quantity,nutriments"
     // Contact address per OFF's API usage policy (product page asks who is
     // hitting them); version identifies the app release in their logs.
-    private val USER_AGENT = "Chompass/Android/${BuildConfig.VERSION_NAME} (fitguy@mailfence.com)"
+    private val USER_AGENT = "Chompass/Android/${BuildConfig.VERSION_NAME} (fitguy@chompass.app)"
     private const val OFF_BASE_URL = "https://world.openfoodfacts.org"
 
     /** search-a-licious (Sal) full-text search endpoint. */
