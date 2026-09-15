@@ -40,6 +40,32 @@ object GeminiClient {
     internal fun serverSideToolConfig(): JSONObject =
         JSONObject().put("includeServerSideToolInvocations", true)
 
+    /**
+     * Per-request generationConfig for Gemini calls: thinking level per model
+     * family, response-length cap, JSON response mode. Returns null when
+     * nothing applies so the request body stays byte-identical to the
+     * pre-config shape for those calls. GEMINI cannot take custom model ids
+     * (AIProvider.models is a closed catalog), so the thinking table is
+     * closed over it: flash-lite thinks minimally (its value is latency),
+     * the 3.5-3.8 flash families think low, and everything else gets NO
+     * thinkingConfig — 2.5 uses the older thinkingBudget API and pro defaults
+     * to dynamic, so omitting is the safe no-op.
+     */
+    internal fun generationConfig(model: String, maxTokens: Int?, jsonResponse: Boolean): JSONObject? {
+        val config = JSONObject()
+        val thinkingLevel = when {
+            model.contains("flash-lite") -> "minimal"
+            Regex("gemini-3\\.[5-8]-flash").containsMatchIn(model) -> "low"
+            else -> null
+        }
+        if (thinkingLevel != null) {
+            config.put("thinkingConfig", JSONObject().put("thinkingLevel", thinkingLevel))
+        }
+        if (maxTokens != null && maxTokens > 0) config.put("maxOutputTokens", maxTokens)
+        if (jsonResponse) config.put("responseMimeType", "application/json")
+        return if (config.length() == 0) null else config
+    }
+
     suspend fun analyze(
         client: OkHttpClient,
         baseUrl: String,
@@ -48,6 +74,8 @@ object GeminiClient {
         prompt: String,
         imageBytesList: List<ByteArray>,
         enableGoogleSearch: Boolean = false,
+        maxTokens: Int? = null,
+        jsonResponse: Boolean = false,
     ): String {
         val url = "$baseUrl/models/$model:generateContent"
 
@@ -68,6 +96,7 @@ object GeminiClient {
         val body = JSONObject().apply {
             put("contents", JSONArray().put(JSONObject().put("parts", parts)))
             buildToolsArray(enableGoogleSearch)?.let { put("tools", it) }
+            generationConfig(model, maxTokens, jsonResponse)?.let { put("generationConfig", it) }
         }
 
         val requestBody = body.toString().toRequestBody(jsonMedia)
@@ -98,6 +127,8 @@ object GeminiClient {
         prompt: String,
         imageBytesList: List<ByteArray>,
         enableGoogleSearch: Boolean = false,
+        maxTokens: Int? = null,
+        jsonResponse: Boolean = false,
         onDelta: (String) -> Unit,
     ): String {
         val url = "$baseUrl/models/$model:streamGenerateContent?alt=sse"
@@ -119,6 +150,7 @@ object GeminiClient {
         val body = JSONObject().apply {
             put("contents", JSONArray().put(JSONObject().put("parts", parts)))
             buildToolsArray(enableGoogleSearch)?.let { put("tools", it) }
+            generationConfig(model, maxTokens, jsonResponse)?.let { put("generationConfig", it) }
         }
 
         return try {
@@ -154,7 +186,7 @@ object GeminiClient {
         } catch (e: AiError) {
             throw e
         } catch (_: Throwable) {
-            analyze(client, baseUrl, model, apiKey, prompt, imageBytesList, enableGoogleSearch)
+            analyze(client, baseUrl, model, apiKey, prompt, imageBytesList, enableGoogleSearch, maxTokens, jsonResponse)
         }
     }
 
@@ -170,6 +202,7 @@ object GeminiClient {
         history: List<Pair<String, String>>, // (role, content) role in {"user","model"}
         userMessage: String,
         enableGoogleSearch: Boolean = false,
+        maxTokens: Int? = null,
     ): String {
         val url = "$baseUrl/models/$model:generateContent"
 
@@ -194,6 +227,7 @@ object GeminiClient {
             )
             put("contents", contents)
             buildToolsArray(enableGoogleSearch)?.let { put("tools", it) }
+            generationConfig(model, maxTokens, jsonResponse = false)?.let { put("generationConfig", it) }
         }
 
         val requestBody = body.toString().toRequestBody(jsonMedia)

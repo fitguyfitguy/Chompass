@@ -135,7 +135,7 @@ class ChatService(
         val httpClient = AiHttp.clientForProvider(okHttp, provider, readTimeoutSeconds)
 
         val reply = when (provider.apiFormat) {
-            AIProvider.ApiFormat.GEMINI -> runGeminiToolLoop(httpClient, baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes, geminiGoogleSearch)
+            AIProvider.ApiFormat.GEMINI -> runGeminiToolLoop(httpClient, baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes, geminiGoogleSearch, maxTokens)
             AIProvider.ApiFormat.ANTHROPIC -> runAnthropicToolLoop(httpClient, baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes, maxTokens)
             AIProvider.ApiFormat.OPENAI_COMPATIBLE -> runOpenAIToolLoop(httpClient, baseUrl, model, apiKey, systemPrompt, history, newUserMessage, provider, tools, imageBytes, maxTokens, prefs.openRouterReasoningEffort.first())
             AIProvider.ApiFormat.ON_DEVICE -> error("unreachable — guarded above")
@@ -355,6 +355,7 @@ class ChatService(
         tools: CoachTools,
         imageBytes: ByteArray?,
         enableGoogleSearch: Boolean,
+        maxTokens: Int,
     ): String {
         val url = "$baseUrl/models/$model:generateContent"
         // Gemini tool schema: tools=[{google_search?}, {functionDeclarations:[{name,description,parameters}]}]
@@ -387,6 +388,7 @@ class ChatService(
                 put("systemInstruction", JSONObject().put("parts", JSONArray().put(JSONObject().put("text", systemPrompt))))
                 put("contents", contents)
                 GeminiClient.buildToolsArray(enableGoogleSearch, declarations)?.let { put("tools", it) }
+                GeminiClient.generationConfig(model, maxTokens, jsonResponse = false)?.let { put("generationConfig", it) }
                 if (enableGoogleSearch) {
                     put("toolConfig", GeminiClient.serverSideToolConfig())
                 }
