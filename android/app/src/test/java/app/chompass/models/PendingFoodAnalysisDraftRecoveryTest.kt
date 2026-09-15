@@ -1,11 +1,18 @@
 package app.chompass.models
 
+import android.app.Application
+import app.chompass.data.PreferencesStore
 import app.chompass.services.ai.FoodAnalysis
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
+import org.robolectric.annotation.Config
 import java.time.Instant
 import java.time.LocalDate
 
@@ -14,6 +21,8 @@ import java.time.LocalDate
  * legacy drafts must keep decoding without the flag (auto-restore as before),
  * marked drafts must round-trip it.
  */
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [33], application = Application::class)
 class PendingFoodAnalysisDraftRecoveryTest {
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -55,5 +64,31 @@ class PendingFoodAnalysisDraftRecoveryTest {
     fun freshDraftDefaultsToNotAwaitingReview() {
         val draft = PendingFoodAnalysisDraft(analysis = analysis())
         assertFalse(draft.awaitingReview)
+    }
+
+    // Startup image prune: the reference set must cover every photo of a
+    // pending multi-photo input draft — photos 2..N used to be silently
+    // pruned, and the restore then failed with "missing input".
+
+    @Test
+    fun referenceSet_includesEveryPhotoOfMultiPhotoInputDraft() = runBlocking {
+        val prefs = PreferencesStore(RuntimeEnvironment.getApplication())
+        prefs.setPendingFoodInputDraft(
+            PendingFoodInputDraft(imageFilenames = listOf("a.jpg", "b.jpg", "c.jpg")),
+        )
+
+        val referenced = prefs.foodImageReferenceFilenames()
+
+        assertEquals(setOf("a.jpg", "b.jpg", "c.jpg"), referenced)
+    }
+
+    @Test
+    fun referenceSet_legacySingleNameDraft_stillCovered() = runBlocking {
+        val prefs = PreferencesStore(RuntimeEnvironment.getApplication())
+        prefs.setPendingFoodInputDraft(PendingFoodInputDraft(imageFilename = "legacy.jpg"))
+
+        val referenced = prefs.foodImageReferenceFilenames()
+
+        assertEquals(setOf("legacy.jpg"), referenced)
     }
 }
