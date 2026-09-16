@@ -5,7 +5,13 @@ All notable changes to Chompass are documented here.
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
 
-## [Unreleased]
+## [5.1.0] - 2026-09-16
+
+### Added
+
+- **Meal planning marks future plans and logs them in one tap** (Android): turn on Settings → Food & Entry → Meal planning to plan ahead. Entries you save onto an upcoming day get a Planned chip in the diary and still count toward that day's totals. One tap on Log now turns a plan into a normal entry on today, with the meal slot picked by the current time when meal suggestions are on. Plans are never written to Health Connect until you log them. Follows Codeberg [#96](https://codeberg.org/fitguy/Chompass/issues/96) by [@sbandoalleciance](https://codeberg.org/sbandoalleciance).
+- **Saved meals and recipes can be placed on a day** (Android): rows in the Add Food list carry a Plan button while meal planning is on. Pick a day in the dialog and the meal is placed there as a plan, with a confirmation note. Relogging from the same list stays a normal entry for today. Follows Codeberg [#102](https://codeberg.org/fitguy/Chompass/issues/102) by [@Ir0nhid3](https://codeberg.org/Ir0nhid3).
+- **Plan the week on one canvas** (Android): the Add Food More menu gains Plan week, a seven-day view of your diary. The + on each day opens your saved meals, frequents, favorites and recipes; picking one places it as a plan on that day. Planned rows carry the Planned chip. Tap a chip to open that day on Home, long-press to remove a row. The window shifts a week at a time within the eight-week limit.
 
 ### Changed
 
