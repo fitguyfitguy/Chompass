@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.time.Instant
 import java.util.Locale
+import java.util.concurrent.atomic.AtomicBoolean
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
@@ -114,6 +115,8 @@ class FoodRepository(
     private val imageStore: FoodImageStore? = null,
     private val sync: app.chompass.sync.SyncRepository? = null,
 ) {
+    /** One-shot gate so concurrent first logs cannot double-fire the review prompt. */
+    private val reviewPromptGate = AtomicBoolean(false)
     val entries: Flow<List<FoodEntry>> = prefs.foodEntries
 
     /**
@@ -213,8 +216,11 @@ class FoodRepository(
         if (writeHealth) {
             PerfLog.measure("save", "healthWrite") { healthRetry.sync(resolved, isUpdate = false) }
         }
-        // One-time organic review moment: the first successful food log (iOS parity).
-        if (!prefs.reviewPromptedAfterFirstLog.first()) {
+        // One-time organic review moment: the first successful food log (iOS
+        // parity). The pref read is the cheap fast path for every later save;
+        // the CAS makes the first-fire decision atomic so two concurrent
+        // addEntry/addEntries saves cannot both pass the check.
+        if (!prefs.reviewPromptedAfterFirstLog.first() && reviewPromptGate.compareAndSet(false, true)) {
             prefs.setReviewPromptedAfterFirstLog(true)
             ReviewPrompter.requestReview.value = true
         }
@@ -239,8 +245,8 @@ class FoodRepository(
                 healthRetry.syncAll(resolved, isUpdate = false)
             }
         }
-        // One-time organic review moment: the first successful food log (iOS parity).
-        if (!prefs.reviewPromptedAfterFirstLog.first()) {
+        // One-time organic review moment — same gated first-fire as [addEntry].
+        if (!prefs.reviewPromptedAfterFirstLog.first() && reviewPromptGate.compareAndSet(false, true)) {
             prefs.setReviewPromptedAfterFirstLog(true)
             ReviewPrompter.requestReview.value = true
         }
