@@ -523,10 +523,9 @@ data class HomeUiState(
     fun isFavorite(entry: FoodEntry): Boolean = entry.favoriteKey in favoriteKeys
 
     /**
-     * Ignore in-flight photo [ByteArray] identity so a water/saving/`copy`
-     * that keeps the same pixels does not bust every Home collector. Image
-     * updates always change another field (`pendingAnalysis`, `analyzing`, …)
-     * so StateFlow still emits when the review sheet needs a new bitmap.
+     * Compare photo [ByteArray]s by content, so identity swaps that keep the
+     * same pixels do not bust every Home collector while genuinely new pixels
+     * still emit through the StateFlow dedupe.
      */
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -553,11 +552,15 @@ data class HomeUiState(
             hasSeenCameraScaleTip == other.hasSeenCameraScaleTip &&
             weightMetric == other.weightMetric &&
             favoriteKeys == other.favoriteKeys &&
+            pendingAnalysis == other.pendingAnalysis &&
+            pendingImageBytes.contentEquals(other.pendingImageBytes) &&
+            pendingAnalysisImages.size == other.pendingAnalysisImages.size &&
+            pendingAnalysisImages.indices.all { pendingAnalysisImages[it].contentEquals(other.pendingAnalysisImages[it]) } &&
             pendingReviewSource == other.pendingReviewSource &&
             recoveredReview == other.recoveredReview &&
+            pendingInputImageBytes.contentEquals(other.pendingInputImageBytes) &&
             pendingFoodSource == other.pendingFoodSource &&
             pendingDraftImageFilename == other.pendingDraftImageFilename &&
-            pendingReviewSource == other.pendingReviewSource &&
             pendingInputNote == other.pendingInputNote &&
             pendingInputConfirmedPortionGrams == other.pendingInputConfirmedPortionGrams &&
             pendingPromptText == other.pendingPromptText &&
@@ -623,6 +626,7 @@ data class HomeUiState(
             showProgressiveMealSheet == other.showProgressiveMealSheet &&
             manualActiveKcal == other.manualActiveKcal &&
             manualActiveTodayEntries == other.manualActiveTodayEntries &&
+            logTimeOverride == other.logTimeOverride &&
             copiedEntries == other.copiedEntries &&
             plannedAck == other.plannedAck
     }
@@ -650,11 +654,14 @@ data class HomeUiState(
         result = 31 * result + hasSeenCameraScaleTip.hashCode()
         result = 31 * result + weightMetric.hashCode()
         result = 31 * result + favoriteKeys.hashCode()
+        result = 31 * result + pendingAnalysis.hashCode()
+        result = 31 * result + (pendingImageBytes?.contentHashCode() ?: 0)
+        result = 31 * result + pendingAnalysisImages.fold(1) { acc, bytes -> 31 * acc + bytes.contentHashCode() }
         result = 31 * result + (pendingReviewSource?.hashCode() ?: 0)
         result = 31 * result + (recoveredReview?.hashCode() ?: 0)
+        result = 31 * result + (pendingInputImageBytes?.contentHashCode() ?: 0)
         result = 31 * result + (pendingFoodSource?.hashCode() ?: 0)
         result = 31 * result + (pendingDraftImageFilename?.hashCode() ?: 0)
-        result = 31 * result + (pendingReviewSource?.hashCode() ?: 0)
         result = 31 * result + (pendingInputNote?.hashCode() ?: 0)
         result = 31 * result + (pendingInputConfirmedPortionGrams?.hashCode() ?: 0)
         result = 31 * result + (pendingPromptText?.hashCode() ?: 0)
@@ -679,6 +686,7 @@ data class HomeUiState(
         result = 31 * result + inferringUnits.hashCode()
         result = 31 * result + saving.hashCode()
         result = 31 * result + (error?.hashCode() ?: 0)
+        result = 31 * result + (errorNotFoundBarcode?.hashCode() ?: 0)
         result = 31 * result + waterTrackingEnabled.hashCode()
         result = 31 * result + waterDailyGoalMl
         result = 31 * result + waterQuickPresetsMl.hashCode()
@@ -719,6 +727,7 @@ data class HomeUiState(
         result = 31 * result + showProgressiveMealSheet.hashCode()
         result = 31 * result + manualActiveKcal
         result = 31 * result + manualActiveTodayEntries.hashCode()
+        result = 31 * result + (logTimeOverride?.hashCode() ?: 0)
         result = 31 * result + copiedEntries.hashCode()
         result = 31 * result + (plannedAck?.hashCode() ?: 0)
         return result
