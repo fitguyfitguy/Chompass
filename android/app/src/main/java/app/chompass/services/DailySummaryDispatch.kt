@@ -10,6 +10,7 @@ import app.chompass.models.EnergyUnit
 import app.chompass.models.MacroPlanResolver
 import app.chompass.models.UserProfile
 import app.chompass.models.WidgetSnapshot
+import app.chompass.models.nutritionTotals
 import kotlinx.coroutines.flow.first
 import java.text.NumberFormat
 import java.time.LocalDate
@@ -65,11 +66,12 @@ internal suspend fun buildDailySummaryNotification(
     val goalKcal = summaryGoalKcal(widgetForDay, profile, day)
     val energyUnit = container.prefs.energyUnit.first()
 
+    val totals = entries.nutritionTotals()
     val input = DailySummaryInput(
-        eatenKcal = entries.sumOf { it.calories },
-        proteinG = entries.sumOf { it.protein }.roundToInt(),
+        eatenKcal = totals.calories,
+        proteinG = totals.protein.roundToInt(),
         carbsG = carbsG,
-        fatG = entries.sumOf { it.fat }.roundToInt(),
+        fatG = totals.fat.roundToInt(),
         bmrKcal = profile?.bmr?.roundToInt() ?: 0,
         activeKcal = active,
         energyLive = energyLive,

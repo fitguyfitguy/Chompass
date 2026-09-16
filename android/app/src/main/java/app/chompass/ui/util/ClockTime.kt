@@ -2,6 +2,7 @@ package app.chompass.ui.util
 
 import android.content.Context
 import java.time.Instant
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -17,3 +18,14 @@ import java.util.Locale
 fun formatClockMillis(context: Context, epochMillis: Long): String =
     DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault())
         .format(Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault()))
+
+/**
+ * Formats minutes-of-day (0..1439) as the device's clock time ("20:30" or
+ * "8:30 PM"), following the system 12/24-hour setting via [clockTimePattern].
+ * The one converter for settings sheets' minutes-of-day values — the sheets
+ * used to carry four divergent copies of this (one pinned to a hardcoded
+ * 12/24-hour policy instead of the device setting).
+ */
+fun formatMinutesOfDay(context: Context, minutes: Int): String =
+    DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault())
+        .format(LocalTime.of(minutes / 60, minutes % 60))

@@ -65,16 +65,13 @@ import app.chompass.ui.components.UnitToggle
 import app.chompass.ui.components.WheelPicker
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
-import app.chompass.ui.util.clockTimePattern
+import app.chompass.ui.util.formatMinutesOfDay
 import androidx.compose.ui.platform.LocalContext
 import java.time.Instant
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
 import java.time.LocalDate
-import java.time.LocalTime
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 import androidx.compose.material3.Icon
 import app.chompass.models.UnitFormat
 
@@ -477,9 +474,6 @@ internal fun FastingStartTimeSheet(
     }
     var selectedMinutes by remember(currentMinutes) { mutableIntStateOf(currentMinutes) }
     val context = LocalContext.current
-    val formatter = remember(context) {
-        DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault())
-    }
     Text(
         stringResource(R.string.settings_fasting_start_time),
         style = MaterialTheme.typography.titleLarge,
@@ -490,7 +484,7 @@ internal fun FastingStartTimeSheet(
         items = options,
         selected = selectedMinutes,
         onSelect = { selectedMinutes = it },
-        label = { LocalTime.of(it / 60, it % 60).format(formatter) },
+        label = { formatMinutesOfDay(context, it) },
     )
     Spacer(Modifier.height(16.dp))
     GradientSaveButton { onSave(selectedMinutes / 60, selectedMinutes % 60) }

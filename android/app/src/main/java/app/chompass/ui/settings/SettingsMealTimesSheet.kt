@@ -55,6 +55,7 @@ import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.FudGlassTextButton
 import app.chompass.ui.components.TimeWheelPicker
 import app.chompass.ui.home.mealLabel
+import app.chompass.ui.util.formatMinutesOfDay
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
@@ -106,7 +107,6 @@ internal fun MealTimesSheet(
                     key(def.id) {
                         MealCatalogRow(
                             def = def,
-                            is24Hour = is24Hour,
                             canMoveUp = index > 0,
                             canMoveDown = index < catalog.meals.lastIndex,
                             onMoveUp = {
@@ -227,7 +227,6 @@ internal fun MealTimesSheet(
 @Composable
 private fun MealCatalogRow(
     def: MealDef,
-    is24Hour: Boolean,
     canMoveUp: Boolean,
     canMoveDown: Boolean,
     onMoveUp: () -> Unit,
@@ -302,7 +301,7 @@ private fun MealCatalogRow(
                 )
                 val start = def.startMinutes
                 Text(
-                    if (start != null) formatTime(start, is24Hour) else stringResource(R.string.settings_meals_no_auto),
+                    if (start != null) formatMinutesOfDay(LocalContext.current, start) else stringResource(R.string.settings_meals_no_auto),
                     fontSize = 13.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
                     modifier = Modifier
@@ -327,10 +326,4 @@ private fun catalogRowLabel(def: MealDef): String {
     if (custom.isNotEmpty()) return custom
     val builtin = MealType.fromId(def.id)
     return if (builtin != null) stringResource(builtin.displayNameRes) else def.id
-}
-
-private fun formatTime(minutes: Int, is24Hour: Boolean): String {
-    val time = java.time.LocalTime.of(minutes / 60, minutes % 60)
-    val pattern = if (is24Hour) "HH:mm" else "h:mm a"
-    return time.format(java.time.format.DateTimeFormatter.ofPattern(pattern, java.util.Locale.getDefault()))
 }

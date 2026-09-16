@@ -16,6 +16,7 @@ import app.chompass.models.KetoCarbMode
 import app.chompass.models.MacroPlanMode
 import app.chompass.models.MacroPlanResolver
 import app.chompass.models.WeightGoal
+import app.chompass.models.nutritionTotals
 import app.chompass.models.FoodEntry
 import app.chompass.models.UserProfile
 import app.chompass.models.WeightEntry
@@ -761,10 +762,11 @@ private fun intakeAverageLines(foods: List<FoodEntry>, zone: ZoneId = ZoneId.sys
         val from = today.minusDays(days.toLong())
         val windowDays = byDay.filterKeys { it >= from }
         if (windowDays.isEmpty()) return null
-        val kcal = windowDays.values.sumOf { list -> list.sumOf { it.calories } }
-        val protein = windowDays.values.sumOf { list -> list.sumOf { it.protein } }
-        val carbs = windowDays.values.sumOf { list -> list.sumOf { it.carbs } }
-        val fat = windowDays.values.sumOf { list -> list.sumOf { it.fat } }
+        val totals = windowDays.values.flatten().nutritionTotals()
+        val kcal = totals.calories
+        val protein = totals.protein
+        val carbs = totals.carbs
+        val fat = totals.fat
         val n = windowDays.size
         return "- Average intake last $days days (${n} logged day${if (n == 1) "" else "s"}): " +
             "${kcal / n} kcal, ${String.format(Locale.US, "%.0f", protein / n)}g protein, " +

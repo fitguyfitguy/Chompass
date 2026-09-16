@@ -14,10 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.chompass.ui.components.WheelPicker
-import app.chompass.ui.util.clockTimePattern
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.util.Locale
+import app.chompass.ui.util.formatMinutesOfDay
 
 @Composable
 internal fun DailySummaryTimeSheet(
@@ -33,9 +30,6 @@ internal fun DailySummaryTimeSheet(
     }
     var selectedMinutes by remember(currentMinutes) { mutableIntStateOf(currentMinutes) }
     val context = LocalContext.current
-    val formatter = remember(context) {
-        DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault())
-    }
     Text(
         title,
         style = MaterialTheme.typography.titleLarge,
@@ -46,7 +40,7 @@ internal fun DailySummaryTimeSheet(
         items = options,
         selected = selectedMinutes,
         onSelect = { selectedMinutes = it },
-        label = { LocalTime.of(it / 60, it % 60).format(formatter) },
+        label = { formatMinutesOfDay(context, it) },
     )
     Spacer(Modifier.height(16.dp))
     GradientSaveButton { onSave(selectedMinutes / 60, selectedMinutes % 60) }

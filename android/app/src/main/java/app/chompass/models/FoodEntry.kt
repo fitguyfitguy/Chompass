@@ -147,3 +147,26 @@ data class FoodEntry(
         microsCompositionSignature = microsCompositionSignature,
     )
 }
+
+/**
+ * kcal + macro totals over a set of entries, plus fiber/sugar for sites that
+ * need them. One pass at the call site replaces the retyped per-nutrient
+ * `sumOf` blocks; identical arithmetic, so no rounding changes anywhere.
+ */
+data class NutrientTotals(
+    val calories: Int,
+    val protein: Double,
+    val carbs: Double,
+    val fat: Double,
+    val fiber: Double = 0.0,
+    val sugar: Double = 0.0,
+)
+
+fun Iterable<FoodEntry>.nutritionTotals(): NutrientTotals = NutrientTotals(
+    calories = sumOf { it.calories },
+    protein = sumOf { it.protein },
+    carbs = sumOf { it.carbs },
+    fat = sumOf { it.fat },
+    fiber = sumOf { it.fiber ?: 0.0 },
+    sugar = sumOf { it.sugar ?: 0.0 },
+)
