@@ -1,0 +1,127 @@
+// @ts-check
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
+import {
+  ANDROID_PREF_DEFAULTS,
+  DEFAULT_HOME_TOP,
+  DEFAULT_FOOD_CHIPS,
+  DEFAULT_NUTRIENT_CARD_COUNT,
+  DEFAULT_OPTIONAL_NUTRIENT_GOALS,
+  DEFAULT_AVERAGES_SELECTION,
+  normalizeAveragesSelection,
+} from "../home-nutrients.js";
+import { DEFAULT_PREFS } from "../db.js";
+import { loadParityFixture } from "../parity-fixtures.js";
+
+const fixture = loadParityFixture("pref-defaults.json");
+
+/** @param {string} semantic */
+function toPwaKey(semantic) {
+  const map = {
+    protein: "proteinG",
+    carbs: "carbsG",
+    fat: "fatG",
+    fiber: "fiberG",
+    sugar: "sugarG",
+    addedSugar: "addedSugarG",
+    saturatedFat: "saturatedFatG",
+    cholesterol: "cholesterolMg",
+    sodium: "sodiumMg",
+    potassium: "potassiumMg",
+    transFat: "transFatG",
+    calcium: "calciumMg",
+    iron: "ironMg",
+    magnesium: "magnesiumMg",
+    zinc: "zincMg",
+    vitaminA: "vitaminAMcg",
+    vitaminC: "vitaminCMg",
+    vitaminD: "vitaminDMcg",
+    vitaminB12: "vitaminB12Mcg",
+    vitaminE: "vitaminEMg",
+    vitaminK: "vitaminKMcg",
+    folate: "folateMcg",
+    omega3: "omega3G",
+    caffeine: "caffeineMg",
+  };
+  return map[semantic] || semantic;
+}
+
+describe("pref defaults (parity fixture)", () => {
+  it("ANDROID_PREF_DEFAULTS matches fixture water/AI keys", () => {
+    assert.equal(ANDROID_PREF_DEFAULTS.showWater, fixture.showWater);
+    assert.equal(ANDROID_PREF_DEFAULTS.waterGoalMl, fixture.waterGoalMl);
+    assert.equal(ANDROID_PREF_DEFAULTS.aiFallbackEnabled, fixture.aiFallbackEnabled);
+    assert.equal(ANDROID_PREF_DEFAULTS.fallbackAiProvider, fixture.fallbackAiProvider);
+    assert.equal(ANDROID_PREF_DEFAULTS.fallbackAiModel, fixture.fallbackAiModel);
+    assert.equal(ANDROID_PREF_DEFAULTS.openrouterReasoningEffort, fixture.openrouterReasoningEffort);
+  });
+
+  it("home tubes / chips / card count match fixture", () => {
+    assert.deepEqual(DEFAULT_HOME_TOP, fixture.homeTopNutrients.map(toPwaKey));
+    assert.deepEqual(DEFAULT_FOOD_CHIPS, fixture.foodLogMacroChips.map(toPwaKey));
+    assert.equal(DEFAULT_NUTRIENT_CARD_COUNT, fixture.homeNutrientCardCount);
+  });
+
+  it("DEFAULT_PREFS coach tab / AI-features defaults match fixture", () => {
+    assert.equal(DEFAULT_PREFS.coachTabEnabled, fixture.coachTabEnabled);
+    assert.equal(DEFAULT_PREFS.aiFeaturesEnabled, fixture.aiFeaturesEnabled);
+  });
+
+  it("DEFAULT_PREFS schedule / gauge / week start match fixture", () => {
+    assert.equal(DEFAULT_PREFS.calorieGaugeMode, fixture.calorieGaugeMode);
+    assert.equal(DEFAULT_PREFS.weekStartsOnMonday, fixture.weekStartsOnMonday);
+    assert.equal(DEFAULT_PREFS.weekStartDay, fixture.weekStartDay);
+    assert.equal(DEFAULT_PREFS.mealBreakfastStart, fixture.mealBreakfastStart);
+    assert.equal(DEFAULT_PREFS.mealLunchStart, fixture.mealLunchStart);
+    assert.equal(DEFAULT_PREFS.mealDinnerStart, fixture.mealDinnerStart);
+    assert.equal(DEFAULT_PREFS.progressDefaultRangeId, fixture.progressDefaultRangeId);
+    assert.equal(DEFAULT_PREFS.progressNutrientAverages, fixture.progressNutrientAverages);
+    assert.equal(DEFAULT_PREFS.progressNutrientAverages, false);
+    // Codeberg #75: the averages selection defaults to the original trio.
+    assert.deepEqual(
+      normalizeAveragesSelection(DEFAULT_PREFS.progressNutrientAveragesSelection),
+      fixture.progressNutrientAveragesSelection.map(toPwaKey),
+    );
+    assert.deepEqual(DEFAULT_AVERAGES_SELECTION, fixture.progressNutrientAveragesSelection.map(toPwaKey));
+  });
+
+  it("legacy caffeineDailyLimitMg is a migration-only alias, never written again", () => {
+    // WS5: the tracker limit now lives in optionalNutrientGoals.caffeineMg;
+    // DEFAULT_PREFS dropping the old key means save() never rewrites it.
+    assert.equal("caffeineDailyLimitMg" in DEFAULT_PREFS, false);
+    assert.equal(DEFAULT_PREFS.optionalNutrientGoals.caffeineMg, fixture.optionalNutrientGoals.caffeine);
+  });
+
+  it("fasting defaults match fixture (16:8, auto cycle armed)", () => {
+    assert.equal(ANDROID_PREF_DEFAULTS.fastingGoalHours, fixture.fastingGoalHours);
+    assert.equal(ANDROID_PREF_DEFAULTS.fastingEatHours, fixture.fastingEatHours);
+    assert.equal(ANDROID_PREF_DEFAULTS.fastingAutoWindows, fixture.fastingAutoWindows);
+    assert.equal(DEFAULT_PREFS.fastingGoalHours, fixture.fastingGoalHours);
+    assert.equal(DEFAULT_PREFS.fastingEatHours, fixture.fastingEatHours);
+    assert.equal(DEFAULT_PREFS.fastingAutoWindows, fixture.fastingAutoWindows);
+  });
+
+  it("optional nutrient goals match fixture", () => {
+    const g = fixture.optionalNutrientGoals;
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.sugarG, g.sugar);
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.addedSugarG, g.addedSugar);
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.fiberG, g.fiber);
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.saturatedFatG, g.saturatedFat);
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.cholesterolMg, g.cholesterol);
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.sodiumMg, g.sodium);
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.potassiumMg, g.potassium);
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.transFatG, g.transFat);
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.calciumMg, g.calcium);
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.ironMg, g.iron);
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.magnesiumMg, g.magnesium);
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.zincMg, g.zinc);
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.vitaminAMcg, g.vitaminA);
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.vitaminCMg, g.vitaminC);
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.vitaminDMcg, g.vitaminD);
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.vitaminB12Mcg, g.vitaminB12);
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.vitaminEMg, g.vitaminE);
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.vitaminKMcg, g.vitaminK);
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.folateMcg, g.folate);
+    assert.equal(DEFAULT_OPTIONAL_NUTRIENT_GOALS.omega3G, g.omega3);
+  });
+});
