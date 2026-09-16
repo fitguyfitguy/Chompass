@@ -1,14 +1,20 @@
 package app.chompass.ui.settings
 
 import android.app.Application
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsNode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.WheelPicker
 import org.junit.Rule
 import org.junit.Test
@@ -30,6 +36,9 @@ import org.robolectric.annotation.GraphicsMode
  *    grid before the first scroll.
  *  - D1: value-editing sheets show an explicit Cancel beside the gradient
  *    Save (AddWeightDialog pairing); scrim/back keep dismissing as Cancel.
+ *  - Sizing: a bounded wheel (NutritionPickerSheet passes 120 dp) must keep
+ *    host-side siblings beside it — the chrome used to fillMaxWidth through
+ *    the caller's modifier and starved the unit label to zero width.
  */
 @RunWith(AndroidJUnit4::class)
 @Config(sdk = [34], application = Application::class, qualifiers = "w340dp-h720dp")
@@ -39,7 +48,7 @@ class WheelPickerA11yTest {
     val composeRule = createComposeRule()
 
     private fun configOf(interaction: SemanticsNodeInteraction) =
-        interaction.fetchSemanticsNode()
+        interaction.fetchSemanticsNode().config
 
     /** Climbs to the enclosing wheel container carrying [SemanticsProperties.StateDescription]. */
     private fun containerStateDescription(node: SemanticsNode): String? {
@@ -107,5 +116,33 @@ class WheelPickerA11yTest {
         }
         composeRule.onNodeWithText("Cancel").assertExists()
         composeRule.onNodeWithText("Save").assertExists()
+    }
+
+    /** Regression: a bounded wheel must not swallow the host row's remaining
+     *  width — the chrome used to fillMaxWidth regardless of its modifier,
+     *  leaving NutritionPickerSheet's unit label zero width (letters stacked). */
+    @Test
+    fun boundedWheelKeepsHostSideSiblingsPlacedBesideIt() {
+        composeRule.setContent {
+            MaterialTheme {
+                Row(Modifier.fillMaxWidth()) {
+                    NumericWheelPicker(
+                        value = 5,
+                        onValueChange = {},
+                        min = 0,
+                        max = 10,
+                        modifier = Modifier.width(120.dp),
+                    )
+                    androidx.compose.material3.Text("kcal")
+                }
+            }
+        }
+
+        val wheelRight = composeRule.onNodeWithText("5").fetchSemanticsNode().boundsInRoot.right
+        val unit = composeRule.onNodeWithText("kcal").fetchSemanticsNode().boundsInRoot
+        assert(unit.left >= wheelRight - 1f) {
+            "unit label must sit beside the bounded wheel (unit.left=${unit.left}, wheel.right=$wheelRight)"
+        }
+        assert(unit.width > 0f) { "unit label must keep nonzero width" }
     }
 }

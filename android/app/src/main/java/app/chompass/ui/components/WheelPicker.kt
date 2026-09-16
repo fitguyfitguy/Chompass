@@ -369,9 +369,9 @@ fun NumericWheelPicker(
         )
         return
     }
-    MagnitudeWheelChrome(showHint = false, onType = { setTyped(true) }) {
+    MagnitudeWheelChrome(showHint = false, onType = { setTyped(true) }, modifier = modifier) {
         Row(
-            modifier = modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -474,9 +474,9 @@ fun SplitDecimalWheelPicker(
         )
         return
     }
-    MagnitudeWheelChrome(showHint = false, onType = { setTyped(true) }) {
+    MagnitudeWheelChrome(showHint = false, onType = { setTyped(true) }, modifier = modifier) {
         Row(
-            modifier = modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -547,9 +547,9 @@ fun DecimalWheelPicker(
         )
         return
     }
-    MagnitudeWheelChrome(showHint = false, onType = { setTyped(true) }) {
+    MagnitudeWheelChrome(showHint = false, onType = { setTyped(true) }, modifier = modifier) {
         Row(
-            modifier = modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -631,9 +631,9 @@ fun ClockTimeWheelPicker(
         return
     }
 
-    MagnitudeWheelChrome(showHint = false, onType = { setTyped(true) }) {
+    MagnitudeWheelChrome(showHint = false, onType = { setTyped(true) }, modifier = modifier) {
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .height(ROW_HEIGHT),
             contentAlignment = Alignment.Center,

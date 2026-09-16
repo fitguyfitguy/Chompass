@@ -221,9 +221,14 @@ internal fun MagnitudeTypeField(
 internal fun MagnitudeWheelChrome(
     showHint: Boolean,
     onType: () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    BoxWithConstraints(Modifier.fillMaxWidth()) {
+    // The caller's sizing modifier must land HERE (the chrome is the picker's
+    // outermost node); hardcoding fillMaxWidth starved any host-side sibling
+    // of a bounded wheel — NutritionPickerSheet's unit label measured with
+    // zero remaining width and stacked one letter per line.
+    BoxWithConstraints(modifier.fillMaxWidth()) {
         val wideEnough = maxWidth >= 96.dp
         Box(Modifier.fillMaxWidth()) {
             content()
