@@ -233,12 +233,14 @@ internal data class FoodLogMealGroup(
     val entries: List<FoodEntry>
 ) {
     // Combined nutrients for this meal group (issue #103: chicken + pasta + sauce = one total).
-    val totalCalories: Int get() = entries.sumOf { it.calories }
-    val totalProtein: Double get() = entries.sumOf { it.protein }
-    val totalCarbs: Double get() = entries.sumOf { it.carbs }
-    val totalFat: Double get() = entries.sumOf { it.fat }
-    val totalFiber: Double get() = entries.sumOf { it.fiber ?: 0.0 }
-    val totalSugar: Double get() = entries.sumOf { it.sugar ?: 0.0 }
+    // Computed once at construction — per-access sumOf re-ran six list scans
+    // on every recomposition of every meal header.
+    val totalCalories: Int = entries.sumOf { it.calories }
+    val totalProtein: Double = entries.sumOf { it.protein }
+    val totalCarbs: Double = entries.sumOf { it.carbs }
+    val totalFat: Double = entries.sumOf { it.fat }
+    val totalFiber: Double = entries.sumOf { it.fiber ?: 0.0 }
+    val totalSugar: Double = entries.sumOf { it.sugar ?: 0.0 }
 }
 
 /**
