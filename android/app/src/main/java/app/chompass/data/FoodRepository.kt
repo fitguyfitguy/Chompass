@@ -546,10 +546,11 @@ class FoodRepository(
     private suspend fun deleteImageIfUnreferenced(imageFilename: String?) {
         val filename = imageFilename ?: return
         val store = imageStore ?: return
-        if (prefs.foodEntries.first().any { it.imageFilename == filename }) return
-        if (prefs.favoriteFoodEntries.first().any { it.imageFilename == filename }) return
-        if (prefs.pendingFoodAnalysisDraft.first()?.imageFilename == filename) return
-        if (prefs.pendingFoodInputDraft.first()?.resolvedImageFilenames?.contains(filename) == true) return
+        // One atomic pass over every reference source instead of four full
+        // snapshot reads. Null = a decode failed and cleanup must keep the
+        // file (fail-safe, matching the prune-skip behavior).
+        val referenced = prefs.foodImageReferenceFilenames() ?: return
+        if (filename in referenced) return
         store.delete(filename)
     }
 

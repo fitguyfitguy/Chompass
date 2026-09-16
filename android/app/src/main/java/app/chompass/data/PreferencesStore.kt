@@ -53,6 +53,18 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
         CorruptBlobArchive(File(appContext.filesDir, CorruptBlobArchive.DIRECTORY_NAME))
     }
 
+
+    /**
+     * Set once [migrateBucketsToFilesIfNeeded] has completed without
+     * exception for this process. The migration is one-shot by design and
+     * every reader/writer is in-process (the single-process assumption is
+     * the bucket design's foundation — see the [JsonBucketStore] KDoc), so
+     * re-running the full key scan + monthsOnDisk() probe on every cold
+     * flow collect is pure overhead.
+     */
+    @Volatile
+    internal var bucketsMigrated = false
+
     /**
      * File-backed month buckets for the unbounded datasets. Keeping them out of
      * the single DataStore proto means a one-row write (sip, relog, weight)
