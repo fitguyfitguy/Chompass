@@ -186,7 +186,10 @@ fun <T> WheelPicker(
             contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = ITEM_HEIGHT * (VISIBLE_ITEMS / 2)),
             modifier = Modifier.fillMaxWidth()
         ) {
-            items(items.size) { index ->
+            // Keyed by value: day lists change size (31→30) and an unkeyed
+            // count-based item scope recycles rows across shifted positions
+            // (stale animations/selection mid-scroll).
+            items(items.size, key = { items[it] as Any }) { index ->
                 val item = items[index]
                 val isSelected = index == centerIndex
                 val alpha by animateFloatAsState(

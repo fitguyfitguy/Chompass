@@ -525,7 +525,7 @@ internal fun AddFoodSuggestionList(
                     item(key = "section:${section.group.name}") {
                         AddFoodSectionLabel(section.group)
                     }
-                    items(section.rows, key = { it.key }) { suggestion ->
+                    items(section.rows, key = { it.key }, contentType = { it.kind }) { suggestion ->
                         AddFoodSuggestionRow(
                             suggestion = suggestion,
                             onClick = { onPick(suggestion) },
@@ -576,7 +576,7 @@ internal fun AddFoodSuggestionList(
                         },
                     )
                 }
-                items(databaseRows, key = { it.key }) { suggestion ->
+                items(databaseRows, key = { it.key }, contentType = { it.kind }) { suggestion ->
                     AddFoodSuggestionRow(
                         suggestion = suggestion,
                         onClick = { onPick(suggestion) },
@@ -586,7 +586,7 @@ internal fun AddFoodSuggestionList(
                     )
                 }
             } else {
-                items(suggestions, key = { it.key }) { suggestion ->
+                items(suggestions, key = { it.key }, contentType = { it.kind }) { suggestion ->
                     AddFoodSuggestionRow(
                         suggestion = suggestion,
                         onClick = { onPick(suggestion) },

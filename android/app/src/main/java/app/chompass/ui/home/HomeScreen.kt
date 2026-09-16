@@ -51,7 +51,9 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.alpha
@@ -114,6 +116,7 @@ import app.chompass.ui.navigation.BottomOverlayPadding
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.nutrientAccentColor
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -253,7 +256,9 @@ fun HomeScreen(
     }
 
     // Mid-flight "Add photo" from the Log sheet only — never auto-start LLM on staging.
-    LaunchedEffect(stagedPhotoBytes, appendPhotoForReanalyze) {
+    // Keyed on booleans: the array identity changed on every session update and
+    // re-launched this effect for nothing.
+    LaunchedEffect(stagedPhotoBytes.isNotEmpty(), appendPhotoForReanalyze) {
         if (stagedPhotoBytes.isEmpty() || !appendPhotoForReanalyze) return@LaunchedEffect
         val images = stagedPhotoBytes.toList()
         val note = appendReanalyzeNote
@@ -268,12 +273,15 @@ fun HomeScreen(
     // Share-sheet photos only. Merge into FoodPhotoSession while RESUMED so a
     // stopped duplicate MainActivity cannot clear the inbox first.
     val sharedImages by container.sharedImageInbox.collectAsState()
-    LaunchedEffect(sharedImages, ui.isEntryAnalysisBusy, lifecycleOwner) {
+    // Busy flips on every analysis phase; read it through the updated state
+    // and wait it out instead of restarting repeatOnLifecycle per flip.
+    val analysisBusy by rememberUpdatedState(ui.isEntryAnalysisBusy)
+    LaunchedEffect(sharedImages, lifecycleOwner) {
         if (sharedImages.isEmpty()) return@LaunchedEffect
-        if (ui.isEntryAnalysisBusy) return@LaunchedEffect
+        snapshotFlow { analysisBusy }.first { !it }
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
             val images = container.sharedImageInbox.value
-            if (images.isEmpty()) return@repeatOnLifecycle
+            if (images.isEmpty() || analysisBusy) return@repeatOnLifecycle
             container.sharedImageInbox.value = emptyList()
             photoSession.mergeExternalShare(images)
         }
@@ -399,14 +407,26 @@ fun HomeScreen(
     val mealGroups = remember(ui.todayEntries, ui.foodLogSortOrder) {
         foodLogMealGroups(ui.todayEntries, ui.foodLogSortOrder)
     }
+    // Derived hero state: resolvedDayTargets walks the goal journal +
+    // MacroPlanResolver on EVERY getter access, dayTypeActiveStats merges
+    // two maps and computes per profile. Remember them per state change
+    // instead of paying that per composable frame.
+    val resolvedTargets = remember(ui.profile, ui.date, ui.goalJournal) { ui.resolvedDayTargets }
+    val dayTypeStats = remember(ui.goalJournal, ui.healthEnergyActiveByDay, ui.manualActiveByDay, ui.date) {
+        ui.dayTypeActiveStats
+    }
     // Codeberg #56 repro instrumentation (TEMP, debug-only): log the rendered
     // meal-group view (ids per section) to separate a state drop from a render
     // drop when comparing against op=homeList phase=emission in logcat.
-    LaunchedEffect(mealGroups) {
-        val groupsView = mealGroups.joinToString("|") { g ->
-            "${g.id}:${g.entries.size}[${g.entries.joinToString(",") { it.id.toString().take(8) }}]"
+    // Guarded by PerfLog.enabled: release builds paid the string build per
+    // group change for nothing (PerfLog.event is a no-op there).
+    if (PerfLog.enabled) {
+        LaunchedEffect(mealGroups) {
+            val groupsView = mealGroups.joinToString("|") { g ->
+                "${g.id}:${g.entries.size}[${g.entries.joinToString(",") { it.id.toString().take(8) }}]"
+            }
+            PerfLog.event("op=homeList phase=renderGroups n=${mealGroups.size} groups=[$groupsView]")
         }
-        PerfLog.event("op=homeList phase=renderGroups n=${mealGroups.size} groups=[$groupsView]")
     }
     var selectedEntryIds by remember(ui.date) { mutableStateOf<Set<UUID>>(emptySet()) }
     val selectedEntries = remember(ui.todayEntries, selectedEntryIds) {
@@ -602,6 +622,18 @@ fun HomeScreen(
                         }
                     }
                     Spacer(Modifier.height(20.dp))
+                    // Current/goal resolved once per state change instead of
+                    // per card per recomposition (current() scans the day's
+                    // entries; goal() re-derives from the resolved targets).
+                    val macroCardValues = remember(
+                        ui.homeTopNutrients, ui.todayEntries, resolvedTargets,
+                        ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale, ui.caffeineTodayMg,
+                    ) {
+                        ui.homeTopNutrients.associateWith { nutrient ->
+                            (if (nutrient == HomeTopNutrient.CAFFEINE) ui.caffeineTodayMg else nutrient.current(ui.todayEntries)) to
+                                nutrient.goal(resolvedTargets, ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale)
+                        }
+                    }
                     Row(
                         Modifier
                             .fillMaxWidth()
@@ -609,10 +641,11 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         ui.homeTopNutrients.forEach { nutrient ->
+                            val (current, goal) = macroCardValues.getValue(nutrient)
                             MacroCard(
                                 label = stringResource(nutrient.displayNameRes),
-                                current = if (nutrient == HomeTopNutrient.CAFFEINE) ui.caffeineTodayMg else nutrient.current(ui.todayEntries),
-                                goal = nutrient.goal(ui.resolvedDayTargets, ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale),
+                                current = current,
+                                goal = goal,
                                 unit = stringResource(nutrient.unitRes),
                                 accentColor = nutrientAccentColor(nutrient),
                                 modifier = Modifier.weight(1f),
@@ -754,7 +787,11 @@ fun HomeScreen(
                     // the destination group kept a stable key after 3.24.1/4.0.0
                     // and still vanished ~1/10 times (self-heals on date switch).
                     val groupMembership = group.entries.joinToString(",") { it.id.toString() }
-                    itemsIndexed(group.entries, key = { _, entry -> "${group.id}:$groupMembership:${entry.id}" }) { index, entry ->
+                    itemsIndexed(
+                        group.entries,
+                        key = { _, entry -> "${group.id}:$groupMembership:${entry.id}" },
+                        contentType = { _, _ -> "food-row" },
+                    ) { index, entry ->
                         // Codeberg #56 repro instrumentation (TEMP, debug-only):
                         // log every row entering/leaving composition so logcat
                         // can catch a render drop — a row present in the groups
@@ -1686,7 +1723,7 @@ fun HomeScreen(
         NutritionDetailSheet(
             entries = if (nutritionDetailScope == "day") ui.todayEntries else mealGroup?.entries.orEmpty(),
             profile = ui.profile,
-            resolved = ui.resolvedDayTargets,
+            resolved = resolvedTargets,
             homeTopNutrients = ui.homeTopNutrients,
             optionalGoals = ui.optionalNutrientGoals,
             macroScale = ui.macroGoalScale,
@@ -1702,7 +1739,7 @@ fun HomeScreen(
         DayTypeSwitchSheet(
             profile = ui.profile,
             today = LocalDate.now(),
-            typicalActiveByProfileId = ui.dayTypeActiveStats.byProfileId
+            typicalActiveByProfileId = dayTypeStats.byProfileId
                 .filter { it.value.sampleCount >= app.chompass.models.DayTypeActiveStats.MIN_SAMPLES }
                 .mapValues { it.value.averageKcal },
             onSwitch = vm::switchTodayDayType,
@@ -1773,7 +1810,7 @@ fun HomeScreen(
             imageBytes = ui.pendingImageBytes,
             preferGramsByDefault = ui.preferGramsByDefault,
             profile = ui.profile,
-            resolved = ui.resolvedDayTargets,
+            resolved = resolvedTargets,
             optionalGoals = ui.optionalNutrientGoals,
             dayEntries = ui.todayEntries,
             isSaving = ui.saving,
@@ -1929,7 +1966,7 @@ internal fun HomeScreenPreviewContent(
                             restingBurn = ui.restingBurnToday,
                             freezeProgress = freezeAnimations,
                         )
-                        Spacer(Modifier.height(20.dp))
+                        val previewResolvedTargets = remember(ui.profile, ui.date, ui.goalJournal) { ui.resolvedDayTargets }
                         Row(
                             Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -1945,7 +1982,7 @@ internal fun HomeScreenPreviewContent(
                                 MacroCard(
                                     label = stringResource(nutrient.displayNameRes),
                                     current = if (nutrient == HomeTopNutrient.CAFFEINE) ui.caffeineTodayMg else nutrient.current(ui.todayEntries),
-                                    goal = nutrient.goal(ui.resolvedDayTargets, ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale),
+                                    goal = nutrient.goal(previewResolvedTargets, ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale),
                                     unit = stringResource(nutrient.unitRes),
                                     accentColor = nutrientAccentColor(nutrient),
                                     modifier = Modifier.weight(1f),
@@ -1990,7 +2027,11 @@ internal fun HomeScreenPreviewContent(
                             )
                         }
                         // Group-scoped keys, see main list above (#56).
-                        itemsIndexed(group.entries, key = { _, entry -> "${group.id}:${entry.id}" }) { index, entry ->
+                        itemsIndexed(
+                            group.entries,
+                            key = { _, entry -> "${group.id}:${entry.id}" },
+                            contentType = { _, _ -> "food-row" },
+                        ) { index, entry ->
                             val isFirst = index == 0
                             val isLast = index == group.entries.lastIndex
                             val rowShape = sectionCardShape(isFirst, isLast)
