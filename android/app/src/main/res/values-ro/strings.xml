@@ -1390,6 +1390,8 @@
     <string name="settings_personal_intro">Bazele pe care Chompass le folosește pentru a estima nevoile tale de energie și obiectivele.</string>
     <string name="settings_picker_custom_placeholder">Valoare în %1$s</string>
     <string name="settings_picker_enter_custom">Introdu valoare personalizată…</string>
+    <string name="settings_picker_confirm_above_title">Cantitate neobișnuită</string>
+    <string name="settings_picker_confirm_above_message">Este o cantitate neobișnuit de mare pentru acest obiectiv. Salvezi oricum?</string>
     <string name="settings_calorie_below_floor_title">Sub limita de siguranță</string>
     <string name="settings_calorie_below_floor_message">Această valoare este sub metabolismul de repaus estimat sau sub %1$s. Continuă doar dacă a fost prescris de un specialist în sănătate.</string>
     <string name="settings_calorie_below_floor_continue">Continuă oricum</string>

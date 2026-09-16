@@ -1391,6 +1391,8 @@
     <string name="settings_personal_intro">Chompass がエネルギー必要量と目標の推定に使う基本データ。</string>
     <string name="settings_picker_custom_placeholder">%1$s 単位の値</string>
     <string name="settings_picker_enter_custom">カスタム値を入力…</string>
+    <string name="settings_picker_confirm_above_title">通常より多い量</string>
+    <string name="settings_picker_confirm_above_message">この目標にはかなり大きな量です。保存しますか？</string>
     <string name="settings_calorie_below_floor_title">安全な下限を下回っています</string>
     <string name="settings_calorie_below_floor_message">これは推定安静時代謝または%1$sを下回っています。医療専門家が処方した場合のみ続けてください。</string>
     <string name="settings_calorie_below_floor_continue">それでも続ける</string>

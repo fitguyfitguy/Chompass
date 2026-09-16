@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,11 +27,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.ui.components.FudGlassTextButton
-import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.energyText
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
@@ -42,11 +39,6 @@ import app.chompass.ui.theme.AppTextOpacity
  * NutritionPickerSheet exactly: optional title, wheel picker stepped at the
  * requested step, gradient Save button, optional "Reset to Auto-balance"
  * link when the macro is currently pinned.
- *
- * Also offers "Enter custom value…": swaps the wheel for a free-entry field
- * so values outside the preset range (e.g. a therapeutic vitamin D dose of
- * 250 mcg) are settable. Parses as a non-negative integer; falls back to the
- * wheel selection when the text is not a number.
  */
 @Composable
 fun NutritionPickerSheet(
@@ -64,20 +56,17 @@ fun NutritionPickerSheet(
     onValueChange: ((Int) -> Unit)? = null,
     accentColor: Color = AppColors.Calorie,
     /**
-     * Optional per-value conversion line shown under the custom field
-     * (e.g. vitamin D mcg → IU). Receives the live custom value so the
-     * hint tracks what is being typed.
+     * Optional per-value conversion line under the wheel (e.g. vitamin D
+     * mcg → IU). Receives the live selection so the hint stays current.
      */
     conversionHintFor: ((Int) -> String)? = null,
-    /**
-     * Optional upper clamp for the custom input (e.g. a nutrient's
-     * maxCustomGoal); null keeps any non-negative integer.
-     */
-    maxCustomGoal: Int? = null,
     /** When set, saving a value below this shows a confirm dialog first. */
     confirmBelow: Int? = null,
     confirmBelowTitle: String? = null,
     confirmBelowMessage: String? = null,
+    /** Mirror of [confirmBelow]: saving above this line asks for a generic
+     *  high-amount confirmation first (optional-nutrient soft maxima). */
+    confirmAbove: Int? = null,
     /**
      * When true, paint [label] as a large colored heading above the wheel.
      * Goal hosts already name the nutrient on the row the user tapped, so
@@ -91,17 +80,7 @@ fun NutritionPickerSheet(
     // off-grid stored value as its own row, so the center label shows the
     // exact stored number until the user scrolls onto the grid.
     var selected by remember(currentValue) { mutableStateOf(currentValue) }
-    var customMode by remember { mutableStateOf(false) }
-    var customText by remember { mutableStateOf("") }
     var pendingConfirm by remember { mutableStateOf(false) }
-    // The custom field only adds power where a host-declared ceiling exceeds
-    // the wheel range (therapeutic vitamin D doses etc.). Everywhere else,
-    // tapping the center row opens the numpad and already sets any value in
-    // range, off-grid included — showing the link there is just clutter.
-    val customAddsRange = maxCustomGoal != null && maxCustomGoal > range.last
-    val clampCustom: (Int) -> Int = { v -> if (maxCustomGoal != null) v.coerceAtMost(maxCustomGoal) else v }
-    val parsedCustom = customText.trim().replace(',', '.').toDoubleOrNull()?.toInt()?.coerceAtLeast(0)?.let(clampCustom)
-    val saveValue = if (customMode) parsedCustom ?: selected else selected
     if (showTitle) {
         Text(label, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = accentColor)
         Spacer(Modifier.height(12.dp))
@@ -128,39 +107,10 @@ fun NutritionPickerSheet(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
         )
     }
-    if (customMode) {
-        Spacer(Modifier.height(10.dp))
-        FudGlassTextField(
-            value = customText,
-            onValueChange = { text ->
-                customText = text
-                text.trim().replace(',', '.').toDoubleOrNull()?.toInt()?.coerceAtLeast(0)?.let(clampCustom)?.let { onValueChange?.invoke(it) }
-            },
-            placeholder = stringResource(R.string.settings_picker_custom_placeholder, unit),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            accentColor = accentColor,
-        )
-        TextButton(
-            onClick = { customMode = false; onValueChange?.invoke(selected) },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                stringResource(R.string.settings_picker_use_wheel),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
-            )
-        }
-    } else if (customAddsRange) {
-        TextButton(
-            onClick = { customMode = true; customText = selected.toString() },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(stringResource(R.string.settings_picker_enter_custom), color = accentColor)
-        }
-    }
-    if (conversionHintFor != null && (customMode || currentValue > range.last)) {
+    if (conversionHintFor != null) {
         Spacer(Modifier.height(6.dp))
         Text(
-            conversionHintFor(parsedCustom ?: selected),
+            conversionHintFor(selected),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             modifier = Modifier.fillMaxWidth(),
@@ -187,10 +137,10 @@ fun NutritionPickerSheet(
                 .background(accentColor)
                 .clickable {
                     app.chompass.ui.components.MagnitudeDrafts.commitAll()
-                    val parsed = customText.trim().replace(',', '.').toDoubleOrNull()?.toInt()?.coerceAtLeast(0)?.let(clampCustom)
-                    val v = if (customMode) parsed ?: selected else selected
-                    if (confirmBelow != null && v < confirmBelow) pendingConfirm = true
-                    else onSave(v)
+                    val needsBelowConfirm = confirmBelow != null && selected < confirmBelow
+                    val needsAboveConfirm = confirmAbove != null && selected > confirmAbove
+                    if (needsBelowConfirm || needsAboveConfirm) pendingConfirm = true
+                    else onSave(selected)
                 },
             contentAlignment = Alignment.Center
         ) {
@@ -215,14 +165,34 @@ fun NutritionPickerSheet(
         }
     }
     Spacer(Modifier.height(8.dp))
-    if (pendingConfirm && confirmBelow != null) {
+    if (pendingConfirm && (confirmBelow != null || confirmAbove != null)) {
+        val highAmount = confirmAbove != null && selected > confirmAbove
         AlertDialog(
             onDismissRequest = { pendingConfirm = false },
-            title = { Text(confirmBelowTitle ?: stringResource(R.string.settings_calorie_below_floor_title)) },
-            text = { Text(confirmBelowMessage ?: stringResource(R.string.settings_calorie_below_floor_message, energyText(1200))) },
+            title = {
+                Text(
+                    when {
+                        highAmount -> stringResource(R.string.settings_picker_confirm_above_title)
+                        else -> confirmBelowTitle ?: stringResource(R.string.settings_calorie_below_floor_title)
+                    }
+                )
+            },
+            text = {
+                Text(
+                    when {
+                        highAmount -> stringResource(R.string.settings_picker_confirm_above_message)
+                        else -> confirmBelowMessage ?: stringResource(R.string.settings_calorie_below_floor_message, energyText(1200))
+                    }
+                )
+            },
             confirmButton = {
-                TextButton(onClick = { pendingConfirm = false; onSave(saveValue) }) {
-                    Text(stringResource(R.string.settings_calorie_below_floor_continue))
+                TextButton(onClick = { pendingConfirm = false; onSave(selected) }) {
+                    Text(
+                        stringResource(
+                            if (highAmount) R.string.action_save
+                            else R.string.settings_calorie_below_floor_continue
+                        )
+                    )
                 }
             },
             dismissButton = {

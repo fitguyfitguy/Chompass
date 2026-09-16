@@ -1392,6 +1392,8 @@
     <string name="settings_personal_intro">मूल बातें जो Chompass आपकी ऊर्जा आवश्यकताओं और लक्ष्यों का अनुमान लगाने के लिए उपयोग करता है।</string>
     <string name="settings_picker_custom_placeholder">%1$s में मान</string>
     <string name="settings_picker_enter_custom">कस्टम मान दर्ज करें…</string>
+    <string name="settings_picker_confirm_above_title">असामान्य मात्रा</string>
+    <string name="settings_picker_confirm_above_message">यह इस लक्ष्य के लिए असामान्य रूप से अधिक मात्रा है। फिर भी सहेजें?</string>
     <string name="settings_calorie_below_floor_title">सुरक्षित सीमा से नीचे</string>
     <string name="settings_calorie_below_floor_message">यह आपके अनुमानित आराम चयापचय या %1$sकिलो कैलोरी से कम है। केवल तभी जारी रखें जब किसी स्वास्थ्य विशेषज्ञ ने इसे निर्धारित किया हो।</string>
     <string name="settings_calorie_below_floor_continue">फिर भी जारी रखें</string>

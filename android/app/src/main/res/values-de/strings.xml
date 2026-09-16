@@ -2941,6 +2941,8 @@ für dich ein</string>
     <string name="settings_reset_autobalance">Auf „Auto-Balance“ zurücksetzen</string>
 
     <string name="settings_picker_enter_custom">Benutzerdefinierten Wert eingeben…</string>
+    <string name="settings_picker_confirm_above_title">Ungewöhnliche Menge</string>
+    <string name="settings_picker_confirm_above_message">Das ist eine ungewöhnlich hohe Menge für dieses Ziel. Trotzdem speichern?</string>
     <string name="settings_calorie_below_floor_title">Unter der Sicherheitsgrenze</string>
     <string name="settings_calorie_below_floor_message">Das liegt unter deinem geschätzten Ruheumsatz oder unter %1$s. Mach nur weiter, wenn eine Ärztin oder ein Arzt es verordnet hat.</string>
     <string name="settings_calorie_below_floor_continue">Trotzdem fortfahren</string>

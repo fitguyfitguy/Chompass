@@ -846,7 +846,6 @@ internal fun SettingsSheets(
                         currentValue = EnergyFormat.quantity(p?.effectiveCalories ?: 2000, unit),
                         range = EnergyFormat.quantity(floor, unit)..EnergyFormat.quantity(ceiling, unit),
                         step = EnergyFormat.wheelStep(50, unit),
-                        maxCustomGoal = EnergyFormat.quantity(ceiling, unit),
                         confirmBelow = EnergyFormat.quantity(floor, unit),
                         confirmBelowTitle = stringResource(R.string.settings_calorie_below_floor_title),
                         confirmBelowMessage = stringResource(R.string.settings_calorie_below_floor_message, energyText(1200)),
@@ -1010,6 +1009,7 @@ internal fun OptionalNutrientGoalsSheet(
             range = nutrient.goalRange,
             step = nutrient.goalStep,
             accentColor = nutrient.macroAccentColor() ?: AppColors.Calorie,
+            confirmAbove = nutrient.softMax,
             onSave = { value ->
                 onChange(goals.withValue(nutrient, value))
                 editing = null

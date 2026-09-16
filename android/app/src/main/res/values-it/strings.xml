@@ -1344,6 +1344,8 @@
     <string name="settings_personal_intro">Le basi che Chompass usa per stimare il tuo fabbisogno energetico e i tuoi obiettivi.</string>
     <string name="settings_picker_custom_placeholder">Valore in %1$s</string>
     <string name="settings_picker_enter_custom">Inserisci valore personalizzato…</string>
+    <string name="settings_picker_confirm_above_title">Quantità insolita</string>
+    <string name="settings_picker_confirm_above_message">È una quantità insolitamente alta per questo obiettivo. Salvare comunque?</string>
     <string name="settings_calorie_below_floor_title">Sotto la soglia di sicurezza</string>
     <string name="settings_calorie_below_floor_message">Questo valore è sotto il tuo dispendio a riposo stimato o sotto %1$s. Continua solo se un professionista sanitario lo ha prescritto.</string>
     <string name="settings_calorie_below_floor_continue">Continua comunque</string>

@@ -193,7 +193,7 @@ fun OptionalNutrientGoalsScreen(
                 range = nutrient.goalRange,
                 step = nutrient.goalStep,
                 accentColor = nutrient.macroAccentColor() ?: AppColors.Calorie,
-                maxCustomGoal = nutrient.maxCustomGoal,
+                confirmAbove = nutrient.softMax,
                 conversionHintFor = if (nutrient == OptionalNutrient.VITAMIN_D) { v ->
                     String.format(java.util.Locale.getDefault(), iuTemplate, v, v * 40)
                 } else null,

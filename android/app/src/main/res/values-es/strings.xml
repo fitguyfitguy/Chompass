@@ -1473,6 +1473,8 @@
     <string name="settings_personal_intro">Los datos básicos que Chompass usa para estimar tus necesidades de energía y tus objetivos.</string>
     <string name="settings_picker_custom_placeholder">Valor en %1$s</string>
     <string name="settings_picker_enter_custom">Introducir valor personalizado…</string>
+    <string name="settings_picker_confirm_above_title">Cantidad inusual</string>
+    <string name="settings_picker_confirm_above_message">Es una cantidad inusualmente alta para este objetivo. ¿Guardar de todos modos?</string>
     <string name="settings_calorie_below_floor_title">Por debajo del mínimo seguro</string>
     <string name="settings_calorie_below_floor_message">Esto está por debajo de tu gasto en reposo estimado o de %1$s. Continúa solo si un profesional de la salud lo ha recetado.</string>
     <string name="settings_calorie_below_floor_continue">Continuar de todos modos</string>
