@@ -86,6 +86,8 @@ internal object Keys {
         val DAILY_NOTES_ENABLED = booleanPreferencesKey("dailyNotesEnabled")
         // Suggest meals by time of day; default on. Off hides the Meals editor.
         val MEAL_TIMES_ENABLED = booleanPreferencesKey("mealTimesEnabled")
+        // Optional meal planning mode; default off.
+        val MEAL_PLANNING_ENABLED = booleanPreferencesKey("mealPlanningEnabled")
         // Optional caffeine tracker (device-pass revision); default off.
         val CAFFEINE_TRACKING_ENABLED = booleanPreferencesKey("caffeineTrackingEnabled")
         val CAFFEINE_DAILY_LIMIT_MG = intPreferencesKey("caffeineDailyLimitMg")

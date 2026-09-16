@@ -47,6 +47,20 @@ class FoodEntryDuplicationTest {
     }
 
     @Test
+    fun decodesLegacyBucketWithoutPlannedFlag() {
+        // Meal planning mode: the local-only `planned` flag must default to
+        // false when older bucket JSON predates it.
+        val json = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
+        val legacy = """
+            {"name":"Curry","calories":450,"protein":20.0,"carbs":40.0,"fat":15.0,
+             "timestamp":${Instant.parse("2026-07-22T18:05:00Z").toEpochMilli()},
+             "source":"snapFood","mealType":"dinner"}
+        """.trimIndent()
+        val decoded = json.decodeFromString<FoodEntry>(legacy)
+        assertEquals(false, decoded.planned)
+    }
+
+    @Test
     fun duplicatedForLogging_carriesImageFilenameForRelog() {
         // #12: the duplicated entry must keep the source's image so the
         // repository can copy the JPEG to the new entry's own filename on save.
@@ -60,6 +74,7 @@ class FoodEntryDuplicationTest {
             imageFilename = "11111111-2222-3333-4444-555555555555.jpg",
             emoji = "🥣",
         )
+
         val copy = source.duplicatedForLogging(Instant.parse("2026-07-22T18:05:00Z"))
 
         assertEquals(source.imageFilename, copy.imageFilename)

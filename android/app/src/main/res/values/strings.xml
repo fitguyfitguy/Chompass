@@ -1654,6 +1654,8 @@
 
 
     <string name="settings_meal_times_enabled">Suggest meals by time of day</string>
+    <string name="settings_meal_planning">Meal planning</string>
+    <string name="settings_meal_planning_info">Plan meals on upcoming days. The diary marks planned entries and one tap logs them as eaten.</string>
 
     <string name="settings_meals">Meals</string>
     <string name="settings_meals_description">Names, order, and start times</string>
