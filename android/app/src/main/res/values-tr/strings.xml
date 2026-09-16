@@ -455,6 +455,7 @@
     <string name="note_char_count">%1$d / %2$d</string>
 
     <string name="home_food_removed">Yiyecek silindi</string>
+    <string name="home_day_type_switched">Gün türü değiştirildi</string>
     <string name="action_undo">Geri al</string>
     <string name="add_food_photo_source_title">Fotoğraf ekle</string>
     <string name="add_food_photo_camera">Fotoğraf Çek</string>

@@ -1038,6 +1038,7 @@
     <string name="home_first_photo_saved">Première photo enregistrée</string>
     <string name="home_food_log">Journal alimentaire</string>
     <string name="home_food_removed">Aliment supprimé</string>
+    <string name="home_day_type_switched">Type de jour modifié</string>
     <string name="home_menu_copy_from_day">Copier depuis un jour</string>
     <string name="home_menu_from_photos_note">Depuis Photos + Note</string>
     <string name="home_menu_grounded">Ancrée</string>

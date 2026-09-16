@@ -989,6 +989,7 @@ bilirsən?</string>
     <string name="home_first_photo_saved">İlk şəkil saxlanıldı</string>
     <string name="home_food_log">Yemək jurnalı</string>
     <string name="home_food_removed">Qida silindi</string>
+    <string name="home_day_type_switched">Gün növü dəyişdirildi</string>
     <string name="home_menu_copy_from_day">Gündən kopyala</string>
     <string name="home_menu_from_photos_note">Foto + Qeyddən</string>
     <string name="home_menu_grounded">Əsaslı</string>

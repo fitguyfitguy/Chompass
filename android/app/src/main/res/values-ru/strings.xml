@@ -1469,6 +1469,7 @@
     <string name="home_display_show_active_calories">Показывать активные калории</string>
     <string name="home_display_show_active_calories_desc">Показывать сегодняшний активный расход на шкале калорий.</string>
     <string name="home_food_removed">Продукт удалён</string>
+    <string name="home_day_type_switched">Тип дня изменён</string>
     <string name="home_menu_grounded">Обоснованный</string>
     <string name="home_water_next">Далее %1$s · %2$s</string>
     <string name="home_water_next_tomorrow">Далее %1$s · завтра %2$s</string>

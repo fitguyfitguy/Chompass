@@ -933,6 +933,7 @@
     <string name="home_first_photo_saved">Перше фото збережено</string>
     <string name="home_food_log">Журнал їжі</string>
     <string name="home_food_removed">Продукт видалено</string>
+    <string name="home_day_type_switched">Тип дня змінено</string>
     <string name="home_menu_barcode">Штрих-код</string>
     <string name="home_menu_copy_from_day">Копіювати з дня</string>
     <string name="home_menu_from_photos_note">З фото + нотатки</string>

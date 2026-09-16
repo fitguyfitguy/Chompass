@@ -615,6 +615,7 @@
     <string name="shortcut_fasting_short">Fast</string>
     <string name="shortcut_fasting_long">Start or stop fasting</string>
     <string name="home_food_removed">Food removed</string>
+    <string name="home_day_type_switched">Day type switched</string>
     <string name="action_undo">Undo</string>
     <string name="add_food_photo_source_title">Add a photo</string>
     <string name="add_food_photo_camera">Take Photo</string>

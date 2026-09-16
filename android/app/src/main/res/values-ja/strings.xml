@@ -996,6 +996,7 @@
     <string name="home_first_photo_saved">最初の写真を保存しました</string>
     <string name="home_food_log">食事記録</string>
     <string name="home_food_removed">食品を削除しました</string>
+    <string name="home_day_type_switched">日タイプを切り替えました</string>
     <string name="home_menu_copy_from_day">日付からコピー</string>
     <string name="home_menu_from_photos_note">写真+メモから</string>
     <string name="home_menu_grounded">裏付け</string>

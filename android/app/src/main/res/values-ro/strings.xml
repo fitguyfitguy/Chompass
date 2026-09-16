@@ -989,6 +989,7 @@
     <string name="home_first_photo_saved">Prima fotografie salvată</string>
     <string name="home_food_log">Jurnal alimentar</string>
     <string name="home_food_removed">Aliment eliminat</string>
+    <string name="home_day_type_switched">Tipul zilei a fost schimbat</string>
     <string name="home_menu_copy_from_day">Copiază din ziua</string>
     <string name="home_menu_from_photos_note">Din foto + notă</string>
     <string name="home_menu_grounded">Fundamentat</string>

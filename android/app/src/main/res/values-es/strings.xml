@@ -1043,6 +1043,7 @@
     <string name="home_first_photo_saved">Primera foto guardada</string>
     <string name="home_food_log">Registro de comida</string>
     <string name="home_food_removed">Comida eliminada</string>
+    <string name="home_day_type_switched">Tipo de día cambiado</string>
     <string name="home_macro_chip_format">%1$s %2$dg</string>
     <string name="home_menu_copy_from_day">Copiar de un día</string>
     <string name="home_menu_from_photos_note">Desde Fotos + Nota</string>
