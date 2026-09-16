@@ -343,7 +343,8 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                         { scope.launch { container.bodyMeasurementRepository.setValue(site, null) }; editing = null }
                     } else null,
                     resetLabel = stringResource(R.string.action_clear),
-                    onValueChange = { editorValue = it }
+                    onValueChange = { editorValue = it },
+                    onDismiss = { editing = null }
                 )
             }
         }

@@ -57,6 +57,7 @@ import app.chompass.models.WeightGoal
 import app.chompass.ui.components.DateWheelPicker
 import app.chompass.ui.components.DecimalWheelPicker
 import app.chompass.ui.components.FeetInchesWheelPicker
+import app.chompass.ui.components.FudGlassTextButton
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.components.NumericWheelPicker
@@ -78,6 +79,33 @@ import app.chompass.models.UnitFormat
 internal fun optionalNutrientSummary(goals: OptionalNutrientGoals): String =
     "Fiber ${goals.fiber}g, Sodium ${goals.sodium}mg"
 
+/**
+ * D1 (audit M8+M9 decision): every value-editing sheet shows explicit Cancel
+ * beside the gradient Save. Scrim and back already dismissed silently (= the
+ * old discard path); the visible Cancel is the discoverable twin, and there
+ * is deliberately no dismiss-with-edits guard (D4).
+ */
+@Composable
+internal fun CancelSaveRow(
+    onDismiss: () -> Unit,
+    enabled: Boolean = true,
+    onSave: () -> Unit
+) {
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        FudGlassTextButton(
+            text = stringResource(R.string.action_cancel),
+            onClick = onDismiss,
+            modifier = Modifier.weight(1f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+        )
+        GradientSaveButton(enabled = enabled, modifier = Modifier.weight(1f), onClick = onSave)
+    }
+}
+
 @Composable
 internal fun <T> ListSheet(
     title: String,
@@ -90,7 +118,9 @@ internal fun <T> ListSheet(
     footer: String? = null,
     customField: ((String) -> Unit)? = null,
     /** Composable leading slot (e.g. a color swatch) rendered before the label; overrides [icon]. */
-    leading: (@Composable (T) -> Unit)? = null
+    leading: (@Composable (T) -> Unit)? = null,
+    /** When non-null, the custom-field footer gains a Cancel beside its Save. */
+    onDismiss: (() -> Unit)? = null
 ) {
     val isDark = isDarkTheme()
     Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
@@ -160,16 +190,15 @@ internal fun <T> ListSheet(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
-        GradientSaveButton(
-            text = stringResource(R.string.action_save),
-            onClick = { if (custom.isNotBlank()) customField(custom.trim()) },
-            modifier = Modifier.fillMaxWidth()
-        )
+        CancelSaveRow(
+            onDismiss = { onDismiss?.invoke() },
+            enabled = custom.isNotBlank()
+        ) { if (custom.isNotBlank()) customField(custom.trim()) }
     }
 }
 
 @Composable
-internal fun ApiKeySheet(title: String, placeholder: String, onSave: (String) -> Unit) {
+internal fun ApiKeySheet(title: String, placeholder: String, onSave: (String) -> Unit, onDismiss: () -> Unit) {
     var value by remember { mutableStateOf("") }
     Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(12.dp))
@@ -183,11 +212,7 @@ internal fun ApiKeySheet(title: String, placeholder: String, onSave: (String) ->
         modifier = Modifier.fillMaxWidth()
     )
     Spacer(Modifier.height(12.dp))
-    GradientSaveButton(
-        text = stringResource(R.string.action_save),
-        onClick = { onSave(value) },
-        modifier = Modifier.fillMaxWidth()
-    )
+    CancelSaveRow(onDismiss) { onSave(value) }
     Spacer(Modifier.height(4.dp))
     TextButton(onClick = { onSave("") }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.settings_clear_key)) }
 }
@@ -198,7 +223,8 @@ internal fun TextFieldSheet(
     initial: String,
     placeholder: String,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    onSave: (String) -> Unit
+    onSave: (String) -> Unit,
+    onDismiss: () -> Unit
 ) {
     var value by remember(initial) { mutableStateOf(initial) }
     Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
@@ -212,15 +238,11 @@ internal fun TextFieldSheet(
         modifier = Modifier.fillMaxWidth()
     )
     Spacer(Modifier.height(12.dp))
-    GradientSaveButton(
-        text = stringResource(R.string.action_save),
-        onClick = { onSave(value.trim()) },
-        modifier = Modifier.fillMaxWidth()
-    )
+    CancelSaveRow(onDismiss) { onSave(value.trim()) }
 }
 
 @Composable
-internal fun HeightSheet(current: Int, useMetric: Boolean, onUnitChange: (Boolean) -> Unit, onSave: (Int) -> Unit) {
+internal fun HeightSheet(current: Int, useMetric: Boolean, onUnitChange: (Boolean) -> Unit, onSave: (Int) -> Unit, onDismiss: () -> Unit) {
     var cm by remember(current) { mutableStateOf(current) }
     var metric by remember { mutableStateOf(useMetric) }
     Text(stringResource(R.string.sheet_height), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
@@ -230,12 +252,12 @@ internal fun HeightSheet(current: Int, useMetric: Boolean, onUnitChange: (Boolea
     if (metric) NumericWheelPicker(cm, { cm = it }, 100, 250, stringResource(R.string.unit_cm))
     else FeetInchesWheelPicker(cm, { cm = it })
     Spacer(Modifier.height(16.dp))
-    GradientSaveButton { onSave(cm) }
+    CancelSaveRow(onDismiss) { onSave(cm) }
     Spacer(Modifier.height(8.dp))
 }
 
 @Composable
-internal fun WeightSheet(titleText: String, current: Double, useMetric: Boolean, onUnitChange: (Boolean) -> Unit, onSave: (Double) -> Unit) {
+internal fun WeightSheet(titleText: String, current: Double, useMetric: Boolean, onUnitChange: (Boolean) -> Unit, onSave: (Double) -> Unit, onDismiss: () -> Unit) {
     var kg by remember(current) { mutableStateOf(current) }
     var metric by remember { mutableStateOf(useMetric) }
     Text(titleText, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
@@ -248,18 +270,18 @@ internal fun WeightSheet(titleText: String, current: Double, useMetric: Boolean,
         SplitDecimalWheelPicker(UnitFormat.kgToLbs(kg), { lbs -> kg = UnitFormat.lbsToKg(lbs) }, 66, 551, stringResource(R.string.unit_lbs))
     }
     Spacer(Modifier.height(16.dp))
-    GradientSaveButton { onSave(kg) }
+    CancelSaveRow(onDismiss) { onSave(kg) }
     Spacer(Modifier.height(8.dp))
 }
 
 @Composable
-internal fun BodyFatSheet(current: Double?, onSave: (Double?) -> Unit) {
+internal fun BodyFatSheet(current: Double?, onSave: (Double?) -> Unit, onDismiss: () -> Unit) {
     var pct by remember(current) { mutableStateOf((current ?: 0.20) * 100) }
     Text(stringResource(R.string.sheet_body_fat_percent), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(12.dp))
     DecimalWheelPicker(pct, { pct = it }, 5.0, 60.0, 0.1, stringResource(R.string.unit_percent))
     Spacer(Modifier.height(12.dp))
-    GradientSaveButton { onSave(pct / 100.0) }
+    CancelSaveRow(onDismiss) { onSave(pct / 100.0) }
     Spacer(Modifier.height(4.dp))
     TextButton(onClick = { onSave(null) }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.action_clear)) }
     Spacer(Modifier.height(8.dp))
@@ -269,7 +291,7 @@ internal fun BodyFatSheet(current: Double?, onSave: (Double?) -> Unit) {
  *  display-only. Seeds from the existing goal, falling back to the user's
  *  current body fat % so the wheel lands somewhere sensible on first open. */
 @Composable
-internal fun GoalBodyFatSheet(currentGoal: Double?, currentBodyFat: Double?, onSave: (Double?) -> Unit) {
+internal fun GoalBodyFatSheet(currentGoal: Double?, currentBodyFat: Double?, onSave: (Double?) -> Unit, onDismiss: () -> Unit) {
     val seed = currentGoal ?: currentBodyFat ?: 0.15
     var pct by remember(currentGoal) { mutableStateOf(seed * 100) }
     Text(stringResource(R.string.sheet_goal_body_fat), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
@@ -284,14 +306,14 @@ internal fun GoalBodyFatSheet(currentGoal: Double?, currentBodyFat: Double?, onS
     Spacer(Modifier.height(12.dp))
     DecimalWheelPicker(pct, { pct = it }, 3.0, 60.0, 0.1, stringResource(R.string.unit_percent))
     Spacer(Modifier.height(12.dp))
-    GradientSaveButton { onSave(pct / 100.0) }
+    CancelSaveRow(onDismiss) { onSave(pct / 100.0) }
     Spacer(Modifier.height(4.dp))
     TextButton(onClick = { onSave(null) }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.action_remove_goal)) }
     Spacer(Modifier.height(8.dp))
 }
 
 @Composable
-internal fun WaterGoalSheet(current: Int, onSave: (Int) -> Unit) {
+internal fun WaterGoalSheet(current: Int, onSave: (Int) -> Unit, onDismiss: () -> Unit) {
     val initialGoal = (((current.coerceIn(50, 10_000) + 25) / 50) * 50).coerceIn(50, 10_000)
     var goal by remember(current) { mutableIntStateOf(initialGoal) }
     Text(stringResource(R.string.settings_water_goal), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
@@ -311,13 +333,13 @@ internal fun WaterGoalSheet(current: Int, onSave: (Int) -> Unit) {
         color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
     )
     Spacer(Modifier.height(16.dp))
-    GradientSaveButton { onSave(goal) }
+    CancelSaveRow(onDismiss) { onSave(goal) }
     Spacer(Modifier.height(8.dp))
 }
 
 /** Daily nicotine count limit (0 = no limit); mirrors the water goal wheel. */
 @Composable
-internal fun NicotineLimitSheet(current: Int, onSave: (Int) -> Unit) {
+internal fun NicotineLimitSheet(current: Int, onSave: (Int) -> Unit, onDismiss: () -> Unit) {
     var limit by remember(current) { mutableIntStateOf(current.coerceIn(0, 100)) }
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
         Text(stringResource(R.string.nicotine_daily_limit), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
@@ -337,14 +359,14 @@ internal fun NicotineLimitSheet(current: Int, onSave: (Int) -> Unit) {
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
         Spacer(Modifier.height(16.dp))
-        GradientSaveButton { onSave(limit) }
+        CancelSaveRow(onDismiss) { onSave(limit) }
         Spacer(Modifier.height(8.dp))
     }
 }
 
 /** Daily caffeine mg limit (0 = no limit); mirrors the nicotine limit wheel. */
 @Composable
-internal fun CaffeineLimitSheet(current: Int, onSave: (Int) -> Unit) {
+internal fun CaffeineLimitSheet(current: Int, onSave: (Int) -> Unit, onDismiss: () -> Unit) {
     var limit by remember(current) { mutableIntStateOf(current.coerceIn(0, 1000)) }
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
         Text(stringResource(R.string.caffeine_daily_limit), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
@@ -364,7 +386,7 @@ internal fun CaffeineLimitSheet(current: Int, onSave: (Int) -> Unit) {
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
         Spacer(Modifier.height(16.dp))
-        GradientSaveButton { onSave(limit) }
+        CancelSaveRow(onDismiss) { onSave(limit) }
         Spacer(Modifier.height(8.dp))
     }
 }
@@ -375,6 +397,7 @@ internal fun FastingGoalSheet(
     fastHours: Int,
     eatHours: Int,
     onSave: (fast: Int, eat: Int) -> Unit,
+    onDismiss: () -> Unit,
 ) {
     var fast by remember(fastHours) { mutableIntStateOf(fastHours.coerceIn(0, MAX_FASTING_GOAL_HOURS)) }
     // Default the eating window to a 24 h cycle when the user only set a fast
@@ -455,7 +478,7 @@ internal fun FastingGoalSheet(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
         Spacer(Modifier.height(16.dp))
-        GradientSaveButton { onSave(fast, eat) }
+        CancelSaveRow(onDismiss) { onSave(fast, eat) }
         Spacer(Modifier.height(8.dp))
     }
 }
@@ -466,6 +489,7 @@ internal fun FastingStartTimeSheet(
     hour: Int,
     minute: Int,
     onSave: (hour: Int, minute: Int) -> Unit,
+    onDismiss: () -> Unit,
 ) {
     val currentMinutes = (hour.coerceIn(0, 23) * 60 + minute.coerceIn(0, 59))
     val options = remember(currentMinutes) {
@@ -487,7 +511,7 @@ internal fun FastingStartTimeSheet(
         label = { formatMinutesOfDay(context, it) },
     )
     Spacer(Modifier.height(16.dp))
-    GradientSaveButton { onSave(selectedMinutes / 60, selectedMinutes % 60) }
+    CancelSaveRow(onDismiss) { onSave(selectedMinutes / 60, selectedMinutes % 60) }
     Spacer(Modifier.height(8.dp))
 }
 
@@ -497,6 +521,7 @@ internal fun FastingReminderLeadSheet(
     title: String,
     current: Int,
     onSave: (Int) -> Unit,
+    onDismiss: () -> Unit,
 ) {
     var lead by remember(current) { mutableIntStateOf(current.coerceIn(0, MAX_FASTING_REMINDER_LEAD_MINUTES)) }
     Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
@@ -516,7 +541,7 @@ internal fun FastingReminderLeadSheet(
         color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
     )
     Spacer(Modifier.height(16.dp))
-    GradientSaveButton { onSave(lead) }
+    CancelSaveRow(onDismiss) { onSave(lead) }
     Spacer(Modifier.height(8.dp))
 }
 
@@ -534,6 +559,7 @@ internal fun WaterQuickPresetsSheet(
     current: List<Int>,
     useMetric: Boolean,
     onSave: (List<Int>) -> Unit,
+    onDismiss: () -> Unit,
 ) {
     var presets by remember(current) { mutableStateOf(current.sorted()) }
 
@@ -636,9 +662,7 @@ internal fun WaterQuickPresetsSheet(
             }
         }
         Spacer(Modifier.height(8.dp))
-        GradientSaveButton {
-            onSave(WaterQuickPresets(presets).validatedOrDefault().amountsMl)
-        }
+        CancelSaveRow(onDismiss) { onSave(WaterQuickPresets(presets).validatedOrDefault().amountsMl) }
         Spacer(Modifier.height(8.dp))
     }
 }
@@ -702,7 +726,7 @@ internal fun GoalSpeedSheet(current: Double, goal: WeightGoal, useMetric: Boolea
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun BirthdaySheet(current: Instant, onSave: (Instant) -> Unit) {
+internal fun BirthdaySheet(current: Instant, onSave: (Instant) -> Unit, onDismiss: () -> Unit) {
     // Material3 DatePicker stores selection as UTC-midnight millis. We store
     // birthdays as a local-zone Instant. Round-trip both sides through the
     // user's local date to avoid an off-by-one when the user is east of UTC.
@@ -722,7 +746,7 @@ internal fun BirthdaySheet(current: Instant, onSave: (Instant) -> Unit) {
         modifier = Modifier.fillMaxWidth()
     )
     Spacer(Modifier.height(12.dp))
-    GradientSaveButton {
+    CancelSaveRow(onDismiss) {
         val age = java.time.Period.between(pickedDate, LocalDate.now()).years
         if (age < CalorieSafety.ADULT_MIN_AGE) confirmMinor = true else commit()
     }
