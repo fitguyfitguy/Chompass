@@ -183,38 +183,35 @@ enum class OptionalNutrient(
     val defaultGoal: Int,
     val displayNameRes: Int,
     val unitRes: Int,
-    /** Bounds and increment for the goal wheel picker in Settings. */
+    /** Full settable envelope and increment for the goal wheel picker in
+     *  Settings; tap-to-type enters exact values without spinning. */
     val goalRange: IntRange,
     val goalStep: Int,
-    /**
-     * Upper clamp for the free "Enter custom value…" input. The wheel range
-     * is intentionally tighter; custom values may exceed it, but not this
-     * cap (keeps goal math and gauges sane). Vitamin D's cap keeps the
-     * common 10,000 IU (250 mcg) target reachable.
-     */
-    val maxCustomGoal: Int
+    /** Saving above this line asks for confirmation — usually a tolerable
+     *  upper intake, not a hard stop. */
+    val softMax: Int
 ) {
-    SUGAR("Sugar", "g", 50, R.string.nutrition_label_sugar, R.string.unit_g, 0..200, 5, 500),
-    ADDED_SUGAR("Added Sugar", "g", 25, R.string.nutrition_label_added_sugar, R.string.unit_g, 0..100, 5, 300),
-    FIBER("Fiber", "g", 30, R.string.nutrition_label_fiber, R.string.unit_g, 0..100, 1, 300),
-    SATURATED_FAT("Saturated Fat", "g", 20, R.string.nutrition_label_saturated_fat, R.string.unit_g, 0..80, 1, 200),
-    CHOLESTEROL("Cholesterol", "mg", 300, R.string.nutrition_label_cholesterol, R.string.unit_mg, 0..1000, 25, 2000),
-    SODIUM("Sodium", "mg", 2300, R.string.nutrition_label_sodium, R.string.unit_mg, 0..5000, 50, 10000),
-    POTASSIUM("Potassium", "mg", 3500, R.string.nutrition_label_potassium, R.string.unit_mg, 0..7000, 50, 15000),
-    TRANS_FAT("Trans Fat", "g", 0, R.string.nutrition_label_trans_fat, R.string.unit_g, 0..10, 1, 50),
-    CALCIUM("Calcium", "mg", 1000, R.string.nutrition_label_calcium, R.string.unit_mg, 300..2000, 50, 5000),
-    IRON("Iron", "mg", 18, R.string.nutrition_label_iron, R.string.unit_mg, 5..45, 1, 200),
-    MAGNESIUM("Magnesium", "mg", 400, R.string.nutrition_label_magnesium, R.string.unit_mg, 100..800, 25, 2000),
-    ZINC("Zinc", "mg", 11, R.string.nutrition_label_zinc, R.string.unit_mg, 3..40, 1, 100),
-    VITAMIN_A("Vitamin A", "mcg", 900, R.string.nutrition_label_vitamin_a, R.string.unit_mcg, 300..3000, 50, 5000),
-    VITAMIN_C("Vitamin C", "mg", 90, R.string.nutrition_label_vitamin_c, R.string.unit_mg, 20..500, 10, 2000),
-    VITAMIN_D("Vitamin D", "mcg", 20, R.string.nutrition_label_vitamin_d, R.string.unit_mcg, 5..100, 1, 500),
-    VITAMIN_B12("Vitamin B12", "mcg", 3, R.string.nutrition_label_vitamin_b12, R.string.unit_mcg, 1..20, 1, 100),
-    VITAMIN_E("Vitamin E", "mg", 15, R.string.nutrition_label_vitamin_e, R.string.unit_mg, 5..100, 1, 1000),
-    VITAMIN_K("Vitamin K", "mcg", 120, R.string.nutrition_label_vitamin_k, R.string.unit_mcg, 30..300, 10, 1000),
-    FOLATE("Folate", "mcg", 400, R.string.nutrition_label_folate, R.string.unit_mcg, 100..1000, 50, 2000),
-    OMEGA3("Omega-3", "g", 2, R.string.nutrition_label_omega3, R.string.unit_g, 0..10, 1, 50),
-    CAFFEINE("Caffeine", "mg", 400, R.string.nutrition_label_caffeine, R.string.unit_mg, 0..1000, 25, 2000)
+    SUGAR("Sugar", "g", 50, R.string.nutrition_label_sugar, R.string.unit_g, 0..500, 5, 200),
+    ADDED_SUGAR("Added Sugar", "g", 25, R.string.nutrition_label_added_sugar, R.string.unit_g, 0..300, 5, 100),
+    FIBER("Fiber", "g", 30, R.string.nutrition_label_fiber, R.string.unit_g, 0..300, 1, 100),
+    SATURATED_FAT("Saturated Fat", "g", 20, R.string.nutrition_label_saturated_fat, R.string.unit_g, 0..200, 1, 80),
+    CHOLESTEROL("Cholesterol", "mg", 300, R.string.nutrition_label_cholesterol, R.string.unit_mg, 0..2000, 25, 1000),
+    SODIUM("Sodium", "mg", 2300, R.string.nutrition_label_sodium, R.string.unit_mg, 0..10000, 50, 5000),
+    POTASSIUM("Potassium", "mg", 3500, R.string.nutrition_label_potassium, R.string.unit_mg, 0..15000, 50, 7000),
+    TRANS_FAT("Trans Fat", "g", 0, R.string.nutrition_label_trans_fat, R.string.unit_g, 0..50, 1, 10),
+    CALCIUM("Calcium", "mg", 1000, R.string.nutrition_label_calcium, R.string.unit_mg, 0..5000, 50, 2000),
+    IRON("Iron", "mg", 18, R.string.nutrition_label_iron, R.string.unit_mg, 0..200, 1, 45),
+    MAGNESIUM("Magnesium", "mg", 400, R.string.nutrition_label_magnesium, R.string.unit_mg, 0..2000, 25, 800),
+    ZINC("Zinc", "mg", 11, R.string.nutrition_label_zinc, R.string.unit_mg, 0..100, 1, 40),
+    VITAMIN_A("Vitamin A", "mcg", 900, R.string.nutrition_label_vitamin_a, R.string.unit_mcg, 0..5000, 50, 3000),
+    VITAMIN_C("Vitamin C", "mg", 90, R.string.nutrition_label_vitamin_c, R.string.unit_mg, 0..2000, 10, 500),
+    VITAMIN_D("Vitamin D", "mcg", 20, R.string.nutrition_label_vitamin_d, R.string.unit_mcg, 0..500, 1, 100),
+    VITAMIN_B12("Vitamin B12", "mcg", 3, R.string.nutrition_label_vitamin_b12, R.string.unit_mcg, 0..100, 1, 20),
+    VITAMIN_E("Vitamin E", "mg", 15, R.string.nutrition_label_vitamin_e, R.string.unit_mg, 0..1000, 1, 100),
+    VITAMIN_K("Vitamin K", "mcg", 120, R.string.nutrition_label_vitamin_k, R.string.unit_mcg, 0..1000, 10, 300),
+    FOLATE("Folate", "mcg", 400, R.string.nutrition_label_folate, R.string.unit_mcg, 0..2000, 50, 1000),
+    OMEGA3("Omega-3", "g", 2, R.string.nutrition_label_omega3, R.string.unit_g, 0..50, 1, 10),
+    CAFFEINE("Caffeine", "mg", 400, R.string.nutrition_label_caffeine, R.string.unit_mg, 0..2000, 25, 1000)
 }
 
 @Serializable
@@ -266,7 +263,7 @@ data class OptionalNutrientGoals(
     }
 
     fun withValue(nutrient: OptionalNutrient, value: Int): OptionalNutrientGoals {
-        val safe = value.coerceIn(0, nutrient.maxCustomGoal)
+        val safe = value.coerceIn(0, nutrient.goalRange.last)
         return when (nutrient) {
             OptionalNutrient.SUGAR -> copy(sugar = safe)
             OptionalNutrient.ADDED_SUGAR -> copy(addedSugar = safe)

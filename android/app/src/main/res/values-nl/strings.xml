@@ -1373,6 +1373,8 @@
     <string name="settings_personal_intro">De basis die Chompass gebruikt om je energiebehoefte en doelen te schatten.</string>
     <string name="settings_picker_custom_placeholder">Waarde in %1$s</string>
     <string name="settings_picker_enter_custom">Eigen waarde invoeren…</string>
+    <string name="settings_picker_confirm_above_title">Ongebruikelijke hoeveelheid</string>
+    <string name="settings_picker_confirm_above_message">Dat is een ongebruikelijk hoge hoeveelheid voor dit doel. Toch opslaan?</string>
     <string name="settings_calorie_below_floor_title">Onder de veilige ondergrens</string>
     <string name="settings_calorie_below_floor_message">Dit ligt onder je geschatte rustverbruik of onder %1$s. Ga alleen verder als een zorgverlener het heeft voorgeschreven.</string>
     <string name="settings_calorie_below_floor_continue">Toch doorgaan</string>

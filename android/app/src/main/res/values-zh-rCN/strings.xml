@@ -1393,6 +1393,8 @@
     <string name="settings_personal_intro">Chompass 用于估算能量需求和目标的基础数据。</string>
     <string name="settings_picker_custom_placeholder">以 %1$s 为单位的值</string>
     <string name="settings_picker_enter_custom">输入自定义值…</string>
+    <string name="settings_picker_confirm_above_title">数值偏高</string>
+    <string name="settings_picker_confirm_above_message">该数值明显高于此目标的常见水平。仍要保存吗？</string>
     <string name="settings_calorie_below_floor_title">低于安全下限</string>
     <string name="settings_calorie_below_floor_message">这低于您估计的静息代谢或 %1$s千卡。仅在医疗专业人士开具处方时继续。</string>
     <string name="settings_calorie_below_floor_continue">仍然继续</string>

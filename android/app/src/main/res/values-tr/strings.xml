@@ -1589,6 +1589,8 @@
     <string name="settings_not_medical_advice">Tıbbi tavsiye değil</string>
     <string name="settings_reset_autobalance">Otomatik Dengelemeye Sıfırla</string>
     <string name="settings_picker_enter_custom">Özel değer gir…</string>
+    <string name="settings_picker_confirm_above_title">Olağandışı miktar</string>
+    <string name="settings_picker_confirm_above_message">Bu hedef için olağandışı yüksek bir miktar. Yine de kaydedilsin mi?</string>
     <string name="settings_calorie_below_floor_title">Güvenli sınırın altında</string>
     <string name="settings_calorie_below_floor_message">Bu, tahmini dinlenme harcamanın veya %1$s\'in altında. Yalnızca bir sağlık uzmanı önerdiyse devam et.</string>
     <string name="settings_calorie_below_floor_continue">Yine de devam et</string>

@@ -1591,6 +1591,8 @@
     <string name="settings_not_medical_advice">Nie porada medyczna</string>
     <string name="settings_reset_autobalance">Resetuj do auto-balansu</string>
     <string name="settings_picker_enter_custom">Wpisz własną wartość…</string>
+    <string name="settings_picker_confirm_above_title">Nietypowa ilość</string>
+    <string name="settings_picker_confirm_above_message">To nietypowo wysoka ilość dla tego celu. Zapisać mimo to?</string>
     <string name="settings_calorie_below_floor_title">Poniżej bezpiecznego minimum</string>
     <string name="settings_calorie_below_floor_message">To poniżej szacowanego spoczynkowego wydatku energetycznego lub 1 200 %1$s. Kontynuuj tylko, jeśli zalecił to specjalista zdrowia.</string>
     <string name="settings_calorie_below_floor_continue">Kontynuuj mimo to</string>

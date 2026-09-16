@@ -2317,6 +2317,8 @@
     <string name="settings_not_medical_advice">Not medical advice</string>
     <string name="settings_reset_autobalance">Reset to Auto-balance</string>
     <string name="settings_picker_enter_custom">Enter custom value…</string>
+    <string name="settings_picker_confirm_above_title">Unusual amount</string>
+    <string name="settings_picker_confirm_above_message">That\'s an unusually high amount for this goal. Save anyway?</string>
     <string name="settings_calorie_below_floor_title">Below the safety floor</string>
     <string name="settings_calorie_below_floor_message">This is below your estimated resting burn or %1$s. Only continue if a clinician prescribed it.</string>
     <string name="settings_calorie_below_floor_continue">Continue anyway</string>

@@ -10,8 +10,11 @@ import androidx.compose.ui.semantics.SemanticsNode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsNodeInteraction
+import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.chompass.ui.components.NumericWheelPicker
@@ -36,8 +39,9 @@ import org.robolectric.annotation.GraphicsMode
  *    grid before the first scroll.
  *  - D1: value-editing sheets show an explicit Cancel beside the gradient
  *    Save (AddWeightDialog pairing); scrim/back keep dismissing as Cancel.
- *  - Custom entry: shown only where the host's maxCustomGoal extends beyond
- *    the wheel range — tap-to-type already covers any in-range value.
+ *  - Custom entry: gone — tap-to-type enters any value the host range allows.
+ *  - Soft maxima: hosts may ask for confirmation when the saved value leaves
+ *    the usual envelope (optional-nutrient tolerable upper intakes).
  *  - Sizing: a bounded wheel (NutritionPickerSheet passes 120 dp) must keep
  *    host-side siblings beside it — the chrome used to fillMaxWidth through
  *    the caller's modifier and starved the unit label to zero width.
@@ -148,11 +152,10 @@ class WheelPickerA11yTest {
         assert(unit.width > 0f) { "unit label must keep nonzero width" }
     }
 
-    /** Tap-to-type already sets any in-range value, so the custom-entry link
-     *  is only shown when the host's maxCustomGoal extends beyond the wheel
-     *  range (therapeutic vitamin D doses etc.). */
+    /** Tap-to-type enters any value the host range allows; the separate
+     *  custom-entry field is gone. */
     @Test
-    fun customEntryHiddenWhenCeilingMatchesRange() {
+    fun customEntryLinkIsGone() {
         composeRule.setContent {
             MaterialTheme {
                 NutritionPickerSheet(
@@ -161,7 +164,6 @@ class WheelPickerA11yTest {
                     currentValue = 1917,
                     range = 1200..3500,
                     step = 50,
-                    maxCustomGoal = 3500,
                     onSave = {},
                     onDismiss = {},
                 )
@@ -170,8 +172,11 @@ class WheelPickerA11yTest {
         composeRule.onNodeWithText("Enter custom value", substring = true).assertDoesNotExist()
     }
 
+    /** Soft maxima (optional-nutrient tolerable upper intakes): saving above
+     *  the line asks once, and confirming commits the value. */
     @Test
-    fun customEntryShownWhenCeilingExtendsRange() {
+    fun saveAboveSoftMaxAsksForConfirmation() {
+        var saved = -1
         composeRule.setContent {
             MaterialTheme {
                 NutritionPickerSheet(
@@ -180,12 +185,18 @@ class WheelPickerA11yTest {
                     currentValue = 40,
                     range = 0..100,
                     step = 5,
-                    maxCustomGoal = 250,
-                    onSave = {},
+                    confirmAbove = 20,
+                    onSave = { saved = it },
                     onDismiss = {},
                 )
             }
         }
-        composeRule.onNodeWithText("Enter custom value", substring = true).assertExists()
+
+        composeRule.onNodeWithText("Save").performClick()
+        composeRule.onNodeWithText("Unusual amount").assertExists()
+        assert(saved == -1) { "nothing may save before the confirmation" }
+
+        composeRule.onAllNodesWithText("Save").onLast().performClick()
+        assert(saved == 40) { "confirming must commit the shown value, got $saved" }
     }
 }

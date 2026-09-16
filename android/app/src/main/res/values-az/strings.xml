@@ -1391,6 +1391,8 @@ bilirsən?</string>
     <string name="settings_personal_intro">Chompass-ın enerji ehtiyaclarını və məqsədlərini təxmin etmək üçün istifadə etdiyi əsaslar.</string>
     <string name="settings_picker_custom_placeholder">%1$s ilə dəyər</string>
     <string name="settings_picker_enter_custom">Fərdi dəyər daxil et…</string>
+    <string name="settings_picker_confirm_above_title">Qeyri-adi miqdar</string>
+    <string name="settings_picker_confirm_above_message">Bu məqsəd üçün adi həddən çox yüksək miqdardır. Yenə də saxlansın?</string>
     <string name="settings_calorie_below_floor_title">Təhlükəsiz həddin altında</string>
     <string name="settings_calorie_below_floor_message">Bu, təxmini istirahət xərcindən və ya %1$s-dan aşağıdır. Yalnız səhiyyə mütəxəssisi tövsiyə edibsə davam et.</string>
     <string name="settings_calorie_below_floor_continue">Yenə də davam et</string>

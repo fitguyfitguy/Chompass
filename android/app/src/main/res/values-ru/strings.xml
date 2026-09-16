@@ -1636,6 +1636,8 @@
     <string name="settings_personal_intro">Базовые данные, которые Chompass использует для оценки потребности в энергии и целей.</string>
     <string name="settings_picker_custom_placeholder">Значение в %1$s</string>
     <string name="settings_picker_enter_custom">Своё значение…</string>
+    <string name="settings_picker_confirm_above_title">Необычное значение</string>
+    <string name="settings_picker_confirm_above_message">Это необычно высокая величина для этой цели. Всё равно сохранить?</string>
     <string name="settings_calorie_below_floor_title">Ниже безопасного минимума</string>
     <string name="settings_calorie_below_floor_message">Это ниже вашего расчетного расхода в покое или 1 200 %1$s. Продолжайте, только если это назначил специалист в области здравоохранения.</string>
     <string name="settings_calorie_below_floor_continue">Всё равно продолжить</string>

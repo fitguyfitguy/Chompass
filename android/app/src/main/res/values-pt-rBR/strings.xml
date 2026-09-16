@@ -1388,6 +1388,8 @@
     <string name="settings_personal_intro">O básico que o Chompass usa para estimar suas necessidades de energia e metas.</string>
     <string name="settings_picker_custom_placeholder">Valor em %1$s</string>
     <string name="settings_picker_enter_custom">Inserir valor personalizado…</string>
+    <string name="settings_picker_confirm_above_title">Quantidade incomum</string>
+    <string name="settings_picker_confirm_above_message">É uma quantidade incomumente alta para esta meta. Salvar mesmo assim?</string>
     <string name="settings_calorie_below_floor_title">Abaixo do mínimo seguro</string>
     <string name="settings_calorie_below_floor_message">Isso está abaixo do seu metabolismo de repouso estimado ou de %1$s. Continue somente se um profissional de saúde receitou.</string>
     <string name="settings_calorie_below_floor_continue">Continuar mesmo assim</string>

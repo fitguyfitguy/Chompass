@@ -1392,6 +1392,8 @@
     <string name="settings_personal_intro">الأساسيات التي يستخدمها Chompass لتقدير احتياجاتك من الطاقة وأهدافك.</string>
     <string name="settings_picker_custom_placeholder">قيمة بوحدة %1$s</string>
     <string name="settings_picker_enter_custom">إدخال قيمة مخصصة…</string>
+    <string name="settings_picker_confirm_above_title">قيمة غير معتادة</string>
+    <string name="settings_picker_confirm_above_message">هذه كمية أعلى بكثير من المعتاد لهذا الهدف. حفظ على أي حال؟</string>
     <string name="settings_calorie_below_floor_title">أقل من الحد الآمن</string>
     <string name="settings_calorie_below_floor_message">هذا أقل من معدل الأيض أثناء الراحة المقدر أو %1$s حرارية. استمر فقط إذا وصفه مختص صحي.</string>
     <string name="settings_calorie_below_floor_continue">المتابعة على أي حال</string>
