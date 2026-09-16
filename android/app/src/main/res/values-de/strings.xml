@@ -1959,7 +1959,7 @@ für dich ein</string>
     <string name="on_device_model_clear">Vom Gerät entfernen</string>
     <string name="on_device_model_clear_footer">Entfernt %1$s an Modelldateien und unfertigen Downloads und entlädt das Modell aus dem Speicher.</string>
     <string name="settings_on_device_headroom">Speicherreserve für On-Device-KI</string>
-    <string name="settings_on_device_headroom_footer">Zusätzlicher Speicher, der reserviert bleibt, bevor das On-Device-Modell läuft: %1$s. Senken Sie das nur, wenn die Analyse abgelehnt wird, obwohl Ihr Telefon freien Speicher hat.</string>
+    <string name="settings_on_device_headroom_footer">Zusätzlicher Speicher, der reserviert bleibt, bevor das On-Device-Modell läuft: %1$s. Senken Sie das nur, wenn die Analyse abgelehnt wird, obwohl Ihr Telefon freien Speicher hat. Zu niedrig eingestellt, kann die Analyse fehlschlagen, das System die App schließen oder das ganze Telefon langsamer werden.</string>
     <string name="settings_custom_models_loading">Modelle werden von Ihrem Server geladen…</string>
     <string name="settings_custom_models_error">Server nicht erreichbar. Die Standardliste wird angezeigt.</string>
     <string name="on_device_model_leftover_footer">%1$s von einem früheren lokalen Download sind noch auf dem Gerät. Öffnen zum Fortsetzen oder Entfernen.</string>
