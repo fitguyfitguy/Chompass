@@ -1110,7 +1110,7 @@
     <string name="on_device_model_clear">Șterge de pe acest dispozitiv</string>
     <string name="on_device_model_clear_footer">Elimină %1$s de fișiere model și descărcări neterminate și eliberează memoria.</string>
     <string name="settings_on_device_headroom">Rezervă de memorie pentru AI pe dispozitiv</string>
-    <string name="settings_on_device_headroom_footer">Memorie suplimentară păstrată în rezervă înainte de rularea modelului pe dispozitiv: %1$s. Scade-o doar dacă analiza este refuzată deși telefonul are memorie liberă.</string>
+    <string name="settings_on_device_headroom_footer">Memorie suplimentară păstrată în rezervă înainte de rularea modelului pe dispozitiv: %1$s. Scade-o doar dacă analiza este refuzată deși telefonul are memorie liberă. Dacă e setată prea jos, analiza poate eșua, sistemul poate închide aplicația sau tot telefonul poate încetini.</string>
     <string name="settings_custom_models_loading">Se încarcă modelele de pe serverul tău…</string>
     <string name="settings_custom_models_error">Nu s-a putut ajunge la server. Se afișează lista implicită.</string>
     <string name="on_device_model_leftover_footer">Pe acest dispozitiv au rămas %1$s dintr-o descărcare locală anterioară. Deschide pentru a relua sau a șterge.</string>

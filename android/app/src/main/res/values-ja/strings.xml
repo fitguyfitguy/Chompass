@@ -1116,7 +1116,7 @@
     <string name="on_device_model_clear">この端末から削除</string>
     <string name="on_device_model_clear_footer">%1$sのモデルファイルと未完了のダウンロードを削除し、メモリからも解放します。</string>
     <string name="settings_on_device_headroom">オンデバイスAIのメモリ余裕</string>
-    <string name="settings_on_device_headroom_footer">オンデバイスモデルの実行前に確保される追加メモリ:%1$s。空きメモリが十分あるのに解析が拒否される場合にのみ下げてください。</string>
+    <string name="settings_on_device_headroom_footer">オンデバイスモデルの実行前に確保される追加メモリ:%1$s。空きメモリが十分あるのに解析が拒否される場合にのみ下げてください。低すぎると、解析に失敗したり、システムがアプリを終了させたり、端末全体が遅くなったりすることがあります。</string>
     <string name="settings_custom_models_loading">サーバーからモデルを読み込んでいます…</string>
     <string name="settings_custom_models_error">サーバーに接続できませんでした。デフォルトのリストを表示します。</string>
     <string name="on_device_model_leftover_footer">以前のオンデバイスダウンロードの%1$sがこの端末に残っています。開いて再開または削除できます。</string>

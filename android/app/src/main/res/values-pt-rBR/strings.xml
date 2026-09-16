@@ -1107,7 +1107,7 @@
     <string name="on_device_model_clear">Limpar deste dispositivo</string>
     <string name="on_device_model_clear_footer">Remove %1$s em arquivos do modelo e downloads incompletos, e libera a memória.</string>
     <string name="settings_on_device_headroom">Reserva de memória para IA no dispositivo</string>
-    <string name="settings_on_device_headroom_footer">Memória extra mantida em reserva antes de o modelo no dispositivo ser executado: %1$s. Reduza apenas se a análise for recusada mesmo com memória livre no telefone.</string>
+    <string name="settings_on_device_headroom_footer">Memória extra mantida em reserva antes de o modelo no dispositivo ser executado: %1$s. Reduza apenas se a análise for recusada mesmo com memória livre no telefone. Se muito baixa, a análise pode falhar, o sistema pode fechar o aplicativo ou o telefone inteiro pode ficar lento.</string>
     <string name="settings_custom_models_loading">Carregando modelos do seu servidor…</string>
     <string name="settings_custom_models_error">Não foi possível conectar ao servidor. Mostrando a lista padrão.</string>
     <string name="on_device_model_leftover_footer">Ainda há %1$s de um download local anterior neste dispositivo. Abra para retomar ou limpar.</string>

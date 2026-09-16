@@ -1079,7 +1079,7 @@
     <string name="on_device_model_clear">Rimuovi da questo dispositivo</string>
     <string name="on_device_model_clear_footer">Elimina %1$s di file del modello e download incompleti, e lo scarica dalla memoria.</string>
     <string name="settings_on_device_headroom">Riserva di memoria per l’IA sul dispositivo</string>
-    <string name="settings_on_device_headroom_footer">Memoria extra tenuta in riserva prima che il modello sul dispositivo venga eseguito: %1$s. Abbassala solo se l’analisi viene rifiutata anche se il telefono ha memoria libera.</string>
+    <string name="settings_on_device_headroom_footer">Memoria extra tenuta in riserva prima che il modello sul dispositivo venga eseguito: %1$s. Abbassala solo se l’analisi viene rifiutata anche se il telefono ha memoria libera. Se troppo bassa, l’analisi può fallire, il sistema può chiudere l’app o tutto il telefono può rallentare.</string>
     <string name="settings_custom_models_loading">Caricamento dei modelli dal tuo server…</string>
     <string name="settings_custom_models_error">Impossibile raggiungere il server. Viene mostrato l’elenco predefinito.</string>
     <string name="on_device_model_leftover_footer">Su questo dispositivo restano %1$s di un download locale precedente. Apri per riprendere o cancellarli.</string>
