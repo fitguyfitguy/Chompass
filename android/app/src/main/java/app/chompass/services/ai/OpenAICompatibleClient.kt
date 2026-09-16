@@ -1,5 +1,6 @@
 package app.chompass.services.ai
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -302,6 +303,11 @@ object OpenAICompatibleClient {
                 throw e
             }
         } catch (e: AiError) {
+            throw e
+        } catch (e: CancellationException) {
+            // Caller gone (sheet dismiss, watchdog): never launch the
+            // non-streaming fallback from a cancelled scope — it would die
+            // at its first suspension anyway after burning a second request.
             throw e
         } catch (_: Throwable) {
             // Endpoint may not support streaming — fall back to the classic path.
