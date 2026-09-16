@@ -4,6 +4,8 @@ import app.chompass.models.BodyMeasurement
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
@@ -19,6 +21,18 @@ class BodyMeasurementRepository(
     private val prefs: PreferencesStore,
     private val sync: app.chompass.sync.SyncRepository? = null,
 ) {
+
+    /**
+     * Serializes read-decide-write sequences (delete/setValue/import) that
+     * span a flow read and a bucket apply: the underlying JsonBucketStore
+     * merges atomically per apply, but the DECISION computed from a stale
+     * read could interleave with a concurrent writer between the two. Every
+     * writer of this dataset goes through this repository, so one mutex
+     * makes decide+apply linearizable. Pure upserts ([addEntry]) need no
+     * lock — [applyMeasurementBucketChanges] merges by id under the store's
+     * own lock.
+     */
+    private val writeMutex = Mutex()
     val entries: Flow<List<BodyMeasurement>> =
         prefs.bodyMeasurements.map { it.sortedBy { e -> e.date } }
 
@@ -32,8 +46,10 @@ class BodyMeasurementRepository(
     }
 
     suspend fun deleteEntry(id: UUID) {
-        val existing = prefs.bodyMeasurements.first().firstOrNull { it.id == id } ?: return
-        prefs.applyMeasurementBucketChanges(removalIdsByMonth = mapOf(existing.month() to setOf(id)))
+        writeMutex.withLock {
+            val existing = prefs.bodyMeasurements.first().firstOrNull { it.id == id } ?: return
+            prefs.applyMeasurementBucketChanges(removalIdsByMonth = mapOf(existing.month() to setOf(id)))
+        }
         sync?.tombstone(id, "measure")
     }
 
@@ -42,7 +58,7 @@ class BodyMeasurementRepository(
      * the first edit on a new day starts a fresh dated snapshot carrying the previous values
      * forward (so the latest entry always holds the user's current full set). `null` clears a site.
      */
-    suspend fun setValue(site: BodyMeasurement.Site, cm: Double?) {
+    suspend fun setValue(site: BodyMeasurement.Site, cm: Double?) = writeMutex.withLock {
         val current = prefs.bodyMeasurements.first()
         val latest = current.maxByOrNull { it.date }
         val zone = ZoneId.systemDefault()
@@ -80,13 +96,13 @@ class BodyMeasurementRepository(
      * the same file is a no-op. Empty snapshots are skipped. Returns entries added or
      * updated.
      */
-    suspend fun importFromFile(entries: List<BodyMeasurement>): Int {
+    suspend fun importFromFile(entries: List<BodyMeasurement>): Int = writeMutex.withLock {
         val incoming = entries.filter { it.hasAnyValue }
         if (incoming.isEmpty()) return 0
         val (merged, changed) = mergeMeasurementsById(prefs.bodyMeasurements.first(), incoming)
         if (changed == 0) return 0
         prefs.setBodyMeasurements(merged)
-        return changed
+        changed
     }
 
     suspend fun replaceAll(entries: List<BodyMeasurement>) {

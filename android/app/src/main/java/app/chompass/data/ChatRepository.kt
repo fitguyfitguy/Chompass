@@ -13,8 +13,7 @@ class ChatRepository(private val prefs: PreferencesStore) {
     val messages: Flow<List<ChatMessage>> = prefs.chatHistory
 
     suspend fun append(message: ChatMessage) {
-        val current = prefs.chatHistory.first()
-        prefs.setChatHistory(current + message)
+        prefs.editListPref(Keys.CHAT_HISTORY, ChatMessage.serializer()) { it + message }
     }
 
     suspend fun replaceAll(messages: List<ChatMessage>) {
