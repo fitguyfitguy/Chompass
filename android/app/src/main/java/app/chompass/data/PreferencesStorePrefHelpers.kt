@@ -79,7 +79,13 @@ internal fun <T> PreferencesStore.objectPref(
     key: Preferences.Key<String>,
     serializer: KSerializer<T>,
 ): Flow<T?> = dataStore.data.map { prefs ->
-    prefs[key]?.let { runCatching { json.decodeFromString(serializer, it) }.getOrNull() }
+    prefs[key]?.let { raw ->
+        runCatching { json.decodeFromString(serializer, raw) }
+            .onFailure { e ->
+                Log.w(TAG, "Undecodable object pref '${key.name}' — treating as null until it is preserved on next write", e)
+            }
+            .getOrNull()
+    }
 }
 
 internal suspend fun <T> PreferencesStore.setObjectPref(
