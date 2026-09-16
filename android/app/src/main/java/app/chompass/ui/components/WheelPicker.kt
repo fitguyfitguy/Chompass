@@ -77,7 +77,10 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.SemanticsProperties
 
 import kotlin.math.roundToInt
 
@@ -168,9 +171,13 @@ fun <T> WheelPicker(
             listState.scrollToItem(targetIndex)
         }
     }
-
+    // A11y (audit H1): focus on the wheel container announces the live center
+    // value as the state, so TalkBack reads the picker without scrolling it.
+    val currentStateLabel = label(selected)
     Box(
-        modifier = modifier.height(ROW_HEIGHT),
+        modifier = modifier
+            .height(ROW_HEIGHT)
+            .semantics { stateDescription = currentStateLabel },
         contentAlignment = Alignment.Center
     ) {
         // iOS UIPickerView paints a single rounded "capsule" tint behind the
@@ -192,6 +199,7 @@ fun <T> WheelPicker(
             items(items.size, key = { items[it] as Any }) { index ->
                 val item = items[index]
                 val isSelected = index == centerIndex
+                val rowText = label(item)
                 val alpha by animateFloatAsState(
                     targetValue = if (isSelected) 1f else 0.6f,
                     label = "wheelAlpha"
@@ -214,7 +222,14 @@ fun <T> WheelPicker(
                             } else {
                                 Modifier
                             }
-                        ),
+                        )
+                        // A11y (audit H1): each row announces its label and
+                        // selected state; contentDescription replaces the bare
+                        // text announcement TalkBack had before.
+                        .semantics {
+                            this[SemanticsProperties.Selected] = isSelected
+                            contentDescription = rowText
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
