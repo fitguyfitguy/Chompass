@@ -33,6 +33,7 @@ import app.chompass.services.FoodPhotoSession
 import app.chompass.services.GoalJournalService
 import app.chompass.services.LauncherShortcuts
 import app.chompass.services.NotificationService
+import app.chompass.services.PerfLog
 import app.chompass.services.ShortcutEntryAction
 import app.chompass.services.TestDataSeeder
 import app.chompass.services.WaterReminderPlanner
@@ -222,7 +223,13 @@ class ChompassApp : Application() {
 class AppContainer(app: ChompassApp) {
     val appContext = app.applicationContext
     val prefs = PreferencesStore(app)
-    val keyStore: KeyStore by lazy(LazyThreadSafetyMode.NONE) { KeyStore(app) }
+    val keyStore: KeyStore by lazy(LazyThreadSafetyMode.NONE) {
+        // Measure-only this pass: eager init is forced by the four keyStore
+        // ctor consumers below (the lazy never wins). If the cold-start ×5
+        // capture shows ≥50 ms, provider-threading through those ctors is a
+        // separate follow-up.
+        PerfLog.measure("coldStart", "keyStoreInit") { KeyStore(app) }
+    }
     val imageStore = FoodImageStore(app)
     /** Analysis queue + prompt history (Codeberg #53): run failed/staged prompts later. */
     val analysisQueue = AnalysisQueueStore(app)
