@@ -15,8 +15,6 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import app.chompass.ChompassApp
@@ -491,8 +489,17 @@ class ReminderReceiver : BroadcastReceiver() {
         // reminders keep their existing reboot gap (out of scope; the receiver is
         // the natural home for a follow-up that re-arms them too).
         if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
+            // goAsync only buys ~10s; an unmanaged CoroutineScope could be
+            // killed mid re-arm and is never cancelled. The application's
+            // process-lifetime scope keeps the work alive past onReceive and
+            // finishes the broadcast result when the block completes.
+            val appScope = (context.applicationContext as? ChompassApp)?.applicationScope
             val pendingResult = goAsync()
-            CoroutineScope(Dispatchers.IO).launch {
+            if (appScope == null) {
+                pendingResult.finish()
+                return
+            }
+            appScope.launch {
                 try {
                     val container = (context.applicationContext as? ChompassApp)?.container
                     if (container != null) {
@@ -522,8 +529,14 @@ class ReminderReceiver : BroadcastReceiver() {
             (request == NotificationService.REQUEST_FASTING_AUTO_START ||
                 request == NotificationService.REQUEST_FASTING_AUTO_END)
         ) {
+            // Process-lifetime scope + goAsync finish — see the BOOT path.
+            val appScope = (context.applicationContext as? ChompassApp)?.applicationScope
             val pendingResult = goAsync()
-            CoroutineScope(Dispatchers.IO).launch {
+            if (appScope == null) {
+                pendingResult.finish()
+                return
+            }
+            appScope.launch {
                 try {
                     val container = (context.applicationContext as? ChompassApp)?.container
                     if (container != null) {
@@ -542,8 +555,14 @@ class ReminderReceiver : BroadcastReceiver() {
         // Silent midnight widget rollover: rewrite the snapshot to today's data
         // and re-arm the chain. No notification is posted (issue #16).
         if (channel == NotificationService.CHANNEL_WIDGET_MIDNIGHT) {
+            // Process-lifetime scope + goAsync finish — see the BOOT path.
+            val appScope = (context.applicationContext as? ChompassApp)?.applicationScope
             val pendingResult = goAsync()
-            CoroutineScope(Dispatchers.IO).launch {
+            if (appScope == null) {
+                pendingResult.finish()
+                return
+            }
+            appScope.launch {
                 try {
                     val container = (context.applicationContext as? ChompassApp)?.container
                     container?.widgetSnapshotWriter?.refresh()
@@ -562,8 +581,14 @@ class ReminderReceiver : BroadcastReceiver() {
         val title = intent.getStringExtra(NotificationService.EXTRA_TITLE) ?: return
         val text = intent.getStringExtra(NotificationService.EXTRA_TEXT) ?: return
 
+        // Process-lifetime scope + goAsync finish — see the BOOT path.
+        val appScope = (context.applicationContext as? ChompassApp)?.applicationScope
         val pendingResult = goAsync()
-        CoroutineScope(Dispatchers.IO).launch {
+        if (appScope == null) {
+            pendingResult.finish()
+            return
+        }
+        appScope.launch {
             try {
                 // Water reminders recompute the cadence at fire time, so the plan
                 // reflects any entries logged since this alarm was armed.
@@ -684,9 +709,12 @@ class ReminderReceiver : BroadcastReceiver() {
                         NotificationService(context).cancelWaterReminder()
                     }
                 } else {
-                    // Re-arm for +24h so the reminder fires daily (even when streak was skipped).
+                    // Re-arm at the next local midnight so the reminder fires
+                    // daily (even when the streak post was skipped) and stays
+                    // anchored to calendar days instead of drifting by the
+                    // time between fires.
                     val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                    val nextFire = System.currentTimeMillis() + 24L * 60 * 60 * 1000
+                    val nextFire = nextMidnightMillis()
                     val reIntent = Intent(context, ReminderReceiver::class.java).apply { putExtras(intent) }
                     val pi = PendingIntent.getBroadcast(
                         context, request, reIntent,
