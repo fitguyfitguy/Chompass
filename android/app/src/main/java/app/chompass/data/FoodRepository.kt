@@ -117,6 +117,13 @@ class FoodRepository(
 ) {
     /** One-shot gate so concurrent first logs cannot double-fire the review prompt. */
     private val reviewPromptGate = AtomicBoolean(false)
+
+    /**
+     * One completed migration pass is enough: afterwards favorites only
+     * change through this repository, which always writes both keys. Without
+     * the memo every favorite op paid 2-3 full snapshot reads.
+     */
+    private val favoritesMigrated = AtomicBoolean(false)
     val entries: Flow<List<FoodEntry>> = prefs.foodEntries
 
     /**
@@ -371,8 +378,7 @@ class FoodRepository(
         val idx = current.indexOfFirst { it.favoriteKey == entry.favoriteKey }
         if (idx >= 0) {
             val removed = current.removeAt(idx)
-            prefs.setFavoriteFoodEntries(current)
-            prefs.setFavoriteKeys(current.map { it.favoriteKey }.toSet())
+            prefs.setFavoritesAtomic(current)
             sync?.tombstone(removed.id, "favorite")
             pruneOrphanedImages()
             return
@@ -382,8 +388,7 @@ class FoodRepository(
             current.removeAll { it.id == entry.id }
             current.add(entry)
         }
-        prefs.setFavoriteFoodEntries(current)
-        prefs.setFavoriteKeys(current.map { it.favoriteKey }.toSet())
+        prefs.setFavoritesAtomic(current)
         sync?.touch(entry.id, "favorite")
     }
 
@@ -435,8 +440,7 @@ class FoodRepository(
         val storedId = current[idx].id
         val stored = updated.copy(id = storedId, recipeLogId = null)
         current[idx] = stored
-        prefs.setFavoriteFoodEntries(current)
-        prefs.setFavoriteKeys(current.map { it.favoriteKey }.toSet())
+        prefs.setFavoritesAtomic(current)
         sync?.touch(storedId, "favorite")
         if (stored.imageFilename != original.imageFilename) {
             deleteImageIfUnreferenced(original.imageFilename)
@@ -455,6 +459,14 @@ class FoodRepository(
      * the legacy key set to the name-only identity.
      */
     private suspend fun ensureFavoritesMigrated() {
+        if (favoritesMigrated.get()) return
+        doFavoritesMigration()
+        // Only a completed pass counts: a thrown migration is retried on
+        // the next favorite op rather than permanently skipped.
+        favoritesMigrated.set(true)
+    }
+
+    private suspend fun doFavoritesMigration() {
         val ordered = prefs.favoriteFoodEntries.first()
         if (ordered.isEmpty()) {
             val legacy = prefs.favoriteKeys.first()
@@ -464,16 +476,14 @@ class FoodRepository(
                 all.firstOrNull { matchesFavoriteIdentity(it, key) }
             }.let { dedupeFavoritesByIdentity(it) }
             if (seeded.isEmpty()) return
-            prefs.setFavoriteFoodEntries(seeded)
-            prefs.setFavoriteKeys(seeded.map { it.favoriteKey }.toSet())
+            prefs.setFavoritesAtomic(seeded)
             return
         }
         val deduped = dedupeFavoritesByIdentity(ordered)
         val newKeys = deduped.map { it.favoriteKey }.toSet()
         val oldKeys = prefs.favoriteKeys.first()
         if (deduped.size != ordered.size || newKeys != oldKeys) {
-            prefs.setFavoriteFoodEntries(deduped)
-            prefs.setFavoriteKeys(newKeys)
+            prefs.setFavoritesAtomic(deduped)
         }
     }
 

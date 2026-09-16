@@ -516,6 +516,8 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setFavoriteKeys(keys: Set<String>) = setFavoriteKeysImpl(keys)
     val favoriteFoodEntries: Flow<List<FoodEntry>> get() = favoriteFoodEntriesImpl
     suspend fun setFavoriteFoodEntries(entries: List<FoodEntry>) = setFavoriteFoodEntriesImpl(entries)
+    /** One-edit write of the favorites list plus its legacy keys mirror. */
+    suspend fun setFavoritesAtomic(entries: List<FoodEntry>) = setFavoritesAtomicImpl(entries)
     val recipes: Flow<List<app.chompass.models.Recipe>> get() = recipesImpl
     suspend fun setRecipes(recipes: List<app.chompass.models.Recipe>) = setRecipesImpl(recipes)
     val pendingFoodAnalysisDraft: Flow<PendingFoodAnalysisDraft?> get() = pendingFoodAnalysisDraftImpl

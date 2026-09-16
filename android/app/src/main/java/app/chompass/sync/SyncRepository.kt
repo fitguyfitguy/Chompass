@@ -270,8 +270,7 @@ class SyncRepository(
             track(wire.id, wire.updatedAt, wire.deletedAt, "favorite")
             wire.entry?.let { reattachLocalFields(it, localFavorites) }
         }
-        prefs.setFavoriteFoodEntries(liveFavorites)
-        prefs.setFavoriteKeys(liveFavorites.map { it.favoriteKey }.toSet())
+        prefs.setFavoritesAtomic(liveFavorites)
 
         val liveWeights = doc.weights.mapNotNull {
             track(it.id, it.updatedAt, it.deletedAt, "weight")
