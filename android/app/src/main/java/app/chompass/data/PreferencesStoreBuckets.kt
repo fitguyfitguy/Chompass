@@ -27,6 +27,13 @@ import java.time.ZoneId
  * files, writes would go to the files, and the old blob would be stranded).
  */
 internal suspend fun PreferencesStore.migrateBucketsToFilesIfNeeded() {
+    // Memoized per process (PreferencesStore.bucketsMigrated): this used to
+    // run a full dataStore read + key scan + two monthsOnDisk() probes on
+    // EVERY cold collect of the bucket-backed flows. One completed pass is
+    // enough — the datasets only change through in-process writers from
+    // then on.
+    if (bucketsMigrated) return
+
     // Pre-bucket-era food history lives in the single `foodEntries` blob; the
     // file migration must never run before the existing bucket migration, or
     // that history would be stranded in a key the file store never reads.
@@ -121,6 +128,10 @@ internal suspend fun PreferencesStore.migrateBucketsToFilesIfNeeded() {
     if (schema < Keys.FOOD_AGGREGATES_SCHEMA_LATEST) {
         dataStore.edit { it[Keys.FOOD_AGGREGATES_SCHEMA] = Keys.FOOD_AGGREGATES_SCHEMA_LATEST }
     }
+
+    // Reached only when the whole migration finished without throwing — a
+    // failed pass must stay un-memoized so the next collect retries it.
+    bucketsMigrated = true
 }
 
 private fun <T> PreferencesStore.decodeListOrEmpty(raw: String, serializer: KSerializer<T>): List<T> =
