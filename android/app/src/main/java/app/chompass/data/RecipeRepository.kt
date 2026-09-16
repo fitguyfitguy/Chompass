@@ -2,7 +2,6 @@ package app.chompass.data
 
 import app.chompass.models.Recipe
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import java.time.Instant
 import java.util.UUID
 
@@ -22,37 +21,44 @@ class RecipeRepository(
     val recipes: Flow<List<Recipe>> = prefs.recipes
 
     suspend fun saveRecipe(recipe: Recipe) {
-        val current = prefs.recipes.first().toMutableList()
-        val idx = current.indexOfFirst { it.id == recipe.id }
-        if (idx >= 0) current[idx] = recipe else current.add(recipe)
-        prefs.setRecipes(current)
+        prefs.editListPref(Keys.RECIPES, Recipe.serializer()) { current ->
+            val next = current.toMutableList()
+            val idx = next.indexOfFirst { it.id == recipe.id }
+            if (idx >= 0) next[idx] = recipe else next.add(recipe)
+            next
+        }
         sync?.touch(recipe.id, "recipe")
     }
 
     /** Upsert by id. Used by Mealie re-import so slugs replace instead of duplicating. */
     suspend fun upsertRecipes(incoming: List<Recipe>) {
         if (incoming.isEmpty()) return
-        val current = prefs.recipes.first().toMutableList()
-        for (recipe in incoming) {
-            val idx = current.indexOfFirst { it.id == recipe.id }
-            if (idx >= 0) current[idx] = recipe else current.add(recipe)
-            sync?.touch(recipe.id, "recipe")
+        prefs.editListPref(Keys.RECIPES, Recipe.serializer()) { current ->
+            val next = current.toMutableList()
+            for (recipe in incoming) {
+                val idx = next.indexOfFirst { it.id == recipe.id }
+                if (idx >= 0) next[idx] = recipe else next.add(recipe)
+            }
+            next
         }
-        prefs.setRecipes(current)
+        for (recipe in incoming) sync?.touch(recipe.id, "recipe")
     }
 
     suspend fun deleteRecipe(recipe: Recipe) {
-        prefs.setRecipes(prefs.recipes.first().filterNot { it.id == recipe.id })
+        prefs.editListPref(Keys.RECIPES, Recipe.serializer()) { current ->
+            current.filterNot { it.id == recipe.id }
+        }
         sync?.tombstone(recipe.id, "recipe")
     }
 
     suspend fun moveRecipe(from: Int, to: Int) {
-        val list = prefs.recipes.first().toMutableList()
-        if (from !in list.indices) return
-        val item = list.removeAt(from)
-        val safeTo = to.coerceIn(0, list.size)
-        list.add(safeTo, item)
-        prefs.setRecipes(list)
+        prefs.editListPref(Keys.RECIPES, Recipe.serializer()) { current ->
+            val list = current.toMutableList()
+            if (from !in list.indices) return@editListPref list
+            val item = list.removeAt(from)
+            list.add(to.coerceIn(0, list.size), item)
+            list
+        }
     }
 
     /**

@@ -75,6 +75,25 @@ internal suspend fun <T> PreferencesStore.setListPref(
     }
 }
 
+/**
+ * Atomic read-modify-write of a JSON list pref: [block] runs inside the
+ * single `dataStore.edit`, so concurrent writers merge against each other's
+ * committed result instead of a stale `first()` read silently losing
+ * updates. An unreadable blob is preserved aside before the write replaces
+ * it, matching [setListPref].
+ */
+internal suspend fun <T> PreferencesStore.editListPref(
+    key: Preferences.Key<String>,
+    serializer: KSerializer<T>,
+    block: (List<T>) -> List<T>,
+) {
+    dataStore.edit { prefs ->
+        val next = block(prefs.decodeList(key, serializer, json))
+        preserveUnreadableList(prefs, key, serializer)
+        prefs[key] = json.encodeToString(ListSerializer(serializer), next)
+    }
+}
+
 internal fun <T> PreferencesStore.objectPref(
     key: Preferences.Key<String>,
     serializer: KSerializer<T>,

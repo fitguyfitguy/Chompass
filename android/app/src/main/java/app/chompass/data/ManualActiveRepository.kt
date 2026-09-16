@@ -17,25 +17,28 @@ class ManualActiveRepository(private val prefs: PreferencesStore) {
             .sumOf { it.calories }
 
     suspend fun add(entry: ManualActiveEntry) {
-        val next = prefs.manualActiveEntries.first() + entry.copy(
+        val normalized = entry.copy(
             name = entry.name.trim().ifEmpty { "Activity" },
             calories = entry.calories.coerceAtLeast(0),
         )
-        prefs.setManualActiveEntries(next)
+        prefs.editListPref(Keys.MANUAL_ACTIVE_ENTRIES, ManualActiveEntry.serializer()) { it + normalized }
     }
 
     suspend fun update(id: String, name: String, calories: Int) {
-        val next = prefs.manualActiveEntries.first().map { entry ->
-            if (entry.id != id) entry
-            else entry.copy(
-                name = name.trim().ifEmpty { "Activity" },
-                calories = calories.coerceAtLeast(0),
-            )
+        prefs.editListPref(Keys.MANUAL_ACTIVE_ENTRIES, ManualActiveEntry.serializer()) { current ->
+            current.map { entry ->
+                if (entry.id != id) entry
+                else entry.copy(
+                    name = name.trim().ifEmpty { "Activity" },
+                    calories = calories.coerceAtLeast(0),
+                )
+            }
         }
-        prefs.setManualActiveEntries(next)
     }
 
     suspend fun delete(id: String) {
-        prefs.setManualActiveEntries(prefs.manualActiveEntries.first().filterNot { it.id == id })
+        prefs.editListPref(Keys.MANUAL_ACTIVE_ENTRIES, ManualActiveEntry.serializer()) { current ->
+            current.filterNot { it.id == id }
+        }
     }
 }
