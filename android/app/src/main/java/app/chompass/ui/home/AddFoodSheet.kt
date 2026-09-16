@@ -148,6 +148,8 @@ fun AddFoodSheet(
     /** Meal planning mode: saved suggestion rows carry a Plan action. */
     planningMode: Boolean = false,
     onPlanSuggestion: (FoodSuggestion) -> Unit = {},
+    /** Plan week canvas (meal planning mode only). */
+    onPlanWeek: () -> Unit = {},
     onAnalyzeQuery: (String) -> Unit = {},
 ) {
     // Two anchors, and a content height that never changes. The sheet animates
@@ -246,6 +248,7 @@ fun AddFoodSheet(
             onReviewSuggestion = { s -> onDismiss(); onReviewSuggestion(s) },
             planningMode = planningMode,
             onPlanSuggestion = { s -> onDismiss(); onPlanSuggestion(s) },
+            onPlanWeek = { onDismiss(); onPlanWeek() },
             onAnalyzeQuery = { text -> onDismiss(); onAnalyzeQuery(text) },
         )
     }
@@ -323,6 +326,8 @@ internal fun AddFoodSheetContent(
     /** Meal planning mode: saved suggestion rows carry a Plan action. */
     planningMode: Boolean = false,
     onPlanSuggestion: (FoodSuggestion) -> Unit = {},
+    /** Plan week canvas (meal planning mode only). */
+    onPlanWeek: () -> Unit = {},
     onAnalyzeQuery: (String) -> Unit = {},
     autoFocusQuery: Boolean = false,
 ) {
@@ -417,6 +422,8 @@ internal fun AddFoodSheetContent(
             onGrounded = onGrounded,
             queuePendingCount = queuePendingCount,
             groundedEnabled = GroundedEntryFeature.ENABLED,
+            planningMode = planningMode,
+            onPlanWeek = onPlanWeek,
             aiFeaturesEnabled = aiFeaturesEnabled,
             barcodeEnabled = barcodeEnabled,
             trackersPillVisible = hasTrackers,

@@ -125,6 +125,9 @@ import kotlin.math.roundToInt
  */
 @Composable
 internal fun AddFoodQueryRow(
+    /** Meal planning mode: opens the week planner from the More menu. */
+    planningMode: Boolean = false,
+    onPlanWeek: () -> Unit = {},
     query: String,
     onQueryChange: (String) -> Unit,
     onPhoto: () -> Unit,
@@ -262,6 +265,9 @@ internal fun AddFoodQueryRow(
                 queuePendingCount = queuePendingCount,
                 aiFeaturesEnabled = aiFeaturesEnabled,
                 groundedEnabled = groundedEnabled,
+                /** Meal planning mode: opens the week planner from the menu. */
+                planningMode = planningMode,
+                onPlanWeek = onPlanWeek,
                 modifier = Modifier.weight(1f),
             )
             if (barcodeEnabled) {
@@ -966,6 +972,9 @@ private fun AddFoodMoreButton(
     queuePendingCount: Int,
     aiFeaturesEnabled: Boolean,
     groundedEnabled: Boolean,
+    /** Meal planning mode: opens the week planner from the menu. */
+    planningMode: Boolean = false,
+    onPlanWeek: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var open by remember { mutableStateOf(false) }
@@ -1005,6 +1014,12 @@ private fun AddFoodMoreButton(
                 label = stringResource(R.string.home_menu_saved_meals),
                 leadingIcon = Icons.Filled.Bookmarks,
             ) { open = false; onSavedMeals() }
+            if (planningMode) {
+                SheetGlassDropdownMenuItem(
+                    label = stringResource(R.string.plan_week_title),
+                    leadingIcon = Icons.Outlined.EventAvailable,
+                ) { open = false; onPlanWeek() }
+            }
             SheetGlassDropdownMenuItem(
                 label = stringResource(R.string.home_menu_manual_entry),
                 leadingIcon = Icons.Filled.DriveFileRenameOutline,
@@ -1043,7 +1058,7 @@ private fun suggestionEmoji(suggestion: FoodSuggestion): String? = when (suggest
     is FoodSuggestion.DatabaseHit -> null
 }
 
-private fun suggestionCalories(suggestion: FoodSuggestion): Int = when (suggestion) {
+internal fun suggestionCalories(suggestion: FoodSuggestion): Int = when (suggestion) {
     is FoodSuggestion.SavedFood -> suggestion.template.calories
     is FoodSuggestion.SavedRecipe -> suggestion.recipe.totalCalories
     is FoodSuggestion.DatabaseHit -> suggestion.result.displayCalories

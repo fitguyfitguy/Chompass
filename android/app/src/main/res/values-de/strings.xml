@@ -2484,6 +2484,9 @@ für dich ein</string>
     <string name="copy_from">Kopieren von</string>
 
     <string name="copy_to">Kopieren nach</string>
+    <string name="plan_week_title">Woche planen</string>
+    <string name="plan_week_range">%1$s – %2$s</string>
+    <string name="plan_week_add_meal">Mahlzeit hinzufügen</string>
     <string name="plan_pick_day_title">Tag wählen</string>
 
     <string name="copy_hint">Die Lebensmittel werden nach %1$s kopiert. Die ursprünglichen Einträge bleiben unverändert.</string>
@@ -2698,6 +2701,9 @@ für dich ein</string>
     <string name="cd_discard_recovered_review">Wiederhergestellte Analyse verwerfen</string>
     <string name="cd_favorited">Als Favorit markiert</string>
     <string name="cd_plan_suggestion">Für einen Tag planen</string>
+    <string name="cd_plan_week">Wochenplaner öffnen</string>
+    <string name="cd_plan_week_prev">Vorherige Woche</string>
+    <string name="cd_plan_week_next">Nächste Woche</string>
 
     <string name="cd_move_up">Nach oben verschieben</string>
 

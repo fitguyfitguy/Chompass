@@ -34,6 +34,7 @@ import app.chompass.services.update.AndroidUpdateChecker
 import app.chompass.services.update.AndroidUpdateState
 import app.chompass.ui.coach.CoachScreen
 import app.chompass.ui.home.HomeScreen
+import app.chompass.ui.home.PlanWeekScreen
 import app.chompass.ui.onboarding.OnboardingScreen
 import app.chompass.ui.progress.BodyMeasurementsScreen
 import app.chompass.ui.progress.ProgressScreen
@@ -240,6 +241,9 @@ fun ChompassNavHost(
                                 restoreState = true
                             }
                         },
+                        onPlanWeek = {
+                            nav.navigate(ChompassRoutes.PLAN_WEEK) { launchSingleTop = true }
+                        },
                         onOpenDayTypes = {
                             nav.navigate(ChompassRoutes.SETTINGS_DAY_TYPES) {
                                 popUpTo(ChompassRoutes.HOME) { saveState = true }
@@ -248,6 +252,9 @@ fun ChompassNavHost(
                             }
                         },
                     )
+                }
+                composable(ChompassRoutes.PLAN_WEEK) {
+                    PlanWeekScreen(container = container, nav = nav)
                 }
                 composable(ChompassRoutes.PROGRESS) {
                     ProgressScreen(
