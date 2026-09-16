@@ -1,14 +1,20 @@
 package app.chompass.services.ai
 
+import android.app.Application
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 /**
  * #103: model discovery on custom OpenAI-compatible endpoints. URL shape
  * (custom base URLs already carry /v1) and the tolerant parser (blank ids
  * skipped, malformed body -> empty, never a crash) are the contract.
  */
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [33], application = Application::class)
 class OpenAiModelsClientTest {
     @Test
     fun parseModels_happyPath() {

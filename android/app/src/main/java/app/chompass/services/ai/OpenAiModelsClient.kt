@@ -1,5 +1,6 @@
 package app.chompass.services.ai
 
+import android.util.Log
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
@@ -12,12 +13,18 @@ import java.util.concurrent.TimeUnit
  * (LM Studio, llama.cpp) are the common case.
  */
 object OpenAiModelsClient {
+    private const val TAG = "OpenAiModels"
+
     /** Custom base URLs already include /v1 — no stripping, unlike Ollama's tagsUrl. */
     fun modelsUrl(baseUrl: String): String =
         AiHttp.normalizeCustomBaseUrl(baseUrl).trimEnd('/') + "/models"
 
     fun parseModels(body: String): List<String> {
-        val json = runCatching { JSONObject(body) }.getOrNull() ?: return emptyList()
+        val json = runCatching { JSONObject(body) }
+            .onFailure { e ->
+                Log.w(TAG, "Undecodable /models body '${body.take(120)}' — returning no models", e)
+            }
+            .getOrNull() ?: return emptyList()
         val data = json.optJSONArray("data") ?: return emptyList()
         val out = ArrayList<String>(data.length())
         for (i in 0 until data.length()) {

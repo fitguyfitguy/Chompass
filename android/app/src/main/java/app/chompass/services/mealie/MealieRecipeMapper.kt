@@ -1,5 +1,6 @@
 package app.chompass.services.mealie
 
+import android.util.Log
 import app.chompass.models.MealType
 import app.chompass.models.Recipe
 import app.chompass.models.RecipeIngredient
@@ -15,13 +16,19 @@ import java.util.UUID
  * nutrition is copied only when Mealie sends parseable numbers.
  */
 object MealieRecipeMapper {
+    private const val TAG = "MealieRecipes"
+
     fun recipeIdForSlug(slug: String): UUID =
         UUID.nameUUIDFromBytes("${Recipe.MEALIE_SOURCE_PREFIX}$slug".toByteArray(StandardCharsets.UTF_8))
 
     fun sourceForSlug(slug: String): String = "${Recipe.MEALIE_SOURCE_PREFIX}$slug"
 
     fun fromDetailJson(body: String): Recipe? {
-        val obj = runCatching { JSONObject(body) }.getOrNull() ?: return null
+        val obj = runCatching { JSONObject(body) }
+            .onFailure { e ->
+                Log.w(TAG, "Undecodable recipe detail body '${body.take(120)}' — treating as missing", e)
+            }
+            .getOrNull() ?: return null
         return fromDetail(obj)
     }
 
@@ -48,7 +55,11 @@ object MealieRecipeMapper {
     }
 
     fun parseSummaryList(body: String): List<MealieRecipeSummary> {
-        val root = runCatching { JSONObject(body) }.getOrNull() ?: return emptyList()
+        val root = runCatching { JSONObject(body) }
+            .onFailure { e ->
+                Log.w(TAG, "Undecodable recipe list body '${body.take(120)}' — returning no recipes", e)
+            }
+            .getOrNull() ?: return emptyList()
         val items = root.optJSONArray("items") ?: root.optJSONArray("data") ?: return emptyList()
         val out = ArrayList<MealieRecipeSummary>(items.length())
         for (i in 0 until items.length()) {

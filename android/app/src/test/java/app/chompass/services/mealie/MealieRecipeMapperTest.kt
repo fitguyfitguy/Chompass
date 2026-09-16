@@ -3,13 +3,19 @@ package app.chompass.services.mealie
 import app.chompass.models.FoodSource
 import app.chompass.models.Recipe
 import org.json.JSONObject
+import android.app.Application
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import java.time.Instant
 
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [33], application = Application::class)
 class MealieRecipeMapperTest {
     @Test
     fun fromDetail_camelCaseNutritionAndDisplay() {
