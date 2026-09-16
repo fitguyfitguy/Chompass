@@ -9,6 +9,7 @@ import app.chompass.data.CaffeineRepository
 import app.chompass.data.PreferencesStore
 import app.chompass.data.ProfileRepository
 import app.chompass.models.FoodEntry
+import app.chompass.models.nutritionTotals
 import app.chompass.models.CaffeineEntry
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.HomeCalorieDisplay
@@ -297,16 +298,17 @@ class WidgetSnapshotWriter(
                 waterRepository = waterRepository,
                 weatherRepository = weatherRepository,
             )
+            val totals = todaysEntries.nutritionTotals()
             val snapshot = WidgetSnapshot(
                 date = Instant.now(),
                 dayStart = WidgetSnapshot.todayStart(),
-                calories = todaysEntries.sumOf { it.calories },
+                calories = totals.calories,
                 calorieGoal = effectiveCalories,
-                protein = todaysEntries.sumOf { it.protein },
+                protein = totals.protein,
                 proteinGoal = resolvedToday.targets.proteinG,
-                carbs = todaysEntries.sumOf { it.carbs },
+                carbs = totals.carbs,
                 carbsGoal = resolvedToday.targets.carbsG,
-                fat = todaysEntries.sumOf { it.fat },
+                fat = totals.fat,
                 fatGoal = resolvedToday.targets.fatG,
                 homeNutrients = selection.map { nutrient ->
                     WidgetNutrient(

@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.models.LocaleFormat
 import app.chompass.models.EnergyFormat
+import app.chompass.models.GoalFormulaReference
 import app.chompass.models.MacroPlanResolver
 import app.chompass.services.ai.GoalRecalcTier
 import app.chompass.services.ai.ImpliedWithheldReason
@@ -134,7 +135,7 @@ internal fun RecalcResultSheet(
                 SheetInfoRow(
                     stringResource(
                         R.string.recalc_sheet_tdee_row,
-                        formatMultiplier(report.activityMultiplier),
+                        GoalFormulaReference.formatMultiplier(report.activityMultiplier),
                         LocaleFormat.integer(EnergyFormat.quantity(report.tdee, unit)),
                         unitLabel,
                     ),
@@ -297,10 +298,6 @@ private fun SheetInfoRow(text: String, dim: Boolean = false) {
         ),
     )
 }
-
-/** "1.55" / "1.375" — matches the prompt's multiplier formatting (no trailing zeros). */
-private fun formatMultiplier(value: Double): String =
-    if (value % 1.0 == 0.0) value.toInt().toString() else value.toString()
 
 /** Signed integer for deltas: "+120" / "-120" / "0". */
 private fun signed(value: Int): String =

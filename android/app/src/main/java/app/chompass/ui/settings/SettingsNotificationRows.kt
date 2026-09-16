@@ -25,6 +25,7 @@ import app.chompass.R
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.util.clockTimePattern
+import app.chompass.ui.util.formatMinutesOfDay
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -174,10 +175,7 @@ internal fun NotificationTypeRows(
 
 @Composable
 private fun drinkingWindowSummary(ui: SettingsUiState, context: android.content.Context): String {
-    val formatter = remember(context) {
-        DateTimeFormatter.ofPattern(clockTimePattern(context), Locale.getDefault())
-    }
-    fun fmt(minutes: Int): String = LocalTime.of(minutes / 60, minutes % 60).format(formatter)
+    fun fmt(minutes: Int): String = formatMinutesOfDay(context, minutes)
     return stringResource(
         R.string.settings_water_drinking_window_summary,
         fmt(ui.waterAwakeStartMinutes),

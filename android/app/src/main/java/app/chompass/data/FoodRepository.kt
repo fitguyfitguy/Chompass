@@ -573,39 +573,7 @@ class FoodRepository(
         val restored = external.mapNotNull { record ->
             val id = manager.ownRecordId(record.clientRecordId) ?: return@mapNotNull null
             if (id in existingIds) return@mapNotNull null
-            val name = record.name?.trim().orEmpty()
-            if (name.isEmpty()) return@mapNotNull null
-            FoodEntry(
-                id = id,
-                name = name,
-                calories = (record.calories ?: 0.0).roundToInt(),
-                protein = record.protein ?: 0.0,
-                carbs = record.carbs ?: 0.0,
-                fat = record.fat ?: 0.0,
-                timestamp = record.time,
-                source = FoodSource.MANUAL,
-                mealType = record.mealType.id,
-                sugar = record.sugar,
-                fiber = record.fiber,
-                saturatedFat = record.saturatedFat,
-                monounsaturatedFat = record.monounsaturatedFat,
-                polyunsaturatedFat = record.polyunsaturatedFat,
-                cholesterol = record.cholesterol,
-                sodium = record.sodium,
-                potassium = record.potassium,
-                transFat = record.transFat,
-                calcium = record.calcium,
-                iron = record.iron,
-                magnesium = record.magnesium,
-                zinc = record.zinc,
-                vitaminA = record.vitaminA,
-                vitaminC = record.vitaminC,
-                vitaminD = record.vitaminD,
-                vitaminB12 = record.vitaminB12,
-                vitaminE = record.vitaminE,
-                vitaminK = record.vitaminK,
-                folate = record.folate
-            )
+            externalToFoodEntry(record, id)
         }
         if (restored.isEmpty()) return
         prefs.applyFoodEntryBucketChanges(upsertsByMonth = restored.groupBy { it.month() })
@@ -623,37 +591,7 @@ class FoodRepository(
         val incoming = external.mapNotNull { record ->
             val name = record.name?.trim().orEmpty()
             if (name.isEmpty()) return@mapNotNull null
-            FoodEntry(
-                id = externalId(record.clientRecordId, record.recordId, record.time),
-                name = name,
-                calories = (record.calories ?: 0.0).roundToInt(),
-                protein = record.protein ?: 0.0,
-                carbs = record.carbs ?: 0.0,
-                fat = record.fat ?: 0.0,
-                timestamp = record.time,
-                source = FoodSource.MANUAL,
-                mealType = record.mealType.id,
-                sugar = record.sugar,
-                fiber = record.fiber,
-                saturatedFat = record.saturatedFat,
-                monounsaturatedFat = record.monounsaturatedFat,
-                polyunsaturatedFat = record.polyunsaturatedFat,
-                cholesterol = record.cholesterol,
-                sodium = record.sodium,
-                potassium = record.potassium,
-                transFat = record.transFat,
-                calcium = record.calcium,
-                iron = record.iron,
-                magnesium = record.magnesium,
-                zinc = record.zinc,
-                vitaminA = record.vitaminA,
-                vitaminC = record.vitaminC,
-                vitaminD = record.vitaminD,
-                vitaminB12 = record.vitaminB12,
-                vitaminE = record.vitaminE,
-                vitaminK = record.vitaminK,
-                folate = record.folate
-            )
+            externalToFoodEntry(record, externalId(record.clientRecordId, record.recordId, record.time))
         }
         if (incoming.isEmpty()) return
         val existingById = prefs.foodEntries.first().associateBy { it.id }
@@ -679,6 +617,47 @@ class FoodRepository(
             ?: recordId.takeIf { it.isNotBlank() }
             ?: "hc-nutrition:${time.toEpochMilli()}"
         return UUID.nameUUIDFromBytes(seed.toByteArray())
+    }
+
+    /** Shared external-record → [FoodEntry] mapping for the HC restore and
+     *  live-import paths; they differ only in id provenance. */
+    private fun externalToFoodEntry(
+        record: app.chompass.services.health.ExternalNutrition,
+        id: UUID,
+    ): FoodEntry? {
+        val name = record.name?.trim().orEmpty()
+        if (name.isEmpty()) return null
+        return FoodEntry(
+            id = id,
+            name = name,
+            calories = (record.calories ?: 0.0).roundToInt(),
+            protein = record.protein ?: 0.0,
+            carbs = record.carbs ?: 0.0,
+            fat = record.fat ?: 0.0,
+            timestamp = record.time,
+            source = FoodSource.MANUAL,
+            mealType = record.mealType.id,
+            sugar = record.sugar,
+            fiber = record.fiber,
+            saturatedFat = record.saturatedFat,
+            monounsaturatedFat = record.monounsaturatedFat,
+            polyunsaturatedFat = record.polyunsaturatedFat,
+            cholesterol = record.cholesterol,
+            sodium = record.sodium,
+            potassium = record.potassium,
+            transFat = record.transFat,
+            calcium = record.calcium,
+            iron = record.iron,
+            magnesium = record.magnesium,
+            zinc = record.zinc,
+            vitaminA = record.vitaminA,
+            vitaminC = record.vitaminC,
+            vitaminD = record.vitaminD,
+            vitaminB12 = record.vitaminB12,
+            vitaminE = record.vitaminE,
+            vitaminK = record.vitaminK,
+            folate = record.folate
+        )
     }
 
     // -- Recents / Frequent ---------------------------------------------
