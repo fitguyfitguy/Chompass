@@ -40,6 +40,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -1212,7 +1213,7 @@ internal fun SheetSectionHeaderWithLock(
         )
         IconButton(
             onClick = onToggle,
-            modifier = Modifier.size(32.dp)
+            modifier = Modifier.minimumInteractiveComponentSize()
         ) {
             Icon(
                 if (unlocked) Icons.Filled.LockOpen else Icons.Filled.Lock,
