@@ -29,7 +29,6 @@ import java.io.FileOutputStream
 @Config(sdk = [33], application = Application::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class AiImageBytesTest {
-
     private fun jpegBytes(width: Int, height: Int): ByteArray {
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         bitmap.eraseColor(android.graphics.Color.RED)

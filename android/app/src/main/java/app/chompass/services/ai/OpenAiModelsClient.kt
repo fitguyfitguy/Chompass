@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit
  * (LM Studio, llama.cpp) are the common case.
  */
 object OpenAiModelsClient {
-
     /** Custom base URLs already include /v1 — no stripping, unlike Ollama's tagsUrl. */
     fun modelsUrl(baseUrl: String): String =
         AiHttp.normalizeCustomBaseUrl(baseUrl).trimEnd('/') + "/models"
