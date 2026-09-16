@@ -808,6 +808,9 @@ für dich ein</string>
 
     <string name="home_no_foods_logged">Keine Mahlzeiten erfasst</string>
     <string name="home_no_foods_planned">Keine Mahlzeiten geplant</string>
+    <string name="home_planned_for">Geplant für %1$s</string>
+    <string name="diary_planned">Geplant</string>
+    <string name="entry_log_now">Jetzt loggen</string>
 
 
     <string name="home_swipe_delete">Löschen</string>
@@ -2481,6 +2484,7 @@ für dich ein</string>
     <string name="copy_from">Kopieren von</string>
 
     <string name="copy_to">Kopieren nach</string>
+    <string name="plan_pick_day_title">Tag wählen</string>
 
     <string name="copy_hint">Die Lebensmittel werden nach %1$s kopiert. Die ursprünglichen Einträge bleiben unverändert.</string>
 
@@ -2693,6 +2697,7 @@ für dich ein</string>
 
     <string name="cd_discard_recovered_review">Wiederhergestellte Analyse verwerfen</string>
     <string name="cd_favorited">Als Favorit markiert</string>
+    <string name="cd_plan_suggestion">Für einen Tag planen</string>
 
     <string name="cd_move_up">Nach oben verschieben</string>
 

@@ -83,6 +83,7 @@ import app.chompass.MainActivity
 import app.chompass.R
 import app.chompass.models.FoodEntry
 import app.chompass.models.LocaleFormat
+import app.chompass.services.grounding.FoodSuggestion
 import app.chompass.models.CurrentMealCatalog
 import app.chompass.models.FoodSource
 import app.chompass.models.CaffeineEntry
@@ -208,6 +209,9 @@ fun HomeScreen(
     val importFailedTick by photoSession.importFailedTick.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val photoImportFailedMessage = stringResource(R.string.photo_import_failed)
+    // Meal planning: suggestion-row Plan action parks the pick here; the
+    // day-picker dialog below turns it into a planned entry.
+    var planForDayTarget by remember { mutableStateOf<FoodSuggestion?>(null) }
 
     fun openGalleryPicker() {
         val activity = ctx.findComponentActivity() as? MainActivity ?: return
@@ -225,6 +229,15 @@ fun HomeScreen(
     LaunchedEffect(importFailedTick) {
         if (importFailedTick == 0) return@LaunchedEffect
         snackbarHostState.showSnackbar(photoImportFailedMessage)
+    }
+
+    // One-shot "planned for <day>" confirmation after a plan action.
+    val plannedForPattern = stringResource(R.string.home_planned_for)
+    val plannedDateFormat = remember { LocaleFormat.shortDate() }
+    LaunchedEffect(ui.plannedAck) {
+        val ack = ui.plannedAck ?: return@LaunchedEffect
+        snackbarHostState.showSnackbar(plannedForPattern.format(ack.second.format(plannedDateFormat)))
+        vm.clearPlannedAck()
     }
 
     // Mid-flight "Add photo" from the Log sheet only — never auto-start LLM on staging.
@@ -801,7 +814,9 @@ fun HomeScreen(
                                             }
                                         }
                                     },
-                                    onToggleFavorite = { vm.toggleFavorite(entry) }
+                                    onToggleFavorite = { vm.toggleFavorite(entry) },
+                                    planningMode = ui.mealPlanningEnabled,
+                                    onLogNow = { vm.logPlannedEntryNow(it) },
                                 )
                             }
                             if (index != group.entries.lastIndex) Divider()
@@ -1115,6 +1130,11 @@ fun HomeScreen(
                 addFoodFlowActive = false
                 vm.reviewSuggestion(it)
                 vm.clearAddFoodQuery()
+            },
+            planningMode = ui.mealPlanningEnabled,
+            onPlanSuggestion = {
+                addFoodFlowActive = false
+                planForDayTarget = it
             },
             onAnalyzeQuery = { text ->
                 if (!ui.isEntryAnalysisBusy) {
@@ -1447,6 +1467,17 @@ fun HomeScreen(
                 showCopyFromDay = false
                 returnToAddFoodGrid()
             }
+        )
+    }
+
+    if (ui.mealPlanningEnabled && planForDayTarget != null) {
+        PlanForDayDialog(
+            onConfirm = { date ->
+                planForDayTarget?.let { vm.planSuggestion(it, date) }
+                planForDayTarget = null
+                vm.clearAddFoodQuery()
+            },
+            onDismiss = { planForDayTarget = null },
         )
     }
 
