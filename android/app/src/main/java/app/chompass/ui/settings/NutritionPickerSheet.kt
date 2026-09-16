@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.chompass.R
+import app.chompass.ui.components.FudGlassTextButton
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.energyText
 import app.chompass.ui.theme.AppColors
@@ -55,6 +56,7 @@ fun NutritionPickerSheet(
     range: IntRange,
     step: Int,
     onSave: (Int) -> Unit,
+    onDismiss: () -> Unit,
     onResetToAuto: (() -> Unit)? = null,
     resetLabel: String? = null,
     // Live wheel-selection reporter, for hosts that need the current value
@@ -84,12 +86,11 @@ fun NutritionPickerSheet(
      */
     showTitle: Boolean = false,
 ) {
-    val items = remember(range, step) { (range.first..range.last step step).toList() }
-    val snapped = (currentValue / step) * step
-    val initial = snapped.coerceIn(range.first, range.last).let { v ->
-        items.minByOrNull { kotlin.math.abs(it - v) } ?: items.first()
-    }
-    var selected by remember(initial) { mutableStateOf(initial) }
+    // D2 (audit M8+M9 decision): open on the stored value verbatim — no snap
+    // to the wheel grid before the first touch. NumericWheelPicker injects an
+    // off-grid stored value as its own row, so the center label shows the
+    // exact stored number until the user scrolls onto the grid.
+    var selected by remember(currentValue) { mutableStateOf(currentValue) }
     var customMode by remember { mutableStateOf(false) }
     var customText by remember { mutableStateOf("") }
     var pendingConfirm by remember { mutableStateOf(false) }
@@ -162,27 +163,39 @@ fun NutritionPickerSheet(
         )
     }
     Spacer(Modifier.height(16.dp))
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .height(54.dp)
-            .clip(RoundedCornerShape(AppRadii.Field))
-            .background(accentColor)
-            .clickable {
-                app.chompass.ui.components.MagnitudeDrafts.commitAll()
-                val parsed = customText.trim().replace(',', '.').toDoubleOrNull()?.toInt()?.coerceAtLeast(0)?.let(clampCustom)
-                val v = if (customMode) parsed ?: selected else selected
-                if (confirmBelow != null && v < confirmBelow) pendingConfirm = true
-                else onSave(v)
-            },
-        contentAlignment = Alignment.Center
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            stringResource(R.string.action_save),
-            color = Color.White,
-            fontWeight = FontWeight.SemiBold,
-            style = MaterialTheme.typography.titleMedium
+        FudGlassTextButton(
+            text = stringResource(R.string.action_cancel),
+            onClick = onDismiss,
+            modifier = Modifier.weight(1f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
         )
+        Box(
+            Modifier
+                .weight(1f)
+                .height(54.dp)
+                .clip(RoundedCornerShape(AppRadii.Field))
+                .background(accentColor)
+                .clickable {
+                    app.chompass.ui.components.MagnitudeDrafts.commitAll()
+                    val parsed = customText.trim().replace(',', '.').toDoubleOrNull()?.toInt()?.coerceAtLeast(0)?.let(clampCustom)
+                    val v = if (customMode) parsed ?: selected else selected
+                    if (confirmBelow != null && v < confirmBelow) pendingConfirm = true
+                    else onSave(v)
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                stringResource(R.string.action_save),
+                color = Color.White,
+                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
     }
     if (onResetToAuto != null) {
         Spacer(Modifier.height(4.dp))

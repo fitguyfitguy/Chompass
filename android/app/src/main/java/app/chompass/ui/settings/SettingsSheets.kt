@@ -199,7 +199,8 @@ internal fun SettingsSheets(
                     },
                     customField = if (ui.selectedAI.supportsCustomModelName) {
                         { m -> vm.selectModel(m); onDismiss() }
-                    } else null
+                    } else null,
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.OPENROUTER_REASONING -> ListSheet(
                     title = stringResource(R.string.settings_ai_reasoning_effort),
@@ -226,18 +227,21 @@ internal fun SettingsSheets(
                     footer = stringResource(R.string.settings_ai_vision_model_footer),
                     customField = if (ui.selectedAI.supportsCustomModelName) {
                         { m -> vm.selectVisionModel(m); onDismiss() }
-                    } else null
+                    } else null,
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.API_KEY -> ApiKeySheet(
                     title = stringResource(R.string.sheet_api_key_format, stringResource(ui.selectedAI.displayNameRes)),
                     placeholder = stringResource(ui.selectedAI.apiKeyPlaceholderRes),
-                    onSave = { vm.setApiKey(it); onDismiss() }
+                    onSave = { vm.setApiKey(it); onDismiss() },
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.CUSTOM_BASE_URL -> TextFieldSheet(
                     title = stringResource(R.string.settings_custom_url_title),
                     initial = ui.customBaseUrl,
                     placeholder = stringResource(R.string.settings_custom_url_placeholder),
-                    onSave = { vm.setCustomBaseUrl(ui.selectedAI, it); onDismiss() }
+                    onSave = { vm.setCustomBaseUrl(ui.selectedAI, it); onDismiss() },
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.ON_DEVICE_MODEL -> OnDeviceModelSheet(
                     container = vm.container,
@@ -262,7 +266,7 @@ internal fun SettingsSheets(
                         unit = stringResource(R.string.settings_max_tokens_unit),
                     )
                     Spacer(Modifier.height(16.dp))
-                    GradientSaveButton { vm.setMaxResponseTokens(value); onDismiss() }
+                    CancelSaveRow(onDismiss) { vm.setMaxResponseTokens(value); onDismiss() }
                     Spacer(Modifier.height(8.dp))
                 }
                 SettingsSheet.AI_READ_TIMEOUT -> {
@@ -278,7 +282,7 @@ internal fun SettingsSheets(
                         unit = stringResource(R.string.settings_ai_read_timeout_unit),
                     )
                     Spacer(Modifier.height(16.dp))
-                    GradientSaveButton { vm.setAiReadTimeoutSeconds(value); onDismiss() }
+                    CancelSaveRow(onDismiss) { vm.setAiReadTimeoutSeconds(value); onDismiss() }
                     Spacer(Modifier.height(8.dp))
                 }
                 SettingsSheet.SERVING_UNIT_MODE -> ListSheet(
@@ -325,7 +329,8 @@ internal fun SettingsSheets(
                         // which left the UI showing "Tap to edit" forever).
                         vm.setSpeechApiKey(it)
                         onDismiss()
-                    }
+                    },
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.FALLBACK_PROVIDER -> ListSheet(
                     title = stringResource(R.string.sheet_ai_provider),
@@ -358,19 +363,22 @@ internal fun SettingsSheets(
                         footer = if (ui.fallbackProvider.supportsCustomModelName) stringResource(R.string.sheet_model_footer) else null,
                         customField = if (ui.fallbackProvider.supportsCustomModelName) {
                             { m -> vm.selectFallbackModel(m); onDismiss() }
-                        } else null
+                        } else null,
+                        onDismiss = onDismiss
                     )
                 }
                 SettingsSheet.FALLBACK_KEY -> ApiKeySheet(
                     title = stringResource(R.string.sheet_api_key_format, stringResource(ui.fallbackProvider.displayNameRes)),
                     placeholder = stringResource(ui.fallbackProvider.apiKeyPlaceholderRes),
-                    onSave = { vm.setFallbackApiKey(it); onDismiss() }
+                    onSave = { vm.setFallbackApiKey(it); onDismiss() },
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.FALLBACK_BASE_URL -> TextFieldSheet(
                     title = stringResource(R.string.settings_custom_url_title),
                     initial = ui.fallbackCustomBaseUrl,
                     placeholder = stringResource(R.string.settings_custom_url_placeholder),
-                    onSave = { vm.setFallbackCustomBaseUrl(ui.fallbackProvider, it); onDismiss() }
+                    onSave = { vm.setFallbackCustomBaseUrl(ui.fallbackProvider, it); onDismiss() },
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.GENDER -> ListSheet(
                     title = stringResource(R.string.sheet_gender),
@@ -386,7 +394,8 @@ internal fun SettingsSheets(
                         current = cm,
                         useMetric = ui.heightMetric,
                         onUnitChange = { metric -> vm.setHeightUnit(if (metric) "cm" else "ftin") },
-                        onSave = { newCm -> vm.updateProfile { it.copy(heightCm = newCm.toDouble()) }; onDismiss() }
+                        onSave = { newCm -> vm.updateProfile { it.copy(heightCm = newCm.toDouble()) }; onDismiss() },
+                        onDismiss = onDismiss
                     )
                 }
                 SettingsSheet.WEIGHT -> {
@@ -396,7 +405,8 @@ internal fun SettingsSheets(
                         current = kg,
                         useMetric = ui.weightMetric,
                         onUnitChange = { metric -> vm.setWeightUnit(if (metric) "kg" else "lbs") },
-                        onSave = { newKg -> vm.saveCurrentWeight(newKg); onDismiss() }
+                        onSave = { newKg -> vm.saveCurrentWeight(newKg); onDismiss() },
+                        onDismiss = onDismiss
                     )
                 }
                 SettingsSheet.BODY_FAT -> BodyFatSheet(
@@ -412,7 +422,8 @@ internal fun SettingsSheets(
                             )
                         }
                         onDismiss()
-                    }
+                    },
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.GOAL_BODY_FAT -> GoalBodyFatSheet(
                     currentGoal = ui.profile?.goalBodyFatPercentage,
@@ -420,7 +431,8 @@ internal fun SettingsSheets(
                     // Goal body fat doesn't feed BMR/TDEE/macro math, so use
                     // updateProfile (no recompute) — editing the goal must
                     // never silently wipe the user's pinned macros.
-                    onSave = { goal -> vm.updateProfile { it.copy(goalBodyFatPercentage = goal) }; onDismiss() }
+                    onSave = { goal -> vm.updateProfile { it.copy(goalBodyFatPercentage = goal) }; onDismiss() },
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.ACTIVITY -> ListSheet(
                     title = stringResource(R.string.sheet_activity_level),
@@ -493,7 +505,8 @@ internal fun SettingsSheets(
                         vm.setKetoCarbMode(KetoCarbMode.ADAPTIVE)
                         vm.setKetoCarbManualTarget(null)
                         onDismiss()
-                    }
+                    },
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.GOAL_WEIGHT -> {
                     val kg = ui.profile?.goalWeightKg ?: (ui.profile?.weightKg ?: 70.0)
@@ -524,7 +537,8 @@ internal fun SettingsSheets(
                                 vm.updateProfile { it.copy(goalWeightKg = newKg) }
                                 onDismiss()
                             }
-                        }
+                        },
+                        onDismiss = onDismiss
                     )
                 }
                 SettingsSheet.GOAL_SPEED -> GoalSpeedSheet(
@@ -538,7 +552,8 @@ internal fun SettingsSheets(
                     onSave = { newInstant ->
                         vm.updateProfile { it.copy(birthday = newInstant) }
                         onDismiss()
-                    }
+                    },
+                    onDismiss = onDismiss
                 )
                 // Global height+weight unit switch, mirrors onboarding's single
                 // Metric/Imperial toggle (heightUnit + weightUnit move together).
@@ -654,6 +669,7 @@ internal fun SettingsSheets(
                         vm.setWaterDailyGoalMl(it)
                         onDismiss()
                     },
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.WATER_QUICK_PRESETS -> WaterQuickPresetsSheet(
                     current = ui.waterQuickPresetsMl,
@@ -662,6 +678,7 @@ internal fun SettingsSheets(
                         vm.setWaterQuickPresetsMl(it)
                         onDismiss()
                     },
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.NICOTINE_LIMIT -> NicotineLimitSheet(
                     current = ui.nicotineDailyLimit,
@@ -669,6 +686,7 @@ internal fun SettingsSheets(
                         vm.setNicotineDailyLimit(it)
                         onDismiss()
                     },
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.CAFFEINE_LIMIT -> CaffeineLimitSheet(
                     current = ui.optionalNutrientGoals.caffeine,
@@ -676,6 +694,7 @@ internal fun SettingsSheets(
                         vm.setOptionalNutrientGoals(ui.optionalNutrientGoals.withValue(OptionalNutrient.CAFFEINE, it))
                         onDismiss()
                     },
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.FASTING_GOAL -> FastingGoalSheet(
                     fastHours = ui.fastingGoalHours,
@@ -685,6 +704,7 @@ internal fun SettingsSheets(
                         vm.setFastingEatHours(eat)
                         onDismiss()
                     },
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.FASTING_START_TIME -> FastingStartTimeSheet(
                     hour = ui.fastingStartHour,
@@ -693,6 +713,7 @@ internal fun SettingsSheets(
                         vm.setFastingStartTime(hour, minute)
                         onDismiss()
                     },
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.FASTING_END_LEAD -> FastingReminderLeadSheet(
                     title = stringResource(R.string.settings_fasting_end_reminder),
@@ -701,6 +722,7 @@ internal fun SettingsSheets(
                         vm.setFastingEndReminderLeadMinutes(it)
                         onDismiss()
                     },
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.FASTING_START_LEAD -> FastingReminderLeadSheet(
                     title = stringResource(R.string.settings_fasting_start_reminder),
@@ -709,6 +731,7 @@ internal fun SettingsSheets(
                         vm.setFastingStartReminderLeadMinutes(it)
                         onDismiss()
                     },
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.WATER_DYNAMIC_BASE -> ListSheet(
                     title = stringResource(R.string.settings_water_dynamic_base),
@@ -833,7 +856,8 @@ internal fun SettingsSheets(
                         },
                         onResetToAuto = if (p?.caloriesLocked == true) {
                             { vm.resetCaloriesLock(); onDismiss() }
-                        } else null
+                        } else null,
+                        onDismiss = onDismiss
                     )
                 }
                 SettingsSheet.PROTEIN -> ProteinGoalSheet(
@@ -854,6 +878,7 @@ internal fun SettingsSheets(
                             onDismiss()
                         }
                     } else null,
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.CARBS -> NutritionPickerSheet(
                     label = stringResource(R.string.macro_carbs), unit = stringResource(R.string.unit_g),
@@ -866,7 +891,8 @@ internal fun SettingsSheets(
                     },
                     onResetToAuto = if (ui.profile?.isMacroLocked(AutoBalanceMacro.CARBS) == true) {
                         { vm.resetMacroLock(AutoBalanceMacro.CARBS); onDismiss() }
-                    } else null
+                    } else null,
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.FAT -> NutritionPickerSheet(
                     label = stringResource(R.string.macro_fat), unit = stringResource(R.string.unit_g),
@@ -879,7 +905,8 @@ internal fun SettingsSheets(
                     },
                     onResetToAuto = if (ui.profile?.isMacroLocked(AutoBalanceMacro.FAT) == true) {
                         { vm.resetMacroLock(AutoBalanceMacro.FAT); onDismiss() }
-                    } else null
+                    } else null,
+                    onDismiss = onDismiss
                 )
                 SettingsSheet.OPTIONAL_NUTRIENTS -> OptionalNutrientGoalsSheet(
                     goals = ui.optionalNutrientGoals,
@@ -986,7 +1013,8 @@ internal fun OptionalNutrientGoalsSheet(
             onSave = { value ->
                 onChange(goals.withValue(nutrient, value))
                 editing = null
-            }
+            },
+            onDismiss = onDismiss
         )
         return
     }

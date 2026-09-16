@@ -26,6 +26,7 @@ internal fun ProteinGoalSheet(
     profile: UserProfile?,
     onModeChange: (ProteinTargetMode) -> Unit,
     onSaveGrams: (Int) -> Unit,
+    onDismiss: () -> Unit,
     onResetToAuto: (() -> Unit)?,
 ) {
     val mode = profile?.proteinTargetMode ?: ProteinTargetMode.Default
@@ -78,6 +79,7 @@ internal fun ProteinGoalSheet(
         step = 5,
         accentColor = AppColors.Protein,
         onSave = onSaveGrams,
+        onDismiss = onDismiss,
         onResetToAuto = onResetToAuto,
     )
 }

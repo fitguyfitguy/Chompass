@@ -41,7 +41,6 @@ import app.chompass.models.OptionalNutrient
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.FudGlassSurface
-import app.chompass.ui.components.FudGlassTextButton
 import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.AppColors
@@ -201,13 +200,8 @@ fun OptionalNutrientGoalsScreen(
                 onSave = { value ->
                     vm.setOptionalNutrientGoals(ui.optionalNutrientGoals.withValue(nutrient, value))
                     editing = null
-                }
-            )
-            FudGlassTextButton(
-                text = stringResource(R.string.action_cancel),
-                onClick = { editing = null },
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f)
+                },
+                onDismiss = { editing = null }
             )
         }
     }
