@@ -455,6 +455,7 @@
     <string name="note_char_count">%1$d / %2$d</string>
 
     <string name="home_food_removed">Usunięto jedzenie</string>
+    <string name="home_day_type_switched">Zmieniono typ dnia</string>
     <string name="action_undo">Cofnij</string>
     <string name="add_food_photo_source_title">Dodaj zdjęcie</string>
     <string name="add_food_photo_camera">Zrób zdjęcie</string>

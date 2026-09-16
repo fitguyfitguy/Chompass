@@ -19,6 +19,7 @@ import app.chompass.models.HomeCalorieDisplay
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.DietMode
 import app.chompass.models.DayTargets
+import app.chompass.models.GoalJournal
 import app.chompass.models.GoalJournalEntry
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.MacroPlanResolver
@@ -2738,6 +2739,14 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             ) {
                 return@launch
             }
+            // D3 (audit M8+M9 decision): snapshot the pre-switch override and
+            // today's journal entry so the post-dismiss Undo snackbar can
+            // restore both. A later switch replaces the snapshot; process
+            // death drops it — a scoped surface, not an undo system.
+            dayTypeUndoData = DayTypeUndoData(
+                profileId = plan.dayAssignments[todayKey],
+                journalEntry = _ui.value.goalJournal.firstOrNull { it.date == todayKey },
+            )
             val merged = if (profileId == null) {
                 plan.dayAssignments - todayKey
             } else {
@@ -2751,6 +2760,45 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             runCatching { container.goalJournalService.recordManualSwitch() }
         }
     }
+
+    /** Pre-switch state for the day-type undo snackbar (audit D3). */
+    private var dayTypeUndoData: DayTypeUndoData? = null
+
+    /**
+     * D3 undo surface: restore the pre-switch override and today's
+     * pre-switch journal entry in one action. The profile save re-emits and
+     * the journal observer's follow-up write skips because the restored
+     * values match the restored plan's resolution.
+     */
+    fun undoTodayDayTypeSwitch() {
+        val undo = dayTypeUndoData ?: return
+        dayTypeUndoData = null
+        viewModelScope.launch {
+            val current = container.profileRepository.current() ?: return@launch
+            val plan = current.macroPlan?.takeIf { it.enabled } ?: return@launch
+            val todayKey = LocalDate.now().toString()
+            val restoredAssignments = if (undo.profileId == null) {
+                plan.dayAssignments - todayKey
+            } else {
+                plan.dayAssignments + (todayKey to undo.profileId)
+            }
+            container.profileRepository.save(
+                current.copy(macroPlan = plan.copy(dayAssignments = restoredAssignments))
+            )
+            val entries = container.prefs.goalJournal.first()
+            val updated = if (undo.journalEntry != null) {
+                GoalJournal.upsertRespectingFreeze(entries, undo.journalEntry, LocalDate.now())
+            } else {
+                entries.filterNot { it.date == todayKey }
+            }
+            if (updated != entries) container.prefs.setGoalJournal(updated)
+        }
+    }
+
+    private data class DayTypeUndoData(
+        val profileId: String?,
+        val journalEntry: GoalJournalEntry?,
+    )
 
     suspend fun suggestMealWhatIf(entry: FoodEntry): String {
         val snapshot = _ui.value

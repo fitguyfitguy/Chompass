@@ -964,6 +964,7 @@
     <string name="home_first_photo_saved">Prima foto salvata</string>
     <string name="home_food_log">Registro alimentare</string>
     <string name="home_food_removed">Alimento rimosso</string>
+    <string name="home_day_type_switched">Tipo di giorno cambiato</string>
     <string name="home_menu_copy_from_day">Copia da Giorno</string>
     <string name="home_menu_from_photos_note">Da Foto + Nota</string>
     <string name="home_menu_grounded">Verificato</string>

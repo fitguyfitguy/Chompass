@@ -997,6 +997,7 @@
     <string name="home_first_photo_saved">تم حفظ الصورة الأولى</string>
     <string name="home_food_log">سجل الطعام</string>
     <string name="home_food_removed">تمت إزالة الطعام</string>
+    <string name="home_day_type_switched">تم تغيير نوع اليوم</string>
     <string name="home_menu_copy_from_day">نسخ من يوم</string>
     <string name="home_menu_from_photos_note">من صورة + ملاحظة</string>
     <string name="home_menu_grounded">موثّق</string>

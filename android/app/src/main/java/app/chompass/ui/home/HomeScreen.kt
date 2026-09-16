@@ -436,6 +436,7 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     val foodRemovedMessage = stringResource(R.string.home_food_removed)
     val undoLabel = stringResource(R.string.action_undo)
+    val dayTypeSwitchedMessage = stringResource(R.string.home_day_type_switched)
 
     // Codeberg #30: add-food flow helper. Backing out of a flow-launched
     // destination reopens the grid instead of closing the whole flow. No-op
@@ -1742,7 +1743,23 @@ fun HomeScreen(
             typicalActiveByProfileId = dayTypeStats.byProfileId
                 .filter { it.value.sampleCount >= app.chompass.models.DayTypeActiveStats.MIN_SAMPLES }
                 .mapValues { it.value.averageKcal },
-            onSwitch = vm::switchTodayDayType,
+            onSwitch = { profileId ->
+                vm.switchTodayDayType(profileId)
+                // Tapping the type already in effect is a VM-side no-op; skip
+                // the undo chip for it too (D3).
+                if (profileId == null || profileId != resolvedTargets.profileId) {
+                    scope.launch {
+                        val result = snackbarHostState.showSnackbar(
+                            message = dayTypeSwitchedMessage,
+                            actionLabel = undoLabel,
+                            duration = SnackbarDuration.Short,
+                        )
+                        if (result == SnackbarResult.ActionPerformed) {
+                            vm.undoTodayDayTypeSwitch()
+                        }
+                    }
+                }
+            },
             onDismiss = { showDayTypeSheet = false },
             // "Edit day types" deep-links straight into the editor when the
             // nav host provides the route; the Settings hub stays the fallback.

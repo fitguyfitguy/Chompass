@@ -968,6 +968,7 @@
     <string name="home_first_photo_saved">Eerste foto opgeslagen</string>
     <string name="home_food_log">Voedingslogboek</string>
     <string name="home_food_removed">Voedsel verwijderd</string>
+    <string name="home_day_type_switched">Dagtype gewijzigd</string>
     <string name="home_menu_barcode">Barcode</string>
     <string name="home_menu_copy_from_day">Kopiëren van dag</string>
     <string name="home_menu_from_photos_note">Van foto\'s + notitie</string>

@@ -997,6 +997,7 @@
     <string name="home_first_photo_saved">पहली फोटो सहेजी गई</string>
     <string name="home_food_log">खाद्य लॉग</string>
     <string name="home_food_removed">खाद्य पदार्थ हटाया गया</string>
+    <string name="home_day_type_switched">दिन का प्रकार बदल गया</string>
     <string name="home_menu_copy_from_day">दिन से कॉपी करें</string>
     <string name="home_menu_from_photos_note">फोटो + नोट से</string>
     <string name="home_menu_grounded">आधारित</string>
