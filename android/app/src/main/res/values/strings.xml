@@ -631,6 +631,9 @@
     <string name="home_todays_food">Today\'s Food</string>
     <string name="home_no_foods_logged">No foods logged</string>
     <string name="home_no_foods_planned">No meals planned</string>
+    <string name="home_planned_for">Planned for %1$s</string>
+    <string name="diary_planned">Planned</string>
+    <string name="entry_log_now">Log now</string>
     <string name="home_swipe_delete">Delete</string>
     <string name="home_swipe_favorite">Favorite</string>
     <string name="home_swipe_unfavorite">Unfavorite</string>
@@ -2042,6 +2045,7 @@
     <string name="settings_reset_defaults">Reset to Defaults</string>
     <string name="copy_from">Copy From</string>
     <string name="copy_to">Copy To</string>
+    <string name="plan_pick_day_title">Pick a day</string>
     <string name="copy_hint">Foods will be copied to %1$s. Original entries stay unchanged.</string>
     <string name="macro_protein_format">Protein: %1$s</string>
     <string name="macro_carbs_format">Carbs: %1$s</string>
@@ -2176,6 +2180,7 @@
     <string name="recovered_review_chip">Recovered analysis: %1$s</string>
     <string name="cd_discard_recovered_review">Discard recovered analysis</string>
     <string name="cd_favorited">Favorited</string>
+    <string name="cd_plan_suggestion">Plan for a day</string>
     <string name="cd_move_up">Move up</string>
     <string name="cd_move_down">Move down</string>
     <string name="cd_unfavorite">Unfavorite</string>

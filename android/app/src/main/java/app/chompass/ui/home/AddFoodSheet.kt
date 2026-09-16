@@ -145,6 +145,9 @@ fun AddFoodSheet(
     onOpenFoodSettings: () -> Unit = {},
     onPickSuggestion: (FoodSuggestion) -> Unit = {},
     onReviewSuggestion: (FoodSuggestion) -> Unit = {},
+    /** Meal planning mode: saved suggestion rows carry a Plan action. */
+    planningMode: Boolean = false,
+    onPlanSuggestion: (FoodSuggestion) -> Unit = {},
     onAnalyzeQuery: (String) -> Unit = {},
 ) {
     // Two anchors, and a content height that never changes. The sheet animates
@@ -241,6 +244,8 @@ fun AddFoodSheet(
             onOpenFoodSettings = { onDismiss(); onOpenFoodSettings() },
             onPickSuggestion = { s -> onDismiss(); onPickSuggestion(s) },
             onReviewSuggestion = { s -> onDismiss(); onReviewSuggestion(s) },
+            planningMode = planningMode,
+            onPlanSuggestion = { s -> onDismiss(); onPlanSuggestion(s) },
             onAnalyzeQuery = { text -> onDismiss(); onAnalyzeQuery(text) },
         )
     }
@@ -315,6 +320,9 @@ internal fun AddFoodSheetContent(
     onOpenFoodSettings: () -> Unit = {},
     onPickSuggestion: (FoodSuggestion) -> Unit = {},
     onReviewSuggestion: (FoodSuggestion) -> Unit = {},
+    /** Meal planning mode: saved suggestion rows carry a Plan action. */
+    planningMode: Boolean = false,
+    onPlanSuggestion: (FoodSuggestion) -> Unit = {},
     onAnalyzeQuery: (String) -> Unit = {},
     autoFocusQuery: Boolean = false,
 ) {
@@ -548,6 +556,8 @@ internal fun AddFoodSheetContent(
             },
             onPick = onPickSuggestion,
             onReview = onReviewSuggestion,
+            planningMode = planningMode,
+            onPlanSuggestion = onPlanSuggestion,
         )
 
     }

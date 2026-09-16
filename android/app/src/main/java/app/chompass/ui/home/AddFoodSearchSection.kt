@@ -53,6 +53,7 @@ import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Science
+import androidx.compose.material.icons.outlined.EventAvailable
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.filled.Search
@@ -428,6 +429,9 @@ internal fun AddFoodSuggestionList(
     packagedSearchEnabled: Boolean = false,
     onPackagedSearchChange: (Boolean) -> Unit = {},
     onOpenFoodSettings: () -> Unit = {},
+    /** Meal planning mode: saved rows carry a Plan-for-a-day action. */
+    planningMode: Boolean = false,
+    onPlanSuggestion: ((FoodSuggestion) -> Unit)? = null,
     /**
      * Trailing space below the last row. Lives inside the scroll range, so it
      * is only reached by scrolling to the end of the list — the pane itself
@@ -520,6 +524,8 @@ internal fun AddFoodSuggestionList(
                             suggestion = suggestion,
                             onClick = { onPick(suggestion) },
                             onLongClick = { onReview(suggestion) },
+                            planningMode = planningMode,
+                            onPlanSuggestion = onPlanSuggestion,
                         )
                     }
                 }
@@ -569,6 +575,8 @@ internal fun AddFoodSuggestionList(
                         suggestion = suggestion,
                         onClick = { onPick(suggestion) },
                         onLongClick = { onReview(suggestion) },
+                        planningMode = planningMode,
+                        onPlanSuggestion = onPlanSuggestion,
                     )
                 }
             } else {
@@ -577,6 +585,8 @@ internal fun AddFoodSuggestionList(
                         suggestion = suggestion,
                         onClick = { onPick(suggestion) },
                         onLongClick = { onReview(suggestion) },
+                        planningMode = planningMode,
+                        onPlanSuggestion = onPlanSuggestion,
                     )
                 }
                 if (suggestions.isEmpty()) {
@@ -817,6 +827,9 @@ private fun AddFoodSuggestionRow(
     suggestion: FoodSuggestion,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
+    /** Meal planning mode: saved rows carry a Plan-for-a-day action. */
+    planningMode: Boolean = false,
+    onPlanSuggestion: ((FoodSuggestion) -> Unit)? = null,
 ) {
     val isDark = isDarkTheme()
     val shape = RoundedCornerShape(AppRadii.Container)
@@ -876,14 +889,28 @@ private fun AddFoodSuggestionRow(
                 )
             }
         }
-        // Mirrors the re-log chip's affordance, so "tap adds it" reads the same
-        // in the list as it does in the chip row above.
-        Icon(
-            Icons.Filled.Add,
-            contentDescription = null,
-            tint = AppColors.Calorie,
-            modifier = Modifier.size(18.dp),
-        )
+        // Plan action (meal planning mode): saved meals/recipes only — a
+        // database hit is not yet anything the app remembers to plan with.
+        if (planningMode && onPlanSuggestion != null &&
+            suggestion !is FoodSuggestion.DatabaseHit
+        ) {
+            IconButton(onClick = { onPlanSuggestion(suggestion) }) {
+                Icon(
+                    Icons.Outlined.EventAvailable,
+                    contentDescription = stringResource(R.string.cd_plan_suggestion),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+            }
+        } else {
+            // Mirrors the re-log chip's affordance, so "tap adds it" reads the
+            // same in the list as it does in the chip row above.
+            Icon(
+                Icons.Filled.Add,
+                contentDescription = null,
+                tint = AppColors.Calorie,
+                modifier = Modifier.size(18.dp),
+            )
+        }
     }
 }
 

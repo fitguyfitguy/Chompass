@@ -60,14 +60,19 @@ class RecipeRepository(
      * named [app.chompass.models.FoodEntry] with constituents. Hand-built
      * recipes still explode to one diary row per ingredient.
      */
-    suspend fun logRecipe(recipe: Recipe, logDate: Instant, mealType: String = recipe.mealType): List<UUID> {
+    suspend fun logRecipe(
+        recipe: Recipe,
+        logDate: Instant,
+        mealType: String = recipe.mealType,
+        planned: Boolean = false,
+    ): List<UUID> {
         if (recipe.logsAsNamedMeal) {
-            val entry = recipe.toNamedMealEntry(logDate, mealType)
+            val entry = recipe.toNamedMealEntry(logDate, mealType).copy(planned = planned)
             foodRepository.addEntries(listOf(entry))
             return listOf(entry.id)
         }
         val recipeLogId = UUID.randomUUID()
-        val entries = recipe.ingredients.map { it.toFoodEntry(logDate, mealType, recipeLogId) }
+        val entries = recipe.ingredients.map { it.toFoodEntry(logDate, mealType, recipeLogId).copy(planned = planned) }
         // One batched DataStore edit instead of one full-file write per ingredient.
         foodRepository.addEntries(entries)
         return entries.map { it.id }

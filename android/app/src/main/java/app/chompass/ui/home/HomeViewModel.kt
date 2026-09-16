@@ -335,7 +335,10 @@ data class HomeUiState(
      * the viewed day (in-memory only, cleared on app restart). Empty when the
      * clipboard is unset.
      */
+    /** In-memory paste clipboard: copied diary rows awaiting a paste chip tap. */
     val copiedEntries: List<FoodEntry> = emptyList(),
+    /** Last plan action (tick to target day); Home shows the "planned for" snackbar once. */
+    val plannedAck: Pair<Int, LocalDate>? = null,
 ) {
     val isEntryAnalysisBusy: Boolean get() = analyzing || analysisPhase != null || inferringUnits
     /** Pending (runnable) queue items — badge count for the Add Food hub row. */
@@ -620,7 +623,8 @@ data class HomeUiState(
             showProgressiveMealSheet == other.showProgressiveMealSheet &&
             manualActiveKcal == other.manualActiveKcal &&
             manualActiveTodayEntries == other.manualActiveTodayEntries &&
-            copiedEntries == other.copiedEntries
+            copiedEntries == other.copiedEntries &&
+            plannedAck == other.plannedAck
     }
 
     override fun hashCode(): Int {
@@ -716,6 +720,7 @@ data class HomeUiState(
         result = 31 * result + manualActiveKcal
         result = 31 * result + manualActiveTodayEntries.hashCode()
         result = 31 * result + copiedEntries.hashCode()
+        result = 31 * result + (plannedAck?.hashCode() ?: 0)
         return result
     }
 }
@@ -2217,6 +2222,53 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /**
+     * Plan action (meal planning mode): place a saved meal/recipe on a chosen
+     * upcoming day as a planned entry — not logged as eaten.
+     */
+    fun planSuggestion(suggestion: FoodSuggestion, date: LocalDate) {
+        when (suggestion) {
+            is FoodSuggestion.SavedFood -> planSavedMeal(suggestion.template, date)
+            is FoodSuggestion.SavedRecipe -> planRecipe(suggestion.recipe, date)
+            is FoodSuggestion.DatabaseHit -> Unit
+        }
+    }
+
+    /** Places a saved meal on [date], keeping the template's slot (planning intent). */
+    fun planSavedMeal(template: FoodEntry, date: LocalDate) {
+        viewModelScope.launch {
+            container.foodRepository.addEntry(
+                template.duplicatedForLogging(timestampForFoodLog(date), mealType = template.mealType)
+                    .copy(planned = true),
+                writeHealth = false,
+            )
+            ackPlanned(date)
+        }
+    }
+
+    /** Places a recipe's rows on [date] as planned entries. */
+    fun planRecipe(recipe: app.chompass.models.Recipe, date: LocalDate) {
+        viewModelScope.launch {
+            container.recipeRepository.logRecipe(
+                recipe,
+                timestampForFoodLog(date),
+                mealType = recipe.mealType,
+                planned = true,
+            )
+            ackPlanned(date)
+        }
+    }
+
+    private fun ackPlanned(date: LocalDate) {
+        val tick = (_ui.value.plannedAck?.first ?: 0) + 1
+        _ui.update { it.copy(plannedAck = tick to date) }
+    }
+
+    /** Dismisses the "planned for" snackbar message after it is shown. */
+    fun clearPlannedAck() {
+        _ui.update { it.copy(plannedAck = null) }
+    }
+
+    /**
      * Add Food "Search food" database pick: resolve the hit to a full
      * [FoodAnalysis] (OFF barcode lookup for micros, or offline USDA/Swiss row)
      * and prefill the review sheet with its provenance badge.
@@ -3080,6 +3132,23 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
+    /** One-tap "Log now" on a planned diary row (meal planning mode). */
+    fun logPlannedEntryNow(entry: FoodEntry) {
+        viewModelScope.launch {
+            val updated = confirmPlannedEntry(
+                entry,
+                LocalDate.now(),
+                Instant.now(),
+                ZoneId.systemDefault(),
+                _ui.value.mealTimesEnabled,
+                CurrentMealCatalog.value,
+            )
+            container.foodRepository.updateEntry(entry, updated)
+            // The row's stamp is now (≤ now), so the mirror passes the HC guard.
+            container.foodRepository.mirrorEntryToHealth(updated)
+        }
+    }
+
     /** Re-log a saved meal (from Saved Meals sheet) as a new entry timestamped to the selected day. */
     fun relogMeal(template: FoodEntry) {
         if (PerfLog.enabled) {
@@ -3107,7 +3176,16 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     /** Log every ingredient of a Recipe as its own diary row, timestamped to the selected day. */
     fun logRecipe(recipe: app.chompass.models.Recipe) {
         viewModelScope.launch {
-            container.recipeRepository.logRecipe(recipe, timestampForFoodLog())
+            container.recipeRepository.logRecipe(
+                recipe,
+                timestampForFoodLog(),
+                planned = plannedFor(
+                    _ui.value.mealPlanningEnabled,
+                    planAction = false,
+                    targetDate = _selectedDate.value,
+                    today = LocalDate.now(),
+                ),
+            )
         }
     }
 
