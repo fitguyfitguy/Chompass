@@ -24,6 +24,8 @@ internal data class AiHttpText(
 
 object RetryPolicy {
     private val delays = longArrayOf(1_000, 2_000, 4_000)
+    /** Largest error-body prefix buffered for message parsing (64 KB). */
+    private const val MAX_ERROR_BODY_BYTES = 64L * 1024
 
     internal fun isRetryableHttpStatus(code: Int): Boolean =
         code == 503 || code == 529
@@ -56,7 +58,14 @@ object RetryPolicy {
 
             if (response.isSuccessful) return response
 
-            val bodyStr = response.use { it.body?.string().orEmpty() }
+            // Cap the buffered error body: an oversized (or hostile) body must
+            // not be read in full just to parse one message string out of it.
+            val bodyStr = response.use { resp ->
+                resp.body?.source()?.let { source ->
+                    source.request(MAX_ERROR_BODY_BYTES + 1)
+                    source.readUtf8(minOf(source.buffer.size, MAX_ERROR_BODY_BYTES))
+                }.orEmpty()
+            }
             val code = response.code
             val raw = parseErrorMessage(bodyStr)?.takeIf { it.isNotEmpty() } ?: "HTTP $code"
             lastMessage = friendlyMessage(code, raw)
@@ -83,7 +92,7 @@ object RetryPolicy {
     }
 }
 
-private suspend fun Call.await(): Response = suspendCancellableCoroutine { cont ->
+internal suspend fun Call.await(): Response = suspendCancellableCoroutine { cont ->
     enqueue(object : okhttp3.Callback {
         override fun onFailure(call: Call, e: IOException) = cont.resumeWithException(e)
         override fun onResponse(call: Call, response: Response) = cont.resume(response)

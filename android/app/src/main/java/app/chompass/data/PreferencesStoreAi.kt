@@ -10,6 +10,7 @@ import app.chompass.models.ServingUnitInferenceMode
 import app.chompass.models.SpeechLanguage
 import app.chompass.models.SpeechProvider
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 // -- Master AI-features switch (Codeberg #20 phase 2) -------------------
@@ -271,3 +272,59 @@ internal suspend fun PreferencesStore.setOnDeviceHeadroomPercentImpl(v: Int) { d
     /** Rollout gate: whether ON_DEVICE appears as a selectable provider. Default on since 1.14.0. */
 internal val PreferencesStore.onDeviceFeatureVisibleImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.ON_DEVICE_FEATURE_VISIBLE] ?: true }
 internal suspend fun PreferencesStore.setOnDeviceFeatureVisibleImpl(v: Boolean) { dataStore.edit { it[Keys.ON_DEVICE_FEATURE_VISIBLE] = v } }
+
+// -- One-snapshot AI call config ---------------------------------------
+
+/**
+ * Every setting an entry-analysis or coach-chat call needs, decoded from
+ * ONE `dataStore.data` snapshot. The call preambles used to do 10-12
+ * sequential `.first()` reads — wasted flow setups, and a settings write
+ * landing mid-call could tear provider vs. model vs. base-url so the
+ * primary and its fallback mixed old and new config. Read fresh per call;
+ * never cache across calls.
+ */
+internal data class AiCallConfig(
+    val aiFeaturesEnabled: Boolean,
+    val provider: AIProvider,
+    val selectedModel: String?,
+    val userContext: String,
+    /** Raw per-provider base URL for [provider]; normalize at the call site. */
+    val customBaseUrl: String?,
+    /** Raw per-provider vision slot for [provider]. */
+    val visionModel: String?,
+    val allowInsecureHttp: Boolean,
+    val maxResponseTokens: Int,
+    val aiReadTimeoutSeconds: Int,
+    val geminiGoogleSearch: Boolean,
+    val reasoningEffort: OpenRouterReasoningEffort,
+    val fallbackEnabled: Boolean,
+    val fallbackProvider: AIProvider,
+    val fallbackModel: String?,
+    /** Raw per-provider base URL for [fallbackProvider]. */
+    val fallbackCustomBaseUrl: String?,
+)
+
+internal suspend fun PreferencesStore.aiCallConfigImpl(): AiCallConfig {
+    val prefs = dataStore.data.first()
+    val provider = AIProvider.values().firstOrNull { p -> p.name == prefs[Keys.SELECTED_AI_PROVIDER] }
+        ?: AIProvider.GEMINI
+    val fallbackProvider = AIProvider.values().firstOrNull { p -> p.name == prefs[Keys.FALLBACK_PROVIDER] }
+        ?: AIProvider.GEMINI
+    return AiCallConfig(
+        aiFeaturesEnabled = prefs[Keys.AI_FEATURES_ENABLED] ?: true,
+        provider = provider,
+        selectedModel = prefs[Keys.SELECTED_AI_MODEL],
+        userContext = prefs[Keys.USER_CONTEXT].orEmpty(),
+        customBaseUrl = prefs[Keys.customBaseUrl(provider)],
+        visionModel = prefs[Keys.visionModel(provider)],
+        allowInsecureHttp = prefs[Keys.ALLOW_INSECURE_HTTP] ?: false,
+        maxResponseTokens = clampMaxResponseTokens(prefs[Keys.MAX_RESPONSE_TOKENS] ?: 1024),
+        aiReadTimeoutSeconds = clampAiReadTimeoutSeconds(prefs[Keys.AI_READ_TIMEOUT_SECONDS] ?: DEFAULT_AI_READ_TIMEOUT_SECONDS),
+        geminiGoogleSearch = prefs[Keys.GEMINI_GOOGLE_SEARCH_ENABLED] ?: false,
+        reasoningEffort = OpenRouterReasoningEffort.fromStorage(prefs[Keys.OPENROUTER_REASONING_EFFORT]),
+        fallbackEnabled = prefs[Keys.FALLBACK_ENABLED] ?: true,
+        fallbackProvider = fallbackProvider,
+        fallbackModel = prefs[Keys.FALLBACK_MODEL],
+        fallbackCustomBaseUrl = prefs[Keys.fallbackCustomBaseUrl(fallbackProvider)],
+    )
+}

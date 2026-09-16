@@ -1,5 +1,6 @@
 package app.chompass.services.ai
 
+import app.chompass.data.AiCallConfig
 import app.chompass.data.KeyStore
 import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.data.PreferencesStore
@@ -88,9 +89,12 @@ class ChatService(
         weightMetric: Boolean,
         imageBytes: ByteArray? = null
     ): ChatResult {
+        // One snapshot for the whole call (see [AiCallConfig]) — read BEFORE
+        // the gate so even the enabled check shares the same consistent view.
+        val cfg = prefs.aiCallConfig()
         // Codeberg #20 phase 2: the master AI-features switch gates the coach
         // BEFORE the system prompt (profile + diary) is even assembled.
-        if (!prefs.aiFeaturesEnabled.first()) throw AiError.Disabled
+        if (!cfg.aiFeaturesEnabled) throw AiError.Disabled
         val dayTypeActiveStats = run {
             val journal = prefs.goalJournal.first()
             val merged = app.chompass.models.DayTypeActiveStats.mergeDayTotals(
@@ -100,7 +104,7 @@ class ChatService(
             app.chompass.models.DayTypeActiveStats.compute(journal, merged, java.time.LocalDate.now())
         }
         val baseSystemPrompt = buildSystemPrompt(profile, weights, bodyFats, measurements, foods, heightMetric, weightMetric, fastingContext = buildFastingContext(), dayTypeActiveStats = dayTypeActiveStats)
-        val userContext = prefs.userContext.first()
+        val userContext = cfg.userContext
         val systemPrompt = if (userContext.isNotBlank()) {
             "$baseSystemPrompt\n\n## User-provided context (user preferences / DATA)\n" +
                 "${InputSanitizer.USER_DATA_OPEN}\n${InputSanitizer.delimiterSafe(userContext)}\n" +
@@ -111,14 +115,14 @@ class ChatService(
         }
         val tools = CoachTools(weights = weights, bodyFats = bodyFats, foods = foods, foodAnalysisService = foodAnalysisService)
 
-        val provider = prefs.selectedAIProvider.first()
+        val provider = cfg.provider
         val model = resolveModelForRequest(
             provider = provider,
-            selectedModel = prefs.selectedAIModel.first(),
-            visionModel = prefs.visionModel(provider).first(),
+            selectedModel = cfg.selectedModel,
+            visionModel = cfg.visionModel,
             hasImages = imageBytes != null,
         )
-        val baseUrl = prefs.customBaseUrl(provider).first()?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: provider.baseUrl
+        val baseUrl = cfg.customBaseUrl?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: provider.baseUrl
         val apiKey = keyLookup?.invoke(provider)
             ?: AiHttp.sanitizeApiKey(keyStore!!.apiKey(provider))
 
@@ -128,16 +132,16 @@ class ChatService(
         }
         if (provider.requiresApiKey && apiKey.isNullOrEmpty()) throw AiError.NoApiKey
         if (baseUrl.isEmpty()) throw AiError.InvalidUrl(baseUrl)
-        AiHttp.assertCleartextAllowed(baseUrl, prefs.allowInsecureHttp.first())
-        val maxTokens = prefs.maxResponseTokens.first()
-        val geminiGoogleSearch = prefs.geminiGoogleSearchEnabled.first()
-        val readTimeoutSeconds = prefs.aiReadTimeoutSeconds.first()
+        AiHttp.assertCleartextAllowed(baseUrl, cfg.allowInsecureHttp)
+        val maxTokens = cfg.maxResponseTokens
+        val geminiGoogleSearch = cfg.geminiGoogleSearch
+        val readTimeoutSeconds = cfg.aiReadTimeoutSeconds
         val httpClient = AiHttp.clientForProvider(okHttp, provider, readTimeoutSeconds)
 
         val reply = when (provider.apiFormat) {
             AIProvider.ApiFormat.GEMINI -> runGeminiToolLoop(httpClient, baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes, geminiGoogleSearch, maxTokens)
             AIProvider.ApiFormat.ANTHROPIC -> runAnthropicToolLoop(httpClient, baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes, maxTokens)
-            AIProvider.ApiFormat.OPENAI_COMPATIBLE -> runOpenAIToolLoop(httpClient, baseUrl, model, apiKey, systemPrompt, history, newUserMessage, provider, tools, imageBytes, maxTokens, prefs.openRouterReasoningEffort.first())
+            AIProvider.ApiFormat.OPENAI_COMPATIBLE -> runOpenAIToolLoop(httpClient, baseUrl, model, apiKey, systemPrompt, history, newUserMessage, provider, tools, imageBytes, maxTokens, cfg.reasoningEffort)
             AIProvider.ApiFormat.ON_DEVICE -> error("unreachable — guarded above")
         }
         return ChatResult(

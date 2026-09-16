@@ -1,5 +1,6 @@
 package app.chompass.services.ai
 
+import android.util.Log
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
@@ -21,6 +22,8 @@ data class OllamaModel(
 }
 
 object OllamaClient {
+    private const val TAG = "Ollama"
+
     private const val DEFAULT_BASE = "http://localhost:11434/v1"
 
     fun tagsUrl(baseUrl: String): String {
@@ -30,7 +33,11 @@ object OllamaClient {
     }
 
     fun parseTags(body: String): List<OllamaModel> {
-        val json = runCatching { JSONObject(body) }.getOrNull() ?: return emptyList()
+        val json = runCatching { JSONObject(body) }
+            .onFailure { e ->
+                Log.w(TAG, "Undecodable /api/tags body '${body.take(120)}' — returning no models", e)
+            }
+            .getOrNull() ?: return emptyList()
         val models = json.optJSONArray("models") ?: return emptyList()
         val out = ArrayList<OllamaModel>(models.length())
         for (i in 0 until models.length()) {

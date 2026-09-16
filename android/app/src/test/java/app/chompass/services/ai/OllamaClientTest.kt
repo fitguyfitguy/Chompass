@@ -1,10 +1,16 @@
 package app.chompass.services.ai
 
+import android.app.Application
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [33], application = Application::class)
 class OllamaClientTest {
     @Test
     fun parseTags_readsIdAndDetails() {

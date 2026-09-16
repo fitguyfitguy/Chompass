@@ -2,6 +2,7 @@ package app.chompass.services.ai
 
 import android.util.Log
 import app.chompass.data.KeyStore
+import app.chompass.data.AiCallConfig
 import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.data.PreferencesStore
 import app.chompass.models.AIProvider
@@ -1555,7 +1556,7 @@ class FoodAnalysisService(
                 onProgress = onProgress,
             )
         } catch (primaryError: Throwable) {
-            val fallback = currentFallbackConfig(primary, primaryModel) ?: throw primaryError
+            val fallback = currentFallbackConfig(primary, primaryModel, prefs!!.aiCallConfig()) ?: throw primaryError
             val fallbackClient = AiHttp.clientForProvider(okHttp, fallback.provider, readTimeoutSeconds)
             val fallbackModel = resolveModelForRequest(
                 provider = fallback.provider,
@@ -1702,13 +1703,14 @@ class FoodAnalysisService(
             return demoJson
         }
 
-        val primary = prefs!!.selectedAIProvider.first()
-        val primaryModel = modelFor(primary, prefs.selectedAIModel.first())
+        val cfg = prefs!!.aiCallConfig()
+        val primary = cfg.provider
+        val primaryModel = modelFor(primary, cfg.selectedModel)
         val kind = kindOverride ?: entryKind(primary, primaryModel)
         attemptState?.kind = kind
         var wrapPrompt: (String) -> String = { it }
         val (finalPrompt, finalSmartPrompt) = PerfLog.measure(op, "promptBuild") {
-            val context = prefs.userContext.first()
+            val context = cfg.userContext
             val languageLine = nonEnglishResponseLanguage()?.let {
                 "Write all human-readable text (food name, reason, advice prose) in $it. Keep JSON keys, numbers, and unit_options unit words in English.\n\n"
             } ?: ""
@@ -1726,10 +1728,10 @@ class FoodAnalysisService(
             wrapPrompt(body) to smartPrompt?.let(wrapPrompt)
         }
 
-        val primaryBaseUrl = prefs.customBaseUrl(primary).first()?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: primary.baseUrl
+        val primaryBaseUrl = cfg.customBaseUrl?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: primary.baseUrl
         val primaryKey = keyLookup?.invoke(primary)
             ?: AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
-        val userCap = prefs.maxResponseTokens.first()
+        val userCap = cfg.maxResponseTokens
         val maxTokens = floorResponseTokensForOp(op, userCap, kind)
         if (PerfLog.enabled) {
             PerfLog.event(
@@ -1737,8 +1739,8 @@ class FoodAnalysisService(
                     if (kindOverride == EntryConstituentPromptKind.MACROS) " downshift=macros" else ""
             )
         }
-        val readTimeoutSeconds = prefs.aiReadTimeoutSeconds.first()
-        val geminiGoogleSearch = prefs.geminiGoogleSearchEnabled.first()
+        val readTimeoutSeconds = cfg.aiReadTimeoutSeconds
+        val geminiGoogleSearch = cfg.geminiGoogleSearch
         val aiImages = if (imageBytesList.isEmpty()) {
             imageBytesList
         } else {
@@ -1748,7 +1750,7 @@ class FoodAnalysisService(
         }
 
         if (reportPhases) onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.CallingAi))
-        val reasoningEffort = prefs.openRouterReasoningEffort.first()
+        val reasoningEffort = cfg.reasoningEffort
         val streamProgress: (FoodAnalysisProgress) -> Unit =
             if (reportPhases) onProgress else ({})
         val assembler = FoodPartialJsonAssembler()
@@ -1776,7 +1778,7 @@ class FoodAnalysisService(
                     )
                 } catch (primaryError: Throwable) {
                     if (partialsEmitted) throw primaryError
-                    val fallback = currentFallbackConfig(primary, primaryModel) ?: throw primaryError
+                    val fallback = currentFallbackConfig(primary, primaryModel, cfg) ?: throw primaryError
                     trace?.let {
                         it.fallbackFired = true
                         it.primaryProvider = primary
@@ -2068,13 +2070,14 @@ class FoodAnalysisService(
         }
     }
 
-    private suspend fun currentFallbackConfig(
+    private fun currentFallbackConfig(
         primary: AIProvider,
-        primaryModel: String
+        primaryModel: String,
+        cfg: AiCallConfig,
     ): FallbackConfig? {
-        if (!prefs!!.fallbackEnabled.first()) return null
-        val provider = prefs.selectedFallbackProvider.first()
-        val model = provider.supportedFallbackModelOrDefault(prefs.selectedFallbackModel.first())
+        if (!cfg.fallbackEnabled) return null
+        val provider = cfg.fallbackProvider
+        val model = provider.supportedFallbackModelOrDefault(cfg.fallbackModel)
         // Fallback identical to primary would be a pointless retry of the same call.
         if (provider == primary && model == primaryModel) return null
         if (provider == AIProvider.ON_DEVICE) {
@@ -2089,7 +2092,7 @@ class FoodAnalysisService(
         val key = keyLookup?.invoke(provider)
             ?: AiHttp.sanitizeApiKey(keyStore!!.fallbackApiKey(provider))
         if (provider.requiresApiKey && key.isNullOrEmpty()) return null
-        val baseUrl = prefs.fallbackCustomBaseUrl(provider).first()?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: provider.baseUrl
+        val baseUrl = cfg.fallbackCustomBaseUrl?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: provider.baseUrl
         if (baseUrl.isEmpty()) return null
         return FallbackConfig(provider, model, baseUrl, key)
     }

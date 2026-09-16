@@ -9,6 +9,8 @@ import app.chompass.models.NutrientSourceKind
 import app.chompass.models.ServingUnitOption
 import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.FoodAnalysisService
+import app.chompass.services.ai.await
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -589,7 +591,10 @@ object OpenFoodFactsService {
         var lastNetworkError: String? = null
         var attempt = 0
         while (attempt < LOOKUP_MAX_ATTEMPTS) {
-            val outcome = runCatching { client.newCall(request).execute() }
+            val outcome = runCatching { client.newCall(request).await() }.onFailure { e ->
+                // A cancelled caller must abort, not burn retry attempts.
+                if (e is CancellationException) throw e
+            }
             val error = outcome.exceptionOrNull()
             if (error == null) {
                 outcome.getOrThrow().use { response ->
