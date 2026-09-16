@@ -402,11 +402,16 @@ open class MainActivity : ComponentActivity() {
             }
             initialAppearance = snap.appearanceMode
             initialThemeColorKey = snap.appThemeColor
-            AndroidAppIconManager.apply(
-                this@MainActivity,
-                AppThemeColor.fromKey(initialThemeColorKey),
-                snap.fixedLauncherIcon,
-            )
+            // Binder work (WallpaperManager theme read + up to 8
+            // PackageManager alias probes/writes) — keep it off the
+            // splash-pinned Main thread. apply() touches no UI state.
+            withContext(Dispatchers.Default) {
+                AndroidAppIconManager.apply(
+                    this@MainActivity,
+                    AppThemeColor.fromKey(initialThemeColorKey),
+                    snap.fixedLauncherIcon,
+                )
+            }
             appliedAppLanguage = snap.appLanguage
             LocaleHelper.apply(this@MainActivity, snap.appLanguage)
             startOnboarding = !snap.onboarded
