@@ -94,6 +94,11 @@ fun NutritionPickerSheet(
     var customMode by remember { mutableStateOf(false) }
     var customText by remember { mutableStateOf("") }
     var pendingConfirm by remember { mutableStateOf(false) }
+    // The custom field only adds power where a host-declared ceiling exceeds
+    // the wheel range (therapeutic vitamin D doses etc.). Everywhere else,
+    // tapping the center row opens the numpad and already sets any value in
+    // range, off-grid included — showing the link there is just clutter.
+    val customAddsRange = maxCustomGoal != null && maxCustomGoal > range.last
     val clampCustom: (Int) -> Int = { v -> if (maxCustomGoal != null) v.coerceAtMost(maxCustomGoal) else v }
     val parsedCustom = customText.trim().replace(',', '.').toDoubleOrNull()?.toInt()?.coerceAtLeast(0)?.let(clampCustom)
     val saveValue = if (customMode) parsedCustom ?: selected else selected
@@ -144,7 +149,7 @@ fun NutritionPickerSheet(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
             )
         }
-    } else {
+    } else if (customAddsRange) {
         TextButton(
             onClick = { customMode = true; customText = selected.toString() },
             modifier = Modifier.fillMaxWidth()

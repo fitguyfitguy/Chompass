@@ -36,6 +36,8 @@ import org.robolectric.annotation.GraphicsMode
  *    grid before the first scroll.
  *  - D1: value-editing sheets show an explicit Cancel beside the gradient
  *    Save (AddWeightDialog pairing); scrim/back keep dismissing as Cancel.
+ *  - Custom entry: shown only where the host's maxCustomGoal extends beyond
+ *    the wheel range — tap-to-type already covers any in-range value.
  *  - Sizing: a bounded wheel (NutritionPickerSheet passes 120 dp) must keep
  *    host-side siblings beside it — the chrome used to fillMaxWidth through
  *    the caller's modifier and starved the unit label to zero width.
@@ -144,5 +146,46 @@ class WheelPickerA11yTest {
             "unit label must sit beside the bounded wheel (unit.left=${unit.left}, wheel.right=$wheelRight)"
         }
         assert(unit.width > 0f) { "unit label must keep nonzero width" }
+    }
+
+    /** Tap-to-type already sets any in-range value, so the custom-entry link
+     *  is only shown when the host's maxCustomGoal extends beyond the wheel
+     *  range (therapeutic vitamin D doses etc.). */
+    @Test
+    fun customEntryHiddenWhenCeilingMatchesRange() {
+        composeRule.setContent {
+            MaterialTheme {
+                NutritionPickerSheet(
+                    label = "Calories",
+                    unit = "kcal",
+                    currentValue = 1917,
+                    range = 1200..3500,
+                    step = 50,
+                    maxCustomGoal = 3500,
+                    onSave = {},
+                    onDismiss = {},
+                )
+            }
+        }
+        composeRule.onNodeWithText("Enter custom value", substring = true).assertDoesNotExist()
+    }
+
+    @Test
+    fun customEntryShownWhenCeilingExtendsRange() {
+        composeRule.setContent {
+            MaterialTheme {
+                NutritionPickerSheet(
+                    label = "Vitamin D",
+                    unit = "µg",
+                    currentValue = 40,
+                    range = 0..100,
+                    step = 5,
+                    maxCustomGoal = 250,
+                    onSave = {},
+                    onDismiss = {},
+                )
+            }
+        }
+        composeRule.onNodeWithText("Enter custom value", substring = true).assertExists()
     }
 }
