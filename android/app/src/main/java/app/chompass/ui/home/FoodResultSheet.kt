@@ -235,6 +235,14 @@ fun FoodResultSheet(
     // without a recorded serving the corrected weight then records as the new
     // serving without scaling macros (Codeberg #10 follow-up).
     var servingTouched by remember(effectiveAnalysis) { mutableStateOf(false) }
+    // Streaming-sync gates: once the user edited a field, a later streamed
+    // partial (or the completed analysis landing late) must not clobber it.
+    var nameTouched by remember(effectiveAnalysis) { mutableStateOf(false) }
+    var caloriesTouched by remember(effectiveAnalysis) { mutableStateOf(false) }
+    var proteinTouched by remember(effectiveAnalysis) { mutableStateOf(false) }
+    var carbsTouched by remember(effectiveAnalysis) { mutableStateOf(false) }
+    var fatTouched by remember(effectiveAnalysis) { mutableStateOf(false) }
+    var microsTouched by remember(effectiveAnalysis) { mutableStateOf(false) }
     var editableConstituents by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.constituents) }
     val analysisMicrosSignature = remember(effectiveAnalysis) {
         microsCompositionSignature(effectiveAnalysis.constituents)
@@ -289,33 +297,38 @@ fun FoodResultSheet(
     var wasReady by remember { mutableStateOf(analysisReady) }
 
     // Sync streamed partials / completed analysis into editable fields.
+    // A field the user already edited keeps its value: tokens keep arriving
+    // after the sheet unlocks, and a blanket rewrite clobbered manual edits.
     LaunchedEffect(analysis, partial) {
         val sourceAnalysis = analysis ?: partial?.toPreviewAnalysis() ?: return@LaunchedEffect
-        name = sourceAnalysis.name
-        servingGrams = sourceAnalysis.servingSizeGrams ?: 100.0
-        baseServingGrams = sourceAnalysis.servingSizeGrams ?: 100.0
+        if (!nameTouched) name = sourceAnalysis.name
+        if (!servingTouched) {
+            servingGrams = sourceAnalysis.servingSizeGrams ?: 100.0
+            baseServingGrams = sourceAnalysis.servingSizeGrams ?: 100.0
+        }
         editableConstituents = sourceAnalysis.constituents
-        editableCalories = sourceAnalysis.calories
-        editableProtein = sourceAnalysis.protein
-        editableCarbs = sourceAnalysis.carbs
-        editableFat = sourceAnalysis.fat
-        editableMicros = sourceAnalysis.toMicronutrients()
-        val options = ServingUnitOption.normalizedOptions(
-            sourceAnalysis.servingUnitOptions,
-            sourceAnalysis.servingSizeGrams ?: 100.0,
-        )
-        selectedServingUnitId = ServingUnitOption.initialUnitId(
-            if (preferGramsByDefault) ServingUnitOption.grams.unit else sourceAnalysis.selectedServingUnit,
-            options,
-        )
-        servingQuantityText = ServingUnitOption.initialQuantityText(
-            totalGrams = sourceAnalysis.servingSizeGrams ?: 100.0,
-            selectedUnitId = selectedServingUnitId,
-            selectedQuantity = sourceAnalysis.selectedServingQuantity,
-            options = options,
-        )
+        if (!caloriesTouched) editableCalories = sourceAnalysis.calories
+        if (!proteinTouched) editableProtein = sourceAnalysis.protein
+        if (!carbsTouched) editableCarbs = sourceAnalysis.carbs
+        if (!fatTouched) editableFat = sourceAnalysis.fat
+        if (!microsTouched) editableMicros = sourceAnalysis.toMicronutrients()
+        if (!servingTouched) {
+            val options = ServingUnitOption.normalizedOptions(
+                sourceAnalysis.servingUnitOptions,
+                sourceAnalysis.servingSizeGrams ?: 100.0,
+            )
+            selectedServingUnitId = ServingUnitOption.initialUnitId(
+                if (preferGramsByDefault) ServingUnitOption.grams.unit else sourceAnalysis.selectedServingUnit,
+                options,
+            )
+            servingQuantityText = ServingUnitOption.initialQuantityText(
+                totalGrams = sourceAnalysis.servingSizeGrams ?: 100.0,
+                selectedUnitId = selectedServingUnitId,
+                selectedQuantity = sourceAnalysis.selectedServingQuantity,
+                options = options,
+            )
+        }
     }
-
     LaunchedEffect(analysisReady) {
         if (analysisReady && !wasReady) {
             nutritionUnlocked = false
@@ -708,7 +721,7 @@ fun FoodResultSheet(
                     Spacer(Modifier.weight(1f))
                     androidx.compose.foundation.text.BasicTextField(
                         value = name.ifEmpty { if (!analysisReady) placeholderName else "" },
-                        onValueChange = { if (analysisReady) name = it },
+                        onValueChange = { if (analysisReady) { name = it; nameTouched = true } },
                         singleLine = true,
                         enabled = analysisReady,
                         readOnly = !analysisReady,
@@ -860,7 +873,7 @@ fun FoodResultSheet(
                         unit = energyUnitLabel(),
                         unlocked = nutritionUnlocked && analysisReady,
                         accentColor = AppColors.Calorie,
-                        onEdit = { editableCalories = EnergyFormat.toKcal(math.baseDoubleFromText(it).roundToInt(), unit) }
+                        onEdit = { editableCalories = EnergyFormat.toKcal(math.baseDoubleFromText(it).roundToInt(), unit); caloriesTouched = true }
                     )
                     SheetHairline()
                     ReviewNutritionValueRow(
@@ -870,7 +883,7 @@ fun FoodResultSheet(
                         unit = stringResource(R.string.unit_g),
                         unlocked = nutritionUnlocked && analysisReady,
                         accentColor = AppColors.Protein,
-                        onEdit = { editableProtein = math.baseDoubleFromText(it) }
+                        onEdit = { editableProtein = math.baseDoubleFromText(it); proteinTouched = true }
                     )
                     SheetHairline()
                     ReviewNutritionValueRow(
@@ -880,7 +893,7 @@ fun FoodResultSheet(
                         unit = stringResource(R.string.unit_g),
                         unlocked = nutritionUnlocked && analysisReady,
                         accentColor = AppColors.Carbs,
-                        onEdit = { editableCarbs = math.baseDoubleFromText(it) }
+                        onEdit = { editableCarbs = math.baseDoubleFromText(it); carbsTouched = true }
                     )
                     SheetHairline()
                     ReviewNutritionValueRow(
@@ -890,7 +903,7 @@ fun FoodResultSheet(
                         unit = stringResource(R.string.unit_g),
                         unlocked = nutritionUnlocked && analysisReady,
                         accentColor = AppColors.Fat,
-                        onEdit = { editableFat = math.baseDoubleFromText(it) }
+                        onEdit = { editableFat = math.baseDoubleFromText(it); fatTouched = true }
                     )
                     SheetHairline()
                     ReviewNutritionValueRow(
@@ -905,6 +918,7 @@ fun FoodResultSheet(
                                 MicronutrientField.FIBER,
                                 math.baseOptionalFromText(it),
                             )
+                            microsTouched = true
                         }
                     )
                 }
@@ -929,6 +943,10 @@ fun FoodResultSheet(
                             editableProtein = commit.baseAggregate.protein
                             editableCarbs = commit.baseAggregate.carbs
                             editableFat = commit.baseAggregate.fat
+                            caloriesTouched = true
+                            proteinTouched = true
+                            carbsTouched = true
+                            fatTouched = true
                         }
                         if (commit.baseSum > 0) {
                             baseServingGrams = commit.baseSum
@@ -976,6 +994,7 @@ fun FoodResultSheet(
                                 dim = true,
                                 onEdit = {
                                     editableMicros = editableMicros.with(field, math.baseOptionalFromText(it))
+                                    microsTouched = true
                                 }
                             )
                         }
