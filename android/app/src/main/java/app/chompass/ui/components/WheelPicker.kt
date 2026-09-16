@@ -226,7 +226,7 @@ fun <T> WheelPicker(
                         // A11y (audit H1): each row announces its label and
                         // selected state; contentDescription replaces the bare
                         // text announcement TalkBack had before.
-                        .semantics {
+                        .semantics(mergeDescendants = true) {
                             this[SemanticsProperties.Selected] = isSelected
                             contentDescription = rowText
                         },
