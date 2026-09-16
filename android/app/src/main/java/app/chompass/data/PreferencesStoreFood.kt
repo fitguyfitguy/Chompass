@@ -195,6 +195,21 @@ internal val PreferencesStore.favoriteFoodEntriesImpl: Flow<List<FoodEntry>>
 internal suspend fun PreferencesStore.setFavoriteFoodEntriesImpl(entries: List<FoodEntry>) =
     setListPref(Keys.FAVORITE_ENTRIES, FoodEntry.serializer(), entries)
 
+/**
+ * Writes the ordered favorites list AND its legacy keys mirror in one
+ * DataStore edit. Two separate edits left a crash window where the legacy
+ * mirror diverged from the ordered list. An unreadable entries blob is
+ * preserved aside before the write replaces it (same semantics as
+ * [setListPref]).
+ */
+internal suspend fun PreferencesStore.setFavoritesAtomicImpl(entries: List<FoodEntry>) {
+    dataStore.edit { prefs ->
+        preserveUnreadableList(prefs, Keys.FAVORITE_ENTRIES, FoodEntry.serializer())
+        prefs[Keys.FAVORITE_ENTRIES] = json.encodeToString(ListSerializer(FoodEntry.serializer()), entries)
+        prefs[Keys.FAVORITE_KEYS] = json.encodeToString(SetSerializer(String.serializer()), entries.map { it.favoriteKey }.toSet())
+    }
+}
+
 // -- Pending food analysis draft --------------------------------------
 internal val PreferencesStore.pendingFoodAnalysisDraftImpl: Flow<PendingFoodAnalysisDraft?>
     get() = objectPref(Keys.PENDING_FOOD_ANALYSIS_DRAFT, PendingFoodAnalysisDraft.serializer())
