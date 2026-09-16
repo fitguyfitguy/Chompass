@@ -117,6 +117,7 @@ data class SettingsUiState(
     val nicotineKindUsage: Map<String, Int> = emptyMap(),
     val dailyNotesEnabled: Boolean = false,
     val mealTimesEnabled: Boolean = true,
+    val mealPlanningEnabled: Boolean = false,
     val caffeineTrackingEnabled: Boolean = false,
     val caffeineQuickKinds: List<String> = HabitPresetDomain.CAFFEINE.defaultQuickKindIds,
     val caffeinePresets: HabitPresetCatalog = HabitPresetDomain.CAFFEINE.defaultCatalog,
@@ -466,6 +467,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     nicotinePresets = snap.nicotinePresets,
                     dailyNotesEnabled = snap.dailyNotesEnabled,
                     mealTimesEnabled = snap.mealTimesEnabled,
+                    mealPlanningEnabled = snap.mealPlanningEnabled,
                     caffeineTrackingEnabled = snap.caffeineTrackingEnabled,
                     caffeineQuickKinds = snap.caffeineQuickKinds,
                     caffeinePresets = snap.caffeinePresets,
@@ -1431,6 +1433,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setMealTimesEnabled(v: Boolean) = updateUiPref(
         { container.prefs.setMealTimesEnabled(v) },
         { copy(mealTimesEnabled = v) },
+    )
+
+    fun setMealPlanningEnabled(v: Boolean) = updateUiPref(
+        { container.prefs.setMealPlanningEnabled(v) },
+        { copy(mealPlanningEnabled = v) },
     )
 
     fun setCaffeineTrackingEnabled(v: Boolean) = updateUiPref(

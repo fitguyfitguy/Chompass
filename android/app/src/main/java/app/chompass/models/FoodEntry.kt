@@ -73,6 +73,13 @@ data class FoodEntry(
      * / sync / meal-share field.
      */
     val microsCompositionSignature: String? = null,
+    /**
+     * True while the entry is a plan (meal planning mode). Local DataStore
+     * only; never serialized into diary export / sync / meal-share
+     * (productMetadata/microsCompositionSignature precedent). Defaults keep
+     * older bucket JSON decodable.
+     */
+    val planned: Boolean = false,
 ) {
     /**
      * Stable identity for Favorites / Frequent / Recents dedup.

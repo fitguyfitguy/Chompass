@@ -1809,6 +1809,8 @@ für dich ein</string>
 
 
     <string name="settings_meal_times_enabled">Mahlzeiten nach Tageszeit vorschlagen</string>
+    <string name="settings_meal_planning">Essensplanung</string>
+    <string name="settings_meal_planning_info">Plane Mahlzeiten für kommende Tage. Geplante Einträge werden im Tagebuch als Geplant markiert und lassen sich mit einem Tap als gegessen erfassen.</string>
     <string name="settings_meals">Mahlzeiten</string>
     <string name="settings_meals_description">Namen, Reihenfolge und Startzeiten</string>
     <string name="settings_meals_help">Neues Essen nutzt die Mahlzeit, deren Startzeit am nächsten vor jetzt liegt.</string>

@@ -54,6 +54,38 @@ internal fun loggingSlotFor(
 ): String =
     if (!timesEnabled) templateMealType else mealIdForLogging(catalog, timeOverride, nowTime)
 
+/** Planned iff mode is on and this is a plan action or the target day is in the future. */
+internal fun plannedFor(
+    mode: Boolean,
+    planAction: Boolean,
+    targetDate: LocalDate,
+    today: LocalDate,
+): Boolean = mode && (planAction || targetDate.isAfter(today))
+
+/**
+ * Log now: future plans move to now (slot per the #102 rule); today/past
+ * plans just clear the flag.
+ */
+internal fun confirmPlannedEntry(
+    entry: FoodEntry,
+    today: LocalDate,
+    now: Instant,
+    zone: ZoneId,
+    timesEnabled: Boolean,
+    catalog: MealCatalog,
+): FoodEntry {
+    // Log-now is only wired for planned rows; anything else passes through.
+    if (!entry.planned) return entry
+    val entryDay = entry.timestamp.atZone(zone).toLocalDate()
+    if (!entryDay.isAfter(today)) return entry.copy(planned = false)
+    val nowTime = now.atZone(zone).toLocalTime().withSecond(0).withNano(0)
+    return entry.copy(
+        timestamp = today.atTime(nowTime).atZone(zone).toInstant(),
+        mealType = loggingSlotFor(entry.mealType, timesEnabled, catalog, null, nowTime),
+        planned = false,
+    )
+}
+
 /** UI prefill: Other when suggestions are off, else catalog slot at [time]. */
 internal fun suggestedSlotFor(
     timesEnabled: Boolean,

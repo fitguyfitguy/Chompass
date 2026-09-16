@@ -19,6 +19,12 @@ internal val PreferencesStore.mealTimesEnabledImpl: Flow<Boolean>
 internal suspend fun PreferencesStore.setMealTimesEnabledImpl(v: Boolean) =
     setBoolPref(Keys.MEAL_TIMES_ENABLED, v)
 
+/** Optional meal planning mode; default off. */
+internal val PreferencesStore.mealPlanningEnabledImpl: Flow<Boolean>
+    get() = boolPref(Keys.MEAL_PLANNING_ENABLED, false)
+internal suspend fun PreferencesStore.setMealPlanningEnabledImpl(v: Boolean) =
+    setBoolPref(Keys.MEAL_PLANNING_ENABLED, v)
+
 internal val PreferencesStore.noteEntriesImpl: Flow<List<DailyNote>>
     get() = flow {
         emitAll(noteBucketStore.allFlow())

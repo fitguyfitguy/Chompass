@@ -286,6 +286,8 @@ data class HomeUiState(
     val dailyNotesEnabled: Boolean = false,
     /** Suggest meals by time of day; default on. */
     val mealTimesEnabled: Boolean = true,
+    /** Optional meal planning mode; default off. */
+    val mealPlanningEnabled: Boolean = false,
     /** Optional caffeine tracker (device-pass revision); default off. */
     val caffeineTrackingEnabled: Boolean = false,
     val caffeineQuickKinds: List<String> = HabitPresetDomain.CAFFEINE.defaultQuickKindIds,
@@ -594,6 +596,7 @@ data class HomeUiState(
             nicotineTodayEntries == other.nicotineTodayEntries &&
             dailyNotesEnabled == other.dailyNotesEnabled &&
             mealTimesEnabled == other.mealTimesEnabled &&
+            mealPlanningEnabled == other.mealPlanningEnabled &&
             caffeineTrackingEnabled == other.caffeineTrackingEnabled &&
             caffeineQuickKinds == other.caffeineQuickKinds &&
             caffeinePresets == other.caffeinePresets &&
@@ -688,6 +691,7 @@ data class HomeUiState(
         result = 31 * result + nicotineTodayEntries.hashCode()
         result = 31 * result + dailyNotesEnabled.hashCode()
         result = 31 * result + mealTimesEnabled.hashCode()
+        result = 31 * result + mealPlanningEnabled.hashCode()
         result = 31 * result + caffeineTrackingEnabled.hashCode()
         result = 31 * result + caffeineQuickKinds.hashCode()
         result = 31 * result + caffeinePresets.hashCode()
@@ -1341,6 +1345,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
         container.prefs.mealTimesEnabled
             .onEach { enabled -> _ui.update { it.copy(mealTimesEnabled = enabled) } }
+            .launchIn(viewModelScope)
+
+        container.prefs.mealPlanningEnabled
+            .onEach { enabled -> _ui.update { it.copy(mealPlanningEnabled = enabled) } }
             .launchIn(viewModelScope)
 
         container.prefs.nicotineDailyLimit
@@ -2405,6 +2413,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         constituents = constituents,
                         productMetadata = analysis.productMetadata,
                         microsCompositionSignature = app.chompass.models.microsCompositionSignature(constituents),
+                        planned = plannedFor(
+                            _ui.value.mealPlanningEnabled,
+                            planAction = false,
+                            targetDate = _selectedDate.value,
+                            today = LocalDate.now(),
+                        ),
                     )
                 )
                 // Capture the saved identity this save merges into (if any)
@@ -2614,7 +2628,16 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     timestamp = timestamp,
                     imageFilenameFor = { item, _ -> filenames[item.id] },
                     resolveName = { raw -> disambiguateFoodName(raw, knownKeys) },
-                )
+                ).map {
+                    it.copy(
+                        planned = plannedFor(
+                            _ui.value.mealPlanningEnabled,
+                            planAction = false,
+                            targetDate = _selectedDate.value,
+                            today = LocalDate.now(),
+                        )
+                    )
+                }
                 // One batched DataStore edit for the whole meal instead of one
                 // full-file write per ingredient; Health Connect mirrors in the
                 // background so the sheet dismisses right after the local commit.
@@ -3067,7 +3090,15 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             PerfLog.measure("relog", "addEntry", "name=${template.name}") {
                 container.foodRepository.addEntry(
-                    template.duplicatedForLogging(timestampForFoodLog(), loggingMealId(template.mealType)),
+                    template.duplicatedForLogging(timestampForFoodLog(), loggingMealId(template.mealType))
+                        .copy(
+                            planned = plannedFor(
+                                _ui.value.mealPlanningEnabled,
+                                planAction = false,
+                                targetDate = _selectedDate.value,
+                                today = LocalDate.now(),
+                            )
+                        ),
                 )
             }
         }
@@ -3106,6 +3137,14 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 // Health Connect mirrors in the background.
                 val duplicated = entries.map {
                     it.duplicatedForLogging(timestampForFoodLog(targetDate), loggingMealId(it.mealType))
+                        .copy(
+                            planned = plannedFor(
+                                _ui.value.mealPlanningEnabled,
+                                planAction = false,
+                                targetDate = targetDate,
+                                today = LocalDate.now(),
+                            )
+                        )
                 }
                 container.foodRepository.addEntries(duplicated, writeHealth = false)
                 viewModelScope.launch {
@@ -3166,6 +3205,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                             servingUnitOptions = servingUnitOptions,
                             selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingUnit,
                             selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
+                            planned = plannedFor(
+                                _ui.value.mealPlanningEnabled,
+                                planAction = false,
+                                targetDate = _selectedDate.value,
+                                today = LocalDate.now(),
+                            ),
                         )
                     )
                 )

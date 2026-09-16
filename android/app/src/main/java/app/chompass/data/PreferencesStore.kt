@@ -252,6 +252,9 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setDailyNotesEnabled(v: Boolean) = setDailyNotesEnabledImpl(v)
     val mealTimesEnabled: Flow<Boolean> get() = mealTimesEnabledImpl
     suspend fun setMealTimesEnabled(v: Boolean) = setMealTimesEnabledImpl(v)
+    /** Optional meal planning mode; default off. */
+    val mealPlanningEnabled: Flow<Boolean> get() = mealPlanningEnabledImpl
+    suspend fun setMealPlanningEnabled(v: Boolean) = setMealPlanningEnabledImpl(v)
     /** Month-scoped daily-note write (one bucket file) — the note path. */
     suspend fun applyNoteBucketChanges(
         upsertsByMonth: Map<YearMonth, List<DailyNote>> = emptyMap(),
