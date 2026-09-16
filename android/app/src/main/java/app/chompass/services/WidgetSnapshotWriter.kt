@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import java.time.Instant
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.ZoneId
 
 /**
@@ -90,7 +91,14 @@ class WidgetSnapshotWriter(
     internal fun observe() = combine(
         combine(
             combine(
-                foodRepository.entriesForDate(LocalDate.now()),
+                // Change trigger only. A date-scoped entries flow captures
+                // LocalDate.now() once at collect, so after midnight it still
+                // streams yesterday's rows and publish() then filters them
+                // against the NEW today — the widget read 0/stale kcal until
+                // process restart. The month flow keeps firing on same-day
+                // writes across midnight; month rolls are covered by the
+                // 00:00 alarm (refresh() re-reads the fresh date).
+                prefs.foodEntriesForMonth(YearMonth.now()),
                 profileRepository.profile,
                 prefs.homeDisplayPreferences,
                 prefs.appThemeColor,
@@ -155,7 +163,12 @@ class WidgetSnapshotWriter(
             inputs.copy(caffeineEntries = caffeine)
         }
         .distinctUntilChanged()
-        .onEach { inputs -> publish(inputs.entries, inputs.profile, inputs.appearance, inputs.water, inputs.caffeineEntries, inputs.energyUnit) }
+        .onEach { inputs ->
+            // Always publish from a fresh today read, never the trigger flow's
+            // captured-at-collect list (see note above).
+            val entries = foodRepository.entriesForDate(LocalDate.now()).first()
+            publish(entries, inputs.profile, inputs.appearance, inputs.water, inputs.caffeineEntries, inputs.energyUnit)
+        }
 
     /**
      * Recompute and publish from current repos/prefs. Used when Theme Color is
