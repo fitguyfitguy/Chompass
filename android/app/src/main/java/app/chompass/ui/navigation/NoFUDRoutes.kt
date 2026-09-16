@@ -5,6 +5,7 @@ object ChompassRoutes {
     const val HOME = "home"
     const val PROGRESS = "progress"
     const val COACH = "coach"
+    const val PLAN_WEEK = "plan-week"
     const val SETTINGS = "settings"
     const val SETTINGS_PERSONAL = "settings/personal"
     const val SETTINGS_GOALS = "settings/goals"

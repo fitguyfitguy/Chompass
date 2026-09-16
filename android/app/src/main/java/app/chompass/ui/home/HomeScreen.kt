@@ -123,6 +123,8 @@ fun HomeScreen(
     onOpenSettings: (() -> Unit)? = null,
     onOpenDayTypes: (() -> Unit)? = null,
     onOpenFoodSettings: (() -> Unit)? = null,
+    /** Plan week canvas (meal planning mode). Null where the canvas is not reachable. */
+    onPlanWeek: (() -> Unit)? = null,
 ) {
     val vm: HomeViewModel = viewModel(factory = HomeViewModel.Factory(container))
     val ui by vm.ui.collectAsState()
@@ -238,6 +240,16 @@ fun HomeScreen(
         val ack = ui.plannedAck ?: return@LaunchedEffect
         snackbarHostState.showSnackbar(plannedForPattern.format(ack.second.format(plannedDateFormat)))
         vm.clearPlannedAck()
+    }
+
+    // Plan week canvas handoff: open Home on the tapped chip's day.
+    LaunchedEffect(Unit) {
+        container.planWeekReturnDay.collect { day ->
+            if (day != null) {
+                vm.setSelectedDate(day)
+                container.planWeekReturnDay.value = null
+            }
+        }
     }
 
     // Mid-flight "Add photo" from the Log sheet only — never auto-start LLM on staging.
@@ -1136,6 +1148,7 @@ fun HomeScreen(
                 addFoodFlowActive = false
                 planForDayTarget = it
             },
+            onPlanWeek = { onPlanWeek?.invoke() },
             onAnalyzeQuery = { text ->
                 if (!ui.isEntryAnalysisBusy) {
                     addFoodFlowActive = false

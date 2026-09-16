@@ -370,6 +370,12 @@ class AppContainer(app: ChompassApp) {
      */
     val launchDestinationInbox: MutableStateFlow<String?> = MutableStateFlow(null)
 
+    /**
+     * Plan week canvas → Home handoff (meal planning mode): the day whose chip
+     * was tapped. Home consumes it by selecting that day, then clears it.
+     */
+    val planWeekReturnDay: MutableStateFlow<java.time.LocalDate?> = MutableStateFlow(null)
+
     /** Debug-only: HomeViewModel runs flippidity benches through the real UI path. */
     val perfBenchInbox: MutableStateFlow<app.chompass.services.PerfBenchRequest?> =
         MutableStateFlow(null)

@@ -2045,6 +2045,9 @@
     <string name="settings_reset_defaults">Reset to Defaults</string>
     <string name="copy_from">Copy From</string>
     <string name="copy_to">Copy To</string>
+    <string name="plan_week_title">Plan week</string>
+    <string name="plan_week_range">%1$s – %2$s</string>
+    <string name="plan_week_add_meal">Add meal</string>
     <string name="plan_pick_day_title">Pick a day</string>
     <string name="copy_hint">Foods will be copied to %1$s. Original entries stay unchanged.</string>
     <string name="macro_protein_format">Protein: %1$s</string>
@@ -2181,6 +2184,9 @@
     <string name="cd_discard_recovered_review">Discard recovered analysis</string>
     <string name="cd_favorited">Favorited</string>
     <string name="cd_plan_suggestion">Plan for a day</string>
+    <string name="cd_plan_week">Open week planner</string>
+    <string name="cd_plan_week_prev">Previous week</string>
+    <string name="cd_plan_week_next">Next week</string>
     <string name="cd_move_up">Move up</string>
     <string name="cd_move_down">Move down</string>
     <string name="cd_unfavorite">Unfavorite</string>
