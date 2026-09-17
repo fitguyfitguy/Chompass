@@ -517,6 +517,8 @@
     <string name="notif_model_download_title">ऑन-डिवाइस मॉडल डाउनलोड हो रहा है</string>
     <string name="settings_recalc_confirm">पुनः गणना करें</string>
     <string name="settings_recalc_details">पुनर्गणना विवरण</string>
+    <string name="settings_recalc_failed_title">पुनर्गणना नहीं हो सकी</string>
+    <string name="settings_recalc_failed_message">AI पुनर्गणना पूरी नहीं कर सका, इसलिए आपके लक्ष्य अपरिवर्तित हैं। कुछ देर बाद फिर कोशिश करें।</string>
     <string name="settings_invalid_goal_title">लक्ष्य वज़न आपके लक्ष्य से मेल नहीं खाता</string>
     <string name="settings_invalid_goal_lose">घटाने के लक्ष्य के लिए आपके वर्तमान वज़न से कम लक्ष्य चाहिए।</string>
     <string name="settings_invalid_goal_gain">बढ़ाने के लक्ष्य के लिए आपके वर्तमान वज़न से अधिक लक्ष्य चाहिए।</string>

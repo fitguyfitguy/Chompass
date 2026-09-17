@@ -488,6 +488,8 @@
     <string name="notif_model_download_title">Model op apparaat downloaden</string>
     <string name="settings_recalc_confirm">Opnieuw berekenen</string>
     <string name="settings_recalc_details">Details van de herberekening</string>
+    <string name="settings_recalc_failed_title">Herberekenen mislukt</string>
+    <string name="settings_recalc_failed_message">De AI kon de herberekening niet voltooien, je doelen blijven ongewijzigd. Probeer het zo opnieuw.</string>
     <string name="settings_invalid_goal_title">Streefgewicht past niet bij je doel</string>
     <string name="settings_invalid_goal_lose">Een doel om af te vallen vereist een streefgewicht onder je huidige gewicht.</string>
     <string name="settings_invalid_goal_gain">Een doel om aan te komen vereist een streefgewicht boven je huidige gewicht.</string>

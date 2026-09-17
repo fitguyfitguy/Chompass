@@ -140,15 +140,10 @@ class CoachViewModel(private val container: AppContainer) : ViewModel() {
             } catch (e: AiError) {
                 _ui.value = _ui.value.copy(sending = false, error = e.userMessage(container.appContext))
             } catch (e: Throwable) {
-                val msg = e.localizedMessage
                 _ui.value = _ui.value.copy(
                     sending = false,
-                    error = when {
-                        !msg.isNullOrBlank() -> msg
-                        BuildConfig.DEBUG -> e.javaClass.simpleName
-                        else -> null
-                    },
-                    errorRes = if (msg.isNullOrBlank()) R.string.coach_chat_failed else null,
+                    error = if (BuildConfig.DEBUG) e.javaClass.simpleName else null,
+                    errorRes = R.string.coach_chat_failed,
                 )
             }
         }

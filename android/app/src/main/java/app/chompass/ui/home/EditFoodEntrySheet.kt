@@ -24,6 +24,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.toMicronutrients
+import app.chompass.services.ai.AiError
+import app.chompass.services.ai.userMessage
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -366,7 +368,7 @@ fun EditFoodEntrySheet(
                     reprocessGUnit,
                 ) { EnergyFormat.quantity(it, reprocessEnergyUnit) }
             } catch (e: Exception) {
-                errorText = e.localizedMessage ?: context.getString(R.string.edit_reprocessing_failed)
+                errorText = (e as? AiError)?.userMessage(context) ?: context.getString(R.string.edit_reprocessing_failed)
             } finally {
                 isReprocessing = false
                 reprocessPhase = null

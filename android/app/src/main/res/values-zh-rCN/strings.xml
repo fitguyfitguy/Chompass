@@ -518,6 +518,8 @@
     <string name="notif_model_download_title">正在下载设备端模型</string>
     <string name="settings_recalc_confirm">重新计算</string>
     <string name="settings_recalc_details">重新计算详情</string>
+    <string name="settings_recalc_failed_title">无法重新计算</string>
+    <string name="settings_recalc_failed_message">AI 未能完成重新计算，你的目标保持不变。请稍后再试。</string>
     <string name="settings_invalid_goal_title">目标体重与你的目标不匹配</string>
     <string name="settings_invalid_goal_lose">减重目标的目标体重需低于当前体重。</string>
     <string name="settings_invalid_goal_gain">增重目标的目标体重需高于当前体重。</string>

@@ -1132,6 +1132,8 @@
     <string name="notif_model_download_title">Pobieranie modelu na urządzenie</string>
     <string name="settings_recalc_confirm">Przelicz</string>
     <string name="settings_recalc_details">Szczegóły przeliczenia</string>
+    <string name="settings_recalc_failed_title">Nie udało się przeliczyć</string>
+    <string name="settings_recalc_failed_message">AI nie ukończyło przeliczania, więc Twoje cele pozostają bez zmian. Spróbuj ponownie za chwilę.</string>
     <string name="settings_invalid_goal_title">Waga docelowa nie pasuje do celu</string>
     <string name="settings_invalid_goal_lose">Cel Schudnąć wymaga celu poniżej obecnej wagi.</string>
     <string name="settings_invalid_goal_gain">Cel Przybrać wymaga celu powyżej obecnej wagi.</string>
