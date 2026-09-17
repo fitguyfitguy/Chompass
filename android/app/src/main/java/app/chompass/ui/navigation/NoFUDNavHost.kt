@@ -106,6 +106,8 @@ fun ChompassNavHost(
     // FoodPhotoSession review. No-op during onboarding (HOME isn't on the stack yet);
     // the inbox is sticky, so Home picks it up once it composes. RESUMED-only
     // so a stopped duplicate MainActivity cannot mutate this nav controller.
+    // The pop carries saveState so the displaced screen comes back via the tab's
+    // restoreState once the share/shortcut flow is done (audit M1: the yank).
     // In-app gallery does not use sharedImageInbox (Activity FoodPhotoSession).
     val lifecycleOwner = LocalLifecycleOwner.current
     val sharedImages by container.sharedImageInbox.collectAsState()
@@ -116,7 +118,7 @@ fun ChompassNavHost(
             if (container.sharedImageInbox.value.isEmpty()) return@repeatOnLifecycle
             val route = nav.currentBackStackEntry?.destination?.route
             if (route != null && route != ChompassRoutes.HOME) {
-                nav.popBackStack(ChompassRoutes.HOME, inclusive = false)
+                nav.popBackStack(ChompassRoutes.HOME, inclusive = false, saveState = true)
             }
         }
     }
@@ -128,7 +130,7 @@ fun ChompassNavHost(
             if (container.shortcutEntryInbox.value == null) return@repeatOnLifecycle
             val route = nav.currentBackStackEntry?.destination?.route
             if (route != null && route != ChompassRoutes.HOME) {
-                nav.popBackStack(ChompassRoutes.HOME, inclusive = false)
+                nav.popBackStack(ChompassRoutes.HOME, inclusive = false, saveState = true)
             }
         }
     }
@@ -142,7 +144,7 @@ fun ChompassNavHost(
             // Onboarding has no HOME on the stack yet; ignore the tap there.
             if (route == null || route == ChompassRoutes.ONBOARDING) return@repeatOnLifecycle
             if (route != ChompassRoutes.HOME && route != dest) {
-                nav.popBackStack(ChompassRoutes.HOME, inclusive = false)
+                nav.popBackStack(ChompassRoutes.HOME, inclusive = false, saveState = true)
             }
             if (container.launchDestinationInbox.value != dest) return@repeatOnLifecycle
             if (route != dest) {
@@ -242,7 +244,11 @@ fun ChompassNavHost(
                             }
                         },
                         onPlanWeek = {
-                            nav.navigate(ChompassRoutes.PLAN_WEEK) { launchSingleTop = true }
+                            nav.navigate(ChompassRoutes.PLAN_WEEK) {
+                                popUpTo(ChompassRoutes.HOME) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         },
                         onOpenDayTypes = {
                             nav.navigate(ChompassRoutes.SETTINGS_DAY_TYPES) {
@@ -260,7 +266,7 @@ fun ChompassNavHost(
                     ProgressScreen(
                         container = container,
                         onOpenCustomize = {
-                            nav.navigate(ChompassRoutes.CUSTOMIZE_PROGRESS)
+                            nav.navigate(ChompassRoutes.CUSTOMIZE_PROGRESS) { launchSingleTop = true }
                         },
                     )
                 }
@@ -268,12 +274,11 @@ fun ChompassNavHost(
                     if (showCoachTab) {
                         CoachScreen(container = container)
                     } else {
-                        // Deep link or stale back stack with the tab off: land Home.
+                        // Deep link or stale back stack with the tab off: pop back to
+                        // Home instead of pushing a second HOME entry on top of COACH
+                        // (that stack made back bounce off COACH and then exit).
                         LaunchedEffect(Unit) {
-                            nav.navigate(ChompassRoutes.HOME) {
-                                popUpTo(ChompassRoutes.HOME) { inclusive = false }
-                                launchSingleTop = true
-                            }
+                            nav.popBackStack(ChompassRoutes.HOME, inclusive = false)
                         }
                     }
                 }
