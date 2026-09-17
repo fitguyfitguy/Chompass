@@ -5,6 +5,7 @@ import app.chompass.models.EnergyFormat
 import app.chompass.R
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -27,7 +28,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -41,6 +49,7 @@ import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import app.chompass.ui.components.energyUnitLabel
 import androidx.compose.ui.unit.sp
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.WeightEntry
@@ -54,6 +63,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import kotlin.math.abs
 import java.time.temporal.TemporalAdjusters
 import app.chompass.models.UnitFormat
 
@@ -376,8 +386,31 @@ internal fun WeightChartCanvas(
         }
     }
 
+    var inspectedPoint by remember(chartModel) { mutableStateOf<Int?>(null) }
+    val textMeasurer = rememberTextMeasurer()
+    val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
+    val chipForeground = MaterialTheme.colorScheme.surface
+    val weightUnit = stringResource(if (useMetric) R.string.unit_kg else R.string.unit_lbs)
+    val inspectedLabel = inspectedPoint?.let { index ->
+        chartModel.points.getOrNull(index)?.let { point ->
+            "${chartModel.xLabelFmt.format(Instant.ofEpochMilli(point.timeMs))} · ${formatTick(point.value)} $weightUnit"
+        }
+    }
     Row(Modifier.fillMaxWidth().height(180.dp)) {
-        Canvas(Modifier.weight(1f).fillMaxSize()) {
+        Canvas(
+            Modifier
+                .weight(1f)
+                .fillMaxSize()
+                .pointerInput(chartModel) {
+                    detectTapGestures { tap ->
+                        val index = nearestTrendIndex(
+                            chartModel.points, chartModel.tStart, chartModel.tRange,
+                            chartModel.singleEntry, tap.x, size.width.toFloat(),
+                        )
+                        inspectedPoint = if (inspectedPoint == index) null else index
+                    }
+                }
+        ) {
             val w = size.width; val h = size.height
             chartModel.ticks.forEach { tick ->
                 val y = h - (((tick - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
@@ -438,6 +471,11 @@ internal fun WeightChartCanvas(
                     offsets.forEach { drawCircle(AppColors.Calorie, radius = 5.5f, center = it) }
                 }
             }
+            drawInspectedDot(offsets, inspectedPoint)
+            val inspectedOffset = inspectedPoint?.takeIf { it < offsets.size }?.let { offsets[it] }
+            if (inspectedOffset != null && inspectedLabel != null) {
+                drawInspectionTag(inspectedLabel, textMeasurer, inspectedOffset, w, chipBackground, chipForeground)
+            }
         }
         Column(
             Modifier.width(36.dp).fillMaxSize().padding(start = 4.dp),
@@ -490,8 +528,30 @@ internal fun BodyFatChartCanvas(
         }
     }
 
+    var inspectedPoint by remember(chartModel) { mutableStateOf<Int?>(null) }
+    val textMeasurer = rememberTextMeasurer()
+    val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
+    val chipForeground = MaterialTheme.colorScheme.surface
+    val inspectedLabel = inspectedPoint?.let { index ->
+        chartModel.points.getOrNull(index)?.let { point ->
+            "${chartModel.xLabelFmt.format(Instant.ofEpochMilli(point.timeMs))} · ${UnitFormat.percent(point.value)}"
+        }
+    }
     Row(Modifier.fillMaxWidth().height(180.dp)) {
-        Canvas(Modifier.weight(1f).fillMaxSize()) {
+        Canvas(
+            Modifier
+                .weight(1f)
+                .fillMaxSize()
+                .pointerInput(chartModel) {
+                    detectTapGestures { tap ->
+                        val index = nearestTrendIndex(
+                            chartModel.points, chartModel.tStart, chartModel.tRange,
+                            chartModel.singleEntry, tap.x, size.width.toFloat(),
+                        )
+                        inspectedPoint = if (inspectedPoint == index) null else index
+                    }
+                }
+        ) {
             val w = size.width; val h = size.height
             chartModel.ticks.forEach { tick ->
                 val y = h - (((tick - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
@@ -532,6 +592,11 @@ internal fun BodyFatChartCanvas(
                 if (chartRenderPhase >= 2 && chartModel.showsDots) {
                     offsets.forEach { drawCircle(AppColors.Calorie, radius = 5.5f, center = it) }
                 }
+            }
+            drawInspectedDot(offsets, inspectedPoint)
+            val inspectedOffset = inspectedPoint?.takeIf { it < offsets.size }?.let { offsets[it] }
+            if (inspectedOffset != null && inspectedLabel != null) {
+                drawInspectionTag(inspectedLabel, textMeasurer, inspectedOffset, w, chipBackground, chipForeground)
             }
         }
         Column(
@@ -616,6 +681,8 @@ internal fun buildMeasurementChartModel(series: List<TrendPoint>): WeightChartMo
 internal fun MeasurementChartCanvas(
     series: List<TrendPoint>,
     immediate: Boolean = false,
+    /** Display-unit formatter for the tap tag (cm → "12.5 cm"); null → bare tick format. */
+    tagFormatter: ((Double) -> String)? = null,
 ) {
     val chartModel = remember(series) { buildMeasurementChartModel(series) }
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
@@ -633,8 +700,31 @@ internal fun MeasurementChartCanvas(
         }
     }
 
+    var inspectedPoint by remember(chartModel) { mutableStateOf<Int?>(null) }
+    val textMeasurer = rememberTextMeasurer()
+    val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
+    val chipForeground = MaterialTheme.colorScheme.surface
+    val inspectedLabel = inspectedPoint?.let { index ->
+        chartModel.points.getOrNull(index)?.let { point ->
+            val value = tagFormatter?.invoke(point.value) ?: formatTick(point.value)
+            "${chartModel.xLabelFmt.format(Instant.ofEpochMilli(point.timeMs))} · $value"
+        }
+    }
     Row(Modifier.fillMaxWidth().height(140.dp)) {
-        Canvas(Modifier.weight(1f).fillMaxSize()) {
+        Canvas(
+            Modifier
+                .weight(1f)
+                .fillMaxSize()
+                .pointerInput(chartModel) {
+                    detectTapGestures { tap ->
+                        val index = nearestTrendIndex(
+                            chartModel.points, chartModel.tStart, chartModel.tRange,
+                            chartModel.singleEntry, tap.x, size.width.toFloat(),
+                        )
+                        inspectedPoint = if (inspectedPoint == index) null else index
+                    }
+                }
+        ) {
             val w = size.width; val h = size.height
             chartModel.ticks.forEach { tick ->
                 val y = h - (((tick - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
@@ -665,6 +755,11 @@ internal fun MeasurementChartCanvas(
                 if (chartRenderPhase >= 2 && chartModel.showsDots) {
                     offsets.forEach { drawCircle(AppColors.Calorie, radius = 5.5f, center = it) }
                 }
+            }
+            drawInspectedDot(offsets, inspectedPoint)
+            val inspectedOffset = inspectedPoint?.takeIf { it < offsets.size }?.let { offsets[it] }
+            if (inspectedOffset != null && inspectedLabel != null) {
+                drawInspectionTag(inspectedLabel, textMeasurer, inspectedOffset, w, chipBackground, chipForeground)
             }
         }
         Column(
@@ -718,6 +813,16 @@ internal fun CalorieBarChart(
     val yTop = ticks.last().coerceAtLeast(maxValue)
     val xLabelFmt = LocaleFormat.shortDate()
 
+    var inspectedBar by remember(dailyCalories) { mutableStateOf<Int?>(null) }
+    val textMeasurer = rememberTextMeasurer()
+    val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
+    val chipForeground = MaterialTheme.colorScheme.surface
+    val energyUnit = LocalEnergyUnit.current
+    val inspectedLabel = inspectedBar?.let { index ->
+        dailyCalories.getOrNull(index)?.let { (day, kcal) ->
+            "${xLabelFmt.format(day)} · ${LocaleFormat.integer(EnergyFormat.quantity(kcal, energyUnit))} ${energyUnitLabel()}"
+        }
+    }
     Column {
         Row(Modifier.fillMaxWidth().height(180.dp)) {
             BoxWithConstraints(Modifier.weight(1f).fillMaxSize()) {
@@ -730,7 +835,17 @@ internal fun CalorieBarChart(
                 val totalGroupW = barWidth * n + gap * (n - 1)
                 val startX = ((barAreaWidthPx - totalGroupW) / 2f).coerceAtLeast(0f)
 
-                Canvas(Modifier.fillMaxSize()) {
+                Canvas(
+                    Modifier
+                        .fillMaxSize()
+                        .pointerInput(dailyCalories, startX, barWidth, gap) {
+                            detectTapGestures { tap ->
+                                if (n == 0) return@detectTapGestures
+                                val index = ((tap.x - startX) / (barWidth + gap)).toInt().coerceIn(0, n - 1)
+                                inspectedBar = if (inspectedBar == index) null else index
+                            }
+                        }
+                ) {
                     val pxW = size.width; val pxH = size.height
                     ticks.forEach { tick ->
                         val y = pxH - ((tick / yTop).toFloat() * pxH)
@@ -773,6 +888,14 @@ internal fun CalorieBarChart(
                             size = Size(barWidth, barH),
                             cornerRadius = CornerRadius(4f, 4f)
                         )
+                    }
+                    inspectedBar?.takeIf { it < n }?.let { index ->
+                        val cx = startX + index * (barWidth + gap) + barWidth / 2f
+                        val topY = pxH - ((dailyCalories[index].second / yTop).toFloat() * pxH)
+                        drawCircle(AppColors.Calorie.copy(alpha = 0.25f), radius = 16f, center = Offset(cx, topY))
+                        if (inspectedLabel != null) {
+                            drawInspectionTag(inspectedLabel, textMeasurer, Offset(cx, topY), pxW, chipBackground, chipForeground)
+                        }
                     }
                 }
             }
@@ -858,4 +981,65 @@ internal fun ChartPlaceholder(height: Dp = 180.dp) {
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
         )
     }
+}
+
+/** Tap-to-read for trend charts (audit M10): index of the plotted point whose
+ *  x is nearest the tap — the Android twin of the PWA's per-point hit circles
+ *  (web/app/src/lib/charts.js). */
+internal fun nearestTrendIndex(
+    points: List<TrendPoint>,
+    tStart: Long,
+    tRange: Long,
+    singleEntry: Boolean,
+    x: Float,
+    width: Float,
+): Int? {
+    if (points.isEmpty()) return null
+    if (singleEntry || points.size == 1) return 0
+    var best = 0
+    var bestDx = Float.MAX_VALUE
+    for ((index, point) in points.withIndex()) {
+        val px = ((point.timeMs - tStart).toDouble() / tRange * width).toFloat()
+        val dx = abs(px - x)
+        if (dx < bestDx) {
+            bestDx = dx
+            best = index
+        }
+    }
+    return best
+}
+
+private fun DrawScope.drawInspectedDot(offsets: List<Offset>, index: Int?) {
+    val center = index?.takeIf { it < offsets.size }?.let { offsets[it] } ?: return
+    drawCircle(AppColors.Calorie.copy(alpha = 0.25f), radius = 16f, center = center)
+    drawCircle(AppColors.Calorie, radius = 7f, center = center)
+}
+
+/** Value tag pinned above the inspected point, clamped to the canvas. */
+private fun DrawScope.drawInspectionTag(
+    label: String,
+    textMeasurer: TextMeasurer,
+    point: Offset,
+    canvasWidth: Float,
+    chipBackground: Color,
+    chipForeground: Color,
+) {
+    if (label.isEmpty()) return
+    val padH = 10.dp.toPx()
+    val padV = 6.dp.toPx()
+    val textLayout = textMeasurer.measure(
+        label,
+        TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = chipForeground),
+    )
+    val tagWidth = textLayout.size.width + padH * 2
+    val tagHeight = textLayout.size.height + padV * 2
+    val left = (point.x - tagWidth / 2f).coerceIn(0f, (canvasWidth - tagWidth).coerceAtLeast(0f))
+    val top = (point.y - tagHeight - 14f).coerceAtLeast(0f)
+    drawRoundRect(
+        color = chipBackground,
+        topLeft = Offset(left, top),
+        size = Size(tagWidth, tagHeight),
+        cornerRadius = CornerRadius(8.dp.toPx()),
+    )
+    drawText(textLayout, topLeft = Offset(left + padH, top + padV))
 }

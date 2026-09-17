@@ -1,5 +1,8 @@
 package app.chompass.ui.progress
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +26,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,8 +64,12 @@ internal fun WeightSection(
     onLogWeight: () -> Unit,
     chartsImmediate: Boolean = false,
 ) {
+    var expanded by rememberSaveable { mutableStateOf(true) }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.progressCollapseHeader(expanded) { expanded = !expanded },
+        ) {
             Text(stringResource(R.string.progress_weight_section), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.weight(1f))
             Row(
@@ -69,46 +80,56 @@ internal fun WeightSection(
                 Spacer(Modifier.width(4.dp))
                 Text(stringResource(R.string.progress_log_weight), fontSize = 15.sp, fontWeight = FontWeight.Medium, color = AppColors.Calorie)
             }
+            Spacer(Modifier.width(8.dp))
+            CollapseChevron(expanded)
         }
-        if (entries.isEmpty()) {
-            Box(Modifier.fillMaxWidth().padding(vertical = 24.dp), contentAlignment = Alignment.Center) {
-                Text(
-                    stringResource(R.string.progress_log_first_weight),
-                    fontSize = 15.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
-                )
-            }
-        } else {
-            val currentLabel = stringResource(R.string.progress_stat_current)
-            val goalLabel = stringResource(R.string.progress_stat_goal)
-            val netChangeLabel = stringResource(R.string.progress_stat_net_change)
-            val averageLabel = stringResource(R.string.progress_stat_average)
-            StatBadgeRow(
-                buildList {
-                    stats.currentKg?.let {
-                        add(currentLabel to formatWeight(it, useMetric))
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically(),
+            exit = shrinkVertically(),
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (entries.isEmpty()) {
+                    Box(Modifier.fillMaxWidth().padding(vertical = 24.dp), contentAlignment = Alignment.Center) {
+                        Text(
+                            stringResource(R.string.progress_log_first_weight),
+                            fontSize = 15.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                        )
                     }
-                    goalKg?.let {
-                        add(goalLabel to formatWeight(it, useMetric))
+                } else {
+                    val currentLabel = stringResource(R.string.progress_stat_current)
+                    val goalLabel = stringResource(R.string.progress_stat_goal)
+                    val netChangeLabel = stringResource(R.string.progress_stat_net_change)
+                    val averageLabel = stringResource(R.string.progress_stat_average)
+                    StatBadgeRow(
+                        buildList {
+                            stats.currentKg?.let {
+                                add(currentLabel to formatWeight(it, useMetric))
+                            }
+                            goalKg?.let {
+                                add(goalLabel to formatWeight(it, useMetric))
+                            }
+                            add(netChangeLabel to formatWeightChange(stats.netChangeKg, useMetric))
+                            add(averageLabel to formatWeight(stats.averageKg, useMetric))
+                        }
+                    )
+                    val hasTrend = remember(entries) {
+                        computeWeightTrend(
+                            weighIns = entries.map { WeightTrendInput(at = it.date, weightKg = it.weightKg) },
+                            zone = ZoneId.systemDefault(),
+                        ).isNotEmpty()
                     }
-                    add(netChangeLabel to formatWeightChange(stats.netChangeKg, useMetric))
-                    add(averageLabel to formatWeight(stats.averageKg, useMetric))
+                    WeightChartLegend(hasTrend = hasTrend)
+                    DeferredChart(immediate = chartsImmediate) {
+                        WeightChartCanvas(
+                            entries = entries,
+                            goalKg = goalKg,
+                            useMetric = useMetric,
+                            immediate = chartsImmediate,
+                        )
+                    }
                 }
-            )
-            val hasTrend = remember(entries) {
-                computeWeightTrend(
-                    weighIns = entries.map { WeightTrendInput(at = it.date, weightKg = it.weightKg) },
-                    zone = ZoneId.systemDefault(),
-                ).isNotEmpty()
-            }
-            WeightChartLegend(hasTrend = hasTrend)
-            DeferredChart(immediate = chartsImmediate) {
-                WeightChartCanvas(
-                    entries = entries,
-                    goalKg = goalKg,
-                    useMetric = useMetric,
-                    immediate = chartsImmediate,
-                )
             }
         }
     }
