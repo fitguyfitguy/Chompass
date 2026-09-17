@@ -59,6 +59,9 @@ fun TextInputSheet(
     isSubmitting: Boolean = false,
     /** Codeberg #53: previously saved analysis prompts for quick reuse. */
     recentPrompts: List<String> = emptyList(),
+    /** Draft restored from the ViewModel so Cancel reopens with the typed text intact. */
+    initialText: String = "",
+    onTextChange: (String) -> Unit = {},
 ) {
     val isDark = isDarkTheme()
     val focusRequester = remember { FocusRequester() }
@@ -76,7 +79,7 @@ fun TextInputSheet(
         stringResource(R.string.text_input_placeholder_4)
     )
     // Upstream #190: saveable so rotation keeps the typed draft and the busy state.
-    var input by rememberSaveable { mutableStateOf("") }
+    var input by rememberSaveable { mutableStateOf(initialText) }
     var placeholderIdx by rememberSaveable { mutableIntStateOf(0) }
     var submitted by rememberSaveable { mutableStateOf(false) }
     val busy = isSubmitting || submitted
@@ -134,7 +137,7 @@ fun TextInputSheet(
             ) {
                 FudGlassTextField(
                     value = input,
-                    onValueChange = { if (!busy) { input = it; autofilled = false } },
+                    onValueChange = { if (!busy) { input = it; onTextChange(it); autofilled = false } },
                     placeholder = placeholders[placeholderIdx],
                     singleLine = false,
                     minLines = 3,
@@ -180,6 +183,7 @@ fun TextInputSheet(
                         prompts = recentPrompts,
                         onPick = { prompt ->
                             input = prompt
+                            onTextChange(prompt)
                             autofilled = true
                             showHistory = false
                         },

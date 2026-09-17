@@ -131,7 +131,7 @@ fun HomeScreen(
 ) {
     val vm: HomeViewModel = viewModel(factory = HomeViewModel.Factory(container))
     val ui by vm.ui.collectAsState()
-    val ctx = LocalContext.current
+    val textInputDraft by vm.textInputDraft.collectAsState()
     val seedingSampleData by container.testDataSeeder.seeding.collectAsState()
     val weekStartDay by container.prefs.weekStartDay.collectAsState(initial = app.chompass.models.WeekStartDay.MONDAY)
     // Codeberg #20 phase 2: master AI-features switch — hides the AI entry tiles
@@ -1372,11 +1372,14 @@ fun HomeScreen(
             },
             isSubmitting = ui.isEntryAnalysisBusy,
             recentPrompts = recentPrompts,
+            initialText = textInputDraft,
+            onTextChange = vm::onTextInputDraftChange,
             onSubmit = {
                 if (!ui.isEntryAnalysisBusy) {
                     showText = false
                     addFoodFlowActive = false
                     vm.analyzeText(it)
+                    vm.clearTextInputDraft()
                 }
             }
         )
