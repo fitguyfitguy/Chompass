@@ -9,6 +9,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Added
 
 - **Undo for day-type switches** (Android): switching a day between Training and Rest shows an Undo chip. One tap brings back the day type you switched from, and today's targets return with it.
+- **Progress shows the update check again** (Android): the app checks Codeberg once per start for a newer release and flags it on the About tab badge. Nothing app-specific is sent: one anonymous request for the latest release tag, compared on the phone. The About row opens the Codeberg releases page, which also carries direct APK downloads.
+- **Read exact values off the Progress charts** (Android): tap a weight, body fat, measurement or calorie chart and a tag pins the date and value at that point. Tap the same spot again to dismiss it.
+- **Progress sections collapse** (Android): the header of every Progress card (weight and body fat, measurement plots, calories, macro and nutrient averages, activity, wellness) folds its content away. Each card remembers its state when you leave the tab.
+- **The typed analyze prompt survives Cancel** (Android): closing the Type it out sheet keeps what you typed, so a stray dismiss no longer costs the whole meal description. Submitting clears it.
 
 ### Changed
 
@@ -22,6 +26,9 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **The home widget keeps today's totals after midnight** (Android): a same-day write right after midnight used to show 0 or stale kcal until the app restarted.
 - **The review sheet opens reliably** (Android): a state dedupe could swallow the pending-review update after a scan, leaving the sheet closed.
 - **Small controls are easier to tap** (Android): the review sheet's lock button and the Add Food search gear meet the 48 dp touch target.
+- **AI errors speak your language** (Android): failed analyses, coach replies, Mealie imports and goal recalculations now show the localized message instead of raw provider text like Failed to connect. The recalculate-goals alert is no longer fixed English.
+- **Your place survives a share or shortcut** (Android): sharing a photo into the app or starting a shortcut used to drop the screen you were on. It is saved now and comes back when you tap its tab.
+- **Back works after a coach deep link with the tab off** (Android): opening chompass://go/coach while the coach tab is hidden landed on a stack whose back button bounced and left the app. It lands on Home with a working back button now.
 
 
 
