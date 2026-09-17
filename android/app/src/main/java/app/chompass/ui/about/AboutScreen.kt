@@ -165,12 +165,12 @@ private fun UpdateRow(
             icon = Icons.Filled.SystemUpdate,
             label = stringResource(R.string.about_update_available),
             subtitle = stringResource(R.string.about_update_details_format, state.current, state.latest),
-            // F-Droid delivers updates through its own client, so this row is
-            // informational: the dot marks the new version, the note says where
-            // it comes from. No in-app tap target to dead-end into.
+            // F-Droid delivers updates through its own client, so the note says
+            // where the update comes from; the row itself opens the Codeberg
+            // releases page, which also carries direct APK downloads.
             note = stringResource(R.string.about_update_fdroid_note),
             showDot = true,
-            onClick = null
+            onClick = { open(AndroidUpdateChecker.PLAY_STORE_WEB_URL) }
         )
         is AndroidUpdateState.Failed -> AboutRow(
             icon = Icons.Filled.Sync,
