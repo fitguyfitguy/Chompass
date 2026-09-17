@@ -131,6 +131,7 @@ fun HomeScreen(
 ) {
     val vm: HomeViewModel = viewModel(factory = HomeViewModel.Factory(container))
     val ui by vm.ui.collectAsState()
+    val ctx = LocalContext.current
     val textInputDraft by vm.textInputDraft.collectAsState()
     val seedingSampleData by container.testDataSeeder.seeding.collectAsState()
     val weekStartDay by container.prefs.weekStartDay.collectAsState(initial = app.chompass.models.WeekStartDay.MONDAY)

@@ -148,6 +148,7 @@ private fun UpdateRow(
     currentVersion: String,
     onRefresh: () -> Unit,
 ) {
+    val ctx = LocalContext.current
     when (state) {
         AndroidUpdateState.Checking -> AboutRow(
             icon = Icons.Filled.Sync,
@@ -170,7 +171,9 @@ private fun UpdateRow(
             // releases page, which also carries direct APK downloads.
             note = stringResource(R.string.about_update_fdroid_note),
             showDot = true,
-            onClick = { open(AndroidUpdateChecker.PLAY_STORE_WEB_URL) }
+            onClick = {
+                ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(AndroidUpdateChecker.PLAY_STORE_WEB_URL)))
+            }
         )
         is AndroidUpdateState.Failed -> AboutRow(
             icon = Icons.Filled.Sync,
