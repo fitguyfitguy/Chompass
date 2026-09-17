@@ -49,7 +49,7 @@ Chompass may contact external services only when you use a feature that requires
 | Voice entry (cloud STT providers) | The recorded audio clip, only when you select Whisper / Gemini / Deepgram / AssemblyAI in Settings | Your configured STT provider. **Default voice input is on-device and sends nothing.** |
 | Health Connect | Nutrition, weight, body fat, height (write); sleep, resting heart rate, hydration, steps, energy (read) if you enable sync | Google Health Connect **on-device** (Android 14+: system module; Android 13 and lower: optional Play Store APK). No Chompass cloud. |
 | User-hosted sync | Sync document (diary, metrics, water, favorites, recipes; not API keys or food photos) | WebDAV URL you configure |
-| App update check | Installed version | Not used (manual updates via Codeberg releases) |
+| App update check | Nothing app-specific: one anonymous request for the latest release tag, compared locally. Runs at app start and when you open Settings → About | Codeberg releases API |
 
 Optional **Health Connect background sync** (off by default, requires an explicit background-read permission) only reads from Health Connect on-device on a periodic schedule; it sends nothing off the device. User-hosted WebDAV sync runs when you tap **Sync now**, or optionally once per day when you open the app if you enable **Sync on open**.
 
