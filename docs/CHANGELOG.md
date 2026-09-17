@@ -4,6 +4,26 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Added
+
+- **Undo for day-type switches** (Android): switching a day between Training and Rest shows an Undo chip. One tap brings back the day type you switched from, and today's targets return with it.
+
+### Changed
+
+- **Goal pickers go past the wheels with a numpad** (Android): tapping the picked value opens a numpad, so exact and off-grid amounts are a few taps instead of spinning. Unusually high amounts ask for a confirmation before saving. The separate custom-value field is gone; the enter-custom link only appears where typing genuinely reaches beyond the wheels, like therapeutic vitamin D doses.
+- **Every wheel picker sheet has a Cancel** (Android): the settings wheel sheets open on the saved value, and nothing changes until Save. Cancel, scrim tap, or back leaves the stored value in place.
+
+### Fixed
+
+- **Streamed answers no longer overwrite your edits** (Android): while an analysis streams into the review sheet, fields you already edited keep your numbers.
+- **Wheel pickers work with TalkBack** (Android): rows carry their labels, and the picker announces which value is selected.
+- **The home widget keeps today's totals after midnight** (Android): a same-day write right after midnight used to show 0 or stale kcal until the app restarted.
+- **The review sheet opens reliably** (Android): a state dedupe could swallow the pending-review update after a scan, leaving the sheet closed.
+- **Small controls are easier to tap** (Android): the review sheet's lock button and the Add Food search gear meet the 48 dp touch target.
+
+
 
 ## [5.1.0] - 2026-09-16
 
