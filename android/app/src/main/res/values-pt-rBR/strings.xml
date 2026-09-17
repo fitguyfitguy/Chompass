@@ -506,6 +506,8 @@
     <string name="notif_model_download_title">Baixando modelo no dispositivo</string>
     <string name="settings_recalc_confirm">Recalcular</string>
     <string name="settings_recalc_details">Detalhes do recálculo</string>
+    <string name="settings_recalc_failed_title">Não foi possível recalcular</string>
+    <string name="settings_recalc_failed_message">A IA não concluiu o recálculo, então suas metas ficam como estão. Tente de novo em instantes.</string>
     <string name="settings_invalid_goal_title">O peso-meta não bate com sua meta</string>
     <string name="settings_invalid_goal_lose">Uma meta de Perder peso precisa de um alvo abaixo do seu peso atual.</string>
     <string name="settings_invalid_goal_gain">Uma meta de Ganhar peso precisa de um alvo acima do seu peso atual.</string>

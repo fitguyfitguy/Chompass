@@ -1104,12 +1104,17 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             block(start)
         } catch (e: AiError) {
             failAnalysis(start.generation, e.userMessage(container.appContext))
-        } catch (e: Throwable) {
+        } catch (e: OpenFoodFactsService.LookupException) {
+            // LookupException messages are the barcode surface's user copy
+            // (not-found / trouble / unreadable), so they render verbatim;
+            // every other throwable maps to the localized default.
             failAnalysis(
                 start.generation,
-                e.localizedMessage ?: container.appContext.getString(defaultErrorRes),
+                e.message ?: container.appContext.getString(defaultErrorRes),
                 notFoundBarcode = (e as? OpenFoodFactsService.LookupException.NotFound)?.code,
             )
+        } catch (e: Throwable) {
+            failAnalysis(start.generation, container.appContext.getString(defaultErrorRes))
         } finally {
             if (shouldEnd()) endAnalysis(start.generation)
         }

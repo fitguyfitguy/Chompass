@@ -94,6 +94,8 @@ import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.PartialFoodAnalysis
 import app.chompass.services.ai.applyTo
 import app.chompass.services.ai.toMicronutrients
+import app.chompass.services.ai.AiError
+import app.chompass.services.ai.userMessage
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
@@ -1401,6 +1403,7 @@ internal fun WhatIfMealImpactDialog(
 
     val onboardingFallback = stringResource(R.string.finish_onboarding_hint)
     val suggestionError = stringResource(R.string.error_ai_suggestion)
+    val context = LocalContext.current
     LaunchedEffect(entry.id) {
         if (initialSuggestion != null) return@LaunchedEffect
         loading = true
@@ -1408,7 +1411,7 @@ internal fun WhatIfMealImpactDialog(
         error = null
         runCatching { onSuggest?.invoke(entry) ?: onboardingFallback }
             .onSuccess { suggestion = it.ifBlank { null } }
-            .onFailure { error = it.localizedMessage ?: suggestionError }
+            .onFailure { error = (it as? AiError)?.userMessage(context) ?: suggestionError }
         loading = false
     }
 

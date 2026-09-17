@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.services.ai.AiError
+import app.chompass.services.ai.userMessage
 import app.chompass.services.mealie.MealieClient
 import app.chompass.services.mealie.MealieRecipeSummary
 import app.chompass.ui.components.ChompassBottomSheet
@@ -142,11 +143,7 @@ fun MealieImportSheet(
                             }.onFailure { err ->
                                 recipes = emptyList()
                                 selected = emptySet()
-                                status = if (err is AiError.InsecureHttpBlocked) {
-                                    ctx.getString(R.string.ai_error_insecure_http_blocked)
-                                } else {
-                                    err.message?.takeIf { it.isNotBlank() } ?: err::class.simpleName.orEmpty()
-                                }
+                                status = (err as? AiError)?.userMessage(ctx) ?: ctx.getString(R.string.error_unknown)
                             }
                         }
                     },
@@ -240,11 +237,7 @@ fun MealieImportSheet(
                             result.onSuccess { count ->
                                 importedCount = count
                             }.onFailure { err ->
-                                status = if (err is AiError.InsecureHttpBlocked) {
-                                    ctx.getString(R.string.ai_error_insecure_http_blocked)
-                                } else {
-                                    err.message?.takeIf { it.isNotBlank() } ?: err::class.simpleName.orEmpty()
-                                }
+                                status = (err as? AiError)?.userMessage(ctx) ?: ctx.getString(R.string.error_unknown)
                             }
                         }
                     },

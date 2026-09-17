@@ -505,6 +505,8 @@
     <string name="notif_model_download_title">Téléchargement du modèle sur l\'appareil</string>
     <string name="settings_recalc_confirm">Recalculer</string>
     <string name="settings_recalc_details">Détails du recalcul</string>
+    <string name="settings_recalc_failed_title">Recalcul impossible</string>
+    <string name="settings_recalc_failed_message">L\'IA n\'a pas pu terminer le recalcul, vos objectifs restent inchangés. Réessayez dans un instant.</string>
     <string name="settings_invalid_goal_title">Le poids cible ne correspond pas à votre objectif</string>
     <string name="settings_invalid_goal_lose">Un objectif de perte nécessite une cible inférieure à votre poids actuel.</string>
     <string name="settings_invalid_goal_gain">Un objectif de prise nécessite une cible supérieure à votre poids actuel.</string>

@@ -769,8 +769,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 Log.e("Chompass", "estimateOptionalNutrientGoals failed", e)
                 _ui.value = _ui.value.copy(
                     estimatingOptionalNutrientGoals = false,
-                    optionalNutrientEstimateAlertMessage = e.localizedMessage
-                        ?: container.appContext.getString(R.string.ai_error_provider_error)
+                    optionalNutrientEstimateAlertMessage = container.appContext.getString(R.string.ai_error_provider_error)
                 )
                 return@launch
             }
@@ -2127,8 +2126,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 Log.e("Chompass", "recalculateGoals failed", e)
                 _ui.value = _ui.value.copy(
                     recalculatingGoals = false,
-                    adaptiveGoalAlertTitle = "Couldn't Recalculate",
-                    adaptiveGoalAlertMessage = "Fud AI couldn't complete the recalculation, so your goals are unchanged. Try again in a moment. (${e.localizedMessage ?: "no response"})"
+                    adaptiveGoalAlertTitle = container.appContext.getString(R.string.settings_recalc_failed_title),
+                    adaptiveGoalAlertMessage = container.appContext.getString(R.string.settings_recalc_failed_message)
                 )
             }
         }

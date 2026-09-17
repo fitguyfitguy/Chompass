@@ -509,6 +509,8 @@
     <string name="notif_model_download_title">Se descarcă modelul pe dispozitiv</string>
     <string name="settings_recalc_confirm">Recalculează</string>
     <string name="settings_recalc_details">Detalii recalculare</string>
+    <string name="settings_recalc_failed_title">Recalcularea nu a reușit</string>
+    <string name="settings_recalc_failed_message">AI-ul nu a putut finaliza recalcularea, deci obiectivele tale rămân neschimbate. Încearcă din nou într-un moment.</string>
     <string name="settings_invalid_goal_title">Greutatea obiectiv nu se potrivește cu obiectivul tău</string>
     <string name="settings_invalid_goal_lose">Un obiectiv de slăbire necesită o țintă sub greutatea actuală.</string>
     <string name="settings_invalid_goal_gain">Un obiectiv de îngrășare necesită o țintă peste greutatea actuală.</string>

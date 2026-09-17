@@ -2042,6 +2042,8 @@ für dich ein</string>
 
     <string name="settings_recalc_confirm">Neu berechnen</string>
     <string name="settings_recalc_details">Details der Neuberechnung</string>
+    <string name="settings_recalc_failed_title">Neuberechnung nicht möglich</string>
+    <string name="settings_recalc_failed_message">Die KI konnte die Neuberechnung nicht abschließen, deine Ziele bleiben unverändert. Versuche es gleich noch einmal.</string>
 
     <string name="settings_invalid_goal_title">Das Zielgewicht stimmt nicht mit deinem Ziel überein</string>
 
