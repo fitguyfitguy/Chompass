@@ -763,6 +763,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     private val _ui = MutableStateFlow(HomeUiState())
     val ui: StateFlow<HomeUiState> = _ui.asStateFlow()
     private val _selectedDate = MutableStateFlow(LocalDate.now())
+    /** Typed analyze prompt. Lives here, not in the sheet, so Cancel keeps the draft (audit M5). */
+    private val _textInputDraft = MutableStateFlow("")
+    val textInputDraft: StateFlow<String> = _textInputDraft.asStateFlow()
 
     companion object {
         /** After this many empty-note photo analyzes, offer “don’t ask again”. */
@@ -2212,6 +2215,16 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 addFoodSuggestNetworkPending = false,
             )
         }
+    }
+
+    /** Every keystroke of the Type-it-out sheet lands here; see [_textInputDraft]. */
+    fun onTextInputDraftChange(text: String) {
+        _textInputDraft.value = text
+    }
+
+    /** Submitted prompts live on in the analysis queue; the draft has served. */
+    fun clearTextInputDraft() {
+        _textInputDraft.value = ""
     }
 
     /**
