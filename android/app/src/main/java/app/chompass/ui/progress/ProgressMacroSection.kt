@@ -1,5 +1,12 @@
 package app.chompass.ui.progress
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,11 +42,27 @@ internal fun MacroAveragesSection(
     avgProtein: Double, avgCarbs: Double, avgFat: Double,
     proteinGoal: Int, carbsGoal: Int, fatGoal: Int
 ) {
+    var expanded by rememberSaveable { mutableStateOf(true) }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(stringResource(R.string.progress_macro_averages), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
-        MacroProgressRow(stringResource(R.string.macro_protein), avgProtein, proteinGoal, AppColors.Protein)
-        MacroProgressRow(stringResource(R.string.macro_carbs), avgCarbs, carbsGoal, AppColors.Carbs)
-        MacroProgressRow(stringResource(R.string.macro_fat), avgFat, fatGoal, AppColors.Fat)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.progressCollapseHeader(expanded) { expanded = !expanded },
+        ) {
+            Text(stringResource(R.string.progress_macro_averages), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.weight(1f))
+            CollapseChevron(expanded)
+        }
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically(),
+            exit = shrinkVertically(),
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                MacroProgressRow(stringResource(R.string.macro_protein), avgProtein, proteinGoal, AppColors.Protein)
+                MacroProgressRow(stringResource(R.string.macro_carbs), avgCarbs, carbsGoal, AppColors.Carbs)
+                MacroProgressRow(stringResource(R.string.macro_fat), avgFat, fatGoal, AppColors.Fat)
+            }
+        }
     }
 }
 
@@ -47,22 +70,38 @@ internal fun MacroAveragesSection(
 internal fun NutrientAveragesSection(
     nutrientAverages: List<NutrientAverage>,
 ) {
+    var expanded by rememberSaveable { mutableStateOf(true) }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(stringResource(R.string.progress_nutrient_averages), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
-        nutrientAverages.forEach { row ->
-            val unitRes = when (row.nutrient.unit) {
-                "mg" -> R.string.unit_mg
-                "mcg" -> R.string.unit_mcg
-                else -> R.string.unit_g
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.progressCollapseHeader(expanded) { expanded = !expanded },
+        ) {
+            Text(stringResource(R.string.progress_nutrient_averages), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.weight(1f))
+            CollapseChevron(expanded)
+        }
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically(),
+            exit = shrinkVertically(),
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                nutrientAverages.forEach { row ->
+                    val unitRes = when (row.nutrient.unit) {
+                        "mg" -> R.string.unit_mg
+                        "mcg" -> R.string.unit_mcg
+                        else -> R.string.unit_g
+                    }
+                    MacroProgressRow(
+                        stringResource(row.nutrient.displayNameRes),
+                        row.avg,
+                        row.goal,
+                        AppColors.nutrientColor(row.nutrient),
+                        unitRes = unitRes,
+                        wholeNumbers = row.nutrient.unit != "g",
+                    )
+                }
             }
-            MacroProgressRow(
-                stringResource(row.nutrient.displayNameRes),
-                row.avg,
-                row.goal,
-                AppColors.nutrientColor(row.nutrient),
-                unitRes = unitRes,
-                wholeNumbers = row.nutrient.unit != "g",
-            )
         }
     }
 }

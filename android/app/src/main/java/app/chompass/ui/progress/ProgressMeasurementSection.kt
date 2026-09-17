@@ -1,5 +1,13 @@
 package app.chompass.ui.progress
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,6 +55,7 @@ internal fun MeasurementPlotCard(
             entry.value(site)?.let { cm -> TrendPoint(entry.date.toEpochMilli(), cm) }
         }
     }
+    var expanded by rememberSaveable(site) { mutableStateOf(true) }
     if (series.isEmpty()) return
     val latest = series.last().value
     val first = series.first().value
@@ -55,7 +64,10 @@ internal fun MeasurementPlotCard(
 
     CardSection {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.progressCollapseHeader(expanded) { expanded = !expanded },
+            ) {
                 Text(
                     stringResource(site.labelRes),
                     fontSize = 17.sp,
@@ -67,15 +79,29 @@ internal fun MeasurementPlotCard(
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 )
+                Spacer(Modifier.width(8.dp))
+                CollapseChevron(expanded)
             }
-            StatBadgeRow(
-                listOf(
-                    stringResource(R.string.progress_stat_current) to formatMeasurementLength(context, latest, useMetric),
-                    stringResource(R.string.progress_stat_net_change) to formatMeasurementChange(context, netChange, useMetric),
-                )
-            )
-            DeferredChart(immediate = chartsImmediate) {
-                MeasurementChartCanvas(series = series, immediate = chartsImmediate)
+            AnimatedVisibility(
+                visible = expanded,
+                enter = expandVertically(),
+                exit = shrinkVertically(),
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    StatBadgeRow(
+                        listOf(
+                            stringResource(R.string.progress_stat_current) to formatMeasurementLength(context, latest, useMetric),
+                            stringResource(R.string.progress_stat_net_change) to formatMeasurementChange(context, netChange, useMetric),
+                        )
+                    )
+                    DeferredChart(immediate = chartsImmediate) {
+                        MeasurementChartCanvas(
+                            series = series,
+                            immediate = chartsImmediate,
+                            tagFormatter = { formatMeasurementLength(context, it, useMetric) },
+                        )
+                    }
+                }
             }
         }
     }

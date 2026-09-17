@@ -1,5 +1,13 @@
 package app.chompass.ui.progress
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,8 +35,12 @@ internal fun ActivitySection(days: List<DailyActivity>) {
     val todayActivity = days.lastOrNull()
     val avgSteps = if (days.isEmpty()) 0L else days.sumOf { it.steps } / days.size
     val weekExerciseMinutes = days.sumOf { it.exerciseMinutes }
+    var expanded by rememberSaveable { mutableStateOf(true) }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.progressCollapseHeader(expanded) { expanded = !expanded },
+        ) {
             Text(stringResource(R.string.progress_activity_section), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.weight(1f))
             Text(
@@ -36,23 +48,32 @@ internal fun ActivitySection(days: List<DailyActivity>) {
                 fontSize = 13.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
             )
+            Spacer(Modifier.width(8.dp))
+            CollapseChevron(expanded)
         }
-        StatBadgeRow(
-            listOf(
-                stringResource(R.string.progress_activity_steps_today) to
-                    integerFormat.format(todayActivity?.steps ?: 0L),
-                stringResource(R.string.progress_activity_steps_avg) to
-                    integerFormat.format(avgSteps),
-                stringResource(R.string.progress_activity_exercise_week) to
-                    stringResource(R.string.progress_activity_minutes_format, weekExerciseMinutes)
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically(),
+            exit = shrinkVertically(),
+        ) {
+            StatBadgeRow(
+                listOf(
+                    stringResource(R.string.progress_activity_steps_today) to
+                        integerFormat.format(todayActivity?.steps ?: 0L),
+                    stringResource(R.string.progress_activity_steps_avg) to
+                        integerFormat.format(avgSteps),
+                    stringResource(R.string.progress_activity_exercise_week) to
+                        stringResource(R.string.progress_activity_minutes_format, weekExerciseMinutes)
+                )
             )
-        )
+        }
     }
 }
 
 @Composable
 internal fun WellnessSection(days: List<DailyWellness>) {
     val integerFormat = remember { NumberFormat.getIntegerInstance() }
+    var expanded by rememberSaveable { mutableStateOf(true) }
     val todaySleep = days.lastOrNull { it.sleepMinutes != null }?.sleepMinutes
     val restingValues = days.mapNotNull { it.restingHeartRateBpm }
     val avgResting = if (restingValues.isEmpty()) null else restingValues.average().roundToInt()
@@ -84,7 +105,10 @@ internal fun WellnessSection(days: List<DailyWellness>) {
     if (badges.isEmpty()) return
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.progressCollapseHeader(expanded) { expanded = !expanded },
+        ) {
             Text(stringResource(R.string.progress_wellness_section), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.weight(1f))
             Text(
@@ -92,7 +116,15 @@ internal fun WellnessSection(days: List<DailyWellness>) {
                 fontSize = 13.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
             )
+            Spacer(Modifier.width(8.dp))
+            CollapseChevron(expanded)
         }
-        StatBadgeRow(badges)
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically(),
+            exit = shrinkVertically(),
+        ) {
+            StatBadgeRow(badges)
+        }
     }
 }

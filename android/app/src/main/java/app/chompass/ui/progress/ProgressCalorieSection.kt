@@ -1,5 +1,13 @@
 package app.chompass.ui.progress
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,8 +38,12 @@ internal fun CalorieSection(
     calorieAverage: Int? = null,
     dailyCalorieGoals: Map<LocalDate, Int> = emptyMap(),
 ) {
+    var expanded by rememberSaveable { mutableStateOf(true) }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.progressCollapseHeader(expanded) { expanded = !expanded },
+        ) {
             Text(stringResource(R.string.progress_calories_section), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.weight(1f))
             if (calorieAverage != null) {
@@ -42,21 +54,31 @@ internal fun CalorieSection(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                 )
             }
+            Spacer(Modifier.width(8.dp))
+            CollapseChevron(expanded)
         }
-        if (dailyCalories.isEmpty()) {
-            Box(Modifier.fillMaxWidth().padding(vertical = 24.dp), contentAlignment = Alignment.Center) {
-                Text(
-                    stringResource(R.string.progress_no_food),
-                    fontSize = 15.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
-                )
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically(),
+            exit = shrinkVertically(),
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (dailyCalories.isEmpty()) {
+                    Box(Modifier.fillMaxWidth().padding(vertical = 24.dp), contentAlignment = Alignment.Center) {
+                        Text(
+                            stringResource(R.string.progress_no_food),
+                            fontSize = 15.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                        )
+                    }
+                } else {
+                    CalorieBarChart(
+                        dailyCalories = downsampleCalorieBars(dailyCalories),
+                        goal = calorieGoal,
+                        dailyGoals = dailyCalorieGoals,
+                    )
+                }
             }
-        } else {
-            CalorieBarChart(
-                dailyCalories = downsampleCalorieBars(dailyCalories),
-                goal = calorieGoal,
-                dailyGoals = dailyCalorieGoals,
-            )
         }
     }
 }

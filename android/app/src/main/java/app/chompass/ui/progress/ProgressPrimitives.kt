@@ -2,6 +2,13 @@ package app.chompass.ui.progress
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -163,4 +170,31 @@ internal fun BodyMetricToggle(selected: BodyMetric, onSelect: (BodyMetric) -> Un
             }
         }
     }
+}
+
+/**
+ * Collapse affordance for Progress section headers (audit M11): the whole
+ * header row toggles, and TalkBack reads the expanded/collapsed state (same
+ * state strings as the Add Food trackers pill).
+ */
+@Composable
+internal fun Modifier.progressCollapseHeader(expanded: Boolean, onToggle: () -> Unit): Modifier {
+    val expandedLabel = stringResource(R.string.cd_expanded)
+    val collapsedLabel = stringResource(R.string.cd_collapsed)
+    return this
+        .clickable(onClick = onToggle)
+        .semantics(mergeDescendants = true) {
+            stateDescription = if (expanded) expandedLabel else collapsedLabel
+        }
+}
+
+@Composable
+internal fun CollapseChevron(expanded: Boolean) {
+    Icon(
+        if (expanded) Icons.Filled.KeyboardArrowDown
+        else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        modifier = Modifier.size(18.dp),
+    )
 }
