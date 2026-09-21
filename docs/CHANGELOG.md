@@ -21,6 +21,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Every wheel picker sheet has a Cancel** (Android): the settings wheel sheets open on the saved value, and nothing changes until Save. Cancel, scrim tap, or back leaves the stored value in place.
 - **Sheets explain when amount edits cannot scale** (Android): entries without a serving keep their calorie and macro totals when you correct the weight. The review, edit and favorite sheets now show a note under the serving control, and it changes once your edit has been recorded so the next edit scales.
 - **Nutrient wheels go past 999.9** (Android): sodium and other micros can now be entered up to 9999.9, so a high-sodium fast food is one entry instead of being capped.
+- **Coach confirmation replies use your language** (Android): after you accept or dismiss a food, weight, or water log from the coach, the follow-up line is translated instead of staying English.
 
 ### Fixed
 

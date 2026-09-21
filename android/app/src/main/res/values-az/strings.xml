@@ -839,6 +839,10 @@ bilirsən?</string>
     <string name="cd_set_meal_start">Başlama vaxtını təyin et</string>
 
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (protein %3$s, karbohidrat %4$s, yağ %5$s)</string>
+    <string name="coach_logged_food">Qeyd edildi: %1$s (%2$s %3$s).</string>
+    <string name="coach_logged_weight">Çəki qeyd edildi: %1$s kq.</string>
+    <string name="coach_logged_water">Su qeyd edildi: %1$d ml.</string>
+    <string name="coach_logged_discard">Yaxşı, qeyd etmirəm.</string>
     <string name="coach_confirm_log_food_title">Bu yeməyi qeyd edim?</string>
     <string name="coach_confirm_log_water_title">Bu suyu qeyd edim?</string>
     <string name="coach_confirm_log_weight_title">Bu çəkini qeyd edim?</string>

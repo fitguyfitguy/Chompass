@@ -939,6 +939,10 @@
     <string name="coach_confirm_log_weight_title">Log this weight?</string>
     <string name="coach_confirm_log_water_title">Log this water?</string>
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (%3$s protein, %4$s carbs, %5$s fat)</string>
+    <string name="coach_logged_food">Logged: %1$s (%2$s %3$s).</string>
+    <string name="coach_logged_weight">Logged weight: %1$s kg.</string>
+    <string name="coach_logged_water">Logged water: %1$d ml.</string>
+    <string name="coach_logged_discard">Okay, I won\'t log that.</string>
 
     <string name="coach_chip_predict_30_days">What\'s my expected weight in 30 days?</string>
     <string name="coach_chip_lose_faster">How do I lose weight faster safely?</string>

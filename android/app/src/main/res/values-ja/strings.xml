@@ -846,6 +846,10 @@
     <string name="cd_set_meal_start">開始時刻を設定</string>
 
     <string name="coach_confirm_log_food_summary">%1$s：%2$s（タンパク質 %3$s、炭水化物 %4$s、脂質 %5$s）</string>
+    <string name="coach_logged_food">記録しました: %1$s（%2$s %3$s）。</string>
+    <string name="coach_logged_weight">体重を記録しました: %1$s kg。</string>
+    <string name="coach_logged_water">水分を記録しました: %1$d ml。</string>
+    <string name="coach_logged_discard">わかりました。記録しません。</string>
     <string name="coach_confirm_log_food_title">この食品を記録しますか？</string>
     <string name="coach_confirm_log_water_title">この水を記録しますか？</string>
     <string name="coach_confirm_log_weight_title">この体重を記録しますか？</string>

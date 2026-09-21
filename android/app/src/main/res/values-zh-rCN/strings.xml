@@ -848,6 +848,10 @@
     <string name="cd_set_meal_start">设置开始时间</string>
 
     <string name="coach_confirm_log_food_summary">%1$s：%2$s（蛋白质 %3$s、碳水 %4$s、脂肪 %5$s）</string>
+    <string name="coach_logged_food">已记录：%1$s（%2$s %3$s）。</string>
+    <string name="coach_logged_weight">已记录体重：%1$s kg。</string>
+    <string name="coach_logged_water">已记录饮水：%1$d ml。</string>
+    <string name="coach_logged_discard">好的，这次不记录。</string>
     <string name="coach_confirm_log_food_title">记录这份食物？</string>
     <string name="coach_confirm_log_water_title">记录这次饮水？</string>
     <string name="coach_confirm_log_weight_title">记录这个体重？</string>

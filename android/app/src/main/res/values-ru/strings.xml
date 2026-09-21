@@ -1402,6 +1402,10 @@
     <string name="cd_new_recipe">Новый рецепт</string>
     <string name="cd_quantity_operator">Вставить %1$s в количество</string>
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (белок %3$s, углеводы %4$s, жиры %5$s)</string>
+    <string name="coach_logged_food">Записано: %1$s (%2$s %3$s).</string>
+    <string name="coach_logged_weight">Вес записан: %1$s кг.</string>
+    <string name="coach_logged_water">Вода записана: %1$d мл.</string>
+    <string name="coach_logged_discard">Хорошо, не записываю.</string>
     <string name="coach_confirm_log_food_title">Записать эту еду?</string>
     <string name="coach_confirm_log_water_title">Записать эту воду?</string>
     <string name="coach_confirm_log_weight_title">Записать этот вес?</string>

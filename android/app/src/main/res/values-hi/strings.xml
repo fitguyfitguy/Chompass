@@ -847,6 +847,10 @@
     <string name="cd_set_meal_start">शुरुआत समय सेट करें</string>
 
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (प्रोटीन %3$s, कार्ब्स %4$s, वसा %5$s)</string>
+    <string name="coach_logged_food">लॉग किया: %1$s (%2$s %3$s).</string>
+    <string name="coach_logged_weight">वज़न लॉग किया: %1$s किग्रा.</string>
+    <string name="coach_logged_water">पानी लॉग किया: %1$d मिली.</string>
+    <string name="coach_logged_discard">ठीक है, मैं इसे लॉग नहीं करूँगा.</string>
     <string name="coach_confirm_log_food_title">यह खाना लॉग करें?</string>
     <string name="coach_confirm_log_water_title">यह पानी लॉग करें?</string>
     <string name="coach_confirm_log_weight_title">यह वज़न लॉग करें?</string>

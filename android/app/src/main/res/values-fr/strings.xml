@@ -906,6 +906,10 @@
     <string name="coach_confirm_log_food_title">Enregistrer cet aliment ?</string>
     <string name="coach_confirm_log_water_title">Enregistrer cette eau ?</string>
     <string name="coach_confirm_log_food_summary">%1$s : %2$s (%3$s protéines, %4$s glucides, %5$s lipides)</string>
+    <string name="coach_logged_food">Enregistré : %1$s (%2$s %3$s).</string>
+    <string name="coach_logged_weight">Poids enregistré : %1$s kg.</string>
+    <string name="coach_logged_water">Eau enregistrée : %1$d ml.</string>
+    <string name="coach_logged_discard">D\'accord, je n\'enregistre pas.</string>
     <string name="coach_confirm_log_weight_title">Enregistrer ce poids ?</string>
     <string name="coach_title">Coach</string>
     <string name="context_note_weight_hint">Si vous avez pesé la portion, saisissez les grammes ici. Le poids exact améliore la précision plus qu\'un titre ou une liste d\'ingrédients seuls.</string>
