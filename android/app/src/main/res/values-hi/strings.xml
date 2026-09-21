@@ -1535,8 +1535,6 @@
     <string name="sheet_language">भाषा</string>
     <string name="sheet_macro_label_format">%1$s (%2$s)</string>
     <string name="sheet_serving_custom_grams">प्रति इकाई ग्राम</string>
-    <string name="sheet_serving_baseless_hint">सर्विंग (यूनिट और मात्रा) सेट करें, और मात्रा संपादन मानों को स्केल करेंगे।</string>
-    <string name="sheet_serving_baseless_touched_hint">सर्विंग सहेजने पर दर्ज होगी; अगला संपादन मानों को स्केल करेगा।</string>
     <string name="sheet_serving_custom_name">इकाई नाम</string>
     <string name="sheet_serving_unit_heuristics">ह्यूरिस्टिक अनुकूलित करें</string>
     <string name="sheet_serving_unit_mode">सर्विंग इकाई अनुमान</string>

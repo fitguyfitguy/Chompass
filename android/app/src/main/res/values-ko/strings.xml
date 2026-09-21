@@ -1534,8 +1534,6 @@
     <string name="sheet_language">언어</string>
     <string name="sheet_macro_label_format">%1$s(%2$s)</string>
     <string name="sheet_serving_custom_grams">단위당 그램</string>
-    <string name="sheet_serving_baseless_hint">1회 제공량(단위와 수량)을 설정하면 수량 편집 시 값이 비율에 맞게 조정됩니다.</string>
-    <string name="sheet_serving_baseless_touched_hint">1회 제공량은 저장할 때 기록됩니다. 다음 편집부터 값이 비율에 맞게 조정됩니다.</string>
     <string name="sheet_serving_custom_name">단위 이름</string>
     <string name="sheet_serving_unit_heuristics">휴리스틱 사용자 지정</string>
     <string name="sheet_serving_unit_mode">1인분 단위 추론</string>

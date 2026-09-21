@@ -1534,8 +1534,6 @@
     <string name="sheet_language">言語</string>
     <string name="sheet_macro_label_format">%1$s（%2$s）</string>
     <string name="sheet_serving_custom_grams">単位あたりのグラム</string>
-    <string name="sheet_serving_baseless_hint">分量（単位と数量）を設定すると、数量の編集で値が比例して調整されます。</string>
-    <string name="sheet_serving_baseless_touched_hint">分量は保存時に記録されます。次の編集から値が比例して調整されます。</string>
     <string name="sheet_serving_custom_name">単位名</string>
     <string name="sheet_serving_unit_heuristics">ヒューリスティックをカスタマイズ</string>
     <string name="sheet_serving_unit_mode">分量単位の推定</string>
