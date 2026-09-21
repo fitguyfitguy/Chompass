@@ -47,6 +47,8 @@ fun MacroCard(
     modifier: Modifier = Modifier,
     accentColor: Color = MaterialTheme.colorScheme.primary,
     freezeProgress: Boolean = false,
+    /** Planned (not eaten) amount; faint fill under the logged bar. */
+    planned: Double = 0.0,
 ) {
     val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
     val goalValue = goal.toDouble()
@@ -92,6 +94,21 @@ fun MacroCard(
             // Empty macros (0 g, or no goal) render as the bare track: the 16 dp
             // minimum fill only applies once there is progress to show, otherwise
             // an empty card would read as ~22 % full.
+            val combined = if (goal > 0) {
+                ((current + planned).toFloat() / goal).coerceIn(0f, 1f)
+            } else {
+                0f
+            }
+            if (planned > 0.0 && combined > animated) {
+                val plannedHeight = (74.dp * combined).coerceAtLeast(16.dp)
+                Box(
+                    Modifier
+                        .width(16.dp)
+                        .height(plannedHeight)
+                        .clip(CircleShape)
+                        .background(accentColor.copy(alpha = 0.38f)),
+                )
+            }
             val fillHeight = if (animated > 0f) (74.dp * animated).coerceAtLeast(16.dp) else 0.dp
             Box(
                 Modifier

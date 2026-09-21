@@ -352,6 +352,8 @@ data class HomeUiState(
     /** Fields + Log unlocked only after the AI call (and unit inference) finish. */
     val analysisReadyForEdit: Boolean get() = pendingAnalysis != null && !isEntryAnalysisBusy
     val caloriesToday: Int get() = todayEntries.sumOf { it.calories }
+    val loggedCaloriesToday: Int get() = todayEntries.filter { !it.planned }.sumOf { it.calories }
+    val plannedCaloriesToday: Int get() = todayEntries.filter { it.planned }.sumOf { it.calories }
     val proteinToday: Double get() = todayEntries.sumOf { it.protein }
     val carbsToday: Double get() = todayEntries.sumOf { it.carbs }
     val fatToday: Double get() = todayEntries.sumOf { it.fat }

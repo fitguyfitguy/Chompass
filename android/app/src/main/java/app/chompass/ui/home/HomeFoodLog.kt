@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -27,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -37,8 +37,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -364,6 +362,24 @@ internal fun Divider() {
     )
 }
 
+/** Shared Planned label for diary rows and the week-plan canvas. */
+@Composable
+internal fun DiaryPlannedChip() {
+    Text(
+        stringResource(R.string.diary_planned).uppercase(Locale.getDefault()),
+        fontSize = 9.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier
+            .border(
+                0.5.dp,
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                RoundedCornerShape(4.dp),
+            )
+            .padding(horizontal = 4.dp, vertical = 1.dp),
+    )
+}
+
 /**
  * Swipe-to-action wrapper around FoodRow.
  *
@@ -398,6 +414,7 @@ internal fun SwipeableFoodRow(
     val favoriteLabel = stringResource(
         if (isFavorite) R.string.home_swipe_unfavorite else R.string.home_swipe_favorite
     )
+    val logNowLabel = stringResource(R.string.entry_log_now)
 
     BoxWithConstraints(
         modifier = Modifier.fillMaxWidth()
@@ -441,10 +458,13 @@ internal fun SwipeableFoodRow(
                         // TalkBack fallback for the swipe gestures (UI-audit 2.7):
                         // expose delete/favorite as custom actions so screen-reader
                         // users can trigger them without swiping.
-                        val actions = listOf(
-                            SwipeAction(deleteLabel, onDelete),
-                            SwipeAction(favoriteLabel, onToggleFavorite),
-                        )
+                        val actions = buildList {
+                            add(SwipeAction(deleteLabel, onDelete))
+                            add(SwipeAction(favoriteLabel, onToggleFavorite))
+                            if (planningMode && entry.planned && onLogNow != null) {
+                                add(SwipeAction(logNowLabel) { onLogNow(entry) })
+                            }
+                        }
                         customActions = actions.map { action ->
                             CustomAccessibilityAction(action.label) {
                                 action.action()
@@ -606,44 +626,28 @@ internal fun FoodRow(
                             modifier = Modifier.size(12.dp)
                         )
                     }
-                    // Planned chip (meal planning mode): a small non-interactive
-                    // outlined label, styled like the row's macro pills.
-                    if (planningMode && entry.planned) {
-                        Text(
-                            stringResource(R.string.diary_planned).uppercase(Locale.getDefault()),
-                            fontSize = 9.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier
-                                .border(
-                                    0.5.dp,
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-                                    RoundedCornerShape(4.dp)
-                                )
-                                .padding(horizontal = 4.dp, vertical = 1.dp)
-                        )
-                    }
                 }
-                Column(horizontalAlignment = Alignment.End) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    if (planningMode && entry.planned) {
+                        DiaryPlannedChip()
+                    }
                     Text(
                         timeFmt.format(entry.timestamp).lowercase(Locale.getDefault()),
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint)
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
                     )
-                    // One-tap promotion of a plan into an eaten log.
                     if (planningMode && entry.planned && onLogNow != null) {
-                        TextButton(
-                            onClick = { onLogNow(entry) },
-                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
-                            modifier = Modifier.minimumInteractiveComponentSize()
-                        ) {
-                            Text(
-                                stringResource(R.string.entry_log_now),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
+                        Icon(
+                            Icons.Filled.Check,
+                            contentDescription = stringResource(R.string.entry_log_now),
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier
+                                .size(16.dp)
+                                .clickable { onLogNow(entry) },
+                        )
                     }
                 }
             }

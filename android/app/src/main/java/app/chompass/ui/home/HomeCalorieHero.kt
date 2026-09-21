@@ -105,6 +105,8 @@ import app.chompass.ui.theme.success
 internal fun CalorieHero(
     current: Int,
     baseGoal: Int,
+    /** Planned (not yet eaten) kcal; drawn as a fainter arc under the logged fill. */
+    planned: Int = 0,
     activeCalories: Int,
     displayMode: HomeCalorieDisplayMode,
     activeCalorieSource: ActiveCalorieSource? = null,
@@ -157,6 +159,18 @@ internal fun CalorieHero(
     } else {
         ratio
     }
+    val plannedFillRatio = if (planned <= 0) {
+        0f
+    } else if (shadesActive) {
+        HomeCalorieDisplay.burnShadeEatenFraction(
+            current + planned,
+            baseGoal,
+            shade!!.typical,
+            shade.live,
+        )
+    } else {
+        HomeCalorieDisplay.progressRatio(displayMode, current + planned, baseGoal, activeCalories)
+    }.coerceAtLeast(fillRatio)
     var showBudgetSheet by remember { mutableStateOf(false) }
     val goalLabel = when {
         shadesActive -> target
@@ -232,6 +246,17 @@ internal fun CalorieHero(
             // bonus tail) paint on top and stay readable when intake covers
             // the active zone. Notch still last.
             var notchAngle: Float? = null
+            if (plannedFillRatio > fillRatio) {
+                drawArc(
+                    color = progressColor.copy(alpha = 0.35f),
+                    startAngle = 180f,
+                    sweepAngle = 180f * plannedFillRatio.coerceIn(0f, 1f),
+                    useCenter = false,
+                    topLeft = mainTopLeft,
+                    size = mainArcSize,
+                    style = Stroke(width = stroke, cap = StrokeCap.Round),
+                )
+            }
             drawArc(
                 color = progressColor,
                 startAngle = 180f,
