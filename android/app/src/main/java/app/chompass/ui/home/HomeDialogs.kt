@@ -622,6 +622,54 @@ internal fun ManualEntryDialog(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
+                // Meal Type — DropdownMenu styled to match the FoodResultSheet /
+                // EditFoodEntrySheet meal pickers (icon + label, pink, anchored
+                // to the right cluster).
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                        .clickable { mealMenuExpanded = true }
+                        .padding(horizontal = 14.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(stringResource(R.string.sheet_meal_type), fontSize = 16.sp, modifier = Modifier.weight(1f))
+                    Box {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                sheetMealIcon(mealType),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(Modifier.width(6.dp))
+                            Text(
+                                mealLabel(mealType),
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                        SheetGlassDropdownMenu(
+                            expanded = mealMenuExpanded,
+                            onDismissRequest = { mealMenuExpanded = false },
+                            menuWidth = 184.dp
+                        ) {
+                            for (m in pickerMealIds(includeOther = !mealTimesEnabled)) {
+                                SheetGlassDropdownMenuItem(
+                                    label = mealLabel(m),
+                                    leadingIcon = sheetMealIcon(m),
+                                    selected = m == mealType,
+                                    onClick = {
+                                        mealType = m
+                                        mealMenuExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
 
                 // Expandable macro pickers — tap to open wheel
                 var caloriesExpanded by remember { mutableStateOf(false) }
@@ -746,54 +794,6 @@ internal fun ManualEntryDialog(
                     },
                 )
 
-                // Meal Type — DropdownMenu styled to match the FoodResultSheet /
-                // EditFoodEntrySheet meal pickers (icon + label, pink, anchored
-                // to the right cluster).
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                        .clickable { mealMenuExpanded = true }
-                        .padding(horizontal = 14.dp, vertical = 14.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(stringResource(R.string.sheet_meal_type), fontSize = 16.sp, modifier = Modifier.weight(1f))
-                    Box {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                sheetMealIcon(mealType),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(Modifier.width(6.dp))
-                            Text(
-                                mealLabel(mealType),
-                                fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                        SheetGlassDropdownMenu(
-                            expanded = mealMenuExpanded,
-                            onDismissRequest = { mealMenuExpanded = false },
-                            menuWidth = 184.dp
-                        ) {
-                            for (m in pickerMealIds(includeOther = !mealTimesEnabled)) {
-                                SheetGlassDropdownMenuItem(
-                                    label = mealLabel(m),
-                                    leadingIcon = sheetMealIcon(m),
-                                    selected = m == mealType,
-                                    onClick = {
-                                        mealType = m
-                                        mealMenuExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
 
                 FudGlassPrimaryButton(
                     text = if (isSaving) {

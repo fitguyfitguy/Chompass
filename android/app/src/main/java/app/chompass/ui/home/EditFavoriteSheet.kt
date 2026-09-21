@@ -295,6 +295,54 @@ fun EditFavoriteSheet(
                                 )
                             }
                         }
+                        item { SheetSectionHeader(stringResource(R.string.sheet_meal)) }
+                        item {
+                            SheetPillRow(onClick = { mealMenuExpanded = true }) {
+                                Text(stringResource(R.string.sheet_meal_type), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                                Box {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            sheetMealIcon(mealType),
+                                            contentDescription = null,
+                                            tint = AppColors.Calorie,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        Spacer(Modifier.width(6.dp))
+                                        Text(
+                                            mealLabel(mealType),
+                                            fontSize = 17.sp,
+                                            color = AppColors.Calorie,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        Spacer(Modifier.width(6.dp))
+                                        Icon(
+                                            Icons.Filled.UnfoldMore,
+                                            contentDescription = null,
+                                            tint = AppColors.Calorie
+                                        )
+                                    }
+                                    SheetGlassDropdownMenu(
+                                        expanded = mealMenuExpanded,
+                                        onDismissRequest = { mealMenuExpanded = false },
+                                        menuWidth = 184.dp
+                                    ) {
+                                        for (m in pickerMealIds()) {
+                                            SheetGlassDropdownMenuItem(
+                                                label = mealLabel(m),
+                                                leadingIcon = sheetMealIcon(m),
+                                                selected = m == mealType,
+                                                onClick = {
+                                                    mealType = m
+                                                    mealMenuExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
 
                         item { SheetSectionHeader(stringResource(R.string.sheet_serving)) }
                         item {
@@ -476,54 +524,6 @@ fun EditFavoriteSheet(
                             }
                         }
 
-                        item { SheetSectionHeader(stringResource(R.string.sheet_meal)) }
-                        item {
-                            SheetPillRow(onClick = { mealMenuExpanded = true }) {
-                                Text(stringResource(R.string.sheet_meal_type), fontSize = 17.sp, modifier = Modifier.weight(1f))
-                                Box {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(
-                                            sheetMealIcon(mealType),
-                                            contentDescription = null,
-                                            tint = AppColors.Calorie,
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                        Spacer(Modifier.width(6.dp))
-                                        Text(
-                                            mealLabel(mealType),
-                                            fontSize = 17.sp,
-                                            color = AppColors.Calorie,
-                                            fontWeight = FontWeight.Medium
-                                        )
-                                        Spacer(Modifier.width(6.dp))
-                                        Icon(
-                                            Icons.Filled.UnfoldMore,
-                                            contentDescription = null,
-                                            tint = AppColors.Calorie
-                                        )
-                                    }
-                                    SheetGlassDropdownMenu(
-                                        expanded = mealMenuExpanded,
-                                        onDismissRequest = { mealMenuExpanded = false },
-                                        menuWidth = 184.dp
-                                    ) {
-                                        for (m in pickerMealIds()) {
-                                            SheetGlassDropdownMenuItem(
-                                                label = mealLabel(m),
-                                                leadingIcon = sheetMealIcon(m),
-                                                selected = m == mealType,
-                                                onClick = {
-                                                    mealType = m
-                                                    mealMenuExpanded = false
-                                                }
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
 
                         item {
                             ConstituentsSection(
