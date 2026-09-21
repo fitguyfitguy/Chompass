@@ -2084,6 +2084,15 @@
     <string name="home_calorie_of_goal">of %1$s %2$s</string>
     <!-- Macro day types (#60): hero chip + quick-switch sheet. -->
     <string name="home_day_type_chip_a11y">Today’s day type: %1$s. Tap to switch.</string>
+    <!-- Untracked days (#106). -->
+    <string name="home_untracked_chip">Not tracked</string>
+    <string name="home_mark_untracked_chip">Mark day</string>
+    <string name="home_untracked_chip_a11y">This day is marked not tracked. Tap to change.</string>
+    <string name="home_mark_untracked_chip_a11y">Mark this day as not tracked.</string>
+    <string name="untracked_sheet_title">Not tracked</string>
+    <string name="untracked_sheet_body">%1$s will stay out of averages, trends, and the streak reminder. Optional rough calories are only for your record.</string>
+    <string name="untracked_sheet_toggle">Not tracked</string>
+    <string name="untracked_sheet_kcal_optional">Rough calories (optional)</string>
     <string name="day_type_sheet_title">Day type</string>
     <string name="day_type_sheet_subtitle">Switch today’s targets to another day type.</string>
     <string name="day_type_targets_summary">%1$s %5$s · %2$dP %3$dC %4$dF</string>

@@ -118,8 +118,17 @@ fun DataSettingsScreen(
                 }
                 when (val result = DiaryImporter.parse(text)) {
                     is DiaryImportResult.Success -> {
-                        val imported = container.foodRepository.importEntries(result.entries)
-                        if (imported <= 0) {
+                        val imported = if (result.entries.isEmpty()) 0
+                            else container.foodRepository.importEntries(result.entries)
+                        if (result.untrackedDates.isNotEmpty()) {
+                            val existing = container.prefs.untrackedDays.first().toMutableSet()
+                            val kcal = container.prefs.untrackedKcalByDay.first().toMutableMap()
+                            result.untrackedDates.forEach { existing += it.toString() }
+                            result.untrackedKcalByDay.forEach { (d, v) -> kcal[d.toString()] = v }
+                            container.prefs.setUntrackedDays(existing)
+                            container.prefs.setUntrackedKcalByDay(kcal)
+                        }
+                        if (imported <= 0 && result.untrackedDates.isEmpty()) {
                             importDiaryMessage = activityContext.getString(R.string.import_diary_empty)
                             return@runCatching
                         }

@@ -123,12 +123,18 @@ fun ExportDiarySheet(
                     val entries = container.foodRepository.entries.first()
                     val notes = container.notesRepository.notes.first()
                     val goalJournal = container.prefs.goalJournal.first()
+                    val untrackedIso = container.prefs.untrackedDays.first()
+                    val untrackedKcalIso = container.prefs.untrackedKcalByDay.first()
                     val (lo, hi) = DiaryExporter.resolveRange(range, customStart, customEnd, entries)
                     val result = DiaryExporter.build(
                         entries = entries, start = lo, end = hi, format = format,
                         profile = profile, mealDisplay = { mealNames[it] ?: it },
                         notes = notes,
                         goalJournal = goalJournal,
+                        untrackedDates = untrackedIso.mapNotNull { runCatching { java.time.LocalDate.parse(it) }.getOrNull() }.toSet(),
+                        untrackedKcalByDay = untrackedKcalIso.mapNotNull { (k, v) ->
+                            runCatching { java.time.LocalDate.parse(k) to v }.getOrNull()
+                        }.toMap(),
                     )
                     if (result == null) {
                         status = context.getString(R.string.export_no_meals)

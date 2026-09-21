@@ -127,6 +127,8 @@ internal fun CalorieHero(
     dayTypeLabel: String? = null,
     /** Opens the day-type quick-switch sheet; chip hidden when null (previews). */
     onDayTypeClick: (() -> Unit)? = null,
+    untracked: Boolean = false,
+    onUntrackedClick: (() -> Unit)? = null,
     /** True when a goal-change explanation exists; shows the ⓘ dialog's recalc-details link. */
     recalcDetailsAvailable: Boolean = false,
     /** Opens the recalc details sheet (closes the ⓘ budget dialog first). */
@@ -413,6 +415,10 @@ internal fun CalorieHero(
                     Spacer(Modifier.width(5.dp))
                     DayTypeChip(label = dayTypeLabel, onClick = onDayTypeClick)
                 }
+                if (onUntrackedClick != null) {
+                    Spacer(Modifier.width(5.dp))
+                    UntrackedChip(untracked = untracked, onClick = onUntrackedClick)
+                }
             }
             if (shadesActive) {
                 BurnShadeCaption(burn = shade!!)
@@ -439,6 +445,37 @@ internal fun CalorieHero(
 }
 
 /** Compact tappable pill beside the hero's remaining caption: today's day type (#60). */
+@Composable
+private fun UntrackedChip(untracked: Boolean, onClick: () -> Unit) {
+    val label = stringResource(
+        if (untracked) R.string.home_untracked_chip else R.string.home_mark_untracked_chip,
+    )
+    val a11y = stringResource(
+        if (untracked) R.string.home_untracked_chip_a11y else R.string.home_mark_untracked_chip_a11y,
+    )
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(50),
+        color = if (untracked) MaterialTheme.colorScheme.tertiaryContainer
+            else MaterialTheme.colorScheme.surfaceVariant,
+        modifier = Modifier
+            .minimumInteractiveComponentSize()
+            .widthIn(max = 140.dp)
+            .semantics { contentDescription = a11y },
+    ) {
+        Text(
+            label,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = if (untracked) MaterialTheme.colorScheme.onTertiaryContainer
+                else MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp),
+        )
+    }
+}
+
 @Composable
 private fun DayTypeChip(label: String, onClick: () -> Unit) {
     val a11y = stringResource(R.string.home_day_type_chip_a11y, label)

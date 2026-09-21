@@ -581,7 +581,7 @@ export class DiaryView extends HTMLElement {
     // catches the UI up.
     const activeNoteInput = this.querySelector("[data-note-input]");
     if (activeNoteInput && document.activeElement === activeNoteInput) return;
-    const [entries, prof, waterLogs, appPrefs, manualKcal, noteLogs, journal, allManual] = await Promise.all([
+    const [entries, prof, waterLogs, appPrefs, manualKcal, noteLogs, journal, allManual, untrackedRows] = await Promise.all([
       foodEntries.byDate(this.date),
       profileStore.load(),
       water.byDate(this.date),
@@ -590,7 +590,9 @@ export class DiaryView extends HTMLElement {
       dailyNotes.byDate(this.date),
       goalJournal.all(),
       loadManualActiveEntries(),
+      untrackedDays.all(),
     ]);
+    const untrackedRow = untrackedRows.find((r) => r.date === this.date) ?? null;
     this._renderedDay = todayIso();
     const note = noteLogs[0] ?? null;
     const nicotineLogs = await nicotine.byDate(this.date);
@@ -620,6 +622,9 @@ export class DiaryView extends HTMLElement {
             dayResolved.profileName ?? t("day_types.chip_none"),
           )}</button>`
         : "";
+    const untrackedChip = `<button type="button" class="chip untracked-chip" data-untracked>${escapeHtml(
+      untrackedRow ? t("untracked.chip") : t("untracked.chip_mark"),
+    )}</button>`;
     let calorieTarget = targets?.calories ?? 0;
     /** @type {{ goal: number, active: number, live: number, typical: number, typicalIsDayType?: boolean, typicalDayTypeName?: string|null, source: string, awaiting: false } | { goal: number, awaiting: true } | null} */
     let gaugeInfo = null;
@@ -957,6 +962,7 @@ export class DiaryView extends HTMLElement {
       el.addEventListener("click", () => this.addWater(Number(el.getAttribute("data-water"))));
     });
     this.querySelector("[data-day-type]")?.addEventListener("click", () => this.openDayTypeSheet());
+    this.querySelector("[data-untracked]")?.addEventListener("click", () => this.openUntrackedSheet());
     this.querySelector("[data-water-custom]")?.addEventListener("click", () => this.customWater());
     this.querySelector("[data-water-undo]")?.addEventListener("click", () => this.undoLastWater(waterLogs));
     this.querySelector("[data-note-empty]")?.addEventListener("click", () => {
@@ -1213,6 +1219,35 @@ export class DiaryView extends HTMLElement {
 
     row.addEventListener("pointerup", end);
     row.addEventListener("pointercancel", () => reset());
+  }
+
+  async openUntrackedSheet() {
+    const rows = await untrackedDays.all();
+    const current = rows.find((r) => r.date === this.date) ?? null;
+    const sheet = openSheet({
+      title: t("untracked.sheet_title"),
+      body: `
+        <p>${escapeHtml(t("untracked.sheet_body", { date: this.date }))}</p>
+        <label class="row">
+          <span>${escapeHtml(t("untracked.toggle"))}</span>
+          <input type="checkbox" data-untracked-on ${current ? "checked" : ""} />
+        </label>
+        <label class="row">
+          <span>${escapeHtml(t("untracked.kcal_optional"))}</span>
+          <input type="number" min="0" data-untracked-kcal value="${current?.kcal ?? ""}" />
+        </label>
+        <div class="btn-row"><button type="button" class="btn" data-untracked-save>${escapeHtml(t("untracked.save"))}</button></div>
+      `,
+    });
+    sheet.body.querySelector("[data-untracked-save]")?.addEventListener("click", async () => {
+      const on = /** @type {HTMLInputElement} */ (sheet.body.querySelector("[data-untracked-on]")).checked;
+      const kcalRaw = /** @type {HTMLInputElement} */ (sheet.body.querySelector("[data-untracked-kcal]")).value;
+      const kcal = kcalRaw === "" ? null : Number(kcalRaw);
+      if (on) await untrackedDays.put({ date: this.date, kcal: Number.isFinite(kcal) ? kcal : null });
+      else await untrackedDays.delete(this.date);
+      sheet.close();
+      this.render();
+    });
   }
 
   /** Macro day types (#60): quick-switch sheet from the hero chip. */

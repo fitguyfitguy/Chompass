@@ -86,22 +86,30 @@ function daysBetweenIso(a, b) {
  * @param {import('./models.js').FoodEntry[]} args.foods
  * @param {import('./models.js').UserProfile} args.profile
  */
-export function computeWeightForecast({ weights, foods, profile }) {
+export function computeWeightForecast({ weights, foods, profile, untrackedDates = [] }) {
   const today = localIsoDate();
   const yesterday = addDaysIso(today, -1);
   const lookbackStart = addDaysIso(today, -MAX_LOOKBACK_DAYS);
   const cutoffIso = lookbackStart;
+  const untracked = new Set((untrackedDates ?? []).map((d) => String(d).slice(0, 10)));
 
   const foodDay = (f) => String(f.date).slice(0, 10);
   const completeFoods = foods.filter((f) => {
     const d = foodDay(f);
-    return d >= lookbackStart && d <= yesterday;
+    return d >= lookbackStart && d <= yesterday && !untracked.has(d);
   });
   const loggedDates = [...new Set(completeFoods.map(foodDay))].sort();
   const daysLogged = loggedDates.length;
   const totalRecentCal = completeFoods.reduce((s, f) => s + f.calories, 0);
   const first = loggedDates[0];
-  const calendarDays = first ? daysBetweenIso(first, yesterday) + 1 : 1;
+  let calendarDays = first ? daysBetweenIso(first, yesterday) + 1 : 1;
+  if (first) {
+    let skipped = 0;
+    for (const d of untracked) {
+      if (d >= first && d <= yesterday) skipped += 1;
+    }
+    calendarDays = Math.max(1, calendarDays - skipped);
+  }
   const intake = averageDailyIntake(totalRecentCal, daysLogged, calendarDays);
   const avgDailyCal = intake.avgDailyCalories;
   const loggedDayAvgCalories = daysLogged > 0 ? Math.trunc(totalRecentCal / daysLogged) : 0;
@@ -166,16 +174,16 @@ export function computeWeightForecast({ weights, foods, profile }) {
  * @param {import('./models.js').WeightEntry[]} args.weights
  * @param {import('./models.js').FoodEntry[]} args.foods
  */
-export function suggestAdaptiveCalories({ profile, weights, foods }) {
+export function suggestAdaptiveCalories({ profile, weights, foods, untrackedDates = [] }) {
   if (profile.caloriesLocked) {
     return {
       changed: false,
       updatedCalories: null,
       message: "Calories are locked, so Adaptive Goals did not change them.",
-      forecast: computeWeightForecast({ weights, foods, profile }),
+      forecast: computeWeightForecast({ weights, foods, profile, untrackedDates }),
     };
   }
-  const forecast = computeWeightForecast({ weights, foods, profile });
+  const forecast = computeWeightForecast({ weights, foods, profile, untrackedDates });
   const observed = forecast.observedWeeklyChangeKg;
   const magnitude = profile.weeklyChangeKg ?? 0.5;
   const targetWeekly =

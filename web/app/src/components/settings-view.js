@@ -9,11 +9,12 @@ import {
   dailyNotes,
   prefs,
   goalJournal,
+  untrackedDays,
   clearAllUserData,
 } from "../lib/db.js";
 import { dailyTargets, bmr, tdee, safetyFloorKcal, CALORIE_PARSER_CEILING_KCAL } from "../lib/chompass-core/formulas.js";
 import { computeWeightForecast } from "../lib/chompass-core/forecast.js";
-import { exportDiary, importDiary } from "../lib/chompass-core/diary-format.js";
+import { exportDiary, importDiary, importDiaryUntracked } from "../lib/chompass-core/diary-format.js";
 import { exportBodyMetrics, importBodyMetrics } from "../lib/chompass-core/body-metrics-format.js";
 import {
   exportDiaryMarkdown,
@@ -635,7 +636,8 @@ export class SettingsView extends HTMLElement {
       const appPrefs = await prefs.load();
       const energyUnit = energyUnitFromPrefs(appPrefs);
       const [foods, weightEntries] = await Promise.all([foodEntries.all(), weights.all()]);
-      const forecast = computeWeightForecast({ weights: weightEntries, foods, profile });
+      const untracked = await untrackedDays.all();
+      const forecast = computeWeightForecast({ weights: weightEntries, foods, profile, untrackedDates: untracked.map((r) => r.date) });
       const result = await calculateGoalsWithAi({
         providerId: aiClient.providerId,
         config: aiClient.config,
@@ -1976,7 +1978,8 @@ export class SettingsView extends HTMLElement {
         }
       }
     }
-    const doc = exportDiary({ entries, targets: targetsByDay, dateRange, notes });
+    const untracked = await untrackedDays.all();
+    const doc = exportDiary({ entries, targets: targetsByDay, dateRange, notes, untrackedDays: untracked });
     await downloadJson(doc, `Chompass-Food-Diary-${dateRange.start}_to_${dateRange.end}.json`);
   }
 
@@ -1999,6 +2002,11 @@ export class SettingsView extends HTMLElement {
       const doc = JSON.parse(await file.text());
       const entries = importDiary(doc);
       await Promise.all(entries.map((e) => foodEntries.put(e)));
+      const untracked = importDiaryUntracked(doc);
+      await Promise.all(untracked.dates.map((date) => untrackedDays.put({
+        date,
+        kcal: untracked.kcalByDate[date] ?? null,
+      })));
       if (status) status.textContent = t("settings.data.imported_entries", { count: entries.length });
     } catch (err) {
       if (status) status.textContent = t("settings.data.import_failed_msg", { msg: err.message });

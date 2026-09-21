@@ -1,9 +1,9 @@
 {
   "export": {
     "app": "Chompass",
-    "format_version": "1.5",
+    "format_version": "1.6",
     "date_range": {
-      "start": "2026-04-27",
+      "start": "2026-04-26",
       "end": "2026-04-29"
     }
   },
@@ -671,6 +671,31 @@
       },
       "note": "Rest day with the lower-carb target; nothing logged.",
       "meals": []
+    },
+    {
+      "date": "2026-04-26",
+      "totals": {
+        "calories": 0,
+        "protein_g": 0,
+        "carbs_g": 0,
+        "fat_g": 0
+      },
+      "targets": {
+        "calories": 2459,
+        "protein_g": 174.0,
+        "carbs_g": 200,
+        "fat_g": 60
+      },
+      "remaining": {
+        "calories": 2459,
+        "protein_g": 174.0,
+        "carbs_g": 200,
+        "fat_g": 60
+      },
+      "meals": [],
+      "note": null,
+      "untracked": true,
+      "untracked_kcal": 2100
     }
   ]
 }

@@ -375,6 +375,22 @@ export const goalJournal = {
   },
 };
 
+/** @type {{ date: string, kcal?: number|null }} */
+export const untrackedDays = {
+  async put(row) {
+    return (await store("untrackedDays")).put(row);
+  },
+  async delete(date) {
+    return (await store("untrackedDays")).delete(date);
+  },
+  async all() {
+    return (await store("untrackedDays")).getAll();
+  },
+  async clear() {
+    return (await store("untrackedDays")).clear();
+  },
+};
+
 const PROFILE_ID = "singleton";
 const PREFS_ID = "singleton";
 const CHAT_ID = "singleton";
@@ -616,6 +632,7 @@ export const keys = {
 export async function clearAllUserData() {
   await Promise.all([
     foodEntries.clear(),
+    untrackedDays.clear(),
     favorites.clear(),
     recipes.clear(),
     weights.clear(),

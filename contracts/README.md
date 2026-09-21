@@ -5,7 +5,8 @@ Versioned JSON Schemas for cross-app interchange. Fixtures in
 
 | Schema | Format | Consumers |
 |--------|--------|-----------|
-| [`diary-1.5.schema.json`](diary-1.5.schema.json) | Diary export `format_version` **1.5** | `DiaryExporter` / `DiaryImporter`, `web/.../diary-format.js` |
+| [`diary-1.6.schema.json`](diary-1.6.schema.json) | Diary export `format_version` **1.6** | `DiaryExporter` / `DiaryImporter`, `web/.../diary-format.js` |
+| [`diary-1.5.schema.json`](diary-1.5.schema.json) | Diary export **1.5** (legacy; still accepted on import) | same |
 | [`diary-1.4.schema.json`](diary-1.4.schema.json) | Diary export **1.4** (legacy; still accepted on import) | same |
 | [`diary-1.3.schema.json`](diary-1.3.schema.json) | Diary export `format_version` **1.3** (legacy; still accepted on import) | same |
 | [`diary-1.2.schema.json`](diary-1.2.schema.json) | Diary export **1.2** (legacy; still accepted on import) | same |

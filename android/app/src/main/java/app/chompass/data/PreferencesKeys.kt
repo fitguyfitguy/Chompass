@@ -84,6 +84,9 @@ internal object Keys {
         val NICOTINE_QUICK_KINDS = stringPreferencesKey("nicotineQuickKinds")
         // Optional daily notes (docs/local/PLAN_DAILY_NOTES.md); default off.
         val DAILY_NOTES_ENABLED = booleanPreferencesKey("dailyNotesEnabled")
+        // Per-day not-tracked flags (#106): ISO dates + optional blind kcal map.
+        val UNTRACKED_DAYS = stringSetPreferencesKey("untrackedDays")
+        val UNTRACKED_KCAL_BY_DAY = stringPreferencesKey("untrackedKcalByDayJson")
         // Suggest meals by time of day; default on. Off hides the Meals editor.
         val MEAL_TIMES_ENABLED = booleanPreferencesKey("mealTimesEnabled")
         // Optional meal planning mode; default off.

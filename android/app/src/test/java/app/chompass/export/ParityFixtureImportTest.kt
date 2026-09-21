@@ -15,7 +15,10 @@ class ParityFixtureImportTest {
         val json = ParityFixtures.readText("diary-sample.json")
         val result = DiaryImporter.parse(json, ZoneOffset.UTC)
         assertTrue(result is DiaryImportResult.Success)
-        val entries = (result as DiaryImportResult.Success).entries
+        val success = result as DiaryImportResult.Success
+        val entries = success.entries
+        assertTrue(java.time.LocalDate.of(2026, 4, 26) in success.untrackedDates)
+        assertEquals(2100, success.untrackedKcalByDay[java.time.LocalDate.of(2026, 4, 26)])
         assertTrue(entries.isNotEmpty())
         assertTrue(entries.all { it.name.isNotBlank() && it.calories >= 0 })
 

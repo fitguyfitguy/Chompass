@@ -2081,7 +2081,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     WeightAnalysisService.compute(
                         weights = weights,
                         foods = foods,
-                        profile = current
+                        profile = current,
+                        untrackedDates = app.chompass.models.UntrackedDays.parseIsoSet(
+                            container.prefs.untrackedDays.first(),
+                        ),
                     )
                 }
                 // Energy Burn toggle: anchor maintenance to the user's measured Health Connect burn.

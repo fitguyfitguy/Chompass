@@ -8,6 +8,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Added
 
+- **Untracked days** (Codeberg #106): mark any diary day as not tracked. It shows a distinct chip, stays out of averages, trends, the weight forecast, and adaptive goals, and does not fire the streak reminder. Optional rough calories stay on the day for your record only. Diary JSON export is now 1.6 so the flag round-trips on Android and the PWA.
 - **Undo for day-type switches** (Android): switching a day between Training and Rest shows an Undo chip. One tap brings back the day type you switched from, and today's targets return with it.
 - **Progress shows the update check again** (Android): the app checks Codeberg once per start for a newer release and flags it on the About tab badge. Nothing app-specific is sent: one anonymous request for the latest release tag, compared on the phone. The About row opens the Codeberg releases page, which also carries direct APK downloads.
 - **Read exact values off the Progress charts** (Android): tap a weight, body fat, measurement or calorie chart and a tag pins the date and value at that point. Tap the same spot again to dismiss it.

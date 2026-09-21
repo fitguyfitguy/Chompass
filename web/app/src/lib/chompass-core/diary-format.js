@@ -7,10 +7,10 @@
 
 import { microOrNull } from "./constituents.js";
 
-export const DIARY_FORMAT_VERSION = "1.5";
+export const DIARY_FORMAT_VERSION = "1.6";
 
 /** Versions accepted on import. New exports always stamp [DIARY_FORMAT_VERSION]. */
-export const DIARY_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2", "1.3", "1.4", "1.5"]);
+export const DIARY_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6"]);
 
 /** Micronutrient wire-key <-> model-field pairs, in ItemDto declaration order. */
 const MICRO_FIELDS = [
@@ -256,15 +256,20 @@ const MEAL_TYPES = ["breakfast", "lunch", "dinner", "snack"];
 /**
  * @param {{ entries: import('./models.js').FoodEntry[], targets?: Record<string, {calories: number, proteinG: number, carbsG: number, fatG: number}>, dateRange: {start: string, end: string}, notes?: Array<{date: string, text: string}>, mealCatalog?: unknown }} arg
  */
-export function exportDiary({ entries, targets = {}, dateRange, notes = [], mealCatalog = null }) {
+export function exportDiary({ entries, targets = {}, dateRange, notes = [], mealCatalog = null, untrackedDays = [] }) {
   const byDate = new Map();
   for (const e of entries) {
     if (!byDate.has(e.date)) byDate.set(e.date, []);
     byDate.get(e.date).push(e);
   }
   const noteByDate = new Map(notes.map((n) => [n.date, n.text]));
-  // Union of food days and note-only days (journal days, Codeberg #58a).
-  const allDates = [...new Set([...byDate.keys(), ...noteByDate.keys()])].sort();
+  const untrackedByDate = new Map();
+  for (const row of untrackedDays) {
+    const date = typeof row === "string" ? row : row.date;
+    if (!date) continue;
+    untrackedByDate.set(date, typeof row === "string" ? null : (row.kcal ?? null));
+  }
+  const allDates = [...new Set([...byDate.keys(), ...noteByDate.keys(), ...untrackedByDate.keys()])].sort();
 
   const days = allDates.map((date) => {
     const dayEntries = byDate.get(date) ?? [];
@@ -308,7 +313,13 @@ export function exportDiary({ entries, targets = {}, dateRange, notes = [], meal
       items: dayEntries.filter((e) => e.mealType === type).map(itemToWire),
     }));
 
-    return { date, totals, targets: targetWire, remaining, meals, note: noteByDate.get(date) ?? null };
+    const day = { date, totals, targets: targetWire, remaining, meals, note: noteByDate.get(date) ?? null };
+    if (untrackedByDate.has(date)) {
+      day.untracked = true;
+      const kcal = untrackedByDate.get(date);
+      if (kcal != null) day.untracked_kcal = kcal;
+    }
+    return day;
   });
 
   return {
@@ -337,7 +348,7 @@ export function importDiary(doc, idGen = () => crypto.randomUUID()) {
   const app = exp.app.trim().toLowerCase();
   if (app !== "chompass" && app !== "nofud" && app !== "fud ai") throw new UnsupportedFormatError(`unrecognized app "${exp.app}"`);
   if (!DIARY_IMPORT_VERSIONS.has(exp.format_version)) {
-    throw new UnsupportedFormatError(`unsupported format_version "${exp.format_version}" (need 1.0 through 1.5)`);
+    throw new UnsupportedFormatError(`unsupported format_version "${exp.format_version}" (need 1.0 through 1.6)`);
   }
 
   /** @type {import('./models.js').FoodEntry[]} */
@@ -350,4 +361,24 @@ export function importDiary(doc, idGen = () => crypto.randomUUID()) {
     }
   }
   return entries;
+}
+
+/**
+ * @param {any} doc
+ * @returns {{ dates: string[], kcalByDate: Record<string, number> }}
+ */
+export function importDiaryUntracked(doc) {
+  /** @type {string[]} */
+  const dates = [];
+  /** @type {Record<string, number>} */
+  const kcalByDate = {};
+  for (const day of doc?.days ?? []) {
+    if (day?.untracked === true && typeof day.date === "string") {
+      dates.push(day.date);
+      if (typeof day.untracked_kcal === "number" && day.untracked_kcal >= 0) {
+        kcalByDate[day.date] = day.untracked_kcal;
+      }
+    }
+  }
+  return { dates, kcalByDate };
 }
