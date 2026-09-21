@@ -4,7 +4,7 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [Unreleased]
+## [5.1.1] - 2026-09-21
 
 ### Added
 
@@ -20,7 +20,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Goal pickers go past the wheels with a numpad** (Android): tapping the picked value opens a numpad, so exact and off-grid amounts are a few taps instead of spinning. Unusually high amounts ask for a confirmation before saving. The separate custom-value field is gone; the enter-custom link only appears where typing genuinely reaches beyond the wheels, like therapeutic vitamin D doses.
 - **Every wheel picker sheet has a Cancel** (Android): the settings wheel sheets open on the saved value, and nothing changes until Save. Cancel, scrim tap, or back leaves the stored value in place.
 - **Amount edits either scale the entry or leave the numbers alone** (Android): with the numbers locked, which is the default, correcting the weight moves calories and macros with it. Unlock the numbers and a weight change leaves them as they are while you edit them. Follows Codeberg [#105](https://codeberg.org/fitguy/Chompass/issues/105) by [@BrassCat](https://codeberg.org/BrassCat).
-- **Nutrient wheels go past 999.9** (Android): sodium and other micros can now be entered up to 9999.9, so a high-sodium fast food is one entry instead of being capped.
+- **Nutrient wheels go past 999.9** (Android): sodium and other micros can now be entered up to 9999.9, so a high-sodium fast food is one entry instead of being capped. Follows Codeberg [#104](https://codeberg.org/fitguy/Chompass/issues/104) by [@bluepostofficebox](https://codeberg.org/bluepostofficebox).
 - **Coach confirmation replies use your language** (Android): after you accept or dismiss a food, weight, or water log from the coach, the follow-up line is translated instead of staying English.
 - **Meal type sits under the food name on more sheets** (Android): editing a favorite and adding a food by hand now put meal type right after the name, then serving, matching the review and edit sheets.
 - **Open Food Facts results use the labeled serving** (Android): picking a packaged food opens the review on that product's serving when Open Food Facts has one. If it does not, the amount stays in grams instead of inventing a 100 g serving.
@@ -39,8 +39,6 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **AI errors speak your language** (Android): failed analyses, coach replies, Mealie imports and goal recalculations now show the localized message instead of raw provider text like Failed to connect. The recalculate-goals alert is no longer fixed English.
 - **Your place survives a share or shortcut** (Android): sharing a photo into the app or starting a shortcut used to drop the screen you were on. It is saved now and comes back when you tap its tab.
 - **Back works after a coach deep link with the tab off** (Android): opening chompass://go/coach while the coach tab is hidden landed on a stack whose back button bounced and left the app. It lands on Home with a working back button now.
-
-
 
 ## [5.1.0] - 2026-09-16
 
