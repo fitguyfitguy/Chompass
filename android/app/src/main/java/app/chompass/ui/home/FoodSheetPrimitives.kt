@@ -84,6 +84,7 @@ import app.chompass.models.MealType
 import app.chompass.models.ServingUnitOption
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.components.MagnitudeDrafts
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.models.MacroValueFormatter
@@ -224,7 +225,10 @@ internal fun SheetStickyPrimaryBar(
         ) {
             if (textActionLabel != null && onTextAction != null) {
                 TextButton(
-                    onClick = onTextAction,
+                    onClick = {
+                        MagnitudeDrafts.commitAll()
+                        onTextAction()
+                    },
                     enabled = textActionEnabled,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
@@ -238,7 +242,10 @@ internal fun SheetStickyPrimaryBar(
                     .clip(shape)
                     .background(Brush.linearGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd)))
                     .alpha(if (primaryEnabled) 1f else 0.45f)
-                    .clickable(enabled = primaryEnabled, onClick = onPrimary)
+                    .clickable(enabled = primaryEnabled, onClick = {
+                        MagnitudeDrafts.commitAll()
+                        onPrimary()
+                    })
                     .padding(vertical = 14.dp),
                 contentAlignment = Alignment.Center,
             ) {
