@@ -69,7 +69,7 @@ object DiaryImporter {
         val version = export["format_version"]?.asString()
         if (version == null || version !in SUPPORTED_IMPORT_VERSIONS) {
             return DiaryImportResult.UnsupportedFormat(
-                "unsupported format_version \"${version ?: ""}\" (need 1.0, 1.1, 1.2, 1.3, 1.4, or 1.5)",
+                "unsupported format_version \"${version ?: ""}\" (need ${SUPPORTED_IMPORT_VERSIONS.sorted().joinToString(", ")})",
             )
         }
 

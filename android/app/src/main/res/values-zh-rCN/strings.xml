@@ -1535,8 +1535,6 @@
     <string name="sheet_keto_carb_mode">生酮碳水模式</string>
     <string name="sheet_language">语言</string>
     <string name="sheet_serving_custom_grams">每单位克数</string>
-    <string name="sheet_serving_baseless_hint">设置份量（单位和数量）后，修改数量会按比例调整数值。</string>
-    <string name="sheet_serving_baseless_touched_hint">份量会在保存时记录；下一次编辑将按比例调整数值。</string>
     <string name="sheet_serving_custom_name">单位名称</string>
     <string name="sheet_serving_unit_heuristics">自定义启发式</string>
     <string name="sheet_serving_unit_mode">份量单位推断</string>

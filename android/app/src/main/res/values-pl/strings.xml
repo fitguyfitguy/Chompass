@@ -1484,8 +1484,6 @@
     <string name="cd_remove_serving_unit">Usuń tę jednostkę</string>
     <string name="sheet_serving_custom_name">Nazwa jednostki</string>
     <string name="sheet_serving_custom_grams">Gramy na jednostkę</string>
-    <string name="sheet_serving_baseless_hint">Ustaw porcję (jednostkę i ilość), a zmiany ilości przeskalują wartości.</string>
-    <string name="sheet_serving_baseless_touched_hint">Porcja zostanie zapisana podczas zapisu; kolejna edycja przeskaluje wartości.</string>
     <string name="cd_quantity_operator">Wstaw %1$s do ilości</string>
     <string name="cd_hold_to_record">Przytrzymaj, aby nagrywać, stuknij, aby zablokować</string>
     <string name="cd_cancel_recording">Anuluj nagrywanie</string>

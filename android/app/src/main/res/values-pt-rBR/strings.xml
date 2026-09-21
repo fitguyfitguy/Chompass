@@ -1532,8 +1532,6 @@
     <string name="sheet_macro_auto">auto</string>
     <string name="sheet_macro_label_format">%1$s (%2$s)</string>
     <string name="sheet_serving_custom_grams">Gramas por unidade</string>
-    <string name="sheet_serving_baseless_hint">Defina uma porção (unidade e quantidade) e as edições de quantidade ajustarão os valores.</string>
-    <string name="sheet_serving_baseless_touched_hint">A porção será registrada ao salvar; a próxima edição ajustará os valores.</string>
     <string name="sheet_serving_custom_name">Nome da unidade</string>
     <string name="sheet_serving_unit_heuristics">Personalizar heurísticas</string>
     <string name="sheet_serving_unit_mode">Inferência de unidade de porção</string>
