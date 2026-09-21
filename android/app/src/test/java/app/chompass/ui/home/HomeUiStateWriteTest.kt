@@ -1,6 +1,8 @@
 package app.chompass.ui.home
 
 import android.app.Application
+import app.chompass.models.FoodEntry
+import app.chompass.models.FoodSource
 import app.chompass.models.PendingFoodAnalysisDraft
 import app.chompass.models.UserProfile
 import app.chompass.services.ai.GoalCalculation
@@ -88,5 +90,30 @@ class HomeUiStateWriteTest {
             "custom equals must not treat recoveredReview-only changes as equal",
             flow.value != HomeUiState(),
         )
+    }
+
+    @Test
+    fun loggedCaloriesToday_excludesPlanned() {
+        val logged = FoodEntry(
+            name = "Eaten",
+            calories = 400,
+            protein = 10.0,
+            carbs = 10.0,
+            fat = 10.0,
+            source = FoodSource.MANUAL,
+        )
+        val planned = FoodEntry(
+            name = "Plan",
+            calories = 250,
+            protein = 10.0,
+            carbs = 10.0,
+            fat = 10.0,
+            source = FoodSource.MANUAL,
+            planned = true,
+        )
+        val state = HomeUiState().copy(todayEntries = listOf(logged, planned))
+        assertEquals(650, state.caloriesToday)
+        assertEquals(400, state.loggedCaloriesToday)
+        assertEquals(250, state.plannedCaloriesToday)
     }
 }

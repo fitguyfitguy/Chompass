@@ -134,6 +134,7 @@ fun EditFoodEntrySheet(
         onProgress: (FoodAnalysisProgress) -> Unit,
     ) -> FoodAnalysis,
     onSave: (FoodEntry, applyTimeToMeal: Boolean) -> Unit,
+    onLogNow: ((FoodEntry) -> Unit)? = null,
     onDismiss: () -> Unit
 ) {
     var currentBaseEntry by remember(entry) { mutableStateOf(entry) }
@@ -1007,6 +1008,18 @@ fun EditFoodEntrySheet(
                     if (!isReprocessing) {
                         if (noteChanged) reprocess() else onSave(buildUpdated(), applyTimeToMeal && timeChanged)
                     }
+                },
+                textActionLabel = if (entry.planned && onLogNow != null && !isReprocessing) {
+                    stringResource(R.string.entry_log_now)
+                } else {
+                    null
+                },
+                onTextAction = if (entry.planned && onLogNow != null) {
+                    {
+                        onLogNow(buildUpdated())
+                    }
+                } else {
+                    null
                 },
             )
         }

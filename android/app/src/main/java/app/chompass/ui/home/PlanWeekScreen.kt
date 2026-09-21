@@ -373,18 +373,7 @@ private fun PlanWeekEntryChip(
             modifier = Modifier.weight(1f),
         )
         if (entry.planned) {
-            Text(
-                stringResource(R.string.diary_planned).uppercase(Locale.getDefault()),
-                fontSize = 9.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .border(
-                        BorderStroke(0.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
-                        RoundedCornerShape(4.dp),
-                    )
-                    .padding(horizontal = 4.dp, vertical = 1.dp),
-            )
+            DiaryPlannedChip()
         }
     }
 }
