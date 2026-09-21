@@ -1364,7 +1364,7 @@ internal fun ReviewNutritionValueRow(
                         onEdit(formatted)
                     },
                     min = 0,
-                    max = 999,
+                    max = 9999,
                     unit = unit,
                     modifier = Modifier
                         .fillMaxWidth()
