@@ -2557,6 +2557,15 @@ für dich ein</string>
 
     <!-- Macro day types (#60): hero chip + quick-switch sheet. -->
     <string name="home_day_type_chip_a11y">Heutiger Tagestyp: %1$s. Zum Wechseln tippen.</string>
+    <!-- Untracked days (#106). -->
+    <string name="home_untracked_chip">Nicht erfasst</string>
+    <string name="home_mark_untracked_chip">Tag markieren</string>
+    <string name="home_untracked_chip_a11y">Dieser Tag ist als nicht erfasst markiert. Zum Ändern tippen.</string>
+    <string name="home_mark_untracked_chip_a11y">Diesen Tag als nicht erfasst markieren.</string>
+    <string name="untracked_sheet_title">Nicht erfasst</string>
+    <string name="untracked_sheet_body">%1$s bleibt außen vor bei Durchschnitten, Trends und der Serien-Erinnerung. Optionale grobe Kalorien dienen nur deiner eigenen Notiz.</string>
+    <string name="untracked_sheet_toggle">Nicht erfasst</string>
+    <string name="untracked_sheet_kcal_optional">Grobe Kalorien (optional)</string>
     <string name="day_type_sheet_title">Tagestyp</string>
     <string name="day_type_sheet_subtitle">Wechsle die heutigen Ziele zu einem anderen Tagestyp.</string>
     <string name="day_type_targets_summary">%1$s %5$s · %2$dP %3$dC %4$dF</string>

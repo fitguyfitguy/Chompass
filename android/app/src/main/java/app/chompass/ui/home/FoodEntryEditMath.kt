@@ -76,7 +76,6 @@ internal data class BakedNutritionEdit(
     val baseServingGrams: Double,
 )
 
-
 /**
  * Parse a decimal text field into a non-negative Double?, null when blank/invalid.
  *

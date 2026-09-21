@@ -879,4 +879,13 @@ export const de = Object.freeze({
   "progress.delete_weight_confirm": "Diesen Gewichtseintrag entfernen?",
   "progress.delete_bf_title": "Körperfett löschen",
   "progress.delete_bf_confirm": "Diesen Körperfetteintrag entfernen?",
+
+  // untracked.* (#106: mark a day as not tracked)
+  "untracked.chip": "Nicht erfasst",
+  "untracked.chip_mark": "Tag markieren",
+  "untracked.sheet_title": "Nicht erfasst",
+  "untracked.sheet_body": "{date} bleibt außen vor bei Durchschnitten, Trends und der Serien-Erinnerung. Optionale grobe Kalorien dienen nur deiner eigenen Notiz.",
+  "untracked.toggle": "Nicht erfasst",
+  "untracked.kcal_optional": "Grobe Kalorien (optional)",
+  "untracked.save": "Speichern",
 });

@@ -2,7 +2,6 @@ package app.chompass.data
 
 import app.chompass.models.Recipe
 import androidx.datastore.preferences.core.edit
-import java.util.UUID
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope

@@ -85,6 +85,7 @@ function daysBetweenIso(a, b) {
  * @param {import('./models.js').WeightEntry[]} args.weights
  * @param {import('./models.js').FoodEntry[]} args.foods
  * @param {import('./models.js').UserProfile} args.profile
+ * @param {string[]} [args.untrackedDates] ISO dates the user marked not tracked (#106)
  */
 export function computeWeightForecast({ weights, foods, profile, untrackedDates = [] }) {
   const today = localIsoDate();
@@ -173,6 +174,7 @@ export function computeWeightForecast({ weights, foods, profile, untrackedDates 
  * @param {import('./models.js').UserProfile} args.profile
  * @param {import('./models.js').WeightEntry[]} args.weights
  * @param {import('./models.js').FoodEntry[]} args.foods
+ * @param {string[]} [args.untrackedDates] ISO dates the user marked not tracked (#106)
  */
 export function suggestAdaptiveCalories({ profile, weights, foods, untrackedDates = [] }) {
   if (profile.caloriesLocked) {

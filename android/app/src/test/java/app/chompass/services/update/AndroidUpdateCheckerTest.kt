@@ -17,7 +17,6 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [33], application = Application::class)
 class AndroidUpdateCheckerTest {
-
     private fun releaseJson(tag: String): String =
         """{"id":1,"tag_name":"$tag","name":"Chompass $tag","draft":false,"prerelease":false}"""
 
