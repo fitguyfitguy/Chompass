@@ -71,6 +71,15 @@ class HomeUiStateWriteTest {
     }
 
     @Test
+    fun equals_distinguishesUntrackedDays() {
+        val marked = HomeUiState().copy(untrackedDays = setOf("2026-09-21"))
+        assertTrue(marked != HomeUiState())
+        val flow = kotlinx.coroutines.flow.MutableStateFlow(HomeUiState())
+        flow.value = marked
+        assertEquals(setOf("2026-09-21"), flow.value.untrackedDays)
+    }
+
+    @Test
     fun copyAndWrite_preservesRecoveredReview() {
         val draft = PendingFoodAnalysisDraft(
             analysis = FoodAnalysis(

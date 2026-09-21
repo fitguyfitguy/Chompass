@@ -29,6 +29,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Fixed
 
 - **Relogging a saved meal uses the current meal slot** (Android): opening a recent or favorite from last night no longer starts the review on Evening when you log it in the morning. The slot follows the time you are logging, and you can still change it. When Suggest meals by time of day is off, the saved slot is kept. Follows Codeberg [#102](https://codeberg.org/fitguy/Chompass/issues/102) by [@Ir0nhid3](https://codeberg.org/Ir0nhid3).
+- **Marking a day not tracked shows on Home** (Android): Save used to sit under the navigation bar, and the chip did not update until a later refresh. The button is reachable, and the chip switches as soon as you save.
 - **Streamed answers no longer overwrite your edits** (Android): while an analysis streams into the review sheet, fields you already edited keep your numbers.
 - **Wheel pickers work with TalkBack** (Android): rows carry their labels, and the picker announces which value is selected.
 - **The home widget keeps today's totals after midnight** (Android): a same-day write right after midnight used to show 0 or stale kcal until the app restarted.
