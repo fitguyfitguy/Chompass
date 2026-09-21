@@ -656,12 +656,8 @@ object OpenFoodFactsService {
         val nutriments = product.optJSONObject("nutriments")
             ?: throw LookupException("This barcode was found, but nutrition data is incomplete. Scan the nutrition label instead.")
 
-        val servingGrams = maxOf(
-            product.flexibleDouble("serving_quantity")
-                ?: gramsFrom(product.optString("serving_size").takeIf { it.isNotBlank() })
-                ?: 100.0,
-            1.0
-        )
+        val labeledGrams = labeledServingGrams(product)
+        val servingGrams = maxOf(labeledGrams ?: 100.0, 1.0)
         val scale = servingGrams / 100.0
 
         fun servingValue(key: String): Double? {
@@ -679,14 +675,17 @@ object OpenFoodFactsService {
             throw LookupException("This barcode was found, but nutrition data is incomplete. Scan the nutrition label instead.")
         }
 
-        val servingOption = ServingUnitOption(unit = "serving", gramsPerUnit = servingGrams, quantity = 1.0)
+        val servingOption = labeledGrams?.let {
+            ServingUnitOption(unit = "serving", gramsPerUnit = it, quantity = 1.0)
+        }
         val packageGramsValue = packageGrams(product)
         val servingOptions = buildList {
-            add(servingOption)
+            if (servingOption != null) add(servingOption)
             if (packageGramsValue != null && abs(packageGramsValue - servingGrams) > 0.01) {
                 add(ServingUnitOption(unit = "package", gramsPerUnit = packageGramsValue, quantity = 1.0))
             }
         }
+        val selectedOption = servingOptions.firstOrNull()
         val metadata = FoodProductMetadata(
             barcode = barcode,
             packageQuantity = product.string("quantity"),
@@ -748,8 +747,8 @@ object OpenFoodFactsService {
             omega3 = rounded(servingValue("omega-3-fat")),
             caffeine = milligrams(servingValue("caffeine")),
             servingUnitOptions = servingOptions,
-            selectedServingUnit = servingOption.unit,
-            selectedServingQuantity = 1.0,
+            selectedServingUnit = selectedOption?.unit,
+            selectedServingQuantity = selectedOption?.let { 1.0 },
             grounding = FoodGroundingProvenance(
                 sourceKind = NutrientSourceKind.OPEN_FOOD_FACTS,
                 sourceId = barcode,
@@ -794,6 +793,11 @@ object OpenFoodFactsService {
 
     private fun micrograms(grams: Double?): Double? =
         grams?.let { round(it * 1_000_000.0 * 10.0) / 10.0 }
+
+    /** Labeled serving mass when OFF has serving_quantity or a parseable serving_size. */
+    internal fun labeledServingGrams(product: JSONObject): Double? =
+        product.flexibleDouble("serving_quantity")?.takeIf { it > 0 }
+            ?: gramsFrom(product.optString("serving_size").takeIf { it.isNotBlank() })?.takeIf { it > 0 }
 
     private fun gramsFrom(servingSize: String?): Double? {
         var text = servingSize?.lowercase(Locale.US) ?: return null

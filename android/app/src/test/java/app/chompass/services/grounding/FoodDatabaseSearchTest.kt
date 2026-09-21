@@ -236,4 +236,24 @@ class FoodDatabaseSearchTest {
         assertEquals(nonNormalizable, seen)
         assertEquals("Test Product", analysis.name)
     }
+
+    @Test
+    fun withSearchLabeledServing_attachesServingWhenLookupHasNone() {
+        val bare = FoodAnalysis(
+            name = "Yogurt",
+            calories = 80,
+            protein = 8.0,
+            carbs = 6.0,
+            fat = 2.0,
+            servingSizeGrams = 100.0,
+        )
+        val labeled = bare.withSearchLabeledServing(150.0)
+        assertEquals("serving", labeled.selectedServingUnit)
+        assertEquals(1.0, labeled.selectedServingQuantity!!, 0.001)
+        assertEquals(150.0, labeled.servingUnitOptions.single().gramsPerUnit, 0.001)
+        assertEquals(bare, bare.withSearchLabeledServing(null))
+        assertEquals(bare, bare.withSearchLabeledServing(0.0))
+        val already = labeled.withSearchLabeledServing(200.0)
+        assertEquals(150.0, already.servingUnitOptions.single().gramsPerUnit, 0.001)
+    }
 }

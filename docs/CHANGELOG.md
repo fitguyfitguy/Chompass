@@ -23,6 +23,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Nutrient wheels go past 999.9** (Android): sodium and other micros can now be entered up to 9999.9, so a high-sodium fast food is one entry instead of being capped.
 - **Coach confirmation replies use your language** (Android): after you accept or dismiss a food, weight, or water log from the coach, the follow-up line is translated instead of staying English.
 - **Meal type sits under the food name on more sheets** (Android): editing a favorite and adding a food by hand now put meal type right after the name, then serving, matching the review and edit sheets.
+- **Open Food Facts results use the labeled serving** (Android): picking a packaged food opens the review on that product's serving when Open Food Facts has one. If it does not, the amount stays in grams instead of inventing a 100 g serving.
 
 ### Fixed
 
