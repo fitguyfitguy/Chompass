@@ -846,6 +846,10 @@
     <string name="cd_set_meal_start">시작 시간 설정</string>
 
     <string name="coach_confirm_log_food_summary">%1$s: %2$s(단백질 %3$s, 탄수화물 %4$s, 지방 %5$s)</string>
+    <string name="coach_logged_food">기록함: %1$s (%2$s %3$s).</string>
+    <string name="coach_logged_weight">체중 기록함: %1$s kg.</string>
+    <string name="coach_logged_water">물 기록함: %1$d ml.</string>
+    <string name="coach_logged_discard">알겠어요. 기록하지 않을게요.</string>
     <string name="coach_confirm_log_food_title">이 음식을 기록할까요?</string>
     <string name="coach_confirm_log_water_title">이 물을 기록할까요?</string>
     <string name="coach_confirm_log_weight_title">이 체중을 기록할까요?</string>

@@ -759,6 +759,10 @@
     <string name="coach_confirm_log_weight_title">Bu kilo kaydedilsin mi?</string>
     <string name="coach_confirm_log_water_title">Bu su kaydedilsin mi?</string>
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (%3$s protein, %4$s karbonhidrat, %5$s yağ)</string>
+    <string name="coach_logged_food">Kaydedildi: %1$s (%2$s %3$s).</string>
+    <string name="coach_logged_weight">Kilo kaydedildi: %1$s kg.</string>
+    <string name="coach_logged_water">Su kaydedildi: %1$d ml.</string>
+    <string name="coach_logged_discard">Tamam, kaydetmiyorum.</string>
 
     <string name="coach_chip_predict_30_days">30 gün sonra beklenen kilom ne olur?</string>
     <string name="coach_chip_lose_faster">Güvenli şekilde daha hızlı nasıl kilo veririm?</string>

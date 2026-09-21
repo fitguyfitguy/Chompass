@@ -847,6 +847,10 @@
     <string name="cd_set_meal_start">تعيين وقت البداية</string>
 
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (بروتين %3$s، كربوهيدرات %4$s، دهون %5$s)</string>
+    <string name="coach_logged_food">تم التسجيل: %1$s (%2$s %3$s).</string>
+    <string name="coach_logged_weight">تم تسجيل الوزن: %1$s كغ.</string>
+    <string name="coach_logged_water">تم تسجيل الماء: %1$d مل.</string>
+    <string name="coach_logged_discard">حسنًا، لن أسجّل ذلك.</string>
     <string name="coach_confirm_log_food_title">تسجيل هذا الطعام؟</string>
     <string name="coach_confirm_log_water_title">تسجيل هذا الماء؟</string>
     <string name="coach_confirm_log_weight_title">تسجيل هذا الوزن؟</string>

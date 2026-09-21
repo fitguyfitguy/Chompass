@@ -820,6 +820,10 @@
     <string name="cd_set_meal_start">Задати час початку</string>
 
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (білок %3$s, вуглеводи %4$s, жири %5$s)</string>
+    <string name="coach_logged_food">Записано: %1$s (%2$s %3$s).</string>
+    <string name="coach_logged_weight">Вагу записано: %1$s кг.</string>
+    <string name="coach_logged_water">Воду записано: %1$d мл.</string>
+    <string name="coach_logged_discard">Гаразд, не записую.</string>
     <string name="coach_confirm_log_food_title">Записати цю їжу?</string>
     <string name="coach_confirm_log_water_title">Записати цю воду?</string>
     <string name="coach_confirm_log_weight_title">Записати цю вагу?</string>

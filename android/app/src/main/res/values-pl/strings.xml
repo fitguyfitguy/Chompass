@@ -759,6 +759,10 @@
     <string name="coach_confirm_log_weight_title">Zalogować tę wagę?</string>
     <string name="coach_confirm_log_water_title">Zalogować tę wodę?</string>
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (%3$s białka, %4$s węglowodanów, %5$s tłuszczu)</string>
+    <string name="coach_logged_food">Zapisano: %1$s (%2$s %3$s).</string>
+    <string name="coach_logged_weight">Zapisano wagę: %1$s kg.</string>
+    <string name="coach_logged_water">Zapisano wodę: %1$d ml.</string>
+    <string name="coach_logged_discard">OK, nie zapisuję tego.</string>
 
     <string name="coach_chip_predict_30_days">Jaka będzie moja waga za 30 dni?</string>
     <string name="coach_chip_lose_faster">Jak bezpiecznie szybciej schudnąć?</string>

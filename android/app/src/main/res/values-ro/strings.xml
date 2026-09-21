@@ -839,6 +839,10 @@
     <string name="cd_set_meal_start">Setează ora de start</string>
 
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (proteine %3$s, carbohidrați %4$s, grăsimi %5$s)</string>
+    <string name="coach_logged_food">Înregistrat: %1$s (%2$s %3$s).</string>
+    <string name="coach_logged_weight">Greutate înregistrată: %1$s kg.</string>
+    <string name="coach_logged_water">Apă înregistrată: %1$d ml.</string>
+    <string name="coach_logged_discard">OK, nu înregistrez.</string>
     <string name="coach_confirm_log_food_title">Înregistrezi această mâncare?</string>
     <string name="coach_confirm_log_water_title">Înregistrezi această apă?</string>
     <string name="coach_confirm_log_weight_title">Înregistrezi această greutate?</string>

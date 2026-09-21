@@ -817,6 +817,10 @@
     <string name="cd_set_meal_start">Starttijd instellen</string>
 
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (eiwit %3$s, koolhydraten %4$s, vet %5$s)</string>
+    <string name="coach_logged_food">Gelogd: %1$s (%2$s %3$s).</string>
+    <string name="coach_logged_weight">Gewicht gelogd: %1$s kg.</string>
+    <string name="coach_logged_water">Water gelogd: %1$d ml.</string>
+    <string name="coach_logged_discard">Oké, ik log het niet.</string>
     <string name="coach_confirm_log_food_title">Dit voedsel loggen?</string>
     <string name="coach_confirm_log_water_title">Dit water loggen?</string>
     <string name="coach_confirm_log_weight_title">Dit gewicht loggen?</string>

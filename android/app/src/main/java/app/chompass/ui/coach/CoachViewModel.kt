@@ -160,9 +160,18 @@ class CoachViewModel(private val container: AppContainer) : ViewModel() {
             )
             container.foodRepository.addEntry(unique)
             val unit = EnergyUnit.fromStorage(container.prefs.energyUnit.first())
-            val unitLabel = container.appContext.getString(if (unit == EnergyUnit.KJ) R.string.unit_kj else R.string.unit_kcal)
+            val ctx = container.appContext
+            val unitLabel = ctx.getString(if (unit == EnergyUnit.KJ) R.string.unit_kj else R.string.unit_kcal)
             container.chatRepository.append(
-                ChatMessage(role = ChatMessage.Role.ASSISTANT, content = "Logged: ${unique.name} (${EnergyFormat.quantity(unique.calories, unit)} $unitLabel).")
+                ChatMessage(
+                    role = ChatMessage.Role.ASSISTANT,
+                    content = ctx.getString(
+                        R.string.coach_logged_food,
+                        unique.name,
+                        EnergyFormat.quantity(unique.calories, unit).toString(),
+                        unitLabel,
+                    ),
+                )
             )
             _ui.value = _ui.value.copy(pendingFood = null)
         }
@@ -173,7 +182,13 @@ class CoachViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             container.weightRepository.addEntry(entry)
             container.chatRepository.append(
-                ChatMessage(role = ChatMessage.Role.ASSISTANT, content = "Logged weight: ${LocaleFormat.decimal(entry.weightKg, 1)} kg.")
+                ChatMessage(
+                    role = ChatMessage.Role.ASSISTANT,
+                    content = container.appContext.getString(
+                        R.string.coach_logged_weight,
+                        LocaleFormat.decimal(entry.weightKg, 1),
+                    ),
+                )
             )
             _ui.value = _ui.value.copy(pendingWeight = null)
         }
@@ -184,7 +199,13 @@ class CoachViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             container.waterRepository.add(entry)
             container.chatRepository.append(
-                ChatMessage(role = ChatMessage.Role.ASSISTANT, content = "Logged water: ${entry.milliliters} ml.")
+                ChatMessage(
+                    role = ChatMessage.Role.ASSISTANT,
+                    content = container.appContext.getString(
+                        R.string.coach_logged_water,
+                        entry.milliliters,
+                    ),
+                )
             )
             _ui.value = _ui.value.copy(pendingWater = null)
         }
@@ -193,7 +214,12 @@ class CoachViewModel(private val container: AppContainer) : ViewModel() {
     /** Discards whichever pending proposal is currently set. */
     fun discardPending() {
         viewModelScope.launch {
-            container.chatRepository.append(ChatMessage(role = ChatMessage.Role.ASSISTANT, content = "Okay, I won't log that."))
+            container.chatRepository.append(
+                ChatMessage(
+                    role = ChatMessage.Role.ASSISTANT,
+                    content = container.appContext.getString(R.string.coach_logged_discard),
+                )
+            )
             _ui.value = _ui.value.copy(pendingFood = null, pendingWeight = null, pendingWater = null)
         }
     }

@@ -835,6 +835,10 @@
     <string name="cd_set_meal_start">Definir horário de início</string>
 
     <string name="coach_confirm_log_food_summary">%1$s: %2$s (proteína %3$s, carboidratos %4$s, gordura %5$s)</string>
+    <string name="coach_logged_food">Registrado: %1$s (%2$s %3$s).</string>
+    <string name="coach_logged_weight">Peso registrado: %1$s kg.</string>
+    <string name="coach_logged_water">Água registrada: %1$d ml.</string>
+    <string name="coach_logged_discard">Ok, não vou registrar.</string>
     <string name="coach_confirm_log_food_title">Registrar esta comida?</string>
     <string name="coach_confirm_log_water_title">Registrar esta água?</string>
     <string name="coach_confirm_log_weight_title">Registrar este peso?</string>
