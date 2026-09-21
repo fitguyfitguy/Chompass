@@ -1480,6 +1480,8 @@
     <string name="cd_remove_serving_unit">Bu birimi kaldır</string>
     <string name="sheet_serving_custom_name">Birim adı</string>
     <string name="sheet_serving_custom_grams">Birim başına gram</string>
+    <string name="sheet_serving_baseless_hint">Bir porsiyon (birim ve miktar) ayarla, miktar düzenlemeleri değerleri ölçekleyecek.</string>
+    <string name="sheet_serving_baseless_touched_hint">Porsiyon, kaydetme işleminde kayıt altına alınacak; sonraki düzenleme değerleri ölçekleyecek.</string>
     <string name="cd_quantity_operator">%1$s miktara ekle</string>
     <string name="cd_hold_to_record">Kaydetmek için basılı tut, kilitlemek için dokun</string>
     <string name="cd_cancel_recording">Kaydı iptal et</string>

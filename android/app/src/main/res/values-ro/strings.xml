@@ -1531,6 +1531,8 @@
     <string name="sheet_macro_label_format">%1$s (%2$s)</string>
     <string name="sheet_model">Model</string>
     <string name="sheet_serving_custom_grams">Grame per unitate</string>
+    <string name="sheet_serving_baseless_hint">Setează o porție (unitate și cantitate), iar modificările de cantitate vor scala valorile.</string>
+    <string name="sheet_serving_baseless_touched_hint">Porția va fi înregistrată la salvare; următoarea modificare va scala valorile.</string>
     <string name="sheet_serving_custom_name">Numele unității</string>
     <string name="sheet_serving_unit_heuristics">Personalizează euristicile</string>
     <string name="sheet_serving_unit_mode">Inferența unității de porție</string>

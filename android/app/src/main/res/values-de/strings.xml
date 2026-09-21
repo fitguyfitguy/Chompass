@@ -2737,6 +2737,8 @@ für dich ein</string>
     <string name="sheet_serving_custom_name">Name der Einheit</string>
 
     <string name="sheet_serving_custom_grams">Gramm pro Einheit</string>
+    <string name="sheet_serving_baseless_hint">Leg eine Portion (Einheit und Menge) fest, dann passen Mengenänderungen die Werte an.</string>
+    <string name="sheet_serving_baseless_touched_hint">Die Portion wird beim Speichern erfasst; die nächste Änderung passt die Werte dann an.</string>
 
     <string name="cd_quantity_operator">%1$s in die Menge einfügen</string>
 

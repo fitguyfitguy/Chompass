@@ -1611,6 +1611,8 @@
     <string name="sheet_micro_sodium">Sodium</string>
     <string name="sheet_nutrition">Nutrition</string>
     <string name="sheet_serving_custom_grams">Grammes par unité</string>
+    <string name="sheet_serving_baseless_hint">Définis une portion (unité et quantité) et les modifications de quantité ajusteront les valeurs.</string>
+    <string name="sheet_serving_baseless_touched_hint">La portion sera enregistrée à la sauvegarde ; la prochaine modification ajustera les valeurs.</string>
     <string name="sheet_serving_custom_name">Nom de l\'unité</string>
     <string name="sheet_serving_unit_heuristics">Personnaliser les heuristiques</string>
     <string name="sheet_serving_unit_mode">Inférence de l\'unité de portion</string>

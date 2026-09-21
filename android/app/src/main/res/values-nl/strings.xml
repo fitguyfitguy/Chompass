@@ -1513,6 +1513,8 @@
     <string name="sheet_macro_auto">auto</string>
     <string name="sheet_macro_label_format">%1$s (%2$s)</string>
     <string name="sheet_serving_custom_grams">Gram per eenheid</string>
+    <string name="sheet_serving_baseless_hint">Stel een portie (eenheid en hoeveelheid) in, dan passen hoeveelheidswijzigingen de waarden aan.</string>
+    <string name="sheet_serving_baseless_touched_hint">De portie wordt bij het opslaan vastgelegd; de volgende bewerking past de waarden aan.</string>
     <string name="sheet_serving_custom_name">Eenheidsnaam</string>
     <string name="sheet_serving_unit_heuristics">Heuristiek aanpassen</string>
     <string name="sheet_serving_unit_mode">Portie-eenheid bepalen</string>

@@ -1531,6 +1531,8 @@
     <string name="sheet_language">اللغة</string>
     <string name="sheet_macro_label_format">%1$s (%2$s)</string>
     <string name="sheet_serving_custom_grams">الجرام لكل وحدة</string>
+    <string name="sheet_serving_baseless_hint">حدّد حصة (وحدة وكمية) وستقوم تعديلات الكمية بقياس القيم.</string>
+    <string name="sheet_serving_baseless_touched_hint">سيتم تسجيل الحصة عند الحفظ؛ والتعديل التالي سيقيس القيم.</string>
     <string name="sheet_serving_custom_name">اسم الوحدة</string>
     <string name="sheet_serving_unit_heuristics">تخصيص الاستدلالات</string>
     <string name="sheet_serving_unit_mode">استدلال وحدة الحصة</string>
