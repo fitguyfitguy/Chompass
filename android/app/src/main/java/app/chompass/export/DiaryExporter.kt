@@ -82,6 +82,8 @@ object DiaryExporter {
         notes: List<DailyNote> = emptyList(),
         goalJournal: List<GoalJournalEntry> = emptyList(),
         today: LocalDate = LocalDate.now(),
+        untrackedDates: Set<LocalDate> = emptySet(),
+        untrackedKcalByDay: Map<LocalDate, Int> = emptyMap(),
     ): Pair<String, String>? {
         val lo = if (start.isAfter(end)) end else start
         val hi = if (start.isAfter(end)) start else end
@@ -98,7 +100,9 @@ object DiaryExporter {
             .associateBy { it.date }
         // A day with a note but no food still exports (journal days) — except
         // CSV, which is entry-row-only and has no place for a day-level note.
-        if (byDay.isEmpty() && (format == DiaryFormat.CSV || noteByDay.isEmpty())) return null
+        val untrackedInRange = untrackedDates.filter { !it.isBefore(lo) && !it.isAfter(hi) }.toSet()
+        if (byDay.isEmpty() && format == DiaryFormat.CSV) return null
+        if (byDay.isEmpty() && noteByDay.isEmpty() && untrackedInRange.isEmpty()) return null
 
         val targetsForDay: (LocalDate) -> Targets = { date ->
             val resolved = MacroPlanResolver.targetsForJournaled(goalJournal, profile, date, today)
@@ -111,7 +115,7 @@ object DiaryExporter {
         }
 
         val content = when (format) {
-            DiaryFormat.JSON -> json(byDay, noteByDay, lo, hi, targetsForDay)
+            DiaryFormat.JSON -> json(byDay, noteByDay, untrackedInRange, untrackedKcalByDay, lo, hi, targetsForDay)
             DiaryFormat.MARKDOWN -> markdown(byDay, noteByDay, lo, hi, targetsForDay, mealDisplay)
             DiaryFormat.CSV -> csv(byDay)
         }
@@ -340,6 +344,8 @@ object DiaryExporter {
     @Serializable private data class DayDto(
         val date: String, val totals: Macro, val targets: Macro, val remaining: Macro,
         val meals: List<MealDto>, val note: String? = null,
+        val untracked: Boolean? = null,
+        val untracked_kcal: Int? = null,
     )
     @Serializable private data class RangeDto(val start: String, val end: String)
     @Serializable private data class MealCatalogDto(val id: String, val label: String)
@@ -351,15 +357,17 @@ object DiaryExporter {
     )
     @Serializable private data class Doc(val export: MetaDto, val days: List<DayDto>)
 
-    private val jsonPretty = Json { prettyPrint = true; encodeDefaults = true }
+    private val jsonPretty = Json { prettyPrint = true; encodeDefaults = true; explicitNulls = false }
 
     private fun json(
         byDay: Map<LocalDate, List<FoodEntry>>,
         noteByDay: Map<LocalDate, DailyNote>,
+        untrackedDates: Set<LocalDate>,
+        untrackedKcalByDay: Map<LocalDate, Int>,
         lo: LocalDate, hi: LocalDate, t: (LocalDate) -> Targets,
     ): String {
-        // Union of days: food days plus note-only days (journal entries).
-        val days = (byDay.keys + noteByDay.keys).sorted().map { date ->
+        // Union of days: food, notes, and untracked-only days (#106).
+        val days = (byDay.keys + noteByDay.keys + untrackedDates).sorted().map { date ->
             val dayEntries = byDay[date].orEmpty()
             val tot = totals(dayEntries)
             val dayTarget = t(date)
@@ -381,12 +389,14 @@ object DiaryExporter {
                 ),
                 meals = mealDtos,
                 note = noteByDay[date]?.text,
+                untracked = true.takeIf { date in untrackedDates },
+                untracked_kcal = untrackedKcalByDay[date],
             )
         }
         val doc = Doc(
             export = MetaDto(
                 app = "Chompass",
-                format_version = "1.5",
+                format_version = "1.6",
                 date_range = RangeDto(dayFmt.format(lo), dayFmt.format(hi)),
                 meal_catalog = app.chompass.models.CurrentMealCatalog.value.meals.map {
                     MealCatalogDto(it.id, it.label)

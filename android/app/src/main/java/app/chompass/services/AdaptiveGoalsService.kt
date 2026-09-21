@@ -97,10 +97,12 @@ class AdaptiveGoalsService(
             // Record the change for the Goals transparency sheet (reopenable on demand):
             // deterministic, so tier/provider stay null and the sheet renders the
             // built-in-formulas lines + the formula baseline/data used + this reason.
+            val untracked = app.chompass.models.UntrackedDays.parseIsoSet(prefs.untrackedDays.first())
             val forecast = WeightAnalysisService.compute(
                 weights = weightRepository.entries.first(),
                 foods = foodRepository.entries.first(),
                 profile = profile,
+                untrackedDates = untracked,
             )
             prefs.saveLastGoalChangeSheet(
                 RecalcSheetData(

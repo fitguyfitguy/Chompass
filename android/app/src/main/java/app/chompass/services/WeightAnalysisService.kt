@@ -280,16 +280,19 @@ object WeightAnalysisService {
         profile: UserProfile,
         now: Instant = Instant.now(),
         zone: ZoneId = ZoneId.systemDefault(),
+        untrackedDates: Collection<LocalDate> = emptySet(),
     ): WeightForecast {
         val today = now.atZone(zone).toLocalDate()
         val lookbackStart = today.minusDays(WeightForecast.MAX_LOOKBACK_DAYS.toLong())
         val cutoff = lookbackStart.atStartOfDay(zone).toInstant()
 
+        val untracked = untrackedDates.toSet()
         val foodDates = foods.map { it.timestamp.atZone(zone).toLocalDate() }
         val window = WeightForecastMath.completeDayWindow(
             foodDates,
             today,
             WeightForecast.MAX_LOOKBACK_DAYS,
+            untrackedDates = untracked,
         )
         val completeFoods = foods.filter {
             it.timestamp.atZone(zone).toLocalDate() in window.loggedDates

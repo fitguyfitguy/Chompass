@@ -47,7 +47,10 @@ test("round-trips totals for parity diary fixture days", () => {
   const notes = doc.days
     .filter((d) => d.note != null)
     .map((d) => ({ date: d.date, text: d.note }));
-  const reExported = exportDiary({ entries, targets, dateRange, notes });
+  const untrackedDays = doc.days
+    .filter((d) => d.untracked === true)
+    .map((d) => ({ date: d.date, kcal: d.untracked_kcal ?? null }));
+  const reExported = exportDiary({ entries, targets, dateRange, notes, untrackedDays });
 
   // The fixture day carries the #58a note; it must survive the round trip.
   const noted = reExported.days.find((d) => d.date === "2026-04-27");
@@ -320,12 +323,12 @@ test("round-trips constituents and serving units", () => {
   assert.equal(item.constituents[1].caffeine_mg, null);
 });
 
-test("diary 1.5 accepted, newer rejected", () => {
-  assert.equal(DIARY_FORMAT_VERSION, "1.5");
-  for (const v of ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5"]) {
+test("diary 1.6 accepted, newer rejected", () => {
+  assert.equal(DIARY_FORMAT_VERSION, "1.6");
+  for (const v of ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6"]) {
     assert.ok(DIARY_IMPORT_VERSIONS.has(v), v);
   }
-  const doc = { export: { app: "Chompass", format_version: "1.6" }, days: [] };
+  const doc = { export: { app: "Chompass", format_version: "1.7" }, days: [] };
   assert.throws(() => importDiary(doc), UnsupportedFormatError);
 });
 

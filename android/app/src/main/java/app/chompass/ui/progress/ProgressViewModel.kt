@@ -197,13 +197,17 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
                 // Daily aggregates (flippidity C.1): one small row per logged
                 // day from the aggregate cache instead of the year of FoodEntry
                 // rows — All-range compute never holds the full diary in memory.
-                container.foodRepository.dailyTotalsBetween(start, end).map { totals ->
+                combine(
+                    container.foodRepository.dailyTotalsBetween(start, end),
+                    container.prefs.untrackedDays,
+                ) { totals, untracked ->
                     ProgressSnapshot(
                         base = inputs.base,
                         dailyTotals = totals,
                         weightUnit = inputs.weightUnit,
                         selectedRange = inputs.selectedRange,
                         showGoalReached = inputs.showGoalReached,
+                        untrackedDays = untracked,
                     )
                 }
             }.mapLatest { snapshot ->
@@ -298,7 +302,8 @@ private data class ProgressSnapshot(
     val dailyTotals: List<DailyFoodTotals>,
     val weightUnit: String,
     val selectedRange: TimeRange,
-    val showGoalReached: Boolean
+    val showGoalReached: Boolean,
+    val untrackedDays: Set<String> = emptySet(),
 )
 
 private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()): ProgressUiState {
@@ -319,7 +324,9 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
         .filter { it.date in rangeStart..rangeEnd }
         .sortedBy { it.date }
         .toList()
-    val foodByDay = dailyTotals.associate { it.date to it }
+    val foodByDay = dailyTotals
+        .filter { it.date.toString() !in untrackedDays }
+        .associate { it.date to it }
     val dailyCalories = foodByDay
         .toSortedMap()
         .mapNotNull { (day, aggregate) ->

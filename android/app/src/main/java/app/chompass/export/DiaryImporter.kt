@@ -24,7 +24,11 @@ import java.time.LocalTime
 import java.time.ZoneId
 
 sealed class DiaryImportResult {
-    data class Success(val entries: List<FoodEntry>) : DiaryImportResult()
+    data class Success(
+        val entries: List<FoodEntry>,
+        val untrackedDates: Set<LocalDate> = emptySet(),
+        val untrackedKcalByDay: Map<LocalDate, Int> = emptyMap(),
+    ) : DiaryImportResult()
     object EmptyPayload : DiaryImportResult()
     data class UnsupportedFormat(val reason: String) : DiaryImportResult()
     data class Malformed(val reason: String) : DiaryImportResult()
@@ -33,12 +37,12 @@ sealed class DiaryImportResult {
 /**
  * Parses the JSON structure emitted by [DiaryExporter] (and Fud AI / NoFUD) into [FoodEntry] rows.
  * Accepts format 1.0 (macros), 1.1 (macros + micros), 1.2 (serving units + constituents),
- * 1.3 (day notes, #58a), 1.4 (custom meal types, #61), and 1.5 (constituent
- * micros, #86). Exports always use 1.5.
+ * 1.3 (day notes, #58a), 1.4 (custom meal types, #61), 1.5 (constituent
+ * micros, #86), and 1.6 (untracked days, #106). Exports always use 1.6.
  */
 object DiaryImporter {
-    /** Versions accepted on import. New exports always stamp format 1.5. */
-    private val SUPPORTED_IMPORT_VERSIONS = setOf("1.0", "1.1", "1.2", "1.3", "1.4", "1.5")
+    /** Versions accepted on import. New exports always stamp format 1.6. */
+    private val SUPPORTED_IMPORT_VERSIONS = setOf("1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6")
 
     private val parser = Json {
         ignoreUnknownKeys = true
@@ -74,13 +78,20 @@ object DiaryImporter {
         if (days.isEmpty()) return DiaryImportResult.EmptyPayload
 
         val collected = mutableListOf<FoodEntry>()
+        val untrackedDates = mutableSetOf<LocalDate>()
+        val untrackedKcal = mutableMapOf<LocalDate, Int>()
         for (dayElement in days) {
             val day = dayElement.asObjectOrNull()
                 ?: return DiaryImportResult.Malformed("Invalid day object")
             val date = day["date"]?.asString()?.let { parseDate(it) }
                 ?: return DiaryImportResult.Malformed("Invalid day date")
+            if (day["untracked"]?.asBoolean() == true) {
+                untrackedDates += date
+                day["untracked_kcal"]?.asInt()?.takeIf { it >= 0 }?.let { untrackedKcal[date] = it }
+            }
             val meals = day["meals"]?.asArrayOrNull()
-                ?: return DiaryImportResult.Malformed("Missing meals array")
+                ?: if (date in untrackedDates) JsonArray(emptyList())
+                else return DiaryImportResult.Malformed("Missing meals array")
             for (mealElement in meals) {
                 val meal = mealElement.asObjectOrNull()
                     ?: return DiaryImportResult.Malformed("Invalid meal object")
@@ -139,7 +150,12 @@ object DiaryImporter {
             }
         }
         if (collected.isEmpty()) return DiaryImportResult.EmptyPayload
-        return DiaryImportResult.Success(collected.sortedBy { it.timestamp })
+        if (collected.isEmpty() && untrackedDates.isEmpty()) return DiaryImportResult.EmptyPayload
+        return DiaryImportResult.Success(
+            collected.sortedBy { it.timestamp },
+            untrackedDates,
+            untrackedKcal,
+        )
     }
 
     private fun parseDate(raw: String): LocalDate? =
@@ -264,5 +280,6 @@ object DiaryImporter {
     private fun JsonElement.asArrayOrNull(): JsonArray? = this as? JsonArray
     private fun JsonElement.asString(): String? = (this as? JsonPrimitive)?.contentOrNull
     private fun JsonElement.asInt(): Int? = (this as? JsonPrimitive)?.intOrNull
+    private fun JsonElement.asBoolean(): Boolean? = (this as? JsonPrimitive)?.booleanOrNull
     private fun JsonElement.asDouble(): Double? = (this as? JsonPrimitive)?.doubleOrNull
 }

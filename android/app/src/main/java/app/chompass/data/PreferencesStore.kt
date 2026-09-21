@@ -262,6 +262,10 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     /** Home note-card visibility (optional daily notes; default off). */
     val dailyNotesEnabled: Flow<Boolean> get() = dailyNotesEnabledImpl
     suspend fun setDailyNotesEnabled(v: Boolean) = setDailyNotesEnabledImpl(v)
+    val untrackedDays: Flow<Set<String>> get() = untrackedDaysImpl
+    suspend fun setUntrackedDays(dates: Set<String>) = setUntrackedDaysImpl(dates)
+    val untrackedKcalByDay: Flow<Map<String, Int>> get() = untrackedKcalByDayImpl
+    suspend fun setUntrackedKcalByDay(map: Map<String, Int>) = setUntrackedKcalByDayImpl(map)
     val mealTimesEnabled: Flow<Boolean> get() = mealTimesEnabledImpl
     suspend fun setMealTimesEnabled(v: Boolean) = setMealTimesEnabledImpl(v)
     /** Optional meal planning mode; default off. */

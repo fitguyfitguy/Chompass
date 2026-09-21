@@ -1,9 +1,13 @@
 package app.chompass.data
 
+import androidx.datastore.preferences.core.edit
 import app.chompass.models.DailyNote
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
 import java.time.YearMonth
 import java.util.UUID
 
@@ -47,4 +51,39 @@ internal suspend fun PreferencesStore.applyNoteBucketChangesImpl(
 ) {
     if (upsertsByMonth.isEmpty() && removalIdsByMonth.isEmpty()) return
     noteBucketStore.applyChanges(upsertsByMonth, removalIdsByMonth)
+}
+
+internal val PreferencesStore.untrackedDaysImpl: Flow<Set<String>>
+    get() = dataStore.data.map { it[Keys.UNTRACKED_DAYS] ?: emptySet() }
+
+internal suspend fun PreferencesStore.setUntrackedDaysImpl(dates: Set<String>) {
+    dataStore.edit { prefs ->
+        if (dates.isEmpty()) prefs.remove(Keys.UNTRACKED_DAYS)
+        else prefs[Keys.UNTRACKED_DAYS] = dates
+    }
+}
+
+internal val PreferencesStore.untrackedKcalByDayImpl: Flow<Map<String, Int>>
+    get() = dataStore.data.map { prefs ->
+        prefs[Keys.UNTRACKED_KCAL_BY_DAY]?.let { raw ->
+            runCatching {
+                json.decodeFromString(
+                    MapSerializer(String.serializer(), Int.serializer()),
+                    raw,
+                )
+            }.getOrNull()
+        } ?: emptyMap()
+    }
+
+internal suspend fun PreferencesStore.setUntrackedKcalByDayImpl(map: Map<String, Int>) {
+    dataStore.edit { prefs ->
+        if (map.isEmpty()) {
+            prefs.remove(Keys.UNTRACKED_KCAL_BY_DAY)
+        } else {
+            prefs[Keys.UNTRACKED_KCAL_BY_DAY] = json.encodeToString(
+                MapSerializer(String.serializer(), Int.serializer()),
+                map,
+            )
+        }
+    }
 }

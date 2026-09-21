@@ -1,5 +1,5 @@
 // @ts-check
-import { weights, foodEntries, profile as profileStore, bodyFat, prefs, goalJournal } from "../lib/db.js";
+import { weights, foodEntries, profile as profileStore, bodyFat, prefs, goalJournal, untrackedDays } from "../lib/db.js";
 import { dailyTargets } from "../lib/chompass-core/formulas.js";
 import { journalAverage } from "../lib/chompass-core/macro-plan.js";
 import { computeWeightForecast, suggestAdaptiveCalories } from "../lib/chompass-core/forecast.js";
@@ -77,14 +77,16 @@ export class ProgressView extends HTMLElement {
   }
 
   async render() {
-    const [allWeights, allEntries, allBf, prof, appPrefs, journal] = await Promise.all([
+    const [allWeights, allEntries, allBf, prof, appPrefs, journal, untrackedRows] = await Promise.all([
       weights.all(),
       foodEntries.all(),
       bodyFat.all(),
       profileStore.load(),
       prefs.load(),
       goalJournal.all(),
+      untrackedDays.all(),
     ]);
+    const untrackedSet = new Set(untrackedRows.map((r) => r.date));
     this.rangeId = resolveProgressRangeId(
       this.rangeId ?? appPrefs.progressRangeId,
       appPrefs.progressDefaultRangeId,
@@ -134,6 +136,7 @@ export class ProgressView extends HTMLElement {
     const totalsByDate = new Map();
     for (const e of allEntries) {
       if (e.date < startIso) continue;
+      if (untrackedSet.has(e.date)) continue;
       const acc = totalsByDate.get(e.date) ?? {
         calories: 0,
         proteinG: 0,
@@ -174,10 +177,10 @@ export class ProgressView extends HTMLElement {
       weightPoints.length > 0 ? weightPoints.reduce((s, p) => s + p.value, 0) / weightPoints.length : null;
     const netChange = currentW != null && firstW != null ? currentW - firstW : null;
 
-    const forecast = prof ? computeWeightForecast({ weights: allWeights, foods: allEntries, profile: prof }) : null;
+    const forecast = prof ? computeWeightForecast({ weights: allWeights, foods: allEntries, profile: prof, untrackedDates: [...untrackedSet] }) : null;
     const adaptive =
       prof && appPrefs.adaptiveGoals
-        ? suggestAdaptiveCalories({ profile: prof, weights: allWeights, foods: allEntries })
+        ? suggestAdaptiveCalories({ profile: prof, weights: allWeights, foods: allEntries, untrackedDates: [...untrackedSet] })
         : null;
 
     const completeMacroDays = [...totalsByDate.entries()]

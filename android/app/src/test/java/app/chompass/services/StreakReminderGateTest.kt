@@ -14,4 +14,9 @@ class StreakReminderGateTest {
     fun shouldNotifyStreak_skipsWhenFoodAlreadyLogged() {
         assertFalse(shouldNotifyStreak(hasFoodLoggedToday = true))
     }
+
+    @Test
+    fun shouldNotifyStreak_skipsWhenTodayUntracked() {
+        assertFalse(shouldNotifyStreak(hasFoodLoggedToday = false, todayUntracked = true))
+    }
 }

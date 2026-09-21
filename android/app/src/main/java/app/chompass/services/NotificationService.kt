@@ -465,7 +465,10 @@ class NotificationService(private val context: Context) {
  * Pure gate for streak reminders: skip the nudge when the diary already has
  * food logged today (upstream #150). Non-streak channels ignore this helper.
  */
-fun shouldNotifyStreak(hasFoodLoggedToday: Boolean): Boolean = !hasFoodLoggedToday
+fun shouldNotifyStreak(
+    hasFoodLoggedToday: Boolean,
+    todayUntracked: Boolean = false,
+): Boolean = !hasFoodLoggedToday && !todayUntracked
 
 /**
  * Pure: millis of the first instant strictly after [nowMillis]'s local
@@ -642,7 +645,12 @@ class ReminderReceiver : BroadcastReceiver() {
                             ?: return@runCatching false
                         c.foodRepository.entriesForDate(LocalDate.now()).first().isNotEmpty()
                     }.getOrDefault(false) // fail open: post if diary read fails / app not ready
-                    shouldNotifyStreak(hasFoodToday)
+                    val todayUntracked = runCatching {
+                        val c = (context.applicationContext as? ChompassApp)?.container
+                            ?: return@runCatching false
+                        LocalDate.now().toString() in c.prefs.untrackedDays.first()
+                    }.getOrDefault(false)
+                    shouldNotifyStreak(hasFoodToday, todayUntracked)
                 } else if (channel == NotificationService.CHANNEL_WATER) {
                     // Nothing to post when the reminder got disabled since arming.
                     waterPlan != null

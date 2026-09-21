@@ -192,6 +192,7 @@ fun HomeScreen(
     var nutritionDetailScope by rememberSaveable { mutableStateOf<String?>(null) }
     // #60: day-type quick-switch sheet (hero chip).
     var showDayTypeSheet by rememberSaveable { mutableStateOf(false) }
+    var showUntrackedSheet by rememberSaveable { mutableStateOf(false) }
     // Codeberg #30: add-food flow. Tapping a tile (or the "+" FAB) marks the
     // flow active; backing out of a flow-launched destination reopens the grid
     // instead of closing the whole flow. Shortcut/share/gallery-launched sheets
@@ -600,6 +601,8 @@ fun HomeScreen(
                         displayMode = calorieMode,
                         dayTypeLabel = ui.dayTypeLabel,
                         onDayTypeClick = { showDayTypeSheet = true },
+                        untracked = ui.viewedDayUntracked,
+                        onUntrackedClick = { showUntrackedSheet = true },
                         activeCalorieSource = ui.resolvedActiveBurn?.source,
                         showActiveCalories = ui.homeDisplay.showActiveCalories,
                         liveActiveBurn = ui.liveActiveBurn,
@@ -1737,6 +1740,16 @@ fun HomeScreen(
             trackerCaffeineMg = if (nutritionDetailScope == "day") ui.caffeineTodayEntries.sumOf { it.mg } else 0.0,
             onHomeTopNutrientsChange = vm::setHomeTopNutrients,
             onDismiss = { nutritionDetailScope = null },
+        )
+    }
+
+    if (showUntrackedSheet) {
+        UntrackedDaySheet(
+            date = ui.date,
+            untracked = ui.viewedDayUntracked,
+            kcal = ui.viewedDayUntrackedKcal,
+            onSave = { flagged, kcal -> vm.setViewedDayUntracked(flagged, kcal) },
+            onDismiss = { showUntrackedSheet = false },
         )
     }
 

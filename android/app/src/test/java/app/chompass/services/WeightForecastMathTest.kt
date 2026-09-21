@@ -99,4 +99,21 @@ class WeightForecastMathTest {
     assertEquals(2, window.calendarDays)
     assertEquals(2, window.loggedDates.size)
   }
+
+  @Test
+  fun completeDayWindow_untrackedDaysDoNotPadOrCountAsLogged() {
+    val today = LocalDate.of(2026, 8, 21)
+    val logged = listOf(
+      LocalDate.of(2026, 8, 20),
+      LocalDate.of(2026, 8, 19),
+      LocalDate.of(2026, 8, 18),
+    )
+    val untracked = setOf(LocalDate.of(2026, 8, 19))
+    val window = WeightForecastMath.completeDayWindow(
+      logged, today, maxLookbackDays = 90, untrackedDates = untracked,
+    )
+    assertEquals(2, window.loggedDates.size)
+    assertFalse(LocalDate.of(2026, 8, 19) in window.loggedDates)
+    assertEquals(2, window.calendarDays)
+  }
 }

@@ -340,6 +340,9 @@ data class HomeUiState(
     val copiedEntries: List<FoodEntry> = emptyList(),
     /** Last plan action (tick to target day); Home shows the "planned for" snackbar once. */
     val plannedAck: Pair<Int, LocalDate>? = null,
+    /** ISO dates marked not tracked (#106). */
+    val untrackedDays: Set<String> = emptySet(),
+    val untrackedKcalByDay: Map<String, Int> = emptyMap(),
 ) {
     val isEntryAnalysisBusy: Boolean get() = analyzing || analysisPhase != null || inferringUnits
     /** Pending (runnable) queue items — badge count for the Add Food hub row. */
@@ -385,6 +388,8 @@ data class HomeUiState(
      */
     val dayTypeLabel: String? get() =
         if (date == LocalDate.now()) resolvedDayTargets.profileName else null
+    val viewedDayUntracked: Boolean get() = date.toString() in untrackedDays
+    val viewedDayUntrackedKcal: Int? get() = untrackedKcalByDay[date.toString()]
     val resolvedActiveBurn: ResolvedActiveBurn? get() {
         val p = profile ?: return null
         val estimate = measuredActiveAverageCalories.takeIf { it > 0 } ?: p.estimatedDailyActiveCalories
@@ -1227,6 +1232,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             .onEach { entries ->
                 _ui.update { it.copy(goalJournal = entries) }
             }
+            .launchIn(viewModelScope)
+
+        container.prefs.untrackedDays
+            .onEach { dates -> _ui.update { it.copy(untrackedDays = dates) } }
+            .launchIn(viewModelScope)
+        container.prefs.untrackedKcalByDay
+            .onEach { map -> _ui.update { it.copy(untrackedKcalByDay = map) } }
             .launchIn(viewModelScope)
 
         container.prefs.homeDisplayPreferences
@@ -2776,6 +2788,24 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             // Journal with MANUAL_SWITCH provenance; the app-scope observer's
             // follow-up write skips because the values now match.
             runCatching { container.goalJournalService.recordManualSwitch() }
+        }
+    }
+
+    /** Mark or clear the viewed day as not tracked (#106). */
+    fun setViewedDayUntracked(untracked: Boolean, kcal: Int? = null) {
+        viewModelScope.launch {
+            val key = _ui.value.date.toString()
+            val dates = container.prefs.untrackedDays.first().toMutableSet()
+            val kcalMap = container.prefs.untrackedKcalByDay.first().toMutableMap()
+            if (untracked) {
+                dates += key
+                if (kcal != null && kcal >= 0) kcalMap[key] = kcal else kcalMap.remove(key)
+            } else {
+                dates -= key
+                kcalMap.remove(key)
+            }
+            container.prefs.setUntrackedDays(dates)
+            container.prefs.setUntrackedKcalByDay(kcalMap)
         }
     }
 

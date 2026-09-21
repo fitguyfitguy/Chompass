@@ -45,10 +45,12 @@ object WeightForecastMath {
         loggedDates: Collection<LocalDate>,
         today: LocalDate,
         maxLookbackDays: Int = 90,
+        untrackedDates: Collection<LocalDate> = emptySet(),
     ): CompleteDayWindow {
         val lookbackStart = today.minusDays(maxLookbackDays.toLong())
         val yesterday = today.minusDays(1)
-        val inLookback = loggedDates.filter { it in lookbackStart..yesterday }.toSet()
+        val untracked = untrackedDates.toSet()
+        val inLookback = loggedDates.filter { it in lookbackStart..yesterday && it !in untracked }.toSet()
         if (inLookback.isEmpty()) {
             return CompleteDayWindow(
                 firstLogged = null,
@@ -58,7 +60,9 @@ object WeightForecastMath {
             )
         }
         val first = inLookback.min()
-        val calendarDays = (ChronoUnit.DAYS.between(first, yesterday).toInt() + 1).coerceAtLeast(1)
+        val span = ChronoUnit.DAYS.between(first, yesterday).toInt() + 1
+        val untrackedInSpan = untracked.count { it in first..yesterday }
+        val calendarDays = (span - untrackedInSpan).coerceAtLeast(1)
         return CompleteDayWindow(
             firstLogged = first,
             lastComplete = yesterday,
