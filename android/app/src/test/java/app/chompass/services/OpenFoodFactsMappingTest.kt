@@ -123,8 +123,31 @@ class OpenFoodFactsMappingTest {
         val food = OpenFoodFactsService.analysis(product, "123")
         assertEquals(60.0, food.servingSizeGrams!!, 0.001)
         assertEquals(150, food.calories)
+        assertEquals("serving", food.selectedServingUnit)
+        assertEquals(60.0, food.servingUnitOptions.single().gramsPerUnit, 0.001)
     }
 
+
+    @Test
+    fun analysis_unlabeledServing_hasNoServingOption() {
+        val product = JSONObject(
+            """
+            {
+              "product_name": "Mystery",
+              "nutriments": {
+                "energy-kcal_100g": 80,
+                "proteins_100g": 8,
+                "carbohydrates_100g": 6,
+                "fat_100g": 2
+              }
+            }
+            """.trimIndent(),
+        )
+        val food = OpenFoodFactsService.analysis(product, "123")
+        assertEquals(100.0, food.servingSizeGrams!!, 0.001)
+        assertTrue(food.servingUnitOptions.isEmpty())
+        org.junit.Assert.assertNull(food.selectedServingUnit)
+    }
     @Test
     fun analysis_rejectsMissingNutriments() {
         try {

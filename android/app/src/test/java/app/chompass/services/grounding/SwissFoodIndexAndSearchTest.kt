@@ -136,6 +136,25 @@ class SwissFoodIndexAndSearchTest {
     }
 
     @Test
+    fun fromOff_unlabeledServing_keepsNullServingGrams() {
+        val hit = OpenFoodFactsService.SearchHit(
+            barcode = "1",
+            name = "Mystery",
+            brand = null,
+            caloriesPer100g = 80.0,
+            proteinPer100g = 8.0,
+            carbsPer100g = 6.0,
+            fatPer100g = 2.0,
+            servingGrams = null,
+            incompleteEnergy = false,
+            score = 1.0,
+        )
+        val result = DatabaseSearchResult.fromOff(hit)
+        org.junit.Assert.assertNull(result.servingGrams)
+        assertEquals(80, result.displayCalories)
+    }
+
+    @Test
     fun fromSwiss_keepsLanguageTagAndScore() {
         val record = SwissFoodRecord(
             id = 7, lang = "de", name = "Buttermilch",

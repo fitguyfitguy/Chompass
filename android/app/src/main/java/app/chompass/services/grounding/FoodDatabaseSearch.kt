@@ -4,6 +4,7 @@ import app.chompass.data.PreferencesStore
 import android.os.SystemClock
 import android.util.Log
 import app.chompass.models.NutrientSourceKind
+import app.chompass.models.ServingUnitOption
 import app.chompass.services.OpenFoodFactsService
 import app.chompass.services.ai.FoodAnalysis
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +27,7 @@ data class DatabaseSearchResult(
     val brand: String? = null,
     /** Swiss rows are tagged with the bundled language (en/de/fr/it). */
     val lang: String? = null,
-    /** Portion used for the per-serving macros below; 100g when unknown. */
+    /** Labeled serving grams when the source has one; null = unknown (macros use 100 g). */
     val servingGrams: Double? = null,
     val caloriesPerServing: Double? = null,
     val proteinPerServing: Double? = null,
@@ -50,7 +51,7 @@ data class DatabaseSearchResult(
                 // subtitle badge — joining them here double-prints "Aldi Aldi…".
                 name = hit.name,
                 brand = hit.brand,
-                servingGrams = grams,
+                servingGrams = hit.servingGrams,
                 caloriesPerServing = p100(hit.caloriesPer100g),
                 proteinPerServing = p100(hit.proteinPer100g),
                 carbsPerServing = p100(hit.carbsPer100g),
@@ -253,6 +254,7 @@ class FoodDatabaseSearch(
     suspend fun toAnalysis(result: DatabaseSearchResult): FoodAnalysis = when (result.sourceKind) {
         NutrientSourceKind.OPEN_FOOD_FACTS ->
             offToAnalysis(result.sourceId) { OpenFoodFactsService.lookupByCode(it, prefs) }
+                .withSearchLabeledServing(result.servingGrams)
         NutrientSourceKind.USDA -> {
             val record = result.sourceId.toLongOrNull()
                 ?.let { usda.getByFdcId(it) }
@@ -315,3 +317,21 @@ internal suspend fun offToAnalysis(
     sourceId: String,
     lookup: suspend (String) -> FoodAnalysis,
 ): FoodAnalysis = lookup(sourceId)
+
+/**
+ * Attach a labeled "serving" unit from the search hit when the lookup did not
+ * produce one (missing serving_quantity). Soft-fail: null/non-positive grams
+ * leave the analysis on grams.
+ */
+internal fun FoodAnalysis.withSearchLabeledServing(labeledGrams: Double?): FoodAnalysis {
+    val grams = labeledGrams?.takeIf { it > 0 } ?: return this
+    if (servingUnitOptions.any { it.isValid && !it.isGramUnit && it.unit == "serving" }) {
+        return this
+    }
+    val option = ServingUnitOption(unit = "serving", gramsPerUnit = grams, quantity = 1.0)
+    return copy(
+        servingUnitOptions = listOf(option) + servingUnitOptions.filter { it.unit != "serving" },
+        selectedServingUnit = selectedServingUnit ?: option.unit,
+        selectedServingQuantity = selectedServingQuantity ?: 1.0,
+    )
+}

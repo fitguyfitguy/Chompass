@@ -127,10 +127,10 @@ class OpenFoodFactsLookupTest {
         assertNull(analysis.productMetadata!!.nutriScore)
         assertNull(analysis.productMetadata!!.ecoScore)
         assertNull(analysis.productMetadata!!.novaGroup)
-        // 330 ml display quantity parses through the strict fallback: no package
-        // option here because serving defaults to 100 g and 330 != 100.
-        assertEquals(listOf("serving", "package"), analysis.servingUnitOptions.map { it.unit })
-        assertEquals(330.0, analysis.servingUnitOptions[1].gramsPerUnit, 0.001)
+        // No serving_quantity: do not invent a 100 g "serving". Package still
+        // ships from the 330 ml display quantity.
+        assertEquals(listOf("package"), analysis.servingUnitOptions.map { it.unit })
+        assertEquals(330.0, analysis.servingUnitOptions[0].gramsPerUnit, 0.001)
     }
 
     @Test
