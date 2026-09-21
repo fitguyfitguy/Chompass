@@ -1860,13 +1860,16 @@ fun HomeScreen(
                 ?: if (ui.pendingImageBytes != null) FoodSource.SNAP_FOOD else FoodSource.TEXT_INPUT,
             portionPreConfirmed = ui.pendingPortionPreConfirmed,
             progressiveMealActive = ui.progressiveMeal?.items?.isNotEmpty() == true,
-            // Codeberg #66: a Saved Meals review starts from the saved food's
-            // meal slot (favorites as a library); fresh analyses keep the
-            // time-of-day guess.
-            initialMealType = ui.pendingReviewSource?.mealType
-                ?: ui.logTimeOverride?.let {
-                    suggestedSlotFor(ui.mealTimesEnabled, CurrentMealCatalog.value, it)
-                },
+            // Codeberg #102: Saved Meals review follows the log-time slot when
+            // suggestions are on; the stored slot is kept only when they are
+            // off (#88 / #66). Fresh analyses still use the time-of-day guess.
+            initialMealType = reviewSlotFor(
+                ui.pendingReviewSource?.mealType,
+                ui.mealTimesEnabled,
+                CurrentMealCatalog.value,
+                ui.logTimeOverride,
+                LocalTime.now(),
+            ),
             mealTimesEnabled = ui.mealTimesEnabled,
             logTimeOverride = ui.logTimeOverride,
             useSystemDateTimePickers = useSystemDateTimePickers,

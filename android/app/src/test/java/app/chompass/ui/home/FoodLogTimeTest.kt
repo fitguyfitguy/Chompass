@@ -94,6 +94,32 @@ class FoodLogTimeTest {
     }
 
     @Test
+    fun reviewSlotFor_savedMealFollowsClockWhenTimesOn() {
+        val catalog = MealCatalog.Default
+        assertEquals(
+            "breakfast",
+            reviewSlotFor("dinner", timesEnabled = true, catalog, null, LocalTime.of(8, 0)),
+        )
+        assertEquals(
+            "dinner",
+            reviewSlotFor("dinner", timesEnabled = false, catalog, null, LocalTime.of(8, 0)),
+        )
+    }
+
+    @Test
+    fun reviewSlotFor_freshAnalysisUsesSuggested() {
+        val catalog = MealCatalog.Default
+        assertEquals(
+            "lunch",
+            reviewSlotFor(null, timesEnabled = true, catalog, null, LocalTime.of(13, 0)),
+        )
+        assertEquals(
+            MealType.OTHER.id,
+            reviewSlotFor(null, timesEnabled = false, catalog, null, LocalTime.of(13, 0)),
+        )
+    }
+
+    @Test
     fun siblings_sameMealSameDay_excludesSelfAndOtherSlots() {
         val lunch = Instant.parse("2026-08-31T13:00:00Z")
         val later = Instant.parse("2026-08-31T19:00:00Z")
