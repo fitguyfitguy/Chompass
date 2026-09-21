@@ -342,6 +342,27 @@ fun EditFavoriteSheet(
                                 },
                             )
                         }
+                        if (recordedServing == null) {
+                            // Codeberg #105: without a recorded serving the
+                            // macros are absolute portion totals and amount
+                            // edits cannot scale them; surface that rule
+                            // instead of leaving it silent.
+                            item {
+                                Text(
+                                    stringResource(
+                                        if (servingTouched) {
+                                            R.string.sheet_serving_baseless_touched_hint
+                                        } else {
+                                            R.string.sheet_serving_baseless_hint
+                                        }
+                                    ),
+                                    fontSize = 13.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                    lineHeight = 18.sp,
+                                    modifier = Modifier.padding(horizontal = 18.dp),
+                                )
+                            }
+                        }
 
                         item {
                             SheetSectionHeaderWithLock(

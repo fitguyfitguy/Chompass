@@ -2208,6 +2208,8 @@
     <string name="cd_remove_serving_unit">Remove this unit</string>
     <string name="sheet_serving_custom_name">Unit name</string>
     <string name="sheet_serving_custom_grams">Grams per unit</string>
+    <string name="sheet_serving_baseless_hint">Set a serving (unit and quantity) and amount edits will scale the values.</string>
+    <string name="sheet_serving_baseless_touched_hint">Serving will be recorded on save; the next edit will scale the values.</string>
     <string name="cd_quantity_operator">Insert %1$s into quantity</string>
     <string name="cd_hold_to_record">Hold to record, tap to lock</string>
     <string name="cd_cancel_recording">Cancel recording</string>

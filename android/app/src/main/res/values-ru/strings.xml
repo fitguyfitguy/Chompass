@@ -1744,6 +1744,8 @@
     <string name="sheet_constituents_remove">Убрать</string>
     <string name="sheet_language">Язык</string>
     <string name="sheet_serving_custom_grams">Граммов на единицу</string>
+    <string name="sheet_serving_baseless_hint">Задайте порцию (единицу и количество), и изменения количества будут масштабировать значения.</string>
+    <string name="sheet_serving_baseless_touched_hint">Порция будет записана при сохранении; следующее изменение будет масштабировать значения.</string>
     <string name="sheet_serving_custom_name">Название единицы</string>
     <string name="speech_error_audio_capture_failed">Сбой захвата звука</string>
     <string name="speech_error_language_not_supported">Язык речи не поддерживается на этом устройстве</string>
