@@ -138,10 +138,14 @@ fun EditFavoriteSheet(
     }
     val selectedServingOption = ServingUnitOption.optionMatching(selectedServingUnitId, servingUnitOptions)
     val selectedServingQuantity = ServingUnitOption.parseQuantity(servingQuantityText)?.takeIf { it > 0 }
-    val scale = ServingUnitOption.servingScale(recordedServing, servingGrams, baseServingGrams)
+    var nutritionUnlocked by remember { mutableStateOf(false) }
+    val scale = ServingUnitOption.servingScale(
+        servingGrams = servingGrams,
+        baseServingGrams = baseServingGrams,
+        scaleWithAmount = !nutritionUnlocked,
+    )
     var mealType by remember(entry) { mutableStateOf(currentBaseEntry.mealType) }
     var moreNutritionExpanded by remember { mutableStateOf(false) }
-    var nutritionUnlocked by remember { mutableStateOf(false) }
     var editableCalories by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.calories) }
     var editableProtein by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.protein) }
     var editableCarbs by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.carbs) }
@@ -390,20 +394,10 @@ fun EditFavoriteSheet(
                                 },
                             )
                         }
-                        if (recordedServing == null) {
-                            // Codeberg #105: without a recorded serving the
-                            // macros are absolute portion totals and amount
-                            // edits cannot scale them; surface that rule
-                            // instead of leaving it silent.
+                        if (nutritionUnlocked) {
                             item {
                                 Text(
-                                    stringResource(
-                                        if (servingTouched) {
-                                            R.string.sheet_serving_baseless_touched_hint
-                                        } else {
-                                            R.string.sheet_serving_baseless_hint
-                                        }
-                                    ),
+                                    stringResource(R.string.sheet_serving_unlocked_hint),
                                     fontSize = 13.sp,
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                                     lineHeight = 18.sp,
@@ -417,8 +411,29 @@ fun EditFavoriteSheet(
                                 title = stringResource(R.string.sheet_nutrition),
                                 unlocked = nutritionUnlocked,
                                 onToggle = {
-                                    nutritionUnlocked = !nutritionUnlocked
-                                    if (!nutritionUnlocked) dismissKeyboard()
+                                    if (!nutritionUnlocked) {
+                                        val baked = math.bakeScale(
+                                            editableCalories,
+                                            editableProtein,
+                                            editableCarbs,
+                                            editableFat,
+                                            editableMicros,
+                                            editableConstituents,
+                                            servingGrams,
+                                        )
+                                        editableCalories = baked.calories
+                                        editableProtein = baked.protein
+                                        editableCarbs = baked.carbs
+                                        editableFat = baked.fat
+                                        editableMicros = baked.micros
+                                        editableConstituents = baked.constituents
+                                        baseServingGrams = baked.baseServingGrams
+                                        nutritionUnlocked = true
+                                    } else {
+                                        baseServingGrams = servingGrams
+                                        nutritionUnlocked = false
+                                        dismissKeyboard()
+                                    }
                                 }
                             )
                         }

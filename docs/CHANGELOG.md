@@ -29,6 +29,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Fixed
 
 - **Relogging a saved meal uses the current meal slot** (Android): opening a recent or favorite from last night no longer starts the review on Evening when you log it in the morning. The slot follows the time you are logging, and you can still change it. When Suggest meals by time of day is off, the saved slot is kept. Follows Codeberg [#102](https://codeberg.org/fitguy/Chompass/issues/102) by [@Ir0nhid3](https://codeberg.org/Ir0nhid3).
+- **Typed nutrient amounts save** (Android): typing a micro on the numpad and hitting Save on the food sheet keeps that number. Switching back to the wheel is no longer required.
+- **Grams scale while the entry is locked** (Android): changing the amount moves calories and macros. Unlock the numbers to edit them without scaling. Follows Codeberg [#105](https://codeberg.org/fitguy/Chompass/issues/105) by [@BrassCat](https://codeberg.org/BrassCat).
 - **Marking a day not tracked shows on Home** (Android): Save used to sit under the navigation bar, and the chip did not update until a later refresh. The button is reachable, and the chip switches as soon as you save.
 - **Streamed answers no longer overwrite your edits** (Android): while an analysis streams into the review sheet, fields you already edited keep your numbers.
 - **Wheel pickers work with TalkBack** (Android): rows carry their labels, and the picker announces which value is selected.

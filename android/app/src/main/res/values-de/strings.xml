@@ -1034,9 +1034,8 @@ für dich ein</string>
 
     <string name="what_if_no_suggestion">Kein Vorschlag verfügbar.</string>
 
-    <string name="nutrition_unlock_editing">Bearbeitung der Nährwerte freischalten</string>
-
-    <string name="nutrition_lock_editing">Bearbeitung der Nährwerte sperren</string>
+    <string name="nutrition_unlock_editing">Zahlen dieses Eintrags freischalten. Die Menge skaliert sie dann nicht.</string>
+    <string name="nutrition_lock_editing">Zahlen dieses Eintrags sperren. Die Menge skaliert sie.</string>
 
     <string name="sheet_micro_sugar">Zucker</string>
 
@@ -2743,6 +2742,7 @@ für dich ein</string>
     <string name="sheet_serving_custom_grams">Gramm pro Einheit</string>
     <string name="sheet_serving_baseless_hint">Leg eine Portion (Einheit und Menge) fest, dann passen Mengenänderungen die Werte an.</string>
     <string name="sheet_serving_baseless_touched_hint">Die Portion wird beim Speichern erfasst; die nächste Änderung passt die Werte dann an.</string>
+    <string name="sheet_serving_unlocked_hint">Die Zahlen sind frei, eine neue Menge lässt sie unverändert.</string>
 
     <string name="cd_quantity_operator">%1$s in die Menge einfügen</string>
 
