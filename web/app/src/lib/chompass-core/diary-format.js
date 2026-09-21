@@ -250,11 +250,8 @@ const MEAL_TYPES = ["breakfast", "lunch", "dinner", "snack"];
 
 /**
  * Serialize a day-grouped set of food entries + targets into the diary
- * export document shape.
- * @param {{entries: import('./models.js').FoodEntry[], targets: Record<string, {calories:number, proteinG:number, carbsG:number, fatG:number}>, dateRange: {start: string, end: string}}} input
- */
-/**
- * @param {{ entries: import('./models.js').FoodEntry[], targets?: Record<string, {calories: number, proteinG: number, carbsG: number, fatG: number}>, dateRange: {start: string, end: string}, notes?: Array<{date: string, text: string}>, mealCatalog?: unknown }} arg
+ * export document shape (1.6: adds per-day `untracked` / `untracked_kcal`).
+ * @param {{ entries: import('./models.js').FoodEntry[], targets?: Record<string, {calories: number, proteinG: number, carbsG: number, fatG: number}>, dateRange: {start: string, end: string}, notes?: Array<{date: string, text: string}>, mealCatalog?: unknown, untrackedDays?: Array<string|{date: string, kcal?: number|null}> }} arg
  */
 export function exportDiary({ entries, targets = {}, dateRange, notes = [], mealCatalog = null, untrackedDays = [] }) {
   const byDate = new Map();

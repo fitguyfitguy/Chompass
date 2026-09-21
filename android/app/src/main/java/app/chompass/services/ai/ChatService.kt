@@ -1,6 +1,5 @@
 package app.chompass.services.ai
 
-import app.chompass.data.AiCallConfig
 import app.chompass.data.KeyStore
 import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.data.PreferencesStore

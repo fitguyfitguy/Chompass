@@ -794,7 +794,6 @@ internal fun ManualEntryDialog(
                     },
                 )
 
-
                 FudGlassPrimaryButton(
                     text = if (isSaving) {
                         stringResource(R.string.action_logging)

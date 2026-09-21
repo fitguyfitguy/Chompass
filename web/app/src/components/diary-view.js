@@ -1,5 +1,5 @@
 // @ts-check
-import { foodEntries, profile as profileStore, water, dailyNotes, nicotine, caffeine, prefs, goalJournal } from "../lib/db.js";
+import { foodEntries, profile as profileStore, water, dailyNotes, nicotine, caffeine, prefs, goalJournal, untrackedDays } from "../lib/db.js";
 import { dailyTargets, estimatedDailyActiveCalories } from "../lib/chompass-core/formulas.js";
 import { dailyNoteIdFor } from "../lib/chompass-core/models.js";
 import { displayUnit, entryServingEcho, formatQuantity } from "../lib/chompass-core/serving-units.js";

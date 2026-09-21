@@ -539,7 +539,6 @@ fun EditFavoriteSheet(
                             }
                         }
 
-
                         item {
                             ConstituentsSection(
                                 rows = app.chompass.services.ai.ConstituentReconcile.scaleAll(

@@ -127,7 +127,6 @@ class OpenFoodFactsMappingTest {
         assertEquals(60.0, food.servingUnitOptions.single().gramsPerUnit, 0.001)
     }
 
-
     @Test
     fun analysis_unlabeledServing_hasNoServingOption() {
         val product = JSONObject(

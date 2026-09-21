@@ -21,7 +21,6 @@ class BodyMeasurementRepository(
     private val prefs: PreferencesStore,
     private val sync: app.chompass.sync.SyncRepository? = null,
 ) {
-
     /**
      * Serializes read-decide-write sequences (delete/setValue/import) that
      * span a flow read and a bucket apply: the underlying JsonBucketStore

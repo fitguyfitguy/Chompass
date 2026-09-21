@@ -375,14 +375,18 @@ export const goalJournal = {
   },
 };
 
-/** @type {{ date: string, kcal?: number|null }} */
+/** Per-day "not tracked" flags (#106). Rows carry the ISO `date` key and an
+ *  optional rough `kcal` the user keeps for their own record. */
 export const untrackedDays = {
+  /** @param {{ date: string, kcal?: number|null }} row */
   async put(row) {
     return (await store("untrackedDays")).put(row);
   },
+  /** @param {string} date */
   async delete(date) {
     return (await store("untrackedDays")).delete(date);
   },
+  /** @returns {Promise<Array<{ date: string, kcal?: number|null }>>} */
   async all() {
     return (await store("untrackedDays")).getAll();
   },

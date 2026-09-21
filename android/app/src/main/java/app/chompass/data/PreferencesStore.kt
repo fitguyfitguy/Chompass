@@ -53,7 +53,6 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
         CorruptBlobArchive(File(appContext.filesDir, CorruptBlobArchive.DIRECTORY_NAME))
     }
 
-
     /**
      * Set once [migrateBucketsToFilesIfNeeded] has completed without
      * exception for this process. The migration is one-shot by design and
