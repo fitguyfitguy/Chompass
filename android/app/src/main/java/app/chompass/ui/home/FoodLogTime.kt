@@ -95,6 +95,24 @@ internal fun suggestedSlotFor(
     if (!timesEnabled) MealType.OTHER.id else catalog.mealIdAt(time)
 
 /**
+ * Review-sheet default (Codeberg #102). Saved-meal templates follow
+ * [loggingSlotFor]: clock slot when suggestions are on, stored slot when
+ * off. Fresh analyses use [suggestedSlotFor].
+ */
+internal fun reviewSlotFor(
+    templateMealType: String?,
+    timesEnabled: Boolean,
+    catalog: MealCatalog,
+    timeOverride: LocalTime?,
+    nowTime: LocalTime,
+): String =
+    if (templateMealType != null) {
+        loggingSlotFor(templateMealType, timesEnabled, catalog, timeOverride, nowTime)
+    } else {
+        suggestedSlotFor(timesEnabled, catalog, timeOverride ?: nowTime)
+    }
+
+/**
  * Other rows in the same meal slot on [original]'s calendar day. Used by
  * Edit Food "apply this date and time to other items".
  */

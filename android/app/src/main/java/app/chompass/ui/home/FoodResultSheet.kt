@@ -145,10 +145,10 @@ fun FoodResultSheet(
     /** True when a weigh-as-you-go draft already has ingredients. */
     progressiveMealActive: Boolean = false,
     /**
-     * Codeberg #66: meal slot the review should start from when the source
-     * carries one (Saved Meals tap — favorites/recents/frequent templates).
-     * Null / blank falls back to the time-of-day guess, so fresh AI analyses
-     * are unchanged. Matches the PWA entry-form prefill behavior.
+     * Meal slot the review starts on. Callers pass [reviewSlotFor] so Saved
+     * Meals follow the log-time slot when suggestions are on (Codeberg #102)
+     * and keep the stored slot when they are off. Null / blank falls back to
+     * the time-of-day guess.
      */
     initialMealType: String? = null,
     mealTimesEnabled: Boolean = true,
