@@ -5,36 +5,27 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 /**
- * Serving-scaling rules (Codeberg #10 follow-up): an entry without a recorded
- * serving has macros that are absolute portion totals, so weight edits must
- * never scale them; correcting the weight records it without touching macros,
- * and leaving it alone keeps the entry serving-less.
+ * Amount scaling: grams over the sheet's base, unless nutrition editing is
+ * unlocked (scaleWithAmount false).
  */
 class ServingScaleTest {
     // --- servingScale ---------------------------------------------------------
 
     @Test
-    fun scale_isOne_withoutRecordedServing_evenWhenWeightEdited() {
-        // Imported entry: no recorded serving, user corrects the 100 g
-        // placeholder to 150 g. Macros must stay as logged.
-        assertEquals(1.0, ServingUnitOption.servingScale(null, servingGrams = 150.0, baseServingGrams = 100.0), 0.0)
+    fun scale_fromDisplayedGrams_whenLocked() {
+        assertEquals(1.0, ServingUnitOption.servingScale(100.0, 100.0, scaleWithAmount = true), 0.0)
+        assertEquals(1.5, ServingUnitOption.servingScale(150.0, 100.0, scaleWithAmount = true), 0.0)
+        assertEquals(0.5, ServingUnitOption.servingScale(100.0, 200.0, scaleWithAmount = true), 0.0)
     }
 
     @Test
-    fun scale_isOne_withoutRecordedServing_atPlaceholderWeight() {
-        assertEquals(1.0, ServingUnitOption.servingScale(null, servingGrams = 100.0, baseServingGrams = 100.0), 0.0)
+    fun scale_isOne_whenUnlocked() {
+        assertEquals(1.0, ServingUnitOption.servingScale(150.0, 100.0, scaleWithAmount = false), 0.0)
     }
 
     @Test
     fun scale_isOne_whenBaseServingIsZero() {
-        assertEquals(1.0, ServingUnitOption.servingScale(120.0, servingGrams = 120.0, baseServingGrams = 0.0), 0.0)
-    }
-
-    @Test
-    fun scale_scalesFromRecordedServing() {
-        assertEquals(1.0, ServingUnitOption.servingScale(120.0, servingGrams = 120.0, baseServingGrams = 120.0), 0.0)
-        assertEquals(1.5, ServingUnitOption.servingScale(120.0, servingGrams = 180.0, baseServingGrams = 120.0), 0.0)
-        assertEquals(0.5, ServingUnitOption.servingScale(200.0, servingGrams = 100.0, baseServingGrams = 200.0), 0.0)
+        assertEquals(1.0, ServingUnitOption.servingScale(120.0, 0.0, scaleWithAmount = true), 0.0)
     }
 
     // --- persistedServingGrams ------------------------------------------------

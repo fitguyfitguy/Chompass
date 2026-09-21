@@ -265,7 +265,12 @@ fun FoodResultSheet(
     }
     val selectedServingOption = ServingUnitOption.optionMatching(selectedServingUnitId, servingUnitOptions)
     val selectedServingQuantity = ServingUnitOption.parseQuantity(servingQuantityText)?.takeIf { it > 0 }
-    val scale = ServingUnitOption.servingScale(recordedServing, servingGrams, baseServingGrams)
+    var nutritionUnlocked by remember { mutableStateOf(false) }
+    val scale = ServingUnitOption.servingScale(
+        servingGrams = servingGrams,
+        baseServingGrams = baseServingGrams,
+        scaleWithAmount = !nutritionUnlocked,
+    )
     var mealType by remember {
         mutableStateOf(
             initialMealType?.takeIf { it.isNotBlank() }
@@ -286,7 +291,6 @@ fun FoodResultSheet(
         logTime = reviewLogTimeAfterOverride(logTime, logTimeOverride, logTimeTouched)
     }
     var moreNutritionExpanded by remember { mutableStateOf(false) }
-    var nutritionUnlocked by remember { mutableStateOf(false) }
     var editableCalories by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.calories) }
     var editableProtein by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.protein) }
     var editableCarbs by remember(effectiveAnalysis) { mutableStateOf(effectiveAnalysis.carbs) }
@@ -854,19 +858,10 @@ fun FoodResultSheet(
                     },
                 )
             }
-            if (recordedServing == null) {
-                // Codeberg #105: without a recorded serving the macros are
-                // absolute portion totals and amount edits cannot scale them;
-                // surface that rule instead of leaving it silent.
+            if (nutritionUnlocked) {
                 item {
                     Text(
-                        stringResource(
-                            if (servingTouched) {
-                                R.string.sheet_serving_baseless_touched_hint
-                            } else {
-                                R.string.sheet_serving_baseless_hint
-                            }
-                        ),
+                        stringResource(R.string.sheet_serving_unlocked_hint),
                         fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                         lineHeight = 18.sp,
@@ -881,8 +876,29 @@ fun FoodResultSheet(
                     unlocked = nutritionUnlocked && analysisReady,
                     onToggle = {
                         if (!analysisReady) return@SheetSectionHeaderWithLock
-                        nutritionUnlocked = !nutritionUnlocked
-                        if (!nutritionUnlocked) dismissKeyboard()
+                        if (!nutritionUnlocked) {
+                            val baked = math.bakeScale(
+                                editableCalories,
+                                editableProtein,
+                                editableCarbs,
+                                editableFat,
+                                editableMicros,
+                                editableConstituents,
+                                servingGrams,
+                            )
+                            editableCalories = baked.calories
+                            editableProtein = baked.protein
+                            editableCarbs = baked.carbs
+                            editableFat = baked.fat
+                            editableMicros = baked.micros
+                            editableConstituents = baked.constituents
+                            baseServingGrams = baked.baseServingGrams
+                            nutritionUnlocked = true
+                        } else {
+                            baseServingGrams = servingGrams
+                            nutritionUnlocked = false
+                            dismissKeyboard()
+                        }
                     }
                 )
             }

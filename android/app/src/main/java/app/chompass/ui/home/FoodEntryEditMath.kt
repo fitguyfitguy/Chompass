@@ -1,7 +1,9 @@
 package app.chompass.ui.home
 
+import app.chompass.models.FoodConstituent
+import app.chompass.models.MicronutrientValues
+import app.chompass.services.ai.ConstituentReconcile
 import kotlin.math.roundToInt
-
 /**
  * Shared math for food entry edit sheets ([FoodResultSheet], [EditFoodEntrySheet]).
  *
@@ -43,7 +45,37 @@ class FoodEntryEditMath(
 
     /** Convert an edited display value back to base units; null when blank/invalid. */
     fun baseOptionalFromText(text: String): Double? = parseDecimalValue(text)?.let { it / scale.coerceAtLeast(0.0001) }
+
+    internal fun bakeScale(
+        calories: Int,
+        protein: Double,
+        carbs: Double,
+        fat: Double,
+        micros: MicronutrientValues,
+        constituents: List<FoodConstituent>,
+        servingGrams: Double,
+    ): BakedNutritionEdit = BakedNutritionEdit(
+        calories = scaledInt(calories),
+        protein = scaledMacro(protein),
+        carbs = scaledMacro(carbs),
+        fat = scaledMacro(fat),
+        micros = micros.scaled(scale),
+        constituents = ConstituentReconcile.scaleAll(constituents, scale),
+        baseServingGrams = servingGrams,
+    )
 }
+
+/** Snapshot after baking the current scale into the edit buffers (unlock). */
+internal data class BakedNutritionEdit(
+    val calories: Int,
+    val protein: Double,
+    val carbs: Double,
+    val fat: Double,
+    val micros: MicronutrientValues,
+    val constituents: List<FoodConstituent>,
+    val baseServingGrams: Double,
+)
+
 
 /**
  * Parse a decimal text field into a non-negative Double?, null when blank/invalid.

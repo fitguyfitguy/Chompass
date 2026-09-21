@@ -139,17 +139,16 @@ data class ServingUnitOption(
         }
 
         /**
-         * Serving-scaling rule (Codeberg #10 follow-up): an entry without a
-         * recorded serving has macros that are absolute portion totals, so
-         * weight edits must never scale them. Only entries with a recorded
-         * serving scale from it.
+         * Amount scale: logged grams over the grams the sheet opened on (or
+         * last locked). Unlocking nutrition editing freezes the numbers
+         * ([scaleWithAmount] false) so a gram change does not move them.
          */
         fun servingScale(
-            recordedServingGrams: Double?,
             servingGrams: Double,
             baseServingGrams: Double,
+            scaleWithAmount: Boolean = true,
         ): Double =
-            if (recordedServingGrams == null || baseServingGrams <= 0) 1.0
+            if (!scaleWithAmount || baseServingGrams <= 0.0) 1.0
             else servingGrams / baseServingGrams
 
         /**

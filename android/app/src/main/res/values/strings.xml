@@ -745,8 +745,8 @@
     <string name="what_if_ai_suggestion">AI suggestion</string>
     <string name="what_if_loading">Checking impact...</string>
     <string name="what_if_no_suggestion">No suggestion available.</string>
-    <string name="nutrition_unlock_editing">Unlock nutrition editing</string>
-    <string name="nutrition_lock_editing">Lock nutrition editing</string>
+    <string name="nutrition_unlock_editing">Unlock this entry\'s numbers. Changing the amount will not scale them.</string>
+    <string name="nutrition_lock_editing">Lock this entry\'s numbers. Changing the amount scales them.</string>
 
     <string name="sheet_micro_sugar">Sugar</string>
     <string name="sheet_micro_added_sugar">Added Sugar</string>
@@ -2223,6 +2223,7 @@
     <string name="sheet_serving_custom_grams">Grams per unit</string>
     <string name="sheet_serving_baseless_hint">Set a serving (unit and quantity) and amount edits will scale the values.</string>
     <string name="sheet_serving_baseless_touched_hint">Serving will be recorded on save; the next edit will scale the values.</string>
+    <string name="sheet_serving_unlocked_hint">Numbers are unlocked, so changing the amount keeps them.</string>
     <string name="cd_quantity_operator">Insert %1$s into quantity</string>
     <string name="cd_hold_to_record">Hold to record, tap to lock</string>
     <string name="cd_cancel_recording">Cancel recording</string>
