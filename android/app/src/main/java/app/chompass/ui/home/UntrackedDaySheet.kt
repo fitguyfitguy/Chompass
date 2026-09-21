@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -39,8 +42,16 @@ fun UntrackedDaySheet(
     var flagged by rememberSaveable { mutableStateOf(untracked) }
     var kcalText by rememberSaveable { mutableStateOf(kcal?.toString().orEmpty()) }
 
-    ChompassBottomSheet(onDismiss = onDismiss) {
-        Column(Modifier.padding(horizontal = 18.dp)) {
+    ChompassBottomSheet(
+        onDismiss = onDismiss,
+        contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
+    ) {
+        Column(
+            Modifier
+                .padding(horizontal = 18.dp)
+                .navigationBarsPadding()
+                .imePadding(),
+        ) {
             Text(
                 stringResource(R.string.untracked_sheet_title),
                 style = MaterialTheme.typography.titleLarge,
@@ -86,7 +97,7 @@ fun UntrackedDaySheet(
             ) {
                 Text(stringResource(R.string.action_save))
             }
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(80.dp))
         }
     }
 }

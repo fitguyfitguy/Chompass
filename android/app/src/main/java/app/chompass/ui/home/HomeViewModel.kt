@@ -636,7 +636,9 @@ data class HomeUiState(
             manualActiveTodayEntries == other.manualActiveTodayEntries &&
             logTimeOverride == other.logTimeOverride &&
             copiedEntries == other.copiedEntries &&
-            plannedAck == other.plannedAck
+            plannedAck == other.plannedAck &&
+            untrackedDays == other.untrackedDays &&
+            untrackedKcalByDay == other.untrackedKcalByDay
     }
 
     override fun hashCode(): Int {
@@ -738,6 +740,8 @@ data class HomeUiState(
         result = 31 * result + (logTimeOverride?.hashCode() ?: 0)
         result = 31 * result + copiedEntries.hashCode()
         result = 31 * result + (plannedAck?.hashCode() ?: 0)
+        result = 31 * result + untrackedDays.hashCode()
+        result = 31 * result + untrackedKcalByDay.hashCode()
         return result
     }
 }
