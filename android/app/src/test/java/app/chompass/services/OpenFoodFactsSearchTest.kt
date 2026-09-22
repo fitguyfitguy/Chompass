@@ -417,4 +417,26 @@ class OpenFoodFactsSearchTest {
         assertEquals(1, search("Aldi Laugen").size)
         assertEquals(2, server.requestCount)
     }
+
+    @Test
+    fun search_stallReturnsEmptyWithinRequestTimeout() {
+        // Both backends stall; the per-request bound must cut each attempt so
+        // the whole walk (Sal + cgi fallback per attempt) stays bounded.
+        repeat(8) {
+            server.enqueue(MockResponse().setSocketPolicy(okhttp3.mockwebserver.SocketPolicy.NO_RESPONSE))
+        }
+        val startNs = System.nanoTime()
+        val hits = runBlocking {
+            OpenFoodFactsService.search(
+                "Aldi Laugen",
+                client = client,
+                baseUrl = server.url("/").toString(),
+                searchBaseUrl = server.url("/").toString(),
+                requestTimeoutMs = 250,
+            )
+        }
+        val elapsedMs = (System.nanoTime() - startNs) / 1_000_000
+        assertTrue("stalled search took ${elapsedMs}ms", elapsedMs < 8_000)
+        assertEquals(emptyList<OpenFoodFactsService.SearchHit>(), hits)
+    }
 }

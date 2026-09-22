@@ -246,4 +246,28 @@ class OpenFoodFactsLookupTest {
         }
         assertEquals(3, server.requestCount)
     }
+
+    @Test
+    fun lookupNetwork_stallFailsWithinRequestTimeout() {
+        // A wedged OFF socket must be cut by the per-request bound (the PWA
+        // off-client.js REQUEST_TIMEOUT_MS contract), not by the read timeout.
+        server.enqueue(MockResponse().setSocketPolicy(okhttp3.mockwebserver.SocketPolicy.NO_RESPONSE))
+        val startNs = System.nanoTime()
+        try {
+            runBlocking {
+                OpenFoodFactsService.lookupNetwork(
+                    code = "9339687206605",
+                    client = client,
+                    baseUrl = server.url("/").toString(),
+                    requestTimeoutMs = 250,
+                )
+            }
+            fail("expected LookupException")
+        } catch (e: LookupException) {
+            // Timeout surfaces through the retried network-error path.
+            assertTrue(e.message!!.startsWith("Barcode lookup failed:"))
+        }
+        val elapsedMs = (System.nanoTime() - startNs) / 1_000_000
+        assertTrue("stalled lookup took ${elapsedMs}ms", elapsedMs < 5_000)
+    }
 }
