@@ -146,6 +146,62 @@ class ProgressiveMealDraftTest {
     }
 
     @Test
+    fun toFoodEntries_namedMealUsesLastPhotoAsImage() {
+        val items = listOf(
+            ProgressiveMealItem(
+                analysis = FoodAnalysis(
+                    name = "Buckwheat",
+                    calories = 200,
+                    protein = 7.0,
+                    carbs = 40.0,
+                    fat = 2.0,
+                    servingSizeGrams = 180.0,
+                ),
+                source = FoodSource.SNAP_FOOD,
+            ),
+            ProgressiveMealItem(
+                analysis = FoodAnalysis(
+                    name = "Chicken",
+                    calories = 250,
+                    protein = 40.0,
+                    carbs = 0.0,
+                    fat = 8.0,
+                    servingSizeGrams = 120.0,
+                ),
+                source = FoodSource.SNAP_FOOD,
+            ),
+            ProgressiveMealItem(
+                analysis = FoodAnalysis(
+                    name = "Salad",
+                    calories = 50,
+                    protein = 2.0,
+                    carbs = 5.0,
+                    fat = 3.0,
+                    servingSizeGrams = 90.0,
+                ),
+                source = FoodSource.SNAP_FOOD,
+            ),
+        )
+        val draft = ProgressiveMealDraft(
+            name = "Plate",
+            mealType = MealType.LUNCH.id,
+            items = items,
+        )
+        // Middle item has no photo; the named entry must pick the LAST photo
+        // (the plate), not the first.
+        val files = mapOf(items[0].id to "first.jpg", items[2].id to "last.jpg")
+
+        val entries = draft.toFoodEntries(
+            recipeLogId = UUID.randomUUID(),
+            timestamp = Instant.parse("2026-07-29T12:00:00Z"),
+            imageFilenameFor = { item, _ -> files[item.id] },
+        )
+
+        assertEquals(1, entries.size)
+        assertEquals("last.jpg", entries[0].imageFilename)
+    }
+
+    @Test
     fun toFoodEntries_assignsDistinctIdsAndPreservesMicros() {
         val draft = ProgressiveMealDraft(
             items = listOf(
