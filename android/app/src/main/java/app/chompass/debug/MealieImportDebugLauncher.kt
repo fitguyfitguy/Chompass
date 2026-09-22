@@ -69,11 +69,12 @@ object MealieImportDebugLauncher {
         Log.i(TAG, "imported ${mapped.size} recipes=${mapped.map { it.name }}")
 
         val recipe = mapped.first()
-        val ids = container.recipeRepository.logRecipe(recipe, Instant.now())
-        check(ids.size == 1) { "named meal must log one row, got ${ids.size}" }
+        val entries = container.recipeRepository.logRecipe(recipe, Instant.now())
+        check(entries.size == 1) { "named meal must log one row, got ${entries.size}" }
+        val entryIds = entries.map { it.id }.toSet()
         val today = LocalDate.now()
         val logged = container.foodRepository.entriesForDate(today).first()
-            .filter { it.id in ids.toSet() }
+            .filter { it.id in entryIds }
         check(logged.size == 1) { "today diary missing logged row" }
         val entry = logged.single()
         check(entry.name == recipe.name) { "logged name ${entry.name}" }

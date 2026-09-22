@@ -1,5 +1,6 @@
 package app.chompass.data
 
+import app.chompass.models.FoodEntry
 import app.chompass.models.Recipe
 import kotlinx.coroutines.flow.Flow
 import java.time.Instant
@@ -65,22 +66,26 @@ class RecipeRepository(
      * Logs a recipe. Mealie imports (`source` starts with `mealie:`) write one
      * named [app.chompass.models.FoodEntry] with constituents. Hand-built
      * recipes still explode to one diary row per ingredient.
+     *
+     * Health Connect mirroring is the caller's job via
+     * [FoodRepository.mirrorEntryToHealth] in the background after the sheet
+     * dismisses (same contract as `addEntry(writeHealth = false)`).
      */
     suspend fun logRecipe(
         recipe: Recipe,
         logDate: Instant,
         mealType: String = recipe.mealType,
         planned: Boolean = false,
-    ): List<UUID> {
+    ): List<FoodEntry> {
         if (recipe.logsAsNamedMeal) {
             val entry = recipe.toNamedMealEntry(logDate, mealType).copy(planned = planned)
-            foodRepository.addEntries(listOf(entry))
-            return listOf(entry.id)
+            foodRepository.addEntries(listOf(entry), writeHealth = false)
+            return listOf(entry)
         }
         val recipeLogId = UUID.randomUUID()
         val entries = recipe.ingredients.map { it.toFoodEntry(logDate, mealType, recipeLogId).copy(planned = planned) }
         // One batched DataStore edit instead of one full-file write per ingredient.
-        foodRepository.addEntries(entries)
-        return entries.map { it.id }
+        foodRepository.addEntries(entries, writeHealth = false)
+        return entries
     }
 }
