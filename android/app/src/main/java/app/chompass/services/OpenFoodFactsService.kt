@@ -25,6 +25,7 @@ import org.json.JSONObject
 import java.io.IOException
 import java.net.URLEncoder
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.math.abs
@@ -72,6 +73,13 @@ object OpenFoodFactsService {
 
     /** Hard cap on total network attempts per search() call, across candidates and retries. */
     private const val MAX_SEARCH_ATTEMPTS = 4
+
+    /**
+     * Per-request network bound for every Open Food Facts call — the mirror of
+     * REQUEST_TIMEOUT_MS in web/app/src/lib/off-client.js. Applied via
+     * [boundedClient]; the unbounded default client stays for AI streaming.
+     */
+    private const val OFF_REQUEST_TIMEOUT_MS = 8_000L
 
     /** Rate-limit breaker cooldown when a 429 carries no Retry-After. */
     private const val RATE_LIMIT_DEFAULT_COOLDOWN_SECONDS = 60L
@@ -124,6 +132,14 @@ object OpenFoodFactsService {
         rateLimitCooldownUntilMs = 0L
         rateLimitNowMs = { System.currentTimeMillis() }
     }
+
+    /**
+     * Short-lived client with a whole-call bound: newBuilder shares the
+     * connection pool and dispatcher, so one derivation per user action is
+     * cheap. Mirrors the PWA OFF client's per-request timeout contract.
+     */
+    private fun boundedClient(client: OkHttpClient, requestTimeoutMs: Long): OkHttpClient =
+        client.newBuilder().callTimeout(requestTimeoutMs, TimeUnit.MILLISECONDS).build()
 
     /**
      * One Open Food Facts search hit with per-100g macros for grounding candidates.
@@ -237,9 +253,11 @@ object OpenFoodFactsService {
         client: OkHttpClient = FoodAnalysisService.defaultClient,
         baseUrl: String = OFF_BASE_URL,
         searchBaseUrl: String = SAL_BASE_URL,
+        requestTimeoutMs: Long = OFF_REQUEST_TIMEOUT_MS,
     ): List<SearchHit> = withContext(Dispatchers.IO) {
         val q = query.trim()
         if (q.isEmpty()) return@withContext emptyList()
+        val http = boundedClient(client, requestTimeoutMs)
         // Rate-limit breaker: while OFF has 429-ed us, answer from nothing
         // rather than adding more load (cached hits come from the callers'
         // local indexes; search has no cache of its own).
@@ -272,7 +290,7 @@ object OpenFoodFactsService {
             var attempt = 0
             while (attempt < MAX_QUERY_ATTEMPTS && attemptsLeft > 0 && !stopWalk) {
                 attemptsLeft--
-                when (val outcome = backendSearch(candidate, capped, client, baseUrl, searchBaseUrl)) {
+                when (val outcome = backendSearch(candidate, capped, http, baseUrl, searchBaseUrl)) {
                     is SearchOutcome.Hits -> hits = outcome.hits
                     is SearchOutcome.RateLimited -> {
                         tripRateLimit(outcome.retryAfterSeconds)
@@ -579,6 +597,7 @@ object OpenFoodFactsService {
         code: String,
         client: OkHttpClient,
         baseUrl: String = OFF_BASE_URL,
+        requestTimeoutMs: Long = OFF_REQUEST_TIMEOUT_MS,
     ): FoodAnalysis = run {
         if (rateLimitActive()) throw LookupException(TROUBLE_MESSAGE)
         val encodedCode = URLEncoder.encode(code, "UTF-8")
@@ -587,11 +606,12 @@ object OpenFoodFactsService {
             .url(url)
             .addHeader("User-Agent", USER_AGENT)
             .build()
+        val http = boundedClient(client, requestTimeoutMs)
 
         var lastNetworkError: String? = null
         var attempt = 0
         while (attempt < LOOKUP_MAX_ATTEMPTS) {
-            val outcome = runCatching { client.newCall(request).await() }.onFailure { e ->
+            val outcome = runCatching { http.newCall(request).await() }.onFailure { e ->
                 // A cancelled caller must abort, not burn retry attempts.
                 if (e is CancellationException) throw e
             }
@@ -823,7 +843,11 @@ object OpenFoodFactsService {
      * `https://images.openfoodfacts.org` is allowed (matches the OFF API's
      * `image_front_url` host); anything else keeps the emoji fallback.
      */
-    internal fun productImageBytes(urlString: String?, client: OkHttpClient): ByteArray? {
+    internal fun productImageBytes(
+        urlString: String?,
+        client: OkHttpClient,
+        requestTimeoutMs: Long = OFF_REQUEST_TIMEOUT_MS,
+    ): ByteArray? {
         val url = urlString?.toHttpUrlOrNull() ?: return null
         if (!url.isHttps || url.host != "images.openfoodfacts.org") return null
         val request = Request.Builder()
@@ -832,7 +856,7 @@ object OpenFoodFactsService {
             .addHeader("Accept", "image/*")
             .build()
         return try {
-            client.newCall(request).execute().use { response ->
+            boundedClient(client, requestTimeoutMs).newCall(request).execute().use { response ->
                 if (!response.isSuccessful) return@use null
                 if (response.body?.contentType()?.type != "image") return@use null
                 val declared = response.body?.contentLength() ?: -1L
