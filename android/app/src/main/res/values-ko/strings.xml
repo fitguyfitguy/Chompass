@@ -82,6 +82,7 @@
     <string name="ai_provider_custom">사용자 지정 (OpenAI 호환)</string>
 
     <!-- AI Provider API key placeholders -->
+    <string name="api_key_placeholder">API 키 붙여넣기</string>
     <string name="ai_key_placeholder_ollama">키 필요 없음</string>
     <string name="ai_key_placeholder_custom">API 키 (엔드포인트가 키를 요구하지 않으면 아무 값)</string>
 
@@ -1686,17 +1687,6 @@
     <string name="widget_water_enable_short">Chompass에서 활성화</string>
     <string name="widget_water_label">Chompass 물</string>
     <string name="widget_water_tracking">물 기록</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
-    <string name="ai_key_placeholder_deepinfra">...</string>
-    <string name="ai_key_placeholder_fireworks">fw_...</string>
-    <string name="ai_key_placeholder_gemini">AIza...</string>
-    <string name="ai_key_placeholder_groq">gsk_...</string>
-    <string name="ai_key_placeholder_huggingface">hf_...</string>
-    <string name="ai_key_placeholder_mistral">...</string>
-    <string name="ai_key_placeholder_openai">sk-...</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
-    <string name="ai_key_placeholder_together">...</string>
-    <string name="ai_key_placeholder_xai">xai-...</string>
     <string name="ai_provider_anthropic">Anthropic Claude</string>
     <string name="ai_provider_deepinfra">DeepInfra</string>
     <string name="ai_provider_fireworks">Fireworks AI</string>
@@ -1730,9 +1720,6 @@
     <string name="onboarding_building_bullet">•</string>
     <string name="onboarding_building_percent_format">%1$d%%</string>
     <string name="recipe_builder_scale_format">%1$.2fx</string>
-    <string name="speech_key_placeholder_gemini">AIza...</string>
-    <string name="speech_key_placeholder_groq">gsk_...</string>
-    <string name="speech_key_placeholder_openai">sk-...</string>
     <string name="speech_provider_assemblyai">AssemblyAI</string>
     <string name="speech_provider_deepgram">Deepgram</string>
     <string name="speech_provider_gemini">Gemini Audio</string>

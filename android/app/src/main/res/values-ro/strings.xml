@@ -80,6 +80,7 @@
     <string name="ai_provider_custom">Personalizat (compatibil OpenAI)</string>
 
     <!-- AI Provider API key placeholders -->
+    <string name="api_key_placeholder">Lipește cheia API</string>
     <string name="ai_key_placeholder_ollama">Nu e nevoie de cheie</string>
     <string name="ai_key_placeholder_custom">Cheie API (sau orice dacă endpoint-ul nu cere)</string>
 
@@ -1687,17 +1688,6 @@
     <string name="widget_water_enable_short">Activează în Chompass</string>
     <string name="widget_water_label">Chompass Apă</string>
     <string name="widget_water_tracking">Urmărirea apei</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
-    <string name="ai_key_placeholder_deepinfra">...</string>
-    <string name="ai_key_placeholder_fireworks">fw_...</string>
-    <string name="ai_key_placeholder_gemini">AIza...</string>
-    <string name="ai_key_placeholder_groq">gsk_...</string>
-    <string name="ai_key_placeholder_huggingface">hf_...</string>
-    <string name="ai_key_placeholder_mistral">...</string>
-    <string name="ai_key_placeholder_openai">sk-...</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
-    <string name="ai_key_placeholder_together">...</string>
-    <string name="ai_key_placeholder_xai">xai-...</string>
     <string name="ai_provider_anthropic">Anthropic Claude</string>
     <string name="ai_provider_deepinfra">DeepInfra</string>
     <string name="ai_provider_fireworks">Fireworks AI</string>
@@ -1732,9 +1722,6 @@
     <string name="onboarding_building_bullet">•</string>
     <string name="onboarding_building_percent_format">%1$d%%</string>
     <string name="recipe_builder_scale_format">%1$.2fx</string>
-    <string name="speech_key_placeholder_gemini">AIza...</string>
-    <string name="speech_key_placeholder_groq">gsk_...</string>
-    <string name="speech_key_placeholder_openai">sk-...</string>
     <string name="speech_provider_assemblyai">AssemblyAI</string>
     <string name="speech_provider_deepgram">Deepgram</string>
     <string name="speech_provider_gemini">Gemini Audio</string>

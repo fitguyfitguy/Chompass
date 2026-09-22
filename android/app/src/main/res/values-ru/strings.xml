@@ -157,6 +157,7 @@
 
 
 
+    <string name="api_key_placeholder">Вставьте API-ключ</string>
     <string name="ai_key_placeholder_ollama">Ключ не нужен</string>
     <string name="ai_key_placeholder_custom">Ключ API (или что угодно, если эндпоинт его не требует)</string>
 
@@ -1779,17 +1780,6 @@
     <string name="water_custom_short">Своё</string>
     <string name="water_progress">%1$d / %2$d мл</string>
     <string name="water_progress_fl_oz">%1$d / %2$d fl oz</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
-    <string name="ai_key_placeholder_deepinfra">...</string>
-    <string name="ai_key_placeholder_fireworks">fw_...</string>
-    <string name="ai_key_placeholder_gemini">AIza...</string>
-    <string name="ai_key_placeholder_groq">gsk_...</string>
-    <string name="ai_key_placeholder_huggingface">hf_...</string>
-    <string name="ai_key_placeholder_mistral">...</string>
-    <string name="ai_key_placeholder_openai">sk-...</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
-    <string name="ai_key_placeholder_together">...</string>
-    <string name="ai_key_placeholder_xai">xai-...</string>
     <string name="ai_provider_anthropic">Anthropic Claude</string>
     <string name="ai_provider_deepinfra">DeepInfra</string>
     <string name="ai_provider_fireworks">Fireworks AI</string>
@@ -1822,9 +1812,6 @@
     <string name="settings_macro_pinned_format">%1$dg</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
     <string name="sheet_macro_label_format">%1$s (%2$s)</string>
-    <string name="speech_key_placeholder_gemini">AIza...</string>
-    <string name="speech_key_placeholder_groq">gsk_...</string>
-    <string name="speech_key_placeholder_openai">sk-...</string>
     <string name="speech_provider_assemblyai">AssemblyAI</string>
     <string name="speech_provider_deepgram">Deepgram</string>
     <string name="speech_provider_gemini">Gemini Audio</string>

@@ -723,7 +723,7 @@ export const en = Object.freeze({
   "settings.ai.fallback_toggle": "Fallback provider on failure",
   "settings.ai.key_configured": "Key configured",
   "settings.ai.key_missing": "No key saved",
-  "settings.ai.key_placeholder_example": "AIza… or sk-…",
+  "settings.ai.key_placeholder_example": "Paste your API key",
   "settings.ai.key_placeholder_saved": "•••••••• (leave blank to keep)",
   "settings.ai.key_removed": "API key removed.",
   "settings.ai.key_saved": "API key saved.",

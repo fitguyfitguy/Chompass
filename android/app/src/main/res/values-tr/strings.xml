@@ -171,17 +171,7 @@
     <string name="ai_provider_on_device_subtitle">Gizli ve çevrimdışı. Bulut AI\'dan daha az doğru; ~2 ila 4 GB indirme</string>
 
     <!-- AI Provider API key placeholders -->
-    <string name="ai_key_placeholder_gemini">AIza...</string>
-    <string name="ai_key_placeholder_openai">sk-...</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
-    <string name="ai_key_placeholder_xai">xai-...</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
-    <string name="ai_key_placeholder_together">...</string>
-    <string name="ai_key_placeholder_groq">gsk_...</string>
-    <string name="ai_key_placeholder_huggingface">hf_...</string>
-    <string name="ai_key_placeholder_fireworks">fw_...</string>
-    <string name="ai_key_placeholder_deepinfra">...</string>
-    <string name="ai_key_placeholder_mistral">...</string>
+    <string name="api_key_placeholder">API anahtarını yapıştır</string>
     <string name="ai_key_placeholder_ollama">Anahtar gerekmez</string>
     <string name="ai_key_placeholder_custom">API anahtarı (uç nokta gerektirmiyorsa herhangi bir şey)</string>
 
@@ -194,9 +184,6 @@
     <string name="speech_provider_assemblyai">AssemblyAI</string>
 
     <string name="speech_key_placeholder_native">Gerekmez</string>
-    <string name="speech_key_placeholder_gemini">AIza...</string>
-    <string name="speech_key_placeholder_openai">sk-...</string>
-    <string name="speech_key_placeholder_groq">gsk_...</string>
     <string name="speech_key_placeholder_deepgram">Token deepgram-anahtarın</string>
     <string name="speech_key_placeholder_assemblyai">AssemblyAI anahtarın</string>
 
