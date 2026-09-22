@@ -81,6 +81,7 @@
     <string name="ai_provider_custom">Personalizzato (compatibile OpenAI)</string>
 
     <!-- AI Provider API key placeholders -->
+    <string name="api_key_placeholder">Incolla la tua chiave API</string>
     <string name="ai_key_placeholder_ollama">Nessuna chiave necessaria</string>
     <string name="ai_key_placeholder_custom">Chiave API (o qualsiasi cosa se l\'endpoint non ne richiede una)</string>
 
@@ -1610,17 +1611,6 @@
     <string name="widget_water_description">Controlla i progressi dell\'acqua di oggi a colpo d\'occhio.</string>
     <string name="widget_water_disabled">Attiva il monitoraggio acqua in Chompass</string>
     <string name="widget_water_label">Chompass Acqua</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
-    <string name="ai_key_placeholder_deepinfra">...</string>
-    <string name="ai_key_placeholder_fireworks">fw_...</string>
-    <string name="ai_key_placeholder_gemini">AIza...</string>
-    <string name="ai_key_placeholder_groq">gsk_...</string>
-    <string name="ai_key_placeholder_huggingface">hf_...</string>
-    <string name="ai_key_placeholder_mistral">...</string>
-    <string name="ai_key_placeholder_openai">sk-...</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
-    <string name="ai_key_placeholder_together">...</string>
-    <string name="ai_key_placeholder_xai">xai-...</string>
     <string name="ai_provider_anthropic">Anthropic Claude</string>
     <string name="ai_provider_deepinfra">DeepInfra</string>
     <string name="ai_provider_fireworks">Fireworks AI</string>
@@ -1655,9 +1645,6 @@
     <string name="onboarding_building_bullet">•</string>
     <string name="onboarding_building_percent_format">%1$d%%</string>
     <string name="recipe_builder_scale_format">%1$.2fx</string>
-    <string name="speech_key_placeholder_gemini">AIza...</string>
-    <string name="speech_key_placeholder_groq">gsk_...</string>
-    <string name="speech_key_placeholder_openai">sk-...</string>
     <string name="speech_provider_assemblyai">AssemblyAI</string>
     <string name="speech_provider_deepgram">Deepgram</string>
     <string name="speech_provider_gemini">Gemini Audio</string>

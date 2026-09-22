@@ -29,11 +29,9 @@ enum class SpeechProvider {
     @get:StringRes
     val apiKeyPlaceholderRes: Int get() = when (this) {
         NATIVE -> R.string.speech_key_placeholder_native
-        GEMINI -> R.string.speech_key_placeholder_gemini
-        OPENAI -> R.string.speech_key_placeholder_openai
-        GROQ -> R.string.speech_key_placeholder_groq
         DEEPGRAM -> R.string.speech_key_placeholder_deepgram
         ASSEMBLY_AI -> R.string.speech_key_placeholder_assemblyai
+        else -> R.string.api_key_placeholder
     }
 
     val defaultModel: String get() = when (this) {

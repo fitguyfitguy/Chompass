@@ -688,7 +688,7 @@ export const de = Object.freeze({
   "settings.ai.fallback_toggle": "Ersatzanbieter bei Fehler",
   "settings.ai.key_configured": "Schlüssel hinterlegt",
   "settings.ai.key_missing": "Kein Schlüssel gespeichert",
-  "settings.ai.key_placeholder_example": "AIza… oder sk-…",
+  "settings.ai.key_placeholder_example": "API-Schlüssel einfügen",
   "settings.ai.key_placeholder_saved": "•••••••• (leer lassen zum Behalten)",
   "settings.ai.key_removed": "API-Schlüssel entfernt.",
   "settings.ai.key_saved": "API-Schlüssel gespeichert.",

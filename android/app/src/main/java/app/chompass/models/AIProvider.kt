@@ -215,20 +215,9 @@ enum class AIProvider {
 
     @get:StringRes
     val apiKeyPlaceholderRes: Int get() = when (this) {
-        GEMINI -> R.string.ai_key_placeholder_gemini
-        OPENAI -> R.string.ai_key_placeholder_openai
-        ANTHROPIC -> R.string.ai_key_placeholder_anthropic
-        XAI -> R.string.ai_key_placeholder_xai
-        OPENROUTER -> R.string.ai_key_placeholder_openrouter
-        TOGETHER_AI -> R.string.ai_key_placeholder_together
-        GROQ -> R.string.ai_key_placeholder_groq
-        HUGGING_FACE -> R.string.ai_key_placeholder_huggingface
-        FIREWORKS -> R.string.ai_key_placeholder_fireworks
-        DEEP_INFRA -> R.string.ai_key_placeholder_deepinfra
-        MISTRAL -> R.string.ai_key_placeholder_mistral
-        OLLAMA -> R.string.ai_key_placeholder_ollama
+        OLLAMA, ON_DEVICE -> R.string.ai_key_placeholder_ollama
         CUSTOM_OPENAI -> R.string.ai_key_placeholder_custom
-        ON_DEVICE -> R.string.ai_key_placeholder_ollama
+        else -> R.string.api_key_placeholder
     }
 
     enum class ApiFormat { GEMINI, OPENAI_COMPATIBLE, ANTHROPIC, ON_DEVICE }

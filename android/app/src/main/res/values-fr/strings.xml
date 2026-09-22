@@ -80,6 +80,7 @@
     <string name="ai_provider_custom">Personnalisé (compatible OpenAI)</string>
 
     <!-- AI Provider API key placeholders -->
+    <string name="api_key_placeholder">Collez votre clé API</string>
     <string name="ai_key_placeholder_ollama">Aucune clé requise</string>
     <string name="ai_key_placeholder_custom">Clé API (ou n\'importe quoi si l\'endpoint n\'en a pas besoin)</string>
 
@@ -826,17 +827,6 @@
     <string name="ai_error_truncated">La réponse de l\'IA a été coupée à la limite de longueur de réponse. Augmentez la longueur maximale de réponse dans Réglages → IA et voix, ou posez une question plus courte.</string>
     <string name="ai_error_truncated_twice">La réponse de l\'IA a été coupée deux fois à la limite de longueur de réponse. Augmentez la longueur maximale de réponse dans Réglages → IA et voix, ou posez une question plus courte.</string>
     <string name="ai_error_truncated_twice_description">Le modèle a atteint la limite de longueur de réponse avant de finir, et le raisonnement compte dans cette limite. Augmentez la longueur maximale de réponse dans Réglages → IA et voix, ou limitez le raisonnement du modèle, puis réessayez.</string>
-    <string name="ai_key_placeholder_anthropic">sk-ant-...</string>
-    <string name="ai_key_placeholder_deepinfra">...</string>
-    <string name="ai_key_placeholder_fireworks">fw_...</string>
-    <string name="ai_key_placeholder_gemini">AIza...</string>
-    <string name="ai_key_placeholder_groq">gsk_...</string>
-    <string name="ai_key_placeholder_huggingface">hf_...</string>
-    <string name="ai_key_placeholder_mistral">...</string>
-    <string name="ai_key_placeholder_openai">sk-...</string>
-    <string name="ai_key_placeholder_openrouter">sk-or-...</string>
-    <string name="ai_key_placeholder_together">...</string>
-    <string name="ai_key_placeholder_xai">xai-...</string>
     <string name="ai_model_tier_paid">Modèle payant uniquement (l\'offre gratuite n\'inclut plus Pro)</string>
     <string name="ai_model_tier_varies">La disponibilité dans l\'offre gratuite varie selon le compte et la région</string>
     <string name="ai_provider_anthropic">Anthropic Claude</string>
@@ -1637,9 +1627,6 @@
     <string name="speech_error_server_disconnected">Service vocal déconnecté</string>
     <string name="speech_error_start_failed">La reconnaissance vocale n\'a pas pu démarrer</string>
     <string name="speech_error_unknown_format">Erreur vocale (%1$d)</string>
-    <string name="speech_key_placeholder_gemini">AIza...</string>
-    <string name="speech_key_placeholder_groq">gsk_...</string>
-    <string name="speech_key_placeholder_openai">sk-...</string>
     <string name="speech_language_chinese">Chinois</string>
     <string name="speech_language_device">Utiliser la langue de l\'appareil</string>
     <string name="speech_language_device_subtitle">Utilise la langue actuelle de ce téléphone.</string>
