@@ -413,7 +413,9 @@ open class MainActivity : ComponentActivity() {
                 )
             }
             appliedAppLanguage = snap.appLanguage
-            LocaleHelper.apply(this@MainActivity, snap.appLanguage)
+            // Blank pref = follow the system: do not touch setApplicationLocales here or a
+            // per-app language chosen in system settings is wiped on every cold start.
+            if (snap.appLanguage.isNotBlank()) LocaleHelper.apply(this@MainActivity, snap.appLanguage)
             startOnboarding = !snap.onboarded
             if (snap.onboarded) {
                 container.profileRepository.profile.first { it != null }
