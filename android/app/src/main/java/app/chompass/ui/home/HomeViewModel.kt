@@ -3269,17 +3269,19 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         promoteSavedIndex(template)
         viewModelScope.launch {
             PerfLog.measure("relog", "addEntry", "name=${template.name}") {
-                container.foodRepository.addEntry(
-                    template.duplicatedForLogging(timestampForFoodLog(), loggingMealId(template.mealType))
-                        .copy(
-                            planned = plannedFor(
-                                _ui.value.mealPlanningEnabled,
-                                planAction = false,
-                                targetDate = _selectedDate.value,
-                                today = LocalDate.now(),
-                            )
-                        ),
-                )
+                val entry = template.duplicatedForLogging(timestampForFoodLog(), loggingMealId(template.mealType))
+                    .copy(
+                        planned = plannedFor(
+                            _ui.value.mealPlanningEnabled,
+                            planAction = false,
+                            targetDate = _selectedDate.value,
+                            today = LocalDate.now(),
+                        )
+                    )
+                container.foodRepository.addEntry(entry, writeHealth = false)
+                // Health Connect mirrors in the background so the relog ack does
+                // not wait on the HC binder (same contract as saveAnalysis).
+                viewModelScope.launch { container.foodRepository.mirrorEntryToHealth(entry) }
             }
         }
     }
@@ -3287,7 +3289,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     /** Log every ingredient of a Recipe as its own diary row, timestamped to the selected day. */
     fun logRecipe(recipe: app.chompass.models.Recipe) {
         viewModelScope.launch {
-            container.recipeRepository.logRecipe(
+            val entries = container.recipeRepository.logRecipe(
                 recipe,
                 timestampForFoodLog(),
                 planned = plannedFor(
@@ -3297,6 +3299,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     today = LocalDate.now(),
                 ),
             )
+            // Health Connect mirrors in the background so the log path dismisses
+            // at once (same contract as saveAnalysis).
+            viewModelScope.launch { entries.forEach { container.foodRepository.mirrorEntryToHealth(it) } }
         }
     }
 
@@ -3376,33 +3381,36 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             if (_ui.value.saving) return@launch
             _ui.update { it.copy(saving = true) }
             try {
-                container.foodRepository.addEntry(
-                    micronutrients.applyTo(
-                        FoodEntry(
-                            name = disambiguateFoodName(
-                                name,
-                                container.foodRepository.existingFoodIdentityKeys(),
-                            ),
-                            calories = calories,
-                            protein = protein,
-                            carbs = carbs,
-                            fat = fat,
-                            timestamp = timestampForFoodLog(),
-                            source = FoodSource.MANUAL,
-                            mealType = mealType,
-                            servingSizeGrams = servingSizeGrams,
-                            servingUnitOptions = servingUnitOptions,
-                            selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingUnit,
-                            selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
-                            planned = plannedFor(
-                                _ui.value.mealPlanningEnabled,
-                                planAction = false,
-                                targetDate = _selectedDate.value,
-                                today = LocalDate.now(),
-                            ),
-                        )
+                val entry = micronutrients.applyTo(
+                    FoodEntry(
+                        name = disambiguateFoodName(
+                            name,
+                            container.foodRepository.existingFoodIdentityKeys(),
+                        ),
+                        calories = calories,
+                        protein = protein,
+                        carbs = carbs,
+                        fat = fat,
+                        timestamp = timestampForFoodLog(),
+                        source = FoodSource.MANUAL,
+                        mealType = mealType,
+                        servingSizeGrams = servingSizeGrams,
+                        servingUnitOptions = servingUnitOptions,
+                        selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingUnit,
+                        selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
+                        planned = plannedFor(
+                            _ui.value.mealPlanningEnabled,
+                            planAction = false,
+                            targetDate = _selectedDate.value,
+                            today = LocalDate.now(),
+                        ),
                     )
                 )
+                container.foodRepository.addEntry(entry, writeHealth = false)
+                // Health Connect mirroring is the slowest save step (IPC). Run it
+                // in the background so the sheet can dismiss as soon as the diary
+                // row is on disk (same contract as saveAnalysis).
+                viewModelScope.launch { container.foodRepository.mirrorEntryToHealth(entry) }
             } finally {
                 _ui.update { it.copy(saving = false) }
             }
