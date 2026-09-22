@@ -2706,19 +2706,16 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 )
                 val named = draft.name.trim().isNotEmpty()
                 val filenames = LinkedHashMap<java.util.UUID, String?>()
-                var photoAssigned = false
+                // Named meal: keep only the last photo (the plate, upstream #441);
+                // unnamed drafts keep per-item photos.
+                val thumbnailItemId = if (named) draft.items.lastOrNull { it.imageBytes != null }?.id else null
                 for (item in draft.items) {
                     val bytes = item.imageBytes
-                    if (bytes == null) {
-                        filenames[item.id] = null
-                        continue
+                    filenames[item.id] = when {
+                        bytes == null -> null
+                        named -> if (item.id == thumbnailItemId) persistImage(bytes, item.id) else null
+                        else -> persistImage(bytes, item.id)
                     }
-                    if (named && photoAssigned) {
-                        filenames[item.id] = null
-                        continue
-                    }
-                    if (named) photoAssigned = true
-                    filenames[item.id] = persistImage(bytes, item.id)
                 }
                 val knownKeys = container.foodRepository.existingFoodIdentityKeys()
                 val built = draft.toFoodEntries(

@@ -133,11 +133,8 @@ private fun ProgressiveMealDraft.toCompositeEntry(
     val constituents = items.map { it.toConstituent() }
     val agg = ConstituentReconcile.aggregatesFrom(constituents) ?: return null
     val entryId = UUID.randomUUID()
-    var filename: String? = null
-    for (item in items) {
-        filename = imageFilenameFor(item, entryId)
-        if (filename != null) break
-    }
+    // Named-meal thumbnail = last photo (the plate, upstream #441).
+    val filename = items.asReversed().firstNotNullOfOrNull { imageFilenameFor(it, entryId) }
     val sources = items.map { it.source }.distinct()
     val source = sources.singleOrNull() ?: FoodSource.MANUAL
     return sumMicros(constituents).applyTo(
