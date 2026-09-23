@@ -2024,4 +2024,5 @@ macros reequilibradas al nuevo total calórico</string>
     <string name="picker_use_wheel">Usar rueda</string>
   <string name="recovered_review_chip">Análisis recuperado: %1$s</string>
   <string name="cd_discard_recovered_review">Descartar el análisis recuperado</string>
+    <string name="health_sync_failed">No se pudo sincronizar con Health Connect. Se reintenta automáticamente.</string>
 </resources>

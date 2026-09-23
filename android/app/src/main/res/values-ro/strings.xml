@@ -2003,4 +2003,5 @@ macro-urile reechilibrate la noul total caloric</string>
     <string name="action_keep_editing">Continuă editarea</string>
   <string name="recovered_review_chip">Analiză recuperată: %1$s</string>
   <string name="cd_discard_recovered_review">Renunță la analiza recuperată</string>
+    <string name="health_sync_failed">Nu s-a putut sincroniza cu Health Connect. Se reîncearcă automat.</string>
 </resources>

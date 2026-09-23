@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -177,6 +178,40 @@ class NutritionHealthRetryTest {
 
         assertEquals(listOf(entry.id), health.writes)
         assertTrue(store.pending.value.isEmpty())
+    }
+
+    @Test
+    fun `sync reports a write that stayed queued as unconfirmed`() = runBlocking {
+        val entry = foodEntry("Rice Bowl")
+        val store = FakeNutritionSyncStore(entries = listOf(entry))
+        val health = FakeNutritionHealthSync(writeSucceeds = false)
+        val retry = NutritionHealthRetry(store, health)
+
+        val confirmed = retry.sync(entry, isUpdate = false)
+
+        assertFalse(confirmed)
+        assertEquals(setOf(entry.id.toString()), store.pending.value)
+    }
+
+    @Test
+    fun `sync reports a confirmed write`() = runBlocking {
+        val entry = foodEntry("Rice Bowl")
+        val store = FakeNutritionSyncStore(entries = listOf(entry))
+        val health = FakeNutritionHealthSync()
+        val retry = NutritionHealthRetry(store, health)
+
+        assertTrue(retry.sync(entry, isUpdate = false))
+    }
+
+    @Test
+    fun `sync reports nothing owed while Health Connect is switched off`() = runBlocking {
+        val entry = foodEntry("Rice Bowl")
+        val store = FakeNutritionSyncStore(entries = listOf(entry), enabled = false)
+        val health = FakeNutritionHealthSync()
+        val retry = NutritionHealthRetry(store, health)
+
+        assertTrue(retry.sync(entry, isUpdate = false))
+        assertTrue(health.writes.isEmpty())
     }
 
     @Test

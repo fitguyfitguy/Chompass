@@ -343,6 +343,8 @@ data class HomeUiState(
     /** ISO dates marked not tracked (#106). */
     val untrackedDays: Set<String> = emptySet(),
     val untrackedKcalByDay: Map<String, Int> = emptyMap(),
+    /** True once a Health Connect mirror write stayed queued this session; Home shows a snackbar once. */
+    val healthSyncFailed: Boolean = false,
 ) {
     val isEntryAnalysisBusy: Boolean get() = analyzing || analysisPhase != null || inferringUnits
     /** Pending (runnable) queue items — badge count for the Add Food hub row. */
@@ -638,7 +640,8 @@ data class HomeUiState(
             copiedEntries == other.copiedEntries &&
             plannedAck == other.plannedAck &&
             untrackedDays == other.untrackedDays &&
-            untrackedKcalByDay == other.untrackedKcalByDay
+            untrackedKcalByDay == other.untrackedKcalByDay &&
+            healthSyncFailed == other.healthSyncFailed
     }
 
     override fun hashCode(): Int {
@@ -742,6 +745,7 @@ data class HomeUiState(
         result = 31 * result + (plannedAck?.hashCode() ?: 0)
         result = 31 * result + untrackedDays.hashCode()
         result = 31 * result + untrackedKcalByDay.hashCode()
+        result = 31 * result + healthSyncFailed.hashCode()
         return result
     }
 }
@@ -2314,6 +2318,33 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         _ui.update { it.copy(plannedAck = null) }
     }
 
+    private var healthNudgeShown = false
+
+    /**
+     * Health Connect mirror in the background (the slowest save step). When a
+     * write stays queued, surface the sync-failure nudge once per session —
+     * the queue retries on the next foreground sync either way.
+     */
+    private fun mirrorToHealthBackground(entries: List<FoodEntry>) {
+        if (entries.isEmpty()) return
+        viewModelScope.launch {
+            if (entries.any { !container.foodRepository.mirrorEntryToHealth(it) }) {
+                markHealthSyncFailed()
+            }
+        }
+    }
+
+    private fun markHealthSyncFailed() {
+        if (healthNudgeShown) return
+        healthNudgeShown = true
+        _ui.update { it.copy(healthSyncFailed = true) }
+    }
+
+    /** Dismisses the Health Connect failure snackbar after it is shown. */
+    fun ackHealthSyncFailed() {
+        _ui.update { it.copy(healthSyncFailed = false) }
+    }
+
     /**
      * Add Food "Search food" database pick: resolve the hit to a full
      * [FoodAnalysis] (OFF barcode lookup for micros, or offline USDA/Swiss row)
@@ -2545,7 +2576,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 // Health Connect mirroring is the slowest save step (IPC). Run it
                 // in the background so the review sheet can dismiss as soon as the
                 // diary row is on disk instead of after the HC round-trip.
-                viewModelScope.launch { container.foodRepository.mirrorEntryToHealth(entry) }
+                mirrorToHealthBackground(listOf(entry))
                 _ui.update { it.copy(
                     pendingAnalysis = null,
                     pendingIdentityName = null,
@@ -2737,9 +2768,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 // full-file write per ingredient; Health Connect mirrors in the
                 // background so the sheet dismisses right after the local commit.
                 container.foodRepository.addEntries(built, writeHealth = false)
-                viewModelScope.launch {
-                    built.forEach { container.foodRepository.mirrorEntryToHealth(it) }
-                }
+                mirrorToHealthBackground(built)
                 _ui.update { it.copy(
                     progressiveMeal = null,
                     showProgressiveMealSheet = false,
@@ -3253,7 +3282,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             )
             container.foodRepository.updateEntry(entry, updated)
             // The row's stamp is now (≤ now), so the mirror passes the HC guard.
-            container.foodRepository.mirrorEntryToHealth(updated)
+            if (!container.foodRepository.mirrorEntryToHealth(updated)) markHealthSyncFailed()
         }
     }
 
@@ -3278,7 +3307,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 container.foodRepository.addEntry(entry, writeHealth = false)
                 // Health Connect mirrors in the background so the relog ack does
                 // not wait on the HC binder (same contract as saveAnalysis).
-                viewModelScope.launch { container.foodRepository.mirrorEntryToHealth(entry) }
+                mirrorToHealthBackground(listOf(entry))
             }
         }
     }
@@ -3298,7 +3327,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             )
             // Health Connect mirrors in the background so the log path dismisses
             // at once (same contract as saveAnalysis).
-            viewModelScope.launch { entries.forEach { container.foodRepository.mirrorEntryToHealth(it) } }
+            mirrorToHealthBackground(entries)
         }
     }
 
@@ -3338,9 +3367,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         )
                 }
                 container.foodRepository.addEntries(duplicated, writeHealth = false)
-                viewModelScope.launch {
-                    duplicated.forEach { container.foodRepository.mirrorEntryToHealth(it) }
-                }
+                mirrorToHealthBackground(duplicated)
             } finally {
                 _ui.update { it.copy(saving = false) }
             }
@@ -3407,7 +3434,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 // Health Connect mirroring is the slowest save step (IPC). Run it
                 // in the background so the sheet can dismiss as soon as the diary
                 // row is on disk (same contract as saveAnalysis).
-                viewModelScope.launch { container.foodRepository.mirrorEntryToHealth(entry) }
+                mirrorToHealthBackground(listOf(entry))
             } finally {
                 _ui.update { it.copy(saving = false) }
             }

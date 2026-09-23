@@ -2001,4 +2001,5 @@
     <string name="action_keep_editing">继续编辑</string>
   <string name="recovered_review_chip">已恢复的分析：%1$s</string>
   <string name="cd_discard_recovered_review">丢弃已恢复的分析</string>
+    <string name="health_sync_failed">无法与 Health Connect 同步。正在自动重试。</string>
 </resources>

@@ -10,6 +10,10 @@ enum class EnergyUnit {
             if (raw.equals("kj", ignoreCase = true)) KJ else KCAL
 
         fun toStorage(unit: EnergyUnit): String = if (unit == KJ) "kj" else "kcal"
+
+        /** Upper wheel bound in display units: kcal keeps its 5000 cap, kJ gets the converted cap. */
+        fun energyWheelMax(display: EnergyUnit): Int =
+            if (display == KJ) EnergyFormat.kcalToKj(5000) else 5000
     }
 }
 

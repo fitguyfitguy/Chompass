@@ -69,19 +69,28 @@ class NutritionHealthRetry(
      * enforces its own permissions, so the worst case is a rejection we then queue
      * and resolve on the next pass — strictly better than assuming the answer and
      * dropping the entry.
+     *
+     * @return true when the write was confirmed (or nothing was owed: Health
+     *   Connect absent / sync switched off); false when the entry stayed queued
+     *   for the next retry pass.
      */
-    suspend fun sync(entry: FoodEntry, isUpdate: Boolean) = syncAll(listOf(entry), isUpdate)
+    suspend fun sync(entry: FoodEntry, isUpdate: Boolean): Boolean =
+        syncAll(listOf(entry), isUpdate)
 
     /**
      * Push several entries in one pass. A bulk log (Log meal / Copy From Day)
      * can carry dozens of entries, and resolving the gate per entry would mean
      * one Health Connect IPC round-trip each, so the gate and the queue are
      * resolved once for the batch.
+     *
+     * @return true when every entry was confirmed or nothing was owed; false
+     *   when at least one entry stayed queued.
      */
-    suspend fun syncAll(entries: List<FoodEntry>, isUpdate: Boolean) {
-        val adapter = health ?: return
-        if (entries.isEmpty()) return
-        mutex.withLock { syncAllLocked(adapter, entries, isUpdate) }
+    suspend fun syncAll(entries: List<FoodEntry>, isUpdate: Boolean): Boolean {
+        val adapter = health ?: return true
+        if (entries.isEmpty()) return true
+        val queue = mutex.withLock { syncAllLocked(adapter, entries, isUpdate) }
+        return entries.none { it.id.toString() in queue }
     }
 
     /** Drop [id] from the queue — the write landed, or the entry no longer exists. */
@@ -117,9 +126,9 @@ class NutritionHealthRetry(
         adapter: NutritionHealthSync,
         entries: List<FoodEntry>,
         isUpdate: Boolean,
-    ) {
-        if (!store.healthConnectEnabled.first()) return
-        if (adapter.writeGate() == NutritionWriteGate.DENIED) return
+    ): Set<String> {
+        if (!store.healthConnectEnabled.first()) return emptySet()
+        if (adapter.writeGate() == NutritionWriteGate.DENIED) return emptySet()
 
         val keys = entries.map { it.id.toString() }
         updateQueueLocked { it + keys }
@@ -142,7 +151,7 @@ class NutritionHealthRetry(
                 else -> failed += key
             }
         }
-        updateQueueLocked { (it - written) + failed }
+        return updateQueueLocked { (it - written) + failed }
     }
 
     private suspend fun retryPendingLocked(adapter: NutritionHealthSync) {
@@ -188,10 +197,11 @@ class NutritionHealthRetry(
         if (writeSucceeded) adapter.delete(entryId)
     }
 
-    /** Read-modify-write of the queue. Caller must hold [mutex]. */
-    private suspend fun updateQueueLocked(transform: (Set<String>) -> Set<String>) {
+    /** Read-modify-write of the queue. Caller must hold [mutex]. Returns the resulting queue. */
+    private suspend fun updateQueueLocked(transform: (Set<String>) -> Set<String>): Set<String> {
         val current = store.pendingNutritionHealthWrites.first()
         val next = transform(current)
         if (next != current) store.setPendingNutritionHealthWrites(next)
+        return next
     }
 }
