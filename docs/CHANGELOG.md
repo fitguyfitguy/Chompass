@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Added
+
+- **More OpenAI models in the picker** (Android + web): choose GPT-5.6 Sol, Terra, or Luna, or GPT-6 Sol or Luna from the built-in model list.
+
 ## [5.1.1] - 2026-09-21
 
 ### Added

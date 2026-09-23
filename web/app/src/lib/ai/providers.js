@@ -498,7 +498,7 @@ export const PROVIDERS = {
     defaultModel: "gpt-5.4-mini",
     defaultFallbackModel: "gpt-5.4-nano",
     supportsCustomModel: true,
-    models: ["gpt-5.4-mini", "gpt-5.4-nano", "gpt-5.5", "gpt-4.1", "gpt-4.1-mini", "gpt-4o-mini"],
+    models: ["gpt-5.4-mini", "gpt-5.4-nano", "gpt-5.5", "gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna", "gpt-6-sol", "gpt-6-luna", "gpt-4.1", "gpt-4.1-mini", "gpt-4o-mini"],
   },
 };
 
