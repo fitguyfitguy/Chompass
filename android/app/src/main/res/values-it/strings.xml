@@ -2004,4 +2004,5 @@ macro riequilibrate al nuovo totale calorico</string>
   <string name="recovered_review_chip">Analisi recuperata: %1$s</string>
   <string name="cd_discard_recovered_review">Elimina analisi recuperata</string>
     <string name="health_sync_failed">Impossibile sincronizzare con Health Connect. Nuovo tentativo automatico.</string>
+    <string name="plan_week_load_failed">Impossibile caricare questa settimana.</string>
 </resources>

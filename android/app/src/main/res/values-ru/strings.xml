@@ -2081,4 +2081,5 @@
   <string name="recovered_review_chip">Восстановленный анализ: %1$s</string>
   <string name="cd_discard_recovered_review">Отменить восстановленный анализ</string>
     <string name="health_sync_failed">Не удалось синхронизировать данные с Health Connect. Повторная попытка выполняется автоматически.</string>
+    <string name="plan_week_load_failed">Не удалось загрузить эту неделю.</string>
 </resources>

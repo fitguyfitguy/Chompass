@@ -2029,4 +2029,5 @@ makro rebalansowane do nowej sumy kalorii</string>
   <string name="recovered_review_chip">Odzyskana analiza: %1$s</string>
   <string name="cd_discard_recovered_review">Odrzuć odzyskaną analizę</string>
     <string name="health_sync_failed">Nie udało się zsynchronizować z Health Connect. Spróbujemy ponownie automatycznie.</string>
+    <string name="plan_week_load_failed">Nie udało się załadować tego tygodnia.</string>
 </resources>

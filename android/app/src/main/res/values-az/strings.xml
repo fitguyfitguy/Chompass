@@ -2004,4 +2004,5 @@ makrolar yeni kalori cəminə uyğun yenidən tarazlaşdırılır</string>
   <string name="recovered_review_chip">Bərpa olunmuş analiz: %1$s</string>
   <string name="cd_discard_recovered_review">Bərpa olunmuş analizi ləğv et</string>
     <string name="health_sync_failed">Health Connect ilə sinxronlaşdırmaq alınmadı. Avtomatik yenidən cəhd edilir.</string>
+    <string name="plan_week_load_failed">Bu həftə yüklənə bilmədi.</string>
 </resources>

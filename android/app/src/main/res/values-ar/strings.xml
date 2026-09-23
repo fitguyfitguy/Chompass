@@ -2013,4 +2013,5 @@
   <string name="recovered_review_chip">تحليل مستعاد: %1$s</string>
   <string name="cd_discard_recovered_review">تجاهل التحليل المستعاد</string>
     <string name="health_sync_failed">تعذّرت المزامنة مع Health Connect. ستتم إعادة المحاولة تلقائيًا.</string>
+    <string name="plan_week_load_failed">تعذّر تحميل هذا الأسبوع.</string>
 </resources>

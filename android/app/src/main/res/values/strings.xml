@@ -2544,4 +2544,5 @@
     <string name="picker_type_value">Type value</string>
     <string name="picker_use_wheel">Use wheel</string>
     <string name="health_sync_failed">Couldn\'t sync to Health Connect. Retrying automatically.</string>
+    <string name="plan_week_load_failed">Couldn\'t load this week.</string>
 </resources>

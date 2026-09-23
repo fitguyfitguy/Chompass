@@ -1933,4 +1933,5 @@ LBM = вага × (1 − %жиру)</string>
   <string name="recovered_review_chip">Відновлений аналіз: %1$s</string>
   <string name="cd_discard_recovered_review">Відхилити відновлений аналіз</string>
     <string name="health_sync_failed">Не вдалося синхронізувати дані з Health Connect. Повторна спроба виконується автоматично.</string>
+    <string name="plan_week_load_failed">Не вдалося завантажити цей тиждень.</string>
 </resources>
