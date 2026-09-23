@@ -29,19 +29,31 @@ fun rememberDecodedBitmap(bytes: ByteArray?): Bitmap? {
     return state.value
 }
 
+/** Load state for an analysis-queue thumbnail: a slow decode shows a spinner, a missing file an icon. */
+sealed interface QueueThumb {
+    data object Loading : QueueThumb
+    data object Missing : QueueThumb
+    data class Ready(val bitmap: Bitmap) : QueueThumb
+}
+
 /** Loads an analysis-queue thumbnail off the composition thread (Codeberg #53). */
 @Composable
 fun rememberQueueThumbnail(
     imageFilename: String?,
     queueStore: AnalysisQueueStore?,
-): Bitmap? {
-    val state = produceState<Bitmap?>(initialValue = null, imageFilename, queueStore) {
+): QueueThumb {
+    val state = produceState(
+        initialValue = if (imageFilename == null || queueStore == null) QueueThumb.Missing else QueueThumb.Loading,
+        imageFilename,
+        queueStore,
+    ) {
         val filename = imageFilename
         val store = queueStore
         value = if (filename == null || store == null) {
-            null
+            QueueThumb.Missing
         } else {
             withContext(Dispatchers.IO) { store.thumbnail(filename) }
+                ?.let { QueueThumb.Ready(it) } ?: QueueThumb.Missing
         }
     }
     return state.value

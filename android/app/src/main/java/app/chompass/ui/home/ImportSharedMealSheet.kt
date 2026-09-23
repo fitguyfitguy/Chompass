@@ -6,25 +6,19 @@ import app.chompass.ui.components.energyText
 import app.chompass.models.EnergyFormat
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalEnergyUnit
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,18 +52,18 @@ fun ImportSharedMealSheet(
         onDismiss = onDismiss,
         sheetState = state,
         body = {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp),
-            ) {
-                Text(
-                    pluralStringResource(R.plurals.import_add_meals_title, meals.size, meals.size),
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
+            Column(Modifier.fillMaxWidth()) {
+                SheetReviewToolbar(
+                    title = pluralStringResource(R.plurals.import_add_meals_title, meals.size, meals.size),
+                    onCancel = onDismiss,
                 )
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 24.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp),
+                ) {
 
                 meals.forEach { meal ->
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -98,33 +92,23 @@ fun ImportSharedMealSheet(
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 )
+                }
             }
         },
         footer = {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    // Pinned footer pads itself (no imePadding — no text inputs).
-                    .navigationBarsPadding()
-                    .padding(horizontal = 24.dp)
-            ) {
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(AppColors.CalorieGradient)
-                        .clickable { onAdd(meals) }
-                        .padding(vertical = 14.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        if (meals.size == 1) stringResource(R.string.import_add_to_log) else stringResource(R.string.import_add_to_log_many_format, meals.size, EnergyFormat.quantity(totalCalories, LocalEnergyUnit.current), energyUnitLabel()),
-                        color = AppColors.onCalorieGradient,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
+            SheetStickyPrimaryBar(
+                primaryLabel = if (meals.size == 1) {
+                    stringResource(R.string.import_add_to_log)
+                } else {
+                    stringResource(
+                        R.string.import_add_to_log_many_format,
+                        meals.size,
+                        EnergyFormat.quantity(totalCalories, LocalEnergyUnit.current),
+                        energyUnitLabel(),
                     )
-                }
-            }
+                },
+                onPrimary = { onAdd(meals) },
+            )
         },
     )
 }

@@ -218,7 +218,7 @@ fun SavedMealsSheet(
     }
     val isDark = isDarkTheme()
     val sheetSurface = MaterialTheme.colorScheme.surfaceContainerLow
-    val searchSurface = if (isDark) Color.Transparent else Color(0xFFF2E9E3).copy(alpha = 0.78f)
+    val searchSurface = if (isDark) Color.Transparent else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.78f)
 
     ChompassBottomSheet(
         onDismiss = onDismiss,

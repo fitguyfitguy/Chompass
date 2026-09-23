@@ -58,6 +58,8 @@ data class MacroPalette(
     val carbs: Color,
     val fat: Color,
     val fiber: Color,
+    /** Fallback for non-core nutrients; themed paths use [mutedNutrient] where composition is available. */
+    val muted: Color = MutedNeutral,
 ) {
     fun proteinArgb(): Int = protein.toArgb() and 0xFFFFFF
     fun carbsArgb(): Int = carbs.toArgb() and 0xFFFFFF
@@ -69,7 +71,7 @@ data class MacroPalette(
         HomeTopNutrient.CARBS -> carbs
         HomeTopNutrient.FAT -> fat
         HomeTopNutrient.FIBER -> fiber
-        else -> Color(0xFF79747E)
+        else -> muted
     }
 
     fun hexForNutrientId(id: String): Int = when (id) {

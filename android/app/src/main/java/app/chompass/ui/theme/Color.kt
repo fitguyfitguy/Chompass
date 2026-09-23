@@ -286,7 +286,7 @@ object AppColors {
     val TranslucentFieldLight = Color(0xFFE7E0EC).copy(alpha = 0.65f)
     val TranslucentFieldDark = Color(0xFF49454F).copy(alpha = 0.55f)
 
-    val HairlineBorderLight = Color(0xFF79747E).copy(alpha = 0.24f)
+    val HairlineBorderLight = MutedNeutral.copy(alpha = 0.24f)
     val HairlineBorderDark = Color(0xFFCAC4D0).copy(alpha = 0.20f)
 
     val NavBarLight = SurfaceContainerLowLight
@@ -345,13 +345,16 @@ val androidx.compose.material3.ColorScheme.water: Color
 val androidx.compose.material3.ColorScheme.caffeine: Color
     get() = if (background.luminance() < 0.5f) AppColors.CaffeineDark else AppColors.CaffeineLight
 
+/** Canonical muted gray base (one literal; UI-audit 2.4). */
+val MutedNeutral: Color = Color(0xFF79747E)
+
 /** Muted tone for non-core nutrients (sodium, vitamins…), theme/dark aware (UI-audit 2.4). */
 val androidx.compose.material3.ColorScheme.mutedNutrient: Color
-    get() = if (background.luminance() < 0.5f) AppColors.MutedDark else Color(0xFF79747E)
+    get() = if (background.luminance() < 0.5f) AppColors.MutedDark else MutedNeutral
 
 /**
  * Accent for a nutrient row: palette color for the four core macros, scheme-muted
- * otherwise (UI-audit 2.4 — the old hardcoded 0xFF79747E was not dark aware).
+ * otherwise (UI-audit 2.4 — the old hardcoded light gray was not dark aware).
  */
 @Composable
 fun nutrientAccentColor(nutrient: HomeTopNutrient): Color = when (nutrient) {
