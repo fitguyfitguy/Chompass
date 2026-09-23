@@ -2547,6 +2547,7 @@
     <string name="plan_week_load_failed">Couldn\'t load this week.</string>
     <string name="coach_image_only_message">Analyze this image.</string>
     <string name="a11y_chart_inspection">%1$s on %2$s: %3$s</string>
+    <string name="a11y_week_strip_day">%1$s, %2$s</string>
     <string name="cd_ingredient_decrease">Decrease ingredient amount</string>
     <string name="cd_ingredient_increase">Increase ingredient amount</string>
     <string name="onboarding_key_checking">Checking key…</string>
