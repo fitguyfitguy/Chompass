@@ -3465,4 +3465,5 @@ für dich ein</string>
     <string name="health_sync_failed">Synchronisierung mit Health Connect fehlgeschlagen. Wird automatisch erneut versucht.</string>
     <string name="plan_week_load_failed">Diese Woche konnte nicht geladen werden.</string>
     <string name="coach_image_only_message">Dieses Bild analysieren.</string>
+    <string name="a11y_chart_inspection">%1$s am %2$s: %3$s</string>
 </resources>

@@ -2031,4 +2031,5 @@ makro rebalansowane do nowej sumy kalorii</string>
     <string name="health_sync_failed">Nie udało się zsynchronizować z Health Connect. Spróbujemy ponownie automatycznie.</string>
     <string name="plan_week_load_failed">Nie udało się załadować tego tygodnia.</string>
     <string name="coach_image_only_message">Przeanalizuj ten obraz.</string>
+    <string name="a11y_chart_inspection">%1$s dnia %2$s: %3$s</string>
 </resources>

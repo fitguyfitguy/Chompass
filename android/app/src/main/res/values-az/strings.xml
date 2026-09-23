@@ -2006,4 +2006,5 @@ makrolar yeni kalori cəminə uyğun yenidən tarazlaşdırılır</string>
     <string name="health_sync_failed">Health Connect ilə sinxronlaşdırmaq alınmadı. Avtomatik yenidən cəhd edilir.</string>
     <string name="plan_week_load_failed">Bu həftə yüklənə bilmədi.</string>
     <string name="coach_image_only_message">Bu şəkli təhlil et.</string>
+    <string name="a11y_chart_inspection">%2$s tarixində %1$s: %3$s</string>
 </resources>

@@ -64,7 +64,7 @@ import java.util.Locale
 
 /** Renders a mg value compactly: whole numbers without decimals. */
 internal fun formatMg(mg: Double): String =
-    if (mg % 1.0 == 0.0) mg.toInt().toString() else String.format(Locale.US, "%.1f", mg)
+    if (mg % 1.0 == 0.0) mg.toInt().toString() else String.format(Locale.getDefault(), "%.1f", mg)
 
 /**
  * Optional caffeine tracker row (device-pass revision of the caffeine plan).
@@ -119,8 +119,8 @@ fun CaffeineProgressRow(
                     .fillMaxWidth()
                     .height(5.dp)
                     .clip(RoundedCornerShape(3.dp)),
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
+                color = MaterialTheme.colorScheme.caffeine,
+                trackColor = MaterialTheme.colorScheme.caffeine.copy(alpha = 0.16f),
             )
         }
     }
@@ -183,7 +183,7 @@ fun CaffeineCustomSheet(
                             onClick = { switchKind(option) },
                             label = { Text(trackerPresetLabel(presets, option.id, HabitPresetDomain.CAFFEINE)) },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+                                selectedContainerColor = MaterialTheme.colorScheme.caffeine.copy(alpha = 0.14f),
                             ),
                         )
                     }
@@ -416,7 +416,7 @@ fun CaffeineEditSheet(
                             onClick = { kind = option.id },
                             label = { Text(trackerPresetLabel(chips, option.id, HabitPresetDomain.CAFFEINE)) },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+                                selectedContainerColor = MaterialTheme.colorScheme.caffeine.copy(alpha = 0.14f),
                             ),
                         )
                     }
@@ -477,7 +477,7 @@ internal fun CaffeineMilkSection(
                 onClick = { onKindChange(option) },
                 label = { Text(stringResource(option.labelRes)) },
                 colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+                    selectedContainerColor = MaterialTheme.colorScheme.caffeine.copy(alpha = 0.14f),
                 ),
             )
         }

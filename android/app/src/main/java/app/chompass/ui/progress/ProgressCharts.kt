@@ -25,6 +25,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
@@ -391,6 +393,18 @@ internal fun WeightChartCanvas(
     val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
     val chipForeground = MaterialTheme.colorScheme.surface
     val weightUnit = stringResource(if (useMetric) R.string.unit_kg else R.string.unit_lbs)
+    val metricTitle = stringResource(R.string.progress_weight_section)
+    val inspectedNow = inspectedPoint?.let { chartModel.points.getOrNull(it) }
+    val chartDescription = if (inspectedNow != null) {
+        stringResource(
+            R.string.a11y_chart_inspection,
+            metricTitle,
+            chartModel.xLabelFmt.format(Instant.ofEpochMilli(inspectedNow.timeMs)),
+            "${formatTick(inspectedNow.value)} $weightUnit",
+        )
+    } else {
+        metricTitle
+    }
     val inspectedLabel = inspectedPoint?.let { index ->
         chartModel.points.getOrNull(index)?.let { point ->
             "${chartModel.xLabelFmt.format(Instant.ofEpochMilli(point.timeMs))} · ${formatTick(point.value)} $weightUnit"
@@ -401,6 +415,7 @@ internal fun WeightChartCanvas(
             Modifier
                 .weight(1f)
                 .fillMaxSize()
+                .semantics { contentDescription = chartDescription }
                 .pointerInput(chartModel) {
                     detectTapGestures { tap ->
                         val index = nearestTrendIndex(
@@ -532,6 +547,18 @@ internal fun BodyFatChartCanvas(
     val textMeasurer = rememberTextMeasurer()
     val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
     val chipForeground = MaterialTheme.colorScheme.surface
+    val metricTitle = stringResource(R.string.progress_metric_body_fat)
+    val inspectedNow = inspectedPoint?.let { chartModel.points.getOrNull(it) }
+    val chartDescription = if (inspectedNow != null) {
+        stringResource(
+            R.string.a11y_chart_inspection,
+            metricTitle,
+            chartModel.xLabelFmt.format(Instant.ofEpochMilli(inspectedNow.timeMs)),
+            UnitFormat.percent(inspectedNow.value),
+        )
+    } else {
+        metricTitle
+    }
     val inspectedLabel = inspectedPoint?.let { index ->
         chartModel.points.getOrNull(index)?.let { point ->
             "${chartModel.xLabelFmt.format(Instant.ofEpochMilli(point.timeMs))} · ${UnitFormat.percent(point.value)}"
@@ -542,6 +569,7 @@ internal fun BodyFatChartCanvas(
             Modifier
                 .weight(1f)
                 .fillMaxSize()
+                .semantics { contentDescription = chartDescription }
                 .pointerInput(chartModel) {
                     detectTapGestures { tap ->
                         val index = nearestTrendIndex(
@@ -683,6 +711,8 @@ internal fun MeasurementChartCanvas(
     immediate: Boolean = false,
     /** Display-unit formatter for the tap tag (cm → "12.5 cm"); null → bare tick format. */
     tagFormatter: ((Double) -> String)? = null,
+    /** Metric name for the TalkBack inspection description (the section header text). */
+    title: String,
 ) {
     val chartModel = remember(series) { buildMeasurementChartModel(series) }
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
@@ -704,6 +734,18 @@ internal fun MeasurementChartCanvas(
     val textMeasurer = rememberTextMeasurer()
     val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
     val chipForeground = MaterialTheme.colorScheme.surface
+    val metricTitle = title
+    val inspectedNow = inspectedPoint?.let { chartModel.points.getOrNull(it) }
+    val chartDescription = if (inspectedNow != null) {
+        stringResource(
+            R.string.a11y_chart_inspection,
+            metricTitle,
+            chartModel.xLabelFmt.format(Instant.ofEpochMilli(inspectedNow.timeMs)),
+            tagFormatter?.invoke(inspectedNow.value) ?: formatTick(inspectedNow.value),
+        )
+    } else {
+        metricTitle
+    }
     val inspectedLabel = inspectedPoint?.let { index ->
         chartModel.points.getOrNull(index)?.let { point ->
             val value = tagFormatter?.invoke(point.value) ?: formatTick(point.value)
@@ -715,6 +757,7 @@ internal fun MeasurementChartCanvas(
             Modifier
                 .weight(1f)
                 .fillMaxSize()
+                .semantics { contentDescription = chartDescription }
                 .pointerInput(chartModel) {
                     detectTapGestures { tap ->
                         val index = nearestTrendIndex(
@@ -818,6 +861,18 @@ internal fun CalorieBarChart(
     val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
     val chipForeground = MaterialTheme.colorScheme.surface
     val energyUnit = LocalEnergyUnit.current
+    val inspectedTitle = stringResource(R.string.progress_calories_section)
+    val inspectedNow = inspectedBar?.let { dailyCalories.getOrNull(it) }
+    val chartDescription = if (inspectedNow != null) {
+        stringResource(
+            R.string.a11y_chart_inspection,
+            inspectedTitle,
+            xLabelFmt.format(inspectedNow.first),
+            "${LocaleFormat.integer(EnergyFormat.quantity(inspectedNow.second, energyUnit))} ${energyUnitLabel()}",
+        )
+    } else {
+        inspectedTitle
+    }
     val inspectedLabel = inspectedBar?.let { index ->
         dailyCalories.getOrNull(index)?.let { (day, kcal) ->
             "${xLabelFmt.format(day)} · ${LocaleFormat.integer(EnergyFormat.quantity(kcal, energyUnit))} ${energyUnitLabel()}"
@@ -838,11 +893,15 @@ internal fun CalorieBarChart(
                 Canvas(
                     Modifier
                         .fillMaxSize()
+                        .semantics { contentDescription = chartDescription }
                         .pointerInput(dailyCalories, startX, barWidth, gap) {
                             detectTapGestures { tap ->
                                 if (n == 0) return@detectTapGestures
-                                val index = ((tap.x - startX) / (barWidth + gap)).toInt().coerceIn(0, n - 1)
-                                inspectedBar = if (inspectedBar == index) null else index
+                                val raw = ((tap.x - startX) / (barWidth + gap)).toInt()
+                                // Taps past the last bar's right edge (label gutter,
+                                // y-axis spacer) do nothing instead of selecting it.
+                                if (raw < 0 || raw >= n) return@detectTapGestures
+                                inspectedBar = if (inspectedBar == raw) null else raw
                             }
                         }
                 ) {
