@@ -1935,4 +1935,5 @@ LBM = вага × (1 − %жиру)</string>
     <string name="health_sync_failed">Не вдалося синхронізувати дані з Health Connect. Повторна спроба виконується автоматично.</string>
     <string name="plan_week_load_failed">Не вдалося завантажити цей тиждень.</string>
     <string name="coach_image_only_message">Проаналізуй це зображення.</string>
+    <string name="a11y_chart_inspection">%1$s за %2$s: %3$s</string>
 </resources>

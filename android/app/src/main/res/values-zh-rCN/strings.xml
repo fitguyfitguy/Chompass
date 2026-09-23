@@ -2004,4 +2004,5 @@
     <string name="health_sync_failed">无法与 Health Connect 同步。正在自动重试。</string>
     <string name="plan_week_load_failed">无法加载本周数据。</string>
     <string name="coach_image_only_message">分析这张图片。</string>
+    <string name="a11y_chart_inspection">%2$s的%1$s：%3$s</string>
 </resources>

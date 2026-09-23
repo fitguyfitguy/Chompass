@@ -2083,4 +2083,5 @@
     <string name="health_sync_failed">Не удалось синхронизировать данные с Health Connect. Повторная попытка выполняется автоматически.</string>
     <string name="plan_week_load_failed">Не удалось загрузить эту неделю.</string>
     <string name="coach_image_only_message">Проанализируй это изображение.</string>
+    <string name="a11y_chart_inspection">%1$s за %2$s: %3$s</string>
 </resources>

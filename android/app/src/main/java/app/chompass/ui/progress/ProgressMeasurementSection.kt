@@ -99,6 +99,7 @@ internal fun MeasurementPlotCard(
                             series = series,
                             immediate = chartsImmediate,
                             tagFormatter = { formatMeasurementLength(context, it, useMetric) },
+                            title = stringResource(site.labelRes),
                         )
                     }
                 }

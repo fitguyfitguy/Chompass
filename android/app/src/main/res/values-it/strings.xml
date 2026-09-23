@@ -2006,4 +2006,5 @@ macro riequilibrate al nuovo totale calorico</string>
     <string name="health_sync_failed">Impossibile sincronizzare con Health Connect. Nuovo tentativo automatico.</string>
     <string name="plan_week_load_failed">Impossibile caricare questa settimana.</string>
     <string name="coach_image_only_message">Analizza questa immagine.</string>
+    <string name="a11y_chart_inspection">%1$s il %2$s: %3$s</string>
 </resources>

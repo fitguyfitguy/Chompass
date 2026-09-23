@@ -2004,4 +2004,5 @@
     <string name="health_sync_failed">Health Connectと同期できませんでした。自動的に再試行します。</string>
     <string name="plan_week_load_failed">今週を読み込めませんでした。</string>
     <string name="coach_image_only_message">この画像を分析して。</string>
+    <string name="a11y_chart_inspection">%2$sの%1$s: %3$s</string>
 </resources>
