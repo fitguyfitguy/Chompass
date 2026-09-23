@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,7 +22,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -70,6 +73,12 @@ internal class PlanWeekViewModel(private val container: AppContainer) : ViewMode
     val windowStart: StateFlow<LocalDate> = _windowStart.asStateFlow()
     private val _days = MutableStateFlow<List<PlanWeekDay>>(emptyList())
     val days: StateFlow<List<PlanWeekDay>> = _days.asStateFlow()
+    private val _loaded = MutableStateFlow(false)
+    /** True once a window read finished; the canvas shows a spinner until then. */
+    val loaded: StateFlow<Boolean> = _loaded.asStateFlow()
+    private val _loadFailed = MutableStateFlow(false)
+    /** True when the last window read threw; the canvas shows an error row with retry. */
+    val loadFailed: StateFlow<Boolean> = _loadFailed.asStateFlow()
 
     private val _tab = MutableStateFlow(SavedTab.RECENTS)
     val tab: StateFlow<SavedTab> = _tab.asStateFlow()
@@ -177,15 +186,29 @@ internal class PlanWeekViewModel(private val container: AppContainer) : ViewMode
         val generation = ++refreshGeneration
         val start = _windowStart.value
         viewModelScope.launch {
-            val days = withContext(Dispatchers.Default) {
-                (0..6).map { offset ->
-                    val day = start.plusDays(offset.toLong())
-                    PlanWeekDay(day, container.foodRepository.entriesForDate(day).first())
+            try {
+                val days = withContext(Dispatchers.Default) {
+                    (0..6).map { offset ->
+                        val day = start.plusDays(offset.toLong())
+                        PlanWeekDay(day, container.foodRepository.entriesForDate(day).first())
+                    }
                 }
+                // A shift may have restarted the read; only the newest window wins.
+                if (generation == refreshGeneration) {
+                    _days.value = days
+                    _loaded.value = true
+                    _loadFailed.value = false
+                }
+            } catch (_: Exception) {
+                if (generation == refreshGeneration) _loadFailed.value = true
             }
-            // A shift may have restarted the read; only the newest window wins.
-            if (generation == refreshGeneration) _days.value = days
         }
+    }
+
+    /** Re-read the window after a failed load (error row retry). */
+    fun retry() {
+        _loadFailed.value = false
+        refresh()
     }
 
     class Factory(private val container: AppContainer) : ViewModelProvider.Factory {
@@ -211,6 +234,8 @@ internal fun PlanWeekScreen(
     val tab by vm.tab.collectAsState()
     val rows by vm.rows.collectAsState()
     val pickerDay by vm.pickerDay.collectAsState()
+    val loaded by vm.loaded.collectAsState()
+    val loadFailed by vm.loadFailed.collectAsState()
     val dateFmt = remember { LocaleFormat.shortDate() }
 
     SettingsSubScreen(
@@ -249,6 +274,29 @@ internal fun PlanWeekScreen(
                     Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = stringResource(R.string.cd_plan_week_next),
                 )
+            }
+        }
+        if (loadFailed) {
+            Row(
+                Modifier.fillMaxWidth().padding(vertical = 24.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    stringResource(R.string.plan_week_load_failed),
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                )
+                TextButton(onClick = { vm.retry() }) {
+                    Text(stringResource(R.string.action_retry))
+                }
+            }
+        } else if (!loaded) {
+            Row(
+                Modifier.fillMaxWidth().padding(vertical = 24.dp),
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp)
             }
         }
 
@@ -349,7 +397,11 @@ private fun PlanWeekEntryChip(
                 BorderStroke(0.5.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)),
                 shape,
             )
-            .combinedClickable(onClick = onTap, onLongClick = onRemove)
+            .combinedClickable(
+                onClick = onTap,
+                onLongClick = onRemove,
+                onLongClickLabel = stringResource(R.string.action_delete),
+            )
             .padding(horizontal = 10.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),

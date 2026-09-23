@@ -2023,4 +2023,5 @@ makrolar yeni kalori toplamına göre yeniden dengelenir</string>
   <string name="recovered_review_chip">Kurtarılan analiz: %1$s</string>
   <string name="cd_discard_recovered_review">Kurtarılan analizi at</string>
     <string name="health_sync_failed">Health Connect ile senkronize edilemedi. Otomatik olarak yeniden deneniyor.</string>
+    <string name="plan_week_load_failed">Bu hafta yüklenemedi.</string>
 </resources>
