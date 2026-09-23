@@ -21,6 +21,7 @@ import androidx.compose.material.icons.outlined.Dialpad
 import androidx.compose.material.icons.outlined.SwapVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -236,6 +237,7 @@ internal fun MagnitudeWheelChrome(
                 Box(
                     Modifier
                         .align(Alignment.CenterEnd)
+                        .minimumInteractiveComponentSize()
                         .padding(end = 10.dp)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },

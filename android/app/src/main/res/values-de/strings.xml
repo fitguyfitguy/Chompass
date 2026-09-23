@@ -3466,4 +3466,9 @@ für dich ein</string>
     <string name="plan_week_load_failed">Diese Woche konnte nicht geladen werden.</string>
     <string name="coach_image_only_message">Dieses Bild analysieren.</string>
     <string name="a11y_chart_inspection">%1$s am %2$s: %3$s</string>
+    <string name="cd_ingredient_decrease">Zutatenmenge verringern</string>
+    <string name="cd_ingredient_increase">Zutatenmenge erhöhen</string>
+    <string name="onboarding_key_checking">Schlüssel wird geprüft …</string>
+    <string name="body_metrics_height_hint">Gib deine Größe ein, um Taille-Körpergröße-Verhältnis und Körperfett-Schätzungen zu sehen.</string>
+    <string name="sheet_serving_baseless_hint">Werte pro 100 g skalieren mit der Portion.</string>
 </resources>

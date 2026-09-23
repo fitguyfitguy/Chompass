@@ -174,11 +174,12 @@ data class ServingUnitOption(
         }
 
         /**
-         * Serving to persist (Codeberg #10 follow-up): correcting the weight on
-         * an entry without a recorded serving records it (macros stay
-         * untouched); leaving it alone keeps the entry serving-less, so a later
-         * edit cannot corrupt macros either. Entries with a recorded serving
-         * persist the edited weight as before.
+         * Serving to persist (Codeberg #10 follow-up, lock model): while the
+         * sheet is locked an amount edit changes nothing and an entry without
+         * a recorded serving stays serving-less — its values are per-100 g
+         * absolutes. An unlocked amount edit records the portion
+         * ([servingTouched]), after which edits rescale against it. Entries
+         * with a recorded serving persist the edited weight as before.
          */
         fun persistedServingGrams(
             recordedServingGrams: Double?,

@@ -2016,4 +2016,9 @@
     <string name="plan_week_load_failed">تعذّر تحميل هذا الأسبوع.</string>
     <string name="coach_image_only_message">حلّل هذه الصورة.</string>
     <string name="a11y_chart_inspection">%1$s في %2$s: %3$s</string>
+    <string name="cd_ingredient_decrease">تقليل كمية المكوّن</string>
+    <string name="cd_ingredient_increase">زيادة كمية المكوّن</string>
+    <string name="onboarding_key_checking">جارٍ التحقق من المفتاح…</string>
+    <string name="body_metrics_height_hint">أضف طولك لرؤية نسبة الخصر إلى الطول وتقديرات دهون الجسم.</string>
+    <string name="sheet_serving_baseless_hint">تتكيف القيم لكل 100 غرام مع حصة الطعام.</string>
 </resources>

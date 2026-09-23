@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -59,6 +60,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import app.chompass.R
 import app.chompass.models.AIProvider
 import app.chompass.models.CalorieSafety
@@ -141,7 +147,11 @@ internal fun ProviderStep(
             border = BorderStroke(1.dp, AppColors.Calorie.copy(alpha = 0.25f)),
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { onProviderChange(AIProvider.GEMINI) }
+                .selectable(
+                    selected = provider == AIProvider.GEMINI,
+                    onClick = { onProviderChange(AIProvider.GEMINI) },
+                    role = Role.RadioButton,
+                )
         ) {
             Row(
                 Modifier.padding(14.dp),
@@ -185,11 +195,17 @@ internal fun ProviderStep(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    val howtoStateLabel = stringResource(
+                        if (howtoExpanded) R.string.cd_expanded else R.string.cd_collapsed,
+                    )
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { howtoExpanded = !howtoExpanded }
+                            .semantics(mergeDescendants = true) {
+                                stateDescription = howtoStateLabel
+                            }
                     ) {
                         Text(
                             stringResource(R.string.onboarding_provider_howto_title),
@@ -259,7 +275,16 @@ internal fun ProviderStep(
                             onClick = onTestKey,
                             enabled = !apiKeyTesting && apiKey.isNotBlank()
                         ) {
-                            Text(stringResource(R.string.onboarding_api_key_test))
+                            if (apiKeyTesting) {
+                                CircularProgressIndicator(Modifier.size(14.dp), strokeWidth = 2.dp)
+                                Spacer(Modifier.width(6.dp))
+                            }
+                            Text(
+                                stringResource(
+                                    if (apiKeyTesting) R.string.onboarding_key_checking
+                                    else R.string.onboarding_api_key_test,
+                                ),
+                            )
                         }
                         if (apiKeyTestMessage.isNotEmpty()) {
                             Text(
@@ -594,21 +619,21 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
                 value = profile.effectiveProtein,
                 color = AppColors.Protein,
                 unitRes = R.string.unit_g,
-                modifier = Modifier.weight(1f).clickable { editing = PlanField.PROTEIN }
+                modifier = Modifier.weight(1f).minimumInteractiveComponentSize().clickable { editing = PlanField.PROTEIN }
             )
             MacroCard(
                 label = stringResource(R.string.macro_carbs),
                 value = profile.effectiveCarbs,
                 color = AppColors.Carbs,
                 unitRes = R.string.unit_g,
-                modifier = Modifier.weight(1f).clickable { editing = PlanField.CARBS }
+                modifier = Modifier.weight(1f).minimumInteractiveComponentSize().clickable { editing = PlanField.CARBS }
             )
             MacroCard(
                 label = stringResource(R.string.macro_fat),
                 value = profile.effectiveFat,
                 color = AppColors.Fat,
                 unitRes = R.string.unit_g,
-                modifier = Modifier.weight(1f).clickable { editing = PlanField.FAT }
+                modifier = Modifier.weight(1f).minimumInteractiveComponentSize().clickable { editing = PlanField.FAT }
             )
         }
         editing?.let { field ->

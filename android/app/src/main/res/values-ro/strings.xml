@@ -2007,4 +2007,9 @@ macro-urile reechilibrate la noul total caloric</string>
     <string name="plan_week_load_failed">Nu s-a putut încărca această săptămână.</string>
     <string name="coach_image_only_message">Analizează această imagine.</string>
     <string name="a11y_chart_inspection">%1$s la %2$s: %3$s</string>
+    <string name="cd_ingredient_decrease">Redu cantitatea ingredientului</string>
+    <string name="cd_ingredient_increase">Mărește cantitatea ingredientului</string>
+    <string name="onboarding_key_checking">Se verifică cheia…</string>
+    <string name="body_metrics_height_hint">Adaugă înălțimea pentru a vedea raportul talie-înălțime și estimările de grăsime corporală.</string>
+    <string name="sheet_serving_baseless_hint">Valorile la 100 g se scalează cu porția.</string>
 </resources>

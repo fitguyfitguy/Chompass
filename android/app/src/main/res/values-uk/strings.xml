@@ -1936,4 +1936,9 @@ LBM = вага × (1 − %жиру)</string>
     <string name="plan_week_load_failed">Не вдалося завантажити цей тиждень.</string>
     <string name="coach_image_only_message">Проаналізуй це зображення.</string>
     <string name="a11y_chart_inspection">%1$s за %2$s: %3$s</string>
+    <string name="cd_ingredient_decrease">Зменшити кількість інгредієнта</string>
+    <string name="cd_ingredient_increase">Збільшити кількість інгредієнта</string>
+    <string name="onboarding_key_checking">Перевірка ключа…</string>
+    <string name="body_metrics_height_hint">Додайте свій зріст, щоб побачити співвідношення талія-зріст і оцінки відсотка жиру.</string>
+    <string name="sheet_serving_baseless_hint">Значення на 100 г масштабуються з порцією.</string>
 </resources>

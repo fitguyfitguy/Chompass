@@ -2007,4 +2007,9 @@ makrolar yeni kalori cəminə uyğun yenidən tarazlaşdırılır</string>
     <string name="plan_week_load_failed">Bu həftə yüklənə bilmədi.</string>
     <string name="coach_image_only_message">Bu şəkli təhlil et.</string>
     <string name="a11y_chart_inspection">%2$s tarixində %1$s: %3$s</string>
+    <string name="cd_ingredient_decrease">Tərkib miqdarını azalt</string>
+    <string name="cd_ingredient_increase">Tərkib miqdarını artır</string>
+    <string name="onboarding_key_checking">Açar yoxlanılır…</string>
+    <string name="body_metrics_height_hint">Bel-boy nisbətini və bədən yağını görmək üçün boyunuzu əlavə edin.</string>
+    <string name="sheet_serving_baseless_hint">100 q dəyərləri porsiyaya görə miqyaslana bilir.</string>
 </resources>

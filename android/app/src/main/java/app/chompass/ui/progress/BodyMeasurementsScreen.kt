@@ -279,6 +279,16 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                             }
                         }
                     }
+                } else if (heightCm <= 0.0) {
+                    // Derived metrics need a height; say so instead of omitting silently.
+                    item {
+                        Text(
+                            stringResource(R.string.body_metrics_height_hint),
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                        )
+                    }
                 }
                 if (entries.size > 1) {
                     item {

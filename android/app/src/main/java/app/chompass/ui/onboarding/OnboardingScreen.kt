@@ -78,14 +78,16 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Outlined.ChevronLeft,
-                    contentDescription = stringResource(R.string.onboarding_back),
-                    tint = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier
-                        .size(28.dp)
-                        .clickable { vm.back() }
-                )
+                if (ui.step != OnboardingStep.DISCLAIMERS) {
+                    Icon(
+                        imageVector = Icons.Outlined.ChevronLeft,
+                        contentDescription = stringResource(R.string.onboarding_back),
+                        tint = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier
+                            .size(28.dp)
+                            .clickable { vm.back() }
+                    )
+                }
                 val totalSteps = OnboardingStep.values().size
                 val progress = ui.step.ordinal.toFloat() / (totalSteps - 1).toFloat()
                 Box(

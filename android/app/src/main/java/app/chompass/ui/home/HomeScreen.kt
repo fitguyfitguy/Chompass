@@ -776,7 +776,7 @@ fun HomeScreen(
                 }
                 item { Spacer(Modifier.height(8.dp)) }
             }
-            if (mealGroups.isEmpty()) {
+            if (ui.diaryLoaded && mealGroups.isEmpty()) {
                 item { SectionHeader(if (isToday) stringResource(R.string.home_todays_food) else stringResource(R.string.home_food_log)) }
                 item {
                     SectionCardWrapper(isFirst = true, isLast = true) {
@@ -2066,7 +2066,7 @@ internal fun HomeScreenPreviewContent(
                     }
                 }
                 item { Spacer(Modifier.height(8.dp)) }
-                if (mealGroups.isEmpty()) {
+                if (ui.diaryLoaded && mealGroups.isEmpty()) {
                     item { SectionHeader(if (isToday) stringResource(R.string.home_todays_food) else stringResource(R.string.home_food_log)) }
                     item {
                         SectionCardWrapper(isFirst = true, isLast = true) {

@@ -2006,4 +2006,9 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
     <string name="plan_week_load_failed">Kan deze week niet laden.</string>
     <string name="coach_image_only_message">Analyseer deze afbeelding.</string>
     <string name="a11y_chart_inspection">%1$s op %2$s: %3$s</string>
+    <string name="cd_ingredient_decrease">Hoeveelheid van ingrediënt verlagen</string>
+    <string name="cd_ingredient_increase">Hoeveelheid van ingrediënt verhogen</string>
+    <string name="onboarding_key_checking">Sleutel controleren…</string>
+    <string name="body_metrics_height_hint">Voeg je lengte toe om taille-lengte-verhouding en lichaamsvetschattingen te zien.</string>
+    <string name="sheet_serving_baseless_hint">Waarden per 100 g schalen mee met de portie.</string>
 </resources>

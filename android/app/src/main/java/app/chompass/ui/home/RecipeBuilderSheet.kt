@@ -27,6 +27,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -300,8 +301,8 @@ private fun IngredientRow(
 
         IconButton(
             onClick = { onScaleChange((ingredient.quantityScale - 0.25).coerceAtLeast(0.25)) },
-            modifier = Modifier.size(28.dp)
-        ) { Icon(Icons.Filled.Remove, contentDescription = null, modifier = Modifier.size(16.dp)) }
+            modifier = Modifier.minimumInteractiveComponentSize().size(28.dp)
+        ) { Icon(Icons.Filled.Remove, contentDescription = stringResource(R.string.cd_ingredient_decrease), modifier = Modifier.size(16.dp)) }
 
         Text(
             stringResource(R.string.recipe_builder_scale_format, ingredient.quantityScale),
@@ -312,8 +313,8 @@ private fun IngredientRow(
 
         IconButton(
             onClick = { onScaleChange(ingredient.quantityScale + 0.25) },
-            modifier = Modifier.size(28.dp)
-        ) { Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(16.dp)) }
+            modifier = Modifier.minimumInteractiveComponentSize().size(28.dp)
+        ) { Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.cd_ingredient_increase), modifier = Modifier.size(16.dp)) }
 
         IconButton(onClick = onRemove, modifier = Modifier.size(28.dp)) {
             Icon(

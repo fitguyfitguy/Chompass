@@ -2026,4 +2026,9 @@ makrolar yeni kalori toplamına göre yeniden dengelenir</string>
     <string name="plan_week_load_failed">Bu hafta yüklenemedi.</string>
     <string name="coach_image_only_message">Bu görüntüyü analiz et.</string>
     <string name="a11y_chart_inspection">%2$s tarihinde %1$s: %3$s</string>
+    <string name="cd_ingredient_decrease">Malzeme miktarını azalt</string>
+    <string name="cd_ingredient_increase">Malzeme miktarını artır</string>
+    <string name="onboarding_key_checking">Anahtar kontrol ediliyor…</string>
+    <string name="body_metrics_height_hint">Bel-göre oranını ve vücut yağ tahminlerini görmek için boyunu ekle.</string>
+    <string name="sheet_serving_baseless_hint">100 g değerleri porsiyona göre ölçeklenir.</string>
 </resources>
