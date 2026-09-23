@@ -122,6 +122,7 @@ class TestDataSeeder(private val container: AppContainer) {
             proteinG = base.proteinG + 10,
             carbsG = trainingCarbs,
             fatG = ((trainingCalories - (base.proteinG + 10) * 4 - trainingCarbs * 4) / 9.0).roundToInt(),
+            colorKey = "green",
         )
         val rest = MacroDayProfile(
             id = "seed-rest",
@@ -130,6 +131,7 @@ class TestDataSeeder(private val container: AppContainer) {
             proteinG = base.proteinG,
             carbsG = restCarbs,
             fatG = ((restCalories - base.proteinG * 4 - restCarbs * 4) / 9.0).roundToInt(),
+            colorKey = "blue",
         )
         val today = LocalDate.now()
         return MacroPlan(

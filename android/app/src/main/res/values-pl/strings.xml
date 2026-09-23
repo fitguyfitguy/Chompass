@@ -2035,6 +2035,11 @@ makro rebalansowane do nowej sumy kalorii</string>
     <string name="cd_ingredient_decrease">Zmniejsz ilość składnika</string>
     <string name="cd_ingredient_increase">Zwiększ ilość składnika</string>
     <string name="onboarding_key_checking">Sprawdzanie klucza…</string>
-    <string name="body_metrics_height_hint">Dodaj swój wzrost, zobaczyć stosunek talia-wzrost i szacunki tkanki tłuszczowej.</string>
     <string name="sheet_serving_baseless_hint">Wartości na 100 g zmieniają się z porcją.</string>
+    <string name="body_metrics_height_hint">Dodaj swój wzrost, zobaczyć stosunek talia-wzrost i szacunki tkanki tłuszczowej.</string>
+    <string name="settings_day_type_color">Kolor</string>
+    <string name="settings_day_type_color_auto">Auto</string>
+    <string name="a11y_marker_lane">Znaczniki typu dnia i dni nieśledzonych</string>
+    <string name="a11y_day_marker_type">typ dnia %1$s</string>
+    <string name="a11y_day_untracked">nieśledzony</string>
 </resources>

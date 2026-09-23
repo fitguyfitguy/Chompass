@@ -97,6 +97,10 @@ data class ProgressUiState(
 
     val weightStats: WeightSummaryStats = WeightSummaryStats(),
     val bodyFatStats: BodyFatSummaryStats = BodyFatSummaryStats(),
+    /** ISO dates marked not tracked (#106) inside the range — lane dashes + bar filter. */
+    val untrackedDays: Set<String> = emptySet(),
+    /** ISO date -> resolved day-type profile id for the marker lanes (UI-UX §10). */
+    val dayTypeByDay: Map<String, String> = emptyMap(),
     val goalReached: Boolean = false
 )
 
@@ -371,6 +375,17 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
     val dailyCalorieGoals = dailyCalories.associate { (day, _) ->
         day to MacroPlanResolver.targetsForJournaled(base.goalJournal, base.profile, day, anchorDate).targets.calories
     }
+    // Marker-lane inputs: one resolver pass per day in range (pure math).
+    val dayTypeByDay = buildMap {
+        var day = rangeStartDay
+        while (!day.isAfter(rangeEndDay)) {
+            val id = MacroPlanResolver
+                .targetsForJournaled(base.goalJournal, base.profile, day, anchorDate)
+                .profileId
+            if (id != null) put(day.toString(), id)
+            day = day.plusDays(1)
+        }
+    }
     return ProgressUiState(
         profile = base.profile,
         weightCount = base.entries.size,
@@ -393,6 +408,8 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
         macroAverages = macroAverages,
         nutrientAverages = nutrientAverages,
         showNutrientAverages = base.showNutrientAverages,
+        untrackedDays = untrackedDays,
+        dayTypeByDay = dayTypeByDay,
 
         weightStats = filteredWeights.toWeightStats(),
         bodyFatStats = filteredBodyFats.toBodyFatStats(),
@@ -443,6 +460,8 @@ internal fun buildProgressPreviewUiState(
     goalJournal: List<GoalJournalEntry> = emptyList(),
     /** #75: which nutrients the averages card shows; default = the original trio. */
     averagesSelection: Collection<String> = HomeTopNutrient.DefaultAveragesStorage,
+    /** Sample untracked days for preview parity with the live snapshot. */
+    untrackedDays: Set<String> = emptySet(),
 ): ProgressUiState {
     // Same range filter the old per-entry grouping applied inside toUiState:
     // previews receive full-history lists and must not count days outside
@@ -464,5 +483,6 @@ internal fun buildProgressPreviewUiState(
         weightUnit = weightUnit,
         selectedRange = timeRange,
         showGoalReached = false,
+        untrackedDays = untrackedDays,
     ).toUiState(anchorDate)
 }

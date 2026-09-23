@@ -24,14 +24,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.chompass.R
 import app.chompass.models.LocaleFormat
 import app.chompass.models.WeekStartDay
 import app.chompass.ui.theme.AppColors
@@ -86,6 +91,12 @@ fun WeekEnergyStrip(
     onSelect: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
     weekStartDay: WeekStartDay = WeekStartDay.MONDAY,
+    /** Resolved day-type color per visible date (UI-UX §10); empty = no dots. */
+    typeColorsByDate: Map<LocalDate, androidx.compose.ui.graphics.Color> = emptyMap(),
+    /** Day-type names per visible date — TalkBack suffix for the type dot. */
+    typeNamesByDate: Map<LocalDate, String> = emptyMap(),
+    /** Dates marked not tracked (#106): muted tile + hollow dot. */
+    untrackedDates: Set<LocalDate> = emptySet(),
 ) {
     val firstDow = remember(weekStartDay) { weekStartDay.javaDay }
     val today = remember { LocalDate.now() }
@@ -125,7 +136,10 @@ fun WeekEnergyStrip(
                         weekStart = weekStart,
                         selectedDate = selectedDate,
                         today = today,
-                        onSelect = onSelect
+                        onSelect = onSelect,
+                        typeColorsByDate = typeColorsByDate,
+                        typeNamesByDate = typeNamesByDate,
+                        untrackedDates = untrackedDates,
                     )
                 }
             }
@@ -138,7 +152,10 @@ private fun WeekRow(
     weekStart: LocalDate,
     selectedDate: LocalDate,
     today: LocalDate,
-    onSelect: (LocalDate) -> Unit
+    onSelect: (LocalDate) -> Unit,
+    typeColorsByDate: Map<LocalDate, androidx.compose.ui.graphics.Color>,
+    typeNamesByDate: Map<LocalDate, String>,
+    untrackedDates: Set<LocalDate>,
 ) {
     Row(
         Modifier.fillMaxWidth(),
@@ -151,6 +168,9 @@ private fun WeekRow(
                 isSelected = date == selectedDate,
                 isToday = date == today,
                 onTap = { onSelect(date) },
+                typeColor = typeColorsByDate[date],
+                typeName = typeNamesByDate[date],
+                untracked = date in untrackedDates,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -163,8 +183,16 @@ private fun DayTile(
     isSelected: Boolean,
     isToday: Boolean,
     onTap: () -> Unit,
+    typeColor: androidx.compose.ui.graphics.Color? = null,
+    typeName: String? = null,
+    untracked: Boolean = false,
     modifier: Modifier = Modifier
 ) {
+    val typeA11y = typeName?.let { stringResource(R.string.a11y_day_marker_type, it) }
+    val untrackedA11y = if (untracked) stringResource(R.string.a11y_day_untracked) else null
+    val markerA11y = listOfNotNull(typeA11y, untrackedA11y).joinToString(", ").ifEmpty { null }
+    val narrowLabel = narrowDay(date.dayOfWeek)
+    val baseA11y = "$narrowLabel ${date.dayOfMonth}"
     Column(
         modifier = modifier
             // selectable exposes the selected state + Tab role to TalkBack
@@ -175,6 +203,15 @@ private fun DayTile(
                 role = Role.Tab,
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
+            )
+            .then(
+                if (markerA11y != null) {
+                    Modifier.semantics {
+                        contentDescription = "$baseA11y, $markerA11y"
+                    }
+                } else {
+                    Modifier
+                },
             ),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -186,7 +223,8 @@ private fun DayTile(
             fontSize = 11.sp,
             fontWeight = FontWeight.Medium,
             color = if (isSelected) AppColors.Calorie
-                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f * 0.6f)
+                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f * 0.6f),
+            modifier = if (untracked) Modifier.alpha(0.45f) else Modifier,
         )
 
         // .font(.system(.body, design: .rounded, weight: .semibold))
@@ -224,7 +262,23 @@ private fun DayTile(
                     isSelected -> AppColors.onCalorieGradient
                     isToday -> AppColors.Calorie
                     else -> MaterialTheme.colorScheme.onSurface
-                }
+                },
+                modifier = if (untracked) Modifier.alpha(0.45f) else Modifier,
+            )
+        }
+        // Marker lane under the day circle: solid type dot, hollow dash for
+        // untracked days (UI-UX §10).
+        if (untracked) {
+            Box(
+                Modifier
+                    .size(4.dp)
+                    .border(1.5.dp, MaterialTheme.colorScheme.onSurfaceVariant, CircleShape),
+            )
+        } else if (typeColor != null) {
+            Box(
+                Modifier
+                    .size(4.dp)
+                    .background(typeColor, CircleShape),
             )
         }
     }

@@ -27,6 +27,12 @@ data class MacroDayProfile(
     val proteinG: Int,
     val carbsG: Int,
     val fatG: Int,
+    /**
+     * Pinned day-type color from the 8-swatch preset (UI-UX 2026-09-23 §10);
+     * null = auto-assign. Optional-nullable so old payloads and the PWA
+     * (which may drop the key) keep parsing.
+     */
+    val colorKey: String? = null,
 ) {
     fun signature(): String = listOf(id, name, calories, proteinG, carbsG, fatG).joinToString(",")
 
