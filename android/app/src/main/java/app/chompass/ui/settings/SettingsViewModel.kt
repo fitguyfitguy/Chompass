@@ -185,6 +185,8 @@ data class SettingsUiState(
     val customModels: List<String>? = null,
     val customModelsLoading: Boolean = false,
     val customModelsError: Boolean = false,
+    /** #107: runtime OpenAI lineup from /v1/models; null = no fetch or fetch failed (curated list shows). */
+    val openAiModels: List<String>? = null,
     val appearanceMode: String = "system",
     /** "" = system default, or locale tag like "de", "zh-CN". */
     val appLanguage: String = "",
@@ -1147,6 +1149,33 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             _ui.value = result.fold(
                 onSuccess = { models -> _ui.value.copy(customModels = models, customModelsLoading = false) },
                 onFailure = { _ui.value.copy(customModels = null, customModelsLoading = false, customModelsError = true) },
+            )
+        }
+    }
+
+    /** #107: refresh the built-in OpenAI lineup from /v1/models; silent fallback to the curated list. */
+    fun fetchOpenAiModels() {
+        if (_ui.value.selectedAI != AIProvider.OPENAI) return
+        val key = container.keyStore.apiKey(AIProvider.OPENAI)
+        if (key.isNullOrBlank()) {
+            _ui.value = _ui.value.copy(openAiModels = null)
+            return
+        }
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                runCatching {
+                    app.chompass.services.ai.OpenAiModelsClient.listModelsWithMeta(
+                        baseUrl = AIProvider.OPENAI.baseUrl,
+                        apiKey = key,
+                        allowInsecureHttp = false,
+                    )
+                }
+            }
+            _ui.value = _ui.value.copy(
+                openAiModels = result.fold(
+                    onSuccess = { models -> app.chompass.services.ai.OpenAiModelsClient.filterGptLineup(models) },
+                    onFailure = { null },
+                ),
             )
         }
     }

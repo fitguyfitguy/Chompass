@@ -189,6 +189,9 @@ enum class AIProvider {
             normalized.isNullOrBlank() -> defaultModel
             supportsCustomModelName -> normalized
             models.contains(normalized) -> normalized
+            // #107: a runtime lineup id picked from the refreshed list must
+            // survive select, restore, and request routing.
+            this == OPENAI && isOpenAiLineupId(normalized) -> normalized
             else -> defaultModel
         }
     }
@@ -233,5 +236,16 @@ enum class AIProvider {
                 "gemini-3.1-flash-lite-preview" -> "gemini-3.1-flash-lite"
                 else -> model
             }
+
+        /**
+         * Id shape of the runtime OpenAI lineup (#107): the model picker
+         * merges /v1/models results over the curated list, and a picked
+         * runtime id must survive select, restore, and request routing.
+         * OpenAiModelsClient.filterGptLineup applies the same shape alongside
+         * the owner and shutdown checks, so picker and validation agree.
+         */
+        fun isOpenAiLineupId(id: String): Boolean = OPENAI_LINEUP.containsMatchIn(id)
+
+        private val OPENAI_LINEUP = Regex("^gpt-(4o|4\\.1|[56])")
     }
 }

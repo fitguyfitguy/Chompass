@@ -53,4 +53,18 @@ class AiModelRoutingTest {
             resolveModelForRequest(AIProvider.GEMINI, "gemini-3.6-flash", "not-a-model", hasImages = true),
         )
     }
+
+    @Test
+    fun runtimeOpenAiLineupId_survivesRouting() {
+        // #107: a picked runtime lineup id (not curated) routes as the primary.
+        assertEquals(
+            "gpt-6-astra",
+            resolveModelForRequest(AIProvider.OPENAI, "gpt-6-astra", null, hasImages = false),
+        )
+        // Off-lineup ids still snap to the OpenAI default.
+        assertEquals(
+            AIProvider.OPENAI.defaultModel,
+            resolveModelForRequest(AIProvider.OPENAI, "gpt-3.5-turbo", null, hasImages = false),
+        )
+    }
 }
