@@ -75,6 +75,7 @@ import app.chompass.models.microsCompositionSignature
 import app.chompass.models.microsStaleFor
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.LocaleFormat
+import app.chompass.models.EnergyUnit
 import app.chompass.models.EnergyFormat
 import app.chompass.models.MealType
 import app.chompass.models.CurrentMealCatalog
@@ -1292,8 +1293,10 @@ internal fun ReviewNutritionValueRow(
     }
     val valueColor = accentColor ?: MaterialTheme.colorScheme.onSurface
     val currentValue = draft.replace(',', '.').toDoubleOrNull() ?: 0.0
-    // Use split integer wheel for calories (kcal) — faster for 0-5000 range
+    // Use split integer wheel for calories — faster for the 0..cap energy range
     val isCalories = unit == stringResource(R.string.unit_kcal) || unit == stringResource(R.string.unit_kj) || label.contains("Calorie", ignoreCase = true)
+    // kcal keeps its 5000 cap; kJ wheels span the converted equivalent.
+    val calorieWheelMax = EnergyUnit.energyWheelMax(LocalEnergyUnit.current)
 
     Column(Modifier.fillMaxWidth()) {
         // Summary row - tap to expand/collapse when unlocked
@@ -1354,7 +1357,7 @@ internal fun ReviewNutritionValueRow(
             exit = shrinkVertically(animationSpec = spring(dampingRatio = 0.75f))
         ) {
             if (isCalories) {
-                val currentCalories = currentValue.roundToInt().coerceIn(0, 5000)
+                val currentCalories = currentValue.roundToInt().coerceIn(0, calorieWheelMax)
                 NumericWheelPicker(
                     value = currentCalories,
                     onValueChange = { newVal ->
@@ -1363,7 +1366,7 @@ internal fun ReviewNutritionValueRow(
                         onEdit(formatted)
                     },
                     min = 0,
-                    max = 5000,
+                    max = calorieWheelMax,
                     unit = unit,
                     step = 1,
                     modifier = Modifier

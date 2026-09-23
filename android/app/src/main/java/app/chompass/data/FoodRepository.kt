@@ -280,9 +280,13 @@ class FoodRepository(
      * the user's sync toggle. Safe to run in the background — a write Health
      * Connect never confirms is queued here and retried on the next sync
      * instead of being dropped.
+     *
+     * @return false when the write stayed queued (the caller may surface a
+     *   one-time nudge); true when confirmed or nothing was owed.
      */
-    suspend fun mirrorEntryToHealth(entry: FoodEntry) {
-        PerfLog.measure("save", "healthWrite") { healthRetry.sync(entry, isUpdate = false) }
+    suspend fun mirrorEntryToHealth(entry: FoodEntry): Boolean {
+        if (!shouldSyncHealth()) return true
+        return PerfLog.measure("save", "healthWrite") { healthRetry.sync(entry, isUpdate = false) }
     }
 
     suspend fun updateEntry(original: FoodEntry, updated: FoodEntry) {

@@ -247,6 +247,14 @@ fun HomeScreen(
         vm.clearPlannedAck()
     }
 
+    // One-time-per-session nudge when a Health Connect mirror write stayed queued.
+    val healthSyncFailedMessage = stringResource(R.string.health_sync_failed)
+    LaunchedEffect(ui.healthSyncFailed) {
+        if (!ui.healthSyncFailed) return@LaunchedEffect
+        snackbarHostState.showSnackbar(healthSyncFailedMessage)
+        vm.ackHealthSyncFailed()
+    }
+
     // Plan week canvas handoff: open Home on the tapped chip's day.
     LaunchedEffect(Unit) {
         container.planWeekReturnDay.collect { day ->

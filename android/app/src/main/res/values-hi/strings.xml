@@ -2002,4 +2002,5 @@
     <string name="action_keep_editing">संपादन जारी रखें</string>
   <string name="recovered_review_chip">पुनर्प्राप्त विश्लेषण: %1$s</string>
   <string name="cd_discard_recovered_review">पुनर्प्राप्त विश्लेषण हटाएँ</string>
+    <string name="health_sync_failed">Health Connect से सिंक नहीं हो सका. अपने आप फिर से कोशिश की जा रही है.</string>
 </resources>

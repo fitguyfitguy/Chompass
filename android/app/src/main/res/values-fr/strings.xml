@@ -2026,4 +2026,5 @@ macros rééquilibrées au nouveau total calorique</string>
     <string name="action_keep_editing">Continuer la modification</string>
   <string name="recovered_review_chip">Analyse récupérée : %1$s</string>
   <string name="cd_discard_recovered_review">Effacer cette analyse récupérée</string>
+    <string name="health_sync_failed">Impossible de synchroniser avec Health Connect. Nouvelle tentative automatique.</string>
 </resources>
