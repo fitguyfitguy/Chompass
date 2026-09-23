@@ -2036,7 +2036,7 @@ macros rééquilibrées au nouveau total calorique</string>
     <string name="sheet_serving_baseless_hint">Les valeurs pour 100 g s\'adaptent à la portion.</string>
     <string name="body_metrics_height_hint">Ajoute ta taille pour voir le rapport taille-taille et les estimations de masse grasse.</string>
     <string name="settings_day_type_color">Couleur</string>
-    <string name="settings_day_type_color_auto">Auto</string>
+    <string name="settings_day_type_color_auto">Automatique</string>
     <string name="a11y_marker_lane">Marqueurs de type de jour et non suivi</string>
     <string name="a11y_day_marker_type">type de jour %1$s</string>
     <string name="a11y_day_untracked">non suivi</string>
