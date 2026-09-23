@@ -2004,4 +2004,5 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
   <string name="cd_discard_recovered_review">Teruggehaalde analyse verwijderen</string>
     <string name="health_sync_failed">Kan niet synchroniseren met Health Connect. Probeert automatisch opnieuw.</string>
     <string name="plan_week_load_failed">Kan deze week niet laden.</string>
+    <string name="coach_image_only_message">Analyseer deze afbeelding.</string>
 </resources>

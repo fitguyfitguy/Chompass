@@ -2028,4 +2028,5 @@ macros rééquilibrées au nouveau total calorique</string>
   <string name="cd_discard_recovered_review">Effacer cette analyse récupérée</string>
     <string name="health_sync_failed">Impossible de synchroniser avec Health Connect. Nouvelle tentative automatique.</string>
     <string name="plan_week_load_failed">Impossible de charger cette semaine.</string>
+    <string name="coach_image_only_message">Analyse cette image.</string>
 </resources>

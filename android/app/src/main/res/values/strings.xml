@@ -2545,4 +2545,5 @@
     <string name="picker_use_wheel">Use wheel</string>
     <string name="health_sync_failed">Couldn\'t sync to Health Connect. Retrying automatically.</string>
     <string name="plan_week_load_failed">Couldn\'t load this week.</string>
+    <string name="coach_image_only_message">Analyze this image.</string>
 </resources>

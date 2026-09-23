@@ -78,6 +78,8 @@ class CoachVoiceController(
     private val container: AppContainer,
     private val scope: CoroutineScope,
     private val onTranscript: (String) -> Unit,
+    /** Voice-path failures (mic permission denied, transcription failed), surfaced via the chat error row. */
+    internal val onVoiceError: (Int) -> Unit = {},
 ) {
     var phase by mutableStateOf(VoicePhase.Idle)
         private set
@@ -145,14 +147,16 @@ class CoachVoiceController(
         } else {
             phase = VoicePhase.Transcribing
             scope.launch {
-                val text = try {
+                try {
                     val file = recorder.stop()
-                    if (file != null) container.speechService.transcribeRemote(file).trim() else ""
+                    val text = if (file != null) container.speechService.transcribeRemote(file).trim() else ""
+                    reset()
+                    if (text.isNotEmpty()) onTranscript(text)
                 } catch (_: Exception) {
-                    ""
+                    // A failed transcription used to vanish silently; surface it.
+                    reset()
+                    onVoiceError(R.string.voice_transcription_failed)
                 }
-                reset()
-                if (text.isNotEmpty()) onTranscript(text)
             }
         }
     }
@@ -259,7 +263,10 @@ private fun CoachNativeMode.next(): CoachNativeMode? = when (this) {
 fun CoachMicButton(controller: CoachVoiceController) {
     val micPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { /* granted -> the next press records */ }
+    ) { granted ->
+        // Denied: say so instead of failing silently on the next press.
+        if (!granted) controller.onVoiceError(R.string.voice_mic_permission_denied)
+    }
 
     val holding = controller.phase == VoicePhase.Holding
     Box(

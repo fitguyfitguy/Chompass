@@ -2003,4 +2003,5 @@
   <string name="cd_discard_recovered_review">丢弃已恢复的分析</string>
     <string name="health_sync_failed">无法与 Health Connect 同步。正在自动重试。</string>
     <string name="plan_week_load_failed">无法加载本周数据。</string>
+    <string name="coach_image_only_message">分析这张图片。</string>
 </resources>
