@@ -34,6 +34,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -150,6 +151,7 @@ fun InAppCameraCaptureDialog(
                 enabled = !isCapturing,
                 modifier = Modifier
                     .align(Alignment.TopStart)
+                    .minimumInteractiveComponentSize()
                     .padding(18.dp)
                     .size(44.dp)
                     .clip(CircleShape)
@@ -164,6 +166,7 @@ fun InAppCameraCaptureDialog(
                     enabled = !isCapturing,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
+                        .minimumInteractiveComponentSize()
                         .padding(18.dp)
                         .size(44.dp)
                         .clip(CircleShape)

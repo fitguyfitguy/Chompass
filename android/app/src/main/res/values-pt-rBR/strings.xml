@@ -2007,4 +2007,9 @@ macros reequilibradas ao novo total calórico</string>
     <string name="plan_week_load_failed">Não foi possível carregar esta semana.</string>
     <string name="coach_image_only_message">Analise esta imagem.</string>
     <string name="a11y_chart_inspection">%1$s em %2$s: %3$s</string>
+    <string name="cd_ingredient_decrease">Diminuir a quantidade do ingrediente</string>
+    <string name="cd_ingredient_increase">Aumentar a quantidade do ingrediente</string>
+    <string name="onboarding_key_checking">Verificando a chave…</string>
+    <string name="body_metrics_height_hint">Adicione sua altura para ver a relação cintura-altura e as estimativas de gordura corporal.</string>
+    <string name="sheet_serving_baseless_hint">Os valores por 100 g mudam com a porção.</string>
 </resources>

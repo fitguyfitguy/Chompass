@@ -2006,4 +2006,9 @@
     <string name="plan_week_load_failed">इस हफ़्ते को लोड नहीं किया जा सका.</string>
     <string name="coach_image_only_message">इस चित्र का विश्लेषण करें।</string>
     <string name="a11y_chart_inspection">%2$s को %1$s: %3$s</string>
+    <string name="cd_ingredient_decrease">सामग्री की मात्रा घटाएँ</string>
+    <string name="cd_ingredient_increase">सामग्री की मात्रा बढ़ाएँ</string>
+    <string name="onboarding_key_checking">कुंजी जाँची जा रही है…</string>
+    <string name="body_metrics_height_hint">कमर-कद अनुपात और शरीर वसा अनुमान देखने के लिए अपनी लंबाई जोड़ें।</string>
+    <string name="sheet_serving_baseless_hint">100 ग्राम के मान हिस्से के साथ बदलते हैं।</string>
 </resources>

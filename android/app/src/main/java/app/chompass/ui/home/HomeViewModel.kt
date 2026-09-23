@@ -342,6 +342,8 @@ data class HomeUiState(
     val plannedAck: Pair<Int, LocalDate>? = null,
     /** ISO dates marked not tracked (#106). */
     val untrackedDays: Set<String> = emptySet(),
+    /** True once the diary flow has emitted at least once; gates the empty-diary text. */
+    val diaryLoaded: Boolean = false,
     val untrackedKcalByDay: Map<String, Int> = emptyMap(),
     /** True once a Health Connect mirror write stayed queued this session; Home shows a snackbar once. */
     val healthSyncFailed: Boolean = false,
@@ -641,7 +643,8 @@ data class HomeUiState(
             plannedAck == other.plannedAck &&
             untrackedDays == other.untrackedDays &&
             untrackedKcalByDay == other.untrackedKcalByDay &&
-            healthSyncFailed == other.healthSyncFailed
+            healthSyncFailed == other.healthSyncFailed &&
+            diaryLoaded == other.diaryLoaded
     }
 
     override fun hashCode(): Int {
@@ -746,6 +749,7 @@ data class HomeUiState(
         result = 31 * result + untrackedDays.hashCode()
         result = 31 * result + untrackedKcalByDay.hashCode()
         result = 31 * result + healthSyncFailed.hashCode()
+        result = 31 * result + diaryLoaded.hashCode()
         return result
     }
 }
@@ -1185,6 +1189,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 profile = p,
                 date = day,
                 todayEntries = dayEntries,
+                diaryLoaded = true,
                 foodLogSortOrder = FoodLogSortOrder.fromStorage(sortOrder),
                 favoriteKeys = favKeys
             )

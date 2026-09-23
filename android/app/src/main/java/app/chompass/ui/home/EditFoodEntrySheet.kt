@@ -648,6 +648,17 @@ fun EditFoodEntrySheet(
                         modifier = Modifier.padding(horizontal = 18.dp),
                     )
                 }
+                if (recordedServing == null) {
+                    item {
+                        Text(
+                            stringResource(R.string.sheet_serving_baseless_hint),
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            lineHeight = 18.sp,
+                            modifier = Modifier.padding(horizontal = 18.dp),
+                        )
+                    }
+                }
             }
 
             item {

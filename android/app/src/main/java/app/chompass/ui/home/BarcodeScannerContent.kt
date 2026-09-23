@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -154,6 +155,7 @@ internal fun BarcodeScannerContent(
                 onClick = onDismiss,
                 modifier = Modifier
                     .align(Alignment.TopStart)
+                    .minimumInteractiveComponentSize()
                     .padding(18.dp)
                     .size(44.dp)
                     .clip(RoundedCornerShape(AppRadii.SectionCard))

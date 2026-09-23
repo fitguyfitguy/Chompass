@@ -34,6 +34,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.DropdownMenu
@@ -540,6 +541,7 @@ internal fun ServingQuantityCard(
                     contentDescription = stringResource(R.string.cd_edit_serving),
                     tint = AppColors.Calorie,
                     modifier = Modifier
+                        .minimumInteractiveComponentSize()
                         .size(18.dp)
                         .clip(CircleShape)
                         .clickable {
@@ -682,6 +684,7 @@ internal fun ServingQuantityCard(
                                 contentDescription = stringResource(R.string.cd_apply_serving_edit),
                                 tint = AppColors.Calorie,
                                 modifier = Modifier
+                                    .minimumInteractiveComponentSize()
                                     .size(20.dp)
                                     .clip(CircleShape)
                                     .clickable {
@@ -696,6 +699,7 @@ internal fun ServingQuantityCard(
                                     contentDescription = stringResource(R.string.cd_remove_serving_unit),
                                     tint = AppColors.Calorie,
                                     modifier = Modifier
+                                        .minimumInteractiveComponentSize()
                                         .size(20.dp)
                                         .clip(CircleShape)
                                         .clickable {

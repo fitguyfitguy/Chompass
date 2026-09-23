@@ -2084,4 +2084,9 @@
     <string name="plan_week_load_failed">Не удалось загрузить эту неделю.</string>
     <string name="coach_image_only_message">Проанализируй это изображение.</string>
     <string name="a11y_chart_inspection">%1$s за %2$s: %3$s</string>
+    <string name="cd_ingredient_decrease">Уменьшить количество ингредиента</string>
+    <string name="cd_ingredient_increase">Увеличить количество ингредиента</string>
+    <string name="onboarding_key_checking">Проверка ключа…</string>
+    <string name="body_metrics_height_hint">Укажите рост, чтобы увидеть соотношение талия-рост и оценки процента жира.</string>
+    <string name="sheet_serving_baseless_hint">Значения на 100 г масштабируются с порцией.</string>
 </resources>

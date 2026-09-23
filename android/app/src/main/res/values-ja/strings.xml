@@ -2005,4 +2005,9 @@
     <string name="plan_week_load_failed">今週を読み込めませんでした。</string>
     <string name="coach_image_only_message">この画像を分析して。</string>
     <string name="a11y_chart_inspection">%2$sの%1$s: %3$s</string>
+    <string name="cd_ingredient_decrease">材料の量を減らす</string>
+    <string name="cd_ingredient_increase">材料の量を増やす</string>
+    <string name="onboarding_key_checking">キーを確認中…</string>
+    <string name="body_metrics_height_hint">ウエスト比と体脂肪率の推定を見るには身長を追加してください。</string>
+    <string name="sheet_serving_baseless_hint">100g 当たりの値は1食分に合わせて変わります。</string>
 </resources>
