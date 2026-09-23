@@ -55,4 +55,12 @@ class AIProviderFallbackTest {
             AIProvider.OLLAMA.supportedModelOrDefault("llama3.2:latest"),
         )
     }
+
+    @Test
+    fun openAiRuntimeLineupIdIsPreserved() {
+        // #107: not curated, but the shape of the runtime lineup, so a picked
+        // id survives select, restore, and request routing.
+        assertEquals("gpt-6-astra", AIProvider.OPENAI.supportedModelOrDefault("gpt-6-astra"))
+        assertEquals("gpt-5.4-mini", AIProvider.OPENAI.supportedModelOrDefault("gpt-3.5-turbo"))
+    }
 }
