@@ -193,6 +193,7 @@ private fun DayTile(
     val markerA11y = listOfNotNull(typeA11y, untrackedA11y).joinToString(", ").ifEmpty { null }
     val narrowLabel = narrowDay(date.dayOfWeek)
     val baseA11y = "$narrowLabel ${date.dayOfMonth}"
+    val fullA11y = stringResource(R.string.a11y_week_strip_day, baseA11y, markerA11y ?: "")
     Column(
         modifier = modifier
             // selectable exposes the selected state + Tab role to TalkBack
@@ -207,7 +208,7 @@ private fun DayTile(
             .then(
                 if (markerA11y != null) {
                     Modifier.semantics {
-                        contentDescription = "$baseA11y, $markerA11y"
+                        contentDescription = fullA11y
                     }
                 } else {
                     Modifier
