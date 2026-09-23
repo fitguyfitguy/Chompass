@@ -3,7 +3,6 @@ package app.chompass.ui.coach
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -63,6 +62,7 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.SpeechLanguage
 import app.chompass.models.SpeechProvider
+import app.chompass.services.decodeSampledBitmap
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.InAppCameraCaptureDialog
@@ -154,7 +154,15 @@ fun CoachScreen(container: AppContainer) {
         .collectAsState(initial = SpeechProvider.NATIVE)
     val voiceLanguage by container.prefs.selectedSpeechLanguage(voiceProvider)
         .collectAsState(initial = SpeechLanguage.defaultFor(voiceProvider))
-    val voice = remember { CoachVoiceController(ctx, container, voiceScope) { text -> sendCurrentDraft(text) } }
+    val voice = remember {
+        CoachVoiceController(
+            ctx,
+            container,
+            voiceScope,
+            onTranscript = { text -> sendCurrentDraft(text) },
+            onVoiceError = { res -> vm.onVoiceError(res) },
+        )
+    }
     LaunchedEffect(voiceProvider, voiceLanguage) {
         voice.provider = voiceProvider
         voice.nativeLocale = voiceLanguage.nativeLocaleTag()
@@ -357,21 +365,11 @@ fun CoachScreen(container: AppContainer) {
 }
 
 private fun resizedJpeg(bytes: ByteArray, maxDimension: Int, quality: Int): ByteArray? {
-    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size) ?: return null
-    val longest = maxOf(bitmap.width, bitmap.height)
-    val scaled = if (longest > maxDimension) {
-        val ratio = maxDimension.toFloat() / longest.toFloat()
-        Bitmap.createScaledBitmap(
-            bitmap,
-            (bitmap.width * ratio).toInt().coerceAtLeast(1),
-            (bitmap.height * ratio).toInt().coerceAtLeast(1),
-            true
-        )
-    } else {
-        bitmap
-    }
+    // Bounds-sampled decode with EXIF orientation, mirroring the home pipeline:
+    // a full-size photo no longer needs an uncompressed full bitmap in memory.
+    val bitmap = decodeSampledBitmap(bytes, maxDimension) ?: return null
     return ByteArrayOutputStream().use { out ->
-        scaled.compress(Bitmap.CompressFormat.JPEG, quality.coerceIn(1, 100), out)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality.coerceIn(1, 100), out)
         out.toByteArray()
     }
 }

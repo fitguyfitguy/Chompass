@@ -93,7 +93,7 @@ class CoachViewModel(private val container: AppContainer) : ViewModel() {
     fun send(userText: String, imageBytes: ByteArray? = null, thumbnailBytes: ByteArray? = null) {
         val trimmed = userText.trim()
         if ((trimmed.isBlank() && imageBytes == null) || _ui.value.sending) return
-        val text = trimmed.ifEmpty { "Analyze this image." }
+        val text = trimmed.ifEmpty { container.appContext.getString(R.string.coach_image_only_message) }
         viewModelScope.launch {
             val userMsg = ChatMessage(
                 role = ChatMessage.Role.USER,
@@ -147,6 +147,11 @@ class CoachViewModel(private val container: AppContainer) : ViewModel() {
                 )
             }
         }
+    }
+
+    /** Surfaces a voice-input failure (mic permission / transcription) in the chat error row. */
+    fun onVoiceError(res: Int) {
+        _ui.value = _ui.value.copy(error = null, errorRes = res)
     }
 
     fun confirmPendingFood() {

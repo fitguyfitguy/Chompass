@@ -3464,4 +3464,5 @@ für dich ein</string>
     <string name="picker_use_wheel">Rad verwenden</string>
     <string name="health_sync_failed">Synchronisierung mit Health Connect fehlgeschlagen. Wird automatisch erneut versucht.</string>
     <string name="plan_week_load_failed">Diese Woche konnte nicht geladen werden.</string>
+    <string name="coach_image_only_message">Dieses Bild analysieren.</string>
 </resources>

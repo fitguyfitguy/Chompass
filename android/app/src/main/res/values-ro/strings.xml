@@ -2005,4 +2005,5 @@ macro-urile reechilibrate la noul total caloric</string>
   <string name="cd_discard_recovered_review">Renunță la analiza recuperată</string>
     <string name="health_sync_failed">Nu s-a putut sincroniza cu Health Connect. Se reîncearcă automat.</string>
     <string name="plan_week_load_failed">Nu s-a putut încărca această săptămână.</string>
+    <string name="coach_image_only_message">Analizează această imagine.</string>
 </resources>
