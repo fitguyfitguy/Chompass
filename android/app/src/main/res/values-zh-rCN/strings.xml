@@ -2008,6 +2008,11 @@
     <string name="cd_ingredient_decrease">减少配料用量</string>
     <string name="cd_ingredient_increase">增加配料用量</string>
     <string name="onboarding_key_checking">正在检查密钥…</string>
-    <string name="body_metrics_height_hint">添加身高即可查看腰高比和体脂估算。</string>
     <string name="sheet_serving_baseless_hint">每 100 克数值随份量缩放。</string>
+    <string name="body_metrics_height_hint">添加身高即可查看腰高比和体脂估算。</string>
+    <string name="settings_day_type_color">颜色</string>
+    <string name="settings_day_type_color_auto">自动</string>
+    <string name="a11y_marker_lane">日类型和未记录标记</string>
+    <string name="a11y_day_marker_type">日类型 %1$s</string>
+    <string name="a11y_day_untracked">未记录</string>
 </resources>

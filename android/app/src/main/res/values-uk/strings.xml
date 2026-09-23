@@ -1939,6 +1939,11 @@ LBM = вага × (1 − %жиру)</string>
     <string name="cd_ingredient_decrease">Зменшити кількість інгредієнта</string>
     <string name="cd_ingredient_increase">Збільшити кількість інгредієнта</string>
     <string name="onboarding_key_checking">Перевірка ключа…</string>
-    <string name="body_metrics_height_hint">Додайте свій зріст, щоб побачити співвідношення талія-зріст і оцінки відсотка жиру.</string>
     <string name="sheet_serving_baseless_hint">Значення на 100 г масштабуються з порцією.</string>
+    <string name="body_metrics_height_hint">Додайте свій зріст, щоб побачити співвідношення талія-зріст і оцінки відсотка жиру.</string>
+    <string name="settings_day_type_color">Колір</string>
+    <string name="settings_day_type_color_auto">Авто</string>
+    <string name="a11y_marker_lane">Позначки типу дня і днів без обліку</string>
+    <string name="a11y_day_marker_type">тип дня %1$s</string>
+    <string name="a11y_day_untracked">без обліку</string>
 </resources>

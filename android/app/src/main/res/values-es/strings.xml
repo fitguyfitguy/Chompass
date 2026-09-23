@@ -2031,6 +2031,11 @@ macros reequilibradas al nuevo total calórico</string>
     <string name="cd_ingredient_decrease">Reducir la cantidad del ingrediente</string>
     <string name="cd_ingredient_increase">Aumentar la cantidad del ingrediente</string>
     <string name="onboarding_key_checking">Comprobando la clave…</string>
-    <string name="body_metrics_height_hint">Añade tu altura para ver la relación cintura-estatura y las estimaciones de grasa corporal.</string>
     <string name="sheet_serving_baseless_hint">Los valores por 100 g cambian con la ración.</string>
+    <string name="body_metrics_height_hint">Añade tu altura para ver la relación cintura-estatura y las estimaciones de grasa corporal.</string>
+    <string name="settings_day_type_color">Color</string>
+    <string name="settings_day_type_color_auto">Automático</string>
+    <string name="a11y_marker_lane">Marcadores de tipo de día y sin registrar</string>
+    <string name="a11y_day_marker_type">tipo de día %1$s</string>
+    <string name="a11y_day_untracked">sin registrar</string>
 </resources>

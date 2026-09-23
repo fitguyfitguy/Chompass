@@ -63,6 +63,10 @@ internal fun WeightSection(
     useMetric: Boolean,
     onLogWeight: () -> Unit,
     chartsImmediate: Boolean = false,
+    /** Day-type/untracked marker lane inputs (UI-UX §10). */
+    dayTypeByDay: Map<String, String> = emptyMap(),
+    untrackedDays: Set<String> = emptySet(),
+    typeColorOf: (String) -> androidx.compose.ui.graphics.Color = { androidx.compose.ui.graphics.Color.Transparent },
 ) {
     var expanded by rememberSaveable { mutableStateOf(true) }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -127,6 +131,9 @@ internal fun WeightSection(
                             goalKg = goalKg,
                             useMetric = useMetric,
                             immediate = chartsImmediate,
+                            dayTypeByDay = dayTypeByDay,
+                            untrackedDays = untrackedDays,
+                            typeColorOf = typeColorOf,
                         )
                     }
                 }

@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.chompass.ui.components.energyUnitLabel
@@ -132,6 +133,96 @@ internal fun downsampleCalorieBars(
         .toSortedMap()
         .values
         .map { bucket -> bucket.first().first to bucket.sumOf { it.second } }
+}
+
+/** One day's marker under a chart: day-type dot, untracked dash (UI-UX §10). */
+internal data class DayMarker(val date: LocalDate, val typeColor: Color?, val untracked: Boolean)
+
+/**
+ * Dense marker list for the trend charts: per-day while the span fits
+ * [maxSlots] days, otherwise ISO-week buckets (Monday start — same grouping
+ * as [downsampleCalorieBars]) with the majority type and a majority-untracked
+ * dash, so dots stay readable at 6M/1Y ranges.
+ */
+internal fun buildMarkerLane(
+    start: LocalDate,
+    end: LocalDate,
+    types: Map<String, String>,
+    untracked: Set<String>,
+    typeColorOf: (String) -> Color,
+    maxSlots: Int = 90,
+): List<DayMarker> {
+    if (start.isAfter(end)) return emptyList()
+    val totalDays = ChronoUnit.DAYS.between(start, end).toInt() + 1
+    fun dayMarker(day: LocalDate) =
+        DayMarker(day, types[day.toString()]?.let(typeColorOf), day.toString() in untracked)
+    if (totalDays <= maxSlots) return (0 until totalDays).map { dayMarker(start.plusDays(it.toLong())) }
+    return (0 until totalDays).map { start.plusDays(it.toLong()) }
+        .groupBy { it.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)) }
+        .toSortedMap()
+        .map { (weekStart, days) ->
+            val majorityType = days.mapNotNull { types[it.toString()] }
+                .groupingBy { it }
+                .eachCount()
+                .maxByOrNull { it.value }?.key
+            DayMarker(
+                date = weekStart,
+                typeColor = majorityType?.let(typeColorOf),
+                untracked = days.count { it.toString() in untracked } * 2 > days.size,
+            )
+        }
+}
+
+/** 8dp marker strip: 3dp type dots / 6dp untracked dashes at slot fractions. */
+@Composable
+internal fun MarkerLane(
+    markers: List<DayMarker>,
+    xFraction: (Int) -> Float,
+    modifier: Modifier = Modifier,
+) {
+    if (markers.isEmpty()) return
+    val onVariant = MaterialTheme.colorScheme.onSurfaceVariant
+    val laneDescription = stringResource(R.string.a11y_marker_lane)
+    Canvas(
+        modifier
+            .fillMaxWidth()
+            .height(8.dp)
+            .semantics { contentDescription = laneDescription }
+    ) {
+        val w = size.width
+        val midY = size.height / 2f
+        markers.forEachIndexed { i, marker ->
+            val x = xFraction(i) * w
+            when {
+                marker.untracked -> drawLine(
+                    color = onVariant.copy(alpha = 0.6f),
+                    start = Offset(x - 3.dp.toPx(), midY),
+                    end = Offset(x + 3.dp.toPx(), midY),
+                    strokeWidth = 1.5.dp.toPx(),
+                )
+                marker.typeColor != null -> drawCircle(
+                    color = marker.typeColor,
+                    radius = 1.5.dp.toPx(),
+                    center = Offset(x, midY),
+                )
+            }
+        }
+    }
+}
+
+/** Shared bar geometry for the calorie chart canvas, marker lane, and labels. */
+internal data class CalorieBarGeometry(val barWidth: Float, val gap: Float, val startX: Float) {
+    fun slotCenter(index: Int): Float = startX + index * (barWidth + gap) + barWidth / 2f
+}
+
+internal fun calorieBarGeometry(areaWidthPx: Float, n: Int, density: Density): CalorieBarGeometry {
+    val gap = 4f
+    val maxBarPx = with(density) { 60.dp.toPx() }
+    val rawWidth = (areaWidthPx - gap * (n - 1)) / n
+    val barWidth = rawWidth.coerceIn(2f, maxBarPx)
+    val totalGroupW = barWidth * n + gap * (n - 1)
+    val startX = ((areaWidthPx - totalGroupW) / 2f).coerceAtLeast(0f)
+    return CalorieBarGeometry(barWidth, gap, startX)
 }
 
 /** Averages a date-sorted series into equal date buckets once it outgrows
@@ -368,6 +459,10 @@ internal fun WeightChartCanvas(
     goalKg: Double?,
     useMetric: Boolean,
     immediate: Boolean = false,
+    /** Day-type/untracked marker lane inputs (UI-UX §10). */
+    dayTypeByDay: Map<String, String> = emptyMap(),
+    untrackedDays: Set<String> = emptySet(),
+    typeColorOf: (String) -> Color = { Color.Transparent },
 ) {
     val chartModel = remember(entries, goalKg, useMetric) {
         buildWeightChartModel(entries = entries, goalKg = goalKg, useMetric = useMetric)
@@ -408,6 +503,25 @@ internal fun WeightChartCanvas(
     val inspectedLabel = inspectedPoint?.let { index ->
         chartModel.points.getOrNull(index)?.let { point ->
             "${chartModel.xLabelFmt.format(Instant.ofEpochMilli(point.timeMs))} · ${formatTick(point.value)} $weightUnit"
+        }
+    }
+    val laneZone = remember { ZoneId.systemDefault() }
+    val laneMarkers = remember(chartModel, dayTypeByDay, untrackedDays, typeColorOf) {
+        buildMarkerLane(
+            start = Instant.ofEpochMilli(chartModel.tStart).atZone(laneZone).toLocalDate(),
+            end = Instant.ofEpochMilli(chartModel.tStart + chartModel.tRange).atZone(laneZone).toLocalDate(),
+            types = dayTypeByDay,
+            untracked = untrackedDays,
+            typeColorOf = typeColorOf,
+        )
+    }
+    val laneXFraction: (Int) -> Float = { i ->
+        val marker = laneMarkers.getOrNull(i)
+        if (marker == null || chartModel.singleEntry || chartModel.tRange <= 0L) {
+            0.5f
+        } else {
+            ((marker.date.atStartOfDay(laneZone).toInstant().toEpochMilli() - chartModel.tStart)
+                .toFloat() / chartModel.tRange).coerceIn(0f, 1f)
         }
     }
     Row(Modifier.fillMaxWidth().height(180.dp)) {
@@ -505,6 +619,14 @@ internal fun WeightChartCanvas(
             }
         }
     }
+    Row(Modifier.fillMaxWidth()) {
+        MarkerLane(
+            markers = laneMarkers,
+            xFraction = laneXFraction,
+            modifier = Modifier.weight(1f),
+        )
+        Spacer(Modifier.width(36.dp))
+    }
     if (chartRenderPhase >= 1) {
         TrendXAxisLabels(
             chartModel.tStart,
@@ -523,6 +645,10 @@ internal fun BodyFatChartCanvas(
     entries: List<BodyFatEntry>,
     goalFraction: Double?,
     immediate: Boolean = false,
+    /** Day-type/untracked marker lane inputs (UI-UX §10). */
+    dayTypeByDay: Map<String, String> = emptyMap(),
+    untrackedDays: Set<String> = emptySet(),
+    typeColorOf: (String) -> Color = { Color.Transparent },
 ) {
     val chartModel = remember(entries, goalFraction) {
         buildBodyFatChartModel(entries = entries, goalFraction = goalFraction)
@@ -562,6 +688,25 @@ internal fun BodyFatChartCanvas(
     val inspectedLabel = inspectedPoint?.let { index ->
         chartModel.points.getOrNull(index)?.let { point ->
             "${chartModel.xLabelFmt.format(Instant.ofEpochMilli(point.timeMs))} · ${UnitFormat.percent(point.value)}"
+        }
+    }
+    val laneZone = remember { ZoneId.systemDefault() }
+    val laneMarkers = remember(chartModel, dayTypeByDay, untrackedDays, typeColorOf) {
+        buildMarkerLane(
+            start = Instant.ofEpochMilli(chartModel.tStart).atZone(laneZone).toLocalDate(),
+            end = Instant.ofEpochMilli(chartModel.tStart + chartModel.tRange).atZone(laneZone).toLocalDate(),
+            types = dayTypeByDay,
+            untracked = untrackedDays,
+            typeColorOf = typeColorOf,
+        )
+    }
+    val laneXFraction: (Int) -> Float = { i ->
+        val marker = laneMarkers.getOrNull(i)
+        if (marker == null || chartModel.singleEntry || chartModel.tRange <= 0L) {
+            0.5f
+        } else {
+            ((marker.date.atStartOfDay(laneZone).toInstant().toEpochMilli() - chartModel.tStart)
+                .toFloat() / chartModel.tRange).coerceIn(0f, 1f)
         }
     }
     Row(Modifier.fillMaxWidth().height(180.dp)) {
@@ -640,6 +785,14 @@ internal fun BodyFatChartCanvas(
             }
         }
     }
+    Row(Modifier.fillMaxWidth()) {
+        MarkerLane(
+            markers = laneMarkers,
+            xFraction = laneXFraction,
+            modifier = Modifier.weight(1f),
+        )
+        Spacer(Modifier.width(40.dp))
+    }
     if (chartRenderPhase >= 1) {
         TrendXAxisLabels(
             chartModel.tStart,
@@ -713,6 +866,10 @@ internal fun MeasurementChartCanvas(
     tagFormatter: ((Double) -> String)? = null,
     /** Metric name for the TalkBack inspection description (the section header text). */
     title: String,
+    /** Day-type/untracked marker lane inputs (UI-UX §10). */
+    dayTypeByDay: Map<String, String> = emptyMap(),
+    untrackedDays: Set<String> = emptySet(),
+    typeColorOf: (String) -> Color = { Color.Transparent },
 ) {
     val chartModel = remember(series) { buildMeasurementChartModel(series) }
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
@@ -750,6 +907,25 @@ internal fun MeasurementChartCanvas(
         chartModel.points.getOrNull(index)?.let { point ->
             val value = tagFormatter?.invoke(point.value) ?: formatTick(point.value)
             "${chartModel.xLabelFmt.format(Instant.ofEpochMilli(point.timeMs))} · $value"
+        }
+    }
+    val laneZone = remember { ZoneId.systemDefault() }
+    val laneMarkers = remember(chartModel, dayTypeByDay, untrackedDays, typeColorOf) {
+        buildMarkerLane(
+            start = Instant.ofEpochMilli(chartModel.tStart).atZone(laneZone).toLocalDate(),
+            end = Instant.ofEpochMilli(chartModel.tStart + chartModel.tRange).atZone(laneZone).toLocalDate(),
+            types = dayTypeByDay,
+            untracked = untrackedDays,
+            typeColorOf = typeColorOf,
+        )
+    }
+    val laneXFraction: (Int) -> Float = { i ->
+        val marker = laneMarkers.getOrNull(i)
+        if (marker == null || chartModel.singleEntry || chartModel.tRange <= 0L) {
+            0.5f
+        } else {
+            ((marker.date.atStartOfDay(laneZone).toInstant().toEpochMilli() - chartModel.tStart)
+                .toFloat() / chartModel.tRange).coerceIn(0f, 1f)
         }
     }
     Row(Modifier.fillMaxWidth().height(140.dp)) {
@@ -818,6 +994,14 @@ internal fun MeasurementChartCanvas(
             }
         }
     }
+    Row(Modifier.fillMaxWidth()) {
+        MarkerLane(
+            markers = laneMarkers,
+            xFraction = laneXFraction,
+            modifier = Modifier.weight(1f),
+        )
+        Spacer(Modifier.width(36.dp))
+    }
     if (chartRenderPhase >= 1) {
         TrendXAxisLabels(
             chartModel.tStart,
@@ -842,6 +1026,10 @@ internal fun CalorieBarChart(
     dailyCalories: List<Pair<LocalDate, Int>>,
     goal: Int,
     dailyGoals: Map<LocalDate, Int> = emptyMap(),
+    /** Day-type/untracked marker lane inputs (UI-UX §10). */
+    dayTypeByDay: Map<String, String> = emptyMap(),
+    untrackedDays: Set<String> = emptySet(),
+    typeColorOf: (String) -> Color = { Color.Transparent },
 ) {
     val maxValue = dailyCalories.maxOf { it.second }.coerceAtLeast(goal).toDouble()
     val gradientStart = AppColors.CalorieStart
@@ -878,17 +1066,20 @@ internal fun CalorieBarChart(
             "${xLabelFmt.format(day)} · ${LocaleFormat.integer(EnergyFormat.quantity(kcal, energyUnit))} ${energyUnitLabel()}"
         }
     }
+    // One marker per plotted bar (bucket key after downsampling), so dots
+    // align with bars at every range.
+    val dayMarkers = dailyCalories.map { (day, _) ->
+        DayMarker(day, dayTypeByDay[day.toString()]?.let(typeColorOf), day.toString() in untrackedDays)
+    }
     Column {
         Row(Modifier.fillMaxWidth().height(180.dp)) {
             BoxWithConstraints(Modifier.weight(1f).fillMaxSize()) {
                 val barAreaWidthPx = with(density) { maxWidth.toPx() }
                 val n = dailyCalories.size
-                val gap = 4f
-                val maxBarPx = with(density) { 60.dp.toPx() }
-                val rawWidth = (barAreaWidthPx - gap * (n - 1)) / n
-                val barWidth = rawWidth.coerceIn(2f, maxBarPx)
-                val totalGroupW = barWidth * n + gap * (n - 1)
-                val startX = ((barAreaWidthPx - totalGroupW) / 2f).coerceAtLeast(0f)
+                val geometry = calorieBarGeometry(barAreaWidthPx, n, density)
+                val gap = geometry.gap
+                val barWidth = geometry.barWidth
+                val startX = geometry.startX
 
                 Canvas(
                     Modifier
@@ -967,17 +1158,26 @@ internal fun CalorieBarChart(
                 }
             }
         }
+        Row(Modifier.fillMaxWidth()) {
+            BoxWithConstraints(Modifier.weight(1f)) {
+                val areaWidthPx = with(density) { maxWidth.toPx() }
+                val geometry = calorieBarGeometry(areaWidthPx, dailyCalories.size, density)
+                MarkerLane(
+                    markers = dayMarkers,
+                    xFraction = { i -> geometry.slotCenter(i) / areaWidthPx },
+                )
+            }
+            Spacer(Modifier.width(44.dp))
+        }
         Row(Modifier.fillMaxWidth().padding(top = 4.dp)) {
             BoxWithConstraints(Modifier.weight(1f)) {
                 val areaWidthDp = maxWidth
                 val areaWidthPx = with(density) { areaWidthDp.toPx() }
                 val n = dailyCalories.size
-                val gap = 4f
-                val maxBarPx = with(density) { 60.dp.toPx() }
-                val rawWidth = (areaWidthPx - gap * (n - 1)) / n
-                val barWidth = rawWidth.coerceIn(2f, maxBarPx)
-                val totalGroupW = barWidth * n + gap * (n - 1)
-                val startX = ((areaWidthPx - totalGroupW) / 2f).coerceAtLeast(0f)
+                val geometry = calorieBarGeometry(areaWidthPx, n, density)
+                val gap = geometry.gap
+                val barWidth = geometry.barWidth
+                val startX = geometry.startX
                 val slotPx = barWidth + gap
                 val slotDp = with(density) { slotPx.toDp() }
                 val minLabelDp = 40.dp

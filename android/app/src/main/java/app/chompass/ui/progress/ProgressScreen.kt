@@ -50,6 +50,8 @@ import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.dayTypeColor
+import androidx.compose.ui.graphics.Color
 
 /**
  * Verbatim port of ios/calorietracker/ContentView.swift > struct ProgressTabView,
@@ -122,6 +124,11 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
     val bodyFatAvailable = ui.bodyFatCount > 0
         || ui.profile?.bodyFatPercentage != null
         || ui.profile?.goalBodyFatPercentage != null
+    // Marker-lane color resolver: pinned colorKey, stable auto otherwise (UI-UX §10).
+    val typeColorOf: (String) -> Color = remember(ui.profile) {
+        val plan = ui.profile?.macroPlan
+        { id: String -> dayTypeColor(plan?.profileById(id)?.colorKey, id) }
+    }
 
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
         LazyColumn(
@@ -181,14 +188,20 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                                     stats = ui.weightStats,
                                     goalKg = ui.profile?.goalWeightKg,
                                     useMetric = weightMetric,
-                                    onLogWeight = { showAddDialog = true }
+                                    onLogWeight = { showAddDialog = true },
+                                    dayTypeByDay = ui.dayTypeByDay,
+                                    untrackedDays = ui.untrackedDays,
+                                    typeColorOf = typeColorOf,
                                 )
                                 BodyMetric.BODY_FAT -> BodyFatSection(
                                     entries = ui.filteredBodyFats,
                                     stats = ui.bodyFatStats,
                                     profileBodyFatFraction = ui.profile?.bodyFatPercentage,
                                     goalFraction = ui.profile?.goalBodyFatPercentage,
-                                    onLogBodyFat = { showAddBodyFatDialog = true }
+                                    onLogBodyFat = { showAddBodyFatDialog = true },
+                                    dayTypeByDay = ui.dayTypeByDay,
+                                    untrackedDays = ui.untrackedDays,
+                                    typeColorOf = typeColorOf,
                                 )
                             }
                         }
@@ -200,7 +213,10 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                             stats = ui.weightStats,
                             goalKg = ui.profile?.goalWeightKg,
                             useMetric = weightMetric,
-                            onLogWeight = { showAddDialog = true }
+                            onLogWeight = { showAddDialog = true },
+                            dayTypeByDay = ui.dayTypeByDay,
+                            untrackedDays = ui.untrackedDays,
+                            typeColorOf = typeColorOf,
                         )
                     }
                 }
@@ -227,6 +243,9 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                                 site = site,
                                 entries = ui.filteredMeasurements,
                                 useMetric = heightMetric,
+                                dayTypeByDay = ui.dayTypeByDay,
+                                untrackedDays = ui.untrackedDays,
+                                typeColorOf = typeColorOf,
                             )
                         }
                     }
@@ -240,6 +259,9 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                             calorieGoal = ui.calorieGoal,
                             calorieAverage = ui.calorieAverage,
                             dailyCalorieGoals = ui.dailyCalorieGoals,
+                            dayTypeByDay = ui.dayTypeByDay,
+                            untrackedDays = ui.untrackedDays,
+                            typeColorOf = typeColorOf,
                         )
                     }
                 }
@@ -358,6 +380,11 @@ internal fun ProgressScreenPreviewContent(
     val bodyFatAvailable = ui.bodyFatCount > 0
         || ui.profile?.bodyFatPercentage != null
         || ui.profile?.goalBodyFatPercentage != null
+    // Marker-lane color resolver: pinned colorKey, stable auto otherwise (UI-UX §10).
+    val typeColorOf: (String) -> Color = remember(ui.profile) {
+        val plan = ui.profile?.macroPlan
+        { id: String -> dayTypeColor(plan?.profileById(id)?.colorKey, id) }
+    }
 
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
         LazyColumn(
@@ -384,6 +411,9 @@ internal fun ProgressScreenPreviewContent(
                                     useMetric = weightMetric,
                                     onLogWeight = {},
                                     chartsImmediate = chartsImmediate,
+                                    dayTypeByDay = ui.dayTypeByDay,
+                                    untrackedDays = ui.untrackedDays,
+                                    typeColorOf = typeColorOf,
                                 )
                                 BodyMetric.BODY_FAT -> BodyFatSection(
                                     entries = ui.filteredBodyFats,
@@ -392,6 +422,9 @@ internal fun ProgressScreenPreviewContent(
                                     goalFraction = ui.profile?.goalBodyFatPercentage,
                                     onLogBodyFat = {},
                                     chartsImmediate = chartsImmediate,
+                                    dayTypeByDay = ui.dayTypeByDay,
+                                    untrackedDays = ui.untrackedDays,
+                                    typeColorOf = typeColorOf,
                                 )
                             }
                         }
@@ -405,6 +438,9 @@ internal fun ProgressScreenPreviewContent(
                             useMetric = weightMetric,
                             onLogWeight = {},
                             chartsImmediate = chartsImmediate,
+                            dayTypeByDay = ui.dayTypeByDay,
+                            untrackedDays = ui.untrackedDays,
+                            typeColorOf = typeColorOf,
                         )
                     }
                 }
@@ -424,6 +460,9 @@ internal fun ProgressScreenPreviewContent(
                             entries = ui.filteredMeasurements,
                             useMetric = heightMetric,
                             chartsImmediate = chartsImmediate,
+                            dayTypeByDay = ui.dayTypeByDay,
+                            untrackedDays = ui.untrackedDays,
+                            typeColorOf = typeColorOf,
                         )
                     }
                 }
@@ -434,6 +473,9 @@ internal fun ProgressScreenPreviewContent(
                         calorieGoal = ui.calorieGoal,
                         calorieAverage = ui.calorieAverage,
                         dailyCalorieGoals = ui.dailyCalorieGoals,
+                        dayTypeByDay = ui.dayTypeByDay,
+                        untrackedDays = ui.untrackedDays,
+                        typeColorOf = typeColorOf,
                     )
                 }
             }

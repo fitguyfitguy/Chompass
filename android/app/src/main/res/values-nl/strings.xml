@@ -2009,6 +2009,11 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
     <string name="cd_ingredient_decrease">Hoeveelheid van ingrediënt verlagen</string>
     <string name="cd_ingredient_increase">Hoeveelheid van ingrediënt verhogen</string>
     <string name="onboarding_key_checking">Sleutel controleren…</string>
-    <string name="body_metrics_height_hint">Voeg je lengte toe om taille-lengte-verhouding en lichaamsvetschattingen te zien.</string>
     <string name="sheet_serving_baseless_hint">Waarden per 100 g schalen mee met de portie.</string>
+    <string name="body_metrics_height_hint">Voeg je lengte toe om taille-lengte-verhouding en lichaamsvetschattingen te zien.</string>
+    <string name="settings_day_type_color">Kleur</string>
+    <string name="settings_day_type_color_auto">Auto</string>
+    <string name="a11y_marker_lane">Dagtype- en niet-bijgehouden markeringen</string>
+    <string name="a11y_day_marker_type">dagtype %1$s</string>
+    <string name="a11y_day_untracked">niet bijgehouden</string>
 </resources>

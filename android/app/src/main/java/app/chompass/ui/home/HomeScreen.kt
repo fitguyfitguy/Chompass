@@ -57,6 +57,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -85,6 +86,7 @@ import app.chompass.MainActivity
 import app.chompass.R
 import app.chompass.models.FoodEntry
 import app.chompass.models.LocaleFormat
+import app.chompass.models.MacroPlanResolver
 import app.chompass.services.grounding.FoodSuggestion
 import app.chompass.models.CurrentMealCatalog
 import app.chompass.models.FoodSource
@@ -115,6 +117,7 @@ import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.navigation.BottomOverlayPadding
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
+import app.chompass.ui.theme.dayTypeColor
 import app.chompass.ui.theme.nutrientAccentColor
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -492,10 +495,19 @@ fun HomeScreen(
             // Week strip — 52 past weeks + current + 8 future (Codeberg #96).
             item {
                 Box(Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
+                    // Type dots + untracked dashes for the whole strip window (UI-UX §10).
+                    val stripDates = remember(weekStartDay) { weekStripDates(weekStartDay) }
+                    val stripMarkers = remember(ui.profile, stripDates) {
+                        dayTypeMarkerMaps(ui.profile, vm.weekDayTypes(stripDates))
+                    }
+                    val stripUntracked = remember(ui.untrackedDays) { isoToLocalDates(ui.untrackedDays) }
                     WeekEnergyStrip(
                         selectedDate = selectedDate,
                         onSelect = { vm.setSelectedDate(it) },
-                        weekStartDay = weekStartDay
+                        weekStartDay = weekStartDay,
+                        typeColorsByDate = stripMarkers.first,
+                        typeNamesByDate = stripMarkers.second,
+                        untrackedDates = stripUntracked,
                     )
                 }
             }
@@ -609,6 +621,10 @@ fun HomeScreen(
                         activeCalories = activeCalories,
                         displayMode = calorieMode,
                         dayTypeLabel = ui.dayTypeLabel,
+                        dayTypeColor = ui.resolvedDayTargets.profileId?.let { id ->
+                            ui.profile?.macroPlan?.profileById(id)
+                                ?.let { p -> dayTypeColor(p.colorKey, id) }
+                        },
                         onDayTypeClick = { showDayTypeSheet = true },
                         untracked = ui.viewedDayUntracked,
                         onUntrackedClick = { showUntrackedSheet = true },
@@ -1979,6 +1995,52 @@ fun HomeScreen(
         RecalcResultSheet(data = sheet, onDismiss = { vm.dismissRecalcSheet() })
     }
 }
+/**
+ * Strip window in lockstep with WeekStrip's PAST_WEEKS (52) / FUTURE_WEEKS (8):
+ * 61 week starts × 7 days around the current week.
+ */
+internal fun weekStripDates(weekStartDay: app.chompass.models.WeekStartDay): List<LocalDate> {
+    val today = LocalDate.now()
+    val firstDow = weekStartDay.javaDay
+    val curStart = today.minusDays(((today.dayOfWeek.value - firstDow.value) + 7) % 7L)
+    return generateSequence(curStart.minusWeeks(52)) { it.plusWeeks(1) }
+        .take(61)
+        .flatMap { start -> (0L..6L).map { start.plusDays(it) } }
+        .toList()
+}
+
+/** ISO date -> resolved day-type profile id; empty while the plan is off. */
+internal fun resolveDayTypeIds(
+    profile: app.chompass.models.UserProfile?,
+    dates: List<LocalDate>,
+): Map<String, String> {
+    if (profile?.macroPlan?.enabled != true) return emptyMap()
+    return dates.mapNotNull { date ->
+        MacroPlanResolver.targetsFor(profile, date).profileId
+            ?.let { date.toString() to it }
+    }.toMap()
+}
+
+/** Splits resolved ids into the strip's color and TalkBack-name maps. */
+internal fun dayTypeMarkerMaps(
+    profile: app.chompass.models.UserProfile?,
+    idsByDate: Map<String, String>,
+): Pair<Map<LocalDate, Color>, Map<LocalDate, String>> {
+    val plan = profile?.macroPlan
+    val colors = mutableMapOf<LocalDate, Color>()
+    val names = mutableMapOf<LocalDate, String>()
+    for ((iso, id) in idsByDate) {
+        val p = plan?.profileById(id) ?: continue
+        val date = LocalDate.parse(iso)
+        colors[date] = dayTypeColor(p.colorKey, id)
+        names[date] = p.name
+    }
+    return colors to names
+}
+
+internal fun isoToLocalDates(isoDates: Set<String>): Set<LocalDate> =
+    isoDates.mapNotNull { runCatching { LocalDate.parse(it) }.getOrNull() }.toSet()
+
 /** Static home layout for release screenshot previews (no ViewModel / permissions). */
 @Composable
 internal fun HomeScreenPreviewContent(
@@ -2004,10 +2066,20 @@ internal fun HomeScreenPreviewContent(
             ) {
                 item {
                     Box(Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
+                        val previewWeekStart =
+                            if (weekStartsOnMonday) weekStartDay else app.chompass.models.WeekStartDay.SUNDAY
+                        val stripDates = remember(previewWeekStart) { weekStripDates(previewWeekStart) }
+                        val stripMarkers = remember(ui.profile, stripDates) {
+                            dayTypeMarkerMaps(ui.profile, resolveDayTypeIds(ui.profile, stripDates))
+                        }
+                        val stripUntracked = remember(ui.untrackedDays) { isoToLocalDates(ui.untrackedDays) }
                         WeekEnergyStrip(
                             selectedDate = selectedDate,
                             onSelect = {},
-                            weekStartDay = if (weekStartsOnMonday) weekStartDay else app.chompass.models.WeekStartDay.SUNDAY,
+                            weekStartDay = previewWeekStart,
+                            typeColorsByDate = stripMarkers.first,
+                            typeNamesByDate = stripMarkers.second,
+                            untrackedDates = stripUntracked,
                         )
                     }
                 }

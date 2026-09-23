@@ -2008,6 +2008,11 @@
     <string name="cd_ingredient_decrease">재료 수량 줄이기</string>
     <string name="cd_ingredient_increase">재료 수량 늘리기</string>
     <string name="onboarding_key_checking">키 확인 중…</string>
-    <string name="body_metrics_height_hint">허리-키 비율과 체지방 추정치를 보려면 키를 추가하세요.</string>
     <string name="sheet_serving_baseless_hint">100g 기준 값은 1인분에 따라 변합니다.</string>
+    <string name="body_metrics_height_hint">허리-키 비율과 체지방 추정치를 보려면 키를 추가하세요.</string>
+    <string name="settings_day_type_color">색상</string>
+    <string name="settings_day_type_color_auto">자동</string>
+    <string name="a11y_marker_lane">날짜 유형 및 미추적 표시</string>
+    <string name="a11y_day_marker_type">날짜 유형 %1$s</string>
+    <string name="a11y_day_untracked">추적 안 됨</string>
 </resources>

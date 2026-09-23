@@ -2550,6 +2550,11 @@
     <string name="cd_ingredient_decrease">Decrease ingredient amount</string>
     <string name="cd_ingredient_increase">Increase ingredient amount</string>
     <string name="onboarding_key_checking">Checking key…</string>
-    <string name="body_metrics_height_hint">Add your height to see waist-to-height and body-fat estimates.</string>
     <string name="sheet_serving_baseless_hint">Per-100 g values scale with serving size.</string>
+    <string name="body_metrics_height_hint">Add your height to see waist-to-height and body-fat estimates.</string>
+    <string name="settings_day_type_color">Color</string>
+    <string name="settings_day_type_color_auto">Auto</string>
+    <string name="a11y_marker_lane">Day type and untracked markers</string>
+    <string name="a11y_day_marker_type">day type %1$s</string>
+    <string name="a11y_day_untracked">not tracked</string>
 </resources>

@@ -1,8 +1,12 @@
 package app.chompass.ui.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -51,6 +55,9 @@ import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
+import app.chompass.ui.theme.DayTypePaletteKeys
+import app.chompass.ui.theme.dayTypeColor
+import androidx.compose.ui.semantics.Role
 import java.util.UUID
 
 /**
@@ -186,6 +193,7 @@ internal fun DayTypeProfileEditorSheet(
 ) {
     val seed = editing?.let { DayTargets(it.calories, it.proteinG, it.carbsG, it.fatG) } ?: base
     var name by remember(editing) { mutableStateOf(editing?.name.orEmpty()) }
+    var colorKey by remember(editing) { mutableStateOf(editing?.colorKey) }
     var calories by remember(editing) {
         mutableIntStateOf((seed?.calories ?: 2400).coerceIn(calorieFloor, calorieCeiling))
     }
@@ -235,6 +243,45 @@ internal fun DayTypeProfileEditorSheet(
                     style = MaterialTheme.typography.bodySmall,
                     color = AppColors.Calorie,
                 )
+            }
+            Spacer(Modifier.height(12.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    stringResource(R.string.settings_day_type_color),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                )
+                if (colorKey == null) {
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        stringResource(R.string.settings_day_type_color_auto),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    )
+                }
+            }
+            Spacer(Modifier.height(6.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                DayTypePaletteKeys.forEach { key ->
+                    val selected = key == colorKey
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .background(dayTypeColor(key, editing?.id.orEmpty()), CircleShape)
+                            .then(
+                                if (selected) {
+                                    Modifier.border(2.dp, MaterialTheme.colorScheme.onSurface, CircleShape)
+                                } else {
+                                    Modifier
+                                },
+                            )
+                            .selectable(
+                                selected = selected,
+                                role = Role.RadioButton,
+                                onClick = { colorKey = if (selected) null else key },
+                            ),
+                    )
+                }
             }
             Spacer(Modifier.height(12.dp))
             val unit = LocalEnergyUnit.current
@@ -311,6 +358,7 @@ internal fun DayTypeProfileEditorSheet(
                         proteinG = protein,
                         carbsG = carbs,
                         fatG = fat,
+                        colorKey = colorKey,
                     )
                 )
             },

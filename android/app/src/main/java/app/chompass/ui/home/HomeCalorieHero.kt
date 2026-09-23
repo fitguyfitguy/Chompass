@@ -40,8 +40,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
@@ -127,6 +129,7 @@ internal fun CalorieHero(
     freezeProgress: Boolean = false,
     /** #60: today's day-type label ("Training day"); null hides the chip. */
     dayTypeLabel: String? = null,
+    dayTypeColor: androidx.compose.ui.graphics.Color? = null,
     /** Opens the day-type quick-switch sheet; chip hidden when null (previews). */
     onDayTypeClick: (() -> Unit)? = null,
     untracked: Boolean = false,
@@ -438,7 +441,7 @@ internal fun CalorieHero(
                 // the plan is off / past-day view (dayTypeLabel == null).
                 if (dayTypeLabel != null && onDayTypeClick != null) {
                     Spacer(Modifier.width(5.dp))
-                    DayTypeChip(label = dayTypeLabel, onClick = onDayTypeClick)
+                    DayTypeChip(label = dayTypeLabel, color = dayTypeColor, onClick = onDayTypeClick)
                 }
                 if (onUntrackedClick != null) {
                     Spacer(Modifier.width(5.dp))
@@ -502,12 +505,19 @@ private fun UntrackedChip(untracked: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-private fun DayTypeChip(label: String, onClick: () -> Unit) {
+private fun DayTypeChip(label: String, color: Color? = null, onClick: () -> Unit) {
     val a11y = stringResource(R.string.home_day_type_chip_a11y, label)
+    // Pinned color wins over the tonal container; light colors flip text dark.
+    val container = color ?: MaterialTheme.colorScheme.secondaryContainer
+    val content = if (color != null) {
+        if (container.luminance() > 0.5f) Color.Black else Color.White
+    } else {
+        MaterialTheme.colorScheme.onSecondaryContainer
+    }
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(50),
-        color = MaterialTheme.colorScheme.secondaryContainer,
+        color = container,
         modifier = Modifier
             // The chip shares the remaining-caption line: cap it so a long
             // day-type name ellipsizes instead of pushing the caption around.
@@ -524,7 +534,7 @@ private fun DayTypeChip(label: String, onClick: () -> Unit) {
                 label,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                color = content,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f, fill = false),
@@ -532,7 +542,7 @@ private fun DayTypeChip(label: String, onClick: () -> Unit) {
             Icon(
                 Icons.Filled.KeyboardArrowDown,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                tint = content,
                 modifier = Modifier.size(13.dp),
             )
         }

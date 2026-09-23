@@ -2008,6 +2008,11 @@
     <string name="cd_ingredient_decrease">材料の量を減らす</string>
     <string name="cd_ingredient_increase">材料の量を増やす</string>
     <string name="onboarding_key_checking">キーを確認中…</string>
-    <string name="body_metrics_height_hint">ウエスト比と体脂肪率の推定を見るには身長を追加してください。</string>
     <string name="sheet_serving_baseless_hint">100g 当たりの値は1食分に合わせて変わります。</string>
+    <string name="body_metrics_height_hint">ウエスト比と体脂肪率の推定を見るには身長を追加してください。</string>
+    <string name="settings_day_type_color">色</string>
+    <string name="settings_day_type_color_auto">自動</string>
+    <string name="a11y_marker_lane">日タイプと記録なしマーカー</string>
+    <string name="a11y_day_marker_type">日タイプ %1$s</string>
+    <string name="a11y_day_untracked">記録なし</string>
 </resources>

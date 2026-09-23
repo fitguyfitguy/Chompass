@@ -2010,6 +2010,11 @@ macro-urile reechilibrate la noul total caloric</string>
     <string name="cd_ingredient_decrease">Redu cantitatea ingredientului</string>
     <string name="cd_ingredient_increase">Mărește cantitatea ingredientului</string>
     <string name="onboarding_key_checking">Se verifică cheia…</string>
-    <string name="body_metrics_height_hint">Adaugă înălțimea pentru a vedea raportul talie-înălțime și estimările de grăsime corporală.</string>
     <string name="sheet_serving_baseless_hint">Valorile la 100 g se scalează cu porția.</string>
+    <string name="body_metrics_height_hint">Adaugă înălțimea pentru a vedea raportul talie-înălțime și estimările de grăsime corporală.</string>
+    <string name="settings_day_type_color">Culoare</string>
+    <string name="settings_day_type_color_auto">Automat</string>
+    <string name="a11y_marker_lane">Marcaje tip de zi și netrimise</string>
+    <string name="a11y_day_marker_type">tip de zi %1$s</string>
+    <string name="a11y_day_untracked">neurmărit</string>
 </resources>

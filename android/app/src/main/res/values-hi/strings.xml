@@ -2009,6 +2009,11 @@
     <string name="cd_ingredient_decrease">सामग्री की मात्रा घटाएँ</string>
     <string name="cd_ingredient_increase">सामग्री की मात्रा बढ़ाएँ</string>
     <string name="onboarding_key_checking">कुंजी जाँची जा रही है…</string>
-    <string name="body_metrics_height_hint">कमर-कद अनुपात और शरीर वसा अनुमान देखने के लिए अपनी लंबाई जोड़ें।</string>
     <string name="sheet_serving_baseless_hint">100 ग्राम के मान हिस्से के साथ बदलते हैं।</string>
+    <string name="body_metrics_height_hint">कमर-कद अनुपात और शरीर वसा अनुमान देखने के लिए अपनी लंबाई जोड़ें।</string>
+    <string name="settings_day_type_color">रंग</string>
+    <string name="settings_day_type_color_auto">स्वतः</string>
+    <string name="a11y_marker_lane">दिन के प्रकार और बिना-ट्रैक चिह्न</string>
+    <string name="a11y_day_marker_type">दिन का प्रकार %1$s</string>
+    <string name="a11y_day_untracked">ट्रैक नहीं किया</string>
 </resources>

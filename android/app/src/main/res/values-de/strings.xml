@@ -3469,6 +3469,11 @@ für dich ein</string>
     <string name="cd_ingredient_decrease">Zutatenmenge verringern</string>
     <string name="cd_ingredient_increase">Zutatenmenge erhöhen</string>
     <string name="onboarding_key_checking">Schlüssel wird geprüft …</string>
-    <string name="body_metrics_height_hint">Gib deine Größe ein, um Taille-Körpergröße-Verhältnis und Körperfett-Schätzungen zu sehen.</string>
     <string name="sheet_serving_baseless_hint">Werte pro 100 g skalieren mit der Portion.</string>
+    <string name="body_metrics_height_hint">Gib deine Größe ein, um Taille-Körpergröße-Verhältnis und Körperfett-Schätzungen zu sehen.</string>
+    <string name="settings_day_type_color">Farbe</string>
+    <string name="settings_day_type_color_auto">Auto</string>
+    <string name="a11y_marker_lane">Tagestyp- und Nicht-Verfolgt-Marker</string>
+    <string name="a11y_day_marker_type">Tagestyp %1$s</string>
+    <string name="a11y_day_untracked">nicht verfolgt</string>
 </resources>

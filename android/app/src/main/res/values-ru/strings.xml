@@ -2087,6 +2087,11 @@
     <string name="cd_ingredient_decrease">Уменьшить количество ингредиента</string>
     <string name="cd_ingredient_increase">Увеличить количество ингредиента</string>
     <string name="onboarding_key_checking">Проверка ключа…</string>
-    <string name="body_metrics_height_hint">Укажите рост, чтобы увидеть соотношение талия-рост и оценки процента жира.</string>
     <string name="sheet_serving_baseless_hint">Значения на 100 г масштабируются с порцией.</string>
+    <string name="body_metrics_height_hint">Укажите рост, чтобы увидеть соотношение талия-рост и оценки процента жира.</string>
+    <string name="settings_day_type_color">Цвет</string>
+    <string name="settings_day_type_color_auto">Авто</string>
+    <string name="a11y_marker_lane">Метки типа дня и дней без учёта</string>
+    <string name="a11y_day_marker_type">тип дня %1$s</string>
+    <string name="a11y_day_untracked">без учёта</string>
 </resources>

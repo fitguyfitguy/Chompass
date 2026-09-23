@@ -2029,6 +2029,11 @@ makrolar yeni kalori toplamına göre yeniden dengelenir</string>
     <string name="cd_ingredient_decrease">Malzeme miktarını azalt</string>
     <string name="cd_ingredient_increase">Malzeme miktarını artır</string>
     <string name="onboarding_key_checking">Anahtar kontrol ediliyor…</string>
-    <string name="body_metrics_height_hint">Bel-göre oranını ve vücut yağ tahminlerini görmek için boyunu ekle.</string>
     <string name="sheet_serving_baseless_hint">100 g değerleri porsiyona göre ölçeklenir.</string>
+    <string name="body_metrics_height_hint">Bel-göre oranını ve vücut yağ tahminlerini görmek için boyunu ekle.</string>
+    <string name="settings_day_type_color">Renk</string>
+    <string name="settings_day_type_color_auto">Otomatik</string>
+    <string name="a11y_marker_lane">Gün türü ve takip edilmeyen işaretleri</string>
+    <string name="a11y_day_marker_type">gün türü %1$s</string>
+    <string name="a11y_day_untracked">takip edilmiyor</string>
 </resources>

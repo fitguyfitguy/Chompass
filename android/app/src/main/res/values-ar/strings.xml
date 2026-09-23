@@ -2019,6 +2019,11 @@
     <string name="cd_ingredient_decrease">تقليل كمية المكوّن</string>
     <string name="cd_ingredient_increase">زيادة كمية المكوّن</string>
     <string name="onboarding_key_checking">جارٍ التحقق من المفتاح…</string>
-    <string name="body_metrics_height_hint">أضف طولك لرؤية نسبة الخصر إلى الطول وتقديرات دهون الجسم.</string>
     <string name="sheet_serving_baseless_hint">تتكيف القيم لكل 100 غرام مع حصة الطعام.</string>
+    <string name="body_metrics_height_hint">أضف طولك لرؤية نسبة الخصر إلى الطول وتقديرات دهون الجسم.</string>
+    <string name="settings_day_type_color">اللون</string>
+    <string name="settings_day_type_color_auto">تلقائي</string>
+    <string name="a11y_marker_lane">علامات نوع اليوم والأيام غير المتتبَّعة</string>
+    <string name="a11y_day_marker_type">نوع اليوم %1$s</string>
+    <string name="a11y_day_untracked">غير متتبَع</string>
 </resources>

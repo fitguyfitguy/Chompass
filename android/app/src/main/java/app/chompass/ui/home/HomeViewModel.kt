@@ -2351,6 +2351,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /**
+     * ISO date -> resolved day-type profile id for [dates] (UI-UX §10).
+     * Empty map while the plan is off — resolver answers null per day anyway.
+     */
+    fun weekDayTypes(dates: List<LocalDate>): Map<String, String> =
+        resolveDayTypeIds(_ui.value.profile, dates)
+
+    /**
      * Add Food "Search food" database pick: resolve the hit to a full
      * [FoodAnalysis] (OFF barcode lookup for micros, or offline USDA/Swiss row)
      * and prefill the review sheet with its provenance badge.

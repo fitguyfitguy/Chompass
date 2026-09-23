@@ -49,6 +49,10 @@ internal fun MeasurementPlotCard(
     entries: List<BodyMeasurement>,
     useMetric: Boolean,
     chartsImmediate: Boolean = false,
+    /** Day-type/untracked marker lane inputs (UI-UX §10). */
+    dayTypeByDay: Map<String, String> = emptyMap(),
+    untrackedDays: Set<String> = emptySet(),
+    typeColorOf: (String) -> androidx.compose.ui.graphics.Color = { androidx.compose.ui.graphics.Color.Transparent },
 ) {
     val series = remember(entries, site) {
         entries.mapNotNull { entry ->
@@ -100,6 +104,9 @@ internal fun MeasurementPlotCard(
                             immediate = chartsImmediate,
                             tagFormatter = { formatMeasurementLength(context, it, useMetric) },
                             title = stringResource(site.labelRes),
+                            dayTypeByDay = dayTypeByDay,
+                            untrackedDays = untrackedDays,
+                            typeColorOf = typeColorOf,
                         )
                     }
                 }
