@@ -3,6 +3,8 @@ package app.chompass.ui.home
 import app.chompass.ui.components.ChompassSheetLazyColumn
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.rememberChompassSheetState
+import app.chompass.ui.components.FoodReviewPositionalThreshold
+import app.chompass.ui.components.FoodReviewVelocityThreshold
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -401,8 +403,8 @@ fun EditFoodEntrySheet(
             // a read-only scroll gesture must spring back; dismissal needs a
             // ~65% pull or a firm flick. Typing is still fully protected by
             // the gate.
-            positionalThreshold = 300.dp,
-            velocityThreshold = 1200.dp,
+            positionalThreshold = FoodReviewPositionalThreshold,
+            velocityThreshold = FoodReviewVelocityThreshold,
         ),
         containerColor = sheetSurface,
         // Codeberg #6: zero the chrome insets — the default contentWindowInsets

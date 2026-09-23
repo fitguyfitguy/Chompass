@@ -4,6 +4,8 @@ import app.chompass.ui.components.ChompassSheetLazyColumn
 import app.chompass.ui.components.ChompassPinnedFooterColumn
 import app.chompass.ui.components.ChompassPinnedFooterSheet
 import app.chompass.ui.components.rememberChompassSheetState
+import app.chompass.ui.components.FoodReviewPositionalThreshold
+import app.chompass.ui.components.FoodReviewVelocityThreshold
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -87,8 +89,8 @@ fun ProgressiveMealSheet(
 ) {
     val state = rememberChompassSheetState(
         busy = isSaving,
-        positionalThreshold = 300.dp,
-        velocityThreshold = 1200.dp,
+        positionalThreshold = FoodReviewPositionalThreshold,
+        velocityThreshold = FoodReviewVelocityThreshold,
     )
     val canLog = draft.items.isNotEmpty() && !isSaving
 

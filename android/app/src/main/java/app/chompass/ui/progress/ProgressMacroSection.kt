@@ -35,6 +35,7 @@ import app.chompass.models.MacroValueFormatter
 import app.chompass.ui.components.macroGramsText
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
+import app.chompass.ui.theme.nutrientAccentColor
 import kotlin.math.roundToInt
 
 @Composable
@@ -96,7 +97,7 @@ internal fun NutrientAveragesSection(
                         stringResource(row.nutrient.displayNameRes),
                         row.avg,
                         row.goal,
-                        AppColors.nutrientColor(row.nutrient),
+                        nutrientAccentColor(row.nutrient),
                         unitRes = unitRes,
                         wholeNumbers = row.nutrient.unit != "g",
                     )

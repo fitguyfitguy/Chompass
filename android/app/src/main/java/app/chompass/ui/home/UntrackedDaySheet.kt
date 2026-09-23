@@ -9,12 +9,12 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,11 +22,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.chompass.R
+import app.chompass.models.LocaleFormat
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.settings.GradientSaveButton
 import java.time.LocalDate
 
 /** Mark the viewed diary day as not tracked (#106). */
@@ -48,56 +50,58 @@ fun UntrackedDaySheet(
     ) {
         Column(
             Modifier
-                .padding(horizontal = 18.dp)
                 .navigationBarsPadding()
                 .imePadding(),
         ) {
-            Text(
-                stringResource(R.string.untracked_sheet_title),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
+            SheetReviewToolbar(
+                title = stringResource(R.string.untracked_sheet_title),
+                onCancel = onDismiss,
             )
-            Spacer(Modifier.height(6.dp))
-            Text(
-                stringResource(R.string.untracked_sheet_body, date.toString()),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Spacer(Modifier.height(16.dp))
-            androidx.compose.foundation.layout.Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-            ) {
+            Column(Modifier.padding(horizontal = 18.dp)) {
                 Text(
-                    stringResource(R.string.untracked_sheet_toggle),
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.bodyLarge,
+                    stringResource(R.string.untracked_sheet_body, date.format(LocaleFormat.mediumDate())),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                Switch(checked = flagged, onCheckedChange = { flagged = it })
-            }
-            if (flagged) {
-                Spacer(Modifier.height(12.dp))
-                OutlinedTextField(
-                    value = kcalText,
-                    onValueChange = { kcalText = it.filter { ch -> ch.isDigit() }.take(5) },
-                    label = { Text(stringResource(R.string.untracked_sheet_kcal_optional)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
+                Spacer(Modifier.height(16.dp))
+                androidx.compose.foundation.layout.Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .toggleable(
+                            value = flagged,
+                            role = Role.Switch,
+                            onValueChange = { flagged = it },
+                        ),
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                ) {
+                    Text(
+                        stringResource(R.string.untracked_sheet_toggle),
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                    Switch(checked = flagged, onCheckedChange = null)
+                }
+                if (flagged) {
+                    Spacer(Modifier.height(12.dp))
+                    OutlinedTextField(
+                        value = kcalText,
+                        onValueChange = { kcalText = it.filter { ch -> ch.isDigit() }.take(5) },
+                        label = { Text(stringResource(R.string.untracked_sheet_kcal_optional)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                    )
+                }
+                Spacer(Modifier.height(8.dp))
+                GradientSaveButton(
+                    text = stringResource(R.string.action_save),
+                    onClick = {
+                        val parsed = kcalText.toIntOrNull()
+                        onSave(flagged, parsed)
+                        onDismiss()
+                    },
                 )
             }
-            Spacer(Modifier.height(8.dp))
-            TextButton(
-                onClick = {
-                    val parsed = kcalText.toIntOrNull()
-                    onSave(flagged, parsed)
-                    onDismiss()
-                },
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(stringResource(R.string.action_save))
-            }
-            Spacer(Modifier.height(80.dp))
         }
     }
 }

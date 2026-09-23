@@ -79,6 +79,7 @@ import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.rememberQueueThumbnail
+import app.chompass.ui.components.QueueThumb
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
@@ -505,7 +506,6 @@ private fun QueueRowSurface(content: @Composable androidx.compose.foundation.lay
 
 @Composable
 private fun QueueThumbnail(filename: String?, store: app.chompass.data.AnalysisQueueStore) {
-    val bitmap = rememberQueueThumbnail(filename, store)
     Box(
         Modifier
             .size(52.dp)
@@ -513,15 +513,18 @@ private fun QueueThumbnail(filename: String?, store: app.chompass.data.AnalysisQ
             .background(MaterialTheme.colorScheme.surfaceContainerHighest),
         contentAlignment = Alignment.Center,
     ) {
-        if (bitmap != null) {
-            Image(
-                bitmap = bitmap.asImageBitmap(),
+        when (val thumb = rememberQueueThumbnail(filename, store)) {
+            is QueueThumb.Ready -> Image(
+                bitmap = thumb.bitmap.asImageBitmap(),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxWidth().height(52.dp),
             )
-        } else {
-            Icon(
+            QueueThumb.Loading -> CircularProgressIndicator(
+                Modifier.size(20.dp),
+                strokeWidth = 2.dp,
+            )
+            QueueThumb.Missing -> Icon(
                 Icons.Filled.PhotoLibrary,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
@@ -665,10 +668,10 @@ private fun EditQueuedSheet(
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     itemsIndexed(item.imageFilenames, key = { _, filename -> filename }) { index, filename ->
                         Box {
-                            val bitmap = rememberQueueThumbnail(filename, store)
-                            if (bitmap != null) {
+                            val thumb = rememberQueueThumbnail(filename, store)
+                            if (thumb is QueueThumb.Ready) {
                                 Image(
-                                    bitmap = bitmap.asImageBitmap(),
+                                    bitmap = thumb.bitmap.asImageBitmap(),
                                     contentDescription = stringResource(R.string.meal_photo_cd, index + 1),
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier

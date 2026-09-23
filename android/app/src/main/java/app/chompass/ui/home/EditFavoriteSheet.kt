@@ -3,6 +3,8 @@ package app.chompass.ui.home
 import app.chompass.ui.components.ChompassSheetLazyColumn
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.rememberChompassSheetState
+import app.chompass.ui.components.FoodReviewPositionalThreshold
+import app.chompass.ui.components.FoodReviewVelocityThreshold
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -230,8 +232,8 @@ fun EditFavoriteSheet(
             // Same raised thresholds as EditFoodEntrySheet (maintainer decision
             // 2026-08-18): a read-only scroll must spring back; dismissal needs
             // a deliberate pull or firm flick.
-            positionalThreshold = 300.dp,
-            velocityThreshold = 1200.dp,
+            positionalThreshold = FoodReviewPositionalThreshold,
+            velocityThreshold = FoodReviewVelocityThreshold,
         ),
         containerColor = sheetSurface,
         // Codeberg #6: zero the chrome insets (footer feedback loop) — same as

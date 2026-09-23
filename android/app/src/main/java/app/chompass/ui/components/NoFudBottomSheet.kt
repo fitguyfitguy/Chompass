@@ -71,6 +71,15 @@ import androidx.compose.ui.unit.dp
  */
 val ChompassSheetCornerRadius: Dp = 28.dp
 
+/**
+ * Dismissal thresholds the review/edit sheets pass explicitly (maintainer
+ * decision): a deliberate 300.dp pull or a 1200.dp/s fling — stricter than
+ * [rememberChompassSheetState]'s modest 120.dp default so a review sheet
+ * with unsaved edits does not close on an accidental drag.
+ */
+val FoodReviewPositionalThreshold: Dp = 300.dp
+val FoodReviewVelocityThreshold: Dp = 1200.dp
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChompassBottomSheet(
