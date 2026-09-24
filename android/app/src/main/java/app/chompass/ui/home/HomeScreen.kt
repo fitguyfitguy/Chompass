@@ -205,6 +205,8 @@ fun HomeScreen(
     var addFoodFlowActive by rememberSaveable { mutableStateOf(false) }
 
     var showCameraCapture by rememberSaveable { mutableStateOf(false) }
+    /** Photo review's initial note, refreshed before adding another image. */
+    var initialPhotoNote by rememberSaveable { mutableStateOf("") }
     /** When true, next capture/gallery pick appends into an in-flight analysis re-run. */
     var appendPhotoForReanalyze by rememberSaveable { mutableStateOf(false) }
     var appendReanalyzeNote by rememberSaveable { mutableStateOf<String?>(null) }
@@ -238,6 +240,7 @@ fun HomeScreen(
 
     LaunchedEffect(importFailedTick) {
         if (importFailedTick == 0) return@LaunchedEffect
+        initialPhotoNote = ""
         snackbarHostState.showSnackbar(photoImportFailedMessage)
     }
 
@@ -296,6 +299,7 @@ fun HomeScreen(
             val images = container.sharedImageInbox.value
             if (images.isEmpty() || analysisBusy) return@repeatOnLifecycle
             container.sharedImageInbox.value = emptyList()
+            initialPhotoNote = ""
             photoSession.mergeExternalShare(images)
         }
     }
@@ -398,7 +402,12 @@ fun HomeScreen(
                 // AI logging is off: camera/voice shortcuts are no-ops (cleared so
                 // they cannot re-fire after a remount); barcode stays (OFF lookup).
                 ShortcutEntryAction.CAMERA ->
-                    if (aiFeaturesEnabled) openCamera() else clearShortcut(ShortcutEntryAction.CAMERA)
+                    if (aiFeaturesEnabled) {
+                        initialPhotoNote = ""
+                        openCamera()
+                    } else {
+                        clearShortcut(ShortcutEntryAction.CAMERA)
+                    }
                 ShortcutEntryAction.BARCODE -> openBarcodeScanner()
                 ShortcutEntryAction.VOICE ->
                     if (aiFeaturesEnabled) return@repeatOnLifecycle else clearShortcut(ShortcutEntryAction.VOICE)
@@ -1127,8 +1136,9 @@ fun HomeScreen(
             savedTab = ui.addFoodSavedTab,
             savedRows = ui.addFoodSavedRows,
             onSavedTabChange = vm::selectAddFoodSavedTab,
-            onPhoto = {
+            onPhoto = { query ->
                 addFoodFlowActive = true
+                initialPhotoNote = query
                 openCamera()
             },
             onNote = {
@@ -1669,6 +1679,7 @@ fun HomeScreen(
                 appendReanalyzeGrams = null
                 photoSession.openReviewIfStaged()
                 if (stagedPhotoBytes.isEmpty()) {
+                    initialPhotoNote = ""
                     returnToDraftOrAddFoodGrid()
                 }
             }
@@ -1684,14 +1695,16 @@ fun HomeScreen(
         MultiPhotoCaptureSheet(
             imageBytesList = stagedPhotoBytes,
             addsFromLibrary = isImportingPhotos,
+            initialNote = initialPhotoNote,
             showScaleTip = ui.progressiveMeal?.items?.isNotEmpty() == true,
             requireNote = !ui.skipPhotoNotePrompt,
             showDontAskAgain = !ui.skipPhotoNotePrompt &&
                 ui.photoNoteSkipCount >= HomeViewModel.PHOTO_NOTE_SKIP_OFFER_THRESHOLD,
             showAccuracyGuide = ui.photoAccuracyGuideCount < HomeViewModel.PHOTO_ACCURACY_GUIDE_COUNT,
             recentPrompts = recentPrompts,
-            onAddPhoto = {
+            onAddPhoto = { note ->
                 if (stagedPhotoBytes.size < FoodPhotoSession.MAX_IMAGES) {
+                    initialPhotoNote = note
                     if (isImportingPhotos) {
                         openGalleryPicker()
                     } else {
@@ -1705,6 +1718,7 @@ fun HomeScreen(
             onAnalyze = { note, grams, dontAskAgain ->
                 val images = photoSession.stagedImages.value
                 photoSession.clear()
+                initialPhotoNote = ""
                 if (!ui.isEntryAnalysisBusy) {
                     addFoodFlowActive = false
                     vm.analyzePhotosFromStaging(images, note, grams, dontAskAgain)
@@ -1715,11 +1729,13 @@ fun HomeScreen(
                 // call; the queue sheet opens so it can be run later.
                 val images = photoSession.stagedImages.value
                 photoSession.clear()
+                initialPhotoNote = ""
                 addFoodFlowActive = false
                 vm.queueStaged(images, note, grams)
             },
             onDismiss = {
                 photoSession.clear()
+                initialPhotoNote = ""
                 returnToDraftOrAddFoodGrid()
             },
         )

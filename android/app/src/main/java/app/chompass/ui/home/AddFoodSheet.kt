@@ -91,7 +91,7 @@ import app.chompass.models.WaterAmountFormat
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddFoodSheet(
-    onPhoto: () -> Unit,
+    onPhoto: (String) -> Unit,
     onNote: () -> Unit,
     onSavedMeals: () -> Unit,
     onVoice: () -> Unit,
@@ -184,7 +184,7 @@ fun AddFoodSheet(
         AddFoodSheetContent(
             autoFocusQuery = true,
             sheetState = sheetState,
-            onPhoto = { onDismiss(); onPhoto() },
+            onPhoto = { onDismiss(); onPhoto(query) },
             onNote = { onDismiss(); onNote() },
             onSavedMeals = { onDismiss(); onSavedMeals() },
             onVoice = { onDismiss(); onVoice() },

@@ -11,6 +11,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **More OpenAI models in the picker** (Android + web): choose GPT-5.6 Sol, Terra, or Luna, or GPT-6 Sol or Luna from the built-in model list. Follows Codeberg [#107](https://codeberg.org/fitguy/Chompass/issues/107) by [@NuperSu](https://codeberg.org/NuperSu).
 - **The OpenAI model list refreshes itself** (Android): opening the model picker pulls the current GPT lineup from OpenAI with your saved key, so new models show up without an app update. Offline or without a key it uses the built-in list.
 
+### Fixed
+
+- **Typed descriptions carry into photo notes** (Android): text entered in Add Food now appears in the photo note when you add a photo.
+
 ## [5.1.1] - 2026-09-21
 
 ### Added
