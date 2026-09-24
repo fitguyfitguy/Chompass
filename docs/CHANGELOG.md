@@ -6,10 +6,38 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+## [5.2.0] - 2026-09-24
+
 ### Added
 
 - **More OpenAI models in the picker** (Android + web): choose GPT-5.6 Sol, Terra, or Luna, or GPT-6 Sol or Luna from the built-in model list. Follows Codeberg [#107](https://codeberg.org/fitguy/Chompass/issues/107) by [@NuperSu](https://codeberg.org/NuperSu).
 - **The OpenAI model list refreshes itself** (Android): opening the model picker pulls the current GPT lineup from OpenAI with your saved key, so new models show up without an app update. Offline or without a key it uses the built-in list.
+- **Day-type colors across the week strip and Progress charts** (Android): each day-type profile can pin a color from an 8-swatch preset. The hero chip and the week strip show it, untracked days get a hollow marker on a muted tile, and every Progress chart gains a marker lane: per-day dots, week buckets past 90 days, and dashes for untracked days. The web app round-trips the color, and entries without one keep the stable auto color.
+- **The web entry form warns about stale ingredient estimates** (web): editing the ingredients of an AI-analyzed meal dims a note that the vitamin and mineral values belong to the previous mix, matching Android.
+
+### Changed
+
+- **Saving is instant, Health Connect catches up in the background** (Android): manual saves, saved-meal relogs, and recipe logs write the diary first and mirror to Health Connect behind the scenes, so the sheet dismisses right away. Home shows a snackbar once per session while queued writes are still retrying. Planned meals no longer queue Health Connect retries at all, and Log now stays the confirm path.
+- **A named weigh-as-you-go meal keeps the last photo as its thumbnail** (Android): the diary and Saved Meals show the finished plate instead of the first ingredient shot. Unnamed drafts keep per-item photos, and the emoji stays first-wins.
+- **API key fields ask you to paste** (Android + web): placeholders that mimicked a filled key, like AIza... or sk-..., are gone. The onboarding key step, the Settings AI key sheets, the speech key sheet, and the web Settings field now show "Paste your API key".
+- **Untracked and import sheets match the other review sheets** (Android): they share the same toolbar and save bar, and queue thumbnails show a loading state instead of the missing-photo icon while a photo decodes.
+- **Haptics on wheels, Save, Undo, and plan placement** (Android): wheel pickers tick as a value settles, and Save, the Undo actions, and placing a meal on a future day give a short buzz.
+- **Serving edits settle on Save instead of every keystroke** (Android): typing an amount keeps the wheel and the text in sync while calories and macros wait, so intermediate digits no longer rescale the row. The result applies when you save, leave the field, or switch the unit.
+
+### Fixed
+
+- **Open Food Facts requests stop at 8 seconds** (Android): searches and lookups could hang for tens of seconds on a slow connection. Every request now gives up at 8 seconds and search moves to its next attempt.
+- **A language chosen in system Settings survives a restart** (Android): with the in-app language left on System, a cold start could wipe the per-app language picked in the system settings.
+- **The calorie wheel covers kJ amounts** (Android): the wheel clamped the display-unit value at 5000, which kJ users hit around 1200 kcal of food. It now spans the converted equivalent, and kcal users are unchanged.
+- **TalkBack reads inspected chart values** (Android): inspecting a point on a Progress chart announces the metric, date, and value, and taps past the last bar's right edge no longer select it.
+- **Caffeine totals follow the system locale** (Android): numbers format the way the phone formats them, and the tracker card uses its own color.
+- **Coach voice failures show up in chat** (Android): a denied microphone permission or a failed transcription now surfaces in the chat error row instead of disappearing, and the image-only send prompt is translated.
+- **Review photos use less memory** (Android): photos in the review sheet decode size-bounded with rotation applied, like the home pipeline, instead of loading a full-size bitmap.
+- **The plan week window shows loading and retry** (Android): it used to paint seven empty day sections until the data arrived, and nothing at all when the read failed. A spinner shows while loading, and a Retry row appears on failure.
+- **Small controls meet the 48 dp touch target** (Android): steppers, pickers, sheet icons, and the log-now check are easier to tap and announce themselves. The onboarding provider controls gained selection semantics, the API-key test shows a checking indicator while it runs, and the Progress customize chip meets the target too.
+- **Review-sheet polish** (Android): the serving hint returns under the unlocked serving card, the empty-diary text no longer flashes before the first load, and body measurements ask for a height when derived numbers are missing.
+- **Fat reads as a floor on Home** (Android + web): passing the fat target shows a calm "Minimum met" instead of the over wording, and the card no longer takes the over color. Follows Codeberg [#109](https://codeberg.org/fitguy/Chompass/issues/109) by [@OlivierM16](https://codeberg.org/OlivierM16).
+- **Day-type colors are translated everywhere** (Android): the color names and the week-strip accessibility label ship complete in German, Spanish, French, and Polish.
 
 ## [5.1.1] - 2026-09-21
 
