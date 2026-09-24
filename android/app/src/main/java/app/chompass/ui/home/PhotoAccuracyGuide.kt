@@ -113,7 +113,7 @@ fun PhotoAccuracyTipCard(
         Text(
             stringResource(R.string.photo_accuracy_guide_body),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.78f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Emphasized),
         )
     }
 }
@@ -127,7 +127,7 @@ fun PhotoAccuracyInfoButton(
         Icon(
             Icons.Outlined.Info,
             contentDescription = stringResource(R.string.photo_accuracy_guide_cd),
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
             modifier = Modifier.size(18.dp),
         )
     }

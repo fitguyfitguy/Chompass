@@ -49,6 +49,8 @@ fun MacroCard(
     freezeProgress: Boolean = false,
     /** Planned (not eaten) amount; faint fill under the logged bar. */
     planned: Double = 0.0,
+    /** Fat is a floor target: at or above it reads "minimum met", never over. */
+    fatFloor: Boolean = false,
 ) {
     val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
     val goalValue = goal.toDouble()
@@ -133,6 +135,7 @@ fun MacroCard(
             Text(
                 when {
                     goal <= 0 -> stringResource(R.string.macro_status_no_goal)
+                    fatFloor && current >= goalValue -> stringResource(R.string.macro_status_floor_met)
                     current == goalValue -> stringResource(R.string.macro_status_goal_reached)
                     current < goalValue -> stringResource(
                         R.string.macro_status_left,
@@ -147,7 +150,7 @@ fun MacroCard(
                 },
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Medium,
-                color = if (goal > 0 && current > goalValue) {
+                color = if (goal > 0 && current > goalValue && !fatFloor) {
                     accentColor
                 } else {
                     MaterialTheme.colorScheme.onSurfaceVariant

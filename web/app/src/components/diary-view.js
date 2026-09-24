@@ -407,8 +407,8 @@ function calorieBar(eaten, target, baseGoal = null, burn = null, unit = "kcal") 
 /** Vertical macro tube — Android MacroCard (mobile). */
 function macroTube(key, label, value, target, unit = "g") {
   const pct = target > 0 ? Math.min(100, (value / target) * 100) : 0;
-  const status = tubeStatus(value, target, unit);
-  const over = target > 0 && value > target;
+  const status = tubeStatus(value, target, unit, key === "fat");
+  const over = target > 0 && value > target && key !== "fat";
   return `
     <div class="macro-tube macro-tube--${key}${over ? " is-over" : ""}">
       <span class="macro-tube__value">${Math.round(value)}</span>
@@ -423,8 +423,8 @@ function macroTube(key, label, value, target, unit = "g") {
 /** Horizontal macro progress row (desktop). */
 function macroRow(key, label, value, target, unit = "g") {
   const pct = target > 0 ? Math.min(100, (value / target) * 100) : 0;
-  const status = tubeStatus(value, target, unit);
-  const over = target > 0 && value > target;
+  const status = tubeStatus(value, target, unit, key === "fat");
+  const over = target > 0 && value > target && key !== "fat";
   return `
     <div class="macro-row macro-row--${key}${over ? " is-over" : ""}">
       <div class="macro-row__meta">

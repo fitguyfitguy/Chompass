@@ -193,7 +193,7 @@ internal fun OpenMeteoCitySheet(
             text = stringResource(R.string.action_close),
             onClick = onClose,
             modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
         )
         Spacer(Modifier.height(8.dp))
     }

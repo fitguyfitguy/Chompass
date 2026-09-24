@@ -205,7 +205,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Row(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(16.dp))
+                            .clip(RoundedCornerShape(AppRadii.Card))
                             .clickable { onBack() }
                             .padding(horizontal = 2.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically

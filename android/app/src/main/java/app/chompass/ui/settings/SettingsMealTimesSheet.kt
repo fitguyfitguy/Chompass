@@ -94,7 +94,7 @@ internal fun MealTimesSheet(
         Text(
             stringResource(R.string.settings_meals_description),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
         )
         Spacer(Modifier.height(16.dp))
         FudGlassSurface(
@@ -193,7 +193,7 @@ internal fun MealTimesSheet(
             text = stringResource(R.string.action_cancel),
             onClick = { editingId = null },
             modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
         )
         Spacer(Modifier.height(8.dp))
     }

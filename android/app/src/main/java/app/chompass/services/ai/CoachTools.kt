@@ -121,7 +121,7 @@ class CoachTools(
         for (e in filtered) {
             arr.put(JSONObject().apply {
                 put("date", iso(e.date))
-                put("percent", (e.bodyFatFraction * 100).toInt())
+                put("percent", kotlin.math.round(e.bodyFatFraction * 1000.0) / 10.0)
             })
         }
         return JSONObject().apply {

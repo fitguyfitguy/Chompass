@@ -163,7 +163,7 @@ fun NotificationsSettingsScreen(
     permissionDeniedMessage?.let { msg ->
         FudGlassDialog(onDismissRequest = { permissionDeniedMessage = null }) {
             Text(stringResource(R.string.settings_permission_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
-            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f))
+            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { permissionDeniedMessage = null }

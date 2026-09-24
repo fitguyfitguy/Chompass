@@ -1100,6 +1100,7 @@
     <string name="macro_status_left">%1$s%2$s restant</string>
     <string name="macro_status_no_goal">Pas d\'objectif</string>
     <string name="macro_status_over">%1$s%2$s en trop</string>
+    <string name="macro_status_floor_met">Minimum atteint</string>
     <string name="manual_calories">Calories (kcal)</string>
     <string name="manual_zero_placeholder">0</string>
     <string name="meal_photo_cd">Photo %1$d</string>

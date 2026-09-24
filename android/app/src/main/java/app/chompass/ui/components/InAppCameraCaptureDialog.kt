@@ -58,6 +58,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import app.chompass.R
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppRadii
 import java.io.File
 
 @Composable
@@ -191,7 +192,7 @@ fun InAppCameraCaptureDialog(
                     modifier = Modifier
                         .align(Alignment.TopCenter)
                         .padding(top = 74.dp, start = 24.dp, end = 24.dp)
-                        .background(Color.Black.copy(alpha = 0.55f), RoundedCornerShape(16.dp))
+                        .background(Color.Black.copy(alpha = 0.55f), RoundedCornerShape(AppRadii.Card))
                         .padding(horizontal = 14.dp, vertical = 10.dp)
                 ) {
                     Text(

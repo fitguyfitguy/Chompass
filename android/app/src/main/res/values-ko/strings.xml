@@ -1059,6 +1059,7 @@
     <string name="macro_status_left">%1$s%2$s남음</string>
     <string name="macro_status_no_goal">목표 없음</string>
     <string name="macro_status_over">%1$s%2$s초과</string>
+    <string name="macro_status_floor_met">최소 기준 충족</string>
     <string name="meal_photo_cd">사진 %1$d</string>
     <string name="meal_photos_add_from_library">사진 추가</string>
     <string name="meal_photos_add_photo">사진 추가</string>

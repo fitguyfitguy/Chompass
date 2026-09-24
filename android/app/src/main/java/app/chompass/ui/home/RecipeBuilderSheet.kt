@@ -270,7 +270,7 @@ private fun IngredientRow(
         Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(AppRadii.Card))
             .background(rowFill)
             .padding(horizontal = 14.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,

@@ -7,6 +7,7 @@ import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.theme.AppTextOpacity
+import app.chompass.ui.theme.AppRadii
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -90,7 +91,7 @@ internal fun DailyNoteCard(
                 .clickable(onClick = onClick)
                 .background(
                     MaterialTheme.colorScheme.surfaceContainerLow,
-                    RoundedCornerShape(16.dp),
+                    RoundedCornerShape(AppRadii.Card),
                 )
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,

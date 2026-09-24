@@ -236,7 +236,7 @@ internal fun SheetStickyPrimaryBar(
                     Text(textActionLabel, fontWeight = FontWeight.Medium)
                 }
             }
-            val shape = RoundedCornerShape(28.dp)
+            val shape = RoundedCornerShape(AppRadii.Sheet)
             Box(
                 Modifier
                     .fillMaxWidth()
@@ -325,7 +325,7 @@ internal fun SheetPillRow(
     onClick: (() -> Unit)? = null,
     content: @Composable RowScope.() -> Unit
 ) {
-    val shape = RoundedCornerShape(24.dp)
+    val shape = RoundedCornerShape(AppRadii.PillCard)
     val isDark = isDarkTheme()
     val rowFill = if (isDark) {
         AppColors.TranslucentSurfaceDark
@@ -348,7 +348,7 @@ internal fun SheetPillRow(
 
 @Composable
 internal fun SheetPillCard(content: @Composable ColumnScope.() -> Unit) {
-    val shape = RoundedCornerShape(24.dp)
+    val shape = RoundedCornerShape(AppRadii.PillCard)
     val isDark = isDarkTheme()
     val cardFill = if (isDark) {
         AppColors.TranslucentSurfaceDark
@@ -394,6 +394,9 @@ internal fun ServingQuantityCard(
      * Hosts without editable options pass null to hide the affordance.
      */
     onUnitOptionsChange: ((List<ServingUnitOption>, String) -> Unit)? = null,
+    /** Fired when the expanded quantity editor collapses (input blur) so hosts
+     *  on the draft-while-typing model can resolve the pending draft. */
+    onQuantityEditingDone: (() -> Unit)? = null,
 ) {
     val pickerOptions = ServingUnitOption.pickerOptions(unitOptions)
     val selectedOption = ServingUnitOption.optionMatching(selectedUnitId, unitOptions)
@@ -507,6 +510,7 @@ internal fun ServingQuantityCard(
                     if (!expanded) {
                         dismissKeyboard()
                         editingServing = false
+                        onQuantityEditingDone?.invoke()
                     }
                 }
                 .padding(horizontal = 18.dp, vertical = 12.dp),
@@ -619,7 +623,7 @@ internal fun ServingQuantityCard(
                         Text(
                             stringResource(R.string.entry_analysis_inferring_units),
                             fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
                         )
                     }
                 }
@@ -745,7 +749,7 @@ internal fun SheetNutritionRow(
     accentColor: Color? = null,
 ) {
     val labelColor = accentColor?.let {
-        if (dim) it.copy(alpha = 0.72f) else it
+        if (dim) it.copy(alpha = AppTextOpacity.Secondary) else it
     } ?: if (dim) {
         MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
     } else {
@@ -870,7 +874,7 @@ internal fun SheetGlassDropdownMenuItem(
             label,
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.94f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.NearFull),
             lineHeight = 19.sp,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,

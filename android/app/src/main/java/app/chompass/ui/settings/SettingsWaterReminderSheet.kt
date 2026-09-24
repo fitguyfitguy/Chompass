@@ -70,7 +70,7 @@ internal fun WaterReminderPlanSheet(
         Text(
             stringResource(R.string.settings_water_reminder_interval_help),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
         )
         Spacer(Modifier.height(16.dp))
         FudGlassSurface(
@@ -113,7 +113,7 @@ internal fun WaterReminderPlanSheet(
             Text(
                 stringResource(R.string.settings_water_reminder_window_too_short),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
             )
         }
         Spacer(Modifier.height(6.dp))
@@ -180,7 +180,7 @@ internal fun WaterReminderPlanSheet(
                     text = stringResource(R.string.action_cancel),
                     onClick = { editing = null },
                     modifier = Modifier.fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
                 )
                 Spacer(Modifier.height(8.dp))
             }
@@ -216,7 +216,7 @@ private fun TimeFieldEditor(
         text = stringResource(R.string.action_cancel),
         onClick = onCancel,
         modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
     )
     Spacer(Modifier.height(8.dp))
 }

@@ -44,6 +44,7 @@ import app.chompass.services.ai.ConstituentReconcile
 import app.chompass.ui.components.energyText
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
+import app.chompass.ui.theme.AppRadii
 import java.util.Locale
 import kotlin.math.roundToInt
 
@@ -135,7 +136,7 @@ private fun ConstituentRowCard(
     }
 
     Surface(
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(AppRadii.Tile),
         color = MaterialTheme.colorScheme.surfaceContainerHighest,
         modifier = Modifier.fillMaxWidth(),
     ) {

@@ -1032,6 +1032,7 @@
     <string name="macro_status_left">%1$s%2$s over</string>
     <string name="macro_status_no_goal">Geen doel</string>
     <string name="macro_status_over">%1$s%2$s erover</string>
+    <string name="macro_status_floor_met">Minimum bereikt</string>
     <string name="meal_photo_cd">Foto %1$d</string>
     <string name="meal_photos_add_from_library">Foto\'s toevoegen</string>
     <string name="meal_photos_add_photo">Foto toevoegen</string>

@@ -122,7 +122,7 @@ fun ManualActiveSheet(
                         EnergyFormat.quantity(todayEntries.sumOf { it.calories }, unit),
                         energyUnitLabel(),
                     ),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
                     fontSize = 13.sp,
                 )
                 Spacer(Modifier.height(8.dp))
@@ -180,7 +180,7 @@ private fun ManualActiveHistoryRow(
             Icon(
                 Icons.Filled.Delete,
                 contentDescription = stringResource(R.string.cd_delete_manual_active),
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
             )
         }
     }

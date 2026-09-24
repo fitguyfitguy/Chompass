@@ -361,7 +361,7 @@ fun SavedMealsSheet(
                                         Icon(
                                             Icons.Outlined.Edit,
                                             contentDescription = stringResource(R.string.cd_edit_favorite),
-                                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
                                             modifier = Modifier.size(18.dp),
                                         )
                                     }
@@ -470,9 +470,9 @@ internal fun SegmentedTabs(selected: SavedTab, onSelect: (SavedTab) -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(AppRadii.Track))
             .background(trackColor)
-            .border(0.5.dp, trackBorder, RoundedCornerShape(10.dp))
+            .border(0.5.dp, trackBorder, RoundedCornerShape(AppRadii.Track))
             .padding(2.dp)
     ) {
         for (t in SavedTab.values()) {
@@ -480,7 +480,7 @@ internal fun SegmentedTabs(selected: SavedTab, onSelect: (SavedTab) -> Unit) {
             Box(
                 Modifier
                     .weight(1f)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(AppRadii.Chip))
                     .background(
                         if (isSel) Brush.linearGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd))
                         else Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))
@@ -577,7 +577,7 @@ private fun FavoritesReorderableList(
                                 Icon(
                                     Icons.Outlined.Edit,
                                     contentDescription = stringResource(R.string.cd_edit_favorite),
-                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
                                     modifier = Modifier.size(18.dp),
                                 )
                             }
@@ -651,7 +651,7 @@ private fun MoveButtons(
         Box(
             Modifier
                 .size(width = 32.dp, height = 28.dp)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(AppRadii.Chip))
                 .background(
                     if (canMoveUp) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
                     else Color.Transparent
@@ -669,7 +669,7 @@ private fun MoveButtons(
         Box(
             Modifier
                 .size(width = 32.dp, height = 28.dp)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(AppRadii.Chip))
                 .background(
                     if (canMoveDown) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
                     else Color.Transparent
@@ -890,7 +890,7 @@ private fun RecipeRow(
  */
 @Composable
 private fun Thumbnail(emoji: String?, imageFilename: String?, imageStore: FoodImageStore) {
-    val shape = RoundedCornerShape(12.dp)
+    val shape = RoundedCornerShape(AppRadii.Tile)
     val bitmap = rememberFoodThumbnail(imageFilename, imageStore)
 
     Box(

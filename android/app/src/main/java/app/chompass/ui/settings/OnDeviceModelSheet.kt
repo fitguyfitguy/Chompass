@@ -80,20 +80,20 @@ internal fun OnDeviceModelSheet(
         Text(
             "${entry.displayName} · ${gb(entry.sizeBytes)}",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
         )
         Spacer(Modifier.height(8.dp))
         Text(
             stringResource(R.string.on_device_model_accuracy_notice),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
         )
         if (entry.modelId == ModelCatalog.E4B.modelId) {
             Spacer(Modifier.height(8.dp))
             Text(
                 stringResource(R.string.on_device_model_e4b_notice),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle)
             )
         }
         Spacer(Modifier.height(12.dp))
@@ -103,7 +103,7 @@ internal fun OnDeviceModelSheet(
                 Text(
                     stringResource(R.string.on_device_model_privacy_notice, entry.modelCardUrl),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
@@ -169,7 +169,7 @@ internal fun OnDeviceModelSheet(
                         stringResource(R.string.on_device_model_not_loaded)
                     },
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle)
                 )
             }
             is OnDeviceDownloadState.Failed -> {
@@ -226,7 +226,7 @@ internal fun OnDeviceModelSheet(
         Text(
             stringResource(R.string.settings_on_device_headroom_footer, gb(reserveBytes)),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
         )
 
         if (isLoaded || occupiedBytes > 0L) {

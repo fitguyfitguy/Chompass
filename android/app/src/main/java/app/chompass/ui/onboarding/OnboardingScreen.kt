@@ -236,7 +236,7 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                         .padding(horizontal = 24.dp)
                         .padding(bottom = 36.dp)
                         .height(54.dp)
-                        .clip(RoundedCornerShape(28.dp))
+                        .clip(RoundedCornerShape(AppRadii.Sheet))
                         .background(
                             Brush.horizontalGradient(
                                 listOf(AppColors.CalorieStart, AppColors.CalorieEnd)
@@ -267,7 +267,7 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                             else vm.next()
                         },
                         enabled = ui.canAdvance,
-                        shape = RoundedCornerShape(28.dp),
+                        shape = RoundedCornerShape(AppRadii.Sheet),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.onBackground,
                             contentColor = MaterialTheme.colorScheme.background
@@ -298,7 +298,7 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                         } else vm.next()
                     },
                     enabled = ui.canAdvance,
-                    shape = RoundedCornerShape(28.dp),
+                    shape = RoundedCornerShape(AppRadii.Sheet),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.onBackground,
                         contentColor = MaterialTheme.colorScheme.background

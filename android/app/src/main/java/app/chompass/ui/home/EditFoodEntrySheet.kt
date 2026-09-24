@@ -5,6 +5,7 @@ import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.FoodReviewPositionalThreshold
 import app.chompass.ui.components.FoodReviewVelocityThreshold
+import app.chompass.ui.components.MagnitudeDrafts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -40,6 +41,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -213,7 +215,27 @@ fun EditFoodEntrySheet(
         )
     }
     val selectedServingOption = ServingUnitOption.optionMatching(selectedServingUnitId, servingUnitOptions)
-    val selectedServingQuantity = ServingUnitOption.parseQuantity(servingQuantityText)?.takeIf { it > 0 }
+    // Draft-while-typing (one commit model with the magnitude pickers): the
+    // quantity field only moves the visible draft; the grams conversion —
+    // deltas and expressions included — resolves on Save / collapse / unit
+    // switch, so macros don't rescale through intermediate digits.
+    val resolveServingDraft = {
+        val option = ServingUnitOption.optionMatching(selectedServingUnitId, servingUnitOptions)
+        val currentQuantity = if (option.gramsPerUnit > 0) servingGrams / option.gramsPerUnit else servingGrams
+        val parsed = ServingUnitOption.applyDeltaInput(servingQuantityText, currentQuantity)
+        if (parsed != null && parsed > 0) {
+            servingGrams = parsed * option.gramsPerUnit
+            servingTouched = true
+            if (servingQuantityText.trim().startsWith("+") || servingQuantityText.trim().startsWith("-")) {
+                servingQuantityText = ServingUnitOption.formatQuantity(parsed)
+            }
+        }
+        Unit
+    }
+    DisposableEffect(currentBaseEntry) {
+        val unregister = MagnitudeDrafts.register(resolveServingDraft)
+        onDispose { unregister() }
+    }
     var nutritionUnlocked by remember { mutableStateOf(false) }
     val scale = ServingUnitOption.servingScale(
         servingGrams = servingGrams,
@@ -282,30 +304,42 @@ fun EditFoodEntrySheet(
     val emDashText = stringResource(R.string.nutrition_em_dash)
     val math = remember(scale, emDashText) { FoodEntryEditMath(scale, emDashText) }
 
-    fun buildUpdated(): FoodEntry = editableMicros
-        .scaled(scale)
-        .applyTo(
-            currentBaseEntry.copy(
-                name = name.trim().ifEmpty { currentBaseEntry.name },
-                calories = math.scaledInt(editableCalories),
-                protein = math.scaledMacro(editableProtein),
-                carbs = math.scaledMacro(editableCarbs),
-                fat = math.scaledMacro(editableFat),
-                timestamp = loggedDate.atTime(loggedTime).atZone(zone).toInstant(),
-                mealType = mealType,
-                customNote = noteText.trim().takeIf { it.isNotEmpty() },
-                servingSizeGrams = ServingUnitOption.persistedServingGrams(recordedServing, servingTouched, servingGrams),
-                servingUnitOptions = servingUnitOptions,
-                selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
-                selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
-                constituents = app.chompass.services.ai.ConstituentReconcile.scaleAll(
-                    editableConstituents,
-                    scale,
-                ),
-                emoji = editableEmoji,
-                imageFilename = editableImageFilename,
+    // Commit paths recompute the scale derivatives from the live grams: the
+    // sticky bar flushes a pending serving draft (MagnitudeDrafts.commitAll)
+    // in the same frame, after the last composition computed `scale`/`math`.
+    fun saveScale(): Double = ServingUnitOption.servingScale(
+        servingGrams = servingGrams,
+        baseServingGrams = baseServingGrams,
+        scaleWithAmount = !nutritionUnlocked,
+    )
+    fun buildUpdated(): FoodEntry {
+        val saveMath = FoodEntryEditMath(saveScale(), emDashText)
+        val saveQuantity = ServingUnitOption.parseQuantity(servingQuantityText)?.takeIf { it > 0 }
+        return editableMicros
+            .scaled(saveScale())
+            .applyTo(
+                currentBaseEntry.copy(
+                    name = name.trim().ifEmpty { currentBaseEntry.name },
+                    calories = saveMath.scaledInt(editableCalories),
+                    protein = saveMath.scaledMacro(editableProtein),
+                    carbs = saveMath.scaledMacro(editableCarbs),
+                    fat = saveMath.scaledMacro(editableFat),
+                    timestamp = loggedDate.atTime(loggedTime).atZone(zone).toInstant(),
+                    mealType = mealType,
+                    customNote = noteText.trim().takeIf { it.isNotEmpty() },
+                    servingSizeGrams = ServingUnitOption.persistedServingGrams(recordedServing, servingTouched, servingGrams),
+                    servingUnitOptions = servingUnitOptions,
+                    selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
+                    selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else saveQuantity,
+                    constituents = app.chompass.services.ai.ConstituentReconcile.scaleAll(
+                        editableConstituents,
+                        saveScale(),
+                    ),
+                    emoji = editableEmoji,
+                    imageFilename = editableImageFilename,
+                )
             )
-        )
+    }
 
     // Re-run the AI on this entry with the edited note and overwrite the fields in
     // place; marking customNote as the current note flips the primary button back to Save.
@@ -584,7 +618,7 @@ fun EditFoodEntrySheet(
                             Text(
                                 stringResource(R.string.edit_food_apply_time, mealLabel(entry.mealType)),
                                 fontSize = 15.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Strong),
                                 modifier = Modifier.padding(end = 8.dp),
                             )
                         }
@@ -597,23 +631,11 @@ fun EditFoodEntrySheet(
                 ServingQuantityCard(
                     quantityText = servingQuantityText,
                     onQuantityChange = { newValue ->
-                        val currentQuantity = if (selectedServingOption.gramsPerUnit > 0) {
-                            servingGrams / selectedServingOption.gramsPerUnit
-                        } else {
-                            servingGrams
-                        }
-                        val parsed = ServingUnitOption.applyDeltaInput(newValue, currentQuantity)
                         servingQuantityText = newValue
-                        if (parsed != null && parsed > 0) {
-                            servingGrams = parsed * selectedServingOption.gramsPerUnit
-                            servingTouched = true
-                            if (newValue.trim().startsWith("+") || newValue.trim().startsWith("-")) {
-                                servingQuantityText = ServingUnitOption.formatQuantity(parsed)
-                            }
-                        }
                     },
                     selectedUnitId = selectedServingUnitId,
                     onSelectedUnitChange = { optionId ->
+                        resolveServingDraft()
                         selectedServingUnitId = optionId
                         val option = ServingUnitOption.optionMatching(optionId, servingUnitOptions)
                         val quantity = if (option.gramsPerUnit > 0) servingGrams / option.gramsPerUnit else servingGrams
@@ -625,6 +647,7 @@ fun EditFoodEntrySheet(
                     onMenuExpandedChange = { servingMenuExpanded = it },
                     gramUnit = stringResource(R.string.unit_g),
                     onUnitOptionsChange = { options, newId ->
+                        resolveServingDraft()
                         val gramsBefore = servingGrams
                         servingUnitOptions = options
                         selectedServingUnitId = newId
@@ -636,6 +659,7 @@ fun EditFoodEntrySheet(
                         }
                         servingQuantityText = ServingUnitOption.formatQuantity(quantity)
                     },
+                    onQuantityEditingDone = resolveServingDraft,
                 )
             }
             if (nutritionUnlocked) {
@@ -666,8 +690,9 @@ fun EditFoodEntrySheet(
                     title = stringResource(R.string.sheet_nutrition),
                     unlocked = nutritionUnlocked,
                     onToggle = {
+                        resolveServingDraft()
                         if (!nutritionUnlocked) {
-                            val baked = math.bakeScale(
+                            val baked = FoodEntryEditMath(saveScale(), emDashText).bakeScale(
                                 editableCalories,
                                 editableProtein,
                                 editableCarbs,
@@ -892,7 +917,7 @@ fun EditFoodEntrySheet(
                                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled)
                                     )
                                 },
-                                shape = RoundedCornerShape(20.dp),
+                                shape = RoundedCornerShape(AppRadii.Pill),
                                 modifier = Modifier.fillMaxWidth().heightIn(min = 90.dp)
                             )
 
@@ -923,7 +948,7 @@ fun EditFoodEntrySheet(
                                                 else -> stringResource(R.string.edit_reprocessing)
                                             },
                                             fontSize = 13.sp,
-                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
                                         )
                                     }
                                 }
@@ -952,7 +977,7 @@ fun EditFoodEntrySheet(
                                                     row.after,
                                                 ),
                                                 fontSize = 13.sp,
-                                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.78f),
+                                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Emphasized),
                                             )
                                         }
                                         Text(
@@ -985,7 +1010,7 @@ fun EditFoodEntrySheet(
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled)
                             )
                         },
-                        shape = RoundedCornerShape(20.dp),
+                        shape = RoundedCornerShape(AppRadii.Pill),
                         modifier = Modifier.fillMaxWidth().heightIn(min = 90.dp)
                     )
                 }
@@ -1333,7 +1358,7 @@ internal fun EditFoodIconDialog(
                             emoji,
                             fontSize = 24.sp,
                             modifier = Modifier
-                                .clip(RoundedCornerShape(10.dp))
+                                .clip(RoundedCornerShape(AppRadii.Track))
                                 .clickable { onPickEmoji(emoji) }
                                 .padding(horizontal = 8.dp, vertical = 4.dp),
                         )

@@ -140,7 +140,7 @@ internal fun ProviderStep(
         Spacer(Modifier.height(18.dp))
         // Recommended provider card — tap selects Google AI Studio (Gemini).
         Card(
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(AppRadii.Card),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             ),
@@ -160,7 +160,7 @@ internal fun ProviderStep(
                 Box(
                     Modifier
                         .size(44.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(AppRadii.Tile))
                         .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.06f)),
                     contentAlignment = Alignment.Center
                 ) {
@@ -190,7 +190,7 @@ internal fun ProviderStep(
         // Collapsible how-to — only relevant while Gemini / AI Studio is selected.
         if (provider == AIProvider.GEMINI) {
             Card(
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(AppRadii.Card),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -235,7 +235,7 @@ internal fun ProviderStep(
         }
         // BYOK setup: provider, model, and optional API key.
         Card(
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(AppRadii.Card),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -588,7 +588,7 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
         Column(
             Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(AppRadii.Tile))
                 .clickable { editing = PlanField.CALORIES }
                 .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -680,7 +680,7 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
         ) {
             Spacer(Modifier.height(20.dp))
             Card(
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(AppRadii.Tile),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.warning.copy(alpha = 0.12f)
                 ),
@@ -736,7 +736,7 @@ internal fun DisclaimersStep() {
         )
         Spacer(Modifier.height(8.dp))
         Card(
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(AppRadii.Tile),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.warning.copy(alpha = 0.12f)
             ),
@@ -762,34 +762,34 @@ internal fun DisclaimersStep() {
                     Text(
                         stringResource(R.string.onboarding_safety_body),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Subtle)
                     )
                     Text(
                         stringResource(R.string.onboarding_safety_low_bf),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Subtle)
                     )
                     Text(
                         stringResource(R.string.onboarding_safety_not_medical),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Subtle)
                     )
                     Text(
                         stringResource(R.string.onboarding_safety_water),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Subtle)
                     )
                     Text(
                         stringResource(R.string.onboarding_safety_settings_hint),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Subtle)
                     )
                 }
             }
         }
         Spacer(Modifier.height(12.dp))
         Card(
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(AppRadii.Tile),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.45f)
             ),
@@ -816,12 +816,12 @@ internal fun DisclaimersStep() {
                         stringResource(R.string.onboarding_privacy_cloud_title),
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Subtle)
                     )
                     Text(
                         stringResource(R.string.onboarding_privacy_cloud_lead),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Subtle)
                     )
                     listOf(
                         R.string.onboarding_privacy_cloud_food,
@@ -832,26 +832,26 @@ internal fun DisclaimersStep() {
                         Text(
                             stringResource(res),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Subtle)
                         )
                     }
                     Text(
                         stringResource(R.string.onboarding_privacy_ondevice_title),
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Subtle)
                     )
                     Text(
                         stringResource(R.string.onboarding_privacy_ondevice_body),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Subtle)
                     )
                 }
             }
         }
         Spacer(Modifier.height(12.dp))
         Card(
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(AppRadii.Tile),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.45f)
             ),
@@ -877,7 +877,7 @@ internal fun DisclaimersStep() {
                     Text(
                         stringResource(R.string.onboarding_accuracy_body),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Subtle)
                     )
                 }
             }

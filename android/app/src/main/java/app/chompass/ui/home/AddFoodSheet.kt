@@ -632,7 +632,7 @@ private fun AddFoodWaterQuickRow(
             waterAmountLabel(selectedMl, useMetric),
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.72f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
             maxLines = 1,
             modifier = Modifier.widthIn(min = 52.dp),
         )

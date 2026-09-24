@@ -168,9 +168,9 @@ internal fun BarcodeScannerContent(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(horizontal = 24.dp, vertical = 36.dp)
-                    .clip(RoundedCornerShape(24.dp))
+                    .clip(RoundedCornerShape(AppRadii.PillCard))
                     .background(Color.Black.copy(alpha = 0.58f))
-                    .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(24.dp))
+                    .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(AppRadii.PillCard))
                     .padding(horizontal = 22.dp, vertical = 18.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

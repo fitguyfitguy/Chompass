@@ -1054,6 +1054,7 @@ bilirsən?</string>
     <string name="macro_status_left">%1$s%2$s qalıb</string>
     <string name="macro_status_no_goal">Məqsəd yoxdur</string>
     <string name="macro_status_over">%1$s%2$s artıq</string>
+    <string name="macro_status_floor_met">Minimum səviyyəyə çatıldı</string>
     <string name="manual_protein">Protein (q)</string>
     <string name="meal_photo_cd">Şəkil %1$d</string>
     <string name="meal_photos_add_from_library">Şəkillər əlavə et</string>

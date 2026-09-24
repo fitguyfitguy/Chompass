@@ -645,8 +645,8 @@ internal fun buildSystemPrompt(
         lines.add("- Keto net carbs target: ${profile.ketoActiveCarbTarget} g/day")
     }
     profile.goalWeightKg?.let { lines.add("- Goal weight: ${wUnit(it)}") }
-    profile.bodyFatPercentage?.let { lines.add("- Body fat: ${(it * 100).toInt()}%") }
-    profile.goalBodyFatPercentage?.let { lines.add("- Goal body fat: ${(it * 100).toInt()}%") }
+    profile.bodyFatPercentage?.let { lines.add("- Body fat: ${String.format(java.util.Locale.US, "%.1f%%", it * 100)}") }
+    profile.goalBodyFatPercentage?.let { lines.add("- Goal body fat: ${String.format(java.util.Locale.US, "%.1f%%", it * 100)}") }
     lines.add("")
     lines.add("## Formulas in use")
     lines.add("- BMR: $bmrFormula. Current BMR ≈ ${profile.bmr.toInt()} kcal/day")

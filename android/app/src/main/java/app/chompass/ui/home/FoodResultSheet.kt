@@ -8,6 +8,7 @@ import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.FoodReviewPositionalThreshold
 import app.chompass.ui.components.FoodReviewVelocityThreshold
+import app.chompass.ui.components.MagnitudeDrafts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.AnimatedVisibility
@@ -47,6 +48,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -267,7 +269,27 @@ fun FoodResultSheet(
         )
     }
     val selectedServingOption = ServingUnitOption.optionMatching(selectedServingUnitId, servingUnitOptions)
-    val selectedServingQuantity = ServingUnitOption.parseQuantity(servingQuantityText)?.takeIf { it > 0 }
+    // Draft-while-typing (one commit model with the magnitude pickers): the
+    // quantity field only moves the visible draft; the grams conversion —
+    // deltas and expressions included — resolves on Save / collapse / unit
+    // switch, so macros don't rescale through intermediate digits.
+    val resolveServingDraft = {
+        val option = ServingUnitOption.optionMatching(selectedServingUnitId, servingUnitOptions)
+        val currentQuantity = if (option.gramsPerUnit > 0) servingGrams / option.gramsPerUnit else servingGrams
+        val parsed = ServingUnitOption.applyDeltaInput(servingQuantityText, currentQuantity)
+        if (parsed != null && parsed > 0) {
+            servingGrams = parsed * option.gramsPerUnit
+            servingTouched = true
+            if (servingQuantityText.trim().startsWith("+") || servingQuantityText.trim().startsWith("-")) {
+                servingQuantityText = ServingUnitOption.formatQuantity(parsed)
+            }
+        }
+        Unit
+    }
+    DisposableEffect(effectiveAnalysis) {
+        val unregister = MagnitudeDrafts.register(resolveServingDraft)
+        onDispose { unregister() }
+    }
     var nutritionUnlocked by remember { mutableStateOf(false) }
     val scale = ServingUnitOption.servingScale(
         servingGrams = servingGrams,
@@ -382,7 +404,16 @@ fun FoodResultSheet(
     val canOfferTip = analysisReady && onReanalyzeWithTip != null && imageBytes != null
     val canAddPhoto = analysisReady && onAddPhoto != null && imageCount < FoodPhotoSession.MAX_IMAGES
 
-    fun editedAnalysis() = editableMicros.scaled(scale).applyTo(
+    // Commit paths recompute the scale derivatives from the live grams: the
+    // sticky bar flushes a pending serving draft (MagnitudeDrafts.commitAll)
+    // in the same frame, after the last composition computed `scale`/`math`.
+    fun saveScale(): Double = ServingUnitOption.servingScale(
+        servingGrams = servingGrams,
+        baseServingGrams = baseServingGrams,
+        scaleWithAmount = !nutritionUnlocked,
+    )
+    fun saveQuantity(): Double? = ServingUnitOption.parseQuantity(servingQuantityText)?.takeIf { it > 0 }
+    fun editedAnalysis(scale: Double = saveScale(), math: FoodEntryEditMath = FoodEntryEditMath(scale, emDashText)) = editableMicros.scaled(scale).applyTo(
         effectiveAnalysis.copy(
             name = name.trim().ifEmpty { effectiveAnalysis.name.ifEmpty { placeholderName } },
             calories = math.scaledInt(editableCalories),
@@ -398,7 +429,7 @@ fun FoodResultSheet(
             ),
         )
     )
-    fun previewEntry() = editableMicros.scaled(scale).applyTo(
+    fun previewEntry(scale: Double = saveScale(), math: FoodEntryEditMath = FoodEntryEditMath(scale, emDashText)) = editableMicros.scaled(scale).applyTo(
         FoodEntry(
             name = name.trim().ifEmpty { effectiveAnalysis.name.ifEmpty { placeholderName } },
             calories = math.scaledInt(editableCalories),
@@ -413,7 +444,7 @@ fun FoodResultSheet(
             servingSizeGrams = ServingUnitOption.persistedServingGrams(recordedServing, servingTouched, servingGrams),
             servingUnitOptions = servingUnitOptions,
             selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
-            selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
+            selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else saveQuantity(),
             constituents = app.chompass.services.ai.ConstituentReconcile.scaleAll(
                 editableConstituents,
                 scale,
@@ -470,10 +501,10 @@ fun FoodResultSheet(
                 onAddToProgressiveMeal(
                     name.trim().ifEmpty { analysis.name },
                     persistedServing,
-                    scale,
+                    saveScale(),
                     mealType,
                     if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
-                    if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
+                    if (servingUnitOptions.isEmpty()) null else saveQuantity(),
                     editedAnalysis(),
                     false,
                     logTime,
@@ -482,10 +513,10 @@ fun FoodResultSheet(
                 onSave(
                     name.trim().ifEmpty { analysis.name },
                     persistedServing,
-                    scale,
+                    saveScale(),
                     mealType,
                     if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
-                    if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
+                    if (servingUnitOptions.isEmpty()) null else saveQuantity(),
                     editedAnalysis(),
                     logTime,
                 )
@@ -496,10 +527,10 @@ fun FoodResultSheet(
             onAddToProgressiveMeal(
                 name.trim().ifEmpty { analysis.name },
                 ServingUnitOption.persistedServingGrams(recordedServing, servingTouched, servingGrams),
-                scale,
+                saveScale(),
                 mealType,
                 if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
-                if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
+                if (servingUnitOptions.isEmpty()) null else saveQuantity(),
                 editedAnalysis(),
                 true,
                 logTime,
@@ -816,25 +847,12 @@ fun FoodResultSheet(
                 ServingQuantityCard(
                     quantityText = servingQuantityText,
                     onQuantityChange = { newValue ->
-                        if (!analysisReady) return@ServingQuantityCard
-                        val currentQuantity = if (selectedServingOption.gramsPerUnit > 0) {
-                            servingGrams / selectedServingOption.gramsPerUnit
-                        } else {
-                            servingGrams
-                        }
-                        val parsed = ServingUnitOption.applyDeltaInput(newValue, currentQuantity)
-                        servingQuantityText = newValue
-                        if (parsed != null && parsed > 0) {
-                            servingGrams = parsed * selectedServingOption.gramsPerUnit
-                            servingTouched = true
-                            if (newValue.trim().startsWith("+") || newValue.trim().startsWith("-")) {
-                                servingQuantityText = ServingUnitOption.formatQuantity(parsed)
-                            }
-                        }
+                        if (analysisReady) servingQuantityText = newValue
                     },
                     selectedUnitId = selectedServingUnitId,
                     onSelectedUnitChange = { optionId ->
                         if (!analysisReady) return@ServingQuantityCard
+                        resolveServingDraft()
                         selectedServingUnitId = optionId
                         val option = ServingUnitOption.optionMatching(optionId, servingUnitOptions)
                         val quantity = if (option.gramsPerUnit > 0) servingGrams / option.gramsPerUnit else servingGrams
@@ -848,6 +866,8 @@ fun FoodResultSheet(
                     isLoadingUnits = inferringUnits,
                     enabled = analysisReady,
                     onUnitOptionsChange = { options, newId ->
+                        if (!analysisReady) return@ServingQuantityCard
+                        resolveServingDraft()
                         val gramsBefore = servingGrams
                         servingUnitOptions = options
                         selectedServingUnitId = newId
@@ -859,6 +879,7 @@ fun FoodResultSheet(
                         }
                         servingQuantityText = ServingUnitOption.formatQuantity(quantity)
                     },
+                    onQuantityEditingDone = resolveServingDraft,
                 )
             }
             if (nutritionUnlocked) {
@@ -879,8 +900,9 @@ fun FoodResultSheet(
                     unlocked = nutritionUnlocked && analysisReady,
                     onToggle = {
                         if (!analysisReady) return@SheetSectionHeaderWithLock
+                        resolveServingDraft()
                         if (!nutritionUnlocked) {
-                            val baked = math.bakeScale(
+                            val baked = FoodEntryEditMath(saveScale(), emDashText).bakeScale(
                                 editableCalories,
                                 editableProtein,
                                 editableCarbs,
@@ -1216,7 +1238,7 @@ internal fun EntryAnalysisTipStrip(
                 Text(
                     stringResource(R.string.context_note_weight_unit),
                     fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
                 )
             }
             TextButton(
@@ -1287,7 +1309,7 @@ internal fun ReviewNutritionValueRow(
         if (unlocked) draft = editValue
     }
     val labelColor = accentColor?.let {
-        if (dim) it.copy(alpha = 0.72f) else it
+        if (dim) it.copy(alpha = AppTextOpacity.Secondary) else it
     } ?: if (dim) {
         MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
     } else {
@@ -1307,7 +1329,7 @@ internal fun ReviewNutritionValueRow(
                 .fillMaxWidth()
                 .padding(horizontal = 18.dp, vertical = 12.dp)
                 .clickable(enabled = unlocked) { expanded = !expanded }
-                .background(Color.Transparent, RoundedCornerShape(12.dp)),
+                .background(Color.Transparent, RoundedCornerShape(AppRadii.Tile)),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -1458,7 +1480,7 @@ internal fun WhatIfMealImpactDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        shape = RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(AppRadii.Sheet),
         title = {
             Text(
                 stringResource(R.string.what_if_title),
@@ -1478,7 +1500,7 @@ internal fun WhatIfMealImpactDialog(
             ) {
                 Text(
                     stringResource(R.string.what_if_subtitle),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
                     lineHeight = 19.sp
                 )
                 SheetPillCard {
@@ -1532,7 +1554,7 @@ internal fun WhatIfMealImpactDialog(
                             stringResource(R.string.what_if_ai_suggestion),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle)
                         )
                         if (loading) {
                             Row(
@@ -1546,13 +1568,13 @@ internal fun WhatIfMealImpactDialog(
                                 )
                                 Text(
                                     stringResource(R.string.what_if_loading),
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
                                 )
                             }
                         } else {
                             Text(
                                 suggestion ?: error ?: stringResource(R.string.what_if_no_suggestion),
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.78f),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Emphasized),
                                 lineHeight = 19.sp
                             )
                         }
@@ -1594,7 +1616,7 @@ private fun WhatIfImpactRow(
             total,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.72f)
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
         )
     }
 }

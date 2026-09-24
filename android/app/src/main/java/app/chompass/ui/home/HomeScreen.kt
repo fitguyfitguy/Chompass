@@ -242,11 +242,13 @@ fun HomeScreen(
     }
 
     // One-shot "planned for <day>" confirmation after a plan action.
-    val plannedForPattern = stringResource(R.string.home_planned_for)
+    val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
+        val plannedForPattern = stringResource(R.string.home_planned_for)
     val plannedDateFormat = remember { LocaleFormat.shortDate() }
     LaunchedEffect(ui.plannedAck) {
         val ack = ui.plannedAck ?: return@LaunchedEffect
-        snackbarHostState.showSnackbar(plannedForPattern.format(ack.second.format(plannedDateFormat)))
+        haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                snackbarHostState.showSnackbar(plannedForPattern.format(ack.second.format(plannedDateFormat)))
         vm.clearPlannedAck()
     }
 
@@ -691,6 +693,7 @@ fun HomeScreen(
                                 label = stringResource(nutrient.displayNameRes),
                                 current = current,
                                 goal = goal,
+                                fatFloor = nutrient == HomeTopNutrient.FAT,
                                 unit = stringResource(nutrient.unitRes),
                                 accentColor = nutrientAccentColor(nutrient),
                                 modifier = Modifier.weight(1f),
@@ -905,6 +908,7 @@ fun HomeScreen(
                                                 duration = SnackbarDuration.Short,
                                             )
                                             if (result == SnackbarResult.ActionPerformed) {
+                                                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                                                 vm.restoreEntry(entry)
                                             }
                                         }
@@ -1817,6 +1821,7 @@ fun HomeScreen(
                             duration = SnackbarDuration.Short,
                         )
                         if (result == SnackbarResult.ActionPerformed) {
+                            haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                             vm.undoTodayDayTypeSwitch()
                         }
                     }
@@ -1836,7 +1841,7 @@ fun HomeScreen(
         val uriHandler = LocalUriHandler.current
         FudGlassDialog(onDismissRequest = { vm.clearError() }) {
             Text(stringResource(R.string.error_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
-            Text(err, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f))
+            Text(err, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
             if (hasRetryableInput) {
                 FudGlassDialogActions(
                     primaryText = stringResource(R.string.action_retry),
@@ -2122,6 +2127,7 @@ internal fun HomeScreenPreviewContent(
                                     label = stringResource(nutrient.displayNameRes),
                                     current = if (nutrient == HomeTopNutrient.CAFFEINE) ui.caffeineTodayMg else nutrient.current(ui.todayEntries),
                                     goal = nutrient.goal(previewResolvedTargets, ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale),
+                                    fatFloor = nutrient == HomeTopNutrient.FAT,
                                     unit = stringResource(nutrient.unitRes),
                                     accentColor = nutrientAccentColor(nutrient),
                                     modifier = Modifier.weight(1f),

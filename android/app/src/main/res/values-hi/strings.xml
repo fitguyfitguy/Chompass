@@ -1060,6 +1060,7 @@
     <string name="macro_status_left">%1$s%2$s बाकी</string>
     <string name="macro_status_no_goal">कोई लक्ष्य नहीं</string>
     <string name="macro_status_over">%1$s%2$s अधिक</string>
+    <string name="macro_status_floor_met">न्यूनतम पूरा हुआ</string>
     <string name="meal_photo_cd">फोटो %1$d</string>
     <string name="meal_photos_add_from_library">फोटो जोड़ें</string>
     <string name="meal_photos_add_photo">फोटो जोड़ें</string>

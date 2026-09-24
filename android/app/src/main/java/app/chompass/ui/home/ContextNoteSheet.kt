@@ -69,6 +69,7 @@ import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
+import app.chompass.ui.theme.AppRadii
 
 /**
  * Intermediate sheet after a photo is captured or picked. Shows the image and an
@@ -154,7 +155,7 @@ fun ContextNoteSheet(
                             contentScale = androidx.compose.ui.layout.ContentScale.Crop,
                             modifier = Modifier
                                 .size(240.dp)
-                                .clip(RoundedCornerShape(20.dp))
+                                .clip(RoundedCornerShape(AppRadii.Pill))
                         )
                     }
                 }
@@ -225,7 +226,7 @@ fun ContextNoteSheet(
                     modifier = Modifier
                         .weight(1f)
                         .height(48.dp),
-                    shape = RoundedCornerShape(24.dp)
+                    shape = RoundedCornerShape(AppRadii.PillCard)
                 ) {
                     androidx.compose.material3.Icon(
                         Icons.Filled.AddAPhoto,
@@ -390,7 +391,7 @@ fun MultiPhotoCaptureSheet(
                         else R.string.meal_photos_subtitle_note_optional,
                     ),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
                     modifier = Modifier.padding(horizontal = 20.dp),
                 )
 
@@ -431,7 +432,7 @@ fun MultiPhotoCaptureSheet(
                                     contentScale = ContentScale.Fit,
                                     modifier = Modifier
                                         .size(width = 160.dp, height = 180.dp)
-                                        .clip(RoundedCornerShape(16.dp)),
+                                        .clip(RoundedCornerShape(AppRadii.Card)),
                                 )
                             }
                             IconButton(
@@ -601,7 +602,7 @@ internal fun MealPhotoAddTile(
     OutlinedButton(
         onClick = onAddPhoto,
         modifier = Modifier.size(width = 150.dp, height = 180.dp),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(AppRadii.Card),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

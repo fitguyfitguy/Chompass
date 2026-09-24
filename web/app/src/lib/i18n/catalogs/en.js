@@ -342,6 +342,7 @@ export const en = Object.freeze({
   "entry.constituents.item_fallback": "Ingredient",
   "entry.constituents.macros": "{calories} {unit} · P {protein} · C {carbs} · F {fat}",
   "entry.constituents.estimates_note": "Ingredient vitamin and mineral values are independent estimates; they may not add up exactly to the meal totals above.",
+  "entry.constituents.stale_note": "Estimated for the previous composition. Values may not match the edited ingredients.",
 
   // Serving unit label (app-generated "serving" option from OFF / heuristics)
   "unit.kcal": "kcal",

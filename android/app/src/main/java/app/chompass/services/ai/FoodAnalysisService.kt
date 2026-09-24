@@ -358,7 +358,7 @@ class FoodAnalysisService(
             String.format(java.util.Locale.US, "%.1f in", UnitFormat.cmToInches(profile.heightCm))
         }
         val bodyFat = profile.bodyFatPercentage
-            ?.let { "${(it * 100).toInt()}%" }
+            ?.let { String.format(java.util.Locale.US, "%.1f%%", it * 100) }
             ?: "not set"
         val goalWeight = profile.goalWeightKg?.let { kg ->
             if (weightMetric) String.format(java.util.Locale.US, "%.1f kg", kg)
@@ -622,7 +622,7 @@ class FoodAnalysisService(
             else String.format(Locale.US, "%.1f lb", UnitFormat.kgToLbs(profile.weightKg))
         val height = if (heightMetric) String.format(Locale.US, "%.0f cm", profile.heightCm)
             else String.format(Locale.US, "%.1f in", UnitFormat.cmToInches(profile.heightCm))
-        val bodyFat = profile.bodyFatPercentage?.let { "${(it * 100).toInt()}%" } ?: "not set"
+        val bodyFat = profile.bodyFatPercentage?.let { String.format(java.util.Locale.US, "%.1f%%", it * 100) } ?: "not set"
         val goalWeight = profile.goalWeightKg?.let { kg ->
             if (weightMetric) String.format(Locale.US, "%.1f kg", kg) else String.format(Locale.US, "%.1f lb", UnitFormat.kgToLbs(kg))
         } ?: "not set"
@@ -925,7 +925,7 @@ class FoodAnalysisService(
             String.format(Locale.US, "%.1f lb", UnitFormat.kgToLbs(profile.weightKg))
         }
         val bodyFat = profile.bodyFatPercentage
-            ?.let { "${(it * 100).toInt()}%" }
+            ?.let { String.format(java.util.Locale.US, "%.1f%%", it * 100) }
             ?: "not set"
         fun grams(value: Double) = String.format(Locale.US, "%.1fg", value)
 

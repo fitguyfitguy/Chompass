@@ -74,6 +74,7 @@ import app.chompass.ui.components.ExpandableMacroPicker
 import app.chompass.ui.components.ExpandableDecimalMacroPicker
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalEnergyUnit
+import app.chompass.ui.theme.AppRadii
 
 // ── Dialogs (unchanged styling polish) ──────────────────────────────
 
@@ -105,7 +106,7 @@ internal fun EntryAnalysisOverlay(
                     contentScale = androidx.compose.ui.layout.ContentScale.Fit,
                     modifier = Modifier
                         .size(220.dp)
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(AppRadii.Card))
                 )
             } else {
                 Icon(
@@ -355,7 +356,7 @@ private fun ProgressiveNutritionRow(
             .then(
                 if (!filled) {
                     Modifier
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(AppRadii.Chip))
                         .background(pendingWash)
                         .padding(horizontal = 8.dp, vertical = 6.dp)
                 } else {
@@ -420,7 +421,7 @@ internal fun AnalyzingOverlay(imageBytes: ByteArray? = null) {
                     contentScale = androidx.compose.ui.layout.ContentScale.Fit,
                     modifier = Modifier
                         .size(250.dp)
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(AppRadii.Card))
                 )
             } else {
                 Icon(
@@ -507,7 +508,7 @@ internal fun CameraPairTransitionOverlay() {
                     stringResource(R.string.home_take_second_shot),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle)
                 )
             }
         }
@@ -628,7 +629,7 @@ internal fun ManualEntryDialog(
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(AppRadii.Tile))
                         .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                         .clickable { mealMenuExpanded = true }
                         .padding(horizontal = 14.dp, vertical = 14.dp),
@@ -821,7 +822,7 @@ internal fun ManualEntryDialog(
                     modifier = Modifier.fillMaxWidth()
                 )
                 TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(R.string.action_cancel), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
+                    Text(stringResource(R.string.action_cancel), color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
                 }
     }
 }

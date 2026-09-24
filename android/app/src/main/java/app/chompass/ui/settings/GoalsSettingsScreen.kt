@@ -147,7 +147,7 @@ fun GoalsSettingsScreen(
             Text(stringResource(R.string.settings_max_pinned_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_max_pinned_message),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
@@ -161,7 +161,7 @@ fun GoalsSettingsScreen(
             Text(stringResource(R.string.settings_rebalance_blocked_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_rebalance_blocked_message),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
@@ -175,7 +175,7 @@ fun GoalsSettingsScreen(
             Text(stringResource(R.string.settings_energy_goals), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_energy_goals_info),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
@@ -189,7 +189,7 @@ fun GoalsSettingsScreen(
             Text(stringResource(R.string.settings_adaptive_goals), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_adaptive_goals_info),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
@@ -205,7 +205,7 @@ fun GoalsSettingsScreen(
             Text(energyAlertTitle, fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 energyAlertMessage,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
@@ -221,7 +221,7 @@ fun GoalsSettingsScreen(
             Text(adaptiveAlertTitle, fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 adaptiveAlertMessage,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
@@ -237,7 +237,7 @@ fun GoalsSettingsScreen(
     invalidGoalWeightMessage?.let { msg ->
         FudGlassDialog(onDismissRequest = { invalidGoalWeightMessage = null }) {
             Text(stringResource(R.string.settings_invalid_goal_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
-            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f))
+            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { invalidGoalWeightMessage = null }
@@ -256,7 +256,7 @@ fun GoalsSettingsScreen(
             }
         ) {
             Text(stringResource(R.string.settings_permission_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
-            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f))
+            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
             if (actionLabel != null && actionIntent != null) {
                 FudGlassDialogActions(
                     primaryText = actionLabel,

@@ -61,7 +61,7 @@ fun ExportBodyMetricsSheet(
             Text(
                 stringResource(R.string.export_body_metrics_subtitle),
                 fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle)
             )
 
             Text(

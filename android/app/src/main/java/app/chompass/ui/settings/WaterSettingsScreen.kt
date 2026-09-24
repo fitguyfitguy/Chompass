@@ -271,7 +271,7 @@ internal fun WaterDynamicGoalPreviewRow(preview: WaterGoalBreakdown?) {
         Text(
             stringResource(R.string.settings_water_goal_summary, preview.netGoalMl),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
         )
     }
 }

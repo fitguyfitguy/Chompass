@@ -25,6 +25,7 @@ import {
   scaleAllConstituents,
   commitConstituentDisplayEdit,
 } from "../lib/chompass-core/constituents.js";
+import { microsStaleFor } from "../lib/chompass-core/micros-composition.js";
 import {
   ALL_MICRO_KEYS,
   NUTRITION_DETAIL_MICROS,
@@ -562,6 +563,9 @@ export class EntryForm extends HTMLElement {
     const rows = this.displayConstituents();
     if (!rows.length) return "";
     const expanded = this.constituentsExpanded;
+    const storedSignature =
+      this.existing?.microsCompositionSignature ?? this.prefill?.microsCompositionSignature ?? null;
+    const stale = microsStaleFor(storedSignature, this.constituents);
     return `
       <section class="entry-section entry-section--constituents">
         <button type="button" class="entry-constituents__toggle" data-constituents-toggle aria-expanded="${expanded}">
@@ -571,6 +575,7 @@ export class EntryForm extends HTMLElement {
         ${
           expanded
             ? `<div class="entry-constituents__list">
+                 ${stale ? `<p class="entry-constituents__stale" role="note">${escapeHtml(t("entry.constituents.stale_note"))}</p>` : ""}
                  ${rows.map((row, index) => this.renderConstituentRow(row, index, optionalGoals)).join("")}
                  <button type="button" class="btn btn--ghost btn--sm" data-constituent-add>
                    ${escapeHtml(t("entry.constituents.add"))}
@@ -1198,6 +1203,8 @@ export class EntryForm extends HTMLElement {
       note: fd.get("note") ? String(fd.get("note")) : this.prefill?.note ?? null,
       grounding: this.existing?.grounding ?? null,
       productMetadata: this.existing?.productMetadata ?? this.prefill?.productMetadata ?? null,
+      microsCompositionSignature:
+        this.existing?.microsCompositionSignature ?? this.prefill?.microsCompositionSignature ?? null,
     };
     for (const key of ALL_MICRO_KEYS) {
       if (key === "fiberG") continue;

@@ -100,7 +100,7 @@ internal fun CancelSaveRow(
             text = stringResource(R.string.action_cancel),
             onClick = onDismiss,
             modifier = Modifier.weight(1f),
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
         )
         GradientSaveButton(enabled = enabled, modifier = Modifier.weight(1f), onClick = onSave)
     }
@@ -598,7 +598,7 @@ internal fun WaterQuickPresetsSheet(
                     stringResource(R.string.settings_water_preset_label, index + 1),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
                 )
                 Spacer(Modifier.height(6.dp))
                 if (useMetric) {

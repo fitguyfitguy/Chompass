@@ -193,7 +193,7 @@ private fun LegendSwatch(
                     .background(color)
             )
         }
-        Text(label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f))
+        Text(label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle))
     }
 }
 

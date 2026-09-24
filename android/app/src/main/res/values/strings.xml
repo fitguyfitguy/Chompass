@@ -111,6 +111,7 @@
     <string name="macro_status_left">%1$s%2$s left</string>
     <string name="macro_status_over">%1$s%2$s over</string>
     <string name="macro_status_goal_reached">Goal reached</string>
+    <string name="macro_status_floor_met">Minimum met</string>
     <string name="macro_status_no_goal">No goal</string>
 
     <!-- Gender -->

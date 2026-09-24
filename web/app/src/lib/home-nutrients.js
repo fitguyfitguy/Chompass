@@ -334,8 +334,9 @@ export function nutritionGoalText(goal, percent) {
  * @param {number} target
  * @param {string} unit
  */
-export function tubeStatus(value, target, unit) {
+export function tubeStatus(value, target, unit, isFloor = false) {
   if (target <= 0) return "—";
+  if (isFloor && Math.round(value) >= Math.round(target)) return "minimum met";
   if (Math.round(value) === Math.round(target)) return "goal";
   const left = Math.round(target - value);
   if (value < target) return `${left}${unit} left`;
