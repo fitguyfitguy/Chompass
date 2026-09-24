@@ -70,7 +70,7 @@ fun SettingsSubScreen(
             ) {
                 Row(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(AppRadii.Card))
                         .clickable(onClick = onBack)
                         .padding(horizontal = 2.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,

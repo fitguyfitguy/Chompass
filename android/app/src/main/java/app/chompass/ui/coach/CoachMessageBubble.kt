@@ -157,9 +157,9 @@ internal fun MessageList(
                     Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(AppRadii.Tile))
                         .background(MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.6f))
-                        .border(0.5.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.25f), RoundedCornerShape(12.dp))
+                        .border(0.5.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.25f), RoundedCornerShape(AppRadii.Tile))
                         .padding(horizontal = 14.dp, vertical = 8.dp)
                 ) {
                     Text(error, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
@@ -465,7 +465,7 @@ internal fun MarkdownText(content: String, color: Color) {
                     Text(inlineMarkdown(block.text, linkColor, codeBg), color = color, fontSize = 17.sp, lineHeight = 22.sp, modifier = Modifier.weight(1f))
                 }
                 is MdBlock.Code -> Box(
-                    Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).background(codeBg).padding(10.dp)
+                    Modifier.fillMaxWidth().clip(RoundedCornerShape(AppRadii.Chip)).background(codeBg).padding(10.dp)
                 ) {
                     Text(block.text, color = color, fontFamily = FontFamily.Monospace, fontSize = 14.sp, lineHeight = 20.sp)
                 }

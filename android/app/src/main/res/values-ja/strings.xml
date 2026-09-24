@@ -1059,6 +1059,7 @@
     <string name="macro_status_left">%1$s%2$s残り</string>
     <string name="macro_status_no_goal">目標なし</string>
     <string name="macro_status_over">%1$s%2$s超過</string>
+    <string name="macro_status_floor_met">最低値達成</string>
     <string name="meal_photo_cd">写真 %1$d</string>
     <string name="meal_photos_add_from_library">写真を追加</string>
     <string name="meal_photos_add_photo">写真を追加</string>

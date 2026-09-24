@@ -68,6 +68,7 @@ import app.chompass.services.speech.SttEvent
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
+import app.chompass.ui.theme.AppRadii
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -298,7 +299,7 @@ fun VoiceInputSheet(
                     .fillMaxWidth()
                     .heightIn(min = 100.dp, max = 200.dp)
                     .verticalScroll(transcriptScroll)
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(AppRadii.Tile))
                     .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
                     .padding(horizontal = 14.dp, vertical = 12.dp)
             ) {
@@ -424,7 +425,7 @@ fun VoiceInputSheet(
                 recorder.cancel()
                 onDismiss()
             }, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(R.string.action_cancel), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
+                Text(stringResource(R.string.action_cancel), color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
             }
         }
     }

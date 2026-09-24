@@ -83,6 +83,7 @@ import app.chompass.ui.components.QueueThumb
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
+import app.chompass.ui.theme.AppRadii
 import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -274,9 +275,9 @@ private fun QueueTabs(selected: QueueTab, onSelect: (QueueTab) -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(AppRadii.Track))
             .background(trackColor)
-            .border(0.5.dp, trackBorder, RoundedCornerShape(10.dp))
+            .border(0.5.dp, trackBorder, RoundedCornerShape(AppRadii.Track))
             .padding(2.dp)
     ) {
         for (t in QueueTab.values()) {
@@ -284,7 +285,7 @@ private fun QueueTabs(selected: QueueTab, onSelect: (QueueTab) -> Unit) {
             Box(
                 Modifier
                     .weight(1f)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(AppRadii.Chip))
                     .background(
                         if (isSel) Brush.linearGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd))
                         else Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))
@@ -491,12 +492,12 @@ private fun QueueRowSurface(content: @Composable androidx.compose.foundation.lay
     Row(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(AppRadii.Card))
             .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
             .border(
                 0.5.dp,
                 if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight,
-                RoundedCornerShape(16.dp),
+                RoundedCornerShape(AppRadii.Card),
             )
             .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -509,7 +510,7 @@ private fun QueueThumbnail(filename: String?, store: app.chompass.data.AnalysisQ
     Box(
         Modifier
             .size(52.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(AppRadii.Tile))
             .background(MaterialTheme.colorScheme.surfaceContainerHighest),
         contentAlignment = Alignment.Center,
     ) {
@@ -676,7 +677,7 @@ private fun EditQueuedSheet(
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier
                                         .size(width = 96.dp, height = 96.dp)
-                                        .clip(RoundedCornerShape(12.dp)),
+                                        .clip(RoundedCornerShape(AppRadii.Tile)),
                                 )
                             }
                             IconButton(
@@ -705,7 +706,7 @@ private fun EditQueuedSheet(
                                     )
                                 },
                                 modifier = Modifier.size(width = 96.dp, height = 96.dp),
-                                shape = RoundedCornerShape(12.dp),
+                                shape = RoundedCornerShape(AppRadii.Tile),
                             ) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Icon(

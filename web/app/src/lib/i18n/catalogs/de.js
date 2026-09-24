@@ -288,6 +288,7 @@ export const de = Object.freeze({
   "entry.constituents.item_fallback": "Zutat",
   "entry.constituents.macros": "{calories} {unit} · P {protein} · C {carbs} · F {fat}",
   "entry.constituents.estimates_note": "Die Vitamin- und Mineralstoffwerte der Zutaten sind unabhängige Schätzungen; sie ergeben nicht immer exakt die Mahlzeitensummen oben.",
+  "entry.constituents.stale_note": "Für die vorherige Zusammensetzung geschätzt. Die Werte passen möglicherweise nicht zu den geänderten Zutaten.",
   "unit.kcal": "kcal",
   "unit.kj": "kJ",
   "settings.units.energy": "Energie",

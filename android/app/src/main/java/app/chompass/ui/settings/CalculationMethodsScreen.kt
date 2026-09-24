@@ -59,7 +59,7 @@ fun CalculationMethodsScreen(
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Row(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(16.dp))
+                            .clip(RoundedCornerShape(AppRadii.Card))
                             .clickable { onBack() }
                             .padding(horizontal = 2.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -87,7 +87,7 @@ fun CalculationMethodsScreen(
                 Text(
                     stringResource(R.string.settings_calc_intro),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.62f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Subtle)
                 )
             }
 
@@ -298,13 +298,13 @@ internal fun CalcFormulaCard(
             Text(
                 usedWhen,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle)
             )
             if (formula != null) {
                 Box(
                     Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(AppRadii.Chip))
                         .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
                         .padding(10.dp)
                 ) {
@@ -312,7 +312,7 @@ internal fun CalcFormulaCard(
                         formula,
                         fontFamily = FontFamily.Monospace,
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Strong)
                     )
                 }
             }

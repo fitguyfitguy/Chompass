@@ -68,7 +68,7 @@ internal fun SettingsHealthDataSection(
                     Text(
                         stringResource(R.string.settings_health_companions),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
                         modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
                     )
                     if (backgroundSyncSupported) {
@@ -80,14 +80,14 @@ internal fun SettingsHealthDataSection(
                         Text(
                             stringResource(R.string.settings_health_background_sync_desc),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
                             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
                         )
                     } else {
                         Text(
                             stringResource(R.string.settings_health_background_sync_unsupported),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
                             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
                         )
                     }
@@ -117,32 +117,32 @@ internal fun SettingsHealthDataSection(
                         Text(
                             stringResource(R.string.settings_safety_body),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
                         )
                         Text(
                             stringResource(R.string.settings_safety_consult),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
                         )
                         Text(
                             stringResource(R.string.settings_safety_ed),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
                         )
                         Text(
                             stringResource(R.string.settings_safety_low_bf),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
                         )
                         Text(
                             stringResource(R.string.settings_safety_escalate),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
                         )
                         Text(
                             stringResource(R.string.settings_safety_water),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
                         )
                         Text(
                             stringResource(R.string.settings_accuracy_title),
@@ -153,7 +153,7 @@ internal fun SettingsHealthDataSection(
                         Text(
                             stringResource(R.string.settings_accuracy_body),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
                         )
                     }
                     HorizontalDivider()

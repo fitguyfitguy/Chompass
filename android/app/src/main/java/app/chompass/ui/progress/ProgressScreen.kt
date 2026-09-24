@@ -50,7 +50,9 @@ import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.dayTypeColor
+import app.chompass.ui.theme.AppRadii
 import androidx.compose.ui.graphics.Color
 
 /**
@@ -152,7 +154,7 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                     Row(
                         Modifier
                             .minimumInteractiveComponentSize()
-                            .clip(RoundedCornerShape(16.dp))
+                            .clip(RoundedCornerShape(AppRadii.Card))
                             .clickable(enabled = onOpenCustomize != null) { onOpenCustomize?.invoke() }
                             .semantics(mergeDescendants = true) { role = Role.Button }
                             .padding(horizontal = 10.dp, vertical = 6.dp),
@@ -356,7 +358,7 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
             Text(stringResource(R.string.progress_goal_reached_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.progress_goal_reached_message),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_keep_going),

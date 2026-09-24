@@ -58,7 +58,7 @@ fun StepsCard(
                 text = stringResource(R.string.home_steps_label),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
         }
         Spacer(Modifier.height(4.dp))
@@ -105,7 +105,7 @@ fun ActiveCaloriesCard(
             stringResource(R.string.home_active_calories_label, energyUnitLabel()),
             fontSize = 11.sp,
             fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
             maxLines = 2,
         )
     }

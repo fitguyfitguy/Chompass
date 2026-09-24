@@ -1060,6 +1060,7 @@
     <string name="macro_status_left">%1$s%2$s متبقي</string>
     <string name="macro_status_no_goal">لا يوجد هدف</string>
     <string name="macro_status_over">%1$s%2$s زائد</string>
+    <string name="macro_status_floor_met">تم تحقيق الحد الأدنى</string>
     <string name="meal_photo_cd">صورة %1$d</string>
     <string name="meal_photos_add_from_library">إضافة صور</string>
     <string name="meal_photos_add_photo">إضافة صورة</string>

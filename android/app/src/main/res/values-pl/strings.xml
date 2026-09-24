@@ -106,6 +106,7 @@
     <string name="macro_goal_of">z %1$d%2$s</string>
     <string name="macro_status_left">%1$s%2$s zostało</string>
     <string name="macro_status_over">%1$s%2$s za dużo</string>
+    <string name="macro_status_floor_met">Osiągnięto minimum</string>
     <string name="macro_status_goal_reached">Cel osiągnięty</string>
     <string name="macro_status_no_goal">Brak celu</string>
 

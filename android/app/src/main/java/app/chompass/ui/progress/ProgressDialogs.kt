@@ -32,6 +32,7 @@ import app.chompass.ui.components.MagnitudeDrafts
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.components.UnitToggle
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppTextOpacity
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -91,7 +92,7 @@ internal fun AddWeightDialog(
             Text(
                 text = if (advanced) stringResource(R.string.action_hide) else stringResource(R.string.action_show),
                 fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle)
             )
         }
         if (advanced) {
@@ -123,7 +124,7 @@ internal fun AddWeightDialog(
             FudGlassTextButton(
                 text = stringResource(R.string.action_cancel),
                 onClick = onDismiss,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
             Spacer(Modifier.width(8.dp))
             FudGlassPrimaryButton(
@@ -185,7 +186,7 @@ internal fun AddBodyFatDialog(
             Text(
                 text = if (advanced) stringResource(R.string.action_hide) else stringResource(R.string.action_show),
                 fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle)
             )
         }
         if (advanced) {
@@ -217,7 +218,7 @@ internal fun AddBodyFatDialog(
             FudGlassTextButton(
                 text = stringResource(R.string.action_cancel),
                 onClick = onDismiss,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
             Spacer(Modifier.width(8.dp))
             FudGlassPrimaryButton(

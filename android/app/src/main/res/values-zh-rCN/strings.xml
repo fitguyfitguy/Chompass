@@ -1061,6 +1061,7 @@
     <string name="macro_status_left">%1$s%2$s剩余</string>
     <string name="macro_status_no_goal">无目标</string>
     <string name="macro_status_over">%1$s%2$s超标</string>
+    <string name="macro_status_floor_met">已达到最低值</string>
     <string name="meal_photo_cd">照片 %1$d</string>
     <string name="meal_photos_add_from_library">添加照片</string>
     <string name="meal_photos_add_photo">添加照片</string>

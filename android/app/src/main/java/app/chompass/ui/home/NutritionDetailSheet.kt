@@ -61,6 +61,7 @@ import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
+import app.chompass.ui.theme.AppRadii
 import java.util.Locale
 import kotlin.math.roundToInt
 
@@ -359,7 +360,7 @@ private fun DetailRow(
             Box(
                 Modifier
                     .size(20.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(AppRadii.Track))
                     .background(accentColor),
                 contentAlignment = Alignment.Center
             ) {

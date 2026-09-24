@@ -127,7 +127,7 @@ fun NutritionPickerSheet(
             text = stringResource(R.string.action_cancel),
             onClick = onDismiss,
             modifier = Modifier.weight(1f),
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
         )
         Box(
             Modifier

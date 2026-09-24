@@ -128,6 +128,7 @@ fun <T> WheelPicker(
     }
     val fling = if (items.size <= SHORT_LIST_ITEM_COUNT) shortFling else defaultFling
 
+    val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
     val centerIndex by remember {
         derivedStateOf { listState.centeredIndex() ?: listState.firstVisibleItemIndex }
     }
@@ -152,6 +153,7 @@ fun <T> WheelPicker(
         snapshotFlow { listState.centeredIndex() }
             .distinctUntilChanged()
             .collect { idx ->
+                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
                 val snapped = currentItems.getOrNull(idx ?: return@collect) ?: return@collect
                 if (snapped != currentSelected) currentOnSelect(snapped)
             }
@@ -838,7 +840,7 @@ fun ExpandableMacroPicker(
                 .fillMaxWidth()
                 .padding(horizontal = 18.dp, vertical = 12.dp)
                 .clickable { onExpandChange(!expanded) }
-                .background(Color.Transparent, RoundedCornerShape(12.dp)),
+                .background(Color.Transparent, RoundedCornerShape(AppRadii.Tile)),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Label with accent color indicator
@@ -926,7 +928,7 @@ fun ExpandableDecimalMacroPicker(
                 .fillMaxWidth()
                 .padding(horizontal = 18.dp, vertical = 12.dp)
                 .clickable { onExpandChange(!expanded) }
-                .background(Color.Transparent, RoundedCornerShape(12.dp)),
+                .background(Color.Transparent, RoundedCornerShape(AppRadii.Tile)),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {

@@ -394,7 +394,7 @@ internal fun DayTypeProfileEditorSheet(
             )
             Text(
                 stringResource(R.string.settings_day_types_delete_used_message),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
             )
             if (isReferenced) {
                 replacementOptions.forEach { option ->
@@ -448,7 +448,7 @@ private fun EditorWheelLabel(label: String, unit: String) {
             label,
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
         )
         Spacer(Modifier.width(4.dp))
         Text(

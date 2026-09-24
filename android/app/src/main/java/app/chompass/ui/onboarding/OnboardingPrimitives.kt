@@ -43,6 +43,7 @@ import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import androidx.compose.material3.Icon
 import app.chompass.models.UnitFormat
+import app.chompass.ui.theme.AppRadii
 
 @Composable
 internal fun StepHeader(title: String, subtitle: String? = null) {
@@ -79,7 +80,7 @@ internal fun SelectionCard(
 ) {
     val accent = if (selected) AppColors.Calorie else MaterialTheme.colorScheme.onBackground
     val selectedBorder = if (selected) {
-        Modifier.border(BorderStroke(1.4.dp, AppColors.Calorie.copy(alpha = 0.55f)), RoundedCornerShape(20.dp))
+        Modifier.border(BorderStroke(1.4.dp, AppColors.Calorie.copy(alpha = 0.55f)), RoundedCornerShape(AppRadii.Pill))
     } else {
         Modifier
     }
@@ -133,7 +134,7 @@ internal fun ChoiceRow(label: String, subtitle: String? = null, selected: Boolea
     Box(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(AppRadii.Card))
             .background(bg)
             .selectable(
                 selected = selected,

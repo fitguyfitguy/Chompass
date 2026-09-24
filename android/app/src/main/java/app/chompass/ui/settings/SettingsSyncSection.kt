@@ -54,7 +54,7 @@ internal fun SettingsSyncSection(
             Text(
                 stringResource(R.string.settings_sync_blurb),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
                 modifier = Modifier.padding(bottom = 8.dp),
             )
             OutlinedTextField(
@@ -111,7 +111,7 @@ internal fun SettingsSyncSection(
         Text(
             stringResource(R.string.settings_webdav_auto_sync_desc),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
         )
         HorizontalDivider()

@@ -182,6 +182,7 @@
     <string name="macro_status_left">%1$s%2$s übrig</string>
 
     <string name="macro_status_over">%1$s%2$s drüber</string>
+    <string name="macro_status_floor_met">Minimum erreicht</string>
 
     <string name="macro_status_goal_reached">Ziel erreicht</string>
 

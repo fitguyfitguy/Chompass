@@ -191,7 +191,7 @@ fun FoodEntrySettingsScreen(
             Text(stringResource(R.string.settings_default_to_grams), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_default_to_grams_info),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
@@ -204,7 +204,7 @@ fun FoodEntrySettingsScreen(
             Text(stringResource(R.string.settings_meal_planning), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_meal_planning_info),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_ok),

@@ -77,6 +77,7 @@ import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppThemeColor
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppSpacing
 import app.chompass.ui.theme.AppTextOpacity
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -133,7 +134,7 @@ internal fun SectionCard(title: String, content: @Composable () -> Unit) {
             title,
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
-            modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
+            modifier = Modifier.padding(start = AppSpacing.Xs, bottom = 6.dp)
         )
         FudGlassSurface(
             modifier = Modifier.fillMaxWidth(),
@@ -316,7 +317,7 @@ internal fun GoalStatusChip(locked: Boolean, onClick: () -> Unit) {
     }
     Box(
         Modifier
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(AppRadii.Chip))
             .semantics { contentDescription = chipCd }
             .clickable(onClick = onClick, role = Role.Button)
             .background(chipColor.copy(alpha = 0.14f))
@@ -441,7 +442,7 @@ internal fun ToggleRowWithInfo(
             Icon(
                 Icons.Outlined.Info,
                 contentDescription = stringResource(R.string.action_info),
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
                 modifier = Modifier.size(18.dp)
             )
         }
@@ -505,7 +506,7 @@ internal fun BusyToggleRow(
                 Icon(
                     Icons.Outlined.Info,
                     contentDescription = stringResource(R.string.action_info),
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f),
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -586,6 +587,7 @@ internal fun GradientSaveButton(
     onClick: () -> Unit
 ) {
     val brush = Brush.linearGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd))
+    val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
     val shape = RoundedCornerShape(AppRadii.Field)
     Box(
         modifier
@@ -602,6 +604,7 @@ internal fun GradientSaveButton(
             )
             .border(0.7.dp, Color.White.copy(alpha = 0.22f), shape)
             .clickable(enabled = enabled, onClick = {
+                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                 app.chompass.ui.components.MagnitudeDrafts.commitAll()
                 onClick()
             })

@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import app.chompass.R
 import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppRadii
 import java.io.File
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -55,7 +56,7 @@ internal fun ExportPrimaryButton(onClick: () -> Unit) {
     Box(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(AppRadii.Card))
             .background(AppColors.CalorieGradient)
             .clickable(onClick = onClick)
             .padding(vertical = 14.dp),

@@ -11,6 +11,7 @@ import {
   parseConstituentsFromPrediction,
   reconcileConstituents,
 } from "../chompass-core/constituents.js";
+import { microsCompositionSignature } from "../chompass-core/micros-composition.js";
 import { isSmallCloudModel } from "../chompass-core/weak-model.js";
 import { FoodPartialJsonAssembler } from "./partial-json.js";
 import { t } from "../i18n/index.js";
@@ -282,6 +283,7 @@ async function runAnalyze(providerId, config, text, productContext, imageList, a
     selectedServingUnit: units.selectedServingUnit,
     selectedServingQuantity: units.selectedServingQuantity,
     constituents: reconciled.constituents,
+    microsCompositionSignature: microsCompositionSignature(reconciled.constituents),
     note: parsed.note ? String(parsed.note) : null,
     source: "ai_estimated",
     ...Object.fromEntries(ALL_MICRO_KEYS.map((key) => [key, optNum(parsed[key])])),

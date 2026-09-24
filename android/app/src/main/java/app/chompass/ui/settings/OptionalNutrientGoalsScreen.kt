@@ -77,7 +77,7 @@ fun OptionalNutrientGoalsScreen(
                 ) {
                     Row(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(16.dp))
+                            .clip(RoundedCornerShape(AppRadii.Card))
                             .clickable { onBack() }
                             .padding(horizontal = 2.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -215,7 +215,7 @@ fun OptionalNutrientGoalsScreen(
             )
             Text(
                 message,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_ok),

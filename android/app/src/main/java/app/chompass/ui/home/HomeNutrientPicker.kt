@@ -47,6 +47,7 @@ import androidx.compose.foundation.shape.CircleShape
 import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.macroGramsText
+import app.chompass.ui.theme.AppRadii
 import java.util.Locale
 
 @Composable
@@ -77,7 +78,7 @@ fun HomeTopNutrientPickerDialog(
         Text(
             stringResource(R.string.home_nutrients_pick_count, maxCards),
             fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f)
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle)
         )
         LazyColumn(
             Modifier
@@ -163,7 +164,7 @@ private fun NutrientPickerRow(
     accentColor: Color,
     onClick: () -> Unit,
 ) {
-    val shape = RoundedCornerShape(16.dp)
+    val shape = RoundedCornerShape(AppRadii.Card)
     val isDark = isDarkTheme()
     Row(
         Modifier
@@ -187,13 +188,13 @@ private fun NutrientPickerRow(
         Box(
             Modifier
                 .size(28.dp)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(AppRadii.Chip))
                 .background(if (checked) accentColor else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f))
                 .border(
                     1.dp,
                     if (checked) accentColor.copy(alpha = 0.55f)
                     else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
-                    RoundedCornerShape(8.dp)
+                    RoundedCornerShape(AppRadii.Chip)
                 ),
             contentAlignment = Alignment.Center
         ) {

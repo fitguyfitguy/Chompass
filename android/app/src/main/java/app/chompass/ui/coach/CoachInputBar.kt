@@ -57,6 +57,7 @@ import app.chompass.ui.navigation.BottomNavDockedControlPadding
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.theme.AppRadii
 
 /**
  * Horizontal scrolling chips. Verbatim port of `promptChips`.
@@ -77,7 +78,7 @@ internal fun PromptChipRow(chips: List<String>, enabled: Boolean, onTap: (String
 
 @Composable
 private fun PromptChip(text: String, enabled: Boolean, onTap: (String) -> Unit) {
-    val shape = RoundedCornerShape(20.dp)
+    val shape = RoundedCornerShape(AppRadii.Pill)
     val isDark = isDarkTheme()
     val borderColor = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
     Box(
@@ -134,7 +135,7 @@ internal fun InputBar(
                     modifier = Modifier
                         .padding(start = 10.dp, end = 10.dp, top = 8.dp, bottom = 4.dp)
                         .size(width = 88.dp, height = 70.dp)
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(AppRadii.Card))
                 ) {
                     Image(
                         bitmap = bitmap.asImageBitmap(),
@@ -218,7 +219,7 @@ internal fun CoachMediaActions(
     onPickImage: () -> Unit,
     onCaptureImage: () -> Unit
 ) {
-    val shape = RoundedCornerShape(19.dp)
+    val shape = RoundedCornerShape(AppRadii.Pill)
     Row(
         modifier = Modifier
             .clip(shape)

@@ -168,7 +168,7 @@ private fun ScreenshotRecipesTabStrip() {
     Row(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(AppRadii.Tile))
             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -178,7 +178,7 @@ private fun ScreenshotRecipesTabStrip() {
             Box(
                 Modifier
                     .weight(1f)
-                    .clip(RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(AppRadii.Track))
                     .background(
                         if (selected) AppColors.Calorie.copy(alpha = 0.22f)
                         else Color.Transparent
@@ -191,7 +191,7 @@ private fun ScreenshotRecipesTabStrip() {
                     fontSize = 11.sp,
                     fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
                     color = if (selected) AppColors.Calorie
-                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    else MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
                     maxLines = 1,
                 )
             }
@@ -218,9 +218,9 @@ private fun ScreenshotRecipeRow(
         Box(
             Modifier
                 .size(56.dp)
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(AppRadii.Tile))
                 .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
-                .border(1.dp, AppColors.Calorie.copy(alpha = 0.15f), RoundedCornerShape(12.dp)),
+                .border(1.dp, AppColors.Calorie.copy(alpha = 0.15f), RoundedCornerShape(AppRadii.Tile)),
             contentAlignment = Alignment.Center,
         ) {
             Text(

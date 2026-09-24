@@ -74,6 +74,7 @@ import app.chompass.ui.components.culinaryUnitLabels
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.util.clockTimePattern
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppSpacing
 import app.chompass.ui.theme.AppTextOpacity
 import java.time.ZoneId
 import androidx.compose.ui.semantics.Role
@@ -92,7 +93,7 @@ internal fun SectionHeader(title: String) {
         fontSize = 22.sp,
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.onBackground,
-        modifier = Modifier.padding(start = 24.dp, top = 12.dp, bottom = 8.dp)
+        modifier = Modifier.padding(start = AppSpacing.Xxl, top = AppSpacing.Md, bottom = AppSpacing.Sm)
     )
 }
 
@@ -137,7 +138,7 @@ internal fun MealSectionHeader(
             fontWeight = FontWeight.Medium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.85f)
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Strong)
         )
         // Combined nutrients for this meal (issue #103: chicken + pasta + sauce = one total)
         if (totalCalories != null) {
@@ -165,7 +166,7 @@ internal fun MealSectionHeader(
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.62f),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Subtle),
             )
         }
     }
@@ -195,7 +196,7 @@ internal fun SelectionActionBar(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = stringResource(R.string.action_cancel),
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Emphasized),
                     modifier = Modifier.size(18.dp),
                 )
             }
@@ -203,7 +204,7 @@ internal fun SelectionActionBar(
                 text = selectedCount.toString(),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Emphasized),
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = onCopy, enabled = selectedCount > 0) {

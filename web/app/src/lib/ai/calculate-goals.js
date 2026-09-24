@@ -333,7 +333,7 @@ export function buildCalculateGoalsPrompt(profile, forecast, heightMetric, weigh
     ? `${Math.round(profile.heightCm)} cm`
     : `${(profile.heightCm / 2.54).toFixed(1)} in`;
   const bodyFat =
-    profile.bodyFatPercentage != null ? `${Math.round(profile.bodyFatPercentage * 100)}%` : "not set";
+    profile.bodyFatPercentage != null ? `${(profile.bodyFatPercentage * 100).toFixed(1)}%` : "not set";
   const goalWeight =
     profile.goalWeightKg != null
       ? weightMetric

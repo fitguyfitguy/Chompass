@@ -345,7 +345,7 @@ fun CoachRecordingIndicator(controller: CoachVoiceController, modifier: Modifier
             Text(
                 stringResource(R.string.voice_transcribing),
                 fontSize = 15.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
             return@Row
         }

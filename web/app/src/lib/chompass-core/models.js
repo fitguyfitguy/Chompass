@@ -141,6 +141,7 @@
  * @property {string|null} [note]
  * @property {Grounding|null} [grounding]
  * @property {string|null} [recipeLogId]  shared id across rows from one Recipe log
+ * @property {string|null} [microsCompositionSignature]  local-only stale-micros fingerprint; never on wire
  */
 
 /**

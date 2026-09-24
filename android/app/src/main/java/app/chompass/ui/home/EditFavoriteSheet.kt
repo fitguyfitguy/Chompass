@@ -29,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +53,7 @@ import app.chompass.models.microsStaleFor
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.EnergyFormat
 import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.components.MagnitudeDrafts
 import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.models.MicronutrientField
 import app.chompass.models.MicronutrientValues
@@ -60,6 +62,7 @@ import app.chompass.models.OptionalNutrientGoals
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
+import app.chompass.ui.theme.AppRadii
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -139,7 +142,27 @@ fun EditFavoriteSheet(
         )
     }
     val selectedServingOption = ServingUnitOption.optionMatching(selectedServingUnitId, servingUnitOptions)
-    val selectedServingQuantity = ServingUnitOption.parseQuantity(servingQuantityText)?.takeIf { it > 0 }
+    // Draft-while-typing (one commit model with the magnitude pickers): the
+    // quantity field only moves the visible draft; the grams conversion —
+    // deltas and expressions included — resolves on Save / collapse / unit
+    // switch, so macros don't rescale through intermediate digits.
+    val resolveServingDraft = {
+        val option = ServingUnitOption.optionMatching(selectedServingUnitId, servingUnitOptions)
+        val currentQuantity = if (option.gramsPerUnit > 0) servingGrams / option.gramsPerUnit else servingGrams
+        val parsed = ServingUnitOption.applyDeltaInput(servingQuantityText, currentQuantity)
+        if (parsed != null && parsed > 0) {
+            servingGrams = parsed * option.gramsPerUnit
+            servingTouched = true
+            if (servingQuantityText.trim().startsWith("+") || servingQuantityText.trim().startsWith("-")) {
+                servingQuantityText = ServingUnitOption.formatQuantity(parsed)
+            }
+        }
+        Unit
+    }
+    DisposableEffect(currentBaseEntry) {
+        val unregister = MagnitudeDrafts.register(resolveServingDraft)
+        onDispose { unregister() }
+    }
     var nutritionUnlocked by remember { mutableStateOf(false) }
     val scale = ServingUnitOption.servingScale(
         servingGrams = servingGrams,
@@ -196,29 +219,41 @@ fun EditFavoriteSheet(
 
     val nameTaken = name.trim().lowercase() in takenNames
 
-    fun buildUpdated(): FoodEntry = editableMicros
-        .scaled(scale)
-        .applyTo(
-            currentBaseEntry.copy(
-                name = name.trim().ifEmpty { currentBaseEntry.name },
-                calories = math.scaledInt(editableCalories),
-                protein = math.scaledMacro(editableProtein),
-                carbs = math.scaledMacro(editableCarbs),
-                fat = math.scaledMacro(editableFat),
-                mealType = mealType,
-                customNote = noteText.trim().takeIf { it.isNotEmpty() },
-                servingSizeGrams = ServingUnitOption.persistedServingGrams(recordedServing, servingTouched, servingGrams),
-                servingUnitOptions = servingUnitOptions,
-                selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
-                selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else selectedServingQuantity,
-                constituents = app.chompass.services.ai.ConstituentReconcile.scaleAll(
-                    editableConstituents,
-                    scale,
-                ),
-                emoji = editableEmoji,
-                imageFilename = editableImageFilename,
+    // Commit paths recompute the scale derivatives from the live grams: the
+    // sticky bar flushes a pending serving draft (MagnitudeDrafts.commitAll)
+    // in the same frame, after the last composition computed `scale`/`math`.
+    fun saveScale(): Double = ServingUnitOption.servingScale(
+        servingGrams = servingGrams,
+        baseServingGrams = baseServingGrams,
+        scaleWithAmount = !nutritionUnlocked,
+    )
+    fun buildUpdated(): FoodEntry {
+        val saveMath = FoodEntryEditMath(saveScale(), emDashText)
+        val saveQuantity = ServingUnitOption.parseQuantity(servingQuantityText)?.takeIf { it > 0 }
+        return editableMicros
+            .scaled(saveScale())
+            .applyTo(
+                currentBaseEntry.copy(
+                    name = name.trim().ifEmpty { currentBaseEntry.name },
+                    calories = saveMath.scaledInt(editableCalories),
+                    protein = saveMath.scaledMacro(editableProtein),
+                    carbs = saveMath.scaledMacro(editableCarbs),
+                    fat = saveMath.scaledMacro(editableFat),
+                    mealType = mealType,
+                    customNote = noteText.trim().takeIf { it.isNotEmpty() },
+                    servingSizeGrams = ServingUnitOption.persistedServingGrams(recordedServing, servingTouched, servingGrams),
+                    servingUnitOptions = servingUnitOptions,
+                    selectedServingUnit = if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
+                    selectedServingQuantity = if (servingUnitOptions.isEmpty()) null else saveQuantity,
+                    constituents = app.chompass.services.ai.ConstituentReconcile.scaleAll(
+                        editableConstituents,
+                        saveScale(),
+                    ),
+                    emoji = editableEmoji,
+                    imageFilename = editableImageFilename,
+                )
             )
-        )
+    }
 
     // Codeberg #30: block top-edge drag dismissal only while the user is
     // editing typed input, same gate as EditFoodEntrySheet.
@@ -355,23 +390,11 @@ fun EditFavoriteSheet(
                             ServingQuantityCard(
                                 quantityText = servingQuantityText,
                                 onQuantityChange = { newValue ->
-                                    val currentQuantity = if (selectedServingOption.gramsPerUnit > 0) {
-                                        servingGrams / selectedServingOption.gramsPerUnit
-                                    } else {
-                                        servingGrams
-                                    }
-                                    val parsed = ServingUnitOption.applyDeltaInput(newValue, currentQuantity)
                                     servingQuantityText = newValue
-                                    if (parsed != null && parsed > 0) {
-                                        servingGrams = parsed * selectedServingOption.gramsPerUnit
-                                        servingTouched = true
-                                        if (newValue.trim().startsWith("+") || newValue.trim().startsWith("-")) {
-                                            servingQuantityText = ServingUnitOption.formatQuantity(parsed)
-                                        }
-                                    }
                                 },
                                 selectedUnitId = selectedServingUnitId,
                                 onSelectedUnitChange = { optionId ->
+                                    resolveServingDraft()
                                     selectedServingUnitId = optionId
                                     val option = ServingUnitOption.optionMatching(optionId, servingUnitOptions)
                                     val quantity = if (option.gramsPerUnit > 0) servingGrams / option.gramsPerUnit else servingGrams
@@ -383,6 +406,7 @@ fun EditFavoriteSheet(
                                 onMenuExpandedChange = { servingMenuExpanded = it },
                                 gramUnit = stringResource(R.string.unit_g),
                                 onUnitOptionsChange = { options, newId ->
+                                    resolveServingDraft()
                                     val gramsBefore = servingGrams
                                     servingUnitOptions = options
                                     selectedServingUnitId = newId
@@ -394,6 +418,7 @@ fun EditFavoriteSheet(
                                     }
                                     servingQuantityText = ServingUnitOption.formatQuantity(quantity)
                                 },
+                                onQuantityEditingDone = resolveServingDraft,
                             )
                         }
                         if (nutritionUnlocked) {
@@ -413,8 +438,9 @@ fun EditFavoriteSheet(
                                 title = stringResource(R.string.sheet_nutrition),
                                 unlocked = nutritionUnlocked,
                                 onToggle = {
+                                    resolveServingDraft()
                                     if (!nutritionUnlocked) {
-                                        val baked = math.bakeScale(
+                                        val baked = FoodEntryEditMath(saveScale(), emDashText).bakeScale(
                                             editableCalories,
                                             editableProtein,
                                             editableCarbs,
@@ -586,7 +612,7 @@ fun EditFavoriteSheet(
                                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled)
                                     )
                                 },
-                                shape = RoundedCornerShape(20.dp),
+                                shape = RoundedCornerShape(AppRadii.Pill),
                                 modifier = Modifier.fillMaxWidth().heightIn(min = 90.dp)
                             )
                         }

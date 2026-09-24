@@ -485,7 +485,7 @@ internal fun WeightChartCanvas(
 
     var inspectedPoint by remember(chartModel) { mutableStateOf<Int?>(null) }
     val textMeasurer = rememberTextMeasurer()
-    val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
+    val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Strong)
     val chipForeground = MaterialTheme.colorScheme.surface
     val weightUnit = stringResource(if (useMetric) R.string.unit_kg else R.string.unit_lbs)
     val metricTitle = stringResource(R.string.progress_weight_section)
@@ -671,7 +671,7 @@ internal fun BodyFatChartCanvas(
 
     var inspectedPoint by remember(chartModel) { mutableStateOf<Int?>(null) }
     val textMeasurer = rememberTextMeasurer()
-    val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
+    val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Strong)
     val chipForeground = MaterialTheme.colorScheme.surface
     val metricTitle = stringResource(R.string.progress_metric_body_fat)
     val inspectedNow = inspectedPoint?.let { chartModel.points.getOrNull(it) }
@@ -889,7 +889,7 @@ internal fun MeasurementChartCanvas(
 
     var inspectedPoint by remember(chartModel) { mutableStateOf<Int?>(null) }
     val textMeasurer = rememberTextMeasurer()
-    val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
+    val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Strong)
     val chipForeground = MaterialTheme.colorScheme.surface
     val metricTitle = title
     val inspectedNow = inspectedPoint?.let { chartModel.points.getOrNull(it) }
@@ -1046,7 +1046,7 @@ internal fun CalorieBarChart(
 
     var inspectedBar by remember(dailyCalories) { mutableStateOf<Int?>(null) }
     val textMeasurer = rememberTextMeasurer()
-    val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
+    val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Strong)
     val chipForeground = MaterialTheme.colorScheme.surface
     val energyUnit = LocalEnergyUnit.current
     val inspectedTitle = stringResource(R.string.progress_calories_section)

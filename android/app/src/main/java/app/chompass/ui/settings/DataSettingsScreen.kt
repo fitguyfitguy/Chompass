@@ -30,6 +30,7 @@ import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.models.LocaleFormat
+import app.chompass.ui.theme.AppTextOpacity
 import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -319,7 +320,7 @@ fun DataSettingsScreen(
             Text(stringResource(R.string.settings_clear_food_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_clear_food_message),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_clear),
@@ -340,7 +341,7 @@ fun DataSettingsScreen(
             Text(stringResource(R.string.settings_delete_all_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_delete_all_message),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_delete),
@@ -368,7 +369,7 @@ fun DataSettingsScreen(
             }
         ) {
             Text(stringResource(R.string.settings_permission_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
-            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f))
+            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
             if (actionLabel != null && actionIntent != null) {
                 FudGlassDialogActions(
                     primaryText = actionLabel,
@@ -401,7 +402,7 @@ fun DataSettingsScreen(
     importDiaryMessage?.let { msg ->
         FudGlassDialog(onDismissRequest = { importDiaryMessage = null }) {
             Text(stringResource(R.string.import_diary_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
-            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f))
+            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { importDiaryMessage = null }
@@ -412,7 +413,7 @@ fun DataSettingsScreen(
     importBodyMetricsMessage?.let { msg ->
         FudGlassDialog(onDismissRequest = { importBodyMetricsMessage = null }) {
             Text(stringResource(R.string.import_body_metrics_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
-            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f))
+            Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
             FudGlassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { importBodyMetricsMessage = null }

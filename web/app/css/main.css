@@ -25,6 +25,13 @@
   --nav-icon-active: #e6e1e5; /* M3 onSecondaryContainer (dark) */
   --nav-bar: #211f26; /* M3 surfaceContainer (dark) */
   --radius: 1rem;
+  /* Spacing steps mirroring Android AppSpacing (Tokens.kt) */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-xxl: 24px;
   --font-display: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   --nav-h: 5rem;
@@ -4755,6 +4762,12 @@ body.camera-open {
 .entry-constituents__chevron {
   color: var(--muted);
   width: 1rem;
+}
+
+.entry-constituents__stale {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
 }
 
 .entry-constituents__list {

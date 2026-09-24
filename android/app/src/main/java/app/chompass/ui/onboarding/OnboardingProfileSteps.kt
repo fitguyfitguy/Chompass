@@ -264,7 +264,7 @@ internal fun BodyFatStep(
                 Text(
                     stringResource(R.string.onboarding_goal_optional),
                     style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Secondary),
                     modifier = Modifier.weight(1f)
                 )
                 Switch(

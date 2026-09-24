@@ -1155,6 +1155,7 @@
     <string name="macro_status_left">%1$s%2$s осталось</string>
     <string name="macro_status_no_goal">Цели нет</string>
     <string name="macro_status_over">%1$s%2$s сверх</string>
+    <string name="macro_status_floor_met">Минимум достигнут</string>
     <string name="meal_photo_cd">Фото %1$d</string>
     <string name="meal_photos_add_from_library">Добавить фото</string>
     <string name="meal_photos_add_photo">Добавить фото</string>
