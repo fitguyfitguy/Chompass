@@ -1,0 +1,3 @@
+• Fixed: the web app's Home loads again after the 5.2.0 update. Installs that had opened the app before the untracked-days feature hit a database error and rendered an empty Home screen; Progress, Coach and Settings kept working, and no data was lost
+• Fat shows G in Brazilian Portuguese: the quick macro letters are initials and now follow the app language, so fat (Gordura) no longer reads as fiber. Other languages keep their initials (Android + web)
+• Typed descriptions carry into photo notes: text entered in Add Food now appears in the photo note when you add a photo

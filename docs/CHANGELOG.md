@@ -6,6 +6,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+## [5.2.1] - 2026-09-25
+
 ### Fixed
 
 - **The web Home loads again after the 5.2.0 update** (web): installs that had opened the app before the untracked-days feature threw a database error and rendered an empty Home screen; Progress, Coach, and Settings kept working. The database upgrade now creates the store the feature expects, so Home and the diary render again with all data intact. Fixes Codeberg [#112](https://codeberg.org/fitguy/Chompass/issues/112) by [@sbandoalleciance](https://codeberg.org/sbandoalleciance).
