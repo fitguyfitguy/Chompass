@@ -21,7 +21,7 @@ createServer(async (req, res) => {
     let path = join(ROOT, decodeURIComponent(new URL(req.url, "http://localhost").pathname));
     if ((await stat(path)).isDirectory()) path = join(path, "index.html");
     const body = await readFile(path);
-    res.writeHead(200, { "Content-Type": MIME[extname(path)] ?? "application/octet-stream" });
+    res.writeHead(200, { "Content-Type": MIME[extname(path)] ?? "application/octet-stream", "Cache-Control": "no-store" });
     res.end(body);
   } catch {
     res.writeHead(404);

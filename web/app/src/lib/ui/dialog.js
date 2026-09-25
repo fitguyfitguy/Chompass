@@ -111,14 +111,123 @@ export function openInput(opts) {
 }
 
 /**
- * @param {{
- *   title: string,
- *   bodyHtml: string,
- *   actions: { label: string, className: string, value: unknown, autofocus?: boolean }[],
- *   onResult: (value: unknown, host: HTMLElement) => void,
- *   submitOnEnter?: boolean,
- * }} opts
+ * @typedef {{
+ *   label: string,
+ *   value?: number,
+ *   min: number,
+ *   max: number,
+ *   step?: number,
+ *   unit?: string,
+ * }} WheelField
  */
+
+/**
+ * Centered glass dialog with one scroll-snap number wheel per field — the PWA
+ * port of Android's NumericWheelPicker used by the tracker quick-log sheets.
+ * Resolves one value per field (in order), or null if cancelled.
+ * @param {{ title: string, fields: WheelField[], confirmLabel?: string, cancelLabel?: string }} opts
+ * @returns {Promise<number[] | null>}
+ */
+export function openWheelDialog(opts) {
+  return new Promise((resolve) => {
+    /** @type {number[]} */
+    const startIdx = [];
+    const bodyHtml = opts.fields
+      .map((f, i) => {
+        const step = f.step ?? 1;
+        const count = Math.floor((f.max - f.min) / step) + 1;
+        const idx = Math.min(count - 1, Math.max(0, Math.round(((f.value ?? f.min) - f.min) / step)));
+        startIdx[i] = idx;
+        const v = f.min + idx * step;
+        const items = Array.from({ length: count }, (_, k) => {
+          const val = f.min + k * step;
+          const unit = f.unit ? ` <span class="wheel__unit">${escapeHtml(f.unit)}</span>` : "";
+          return `<div class="wheel__item" data-value="${val}">${val}${unit}</div>`;
+        }).join("");
+        return `
+        <div class="wheel">
+          <span class="dialog__label">${escapeHtml(f.label)}</span>
+          <div class="wheel__viewport">
+            <div class="wheel__band" aria-hidden="true"></div>
+            <div
+              class="wheel__list"
+              data-wheel
+              tabindex="0"
+              role="spinbutton"
+              aria-label="${escapeAttr(f.label)}"
+              aria-valuemin="${f.min}"
+              aria-valuemax="${f.max}"
+              aria-valuenow="${v}"
+            >
+              <div class="wheel__pad" aria-hidden="true"></div>${items}<div class="wheel__pad" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>`;
+      })
+      .join("");
+
+    const host = mountDialog({
+      title: opts.title,
+      bodyHtml,
+      actions: [
+        { label: opts.cancelLabel ?? "Cancel", className: "btn btn--ghost", value: null },
+        { label: opts.confirmLabel ?? "Save", className: "btn btn--primary", value: "submit", autofocus: true },
+      ],
+      onResult: (v, dialogHost) => {
+        if (v !== "submit") {
+          resolve(null);
+          return;
+        }
+        const lists = dialogHost.querySelectorAll("[data-wheel]");
+        resolve(Array.from(lists).map((list) => readWheelValue(/** @type {HTMLElement} */ (list))));
+      },
+      submitOnEnter: true,
+    });
+
+    host.querySelectorAll("[data-wheel]").forEach((list, i) =>
+      initWheel(/** @type {HTMLElement} */ (list), startIdx[i]),
+    );
+  });
+}
+
+/** @param {HTMLElement} list */
+function wheelRowHeight(list) {
+  const item = list.querySelector(".wheel__item");
+  return item ? item.getBoundingClientRect().height : 0;
+}
+
+/** @param {HTMLElement} list @param {number} start */
+function initWheel(list, start) {
+  const items = list.querySelectorAll(".wheel__item");
+  const rowH = wheelRowHeight(list);
+  if (rowH > 0) list.scrollTop = start * rowH;
+  let active = start;
+  items[active]?.classList.add("is-active");
+  list.addEventListener(
+    "scroll",
+    () => {
+      const h = wheelRowHeight(list);
+      if (!h) return;
+      const idx = Math.min(items.length - 1, Math.max(0, Math.round(list.scrollTop / h)));
+      if (idx === active) return;
+      items[active]?.classList.remove("is-active");
+      items[idx]?.classList.add("is-active");
+      active = idx;
+      list.setAttribute("aria-valuenow", String(Number(/** @type {HTMLElement} */ (items[idx]).dataset.value)));
+    },
+    { passive: true },
+  );
+}
+
+/** @param {HTMLElement} list */
+function readWheelValue(list) {
+  // Read aria-valuenow, not scrollTop: onResult runs after the dialog host is
+  // detached, and a detached scroller reports scrollTop 0 (silently logging
+  // the minimum instead of the picked value).
+  const now = list.getAttribute("aria-valuenow");
+  return now == null ? 0 : Number(now);
+}
+
 /**
  * Centered glass informational dialog with a single dismiss action.
  * @param {{ title: string, message?: string, bodyHtml?: string, doneLabel?: string }} opts
@@ -144,6 +253,15 @@ export function openInfo(opts) {
   });
 }
 
+/**
+ * @param {{
+ *   title: string,
+ *   bodyHtml: string,
+ *   actions: { label: string, className: string, value: unknown, autofocus?: boolean }[],
+ *   onResult: (value: unknown, host: HTMLElement) => void,
+ *   submitOnEnter?: boolean,
+ * }} opts
+ */
 function mountDialog(opts) {
   const host = document.createElement("div");
   host.className = "dialog";

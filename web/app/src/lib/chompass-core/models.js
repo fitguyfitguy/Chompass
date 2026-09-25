@@ -237,6 +237,14 @@
  * @typedef {"coffee"|"tea"|"energy"|"other"} CaffeineKind
  */
 
+/** Default diary quick-chip kinds (mirror Android DefaultQuickKinds);
+ *  prefs caffeineQuickKinds / nicotineQuickKinds override per install. */
+export const NICOTINE_QUICK_KINDS = ["cigarette", "vape", "pouch"];
+export const CAFFEINE_QUICK_KINDS = ["coffee", "tea", "energy"];
+
+/** Default mg per caffeine quick chip (mirror Android CaffeineKind.defaultMg). */
+export const CAFFEINE_KIND_MG = { coffee: 95, tea: 28, energy: 80, other: 0 };
+
 /**
  * One per-day free-text note (Codeberg #58a). The id is deterministic from the
  * date (day count since 1970-01-01 in the low 48 bits), so both apps merge by
