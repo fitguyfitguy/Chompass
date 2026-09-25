@@ -1,0 +1,5 @@
+• Quick chips for caffeine and nicotine can be turned off (web): Settings → App & Display → Home display lists the quick chips for each tracker, uncheck the ones you never use and the diary card shows only the ones you log
+• Scroll wheels in the custom caffeine and nicotine dialogs (web): picking an amount is a scroll instead of a typed number, matching Android; the nicotine dialog takes the count and an optional mg value, and caffeine spans 0 to 500 mg
+• Remove a logged food photo with an X (Android): the edit sheet puts an X on the photo. Tap it, then Save to drop the photo; Cancel keeps it
+• Customize Progress reads as an entry (Android): the link at the top of the Progress tab is now a full row with icon and chevron instead of a small text link
+• Untracked-day chips are translated in 16 languages (Android): "Not tracked", "Mark day", and the Today label fell back to English before and now show in the app language
