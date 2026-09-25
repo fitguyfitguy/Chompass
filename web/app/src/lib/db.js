@@ -477,6 +477,8 @@ export const profile = {
  * @property {number} [homeNutrientCardCount]
  * @property {string[]} [homeTopNutrients]
  * @property {string[]} [foodLogMacroChips]
+ * @property {string[]} [caffeineQuickKinds] Diary caffeine +1 chips (unset = coffee/tea/energy)
+ * @property {string[]} [nicotineQuickKinds] Diary nicotine +1 chips (unset = cigarette/vape/pouch)
  * @property {OptionalNutrientGoals} [optionalNutrientGoals]
  * @property {string} [userContext]
  * @property {boolean} [aiFallbackEnabled]

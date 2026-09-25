@@ -22,6 +22,7 @@ import {
   exportBodyMetricsCsv,
   filterDiaryRange,
 } from "../lib/chompass-core/export-text.js";
+import { CAFFEINE_QUICK_KINDS, NICOTINE_QUICK_KINDS } from "../lib/chompass-core/models.js";
 import { PROVIDERS, modelSelectOptionsHtml, resolveProviderModel, visionModelOptionsHtml } from "../lib/ai/providers.js";
 import { saveProviderKey, deleteProviderKey, listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.js";
 import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
@@ -1154,6 +1155,8 @@ export class SettingsView extends HTMLElement {
       normalizeHomeTopNutrients(p.homeTopNutrients, p.homeNutrientCardCount ?? DEFAULT_NUTRIENT_CARD_COUNT)
     );
     const selectedChips = new Set(normalizeFoodLogChips(p.foodLogMacroChips));
+    const selNicotineQuick = new Set(p.nicotineQuickKinds ?? NICOTINE_QUICK_KINDS);
+    const selCaffeineQuick = new Set(p.caffeineQuickKinds ?? CAFFEINE_QUICK_KINDS);
     const chipDefs = HOME_TOP_NUTRIENTS.filter((n) => FOOD_LOG_CHIP_KEYS.includes(n.key));
     this.innerHTML = `
       ${subpageBar(t("settings.app.home"), { backHref: SETTINGS_PARENT.home })}
@@ -1181,6 +1184,18 @@ export class SettingsView extends HTMLElement {
           <label for="nicotineDailyLimit">${t("settings.home.nicotine_limit")}</label>
           <input id="nicotineDailyLimit" name="nicotineDailyLimit" type="number" min="0" value="${p.nicotineDailyLimit ?? 0}" />
         </div>
+        <fieldset class="nutrient-picker">
+          <legend>${t("settings.home.nicotine_quick_kinds")}</legend>
+          <div class="nutrient-picker__list">
+            ${NICOTINE_QUICK_KINDS.map(
+              (k) => `
+              <label class="nutrient-picker__row">
+                <input type="checkbox" name="nicotineQuickKinds" value="${k}" ${selNicotineQuick.has(k) ? "checked" : ""} />
+                <span>${t(`settings.home.quick_kind_${k}`)}</span>
+              </label>`,
+            ).join("")}
+          </div>
+        </fieldset>
         <div class="field">
           <label for="showCaffeine">${t("settings.home.caffeine_tracking")}</label>
           <select id="showCaffeine" name="showCaffeine">
@@ -1193,6 +1208,18 @@ export class SettingsView extends HTMLElement {
           <label for="caffeineDailyLimitMg">${t("settings.home.caffeine_limit")}</label>
           <input id="caffeineDailyLimitMg" name="caffeineDailyLimitMg" type="number" min="0" max="1000" value="${p.optionalNutrientGoals?.caffeineMg ?? 400}" />
         </div>
+        <fieldset class="nutrient-picker">
+          <legend>${t("settings.home.caffeine_quick_kinds")}</legend>
+          <div class="nutrient-picker__list">
+            ${CAFFEINE_QUICK_KINDS.map(
+              (k) => `
+              <label class="nutrient-picker__row">
+                <input type="checkbox" name="caffeineQuickKinds" value="${k}" ${selCaffeineQuick.has(k) ? "checked" : ""} />
+                <span>${t(`settings.home.quick_kind_${k}`)}</span>
+              </label>`,
+            ).join("")}
+          </div>
+        </fieldset>
         <div class="field">
           <label for="showNotes">${t("settings.home.daily_notes")}</label>
           <select id="showNotes" name="showNotes">
@@ -1299,6 +1326,8 @@ export class SettingsView extends HTMLElement {
         waterGoalMl: Number(fd.get("waterGoalMl") || 2000),
         showNicotine: fd.get("showNicotine") === "true",
         nicotineDailyLimit: Math.max(0, Number(fd.get("nicotineDailyLimit") || 0)),
+        nicotineQuickKinds: fd.getAll("nicotineQuickKinds").map(String),
+        caffeineQuickKinds: fd.getAll("caffeineQuickKinds").map(String),
         showCaffeine: fd.get("showCaffeine") === "true",
         optionalNutrientGoals: {
           ...(p.optionalNutrientGoals ?? {}),

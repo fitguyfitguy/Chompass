@@ -1,12 +1,12 @@
 // @ts-check
 import { foodEntries, profile as profileStore, water, dailyNotes, nicotine, caffeine, prefs, goalJournal, untrackedDays } from "../lib/db.js";
 import { dailyTargets, estimatedDailyActiveCalories } from "../lib/chompass-core/formulas.js";
-import { dailyNoteIdFor } from "../lib/chompass-core/models.js";
+import { CAFFEINE_KIND_MG, CAFFEINE_QUICK_KINDS, NICOTINE_QUICK_KINDS, dailyNoteIdFor } from "../lib/chompass-core/models.js";
 import { displayUnit, entryServingEcho, formatQuantity } from "../lib/chompass-core/serving-units.js";
 import { computeFastingState, nextFastStartMillis, FastingPhase } from "../lib/chompass-core/fasting-state.js";
 import { microOrNull } from "../lib/chompass-core/constituents.js";
 import { openSheet } from "../lib/ui/sheet.js";
-import { openConfirm, openInfo, openInput } from "../lib/ui/dialog.js";
+import { openConfirm, openInfo, openInput, openWheelDialog } from "../lib/ui/dialog.js";
 import {
   historyTemplates,
   frequentFoodGroups,
@@ -90,11 +90,7 @@ function mealOrderFor(entries) {
   return known.concat(extra);
 }
 const WATER_PRESETS = [250, 500, 750];
-/** PWA quick chips mirror Android NicotineKind.DefaultQuickKinds. */
-const NICOTINE_QUICK_KINDS = ["cigarette", "vape", "pouch"];
-const CAFFEINE_QUICK_KINDS = ["coffee", "tea", "energy"];
-/** Default mg per quick chip, mirroring Android CaffeineKind.defaultMg. */
-const CAFFEINE_KIND_MG = { coffee: 95, tea: 28, energy: 80, other: 0 };
+
 const HOME_DATE_KEY = "chompass-home-date";
 
 /** Local-only fasting timer card (docs/local/PLAN_FASTING_TRACKER.md mirror).
@@ -837,7 +833,7 @@ export class DiaryView extends HTMLElement {
                     : t("diary.nicotine_logged_line", { count: `<strong>${nicotineCount}</strong>` })
                 }</div>
                 <div class="water-presets">
-                  ${NICOTINE_QUICK_KINDS.map((kind) => `<button type="button" class="chip" data-nicotine="${kind}">${t(`diary.chip_${kind}`)}</button>`).join("")}
+                  ${(appPrefs.nicotineQuickKinds ?? NICOTINE_QUICK_KINDS).map((kind) => `<button type="button" class="chip" data-nicotine="${kind}">${t(`diary.chip_${kind}`)}</button>`).join("")}
                   <button type="button" class="chip" data-nicotine-custom>${t("diary.custom")}</button>
                   ${nicotineLogs.length ? `<button type="button" class="chip chip--ghost" data-nicotine-undo title="${t("diary.remove_last")}">${t("diary.undo")}</button>` : ""}
                 </div>
@@ -863,7 +859,7 @@ export class DiaryView extends HTMLElement {
                     : t("diary.caffeine_logged_line", { count: `<strong>${caffeineMg}</strong>` })
                 }</div>
                 <div class="water-presets">
-                  ${CAFFEINE_QUICK_KINDS.map((kind) => `<button type="button" class="chip" data-caffeine="${kind}">${t(`diary.chip_${kind}`)}</button>`).join("")}
+                  ${(appPrefs.caffeineQuickKinds ?? CAFFEINE_QUICK_KINDS).map((kind) => `<button type="button" class="chip" data-caffeine="${kind}">${t(`diary.chip_${kind}`)}</button>`).join("")}
                   <button type="button" class="chip" data-caffeine-custom>${t("diary.custom")}</button>
                   ${caffeineLogs.length ? `<button type="button" class="chip chip--ghost" data-caffeine-undo title="${t("diary.remove_last")}">${t("diary.undo")}</button>` : ""}
                 </div>
@@ -2306,19 +2302,20 @@ export class DiaryView extends HTMLElement {
   }
 
   async customNicotine() {
-    const raw = await openInput({
+    // Android NicotineViews add sheet: count wheel (1-20) + optional mg wheel (0-30).
+    const picked = await openWheelDialog({
       title: t("diary.add_nicotine"),
-      label: t("diary.count"),
-      value: "1",
-      unit: "",
-      inputMode: "numeric",
-      type: "number",
       confirmLabel: t("diary.add"),
+      cancelLabel: t("action.cancel"),
+      fields: [
+        { label: t("diary.count"), value: 1, min: 1, max: 20 },
+        { label: t("diary.nicotine_mg_optional"), value: 0, min: 0, max: 30, unit: "mg" },
+      ],
     });
-    if (raw == null) return;
-    const count = Number(raw);
+    if (!picked) return;
+    const [count, mg] = picked;
     if (count > 0) {
-      await nicotine.put({ id: crypto.randomUUID(), date: this.date, kind: "other", count, mg: null });
+      await nicotine.put({ id: crypto.randomUUID(), date: this.date, kind: "other", count, mg: mg > 0 ? mg : null });
       this.render();
     }
   }
@@ -2343,17 +2340,15 @@ export class DiaryView extends HTMLElement {
   }
 
   async customCaffeine() {
-    const raw = await openInput({
+    // Android CaffeineViews add sheet: mg wheel 0-500, step 5.
+    const picked = await openWheelDialog({
       title: t("diary.add_caffeine"),
-      label: t("diary.caffeine_mg"),
-      value: "95",
-      unit: "mg",
-      inputMode: "numeric",
-      type: "number",
       confirmLabel: t("diary.add"),
+      cancelLabel: t("action.cancel"),
+      fields: [{ label: t("diary.caffeine_mg"), value: 95, min: 0, max: 500, step: 5, unit: "mg" }],
     });
-    if (raw == null) return;
-    const mg = Number(raw);
+    if (!picked) return;
+    const mg = picked[0];
     if (mg > 0) {
       await caffeine.put({ id: crypto.randomUUID(), date: this.date, kind: "other", mg });
       this.render();

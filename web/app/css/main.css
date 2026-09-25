@@ -3689,6 +3689,65 @@ body.dialog-open {
   color: var(--muted);
 }
 
+/* Number wheels (PWA port of Android NumericWheelPicker) */
+.wheel {
+  position: relative;
+  margin-top: 0.4rem;
+}
+.wheel .dialog__label {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+.wheel__viewport {
+  position: relative;
+}
+.wheel__list {
+  position: relative;
+  z-index: 1;
+  height: calc(var(--wheel-rows, 5) * var(--wheel-row-h, 44px));
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
+}
+.wheel__list::-webkit-scrollbar {
+  display: none;
+}
+.wheel__pad {
+  height: calc((var(--wheel-rows, 5) - 1) * var(--wheel-row-h, 44px) / 2);
+}
+.wheel__item {
+  height: var(--wheel-row-h, 44px);
+  line-height: var(--wheel-row-h, 44px);
+  scroll-snap-align: center;
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.wheel__item.is-active {
+  color: var(--text);
+}
+.wheel__unit {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.wheel__band {
+  position: absolute;
+  z-index: 0;
+  left: 0;
+  right: 0;
+  top: calc((var(--wheel-rows, 5) - 1) * var(--wheel-row-h, 44px) / 2);
+  height: var(--wheel-row-h, 44px);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--teal) 14%, transparent);
+  pointer-events: none;
+}
+
 .dialog__input-wrap {
   display: flex;
   align-items: center;
