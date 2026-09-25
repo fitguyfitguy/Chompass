@@ -905,7 +905,7 @@ private fun MacroCard(
             Text(
                 label,
                 style = MaterialTheme.typography.bodySmall,
-                color = color.copy(alpha = 0.85f),
+                color = color.copy(alpha = AppTextOpacity.Strong),
                 fontWeight = FontWeight.SemiBold
             )
             Spacer(Modifier.height(4.dp))

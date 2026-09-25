@@ -443,7 +443,7 @@ fun MultiPhotoCaptureSheet(
                                     .align(Alignment.TopEnd)
                                     .padding(6.dp)
                                     .size(32.dp)
-                                    .background(Color.Black.copy(alpha = 0.62f), CircleShape),
+                                    .background(Color.Black.copy(alpha = AppTextOpacity.Subtle), CircleShape),
                             ) {
                                 Icon(
                                     Icons.Filled.Close,

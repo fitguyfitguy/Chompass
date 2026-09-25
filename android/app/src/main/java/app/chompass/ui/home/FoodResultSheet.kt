@@ -1608,7 +1608,7 @@ private fun WhatIfImpactRow(
             Text(
                 added,
                 fontSize = 13.sp,
-                color = accentColor.copy(alpha = 0.85f),
+                color = accentColor.copy(alpha = AppTextOpacity.Strong),
                 fontWeight = FontWeight.Medium
             )
         }

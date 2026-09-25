@@ -686,7 +686,7 @@ private fun EditQueuedSheet(
                                     .align(Alignment.TopEnd)
                                     .padding(4.dp)
                                     .size(28.dp)
-                                    .background(Color.Black.copy(alpha = 0.62f), CircleShape),
+                                    .background(Color.Black.copy(alpha = AppTextOpacity.Subtle), CircleShape),
                             ) {
                                 Icon(
                                     Icons.Filled.Close,

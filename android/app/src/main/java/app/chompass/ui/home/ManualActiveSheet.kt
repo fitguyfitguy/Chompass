@@ -159,7 +159,7 @@ private fun ManualActiveHistoryRow(
         Icon(
             Icons.AutoMirrored.Filled.DirectionsRun,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.85f),
+            tint = MaterialTheme.colorScheme.tertiary.copy(alpha = AppTextOpacity.Strong),
             modifier = Modifier.size(18.dp),
         )
         Text(
