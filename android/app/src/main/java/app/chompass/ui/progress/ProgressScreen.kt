@@ -12,12 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -32,11 +31,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,11 +44,11 @@ import app.chompass.models.BodyMeasurement
 import app.chompass.services.health.DailyActivity
 import app.chompass.ui.components.FudGlassDialog
 import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.components.FudGlassSurface
+import app.chompass.ui.components.FudIconBubble
 import app.chompass.ui.navigation.BottomNavScrollPadding
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.dayTypeColor
-import app.chompass.ui.theme.AppRadii
 import androidx.compose.ui.graphics.Color
 
 /**
@@ -147,31 +143,34 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                 // F6: progress display settings (default range, week start, trend
                 // plots) were only reachable via Settings → Display → Customize
                 // progress; this gives the tab a one-tap entry to the same screen.
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
+                // B6: was a right-aligned Tune + 13sp text link that read as a
+                // filter control next to the range chips; the same full-width
+                // glass row as the history links reads as a proper entry.
+                FudGlassSurface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(enabled = onOpenCustomize != null, role = Role.Button) { onOpenCustomize?.invoke() },
+                    cornerRadius = 16.dp,
+                    padding = 14.dp,
                 ) {
-                    Row(
-                        Modifier
-                            .minimumInteractiveComponentSize()
-                            .clip(RoundedCornerShape(AppRadii.Card))
-                            .clickable(enabled = onOpenCustomize != null) { onOpenCustomize?.invoke() }
-                            .semantics(mergeDescendants = true) { role = Role.Button }
-                            .padding(horizontal = 10.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            Icons.Outlined.Tune,
-                            contentDescription = null,
-                            tint = AppColors.Calorie,
-                            modifier = Modifier.size(16.dp),
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        FudIconBubble(
+                            icon = Icons.Outlined.Tune,
+                            size = 28.dp,
+                            iconSize = 16.dp,
                         )
-                        Spacer(Modifier.width(4.dp))
+                        Spacer(Modifier.width(12.dp))
                         Text(
                             stringResource(R.string.settings_customize_progress),
-                            color = AppColors.Calorie,
-                            fontSize = 13.sp,
+                            fontSize = 17.sp,
                             fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.weight(1f),
+                        )
+                        Icon(
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
+                            modifier = Modifier.size(18.dp),
                         )
                     }
                 }
