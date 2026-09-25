@@ -2018,4 +2018,9 @@ macro riequilibrate al nuovo totale calorico</string>
     <string name="a11y_marker_lane">Indicatori tipo di giorno e non tracciato</string>
     <string name="a11y_day_marker_type">tipo di giorno %1$s</string>
     <string name="a11y_day_untracked">non tracciato</string>
+    <string name="home_untracked_chip">Non tracciato</string>
+    <string name="home_mark_untracked_chip">Segna giorno</string>
+    <string name="home_untracked_chip_a11y">Questo giorno è segnato come non tracciato. Tocca per cambiare.</string>
+    <string name="home_mark_untracked_chip_a11y">Segna questo giorno come non tracciato.</string>
+    <string name="home_today">Oggi</string>
 </resources>

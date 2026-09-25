@@ -1947,4 +1947,9 @@ LBM = вага × (1 − %жиру)</string>
     <string name="a11y_marker_lane">Позначки типу дня і днів без обліку</string>
     <string name="a11y_day_marker_type">тип дня %1$s</string>
     <string name="a11y_day_untracked">без обліку</string>
+    <string name="home_untracked_chip">Не відстежується</string>
+    <string name="home_mark_untracked_chip">Позначити день</string>
+    <string name="home_untracked_chip_a11y">Цей день позначено як невідстежуваний. Натисніть, щоб змінити.</string>
+    <string name="home_mark_untracked_chip_a11y">Позначити цей день як невідстежуваний.</string>
+    <string name="home_today">Сьогодні</string>
 </resources>

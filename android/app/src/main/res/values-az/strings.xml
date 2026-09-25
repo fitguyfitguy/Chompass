@@ -2018,4 +2018,9 @@ makrolar yeni kalori cəminə uyğun yenidən tarazlaşdırılır</string>
     <string name="a11y_marker_lane">Gün növü və izlənməyən nişanlar</string>
     <string name="a11y_day_marker_type">gün növü %1$s</string>
     <string name="a11y_day_untracked">izlənməyib</string>
+    <string name="home_untracked_chip">İzlənmir</string>
+    <string name="home_mark_untracked_chip">Günü işarələ</string>
+    <string name="home_untracked_chip_a11y">Bu gün izlənmir kimi işarələnib. Dəyişmək üçün toxun.</string>
+    <string name="home_mark_untracked_chip_a11y">Bu günü izlənmir kimi işarələ.</string>
+    <string name="home_today">Bu gün</string>
 </resources>

@@ -2095,4 +2095,9 @@
     <string name="a11y_marker_lane">Метки типа дня и дней без учёта</string>
     <string name="a11y_day_marker_type">тип дня %1$s</string>
     <string name="a11y_day_untracked">без учёта</string>
+    <string name="home_untracked_chip">Не отслеживается</string>
+    <string name="home_mark_untracked_chip">Отметить день</string>
+    <string name="home_untracked_chip_a11y">Этот день отмечен как не отслеживаемый. Нажмите, чтобы изменить.</string>
+    <string name="home_mark_untracked_chip_a11y">Отметить этот день как не отслеживаемый.</string>
+    <string name="home_today">Сегодня</string>
 </resources>

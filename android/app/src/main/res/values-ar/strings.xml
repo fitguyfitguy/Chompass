@@ -2027,4 +2027,9 @@
     <string name="a11y_marker_lane">علامات نوع اليوم والأيام غير المتتبَّعة</string>
     <string name="a11y_day_marker_type">نوع اليوم %1$s</string>
     <string name="a11y_day_untracked">غير متتبَع</string>
+    <string name="home_untracked_chip">غير متتبَع</string>
+    <string name="home_mark_untracked_chip">تعليم اليوم</string>
+    <string name="home_untracked_chip_a11y">هذا اليوم مُعلَّم بعدم التتبُّع. اضغط للتغيير.</string>
+    <string name="home_mark_untracked_chip_a11y">علِّم هذا اليوم بعدم التتبُّع.</string>
+    <string name="home_today">اليوم</string>
 </resources>

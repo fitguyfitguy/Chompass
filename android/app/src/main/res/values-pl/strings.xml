@@ -2043,4 +2043,9 @@ makro rebalansowane do nowej sumy kalorii</string>
     <string name="a11y_marker_lane">Znaczniki typu dnia i dni nieśledzonych</string>
     <string name="a11y_day_marker_type">typ dnia %1$s</string>
     <string name="a11y_day_untracked">nieśledzony</string>
+    <string name="home_untracked_chip">Nieśledzony</string>
+    <string name="home_mark_untracked_chip">Oznacz dzień</string>
+    <string name="home_untracked_chip_a11y">Ten dzień jest oznaczony jako nieśledzony. Dotknij, aby zmienić.</string>
+    <string name="home_mark_untracked_chip_a11y">Oznacz ten dzień jako nieśledzony.</string>
+    <string name="home_today">Dzisiaj</string>
 </resources>
