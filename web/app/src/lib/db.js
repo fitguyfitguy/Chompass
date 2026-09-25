@@ -17,7 +17,7 @@ const DB_NAME =
   typeof window !== "undefined" && /** @type {any} */ (window).CHOMPASS_DEMO
     ? "chompass-pwa-demo"
     : "chompass-pwa";
-const DB_VERSION = 7;
+const DB_VERSION = 8;
 
 /** @type {Promise<IDBDatabase>|null} */
 let dbPromise = null;
@@ -62,6 +62,15 @@ function openChompassDb() {
     if (oldVersion < 7) {
       if (!db.objectStoreNames.contains("goalJournal")) {
         db.createObjectStore("goalJournal", { keyPath: "date" }).createIndex("date", "date");
+      }
+    }
+    // Untracked days (#106): 5.2.0 shipped the store consumers without the
+    // store or a version bump, so installs upgrading from v7 threw
+    // NotFoundError on Home (#112). Own version bump, same pattern as
+    // nicotine/caffeine above.
+    if (oldVersion < 8) {
+      if (!db.objectStoreNames.contains("untrackedDays")) {
+        db.createObjectStore("untrackedDays", { keyPath: "date" }).createIndex("date", "date");
       }
     }
   });
