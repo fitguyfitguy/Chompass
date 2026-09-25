@@ -17,7 +17,11 @@ import {
   formatFoodPills,
   ALL_MICRO_KEYS,
   migrateLegacyCaffeineLimit,
+  chipGlyph,
+  formatMacroChip,
 } from "../home-nutrients.js";
+import { setActiveLocale } from "../i18n/index.js";
+import { loadCatalog } from "../i18n/catalogs/index.js";
 import { mapProduct } from "../off-client.js";
 
 test("androidAlignedDefaultConstants", () => {
@@ -310,4 +314,18 @@ test("offMapProduct_normalizesScoresAndClampsNova", () => {
   const pkg = mapped.servingUnitOptions.find((o) => o.unit === "package");
   assert.ok(pkg);
   assert.equal(pkg.gramsPerUnit, 330);
+});
+
+test("macro chip glyphs follow the active locale (Codeberg #111)", async () => {
+  await loadCatalog("pt-BR");
+  setActiveLocale("en");
+  assert.equal(chipGlyph("fatG"), "F");
+  setActiveLocale("pt-BR");
+  assert.equal(chipGlyph("fatG"), "G");
+  assert.equal(chipGlyph("proteinG"), "P");
+  assert.equal(
+    formatMacroChip("fatG", 9.4),
+    '9<span class="macro-chip macro-chip--fat">G</span>',
+  );
+  setActiveLocale("en");
 });

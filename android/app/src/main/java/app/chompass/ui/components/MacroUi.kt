@@ -11,6 +11,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import app.chompass.ui.theme.MacroKind
 
 @Composable
@@ -20,6 +21,7 @@ fun MacroChip(
     modifier: Modifier = Modifier,
 ) {
     val color = kind.color()
+    val glyph = stringResource(kind.glyphRes())
     Box(
         modifier
             .clip(CircleShape)
@@ -27,7 +29,7 @@ fun MacroChip(
             .padding(horizontal = 8.dp, vertical = 3.dp)
     ) {
         Text(
-            "${kind.glyph} ${macroGramsText(value)}",
+            "$glyph ${macroGramsText(value)}",
             fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold,
             color = color,

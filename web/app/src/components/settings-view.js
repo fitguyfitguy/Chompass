@@ -52,6 +52,7 @@ import {
   normalizeFoodLogChips,
   normalizeAveragesSelection,
   AVERAGES_CANDIDATES,
+  chipGlyph,
   nutrientDef,
   mergeOptionalGoals,
   MAX_CUSTOM_GOAL_BY_KEY,
@@ -1278,7 +1279,7 @@ export class SettingsView extends HTMLElement {
                 (n) => `
               <label class="nutrient-picker__row">
                 <input type="checkbox" name="foodLogMacroChips" value="${n.key}" ${selectedChips.has(n.key) ? "checked" : ""} />
-                <span>${n.label} (${n.chipGlyph})</span>
+                <span>${n.label} (${chipGlyph(n.key)})</span>
               </label>`
               )
               .join("")}

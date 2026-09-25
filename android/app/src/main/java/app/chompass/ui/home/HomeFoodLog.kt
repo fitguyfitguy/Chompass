@@ -142,6 +142,7 @@ internal fun MealSectionHeader(
         )
         // Combined nutrients for this meal (issue #103: chicken + pasta + sauce = one total)
         if (totalCalories != null) {
+            val chipGlyphs = macroChips.associateWith { stringResource(it.glyphRes()) }
             val summary = buildAnnotatedString {
                 append(energyText(totalCalories))
                 if (macroChips.isNotEmpty()) {
@@ -156,7 +157,7 @@ internal fun MealSectionHeader(
                             totalSugar,
                         ).roundToInt()
                         val color = chip.macroKind()?.color() ?: AppColors.Calorie
-                        withStyle(SpanStyle(color = color)) { append("${value}${chip.glyph}") }
+                        withStyle(SpanStyle(color = color)) { append("${value}${chipGlyphs[chip]}") }
                     }
                 }
             }

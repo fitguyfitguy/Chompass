@@ -49,6 +49,10 @@ export const pt_BR = Object.freeze({
   "settings.language.label": "Idioma de exibição",
   "settings.speech.language": "Idioma da fala",
   "settings.speech.browser_default": "Padrão do navegador",
+  // Codeberg #111: fat = G (Gordura); "F" reads as fiber in Brazilian Portuguese.
+  "macro.glyph.protein": "P",
+  "macro.glyph.carbs": "C",
+  "macro.glyph.fat": "G",
   "diary.empty": "Ainda não há entradas neste dia. Toque em + para registrar comida.",
   "diary.empty_no_profile": "Configure seu perfil para começar.",
   "diary.nothing": "Ainda não há nada aqui.",

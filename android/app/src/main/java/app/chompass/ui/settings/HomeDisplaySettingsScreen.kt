@@ -211,7 +211,7 @@ fun HomeDisplaySettingsScreen(
                 FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp) {
                     SettingRow(
                         label = stringResource(R.string.home_display_food_log_chips),
-                        value = display.foodLogMacroChips.joinToString(" ") { it.glyph },
+                        value = display.foodLogMacroChips.map { stringResource(it.glyphRes()) }.joinToString(" "),
                         onClick = { showChipPicker = true },
                     )
                 }

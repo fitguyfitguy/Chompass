@@ -18,12 +18,21 @@ enum class HomeCalorieDisplayMode(val storageKey: String, val displayNameRes: In
 }
 
 /** Macros shown on food-log rows (subset of core nutrients). */
-enum class FoodLogMacroChip(val storageKey: String, val glyph: String) {
-    PROTEIN("protein", "P"),
-    CARBS("carbs", "C"),
-    FAT("fat", "F"),
-    FIBER("fiber", "Fi"),
-    SUGAR("sugar", "S");
+enum class FoodLogMacroChip(val storageKey: String) {
+    PROTEIN("protein"),
+    CARBS("carbs"),
+    FAT("fat"),
+    FIBER("fiber"),
+    SUGAR("sugar");
+
+    /** Chip letter before the gram value — per-locale (#111): pt-BR fat = "G" (Gordura). */
+    fun glyphRes(): Int = when (this) {
+        PROTEIN -> R.string.macro_glyph_protein
+        CARBS -> R.string.macro_glyph_carbs
+        FAT -> R.string.macro_glyph_fat
+        FIBER -> R.string.macro_glyph_fiber
+        SUGAR -> R.string.macro_glyph_sugar
+    }
 
     fun macroKind(): MacroKind? = when (this) {
         PROTEIN -> MacroKind.PROTEIN

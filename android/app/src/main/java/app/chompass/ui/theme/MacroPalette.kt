@@ -2,6 +2,7 @@ package app.chompass.ui.theme
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import app.chompass.R
 import app.chompass.models.AutoBalanceMacro
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.OptionalNutrient
@@ -24,14 +25,14 @@ enum class MacroKind {
         FIBER -> AppColors.Fiber
     }
 
-    val glyph: String
-        get() = when (this) {
-            PROTEIN -> "P"
-            CARBS -> "C"
-            FAT -> "F"
-            FIBER -> "Fi"
-            CALORIES -> "kcal"
-        }
+    /** Chip letter before the gram value — per-locale (#111): pt-BR fat = "G" (Gordura). */
+    fun glyphRes(): Int = when (this) {
+        PROTEIN -> R.string.macro_glyph_protein
+        CARBS -> R.string.macro_glyph_carbs
+        FAT -> R.string.macro_glyph_fat
+        FIBER -> R.string.macro_glyph_fiber
+        CALORIES -> R.string.macro_glyph_calories
+    }
 }
 
 fun AutoBalanceMacro.toMacroKind(): MacroKind = when (this) {

@@ -3,6 +3,7 @@
  * Home nutrient tubes / food-row chips — mirrors Android HomeTopNutrient,
  * FoodLogMacroChip, and OptionalNutrientGoals defaults.
  */
+import { t } from "./i18n/index.js";
 
 /** @typedef {import('./chompass-core/models.js').FoodEntry} FoodEntry */
 /** @typedef {{calories: number, proteinG: number, fatG: number, carbsG: number}} DailyTargets */
@@ -343,11 +344,26 @@ export function tubeStatus(value, target, unit, isFloor = false) {
   return `${Math.round(value - target)}${unit} over`;
 }
 
+/** Macro chip letters are per-locale (Codeberg #111): pt-BR fat = "G" (Gordura,
+ * where "F" reads as fiber). Resolved through the i18n catalog at render time;
+ * other glyphs keep their static NutrientDef values. */
+const MACRO_GLYPH_KEYS = {
+  proteinG: "macro.glyph.protein",
+  carbsG: "macro.glyph.carbs",
+  fatG: "macro.glyph.fat",
+};
+
 /**
- * Chip glyph for a food-row nutrient key.
+ * Chip letter for a nutrient key (localized for the macros, #111).
  * @param {string} key
+ * @returns {string}
  */
 export function chipGlyph(key) {
+  const tkey = MACRO_GLYPH_KEYS[key];
+  if (tkey) {
+    const localized = t(tkey);
+    if (localized !== tkey) return localized; // key echoed back = not in catalog
+  }
   return nutrientDef(key)?.chipGlyph ?? key.slice(0, 1).toUpperCase();
 }
 
