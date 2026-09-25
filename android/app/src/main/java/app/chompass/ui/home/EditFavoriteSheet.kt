@@ -304,6 +304,7 @@ fun EditFavoriteSheet(
                                     dismissKeyboard()
                                     showIconPicker = true
                                 },
+                                onRemovePhoto = { editableImageFilename = null; iconPickError = null },
                             )
                         }
 
