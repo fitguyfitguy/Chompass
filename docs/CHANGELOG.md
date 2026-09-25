@@ -6,6 +6,12 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Fixed
+
+- **The web Home loads again after the 5.2.0 update** (web): installs that had opened the app before the untracked-days feature threw a database error and rendered an empty Home screen; Progress, Coach, and Settings kept working. The database upgrade now creates the store the feature expects, so Home and the diary render again with all data intact. Fixes Codeberg [#112](https://codeberg.org/fitguy/Chompass/issues/112) by [@sbandoalleciance](https://codeberg.org/sbandoalleciance).
+- **Fat shows G in Brazilian Portuguese** (Android + web): the quick macro letters are initials, and F for fat read as fiber where fat is Gordura. The letters now follow the app language, so Brazilian Portuguese shows G for fat while the other languages keep their initials. Follows Codeberg [#111](https://codeberg.org/fitguy/Chompass/issues/111) by [@lucasmz](https://codeberg.org/lucasmz).
+- **Typed descriptions carry into photo notes** (Android): text entered in Add Food now appears in the photo note when you add a photo.
+
 ## [5.2.0] - 2026-09-24
 
 ### Added
@@ -38,10 +44,6 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Review-sheet polish** (Android): the serving hint returns under the unlocked serving card, the empty-diary text no longer flashes before the first load, and body measurements ask for a height when derived numbers are missing.
 - **Fat reads as a floor on Home** (Android + web): passing the fat target shows a calm "Minimum met" instead of the over wording, and the card no longer takes the over color. Follows Codeberg [#109](https://codeberg.org/fitguy/Chompass/issues/109) by [@OlivierM16](https://codeberg.org/OlivierM16).
 - **Day-type colors are translated everywhere** (Android): the color names and the week-strip accessibility label ship complete in German, Spanish, French, and Polish.
-
-### Fixed
-
-- **Typed descriptions carry into photo notes** (Android): text entered in Add Food now appears in the photo note when you add a photo.
 
 ## [5.1.1] - 2026-09-21
 
