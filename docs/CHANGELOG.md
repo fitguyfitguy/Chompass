@@ -39,6 +39,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Fat reads as a floor on Home** (Android + web): passing the fat target shows a calm "Minimum met" instead of the over wording, and the card no longer takes the over color. Follows Codeberg [#109](https://codeberg.org/fitguy/Chompass/issues/109) by [@OlivierM16](https://codeberg.org/OlivierM16).
 - **Day-type colors are translated everywhere** (Android): the color names and the week-strip accessibility label ship complete in German, Spanish, French, and Polish.
 
+### Fixed
+
+- **Typed descriptions carry into photo notes** (Android): text entered in Add Food now appears in the photo note when you add a photo.
+
 ## [5.1.1] - 2026-09-21
 
 ### Added
