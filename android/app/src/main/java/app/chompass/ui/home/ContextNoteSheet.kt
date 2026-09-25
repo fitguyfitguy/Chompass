@@ -282,6 +282,8 @@ fun ContextNoteSheet(
 fun MultiPhotoCaptureSheet(
     imageBytesList: List<ByteArray>,
     addsFromLibrary: Boolean,
+    /** Optional food description carried over from the Add Food search field. */
+    initialNote: String = "",
     showScaleTip: Boolean = false,
     /** When true, expand the note field by default (until user opts out in settings). */
     requireNote: Boolean = true,
@@ -291,7 +293,7 @@ fun MultiPhotoCaptureSheet(
     showAccuracyGuide: Boolean = false,
     /** Codeberg #53: previously saved analysis prompts for quick reuse. */
     recentPrompts: List<String> = emptyList(),
-    onAddPhoto: () -> Unit,
+    onAddPhoto: (note: String) -> Unit,
     onRemove: (Int) -> Unit,
     onAnalyze: (note: String?, confirmedPortionGrams: Double?, dontAskAgain: Boolean) -> Unit,
     /** Codeberg #53: store photos + note WITHOUT an AI call, run later from the queue. */
@@ -299,7 +301,7 @@ fun MultiPhotoCaptureSheet(
     onDismiss: () -> Unit,
 ) {
     val state = rememberChompassSheetState()
-    var note by rememberSaveable { mutableStateOf("") }
+    var note by rememberSaveable { mutableStateOf(initialNote) }
     var weightText by rememberSaveable { mutableStateOf("") }
     var tipExpanded by remember(requireNote) { mutableStateOf(requireNote) }
     var dontAskAgain by remember { mutableStateOf(false) }
@@ -460,7 +462,7 @@ fun MultiPhotoCaptureSheet(
                                     else R.string.meal_photos_add_photo,
                                 ),
                                 addsFromLibrary = addsFromLibrary,
-                                onAddPhoto = onAddPhoto,
+                                onAddPhoto = { onAddPhoto(note) },
                             )
                         }
                     }
