@@ -22,6 +22,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
@@ -34,8 +35,10 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.UnfoldMore
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -487,6 +490,7 @@ fun EditFoodEntrySheet(
                         dismissKeyboard()
                         showIconPicker = true
                     },
+                    onRemovePhoto = { editableImageFilename = null; iconPickError = null },
                 )
             }
 
@@ -1285,7 +1289,9 @@ internal fun foodEntryEmojisSupported(hasGlyph: (String) -> Boolean): List<Strin
     return if (supported.size >= FOOD_ENTRY_EMOJIS.size / 2) supported else FOOD_ENTRY_EMOJIS
 }
 
-/** Hero shown at the top of the edit sheet; tap to change the emoji / photo. */
+/** Hero shown at the top of the edit sheet; tap to change the emoji / photo.
+ *  Pass [onRemovePhoto] to render a direct × on the photo (#220) — it only
+ *  clears the pending edit state; Save persists, Cancel keeps the photo. */
 @Composable
 internal fun EditFoodEntryHero(
     emoji: String?,
@@ -1293,6 +1299,7 @@ internal fun EditFoodEntryHero(
     onClick: () -> Unit,
     enabled: Boolean = true,
     packShot: Boolean = false,
+    onRemovePhoto: (() -> Unit)? = null,
 ) {
     val ctx = LocalContext.current
     // Safe-cast so previews (no ChompassApp application) render the emoji fallback.
@@ -1310,18 +1317,39 @@ internal fun EditFoodEntryHero(
         contentAlignment = Alignment.Center
     ) {
         if (bitmap != null) {
-            androidx.compose.foundation.Image(
-                bitmap = bitmap.asImageBitmap(),
-                contentDescription = null,
-                contentScale = if (packShot) ContentScale.Fit else ContentScale.Crop,
-                modifier = Modifier
-                    .then(
-                        if (packShot) Modifier.fillMaxWidth().height(160.dp)
-                        else Modifier.size(96.dp),
-                    )
-                    .clip(RoundedCornerShape(AppRadii.Field))
-                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
-            )
+            Box {
+                androidx.compose.foundation.Image(
+                    bitmap = bitmap.asImageBitmap(),
+                    contentDescription = null,
+                    contentScale = if (packShot) ContentScale.Fit else ContentScale.Crop,
+                    modifier = Modifier
+                        .then(
+                            if (packShot) Modifier.fillMaxWidth().height(160.dp)
+                            else Modifier.size(96.dp),
+                        )
+                        .clip(RoundedCornerShape(AppRadii.Field))
+                        .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
+                )
+                // #220: analysis-queue-style direct remove; pending state only.
+                if (onRemovePhoto != null) {
+                    IconButton(
+                        onClick = onRemovePhoto,
+                        enabled = enabled,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(4.dp)
+                            .size(28.dp)
+                            .background(Color.Black.copy(alpha = AppTextOpacity.Subtle), CircleShape),
+                    ) {
+                        Icon(
+                            Icons.Filled.Close,
+                            contentDescription = stringResource(R.string.action_remove),
+                            tint = Color.White,
+                            modifier = Modifier.size(14.dp),
+                        )
+                    }
+                }
+            }
         } else {
             Text(emoji ?: "🍽", fontSize = 40.sp)
         }
