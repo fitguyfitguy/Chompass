@@ -2017,4 +2017,9 @@
     <string name="a11y_marker_lane">दिन के प्रकार और बिना-ट्रैक चिह्न</string>
     <string name="a11y_day_marker_type">दिन का प्रकार %1$s</string>
     <string name="a11y_day_untracked">ट्रैक नहीं किया</string>
+    <string name="home_untracked_chip">ट्रैक नहीं किया गया</string>
+    <string name="home_mark_untracked_chip">दिन चिह्नित करें</string>
+    <string name="home_untracked_chip_a11y">यह दिन ट्रैक न किया गया चिह्नित है। बदलने के लिए टैप करें।</string>
+    <string name="home_mark_untracked_chip_a11y">इस दिन को ट्रैक न किया गया चिह्नित करें।</string>
+    <string name="home_today">आज</string>
 </resources>

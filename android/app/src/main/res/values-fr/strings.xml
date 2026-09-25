@@ -2041,4 +2041,8 @@ macros rééquilibrées au nouveau total calorique</string>
     <string name="a11y_marker_lane">Marqueurs de type de jour et non suivi</string>
     <string name="a11y_day_marker_type">type de jour %1$s</string>
     <string name="a11y_day_untracked">non suivi</string>
+    <string name="home_untracked_chip">Non suivi</string>
+    <string name="home_mark_untracked_chip">Marquer le jour</string>
+    <string name="home_untracked_chip_a11y">Ce jour est marqué comme non suivi. Touchez pour modifier.</string>
+    <string name="home_mark_untracked_chip_a11y">Marquer ce jour comme non suivi.</string>
 </resources>

@@ -2037,4 +2037,9 @@ makrolar yeni kalori toplamına göre yeniden dengelenir</string>
     <string name="a11y_marker_lane">Gün türü ve takip edilmeyen işaretleri</string>
     <string name="a11y_day_marker_type">gün türü %1$s</string>
     <string name="a11y_day_untracked">takip edilmiyor</string>
+    <string name="home_untracked_chip">İzlenmedi</string>
+    <string name="home_mark_untracked_chip">Günü işaretle</string>
+    <string name="home_untracked_chip_a11y">Bu gün izlenmemiş olarak işaretlendi. Değiştirmek için dokun.</string>
+    <string name="home_mark_untracked_chip_a11y">Bu günü izlenmemiş olarak işaretle.</string>
+    <string name="home_today">Bugün</string>
 </resources>

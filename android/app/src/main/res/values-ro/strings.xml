@@ -2018,4 +2018,9 @@ macro-urile reechilibrate la noul total caloric</string>
     <string name="a11y_marker_lane">Marcaje tip de zi și netrimise</string>
     <string name="a11y_day_marker_type">tip de zi %1$s</string>
     <string name="a11y_day_untracked">neurmărit</string>
+    <string name="home_untracked_chip">Neurmărit</string>
+    <string name="home_mark_untracked_chip">Marchează ziua</string>
+    <string name="home_untracked_chip_a11y">Această zi este marcată ca neurmărită. Atinge pentru a schimba.</string>
+    <string name="home_mark_untracked_chip_a11y">Marchează această zi ca neurmărită.</string>
+    <string name="home_today">Astăzi</string>
 </resources>

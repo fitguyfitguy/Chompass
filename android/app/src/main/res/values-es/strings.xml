@@ -2038,4 +2038,8 @@ macros reequilibradas al nuevo total calórico</string>
     <string name="a11y_marker_lane">Marcadores de tipo de día y sin registrar</string>
     <string name="a11y_day_marker_type">tipo de día %1$s</string>
     <string name="a11y_day_untracked">sin registrar</string>
+    <string name="home_untracked_chip">Sin registrar</string>
+    <string name="home_mark_untracked_chip">Marcar día</string>
+    <string name="home_untracked_chip_a11y">Este día está marcado como no registrado. Toca para cambiar.</string>
+    <string name="home_mark_untracked_chip_a11y">Marcar este día como no registrado.</string>
 </resources>

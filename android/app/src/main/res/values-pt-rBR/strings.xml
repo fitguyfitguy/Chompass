@@ -2019,4 +2019,9 @@ macros reequilibradas ao novo total calórico</string>
     <string name="a11y_marker_lane">Marcadores de tipo de dia e não registrado</string>
     <string name="a11y_day_marker_type">tipo de dia %1$s</string>
     <string name="a11y_day_untracked">não registrado</string>
+    <string name="home_untracked_chip">Não rastreado</string>
+    <string name="home_mark_untracked_chip">Marcar dia</string>
+    <string name="home_untracked_chip_a11y">Este dia está marcado como não rastreado. Toque para alterar.</string>
+    <string name="home_mark_untracked_chip_a11y">Marcar este dia como não rastreado.</string>
+    <string name="home_today">Hoje</string>
 </resources>
