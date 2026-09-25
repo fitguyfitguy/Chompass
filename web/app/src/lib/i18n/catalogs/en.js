@@ -57,6 +57,11 @@ export const en = Object.freeze({
   "settings.speech.language": "Speech language",
   "settings.speech.browser_default": "Browser default",
 
+  // Macro chip letters (Codeberg #111): per-locale initials so pt-BR can use G for Gordura.
+  "macro.glyph.protein": "P",
+  "macro.glyph.carbs": "C",
+  "macro.glyph.fat": "F",
+
   // Diary / home
   "diary.empty": "No entries yet for this day. Tap + to log food.",
   "diary.empty_no_profile": "Set up your profile to start tracking.",

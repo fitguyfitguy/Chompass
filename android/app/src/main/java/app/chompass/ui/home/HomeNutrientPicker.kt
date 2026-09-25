@@ -136,7 +136,7 @@ fun FoodLogMacroChipPickerDialog(
                 val kind = chip.macroKind()
                 val accent = kind?.color() ?: AppColors.Calorie
                 NutrientPickerRow(
-                    label = chip.glyph,
+                    label = stringResource(chip.glyphRes()),
                     unit = kind?.name?.lowercase(Locale.ROOT)?.replaceFirstChar { it.titlecase() } ?: "Sugar",
                     checked = chip in draft,
                     accentColor = accent,
@@ -233,7 +233,7 @@ fun FoodLogMacroChipView(chip: FoodLogMacroChip, value: Double) {
                 .padding(horizontal = 8.dp, vertical = 3.dp)
         ) {
             Text(
-                "${chip.glyph} ${macroGramsText(value)}",
+                "${stringResource(chip.glyphRes())} ${macroGramsText(value)}",
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = color,

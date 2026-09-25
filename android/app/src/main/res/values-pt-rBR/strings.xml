@@ -363,6 +363,7 @@
     <string name="nutrition_label_protein">Proteína</string>
     <string name="nutrition_label_carbs">Carboidratos</string>
     <string name="nutrition_label_fat">Gordura</string>
+    <string name="macro_glyph_fat">G</string>
     <string name="nutrition_label_sugar">Açúcar</string>
     <string name="nutrition_label_added_sugar">Açúcar adicionado</string>
     <string name="nutrition_label_fiber">Fibras</string>

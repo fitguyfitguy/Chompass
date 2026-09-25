@@ -1259,6 +1259,19 @@ für dich ein</string>
 
     <string name="nutrition_label_fat">Fett</string>
 
+    <!-- Chip letters next to gram values (#111): per-locale so pt-BR uses G for Gordura. -->
+    <string name="macro_glyph_protein">P</string>
+
+    <string name="macro_glyph_carbs">C</string>
+
+    <string name="macro_glyph_fat">F</string>
+
+    <string name="macro_glyph_fiber">Fi</string>
+
+    <string name="macro_glyph_sugar">S</string>
+
+    <string name="macro_glyph_calories">kcal</string>
+
     <string name="nutrition_label_sugar">Zucker</string>
 
     <string name="nutrition_label_added_sugar">Zugesetzter Zucker</string>

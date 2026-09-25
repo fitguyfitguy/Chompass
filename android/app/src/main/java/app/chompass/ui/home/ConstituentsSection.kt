@@ -217,6 +217,9 @@ private fun ConstituentRowCard(
 @Composable
 private fun ConstituentMacroLine(row: FoodConstituent, modifier: Modifier = Modifier) {
     val separatorColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val proteinGlyph = stringResource(R.string.macro_glyph_protein)
+    val carbsGlyph = stringResource(R.string.macro_glyph_carbs)
+    val fatGlyph = stringResource(R.string.macro_glyph_fat)
     Text(
         text = buildAnnotatedString {
             withStyle(SpanStyle(color = AppColors.Calorie, fontWeight = FontWeight.Medium)) {
@@ -224,15 +227,15 @@ private fun ConstituentMacroLine(row: FoodConstituent, modifier: Modifier = Modi
             }
             withStyle(SpanStyle(color = separatorColor)) { append(" · ") }
             withStyle(SpanStyle(color = MacroKind.PROTEIN.color(), fontWeight = FontWeight.Medium)) {
-                append("${MacroKind.PROTEIN.glyph} ${MacroValueFormatter.string(row.protein)}")
+                append("$proteinGlyph ${MacroValueFormatter.string(row.protein)}")
             }
             withStyle(SpanStyle(color = separatorColor)) { append(" · ") }
             withStyle(SpanStyle(color = MacroKind.CARBS.color(), fontWeight = FontWeight.Medium)) {
-                append("${MacroKind.CARBS.glyph} ${MacroValueFormatter.string(row.carbs)}")
+                append("$carbsGlyph ${MacroValueFormatter.string(row.carbs)}")
             }
             withStyle(SpanStyle(color = separatorColor)) { append(" · ") }
             withStyle(SpanStyle(color = MacroKind.FAT.color(), fontWeight = FontWeight.Medium)) {
-                append("${MacroKind.FAT.glyph} ${MacroValueFormatter.string(row.fat)}")
+                append("$fatGlyph ${MacroValueFormatter.string(row.fat)}")
             }
         },
         style = MaterialTheme.typography.bodySmall,

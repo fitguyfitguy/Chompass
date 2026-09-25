@@ -172,13 +172,16 @@ fun NutritionDetailSheet(
                     val proteinGoal = HomeTopNutrient.PROTEIN.goal(resolved, profile, optionalGoals, macroScale)
                     val carbsGoal = HomeTopNutrient.CARBS.goal(resolved, profile, optionalGoals, macroScale)
                     val fatGoal = HomeTopNutrient.FAT.goal(resolved, profile, optionalGoals, macroScale)
+                    val proteinGlyph = stringResource(R.string.macro_glyph_protein)
+                    val carbsGlyph = stringResource(R.string.macro_glyph_carbs)
+                    val fatGlyph = stringResource(R.string.macro_glyph_fat)
                     DetailRow(Icons.Filled.LocalFireDepartment, stringResource(R.string.nutrition_label_calories), "${EnergyFormat.quantity(calories, LocalEnergyUnit.current)}", energyUnitLabel(), goal = "${EnergyFormat.quantity(calorieGoal, LocalEnergyUnit.current)}", percent = nutritionGoalPercent(calories.toDouble(), calorieGoal.toDouble()), accentColor = AppColors.Calorie)
                     Hairline()
-                    DetailRow(null, stringResource(R.string.nutrition_label_protein), MacroValueFormatter.string(protein), stringResource(R.string.unit_g), goal = "$proteinGoal", percent = nutritionGoalPercent(protein, proteinGoal.toDouble()), labelGlyph = "P", accentColor = AppColors.Protein)
+                    DetailRow(null, stringResource(R.string.nutrition_label_protein), MacroValueFormatter.string(protein), stringResource(R.string.unit_g), goal = "$proteinGoal", percent = nutritionGoalPercent(protein, proteinGoal.toDouble()), labelGlyph = proteinGlyph, accentColor = AppColors.Protein)
                     Hairline()
-                    DetailRow(null, stringResource(R.string.nutrition_label_carbs), MacroValueFormatter.string(carbs), stringResource(R.string.unit_g), goal = "$carbsGoal", percent = nutritionGoalPercent(carbs, carbsGoal.toDouble()), labelGlyph = "C", accentColor = AppColors.Carbs)
+                    DetailRow(null, stringResource(R.string.nutrition_label_carbs), MacroValueFormatter.string(carbs), stringResource(R.string.unit_g), goal = "$carbsGoal", percent = nutritionGoalPercent(carbs, carbsGoal.toDouble()), labelGlyph = carbsGlyph, accentColor = AppColors.Carbs)
                     Hairline()
-                    DetailRow(null, stringResource(R.string.nutrition_label_fat), MacroValueFormatter.string(fat), stringResource(R.string.unit_g), goal = "$fatGoal", percent = nutritionGoalPercent(fat, fatGoal.toDouble()), labelGlyph = "F", accentColor = AppColors.Fat)
+                    DetailRow(null, stringResource(R.string.nutrition_label_fat), MacroValueFormatter.string(fat), stringResource(R.string.unit_g), goal = "$fatGoal", percent = nutritionGoalPercent(fat, fatGoal.toDouble()), labelGlyph = fatGlyph, accentColor = AppColors.Fat)
                 }
             }
 
