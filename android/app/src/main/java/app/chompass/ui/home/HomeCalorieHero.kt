@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Info
@@ -483,7 +483,7 @@ private fun UntrackedChip(untracked: Boolean, onClick: () -> Unit) {
     )
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(50),
+        shape = CircleShape,
         color = if (untracked) MaterialTheme.colorScheme.tertiaryContainer
             else MaterialTheme.colorScheme.surfaceVariant,
         modifier = Modifier
@@ -516,7 +516,7 @@ private fun DayTypeChip(label: String, color: Color? = null, onClick: () -> Unit
     }
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(50),
+        shape = CircleShape,
         color = container,
         modifier = Modifier
             // The chip shares the remaining-caption line: cap it so a long

@@ -177,7 +177,7 @@ internal fun EntryAnalysisStepRow(currentPhase: EntryAnalysisPhase) {
                     .clip(CircleShape)
                     .background(
                         when {
-                            done -> AppColors.Calorie.copy(alpha = 0.85f)
+                            done -> AppColors.Calorie.copy(alpha = AppTextOpacity.Strong)
                             active -> AppColors.Calorie.copy(alpha = 0.2f)
                             else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
                         }

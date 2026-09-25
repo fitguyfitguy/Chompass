@@ -321,7 +321,7 @@ private fun WaterHistoryRow(
         Icon(
             Icons.Filled.WaterDrop,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.water.copy(alpha = 0.85f),
+            tint = MaterialTheme.colorScheme.water.copy(alpha = AppTextOpacity.Strong),
             modifier = Modifier.size(18.dp),
         )
         Text(

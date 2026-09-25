@@ -1096,7 +1096,7 @@ internal fun OptionalNutrientGoalRow(
             "$value${nutrient.unit}",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.SemiBold,
-            color = accent?.copy(alpha = 0.85f) ?: MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+            color = accent?.copy(alpha = AppTextOpacity.Strong) ?: MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
         )
         Spacer(Modifier.width(8.dp))
         Icon(

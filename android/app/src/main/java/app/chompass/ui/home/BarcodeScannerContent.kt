@@ -46,6 +46,7 @@ import app.chompass.services.BarcodeCodeNormalizer
 import app.chompass.ui.theme.AppColors
 import zxingcpp.BarcodeReader
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
 
 @Composable
 internal fun BarcodeScannerContent(
@@ -189,7 +190,7 @@ internal fun BarcodeScannerContent(
                 )
                 Text(
                     stringResource(R.string.barcode_off_note),
-                    color = Color.White.copy(alpha = 0.72f),
+                    color = Color.White.copy(alpha = AppTextOpacity.Secondary),
                     fontSize = 13.sp,
                     lineHeight = 18.sp
                 )
