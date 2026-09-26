@@ -18,6 +18,7 @@ import app.chompass.models.HeuristicServingUnitSettings
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeCalorieHeroLayout
 import app.chompass.models.HomeMacroCardLayout
+import app.chompass.models.HomeFoodLogLayout
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.KetoCarbMode
@@ -836,6 +837,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
 
     fun setHomeMacroCardLayout(layout: HomeMacroCardLayout?) = launchPref {
         container.prefs.setHomeMacroCardLayout(layout?.storageKey)
+    }
+
+    fun setHomeFoodLogLayout(layout: HomeFoodLogLayout?) = launchPref {
+        container.prefs.setHomeFoodLogLayout(layout?.storageKey)
     }
 
     fun setFoodLogMacroChips(chips: List<FoodLogMacroChip>) = launchPref {
