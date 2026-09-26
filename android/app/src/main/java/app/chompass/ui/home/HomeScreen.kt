@@ -677,6 +677,7 @@ fun HomeScreen(
                         recalcDetailsAvailable = ui.lastRecalcSheet != null,
                         onShowRecalcDetails = { vm.openRecalcDetails() },
                         goalDerivation = ui.goalDerivation,
+                        layout = ui.homeDisplay.calorieHeroLayout,
                     )
                     if (ui.homeDisplay.showSteps) {
                         Spacer(Modifier.height(12.dp))
@@ -2305,6 +2306,7 @@ internal fun HomeScreenPreviewContent(
                             restingBurn = ui.restingBurnToday,
                             freezeProgress = freezeAnimations,
                             goalDerivation = ui.goalDerivation,
+                            layout = ui.homeDisplay.calorieHeroLayout,
                         )
                         val previewResolvedTargets = remember(ui.profile, ui.date, ui.goalJournal) { ui.resolvedDayTargets }
                         Row(
