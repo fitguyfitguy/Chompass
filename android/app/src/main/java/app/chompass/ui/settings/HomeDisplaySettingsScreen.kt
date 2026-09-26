@@ -1,6 +1,7 @@
 package app.chompass.ui.settings
 
 import androidx.navigation.NavHostController
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Add
@@ -24,6 +26,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.models.HomeCalorieHeroLayout
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.navigation.ChompassRoutes
@@ -39,6 +43,7 @@ import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.home.FoodLogMacroChipPickerDialog
 import app.chompass.ui.home.HomeLookPreview
 import app.chompass.ui.home.HomeTopNutrientPickerDialog
+import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
 @Composable
@@ -52,6 +57,7 @@ fun HomeDisplaySettingsScreen(
     val display = ui.homeDisplay
     var showNutrientPicker by remember { mutableStateOf(false) }
     var showChipPicker by remember { mutableStateOf(false) }
+    var showCalorieLayoutPicker by remember { mutableStateOf(false) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -153,11 +159,19 @@ fun HomeDisplaySettingsScreen(
             // only a pointer so Customize Home never holds a second editor.
             item {
                 ChompassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp) {
-                    SettingRow(
-                        label = stringResource(R.string.home_display_calorie_mode),
-                        value = stringResource(display.calorieDisplayMode.displayNameRes),
-                        onClick = { nav?.navigate(ChompassRoutes.SETTINGS_GOALS) },
-                    )
+                    Column {
+                        SettingRow(
+                            label = stringResource(R.string.home_display_calorie_mode),
+                            value = stringResource(display.calorieDisplayMode.displayNameRes),
+                            onClick = { nav?.navigate(ChompassRoutes.SETTINGS_GOALS) },
+                        )
+                        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+                        SettingRow(
+                            label = stringResource(R.string.home_display_calorie_layout),
+                            value = calorieHeroLayoutLabel(display.calorieHeroLayout),
+                            onClick = { showCalorieLayoutPicker = true },
+                        )
+                    }
                 }
             }
 
@@ -188,7 +202,61 @@ fun HomeDisplaySettingsScreen(
             onDismiss = { showChipPicker = false }
         )
     }
+    if (showCalorieLayoutPicker) {
+        CalorieLayoutPickerDialog(
+            selected = display.calorieHeroLayout,
+            onSelect = {
+                vm.setHomeCalorieHeroLayout(it)
+                showCalorieLayoutPicker = false
+            },
+            onDismiss = { showCalorieLayoutPicker = false }
+        )
+    }
 }
+
+@Composable
+private fun calorieHeroLayoutLabel(layout: HomeCalorieHeroLayout?): String = stringResource(
+    when (layout) {
+        null -> R.string.home_calorie_layout_default
+        HomeCalorieHeroLayout.COMPACT_HORIZONTAL -> R.string.home_calorie_layout_compact_horizontal
+    }
+)
+
+@Composable
+private fun CalorieLayoutPickerDialog(
+    selected: HomeCalorieHeroLayout?,
+    onSelect: (HomeCalorieHeroLayout?) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    app.chompass.ui.components.FudGlassDialog(onDismissRequest = onDismiss) {
+        Text(stringResource(R.string.home_display_calorie_layout), fontSize = 22.sp, fontWeight = FontWeight.Bold)
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            (listOf<HomeCalorieHeroLayout?>(null) + HomeCalorieHeroLayout.entries).forEach { layout ->
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(AppRadii.Field))
+                        .clickable { onSelect(layout) }
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        calorieHeroLayoutLabel(layout),
+                        fontWeight = if (layout == selected) FontWeight.Bold else FontWeight.Normal,
+                        color = if (layout == selected) AppColors.Calorie else MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+            }
+        }
+        app.chompass.ui.components.FudGlassDialogActions(
+            primaryText = stringResource(R.string.action_done),
+            onPrimary = onDismiss,
+            dismissText = stringResource(R.string.action_cancel),
+            onDismiss = onDismiss
+        )
+    }
+}
+
 
 @Composable
 private fun CardCountRow(count: Int, onDecrement: () -> Unit, onIncrement: () -> Unit) {
