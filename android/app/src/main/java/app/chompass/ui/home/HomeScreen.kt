@@ -739,6 +739,7 @@ fun HomeScreen(
                                 accentColor = nutrientAccentColor(nutrient),
                                 modifier = Modifier.weight(1f),
                                 planned = planned,
+                                layout = ui.homeDisplay.macroCardLayout,
                             )
                         }
                     }
@@ -2330,6 +2331,7 @@ internal fun HomeScreenPreviewContent(
                                     accentColor = nutrientAccentColor(nutrient),
                                     modifier = Modifier.weight(1f),
                                     freezeProgress = freezeAnimations,
+                                    layout = ui.homeDisplay.macroCardLayout,
                                 )
                             }
                         }
