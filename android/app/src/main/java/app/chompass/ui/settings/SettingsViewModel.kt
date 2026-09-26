@@ -16,6 +16,7 @@ import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.HeuristicRuleOverride
 import app.chompass.models.HeuristicServingUnitSettings
 import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.models.HomeCalorieHeroLayout
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.KetoCarbMode
@@ -826,6 +827,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
 
     fun setHomeCalorieFullCredit(enabled: Boolean) = launchPref {
         container.prefs.setHomeCalorieFullCredit(enabled)
+    }
+
+    fun setHomeCalorieHeroLayout(layout: HomeCalorieHeroLayout?) = launchPref {
+        container.prefs.setHomeCalorieHeroLayout(layout?.storageKey)
     }
 
     fun setFoodLogMacroChips(chips: List<FoodLogMacroChip>) = launchPref {
