@@ -6,6 +6,7 @@ import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.HeuristicServingUnitSettings
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeCalorieHeroLayout
+import app.chompass.models.HomeMacroCardLayout
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.MealSchedule
@@ -288,6 +289,7 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
             calorieDisplayMode = HomeCalorieDisplayMode.fromStorage(this[Keys.HOME_CALORIE_DISPLAY_MODE]),
             fullCreditActiveBurn = this[Keys.HOME_CALORIE_FULL_CREDIT] ?: false,
             calorieHeroLayout = HomeCalorieHeroLayout.fromStorage(this[Keys.HOME_CALORIE_HERO_LAYOUT]),
+            macroCardLayout = HomeMacroCardLayout.fromStorage(this[Keys.HOME_MACRO_CARD_LAYOUT]),
             foodLogMacroChips = FoodLogMacroChip.fromStorage(this[Keys.FOOD_LOG_MACRO_CHIPS]),
         ),
         mealSchedule = mealCatalog.toLegacySchedule(),
