@@ -7,6 +7,7 @@ import app.chompass.debug.DebugTrace
 import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.GoalJournalEntry
 import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.models.HomeCalorieHeroLayout
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.OptionalNutrientGoals
@@ -273,6 +274,13 @@ internal suspend fun PreferencesStore.setHomeCalorieFullCreditImpl(v: Boolean) {
         dataStore.edit { it[Keys.HOME_CALORIE_FULL_CREDIT] = v }
     }
 
+internal suspend fun PreferencesStore.setHomeCalorieHeroLayoutImpl(v: String?) {
+        dataStore.edit { prefs ->
+            if (v == null) prefs.remove(Keys.HOME_CALORIE_HERO_LAYOUT)
+            else prefs[Keys.HOME_CALORIE_HERO_LAYOUT] = v
+        }
+    }
+
 internal val PreferencesStore.foodLogMacroChipsImpl: Flow<String> get() = dataStore.data.map {
         it[Keys.FOOD_LOG_MACRO_CHIPS] ?: FoodLogMacroChip.DefaultStorageValue
     }
@@ -308,6 +316,7 @@ internal val PreferencesStore.homeDisplayPreferencesImpl: Flow<HomeDisplayPrefer
             stepGoal = prefs[Keys.HOME_STEP_GOAL] ?: HomeDisplayPreferences.DEFAULT_STEP_GOAL,
             calorieDisplayMode = HomeCalorieDisplayMode.fromStorage(prefs[Keys.HOME_CALORIE_DISPLAY_MODE]),
             fullCreditActiveBurn = prefs[Keys.HOME_CALORIE_FULL_CREDIT] ?: false,
+            calorieHeroLayout = HomeCalorieHeroLayout.fromStorage(prefs[Keys.HOME_CALORIE_HERO_LAYOUT]),
             foodLogMacroChips = FoodLogMacroChip.fromStorage(prefs[Keys.FOOD_LOG_MACRO_CHIPS]),
         )
     }

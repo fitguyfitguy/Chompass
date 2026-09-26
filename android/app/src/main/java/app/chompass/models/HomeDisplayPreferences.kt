@@ -17,6 +17,16 @@ enum class HomeCalorieDisplayMode(val storageKey: String, val displayNameRes: In
     }
 }
 
+/** Presentation options for the home calorie hero. Null preserves the existing layout. */
+enum class HomeCalorieHeroLayout(val storageKey: String) {
+    COMPACT_HORIZONTAL("compactHorizontal");
+
+    companion object {
+        fun fromStorage(raw: String?): HomeCalorieHeroLayout? =
+            entries.firstOrNull { it.storageKey == raw }
+    }
+}
+
 /** Macros shown on food-log rows (subset of core nutrients). */
 enum class FoodLogMacroChip(val storageKey: String) {
     PROTEIN("protein"),
@@ -99,6 +109,7 @@ data class HomeDisplayPreferences(
     val calorieDisplayMode: HomeCalorieDisplayMode = HomeCalorieDisplayMode.Default,
     /** Add Active only: credit today's measured burn on top of the full goal instead of the sedentary split. */
     val fullCreditActiveBurn: Boolean = false,
+    val calorieHeroLayout: HomeCalorieHeroLayout? = null,
     val foodLogMacroChips: List<FoodLogMacroChip> = FoodLogMacroChip.DefaultSelection,
 ) {
     companion object {
