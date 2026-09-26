@@ -37,6 +37,16 @@ enum class HomeMacroCardLayout(val storageKey: String) {
     }
 }
 
+/** Presentation options for food-log rows. Null preserves the existing layout. */
+enum class HomeFoodLogLayout(val storageKey: String) {
+    COMPACT_HORIZONTAL("compactHorizontal");
+
+    companion object {
+        fun fromStorage(raw: String?): HomeFoodLogLayout? =
+            entries.firstOrNull { it.storageKey == raw }
+    }
+}
+
 /** Macros shown on food-log rows (subset of core nutrients). */
 enum class FoodLogMacroChip(val storageKey: String) {
     PROTEIN("protein"),
@@ -121,6 +131,7 @@ data class HomeDisplayPreferences(
     val fullCreditActiveBurn: Boolean = false,
     val calorieHeroLayout: HomeCalorieHeroLayout? = null,
     val macroCardLayout: HomeMacroCardLayout? = null,
+    val foodLogLayout: HomeFoodLogLayout? = null,
     val foodLogMacroChips: List<FoodLogMacroChip> = FoodLogMacroChip.DefaultSelection,
 ) {
     companion object {
