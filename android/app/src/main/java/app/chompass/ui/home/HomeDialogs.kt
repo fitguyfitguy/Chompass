@@ -68,6 +68,7 @@ import app.chompass.ui.components.FudGlassDialogActions
 import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.MagnitudeDrafts
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.components.rememberDecodedBitmap
 import app.chompass.ui.components.ExpandableMacroPicker
@@ -803,6 +804,9 @@ internal fun ManualEntryDialog(
                     },
                     onClick = {
                         if (!isSaving) {
+                            // Typed mode keeps the wheel draft until Done / flip-to-wheel;
+                            // Save must flush it before reading host state (#63 family).
+                            MagnitudeDrafts.commitAll()
                             onSave(
                                 name.trim(),
                                 calories,

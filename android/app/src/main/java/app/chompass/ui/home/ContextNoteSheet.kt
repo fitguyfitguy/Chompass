@@ -66,6 +66,7 @@ import app.chompass.services.FoodPhotoSession
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.rememberDecodedBitmap
 import app.chompass.ui.components.FudGlassPrimaryButton
+import app.chompass.ui.components.MagnitudeDrafts
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
@@ -246,6 +247,9 @@ fun ContextNoteSheet(
                     text = stringResource(R.string.action_analyze),
                     onClick = {
                         if (!busy) {
+                            // Typed mode keeps the wheel draft until Done / flip-to-wheel;
+                            // Analyze must flush it before reading weightText (#63 family).
+                            MagnitudeDrafts.commitAll()
                             submitted = true
                             onAnalyze(note, parsePositiveGrams(weightText))
                         }

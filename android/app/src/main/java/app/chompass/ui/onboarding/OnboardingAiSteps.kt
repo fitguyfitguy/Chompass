@@ -977,7 +977,12 @@ private fun PlanEditDialog(
             )
         },
         confirmButton = {
-            TextButton(onClick = { onSave(picked) }) {
+            TextButton(onClick = {
+                // Typed mode keeps the wheel draft until Done / flip-to-wheel;
+                // Save must flush it before reading `picked` (#63 family).
+                app.chompass.ui.components.MagnitudeDrafts.commitAll()
+                onSave(picked)
+            }) {
                 Text(stringResource(R.string.action_save), color = accent)
             }
         },
