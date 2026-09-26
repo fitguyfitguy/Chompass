@@ -38,6 +38,18 @@ import app.chompass.ui.navigation.LocalLaunchFillEpoch
  * A single macro shown as a vertical fill bar (rounded tube that fills bottom-up toward the goal),
  * with the value above and the name + goal beneath.
  */
+private data class MacroCardInput(
+    val label: String,
+    val current: Double,
+    val goal: Int,
+    val unit: String,
+    val modifier: Modifier,
+    val accentColor: Color,
+    val freezeProgress: Boolean,
+    val planned: Double,
+    val fatFloor: Boolean,
+)
+
 @Composable
 fun MacroCard(
     label: String,
@@ -51,7 +63,23 @@ fun MacroCard(
     planned: Double = 0.0,
     /** Fat is a floor target: at or above it reads "minimum met", never over. */
     fatFloor: Boolean = false,
-) {
+) = DefaultMacroCard(
+    MacroCardInput(
+        label = label,
+        current = current,
+        goal = goal,
+        unit = unit,
+        modifier = modifier,
+        accentColor = accentColor,
+        freezeProgress = freezeProgress,
+        planned = planned,
+        fatFloor = fatFloor,
+    )
+)
+
+@Composable
+private fun DefaultMacroCard(input: MacroCardInput) {
+    with(input) {
     val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
     val goalValue = goal.toDouble()
     val epoch = LocalLaunchFillEpoch.current
@@ -161,5 +189,6 @@ fun MacroCard(
                 autoSize = TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = 11.sp, stepSize = 0.5.sp),
             )
         }
+    }
     }
 }
