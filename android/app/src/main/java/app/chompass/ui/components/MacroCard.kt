@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,9 +29,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.models.HomeMacroCardLayout
 import app.chompass.models.MacroValueFormatter
 import app.chompass.ui.navigation.LocalLaunchFillEpoch
 
@@ -63,8 +66,9 @@ fun MacroCard(
     planned: Double = 0.0,
     /** Fat is a floor target: at or above it reads "minimum met", never over. */
     fatFloor: Boolean = false,
-) = DefaultMacroCard(
-    MacroCardInput(
+    layout: HomeMacroCardLayout? = null,
+) {
+    val input = MacroCardInput(
         label = label,
         current = current,
         goal = goal,
@@ -75,7 +79,11 @@ fun MacroCard(
         planned = planned,
         fatFloor = fatFloor,
     )
-)
+    when (layout) {
+        HomeMacroCardLayout.COMPACT_HORIZONTAL -> CompactHorizontalMacroCard(input)
+        null -> DefaultMacroCard(input)
+    }
+}
 
 @Composable
 private fun DefaultMacroCard(input: MacroCardInput) {
@@ -192,3 +200,100 @@ private fun DefaultMacroCard(input: MacroCardInput) {
     }
     }
 }
+
+@Composable
+private fun CompactHorizontalMacroCard(input: MacroCardInput) {
+    with(input) {
+        val goalValue = goal.toDouble()
+        val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
+        val combined = if (goal > 0) ((current + planned).toFloat() / goal).coerceIn(0f, 1f) else 0f
+        val epoch = LocalLaunchFillEpoch.current
+        var lastEpoch by rememberSaveable { mutableIntStateOf(0) }
+        val animatable = remember { Animatable(if (lastEpoch == epoch) progress else 0f) }
+        LaunchedEffect(epoch, progress) {
+            if (freezeProgress) return@LaunchedEffect
+            val spec = spring<Float>(dampingRatio = 0.85f, stiffness = 55f)
+            if (lastEpoch != epoch) {
+                animatable.snapTo(0f)
+                animatable.animateTo(progress, spec)
+                lastEpoch = epoch
+            } else {
+                animatable.animateTo(progress, spec)
+            }
+        }
+        val animated = if (freezeProgress) progress else animatable.value
+        val status = when {
+            goal <= 0 -> stringResource(R.string.macro_status_no_goal)
+            fatFloor && current >= goalValue -> stringResource(R.string.macro_status_left, "0", "")
+            current <= goalValue -> stringResource(
+                R.string.macro_status_left,
+                MacroValueFormatter.string(goalValue - current),
+                "",
+            )
+            else -> stringResource(
+                R.string.macro_status_over,
+                MacroValueFormatter.string(current - goalValue),
+                "",
+            )
+        }
+
+        Column(
+            modifier = modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(0.dp),
+        ) {
+            Text(
+                label,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp)
+                    .clip(CircleShape)
+                    .background(accentColor.copy(alpha = 0.16f)),
+                contentAlignment = Alignment.CenterStart,
+            ) {
+                if (planned > 0.0 && combined > animated) {
+                    Box(
+                        Modifier
+                            .fillMaxWidth(combined)
+                            .fillMaxSize()
+                            .background(accentColor.copy(alpha = 0.38f)),
+                    )
+                }
+                if (animated > 0f) {
+                    Box(
+                        Modifier
+                            .fillMaxWidth(animated)
+                            .fillMaxSize()
+                            .background(accentColor),
+                    )
+                }
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(
+                        "${MacroValueFormatter.string(current)}$unit",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = accentColor,
+                        maxLines = 1,
+                    )
+                    Text("|", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        status,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = if (goal > 0 && current > goalValue && !fatFloor) accentColor
+                            else MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+        }
+    }
