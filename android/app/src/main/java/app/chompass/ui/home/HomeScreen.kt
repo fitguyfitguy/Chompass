@@ -930,6 +930,7 @@ fun HomeScreen(
                                         rowShape = rowShape,
                                         isSelected = isSelected,
                                         macroChips = ui.foodLogMacroChips,
+                                        compact = ui.homeDisplay.foodLogLayout != null,
                                     )
                                 }
                             } else {
@@ -939,6 +940,7 @@ fun HomeScreen(
                                     isFavorite = isFav,
                                     rowShape = rowShape,
                                     macroChips = ui.foodLogMacroChips,
+                                    compact = ui.homeDisplay.foodLogLayout != null,
                                     onTap = { editingEntry = entry },
                                     onLongPress = { selectedEntryIds = setOf(entry.id) },
                                     onDelete = {
@@ -2386,6 +2388,7 @@ internal fun HomeScreenPreviewContent(
                                     isFavorite = ui.isFavorite(entry),
                                     rowShape = rowShape,
                                     macroChips = ui.foodLogMacroChips,
+                                    compact = ui.homeDisplay.foodLogLayout != null,
                                 )
                                 if (index != group.entries.lastIndex) Divider()
                             }

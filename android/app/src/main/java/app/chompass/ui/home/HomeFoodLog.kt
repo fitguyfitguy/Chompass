@@ -404,6 +404,7 @@ internal fun SwipeableFoodRow(
     isFavorite: Boolean,
     rowShape: RoundedCornerShape,
     macroChips: List<FoodLogMacroChip>,
+    compact: Boolean = false,
     onTap: () -> Unit,
     onLongPress: () -> Unit,
     onDelete: () -> Unit,
@@ -482,6 +483,7 @@ internal fun SwipeableFoodRow(
                     isFavorite = isFavorite,
                     rowShape = rowShape,
                     macroChips = macroChips,
+                    compact = compact,
                     planningMode = planningMode,
                     onLogNow = onLogNow,
                 )
@@ -547,6 +549,7 @@ internal fun FoodRow(
     rowShape: RoundedCornerShape = RoundedCornerShape(AppRadii.SectionCard),
     isSelected: Boolean = false,
     macroChips: List<FoodLogMacroChip> = FoodLogMacroChip.DefaultSelection,
+    compact: Boolean = false,
     /** Meal planning mode: planned rows show the chip and the Log-now action. */
     planningMode: Boolean = false,
     onLogNow: ((FoodEntry) -> Unit)? = null,
@@ -577,13 +580,13 @@ internal fun FoodRow(
                 else AppColors.HairlineBorderLight,
                 rowShape
             )
-            .padding(horizontal = 14.dp, vertical = 12.dp),
+            .padding(horizontal = 14.dp, vertical = if (compact) 8.dp else 12.dp),
         verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(if (compact) 10.dp else 12.dp)
     ) {
         Box(
             Modifier
-                .size(76.dp)
+                .size(if (compact) 57.dp else 76.dp)
                 .clip(RoundedCornerShape(AppRadii.Field))
                 .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)),
             contentAlignment = Alignment.Center
@@ -599,19 +602,19 @@ internal fun FoodRow(
                     },
                     modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(AppRadii.Field))
                 )
-                entry.emoji != null -> Text(entry.emoji ?: "", fontSize = 36.sp)
+                entry.emoji != null -> Text(entry.emoji ?: "", fontSize = if (compact) 26.sp else 36.sp)
                 else -> Icon(
                     Icons.Filled.Restaurant,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(if (compact) 22.dp else 28.dp)
                 )
             }
         }
 
         Column(
             Modifier.weight(1f).padding(top = 2.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            verticalArrangement = Arrangement.spacedBy(if (compact) 2.dp else 6.dp)
         ) {
             // Name (+ heart) on the left, time on the top-right.
             Row(
@@ -627,7 +630,7 @@ internal fun FoodRow(
                         entry.name,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
-                        maxLines = 2,
+                        maxLines = if (compact) 1 else 2,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false)
                     )
@@ -670,6 +673,7 @@ internal fun FoodRow(
             // unit ("2 oz", "1 bowl") when the entry still has a resolvable
             // non-gram selection; otherwise today's grams line (Codeberg #65).
             Row(
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
@@ -705,12 +709,22 @@ internal fun FoodRow(
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                     )
                 }
+                if (compact) {
+                    Spacer(Modifier.weight(1f))
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        macroChips.forEach { chip ->
+                            FoodLogMacroChipView(chip, chip.valueFrom(entry))
+                        }
+                    }
+                }
             }
 
-            // Macro pills (P / C / F) — tinted dark capsules with gray text.
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                macroChips.forEach { chip ->
-                    FoodLogMacroChipView(chip, chip.valueFrom(entry))
+            if (!compact) {
+                // Macro pills (P / C / F) — tinted dark capsules with gray text.
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    macroChips.forEach { chip ->
+                        FoodLogMacroChipView(chip, chip.valueFrom(entry))
+                    }
                 }
             }
         }
