@@ -40,6 +40,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -64,6 +65,7 @@ import app.chompass.models.GoalDerivation
 import app.chompass.models.GoalFormulaReference
 import app.chompass.models.HomeCalorieDisplay
 import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.models.HomeCalorieHeroLayout
 import app.chompass.models.LocaleFormat
 import app.chompass.models.NutritionConstants
 import app.chompass.ui.components.ChompassDialog
@@ -145,9 +147,16 @@ internal fun CalorieHero(
     onShowRecalcDetails: (() -> Unit)? = null,
     /** Standing goal derivation for the ⓘ dialog's formula-baseline block. */
     goalDerivation: GoalDerivation? = null,
+4:     layout: HomeCalorieHeroLayout? = null,
     modifier: Modifier = Modifier,
-) = DefaultCalorieHero(
-    CalorieHeroInput(
+) {
+    val input = CalorieHeroInput(
+5:     )
+    when (layout) {
+        HomeCalorieHeroLayout.COMPACT_HORIZONTAL -> CompactHorizontalCalorieHero(input)
+        null -> DefaultCalorieHero(input, modifier)
+    }
+}
         current = current,
         baseGoal = baseGoal,
         planned = planned,
@@ -167,9 +176,16 @@ internal fun CalorieHero(
         recalcDetailsAvailable = recalcDetailsAvailable,
         onShowRecalcDetails = onShowRecalcDetails,
         goalDerivation = goalDerivation,
-    ),
-    modifier,
-)
+4:     layout: HomeCalorieHeroLayout? = null,
+    modifier: Modifier = Modifier,
+) {
+    val input = CalorieHeroInput(
+5:     )
+    when (layout) {
+        HomeCalorieHeroLayout.COMPACT_HORIZONTAL -> CompactHorizontalCalorieHero(input)
+        null -> DefaultCalorieHero(input, modifier)
+    }
+}
 
 @Composable
 private fun DefaultCalorieHero(
@@ -578,6 +594,150 @@ private fun DefaultCalorieHero(
             goalDerivation = goalDerivation,
         )
     }
+    }
+}
+
+@Composable
+private fun CompactHorizontalCalorieHero(input: CalorieHeroInput) {
+    with(input) {
+        val unit = LocalEnergyUnit.current
+        val effectiveGoal = HomeCalorieDisplay.effectiveGoal(displayMode, baseGoal, activeCalories)
+        val shadesActive = burnShade != null && burnShade.typical > 0 &&
+            displayMode == HomeCalorieDisplayMode.ADD_ACTIVE
+        val target = if (shadesActive) {
+            HomeCalorieDisplay.expectedTarget(baseGoal, burnShade!!.typical, burnShade.live)
+        } else {
+            effectiveGoal
+        }
+        val fillRatio = (current.toFloat() / target.coerceAtLeast(1)).coerceIn(0f, 1f)
+        val plannedRatio = ((current + planned).toFloat() / target.coerceAtLeast(1)).coerceIn(fillRatio, 1f)
+        val remaining = (target - current).coerceAtLeast(0)
+        val trackColor = MaterialTheme.colorScheme.surfaceVariant
+        val progressColor = MaterialTheme.colorScheme.primary
+        val activeColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f)
+        val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+        var showBudgetSheet by remember { mutableStateOf(false) }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Canvas(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(12.dp)
+                    .semantics {
+                        progressBarRangeInfo = ProgressBarRangeInfo(fillRatio, 0f..1f, 0)
+                    }
+            ) {
+                val radius = size.height / 2f
+                drawRoundRect(trackColor, cornerRadius = CornerRadius(radius, radius))
+                if (plannedRatio > fillRatio) {
+                    drawRoundRect(
+                        progressColor.copy(alpha = 0.35f),
+                        size = Size(size.width * plannedRatio, size.height),
+                        cornerRadius = CornerRadius(radius, radius),
+                    )
+                }
+                drawRoundRect(
+                    progressColor,
+                    size = Size(size.width * fillRatio, size.height),
+                    cornerRadius = CornerRadius(radius, radius),
+                )
+                if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && target > baseGoal) {
+                    val baseX = size.width * (baseGoal.toFloat() / target).coerceIn(0f, 1f)
+                    drawRoundRect(
+                        activeColor,
+                        topLeft = Offset(baseX, 0f),
+                        size = Size(size.width - baseX, size.height),
+                        cornerRadius = CornerRadius(radius, radius),
+                    )
+                }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Text(
+                    stringResource(R.string.home_calories_label),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 0.5.sp,
+                    color = muted,
+                )
+                Text(
+                    LocaleFormat.integer(EnergyFormat.quantity(current, unit)),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = progressColor,
+                )
+                Text(
+                    stringResource(
+                        R.string.home_calorie_of_goal,
+                        LocaleFormat.integer(EnergyFormat.quantity(target, unit)),
+                        energyUnitLabel(),
+                    ),
+                    fontSize = 13.sp,
+                    color = muted,
+                )
+                Icon(
+                    Icons.Filled.LocalFireDepartment,
+                    contentDescription = null,
+                    tint = progressColor,
+                    modifier = Modifier.size(13.dp),
+                )
+                Text(
+                    stringResource(
+                        R.string.home_calories_left,
+                        LocaleFormat.integer(EnergyFormat.quantity(remaining, unit)),
+                    ),
+                    modifier = Modifier.weight(1f),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = progressColor,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE) {
+                    Icon(
+                        Icons.Filled.Info,
+                        contentDescription = stringResource(R.string.home_calorie_budget_info),
+                        tint = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier
+                            .minimumInteractiveComponentSize()
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = { showBudgetSheet = true },
+                            ),
+                    )
+                }
+                if (dayTypeLabel != null && onDayTypeClick != null) {
+                    DayTypeChip(label = dayTypeLabel, color = dayTypeColor, onClick = onDayTypeClick)
+                }
+                if (onUntrackedClick != null) {
+                    UntrackedChip(untracked = untracked, onClick = onUntrackedClick)
+                }
+            }
+        }
+        if (showBudgetSheet) {
+            BudgetExplanationDialog(
+                goal = baseGoal,
+                active = activeCalories,
+                typical = burnShade?.typical,
+                typicalIsDayType = burnShade?.typicalIsDayType == true,
+                typicalDayTypeName = burnShade?.typicalDayTypeName,
+                blendedTypical = burnShade?.blendedTypical,
+                source = activeCalorieSource,
+                burnedToday = restingBurn?.let { it + liveActiveBurn },
+                onDismiss = { showBudgetSheet = false },
+                recalcDetailsAvailable = recalcDetailsAvailable && onShowRecalcDetails != null,
+                onShowRecalcDetails = onShowRecalcDetails,
+            )
+        }
     }
 }
 
