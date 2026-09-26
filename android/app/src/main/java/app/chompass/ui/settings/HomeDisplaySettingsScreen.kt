@@ -36,6 +36,7 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeCalorieHeroLayout
+import app.chompass.models.HomeMacroCardLayout
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.navigation.ChompassRoutes
@@ -58,6 +59,7 @@ fun HomeDisplaySettingsScreen(
     var showNutrientPicker by remember { mutableStateOf(false) }
     var showChipPicker by remember { mutableStateOf(false) }
     var showCalorieLayoutPicker by remember { mutableStateOf(false) }
+    var showNutrientCardLayoutPicker by remember { mutableStateOf(false) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -97,6 +99,12 @@ fun HomeDisplaySettingsScreen(
                                 container.appContext.getString(it.displayNameRes)
                             },
                             onClick = { showNutrientPicker = true },
+                        )
+                        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+                        SettingRow(
+                            label = stringResource(R.string.home_display_nutrient_card_layout),
+                            value = nutrientCardLayoutLabel(display.macroCardLayout),
+                            onClick = { showNutrientCardLayoutPicker = true },
                         )
                         HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
                         CardCountRow(
@@ -202,6 +210,16 @@ fun HomeDisplaySettingsScreen(
             onDismiss = { showChipPicker = false }
         )
     }
+    if (showNutrientCardLayoutPicker) {
+        NutrientCardLayoutPickerDialog(
+            selected = display.macroCardLayout,
+            onSelect = {
+                vm.setHomeMacroCardLayout(it)
+                showNutrientCardLayoutPicker = false
+            },
+            onDismiss = { showNutrientCardLayoutPicker = false },
+        )
+    }
     if (showCalorieLayoutPicker) {
         CalorieLayoutPickerDialog(
             selected = display.calorieHeroLayout,
@@ -210,6 +228,49 @@ fun HomeDisplaySettingsScreen(
                 showCalorieLayoutPicker = false
             },
             onDismiss = { showCalorieLayoutPicker = false }
+        )
+    }
+}
+
+@Composable
+private fun nutrientCardLayoutLabel(layout: HomeMacroCardLayout?): String = stringResource(
+    when (layout) {
+        null -> R.string.home_nutrient_card_layout_default
+        HomeMacroCardLayout.COMPACT_HORIZONTAL -> R.string.home_nutrient_card_layout_compact_horizontal
+    }
+)
+
+@Composable
+private fun NutrientCardLayoutPickerDialog(
+    selected: HomeMacroCardLayout?,
+    onSelect: (HomeMacroCardLayout?) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    app.chompass.ui.components.FudGlassDialog(onDismissRequest = onDismiss) {
+        Text(stringResource(R.string.home_display_nutrient_card_layout), fontSize = 22.sp, fontWeight = FontWeight.Bold)
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            (listOf<HomeMacroCardLayout?>(null) + HomeMacroCardLayout.entries).forEach { layout ->
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(AppRadii.Field))
+                        .clickable { onSelect(layout) }
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        nutrientCardLayoutLabel(layout),
+                        fontWeight = if (layout == selected) FontWeight.Bold else FontWeight.Normal,
+                        color = if (layout == selected) AppColors.Calorie else MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+            }
+        }
+        app.chompass.ui.components.FudGlassDialogActions(
+            primaryText = stringResource(R.string.action_done),
+            onPrimary = onDismiss,
+            dismissText = stringResource(R.string.action_cancel),
+            onDismiss = onDismiss,
         )
     }
 }
