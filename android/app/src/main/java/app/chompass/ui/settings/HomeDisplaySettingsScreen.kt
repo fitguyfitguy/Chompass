@@ -37,6 +37,7 @@ import app.chompass.R
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeCalorieHeroLayout
 import app.chompass.models.HomeMacroCardLayout
+import app.chompass.models.HomeFoodLogLayout
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.navigation.ChompassRoutes
@@ -60,6 +61,7 @@ fun HomeDisplaySettingsScreen(
     var showChipPicker by remember { mutableStateOf(false) }
     var showCalorieLayoutPicker by remember { mutableStateOf(false) }
     var showNutrientCardLayoutPicker by remember { mutableStateOf(false) }
+    var showFoodLogLayoutPicker by remember { mutableStateOf(false) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -185,11 +187,19 @@ fun HomeDisplaySettingsScreen(
 
             item {
                 ChompassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp) {
-                    SettingRow(
-                        label = stringResource(R.string.home_display_food_log_chips),
-                        value = display.foodLogMacroChips.map { stringResource(it.glyphRes()) }.joinToString(" "),
-                        onClick = { showChipPicker = true },
-                    )
+                    Column {
+                        SettingRow(
+                            label = stringResource(R.string.home_display_food_log_chips),
+                            value = display.foodLogMacroChips.map { stringResource(it.glyphRes()) }.joinToString(" "),
+                            onClick = { showChipPicker = true },
+                        )
+                        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+                        SettingRow(
+                            label = stringResource(R.string.home_display_food_log_layout),
+                            value = foodLogLayoutLabel(display.foodLogLayout),
+                            onClick = { showFoodLogLayoutPicker = true },
+                        )
+                    }
                 }
             }
         }
@@ -210,6 +220,16 @@ fun HomeDisplaySettingsScreen(
             onDismiss = { showChipPicker = false }
         )
     }
+    if (showFoodLogLayoutPicker) {
+        FoodLogLayoutPickerDialog(
+            selected = display.foodLogLayout,
+            onSelect = {
+                vm.setHomeFoodLogLayout(it)
+                showFoodLogLayoutPicker = false
+            },
+            onDismiss = { showFoodLogLayoutPicker = false },
+        )
+    }
     if (showNutrientCardLayoutPicker) {
         NutrientCardLayoutPickerDialog(
             selected = display.macroCardLayout,
@@ -228,6 +248,49 @@ fun HomeDisplaySettingsScreen(
                 showCalorieLayoutPicker = false
             },
             onDismiss = { showCalorieLayoutPicker = false }
+        )
+    }
+}
+
+@Composable
+private fun foodLogLayoutLabel(layout: HomeFoodLogLayout?): String = stringResource(
+    when (layout) {
+        null -> R.string.home_food_log_layout_default
+        HomeFoodLogLayout.COMPACT_HORIZONTAL -> R.string.home_food_log_layout_compact_horizontal
+    }
+)
+
+@Composable
+private fun FoodLogLayoutPickerDialog(
+    selected: HomeFoodLogLayout?,
+    onSelect: (HomeFoodLogLayout?) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    app.chompass.ui.components.FudGlassDialog(onDismissRequest = onDismiss) {
+        Text(stringResource(R.string.home_display_food_log_layout), fontSize = 22.sp, fontWeight = FontWeight.Bold)
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            (listOf<HomeFoodLogLayout?>(null) + HomeFoodLogLayout.entries).forEach { layout ->
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(AppRadii.Field))
+                        .clickable { onSelect(layout) }
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        foodLogLayoutLabel(layout),
+                        fontWeight = if (layout == selected) FontWeight.Bold else FontWeight.Normal,
+                        color = if (layout == selected) AppColors.Calorie else MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+            }
+        }
+        app.chompass.ui.components.FudGlassDialogActions(
+            primaryText = stringResource(R.string.action_done),
+            onPrimary = onDismiss,
+            dismissText = stringResource(R.string.action_cancel),
+            onDismiss = onDismiss,
         )
     }
 }
