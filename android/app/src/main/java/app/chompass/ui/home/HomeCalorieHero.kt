@@ -86,6 +86,28 @@ import app.chompass.ui.theme.success
  * section's "Today" label, in the empty wedge at the arc's top left, and the
  * calories-left caption in the matching wedge at the top right.
  */
+private data class CalorieHeroInput(
+    val current: Int,
+    val baseGoal: Int,
+    val planned: Int,
+    val activeCalories: Int,
+    val displayMode: HomeCalorieDisplayMode,
+    val activeCalorieSource: ActiveCalorieSource?,
+    val showActiveCalories: Boolean,
+    val liveActiveBurn: Int,
+    val burnShade: ActiveBurnShade?,
+    val restingBurn: Int?,
+    val freezeProgress: Boolean,
+    val dayTypeLabel: String?,
+    val dayTypeColor: Color?,
+    val onDayTypeClick: (() -> Unit)?,
+    val untracked: Boolean,
+    val onUntrackedClick: (() -> Unit)?,
+    val recalcDetailsAvailable: Boolean,
+    val onShowRecalcDetails: (() -> Unit)?,
+    val goalDerivation: GoalDerivation?,
+)
+
 @Composable
 internal fun CalorieHero(
     current: Int,
@@ -124,7 +146,37 @@ internal fun CalorieHero(
     /** Standing goal derivation for the ⓘ dialog's formula-baseline block. */
     goalDerivation: GoalDerivation? = null,
     modifier: Modifier = Modifier,
+) = DefaultCalorieHero(
+    CalorieHeroInput(
+        current = current,
+        baseGoal = baseGoal,
+        planned = planned,
+        activeCalories = activeCalories,
+        displayMode = displayMode,
+        activeCalorieSource = activeCalorieSource,
+        showActiveCalories = showActiveCalories,
+        liveActiveBurn = liveActiveBurn,
+        burnShade = burnShade,
+        restingBurn = restingBurn,
+        freezeProgress = freezeProgress,
+        dayTypeLabel = dayTypeLabel,
+        dayTypeColor = dayTypeColor,
+        onDayTypeClick = onDayTypeClick,
+        untracked = untracked,
+        onUntrackedClick = onUntrackedClick,
+        recalcDetailsAvailable = recalcDetailsAvailable,
+        onShowRecalcDetails = onShowRecalcDetails,
+        goalDerivation = goalDerivation,
+    ),
+    modifier,
+)
+
+@Composable
+private fun DefaultCalorieHero(
+    input: CalorieHeroInput,
+    modifier: Modifier = Modifier,
 ) {
+    with(input) {
     val ratio = HomeCalorieDisplay.progressRatio(displayMode, current, baseGoal, activeCalories)
     val effectiveGoal = HomeCalorieDisplay.effectiveGoal(displayMode, baseGoal, activeCalories)
     val unit = LocalEnergyUnit.current
@@ -525,6 +577,7 @@ internal fun CalorieHero(
             onShowRecalcDetails = onShowRecalcDetails,
             goalDerivation = goalDerivation,
         )
+    }
     }
 }
 
