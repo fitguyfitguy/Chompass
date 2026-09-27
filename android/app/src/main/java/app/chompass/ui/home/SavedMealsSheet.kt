@@ -1,5 +1,6 @@
 package app.chompass.ui.home
 
+import app.chompass.ui.components.ChompassSegmentedTabs
 import app.chompass.ui.components.ChompassSheetLazyColumn
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.rememberChompassSheetState
@@ -463,42 +464,21 @@ private fun RecentsSortChips(selected: SavedMealsSort, onSelect: (SavedMealsSort
 
 @Composable
 internal fun SegmentedTabs(selected: SavedTab, onSelect: (SavedTab) -> Unit) {
-    val isDark = isDarkTheme()
-    val trackColor = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
-    val trackBorder = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(AppRadii.Track))
-            .background(trackColor)
-            .border(0.5.dp, trackBorder, RoundedCornerShape(AppRadii.Track))
-            .padding(2.dp)
-    ) {
-        for (t in SavedTab.values()) {
-            val isSel = t == selected
-            Box(
-                Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(AppRadii.Chip))
-                    .background(if (isSel) MaterialTheme.colorScheme.primary else Color.Transparent)
-                    .clickable { onSelect(t) }
-                    .padding(vertical = 7.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    when (t) {
-                        SavedTab.RECENTS -> stringResource(R.string.saved_meals_tab_recents)
-                        SavedTab.FREQUENT -> stringResource(R.string.saved_meals_tab_frequent)
-                        SavedTab.FAVORITES -> stringResource(R.string.saved_meals_tab_favorites)
-                        SavedTab.RECIPES -> stringResource(R.string.saved_meals_tab_recipes)
-                    },
-                    color = if (isSel) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-        }
-    }
+    ChompassSegmentedTabs(
+        options = SavedTab.entries,
+        selected = selected,
+        onSelect = onSelect,
+        label = { tab ->
+            stringResource(
+                when (tab) {
+                    SavedTab.RECENTS -> R.string.saved_meals_tab_recents
+                    SavedTab.FREQUENT -> R.string.saved_meals_tab_frequent
+                    SavedTab.FAVORITES -> R.string.saved_meals_tab_favorites
+                    SavedTab.RECIPES -> R.string.saved_meals_tab_recipes
+                }
+            )
+        },
+    )
 }
 
 @Composable

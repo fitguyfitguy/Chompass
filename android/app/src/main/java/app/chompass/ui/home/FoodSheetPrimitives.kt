@@ -36,6 +36,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.Text
+import androidx.compose.material3.Button
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
@@ -115,14 +116,22 @@ internal fun SheetReviewToolbar(
     val compact = LocalConfiguration.current.screenWidthDp < 380
     val outerPadding = if (compact) 8.dp else 14.dp
     val itemGap = if (compact) 6.dp else 8.dp
-    val showPrimary = primaryLabel != null && onPrimary != null
-    val secondaryShown = secondaryLabel != null && onSecondary != null
+    val primaryText = primaryLabel
+    val primaryClick = onPrimary
+    val secondaryText = secondaryLabel
+    val secondaryClick = onSecondary
+    val buttonPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 8.dp)
     Row(
         Modifier.fillMaxWidth().padding(horizontal = outerPadding, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        SheetToolbarPill(stringResource(R.string.action_cancel), compact = compact, onClick = onCancel)
-        if (secondaryShown || showPrimary) Spacer(Modifier.width(itemGap))
+        TextButton(onClick = onCancel, contentPadding = buttonPadding) {
+            Text(
+                stringResource(R.string.action_cancel),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
         Text(
             title,
             fontSize = if (compact) 16.sp else 17.sp,
@@ -132,29 +141,25 @@ internal fun SheetReviewToolbar(
             textAlign = TextAlign.Center,
             modifier = Modifier.weight(1f)
         )
-        if (secondaryShown) {
-            // Weighted (and fill=false) so the Row measures the non-weighted
-            // primary pill BEFORE this one: when font scale squeezes the row,
-            // the title yields first, then this secondary pill truncates,
-            // and the primary CTA can never be starved to 0x0 (it used to be
-            // the last-measured sibling and collapsed at 1.3x+).
+        if (secondaryText != null && secondaryClick != null) {
             Spacer(Modifier.width(itemGap))
-            SheetToolbarPill(
-                secondaryLabel,
-                compact = compact,
-                onClick = onSecondary,
+            TextButton(
+                onClick = secondaryClick,
                 modifier = Modifier.weight(1f, fill = false),
-            )
+                contentPadding = buttonPadding,
+            ) {
+                Text(secondaryText, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
         }
-        if (showPrimary) {
+        if (primaryText != null && primaryClick != null) {
             Spacer(Modifier.width(itemGap))
-            SheetToolbarPill(
-                primaryLabel,
-                bold = true,
-                compact = compact,
+            Button(
+                onClick = primaryClick,
                 enabled = primaryEnabled,
-                onClick = onPrimary,
-            )
+                contentPadding = buttonPadding,
+            ) {
+                Text(primaryText, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
         }
     }
 }

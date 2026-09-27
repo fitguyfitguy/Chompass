@@ -18,11 +18,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,10 +42,38 @@ import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
+
 /**
- * Shared scaffold for settings drill-down screens: back chip, large title,
- * then a vertically scrolling column of section cards. Optional [snackbarHost]
- * for one-shot notices (e.g. the keto→day-types pause snackbar on Goals).
+ * Pinned bar for a pushed settings screen. [backContentDescription] is where
+ * Back returns (the parent screen name), not a visible "< Settings" chip.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun SettingsTopBar(
+    title: String,
+    onBack: () -> Unit,
+    backContentDescription: String = stringResource(R.string.nav_settings),
+) {
+    TopAppBar(
+        title = { Text(title) },
+        navigationIcon = {
+            IconButton(onClick = onBack) {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = backContentDescription,
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background,
+        ),
+    )
+}
+
+/**
+ * Shared scaffold for settings drill-down screens: top bar, then a vertically
+ * scrolling column of section cards. Optional [snackbarHost] for one-shot
+ * notices (e.g. the keto→day-types pause snackbar on Goals).
  */
 @Composable
 fun SettingsSubScreen(
@@ -54,6 +86,7 @@ fun SettingsSubScreen(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = snackbarHost,
+        topBar = { SettingsTopBar(title = title, onBack = onBack, backContentDescription = backLabel) },
     ) { padding ->
         Column(
             Modifier
@@ -61,44 +94,10 @@ fun SettingsSubScreen(
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
-                .padding(top = 14.dp),
+                .padding(top = 8.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            Row(
-                Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Row(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(AppRadii.Card))
-                        .clickable(onClick = onBack)
-                        .padding(horizontal = 2.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = null,
-                        tint = AppColors.Calorie,
-                        modifier = Modifier.size(22.dp),
-                    )
-                    Spacer(Modifier.width(6.dp))
-                    Text(
-                        backLabel,
-                        color = AppColors.Calorie,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                }
-            }
-
-            Text(
-                title,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-
             content()
-
             Spacer(Modifier.height(BottomNavScrollPadding))
         }
     }
