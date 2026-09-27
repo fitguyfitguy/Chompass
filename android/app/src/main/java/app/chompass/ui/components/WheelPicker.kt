@@ -59,8 +59,10 @@ import app.chompass.models.ServingUnitOption
 import app.chompass.models.MacroValueFormatter
 import app.chompass.models.LocaleFormat
 import kotlinx.coroutines.flow.distinctUntilChanged
+import android.text.format.DateFormat
 import java.time.LocalDate
 import java.time.YearMonth
+import java.util.Locale
 import app.chompass.models.UnitFormat
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
@@ -103,9 +105,8 @@ fun <T> WheelPicker(
     modifier: Modifier = Modifier,
     label: @Composable (T) -> String = { it.toString() },
     /**
-     * When false, the wheel does NOT paint its own selected-row capsule. Useful
-     * when several WheelPickers sit in a Row and the parent overlays a single
-     * shared capsule spanning every column (matches iOS UIDatePicker).
+     * When false, the wheel does not paint its own selected-row band. Used when
+     * several wheels share one band painted by the parent.
      */
     showSelectionHighlight: Boolean = true,
     onCenterTap: (() -> Unit)? = null,
@@ -182,8 +183,8 @@ fun <T> WheelPicker(
             .semantics { stateDescription = currentStateLabel },
         contentAlignment = Alignment.Center
     ) {
-        // iOS UIPickerView paints a single rounded "capsule" tint behind the
-        // selected row instead of two divider lines. Match that look.
+        // Shared selected-row band. Parents that paint one band across several
+        // wheels pass showSelectionHighlight = false.
         if (showSelectionHighlight) {
             WheelSelectionHighlight(Modifier.align(Alignment.Center))
         }
@@ -249,9 +250,43 @@ fun <T> WheelPicker(
     }
 }
 
+/** Day / month / year column in [DateWheelPicker]. */
+enum class DateWheelColumn { DAY, MONTH, YEAR }
+
 /**
- * Triple-column iOS-style date picker (Month / Day / Year). Updates the caller
- * any time any wheel lands on a new value.
+ * Column order for [locale], from the best pattern for skeleton `dMMMMyyyy`.
+ * First occurrence of d, M/L, and y wins. Missing fields append in day, month, year.
+ */
+fun dateWheelColumnOrder(locale: Locale): List<DateWheelColumn> =
+    dateWheelColumnOrderFromPattern(DateFormat.getBestDateTimePattern(locale, "dMMMMyyyy"))
+
+internal fun dateWheelColumnOrderFromPattern(pattern: String): List<DateWheelColumn> {
+    val seen = mutableListOf<DateWheelColumn>()
+    var quoted = false
+    for (ch in pattern) {
+        if (ch == '\'') {
+            quoted = !quoted
+            continue
+        }
+        if (quoted) continue
+        val column = when (ch) {
+            'd', 'D' -> DateWheelColumn.DAY
+            'M', 'L' -> DateWheelColumn.MONTH
+            'y', 'Y' -> DateWheelColumn.YEAR
+            else -> null
+        }
+        if (column != null && column !in seen) seen += column
+    }
+    for (fallback in DateWheelColumn.entries) {
+        if (fallback !in seen) seen += fallback
+    }
+    return seen
+}
+
+/**
+ * Three date wheels. Column order follows the locale's best date pattern
+ * (en: month, day, year; de: day, month, year). Any wheel change updates
+ * the caller. The selection band spans all three columns.
  */
 @Composable
 fun DateWheelPicker(
@@ -261,24 +296,21 @@ fun DateWheelPicker(
     maxYear: Int = LocalDate.now().year,
     modifier: Modifier = Modifier
 ) {
+    val locale = Locale.getDefault()
     val months = remember { (1..12).toList() }
     val years = remember(minYear, maxYear) { (minYear..maxYear).toList().reversed() }
     val daysInMonth = remember(selected.year, selected.monthValue) {
         YearMonth.of(selected.year, selected.monthValue).lengthOfMonth()
     }
     val days = remember(daysInMonth) { (1..daysInMonth).toList() }
-
-    // iOS DatePicker shows full month names (April, not Apr) — localized.
-    val monthNames = remember {
-        java.time.Month.values().map { m ->
-            m.getDisplayName(java.time.format.TextStyle.FULL_STANDALONE, java.util.Locale.getDefault())
-                .replaceFirstChar { it.uppercase() }
+    val monthNames = remember(locale) {
+        java.time.Month.entries.map { m ->
+            m.getDisplayName(java.time.format.TextStyle.FULL_STANDALONE, locale)
+                .replaceFirstChar { it.uppercase(locale) }
         }
     }
+    val columnOrder = remember(locale) { dateWheelColumnOrder(locale) }
 
-    // iOS column order is Day | Month | Year (matches iOS UIDatePicker default).
-    // The capsule highlight spans all three wheels — paint it on the parent Box
-    // and tell each wheel to skip its own per-column highlight.
     Box(
         modifier = modifier.fillMaxWidth().height(ROW_HEIGHT),
         contentAlignment = Alignment.Center
@@ -288,34 +320,42 @@ fun DateWheelPicker(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            WheelPicker(
-                items = days,
-                selected = selected.dayOfMonth.coerceAtMost(daysInMonth),
-                onSelect = { d -> onSelect(LocalDate.of(selected.year, selected.monthValue, d)) },
-                modifier = Modifier.weight(0.5f),
-                showSelectionHighlight = false
-            )
-            WheelPicker(
-                items = months,
-                selected = selected.monthValue,
-                onSelect = { m ->
-                    val clampedDay = selected.dayOfMonth.coerceAtMost(YearMonth.of(selected.year, m).lengthOfMonth())
-                    onSelect(LocalDate.of(selected.year, m, clampedDay))
-                },
-                label = { monthNames[it - 1] },
-                modifier = Modifier.weight(1.2f),
-                showSelectionHighlight = false
-            )
-            WheelPicker(
-                items = years,
-                selected = selected.year,
-                onSelect = { y ->
-                    val clampedDay = selected.dayOfMonth.coerceAtMost(YearMonth.of(y, selected.monthValue).lengthOfMonth())
-                    onSelect(LocalDate.of(y, selected.monthValue, clampedDay))
-                },
-                modifier = Modifier.weight(0.7f),
-                showSelectionHighlight = false
-            )
+            columnOrder.forEach { column ->
+                when (column) {
+                    DateWheelColumn.DAY -> WheelPicker(
+                        items = days,
+                        selected = selected.dayOfMonth.coerceAtMost(daysInMonth),
+                        onSelect = { d -> onSelect(LocalDate.of(selected.year, selected.monthValue, d)) },
+                        modifier = Modifier.weight(0.5f),
+                        showSelectionHighlight = false
+                    )
+                    DateWheelColumn.MONTH -> WheelPicker(
+                        items = months,
+                        selected = selected.monthValue,
+                        onSelect = { m ->
+                            val clampedDay = selected.dayOfMonth.coerceAtMost(
+                                YearMonth.of(selected.year, m).lengthOfMonth()
+                            )
+                            onSelect(LocalDate.of(selected.year, m, clampedDay))
+                        },
+                        label = { monthNames[it - 1] },
+                        modifier = Modifier.weight(1.2f),
+                        showSelectionHighlight = false
+                    )
+                    DateWheelColumn.YEAR -> WheelPicker(
+                        items = years,
+                        selected = selected.year,
+                        onSelect = { y ->
+                            val clampedDay = selected.dayOfMonth.coerceAtMost(
+                                YearMonth.of(y, selected.monthValue).lengthOfMonth()
+                            )
+                            onSelect(LocalDate.of(y, selected.monthValue, clampedDay))
+                        },
+                        modifier = Modifier.weight(0.7f),
+                        showSelectionHighlight = false
+                    )
+                }
+            }
         }
     }
 }
