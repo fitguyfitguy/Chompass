@@ -58,7 +58,15 @@ fun OptionalNutrientGoalsScreen(
     val ui by vm.ui.collectAsState()
     var editing by remember { mutableStateOf<OptionalNutrient?>(null) }
 
-    Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            SettingsTopBar(
+                title = stringResource(R.string.settings_other_nutrient_goals),
+                onBack = onBack,
+            )
+        },
+    ) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -70,42 +78,6 @@ fun OptionalNutrientGoalsScreen(
             ),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            item {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(AppRadii.Card))
-                            .clickable { onBack() }
-                            .padding(horizontal = 2.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = null,
-                            tint = AppColors.Calorie,
-                            modifier = Modifier.size(22.dp)
-                        )
-                        Spacer(Modifier.width(6.dp))
-                        Text(
-                            stringResource(R.string.nav_settings),
-                            color = AppColors.Calorie,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-                }
-            }
-
-            item {
-                Text(
-                    stringResource(R.string.settings_other_nutrient_goals),
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
             // Opt-in AI estimate (Codeberg #20 phase 2: hidden with the master AI
             // switch off — this is a purely-LLM feature with no formula fallback).
             // Never fired automatically: Recalculate keeps optional goals untouched.

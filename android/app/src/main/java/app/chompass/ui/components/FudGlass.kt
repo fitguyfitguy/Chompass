@@ -18,12 +18,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -168,6 +170,7 @@ fun FudGlassTextField(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FudGlassDialog(
     onDismissRequest: () -> Unit,
@@ -176,23 +179,22 @@ fun FudGlassDialog(
     scrollable: Boolean = false,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    Dialog(
+    BasicAlertDialog(
         onDismissRequest = onDismissRequest,
+        modifier = modifier,
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
-        Card(
-            modifier = modifier
+        Surface(
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp),
-            shape = MaterialTheme.shapes.large,
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            ),
+            shape = MaterialTheme.shapes.extraLarge,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
         ) {
             BoxWithConstraints(Modifier.fillMaxWidth()) {
                 Column(
                     modifier = Modifier
-                        .padding(20.dp)
+                        .padding(24.dp)
                         .then(
                             if (scrollable) {
                                 Modifier
@@ -285,7 +287,7 @@ fun FudGlassDialogActions(
                 Text(primaryText, maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
         } else {
-            Button(onClick = onPrimary, enabled = primaryEnabled) {
+            TextButton(onClick = onPrimary, enabled = primaryEnabled) {
                 Text(primaryText, maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
         }

@@ -195,30 +195,21 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
         return if (heightMetric) String.format(Locale.getDefault(), "%.0f %s", cm, cmUnit) else String.format(Locale.getDefault(), "%.0f %s", UnitFormat.cmToInches(cm), inUnit)
     }
 
-    Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            app.chompass.ui.settings.SettingsTopBar(
+                title = stringResource(R.string.body_measurements_title),
+                onBack = onBack,
+            )
+        },
+    ) { padding ->
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 14.dp, bottom = BottomNavScrollPadding),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Row(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(AppRadii.Card))
-                            .clickable { onBack() }
-                            .padding(horizontal = 2.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = AppColors.Calorie, modifier = Modifier.size(22.dp))
-                        Spacer(Modifier.width(6.dp))
-                        Text(stringResource(R.string.nav_settings), color = AppColors.Calorie, fontWeight = FontWeight.SemiBold)
-                    }
-                }
-            }
-            item {
-                Text(stringResource(R.string.body_measurements_title), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-                Spacer(Modifier.height(6.dp))
                 Text(
                     "Optional. Chompass turns these into waist-to-hip, waist-to-height, body-fat %, and frame size, and reads them when it recalculates your goals and in Coach.",
                     style = MaterialTheme.typography.bodySmall,

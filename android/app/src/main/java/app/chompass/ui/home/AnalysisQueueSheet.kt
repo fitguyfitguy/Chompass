@@ -268,40 +268,19 @@ fun AnalysisQueueSheet(
 
 @Composable
 private fun QueueTabs(selected: QueueTab, onSelect: (QueueTab) -> Unit) {
-    val isDark = isDarkTheme()
-    val trackColor = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
-    val trackBorder = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(AppRadii.Track))
-            .background(trackColor)
-            .border(0.5.dp, trackBorder, RoundedCornerShape(AppRadii.Track))
-            .padding(2.dp)
-    ) {
-        for (t in QueueTab.values()) {
-            val isSel = t == selected
-            Box(
-                Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(AppRadii.Chip))
-                    .background(if (isSel) MaterialTheme.colorScheme.primary else Color.Transparent)
-                    .clickable { onSelect(t) }
-                    .padding(vertical = 7.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    when (t) {
-                        QueueTab.QUEUE -> stringResource(R.string.analysis_queue_tab_queue)
-                        QueueTab.HISTORY -> stringResource(R.string.analysis_queue_tab_history)
-                    },
-                    color = if (isSel) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-        }
-    }
+    app.chompass.ui.components.ChompassSegmentedTabs(
+        options = QueueTab.entries,
+        selected = selected,
+        onSelect = onSelect,
+        label = { tab ->
+            stringResource(
+                when (tab) {
+                    QueueTab.QUEUE -> R.string.analysis_queue_tab_queue
+                    QueueTab.HISTORY -> R.string.analysis_queue_tab_history
+                }
+            )
+        },
+    )
 }
 
 @Composable

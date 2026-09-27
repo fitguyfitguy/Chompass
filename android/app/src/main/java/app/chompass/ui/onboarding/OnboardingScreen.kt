@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ChevronLeft
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -47,6 +47,7 @@ import java.time.Period
 import app.chompass.services.ondevice.OnDeviceCapability
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
     val vm: OnboardingViewModel = viewModel(factory = OnboardingViewModel.Factory(container))
@@ -78,7 +79,7 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
             ) {
                 if (ui.step != OnboardingStep.DISCLAIMERS) {
                     Icon(
-                        imageVector = Icons.Outlined.ChevronLeft,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.onboarding_back),
                         tint = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier
@@ -86,23 +87,17 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                             .clickable { vm.back() }
                     )
                 }
-                val totalSteps = OnboardingStep.values().size
+                val totalSteps = OnboardingStep.entries.size
                 val progress = ui.step.ordinal.toFloat() / (totalSteps - 1).toFloat()
-                Box(
-                    Modifier
-                        .weight(1f)
-                        .height(4.dp)
-                        .clip(RoundedCornerShape(2.dp))
-                        .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f))
-                ) {
-                    Box(
-                        Modifier
-                            .fillMaxHeight()
-                            .fillMaxWidth(progress)
-                            .clip(RoundedCornerShape(2.dp))
-                            .background(MaterialTheme.colorScheme.onBackground)
-                    )
-                }
+                androidx.compose.material3.LinearProgressIndicator(
+                    progress = { progress },
+                    modifier = Modifier.weight(1f).height(4.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f),
+                    strokeCap = androidx.compose.ui.graphics.StrokeCap.Round,
+                    gapSize = 0.dp,
+                    drawStopIndicator = {},
+                )
             }
             Spacer(Modifier.height(8.dp))
         } else {
