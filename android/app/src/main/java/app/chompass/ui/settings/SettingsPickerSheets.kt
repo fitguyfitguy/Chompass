@@ -1,5 +1,6 @@
 package app.chompass.ui.settings
 
+import app.chompass.ui.components.ChompassPrimaryButton
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
@@ -57,9 +58,9 @@ import app.chompass.models.WeightGoal
 import app.chompass.ui.components.DateWheelPicker
 import app.chompass.ui.components.DecimalWheelPicker
 import app.chompass.ui.components.FeetInchesWheelPicker
-import app.chompass.ui.components.FudGlassTextButton
-import app.chompass.ui.components.FudGlassTextField
-import app.chompass.ui.components.FudIconBubble
+import app.chompass.ui.components.ChompassTextButton
+import app.chompass.ui.components.ChompassTextField
+import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.components.UnitToggle
@@ -96,13 +97,13 @@ internal fun CancelSaveRow(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        FudGlassTextButton(
+        ChompassTextButton(
             text = stringResource(R.string.action_cancel),
             onClick = onDismiss,
             modifier = Modifier.weight(1f),
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
         )
-        GradientSaveButton(enabled = enabled, modifier = Modifier.weight(1f), onClick = onSave)
+        ChompassPrimaryButton(flushDrafts = true, enabled = enabled, modifier = Modifier.weight(1f), onClick = onSave)
     }
 }
 
@@ -147,7 +148,7 @@ internal fun <T> ListSheet(
                     leading(item)
                     Spacer(Modifier.width(14.dp))
                 } else if (rowIcon != null) {
-                    FudIconBubble(rowIcon, size = 22.dp, iconSize = 14.dp)
+                    ChompassIconBubble(rowIcon, size = 22.dp, iconSize = 14.dp)
                     Spacer(Modifier.width(14.dp))
                 }
                 Column(Modifier.weight(1f)) {
@@ -183,7 +184,7 @@ internal fun <T> ListSheet(
         }
         var custom by remember { mutableStateOf("") }
         Spacer(Modifier.height(8.dp))
-        FudGlassTextField(
+        ChompassTextField(
             value = custom,
             onValueChange = { custom = it },
             placeholder = stringResource(R.string.sheet_any_model_id),
@@ -202,7 +203,7 @@ internal fun ApiKeySheet(title: String, placeholder: String, onSave: (String) ->
     var value by remember { mutableStateOf("") }
     Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(12.dp))
-    FudGlassTextField(
+    ChompassTextField(
         value = value,
         onValueChange = { value = it },
         placeholder = placeholder,
@@ -229,7 +230,7 @@ internal fun TextFieldSheet(
     var value by remember(initial) { mutableStateOf(initial) }
     Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(12.dp))
-    FudGlassTextField(
+    ChompassTextField(
         value = value,
         onValueChange = { value = it },
         placeholder = placeholder,

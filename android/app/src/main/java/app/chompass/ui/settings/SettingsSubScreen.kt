@@ -37,7 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
-import app.chompass.ui.components.FudIconBubble
+import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
@@ -137,7 +137,7 @@ internal fun RelatedLinks(rows: List<RelatedLink>) {
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
             modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
         )
-        app.chompass.ui.components.FudGlassSurface(
+        app.chompass.ui.components.ChompassSurface(
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = AppRadii.Container,
             padding = 0.dp,
@@ -185,7 +185,7 @@ internal fun SettingsHubRow(
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        FudIconBubble(icon = icon, size = 28.dp, iconSize = 16.dp)
+        ChompassIconBubble(icon = icon, size = 28.dp, iconSize = 16.dp)
         Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f)) {
             Text(

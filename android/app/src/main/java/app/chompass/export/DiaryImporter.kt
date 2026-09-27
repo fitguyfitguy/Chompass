@@ -35,7 +35,7 @@ sealed class DiaryImportResult {
 }
 
 /**
- * Parses the JSON structure emitted by [DiaryExporter] (and Fud AI / NoFUD) into [FoodEntry] rows.
+ * Parses the JSON structure emitted by [DiaryExporter] (and upstream Fud AI) into [FoodEntry] rows.
  * Accepts format 1.0 (macros), 1.1 (macros + micros), 1.2 (serving units + constituents),
  * 1.3 (day notes, #58a), 1.4 (custom meal types, #61), 1.5 (constituent
  * micros, #86), and 1.6 (untracked days, #106). Exports always use 1.6.

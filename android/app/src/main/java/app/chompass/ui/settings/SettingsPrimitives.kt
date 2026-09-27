@@ -71,10 +71,10 @@ import app.chompass.models.ActivityLevel
 import app.chompass.models.Gender
 import app.chompass.models.UserProfile
 import app.chompass.models.WeightGoal
-import app.chompass.ui.components.FudGlassPrimaryButton
-import app.chompass.ui.components.FudGlassSurface
-import app.chompass.ui.components.FudGlassTextField
-import app.chompass.ui.components.FudIconBubble
+import app.chompass.ui.components.ChompassPrimaryButton
+import app.chompass.ui.components.ChompassSurface
+import app.chompass.ui.components.ChompassTextField
+import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppThemeColor
 import app.chompass.ui.theme.AppRadii
@@ -140,7 +140,7 @@ internal fun SectionCard(title: String, content: @Composable () -> Unit) {
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
             modifier = Modifier.padding(start = AppSpacing.Xs, bottom = 6.dp)
         )
-        FudGlassSurface(
+        ChompassSurface(
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = AppRadii.Container,
             padding = 0.dp,
@@ -169,7 +169,7 @@ internal fun SettingRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (icon != null) {
-            FudIconBubble(icon = icon, size = 22.dp, iconSize = 14.dp)
+            ChompassIconBubble(icon = icon, size = 22.dp, iconSize = 14.dp)
             Spacer(Modifier.width(14.dp))
         }
         // Label keeps its natural width (no weight) so a long sibling value can
@@ -226,7 +226,7 @@ internal fun ActivityLevelSettingRow(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        FudIconBubble(icon = Icons.AutoMirrored.Outlined.DirectionsRun, size = 22.dp, iconSize = 14.dp)
+        ChompassIconBubble(icon = Icons.AutoMirrored.Outlined.DirectionsRun, size = 22.dp, iconSize = 14.dp)
         Spacer(Modifier.width(14.dp))
         Column(
             modifier = Modifier
@@ -281,7 +281,7 @@ internal fun LockableGoalRow(
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        FudIconBubble(icon = icon, size = 22.dp, iconSize = 14.dp, tint = iconTint)
+        ChompassIconBubble(icon = icon, size = 22.dp, iconSize = 14.dp, tint = iconTint)
         Spacer(Modifier.width(14.dp))
         Text(
             label,
@@ -353,7 +353,7 @@ internal fun CustomInstructionsBlock(
     var saved by remember(initial) { mutableStateOf(initial) }
     val hasChanges = text != saved
     Column(Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) {
-        FudGlassTextField(
+        ChompassTextField(
             value = text,
             onValueChange = { text = it },
             placeholder = placeholder,
@@ -401,7 +401,7 @@ internal fun ToggleRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (icon != null) {
-            FudIconBubble(icon = icon, size = 22.dp, iconSize = 14.dp)
+            ChompassIconBubble(icon = icon, size = 22.dp, iconSize = 14.dp)
             Spacer(Modifier.width(14.dp))
         }
         Text(
@@ -433,7 +433,7 @@ internal fun ToggleRowWithInfo(
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (icon != null) {
-            FudIconBubble(icon = icon, size = 22.dp, iconSize = 14.dp)
+            ChompassIconBubble(icon = icon, size = 22.dp, iconSize = 14.dp)
             Spacer(Modifier.width(14.dp))
         }
         Text(
@@ -473,7 +473,7 @@ internal fun BusyToggleRow(
         Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        FudIconBubble(icon = icon, size = 22.dp, iconSize = 14.dp)
+        ChompassIconBubble(icon = icon, size = 22.dp, iconSize = 14.dp)
         Spacer(Modifier.width(14.dp))
         Column(
             modifier = Modifier.weight(1f),
@@ -577,37 +577,3 @@ internal fun appearanceIcon(key: String): ImageVector = when (key) {
     else -> Icons.Outlined.SettingsBrightness
 }
 
-/**
- * Flat primary save action. Delegates to [FudGlassPrimaryButton] (renamed in the
- * chrome batch). Keeps the picker-sheet haptic and commits open magnitude drafts.
- */
-@Composable
-internal fun GradientSaveButton(
-    text: String? = null,
-    enabled: Boolean = true,
-    modifier: Modifier = Modifier,
-    icon: ImageVector? = null,
-    onClick: () -> Unit
-) {
-    val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
-    val label = text ?: stringResource(R.string.action_save)
-    FudGlassPrimaryButton(
-        text = label,
-        enabled = enabled,
-        modifier = modifier.fillMaxWidth(),
-        onClick = {
-            haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
-            app.chompass.ui.components.MagnitudeDrafts.commitAll()
-            onClick()
-        },
-        content = if (icon == null) {
-            null
-        } else {
-            {
-                Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp))
-                Spacer(Modifier.width(8.dp))
-                Text(label, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
-            }
-        },
-    )
-}

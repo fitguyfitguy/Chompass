@@ -41,7 +41,7 @@ import app.chompass.R
 import app.chompass.data.WeatherRepository
 import app.chompass.models.WaterGoalBreakdown
 import app.chompass.models.WaterGoalCalculator
-import app.chompass.ui.components.FudIconBubble
+import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
@@ -248,7 +248,7 @@ internal fun WaterDynamicGoalPreviewRow(preview: WaterGoalBreakdown?) {
         Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        FudIconBubble(icon = Icons.Outlined.WaterDrop, size = 22.dp, iconSize = 14.dp)
+        ChompassIconBubble(icon = Icons.Outlined.WaterDrop, size = 22.dp, iconSize = 14.dp)
         Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(

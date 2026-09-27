@@ -91,9 +91,9 @@ import app.chompass.ui.components.ClockTimeWheelPicker
 import app.chompass.ui.components.parseClockDigits
 import app.chompass.ui.components.DateWheelPicker
 
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassDialogActions
-import app.chompass.ui.components.FudGlassPrimaryButton
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
+import app.chompass.ui.components.ChompassPrimaryButton
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import java.time.LocalDate
@@ -1112,7 +1112,7 @@ fun EditFoodEntrySheet(
         } else {
 
             var pickedDate by remember(loggedDate) { mutableStateOf(loggedDate) }
-            FudGlassDialog(onDismissRequest = { showDatePicker = false }) {
+            ChompassDialog(onDismissRequest = { showDatePicker = false }) {
                 Text(stringResource(R.string.label_date), fontSize = 21.sp, fontWeight = FontWeight.Bold)
                 DateWheelPicker(
                     selected = pickedDate,
@@ -1121,7 +1121,7 @@ fun EditFoodEntrySheet(
                     maxYear = LocalDate.now().year,
                     modifier = Modifier.fillMaxWidth()
                 )
-                FudGlassDialogActions(
+                ChompassDialogActions(
                     primaryText = stringResource(R.string.action_done),
                     onPrimary = {
                         loggedDate = pickedDate
@@ -1229,7 +1229,7 @@ private fun EditFoodTimeDialog(
 ) {
     var picked by remember(initialTime) { mutableStateOf(initialTime) }
     var typedDigits by remember { mutableStateOf<String?>(null) }
-    FudGlassDialog(onDismissRequest = onDismiss) {
+    ChompassDialog(onDismissRequest = onDismiss) {
         Text(stringResource(R.string.label_time), fontSize = 21.sp, fontWeight = FontWeight.Bold)
         ClockTimeWheelPicker(
             time = picked,
@@ -1237,7 +1237,7 @@ private fun EditFoodTimeDialog(
             onTypedDraftChange = { typedDigits = it },
             modifier = Modifier.fillMaxWidth(),
         )
-        FudGlassDialogActions(
+        ChompassDialogActions(
             primaryText = stringResource(R.string.action_done),
             onPrimary = {
                 val digits = typedDigits?.filter { it.isDigit() }
@@ -1366,7 +1366,7 @@ internal fun EditFoodIconDialog(
     onRemovePhoto: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    FudGlassDialog(onDismissRequest = onDismiss) {
+    ChompassDialog(onDismissRequest = onDismiss) {
         Text(stringResource(R.string.edit_icon_picker_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(2.dp))
         Column(
@@ -1395,14 +1395,14 @@ internal fun EditFoodIconDialog(
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            FudGlassPrimaryButton(
+            ChompassPrimaryButton(
                 text = stringResource(R.string.edit_icon_set_photo),
                 onClick = onSetPhoto,
                 modifier = Modifier.weight(1f),
                 height = 44.dp,
             )
             if (hasPhoto) {
-                FudGlassPrimaryButton(
+                ChompassPrimaryButton(
                     text = stringResource(R.string.edit_icon_remove_photo),
                     onClick = onRemovePhoto,
                     modifier = Modifier.weight(1f),
@@ -1413,7 +1413,7 @@ internal fun EditFoodIconDialog(
         errorMessage?.let {
             Text(it, color = Color.Red, fontSize = 13.sp)
         }
-        FudGlassDialogActions(
+        ChompassDialogActions(
             primaryText = stringResource(R.string.action_done),
             onPrimary = onDismiss,
             dismissText = stringResource(R.string.action_cancel),

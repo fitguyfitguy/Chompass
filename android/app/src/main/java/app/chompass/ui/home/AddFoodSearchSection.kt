@@ -110,7 +110,7 @@ import app.chompass.services.grounding.DatabaseSearchResult
 import app.chompass.services.grounding.FoodSuggestion
 import app.chompass.services.grounding.SuggestionKind
 import app.chompass.ui.components.ChompassSheetLazyColumn
-import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.energyText
 import app.chompass.ui.theme.AppColors
@@ -158,7 +158,7 @@ internal fun AddFoodQueryRow(
     Column(Modifier.fillMaxWidth()) {
         // Full width: the field is the primary control, and sharing its row with
         // three buttons squeezed the placeholder into an ellipsis.
-        FudGlassTextField(
+        ChompassTextField(
             value = query,
             onValueChange = onQueryChange,
             placeholder = stringResource(R.string.food_search_placeholder),

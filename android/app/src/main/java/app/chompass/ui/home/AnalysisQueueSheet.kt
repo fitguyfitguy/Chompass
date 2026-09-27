@@ -72,9 +72,9 @@ import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.models.EnergyFormat
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalEnergyUnit
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassDialogActions
-import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
+import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.rememberQueueThumbnail
@@ -224,13 +224,13 @@ fun AnalysisQueueSheet(
     }
 
     confirmDelete?.let { item ->
-        FudGlassDialog(onDismissRequest = { confirmDelete = null }) {
+        ChompassDialog(onDismissRequest = { confirmDelete = null }) {
             Text(
                 stringResource(R.string.analysis_queue_delete_confirm),
                 fontSize = 17.sp,
                 fontWeight = FontWeight.SemiBold,
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_delete),
                 onPrimary = {
                     onDelete(item.id)
@@ -244,13 +244,13 @@ fun AnalysisQueueSheet(
     }
 
     if (confirmClearHistory) {
-        FudGlassDialog(onDismissRequest = { confirmClearHistory = false }) {
+        ChompassDialog(onDismissRequest = { confirmClearHistory = false }) {
             Text(
                 stringResource(R.string.analysis_queue_clear_history_confirm),
                 fontSize = 17.sp,
                 fontWeight = FontWeight.SemiBold,
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.analysis_queue_clear_history),
                 onPrimary = {
                     onClearHistory()
@@ -582,7 +582,7 @@ private fun EditQueuedSheet(
                     .padding(horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                FudGlassTextField(
+                ChompassTextField(
                     value = note,
                     onValueChange = { note = it },
                     modifier = Modifier

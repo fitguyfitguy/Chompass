@@ -52,8 +52,8 @@ import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.ui.about.AboutSettingsRows
-import app.chompass.ui.components.FudGlassSurface
-import app.chompass.ui.components.FudIconBubble
+import app.chompass.ui.components.ChompassSurface
+import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppColors
@@ -95,7 +95,7 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                     )
                 }
 
-                FudGlassSurface(
+                ChompassSurface(
                     modifier = Modifier.fillMaxWidth(),
                     cornerRadius = AppRadii.Container,
                     padding = 0.dp,
@@ -169,7 +169,7 @@ internal fun SettingsSearchField(
     query: String,
     onQueryChange: (String) -> Unit,
 ) {
-    FudGlassSurface(
+    ChompassSurface(
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = AppRadii.Container,
         padding = 0.dp,
@@ -253,7 +253,7 @@ private fun SettingsSearchResults(query: String, nav: NavHostController) {
         )
         return
     }
-    FudGlassSurface(
+    ChompassSurface(
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = AppRadii.Container,
         padding = 0.dp,
@@ -268,7 +268,7 @@ private fun SettingsSearchResults(query: String, nav: NavHostController) {
                         .padding(horizontal = 16.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    FudIconBubble(icon = entry.icon, size = 28.dp, iconSize = 16.dp)
+                    ChompassIconBubble(icon = entry.icon, size = 28.dp, iconSize = 16.dp)
                     Spacer(Modifier.width(14.dp))
                     Column(Modifier.weight(1f)) {
                         Text(
@@ -300,7 +300,7 @@ private fun SuggestionsCard(
     onAction: (SettingsSuggestion) -> Unit,
     onDismiss: (String) -> Unit,
 ) {
-    FudGlassSurface(
+    ChompassSurface(
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = AppRadii.Container,
         padding = 0.dp,

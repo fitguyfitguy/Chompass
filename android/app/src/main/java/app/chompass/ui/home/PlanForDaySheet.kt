@@ -13,8 +13,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.ui.components.DateWheelPicker
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
 import java.time.LocalDate
 
 /**
@@ -34,7 +34,7 @@ internal fun PlanForDayDialog(
     val today = LocalDate.now()
     val maxDate = maxDiaryNavDate(today)
     var pickedDate by remember { mutableStateOf(today.plusDays(1)) }
-    FudGlassDialog(onDismissRequest = onDismiss) {
+    ChompassDialog(onDismissRequest = onDismiss) {
         Text(stringResource(R.string.plan_pick_day_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
         DateWheelPicker(
             selected = pickedDate.coerceIn(today, maxDate),
@@ -43,7 +43,7 @@ internal fun PlanForDayDialog(
             maxYear = maxDate.year,
             modifier = Modifier.fillMaxWidth()
         )
-        FudGlassDialogActions(
+        ChompassDialogActions(
             primaryText = stringResource(R.string.action_done),
             onPrimary = { onConfirm(pickedDate.coerceIn(today, maxDate)) },
             dismissText = stringResource(R.string.action_cancel),

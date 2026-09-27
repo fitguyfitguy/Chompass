@@ -1,5 +1,6 @@
 package app.chompass.ui.settings
 
+import app.chompass.ui.components.ChompassPrimaryButton
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,8 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.models.WaterGoalCalculator
-import app.chompass.ui.components.FudGlassSurface
-import app.chompass.ui.components.FudGlassTextButton
+import app.chompass.ui.components.ChompassSurface
+import app.chompass.ui.components.ChompassTextButton
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.WheelPicker
 import app.chompass.ui.theme.AppColors
@@ -73,7 +74,7 @@ internal fun WaterReminderPlanSheet(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
         )
         Spacer(Modifier.height(16.dp))
-        FudGlassSurface(
+        ChompassSurface(
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = AppRadii.Container,
             padding = 0.dp,
@@ -123,8 +124,8 @@ internal fun WaterReminderPlanSheet(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
         Spacer(Modifier.height(16.dp))
-        GradientSaveButton { onSave(startMinutes, endMinutes, cupMl) }
-        FudGlassTextButton(
+        ChompassPrimaryButton(flushDrafts = true, onClick = { onSave(startMinutes, endMinutes, cupMl) })
+        ChompassTextButton(
             text = stringResource(R.string.settings_water_restore_default_plan),
             onClick = {
                 startMinutes = 8 * 60
@@ -175,8 +176,8 @@ internal fun WaterReminderPlanSheet(
                     step = 50,
                 )
                 Spacer(Modifier.height(16.dp))
-                GradientSaveButton { editing = null }
-                FudGlassTextButton(
+                ChompassPrimaryButton(flushDrafts = true, onClick = { editing = null })
+                ChompassTextButton(
                     text = stringResource(R.string.action_cancel),
                     onClick = { editing = null },
                     modifier = Modifier.fillMaxWidth(),
@@ -211,8 +212,8 @@ private fun TimeFieldEditor(
         label = { LocalTime.of(it / 60, it % 60).format(formatter) },
     )
     Spacer(Modifier.height(16.dp))
-    GradientSaveButton { onSave(selectedMinutes) }
-    FudGlassTextButton(
+    ChompassPrimaryButton(flushDrafts = true, onClick = { onSave(selectedMinutes) })
+    ChompassTextButton(
         text = stringResource(R.string.action_cancel),
         onClick = onCancel,
         modifier = Modifier.fillMaxWidth(),
@@ -245,7 +246,7 @@ internal fun WaterManualTempSheet(current: Int, onSave: (Int) -> Unit) {
             unit = stringResource(R.string.unit_celsius),
         )
         Spacer(Modifier.height(16.dp))
-        GradientSaveButton { onSave(temp) }
+        ChompassPrimaryButton(flushDrafts = true, onClick = { onSave(temp) })
         Spacer(Modifier.height(8.dp))
     }
 }

@@ -55,9 +55,9 @@ import app.chompass.models.BodyFatEntry
 import app.chompass.models.LocaleFormat
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.Gender
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassDialogActions
-import app.chompass.ui.components.FudGlassSurface
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
+import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.UnitToggle
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.settings.NutritionPickerSheet
@@ -128,7 +128,7 @@ private fun BodyMeasurementsHistorySheet(
                 TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done), color = AppColors.Calorie) }
             }
             Spacer(Modifier.height(12.dp))
-            FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp) {
+            ChompassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp) {
                 LazyColumn(modifier = Modifier.fillMaxWidth().heightIn(max = 560.dp).padding(vertical = 4.dp)) {
                     items(entries, key = { it.id }) { entry ->
                         Row(
@@ -217,7 +217,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                 )
             }
             item {
-                FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp) {
+                ChompassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp) {
                     Column {
                         BodyMeasurement.Site.values().forEachIndexed { index, site ->
                             Row(
@@ -243,7 +243,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                 val derived = derivedMetricList(context, latest, gender, heightCm)
                 if (derived.isNotEmpty()) {
                     item {
-                        FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 16.dp) {
+                        ChompassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 16.dp) {
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Text(stringResource(R.string.label_derived), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
                                 derived.forEach { (label, value) ->
@@ -283,7 +283,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                 }
                 if (entries.size > 1) {
                     item {
-                        FudGlassSurface(
+                        ChompassSurface(
                             modifier = Modifier.fillMaxWidth().clickable { showHistory = true },
                             cornerRadius = 16.dp,
                             padding = 14.dp
@@ -309,7 +309,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                     ?: if (heightMetric) 80 else 32
             )
         }
-        FudGlassDialog(onDismissRequest = { editing = null }) {
+        ChompassDialog(onDismissRequest = { editing = null }) {
             UnitToggle(
                 stringResource(R.string.unit_cm),
                 stringResource(R.string.unit_in),
@@ -353,7 +353,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
     if (showUseAsBodyFat && (navyPercent != null || rfmPercent != null)) {
         val chosen = if (useNavyEstimate && navyPercent != null) navyPercent else rfmPercent ?: navyPercent
         val chosenLabel = String.format(Locale.getDefault(), "%.0f", chosen)
-        FudGlassDialog(onDismissRequest = { showUseAsBodyFat = false }) {
+        ChompassDialog(onDismissRequest = { showUseAsBodyFat = false }) {
             Text(
                 stringResource(R.string.confirm_log_tape_body_fat, chosenLabel),
                 style = MaterialTheme.typography.bodyMedium
@@ -376,7 +376,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                 }
             }
             Spacer(Modifier.height(8.dp))
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = {
                     val pct = if (useNavyEstimate && navyPercent != null) navyPercent else rfmPercent ?: navyPercent

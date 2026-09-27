@@ -34,7 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
-import app.chompass.ui.components.FudGlassSurface
+import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
@@ -70,7 +70,7 @@ internal fun TimeRangePicker(selected: TimeRange, onSelect: (TimeRange) -> Unit)
 
 @Composable
 internal fun CardSection(content: @Composable () -> Unit) {
-    FudGlassSurface(
+    ChompassSurface(
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = 16.dp,
         padding = 16.dp,

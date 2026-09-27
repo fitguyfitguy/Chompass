@@ -63,9 +63,9 @@ import kotlinx.coroutines.delay
 import app.chompass.R
 import app.chompass.models.ServingUnitOption
 import app.chompass.services.FoodPhotoSession
-import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.rememberDecodedBitmap
-import app.chompass.ui.components.FudGlassPrimaryButton
+import app.chompass.ui.components.ChompassPrimaryButton
 import app.chompass.ui.components.MagnitudeDrafts
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.theme.AppColors
@@ -180,7 +180,7 @@ fun ContextNoteSheet(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                 )
 
-                FudGlassTextField(
+                ChompassTextField(
                     value = note,
                     onValueChange = { if (!busy) note = it },
                     placeholder = stringResource(R.string.context_note_placeholder),
@@ -243,7 +243,7 @@ fun ContextNoteSheet(
                         fontSize = 14.sp
                     )
                 }
-                FudGlassPrimaryButton(
+                ChompassPrimaryButton(
                     text = stringResource(R.string.action_analyze),
                     onClick = {
                         if (!busy) {
@@ -488,7 +488,7 @@ fun MultiPhotoCaptureSheet(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                         )
-                        FudGlassTextField(
+                        ChompassTextField(
                             value = note,
                             onValueChange = {
                                 note = it

@@ -1,5 +1,6 @@
 package app.chompass.ui.settings
 
+import app.chompass.ui.components.ChompassPrimaryButton
 import android.app.ActivityManager
 import android.content.Context
 import android.os.StatFs
@@ -130,7 +131,7 @@ internal fun OnDeviceModelSheet(
                     onChange = onSetOverWifiOnly
                 )
                 Spacer(Modifier.height(8.dp))
-                GradientSaveButton(
+                ChompassPrimaryButton(flushDrafts = true, 
                     text = stringResource(R.string.on_device_model_download),
                     enabled = hasEnoughSpace,
                     onClick = onStartDownload
@@ -179,7 +180,7 @@ internal fun OnDeviceModelSheet(
                     color = MaterialTheme.colorScheme.error
                 )
                 Spacer(Modifier.height(12.dp))
-                GradientSaveButton(
+                ChompassPrimaryButton(flushDrafts = true, 
                     text = stringResource(R.string.on_device_model_retry),
                     onClick = onStartDownload
                 )

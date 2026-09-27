@@ -1,5 +1,6 @@
 package app.chompass.ui.settings
 
+import app.chompass.ui.components.ChompassPrimaryButton
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,9 +31,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.services.weather.OmCity
-import app.chompass.ui.components.FudGlassSurface
-import app.chompass.ui.components.FudGlassTextButton
-import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.ChompassSurface
+import app.chompass.ui.components.ChompassTextButton
+import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.util.clockTimePattern
 import app.chompass.ui.theme.AppRadii
@@ -103,14 +104,14 @@ internal fun OpenMeteoCitySheet(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
         Spacer(Modifier.height(12.dp))
-        FudGlassTextField(
+        ChompassTextField(
             value = query,
             onValueChange = { query = it; searched = false },
             placeholder = stringResource(R.string.settings_weather_city_search_hint),
             modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(8.dp))
-        GradientSaveButton(
+        ChompassPrimaryButton(flushDrafts = true, 
             text = stringResource(R.string.settings_weather_city_search),
             onClick = {
                 scope.launch {
@@ -168,7 +169,7 @@ internal fun OpenMeteoCitySheet(
         HorizontalDivider()
         Spacer(Modifier.height(10.dp))
         // Current selection + status + manual refresh.
-        FudGlassSurface(
+        ChompassSurface(
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = AppRadii.Container,
             padding = 0.dp,
@@ -189,7 +190,7 @@ internal fun OpenMeteoCitySheet(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
         Spacer(Modifier.height(14.dp))
-        FudGlassTextButton(
+        ChompassTextButton(
             text = stringResource(R.string.action_close),
             onClick = onClose,
             modifier = Modifier.fillMaxWidth(),

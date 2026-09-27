@@ -31,7 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
-import app.chompass.ui.components.FudGlassSurface
+import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.theme.AppRadii
 
 /**
@@ -49,7 +49,7 @@ internal fun SettingRowStressPreviewContent() {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        FudGlassSurface(
+        ChompassSurface(
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = AppRadii.Container,
             padding = 0.dp,
@@ -90,7 +90,7 @@ internal fun SettingRowAlignmentPreviewContent() {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        FudGlassSurface(
+        ChompassSurface(
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = AppRadii.Container,
             padding = 0.dp,
@@ -155,7 +155,7 @@ internal fun SettingsScreenPreviewContent(
 
             SettingsSearchField(query = "", onQueryChange = {})
 
-            FudGlassSurface(
+            ChompassSurface(
                 modifier = Modifier.fillMaxWidth(),
                 cornerRadius = AppRadii.Container,
                 padding = 0.dp,

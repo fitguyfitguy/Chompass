@@ -1,5 +1,6 @@
 package app.chompass.ui.settings
 
+import app.chompass.ui.components.ChompassPrimaryButton
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -46,9 +47,9 @@ import app.chompass.models.EnergyFormat
 import app.chompass.models.LocaleFormat
 import app.chompass.models.MacroDayProfile
 import app.chompass.ui.components.ChompassBottomSheet
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassDialogActions
-import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
+import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalEnergyUnit
@@ -228,7 +229,7 @@ internal fun DayTypeProfileEditorSheet(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 18.dp),
         ) {
-            FudGlassTextField(
+            ChompassTextField(
                 value = name,
                 onValueChange = { if (it.length <= 32) name = it },
                 placeholder = stringResource(R.string.settings_day_types_name_placeholder),
@@ -346,7 +347,7 @@ internal fun DayTypeProfileEditorSheet(
                 Text(stringResource(R.string.settings_day_types_copy_current))
             }
         }
-        GradientSaveButton(
+        ChompassPrimaryButton(flushDrafts = true, 
             enabled = canSave,
             modifier = Modifier.padding(horizontal = 18.dp),
             onClick = {
@@ -383,7 +384,7 @@ internal fun DayTypeProfileEditorSheet(
         // old AlertDialog stacked them as trailing text buttons right next to
         // Cancel, which made the scrub option hard to hit (device review,
         // phase 2 pass).
-        FudGlassDialog(
+        ChompassDialog(
             onDismissRequest = { confirmDelete = false },
             scrollable = true,
         ) {
@@ -421,7 +422,7 @@ internal fun DayTypeProfileEditorSheet(
                         )
                     }
                 }
-                FudGlassDialogActions(
+                ChompassDialogActions(
                     primaryText = stringResource(R.string.settings_day_types_delete_scrub),
                     onPrimary = { onDelete(null) },
                     dismissText = stringResource(R.string.action_cancel),
@@ -429,7 +430,7 @@ internal fun DayTypeProfileEditorSheet(
                     destructive = true,
                 )
             } else {
-                FudGlassDialogActions(
+                ChompassDialogActions(
                     primaryText = stringResource(R.string.action_delete),
                     onPrimary = { onDelete(null) },
                     dismissText = stringResource(R.string.action_cancel),

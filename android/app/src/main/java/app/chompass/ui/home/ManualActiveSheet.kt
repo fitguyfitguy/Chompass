@@ -36,7 +36,7 @@ import app.chompass.R
 import app.chompass.models.ManualActiveEntry
 import app.chompass.models.EnergyFormat
 import app.chompass.ui.components.ChompassBottomSheet
-import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalEnergyUnit
@@ -81,7 +81,7 @@ fun ManualActiveSheet(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             )
             Spacer(Modifier.height(14.dp))
-            FudGlassTextField(
+            ChompassTextField(
                 value = name,
                 onValueChange = { name = it },
                 placeholder = stringResource(R.string.manual_active_name_hint),

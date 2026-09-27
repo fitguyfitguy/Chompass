@@ -29,7 +29,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.chompass.R
-import app.chompass.ui.components.FudGlassTextButton
+import app.chompass.ui.components.ChompassTextButton
 import app.chompass.ui.components.energyText
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
@@ -123,7 +123,7 @@ fun NutritionPickerSheet(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        FudGlassTextButton(
+        ChompassTextButton(
             text = stringResource(R.string.action_cancel),
             onClick = onDismiss,
             modifier = Modifier.weight(1f),

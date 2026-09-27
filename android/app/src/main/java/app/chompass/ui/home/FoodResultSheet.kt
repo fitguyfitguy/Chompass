@@ -113,7 +113,7 @@ import app.chompass.ui.components.energyText
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.components.macroGramsText
-import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.ChompassTextField
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -1211,7 +1211,7 @@ internal fun EntryAnalysisTipStrip(
                     PhotoAccuracyGuideDialog(onDismiss = { showGuide = false })
                 }
             }
-            FudGlassTextField(
+            ChompassTextField(
                 value = note,
                 onValueChange = onNoteChange,
                 modifier = Modifier
@@ -1228,7 +1228,7 @@ internal fun EntryAnalysisTipStrip(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                FudGlassTextField(
+                ChompassTextField(
                     value = weightText,
                     onValueChange = { onWeightChange(it.filter { ch -> ch.isDigit() || ch == '.' || ch == ',' }) },
                     placeholder = stringResource(R.string.context_note_weight_placeholder),

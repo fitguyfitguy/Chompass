@@ -29,8 +29,8 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.R
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppTextOpacity
 
@@ -161,10 +161,10 @@ fun NotificationsSettingsScreen(
     }
 
     permissionDeniedMessage?.let { msg ->
-        FudGlassDialog(onDismissRequest = { permissionDeniedMessage = null }) {
+        ChompassDialog(onDismissRequest = { permissionDeniedMessage = null }) {
             Text(stringResource(R.string.settings_permission_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { permissionDeniedMessage = null }
             )

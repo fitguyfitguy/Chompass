@@ -1,5 +1,6 @@
 package app.chompass.ui.home
 
+import app.chompass.ui.components.ChompassPrimaryButton
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.ChompassBottomSheet
 import androidx.compose.foundation.background
@@ -38,7 +39,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
-import app.chompass.ui.settings.GradientSaveButton
 import app.chompass.models.WaterAmountFormat
 import app.chompass.models.WaterEntry
 import app.chompass.ui.theme.AppTextOpacity
@@ -204,7 +204,7 @@ fun WaterCustomAmountSheet(
                 )
             }
 
-            GradientSaveButton(
+            ChompassPrimaryButton(flushDrafts = true, 
                 text = stringResource(R.string.water_add),
                 icon = Icons.Filled.WaterDrop,
                 onClick = {
@@ -415,7 +415,7 @@ fun WaterEditAmountSheet(
                 )
             }
 
-            GradientSaveButton(
+            ChompassPrimaryButton(flushDrafts = true, 
                 text = stringResource(R.string.action_save),
                 icon = Icons.Filled.WaterDrop,
                 onClick = {

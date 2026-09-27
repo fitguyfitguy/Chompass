@@ -30,9 +30,9 @@ import app.chompass.R
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.UnitFormat
-import app.chompass.ui.components.FudGlassSurface
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.components.ChompassSurface
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
 
 import app.chompass.ui.progress.TimeRange
 import java.util.Locale
@@ -68,7 +68,7 @@ fun CustomizeProgressScreen(
         title = stringResource(R.string.settings_customize_progress),
         onBack = onBack,
     ) {
-        FudGlassSurface(
+        ChompassSurface(
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = AppRadii.SectionCard,
             padding = 0.dp,
@@ -127,7 +127,7 @@ fun CustomizeProgressScreen(
             }
         }
 
-        FudGlassSurface(
+        ChompassSurface(
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = AppRadii.SectionCard,
             padding = 0.dp,
@@ -184,7 +184,7 @@ fun CustomizeProgressScreen(
     }
 
     if (showNutrientAveragesWarning) {
-        FudGlassDialog(onDismissRequest = { showNutrientAveragesWarning = false }) {
+        ChompassDialog(onDismissRequest = { showNutrientAveragesWarning = false }) {
             Text(
                 stringResource(R.string.settings_progress_nutrient_averages_warning_title),
                 fontSize = 21.sp,
@@ -194,7 +194,7 @@ fun CustomizeProgressScreen(
                 stringResource(R.string.settings_progress_nutrient_averages_warning_body),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.settings_progress_nutrient_averages_confirm),
                 onPrimary = {
                     vm.setProgressNutrientAverages(true)

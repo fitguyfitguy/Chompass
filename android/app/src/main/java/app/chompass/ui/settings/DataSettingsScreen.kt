@@ -26,8 +26,8 @@ import app.chompass.export.BodyMetricsImportResult
 import app.chompass.export.BodyMetricsImporter
 import app.chompass.export.DiaryImportResult
 import app.chompass.export.DiaryImporter
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.models.LocaleFormat
 import app.chompass.ui.theme.AppTextOpacity
@@ -316,13 +316,13 @@ fun DataSettingsScreen(
     }
 
     if (showClearFoodDialog) {
-        FudGlassDialog(onDismissRequest = { showClearFoodDialog = false }) {
+        ChompassDialog(onDismissRequest = { showClearFoodDialog = false }) {
             Text(stringResource(R.string.settings_clear_food_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_clear_food_message),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_clear),
                 onPrimary = {
                     vm.clearFoodLog()
@@ -337,13 +337,13 @@ fun DataSettingsScreen(
 
     if (showDeleteDialog) {
         val context = LocalContext.current
-        FudGlassDialog(onDismissRequest = { showDeleteDialog = false }) {
+        ChompassDialog(onDismissRequest = { showDeleteDialog = false }) {
             Text(stringResource(R.string.settings_delete_all_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_delete_all_message),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_delete),
                 onPrimary = {
                     vm.deleteAllData {
@@ -361,7 +361,7 @@ fun DataSettingsScreen(
     permissionDeniedMessage?.let { msg ->
         val actionLabel = healthAvailabilityActionLabel
         val actionIntent = healthAvailabilityActionIntent
-        FudGlassDialog(
+        ChompassDialog(
             onDismissRequest = {
                 permissionDeniedMessage = null
                 healthAvailabilityActionLabel = null
@@ -371,7 +371,7 @@ fun DataSettingsScreen(
             Text(stringResource(R.string.settings_permission_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
             if (actionLabel != null && actionIntent != null) {
-                FudGlassDialogActions(
+                ChompassDialogActions(
                     primaryText = actionLabel,
                     onPrimary = {
                         runCatching { activityContext.startActivity(actionIntent) }
@@ -387,7 +387,7 @@ fun DataSettingsScreen(
                     },
                 )
             } else {
-                FudGlassDialogActions(
+                ChompassDialogActions(
                     primaryText = stringResource(R.string.action_ok),
                     onPrimary = {
                         permissionDeniedMessage = null
@@ -400,10 +400,10 @@ fun DataSettingsScreen(
     }
 
     importDiaryMessage?.let { msg ->
-        FudGlassDialog(onDismissRequest = { importDiaryMessage = null }) {
+        ChompassDialog(onDismissRequest = { importDiaryMessage = null }) {
             Text(stringResource(R.string.import_diary_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { importDiaryMessage = null }
             )
@@ -411,10 +411,10 @@ fun DataSettingsScreen(
     }
 
     importBodyMetricsMessage?.let { msg ->
-        FudGlassDialog(onDismissRequest = { importBodyMetricsMessage = null }) {
+        ChompassDialog(onDismissRequest = { importBodyMetricsMessage = null }) {
             Text(stringResource(R.string.import_body_metrics_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { importBodyMetricsMessage = null }
             )

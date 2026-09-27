@@ -103,10 +103,10 @@ import app.chompass.services.OpenFoodFactsService
 import app.chompass.services.PerfLog
 import app.chompass.services.ShortcutEntryAction
 import app.chompass.services.grounding.GroundedEntryFeature
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.settings.RecalcResultSheet
-import app.chompass.ui.components.FudGlassSurface
+import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.InAppCameraCaptureDialog
 import app.chompass.ui.components.MacroCard
 import app.chompass.ui.components.StepsCard
@@ -1016,7 +1016,7 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 if (showRecoveredChip && recoveredReview != null) {
-                    FudGlassSurface(
+                    ChompassSurface(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable(onClick = vm::restoreRecoveredReview),
@@ -1057,7 +1057,7 @@ fun HomeScreen(
                     }
                 }
                 if (copied.isNotEmpty() && !inSelectionMode && !showProgressiveChip) {
-                    FudGlassSurface(
+                    ChompassSurface(
                         modifier = Modifier
                             .fillMaxWidth()
                             .alpha(if (pasteBusy) 0.55f else 1f)
@@ -1611,7 +1611,7 @@ fun HomeScreen(
     }
 
     if (showAppendPhotoChooser) {
-        FudGlassDialog(
+        ChompassDialog(
             onDismissRequest = {
                 showAppendPhotoChooser = false
                 appendReanalyzeNote = null
@@ -1623,7 +1623,7 @@ fun HomeScreen(
                 fontSize = 21.sp,
                 fontWeight = FontWeight.Bold,
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.add_food_photo_camera),
                 onPrimary = {
                     showAppendPhotoChooser = false
@@ -1855,11 +1855,11 @@ fun HomeScreen(
             ui.pendingInputDraftImageFilenames.isNotEmpty()
         val autoSavedToQueue = ui.pendingQueueEntryId != null
         val uriHandler = LocalUriHandler.current
-        FudGlassDialog(onDismissRequest = { vm.clearError() }) {
+        ChompassDialog(onDismissRequest = { vm.clearError() }) {
             Text(stringResource(R.string.error_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(err, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
             if (hasRetryableInput) {
-                FudGlassDialogActions(
+                ChompassDialogActions(
                     primaryText = stringResource(R.string.action_retry),
                     onPrimary = { vm.retryFailedInput() },
                     primaryEnabled = !ui.isEntryAnalysisBusy,
@@ -1867,7 +1867,7 @@ fun HomeScreen(
                     onDismiss = { vm.dismissFailedInput() }
                 )
             } else {
-                FudGlassDialogActions(
+                ChompassDialogActions(
                     primaryText = stringResource(R.string.action_ok),
                     onPrimary = { vm.clearError() }
                 )

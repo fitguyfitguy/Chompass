@@ -1,6 +1,6 @@
 package app.chompass.ui.home
-import app.chompass.ui.settings.GradientSaveButton
 
+import app.chompass.ui.components.ChompassPrimaryButton
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -214,7 +214,7 @@ fun CaffeineCustomSheet(
             }
         },
         footer = {
-            GradientSaveButton(
+            ChompassPrimaryButton(flushDrafts = true, 
                 text = stringResource(R.string.caffeine_add),
                 enabled = mg > 0,
                 modifier = Modifier
@@ -440,7 +440,7 @@ fun CaffeineEditSheet(
             }
         },
         footer = {
-            GradientSaveButton(
+            ChompassPrimaryButton(flushDrafts = true, 
                 text = stringResource(R.string.action_save),
                 enabled = mg > 0,
                 modifier = Modifier

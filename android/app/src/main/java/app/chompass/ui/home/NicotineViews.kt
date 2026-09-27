@@ -1,6 +1,6 @@
 package app.chompass.ui.home
-import app.chompass.ui.settings.GradientSaveButton
 
+import app.chompass.ui.components.ChompassPrimaryButton
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -207,7 +207,7 @@ fun NicotineCustomCountSheet(
             }
         },
         footer = {
-            GradientSaveButton(
+            ChompassPrimaryButton(flushDrafts = true, 
                 text = stringResource(R.string.nicotine_add),
                 enabled = count > 0,
                 modifier = Modifier
@@ -451,7 +451,7 @@ fun NicotineEditSheet(
             }
         },
         footer = {
-            GradientSaveButton(
+            ChompassPrimaryButton(flushDrafts = true, 
                 text = stringResource(R.string.action_save),
                 enabled = count > 0,
                 modifier = Modifier

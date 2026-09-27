@@ -22,7 +22,7 @@ import kotlin.math.roundToInt
 object MealShare {
     const val SCHEME = "chompass"
     const val HOST = "add-meal"
-    /** Pre-rename NoFUD scheme — import-only so old shared links keep working. */
+    /** Previous app scheme — import-only so old shared links keep working. */
     private const val NOFUD_SCHEME = "nofud"
     /** Upstream Fud AI scheme — import-only for shared meals from the original app. */
     private const val LEGACY_SCHEME = "fudai"

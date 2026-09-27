@@ -30,7 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
-import app.chompass.ui.components.FudGlassSurface
+import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.warning
@@ -264,7 +264,7 @@ internal fun CalcFormulaCard(
     url: String?
 ) {
     val uriHandler = LocalUriHandler.current
-    FudGlassSurface(
+    ChompassSurface(
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = AppRadii.Container,
         padding = 14.dp,

@@ -60,8 +60,8 @@ import app.chompass.models.EnergyFormat
 import app.chompass.models.HomeCalorieDisplay
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.LocaleFormat
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalLaunchFillEpoch
 import app.chompass.ui.navigation.LocalEnergyUnit
@@ -642,7 +642,7 @@ private fun BudgetExplanationDialog(
     val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
     val unit = LocalEnergyUnit.current
     val unitLabel = energyUnitLabel()
-    FudGlassDialog(onDismissRequest = onDismiss) {
+    ChompassDialog(onDismissRequest = onDismiss) {
         Text(
             stringResource(R.string.home_calorie_budget_sheet_title),
             fontSize = 20.sp,
@@ -737,7 +737,7 @@ private fun BudgetExplanationDialog(
                 }
             }
         }
-        FudGlassDialogActions(
+        ChompassDialogActions(
             primaryText = stringResource(R.string.action_done),
             onPrimary = onDismiss,
             dismissText = stringResource(R.string.action_cancel),

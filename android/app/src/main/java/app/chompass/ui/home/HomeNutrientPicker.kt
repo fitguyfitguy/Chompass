@@ -38,8 +38,8 @@ import app.chompass.R
 import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.nutrientAccentColor
@@ -73,7 +73,7 @@ fun HomeTopNutrientPickerDialog(
         }
     }
 
-    FudGlassDialog(onDismissRequest = onDismiss) {
+    ChompassDialog(onDismissRequest = onDismiss) {
         Text(stringResource(R.string.home_nutrients), fontSize = 22.sp, fontWeight = FontWeight.Bold)
         Text(
             stringResource(R.string.home_nutrients_pick_count, maxCards),
@@ -96,7 +96,7 @@ fun HomeTopNutrientPickerDialog(
                 )
             }
         }
-        FudGlassDialogActions(
+        ChompassDialogActions(
             primaryText = stringResource(R.string.action_done),
             onPrimary = {
                 onSave(HomeTopNutrient.normalized(draft, cardCount))
@@ -124,7 +124,7 @@ fun FoodLogMacroChipPickerDialog(
         }
     }
 
-    FudGlassDialog(onDismissRequest = onDismiss) {
+    ChompassDialog(onDismissRequest = onDismiss) {
         Text(stringResource(R.string.home_display_food_log_chips), fontSize = 22.sp, fontWeight = FontWeight.Bold)
         LazyColumn(
             Modifier
@@ -144,7 +144,7 @@ fun FoodLogMacroChipPickerDialog(
                 )
             }
         }
-        FudGlassDialogActions(
+        ChompassDialogActions(
             primaryText = stringResource(R.string.action_done),
             onPrimary = {
                 onSave(FoodLogMacroChip.normalized(draft))

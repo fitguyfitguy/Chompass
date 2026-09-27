@@ -45,8 +45,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.chompass.R
-import app.chompass.ui.components.FudGlassPrimaryButton
-import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.ChompassPrimaryButton
+import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.theme.AppColors
 
 /**
@@ -104,7 +104,7 @@ fun GroundedEntrySheet(
             )
             Spacer(Modifier.height(16.dp))
 
-            FudGlassTextField(
+            ChompassTextField(
                 value = note,
                 onValueChange = { if (!busy) note = it },
                 placeholder = stringResource(R.string.grounded_entry_placeholder),
@@ -119,7 +119,7 @@ fun GroundedEntrySheet(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                FudGlassPrimaryButton(
+                ChompassPrimaryButton(
                     text = stringResource(R.string.grounded_entry_add_photo),
                     onClick = {
                         picker.launch(
@@ -173,10 +173,10 @@ fun GroundedEntrySheet(
             }
 
             Spacer(Modifier.height(20.dp))
-            FudGlassPrimaryButton(
+            ChompassPrimaryButton(
                 text = stringResource(R.string.grounded_entry_analyze),
                 onClick = {
-                    if (!canSubmit) return@FudGlassPrimaryButton
+                    if (!canSubmit) return@ChompassPrimaryButton
                     submitted = true
                     onSubmit(
                         note.trim().takeIf { it.isNotEmpty() },

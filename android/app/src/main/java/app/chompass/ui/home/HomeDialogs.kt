@@ -63,11 +63,11 @@ import app.chompass.models.ServingUnitOption
 import app.chompass.ui.theme.AppColors
 import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.PartialFoodAnalysis
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassDialogActions
-import app.chompass.ui.components.FudGlassPrimaryButton
-import app.chompass.ui.components.FudGlassSurface
-import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
+import app.chompass.ui.components.ChompassPrimaryButton
+import app.chompass.ui.components.ChompassSurface
+import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.MagnitudeDrafts
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.components.rememberDecodedBitmap
@@ -259,7 +259,7 @@ internal fun ProgressiveAnalysisCard(
     partial: PartialFoodAnalysis,
     animate: Boolean = true,
 ) {
-    FudGlassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 20.dp, padding = 16.dp) {
+    ChompassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = 20.dp, padding = 16.dp) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             val nameFilled = partial.name != null
             val nameAlpha by animateFloatAsState(
@@ -470,7 +470,7 @@ internal fun CameraPairTransitionOverlay() {
             .background(Color.Black.copy(alpha = 0.72f)),
         contentAlignment = Alignment.Center
     ) {
-        FudGlassSurface(
+        ChompassSurface(
             modifier = Modifier
                 .width(250.dp)
                 .graphicsLayer {
@@ -522,9 +522,9 @@ internal fun AnalysisResultDialog(
     onSave: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    FudGlassDialog(onDismissRequest = onDismiss) {
+    ChompassDialog(onDismissRequest = onDismiss) {
         AnalysisPreviewCard(analysis = analysis)
-        FudGlassDialogActions(
+        ChompassDialogActions(
             primaryText = stringResource(R.string.action_save),
             onPrimary = onSave,
             dismissText = stringResource(R.string.action_discard),
@@ -611,10 +611,10 @@ internal fun ManualEntryDialog(
 
     val canSave = name.isNotBlank() && calories > 0 && !isSaving
 
-    FudGlassDialog(onDismissRequest = onDismiss, scrollable = true) {
+    ChompassDialog(onDismissRequest = onDismiss, scrollable = true) {
                 Text(stringResource(R.string.manual_title), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
 
-                FudGlassTextField(
+                ChompassTextField(
                     value = name,
                     onValueChange = {
                         name = it
@@ -796,7 +796,7 @@ internal fun ManualEntryDialog(
                     },
                 )
 
-                FudGlassPrimaryButton(
+                ChompassPrimaryButton(
                     text = if (isSaving) {
                         stringResource(R.string.action_logging)
                     } else {
@@ -840,7 +840,7 @@ private fun NumberField(
     decimal: Boolean = false,
     accentColor: Color = AppColors.Calorie,
 ) {
-    FudGlassTextField(
+    ChompassTextField(
         value = value,
         onValueChange = onValueChange,
         placeholder = label,

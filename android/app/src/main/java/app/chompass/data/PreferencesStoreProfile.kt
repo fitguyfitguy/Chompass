@@ -98,9 +98,6 @@ internal val PreferencesStore.appThemeColorImpl: Flow<String> get() = dataStore.
     }
 internal suspend fun PreferencesStore.setAppThemeColorImpl(v: String) { dataStore.edit { it[Keys.APP_THEME_COLOR] = v } }
 
-    /** Controls whether glass surfaces try to use a real blur effect (API 31+). Default OFF. */
-internal val PreferencesStore.glassBlurEnabledImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.GLASS_BLUR_ENABLED] ?: false }
-internal suspend fun PreferencesStore.setGlassBlurEnabledImpl(v: Boolean) { dataStore.edit { it[Keys.GLASS_BLUR_ENABLED] = v } }
 
     /** When ON the launcher icon stays teal and never swaps activity aliases (launcher workaround, #21). */
 internal val PreferencesStore.fixedLauncherIconImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.FIXED_LAUNCHER_ICON] ?: false }

@@ -1,5 +1,6 @@
 package app.chompass.ui.settings
 
+import app.chompass.ui.components.ChompassPrimaryButton
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +44,6 @@ internal fun DailySummaryTimeSheet(
         label = { formatMinutesOfDay(context, it) },
     )
     Spacer(Modifier.height(16.dp))
-    GradientSaveButton { onSave(selectedMinutes / 60, selectedMinutes % 60) }
+    ChompassPrimaryButton(flushDrafts = true, onClick = { onSave(selectedMinutes / 60, selectedMinutes % 60) })
     Spacer(Modifier.height(8.dp))
 }

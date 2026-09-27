@@ -42,10 +42,10 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.BodyMeasurement
 import app.chompass.services.health.DailyActivity
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassDialogActions
-import app.chompass.ui.components.FudGlassSurface
-import app.chompass.ui.components.FudIconBubble
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
+import app.chompass.ui.components.ChompassSurface
+import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.dayTypeColor
@@ -146,7 +146,7 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                 // B6: was a right-aligned Tune + 13sp text link that read as a
                 // filter control next to the range chips; the same full-width
                 // glass row as the history links reads as a proper entry.
-                FudGlassSurface(
+                ChompassSurface(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable(enabled = onOpenCustomize != null, role = Role.Button) { onOpenCustomize?.invoke() },
@@ -154,7 +154,7 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                     padding = 14.dp,
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        FudIconBubble(
+                        ChompassIconBubble(
                             icon = Icons.Outlined.Tune,
                             size = 28.dp,
                             iconSize = 16.dp,
@@ -353,13 +353,13 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
         )
     }
     if (ui.goalReached) {
-        FudGlassDialog(onDismissRequest = { vm.dismissGoalReached() }) {
+        ChompassDialog(onDismissRequest = { vm.dismissGoalReached() }) {
             Text(stringResource(R.string.progress_goal_reached_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.progress_goal_reached_message),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_keep_going),
                 onPrimary = { vm.dismissGoalReached() }
             )

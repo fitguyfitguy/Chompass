@@ -38,10 +38,10 @@ import androidx.compose.ui.unit.sp
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.OptionalNutrient
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassDialogActions
-import app.chompass.ui.components.FudGlassSurface
-import app.chompass.ui.components.FudIconBubble
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
+import app.chompass.ui.components.ChompassSurface
+import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.macroAccentColor
@@ -83,7 +83,7 @@ fun OptionalNutrientGoalsScreen(
             // Never fired automatically: Recalculate keeps optional goals untouched.
             if (ui.aiFeaturesEnabled) {
                 item {
-                    FudGlassSurface(
+                    ChompassSurface(
                         modifier = Modifier.fillMaxWidth(),
                         cornerRadius = AppRadii.SectionCard,
                         padding = 0.dp,
@@ -97,7 +97,7 @@ fun OptionalNutrientGoalsScreen(
                                 .padding(horizontal = 16.dp, vertical = 14.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            FudIconBubble(icon = Icons.Outlined.AutoAwesome, size = 22.dp, iconSize = 14.dp)
+                            ChompassIconBubble(icon = Icons.Outlined.AutoAwesome, size = 22.dp, iconSize = 14.dp)
                             Spacer(Modifier.width(14.dp))
                             Column(Modifier.weight(1f)) {
                                 Text(
@@ -124,7 +124,7 @@ fun OptionalNutrientGoalsScreen(
                 }
             }
             item {
-                FudGlassSurface(
+                ChompassSurface(
                     modifier = Modifier.fillMaxWidth(),
                     cornerRadius = AppRadii.SectionCard,
                     padding = 0.dp,
@@ -157,7 +157,7 @@ fun OptionalNutrientGoalsScreen(
 
     editing?.let { nutrient ->
         val iuTemplate = stringResource(R.string.settings_picker_vitd_iu_hint)
-        FudGlassDialog(onDismissRequest = { editing = null }) {
+        ChompassDialog(onDismissRequest = { editing = null }) {
             NutritionPickerSheet(
                 label = stringResource(nutrient.displayNameRes),
                 unit = stringResource(nutrient.unitRes),
@@ -179,7 +179,7 @@ fun OptionalNutrientGoalsScreen(
     }
 
     ui.optionalNutrientEstimateAlertMessage?.let { message ->
-        FudGlassDialog(onDismissRequest = { vm.dismissOptionalNutrientEstimateAlert() }) {
+        ChompassDialog(onDismissRequest = { vm.dismissOptionalNutrientEstimateAlert() }) {
             Text(
                 stringResource(R.string.settings_optional_nutrient_estimate_failed_title),
                 fontSize = 21.sp,
@@ -189,7 +189,7 @@ fun OptionalNutrientGoalsScreen(
                 message,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { vm.dismissOptionalNutrientEstimateAlert() }
             )

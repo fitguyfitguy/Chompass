@@ -45,6 +45,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import app.chompass.R
 import app.chompass.ui.theme.AppColors
 
 @Composable
@@ -57,7 +58,7 @@ fun hairlineBorder(isDark: Boolean): Color =
     if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
 
 @Composable
-fun FudGlassSurface(
+fun ChompassSurface(
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 16.dp,
     padding: Dp = 16.dp,
@@ -87,13 +88,13 @@ fun FudGlassSurface(
 }
 
 @Composable
-fun FudGlassColumn(
+fun ChompassSurfaceColumn(
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 16.dp,
     padding: Dp = 16.dp,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    FudGlassSurface(
+    ChompassSurface(
         modifier = modifier,
         cornerRadius = cornerRadius,
         padding = 0.dp,
@@ -103,7 +104,7 @@ fun FudGlassColumn(
 }
 
 @Composable
-fun FudIconBubble(
+fun ChompassIconBubble(
     icon: ImageVector,
     modifier: Modifier = Modifier,
     size: Dp = 34.dp,
@@ -124,7 +125,7 @@ fun FudIconBubble(
 }
 
 @Composable
-fun FudGlassTextField(
+fun ChompassTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -172,7 +173,7 @@ fun FudGlassTextField(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FudGlassDialog(
+fun ChompassDialog(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     /** Cap the dialog height to the window and scroll the content when it overflows. */
@@ -213,16 +214,26 @@ fun FudGlassDialog(
 }
 
 @Composable
-fun FudGlassPrimaryButton(
-    text: String,
+fun ChompassPrimaryButton(
+    text: String? = null,
     onClick: () -> Unit,
     modifier: Modifier = Modifier.fillMaxWidth(),
     enabled: Boolean = true,
     height: Dp = 50.dp,
+    icon: ImageVector? = null,
+    flushDrafts: Boolean = false,
     content: (@Composable RowScope.() -> Unit)? = null,
 ) {
+    val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
+    val label = text ?: androidx.compose.ui.res.stringResource(R.string.action_save)
     Button(
-        onClick = onClick,
+        onClick = {
+            if (flushDrafts) {
+                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                MagnitudeDrafts.commitAll()
+            }
+            onClick()
+        },
         enabled = enabled,
         modifier = modifier.height(height),
         shape = MaterialTheme.shapes.medium,
@@ -231,16 +242,20 @@ fun FudGlassPrimaryButton(
             contentColor = MaterialTheme.colorScheme.onPrimary,
         ),
     ) {
-        if (content != null) {
-            content()
-        } else {
-            Text(text, style = MaterialTheme.typography.labelLarge)
+        when {
+            content != null -> content()
+            icon != null -> {
+                Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(label, style = MaterialTheme.typography.labelLarge)
+            }
+            else -> Text(label, style = MaterialTheme.typography.labelLarge)
         }
     }
 }
 
 @Composable
-fun FudGlassTextButton(
+fun ChompassTextButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -256,7 +271,7 @@ fun FudGlassTextButton(
 }
 
 @Composable
-fun FudGlassDialogActions(
+fun ChompassDialogActions(
     primaryText: String,
     onPrimary: () -> Unit,
     modifier: Modifier = Modifier,

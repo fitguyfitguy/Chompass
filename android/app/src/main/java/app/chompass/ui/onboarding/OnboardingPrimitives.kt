@@ -34,8 +34,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.chompass.R
-import app.chompass.ui.components.FudGlassSurface
-import app.chompass.ui.components.FudIconBubble
+import app.chompass.ui.components.ChompassSurface
+import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.theme.AppColors
@@ -83,7 +83,7 @@ internal fun SelectionCard(
     } else {
         Modifier
     }
-    FudGlassSurface(
+    ChompassSurface(
         modifier = Modifier
             .fillMaxWidth()
             .then(selectedBorder)
@@ -96,7 +96,7 @@ internal fun SelectionCard(
         padding = 16.dp
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            FudIconBubble(icon = icon, size = 40.dp, iconSize = 21.dp, tint = accent)
+            ChompassIconBubble(icon = icon, size = 40.dp, iconSize = 21.dp, tint = accent)
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
                 Text(
@@ -188,7 +188,7 @@ internal fun ChoiceRow(label: String, subtitle: String? = null, selected: Boolea
 
 @Composable
 internal fun ToggleCard(label: String, subtitle: String, enabled: Boolean, onToggle: (Boolean) -> Unit) {
-    FudGlassSurface(
+    ChompassSurface(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onToggle(!enabled) },

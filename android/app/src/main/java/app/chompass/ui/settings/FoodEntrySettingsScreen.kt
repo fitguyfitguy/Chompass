@@ -31,8 +31,8 @@ import androidx.compose.ui.unit.sp
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.ServingUnitInferenceMode
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.theme.AppTextOpacity
 
 /**
@@ -187,26 +187,26 @@ fun FoodEntrySettingsScreen(
     }
 
     if (showDefaultGramsInfo) {
-        FudGlassDialog(onDismissRequest = { showDefaultGramsInfo = false }) {
+        ChompassDialog(onDismissRequest = { showDefaultGramsInfo = false }) {
             Text(stringResource(R.string.settings_default_to_grams), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_default_to_grams_info),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { showDefaultGramsInfo = false }
             )
         }
     }
     if (showMealPlanningInfo) {
-        FudGlassDialog(onDismissRequest = { showMealPlanningInfo = false }) {
+        ChompassDialog(onDismissRequest = { showMealPlanningInfo = false }) {
             Text(stringResource(R.string.settings_meal_planning), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_meal_planning_info),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { showMealPlanningInfo = false }
             )

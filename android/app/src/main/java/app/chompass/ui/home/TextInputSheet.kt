@@ -42,8 +42,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import app.chompass.R
-import app.chompass.ui.components.FudGlassPrimaryButton
-import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.ChompassPrimaryButton
+import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppTextOpacity
 
@@ -135,7 +135,7 @@ fun TextInputSheet(
                     .padding(horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                FudGlassTextField(
+                ChompassTextField(
                     value = input,
                     onValueChange = { if (!busy) { input = it; onTextChange(it); autofilled = false } },
                     placeholder = placeholders[placeholderIdx],
@@ -191,7 +191,7 @@ fun TextInputSheet(
                     )
                 }
 
-                FudGlassPrimaryButton(
+                ChompassPrimaryButton(
                     text = stringResource(R.string.action_analyze),
                     onClick = submit,
                     enabled = input.isNotBlank() && !busy,
