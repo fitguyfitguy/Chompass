@@ -71,6 +71,7 @@ import app.chompass.models.ActivityLevel
 import app.chompass.models.Gender
 import app.chompass.models.UserProfile
 import app.chompass.models.WeightGoal
+import app.chompass.ui.components.FudGlassPrimaryButton
 import app.chompass.ui.components.FudGlassSurface
 import app.chompass.ui.components.FudGlassTextField
 import app.chompass.ui.components.FudIconBubble
@@ -104,24 +105,27 @@ internal enum class HealthConnectPermissionAction {
 
 @Composable
 internal fun ThemeColorSwatch(themeColor: AppThemeColor, modifier: Modifier = Modifier) {
-    val background = if (themeColor.usesSystemPalette) {
-        Brush.sweepGradient(
-            listOf(
-                Color(0xFF6750A4),
-                Color(0xFF7D5260),
-                Color(0xFFB3261E),
-                Color(0xFF006E1C),
-                Color(0xFF0061A4),
-                Color(0xFF6750A4),
-            )
-        )
-    } else {
-        Brush.linearGradient(listOf(themeColor.primary, themeColor.primary))
-    }
     Box(
         modifier
             .clip(CircleShape)
-            .background(background),
+            .then(
+                if (themeColor.usesSystemPalette) {
+                    Modifier.background(
+                        Brush.sweepGradient(
+                            listOf(
+                                Color(0xFF6750A4),
+                                Color(0xFF7D5260),
+                                Color(0xFFB3261E),
+                                Color(0xFF006E1C),
+                                Color(0xFF0061A4),
+                                Color(0xFF6750A4),
+                            )
+                        )
+                    )
+                } else {
+                    Modifier.background(themeColor.primary)
+                }
+            ),
     )
 }
 
@@ -574,9 +578,8 @@ internal fun appearanceIcon(key: String): ImageVector = when (key) {
 }
 
 /**
- * Pink-gradient capsule "Save" button matching the iOS picker sheets
- * (`LinearGradient(colors: AppColors.calorieGradient)` over a 14dp rounded
- * rectangle, white semibold label).
+ * Flat primary save action. Delegates to [FudGlassPrimaryButton] (renamed in the
+ * chrome batch). Keeps the picker-sheet haptic and commits open magnitude drafts.
  */
 @Composable
 internal fun GradientSaveButton(
@@ -586,37 +589,25 @@ internal fun GradientSaveButton(
     icon: ImageVector? = null,
     onClick: () -> Unit
 ) {
-    val brush = Brush.linearGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd))
     val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
-    val shape = RoundedCornerShape(AppRadii.Field)
-    Box(
-        modifier
-            .fillMaxWidth()
-            .clip(shape)
-            .background(if (enabled) brush else Brush.linearGradient(listOf(AppColors.Calorie.copy(alpha = 0.4f), AppColors.Calorie.copy(alpha = 0.4f))))
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color.White.copy(alpha = 0.24f),
-                        Color.White.copy(alpha = 0.04f)
-                    )
-                )
-            )
-            .border(0.7.dp, Color.White.copy(alpha = 0.22f), shape)
-            .clickable(enabled = enabled, onClick = {
-                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
-                app.chompass.ui.components.MagnitudeDrafts.commitAll()
-                onClick()
-            })
-            .padding(vertical = 14.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            if (icon != null) {
-                Icon(icon, contentDescription = null, tint = AppColors.onCalorieGradient, modifier = Modifier.size(20.dp))
+    val label = text ?: stringResource(R.string.action_save)
+    FudGlassPrimaryButton(
+        text = label,
+        enabled = enabled,
+        modifier = modifier.fillMaxWidth(),
+        onClick = {
+            haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+            app.chompass.ui.components.MagnitudeDrafts.commitAll()
+            onClick()
+        },
+        content = if (icon == null) {
+            null
+        } else {
+            {
+                Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(8.dp))
+                Text(label, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
             }
-            Text(text ?: stringResource(R.string.action_save), color = AppColors.onCalorieGradient, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
-        }
-    }
+        },
+    )
 }

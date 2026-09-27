@@ -53,7 +53,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -514,9 +513,7 @@ internal fun BuildingPlanStep(vm: OnboardingViewModel, onComplete: () -> Unit) {
                     .fillMaxWidth(animatedProgress)
                     .clip(RoundedCornerShape(5.dp))
                     .background(
-                        Brush.horizontalGradient(
-                            listOf(AppColors.CalorieStart, AppColors.CalorieEnd)
-                        )
+                        MaterialTheme.colorScheme.primary
                     )
             )
         }
@@ -597,11 +594,7 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
                 "${EnergyFormat.quantity(profile.effectiveCalories, LocalEnergyUnit.current)}",
                 fontSize = 64.sp,
                 fontWeight = FontWeight.Bold,
-                style = LocalTextStyle.current.copy(
-                    brush = Brush.linearGradient(
-                        listOf(AppColors.CalorieStart, AppColors.CalorieEnd)
-                    )
-                )
+                color = MaterialTheme.colorScheme.primary,
             )
             Text(
                 stringResource(R.string.onboarding_plan_daily_calories),

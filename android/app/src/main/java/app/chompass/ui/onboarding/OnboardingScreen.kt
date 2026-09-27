@@ -34,8 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -206,16 +204,14 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                             .height(56.dp)
                             .clip(RoundedCornerShape(AppRadii.Field))
                             .background(
-                                Brush.horizontalGradient(
-                                    listOf(AppColors.CalorieStart, AppColors.CalorieEnd)
-                                )
+                                MaterialTheme.colorScheme.primary
                             )
                             .clickable { vm.next() },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             stringResource(R.string.action_get_started),
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -238,16 +234,14 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                         .height(54.dp)
                         .clip(RoundedCornerShape(AppRadii.Sheet))
                         .background(
-                            Brush.horizontalGradient(
-                                listOf(AppColors.CalorieStart, AppColors.CalorieEnd)
-                            )
+                            MaterialTheme.colorScheme.primary
                         )
                         .clickable { vm.complete(onComplete) },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         stringResource(R.string.action_get_started),
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )

@@ -35,8 +35,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -86,7 +84,7 @@ internal fun NotificationsStep(enabled: Boolean, onToggle: (Boolean) -> Unit) {
                 .height(52.dp)
                 .clip(RoundedCornerShape(AppRadii.Field))
                 .background(
-                    Brush.horizontalGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd))
+                    MaterialTheme.colorScheme.primary
                 )
                 .clickable {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -99,7 +97,7 @@ internal fun NotificationsStep(enabled: Boolean, onToggle: (Boolean) -> Unit) {
         ) {
             Text(
                 if (enabled) stringResource(R.string.onboarding_notifications_enabled) else stringResource(R.string.onboarding_notifications_allow),
-                color = AppColors.onCalorieGradient,
+                color = MaterialTheme.colorScheme.onPrimary,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
@@ -173,13 +171,8 @@ internal fun HealthConnectStep(container: AppContainer, enabled: Boolean, onTogg
                 .height(52.dp)
                 .clip(RoundedCornerShape(AppRadii.Field))
                 .background(
-                    if (available)
-                        Brush.horizontalGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd))
-                    else
-                        Brush.horizontalGradient(listOf(
-                            MaterialTheme.colorScheme.onBackground.copy(alpha = 0.15f),
-                            MaterialTheme.colorScheme.onBackground.copy(alpha = 0.15f)
-                        ))
+                    if (available) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.15f)
                 )
                 .clickable(enabled = available) {
                     hcLauncher.launch(container.health.permissions)
@@ -192,7 +185,7 @@ internal fun HealthConnectStep(container: AppContainer, enabled: Boolean, onTogg
                     enabled -> stringResource(R.string.onboarding_health_connected)
                     else -> stringResource(R.string.onboarding_health_connect)
                 },
-                color = Color.White,
+                color = if (available) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )

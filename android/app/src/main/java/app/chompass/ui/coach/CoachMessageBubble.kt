@@ -205,7 +205,7 @@ internal fun TypingIndicator() {
                     .scale(scale)
                     .alpha(alpha)
                     .clip(CircleShape)
-                    .background(AppColors.CalorieGradient)
+                    .background(MaterialTheme.colorScheme.primary)
             )
         }
     }

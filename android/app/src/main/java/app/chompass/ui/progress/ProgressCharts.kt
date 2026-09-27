@@ -1032,8 +1032,7 @@ internal fun CalorieBarChart(
     typeColorOf: (String) -> Color = { Color.Transparent },
 ) {
     val maxValue = dailyCalories.maxOf { it.second }.coerceAtLeast(goal).toDouble()
-    val gradientStart = AppColors.CalorieStart
-    val gradientEnd = AppColors.CalorieEnd
+    val barColor = AppColors.Calorie
     val overColor = MaterialTheme.colorScheme.error
     val overColorSoft = overColor.copy(alpha = 0.75f)
     val goalColor = AppColors.Calorie.copy(alpha = 0.4f)
@@ -1121,23 +1120,25 @@ internal fun CalorieBarChart(
                         val barH = ((cals / yTop).toFloat() * pxH)
                         val x = startX + i * (barWidth + gap)
                         val y = pxH - barH
-                        val brush = if (cals > (dailyGoals[day] ?: goal)) {
-                            Brush.verticalGradient(
-                                colors = listOf(overColorSoft, overColor),
-                                startY = y, endY = pxH
+                        val overGoal = cals > (dailyGoals[day] ?: goal)
+                        if (overGoal) {
+                            drawRoundRect(
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(overColorSoft, overColor),
+                                    startY = y, endY = pxH
+                                ),
+                                topLeft = Offset(x, y),
+                                size = Size(barWidth, barH),
+                                cornerRadius = CornerRadius(4f, 4f)
                             )
                         } else {
-                            Brush.verticalGradient(
-                                colors = listOf(gradientEnd, gradientStart),
-                                startY = y, endY = pxH
+                            drawRoundRect(
+                                color = barColor,
+                                topLeft = Offset(x, y),
+                                size = Size(barWidth, barH),
+                                cornerRadius = CornerRadius(4f, 4f)
                             )
                         }
-                        drawRoundRect(
-                            brush = brush,
-                            topLeft = Offset(x, y),
-                            size = Size(barWidth, barH),
-                            cornerRadius = CornerRadius(4f, 4f)
-                        )
                     }
                     inspectedBar?.takeIf { it < n }?.let { index ->
                         val cx = startX + index * (barWidth + gap) + barWidth / 2f

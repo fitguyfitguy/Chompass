@@ -489,13 +489,13 @@ internal fun CameraPairTransitionOverlay() {
                     modifier = Modifier
                         .size(58.dp)
                         .clip(CircleShape)
-                        .background(AppColors.CalorieGradient),
+                        .background(MaterialTheme.colorScheme.primary),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         Icons.Filled.AddAPhoto,
                         contentDescription = null,
-                        tint = AppColors.onCalorieGradient,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(30.dp)
                     )
                 }

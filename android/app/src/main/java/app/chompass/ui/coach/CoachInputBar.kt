@@ -41,7 +41,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.asImageBitmap
@@ -226,12 +225,7 @@ internal fun CoachMediaActions(
             .background(AppColors.Calorie.copy(alpha = 0.075f))
             .border(
                 0.6.dp,
-                Brush.linearGradient(
-                    listOf(
-                        Color.White.copy(alpha = 0.16f),
-                        AppColors.Calorie.copy(alpha = 0.12f)
-                    )
-                ),
+                AppColors.Calorie.copy(alpha = 0.22f),
                 shape
             )
             .padding(2.dp),

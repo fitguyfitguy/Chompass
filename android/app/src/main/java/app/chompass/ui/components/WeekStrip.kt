@@ -26,8 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -239,14 +237,8 @@ private fun DayTile(
                 .let {
                     if (isSelected) {
                         it
-                            .shadow(
-                                elevation = 6.dp,
-                                shape = CircleShape,
-                                ambientColor = AppColors.Calorie.copy(alpha = 0.35f),
-                                spotColor = AppColors.Calorie.copy(alpha = 0.35f)
-                            )
                             .clip(CircleShape)
-                            .background(Brush.linearGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd)))
+                            .background(MaterialTheme.colorScheme.primary)
                     } else if (isToday) {
                         it
                             .clip(CircleShape)
@@ -260,7 +252,7 @@ private fun DayTile(
                 fontSize = 17.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = when {
-                    isSelected -> AppColors.onCalorieGradient
+                    isSelected -> MaterialTheme.colorScheme.onPrimary
                     isToday -> AppColors.Calorie
                     else -> MaterialTheme.colorScheme.onSurface
                 },
