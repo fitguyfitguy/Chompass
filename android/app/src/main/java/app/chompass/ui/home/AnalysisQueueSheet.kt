@@ -55,7 +55,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -286,10 +285,7 @@ private fun QueueTabs(selected: QueueTab, onSelect: (QueueTab) -> Unit) {
                 Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(AppRadii.Chip))
-                    .background(
-                        if (isSel) Brush.linearGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd))
-                        else Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))
-                    )
+                    .background(if (isSel) MaterialTheme.colorScheme.primary else Color.Transparent)
                     .clickable { onSelect(t) }
                     .padding(vertical = 7.dp),
                 contentAlignment = Alignment.Center
@@ -299,7 +295,7 @@ private fun QueueTabs(selected: QueueTab, onSelect: (QueueTab) -> Unit) {
                         QueueTab.QUEUE -> stringResource(R.string.analysis_queue_tab_queue)
                         QueueTab.HISTORY -> stringResource(R.string.analysis_queue_tab_history)
                     },
-                    color = if (isSel) AppColors.onCalorieGradient else MaterialTheme.colorScheme.onSurface,
+                    color = if (isSel) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium
                 )

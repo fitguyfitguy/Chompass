@@ -8,7 +8,6 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.luminance
@@ -31,11 +30,11 @@ enum class AppThemeColor(
     INDIGO("indigo", R.string.theme_color_indigo, Color(0xFF4F378B)),
     NEUTRAL("neutral", R.string.theme_color_neutral, Color(0xFF5E5E62));
 
-    /** Accent gradient start — kept for rings/charts. */
+    /** Flat accent for non-Compose surfaces. Compose reads `colorScheme.primary`. */
     val start: Color
         get() = if (this == SYSTEM) TEAL.primary else primary
 
-    /** Accent gradient end — lighter blend of [primary]. */
+    /** Widget-gauge blend only. Compose surfaces do not read this. */
     val end: Color
         get() = if (this == SYSTEM) TEAL.end else lerp(primary, Color.White, 0.28f)
 
@@ -224,9 +223,7 @@ object AppColors {
     val CalorieStart: Color
         get() = primaryOverride ?: activeThemeColor.start
 
-    val CalorieEnd: Color
-        get() = primaryOverride?.let { lerp(it, Color.White, 0.28f) } ?: activeThemeColor.end
-
+    /** Flat accent. Mirrors [CalorieStart] and `colorScheme.primary`. */
     val Calorie: Color
         get() = CalorieStart
 
@@ -244,19 +241,6 @@ object AppColors {
 
     fun nutrientColor(nutrient: HomeTopNutrient): Color =
         activeThemeColor.macroPalette.colorFor(nutrient)
-
-    val CalorieGradient: Brush
-        get() = Brush.linearGradient(listOf(CalorieStart, CalorieEnd))
-
-    /**
-     * Foreground for text/icons drawn on [CalorieGradient]: pure white on dark
-     * accents (the existing look), dark on light ones. Light wallpapers yield
-     * near-white Material You primaries (especially in dark mode, where the
-     * dynamic primary is tone 80), so white labels on the gradient would vanish
-     * (Codeberg #44).
-     */
-    val onCalorieGradient: Color
-        get() = if (CalorieEnd.luminance() > 0.5f) OnLight else Color.White
 
     // M3 neutral surfaces
     val AppBackgroundLight = Color(0xFFFEF7FF)

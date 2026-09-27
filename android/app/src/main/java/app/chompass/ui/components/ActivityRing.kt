@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -34,18 +33,7 @@ import kotlin.math.min
 import kotlin.math.sin
 
 /**
- * Verbatim port of ios/calorietracker/Views/ActivityRingView.swift.
- *
- * SwiftUI structure preserved:
- *   GeometryReader { geo in
- *       ZStack {
- *           Circle().stroke(track)                              // background track
- *           Circle().trim(0..animated).stroke(angularGradient)  // foreground arc
- *           if animated > 0.01 { glow dot at arc endpoint }     // endpoint dot
- *       }
- *   }
- *   .onAppear { spring(response: 1.2, damping: 0.75).delay(0.15) }
- *   .onChange(of: progress) { spring(response: 0.6, damping: 0.85) }
+ * Activity ring. Flat accent arc on a tinted track, endpoint dot at the sweep.
  */
 @Composable
 fun ActivityRing(
@@ -53,7 +41,7 @@ fun ActivityRing(
     modifier: Modifier = Modifier,
     size: Dp = 160.dp,
     strokeWidth: Dp = 14.dp,
-    gradientColors: List<Color> = listOf(AppColors.CalorieStart, AppColors.CalorieEnd),
+    color: Color = AppColors.Calorie,
     centerContent: @Composable () -> Unit = {}
 ) {
     val animated = remember { Animatable(0f) }
@@ -78,9 +66,7 @@ fun ActivityRing(
         )
     }
 
-    val firstColor = gradientColors.firstOrNull() ?: Color.Transparent
-    val lastColor = gradientColors.lastOrNull() ?: Color.White
-    val trackColor = firstColor.copy(alpha = 0.15f)
+    val trackColor = color.copy(alpha = 0.15f)
 
     Box(modifier = modifier.size(size).aspectRatio(1f), contentAlignment = Alignment.Center) {
         Canvas(modifier = Modifier.size(size)) {
@@ -107,14 +93,10 @@ fun ActivityRing(
                 style = stroke
             )
 
-            // Foreground arc with gradient
             val sweepDegrees = 360f * animated.value.coerceAtMost(1f)
             if (animated.value > 0f) {
                 drawArc(
-                    brush = Brush.sweepGradient(
-                        colors = gradientColors + firstColor, // matches `gradientColors + [first]`
-                        center = Offset(centerX, centerY)
-                    ),
+                    color = color,
                     startAngle = -90f,
                     sweepAngle = sweepDegrees,
                     useCenter = false,
@@ -123,25 +105,13 @@ fun ActivityRing(
                     style = stroke
                 )
             }
-
-            // Glow dot at arc endpoint — visible when animated > 0.01
             if (animated.value > 0.01f) {
-                // SwiftUI does .offset(y: -radius).rotationEffect(.degrees(360 * progress - 90))
-                // which places the dot at (-90 + 360*p) degrees on the circle.
                 val endAngleRad = Math.toRadians((sweepDegrees - 90f).toDouble())
                 val dotX = centerX + radius * cos(endAngleRad).toFloat()
                 val dotY = centerY + radius * sin(endAngleRad).toFloat()
-                val dotRadius = strokeWidth.toPx() / 2f
-
-                // .shadow(color: last.opacity(0.6), radius: 6) — soft glow
                 drawCircle(
-                    color = lastColor.copy(alpha = 0.6f),
-                    radius = dotRadius * 1.6f,
-                    center = Offset(dotX, dotY)
-                )
-                drawCircle(
-                    color = lastColor,
-                    radius = dotRadius,
+                    color = color,
+                    radius = strokeWidth.toPx() / 2f,
                     center = Offset(dotX, dotY)
                 )
             }

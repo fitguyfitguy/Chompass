@@ -70,17 +70,11 @@ internal fun WelcomeStep() {
             color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(Modifier.height(8.dp))
-        // Second line of the headline uses the pink gradient as a foreground
-        // brush — matches iOS .foregroundStyle(LinearGradient(...)).
         Text(
             stringResource(R.string.onboarding_welcome_line2),
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
-            style = LocalTextStyle.current.copy(
-                brush = androidx.compose.ui.graphics.Brush.horizontalGradient(
-                    listOf(AppColors.CalorieStart, AppColors.CalorieEnd)
-                )
-            )
+            color = MaterialTheme.colorScheme.primary,
         )
         Spacer(Modifier.height(20.dp))
         Text(

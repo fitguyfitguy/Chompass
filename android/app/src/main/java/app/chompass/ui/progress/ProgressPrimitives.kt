@@ -154,7 +154,7 @@ internal fun BodyMetricToggle(selected: BodyMetric, onSelect: (BodyMetric) -> Un
                     .weight(1f)
                     .clip(RoundedCornerShape(15.dp))
                     .then(
-                        if (isSelected) Modifier.background(AppColors.CalorieGradient)
+                        if (isSelected) Modifier.background(MaterialTheme.colorScheme.primary)
                         else Modifier.background(Color.Transparent)
                     )
                     .clickable { onSelect(metric) }
@@ -165,7 +165,7 @@ internal fun BodyMetricToggle(selected: BodyMetric, onSelect: (BodyMetric) -> Un
                     label,
                     fontSize = 14.sp,
                     fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
-                    color = if (isSelected) AppColors.onCalorieGradient else MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
                 )
             }
         }

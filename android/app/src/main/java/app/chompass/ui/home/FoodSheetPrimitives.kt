@@ -50,7 +50,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.SolidColor
@@ -241,7 +240,7 @@ internal fun SheetStickyPrimaryBar(
                 Modifier
                     .fillMaxWidth()
                     .clip(shape)
-                    .background(Brush.linearGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd)))
+                    .background(MaterialTheme.colorScheme.primary)
                     .alpha(if (primaryEnabled) 1f else 0.45f)
                     .clickable(enabled = primaryEnabled, onClick = {
                         MagnitudeDrafts.commitAll()
@@ -252,7 +251,7 @@ internal fun SheetStickyPrimaryBar(
             ) {
                 Text(
                     primaryLabel,
-                    color = AppColors.onCalorieGradient,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontSize = 17.sp,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -282,7 +281,7 @@ internal fun SheetToolbarPill(
     val pillContainer = (if (bold) {
         Modifier
             .clip(shape)
-            .background(Brush.linearGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd)))
+            .background(MaterialTheme.colorScheme.primary)
     } else {
         Modifier
             .clip(shape)
@@ -297,7 +296,7 @@ internal fun SheetToolbarPill(
     ) {
         Text(
             label,
-            color = if (bold) AppColors.onCalorieGradient else AppColors.Calorie,
+            color = if (bold) MaterialTheme.colorScheme.onPrimary else AppColors.Calorie,
             fontSize = if (compact) 15.sp else 16.sp,
             fontWeight = if (bold) FontWeight.SemiBold else FontWeight.Medium,
             maxLines = maxLines,

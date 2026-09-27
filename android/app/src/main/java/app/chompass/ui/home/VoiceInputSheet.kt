@@ -50,9 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -450,21 +448,14 @@ private fun MicButton(phase: VoicePhase, onToggle: () -> Unit) {
         animationSpec = tween(200),
         label = "micScale"
     )
-    val bgBrush = if (recording)
-        Brush.linearGradient(
-            listOf(
-                MaterialTheme.colorScheme.error,
-                lerp(MaterialTheme.colorScheme.error, Color.White, 0.25f),
-            )
-        )
-    else
-        Brush.linearGradient(listOf(AppColors.CalorieStart, AppColors.CalorieEnd))
+    val bg = if (recording) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+    val iconTint = if (recording) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onPrimary
     val interactionSource = remember { MutableInteractionSource() }
     Box(
         Modifier
             .size((80 * scale).dp)
             .clip(CircleShape)
-            .background(bgBrush)
+            .background(bg)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
@@ -475,7 +466,7 @@ private fun MicButton(phase: VoicePhase, onToggle: () -> Unit) {
         Icon(
             imageVector = if (recording) Icons.Filled.Mic else Icons.Filled.MicNone,
             contentDescription = if (recording) stringResource(R.string.voice_stop) else stringResource(R.string.voice_record),
-            tint = if (recording) Color.White else AppColors.onCalorieGradient,
+            tint = iconTint,
             modifier = Modifier.size(32.dp)
         )
     }
