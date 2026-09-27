@@ -104,6 +104,7 @@ internal fun StatBadge(label: String, value: String, modifier: Modifier = Modifi
             value,
             modifier = Modifier.fillMaxWidth(),
             fontSize = 15.sp,
+            fontFamily = app.chompass.ui.theme.AppFonts.Numerals,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

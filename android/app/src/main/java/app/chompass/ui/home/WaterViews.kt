@@ -127,6 +127,7 @@ fun WaterProgressRow(
             Text(
                 waterProgressLabel(current, goal, useMetric),
                 color = MaterialTheme.colorScheme.water,
+                fontFamily = app.chompass.ui.theme.AppFonts.Numerals,
                 fontSize = 12.sp,
             )
         }

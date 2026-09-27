@@ -22,3 +22,7 @@ Chompass launcher icons and splash logos are original artwork by fitguy, distinc
 The compass-needle silhouette is adapted from [Fork SVG](https://www.svgrepo.com/svg/203809/fork) on SVG Repo (`scripts/assets/fork_needle_svgrepo.svg`), dedicated to the public domain under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
 
 On Android API 26+, home-screen icons use adaptive XML (`mipmap-anydpi-v26`) with a full-bleed theme background, a safe-zone foreground logo, and a monochrome layer so the system icon-shape mask and Material You themed icons apply. PWA and store listing icons remain pre-shaped squircles.
+
+## Display numerals
+
+Home, progress, and water numerals use [Doto](https://github.com/oliverlalan/Doto) by Óliver Lalan (The Doto Project Authors), licensed under the [SIL Open Font License 1.1](https://openfontlicense.org). The variable file is `android/app/src/main/res/font/doto.ttf`, taken from [google/fonts `ofl/doto`](https://github.com/google/fonts/tree/main/ofl/doto) (`Doto[ROND,wght].ttf`). Numerals pin wght 700 and ROND 0. Body text does not use this font.

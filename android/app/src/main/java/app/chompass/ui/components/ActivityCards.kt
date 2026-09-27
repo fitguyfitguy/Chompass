@@ -65,6 +65,7 @@ fun StepsCard(
         Text(
             text = LocaleFormat.integer(steps),
             fontSize = 24.sp,
+            fontFamily = app.chompass.ui.theme.AppFonts.Numerals,
             fontWeight = FontWeight.Bold,
             color = accentColor
         )
@@ -98,6 +99,7 @@ fun ActiveCaloriesCard(
         Text(
             LocaleFormat.integer(EnergyFormat.quantity(activeCalories, LocalEnergyUnit.current)),
             fontSize = 20.sp,
+            fontFamily = app.chompass.ui.theme.AppFonts.Numerals,
             fontWeight = FontWeight.Bold,
             color = accentColor,
         )
