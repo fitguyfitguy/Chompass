@@ -25,6 +25,7 @@ import app.chompass.ui.settings.SettingsScreenPreviewContent
 import app.chompass.ui.settings.SettingRowStressPreviewContent
 import app.chompass.ui.settings.SettingRowAlignmentPreviewContent
 import app.chompass.ui.home.ResultSheetTipStripStressPreviewContent
+import app.chompass.ui.home.SwipeRevealScreenshotContent
 import app.chompass.ui.theme.AppThemeColor
 import app.chompass.ui.theme.ChompassTheme
 
@@ -457,5 +458,18 @@ fun ResultTipStripRuMaxFontScreenshot() {
     // labels must ellipsize, not squeeze the second button to zero width.
     ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = false, showNavBar = false) {
         ResultSheetTipStripStressPreviewContent()
+    }
+}
+
+@PreviewTest
+@Preview(name = "27-swipe-reveal-light", device = PHONE)
+@Composable
+fun SwipeRevealLightScreenshot() {
+    // Regression guard for the swipe-action reveal: the red/green panel must
+    // carry the row's rounded corner shape at the seam (no square corners
+    // against the rounded card edge). Covers delete + favorite on single-row,
+    // first-row, and last-row section shapes.
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = false, showNavBar = false) {
+        SwipeRevealScreenshotContent()
     }
 }

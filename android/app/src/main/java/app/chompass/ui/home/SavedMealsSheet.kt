@@ -708,7 +708,7 @@ private fun BoxScope.FavoriteUnfavoriteBackground(offsetPx: Float) {
                 .align(Alignment.CenterEnd)
                 .fillMaxHeight()
                 .width(revealWidthDp)
-                .background(AppColors.Calorie),
+                .background(AppColors.Calorie, RoundedCornerShape(AppRadii.Container)),
             contentAlignment = Alignment.Center
         ) {
             if (revealWidthPx > 24f) {

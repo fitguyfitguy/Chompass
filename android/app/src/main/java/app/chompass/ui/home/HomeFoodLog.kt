@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -430,7 +431,7 @@ internal fun SwipeableFoodRow(
         val favoriteTriggerPx = rowWidthPx * 0.30f
         val deleteTriggerPx = rowWidthPx * 0.55f
         Box(Modifier.fillMaxWidth()) {
-            SwipeBackground(offsetPx = offsetPx, isFavorite = isFavorite)
+            SwipeBackground(offsetPx = offsetPx, isFavorite = isFavorite, rowShape = rowShape)
             Box(
                 modifier = Modifier
                     .offset { IntOffset(offsetPx.roundToInt(), 0) }
@@ -490,7 +491,11 @@ internal fun SwipeableFoodRow(
 }
 
 @Composable
-private fun BoxScope.SwipeBackground(offsetPx: Float, isFavorite: Boolean) {
+private fun BoxScope.SwipeBackground(
+    offsetPx: Float,
+    isFavorite: Boolean,
+    rowShape: RoundedCornerShape,
+) {
     if (offsetPx == 0f) {
         Box(Modifier.matchParentSize())
         return
@@ -513,6 +518,26 @@ private fun BoxScope.SwipeBackground(offsetPx: Float, isFavorite: Boolean) {
     val widthPx = kotlin.math.abs(offsetPx)
     val widthDp = with(LocalDensity.current) { widthPx.toDp() }
     val alignment = if (offsetPx < 0f) Alignment.CenterEnd else Alignment.CenterStart
+    // Round the reveal's seam edge with the row's mirrored corner radii so the
+    // panel follows the card shape instead of showing square corners against
+    // its rounded edge; the far edge is already clipped by SectionCardWrapper.
+    val deleteRevealShape = remember(rowShape) {
+        RoundedCornerShape(
+            topStart = rowShape.topEnd,
+            topEnd = CornerSize(0.dp),
+            bottomEnd = CornerSize(0.dp),
+            bottomStart = rowShape.bottomEnd,
+        )
+    }
+    val favoriteRevealShape = remember(rowShape) {
+        RoundedCornerShape(
+            topStart = CornerSize(0.dp),
+            topEnd = rowShape.topStart,
+            bottomEnd = rowShape.bottomStart,
+            bottomStart = CornerSize(0.dp),
+        )
+    }
+    val revealShape = if (offsetPx < 0f) deleteRevealShape else favoriteRevealShape
 
     Box(Modifier.matchParentSize()) {
         Box(
@@ -520,7 +545,7 @@ private fun BoxScope.SwipeBackground(offsetPx: Float, isFavorite: Boolean) {
                 .align(alignment)
                 .fillMaxHeight()
                 .width(widthDp)
-                .background(bg),
+                .background(bg, revealShape),
             contentAlignment = Alignment.Center
         ) {
             if (widthPx > 24f) {
@@ -703,6 +728,54 @@ internal fun FoodRow(
                     FoodLogMacroChipView(chip, chip.valueFrom(entry))
                 }
             }
+        }
+    }
+}
+
+/** Static swipe-reveal layout for release screenshot previews (no gesture state). */
+@Composable
+internal fun SwipeRevealScreenshotContent() {
+    val entry = FoodEntry(
+        name = "Greek yogurt with berries",
+        calories = 280,
+        protein = 22.0,
+        carbs = 32.0,
+        fat = 6.0,
+        source = FoodSource.MANUAL,
+        emoji = "\uD83E\uDD63",
+    )
+    Column(
+        Modifier.fillMaxWidth().padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        // Single-row group: all four card corners rounded — delete reveal.
+        SwipeRevealRow(entry, offsetPx = -400f, isFavorite = false, isFirst = true, isLast = true)
+        // First row of a group (top corners rounded) — delete reveal.
+        SwipeRevealRow(entry, offsetPx = -320f, isFavorite = false, isFirst = true, isLast = false)
+        // Last row of a group (bottom corners rounded) — favorite reveal.
+        SwipeRevealRow(entry, offsetPx = 320f, isFavorite = false, isFirst = false, isLast = true)
+    }
+}
+
+/** Mirrors the SwipeableFoodRow structure (SectionCardWrapper clip + offset card). */
+@Composable
+private fun SwipeRevealRow(
+    entry: FoodEntry,
+    offsetPx: Float,
+    isFavorite: Boolean,
+    isFirst: Boolean,
+    isLast: Boolean,
+) {
+    val rowShape = sectionCardShape(isFirst, isLast)
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .clip(rowShape)
+    ) {
+        SwipeBackground(offsetPx = offsetPx, isFavorite = isFavorite, rowShape = rowShape)
+        Box(Modifier.offset { IntOffset(offsetPx.roundToInt(), 0) }) {
+            FoodRow(entry = entry, isFavorite = isFavorite, rowShape = rowShape)
         }
     }
 }
