@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Fixed
+
+- **Swipe colors follow the card's rounded corners** (Android): when you swipe a diary entry to delete or favorite it, the colored panel behind the card now curves with the card's corners instead of cutting them off with a straight edge. The unfavorite swipe in Saved Meals gets the same fix.
+
 ## [5.3.0] - 2026-09-25
 
 ### Added
