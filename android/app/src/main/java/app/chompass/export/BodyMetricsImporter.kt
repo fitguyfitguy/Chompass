@@ -62,14 +62,14 @@ object BodyMetricsImporter {
     ): BodyMetricsImportResult {
         val trimmed = text.trim()
         if (trimmed.isEmpty()) return BodyMetricsImportResult.EmptyPayload
-        if (trimmed.startsWith("{")) return parseNoFudJson(trimmed)
+        if (trimmed.startsWith("{")) return parseLegacyMetricsJson(trimmed)
 
         val lines = trimmed.lines().map { it.trimEnd('\r') }.filter { it.isNotBlank() }
         if (lines.isEmpty()) return BodyMetricsImportResult.EmptyPayload
         val header = csvParseLine(lines.first()).map { it.trim().lowercase() }
         return when {
             header == listOf("metric", "timestamp", "value", "unit") ->
-                parseNoFudCsv(lines.drop(1), zone)
+                parseLegacyMetricsCsv(lines.drop(1), zone)
             header.contains("datetime") && header.contains("weight") ->
                 parseOpenScaleCsv(header, lines.drop(1), zone)
             header.any { it.startsWith("date") } && header.any { it.contains("weight") } ->
@@ -107,7 +107,7 @@ object BodyMetricsImporter {
 
     // --- 1. Chompass JSON ---
 
-    private fun parseNoFudJson(text: String): BodyMetricsImportResult {
+    private fun parseLegacyMetricsJson(text: String): BodyMetricsImportResult {
         val root = try {
             parser.parseToJsonElement(text) as? JsonObject
                 ?: return BodyMetricsImportResult.UnsupportedFormat
@@ -168,7 +168,7 @@ object BodyMetricsImporter {
             // openScale/1.7 tolerance: singular/alias spellings
             .plus(mapOf("hip" to BodyMeasurement.Site.HIPS, "biceps" to BodyMeasurement.Site.UPPER_ARM))
 
-    private fun parseNoFudCsv(rows: List<String>, zone: ZoneId): BodyMetricsImportResult {
+    private fun parseLegacyMetricsCsv(rows: List<String>, zone: ZoneId): BodyMetricsImportResult {
         val weights = mutableListOf<WeightEntry>()
         val bodyFats = mutableListOf<BodyFatEntry>()
         // Site rows sharing a timestamp collapse into one snapshot, like the export wrote them.

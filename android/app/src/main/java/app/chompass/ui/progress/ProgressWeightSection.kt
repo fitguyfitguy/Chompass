@@ -39,8 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.WeightEntry
-import app.chompass.ui.components.FudGlassSurface
-import app.chompass.ui.components.FudIconBubble
+import app.chompass.ui.components.ChompassSurface
+import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.models.UnitFormat
@@ -199,7 +199,7 @@ private fun LegendSwatch(
 
 @Composable
 internal fun WeightHistoryLink(count: Int, onClick: () -> Unit) {
-    FudGlassSurface(
+    ChompassSurface(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
@@ -207,7 +207,7 @@ internal fun WeightHistoryLink(count: Int, onClick: () -> Unit) {
         padding = 14.dp
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            FudIconBubble(
+            ChompassIconBubble(
                 icon = Icons.AutoMirrored.Filled.ListAlt,
                 size = 28.dp,
                 iconSize = 16.dp
@@ -233,7 +233,7 @@ internal fun WeightHistoryLink(count: Int, onClick: () -> Unit) {
 
 @Composable
 internal fun BodyFatHistoryLink(count: Int, onClick: () -> Unit) {
-    FudGlassSurface(
+    ChompassSurface(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
@@ -241,7 +241,7 @@ internal fun BodyFatHistoryLink(count: Int, onClick: () -> Unit) {
         padding = 14.dp
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            FudIconBubble(
+            ChompassIconBubble(
                 icon = Icons.AutoMirrored.Filled.ListAlt,
                 size = 28.dp,
                 iconSize = 16.dp

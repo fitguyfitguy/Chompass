@@ -32,7 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.chompass.R
-import app.chompass.ui.components.FudIconBubble
+import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.warning
@@ -167,7 +167,7 @@ internal fun SettingsHealthDataSection(
                         .padding(horizontal = 16.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    FudIconBubble(icon = Icons.Outlined.Share, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
+                    ChompassIconBubble(icon = Icons.Outlined.Share, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
                     Spacer(Modifier.width(14.dp))
                     Text(
                         stringResource(R.string.export_diary_title),
@@ -183,7 +183,7 @@ internal fun SettingsHealthDataSection(
                         .padding(horizontal = 16.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    FudIconBubble(icon = Icons.Outlined.MonitorWeight, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
+                    ChompassIconBubble(icon = Icons.Outlined.MonitorWeight, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
                     Spacer(Modifier.width(14.dp))
                     Text(
                         stringResource(R.string.export_body_metrics_title),
@@ -199,7 +199,7 @@ internal fun SettingsHealthDataSection(
                         .padding(horizontal = 16.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    FudIconBubble(icon = Icons.Outlined.Link, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
+                    ChompassIconBubble(icon = Icons.Outlined.Link, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
                     Spacer(Modifier.width(14.dp))
                     Text(
                         stringResource(R.string.import_diary_title),
@@ -215,7 +215,7 @@ internal fun SettingsHealthDataSection(
                         .padding(horizontal = 16.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    FudIconBubble(icon = Icons.Outlined.MonitorWeight, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
+                    ChompassIconBubble(icon = Icons.Outlined.MonitorWeight, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
                     Spacer(Modifier.width(14.dp))
                     Text(
                         stringResource(R.string.import_body_metrics_title),
@@ -232,7 +232,7 @@ internal fun SettingsHealthDataSection(
                         .padding(horizontal = 16.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    FudIconBubble(icon = Icons.Outlined.Sync, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
+                    ChompassIconBubble(icon = Icons.Outlined.Sync, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
                     Spacer(Modifier.width(14.dp))
                     Column(Modifier.weight(1f)) {
                         Text(
@@ -267,7 +267,7 @@ internal fun SettingsHealthDataSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val warning = MaterialTheme.colorScheme.warning
-                    FudIconBubble(icon = Icons.Outlined.DeleteSweep, size = 22.dp, iconSize = 14.dp, tint = warning)
+                    ChompassIconBubble(icon = Icons.Outlined.DeleteSweep, size = 22.dp, iconSize = 14.dp, tint = warning)
                     Spacer(Modifier.width(14.dp))
                     Text(
                         stringResource(R.string.settings_clear_food_log),
@@ -285,7 +285,7 @@ internal fun SettingsHealthDataSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val destructive = MaterialTheme.colorScheme.error
-                    FudIconBubble(icon = Icons.Outlined.DeleteForever, size = 22.dp, iconSize = 14.dp, tint = destructive)
+                    ChompassIconBubble(icon = Icons.Outlined.DeleteForever, size = 22.dp, iconSize = 14.dp, tint = destructive)
                     Spacer(Modifier.width(14.dp))
                     Text(
                         stringResource(R.string.settings_delete_all_data),

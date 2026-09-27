@@ -26,7 +26,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import app.chompass.R
-import app.chompass.ui.components.FudIconBubble
+import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.models.LocaleFormat
@@ -93,7 +93,7 @@ internal fun SettingsSyncSection(
                     .padding(vertical = 14.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                FudIconBubble(icon = Icons.Outlined.CloudSync, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
+                ChompassIconBubble(icon = Icons.Outlined.CloudSync, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
                 Spacer(Modifier.width(14.dp))
                 Text(
                     stringResource(R.string.settings_webdav_save),
@@ -122,7 +122,7 @@ internal fun SettingsSyncSection(
                 .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            FudIconBubble(icon = Icons.Outlined.Upload, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
+            ChompassIconBubble(icon = Icons.Outlined.Upload, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
             Spacer(Modifier.width(14.dp))
             Text(
                 stringResource(R.string.export_sync_title),
@@ -138,7 +138,7 @@ internal fun SettingsSyncSection(
                 .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            FudIconBubble(icon = Icons.Outlined.Download, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
+            ChompassIconBubble(icon = Icons.Outlined.Download, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
             Spacer(Modifier.width(14.dp))
             Text(
                 stringResource(R.string.import_sync_title),
@@ -154,7 +154,7 @@ internal fun SettingsSyncSection(
                 .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            FudIconBubble(icon = Icons.Outlined.Sync, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
+            ChompassIconBubble(icon = Icons.Outlined.Sync, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
             Spacer(Modifier.width(14.dp))
             Column {
                 Text(

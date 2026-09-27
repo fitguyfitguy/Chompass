@@ -66,7 +66,7 @@ import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.ServingUnitOption
-import app.chompass.ui.components.FudGlassSurface
+import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.rememberFoodThumbnail
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.energyText
@@ -182,7 +182,7 @@ internal fun SelectionActionBar(
     onCopy: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    FudGlassSurface(
+    ChompassSurface(
         modifier = modifier.fillMaxWidth(),
         cornerRadius = AppRadii.SectionCard,
         padding = 0.dp

@@ -40,7 +40,7 @@ import app.chompass.models.DietMode
 import app.chompass.models.KetoCarbMode
 import app.chompass.models.MacroPlanMode
 import app.chompass.models.WeightGoal
-import app.chompass.ui.components.FudIconBubble
+import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.components.gramsText
 import app.chompass.ui.components.energyText
 import app.chompass.ui.navigation.ChompassRoutes
@@ -226,7 +226,7 @@ internal fun SettingsGoalsSection(
                             .padding(horizontal = 16.dp, vertical = 14.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        FudIconBubble(icon = Icons.Outlined.Refresh, size = 22.dp, iconSize = 14.dp)
+                        ChompassIconBubble(icon = Icons.Outlined.Refresh, size = 22.dp, iconSize = 14.dp)
                         Spacer(Modifier.width(14.dp))
                         Text(
                             stringResource(R.string.settings_recalculate_goals),

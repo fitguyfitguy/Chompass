@@ -78,14 +78,14 @@ fun <T> OptionPickerSheet(
                 }
                 var custom by remember { mutableStateOf("") }
                 Spacer(Modifier.height(8.dp))
-                FudGlassTextField(
+                ChompassTextField(
                     value = custom,
                     onValueChange = { custom = it },
                     placeholder = customPlaceholder.orEmpty(),
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Spacer(Modifier.height(8.dp))
-                FudGlassPrimaryButton(
+                ChompassPrimaryButton(
                     text = stringResource(R.string.action_save),
                     onClick = { if (custom.isNotBlank()) onCustomSubmit(custom.trim()) },
                     modifier = Modifier.fillMaxWidth(),

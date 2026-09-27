@@ -39,10 +39,10 @@ import app.chompass.R
 import app.chompass.models.LocaleFormat
 import app.chompass.models.FoodEntry
 import app.chompass.ui.components.DateWheelPicker
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassDialogActions
-import app.chompass.ui.components.FudGlassPrimaryButton
-import app.chompass.ui.components.FudGlassSurface
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
+import app.chompass.ui.components.ChompassPrimaryButton
+import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.theme.AppColors
 import kotlinx.coroutines.Dispatchers
 import app.chompass.ui.theme.AppRadii
@@ -201,7 +201,7 @@ internal fun CopyFromDaySheet(
                 }
             } else {
                 item {
-                    FudGlassPrimaryButton(
+                    ChompassPrimaryButton(
                         text = pluralStringResource(R.plurals.copy_foods_to, sourceEntries.size, sourceEntries.size, targetText),
                         onClick = { if (!isSaving) onCopy(sourceEntries, targetDate) },
                         enabled = !isSaving,
@@ -216,7 +216,7 @@ internal fun CopyFromDaySheet(
                         MealSectionHeader(meal = group.meal)
                     }
                     item(key = "copy-meal-${group.id}") {
-                        FudGlassSurface(
+                        ChompassSurface(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp),
@@ -258,7 +258,7 @@ internal fun CopyFromDaySheet(
 
     if (showDatePicker) {
         var pickedDate by remember(sourceDate) { mutableStateOf(sourceDate) }
-        FudGlassDialog(onDismissRequest = { showDatePicker = false }) {
+        ChompassDialog(onDismissRequest = { showDatePicker = false }) {
             Text(stringResource(R.string.copy_from), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             DateWheelPicker(
                 selected = pickedDate,
@@ -267,7 +267,7 @@ internal fun CopyFromDaySheet(
                 maxYear = LocalDate.now().year,
                 modifier = Modifier.fillMaxWidth()
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_done),
                 onPrimary = {
                     sourceDate = pickedDate
@@ -281,7 +281,7 @@ internal fun CopyFromDaySheet(
 
     if (showTargetPicker) {
         var pickedTarget by remember(targetDate) { mutableStateOf(targetDate) }
-        FudGlassDialog(onDismissRequest = { showTargetPicker = false }) {
+        ChompassDialog(onDismissRequest = { showTargetPicker = false }) {
             Text(stringResource(R.string.copy_to), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             DateWheelPicker(
                 selected = pickedTarget,
@@ -290,7 +290,7 @@ internal fun CopyFromDaySheet(
                 maxYear = LocalDate.now().year,
                 modifier = Modifier.fillMaxWidth()
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_done),
                 onPrimary = {
                     targetDate = pickedTarget

@@ -63,8 +63,8 @@ import app.chompass.R
 import app.chompass.models.SpeechLanguage
 import app.chompass.models.SpeechProvider
 import app.chompass.services.decodeSampledBitmap
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.components.InAppCameraCaptureDialog
 import app.chompass.ui.components.gramsText
 import app.chompass.ui.components.energyText
@@ -290,7 +290,7 @@ fun CoachScreen(container: AppContainer) {
     }
 
     ui.pendingFood?.let { entry ->
-        FudGlassDialog(onDismissRequest = { vm.discardPending() }) {
+        ChompassDialog(onDismissRequest = { vm.discardPending() }) {
             Text(stringResource(R.string.coach_confirm_log_food_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Text(
                 stringResource(
@@ -303,7 +303,7 @@ fun CoachScreen(container: AppContainer) {
                 ),
                 style = MaterialTheme.typography.bodyMedium
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_log),
                 onPrimary = { vm.confirmPendingFood() },
                 dismissText = stringResource(R.string.action_cancel),
@@ -313,10 +313,10 @@ fun CoachScreen(container: AppContainer) {
     }
 
     ui.pendingWeight?.let { entry ->
-        FudGlassDialog(onDismissRequest = { vm.discardPending() }) {
+        ChompassDialog(onDismissRequest = { vm.discardPending() }) {
             Text(stringResource(R.string.coach_confirm_log_weight_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Text(stringResource(R.string.kg_value_format, entry.weightKg), style = MaterialTheme.typography.bodyMedium)
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_log),
                 onPrimary = { vm.confirmPendingWeight() },
                 dismissText = stringResource(R.string.action_cancel),
@@ -326,7 +326,7 @@ fun CoachScreen(container: AppContainer) {
     }
 
     ui.pendingWater?.let { entry ->
-        FudGlassDialog(onDismissRequest = { vm.discardPending() }) {
+        ChompassDialog(onDismissRequest = { vm.discardPending() }) {
             Text(stringResource(R.string.coach_confirm_log_water_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Text(
                 stringResource(
@@ -336,7 +336,7 @@ fun CoachScreen(container: AppContainer) {
                 ),
                 style = MaterialTheme.typography.bodyMedium
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_log),
                 onPrimary = { vm.confirmPendingWater() },
                 dismissText = stringResource(R.string.action_cancel),

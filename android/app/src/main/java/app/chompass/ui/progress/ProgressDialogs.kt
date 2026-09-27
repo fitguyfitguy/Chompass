@@ -24,10 +24,10 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.ui.components.DateWheelPicker
 import app.chompass.ui.components.DecimalWheelPicker
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassPrimaryButton
-import app.chompass.ui.components.FudGlassTextButton
-import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassPrimaryButton
+import app.chompass.ui.components.ChompassTextButton
+import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.MagnitudeDrafts
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.components.UnitToggle
@@ -53,7 +53,7 @@ internal fun AddWeightDialog(
     var pickedDate by remember { mutableStateOf(LocalDate.now()) }
     var hourText by remember { mutableStateOf(LocalTime.now().hour.toString().padStart(2, '0')) }
     var minuteText by remember { mutableStateOf(LocalTime.now().minute.toString().padStart(2, '0')) }
-    FudGlassDialog(onDismissRequest = onDismiss, scrollable = true) {
+    ChompassDialog(onDismissRequest = onDismiss, scrollable = true) {
         Text(stringResource(R.string.progress_log_weight_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(10.dp))
         UnitToggle(stringResource(R.string.unit_kg), stringResource(R.string.unit_lbs), metric, { metric = it; onUnitChange(it) }, Modifier.fillMaxWidth())
@@ -104,14 +104,14 @@ internal fun AddWeightDialog(
                 modifier = Modifier.fillMaxWidth()
             )
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                FudGlassTextField(
+                ChompassTextField(
                     value = hourText,
                     onValueChange = { hourText = it.filter(Char::isDigit).take(2) },
                     placeholder = stringResource(R.string.placeholder_hour),
                     singleLine = true,
                     modifier = Modifier.weight(1f)
                 )
-                FudGlassTextField(
+                ChompassTextField(
                     value = minuteText,
                     onValueChange = { minuteText = it.filter(Char::isDigit).take(2) },
                     placeholder = stringResource(R.string.placeholder_minute),
@@ -121,13 +121,13 @@ internal fun AddWeightDialog(
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
-            FudGlassTextButton(
+            ChompassTextButton(
                 text = stringResource(R.string.action_cancel),
                 onClick = onDismiss,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
             Spacer(Modifier.width(8.dp))
-            FudGlassPrimaryButton(
+            ChompassPrimaryButton(
                 text = stringResource(R.string.action_save),
                 onClick = {
                     // Typed mode keeps the draft until Done / flip-to-wheel; Save must flush it
@@ -159,7 +159,7 @@ internal fun AddBodyFatDialog(
     var pickedDate by remember { mutableStateOf(LocalDate.now()) }
     var hourText by remember { mutableStateOf(LocalTime.now().hour.toString().padStart(2, '0')) }
     var minuteText by remember { mutableStateOf(LocalTime.now().minute.toString().padStart(2, '0')) }
-    FudGlassDialog(onDismissRequest = onDismiss, scrollable = true) {
+    ChompassDialog(onDismissRequest = onDismiss, scrollable = true) {
         Text(stringResource(R.string.progress_log_body_fat_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
         DecimalWheelPicker(
             value = pct.coerceIn(3.0, 60.0),
@@ -198,14 +198,14 @@ internal fun AddBodyFatDialog(
                 modifier = Modifier.fillMaxWidth()
             )
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                FudGlassTextField(
+                ChompassTextField(
                     value = hourText,
                     onValueChange = { hourText = it.filter(Char::isDigit).take(2) },
                     placeholder = stringResource(R.string.placeholder_hour),
                     singleLine = true,
                     modifier = Modifier.weight(1f)
                 )
-                FudGlassTextField(
+                ChompassTextField(
                     value = minuteText,
                     onValueChange = { minuteText = it.filter(Char::isDigit).take(2) },
                     placeholder = stringResource(R.string.placeholder_minute),
@@ -215,13 +215,13 @@ internal fun AddBodyFatDialog(
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
-            FudGlassTextButton(
+            ChompassTextButton(
                 text = stringResource(R.string.action_cancel),
                 onClick = onDismiss,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
             Spacer(Modifier.width(8.dp))
-            FudGlassPrimaryButton(
+            ChompassPrimaryButton(
                 text = stringResource(R.string.action_save),
                 onClick = {
                     MagnitudeDrafts.commitAll()

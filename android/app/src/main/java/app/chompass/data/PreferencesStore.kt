@@ -400,8 +400,6 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setAllowInsecureHttp(v: Boolean) = setAllowInsecureHttpImpl(v)
     val appThemeColor: Flow<String> get() = appThemeColorImpl
     suspend fun setAppThemeColor(v: String) = setAppThemeColorImpl(v)
-    val glassBlurEnabled: Flow<Boolean> get() = glassBlurEnabledImpl
-    suspend fun setGlassBlurEnabled(v: Boolean) = setGlassBlurEnabledImpl(v)
     val fixedLauncherIcon: Flow<Boolean> get() = fixedLauncherIconImpl
     suspend fun setFixedLauncherIcon(v: Boolean) = setFixedLauncherIconImpl(v)
     val useSystemDateTimePickers: Flow<Boolean> get() = useSystemDateTimePickersImpl

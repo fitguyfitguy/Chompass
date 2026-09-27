@@ -1,5 +1,6 @@
 package app.chompass.ui.settings
 
+import app.chompass.ui.components.ChompassPrimaryButton
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.layout.Column
@@ -51,8 +52,8 @@ import app.chompass.models.LocaleFormat
 import app.chompass.models.MealCatalog
 import app.chompass.models.MealDef
 import app.chompass.models.MealType
-import app.chompass.ui.components.FudGlassSurface
-import app.chompass.ui.components.FudGlassTextButton
+import app.chompass.ui.components.ChompassSurface
+import app.chompass.ui.components.ChompassTextButton
 import app.chompass.ui.components.TimeWheelPicker
 import app.chompass.ui.home.mealLabel
 import app.chompass.ui.util.formatMinutesOfDay
@@ -97,7 +98,7 @@ internal fun MealTimesSheet(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
         )
         Spacer(Modifier.height(16.dp))
-        FudGlassSurface(
+        ChompassSurface(
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = AppRadii.Container,
             padding = 0.dp,
@@ -135,7 +136,7 @@ internal fun MealTimesSheet(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
         )
         Spacer(Modifier.height(12.dp))
-        FudGlassTextButton(
+        ChompassTextButton(
             text = stringResource(R.string.settings_meals_add),
             onClick = {
                 if (catalog.meals.size < MealCatalog.MAX_MEALS) {
@@ -146,14 +147,14 @@ internal fun MealTimesSheet(
             color = AppColors.Calorie,
         )
         Spacer(Modifier.height(16.dp))
-        GradientSaveButton {
+        ChompassPrimaryButton(flushDrafts = true, onClick = {
             if (catalog.isValid) {
                 saveError = false
                 onSave(catalog)
             } else {
                 saveError = true
             }
-        }
+        })
         if (saveError) {
             Spacer(Modifier.height(8.dp))
             Text(
@@ -162,7 +163,7 @@ internal fun MealTimesSheet(
                 color = MaterialTheme.colorScheme.error,
             )
         }
-        FudGlassTextButton(
+        ChompassTextButton(
             text = stringResource(R.string.settings_restore_default_times),
             onClick = { catalog = MealCatalog.Default },
             modifier = Modifier.fillMaxWidth(),
@@ -185,11 +186,11 @@ internal fun MealTimesSheet(
             is24Hour = is24Hour,
         )
         Spacer(Modifier.height(16.dp))
-        GradientSaveButton {
+        ChompassPrimaryButton(flushDrafts = true, onClick = {
             catalog = catalog.withStart(selectedId, selectedMinutes)
             editingId = null
-        }
-        FudGlassTextButton(
+        })
+        ChompassTextButton(
             text = stringResource(R.string.action_cancel),
             onClick = { editingId = null },
             modifier = Modifier.fillMaxWidth(),

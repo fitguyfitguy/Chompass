@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.R
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppTextOpacity
 
@@ -143,13 +143,13 @@ fun GoalsSettingsScreen(
     }
 
     if (showThirdMacroLockAlert) {
-        FudGlassDialog(onDismissRequest = { showThirdMacroLockAlert = false }) {
+        ChompassDialog(onDismissRequest = { showThirdMacroLockAlert = false }) {
             Text(stringResource(R.string.settings_max_pinned_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_max_pinned_message),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { showThirdMacroLockAlert = false }
             )
@@ -157,13 +157,13 @@ fun GoalsSettingsScreen(
     }
 
     if (showRebalanceBlockedAlert) {
-        FudGlassDialog(onDismissRequest = { showRebalanceBlockedAlert = false }) {
+        ChompassDialog(onDismissRequest = { showRebalanceBlockedAlert = false }) {
             Text(stringResource(R.string.settings_rebalance_blocked_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_rebalance_blocked_message),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { showRebalanceBlockedAlert = false }
             )
@@ -171,13 +171,13 @@ fun GoalsSettingsScreen(
     }
 
     if (showHealthEnergyGoalsInfo) {
-        FudGlassDialog(onDismissRequest = { showHealthEnergyGoalsInfo = false }) {
+        ChompassDialog(onDismissRequest = { showHealthEnergyGoalsInfo = false }) {
             Text(stringResource(R.string.settings_energy_goals), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_energy_goals_info),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { showHealthEnergyGoalsInfo = false }
             )
@@ -185,13 +185,13 @@ fun GoalsSettingsScreen(
     }
 
     if (showAdaptiveGoalsInfo) {
-        FudGlassDialog(onDismissRequest = { showAdaptiveGoalsInfo = false }) {
+        ChompassDialog(onDismissRequest = { showAdaptiveGoalsInfo = false }) {
             Text(stringResource(R.string.settings_adaptive_goals), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_adaptive_goals_info),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { showAdaptiveGoalsInfo = false }
             )
@@ -201,13 +201,13 @@ fun GoalsSettingsScreen(
     val energyAlertTitle = ui.healthEnergyGoalAlertTitle
     val energyAlertMessage = ui.healthEnergyGoalAlertMessage
     if (energyAlertTitle != null && energyAlertMessage != null) {
-        FudGlassDialog(onDismissRequest = { vm.dismissHealthEnergyGoalAlert() }) {
+        ChompassDialog(onDismissRequest = { vm.dismissHealthEnergyGoalAlert() }) {
             Text(energyAlertTitle, fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 energyAlertMessage,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { vm.dismissHealthEnergyGoalAlert() }
             )
@@ -217,13 +217,13 @@ fun GoalsSettingsScreen(
     val adaptiveAlertTitle = ui.adaptiveGoalAlertTitle
     val adaptiveAlertMessage = ui.adaptiveGoalAlertMessage
     if (adaptiveAlertTitle != null && adaptiveAlertMessage != null) {
-        FudGlassDialog(onDismissRequest = { vm.dismissAdaptiveGoalAlert() }) {
+        ChompassDialog(onDismissRequest = { vm.dismissAdaptiveGoalAlert() }) {
             Text(adaptiveAlertTitle, fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(
                 adaptiveAlertMessage,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { vm.dismissAdaptiveGoalAlert() }
             )
@@ -235,10 +235,10 @@ fun GoalsSettingsScreen(
     }
 
     invalidGoalWeightMessage?.let { msg ->
-        FudGlassDialog(onDismissRequest = { invalidGoalWeightMessage = null }) {
+        ChompassDialog(onDismissRequest = { invalidGoalWeightMessage = null }) {
             Text(stringResource(R.string.settings_invalid_goal_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
-            FudGlassDialogActions(
+            ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { invalidGoalWeightMessage = null }
             )
@@ -248,7 +248,7 @@ fun GoalsSettingsScreen(
     permissionDeniedMessage?.let { msg ->
         val actionLabel = healthAvailabilityActionLabel
         val actionIntent = healthAvailabilityActionIntent
-        FudGlassDialog(
+        ChompassDialog(
             onDismissRequest = {
                 permissionDeniedMessage = null
                 healthAvailabilityActionLabel = null
@@ -258,7 +258,7 @@ fun GoalsSettingsScreen(
             Text(stringResource(R.string.settings_permission_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
             if (actionLabel != null && actionIntent != null) {
-                FudGlassDialogActions(
+                ChompassDialogActions(
                     primaryText = actionLabel,
                     onPrimary = {
                         runCatching { activityContext.startActivity(actionIntent) }
@@ -274,7 +274,7 @@ fun GoalsSettingsScreen(
                     },
                 )
             } else {
-                FudGlassDialogActions(
+                ChompassDialogActions(
                     primaryText = stringResource(R.string.action_ok),
                     onPrimary = {
                         permissionDeniedMessage = null

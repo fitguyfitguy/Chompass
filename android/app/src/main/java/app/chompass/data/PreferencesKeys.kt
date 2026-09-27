@@ -159,6 +159,7 @@ internal object Keys {
          *  no data is sent to any LLM provider and AI entry points are hidden. */
         val AI_FEATURES_ENABLED = booleanPreferencesKey("aiFeaturesEnabled")
         val APP_THEME_COLOR = stringPreferencesKey("appThemeColor")
+        /** Ignored. Former iOS frosted-glass toggle; stored values are left unread. */
         val GLASS_BLUR_ENABLED = booleanPreferencesKey("glassBlurEnabled")
         /** When ON the launcher icon stays the brand teal and never swaps activity aliases. */
         val FIXED_LAUNCHER_ICON = booleanPreferencesKey("fixedLauncherIcon")

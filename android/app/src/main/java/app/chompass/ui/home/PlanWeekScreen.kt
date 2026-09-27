@@ -45,8 +45,8 @@ import androidx.compose.material3.minimumInteractiveComponentSize
 import app.chompass.models.FoodEntry
 import app.chompass.models.LocaleFormat
 import app.chompass.services.grounding.FoodSuggestion
-import app.chompass.ui.components.FudGlassDialog
-import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.services.grounding.SuggestionKind
 import app.chompass.ui.components.energyText
 import app.chompass.ui.settings.SettingsSubScreen
@@ -440,7 +440,7 @@ private fun PlanWeekPickerDialog(
     onDismiss: () -> Unit,
 ) {
     val dateFmt = remember { LocaleFormat.shortDate() }
-    FudGlassDialog(onDismissRequest = onDismiss) {
+    ChompassDialog(onDismissRequest = onDismiss) {
         Text(
             stringResource(R.string.plan_week_add_meal) + " · " + day.format(dateFmt),
             fontSize = 18.sp,
@@ -485,7 +485,7 @@ private fun PlanWeekPickerDialog(
                 ) }
             }
         }
-        FudGlassDialogActions(
+        ChompassDialogActions(
             primaryText = stringResource(R.string.action_done),
             onPrimary = onDismiss,
         )

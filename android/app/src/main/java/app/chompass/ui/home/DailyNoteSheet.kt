@@ -1,10 +1,10 @@
 package app.chompass.ui.home
-import app.chompass.ui.settings.GradientSaveButton
 
+import app.chompass.ui.components.ChompassPrimaryButton
 import app.chompass.R
 import app.chompass.models.DailyNote
 import app.chompass.ui.components.ChompassBottomSheet
-import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.AppRadii
@@ -184,7 +184,7 @@ internal fun DailyNoteSheet(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 )
 
-                FudGlassTextField(
+                ChompassTextField(
                     value = text,
                     onValueChange = { if (it.length <= DailyNote.MAX_TEXT_LENGTH) text = it },
                     placeholder = stringResource(R.string.note_placeholder),
@@ -226,7 +226,7 @@ internal fun DailyNoteSheet(
                         Text(stringResource(R.string.action_clear))
                     }
                 }
-                GradientSaveButton(
+                ChompassPrimaryButton(flushDrafts = true, 
                     text = stringResource(R.string.action_save),
                     modifier = Modifier.weight(1f),
                     onClick = {

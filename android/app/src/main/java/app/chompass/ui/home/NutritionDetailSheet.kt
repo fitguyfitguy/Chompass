@@ -57,7 +57,7 @@ import app.chompass.models.ResolvedDayTargets
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.models.UserProfile
-import app.chompass.ui.components.FudGlassSurface
+import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
@@ -274,7 +274,7 @@ fun NutritionDetailSheet(
 
 @Composable
 private fun Card(content: @Composable () -> Unit) {
-    FudGlassSurface(
+    ChompassSurface(
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = 20.dp,
         padding = 0.dp

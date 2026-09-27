@@ -1,5 +1,6 @@
 package app.chompass.ui.home
 
+import app.chompass.ui.components.ChompassPrimaryButton
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.models.LocaleFormat
 import app.chompass.ui.components.ChompassBottomSheet
-import app.chompass.ui.settings.GradientSaveButton
 import java.time.LocalDate
 
 /** Mark the viewed diary day as not tracked (#106). */
@@ -93,7 +93,7 @@ fun UntrackedDaySheet(
                     )
                 }
                 Spacer(Modifier.height(8.dp))
-                GradientSaveButton(
+                ChompassPrimaryButton(flushDrafts = true, 
                     text = stringResource(R.string.action_save),
                     onClick = {
                         val parsed = kcalText.toIntOrNull()

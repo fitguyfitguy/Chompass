@@ -68,7 +68,7 @@ import app.chompass.R
 import app.chompass.models.AIProvider
 import app.chompass.models.CalorieSafety
 import app.chompass.models.EnergyFormat
-import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.OptionPickerSheet
 import app.chompass.ui.components.energyText
@@ -252,7 +252,7 @@ internal fun ProviderStep(
                 )
                 if (provider.requiresApiKey) {
                     HorizontalDivider(Modifier.padding(horizontal = 14.dp))
-                    FudGlassTextField(
+                    ChompassTextField(
                         value = apiKey,
                         onValueChange = onKeyChange,
                         singleLine = true,

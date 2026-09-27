@@ -2,7 +2,7 @@ package app.chompass.ui
 
 import android.app.Application
 import app.chompass.models.ActivityLevel
-import app.chompass.ui.components.FudGlassDialogActions
+import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.home.MealSectionHeader
 import app.chompass.ui.settings.ActivityLevelSettingRow
 import app.chompass.ui.home.EntryAnalysisTipStrip
@@ -303,7 +303,7 @@ class OverflowGateTest {
         composeRule.setContent {
             MaterialTheme {
                 DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(2f)) {
-                    FudGlassDialogActions(
+                    ChompassDialogActions(
                         primaryText = "Erneut analysieren",
                         dismissText = "Abbrechen",
                         onPrimary = {},

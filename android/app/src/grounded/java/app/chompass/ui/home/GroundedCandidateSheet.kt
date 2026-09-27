@@ -38,7 +38,7 @@ import app.chompass.R
 import app.chompass.models.GroundingCandidate
 import app.chompass.models.NutrientSourceKind
 import app.chompass.services.grounding.GroundedFoodEntryService
-import app.chompass.ui.components.FudGlassPrimaryButton
+import app.chompass.ui.components.ChompassPrimaryButton
 import app.chompass.ui.theme.AppColors
 import kotlin.math.roundToInt
 
@@ -117,10 +117,10 @@ fun GroundedCandidateSheet(
                 Spacer(Modifier.height(14.dp))
             }
 
-            FudGlassPrimaryButton(
+            ChompassPrimaryButton(
                 text = stringResource(R.string.grounded_review_continue),
                 onClick = {
-                    if (busy) return@FudGlassPrimaryButton
+                    if (busy) return@ChompassPrimaryButton
                     submitted = true
                     val grams = gramTexts.mapNotNull { (idx, text) ->
                         text.toDoubleOrNull()?.takeIf { it > 0 }?.let { idx to it }

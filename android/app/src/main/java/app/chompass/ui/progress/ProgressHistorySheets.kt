@@ -33,7 +33,7 @@ import app.chompass.R
 import app.chompass.models.LocaleFormat
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.WeightEntry
-import app.chompass.ui.components.FudGlassSurface
+import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
@@ -60,7 +60,7 @@ internal fun AllWeightHistorySheet(
                 TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done), color = AppColors.Calorie) }
             }
             Spacer(Modifier.height(12.dp))
-            FudGlassSurface(
+            ChompassSurface(
                 modifier = Modifier.fillMaxWidth(),
                 cornerRadius = AppRadii.SectionCard,
                 padding = 0.dp
@@ -121,7 +121,7 @@ internal fun AllBodyFatHistorySheet(
                 TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done), color = AppColors.Calorie) }
             }
             Spacer(Modifier.height(12.dp))
-            FudGlassSurface(
+            ChompassSurface(
                 modifier = Modifier.fillMaxWidth(),
                 cornerRadius = AppRadii.SectionCard,
                 padding = 0.dp

@@ -1,6 +1,6 @@
 package app.chompass.ui.home
-import app.chompass.ui.settings.GradientSaveButton
 
+import app.chompass.ui.components.ChompassPrimaryButton
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -63,7 +63,7 @@ import app.chompass.models.SpeechProvider
 import app.chompass.services.speech.AudioRecorder
 import app.chompass.services.speech.NativeSpeechRecognizer
 import app.chompass.services.speech.SttEvent
-import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.AppRadii
@@ -320,7 +320,7 @@ fun VoiceInputSheet(
                     transcript.isNotEmpty() -> {
                         // Editable in REVIEW phase, read-only otherwise (live partial).
                         if (phase == VoicePhase.REVIEWING) {
-                            FudGlassTextField(
+                            ChompassTextField(
                                 value = transcript,
                                 onValueChange = { transcript = it },
                                 placeholder = "",
@@ -396,11 +396,11 @@ fun VoiceInputSheet(
             // stop+transcribe, then Analyze on the reviewed transcript).
             val canAnalyze = transcript.trim().isNotEmpty() && phase != VoicePhase.TRANSCRIBING && !busy
             Spacer(Modifier.height(20.dp))
-            GradientSaveButton(
+            ChompassPrimaryButton(flushDrafts = true, 
                 text = stringResource(R.string.action_analyze),
                 enabled = canAnalyze,
                 onClick = {
-                    if (busy) return@GradientSaveButton
+                    if (busy) return@ChompassPrimaryButton
                     if (provider == SpeechProvider.NATIVE && phase == VoicePhase.RECORDING) {
                         nativeJob?.cancel()
                         phase = VoicePhase.REVIEWING

@@ -1,5 +1,6 @@
 package app.chompass.ui.settings
 
+import app.chompass.ui.components.ChompassPrimaryButton
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -48,7 +49,7 @@ import app.chompass.models.builtinCaffeineDefaultMg
 import app.chompass.models.MilkKind
 import app.chompass.models.caffeineKindLabelRes
 import app.chompass.ui.components.ChompassPinnedFooterSheet
-import app.chompass.ui.components.FudGlassTextField
+import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.home.SheetReviewToolbar
@@ -289,7 +290,7 @@ internal fun CaffeinePresetEditorSheet(
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp,
                     )
-                    FudGlassTextField(
+                    ChompassTextField(
                         value = name,
                         onValueChange = { name = it.take(HabitPresetCatalog.MAX_LABEL) },
                         placeholder = stringResource(R.string.settings_tracker_preset_name),
@@ -320,7 +321,7 @@ internal fun CaffeinePresetEditorSheet(
             }
         },
         footer = {
-            GradientSaveButton(
+            ChompassPrimaryButton(flushDrafts = true, 
                 text = stringResource(if (isAdd) R.string.settings_caffeine_preset_add else R.string.action_save),
                 enabled = (isAdd && name.isNotBlank()) || !isAdd,
                 modifier = Modifier
@@ -398,7 +399,7 @@ internal fun NicotinePresetEditorSheet(
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp,
                     )
-                    FudGlassTextField(
+                    ChompassTextField(
                         value = name,
                         onValueChange = { name = it.take(HabitPresetCatalog.MAX_LABEL) },
                         placeholder = stringResource(R.string.settings_tracker_preset_name),
@@ -435,7 +436,7 @@ internal fun NicotinePresetEditorSheet(
             }
         },
         footer = {
-            GradientSaveButton(
+            ChompassPrimaryButton(flushDrafts = true, 
                 text = stringResource(if (isAdd) R.string.settings_nicotine_preset_add else R.string.action_save),
                 enabled = (isAdd && name.isNotBlank()) || !isAdd,
                 modifier = Modifier
