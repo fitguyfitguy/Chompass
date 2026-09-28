@@ -35,6 +35,28 @@ test("geminiContent_emitsOnePartPerImage", () => {
   assert.equal(mapped.parts[2].text, "estimate");
 });
 
+// Codeberg #115: gemini-3 thoughtSignature must survive the normalized
+// assistant tool-call turn and be re-emitted on the follow-up request.
+test("geminiContent_roundTripsThoughtSignatureOnToolCalls", () => {
+  const mapped = geminiContent({
+    role: "assistant",
+    text: "checking",
+    toolCalls: [{ id: "log_meal-0", name: "log_meal", input: { kcal: 500 }, thoughtSignature: "sig-abc" }],
+  });
+  assert.equal(mapped.role, "model");
+  assert.equal(mapped.parts.length, 2);
+  assert.equal(mapped.parts[1].functionCall.name, "log_meal");
+  assert.equal(mapped.parts[1].thoughtSignature, "sig-abc");
+});
+
+test("geminiContent_omitsThoughtSignatureWhenAbsent", () => {
+  const mapped = geminiContent({
+    role: "assistant",
+    toolCalls: [{ id: "log_meal-0", name: "log_meal", input: { kcal: 500 } }],
+  });
+  assert.equal(mapped.parts[0].thoughtSignature, undefined);
+});
+
 test("openAiMessages_emitsOneImageUrlPerImage", () => {
   const [mapped] = openAiMessages({ role: "user", text: "estimate", images: [imgA, imgB] });
   assert.equal(mapped.content.length, 3);
