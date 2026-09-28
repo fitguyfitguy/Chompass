@@ -23,6 +23,9 @@ val keystoreProps = Properties().apply {
 // into the DEBUG BuildConfig only and seeded into the encrypted KeyStore on
 // first launch so you don't have to re-enter it in Settings after every
 // reinstall. Release builds always get an empty string — never ship a key.
+// JEV_API_KEY rides the same debug-only slot (LLM-classifier experimentation):
+// baked into the DEBUG BuildConfig as BuildConfig.JEV_API_KEY, but NOT seeded
+// into the KeyStore (no AIProvider entry) — debug-only harnesses read it directly.
 // secrets.properties is preferred; local.properties works as a fallback, but
 // the Android tooling rewrites that file and can drop the line, so prefer the
 // dedicated file.
@@ -36,6 +39,7 @@ val secretsProps = Properties().apply {
 fun bcString(value: String): String =
     "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 val geminiDebugApiKey: String = (secretsProps.getProperty("GEMINI_API_KEY") ?: "").trim()
+val jevDebugApiKey: String = (secretsProps.getProperty("JEV_API_KEY") ?: "").trim()
 // Optional: -PreleaseAbi=arm64-v8a for a single-ABI release APK (local smoke test /
 // F-Droid). Uses ndk.abiFilters with ABI splits disabled so the artifact is the
 // plain app-*-release(-unsigned).apk name F-Droid discovers without `output:`.
@@ -107,6 +111,7 @@ android {
             signingConfigs.findByName("release")?.let { signingConfig = it }
             // Never bake an API key into a shippable build.
             buildConfigField("String", "GEMINI_API_KEY", bcString(""))
+            buildConfigField("String", "JEV_API_KEY", bcString(""))
         }
         debug {
             // Suffix the package + version so the debug build installs side-by-side
@@ -115,6 +120,7 @@ android {
             versionNameSuffix = "-debug"
             // Seeded into the encrypted KeyStore on first launch (see ChompassApp).
             buildConfigField("String", "GEMINI_API_KEY", bcString(geminiDebugApiKey))
+            buildConfigField("String", "JEV_API_KEY", bcString(jevDebugApiKey))
         }
         create("debug2") {
             initWith(getByName("debug"))

@@ -10,6 +10,7 @@ build/
 local.properties
 android/keystore.properties
 android/secrets.properties
+android/secrets.properties.*
 android/app/build/
 android/build/
 *.iml
