@@ -17,6 +17,7 @@ import { escapeAttr } from "../ui/html.js";
  * @property {string} id
  * @property {string} name
  * @property {any} input
+ * @property {string} [thoughtSignature]   gemini-3 signed function call (must round-trip)
  */
 
 /**
@@ -201,7 +202,12 @@ export async function geminiSend(config, req) {
   const text = parts.filter((p) => p.text).map((p) => p.text).join("");
   const toolCalls = parts
     .filter((p) => p.functionCall)
-    .map((p, i) => ({ id: `${p.functionCall.name}-${i}`, name: p.functionCall.name, input: p.functionCall.args }));
+    .map((p, i) => ({
+      id: `${p.functionCall.name}-${i}`,
+      name: p.functionCall.name,
+      input: p.functionCall.args,
+      thoughtSignature: p.thoughtSignature,
+    }));
   return { text, toolCalls };
 }
 
@@ -258,7 +264,7 @@ export function geminiContent(m) {
     parts.push({ inline_data: { mime_type: img.mimeType, data: img.base64 } });
   }
   if (m.text) parts.push({ text: m.text });
-  if (m.toolCalls) for (const tc of m.toolCalls) parts.push({ functionCall: { name: tc.name, args: tc.input } });
+  if (m.toolCalls) for (const tc of m.toolCalls) parts.push({ functionCall: { name: tc.name, args: tc.input }, ...(tc.thoughtSignature ? { thoughtSignature: tc.thoughtSignature } : {}) });
   if (m.toolResults) for (const tr of m.toolResults) parts.push({ functionResponse: { name: tr.id.split("-")[0], response: tr.output } });
   return { role: m.role === "assistant" ? "model" : "user", parts };
 }
