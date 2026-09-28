@@ -21,5 +21,6 @@ keystore.properties
 *.jks
 *.keystore
 
-# Dev-only API keys (e.g. GEMINI_API_KEY) seeded into DEBUG builds. Never commit.
+# Dev-only API keys (e.g. GEMINI_API_KEY, JEV_API_KEY) seeded into DEBUG builds. Never commit.
 secrets.properties
+secrets.properties.*
