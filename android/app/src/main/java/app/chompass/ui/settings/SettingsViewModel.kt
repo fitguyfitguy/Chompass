@@ -2071,9 +2071,12 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
 
     fun deleteAllData(onComplete: () -> Unit = {}) {
         viewModelScope.launch {
+            container.notifications.cancelRemindersForDataWipe()
+            val tombs = container.syncRepository.tombstonesForWipe()
             container.prefs.clearAll()
             container.keyStore.clearAll()
             container.imageStore.clearAll()
+            if (tombs.isNotEmpty()) container.prefs.setSyncRevisions(tombs)
             onComplete()
         }
     }

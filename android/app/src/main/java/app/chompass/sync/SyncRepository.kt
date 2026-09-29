@@ -236,6 +236,26 @@ class SyncRepository(
         if (changed) prefs.setSyncRevisions(revisions)
     }
 
+    /** Tombstones every live sync row so a later sync of the same file cannot restore a wipe. */
+    suspend fun tombstonesForWipe(now: Instant = Instant.now()): Map<String, SyncRevision> {
+        val rows = mutableListOf<Pair<UUID, String>>()
+        prefs.foodEntries.first().forEach { rows += it.id to "food" }
+        prefs.favoriteFoodEntries.first().forEach { rows += it.id to "favorite" }
+        prefs.weightEntries.first().forEach { rows += it.id to "weight" }
+        prefs.bodyFatEntries.first().forEach { rows += it.id to "bodyfat" }
+        prefs.bodyMeasurements.first().forEach { rows += it.id to "measure" }
+        prefs.waterEntries.first().forEach { rows += it.id to "water" }
+        prefs.noteEntries.first().forEach { rows += it.id to "daily_note" }
+        prefs.nicotineEntries.first().forEach { rows += it.id to "nicotine" }
+        prefs.caffeineEntries.first().forEach { rows += it.id to "caffeine" }
+        prefs.recipes.first().forEach { rows += it.id to "recipe" }
+        prefs.goalJournal.first().forEach { entry ->
+            val date = GoalJournal.parseDateOrNull(entry.date) ?: return@forEach
+            rows += GoalJournal.idFor(date) to "goal_journal"
+        }
+        return wipeTombstones(rows, now.toString())
+    }
+
     private suspend fun applyMergedDocument(
         jsonText: String,
         zone: ZoneId,
@@ -410,4 +430,13 @@ internal fun reattachLocalFields(entry: FoodEntry, local: Map<UUID, FoodEntry>):
         imageFilename = entry.imageFilename ?: localEntry.imageFilename,
         emoji = entry.emoji ?: localEntry.emoji,
     )
+}
+
+/** Last write wins on duplicate ids. */
+internal fun wipeTombstones(rows: List<Pair<UUID, String>>, now: String): Map<String, SyncRevision> {
+    val out = LinkedHashMap<String, SyncRevision>()
+    for ((id, kind) in rows) {
+        out[id.toString()] = SyncRevision(updatedAt = now, deletedAt = now, kind = kind)
+    }
+    return out
 }
