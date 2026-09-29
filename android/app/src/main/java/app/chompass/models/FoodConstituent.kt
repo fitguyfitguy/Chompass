@@ -54,7 +54,7 @@ data class FoodConstituent(
             ServingUnitOption.optionMatching(unitId, servingUnitOptions)
         }
         return copy(
-            calories = (calories * factor).toInt().coerceAtLeast(0),
+            calories = (calories * factor).roundToInt().coerceAtLeast(0),
             protein = protein * factor,
             carbs = carbs * factor,
             fat = fat * factor,
