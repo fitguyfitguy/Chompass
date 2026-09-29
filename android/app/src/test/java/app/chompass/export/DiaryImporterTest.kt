@@ -3,6 +3,7 @@ package app.chompass.export
 import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
+import app.chompass.models.MealDef
 import app.chompass.models.MealType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -296,4 +297,103 @@ class DiaryImporterTest {
         assertEquals(null, row.caffeine)
         assertEquals(null, row.addedSugar)
     }
+
+    @Test
+    fun keepsDayNoteOnMealDay() {
+        val result = DiaryImporter.parse(dayJson(note = "\"kept\"", meals = oneMeal()), zone)
+        assertTrue(result is DiaryImportResult.Success)
+        val success = result as DiaryImportResult.Success
+        assertEquals("kept", success.notesByDay[LocalDate.of(2026, 4, 27)])
+    }
+
+    @Test
+    fun noteOnlyDayIsSuccessNotEmpty() {
+        val result = DiaryImporter.parse(dayJson(note = "\"kept\"", meals = "[]"), zone)
+        assertTrue(result is DiaryImportResult.Success)
+        val success = result as DiaryImportResult.Success
+        assertTrue(success.entries.isEmpty())
+        assertEquals("kept", success.notesByDay[LocalDate.of(2026, 4, 27)])
+    }
+
+    @Test
+    fun untrackedOnlyDayIsSuccessNotEmpty() {
+        val result = DiaryImporter.parse(
+            dayJson(note = "null", meals = "[]", extra = """, "untracked": true, "untracked_kcal": 2100"""),
+            zone,
+        )
+        assertTrue(result is DiaryImportResult.Success)
+        val success = result as DiaryImportResult.Success
+        val date = LocalDate.of(2026, 4, 27)
+        assertTrue(date in success.untrackedDates)
+        assertEquals(2100, success.untrackedKcalByDay[date])
+    }
+
+    @Test
+    fun emptyMealsWithoutNoteOrUntrackedIsEmptyPayload() {
+        val result = DiaryImporter.parse(dayJson(note = "null", meals = "[]"), zone)
+        assertTrue(result is DiaryImportResult.EmptyPayload)
+    }
+
+    @Test
+    fun blankNoteIsNotStored() {
+        val result = DiaryImporter.parse(dayJson(note = "\"  \"", meals = oneMeal()), zone)
+        assertTrue(result is DiaryImportResult.Success)
+        val success = result as DiaryImportResult.Success
+        assertTrue(success.notesByDay.isEmpty())
+    }
+
+    @Test
+    fun mealCatalogKeepsBuiltinAndCustomIds() {
+        val catalog = """,
+              "meal_catalog": [
+                { "id": "c_ab12cd34", "label": "Comida" },
+                { "id": "lunch", "label": "Almuerzo" },
+                { "id": "nope", "label": "x" }
+              ]"""
+        val result = DiaryImporter.parse(dayJson(note = "null", meals = oneMeal(), catalog = catalog), zone)
+        assertTrue(result is DiaryImportResult.Success)
+        val imported = (result as DiaryImportResult.Success).mealCatalog
+        assertEquals(
+            listOf(
+                MealDef("c_ab12cd34", "Comida", startMinutes = null, enabled = true),
+                MealDef("lunch", "Almuerzo", startMinutes = null, enabled = true),
+            ),
+            imported,
+        )
+        assertTrue(imported.none { it.id == "nope" })
+    }
+
+    private fun oneMeal(): String = """
+        [{
+          "type": "breakfast",
+          "items": [{
+            "name": "Oats",
+            "calories": 100,
+            "protein_g": 10.0,
+            "carbs_g": 5.0,
+            "fat_g": 2.0,
+            "time": "08:00"
+          }]
+        }]
+    """.trimIndent()
+
+    private fun dayJson(
+        note: String,
+        meals: String,
+        extra: String = "",
+        catalog: String = "",
+    ): String = """
+        {
+          "export": {
+            "app": "Chompass",
+            "format_version": "1.6",
+            "date_range": { "start": "2026-04-27", "end": "2026-04-27" }$catalog
+          },
+          "days": [{
+            "date": "2026-04-27",
+            "note": $note,
+            "meals": $meals$extra
+          }]
+        }
+    """.trimIndent()
 }

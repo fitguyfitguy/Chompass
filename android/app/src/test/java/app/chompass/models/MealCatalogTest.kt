@@ -138,4 +138,29 @@ class MealCatalogTest {
         assertTrue(catalog.toLegacySchedule().isValid)
     }
 
+    @Test
+    fun unionImportedAddsCustomAndKeepsExistingLabel() {
+        val merged = MealCatalog.Default.unionImported(
+            listOf(
+                MealDef("c_ab12cd34", "Comida"),
+                MealDef(MealType.BREAKFAST.id, "Desayuno"),
+                MealDef("nope", "x"),
+            ),
+        )
+        assertTrue(merged.isValid)
+        assertEquals("Comida", merged.def("c_ab12cd34")?.label)
+        assertEquals("", merged.def(MealType.BREAKFAST.id)?.label)
+        assertEquals(null, merged.def("nope"))
+    }
+
+    @Test
+    fun unionImportedDoesNotGrowPastMaxMeals() {
+        val incoming = (1..4).map { MealDef("c_ab12cd3$it", "M$it") }
+        val merged = MealCatalog.Default.unionImported(incoming)
+        assertTrue(merged.isValid)
+        assertEquals(MealCatalog.MAX_MEALS, merged.meals.size)
+        assertEquals("M3", merged.def("c_ab12cd33")?.label)
+        assertEquals(null, merged.def("c_ab12cd34"))
+    }
+
 }

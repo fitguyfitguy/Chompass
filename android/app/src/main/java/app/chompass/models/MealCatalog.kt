@@ -137,6 +137,26 @@ data class MealCatalog(
         return copy(meals = next)
     }
 
+    /** Appends imported ids the local catalog does not already have. Local rows win. */
+    fun unionImported(incoming: List<MealDef>): MealCatalog {
+        val present = meals.mapTo(HashSet()) { it.id }
+        val next = meals.toMutableList()
+        for (row in incoming) {
+            if (row.id in present) continue
+            if (next.size >= MAX_MEALS) continue
+            val candidate = MealDef(
+                id = row.id,
+                label = row.label.trim().take(MAX_LABEL),
+                startMinutes = null,
+                enabled = true,
+            )
+            if (copy(meals = next + candidate).validate() != null) continue
+            next += candidate
+            present += row.id
+        }
+        return copy(meals = next)
+    }
+
     fun suggestedStartForNew(): Int {
         val timed = scheduleWindows().mapNotNull { it.startMinutes }.sorted()
         if (timed.isEmpty()) return MealSchedule.DEFAULT_LUNCH_START
