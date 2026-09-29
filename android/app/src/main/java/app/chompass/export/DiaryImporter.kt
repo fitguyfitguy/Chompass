@@ -16,6 +16,8 @@ import app.chompass.models.FoodEntry
 import app.chompass.models.FoodGroundingProvenance
 import app.chompass.models.FoodSource
 import app.chompass.models.GroundedComponentProvenance
+import app.chompass.models.MealCatalog
+import app.chompass.models.MealDef
 import app.chompass.models.MealType
 import app.chompass.models.NutrientSourceKind
 import app.chompass.models.ServingUnitOption
@@ -28,6 +30,8 @@ sealed class DiaryImportResult {
         val entries: List<FoodEntry>,
         val untrackedDates: Set<LocalDate> = emptySet(),
         val untrackedKcalByDay: Map<LocalDate, Int> = emptyMap(),
+        val notesByDay: Map<LocalDate, String> = emptyMap(),
+        val mealCatalog: List<MealDef> = emptyList(),
     ) : DiaryImportResult()
     object EmptyPayload : DiaryImportResult()
     data class UnsupportedFormat(val reason: String) : DiaryImportResult()
@@ -73,6 +77,8 @@ object DiaryImporter {
             )
         }
 
+        val mealCatalog = parseImportedMealCatalog(export["meal_catalog"]?.asArrayOrNull())
+
         val days = root["days"]?.asArrayOrNull()
             ?: return DiaryImportResult.UnsupportedFormat("missing days array")
         if (days.isEmpty()) return DiaryImportResult.EmptyPayload
@@ -80,11 +86,13 @@ object DiaryImporter {
         val collected = mutableListOf<FoodEntry>()
         val untrackedDates = mutableSetOf<LocalDate>()
         val untrackedKcal = mutableMapOf<LocalDate, Int>()
+        val notesByDay = mutableMapOf<LocalDate, String>()
         for (dayElement in days) {
             val day = dayElement.asObjectOrNull()
                 ?: return DiaryImportResult.Malformed("Invalid day object")
             val date = day["date"]?.asString()?.let { parseDate(it) }
                 ?: return DiaryImportResult.Malformed("Invalid day date")
+            day["note"]?.asString()?.trim()?.takeIf { it.isNotEmpty() }?.let { notesByDay[date] = it }
             if (day["untracked"]?.asBoolean() == true) {
                 untrackedDates += date
                 day["untracked_kcal"]?.asInt()?.takeIf { it >= 0 }?.let { untrackedKcal[date] = it }
@@ -149,13 +157,30 @@ object DiaryImporter {
                 }
             }
         }
-        if (collected.isEmpty()) return DiaryImportResult.EmptyPayload
-        if (collected.isEmpty() && untrackedDates.isEmpty()) return DiaryImportResult.EmptyPayload
+        if (collected.isEmpty() && untrackedDates.isEmpty() && notesByDay.isEmpty()) {
+            return DiaryImportResult.EmptyPayload
+        }
         return DiaryImportResult.Success(
             collected.sortedBy { it.timestamp },
             untrackedDates,
             untrackedKcal,
+            notesByDay,
+            mealCatalog,
         )
+    }
+
+    private fun parseImportedMealCatalog(arr: JsonArray?): List<MealDef> {
+        if (arr == null) return emptyList()
+        val out = mutableListOf<MealDef>()
+        for (element in arr) {
+            val row = element.asObjectOrNull() ?: continue
+            val id = row["id"]?.asString()?.trim().orEmpty()
+            if (id.isEmpty()) continue
+            if (MealType.fromId(id) == null && !MealCatalog.CUSTOM_ID_REGEX.matches(id)) continue
+            val label = row["label"]?.asString().orEmpty().trim().take(MealCatalog.MAX_LABEL)
+            out += MealDef(id, label, startMinutes = null, enabled = true)
+        }
+        return out
     }
 
     private fun parseDate(raw: String): LocalDate? =

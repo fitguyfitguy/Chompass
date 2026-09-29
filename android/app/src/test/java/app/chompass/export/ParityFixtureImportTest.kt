@@ -19,6 +19,14 @@ class ParityFixtureImportTest {
         val entries = success.entries
         assertTrue(java.time.LocalDate.of(2026, 4, 26) in success.untrackedDates)
         assertEquals(2100, success.untrackedKcalByDay[java.time.LocalDate.of(2026, 4, 26)])
+        assertEquals(
+            "First day back on plan; dinner portion was generous.",
+            success.notesByDay[java.time.LocalDate.of(2026, 4, 27)],
+        )
+        assertEquals(
+            "Rest day with the lower-carb target; nothing logged.",
+            success.notesByDay[java.time.LocalDate.of(2026, 4, 29)],
+        )
         assertTrue(entries.isNotEmpty())
         assertTrue(entries.all { it.name.isNotBlank() && it.calories >= 0 })
 

@@ -29,6 +29,7 @@ import app.chompass.export.DiaryImporter
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.navigation.ChompassRoutes
+import app.chompass.models.CurrentMealCatalog
 import app.chompass.models.LocaleFormat
 import app.chompass.ui.theme.AppTextOpacity
 import java.time.Instant
@@ -119,6 +120,12 @@ fun DataSettingsScreen(
                 }
                 when (val result = DiaryImporter.parse(text)) {
                     is DiaryImportResult.Success -> {
+                        val currentCatalog = container.prefs.mealCatalog.first()
+                        val merged = currentCatalog.unionImported(result.mealCatalog)
+                        if (merged != currentCatalog) {
+                            container.prefs.setMealCatalog(merged)
+                            CurrentMealCatalog.value = merged
+                        }
                         val imported = if (result.entries.isEmpty()) 0
                             else container.foodRepository.importEntries(result.entries)
                         if (result.untrackedDates.isNotEmpty()) {
@@ -129,7 +136,10 @@ fun DataSettingsScreen(
                             container.prefs.setUntrackedDays(existing)
                             container.prefs.setUntrackedKcalByDay(kcal)
                         }
-                        if (imported <= 0 && result.untrackedDates.isEmpty()) {
+                        for ((date, noteText) in result.notesByDay) {
+                            container.notesRepository.setNote(date, noteText)
+                        }
+                        if (imported <= 0 && result.untrackedDates.isEmpty() && result.notesByDay.isEmpty()) {
                             importDiaryMessage = activityContext.getString(R.string.import_diary_empty)
                             return@runCatching
                         }
