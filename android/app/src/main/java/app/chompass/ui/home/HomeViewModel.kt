@@ -2993,8 +2993,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             // images); single-photo-without-draft falls back to the in-memory
             // bytes captured at attempt start.
             val bytes = draft?.resolvedImageFilenames
-                ?.mapNotNull { filename ->
-                    runCatching { container.imageStore.file(filename).readBytes() }.getOrNull()
+                ?.let { filenames ->
+                    withContext(Dispatchers.IO) {
+                        filenames.mapNotNull { filename ->
+                            runCatching { container.imageStore.file(filename).readBytes() }.getOrNull()
+                        }
+                    }
                 }
                 ?.takeIf { it.isNotEmpty() }
                 ?: snapshot.pendingInputImageBytes?.let { listOf(it) }
@@ -3210,24 +3214,28 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
      * iOS RecentsView's `onReview` callback path.
      */
     fun reviewSavedMeal(template: FoodEntry) {
-        val analysis = template.toAnalysis()
-        val bytes = template.imageFilename?.let {
-            runCatching { container.imageStore.file(it).readBytes() }.getOrNull()
+        viewModelScope.launch {
+            val analysis = template.toAnalysis()
+            val bytes = template.imageFilename?.let {
+                withContext(Dispatchers.IO) {
+                    runCatching { container.imageStore.file(it).readBytes() }.getOrNull()
+                }
+            }
+            _ui.update { it.copy(
+                pendingAnalysis = analysis,
+                pendingImageBytes = bytes,
+                pendingAnalysisImages = listOfNotNull(bytes),
+                pendingFoodSource = template.source,
+                pendingDraftImageFilename = null,
+                pendingReviewSource = template,
+                pendingPortionPreConfirmed = false,
+                // A saved meal already is the source of record: nothing to offer,
+                // and any strip left over from a previous analysis is stale.
+                pendingIdentityName = template.name,
+                error = null,
+                errorNotFoundBarcode = null
+            ) }
         }
-        _ui.update { it.copy(
-            pendingAnalysis = analysis,
-            pendingImageBytes = bytes,
-            pendingAnalysisImages = listOfNotNull(bytes),
-            pendingFoodSource = template.source,
-            pendingDraftImageFilename = null,
-            pendingReviewSource = template,
-            pendingPortionPreConfirmed = false,
-            // A saved meal already is the source of record: nothing to offer,
-            // and any strip left over from a previous analysis is stale.
-            pendingIdentityName = template.name,
-            error = null,
-            errorNotFoundBarcode = null
-        ) }
     }
 
     fun deleteEntry(entry: FoodEntry) {
@@ -3570,11 +3578,13 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     private fun restorePendingDraft(draft: PendingFoodAnalysisDraft) {
-        val bytes = draft.imageFilename?.let {
-            runCatching { container.imageStore.file(it).readBytes() }.getOrNull()
-        }
         // Re-check collisions: the diary may have grown since the draft was saved.
         viewModelScope.launch {
+            val bytes = draft.imageFilename?.let {
+                withContext(Dispatchers.IO) {
+                    runCatching { container.imageStore.file(it).readBytes() }.getOrNull()
+                }
+            }
             // Restore the diary day the draft was opened for — a fresh ViewModel
             // starts on today, and the modal review sheet hides the day strip, so
             // without this the Log button would silently land on today (Codeberg
@@ -3677,8 +3687,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         // Re-target the diary day the input sheet was opened for (same rationale
         // as [restorePendingDraft]): the resumed Log must land on that day.
         _selectedDate.value = draft.targetDate
-        val bytes = draft.resolvedImageFilenames.mapNotNull { filename ->
-            runCatching { container.imageStore.file(filename).readBytes() }.getOrNull()
+        val bytes = withContext(Dispatchers.IO) {
+            draft.resolvedImageFilenames.mapNotNull { filename ->
+                runCatching { container.imageStore.file(filename).readBytes() }.getOrNull()
+            }
         }
         if (bytes.isEmpty()) {
             clearPendingInputDraft()
@@ -3964,7 +3976,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         onProgress: (FoodAnalysisProgress) -> Unit = {},
     ): FoodAnalysis {
         val imageBytes = entry.imageFilename?.let {
-            runCatching { container.imageStore.file(it).readBytes() }.getOrNull()
+            withContext(Dispatchers.IO) {
+                runCatching { container.imageStore.file(it).readBytes() }.getOrNull()
+            }
         }
         // Compose name + serving + note so a photo-less (text / voice / emoji) entry
         // keeps its food context instead of re-analyzing the bare note; a photo entry
