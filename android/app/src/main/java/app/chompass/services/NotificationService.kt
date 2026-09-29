@@ -353,6 +353,19 @@ class NotificationService(private val context: Context) {
 
     fun cancelFastingAutoEnd() = cancel(REQUEST_FASTING_AUTO_END)
 
+    /** Disarms user reminder alarms. Does not touch the silent widget midnight refresh. */
+    fun cancelRemindersForDataWipe() {
+        cancelStreakReminder()
+        cancelDailySummary()
+        cancelWeightReminder()
+        cancelBodyFatReminder()
+        cancelWaterReminder()
+        cancelFastingGoal()
+        cancelFastingStartReminder()
+        cancelFastingAutoStart()
+        cancelFastingAutoEnd()
+    }
+
     /**
      * Arms a silent daily alarm for just after midnight that rewrites the
      * widget snapshot to "today" (issue #16). The receiver re-arms the chain;

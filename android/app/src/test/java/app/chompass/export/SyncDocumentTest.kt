@@ -23,6 +23,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZoneOffset
+import java.util.UUID
 
 class SyncDocumentTest {
     @Test
@@ -601,5 +602,54 @@ class SyncDocumentTest {
         assertEquals(1, rows.size)
         assertEquals(2100, rows.single().jsonObject["calories"]!!.jsonPrimitive.content.toInt())
         assertEquals("manual_switch", rows.single().jsonObject["source"]!!.jsonPrimitive.content)
+    }
+
+    @Test
+    fun wipeTombstonesMarksIdDeleted() {
+        val id = UUID.fromString("11111111-1111-4111-8111-111111111111")
+        val tombs = app.chompass.sync.wipeTombstones(
+            listOf(id to "food"),
+            "2026-09-29T12:00:00Z",
+        )
+        val rev = tombs.getValue(id.toString())
+        assertEquals("2026-09-29T12:00:00Z", rev.deletedAt)
+        assertEquals("food", rev.kind)
+    }
+
+    @Test
+    fun wipeTombstoneWinsOverOlderRemoteFood() {
+        val id = UUID.fromString("11111111-1111-4111-8111-111111111111")
+        val tombs = app.chompass.sync.wipeTombstones(
+            listOf(id to "food"),
+            "2026-09-29T12:00:00Z",
+        )
+        val revisions = tombs.mapValues { (_, rev) ->
+            SyncDocument.Revision(
+                updatedAt = rev.updatedAt,
+                deletedAt = rev.deletedAt,
+                kind = rev.kind,
+            )
+        }
+        val localJson = SyncDocument.buildJson(
+            foodEntries = emptyList(),
+            favorites = emptyList(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            measurements = emptyList(),
+            water = emptyList(),
+            recipes = emptyList(),
+            revisions = revisions,
+            zone = ZoneOffset.UTC,
+        )
+        val remote = """
+            {"export":{"app":"Chompass","kind":"sync","format_version":"1.0"},
+             "food_entries":[{"id":"$id","updated_at":"2026-09-01T00:00:00Z","deleted_at":null,"name":"Oats","date":"2026-09-01","time":"08:00","meal_type":"breakfast","calories":300,"protein_g":10,"carbs_g":50,"fat_g":5}],
+             "favorites":[],"weights":[],"body_fat":[],"measurements":[],"water":[],"recipes":[],"profile":null,"prefs":null}
+        """.trimIndent()
+        val local = (SyncDocument.parse(localJson, ZoneOffset.UTC) as SyncDocument.ParseResult.Success).parsed.raw
+        val remoteRaw = (SyncDocument.parse(remote, ZoneOffset.UTC) as SyncDocument.ParseResult.Success).parsed.raw
+        val merged = SyncDocument.mergeRawDocuments(local, remoteRaw)
+        val parsed = (SyncDocument.parse(merged.toString(), ZoneOffset.UTC) as SyncDocument.ParseResult.Success).parsed
+        assertTrue(parsed.foodEntries.none { it.id == id.toString() && it.entry != null })
     }
 }
