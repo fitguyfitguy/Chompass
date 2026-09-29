@@ -42,6 +42,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -60,6 +61,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import app.chompass.R
 import app.chompass.models.ServingUnitOption
 import app.chompass.services.FoodPhotoSession
@@ -429,11 +432,14 @@ fun MultiPhotoCaptureSheet(
                     contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 20.dp),
                 ) {
                     itemsIndexed(imageBytesList, key = { index, bytes -> "$index-${bytes.size}" }) { index, bytes ->
-                        val bitmap = remember(bytes) { decodePreviewBitmap(bytes) }
+                        val bitmap by produceState<android.graphics.Bitmap?>(initialValue = null, bytes) {
+                            value = withContext(Dispatchers.IO) { decodePreviewBitmap(bytes) }
+                        }
                         Box {
-                            if (bitmap != null) {
+                            val preview = bitmap
+                            if (preview != null) {
                                 androidx.compose.foundation.Image(
-                                    bitmap = bitmap.asImageBitmap(),
+                                    bitmap = preview.asImageBitmap(),
                                     contentDescription = stringResource(R.string.meal_photo_cd, index + 1),
                                     contentScale = ContentScale.Fit,
                                     modifier = Modifier
