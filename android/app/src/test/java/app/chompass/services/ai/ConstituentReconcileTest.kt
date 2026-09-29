@@ -119,6 +119,19 @@ class ConstituentReconcileTest {
     }
 
     @Test
+    fun scaled_roundsHalfCalorieUp() {
+        val scaled = FoodConstituent(
+            "bit",
+            calories = 1,
+            protein = 0.0,
+            carbs = 0.0,
+            fat = 0.0,
+            servingSizeGrams = 10.0,
+        ).scaled(0.5)
+        assertEquals(1, scaled.calories)
+    }
+
+    @Test
     fun reconcile_scalesConstituentMicrosByGramsFactor() {
         val analysis = FoodAnalysis(
             name = "Breakfast",
