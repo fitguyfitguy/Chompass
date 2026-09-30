@@ -6,14 +6,19 @@ import okhttp3.Call
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
+import java.net.UnknownHostException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 /**
- * Retries transient overload (503/529) with 1s/2s/4s exponential backoff (same as iOS).
+ * Retries transient overload (503/529, same as iOS) and a DNS miss
+ * ([UnknownHostException], including as a cause) on the same 1s/2s/4s ladder.
+ * Other [IOException]s fail on the first attempt.
  * HTTP 429 is not retried — quota is exhausted and immediate retries only burn more
  * requests; callers may try a different fallback model instead.
- * On final failure, throws [AiError.Api] with a user-friendly message.
+ * On final HTTP failure, throws [AiError.Api] with a user-friendly message.
+ * A DNS miss that exhausts the ladder throws [AiError.Network] with the platform
+ * line unchanged.
  * The caller supplies a factory that builds a fresh [Call] per attempt
  * because OkHttp [Call] instances can only be executed once.
  */
@@ -29,6 +34,15 @@ object RetryPolicy {
 
     internal fun isRetryableHttpStatus(code: Int): Boolean =
         code == 503 || code == 529
+
+    internal fun isDnsMiss(error: IOException): Boolean {
+        var t: Throwable? = error
+        while (t != null) {
+            if (t is UnknownHostException) return true
+            t = t.cause
+        }
+        return false
+    }
 
     suspend fun execute(callFactory: () -> Call): String =
         executeText(callFactory).body
@@ -47,12 +61,18 @@ object RetryPolicy {
      * Like [execute], but returns the successful [Response] with its body stream
      * still open for SSE/chunked reading. Caller must close the response.
      */
-    suspend fun open(callFactory: () -> Call): Response {
+    suspend fun open(callFactory: () -> Call): Response = open(callFactory, delays)
+
+    internal suspend fun open(callFactory: () -> Call, retryDelaysMs: LongArray): Response {
         var lastMessage = "Request failed"
-        for (attempt in 0..delays.size) {
+        for (attempt in 0..retryDelaysMs.size) {
             val response = try {
                 callFactory().await()
             } catch (io: IOException) {
+                if (isDnsMiss(io) && attempt < retryDelaysMs.size) {
+                    delay(retryDelaysMs[attempt])
+                    continue
+                }
                 throw AiError.Network(io)
             }
 
@@ -70,8 +90,8 @@ object RetryPolicy {
             val raw = parseErrorMessage(bodyStr)?.takeIf { it.isNotEmpty() } ?: "HTTP $code"
             lastMessage = friendlyMessage(code, raw)
 
-            if (isRetryableHttpStatus(code) && attempt < delays.size) {
-                delay(delays[attempt])
+            if (isRetryableHttpStatus(code) && attempt < retryDelaysMs.size) {
+                delay(retryDelaysMs[attempt])
                 continue
             }
             throw AiError.Api(lastMessage, messageRes = friendlyMessageRes(code, raw), httpStatus = code)

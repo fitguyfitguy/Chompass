@@ -8,6 +8,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **A brief lookup failure retries the AI request** (Android): when the phone cannot look up the AI server for a moment, the request is tried again. If it still cannot connect, the same network error is shown.
 - **Swipe colors follow the card's rounded corners** (Android): when you swipe a diary entry to delete or favorite it, the colored panel behind the card now curves with the card's corners instead of cutting them off with a straight edge. The unfavorite swipe in Saved Meals gets the same fix.
 - **Barcode scans confirm the code before looking it up** (Android): a glare misread on a curved package could look up the wrong digits and report the product missing. The scanner now waits until it reads the same code twice. The not-found dialog shows the digits it queried, so a misread is visible. Closes Codeberg [#120](https://codeberg.org/fitguy/Chompass/issues/120) by [@quadcorei8085](https://codeberg.org/quadcorei8085).
 
