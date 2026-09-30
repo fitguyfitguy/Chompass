@@ -203,6 +203,8 @@ class ChatService(
                         OpenAICompatibleClient.reasoningBody(reasoningEffort, compactRetry)?.let { put("reasoning", it) }
                     } else if (OpenAICompatibleClient.usesFlatReasoningEffort(provider)) {
                         OpenAICompatibleClient.flatReasoningEffort(provider, reasoningEffort)?.let { put("reasoning_effort", it) }
+                    } else if (provider == AIProvider.OPENAI) {
+                        OpenAICompatibleClient.openAiToolReasoningEffort(model)?.let { put("reasoning_effort", it) }
                     }
                 }
                 val builder = Request.Builder()

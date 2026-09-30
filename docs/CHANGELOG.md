@@ -11,6 +11,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **A brief lookup failure retries the AI request** (Android): when the phone cannot look up the AI server for a moment, the request is tried again. If it still cannot connect, the same network error is shown.
 - **Swipe colors follow the card's rounded corners** (Android): when you swipe a diary entry to delete or favorite it, the colored panel behind the card now curves with the card's corners instead of cutting them off with a straight edge. The unfavorite swipe in Saved Meals gets the same fix.
 - **Barcode scans confirm the code before looking it up** (Android): a glare misread on a curved package could look up the wrong digits and report the product missing. The scanner now waits until it reads the same code twice. The not-found dialog shows the digits it queried, so a misread is visible. Closes Codeberg [#120](https://codeberg.org/fitguy/Chompass/issues/120) by [@quadcorei8085](https://codeberg.org/quadcorei8085).
+- **Coach reads your diary again on the newest OpenAI models** (Android + web): asking Coach about your logged food with GPT-5.6 or GPT-6 Sol or Luna came back without the diary, because those models refuse the app's lookups unless reasoning is switched off. Coach now switches it off for them, so answers use your real entries. Follows Codeberg pull request [#121](https://codeberg.org/fitguy/Chompass/pulls/121) by [@NuperSu](https://codeberg.org/NuperSu).
 
 ## [5.3.0] - 2026-09-25
 

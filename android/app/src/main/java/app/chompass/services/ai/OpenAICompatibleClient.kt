@@ -78,6 +78,24 @@ object OpenAICompatibleClient {
         return if (effort == OpenRouterReasoningEffort.AUTO) null else effort.requestValue
     }
 
+    /**
+     * Flat `reasoning_effort` value the official OpenAI chat endpoint needs for
+     * tool calls. Chat Completions accepts `function` tools on the GPT-5.4+ and
+     * GPT-6 ids only with reasoning off; the GPT-4.x ids are non-reasoning and
+     * take no field. Runtime-only lineup ids (e.g. `gpt-6-astra`, #107) reject
+     * `none` with HTTP 400 and cannot call tools on Chat Completions at all, so
+     * curated-list membership is the gate.
+     */
+    internal fun openAiToolReasoningEffort(model: String): String? =
+        if (
+            model in AIProvider.OPENAI.models &&
+            (model.startsWith("gpt-5") || model.startsWith("gpt-6"))
+        ) {
+            "none"
+        } else {
+            null
+        }
+
     /** Puts the provider's reasoning fields onto a chat/completions body (null effort = none). */
     private fun putReasoningFields(
         body: JSONObject,
