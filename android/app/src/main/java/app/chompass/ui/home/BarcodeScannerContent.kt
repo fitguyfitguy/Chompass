@@ -1,8 +1,14 @@
 package app.chompass.ui.home
 
+import android.os.SystemClock
+import android.util.Log
+import android.util.Size
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
@@ -39,14 +45,19 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnLayout
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicLong
 import app.chompass.R
 import app.chompass.services.BarcodeCodeNormalizer
 import app.chompass.ui.theme.AppColors
 import zxingcpp.BarcodeReader
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
+
+private const val FOCUS_SETTLE_DEADLINE_MS = 800L
+private val ANALYSIS_TARGET_SIZE = Size(1280, 720)
 
 @Composable
 internal fun BarcodeScannerContent(
@@ -62,6 +73,9 @@ internal fun BarcodeScannerContent(
     }
     val executor = remember { Executors.newSingleThreadExecutor() }
     val hasScanned = remember { AtomicBoolean(false) }
+    val scanLock = remember { BarcodeScanLock() }
+    val accepting = remember { AtomicBoolean(false) }
+    val focusDeadlineMs = remember { AtomicLong(Long.MAX_VALUE) }
     val reader = remember {
         BarcodeReader(
             BarcodeReader.Options().apply {
@@ -85,49 +99,87 @@ internal fun BarcodeScannerContent(
             val preview = Preview.Builder().build().also {
                 it.surfaceProvider = previewView.surfaceProvider
             }
-            val analysis = ImageAnalysis.Builder()
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .build()
-                .also { analyzer ->
-                    analyzer.setAnalyzer(executor) { imageProxy ->
-                        if (hasScanned.get()) {
-                            imageProxy.close()
-                            return@setAnalyzer
-                        }
-                        val value = runCatching {
-                            imageProxy.use { proxy ->
-                                val entries = reader.read(proxy)
-                                    .mapNotNull { result ->
-                                        result.text?.trim()?.takeIf(String::isNotEmpty)
-                                            ?.let { result.format to it }
-                                    }
-                                // Keep scanning until a frame yields a code that
-                                // normalizes to a product code: a junk or half-read
-                                // frame (internal factory codes, partial EANs) can
-                                // never resolve via OFF, and stopping on one turned
-                                // a single bad frame into a hard scan failure.
-                                // Mixed frames prefer the retail 1D code (EAN/UPC)
-                                // over a 2D code (QR/DataMatrix): a jar's GS1
-                                // Digital Link QR usually carries a case-level GTIN
-                                // OFF does not index, while the EAN-13 in the same
-                                // frame resolves.
-                                pickPreferredCode(entries)
-                            }
-                        }.getOrNull()
-                        if (value != null && hasScanned.compareAndSet(false, true)) {
-                            onBarcode(value)
-                        }
-                    }
+            val analyzer = ImageAnalysis.Analyzer { imageProxy ->
+                if (hasScanned.get()) {
+                    imageProxy.close()
+                    return@Analyzer
                 }
+                // Opening frames are the glare misreads. Do not count them until
+                // the center focus request has completed, or the settle deadline
+                // has elapsed.
+                if (!accepting.get() && SystemClock.elapsedRealtime() < focusDeadlineMs.get()) {
+                    imageProxy.close()
+                    return@Analyzer
+                }
+                accepting.set(true)
+                val preferred = runCatching {
+                    imageProxy.use { proxy ->
+                        val entries = reader.read(proxy)
+                            .mapNotNull { result ->
+                                result.text?.trim()?.takeIf(String::isNotEmpty)
+                                    ?.let { result.format to it }
+                            }
+                        pickPreferredCode(entries)
+                    }
+                }.getOrNull()
+                // A junk frame does not end the scan, and neither does a single
+                // normalizable frame.
+                val accepted = scanLock.observe(preferred)
+                if (accepted != null && hasScanned.compareAndSet(false, true)) {
+                    onBarcode(accepted)
+                }
+            }
 
-            runCatching {
-                cameraProvider.unbindAll()
+            fun buildAnalysis(targeted: Boolean): ImageAnalysis {
+                val builder = ImageAnalysis.Builder()
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                if (targeted) {
+                    builder.setResolutionSelector(
+                        ResolutionSelector.Builder()
+                            .setResolutionStrategy(
+                                ResolutionStrategy(
+                                    ANALYSIS_TARGET_SIZE,
+                                    ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER,
+                                ),
+                            )
+                            .build(),
+                    )
+                }
+                return builder.build().also { it.setAnalyzer(executor, analyzer) }
+            }
+
+            fun bindAnalysis(analysis: ImageAnalysis) =
                 cameraProvider.bindToLifecycle(
                     lifecycleOwner,
                     CameraSelector.DEFAULT_BACK_CAMERA,
                     preview,
-                    analysis
+                    analysis,
                 )
+
+            val camera = runCatching {
+                cameraProvider.unbindAll()
+                bindAnalysis(buildAnalysis(targeted = true))
+            }.getOrElse { error ->
+                Log.w("Chompass", "barcode analysis resolution fallback", error)
+                runCatching {
+                    cameraProvider.unbindAll()
+                    bindAnalysis(buildAnalysis(targeted = false))
+                }.getOrNull()
+            }
+            if (camera != null) {
+                previewView.doOnLayout {
+                    val point = previewView.meteringPointFactory.createPoint(
+                        previewView.width / 2f,
+                        previewView.height / 2f,
+                    )
+                    val action = FocusMeteringAction.Builder(
+                        point,
+                        FocusMeteringAction.FLAG_AF or FocusMeteringAction.FLAG_AE,
+                    ).disableAutoCancel().build()
+                    focusDeadlineMs.set(SystemClock.elapsedRealtime() + FOCUS_SETTLE_DEADLINE_MS)
+                    camera.cameraControl.startFocusAndMetering(action)
+                        .addListener({ accepting.set(true) }, mainExecutor)
+                }
             }
         }
         cameraProviderFuture.addListener(listener, mainExecutor)
@@ -237,4 +289,39 @@ internal fun pickPreferredCode(entries: List<Pair<BarcodeReader.Format, String>>
     return entries.firstOrNull { (_, text) ->
         BarcodeCodeNormalizer.normalize(text) != null
     }?.second
+}
+
+/**
+ * Android live-scan only. A still image
+ * ([app.chompass.services.BarcodeImageDecoder]) and the PWA have no second
+ * frame, so they must not use this class and it is not mirrored.
+ *
+ * Not thread-safe. Only the camera analyzer executor calls [observe].
+ */
+internal class BarcodeScanLock {
+    private var candidate: String? = null
+    private var confirmingRaw: String? = null
+    private var matchCount = 0
+
+    /**
+     * Returns the confirming frame's raw text once the same normalized product
+     * code has been read twice. Otherwise null.
+     * Null, blank, and non-product text do not change the candidate or the count.
+     */
+    fun observe(rawText: String?): String? {
+        val normalized = rawText?.let(BarcodeCodeNormalizer::normalize) ?: return null
+        if (normalized == candidate) {
+            matchCount += 1
+            confirmingRaw = rawText
+        } else {
+            candidate = normalized
+            confirmingRaw = rawText
+            matchCount = 1
+        }
+        return if (matchCount >= REQUIRED_MATCHES) confirmingRaw else null
+    }
+
+    private companion object {
+        const val REQUIRED_MATCHES = 2
+    }
 }
