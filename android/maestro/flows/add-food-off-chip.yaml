@@ -6,7 +6,10 @@ appId: app.chompass.debug
 name: Add Food OFF chip round trip
 ---
 - launchApp
-- waitForAnimationToEnd
+# First launch after install seeds a year of fixture data; wait it out.
+- extendedWaitUntil:
+    visible: "Heute"
+    timeout: 90000
 - assertVisible: "Heute"
 - tapOn: "Lebensmittel hinzufügen"          # + FAB content-desc / hub chip
 - assertVisible: "Essen hinzufügen"         # add_food_sheet_title

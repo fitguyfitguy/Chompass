@@ -5,10 +5,13 @@ appId: app.chompass.debug
 name: Untracked day mark round trip
 ---
 - launchApp
-- waitForAnimationToEnd
+# First launch after install seeds a year of fixture data; wait it out.
+- extendedWaitUntil:
+    visible: "Heute"
+    timeout: 90000
 - assertVisible: "Heute"
 - tapOn: "Tag markieren"                    # UntrackedChip (HomeCalorieHero)
-- assertVisible: "bleibt außen vor"         # unique body fragment
+- assertVisible: ".*bleibt außen vor.*"    # unique body fragment
 - tapOn:                                    # toggle row: the Role.Switch row
     text: "Nicht erfasst"                   # below the body text (the toolbar
     below: ".*bleibt außen vor.*"           # title shares the label, but sits above)

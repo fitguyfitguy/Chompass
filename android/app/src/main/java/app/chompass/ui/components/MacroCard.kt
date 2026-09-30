@@ -78,7 +78,6 @@ fun MacroCard(
         Text(
             MacroValueFormatter.string(current),
             fontSize = 20.sp,
-            fontFamily = app.chompass.ui.theme.AppFonts.Numerals,
             fontWeight = FontWeight.Bold,
             color = accentColor,
             maxLines = 1,

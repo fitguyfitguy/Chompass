@@ -2,33 +2,9 @@ package app.chompass.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import app.chompass.R
-
-@OptIn(ExperimentalTextApi::class)
-/** Display numerals. Body and UI text stay [FontFamily.Default]. */
-object AppFonts {
-    private fun doto(weight: FontWeight) = Font(
-        R.font.doto,
-        weight = weight,
-        variationSettings = FontVariation.Settings(
-            FontVariation.weight(700),
-            FontVariation.Setting("ROND", 0f),
-        ),
-    )
-
-    val Numerals: FontFamily = FontFamily(
-        doto(FontWeight.Normal),
-        doto(FontWeight.Medium),
-        doto(FontWeight.SemiBold),
-        doto(FontWeight.Bold),
-    )
-}
 
 private val AppFont = FontFamily.Default
 

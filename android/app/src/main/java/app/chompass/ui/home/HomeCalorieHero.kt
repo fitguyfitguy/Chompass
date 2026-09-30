@@ -374,7 +374,6 @@ internal fun CalorieHero(
             Text(
                 LocaleFormat.integer(EnergyFormat.quantity(current, unit)),
                 style = MaterialTheme.typography.displayMedium,
-                fontFamily = app.chompass.ui.theme.AppFonts.Numerals,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
