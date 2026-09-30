@@ -27,7 +27,7 @@ status is missing or stale, fix it (release checklist).
 
 | Doc | Contents |
 |-----|----------|
-| [`DEVELOPMENT.md`](DEVELOPMENT.md) | devenv/Nix setup, SDK, first-time build |
+| [`DEVELOPMENT.md`](DEVELOPMENT.md) | devenv/Nix setup, SDK, first-time build, device testing (adb over Wi-Fi, Maestro) |
 | [`RELEASE.md`](RELEASE.md) | Tag/publish runbook, token split, quota policy |
 | [`DISTRIBUTION.md`](DISTRIBUTION.md) | Single F-Droid/Codeberg build; `play` flavor disabled |
 | [`FDROID_SUBMISSION.md`](FDROID_SUBMISSION.md) | F-Droid listing (`app.chompass`): keep [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml) in sync |

@@ -170,7 +170,7 @@ adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_tes
 adb exec-out screencap -p > 01-home.png
 ```
 
-Prefer the emulator over coordinate-based phone taps when automating; screen sizes vary.
+Automated taps go through the Maestro flows (`devenv tasks run device:maestro`; text/id selectors, never screen coordinates) or the emulator; screen sizes vary. See [`DEVELOPMENT.md`](DEVELOPMENT.md) § Device testing.
 
 ## F-Droid follow-up
 
