@@ -1,0 +1,42 @@
+{
+  "export": {
+    "app": "Chompass",
+    "format_version": "1.6",
+    "date_range": { "start": "2026-09-28", "end": "2026-09-30" },
+    "meal_catalog": [
+      { "id": "c_deadbeef", "label": "Testmahlzeit Import" }
+    ]
+  },
+  "days": [
+    {
+      "date": "2026-09-28",
+      "note": "Importprobe: nur Notiz-Tag"
+    },
+    {
+      "date": "2026-09-29",
+      "untracked": true,
+      "untracked_kcal": 1800
+    },
+    {
+      "date": "2026-09-30",
+      "note": "Importprobe: Eintrag-Tag",
+      "meals": [
+        {
+          "type": "breakfast",
+          "items": [
+            {
+              "name": "Importprobe Haferbrei",
+              "quantity_g": 250.0,
+              "calories": 320,
+              "protein_g": 12.0,
+              "carbs_g": 45.0,
+              "fat_g": 9.0,
+              "time": "08:30",
+              "source": "manually_edited"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

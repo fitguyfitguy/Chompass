@@ -1,0 +1,48 @@
+# Device-pass flow: typed amount saves over the wheel in ManualEntryDialog
+# (fix batch 171cff5a; DEVICE_PASS § 2 typed-amounts item).
+# Commits 421 via the wheel-flip icon, then leaves 521 as an uncommitted draft
+# and taps Save — Save must flush the draft (MagnitudeDrafts) and store 521.
+# Selectors use the German strings (device locale de-DE, values-de/strings.xml).
+appId: app.chompass.debug
+name: Typed amount manual entry round trip
+---
+- launchApp
+# First launch after install seeds a year of fixture data; wait it out.
+- extendedWaitUntil:
+    visible: "Heute"
+    timeout: 90000
+- tapOn: "Lebensmittel hinzufügen"
+- tapOn: "Mehr anzeigen"                     # hub overflow menu (MoreHoriz tool)
+- tapOn: "Manuelle Eingabe"
+- assertVisible: "Kalorien"
+- tapOn: "z. B. Selbstgemachter Salat"      # name field placeholder
+- inputText: "Radtest"
+- tapOn: "Kalorien"                          # summary row expands the wheel
+- tapOn:                                     # center row tap → typed mode
+    point: "50%, 45%"
+- assertVisible: "Wert eintippen"            # typed field content-desc present
+- eraseText                                  # field starts as current value "0"
+- inputText: "421"
+- tapOn: "Rad verwenden"                     # flip icon: commits draft, returns to wheel
+- tapOn:                                     # center row tap → typed mode again
+    point: "50%, 45%"
+- assertVisible: "421"                       # committed host value in the typed field
+- eraseText                                  # leave "521" as an uncommitted draft
+- inputText: "521"
+- hideKeyboard
+- swipe:                                     # dialog is scrollable; Save is below the fold
+    start: "50%, 70%"
+    end: "50%, 25%"
+- tapOn: "Speichern"                         # no IME Done: Save must flush the 521 draft
+- scrollUntilVisible:                        # new entry sits below the hero cards;
+    element:                                 # duplicates get " (N)" suffixes in the list
+      text: ".*Radtest.*"
+    direction: down
+    timeout: 45000
+    speed: 90
+- assertVisible: ".*Radtest.*"               # entry lands in the diary list
+- tapOn: ".*Radtest.*"                       # newest match: reopen via edit sheet
+- swipe:                                     # macros sit below the details fold
+    start: "50%, 75%"
+    end: "50%, 30%"
+- assertVisible: "521"                       # flushed draft value stuck (not 421)

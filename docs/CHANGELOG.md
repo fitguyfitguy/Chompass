@@ -10,7 +10,6 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **One flat accent color** (Android): buttons, highlights, and the hero number use a single accent color where they used to carry a gradient. Your theme color choices, Material You dynamic color, and dark mode work as before.
 - **Standard Android app bars and dialogs** (Android): settings sub-screens show a top bar with a back arrow instead of a heading with a back chip. Confirmation dialogs use the standard Android layout, Saved Meals and the analysis queue use segmented tabs, and onboarding gets the same back arrow with a thin progress bar.
-- **Big numbers in a dot-matrix typeface** (Android): the calorie hero, macro card values, progress badges, activity values, and the water value render in Doto, a dot-matrix font. All other text is unchanged.
 - **Date wheels follow the app language** (Android): the day, month, and year columns now order themselves the way dates read in your language. English shows month first, German shows day first.
 
 ### Fixed

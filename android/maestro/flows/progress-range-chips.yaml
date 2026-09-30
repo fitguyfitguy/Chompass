@@ -5,8 +5,10 @@ appId: app.chompass.debug
 name: Progress tab and range chips
 ---
 - launchApp
-- waitForAnimationToEnd
-- assertVisible: "Heute"                    # home_today hero
+# First launch after install seeds a year of fixture data; wait it out.
+- extendedWaitUntil:
+    visible: "Heute"
+    timeout: 90000
 - tapOn: "Fortschritt"                      # nav_progress bottom nav
 - assertVisible: "Fortschritt anpassen"     # progress header (pass P2-1)
 - extendedWaitUntil:                        # seeded chart titles

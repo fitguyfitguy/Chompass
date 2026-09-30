@@ -1,0 +1,37 @@
+# Device-pass flow: diary import keeps note-only days, untracked-only days,
+# and meal labels (fix batch eb7f9e00; DEVICE_PASS § 2 diary-import item).
+# Requires the fixture on the device first (the .txt twin, because this ROM's
+# picker only surfaces text/plain files in Recents):
+#   adb push android/maestro/fixtures/diary-import-test.txt /sdcard/Download/
+# Fixture days: 28.09 note-only, 29.09 untracked, 30.09 one breakfast entry,
+# plus custom meal label "Testmahlzeit Import" in export.meal_catalog.
+# Run from a clean state: the picker (com.android.documentsui) keeps its task
+# on top of launchApp, so kill it first:
+#   adb shell am force-stop com.android.documentsui app.chompass.debug
+# Selectors use the German strings (device locale de-DE, values-de/strings.xml).
+appId: app.chompass.debug
+name: Diary import notes untracked catalog
+---
+- launchApp
+- extendedWaitUntil:
+    visible: "Heute"
+    timeout: 90000
+- tapOn: "Einstellungen"
+- tapOn: "Gesundheit & Daten"                # group card expands to its entries
+- tapOn: "JSON-Datei des Ernährungstagebuchs importieren"   # row opens the picker
+- extendedWaitUntil:                         # picker root: recents list (file is
+    visible: ".*chompass-import-test.*"      # MediaStore-indexed, newest row)
+    timeout: 20000
+# Element tap on the row triggers this ROM's "open file" path; a plain center
+# tap (first recents row, verified manually) returns the document to the app.
+- tapOn:
+    point: "40%, 47%"
+- extendedWaitUntil:                         # success snackbar (1 entry imported)
+    visible: ".*wurden importiert.*"
+    timeout: 15000
+- back                                       # data screen → settings index
+- tapOn: "Tagesnotizen"
+- assertVisible: ".*Importprobe: nur Notiz-Tag.*"   # note-only day survived
+- back
+- tapOn: "Mahlzeiten"
+- assertVisible: ".*Testmahlzeit Import.*"   # catalog union kept the label
