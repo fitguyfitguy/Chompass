@@ -11,6 +11,8 @@ import zxingcpp.BarcodeReader
  * factory codes, partial EANs) must never be handed to the OFF lookup — the
  * scanner keeps scanning until a frame yields a code that normalizes.
  * Mirrored in the PWA (`barcode-detect.test.js` `pickNormalizable`).
+ * [BarcodeScanLock] is Android live-scan only (#120): one normalizable frame
+ * is not a lookup. Not mirrored.
  */
 class BarcodeScannerContentTest {
     @Test
@@ -88,5 +90,51 @@ class BarcodeScannerContentTest {
                 ),
             ),
         )
+    }
+
+    @Test
+    fun oneValidFrame_isNotALookup() {
+        // #120: one check-digit-valid frame is not a lookup.
+        val lock = BarcodeScanLock()
+        assertNull(lock.observe("4099200030920"))
+        assertEquals("4099200030920", lock.observe("4099200030920"))
+    }
+
+    @Test
+    fun differentValidCode_replacesCandidate() {
+        val lock = BarcodeScanLock()
+        assertNull(lock.observe("4099200030920"))
+        assertNull(lock.observe("4099200011059"))
+        assertEquals("4099200011059", lock.observe("4099200011059"))
+    }
+
+    @Test
+    fun droppedFrame_doesNotResetCandidate() {
+        val lock = BarcodeScanLock()
+        assertNull(lock.observe("4099200030920"))
+        assertNull(lock.observe(null))
+        assertEquals("4099200030920", lock.observe("4099200030920"))
+    }
+
+    @Test
+    fun junkFrame_doesNotResetCandidate() {
+        val lock = BarcodeScanLock()
+        assertNull(lock.observe("4099200030920"))
+        assertNull(lock.observe("1111201I"))
+        assertEquals("4099200030920", lock.observe("4099200030920"))
+    }
+
+    @Test
+    fun junkTwice_returnsNull() {
+        val lock = BarcodeScanLock()
+        assertNull(lock.observe("1111201I"))
+        assertNull(lock.observe("1111201I"))
+    }
+
+    @Test
+    fun gs1AndBareEan_returnsConfirmingRawText() {
+        val lock = BarcodeScanLock()
+        assertNull(lock.observe("(01)09400597028233"))
+        assertEquals("9400597028233", lock.observe("9400597028233"))
     }
 }
