@@ -1,0 +1,25 @@
+# Device-pass pilot flow 2: Add Food → Open Food Facts chip → hint → Settings →
+# back lands Home with a fresh sheet (DEVICE_PASS manual item 7).
+# Requires the fresh-state default: packaged search ON (seed_full / fresh install).
+# Selectors use the German strings (device locale de-DE, values-de/strings.xml).
+appId: app.chompass.debug
+name: Add Food OFF chip round trip
+---
+- launchApp
+- waitForAnimationToEnd
+- assertVisible: "Heute"
+- tapOn: "Lebensmittel hinzufügen"          # + FAB content-desc / hub chip
+- assertVisible: "Essen hinzufügen"         # add_food_sheet_title
+- tapOn: "z. B. griechischer Joghurt, Milch, Quark"   # search field placeholder
+- inputText: "cola"
+- extendedWaitUntil:                        # results heading shows the source chip
+    visible: "Open Food Facts"
+    timeout: 10000
+- tapOn: "Open Food Facts"                  # chip turns the source off; the muted
+- assertVisible: "Open Food Facts"          # hint replaces it (same string)
+- tapOn: "Open Food Facts"                  # hint link → food-search settings
+- back                                      # one press: settings → Home
+- assertVisible: "Heute"
+- assertNotVisible: "Essen hinzufügen"      # sheet must be gone on return
+- tapOn: "Lebensmittel hinzufügen"          # re-enter: fresh sheet
+- assertVisible: "Essen hinzufügen"

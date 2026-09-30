@@ -68,6 +68,11 @@
     description = "Assemble the signed release APK (F-Droid / Codeberg distribution)";
   };
 
+  tasks."device:maestro" = {
+    exec = "./scripts/device_pass_maestro.sh";
+    description = "Run Maestro device-pass flows on the phone (adb over Wi-Fi, WSL-native; connect once via scripts/adb_wifi.sh)";
+  };
+
   tasks."release:package" = {
     exec = "./scripts/package_release.sh";
     description = "Run pre-release checks (Android tests + parity), build release APKs, package, and write SHA256SUMS";

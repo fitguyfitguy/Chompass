@@ -18,6 +18,7 @@
 #   ./scripts/install_debug.sh --2y         # slim only: also pass seed_body_metrics_2y
 #   ./scripts/install_debug.sh --universal  # prefer universal APK over arm64
 #   ./scripts/install_debug.sh --reinstall  # uninstall first (signature-mismatch installs)
+#   ./scripts/install_debug.sh --wifi       # adb over Wi-Fi first (scripts/adb_wifi.sh); WSL adb owns the device
 #
 # Env:
 #   ADB_BIN   adb binary (auto-detects Windows adb.exe from WSL if unset)
@@ -47,6 +48,7 @@ SEED_BUSY_HOME=0
 SEED_2Y=0
 PREFER_UNIVERSAL=0
 DO_REINSTALL=0
+DO_WIFI=0
 APK_OVERRIDE="${APK:-}"
 
 while [ $# -gt 0 ]; do
@@ -56,6 +58,7 @@ while [ $# -gt 0 ]; do
     --no-launch) DO_LAUNCH=0 ;;
     --reseed) DO_BUILD=0; DO_INSTALL=0; DO_LAUNCH=1; DO_SEED=1 ;;
     --reinstall) DO_REINSTALL=1 ;;
+    --wifi) DO_WIFI=1 ;;
     --full) SEED_MODE=full ;;
     --slim) SEED_MODE=slim ;;
     --keto) SEED_KETO=1 ;;
@@ -101,6 +104,12 @@ resolve_apk() {
   done
   return 1
 }
+
+if [ "${DO_WIFI}" -eq 1 ]; then
+  # Wi-Fi target: the device lives on the WSL adb server (5038) — never adb.exe.
+  "${ROOT}/scripts/adb_wifi.sh" connect
+  ADB_BIN="adb"
+fi
 
 echo "Using adb: ${ADB_BIN}"
 "${ADB_BIN}" devices
