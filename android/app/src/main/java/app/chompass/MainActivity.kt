@@ -32,6 +32,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import app.chompass.models.FoodEntry
@@ -470,7 +472,18 @@ open class MainActivity : ComponentActivity() {
                     themeColor = themeColor,
                 ) {
                     Surface(
-                        modifier = Modifier.fillMaxSize(),
+                        // Device passes (Maestro/uiautomator): expose Compose
+                        // testTags as resource-ids so flows can select by id
+                        // across locales. Debug builds only.
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .then(
+                                if (BuildConfig.DEBUG) {
+                                    Modifier.semantics { testTagsAsResourceId = true }
+                                } else {
+                                    Modifier
+                                }
+                            ),
                         color = MaterialTheme.colorScheme.background
                     ) {
                         ChompassNavHost(container = container, startOnboarding = resolvedStartOnboarding)

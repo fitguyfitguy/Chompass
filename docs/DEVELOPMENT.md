@@ -78,11 +78,38 @@ install-debug                         # same, inside devenv shell
 ./scripts/install_debug.sh --slim     # old trio (year food + 30d metrics + keto)
 ./scripts/install_debug.sh --keto     # full seed in keto diet mode
 ./scripts/install_debug.sh --busy-home # full seed with extra Home cards
+./scripts/install_debug.sh --wifi      # adb over Wi-Fi first (scripts/adb_wifi.sh); WSL adb owns the device
 ```
 
 **Native Linux / macOS:** use host `adb` on the default port. The `ANDROID_ADB_SERVER_PORT=5038` setting and Windows `adb.exe` paths in this repo are only for the maintainer’s WSL2 + Windows USB split: ignore them if your device is visible to local `adb devices`.
 
 First launch walks through onboarding. A free Gemini key is available at https://aistudio.google.com/apikey - configure any supported provider under **Settings -> AI Access**.
+
+## Device testing from WSL (adb over Wi-Fi + Maestro)
+
+Phone work can run natively in WSL — no Windows adb hop — once the device is connected to the WSL adb server (port 5038):
+
+```bash
+./scripts/adb_wifi.sh --tcpip          # preferred: cable plugged in once; switches adbd to TCP 5555
+./scripts/adb_wifi.sh status           # WSL + Windows adb view, saved target, mDNS hints
+./scripts/adb_wifi.sh pair IP:PORT CODE # alternative: Android 11+ wireless debugging pairing
+./scripts/adb_wifi.sh connect IP:PORT  # then connect (port changes on every wireless-debugging toggle)
+./scripts/adb_wifi.sh forget
+```
+
+`--tcpip` reads the phone's Wi-Fi IP over USB and saves it (`~/.config/chompass/adb-wifi`); the connection survives unplugging **until the phone reboots** — rerun with the cable in after a reboot. Everything downstream then works with plain `adb`: `install_debug.sh --wifi`, logcat, `screencap`, seed intent extras.
+
+Automated device passes use [Maestro](https://maestro.dev) YAML flows (single binary, own JRE, auto-installed pinned to `~/.local/share/chompass/maestro` by `scripts/ensure_maestro.sh`):
+
+```bash
+devenv tasks run device:maestro           # build + install + seed_full + all flows
+./scripts/device_pass_maestro.sh --no-build untracked   # reuse APK, one flow
+./scripts/device_pass_maestro.sh --fresh  # pm clear first (fresh-state semantics)
+```
+
+- Flows live in `android/maestro/flows/*.yaml` (JUnit XML + failure screenshots land in `android/build/maestro/<ts>/`). Each flow maps to a device-pass item (`progress-range-chips`, `add-food-off-chip`, `untracked-day-mark`).
+- Selectors are the German UI strings from `values-de/strings.xml` (maintainer device is de-DE). Debug builds expose Compose `testTag`s as resource-ids (`MainActivity` sets `testTagsAsResourceId` under `BuildConfig.DEBUG`), so id-based selectors are available for locale-proof flows.
+- Caveats: Maestro sees only devices on the WSL adb server (not USB phones on the Windows adb); emulator-free — the runner fails fast with the `adb_wifi.sh` hint when no device is present. Perf benchmarks keep running on the physical device per [`docs/PERFORMANCE.md`](PERFORMANCE.md); the emulator story (Windows-side AVD) is tracked separately.
 
 ## Project website (Codeberg Pages)
 
