@@ -6,11 +6,24 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Changed
+
+- **One flat accent color** (Android): buttons, highlights, and the hero number use a single accent color where they used to carry a gradient. Your theme color choices, Material You dynamic color, and dark mode work as before.
+- **Standard Android app bars and dialogs** (Android): settings sub-screens show a top bar with a back arrow instead of a heading with a back chip. Confirmation dialogs use the standard Android layout, Saved Meals and the analysis queue use segmented tabs, and onboarding gets the same back arrow with a thin progress bar.
+- **Big numbers in a dot-matrix typeface** (Android): the calorie hero, macro card values, progress badges, activity values, and the water value render in Doto, a dot-matrix font. All other text is unchanged.
+- **Date wheels follow the app language** (Android): the day, month, and year columns now order themselves the way dates read in your language. English shows month first, German shows day first.
+
 ### Fixed
 
-- **A brief lookup failure retries the AI request** (Android): when the phone cannot look up the AI server for a moment, the request is tried again. If it still cannot connect, the same network error is shown.
+- **Diary import keeps day notes, untracked days, and meal names** (Android): a day whose only content was a note or an untracked mark imported as empty, dropping what it held. Day notes now come across, untracked days keep their mark, and meal names from the file are added to your saved meals without replacing the ones you already have.
+- **Delete all data stays deleted** (Android): reminders could still fire after a wipe, and turning sync back on could restore the whole diary from the sync file. Delete all data now cancels the reminder alarms and marks the removed entries deleted, so a later sync leaves them deleted.
 - **Swipe colors follow the card's rounded corners** (Android): when you swipe a diary entry to delete or favorite it, the colored panel behind the card now curves with the card's corners instead of cutting them off with a straight edge. The unfavorite swipe in Saved Meals gets the same fix.
+- **Ingredient calories round like the meal total** (Android): a fraction of a small row was dropped, so half a portion of a 1 kcal ingredient showed 0. Ingredient rows now round the same way as the meal total.
+- **Saved-meal photos load off the main thread** (Android): the saved-meal review sheet, draft restore, retry, reprocess, and the note preview decoded their photos on the main thread, which could stall the screen. Those reads now run in the background.
+- **Typed amounts save in manual entry, the weight note, and onboarding** (Android): typing a number over the wheel in these three spots now saves what you typed. They kept the previous value when you tapped Save.
+- **A brief lookup failure retries the AI request** (Android): when the phone cannot look up the AI server for a moment, the request is tried again. If it still cannot connect, the same network error is shown.
 - **Barcode scans confirm the code before looking it up** (Android): a glare misread on a curved package could look up the wrong digits and report the product missing. The scanner now waits until it reads the same code twice. The not-found dialog shows the digits it queried, so a misread is visible. Closes Codeberg [#120](https://codeberg.org/fitguy/Chompass/issues/120) by [@quadcorei8085](https://codeberg.org/quadcorei8085).
+- **Web coach follow-ups work with Gemini 3** (web): a coach turn that uses a tool no longer fails with a missing thought signature error on Gemini 3 models. Fixes Codeberg [#115](https://codeberg.org/fitguy/Chompass/issues/115) by [@sparkyanna](https://codeberg.org/sparkyanna).
 - **Coach reads your diary again on the newest OpenAI models** (Android + web): asking Coach about your logged food with GPT-5.6 or GPT-6 Sol or Luna came back without the diary, because those models refuse the app's lookups unless reasoning is switched off. Coach now switches it off for them, so answers use your real entries. Follows Codeberg pull request [#121](https://codeberg.org/fitguy/Chompass/pulls/121) by [@NuperSu](https://codeberg.org/NuperSu).
 
 ## [5.3.0] - 2026-09-25
