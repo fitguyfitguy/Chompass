@@ -299,6 +299,25 @@ export function stripThinkBlocks(text) {
   return closed.slice(0, open).trim();
 }
 
+/** Official OpenAI endpoint, as opposed to a self-hosted OpenAI-compatible base. */
+function isOfficialOpenAi(base) {
+  return /^https:\/\/api\.openai\.com(\/|$)/.test(base);
+}
+
+/**
+ * Chat Completions accepts `function` tools on the GPT-5.4+ and GPT-6 ids only
+ * with reasoning off; the GPT-4.x ids are non-reasoning. Runtime-only lineup
+ * ids (e.g. gpt-6-astra, Codeberg #107) reject `none` with HTTP 400, so
+ * curated-list membership is the gate. Mirrors Android
+ * OpenAICompatibleClient.openAiToolReasoningEffort.
+ * @param {string} model
+ * @returns {boolean}
+ */
+function needsReasoningNoneForTools(model) {
+  if (!PROVIDERS.openai_compatible.models.includes(model)) return false;
+  return model.startsWith("gpt-5") || model.startsWith("gpt-6");
+}
+
 /**
  * @param {{apiKey: string, model?: string, baseUrl?: string, reasoningEffort?: string, visionModel?: string}} config
  * @param {AiRequest} req
@@ -313,14 +332,22 @@ export async function openAiCompatibleSend(config, req) {
     }
   }
   const base = (config.baseUrl || "https://api.openai.com/v1").replace(/\/$/, "");
+  const officialOpenAi = isOfficialOpenAi(base);
+  const model = config.model || PROVIDERS.openai_compatible.defaultModel;
   const messages = [{ role: "system", content: req.systemPrompt }, ...req.messages.flatMap(openAiMessages)];
   const body = {
-    model: config.model || PROVIDERS.openai_compatible.defaultModel,
+    model,
     messages,
     tools: req.tools.length ? req.tools.map((t) => ({ type: "function", function: { name: t.name, description: t.description, parameters: t.inputSchema } })) : undefined,
   };
-  const reasoning = openRouterReasoningBody(config.reasoningEffort);
-  if (reasoning) body.reasoning = reasoning;
+  if (officialOpenAi) {
+    // Official OpenAI takes the flat reasoning_effort field, never OpenRouter's
+    // `reasoning` object; its Chat Completions tool calls need reasoning off.
+    if (req.tools.length && needsReasoningNoneForTools(model)) body.reasoning_effort = "none";
+  } else {
+    const reasoning = openRouterReasoningBody(config.reasoningEffort);
+    if (reasoning) body.reasoning = reasoning;
+  }
   const res = await fetch(`${base}/chat/completions`, {
     method: "POST",
     headers: { "content-type": "application/json", authorization: `Bearer ${config.apiKey}` },
@@ -348,7 +375,9 @@ async function openAiCompatibleSendStreaming(config, req) {
     stream: true,
   };
   const reasoning = openRouterReasoningBody(config.reasoningEffort);
-  if (reasoning) body.reasoning = reasoning;
+  // Official OpenAI never takes OpenRouter's `reasoning` object. Streaming
+  // carries no tools, so it needs no reasoning_effort either.
+  if (reasoning && !isOfficialOpenAi(base)) body.reasoning = reasoning;
   const res = await fetch(`${base}/chat/completions`, {
     method: "POST",
     headers: {
