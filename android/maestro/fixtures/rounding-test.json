@@ -1,0 +1,43 @@
+{
+  "export": {
+    "app": "Chompass",
+    "format_version": "1.6",
+    "date_range": { "start": "2026-10-01", "end": "2026-10-01" },
+    "meal_catalog": []
+  },
+  "days": [
+    {
+      "date": "2026-10-01",
+      "totals": { "calories": 1, "protein_g": 0, "carbs_g": 0, "fat_g": 0 },
+      "targets": { "calories": 2100, "protein_g": 120, "carbs_g": 200, "fat_g": 70 },
+      "remaining": { "calories": 2099, "protein_g": 120, "carbs_g": 200, "fat_g": 70 },
+      "meals": [
+        {
+          "type": "lunch",
+          "items": [
+            {
+              "name": "Rundungstest Mahlzeit",
+              "quantity_g": 100.0,
+              "calories": 1,
+              "protein_g": 0.0,
+              "carbs_g": 0.0,
+              "fat_g": 0.0,
+              "time": "12:00",
+              "source": "manually_edited",
+              "constituents": [
+                {
+                  "name": "Testzutat 1 kcal",
+                  "calories": 1,
+                  "protein_g": 0.0,
+                  "carbs_g": 0.0,
+                  "fat_g": 0.0,
+                  "quantity_g": 100.0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

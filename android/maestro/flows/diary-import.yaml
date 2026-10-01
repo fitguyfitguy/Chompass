@@ -1,14 +1,20 @@
 # Device-pass flow: diary import keeps note-only days, untracked-only days,
 # and meal labels (fix batch eb7f9e00; DEVICE_PASS § 2 diary-import item).
-# Requires the fixture on the device first (the .txt twin, because this ROM's
-# picker only surfaces text/plain files in Recents):
+# Requires the fixture on the device first, MediaStore-indexed so Recents
+# surfaces it (verified on Pixel 9a and OnePlus DN2103):
 #   adb push android/maestro/fixtures/diary-import-test.txt /sdcard/Download/
+#   adb shell content insert --uri content://media/external/file \
+#     --bind _data:s:/sdcard/Download/diary-import-test.txt \
+#     --bind mime_type:s:text/plain
+# Re-run the content insert after EVERY adb push: replacing the file
+# invalidates the old MediaStore row and the picker's Recents goes empty.
 # Fixture days: 28.09 note-only, 29.09 untracked, 30.09 one breakfast entry,
 # plus custom meal label "Testmahlzeit Import" in export.meal_catalog.
-# Run from a clean state: the picker (com.android.documentsui) keeps its task
-# on top of launchApp, so kill it first:
-#   adb shell am force-stop com.android.documentsui app.chompass.debug
-# Selectors use the German strings (device locale de-DE, values-de/strings.xml).
+# Run from a clean state: the picker task stays on top of launchApp, so kill
+# it first — note the Google package name, not com.android.documentsui:
+#   adb shell am force-stop com.google.android.documentsui app.chompass.debug
+# Selectors use the German strings (set the per-app locale if the device is
+# not German: adb shell cmd locale set-app-locales app.chompass.debug --locales de-DE).
 appId: app.chompass.debug
 name: Diary import notes untracked catalog
 ---
@@ -16,22 +22,46 @@ name: Diary import notes untracked catalog
 - extendedWaitUntil:
     visible: "Heute"
     timeout: 90000
+- extendedWaitUntil:                         # nav bar settles after the seed load
+    visible: "Einstellungen"
+    timeout: 20000
 - tapOn: "Einstellungen"
 - tapOn: "Gesundheit & Daten"                # group card expands to its entries
 - tapOn: "JSON-Datei des Ernährungstagebuchs importieren"   # row opens the picker
 - extendedWaitUntil:                         # picker root: recents list (file is
-    visible: ".*chompass-import-test.*"      # MediaStore-indexed, newest row)
+    visible: ".*diary-import-test.*"         # MediaStore-indexed, newest row)
     timeout: 20000
-# Element tap on the row triggers this ROM's "open file" path; a plain center
-# tap (first recents row, verified manually) returns the document to the app.
+# Element tap on the row triggers some ROMs' "open file" path; a plain center
+# tap on the first recents row returns the document to the app. Coords are the
+# fixture row measured on a 1080x2400 OnePlus (row y 860-1000); re-measure if
+# the picker lists other files above it.
 - tapOn:
-    point: "40%, 47%"
+    point: "46%, 39%"
 - extendedWaitUntil:                         # success snackbar (1 entry imported)
     visible: ".*wurden importiert.*"
     timeout: 15000
+- back                                       # dismiss the snackbar
 - back                                       # data screen → settings index
-- tapOn: "Tagesnotizen"
-- assertVisible: ".*Importprobe: nur Notiz-Tag.*"   # note-only day survived
-- back
-- tapOn: "Mahlzeiten"
+- tapOn: "Tracker & Erinnerungen"            # index hub row → trackers subscreen
+- tapOn: "Tagesnotizen"                      # single row on the subscreen
+- tapOn:
+    text: "Tagesnotizen"
+    index: 1                                 # screen title is match 0; row 1 = toggle
+- back                                       # → trackers subscreen
+- back                                       # → settings index
+- tapOn: "Ernährung & Erfassung"
+- tapOn: "Mahlzeiten"                        # meal-times sheet lists the catalog
 - assertVisible: ".*Testmahlzeit Import.*"   # catalog union kept the label
+- back                                       # close sheet
+- back                                       # → settings index
+- tapOn: "Start"                             # nav bar → Home
+- tapOn: "28"                                # date strip chip (28.09)
+- swipe:
+    start: 54%, 78%
+    end: 54%, 26%
+- assertVisible: ".*Importprobe: nur Notiz-Tag.*"   # note-only day survived
+- swipe:                                     # strip back into view for day 29
+    start: 54%, 26%
+    end: 54%, 78%
+- tapOn: "29"                                # untracked day
+- assertVisible: "Nicht erfasst"             # untracked-only day survived
