@@ -10,16 +10,27 @@
   "days": [
     {
       "date": "2026-09-28",
-      "note": "Importprobe: nur Notiz-Tag"
+      "note": "Importprobe: nur Notiz-Tag",
+      "totals": { "calories": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0 },
+      "targets": { "calories": 2100, "protein_g": 120, "carbs_g": 200, "fat_g": 70 },
+      "remaining": { "calories": 2100, "protein_g": 120, "carbs_g": 200, "fat_g": 70 },
+      "meals": []
     },
     {
       "date": "2026-09-29",
       "untracked": true,
-      "untracked_kcal": 1800
+      "untracked_kcal": 1800,
+      "totals": { "calories": 1800, "protein_g": 0, "carbs_g": 0, "fat_g": 0 },
+      "targets": { "calories": 2100, "protein_g": 120, "carbs_g": 200, "fat_g": 70 },
+      "remaining": { "calories": 300, "protein_g": 120, "carbs_g": 200, "fat_g": 70 },
+      "meals": []
     },
     {
       "date": "2026-09-30",
       "note": "Importprobe: Eintrag-Tag",
+      "totals": { "calories": 320, "protein_g": 12, "carbs_g": 45, "fat_g": 9 },
+      "targets": { "calories": 2100, "protein_g": 120, "carbs_g": 200, "fat_g": 70 },
+      "remaining": { "calories": 1780, "protein_g": 108, "carbs_g": 155, "fat_g": 61 },
       "meals": [
         {
           "type": "breakfast",
