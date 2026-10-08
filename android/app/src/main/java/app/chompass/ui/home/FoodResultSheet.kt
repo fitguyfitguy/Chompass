@@ -334,9 +334,19 @@ fun FoodResultSheet(
     LaunchedEffect(analysis, partial) {
         val sourceAnalysis = analysis ?: partial?.toPreviewAnalysis() ?: return@LaunchedEffect
         if (!nameTouched) name = sourceAnalysis.name
+        // Same honest-portion decision as the initial composition above
+        // (Codeberg #89): a serving-less entry with a unit selection scales
+        // from quantity × grams-per-unit, not from a 100 g fallback
+        // (Codeberg #128 — relogged favorites rescaled from 100 g).
+        val sourceBase = ServingUnitOption.recordedPortionGrams(
+            recordedServingGrams = sourceAnalysis.servingSizeGrams,
+            selectedUnit = sourceAnalysis.selectedServingUnit,
+            selectedQuantity = sourceAnalysis.selectedServingQuantity,
+            options = sourceAnalysis.servingUnitOptions,
+        ) ?: 100.0
         if (!servingTouched) {
-            servingGrams = sourceAnalysis.servingSizeGrams ?: 100.0
-            baseServingGrams = sourceAnalysis.servingSizeGrams ?: 100.0
+            servingGrams = sourceBase
+            baseServingGrams = sourceBase
         }
         editableConstituents = sourceAnalysis.constituents
         if (!caloriesTouched) editableCalories = sourceAnalysis.calories
@@ -347,14 +357,14 @@ fun FoodResultSheet(
         if (!servingTouched) {
             val options = ServingUnitOption.normalizedOptions(
                 sourceAnalysis.servingUnitOptions,
-                sourceAnalysis.servingSizeGrams ?: 100.0,
+                sourceBase,
             )
             selectedServingUnitId = ServingUnitOption.initialUnitId(
                 if (preferGramsByDefault) ServingUnitOption.grams.unit else sourceAnalysis.selectedServingUnit,
                 options,
             )
             servingQuantityText = ServingUnitOption.initialQuantityText(
-                totalGrams = sourceAnalysis.servingSizeGrams ?: 100.0,
+                totalGrams = sourceBase,
                 selectedUnitId = selectedServingUnitId,
                 selectedQuantity = sourceAnalysis.selectedServingQuantity,
                 options = options,
