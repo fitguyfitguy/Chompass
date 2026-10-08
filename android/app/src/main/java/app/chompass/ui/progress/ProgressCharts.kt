@@ -115,14 +115,23 @@ internal data class BodyFatChartModel(
     val goalPercent: Double?
 )
 
-/** One day's marker under a chart: day-type dot, untracked dash (UI-UX §10). */
-internal data class DayMarker(val date: LocalDate, val typeColor: Color?, val untracked: Boolean)
+/** One day's marker under a chart: day-type dot, untracked dash (UI-UX §10).
+ *  [partialUntracked] marks a week bucket holding untracked days below the
+ *  majority — drawn as a fainter dash so stray untracked days stay visible
+ *  at 6M/1Y/All. */
+internal data class DayMarker(
+    val date: LocalDate,
+    val typeColor: Color?,
+    val untracked: Boolean,
+    val partialUntracked: Boolean = false,
+)
 
 /**
  * Dense marker list for the trend charts: per-day while the span fits
  * [maxSlots] days, otherwise ISO-week buckets (Monday start — same grouping
  * as [bucketCalorieSlots]) with the majority type and a majority-untracked
- * dash, so dots stay readable at 6M/1Y ranges.
+ * dash, so dots stay readable at 6M/1Y ranges. Weeks holding untracked days
+ * below the majority carry [DayMarker.partialUntracked].
  */
 internal fun buildMarkerLane(
     start: LocalDate,
@@ -145,62 +154,80 @@ internal fun buildMarkerLane(
                 .groupingBy { it }
                 .eachCount()
                 .maxByOrNull { it.value }?.key
+            val untrackedCount = days.count { it.toString() in untracked }
+            val majority = untrackedCount * 2 > days.size
             DayMarker(
                 date = weekStart,
                 typeColor = majorityType?.let(typeColorOf),
-                untracked = days.count { it.toString() in untracked } * 2 > days.size,
+                untracked = majority,
+                partialUntracked = !majority && untrackedCount > 0,
             )
         }
 }
 
+/** One untracked backdrop band. [partial] marks a week bucket holding
+ *  untracked days below the majority — drawn at half alpha so stray
+ *  untracked days stay visible at 6M/1Y/All. */
+internal data class UntrackedBand(val range: ClosedRange<Long>, val partial: Boolean)
+
 /**
- * Epoch-ms day-boundary spans (start-of-day inclusive, system zone) of
- * consecutive untracked days inside [start, end] — the muted backdrop bands
- * behind the trend plots. Ranges longer than [maxSlots] days bucket per ISO
- * week (Monday start — same grouping as [buildMarkerLane]); a week counts as
- * untracked when more than half of its in-range days are untracked, and
- * adjacent untracked weeks merge into one span covering the full final week.
+ * Epoch-ms day-boundary bands (start-of-day inclusive, system zone) of
+ * untracked days inside [start, end] — the muted backdrop bands behind the
+ * trend plots. Ranges longer than [maxSlots] days bucket per ISO week
+ * (Monday start — same grouping as [buildMarkerLane]): a majority-untracked
+ * week yields a full band, a week holding any untracked days below the
+ * majority yields a [UntrackedBand.partial] band, and adjacent same-tier
+ * weeks merge into one band covering the full final week.
  */
 internal fun buildUntrackedSpans(
     start: LocalDate,
     end: LocalDate,
     untracked: Set<String>,
     maxSlots: Int = 90,
-): List<ClosedRange<Long>> {
+): List<UntrackedBand> {
     if (start.isAfter(end) || untracked.isEmpty()) return emptyList()
     val totalDays = ChronoUnit.DAYS.between(start, end).toInt() + 1
     val weekly = totalDays > maxSlots
     val step = if (weekly) 7L else 1L
-    val marked = (0 until totalDays)
+    // Marked dates with their tier: full for untracked days (daily mode) or
+    // majority-untracked weeks, partial for weeks below the majority.
+    val marked: List<Pair<LocalDate, Boolean>> = (0 until totalDays)
         .map { start.plusDays(it.toLong()) }
         .let { days ->
-            if (!weekly) days.filter { it.toString() in untracked }
+            if (!weekly) days.filter { it.toString() in untracked }.map { it to false }
             else days.groupBy { it.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)) }
                 .toSortedMap()
                 .flatMap { (weekStart, daysInWeek) ->
-                    if (daysInWeek.count { it.toString() in untracked } * 2 > daysInWeek.size) {
-                        listOf(weekStart)
-                    } else emptyList()
+                    val count = daysInWeek.count { it.toString() in untracked }
+                    if (count == 0) emptyList()
+                    else listOf(weekStart to (count * 2 <= daysInWeek.size))
                 }
         }
     if (marked.isEmpty()) return emptyList()
     val zone = ZoneId.systemDefault()
     fun epochMs(day: LocalDate) = day.atStartOfDay(zone).toInstant().toEpochMilli()
     val tail = if (weekly) 6L else 0L
-    val spans = mutableListOf<ClosedRange<Long>>()
+    val bands = mutableListOf<UntrackedBand>()
     var runStart = marked.first()
     var runEnd = marked.first()
-    for (day in marked.drop(1)) {
-        if (day.toEpochDay() - runEnd.toEpochDay() <= step) {
-            runEnd = day
+    for (markedDay in marked.drop(1)) {
+        val (day, partial) = markedDay
+        if (partial == runStart.second && day.toEpochDay() - runEnd.first.toEpochDay() <= step) {
+            runEnd = markedDay
         } else {
-            spans += epochMs(runStart)..epochMs(runEnd.plusDays(tail).coerceAtMost(end))
-            runStart = day
-            runEnd = day
+            bands += UntrackedBand(
+                epochMs(runStart.first)..epochMs(runEnd.first.plusDays(tail).coerceAtMost(end)),
+                runStart.second,
+            )
+            runStart = markedDay
+            runEnd = markedDay
         }
     }
-    spans += epochMs(runStart)..epochMs(runEnd.plusDays(tail).coerceAtMost(end))
-    return spans
+    bands += UntrackedBand(
+        epochMs(runStart.first)..epochMs(runEnd.first.plusDays(tail).coerceAtMost(end)),
+        runStart.second,
+    )
+    return bands
 }
 
 /** One calendar day on the calorie axis: a logged value, an untracked dash,
@@ -265,7 +292,7 @@ private fun rememberUntrackedSpans(
     tStart: Long,
     tRange: Long,
     untrackedDays: Set<String>,
-): List<ClosedRange<Long>> {
+): List<UntrackedBand> {
     val zone = remember { ZoneId.systemDefault() }
     return remember(tStart, tRange, untrackedDays, zone) {
         buildUntrackedSpans(
@@ -276,20 +303,22 @@ private fun rememberUntrackedSpans(
     }
 }
 
-/** Full-height muted rects behind the plot data, one per untracked span. */
+/** Full-height muted rects behind the plot data; partial weeks draw at half
+ *  alpha so a stray untracked day marks its week without overstating it. */
 private fun DrawScope.drawUntrackedBands(
-    spans: List<ClosedRange<Long>>,
+    bands: List<UntrackedBand>,
     tStart: Long,
     tRange: Long,
     color: Color,
 ) {
     if (tRange <= 0L) return
     val dayMs = 86_400_000L
-    spans.forEach { span ->
-        val x0 = ((span.start - tStart).toFloat() / tRange * size.width).coerceIn(0f, size.width)
-        val x1 = ((span.endInclusive + dayMs - tStart).toFloat() / tRange * size.width)
+    bands.forEach { band ->
+        val tierColor = if (band.partial) color.copy(alpha = color.alpha * 0.5f) else color
+        val x0 = ((band.range.start - tStart).toFloat() / tRange * size.width).coerceIn(0f, size.width)
+        val x1 = ((band.range.endInclusive + dayMs - tStart).toFloat() / tRange * size.width)
             .coerceIn(0f, size.width)
-        if (x1 > x0) drawRect(color, topLeft = Offset(x0, 0f), size = Size(x1 - x0, size.height))
+        if (x1 > x0) drawRect(tierColor, topLeft = Offset(x0, 0f), size = Size(x1 - x0, size.height))
     }
 }
 
@@ -348,6 +377,13 @@ internal fun MarkerLane(
                     end = Offset(x + 3.dp.toPx(), midY),
                     strokeWidth = 1.5.dp.toPx(),
                 )
+                // Week bucket with untracked days below the majority.
+                marker.partialUntracked -> drawLine(
+                    color = onVariant.copy(alpha = 0.3f),
+                    start = Offset(x - 3.dp.toPx(), midY),
+                    end = Offset(x + 3.dp.toPx(), midY),
+                    strokeWidth = 1.5.dp.toPx(),
+                )
                 marker.typeColor != null -> drawCircle(
                     color = marker.typeColor,
                     radius = 1.5.dp.toPx(),
@@ -371,6 +407,22 @@ internal fun calorieBarGeometry(areaWidthPx: Float, n: Int, density: Density): C
     val totalGroupW = barWidth * n + gap * (n - 1)
     val startX = ((areaWidthPx - totalGroupW) / 2f).coerceAtLeast(0f)
     return CalorieBarGeometry(barWidth, gap, startX)
+}
+
+/** X-axis label picks for the calorie chart: every [slotStep]-th slot, with
+ *  the end slot always labeled — replacing the last uniform pick rather than
+ *  appending, so label boxes stay [slotStep] slots apart instead of
+ *  overlapping at the right edge. */
+internal fun calorieLabelIndices(n: Int, slotStep: Int): List<Int> {
+    if (n <= 0) return emptyList()
+    val picks = mutableListOf<Int>()
+    var i = 0
+    while (i < n) {
+        picks.add(i)
+        i += slotStep
+    }
+    picks[picks.size - 1] = n - 1
+    return picks
 }
 
 /** Averages a date-sorted series into equal date buckets once it outgrows
@@ -1395,19 +1447,21 @@ internal fun CalorieBarChart(
                 val minLabelDp = 40.dp
                 val slotStep = if (slotDp >= minLabelDp) 1
                     else Math.ceil((minLabelDp.value / slotDp.value).toDouble()).toInt().coerceAtLeast(1)
-                val pickedIndices = buildList {
-                    var i = 0
-                    while (i < n) { add(i); i += slotStep }
-                    if (last() != n - 1) add(n - 1)
-                }.distinct()
+                val pickedIndices = calorieLabelIndices(n, slotStep)
                 val labelBoxWidth = if (slotStep == 1) slotDp else minLabelDp.coerceAtLeast(slotDp)
                 pickedIndices.forEach { i ->
                     val cxPx = startX + i * (barWidth + gap) + barWidth / 2f
                     val cxDp = with(density) { cxPx.toDp() }
+                    // Keep the box inside the chart area — the first/last slot
+                    // centers sit within half a box of the edges.
+                    val offsetX = (cxDp - labelBoxWidth / 2).coerceIn(
+                        0.dp,
+                        (areaWidthDp - labelBoxWidth).coerceAtLeast(0.dp),
+                    )
                     Box(
                         Modifier
                             .width(labelBoxWidth)
-                            .offset(x = cxDp - labelBoxWidth / 2)
+                            .offset(x = offsetX)
                             .alpha(tailAlpha),
                         contentAlignment = Alignment.Center
                     ) {
