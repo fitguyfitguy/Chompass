@@ -4,14 +4,6 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [5.5.0] - 2026-10-08
-
-### Changed
-
-- **Untracked days show on the progress charts** (Android): days you marked as not tracked now draw a soft band behind the weight, body fat, and measurement lines and a small dash on the calorie axis, instead of only appearing in the strip below the charts. Days with nothing logged stay visibly empty, so the calorie bars no longer pull logged days together. Closes Codeberg [#106](https://codeberg.org/fitguy/Chompass/issues/106).
-- **The 7-day trend reads at a glance** (Android): the weight trend is the solid line with a light fill underneath, weigh-ins are small dots without a connecting line, and a chip at the end of the line shows your latest value. Over-goal calorie bars are a single flat red, and the calorie chart labels skipped days the way it labels logged ones.
-- **Charts draw in** (Android): progress charts sweep in over about half a second when you open the tab or switch the range.
-
 ## [5.4.0] - 2026-10-08
 
 ### Changed
@@ -22,6 +14,9 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Settings split into focused screens** (Android): the broad groups are now Goals and Calories & Macros, AI Provider, Speech-to-Text, and Coach, Health Data and Data & Backup, plus About, Support & Feedback, and Privacy & Legal. The calorie and macro row is now called Calories & Macros so it no longer reads like a second Goals entry. Search, deep links, and the Health Connect energy-goals flow follow the new structure.
 - **Customize Progress sits beside the range chips** (Android): the entry is now a tune icon at the end of the range-chip row instead of a full-width row above the charts. Settings and hub search still find it.
 - **Open Food Facts outages say so** (Android): when the Open Food Facts search cannot be reached, the Add Food sheet shows an unreachable note instead of looking like nothing matched. Saved and offline results are unaffected.
+- **Untracked days show on the progress charts** (Android): days you marked as not tracked now draw a soft band behind the weight, body fat, and measurement lines and a small dash on the calorie axis, instead of only appearing in the strip below the charts. Days with nothing logged stay visibly empty, so the calorie bars no longer pull logged days together. Closes Codeberg [#106](https://codeberg.org/fitguy/Chompass/issues/106).
+- **The 7-day trend reads at a glance** (Android): the weight trend is the solid line with a light fill underneath, weigh-ins are small dots without a connecting line, and a chip at the end of the line shows your latest value. Over-goal calorie bars are a single flat red, and the calorie chart labels skipped days the way it labels logged ones.
+- **Charts draw in** (Android): progress charts sweep in over about half a second when you open the tab or switch the range.
 
 ### Fixed
 
