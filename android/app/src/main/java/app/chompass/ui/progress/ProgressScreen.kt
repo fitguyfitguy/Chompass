@@ -335,8 +335,14 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
             vm.addBodyFatAt(fraction, whenLogged); showAddBodyFatDialog = false
         }
     }
+    // Collected at screen level so the history sheets compose with data
+    // already present: collected inside the `if` they start empty, the sheet
+    // anchors to the header-only height, and the later emission never
+    // re-anchors it (maintainer finding M3 2026-10-08: sheet showed one
+    // entry, nothing to scroll).
+    val allWeights by container.weightRepository.entries.collectAsState(initial = emptyList())
+    val allBodyFats by container.bodyFatRepository.entries.collectAsState(initial = emptyList())
     if (showAllWeights) {
-        val allWeights by container.weightRepository.entries.collectAsState(initial = emptyList())
         AllWeightHistorySheet(
             entries = allWeights.sortedByDescending { it.date },
             useMetric = weightMetric,
@@ -345,7 +351,6 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
         )
     }
     if (showAllBodyFats) {
-        val allBodyFats by container.bodyFatRepository.entries.collectAsState(initial = emptyList())
         AllBodyFatHistorySheet(
             entries = allBodyFats.sortedByDescending { it.date },
             onDelete = vm::deleteBodyFat,
