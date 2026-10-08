@@ -435,7 +435,7 @@
     <!-- Settings -->
     <string name="settings_section_personal">Informații personale</string>
     <string name="settings_section_goals">Obiective și nutriție</string>
-    <string name="settings_section_nutrition_targets">Obiective nutriționale</string>
+    <string name="settings_section_nutrition_targets">Calorii și macro</string>
     <string name="settings_section_nutrition_targets_summary">Calorii, macro, obiective energetice</string>
     <string name="settings_section_ai">Furnizor AI</string>
     <string name="settings_section_ai_summary">Furnizor, model, chei, rezervă</string>
@@ -449,7 +449,7 @@
     <string name="settings_group_coach_summary">Fila antrenorului, instrucțiuni personalizate</string>
     <string name="settings_group_data">Date și backup</string>
     <string name="settings_group_personal_summary">Gen, înălțime, greutate, măsurători</string>
-    <string name="settings_group_goals_summary">Dietă, macro, obiective adaptive</string>
+    <string name="settings_group_goals_summary">Dietă, activitate, greutate obiectiv</string>
     <string name="settings_group_app_summary">Aspect, acasă, notificări</string>
     <string name="settings_group_ai_summary">Furnizor, model, chei, rezervă</string>
     <string name="settings_group_support">Asistență și feedback</string>

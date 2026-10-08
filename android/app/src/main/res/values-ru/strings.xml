@@ -537,7 +537,7 @@
     
     <string name="settings_section_personal">Личные данные</string>
     <string name="settings_section_goals">Цели и питание</string>
-    <string name="settings_section_nutrition_targets">Цели питания</string>
+    <string name="settings_section_nutrition_targets">Калории и макросы</string>
     <string name="settings_section_nutrition_targets_summary">Калории, макросы, цели по энергии</string>
     <string name="settings_section_ai">ИИ-провайдер</string>
     <string name="settings_section_ai_summary">Провайдер, модель, ключи, резерв</string>
@@ -551,7 +551,7 @@
     <string name="settings_group_coach_summary">Вкладка тренера, свои инструкции</string>
     <string name="settings_group_data">Данные и резервное копирование</string>
     <string name="settings_group_personal_summary">Пол, рост, вес, измерения</string>
-    <string name="settings_group_goals_summary">Диета, макросы, адаптивные цели</string>
+    <string name="settings_group_goals_summary">Диета, активность, целевой вес</string>
     <string name="settings_group_app_summary">Внешний вид, главная, уведомления</string>
     <string name="settings_group_ai_summary">Провайдер, модель, ключи, резерв</string>
     <string name="settings_group_data_summary">Экспорт, импорт, синхронизация, опасная зона</string>

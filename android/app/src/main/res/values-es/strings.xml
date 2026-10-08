@@ -435,7 +435,7 @@
     <!-- Settings -->
     <string name="settings_section_personal">Información personal</string>
     <string name="settings_section_goals">Objetivos y nutrición</string>
-    <string name="settings_section_nutrition_targets">Objetivos nutricionales</string>
+    <string name="settings_section_nutrition_targets">Calorías y macros</string>
     <string name="settings_section_nutrition_targets_summary">Calorías, macros, objetivos de energía</string>
     <string name="settings_section_ai">Proveedor de IA</string>
     <string name="settings_section_ai_summary">Proveedor, modelo, claves, respaldo</string>
@@ -449,7 +449,7 @@
     <string name="settings_group_coach_summary">Pestaña del Coach, instrucciones personalizadas</string>
     <string name="settings_group_data">Datos y copia de seguridad</string>
     <string name="settings_group_personal_summary">Género, altura, peso, medidas</string>
-    <string name="settings_group_goals_summary">Dieta, macros, objetivos adaptativos</string>
+    <string name="settings_group_goals_summary">Dieta, actividad, peso objetivo</string>
     <string name="settings_group_app_summary">Apariencia, inicio, notificaciones</string>
     <string name="settings_group_ai_summary">Proveedor, modelo, claves, respaldo</string>
     <string name="settings_group_data_summary">Exportar, importar, sincronización, zona de peligro</string>

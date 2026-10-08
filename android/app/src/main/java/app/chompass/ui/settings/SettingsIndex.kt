@@ -168,7 +168,7 @@ internal val SETTINGS_INDEX: List<SettingsIndexEntry> = listOf(
     SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_day_types_title,
         R.array.settings_search_kw_day_types, ChompassRoutes.SETTINGS_DAY_TYPES, Icons.Outlined.CalendarToday),
 
-    // — Nutrition Targets —
+    // — Calories & Macros —
     SettingsIndexEntry(R.string.settings_section_nutrition_targets, R.string.settings_energy_goals,
         R.array.settings_search_kw_energy_goals, ChompassRoutes.SETTINGS_NUTRITION_TARGETS, Icons.Outlined.LocalFireDepartment),
     SettingsIndexEntry(R.string.settings_section_nutrition_targets, R.string.settings_calories,

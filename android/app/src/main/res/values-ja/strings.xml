@@ -439,7 +439,7 @@
     <!-- Settings -->
     <string name="settings_section_personal">個人情報</string>
     <string name="settings_section_goals">目標と栄養</string>
-    <string name="settings_section_nutrition_targets">栄養ターゲット</string>
+    <string name="settings_section_nutrition_targets">カロリーとマクロ</string>
     <string name="settings_section_nutrition_targets_summary">カロリー、マクロ、エネルギー消費目標</string>
     <string name="settings_section_ai">AIプロバイダ</string>
     <string name="settings_section_ai_summary">プロバイダ、モデル、キー、フォールバック</string>
@@ -453,7 +453,7 @@
     <string name="settings_group_coach_summary">コーチタブ、カスタムAIインストラクション</string>
     <string name="settings_group_data">データとバックアップ</string>
     <string name="settings_group_personal_summary">性別、身長、体重、計測</string>
-    <string name="settings_group_goals_summary">食事、マクロ、適応目標</string>
+    <string name="settings_group_goals_summary">食事、活動、目標体重</string>
     <string name="settings_group_app_summary">外観、ホーム、通知</string>
     <string name="settings_group_ai_summary">プロバイダ、モデル、キー、フォールバック</string>
     <string name="settings_group_data_summary">エクスポート、インポート、同期、危険ゾーン</string>
