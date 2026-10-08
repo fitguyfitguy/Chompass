@@ -1,5 +1,6 @@
 package app.chompass.ui.progress
 
+import androidx.compose.ui.graphics.Color
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -35,13 +36,19 @@ class CalorieSlotModelTest {
         val start = LocalDate.of(2026, 10, 1)
         val end = LocalDate.of(2026, 10, 10)
         val untracked = setOf("2026-10-03", "2026-10-04", "2026-10-05", "2026-10-08")
-        val spans = buildUntrackedSpans(start, end, untracked)
+        val bands = buildUntrackedSpans(start, end, untracked)
         assertEquals(
             listOf(
-                epoch(LocalDate.of(2026, 10, 3))..epoch(LocalDate.of(2026, 10, 5)),
-                epoch(LocalDate.of(2026, 10, 8))..epoch(LocalDate.of(2026, 10, 8)),
+                UntrackedBand(
+                    epoch(LocalDate.of(2026, 10, 3))..epoch(LocalDate.of(2026, 10, 5)),
+                    partial = false,
+                ),
+                UntrackedBand(
+                    epoch(LocalDate.of(2026, 10, 8))..epoch(LocalDate.of(2026, 10, 8)),
+                    partial = false,
+                ),
             ),
-            spans,
+            bands,
         )
     }
 
@@ -51,10 +58,15 @@ class CalorieSlotModelTest {
         val end = LocalDate.of(2026, 10, 9)
         // 10-04 precedes the window; 10-09 is the boundary day itself.
         val untracked = setOf("2026-10-04", "2026-10-09", "2026-10-10")
-        val spans = buildUntrackedSpans(start, end, untracked)
+        val bands = buildUntrackedSpans(start, end, untracked)
         assertEquals(
-            listOf(epoch(LocalDate.of(2026, 10, 9))..epoch(LocalDate.of(2026, 10, 9))),
-            spans,
+            listOf(
+                UntrackedBand(
+                    epoch(LocalDate.of(2026, 10, 9))..epoch(LocalDate.of(2026, 10, 9)),
+                    partial = false,
+                ),
+            ),
+            bands,
         )
     }
 
@@ -65,14 +77,18 @@ class CalorieSlotModelTest {
         assertEquals(DayOfWeek.MONDAY, start.dayOfWeek)
         val end = start.plusDays(99)
         // Week 1 fully untracked (7/7), week 2 majority (4/7) -> both merge into
-        // one span covering week 2's full 7 days; week 3 minority (3/7) -> none.
+        // one full band covering week 2's full 7 days; week 3 minority (3/7)
+        // -> partial band over week 3.
         val untracked = (0..6).map { start.plusDays(it.toLong()).toString() }.toSet() +
             (7..10).map { start.plusDays(it.toLong()).toString() }.toSet() +
             (14..16).map { start.plusDays(it.toLong()).toString() }.toSet()
-        val spans = buildUntrackedSpans(start, end, untracked)
+        val bands = buildUntrackedSpans(start, end, untracked)
         assertEquals(
-            listOf(epoch(start)..epoch(start.plusDays(13))),
-            spans,
+            listOf(
+                UntrackedBand(epoch(start)..epoch(start.plusDays(13)), partial = false),
+                UntrackedBand(epoch(start.plusDays(14))..epoch(start.plusDays(20)), partial = true),
+            ),
+            bands,
         )
     }
 
@@ -81,15 +97,87 @@ class CalorieSlotModelTest {
         val start = LocalDate.of(2026, 1, 5)
         // 95 days still forces weekly buckets; range ends mid-week.
         val end = start.plusDays(94)
-        // Days 90..94 untracked: day 90 alone in its week (1/7, minority), the
-        // partial final week holds 91..94 (4/4, majority) -> band from that
-        // Monday, clamped to the range end instead of spilling past it.
+        // Days 90..94 untracked: day 90 alone in its week (1/7 -> partial band
+        // over that whole week), the partial final week holds 91..94 (4/4,
+        // majority) -> full band from that Monday, clamped to the range end.
         val untracked = (90..94).map { start.plusDays(it.toLong()).toString() }.toSet()
-        val spans = buildUntrackedSpans(start, end, untracked)
+        val bands = buildUntrackedSpans(start, end, untracked)
         assertEquals(
-            listOf(epoch(start.plusDays(91))..epoch(end)),
-            spans,
+            listOf(
+                UntrackedBand(
+                    epoch(start.plusDays(84))..epoch(start.plusDays(90)),
+                    partial = true,
+                ),
+                UntrackedBand(epoch(start.plusDays(91))..epoch(end), partial = false),
+            ),
+            bands,
         )
+    }
+
+    // -- buildMarkerLane ----------------------------------------------------
+
+    @Test
+    fun lane_dailyUntrackedDaysGetFullDashes() {
+        val markers = buildMarkerLane(
+            start = LocalDate.of(2026, 10, 5),
+            end = LocalDate.of(2026, 10, 7),
+            types = emptyMap(),
+            untracked = setOf("2026-10-06"),
+            typeColorOf = { Color.Transparent },
+        )
+        assertEquals(
+            listOf(
+                DayMarker(LocalDate.of(2026, 10, 5), null, untracked = false),
+                DayMarker(LocalDate.of(2026, 10, 6), null, untracked = true),
+                DayMarker(LocalDate.of(2026, 10, 7), null, untracked = false),
+            ),
+            markers,
+        )
+    }
+
+    @Test
+    fun lane_weeklyMajorityFullMinorityPartial() {
+        val start = LocalDate.of(2026, 1, 5)
+        val end = start.plusDays(99)
+        // Week 1 fully untracked -> full dash; week 2 holds 2/7 -> partial;
+        // week 3 untouched -> neither.
+        val untracked = (0..6).map { start.plusDays(it.toLong()).toString() }.toSet() +
+            (10..11).map { start.plusDays(it.toLong()).toString() }.toSet()
+        val markers = buildMarkerLane(
+            start = start,
+            end = end,
+            types = emptyMap(),
+            untracked = untracked,
+            typeColorOf = { Color.Transparent },
+        )
+        assertEquals(
+            DayMarker(start, null, untracked = true, partialUntracked = false),
+            markers[0],
+        )
+        assertEquals(
+            DayMarker(start.plusDays(7), null, untracked = false, partialUntracked = true),
+            markers[1],
+        )
+        assertEquals(
+            DayMarker(start.plusDays(14), null, untracked = false, partialUntracked = false),
+            markers[2],
+        )
+    }
+
+    // -- calorieLabelIndices ------------------------------------------------
+
+    @Test
+    fun labels_endSlotReplacesCrowdedPick() {
+        // 30 slots at step 4: uniform picks end at 28; forcing 29 by appending
+        // would crowd it (1-slot gap in a 4-slot box pitch) -> replace instead.
+        assertEquals(listOf(0, 4, 8, 12, 16, 20, 24, 29), calorieLabelIndices(30, 4))
+    }
+
+    @Test
+    fun labels_endSlotKeptWhenAlreadyPicked() {
+        assertEquals(listOf(0, 3, 6), calorieLabelIndices(7, 3))
+        assertEquals(listOf(0), calorieLabelIndices(1, 4))
+        assertEquals(emptyList<Int>(), calorieLabelIndices(0, 4))
     }
 
     // -- buildCalorieSlots --------------------------------------------------
