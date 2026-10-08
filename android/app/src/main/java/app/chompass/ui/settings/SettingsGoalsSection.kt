@@ -10,11 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DataUsage
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Equalizer
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.Speed
@@ -35,14 +33,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import app.chompass.R
-import app.chompass.models.AutoBalanceMacro
 import app.chompass.models.DietMode
 import app.chompass.models.KetoCarbMode
 import app.chompass.models.MacroPlanMode
 import app.chompass.models.WeightGoal
 import app.chompass.ui.components.ChompassIconBubble
-import app.chompass.ui.components.gramsText
-import app.chompass.ui.components.energyText
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
@@ -59,10 +54,7 @@ internal fun SettingsGoalsSection(
     vm: SettingsViewModel,
     nav: NavHostController,
     onOpenSheet: (SettingsSheet) -> Unit,
-    onHealthEnergyGoalsToggle: (Boolean) -> Unit,
     onShowAdaptiveGoalsInfo: () -> Unit,
-    onShowHealthEnergyGoalsInfo: () -> Unit,
-    onThirdMacroLockBlocked: () -> Unit,
 ) {
     SectionCard(title = stringResource(R.string.settings_section_goals)) {
                 profile?.let { p ->
@@ -117,96 +109,6 @@ internal fun SettingsGoalsSection(
                         onInfo = onShowAdaptiveGoalsInfo,
                         onChange = vm::setAdaptiveGoalsEnabled
                     )
-                    HorizontalDivider()
-                    BusyToggleRow(
-                        label = stringResource(R.string.settings_energy_goals),
-                        checked = ui.healthEnergyGoalsEnabled,
-                        icon = Icons.Outlined.LocalFireDepartment,
-                        // Only show recalc activity here when the recalculation
-                        // actually consults Health Connect: measuredEnergyTdeeIfEnabled
-                        // returns null (and the prompt skips the measured TDEE) unless
-                        // Energy Burn is on AND Health Connect is connected. Without
-                        // HC the row just sits there disabled — a spinner would lie.
-                        busy = ui.recalculatingGoals &&
-                            ui.healthEnergyGoalsEnabled &&
-                            ui.healthConnectEnabled,
-                        onInfo = onShowHealthEnergyGoalsInfo,
-                        subtitle = if (!ui.healthConnectEnabled) {
-                            stringResource(R.string.settings_needs_health_connect)
-                        } else {
-                            null
-                        },
-                        onSubtitleClick = if (!ui.healthConnectEnabled) {
-                            { nav.navigate(ChompassRoutes.SETTINGS_DATA) }
-                        } else {
-                            null
-                        },
-                        onChange = onHealthEnergyGoalsToggle
-                    )
-                    HorizontalDivider()
-                    // Chip is a real Locked / Auto toggle. Saving a picker value also locks;
-                    // picker Reset snaps to auto-balance. Locked rows survive Recalculate
-                    // and weekly Adaptive.
-                    val openGoal = { target: SettingsSheet -> onOpenSheet(target) }
-                    LockableGoalRow(
-                        label = stringResource(R.string.settings_calories),
-                        value = energyText(p.effectiveCalories),
-                        icon = Icons.Outlined.LocalFireDepartment,
-                        locked = p.caloriesLocked,
-                        onClick = { openGoal(SettingsSheet.CALORIES) },
-                        onToggleLock = vm::toggleCaloriesLock,
-                    )
-                    HorizontalDivider()
-                    LockableGoalRow(
-                        label = stringResource(R.string.macro_protein),
-                        value = when {
-                            p.proteinTargetMode.usesRate && p.proteinGramsPerKg != null ->
-                                stringResource(
-                                    R.string.protein_target_g_per_kg_format,
-                                    p.proteinGramsPerKg!!,
-                                    p.effectiveProtein,
-                                )
-                            else -> gramsText(p.effectiveProtein.toDouble())
-                        },
-                        icon = Icons.Outlined.DataUsage,
-                        iconTint = AppColors.Protein,
-                        locked = p.isMacroLocked(AutoBalanceMacro.PROTEIN) ||
-                            (p.proteinTargetMode.usesRate && p.proteinGramsPerKg != null),
-                        onClick = { openGoal(SettingsSheet.PROTEIN) },
-                        onToggleLock = {
-                            vm.toggleMacroLock(AutoBalanceMacro.PROTEIN, onThirdMacroLockBlocked)
-                        },
-                    )
-                    HorizontalDivider()
-                    LockableGoalRow(
-                        label = stringResource(R.string.macro_carbs),
-                        value = gramsText(p.effectiveCarbs.toDouble()),
-                        icon = Icons.Outlined.DataUsage,
-                        iconTint = AppColors.Carbs,
-                        locked = p.isMacroLocked(AutoBalanceMacro.CARBS),
-                        onClick = { openGoal(SettingsSheet.CARBS) },
-                        onToggleLock = {
-                            vm.toggleMacroLock(AutoBalanceMacro.CARBS, onThirdMacroLockBlocked)
-                        },
-                    )
-                    HorizontalDivider()
-                    LockableGoalRow(
-                        label = stringResource(R.string.macro_fat),
-                        value = gramsText(p.effectiveFat.toDouble()),
-                        icon = Icons.Outlined.DataUsage,
-                        iconTint = AppColors.Fat,
-                        locked = p.isMacroLocked(AutoBalanceMacro.FAT),
-                        onClick = { openGoal(SettingsSheet.FAT) },
-                        onToggleLock = {
-                            vm.toggleMacroLock(AutoBalanceMacro.FAT, onThirdMacroLockBlocked)
-                        },
-                    )
-                    HorizontalDivider()
-                    SettingRow(
-                        stringResource(R.string.settings_other_nutrient_goals),
-                        optionalNutrientSummary(ui.optionalNutrientGoals),
-                        icon = Icons.Outlined.DataUsage
-                    ) { nav.navigate(ChompassRoutes.OPTIONAL_NUTRIENT_GOALS) }
                     if (p.dietMode == DietMode.STANDARD) {
                         // Day types (#60): STANDARD-only — keto's fixed net-carb
                         // ceiling contradicts carb cycling (settled Q4). Switching

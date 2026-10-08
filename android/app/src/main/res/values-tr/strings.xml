@@ -820,19 +820,31 @@
     <!-- Settings -->
     <string name="settings_section_personal">Kişisel Bilgiler</string>
     <string name="settings_section_goals">Hedefler ve Beslenme</string>
-    <string name="settings_section_ai">AI ve Ses</string>
+    <string name="settings_section_nutrition_targets">Beslenme Hedefleri</string>
+    <string name="settings_section_nutrition_targets_summary">Kalori, makrolar, enerji hedefleri</string>
+    <string name="settings_section_ai">AI Sağlayıcı</string>
+    <string name="settings_section_ai_summary">Sağlayıcı, model, anahtarlar, yedek</string>
     <string name="settings_section_speech">Konuşmadan Metne</string>
-    <string name="settings_section_health">Sağlık ve Veriler</string>
+    <string name="settings_section_speech_summary">Sağlayıcı, dil, anahtar</string>
+    <string name="settings_section_health">Sağlık Verileri</string>
+    <string name="settings_section_health_summary">Health Connect, arka plan senkronizasyonu</string>
     <string name="settings_group_app_display">Uygulama ve Görünüm</string>
-    <string name="settings_group_ai">AI ve Ses</string>
-    <string name="settings_group_data">Sağlık ve Veriler</string>
+    <string name="settings_group_ai">AI Sağlayıcı</string>
+    <string name="settings_group_coach">Koç</string>
+    <string name="settings_group_coach_summary">Koç sekmesi, özel talimatlar</string>
+    <string name="settings_group_data">Veriler ve Yedekleme</string>
     <string name="settings_group_food">Yiyecek ve Kayıt</string>
     <string name="settings_group_personal_summary">Cinsiyet, boy, kilo, ölçümler</string>
     <string name="settings_group_goals_summary">Diyet, makrolar, uyarlanabilir hedefler</string>
     <string name="settings_group_food_summary">Kayıt, porsiyon boyutları, fotoğraf analizi</string>
     <string name="settings_group_app_summary">Görünüm, ana ekran, su, bildirimler</string>
-    <string name="settings_group_ai_summary">Sağlayıcılar, modeller, ses</string>
-    <string name="settings_group_data_summary">Health Connect, dışa aktarma, senkronizasyon</string>
+    <string name="settings_group_ai_summary">Sağlayıcı, model, anahtarlar, yedek</string>
+    <string name="settings_group_data_summary">Dışa aktarma, içe aktarma, senkronizasyon, tehlike bölgesi</string>
+    <string name="settings_group_support">Destek ve Geri Bildirim</string>
+    <string name="settings_group_support_summary">Sorun bildir, özellik iste, yoğurt ısmarla</string>
+    <string name="settings_group_legal">Gizlilik ve Yasal</string>
+    <string name="settings_group_legal_summary">Gizlilik politikası, varlıklar</string>
+    <string name="settings_about_summary">Sürüm, güncellemeler, paylaş</string>
 
     <string name="settings_water_title">Su</string>
     <string name="settings_water_intro">Ne kadar içtiğini takip et, günlük bir hedef belirle ve kiloya, havaya ve aktiviteye uyum sağlamasına izin ver.</string>

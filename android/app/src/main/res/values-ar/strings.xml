@@ -440,17 +440,29 @@
     <!-- Settings -->
     <string name="settings_section_personal">المعلومات الشخصية</string>
     <string name="settings_section_goals">الأهداف والتغذية</string>
+    <string name="settings_section_nutrition_targets">أهداف التغذية</string>
+    <string name="settings_section_nutrition_targets_summary">السعرات الحرارية والمغذيات الكبرى وأهداف إنفاق الطاقة</string>
     <string name="settings_section_ai">مزود الذكاء الاصطناعي</string>
+    <string name="settings_section_ai_summary">المزود والنموذج والمفاتيح والاحتياطي</string>
     <string name="settings_section_speech">تحويل الكلام إلى نص</string>
-    <string name="settings_section_health">الصحة والبيانات</string>
+    <string name="settings_section_speech_summary">المزود واللغة والمفتاح</string>
+    <string name="settings_section_health">بيانات الصحة</string>
+    <string name="settings_section_health_summary">Health Connect ومزامنة الخلفية</string>
     <string name="settings_group_app_display">التطبيق والعرض</string>
-    <string name="settings_group_ai">الذكاء الاصطناعي والصوت</string>
-    <string name="settings_group_data">الصحة والبيانات والمزامنة</string>
+    <string name="settings_group_ai">مزود الذكاء الاصطناعي</string>
+    <string name="settings_group_coach">المدرب</string>
+    <string name="settings_group_coach_summary">علامة تبويب المدرب وتعليمات الذكاء الاصطناعي المخصصة</string>
+    <string name="settings_group_data">البيانات والنسخ الاحتياطي</string>
     <string name="settings_group_personal_summary">الجنس والطول والوزن والقياسات</string>
     <string name="settings_group_goals_summary">النظام الغذائي والمغذيات والأهداف التكيفية</string>
     <string name="settings_group_app_summary">المظهر والرئيسية والإشعارات</string>
-    <string name="settings_group_ai_summary">المزودون والنماذج والصوت</string>
-    <string name="settings_group_data_summary">Health Connect والتصدير والمزامنة</string>
+    <string name="settings_group_ai_summary">المزود والنموذج والمفاتيح والاحتياطي</string>
+    <string name="settings_group_data_summary">التصدير والاستيراد والمزامنة ومنطقة الخطر</string>
+    <string name="settings_group_support">الدعم والملاحظات</string>
+    <string name="settings_group_support_summary">الإبلاغ عن مشكلات وطلب ميزات والتبرع</string>
+    <string name="settings_group_legal">الخصوصية والشؤون القانونية</string>
+    <string name="settings_group_legal_summary">سياسة الخصوصية والمصدر المفتوح والأصول</string>
+    <string name="settings_about_summary">الإصدار والتحديثات والمشاركة</string>
 
     <string name="settings_gender">الجنس</string>
     <string name="settings_birthday">تاريخ الميلاد</string>

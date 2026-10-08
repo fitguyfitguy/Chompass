@@ -13,9 +13,10 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.ui.navigation.ChompassRoutes
 
+/** Speech-to-text provider, language and key — split out of AI Provider. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AiSettingsScreen(
+fun SpeechSettingsScreen(
     container: AppContainer,
     nav: NavHostController,
     onBack: () -> Unit,
@@ -25,31 +26,17 @@ fun AiSettingsScreen(
     var sheet by remember { mutableStateOf<SettingsSheet?>(null) }
 
     SettingsSubScreen(
-        title = stringResource(R.string.settings_group_ai),
+        title = stringResource(R.string.settings_section_speech),
         onBack = onBack,
     ) {
-        SettingsAiSection(
+        SettingsSpeechSection(
             ui = ui,
-            vm = vm,
             onOpenSheet = { sheet = it },
         )
-        SettingsFallbackSection(
-            ui = ui,
-            vm = vm,
-            onOpenSheet = { sheet = it },
-        )
-        // Speech and Coach are their own screens now; serving-unit behavior is
-        // edited in Food & Entry.
         RelatedLinks(
             rows = listOf(
-                RelatedLink(label = stringResource(R.string.settings_section_speech)) {
-                    nav.navigate(ChompassRoutes.SETTINGS_SPEECH)
-                },
-                RelatedLink(label = stringResource(R.string.settings_group_coach)) {
-                    nav.navigate(ChompassRoutes.SETTINGS_COACH)
-                },
-                RelatedLink(label = stringResource(R.string.settings_group_food)) {
-                    nav.navigate(ChompassRoutes.SETTINGS_FOOD)
+                RelatedLink(label = stringResource(R.string.settings_group_ai)) {
+                    nav.navigate(ChompassRoutes.SETTINGS_AI)
                 },
             ),
         )

@@ -415,16 +415,28 @@
     <!-- Settings -->
     <string name="settings_section_personal">Persoonlijke gegevens</string>
     <string name="settings_section_goals">Doelen &amp; voeding</string>
+    <string name="settings_section_nutrition_targets">Voedingsdoelen</string>
+    <string name="settings_section_nutrition_targets_summary">Calorieën, macro\'s, energiedoelen</string>
     <string name="settings_section_ai">AI-provider</string>
+    <string name="settings_section_ai_summary">Provider, model, sleutels, reserve</string>
     <string name="settings_section_speech">Spraak-naar-tekst</string>
-    <string name="settings_section_health">Gezondheid &amp; gegevens</string>
+    <string name="settings_section_speech_summary">Provider, taal, sleutel</string>
+    <string name="settings_section_health">Gezondheidsgegevens</string>
+    <string name="settings_section_health_summary">Health Connect, achtergrondsynchronisatie</string>
     <string name="settings_group_app_display">App &amp; weergave</string>
-    <string name="settings_group_ai">AI &amp; spraak</string>
-    <string name="settings_group_data">Gezondheid, gegevens &amp; sync</string>
+    <string name="settings_group_ai">AI-provider</string>
+    <string name="settings_group_coach">Coach</string>
+    <string name="settings_group_coach_summary">Coach-tabblad, aangepaste instructies</string>
+    <string name="settings_group_data">Gegevens &amp; back-up</string>
     <string name="settings_group_personal_summary">Geslacht, lengte, gewicht, maten</string>
     <string name="settings_group_goals_summary">Dieet, macro\'s, adaptieve doelen</string>
     <string name="settings_group_app_summary">Uiterlijk, home, meldingen</string>
-    <string name="settings_group_ai_summary">Providers, modellen, spraak</string>
+    <string name="settings_group_ai_summary">Provider, model, sleutels, reserve</string>
+    <string name="settings_group_support">Ondersteuning en feedback</string>
+    <string name="settings_group_support_summary">Problemen melden, functies aanvragen, doneren</string>
+    <string name="settings_group_legal">Privacy en juridisch</string>
+    <string name="settings_group_legal_summary">Privacybeleid, assetcredits</string>
+    <string name="settings_about_summary">Versie, updates, delen</string>
 
     <string name="settings_gender">Geslacht</string>
     <string name="settings_birthday">Geboortedatum</string>
@@ -1305,7 +1317,7 @@
     <string name="settings_goals_how_lock">Vergrendel een doel om je eigen waarde te behouden. Herberekening en adaptieve doelen laten het ongemoeid.</string>
     <string name="settings_goals_how_title">Hoe je doelen werken</string>
     <string name="settings_goals_intro">Je dagelijkse calorie- en macrodoelen en wat ze bepaalt.</string>
-    <string name="settings_group_data_summary">Health Connect, exporteren, synchronisatie</string>
+    <string name="settings_group_data_summary">Exporteren, importeren, synchronisatie, gevarenzone</string>
     <string name="settings_group_food">Voedsel en invoer</string>
     <string name="settings_group_food_summary">Loggen, portiegroottes, foto-analyse</string>
     <string name="settings_health_background_denied">Achtergrondsynchronisatie heeft toestemming nodig om Health Connect te lezen terwijl Chompass gesloten is. Tik nogmaals op de schakelaar en verleen deze.</string>

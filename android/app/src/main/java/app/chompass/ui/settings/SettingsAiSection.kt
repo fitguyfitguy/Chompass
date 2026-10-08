@@ -2,7 +2,6 @@ package app.chompass.ui.settings
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Download
-import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Numbers
@@ -17,27 +16,24 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavHostController
 import app.chompass.R
 import app.chompass.models.AIProvider
 import app.chompass.models.LocaleFormat
 import app.chompass.services.ai.OpenAICompatibleClient
 import app.chompass.services.ondevice.OnDeviceDownloadState
-import app.chompass.ui.navigation.ChompassRoutes
 
 private fun leftoverGb(bytes: Long): String =
     "${LocaleFormat.decimal(bytes / 1_073_741_824.0, 1)} GB"
 
 /**
- * AI & Speech provider wiring: which service, model, key and endpoint are
- * used. Entry-flow behavior (serving sizes, photo note, constituents) lives
- * in Food & Entry — linked from here.
+ * AI provider wiring: which service, model, key and endpoint are used.
+ * Entry-flow behavior (serving sizes, photo note, constituents) lives in
+ * Food & Entry — linked from the AI screen footer.
  */
 @Composable
 internal fun SettingsAiSection(
     ui: SettingsUiState,
     vm: SettingsViewModel,
-    nav: NavHostController,
     onOpenSheet: (SettingsSheet) -> Unit,
 ) {
     SectionCard(title = stringResource(R.string.settings_section_ai)) {
@@ -52,19 +48,6 @@ internal fun SettingsAiSection(
                 )
                 SettingFootnote(stringResource(R.string.settings_ai_features_master_footer))
                 HorizontalDivider()
-                // Phase 1 of the master AI-off switch (Codeberg #20): hide the
-                // coach tab wholesale without touching any data path. The master
-                // switch above covers it too, so the row only shows while AI is on.
-                if (ui.aiFeaturesEnabled) {
-                    ToggleRow(
-                        stringResource(R.string.settings_show_coach_tab),
-                        ui.coachTabEnabled,
-                        icon = Icons.Outlined.Forum,
-                        onChange = { vm.setCoachTabEnabled(it) }
-                    )
-                    SettingFootnote(stringResource(R.string.settings_show_coach_tab_footer))
-                    HorizontalDivider()
-                }
                 SettingRow(stringResource(R.string.settings_ai_provider), stringResource(ui.selectedAI.displayNameRes), icon = Icons.Outlined.SmartToy) { onOpenSheet(SettingsSheet.AI_PROVIDER) }
                 // Privacy disclosure per provider: cloud providers receive food/chat/
                 // profile data; only on-device Gemma 4 keeps everything local.
@@ -191,12 +174,5 @@ internal fun SettingsAiSection(
                     )
                     SettingFootnote(stringResource(R.string.settings_gemini_google_search_footer))
                 }
-                HorizontalDivider()
-                // Cross-link (Rule A): serving-size behavior is edited in Food & Entry.
-                SettingRow(
-                    stringResource(R.string.settings_serving_unit_mode),
-                    stringResource(ui.servingUnitInferenceMode.displayNameRes),
-                    icon = Icons.Outlined.Tune,
-                ) { nav.navigate(ChompassRoutes.SETTINGS_FOOD) }
     }
 }

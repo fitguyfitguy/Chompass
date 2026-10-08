@@ -17,8 +17,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Equalizer
 import androidx.compose.material.icons.outlined.FolderOpen
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.Forum
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.LocalFireDepartment
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.Search
@@ -51,7 +58,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.R
-import app.chompass.ui.about.AboutSettingsRows
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.navigation.BottomNavScrollPadding
@@ -116,6 +122,13 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                         )
                         HorizontalDivider()
                         SettingsHubRow(
+                            label = stringResource(R.string.settings_section_nutrition_targets),
+                            summary = stringResource(R.string.settings_section_nutrition_targets_summary),
+                            icon = Icons.Outlined.LocalFireDepartment,
+                            onClick = { nav.navigate(ChompassRoutes.SETTINGS_NUTRITION_TARGETS) },
+                        )
+                        HorizontalDivider()
+                        SettingsHubRow(
                             label = stringResource(R.string.settings_group_food),
                             summary = stringResource(R.string.settings_group_food_summary),
                             icon = Icons.Outlined.Restaurant,
@@ -138,9 +151,30 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                         HorizontalDivider()
                         SettingsHubRow(
                             label = stringResource(R.string.settings_group_ai),
-                            summary = stringResource(R.string.settings_group_ai_summary),
+                            summary = stringResource(R.string.settings_section_ai_summary),
                             icon = Icons.Outlined.SmartToy,
                             onClick = { nav.navigate(ChompassRoutes.SETTINGS_AI) },
+                        )
+                        HorizontalDivider()
+                        SettingsHubRow(
+                            label = stringResource(R.string.settings_section_speech),
+                            summary = stringResource(R.string.settings_section_speech_summary),
+                            icon = Icons.Outlined.Mic,
+                            onClick = { nav.navigate(ChompassRoutes.SETTINGS_SPEECH) },
+                        )
+                        HorizontalDivider()
+                        SettingsHubRow(
+                            label = stringResource(R.string.settings_group_coach),
+                            summary = stringResource(R.string.settings_group_coach_summary),
+                            icon = Icons.Outlined.Forum,
+                            onClick = { nav.navigate(ChompassRoutes.SETTINGS_COACH) },
+                        )
+                        HorizontalDivider()
+                        SettingsHubRow(
+                            label = stringResource(R.string.settings_section_health),
+                            summary = stringResource(R.string.settings_section_health_summary),
+                            icon = Icons.Outlined.Favorite,
+                            onClick = { nav.navigate(ChompassRoutes.SETTINGS_HEALTH) },
                         )
                         HorizontalDivider()
                         SettingsHubRow(
@@ -152,8 +186,33 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                     }
                 }
 
-                SectionCard(title = stringResource(R.string.nav_about)) {
-                    AboutSettingsRows(container)
+                ChompassSurface(
+                    modifier = Modifier.fillMaxWidth(),
+                    cornerRadius = AppRadii.Container,
+                    padding = 0.dp,
+                ) {
+                    Column(Modifier.padding(vertical = 4.dp)) {
+                        SettingsHubRow(
+                            label = stringResource(R.string.nav_about),
+                            summary = stringResource(R.string.settings_about_summary),
+                            icon = Icons.Outlined.Info,
+                            onClick = { nav.navigate(ChompassRoutes.SETTINGS_ABOUT) },
+                        )
+                        HorizontalDivider()
+                        SettingsHubRow(
+                            label = stringResource(R.string.settings_group_support),
+                            summary = stringResource(R.string.settings_group_support_summary),
+                            icon = Icons.Outlined.BugReport,
+                            onClick = { nav.navigate(ChompassRoutes.SETTINGS_SUPPORT) },
+                        )
+                        HorizontalDivider()
+                        SettingsHubRow(
+                            label = stringResource(R.string.settings_group_legal),
+                            summary = stringResource(R.string.settings_group_legal_summary),
+                            icon = Icons.Outlined.Lock,
+                            onClick = { nav.navigate(ChompassRoutes.SETTINGS_LEGAL) },
+                        )
+                    }
                 }
             } else {
                 SettingsSearchResults(query = query, nav = nav)

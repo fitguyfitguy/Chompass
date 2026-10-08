@@ -435,17 +435,29 @@
     <!-- Settings -->
     <string name="settings_section_personal">Información personal</string>
     <string name="settings_section_goals">Objetivos y nutrición</string>
+    <string name="settings_section_nutrition_targets">Objetivos nutricionales</string>
+    <string name="settings_section_nutrition_targets_summary">Calorías, macros, objetivos de energía</string>
     <string name="settings_section_ai">Proveedor de IA</string>
+    <string name="settings_section_ai_summary">Proveedor, modelo, claves, respaldo</string>
     <string name="settings_section_speech">Voz a texto</string>
-    <string name="settings_section_health">Salud y datos</string>
+    <string name="settings_section_speech_summary">Proveedor, idioma, clave</string>
+    <string name="settings_section_health">Datos de salud</string>
+    <string name="settings_section_health_summary">Health Connect, sincronización en segundo plano</string>
     <string name="settings_group_app_display">App y pantalla</string>
-    <string name="settings_group_ai">IA y voz</string>
-    <string name="settings_group_data">Salud, datos y sincronización</string>
+    <string name="settings_group_ai">Proveedor de IA</string>
+    <string name="settings_group_coach">Coach</string>
+    <string name="settings_group_coach_summary">Pestaña del Coach, instrucciones personalizadas</string>
+    <string name="settings_group_data">Datos y copia de seguridad</string>
     <string name="settings_group_personal_summary">Género, altura, peso, medidas</string>
     <string name="settings_group_goals_summary">Dieta, macros, objetivos adaptativos</string>
     <string name="settings_group_app_summary">Apariencia, inicio, notificaciones</string>
-    <string name="settings_group_ai_summary">Proveedores, modelos, voz</string>
-    <string name="settings_group_data_summary">Health Connect, exportar, sync</string>
+    <string name="settings_group_ai_summary">Proveedor, modelo, claves, respaldo</string>
+    <string name="settings_group_data_summary">Exportar, importar, sincronización, zona de peligro</string>
+    <string name="settings_group_support">Soporte y comentarios</string>
+    <string name="settings_group_support_summary">Informar de problemas, solicitar funciones, donar</string>
+    <string name="settings_group_legal">Privacidad y legal</string>
+    <string name="settings_group_legal_summary">Política de privacidad, créditos de recursos</string>
+    <string name="settings_about_summary">Versión, actualizaciones, compartir</string>
 
     <string name="settings_gender">Sexo</string>
     <string name="settings_birthday">Fecha de nacimiento</string>

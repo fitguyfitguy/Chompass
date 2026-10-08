@@ -434,17 +434,29 @@ bilirsən?</string>
     <!-- Settings -->
     <string name="settings_section_personal">Şəxsi Məlumat</string>
     <string name="settings_section_goals">Hədəflər və Qidalanma</string>
-    <string name="settings_section_ai">AI və Nitq</string>
+    <string name="settings_section_nutrition_targets">Qidalanma hədəfləri</string>
+    <string name="settings_section_nutrition_targets_summary">Kalorilər, makro, enerji məqsədləri</string>
+    <string name="settings_section_ai">AI Provayder</string>
+    <string name="settings_section_ai_summary">Provayder, model, açarlar, ehtiyat</string>
     <string name="settings_section_speech">Nitqdən Mətnə</string>
-    <string name="settings_section_health">Sağlamlıq və Məlumat</string>
+    <string name="settings_section_speech_summary">Provayder, dil, açar</string>
+    <string name="settings_section_health">Sağlamlıq məlumatları</string>
+    <string name="settings_section_health_summary">Health Connect, fonda sinxronizasiya</string>
     <string name="settings_group_app_display">Tətbiq və görünüş</string>
-    <string name="settings_group_ai">AI və nitq</string>
-    <string name="settings_group_data">Sağlamlıq, məlumat və sync</string>
+    <string name="settings_group_ai">AI Provayder</string>
+    <string name="settings_group_coach">Məşqçi</string>
+    <string name="settings_group_coach_summary">Məşqçi nişanı, fərdi təlimatlar</string>
+    <string name="settings_group_data">Məlumat və ehtiyat nüsxə</string>
     <string name="settings_group_personal_summary">Cins, boy, çəki, ölçülər</string>
     <string name="settings_group_goals_summary">Diet, makro, adaptiv hədəflər</string>
     <string name="settings_group_app_summary">Görünüş, ana səhifə, bildirişlər</string>
-    <string name="settings_group_ai_summary">Provayderlər, modellər, nitq</string>
-    <string name="settings_group_data_summary">Health Connect, ixrac, sinxronizasiya</string>
+    <string name="settings_group_ai_summary">Provayder, model, açarlar, ehtiyat</string>
+    <string name="settings_group_data_summary">İxrac, idxal, sinxronizasiya, təhlükə zonası</string>
+    <string name="settings_group_support">Dəstək və rəy</string>
+    <string name="settings_group_support_summary">Problemi bildir, funksiya tələb et, qatıq al</string>
+    <string name="settings_group_legal">Məxfilik və hüquqi</string>
+    <string name="settings_group_legal_summary">Məxfilik siyasəti, resurslar</string>
+    <string name="settings_about_summary">Versiya, yeniləmələr, paylaş</string>
 
     <string name="settings_gender">Cins</string>
     <string name="settings_birthday">Doğum Günü</string>

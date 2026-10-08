@@ -435,16 +435,28 @@
     <!-- Settings -->
     <string name="settings_section_personal">Informații personale</string>
     <string name="settings_section_goals">Obiective și nutriție</string>
+    <string name="settings_section_nutrition_targets">Obiective nutriționale</string>
+    <string name="settings_section_nutrition_targets_summary">Calorii, macro, obiective energetice</string>
     <string name="settings_section_ai">Furnizor AI</string>
+    <string name="settings_section_ai_summary">Furnizor, model, chei, rezervă</string>
     <string name="settings_section_speech">Voce în text</string>
-    <string name="settings_section_health">Sănătate și date</string>
+    <string name="settings_section_speech_summary">Furnizor, limbă, cheie</string>
+    <string name="settings_section_health">Date de sănătate</string>
+    <string name="settings_section_health_summary">Health Connect, sincronizare în fundal</string>
     <string name="settings_group_app_display">Aplicație și afișare</string>
-    <string name="settings_group_ai">AI și voce</string>
-    <string name="settings_group_data">Sănătate, date și sync</string>
+    <string name="settings_group_ai">Furnizor AI</string>
+    <string name="settings_group_coach">Antrenor</string>
+    <string name="settings_group_coach_summary">Fila antrenorului, instrucțiuni personalizate</string>
+    <string name="settings_group_data">Date și backup</string>
     <string name="settings_group_personal_summary">Gen, înălțime, greutate, măsurători</string>
     <string name="settings_group_goals_summary">Dietă, macro, obiective adaptive</string>
     <string name="settings_group_app_summary">Aspect, acasă, notificări</string>
-    <string name="settings_group_ai_summary">Furnizori, modele, voce</string>
+    <string name="settings_group_ai_summary">Furnizor, model, chei, rezervă</string>
+    <string name="settings_group_support">Asistență și feedback</string>
+    <string name="settings_group_support_summary">Raportează probleme, solicită funcții, cumpără un iaurt</string>
+    <string name="settings_group_legal">Confidențialitate și aspecte legale</string>
+    <string name="settings_group_legal_summary">Politica de confidențialitate, resurse</string>
+    <string name="settings_about_summary">Versiune, actualizări, distribuie</string>
 
     <string name="settings_gender">Sex</string>
     <string name="settings_birthday">Data nașterii</string>
@@ -1320,7 +1332,7 @@
     <string name="settings_goals_how_lock">Blochează un obiectiv pentru a-ți păstra propria valoare. Recalcularea și obiectivele adaptive nu îl ating.</string>
     <string name="settings_goals_how_title">Cum funcționează obiectivele tale</string>
     <string name="settings_goals_intro">Obiectivele tale zilnice de calorii și macrouri și ce le determină.</string>
-    <string name="settings_group_data_summary">Health Connect, export, sincronizare</string>
+    <string name="settings_group_data_summary">Export, import, sincronizare, zonă de pericol</string>
     <string name="settings_group_food">Mâncare și înregistrare</string>
     <string name="settings_group_food_summary">Înregistrare, mărimi de porții, analiza fotografiilor</string>
     <string name="settings_health_background_denied">Sincronizarea în fundal necesită permisiunea de a citi Health Connect când Chompass este închis. Atinge din nou comutatorul și acord-o.</string>

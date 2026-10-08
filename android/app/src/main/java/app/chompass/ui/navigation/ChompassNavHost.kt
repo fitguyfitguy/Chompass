@@ -32,6 +32,9 @@ import app.chompass.AppContainer
 import app.chompass.models.EnergyUnit
 import app.chompass.services.update.AndroidUpdateChecker
 import app.chompass.services.update.AndroidUpdateState
+import app.chompass.ui.about.AboutSettingsScreen
+import app.chompass.ui.about.LegalSettingsScreen
+import app.chompass.ui.about.SupportSettingsScreen
 import app.chompass.ui.coach.CoachScreen
 import app.chompass.ui.home.HomeScreen
 import app.chompass.ui.home.PlanWeekScreen
@@ -41,16 +44,20 @@ import app.chompass.ui.progress.ProgressScreen
 import app.chompass.ui.settings.AiSettingsScreen
 import app.chompass.ui.settings.AppSettingsScreen
 import app.chompass.ui.settings.CalculationMethodsScreen
+import app.chompass.ui.settings.CoachSettingsScreen
 import app.chompass.ui.settings.CustomizeProgressScreen
 import app.chompass.ui.settings.DataSettingsScreen
 import app.chompass.ui.settings.DayTypesSettingsScreen
 import app.chompass.ui.settings.FoodEntrySettingsScreen
 import app.chompass.ui.settings.GoalsSettingsScreen
+import app.chompass.ui.settings.HealthDataSettingsScreen
 import app.chompass.ui.settings.HomeDisplaySettingsScreen
+import app.chompass.ui.settings.NutritionTargetsSettingsScreen
 import app.chompass.ui.settings.NotificationsSettingsScreen
 import app.chompass.ui.settings.OptionalNutrientGoalsScreen
 import app.chompass.ui.settings.PersonalSettingsScreen
 import app.chompass.ui.settings.SettingsScreen
+import app.chompass.ui.settings.SpeechSettingsScreen
 import app.chompass.ui.settings.SyncSettingsScreen
 import app.chompass.ui.settings.TrackersSettingsScreen
 import app.chompass.ui.settings.WaterSettingsScreen
@@ -327,6 +334,55 @@ fun ChompassNavHost(
                 }
                 composable(ChompassRoutes.SETTINGS_DATA) {
                     DataSettingsScreen(
+                        container = container,
+                        nav = nav,
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+                composable(ChompassRoutes.SETTINGS_NUTRITION_TARGETS) {
+                    NutritionTargetsSettingsScreen(
+                        container = container,
+                        nav = nav,
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+                composable(ChompassRoutes.SETTINGS_SPEECH) {
+                    SpeechSettingsScreen(
+                        container = container,
+                        nav = nav,
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+                composable(ChompassRoutes.SETTINGS_COACH) {
+                    CoachSettingsScreen(
+                        container = container,
+                        nav = nav,
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+                composable(ChompassRoutes.SETTINGS_HEALTH) {
+                    HealthDataSettingsScreen(
+                        container = container,
+                        nav = nav,
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+                composable(ChompassRoutes.SETTINGS_ABOUT) {
+                    AboutSettingsScreen(
+                        container = container,
+                        nav = nav,
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+                composable(ChompassRoutes.SETTINGS_SUPPORT) {
+                    SupportSettingsScreen(
+                        container = container,
+                        nav = nav,
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+                composable(ChompassRoutes.SETTINGS_LEGAL) {
+                    LegalSettingsScreen(
                         container = container,
                         nav = nav,
                         onBack = { nav.popBackStack() },
