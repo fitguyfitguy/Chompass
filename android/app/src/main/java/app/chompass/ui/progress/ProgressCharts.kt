@@ -173,6 +173,110 @@ internal fun buildMarkerLane(
         }
 }
 
+/**
+ * Epoch-ms day-boundary spans (start-of-day inclusive, system zone) of
+ * consecutive untracked days inside [start, end] — the muted backdrop bands
+ * behind the trend plots. Ranges longer than [maxSlots] days bucket per ISO
+ * week (Monday start — same grouping as [buildMarkerLane]); a week counts as
+ * untracked when more than half of its in-range days are untracked, and
+ * adjacent untracked weeks merge into one span covering the full final week.
+ */
+internal fun buildUntrackedSpans(
+    start: LocalDate,
+    end: LocalDate,
+    untracked: Set<String>,
+    maxSlots: Int = 90,
+): List<ClosedRange<Long>> {
+    if (start.isAfter(end) || untracked.isEmpty()) return emptyList()
+    val totalDays = ChronoUnit.DAYS.between(start, end).toInt() + 1
+    val weekly = totalDays > maxSlots
+    val step = if (weekly) 7L else 1L
+    val marked = (0 until totalDays)
+        .map { start.plusDays(it.toLong()) }
+        .let { days ->
+            if (!weekly) days.filter { it.toString() in untracked }
+            else days.groupBy { it.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)) }
+                .toSortedMap()
+                .flatMap { (weekStart, daysInWeek) ->
+                    if (daysInWeek.count { it.toString() in untracked } * 2 > daysInWeek.size) {
+                        listOf(weekStart)
+                    } else emptyList()
+                }
+        }
+    if (marked.isEmpty()) return emptyList()
+    val zone = ZoneId.systemDefault()
+    fun epochMs(day: LocalDate) = day.atStartOfDay(zone).toInstant().toEpochMilli()
+    val tail = if (weekly) 6L else 0L
+    val spans = mutableListOf<ClosedRange<Long>>()
+    var runStart = marked.first()
+    var runEnd = marked.first()
+    for (day in marked.drop(1)) {
+        if (day.toEpochDay() - runEnd.toEpochDay() <= step) {
+            runEnd = day
+        } else {
+            spans += epochMs(runStart)..epochMs(runEnd.plusDays(tail).coerceAtMost(end))
+            runStart = day
+            runEnd = day
+        }
+    }
+    spans += epochMs(runStart)..epochMs(runEnd.plusDays(tail).coerceAtMost(end))
+    return spans
+}
+
+/** One calendar day on the calorie axis: a logged value, an untracked dash,
+ *  or nothing — the day keeps its place instead of collapsing the bar row. */
+internal data class CalorieSlot(
+    val day: LocalDate,
+    val kcal: Int?,
+    val untracked: Boolean,
+)
+
+/** One [CalorieSlot] per calendar day in [start, end]; untracked days always
+ *  carry `kcal = null` even if somehow logged, logged-at-zero stays 0. */
+internal fun buildCalorieSlots(
+    start: LocalDate,
+    end: LocalDate,
+    logged: Map<LocalDate, Int>,
+    untracked: Set<String>,
+): List<CalorieSlot> {
+    if (start.isAfter(end)) return emptyList()
+    val totalDays = ChronoUnit.DAYS.between(start, end).toInt() + 1
+    return (0 until totalDays).map { i ->
+        val day = start.plusDays(i.toLong())
+        val untrackedDay = day.toString() in untracked
+        CalorieSlot(
+            day = day,
+            kcal = if (untrackedDay) null else logged[day],
+            untracked = untrackedDay,
+        )
+    }
+}
+
+/**
+ * Cap calorie-slot draw calls: within [maxSlots] the calendar-day slots pass
+ * through untouched; longer ranges roll up to ISO weeks (Monday start), summing
+ * logged kcal (null when nothing was logged that week) with a majority-untracked
+ * dash. Slot totals must use the unbucketed series — this is canvas-only.
+ */
+internal fun bucketCalorieSlots(
+    slots: List<CalorieSlot>,
+    maxSlots: Int = 90,
+): List<CalorieSlot> {
+    if (slots.size <= maxSlots) return slots
+    return slots
+        .groupBy { it.day.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)) }
+        .toSortedMap()
+        .map { (weekStart, days) ->
+            CalorieSlot(
+                day = weekStart,
+                kcal = days.mapNotNull { slot -> slot.kcal }
+                    .takeIf { days.any { slot -> slot.kcal != null } }
+                    ?.sum(),
+                untracked = days.count { it.untracked } * 2 > days.size,
+            )
+        }
+}
+
 /** 8dp marker strip: 3dp type dots / 6dp untracked dashes at slot fractions. */
 @Composable
 internal fun MarkerLane(
