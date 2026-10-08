@@ -4,13 +4,16 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [Unreleased]
+## [5.4.0] - 2026-10-08
 
 ### Changed
 
 - **One flat accent color** (Android): buttons, highlights, and the hero number use a single accent color where they used to carry a gradient. Your theme color choices, Material You dynamic color, and dark mode work as before.
 - **Standard Android app bars and dialogs** (Android): settings sub-screens show a top bar with a back arrow instead of a heading with a back chip. Confirmation dialogs use the standard Android layout, Saved Meals and the analysis queue use segmented tabs, and onboarding gets the same back arrow with a thin progress bar.
 - **Date wheels follow the app language** (Android): the day, month, and year columns now order themselves the way dates read in your language. English shows month first, German shows day first.
+- **Settings split into focused screens** (Android): the broad groups are now Goals and Calories & Macros, AI Provider, Speech-to-Text, and Coach, Health Data and Data & Backup, plus About, Support & Feedback, and Privacy & Legal. The calorie and macro row is now called Calories & Macros so it no longer reads like a second Goals entry. Search, deep links, and the Health Connect energy-goals flow follow the new structure.
+- **Customize Progress sits beside the range chips** (Android): the entry is now a tune icon at the end of the range-chip row instead of a full-width row above the charts. Settings and hub search still find it.
+- **Open Food Facts outages say so** (Android): when the Open Food Facts search cannot be reached, the Add Food sheet shows an unreachable note instead of looking like nothing matched. Saved and offline results are unaffected.
 
 ### Fixed
 
@@ -26,6 +29,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Barcode scans confirm the code before looking it up** (Android): a glare misread on a curved package could look up the wrong digits and report the product missing. The scanner now waits until it reads the same code twice. The not-found dialog shows the digits it queried, so a misread is visible. Closes Codeberg [#120](https://codeberg.org/fitguy/Chompass/issues/120) by [@quadcorei8085](https://codeberg.org/quadcorei8085).
 - **Web coach follow-ups work with Gemini 3** (web): a coach turn that uses a tool no longer fails with a missing thought signature error on Gemini 3 models. Fixes Codeberg [#115](https://codeberg.org/fitguy/Chompass/issues/115) by [@sparkyanna](https://codeberg.org/sparkyanna).
 - **Coach reads your diary again on the newest OpenAI models** (Android + web): asking Coach about your logged food with GPT-5.6 or GPT-6 Sol or Luna came back without the diary, because those models refuse the app's lookups unless reasoning is switched off. Coach now switches it off for them, so answers use your real entries. Follows Codeberg pull request [#121](https://codeberg.org/fitguy/Chompass/pulls/121) by [@NuperSu](https://codeberg.org/NuperSu).
+- **Relogged meals keep their serving and scale correctly** (Android): re-logging a saved meal with a cup, tablespoon, or other non-gram serving and then changing the amount recalculated nutrition from a 100 g base and gave wrong numbers. Amounts now scale from the meal's real portion. Fixes Codeberg [#128](https://codeberg.org/fitguy/Chompass/issues/128) by [@Ir0nhid3](https://codeberg.org/Ir0nhid3).
 
 ## [5.3.0] - 2026-09-25
 
