@@ -8,6 +8,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **Calorie header stays on one line** (Android): on the Progress tab the average readout could break across several lines and press the untracked-days note against the section title. The average now sits beside the title on one line, and the untracked-days note gets its own line below.
 - **Food search keeps database hits that only partly match your words** (Android): searching for something like "cooked potatoes" could come back empty because every product name was re-checked against your exact words, and anything not containing them was dropped. Database results now stay once the food databases matched them, with the closest word matches first.
 
 ## [5.4.0] - 2026-10-08
