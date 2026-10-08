@@ -48,30 +48,33 @@ internal fun CalorieSection(
     var expanded by rememberSaveable { mutableStateOf(true) }
     val untrackedCount = calorieSlots.count { it.untracked }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
+            verticalArrangement = Arrangement.spacedBy(2.dp),
             modifier = Modifier.progressCollapseHeader(expanded) { expanded = !expanded },
         ) {
-            Text(stringResource(R.string.progress_calories_section), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
-            Spacer(Modifier.weight(1f))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.progress_calories_section), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                Spacer(Modifier.weight(1f))
+                if (calorieAverage != null) {
+                    Text(
+                        stringResource(R.string.progress_avg_format, EnergyFormat.quantity(calorieAverage, LocalEnergyUnit.current), energyUnitLabel()),
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 1,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    )
+                }
+                Spacer(Modifier.width(8.dp))
+                CollapseChevron(expanded)
+            }
             if (untrackedCount > 0) {
                 Text(
                     pluralStringResource(R.plurals.untracked_days_excluded, untrackedCount, untrackedCount),
                     fontSize = 13.sp,
+                    maxLines = 1,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 )
             }
-            Spacer(Modifier.width(8.dp))
-            if (calorieAverage != null) {
-                Text(
-                    stringResource(R.string.progress_avg_format, EnergyFormat.quantity(calorieAverage, LocalEnergyUnit.current), energyUnitLabel()),
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
-                )
-            }
-            Spacer(Modifier.width(8.dp))
-            CollapseChevron(expanded)
         }
         AnimatedVisibility(
             visible = expanded,
