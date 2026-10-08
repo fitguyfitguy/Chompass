@@ -50,7 +50,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -396,7 +395,7 @@ fun VoiceInputSheet(
             // stop+transcribe, then Analyze on the reviewed transcript).
             val canAnalyze = transcript.trim().isNotEmpty() && phase != VoicePhase.TRANSCRIBING && !busy
             Spacer(Modifier.height(20.dp))
-            ChompassPrimaryButton(flushDrafts = true, 
+            ChompassPrimaryButton(flushDrafts = true,
                 text = stringResource(R.string.action_analyze),
                 enabled = canAnalyze,
                 onClick = {

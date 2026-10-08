@@ -207,7 +207,7 @@ fun NicotineCustomCountSheet(
             }
         },
         footer = {
-            ChompassPrimaryButton(flushDrafts = true, 
+            ChompassPrimaryButton(flushDrafts = true,
                 text = stringResource(R.string.nicotine_add),
                 enabled = count > 0,
                 modifier = Modifier
@@ -451,7 +451,7 @@ fun NicotineEditSheet(
             }
         },
         footer = {
-            ChompassPrimaryButton(flushDrafts = true, 
+            ChompassPrimaryButton(flushDrafts = true,
                 text = stringResource(R.string.action_save),
                 enabled = count > 0,
                 modifier = Modifier

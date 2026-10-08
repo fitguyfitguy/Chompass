@@ -214,7 +214,7 @@ fun CaffeineCustomSheet(
             }
         },
         footer = {
-            ChompassPrimaryButton(flushDrafts = true, 
+            ChompassPrimaryButton(flushDrafts = true,
                 text = stringResource(R.string.caffeine_add),
                 enabled = mg > 0,
                 modifier = Modifier
@@ -440,7 +440,7 @@ fun CaffeineEditSheet(
             }
         },
         footer = {
-            ChompassPrimaryButton(flushDrafts = true, 
+            ChompassPrimaryButton(flushDrafts = true,
                 text = stringResource(R.string.action_save),
                 enabled = mg > 0,
                 modifier = Modifier

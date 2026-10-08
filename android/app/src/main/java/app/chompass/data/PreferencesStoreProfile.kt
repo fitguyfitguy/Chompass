@@ -98,7 +98,6 @@ internal val PreferencesStore.appThemeColorImpl: Flow<String> get() = dataStore.
     }
 internal suspend fun PreferencesStore.setAppThemeColorImpl(v: String) { dataStore.edit { it[Keys.APP_THEME_COLOR] = v } }
 
-
     /** When ON the launcher icon stays teal and never swaps activity aliases (launcher workaround, #21). */
 internal val PreferencesStore.fixedLauncherIconImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.FIXED_LAUNCHER_ICON] ?: false }
 internal suspend fun PreferencesStore.setFixedLauncherIconImpl(v: Boolean) { dataStore.edit { it[Keys.FIXED_LAUNCHER_ICON] = v } }

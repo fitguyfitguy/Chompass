@@ -1,7 +1,6 @@
 package app.chompass.ui.settings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -71,7 +70,6 @@ import app.chompass.models.ActivityLevel
 import app.chompass.models.Gender
 import app.chompass.models.UserProfile
 import app.chompass.models.WeightGoal
-import app.chompass.ui.components.ChompassPrimaryButton
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.ChompassIconBubble
@@ -576,4 +574,3 @@ internal fun appearanceIcon(key: String): ImageVector = when (key) {
     "oled" -> Icons.Outlined.DarkMode
     else -> Icons.Outlined.SettingsBrightness
 }
-

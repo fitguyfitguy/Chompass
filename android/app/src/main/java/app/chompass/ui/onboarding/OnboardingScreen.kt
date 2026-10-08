@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -45,7 +44,6 @@ import app.chompass.models.CalorieSafety
 import java.time.LocalDate
 import java.time.Period
 import app.chompass.services.ondevice.OnDeviceCapability
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable

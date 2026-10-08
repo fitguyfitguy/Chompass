@@ -93,7 +93,7 @@ fun UntrackedDaySheet(
                     )
                 }
                 Spacer(Modifier.height(8.dp))
-                ChompassPrimaryButton(flushDrafts = true, 
+                ChompassPrimaryButton(flushDrafts = true,
                     text = stringResource(R.string.action_save),
                     onClick = {
                         val parsed = kcalText.toIntOrNull()

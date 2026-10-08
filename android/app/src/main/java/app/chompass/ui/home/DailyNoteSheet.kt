@@ -226,7 +226,7 @@ internal fun DailyNoteSheet(
                         Text(stringResource(R.string.action_clear))
                     }
                 }
-                ChompassPrimaryButton(flushDrafts = true, 
+                ChompassPrimaryButton(flushDrafts = true,
                     text = stringResource(R.string.action_save),
                     modifier = Modifier.weight(1f),
                     onClick = {

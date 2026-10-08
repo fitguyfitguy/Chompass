@@ -347,7 +347,7 @@ internal fun DayTypeProfileEditorSheet(
                 Text(stringResource(R.string.settings_day_types_copy_current))
             }
         }
-        ChompassPrimaryButton(flushDrafts = true, 
+        ChompassPrimaryButton(flushDrafts = true,
             enabled = canSave,
             modifier = Modifier.padding(horizontal = 18.dp),
             onClick = {
