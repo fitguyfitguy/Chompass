@@ -39,6 +39,7 @@ internal fun CalorieSection(
     calorieGoal: Int,
     calorieAverage: Int? = null,
     dailyCalorieGoals: Map<LocalDate, Int> = emptyMap(),
+    chartsImmediate: Boolean = false,
     /** Day-type/untracked marker lane inputs (UI-UX §10). */
     dayTypeByDay: Map<String, String> = emptyMap(),
     untrackedDays: Set<String> = emptySet(),
@@ -92,6 +93,7 @@ internal fun CalorieSection(
                         slots = chartSlots,
                         goal = calorieGoal,
                         dailyGoals = dailyCalorieGoals,
+                        immediate = chartsImmediate,
                         dayTypeByDay = dayTypeByDay,
                         untrackedDays = untrackedDays,
                         typeColorOf = typeColorOf,

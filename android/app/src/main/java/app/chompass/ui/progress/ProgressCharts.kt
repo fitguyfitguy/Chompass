@@ -5,6 +5,9 @@ import app.chompass.models.EnergyFormat
 import app.chompass.R
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,12 +44,17 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -294,6 +302,23 @@ internal fun trendFillPath(points: List<Offset>, height: Float): Path {
     path.lineTo(points.first().x, height)
     path.close()
     return path
+}
+
+/** Left-to-right partial of the straight path through [points] at [fraction]
+ *  (1f = full path) for the animated chart reveal, written into [dst]. */
+internal fun trimmedStraightPath(
+    points: List<Offset>,
+    fraction: Float,
+    measure: PathMeasure,
+    dst: Path,
+): Path {
+    dst.reset()
+    if (points.isEmpty()) return dst
+    measure.setPath(straightTrendPath(points), false)
+    val length = measure.length
+    if (length <= 0f) return dst
+    measure.getSegment(0f, length * fraction.coerceIn(0f, 1f), dst, true)
+    return dst
 }
 
 /** 8dp marker strip: 3dp type dots / 6dp untracked dashes at slot fractions. */
@@ -572,18 +597,18 @@ internal fun WeightChartCanvas(
     val goalLineColor = MaterialTheme.colorScheme.success.copy(alpha = 0.7f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
-    var chartRenderPhase by remember(entries, goalKg, useMetric, immediate) {
-        mutableStateOf(if (immediate) 2 else 0)
+    // 450ms draw-in: grid/goal/bands are instant, the trend sweeps in
+    // left-to-right, dots/labels/latest chip fade at the end. Keyed on the
+    // model so switching ranges re-runs the reveal; `immediate` (screenshot
+    // path) starts fully drawn for deterministic goldens.
+    val reveal = remember(chartModel, immediate) { Animatable(if (immediate) 1f else 0f) }
+    LaunchedEffect(chartModel, immediate) {
+        if (!immediate) reveal.animateTo(1f, tween(durationMillis = 450, easing = FastOutSlowInEasing))
     }
-    if (!immediate) {
-        LaunchedEffect(entries, goalKg, useMetric) {
-            chartRenderPhase = 0
-            withFrameNanos { }
-            chartRenderPhase = 1
-            withFrameNanos { }
-            chartRenderPhase = 2
-        }
-    }
+    val tailAlpha = ((reveal.value - 0.85f) / 0.15f).coerceIn(0f, 1f)
+    val pathMeasure = remember { PathMeasure() }
+    val trimDst = remember { Path() }
+    val tagPaint = remember { Paint() }
 
     var inspectedPoint by remember(chartModel) { mutableStateOf<Int?>(null) }
     val textMeasurer = rememberTextMeasurer()
@@ -680,15 +705,26 @@ internal fun WeightChartCanvas(
             clipRect {
                 // Raw weigh-ins stay honest as muted dots; the solid line is the
                 // labeled 7-day trend (dashes read as uncertainty, not style).
-                if (chartRenderPhase >= 1) {
-                    for (segment in chartModel.trendSegments) {
-                        val trendOffsets = segment.map(::pointOffset)
-                        drawPath(trendFillPath(trendOffsets, h), AppColors.Calorie.copy(alpha = 0.08f))
-                        drawPath(straightTrendPath(trendOffsets), AppColors.Calorie, style = Stroke(width = 4f))
+                for (segment in chartModel.trendSegments) {
+                    val trendOffsets = segment.map(::pointOffset)
+                    drawPath(
+                        trendFillPath(trendOffsets, h),
+                        AppColors.Calorie.copy(alpha = 0.08f * reveal.value),
+                    )
+                    if (trendOffsets.size == 1) {
+                        drawCircle(AppColors.Calorie, radius = 3.dp.toPx(), center = trendOffsets.first())
+                    } else {
+                        drawPath(
+                            trimmedStraightPath(trendOffsets, reveal.value, pathMeasure, trimDst),
+                            AppColors.Calorie,
+                            style = Stroke(width = 4f),
+                        )
                     }
                 }
-                if (chartRenderPhase >= 2 && chartModel.showsDots) {
-                    offsets.forEach { drawCircle(rawDotColor, radius = 3.dp.toPx(), center = it) }
+                if (chartModel.showsDots && tailAlpha > 0f) {
+                    offsets.forEach {
+                        drawCircle(rawDotColor.copy(alpha = 0.75f * tailAlpha), radius = 3.dp.toPx(), center = it)
+                    }
                 }
             }
             drawInspectedDot(offsets, inspectedPoint)
@@ -699,15 +735,20 @@ internal fun WeightChartCanvas(
             // Latest-value chip: the trend's end is the headline reading.
             val trendTail = chartModel.trendSegments.lastOrNull()?.lastOrNull()
                 ?: chartModel.points.lastOrNull()?.takeIf { chartModel.trendSegments.isEmpty() }
-            if (inspectedPoint == null && trendTail != null) {
-                drawInspectionTag(
-                    "${formatTick(trendTail.value)} $weightUnit",
-                    textMeasurer,
-                    pointOffset(trendTail),
-                    w,
-                    chipBackground,
-                    chipForeground,
-                )
+            if (inspectedPoint == null && trendTail != null && tailAlpha > 0f) {
+                drawIntoCanvas { canvas ->
+                    tagPaint.alpha = tailAlpha
+                    canvas.saveLayer(Rect(0f, 0f, w, h), tagPaint)
+                    drawInspectionTag(
+                        "${formatTick(trendTail.value)} $weightUnit",
+                        textMeasurer,
+                        pointOffset(trendTail),
+                        w,
+                        chipBackground,
+                        chipForeground,
+                    )
+                    canvas.restore()
+                }
             }
         }
         Column(
@@ -731,7 +772,7 @@ internal fun WeightChartCanvas(
         )
         Spacer(Modifier.width(36.dp))
     }
-    if (chartRenderPhase >= 1) {
+    Box(Modifier.alpha(tailAlpha)) {
         TrendXAxisLabels(
             chartModel.tStart,
             chartModel.tEnd,
@@ -763,18 +804,14 @@ internal fun BodyFatChartCanvas(
     val goalLineColor = MaterialTheme.colorScheme.success.copy(alpha = 0.7f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
-    var chartRenderPhase by remember(entries, goalFraction, immediate) {
-        mutableStateOf(if (immediate) 2 else 0)
+    val reveal = remember(chartModel, immediate) { Animatable(if (immediate) 1f else 0f) }
+    LaunchedEffect(chartModel, immediate) {
+        if (!immediate) reveal.animateTo(1f, tween(durationMillis = 450, easing = FastOutSlowInEasing))
     }
-    if (!immediate) {
-        LaunchedEffect(entries, goalFraction) {
-            chartRenderPhase = 0
-            withFrameNanos { }
-            chartRenderPhase = 1
-            withFrameNanos { }
-            chartRenderPhase = 2
-        }
-    }
+    val tailAlpha = ((reveal.value - 0.85f) / 0.15f).coerceIn(0f, 1f)
+    val pathMeasure = remember { PathMeasure() }
+    val trimDst = remember { Path() }
+    val tagPaint = remember { Paint() }
 
     var inspectedPoint by remember(chartModel) { mutableStateOf<Int?>(null) }
     val textMeasurer = rememberTextMeasurer()
@@ -870,12 +907,25 @@ internal fun BodyFatChartCanvas(
             clipRect {
                 // Readings path straight, not smoothed — the curve implied a
                 // calculated trend; the muted dots carry the raw cadence.
-                if (chartRenderPhase >= 1) {
-                    drawPath(trendFillPath(offsets, h), AppColors.Calorie.copy(alpha = 0.08f))
-                    drawPath(straightTrendPath(offsets), AppColors.Calorie, style = Stroke(width = 4f))
+                if (chartModel.points.isNotEmpty()) {
+                    drawPath(
+                        trendFillPath(offsets, h),
+                        AppColors.Calorie.copy(alpha = 0.08f * reveal.value),
+                    )
+                    if (offsets.size == 1) {
+                        drawCircle(AppColors.Calorie, radius = 4f, center = offsets.first())
+                    } else {
+                        drawPath(
+                            trimmedStraightPath(offsets, reveal.value, pathMeasure, trimDst),
+                            AppColors.Calorie,
+                            style = Stroke(width = 4f),
+                        )
+                    }
                 }
-                if (chartRenderPhase >= 2 && chartModel.showsDots) {
-                    offsets.forEach { drawCircle(rawDotColor, radius = 3.dp.toPx(), center = it) }
+                if (chartModel.showsDots && tailAlpha > 0f) {
+                    offsets.forEach {
+                        drawCircle(rawDotColor.copy(alpha = 0.75f * tailAlpha), radius = 3.dp.toPx(), center = it)
+                    }
                 }
             }
             drawInspectedDot(offsets, inspectedPoint)
@@ -884,16 +934,21 @@ internal fun BodyFatChartCanvas(
                 drawInspectionTag(inspectedLabel, textMeasurer, inspectedOffset, w, chipBackground, chipForeground)
             }
             // Latest-value chip at the newest reading.
-            if (inspectedPoint == null && chartModel.points.isNotEmpty()) {
+            if (inspectedPoint == null && chartModel.points.isNotEmpty() && tailAlpha > 0f) {
                 val tail = chartModel.points.last()
-                drawInspectionTag(
-                    formatPercentTick(tail.value),
-                    textMeasurer,
-                    pointOffset(tail),
-                    w,
-                    chipBackground,
-                    chipForeground,
-                )
+                drawIntoCanvas { canvas ->
+                    tagPaint.alpha = tailAlpha
+                    canvas.saveLayer(Rect(0f, 0f, w, h), tagPaint)
+                    drawInspectionTag(
+                        formatPercentTick(tail.value),
+                        textMeasurer,
+                        pointOffset(tail),
+                        w,
+                        chipBackground,
+                        chipForeground,
+                    )
+                    canvas.restore()
+                }
             }
         }
         Column(
@@ -917,7 +972,7 @@ internal fun BodyFatChartCanvas(
         )
         Spacer(Modifier.width(40.dp))
     }
-    if (chartRenderPhase >= 1) {
+    Box(Modifier.alpha(tailAlpha)) {
         TrendXAxisLabels(
             chartModel.tStart,
             chartModel.tEnd,
@@ -1000,18 +1055,13 @@ internal fun MeasurementChartCanvas(
     val bandColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
-    var chartRenderPhase by remember(series, immediate) {
-        mutableStateOf(if (immediate) 2 else 0)
+    val reveal = remember(chartModel, immediate) { Animatable(if (immediate) 1f else 0f) }
+    LaunchedEffect(chartModel, immediate) {
+        if (!immediate) reveal.animateTo(1f, tween(durationMillis = 450, easing = FastOutSlowInEasing))
     }
-    if (!immediate) {
-        LaunchedEffect(series) {
-            chartRenderPhase = 0
-            withFrameNanos { }
-            chartRenderPhase = 1
-            withFrameNanos { }
-            chartRenderPhase = 2
-        }
-    }
+    val tailAlpha = ((reveal.value - 0.85f) / 0.15f).coerceIn(0f, 1f)
+    val pathMeasure = remember { PathMeasure() }
+    val trimDst = remember { Path() }
 
     var inspectedPoint by remember(chartModel) { mutableStateOf<Int?>(null) }
     val textMeasurer = rememberTextMeasurer()
@@ -1097,9 +1147,22 @@ internal fun MeasurementChartCanvas(
             // Untracked bands sit behind every plot layer (#106).
             drawUntrackedBands(untrackedSpans, chartModel.tStart, chartModel.tRange, bandColor)
             clipRect {
-                drawPath(trendFillPath(offsets, h), AppColors.Calorie.copy(alpha = 0.08f))
-                drawPath(straightTrendPath(offsets), AppColors.Calorie, style = Stroke(width = 5f))
-                if (chartRenderPhase >= 2 && chartModel.showsDots) {
+                if (offsets.isNotEmpty()) {
+                    drawPath(
+                        trendFillPath(offsets, h),
+                        AppColors.Calorie.copy(alpha = 0.08f * reveal.value),
+                    )
+                    if (offsets.size == 1) {
+                        drawCircle(AppColors.Calorie, radius = 5.5f, center = offsets.first())
+                    } else {
+                        drawPath(
+                            trimmedStraightPath(offsets, reveal.value, pathMeasure, trimDst),
+                            AppColors.Calorie,
+                            style = Stroke(width = 5f),
+                        )
+                    }
+                }
+                if (chartModel.showsDots && tailAlpha > 0f) {
                     offsets.forEach { drawCircle(AppColors.Calorie, radius = 5.5f, center = it) }
                 }
             }
@@ -1130,7 +1193,7 @@ internal fun MeasurementChartCanvas(
         )
         Spacer(Modifier.width(36.dp))
     }
-    if (chartRenderPhase >= 1) {
+    Box(Modifier.alpha(tailAlpha)) {
         TrendXAxisLabels(
             chartModel.tStart,
             chartModel.tEnd,
@@ -1155,6 +1218,7 @@ internal fun CalorieBarChart(
     slots: List<CalorieSlot>,
     goal: Int,
     dailyGoals: Map<LocalDate, Int> = emptyMap(),
+    immediate: Boolean = false,
     /** Day-type/untracked marker lane inputs (UI-UX §10). */
     dayTypeByDay: Map<String, String> = emptyMap(),
     untrackedDays: Set<String> = emptySet(),
@@ -1173,6 +1237,14 @@ internal fun CalorieBarChart(
     val ticks = niceAxisTicks(0.0, maxValue, count = 5)
     val yTop = ticks.last().coerceAtLeast(maxValue)
     val xLabelFmt = LocaleFormat.shortDate()
+    // Same 450ms draw-in as the trend charts: bars grow from the baseline,
+    // untracked dashes and x labels fade at the end; `immediate` (screenshot
+    // path) starts fully drawn for deterministic goldens.
+    val reveal = remember(slots, immediate) { Animatable(if (immediate) 1f else 0f) }
+    LaunchedEffect(slots, immediate) {
+        if (!immediate) reveal.animateTo(1f, tween(durationMillis = 450, easing = FastOutSlowInEasing))
+    }
+    val tailAlpha = ((reveal.value - 0.85f) / 0.15f).coerceIn(0f, 1f)
 
     var inspectedBar by remember(slots) { mutableStateOf<Int?>(null) }
     val textMeasurer = rememberTextMeasurer()
@@ -1253,21 +1325,23 @@ internal fun CalorieBarChart(
                         val kcal = slot.kcal
                         when {
                             kcal != null -> {
-                                val barH = ((kcal / yTop).toFloat() * pxH)
-                                val y = pxH - barH
-                                val overGoal = kcal > (dailyGoals[slot.day] ?: goal)
-                                drawRoundRect(
-                                    color = if (overGoal) overColor else barColor,
-                                    topLeft = Offset(x, y),
-                                    size = Size(barWidth, barH),
-                                    cornerRadius = CornerRadius(4f, 4f)
-                                )
+                                val barH = ((kcal / yTop).toFloat() * pxH) * reveal.value
+                                if (barH > 0f) {
+                                    val y = pxH - barH
+                                    val overGoal = kcal > (dailyGoals[slot.day] ?: goal)
+                                    drawRoundRect(
+                                        color = if (overGoal) overColor else barColor,
+                                        topLeft = Offset(x, y),
+                                        size = Size(barWidth, barH),
+                                        cornerRadius = CornerRadius(4f, 4f)
+                                    )
+                                }
                             }
                             // Untracked day: baseline dash, never a zero bar.
-                            slot.untracked -> {
+                            slot.untracked && tailAlpha > 0f -> {
                                 val cx = x + barWidth / 2f
                                 drawLine(
-                                    color = dashColor,
+                                    color = dashColor.copy(alpha = 0.5f * tailAlpha),
                                     start = Offset(cx - 3.dp.toPx(), pxH - 2.dp.toPx()),
                                     end = Offset(cx + 3.dp.toPx(), pxH - 2.dp.toPx()),
                                     strokeWidth = 2.dp.toPx(),
@@ -1333,7 +1407,8 @@ internal fun CalorieBarChart(
                     Box(
                         Modifier
                             .width(labelBoxWidth)
-                            .offset(x = cxDp - labelBoxWidth / 2),
+                            .offset(x = cxDp - labelBoxWidth / 2)
+                            .alpha(tailAlpha),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(

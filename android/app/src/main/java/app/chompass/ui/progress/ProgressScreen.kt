@@ -476,6 +476,7 @@ internal fun ProgressScreenPreviewContent(
                         calorieGoal = ui.calorieGoal,
                         calorieAverage = ui.calorieAverage,
                         dailyCalorieGoals = ui.dailyCalorieGoals,
+                        chartsImmediate = chartsImmediate,
                         dayTypeByDay = ui.dayTypeByDay,
                         untrackedDays = ui.untrackedDays,
                         typeColorOf = typeColorOf,
