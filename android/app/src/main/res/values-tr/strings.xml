@@ -820,7 +820,7 @@
     <!-- Settings -->
     <string name="settings_section_personal">Kişisel Bilgiler</string>
     <string name="settings_section_goals">Hedefler ve Beslenme</string>
-    <string name="settings_section_nutrition_targets">Beslenme Hedefleri</string>
+    <string name="settings_section_nutrition_targets">Kalori ve Makrolar</string>
     <string name="settings_section_nutrition_targets_summary">Kalori, makrolar, enerji hedefleri</string>
     <string name="settings_section_ai">AI Sağlayıcı</string>
     <string name="settings_section_ai_summary">Sağlayıcı, model, anahtarlar, yedek</string>
@@ -835,7 +835,7 @@
     <string name="settings_group_data">Veriler ve Yedekleme</string>
     <string name="settings_group_food">Yiyecek ve Kayıt</string>
     <string name="settings_group_personal_summary">Cinsiyet, boy, kilo, ölçümler</string>
-    <string name="settings_group_goals_summary">Diyet, makrolar, uyarlanabilir hedefler</string>
+    <string name="settings_group_goals_summary">Diyet, aktivite, hedef kilo</string>
     <string name="settings_group_food_summary">Kayıt, porsiyon boyutları, fotoğraf analizi</string>
     <string name="settings_group_app_summary">Görünüm, ana ekran, su, bildirimler</string>
     <string name="settings_group_ai_summary">Sağlayıcı, model, anahtarlar, yedek</string>

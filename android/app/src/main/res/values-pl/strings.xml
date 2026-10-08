@@ -820,7 +820,7 @@
     <!-- Settings -->
     <string name="settings_section_personal">Dane osobowe</string>
     <string name="settings_section_goals">Cele i odżywianie</string>
-    <string name="settings_section_nutrition_targets">Cele żywieniowe</string>
+    <string name="settings_section_nutrition_targets">Kalorie i makroskładniki</string>
     <string name="settings_section_nutrition_targets_summary">Kalorie, makroskładniki, cele energetyczne</string>
     <string name="settings_section_ai">Dostawca AI</string>
     <string name="settings_section_ai_summary">Dostawca, model, klucze, zapasowy</string>
@@ -835,7 +835,7 @@
     <string name="settings_group_data">Dane i kopia zapasowa</string>
     <string name="settings_group_food">Jedzenie i dodawanie</string>
     <string name="settings_group_personal_summary">Płeć, wzrost, waga, pomiary</string>
-    <string name="settings_group_goals_summary">Dieta, makroskładniki, cele adaptacyjne</string>
+    <string name="settings_group_goals_summary">Dieta, aktywność, waga docelowa</string>
     <string name="settings_group_food_summary">Dodawanie, wielkości porcji, analiza zdjęć</string>
     <string name="settings_group_app_summary">Wygląd, ekran główny, woda, powiadomienia</string>
     <string name="settings_group_ai_summary">Dostawca, model, klucze, zapasowy</string>

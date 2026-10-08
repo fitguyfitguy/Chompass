@@ -1443,7 +1443,7 @@ für dich ein</string>
 
     <string name="settings_section_goals">Ziele &amp; Ernährung</string>
 
-    <string name="settings_section_nutrition_targets">Ernährungsziele</string>
+    <string name="settings_section_nutrition_targets">Kalorien &amp; Makros</string>
 
     <string name="settings_section_nutrition_targets_summary">Kalorien, Makros, Energieziele</string>
 
@@ -1473,7 +1473,7 @@ für dich ein</string>
 
     <string name="settings_group_personal_summary">Geschlecht, Größe, Gewicht, Körpermaße</string>
 
-    <string name="settings_group_goals_summary">Ernährung, Makros, adaptive Ziele</string>
+    <string name="settings_group_goals_summary">Diät, Aktivität, Zielgewicht</string>
 
     <string name="settings_group_food_summary">Erfassung, Portionsgrößen, Fotoanalyse</string>
 

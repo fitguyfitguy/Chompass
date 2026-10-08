@@ -415,7 +415,7 @@
     <!-- Settings -->
     <string name="settings_section_personal">Persoonlijke gegevens</string>
     <string name="settings_section_goals">Doelen &amp; voeding</string>
-    <string name="settings_section_nutrition_targets">Voedingsdoelen</string>
+    <string name="settings_section_nutrition_targets">Calorieën &amp; macro\'s</string>
     <string name="settings_section_nutrition_targets_summary">Calorieën, macro\'s, energiedoelen</string>
     <string name="settings_section_ai">AI-provider</string>
     <string name="settings_section_ai_summary">Provider, model, sleutels, reserve</string>
@@ -429,7 +429,7 @@
     <string name="settings_group_coach_summary">Coach-tabblad, aangepaste instructies</string>
     <string name="settings_group_data">Gegevens &amp; back-up</string>
     <string name="settings_group_personal_summary">Geslacht, lengte, gewicht, maten</string>
-    <string name="settings_group_goals_summary">Dieet, macro\'s, adaptieve doelen</string>
+    <string name="settings_group_goals_summary">Dieet, activiteit, streefgewicht</string>
     <string name="settings_group_app_summary">Uiterlijk, home, meldingen</string>
     <string name="settings_group_ai_summary">Provider, model, sleutels, reserve</string>
     <string name="settings_group_support">Ondersteuning en feedback</string>

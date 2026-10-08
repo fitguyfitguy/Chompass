@@ -1007,7 +1007,7 @@
     <!-- Settings -->
     <string name="settings_section_personal">Personal Info</string>
     <string name="settings_section_goals">Goals &amp; Nutrition</string>
-    <string name="settings_section_nutrition_targets">Nutrition Targets</string>
+    <string name="settings_section_nutrition_targets">Calories &amp; Macros</string>
     <string name="settings_section_nutrition_targets_summary">Calories, macros, energy goals</string>
     <string name="settings_section_ai">AI Provider</string>
     <string name="settings_section_ai_summary">Provider, model, keys, fallback</string>
@@ -1023,7 +1023,7 @@
     <string name="settings_group_data">Data &amp; Backup</string>
     <string name="settings_group_food">Food &amp; Entry</string>
     <string name="settings_group_personal_summary">Gender, height, weight, measurements</string>
-    <string name="settings_group_goals_summary">Diet, macros, adaptive goals</string>
+    <string name="settings_group_goals_summary">Diet, activity, goal weight</string>
     <string name="settings_group_food_summary">Logging, serving sizes, photo analysis</string>
     <string name="settings_group_app_summary">Appearance, theme, home &amp; progress, language</string>
     <string name="settings_group_trackers_summary">Water, nicotine, caffeine, fasting, reminders</string>

@@ -440,7 +440,7 @@
     <!-- Settings -->
     <string name="settings_section_personal">개인 정보</string>
     <string name="settings_section_goals">목표 및 영양</string>
-    <string name="settings_section_nutrition_targets">영양 목표</string>
+    <string name="settings_section_nutrition_targets">칼로리와 매크로</string>
     <string name="settings_section_nutrition_targets_summary">칼로리, 매크로, 에너지 소비 목표</string>
     <string name="settings_section_ai">AI 제공자</string>
     <string name="settings_section_ai_summary">제공자, 모델, 키, 폴백</string>
@@ -454,7 +454,7 @@
     <string name="settings_group_coach_summary">코치 탭, 사용자 지정 AI 지침</string>
     <string name="settings_group_data">데이터 및 백업</string>
     <string name="settings_group_personal_summary">성별, 키, 체중, 측정</string>
-    <string name="settings_group_goals_summary">식단, 매크로, 적응형 목표</string>
+    <string name="settings_group_goals_summary">식단, 활동, 목표 체중</string>
     <string name="settings_group_app_summary">모양, 홈, 알림</string>
     <string name="settings_group_ai_summary">제공자, 모델, 키, 폴백</string>
     <string name="settings_group_data_summary">내보내기, 가져오기, 동기화, 위험 구역</string>

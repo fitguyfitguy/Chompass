@@ -440,7 +440,7 @@
     <!-- Settings -->
     <string name="settings_section_personal">المعلومات الشخصية</string>
     <string name="settings_section_goals">الأهداف والتغذية</string>
-    <string name="settings_section_nutrition_targets">أهداف التغذية</string>
+    <string name="settings_section_nutrition_targets">السعرات الحرارية والمغذيات الكبرى</string>
     <string name="settings_section_nutrition_targets_summary">السعرات الحرارية والمغذيات الكبرى وأهداف إنفاق الطاقة</string>
     <string name="settings_section_ai">مزود الذكاء الاصطناعي</string>
     <string name="settings_section_ai_summary">المزود والنموذج والمفاتيح والاحتياطي</string>
@@ -454,7 +454,7 @@
     <string name="settings_group_coach_summary">علامة تبويب المدرب وتعليمات الذكاء الاصطناعي المخصصة</string>
     <string name="settings_group_data">البيانات والنسخ الاحتياطي</string>
     <string name="settings_group_personal_summary">الجنس والطول والوزن والقياسات</string>
-    <string name="settings_group_goals_summary">النظام الغذائي والمغذيات والأهداف التكيفية</string>
+    <string name="settings_group_goals_summary">النظام الغذائي والنشاط ووزن الهدف</string>
     <string name="settings_group_app_summary">المظهر والرئيسية والإشعارات</string>
     <string name="settings_group_ai_summary">المزود والنموذج والمفاتيح والاحتياطي</string>
     <string name="settings_group_data_summary">التصدير والاستيراد والمزامنة ومنطقة الخطر</string>

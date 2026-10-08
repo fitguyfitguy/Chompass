@@ -440,7 +440,7 @@
     <!-- Settings -->
     <string name="settings_section_personal">व्यक्तिगत जानकारी</string>
     <string name="settings_section_goals">लक्ष्य और पोषण</string>
-    <string name="settings_section_nutrition_targets">पोषण लक्ष्य</string>
+    <string name="settings_section_nutrition_targets">कैलोरी और मैक्रो</string>
     <string name="settings_section_nutrition_targets_summary">कैलोरी, मैक्रो, ऊर्जा व्यय लक्ष्य</string>
     <string name="settings_section_ai">AI प्रदाता</string>
     <string name="settings_section_ai_summary">प्रदाता, मॉडल, कुंजी, फ़ॉलबैक</string>
@@ -454,7 +454,7 @@
     <string name="settings_group_coach_summary">कोच टैब, कस्टम AI निर्देश</string>
     <string name="settings_group_data">डेटा और बैकअप</string>
     <string name="settings_group_personal_summary">लिंग, ऊंचाई, वजन, माप</string>
-    <string name="settings_group_goals_summary">आहार, मैक्रो, अनुकूली लक्ष्य</string>
+    <string name="settings_group_goals_summary">आहार, गतिविधि, लक्ष्य वज़न</string>
     <string name="settings_group_app_summary">दिखावट, होम, सूचनाएँ</string>
     <string name="settings_group_ai_summary">प्रदाता, मॉडल, कुंजी, फ़ॉलबैक</string>
     <string name="settings_group_data_summary">निर्यात, आयात, सिंक, खतरे का क्षेत्र</string>

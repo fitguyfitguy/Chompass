@@ -434,7 +434,7 @@ bilirsən?</string>
     <!-- Settings -->
     <string name="settings_section_personal">Şəxsi Məlumat</string>
     <string name="settings_section_goals">Hədəflər və Qidalanma</string>
-    <string name="settings_section_nutrition_targets">Qidalanma hədəfləri</string>
+    <string name="settings_section_nutrition_targets">Kalorilər və makro</string>
     <string name="settings_section_nutrition_targets_summary">Kalorilər, makro, enerji məqsədləri</string>
     <string name="settings_section_ai">AI Provayder</string>
     <string name="settings_section_ai_summary">Provayder, model, açarlar, ehtiyat</string>
@@ -448,7 +448,7 @@ bilirsən?</string>
     <string name="settings_group_coach_summary">Məşqçi nişanı, fərdi təlimatlar</string>
     <string name="settings_group_data">Məlumat və ehtiyat nüsxə</string>
     <string name="settings_group_personal_summary">Cins, boy, çəki, ölçülər</string>
-    <string name="settings_group_goals_summary">Diet, makro, adaptiv hədəflər</string>
+    <string name="settings_group_goals_summary">Diet, fəaliyyət, hədəf çəki</string>
     <string name="settings_group_app_summary">Görünüş, ana səhifə, bildirişlər</string>
     <string name="settings_group_ai_summary">Provayder, model, açarlar, ehtiyat</string>
     <string name="settings_group_data_summary">İxrac, idxal, sinxronizasiya, təhlükə zonası</string>
