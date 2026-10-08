@@ -60,6 +60,10 @@ internal fun TimeRangePicker(selected: TimeRange, onSelect: (TimeRange) -> Unit)
                         softWrap = false,
                         overflow = TextOverflow.Clip,
                         fontSize = 12.sp,
+                        // Center within the weight(1f) chip — the label slot
+                        // alone wrap-sizes and sits leading-biased (finding M2).
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 },
                 modifier = Modifier.weight(1f),
