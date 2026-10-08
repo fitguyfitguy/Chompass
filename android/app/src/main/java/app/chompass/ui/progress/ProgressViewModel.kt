@@ -71,8 +71,10 @@ data class ProgressUiState(
     val filteredMeasurements: List<BodyMeasurement> = emptyList(),
     /** Sites with a Progress-tab trend plot enabled in Customize Progress; empty = plots off. */
     val measurementSites: Set<BodyMeasurement.Site> = emptySet(),
-    val dailyCalories: List<Pair<LocalDate, Int>> = emptyList(),
-    /** Mean of complete days in [dailyCalories] (today excluded). Null if none. */
+    /** One [CalorieSlot] per calendar day in range — logged kcal, untracked
+     *  dash, or an honest gap; the calorie chart's axis. */
+    val calorieSlots: List<CalorieSlot> = emptyList(),
+    /** Mean over complete logged days with a positive total (today excluded). Null if none. */
     val calorieAverage: Int? = null,
     /**
      * Calorie goal rule for the selected range (#60 phase 3): the journaled
@@ -331,16 +333,20 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
     val foodByDay = dailyTotals
         .filter { it.date.toString() !in untrackedDays }
         .associate { it.date to it }
-    val dailyCalories = foodByDay
-        .toSortedMap()
-        .mapNotNull { (day, aggregate) ->
-            if (aggregate.calories == 0) null else day to aggregate.calories
-        }
-    val completeCalorieDays = dailyCalories.filter { it.first < anchorDate }
+    val (rangeStartDay, rangeEndDay) = selectedRange.dateRange(anchorDate)
+    val calorieSlots = buildCalorieSlots(
+        start = rangeStartDay,
+        end = rangeEndDay,
+        logged = foodByDay.mapValues { (_, aggregate) -> aggregate.calories },
+        untracked = untrackedDays,
+    )
+    // Average stays on the same complete logged days the old dropped-zero
+    // series used (today excluded; untracked days never reach [foodByDay]).
+    val completeCalorieDays = calorieSlots.filter { it.day < anchorDate && (it.kcal ?: 0) > 0 }
     val calorieAverage = if (completeCalorieDays.isEmpty()) {
         null
     } else {
-        completeCalorieDays.sumOf { it.second } / completeCalorieDays.size
+        completeCalorieDays.sumOf { it.kcal ?: 0 } / completeCalorieDays.size
     }
     val completeFoodByDay = foodByDay.filterKeys { it < anchorDate }
     val macroAverages: Triple<Double, Double, Double>
@@ -368,13 +374,16 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
     // target painted over all history" once day types exist. Per-bar goals are
     // journal-first per day (resolver fallback for gaps), so a logged rest day
     // under a training-day rule line still colors correctly.
-    val (rangeStartDay, rangeEndDay) = selectedRange.dateRange(anchorDate)
     val baseTargets = base.profile?.let { MacroPlanResolver.baseTargets(it) }
     val rangeTargets = MacroPlanResolver.journalAverage(base.goalJournal, rangeStartDay, rangeEndDay)
         ?: baseTargets
-    val dailyCalorieGoals = dailyCalories.associate { (day, _) ->
-        day to MacroPlanResolver.targetsForJournaled(base.goalJournal, base.profile, day, anchorDate).targets.calories
-    }
+    val dailyCalorieGoals = calorieSlots
+        .filter { it.kcal != null }
+        .associate { slot ->
+            slot.day to MacroPlanResolver
+                .targetsForJournaled(base.goalJournal, base.profile, slot.day, anchorDate)
+                .targets.calories
+        }
     // Marker-lane inputs: one resolver pass per day in range (pure math).
     val dayTypeByDay = buildMap {
         var day = rangeStartDay
@@ -398,7 +407,7 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
         filteredBodyFats = filteredBodyFats,
         filteredMeasurements = filteredMeasurements,
         measurementSites = base.measurementSites.mapNotNull { BodyMeasurement.Site.fromStorageId(it) }.toSet(),
-        dailyCalories = dailyCalories,
+        calorieSlots = calorieSlots,
         calorieAverage = calorieAverage,
         calorieGoal = rangeTargets?.calories ?: 2000,
         proteinGoal = rangeTargets?.proteinG ?: 0,

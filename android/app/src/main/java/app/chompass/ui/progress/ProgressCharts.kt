@@ -42,7 +42,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
@@ -108,40 +107,13 @@ internal data class BodyFatChartModel(
     val goalPercent: Double?
 )
 
-/**
- * Cap calorie-bar draw calls. 1W/1M stay daily. Longer ranges roll up to ISO
- * weeks (iOS weekly bars); if that still exceeds [maxBars] (All over years),
- * fold weeks into equal-width buckets. Badge totals must use the unbucketed
- * series — this is canvas-only.
- */
-internal fun downsampleCalorieBars(
-    dailyCalories: List<Pair<LocalDate, Int>>,
-    maxBars: Int = 90,
-): List<Pair<LocalDate, Int>> {
-    if (dailyCalories.size <= maxBars) return dailyCalories
-    val weekly = dailyCalories
-        .groupBy { it.first.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)) }
-        .toSortedMap()
-        .map { (weekStart, days) -> weekStart to days.sumOf { it.second } }
-    if (weekly.size <= maxBars) return weekly
-    val first = weekly.first().first
-    val last = weekly.last().first
-    val spanDays = ChronoUnit.DAYS.between(first, last).coerceAtLeast(1)
-    val bucketDays = ((spanDays + maxBars - 1) / maxBars).coerceAtLeast(7)
-    return weekly
-        .groupBy { ChronoUnit.DAYS.between(first, it.first) / bucketDays }
-        .toSortedMap()
-        .values
-        .map { bucket -> bucket.first().first to bucket.sumOf { it.second } }
-}
-
 /** One day's marker under a chart: day-type dot, untracked dash (UI-UX §10). */
 internal data class DayMarker(val date: LocalDate, val typeColor: Color?, val untracked: Boolean)
 
 /**
  * Dense marker list for the trend charts: per-day while the span fits
  * [maxSlots] days, otherwise ISO-week buckets (Monday start — same grouping
- * as [downsampleCalorieBars]) with the majority type and a majority-untracked
+ * as [bucketCalorieSlots]) with the majority type and a majority-untracked
  * dash, so dots stay readable at 6M/1Y ranges.
  */
 internal fun buildMarkerLane(
@@ -224,8 +196,9 @@ internal fun buildUntrackedSpans(
 }
 
 /** One calendar day on the calorie axis: a logged value, an untracked dash,
- *  or nothing — the day keeps its place instead of collapsing the bar row. */
-internal data class CalorieSlot(
+ *  or nothing — the day keeps its place instead of collapsing the bar row.
+ *  Public: exposed through [ProgressUiState]. */
+data class CalorieSlot(
     val day: LocalDate,
     val kcal: Int?,
     val untracked: Boolean,
@@ -1171,14 +1144,15 @@ internal fun MeasurementChartCanvas(
 }
 
 /**
- * Per-day calorie bars against a goal rule line (#60 phase 3): [goal] is the
- * range average (MACRO-CYCLE-D); each bar colors over/under against its own
- * day's target from [dailyGoals] (journal-first; missing entries — e.g.
- * downsampled week buckets — fall back to [goal]).
+ * Calendar-day calorie bars against a goal rule line (#60 phase 3): [goal] is
+ * the range average (MACRO-CYCLE-D); each bar colors over/under against its
+ * own day's target from [dailyGoals] (journal-first; missing entries — e.g.
+ * bucketed week slots — fall back to [goal]). Untracked days draw a baseline
+ * dash; days with nothing logged leave a real gap on the axis.
  */
 @Composable
 internal fun CalorieBarChart(
-    dailyCalories: List<Pair<LocalDate, Int>>,
+    slots: List<CalorieSlot>,
     goal: Int,
     dailyGoals: Map<LocalDate, Int> = emptyMap(),
     /** Day-type/untracked marker lane inputs (UI-UX §10). */
@@ -1186,10 +1160,12 @@ internal fun CalorieBarChart(
     untrackedDays: Set<String> = emptySet(),
     typeColorOf: (String) -> Color = { Color.Transparent },
 ) {
-    val maxValue = dailyCalories.maxOf { it.second }.coerceAtLeast(goal).toDouble()
+    val maxValue = slots.mapNotNull { it.kcal }.maxOrNull()?.coerceAtLeast(goal)?.toDouble()
+        ?: goal.toDouble()
     val barColor = AppColors.Calorie
-    val overColor = MaterialTheme.colorScheme.error
-    val overColorSoft = overColor.copy(alpha = 0.75f)
+    // Over-goal bars are flat error (no gradient — restyle D1/D10).
+    val overColor = MaterialTheme.colorScheme.error.copy(alpha = 0.85f)
+    val dashColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
     val goalColor = AppColors.Calorie.copy(alpha = 0.4f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
@@ -1198,38 +1174,38 @@ internal fun CalorieBarChart(
     val yTop = ticks.last().coerceAtLeast(maxValue)
     val xLabelFmt = LocaleFormat.shortDate()
 
-    var inspectedBar by remember(dailyCalories) { mutableStateOf<Int?>(null) }
+    var inspectedBar by remember(slots) { mutableStateOf<Int?>(null) }
     val textMeasurer = rememberTextMeasurer()
     val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Strong)
     val chipForeground = MaterialTheme.colorScheme.surface
     val energyUnit = LocalEnergyUnit.current
     val inspectedTitle = stringResource(R.string.progress_calories_section)
-    val inspectedNow = inspectedBar?.let { dailyCalories.getOrNull(it) }
+    val inspectedNow = inspectedBar?.let { slots.getOrNull(it) }?.takeIf { it.kcal != null }
     val chartDescription = if (inspectedNow != null) {
         stringResource(
             R.string.a11y_chart_inspection,
             inspectedTitle,
-            xLabelFmt.format(inspectedNow.first),
-            "${LocaleFormat.integer(EnergyFormat.quantity(inspectedNow.second, energyUnit))} ${energyUnitLabel()}",
+            xLabelFmt.format(inspectedNow.day),
+            "${LocaleFormat.integer(EnergyFormat.quantity(inspectedNow.kcal ?: 0, energyUnit))} ${energyUnitLabel()}",
         )
     } else {
         inspectedTitle
     }
     val inspectedLabel = inspectedBar?.let { index ->
-        dailyCalories.getOrNull(index)?.let { (day, kcal) ->
-            "${xLabelFmt.format(day)} · ${LocaleFormat.integer(EnergyFormat.quantity(kcal, energyUnit))} ${energyUnitLabel()}"
+        slots.getOrNull(index)?.takeIf { it.kcal != null }?.let { slot ->
+            "${xLabelFmt.format(slot.day)} · ${LocaleFormat.integer(EnergyFormat.quantity(slot.kcal ?: 0, energyUnit))} ${energyUnitLabel()}"
         }
     }
-    // One marker per plotted bar (bucket key after downsampling), so dots
-    // align with bars at every range.
-    val dayMarkers = dailyCalories.map { (day, _) ->
-        DayMarker(day, dayTypeByDay[day.toString()]?.let(typeColorOf), day.toString() in untrackedDays)
+    // One marker per plotted slot (bucket day after roll-up), so dashes and
+    // dots align with bars at every range.
+    val dayMarkers = slots.map { slot ->
+        DayMarker(slot.day, dayTypeByDay[slot.day.toString()]?.let(typeColorOf), slot.untracked)
     }
     Column {
         Row(Modifier.fillMaxWidth().height(180.dp)) {
             BoxWithConstraints(Modifier.weight(1f).fillMaxSize()) {
                 val barAreaWidthPx = with(density) { maxWidth.toPx() }
-                val n = dailyCalories.size
+                val n = slots.size
                 val geometry = calorieBarGeometry(barAreaWidthPx, n, density)
                 val gap = geometry.gap
                 val barWidth = geometry.barWidth
@@ -1239,13 +1215,14 @@ internal fun CalorieBarChart(
                     Modifier
                         .fillMaxSize()
                         .semantics { contentDescription = chartDescription }
-                        .pointerInput(dailyCalories, startX, barWidth, gap) {
+                        .pointerInput(slots, startX, barWidth, gap) {
                             detectTapGestures { tap ->
                                 if (n == 0) return@detectTapGestures
                                 val raw = ((tap.x - startX) / (barWidth + gap)).toInt()
                                 // Taps past the last bar's right edge (label gutter,
-                                // y-axis spacer) do nothing instead of selecting it.
-                                if (raw < 0 || raw >= n) return@detectTapGestures
+                                // y-axis spacer) do nothing instead of selecting it;
+                                // only kcal-bearing slots are selectable.
+                                if (raw < 0 || raw >= n || slots[raw].kcal == null) return@detectTapGestures
                                 inspectedBar = if (inspectedBar == raw) null else raw
                             }
                         }
@@ -1271,33 +1248,38 @@ internal fun CalorieBarChart(
                         strokeWidth = 2f,
                         pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 6f))
                     )
-                    dailyCalories.forEachIndexed { i, (day, cals) ->
-                        val barH = ((cals / yTop).toFloat() * pxH)
+                    slots.forEachIndexed { i, slot ->
                         val x = startX + i * (barWidth + gap)
-                        val y = pxH - barH
-                        val overGoal = cals > (dailyGoals[day] ?: goal)
-                        if (overGoal) {
-                            drawRoundRect(
-                                brush = Brush.verticalGradient(
-                                    colors = listOf(overColorSoft, overColor),
-                                    startY = y, endY = pxH
-                                ),
-                                topLeft = Offset(x, y),
-                                size = Size(barWidth, barH),
-                                cornerRadius = CornerRadius(4f, 4f)
-                            )
-                        } else {
-                            drawRoundRect(
-                                color = barColor,
-                                topLeft = Offset(x, y),
-                                size = Size(barWidth, barH),
-                                cornerRadius = CornerRadius(4f, 4f)
-                            )
+                        val kcal = slot.kcal
+                        when {
+                            kcal != null -> {
+                                val barH = ((kcal / yTop).toFloat() * pxH)
+                                val y = pxH - barH
+                                val overGoal = kcal > (dailyGoals[slot.day] ?: goal)
+                                drawRoundRect(
+                                    color = if (overGoal) overColor else barColor,
+                                    topLeft = Offset(x, y),
+                                    size = Size(barWidth, barH),
+                                    cornerRadius = CornerRadius(4f, 4f)
+                                )
+                            }
+                            // Untracked day: baseline dash, never a zero bar.
+                            slot.untracked -> {
+                                val cx = x + barWidth / 2f
+                                drawLine(
+                                    color = dashColor,
+                                    start = Offset(cx - 3.dp.toPx(), pxH - 2.dp.toPx()),
+                                    end = Offset(cx + 3.dp.toPx(), pxH - 2.dp.toPx()),
+                                    strokeWidth = 2.dp.toPx(),
+                                )
+                            }
                         }
                     }
                     inspectedBar?.takeIf { it < n }?.let { index ->
+                        val slot = slots.getOrNull(index) ?: return@let
+                        val kcal = slot.kcal ?: return@let
                         val cx = startX + index * (barWidth + gap) + barWidth / 2f
-                        val topY = pxH - ((dailyCalories[index].second / yTop).toFloat() * pxH)
+                        val topY = pxH - ((kcal / yTop).toFloat() * pxH)
                         drawCircle(AppColors.Calorie.copy(alpha = 0.25f), radius = 16f, center = Offset(cx, topY))
                         if (inspectedLabel != null) {
                             drawInspectionTag(inspectedLabel, textMeasurer, Offset(cx, topY), pxW, chipBackground, chipForeground)
@@ -1317,7 +1299,7 @@ internal fun CalorieBarChart(
         Row(Modifier.fillMaxWidth()) {
             BoxWithConstraints(Modifier.weight(1f)) {
                 val areaWidthPx = with(density) { maxWidth.toPx() }
-                val geometry = calorieBarGeometry(areaWidthPx, dailyCalories.size, density)
+                val geometry = calorieBarGeometry(areaWidthPx, slots.size, density)
                 MarkerLane(
                     markers = dayMarkers,
                     xFraction = { i -> geometry.slotCenter(i) / areaWidthPx },
@@ -1329,7 +1311,7 @@ internal fun CalorieBarChart(
             BoxWithConstraints(Modifier.weight(1f)) {
                 val areaWidthDp = maxWidth
                 val areaWidthPx = with(density) { areaWidthDp.toPx() }
-                val n = dailyCalories.size
+                val n = slots.size
                 val geometry = calorieBarGeometry(areaWidthPx, n, density)
                 val gap = geometry.gap
                 val barWidth = geometry.barWidth
@@ -1355,7 +1337,7 @@ internal fun CalorieBarChart(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            xLabelFmt.format(dailyCalories[i].first),
+                            xLabelFmt.format(slots[i].day),
                             fontSize = 11.sp,
                             color = secondaryColor,
                             maxLines = 1
