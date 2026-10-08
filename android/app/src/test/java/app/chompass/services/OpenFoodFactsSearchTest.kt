@@ -84,7 +84,13 @@ class OpenFoodFactsSearchTest {
         brand: String? = null,
     ): List<OpenFoodFactsService.SearchHit> = runBlocking {
         val base = server.url("/").toString()
-        OpenFoodFactsService.search(query, brand = brand, client = client, baseUrl = base, searchBaseUrl = base)
+        OpenFoodFactsService.search(
+            query,
+            brand = brand,
+            client = client,
+            baseUrl = base,
+            searchBaseUrl = base,
+        ).hits
     }
 
     private fun lastQueryParameter(name: String): String? {
@@ -426,7 +432,7 @@ class OpenFoodFactsSearchTest {
             server.enqueue(MockResponse().setSocketPolicy(okhttp3.mockwebserver.SocketPolicy.NO_RESPONSE))
         }
         val startNs = System.nanoTime()
-        val hits = runBlocking {
+        val result = runBlocking {
             OpenFoodFactsService.search(
                 "Aldi Laugen",
                 client = client,
@@ -437,6 +443,41 @@ class OpenFoodFactsSearchTest {
         }
         val elapsedMs = (System.nanoTime() - startNs) / 1_000_000
         assertTrue("stalled search took ${elapsedMs}ms", elapsedMs < 8_000)
-        assertEquals(emptyList<OpenFoodFactsService.SearchHit>(), hits)
+        assertEquals(emptyList<OpenFoodFactsService.SearchHit>(), result.hits)
+    }
+
+    @Test
+    fun search_allAttemptsFail_reportsUnreachable() {
+        // Every attempt 503s (Sal, its cgi fallback, the retry, every
+        // candidate): the walk ends without a single usable response, which is
+        // the state the Add Food sheet must be able to name.
+        repeat(10) { server.enqueue(serviceUnavailable) }
+        val result = runBlocking {
+            OpenFoodFactsService.search(
+                "Aldi Laugen",
+                client = client,
+                baseUrl = server.url("/").toString(),
+                searchBaseUrl = server.url("/").toString(),
+            )
+        }
+        assertTrue(result.hits.isEmpty())
+        assertTrue(result.unreachable)
+    }
+
+    @Test
+    fun search_emptyAnswerIsReachable_reportsUnreachableFalse() {
+        // A 200 with zero hits is OFF authoritatively saying "no results" —
+        // reachable, so the sheet must not show the unreachable note.
+        server.enqueue(jsonResponse("""{"hits":[],"count":0}"""))
+        val result = runBlocking {
+            OpenFoodFactsService.search(
+                "Aldi Laugen",
+                client = client,
+                baseUrl = server.url("/").toString(),
+                searchBaseUrl = server.url("/").toString(),
+            )
+        }
+        assertTrue(result.hits.isEmpty())
+        assertTrue(!result.unreachable)
     }
 }

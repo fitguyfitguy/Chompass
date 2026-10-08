@@ -1809,6 +1809,7 @@
     <string name="entry_analysis_placeholder_name">····</string>
     <string name="feet_inches_format">%1$d\' %2$d\"</string>
     <string name="food_search_source_off">Open Food Facts</string>
+    <string name="add_food_off_unreachable">Open Food Facts сейчас недоступен. Сохранённые и офлайн-результаты всё равно показываются.</string>
     <string name="food_search_source_usda">USDA</string>
     <string name="ft_label_format">%1$d ft</string>
     <string name="home_macro_chip_format">%1$s %2$dg</string>

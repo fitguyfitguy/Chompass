@@ -1003,6 +1003,7 @@
     <string name="feet_inches_format">%1$d\' %2$d\"</string>
     <string name="finish_onboarding_hint">Termina primero la configuración inicial para comparar esta comida con tus objetivos diarios.</string>
     <string name="food_search_source_off">Open Food Facts</string>
+    <string name="add_food_off_unreachable">Open Food Facts no está disponible ahora mismo. Los resultados guardados y sin conexión siguen mostrándose.</string>
     <string name="food_search_source_usda">USDA</string>
     <string name="frame_large">Grande</string>
     <string name="frame_medium">Medio</string>

@@ -127,7 +127,7 @@ class GroundingTools(
         val limit = args.optInt("limit", 6).coerceIn(1, 8)
         val hits = runCatching {
             offSearch?.invoke(rawQuery, brand, limit)
-                ?: OpenFoodFactsService.search(rawQuery, brand = brand, limit = limit)
+                ?: OpenFoodFactsService.search(rawQuery, brand = brand, limit = limit).hits
         }.getOrElse { emptyList() }
         val candidates = hits
             .filter { !it.incompleteEnergy || it.caloriesPer100g != null }

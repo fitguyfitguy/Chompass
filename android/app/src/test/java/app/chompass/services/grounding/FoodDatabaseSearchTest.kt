@@ -29,7 +29,9 @@ class FoodDatabaseSearchTest {
 
     private fun newSearch(
         prefs: PreferencesStore = PreferencesStore(context),
-        offSearch: suspend (String) -> List<DatabaseSearchResult> = { emptyList() },
+        offSearch: suspend (String) -> FoodDatabaseSearch.OnlineSearchOutcome = {
+            FoodDatabaseSearch.OnlineSearchOutcome(emptyList(), unreachable = false)
+        },
     ): FoodDatabaseSearch =
         FoodDatabaseSearch(
             prefs = prefs,
@@ -107,7 +109,10 @@ class FoodDatabaseSearchTest {
         // gets only the two bundled ones, and the network leg is not attempted.
         var offCalls = 0
         val prefs = PreferencesStore(context)
-        val search = newSearch(prefs = prefs, offSearch = { offCalls++; emptyList() })
+        val search = newSearch(prefs = prefs, offSearch = {
+            offCalls++
+            FoodDatabaseSearch.OnlineSearchOutcome(emptyList(), unreachable = false)
+        })
         val sources = setOf(
             FoodDatabaseSearch.Source.OPEN_FOOD_FACTS,
             FoodDatabaseSearch.Source.USDA,
@@ -144,19 +149,21 @@ class FoodDatabaseSearchTest {
             caloriesPerServing = 42.0,
             matchScore = 1.0,
         )
-        val search = newSearch(prefs = prefs, offSearch = { listOf(hit) })
+        val search = newSearch(prefs = prefs, offSearch = {
+            FoodDatabaseSearch.OnlineSearchOutcome(listOf(hit), unreachable = false)
+        })
 
         prefs.setFoodSearchOpenFoodFactsEnabled(false)
         assertTrue(
             "the switch is off, so nothing reaches the fan-out",
-            search.searchOnline("cola").isEmpty(),
+            search.searchOnline("cola").results.isEmpty(),
         )
 
         prefs.setFoodSearchOpenFoodFactsEnabled(true)
 
         val results = search.searchOnline("cola")
-        assertEquals(1, results.size)
-        assertEquals(NutrientSourceKind.OPEN_FOOD_FACTS, results.single().sourceKind)
+        assertEquals(1, results.results.size)
+        assertEquals(NutrientSourceKind.OPEN_FOOD_FACTS, results.results.single().sourceKind)
     }
 
     @Test
@@ -211,7 +218,23 @@ class FoodDatabaseSearchTest {
         val prefs = PreferencesStore(context)
         prefs.setFoodSearchOpenFoodFactsEnabled(true)
         val search = newSearch(prefs = prefs, offSearch = { throw OffUnreachable() })
-        assertTrue(search.searchOnline("pork ground").isEmpty())
+        assertTrue(search.searchOnline("pork ground").results.isEmpty())
+    }
+
+    @Test
+    fun searchOnline_unreachableSeam_propagatesStatus() = runBlocking {
+        // The packaged leg is the only place that names OFF's reachability: a
+        // seam reporting unreachable (the real service's all-attempts-failed
+        // answer) must come through as an empty, unreachable outcome so the
+        // sheet can say "unreachable" instead of "nothing matched".
+        val prefs = PreferencesStore(context)
+        prefs.setFoodSearchOpenFoodFactsEnabled(true)
+        val search = newSearch(prefs = prefs, offSearch = {
+            FoodDatabaseSearch.OnlineSearchOutcome(emptyList(), unreachable = true)
+        })
+        val outcome = search.searchOnline("pork ground")
+        assertTrue(outcome.results.isEmpty())
+        assertTrue(outcome.unreachable)
     }
 
     @Test

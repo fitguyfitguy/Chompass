@@ -254,14 +254,14 @@ object OpenFoodFactsService {
         baseUrl: String = OFF_BASE_URL,
         searchBaseUrl: String = SAL_BASE_URL,
         requestTimeoutMs: Long = OFF_REQUEST_TIMEOUT_MS,
-    ): List<SearchHit> = withContext(Dispatchers.IO) {
+    ): OffSearchResult = withContext(Dispatchers.IO) {
         val q = query.trim()
-        if (q.isEmpty()) return@withContext emptyList()
+        if (q.isEmpty()) return@withContext OffSearchResult(emptyList(), unreachable = false)
         val http = boundedClient(client, requestTimeoutMs)
         // Rate-limit breaker: while OFF has 429-ed us, answer from nothing
         // rather than adding more load (cached hits come from the callers'
         // local indexes; search has no cache of its own).
-        if (rateLimitActive()) return@withContext emptyList()
+        if (rateLimitActive()) return@withContext OffSearchResult(emptyList(), unreachable = true)
         val capped = limit.coerceIn(1, 8)
         val brandToken = brand?.trim()?.takeIf { it.isNotEmpty() }
         val terms = listOfNotNull(brandToken, q).distinct().joinToString(" ")
@@ -286,6 +286,10 @@ object OpenFoodFactsService {
         var attemptsLeft = MAX_SEARCH_ATTEMPTS
         var stopWalk = false
         var retriedGlobalLimit = false
+        // No usable response ever arrived: every attempt failed on the wire or
+        // was stopped by an OFF-side limit. Only this state may surface as
+        // "unreachable"; a successful-but-empty answer must not.
+        var sawFailure = false
         for (candidate in candidates) {
             var attempt = 0
             while (attempt < MAX_QUERY_ATTEMPTS && attemptsLeft > 0 && !stopWalk) {
@@ -293,6 +297,7 @@ object OpenFoodFactsService {
                 when (val outcome = backendSearch(candidate, capped, http, baseUrl, searchBaseUrl)) {
                     is SearchOutcome.Hits -> hits = outcome.hits
                     is SearchOutcome.RateLimited -> {
+                        sawFailure = true
                         tripRateLimit(outcome.retryAfterSeconds)
                         stopWalk = true
                     }
@@ -300,11 +305,13 @@ object OpenFoodFactsService {
                         // A second 503 after the one allowed retry means OFF's
                         // global request limit: stop the walk entirely rather
                         // than pushing more candidates at a saturated backend.
+                        sawFailure = true
                         stopWalk = true
                     } else {
+                        sawFailure = true
                         retriedGlobalLimit = true
                     }
-                    SearchOutcome.Unavailable -> Unit
+                    SearchOutcome.Unavailable -> sawFailure = true
                 }
                 if (stopWalk) break
                 if (!hits.isNullOrEmpty()) break
@@ -319,9 +326,10 @@ object OpenFoodFactsService {
 
         val finalHits = hits.orEmpty()
         val queryTokens = terms.lowercase(Locale.US).split(Regex("\\s+")).filter { it.length > 1 }
-        finalHits
+        val ranked = finalHits
             .map { it.withScoreAgainst(queryTokens) }
             .sortedByDescending { it.score }
+        OffSearchResult(hits = ranked, unreachable = hits == null && sawFailure)
     }
 
     /** One search attempt, classified so the walk can react per failure kind. */
@@ -338,6 +346,20 @@ object OpenFoodFactsService {
         /** Any other failure (network error, timeout, non-JSON, HTTP error). */
         data object Unavailable : SearchOutcome
     }
+
+    /**
+     * Result of [search]: the ranked hits, plus whether OFF could be reached
+     * at all. [unreachable] is true only when the walk ended without a single
+     * usable response (transport failures, the rate-limit breaker, or a 503
+     * that survived its retry) — an authoritative "no results" is reachable
+     * and renders as plain empty. Surfaced so the Add Food sheet can say
+     * "unreachable" instead of reading as "nothing matched" (Codeberg #120
+     * facet).
+     */
+    data class OffSearchResult(
+        val hits: List<SearchHit>,
+        val unreachable: Boolean,
+    )
 
     /**
      * One search request. Returns [SearchOutcome.Unavailable] when the response
