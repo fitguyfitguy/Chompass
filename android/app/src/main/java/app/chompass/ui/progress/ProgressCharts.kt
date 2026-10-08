@@ -277,6 +277,52 @@ internal fun bucketCalorieSlots(
         }
 }
 
+/** Untracked backdrop bands for the chart window [tStart, tStart + tRange]
+ *  (same day-window derivation as the marker lane). */
+@Composable
+private fun rememberUntrackedSpans(
+    tStart: Long,
+    tRange: Long,
+    untrackedDays: Set<String>,
+): List<ClosedRange<Long>> {
+    val zone = remember { ZoneId.systemDefault() }
+    return remember(tStart, tRange, untrackedDays, zone) {
+        buildUntrackedSpans(
+            start = Instant.ofEpochMilli(tStart).atZone(zone).toLocalDate(),
+            end = Instant.ofEpochMilli(tStart + tRange).atZone(zone).toLocalDate(),
+            untracked = untrackedDays,
+        )
+    }
+}
+
+/** Full-height muted rects behind the plot data, one per untracked span. */
+private fun DrawScope.drawUntrackedBands(
+    spans: List<ClosedRange<Long>>,
+    tStart: Long,
+    tRange: Long,
+    color: Color,
+) {
+    if (tRange <= 0L) return
+    val dayMs = 86_400_000L
+    spans.forEach { span ->
+        val x0 = ((span.start - tStart).toFloat() / tRange * size.width).coerceIn(0f, size.width)
+        val x1 = ((span.endInclusive + dayMs - tStart).toFloat() / tRange * size.width)
+            .coerceIn(0f, size.width)
+        if (x1 > x0) drawRect(color, topLeft = Offset(x0, 0f), size = Size(x1 - x0, size.height))
+    }
+}
+
+/** [straightTrendPath] closed down to the canvas bottom — the flat trend fill
+ *  (flat alpha, no gradient — restyle D1/D10). */
+internal fun trendFillPath(points: List<Offset>, height: Float): Path {
+    if (points.isEmpty()) return Path()
+    val path = straightTrendPath(points)
+    path.lineTo(points.last().x, height)
+    path.lineTo(points.first().x, height)
+    path.close()
+    return path
+}
+
 /** 8dp marker strip: 3dp type dots / 6dp untracked dashes at slot fractions. */
 @Composable
 internal fun MarkerLane(
@@ -349,30 +395,6 @@ internal fun downsampleTrend(points: List<TrendPoint>, maxPoints: Int = 60): Lis
                 value = bucket.map { it.value }.average()
             )
         }
-}
-
-/** Catmull-Rom smoothed path through [points] — same curve the iOS charts
- *  get from interpolationMethod(.catmullRom). */
-internal fun smoothTrendPath(points: List<Offset>): Path {
-    val path = Path()
-    if (points.isEmpty()) return path
-    // Lower tension than the default Catmull-Rom handles to avoid exaggerated
-    // bends when adjacent dates have sharp value changes.
-    val smoothing = 0.42f
-    path.moveTo(points.first().x, points.first().y)
-    for (i in 1 until points.size) {
-        val p0 = points[maxOf(i - 2, 0)]
-        val p1 = points[i - 1]
-        val p2 = points[i]
-        val p3 = points[minOf(i + 1, points.size - 1)]
-        val handleScale = smoothing / 6f
-        path.cubicTo(
-            p1.x + (p2.x - p0.x) * handleScale, p1.y + (p2.y - p0.y) * handleScale,
-            p2.x - (p3.x - p1.x) * handleScale, p2.y - (p3.y - p1.y) * handleScale,
-            p2.x, p2.y
-        )
-    }
-    return path
 }
 
 internal fun straightTrendPath(points: List<Offset>): Path {
@@ -571,6 +593,9 @@ internal fun WeightChartCanvas(
     val chartModel = remember(entries, goalKg, useMetric) {
         buildWeightChartModel(entries = entries, goalKg = goalKg, useMetric = useMetric)
     }
+    val untrackedSpans = rememberUntrackedSpans(chartModel.tStart, chartModel.tRange, untrackedDays)
+    val bandColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
+    val rawDotColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
     val goalLineColor = MaterialTheme.colorScheme.success.copy(alpha = 0.7f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
@@ -671,43 +696,45 @@ internal fun WeightChartCanvas(
                     pathEffect = PathEffect.dashPathEffect(floatArrayOf(18f, 12f))
                 )
             }
-            val offsets = chartModel.points.map { p ->
-                Offset(
-                    if (chartModel.singleEntry) w / 2f
-                    else ((p.timeMs - chartModel.tStart).toDouble() / chartModel.tRange * w).toFloat(),
-                    h - (((p.value - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
-                )
-            }
             fun pointOffset(p: TrendPoint): Offset = Offset(
                 if (chartModel.singleEntry) w / 2f
                 else ((p.timeMs - chartModel.tStart).toDouble() / chartModel.tRange * w).toFloat(),
                 h - (((p.value - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
             )
+            val offsets = chartModel.points.map(::pointOffset)
+            // Untracked bands sit behind every plot layer (#106).
+            drawUntrackedBands(untrackedSpans, chartModel.tStart, chartModel.tRange, bandColor)
             clipRect {
-                // Raw weigh-ins: straight path. Catmull–Rom was cosmetic only and
-                // looked like a calculated trend. Trend overlay uses a dashed stroke.
+                // Raw weigh-ins stay honest as muted dots; the solid line is the
+                // labeled 7-day trend (dashes read as uncertainty, not style).
                 if (chartRenderPhase >= 1) {
                     for (segment in chartModel.trendSegments) {
                         val trendOffsets = segment.map(::pointOffset)
-                        drawPath(
-                            straightTrendPath(trendOffsets),
-                            AppColors.Protein,
-                            style = Stroke(
-                                width = 4f,
-                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(14f, 10f)),
-                            ),
-                        )
+                        drawPath(trendFillPath(trendOffsets, h), AppColors.Calorie.copy(alpha = 0.08f))
+                        drawPath(straightTrendPath(trendOffsets), AppColors.Calorie, style = Stroke(width = 4f))
                     }
                 }
-                drawPath(straightTrendPath(offsets), AppColors.Calorie, style = Stroke(width = 5f))
                 if (chartRenderPhase >= 2 && chartModel.showsDots) {
-                    offsets.forEach { drawCircle(AppColors.Calorie, radius = 5.5f, center = it) }
+                    offsets.forEach { drawCircle(rawDotColor, radius = 3.dp.toPx(), center = it) }
                 }
             }
             drawInspectedDot(offsets, inspectedPoint)
             val inspectedOffset = inspectedPoint?.takeIf { it < offsets.size }?.let { offsets[it] }
             if (inspectedOffset != null && inspectedLabel != null) {
                 drawInspectionTag(inspectedLabel, textMeasurer, inspectedOffset, w, chipBackground, chipForeground)
+            }
+            // Latest-value chip: the trend's end is the headline reading.
+            val trendTail = chartModel.trendSegments.lastOrNull()?.lastOrNull()
+                ?: chartModel.points.lastOrNull()?.takeIf { chartModel.trendSegments.isEmpty() }
+            if (inspectedPoint == null && trendTail != null) {
+                drawInspectionTag(
+                    "${formatTick(trendTail.value)} $weightUnit",
+                    textMeasurer,
+                    pointOffset(trendTail),
+                    w,
+                    chipBackground,
+                    chipForeground,
+                )
             }
         }
         Column(
@@ -757,6 +784,9 @@ internal fun BodyFatChartCanvas(
     val chartModel = remember(entries, goalFraction) {
         buildBodyFatChartModel(entries = entries, goalFraction = goalFraction)
     }
+    val untrackedSpans = rememberUntrackedSpans(chartModel.tStart, chartModel.tRange, untrackedDays)
+    val bandColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
+    val rawDotColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
     val goalLineColor = MaterialTheme.colorScheme.success.copy(alpha = 0.7f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
@@ -856,24 +886,41 @@ internal fun BodyFatChartCanvas(
                     pathEffect = PathEffect.dashPathEffect(floatArrayOf(18f, 12f))
                 )
             }
-            val offsets = chartModel.points.map { p ->
-                Offset(
-                    if (chartModel.singleEntry) w / 2f
-                    else ((p.timeMs - chartModel.tStart).toDouble() / chartModel.tRange * w).toFloat(),
-                    h - (((p.value - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
-                )
-            }
+            fun pointOffset(p: TrendPoint): Offset = Offset(
+                if (chartModel.singleEntry) w / 2f
+                else ((p.timeMs - chartModel.tStart).toDouble() / chartModel.tRange * w).toFloat(),
+                h - (((p.value - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
+            )
+            val offsets = chartModel.points.map(::pointOffset)
+            // Untracked bands sit behind every plot layer (#106).
+            drawUntrackedBands(untrackedSpans, chartModel.tStart, chartModel.tRange, bandColor)
             clipRect {
-                val trendPath = if (chartRenderPhase >= 1) smoothTrendPath(offsets) else straightTrendPath(offsets)
-                drawPath(trendPath, AppColors.Calorie, style = Stroke(width = 5f))
+                // Readings path straight, not smoothed — the curve implied a
+                // calculated trend; the muted dots carry the raw cadence.
+                if (chartRenderPhase >= 1) {
+                    drawPath(trendFillPath(offsets, h), AppColors.Calorie.copy(alpha = 0.08f))
+                    drawPath(straightTrendPath(offsets), AppColors.Calorie, style = Stroke(width = 4f))
+                }
                 if (chartRenderPhase >= 2 && chartModel.showsDots) {
-                    offsets.forEach { drawCircle(AppColors.Calorie, radius = 5.5f, center = it) }
+                    offsets.forEach { drawCircle(rawDotColor, radius = 3.dp.toPx(), center = it) }
                 }
             }
             drawInspectedDot(offsets, inspectedPoint)
             val inspectedOffset = inspectedPoint?.takeIf { it < offsets.size }?.let { offsets[it] }
             if (inspectedOffset != null && inspectedLabel != null) {
                 drawInspectionTag(inspectedLabel, textMeasurer, inspectedOffset, w, chipBackground, chipForeground)
+            }
+            // Latest-value chip at the newest reading.
+            if (inspectedPoint == null && chartModel.points.isNotEmpty()) {
+                val tail = chartModel.points.last()
+                drawInspectionTag(
+                    formatPercentTick(tail.value),
+                    textMeasurer,
+                    pointOffset(tail),
+                    w,
+                    chipBackground,
+                    chipForeground,
+                )
             }
         }
         Column(
@@ -976,6 +1023,8 @@ internal fun MeasurementChartCanvas(
     typeColorOf: (String) -> Color = { Color.Transparent },
 ) {
     val chartModel = remember(series) { buildMeasurementChartModel(series) }
+    val untrackedSpans = rememberUntrackedSpans(chartModel.tStart, chartModel.tRange, untrackedDays)
+    val bandColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
     var chartRenderPhase by remember(series, immediate) {
@@ -1066,14 +1115,16 @@ internal fun MeasurementChartCanvas(
                     pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 6f))
                 )
             }
-            val offsets = chartModel.points.map { p ->
-                Offset(
-                    if (chartModel.singleEntry) w / 2f
-                    else ((p.timeMs - chartModel.tStart).toDouble() / chartModel.tRange * w).toFloat(),
-                    h - (((p.value - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
-                )
-            }
+            fun pointOffset(p: TrendPoint): Offset = Offset(
+                if (chartModel.singleEntry) w / 2f
+                else ((p.timeMs - chartModel.tStart).toDouble() / chartModel.tRange * w).toFloat(),
+                h - (((p.value - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
+            )
+            val offsets = chartModel.points.map(::pointOffset)
+            // Untracked bands sit behind every plot layer (#106).
+            drawUntrackedBands(untrackedSpans, chartModel.tStart, chartModel.tRange, bandColor)
             clipRect {
+                drawPath(trendFillPath(offsets, h), AppColors.Calorie.copy(alpha = 0.08f))
                 drawPath(straightTrendPath(offsets), AppColors.Calorie, style = Stroke(width = 5f))
                 if (chartRenderPhase >= 2 && chartModel.showsDots) {
                     offsets.forEach { drawCircle(AppColors.Calorie, radius = 5.5f, center = it) }

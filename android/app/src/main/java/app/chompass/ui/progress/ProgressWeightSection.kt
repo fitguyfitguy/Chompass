@@ -4,7 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,7 +32,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -44,6 +43,7 @@ import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.models.UnitFormat
+import java.time.LocalDate
 import java.time.ZoneId
 
 internal fun formatWeight(kg: Double, useMetric: Boolean): String =
@@ -124,7 +124,17 @@ internal fun WeightSection(
                             zone = ZoneId.systemDefault(),
                         ).isNotEmpty()
                     }
-                    WeightChartLegend(hasTrend = hasTrend)
+                    val hasUntracked = remember(entries, untrackedDays) {
+                        val zone = ZoneId.systemDefault()
+                        val days = entries.map { it.date.atZone(zone).toLocalDate() }
+                        val first = days.minOrNull()
+                        val last = days.maxOrNull()
+                        first != null && last != null && untrackedDays.any { day ->
+                            val date = runCatching { LocalDate.parse(day) }.getOrNull()
+                            date != null && !date.isBefore(first) && !date.isAfter(last)
+                        }
+                    }
+                    WeightChartLegend(hasTrend = hasTrend, hasUntracked = hasUntracked)
                     DeferredChart(immediate = chartsImmediate) {
                         WeightChartCanvas(
                             entries = entries,
@@ -143,17 +153,27 @@ internal fun WeightSection(
 }
 
 @Composable
-private fun WeightChartLegend(hasTrend: Boolean) {
+private fun WeightChartLegend(hasTrend: Boolean, hasUntracked: Boolean) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            LegendSwatch(color = AppColors.Calorie, label = stringResource(R.string.progress_weight_raw_legend))
+            LegendSwatch(
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                label = stringResource(R.string.progress_weight_raw_legend),
+                dot = true,
+            )
             if (hasTrend) {
                 LegendSwatch(
-                    color = AppColors.Protein,
+                    color = AppColors.Calorie,
                     label = stringResource(R.string.progress_weight_trend_legend),
+                )
+            }
+            if (hasUntracked) {
+                LegendSwatch(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    label = stringResource(R.string.progress_untracked_legend),
                     dashed = true,
                 )
             }
@@ -169,13 +189,21 @@ private fun WeightChartLegend(hasTrend: Boolean) {
 }
 
 @Composable
-private fun LegendSwatch(
+internal fun LegendSwatch(
     color: androidx.compose.ui.graphics.Color,
     label: String,
     dashed: Boolean = false,
+    /** Hollow 8dp ring — raw readings drawn without a connecting line. */
+    dot: Boolean = false,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-        if (dashed) {
+        if (dot) {
+            Box(
+                Modifier
+                    .size(8.dp)
+                    .border(2.dp, color, CircleShape)
+            )
+        } else if (dashed) {
             Canvas(Modifier.width(18.dp).height(3.dp)) {
                 drawLine(
                     color = color,
@@ -186,12 +214,14 @@ private fun LegendSwatch(
                 )
             }
         } else {
-            Box(
-                Modifier
-                    .size(8.dp)
-                    .clip(CircleShape)
-                    .background(color)
-            )
+            Canvas(Modifier.width(18.dp).height(3.dp)) {
+                drawLine(
+                    color = color,
+                    start = androidx.compose.ui.geometry.Offset(0f, size.height / 2f),
+                    end = androidx.compose.ui.geometry.Offset(size.width, size.height / 2f),
+                    strokeWidth = size.height,
+                )
+            }
         }
         Text(label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle))
     }
