@@ -131,7 +131,7 @@ internal fun OnDeviceModelSheet(
                     onChange = onSetOverWifiOnly
                 )
                 Spacer(Modifier.height(8.dp))
-                ChompassPrimaryButton(flushDrafts = true, 
+                ChompassPrimaryButton(flushDrafts = true,
                     text = stringResource(R.string.on_device_model_download),
                     enabled = hasEnoughSpace,
                     onClick = onStartDownload
@@ -180,7 +180,7 @@ internal fun OnDeviceModelSheet(
                     color = MaterialTheme.colorScheme.error
                 )
                 Spacer(Modifier.height(12.dp))
-                ChompassPrimaryButton(flushDrafts = true, 
+                ChompassPrimaryButton(flushDrafts = true,
                     text = stringResource(R.string.on_device_model_retry),
                     onClick = onStartDownload
                 )

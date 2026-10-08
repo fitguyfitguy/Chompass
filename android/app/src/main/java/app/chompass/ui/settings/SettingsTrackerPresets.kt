@@ -321,7 +321,7 @@ internal fun CaffeinePresetEditorSheet(
             }
         },
         footer = {
-            ChompassPrimaryButton(flushDrafts = true, 
+            ChompassPrimaryButton(flushDrafts = true,
                 text = stringResource(if (isAdd) R.string.settings_caffeine_preset_add else R.string.action_save),
                 enabled = (isAdd && name.isNotBlank()) || !isAdd,
                 modifier = Modifier
@@ -436,7 +436,7 @@ internal fun NicotinePresetEditorSheet(
             }
         },
         footer = {
-            ChompassPrimaryButton(flushDrafts = true, 
+            ChompassPrimaryButton(flushDrafts = true,
                 text = stringResource(if (isAdd) R.string.settings_nicotine_preset_add else R.string.action_save),
                 enabled = (isAdd && name.isNotBlank()) || !isAdd,
                 modifier = Modifier

@@ -203,7 +203,7 @@ fun WaterCustomAmountSheet(
                 )
             }
 
-            ChompassPrimaryButton(flushDrafts = true, 
+            ChompassPrimaryButton(flushDrafts = true,
                 text = stringResource(R.string.water_add),
                 icon = Icons.Filled.WaterDrop,
                 onClick = {
@@ -414,7 +414,7 @@ fun WaterEditAmountSheet(
                 )
             }
 
-            ChompassPrimaryButton(flushDrafts = true, 
+            ChompassPrimaryButton(flushDrafts = true,
                 text = stringResource(R.string.action_save),
                 icon = Icons.Filled.WaterDrop,
                 onClick = {

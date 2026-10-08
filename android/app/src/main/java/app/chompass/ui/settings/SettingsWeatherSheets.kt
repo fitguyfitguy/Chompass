@@ -111,7 +111,7 @@ internal fun OpenMeteoCitySheet(
             modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(8.dp))
-        ChompassPrimaryButton(flushDrafts = true, 
+        ChompassPrimaryButton(flushDrafts = true,
             text = stringResource(R.string.settings_weather_city_search),
             onClick = {
                 scope.launch {
