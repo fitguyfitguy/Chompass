@@ -36,7 +36,12 @@ object FoodSuggestionRanker {
     private const val SAVED_PRIOR = 0.55
     private const val RECIPE_PRIOR = 0.50
 
-    /** Below this the name barely relates to the query; drop rather than pad the list. */
+    /**
+     * Below this the name barely relates to the query; drop rather than pad the
+     * list. Saved foods and recipes only — database hits are already gated by
+     * their provider (FTS/LIKE + score > 0 offline, server-side match on Open
+     * Food Facts) and only get ordered here.
+     */
     internal const val MIN_LEXICAL = 0.375 // the "contains" tier, 3.0 / LEXICAL_MAX
 
     fun rank(
@@ -83,11 +88,15 @@ object FoodSuggestionRanker {
         val databaseHits = database.mapNotNull { result ->
             val normalized = QueryNormalizer.normalizeQuery(result.name)
             val lex = lexNorm(q, tokens, normalized, QueryNormalizer.normalizeTokens(result.name).toSet())
-            if (lex < minLexical) return@mapNotNull null
-            // Re-score the name with the same lexical function so cross-source
-            // ordering sits on one scale; the provider's own normalized score
-            // rides along only as a confidence term (its per-source ceilings in
-            // FoodDatabaseSearch.SCORE_CEILINGS are hand-tuned, not calibrated).
+            // No lexical floor on this leg: the rows already passed the
+            // provider's own relevance gate, and re-filtering them here
+            // double-filters morphology the providers tolerate — "cooked
+            // potatoes" lost every Open Food Facts hit because no product name
+            // carried the verbatim plural and there is no stemming (#120). The
+            // lex only orders the leg now; the provider score stays the
+            // confidence term. A row the provider itself scored zero carries
+            // no signal at all and still drops.
+            if (result.matchScore <= 0.0) return@mapNotNull null
             FoodSuggestion.DatabaseHit(
                 result = result,
                 score = 0.40 * lex + 0.30 * result.matchScore.coerceIn(0.0, 1.0),

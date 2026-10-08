@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Fixed
+
+- **Food search keeps database hits that only partly match your words** (Android): searching for something like "cooked potatoes" could come back empty because every product name was re-checked against your exact words, and anything not containing them was dropped. Database results now stay once the food databases matched them, with the closest word matches first.
+
 ## [5.4.0] - 2026-10-08
 
 ### Changed
