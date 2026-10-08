@@ -1448,7 +1448,10 @@ internal fun CalorieBarChart(
                 val slotStep = if (slotDp >= minLabelDp) 1
                     else Math.ceil((minLabelDp.value / slotDp.value).toDouble()).toInt().coerceAtLeast(1)
                 val pickedIndices = calorieLabelIndices(n, slotStep)
-                val labelBoxWidth = if (slotStep == 1) slotDp else minLabelDp.coerceAtLeast(slotDp)
+                // Boxes tile the slot pitch exactly: adjacent labels meet at
+                // their box edges without overlapping, and clamping the
+                // first/last box inward keeps every date fully visible.
+                val labelBoxWidth = slotDp * slotStep
                 pickedIndices.forEach { i ->
                     val cxPx = startX + i * (barWidth + gap) + barWidth / 2f
                     val cxDp = with(density) { cxPx.toDp() }
