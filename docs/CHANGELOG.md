@@ -4,13 +4,18 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [5.4.0] - 2026-10-08
+## [5.5.0] - 2026-10-08
 
 ### Changed
 
 - **Untracked days show on the progress charts** (Android): days you marked as not tracked now draw a soft band behind the weight, body fat, and measurement lines and a small dash on the calorie axis, instead of only appearing in the strip below the charts. Days with nothing logged stay visibly empty, so the calorie bars no longer pull logged days together. Closes Codeberg [#106](https://codeberg.org/fitguy/Chompass/issues/106).
 - **The 7-day trend reads at a glance** (Android): the weight trend is the solid line with a light fill underneath, weigh-ins are small dots without a connecting line, and a chip at the end of the line shows your latest value. Over-goal calorie bars are a single flat red, and the calorie chart labels skipped days the way it labels logged ones.
 - **Charts draw in** (Android): progress charts sweep in over about half a second when you open the tab or switch the range.
+
+## [5.4.0] - 2026-10-08
+
+### Changed
+
 - **One flat accent color** (Android): buttons, highlights, and the hero number use a single accent color where they used to carry a gradient. Your theme color choices, Material You dynamic color, and dark mode work as before.
 - **Standard Android app bars and dialogs** (Android): settings sub-screens show a top bar with a back arrow instead of a heading with a back chip. Confirmation dialogs use the standard Android layout, Saved Meals and the analysis queue use segmented tabs, and onboarding gets the same back arrow with a thin progress bar.
 - **Date wheels follow the app language** (Android): the day, month, and year columns now order themselves the way dates read in your language. English shows month first, German shows day first.

@@ -1,0 +1,1 @@
+Progress charts now show untracked days, the 7-day weight trend reads at a glance, and charts draw in with a short animation.
