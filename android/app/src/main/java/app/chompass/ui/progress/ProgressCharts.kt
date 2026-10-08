@@ -5,6 +5,9 @@ import app.chompass.models.EnergyFormat
 import app.chompass.R
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,13 +44,17 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -108,41 +115,23 @@ internal data class BodyFatChartModel(
     val goalPercent: Double?
 )
 
-/**
- * Cap calorie-bar draw calls. 1W/1M stay daily. Longer ranges roll up to ISO
- * weeks (iOS weekly bars); if that still exceeds [maxBars] (All over years),
- * fold weeks into equal-width buckets. Badge totals must use the unbucketed
- * series — this is canvas-only.
- */
-internal fun downsampleCalorieBars(
-    dailyCalories: List<Pair<LocalDate, Int>>,
-    maxBars: Int = 90,
-): List<Pair<LocalDate, Int>> {
-    if (dailyCalories.size <= maxBars) return dailyCalories
-    val weekly = dailyCalories
-        .groupBy { it.first.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)) }
-        .toSortedMap()
-        .map { (weekStart, days) -> weekStart to days.sumOf { it.second } }
-    if (weekly.size <= maxBars) return weekly
-    val first = weekly.first().first
-    val last = weekly.last().first
-    val spanDays = ChronoUnit.DAYS.between(first, last).coerceAtLeast(1)
-    val bucketDays = ((spanDays + maxBars - 1) / maxBars).coerceAtLeast(7)
-    return weekly
-        .groupBy { ChronoUnit.DAYS.between(first, it.first) / bucketDays }
-        .toSortedMap()
-        .values
-        .map { bucket -> bucket.first().first to bucket.sumOf { it.second } }
-}
-
-/** One day's marker under a chart: day-type dot, untracked dash (UI-UX §10). */
-internal data class DayMarker(val date: LocalDate, val typeColor: Color?, val untracked: Boolean)
+/** One day's marker under a chart: day-type dot, untracked dash (UI-UX §10).
+ *  [partialUntracked] marks a week bucket holding untracked days below the
+ *  majority — drawn as a fainter dash so stray untracked days stay visible
+ *  at 6M/1Y/All. */
+internal data class DayMarker(
+    val date: LocalDate,
+    val typeColor: Color?,
+    val untracked: Boolean,
+    val partialUntracked: Boolean = false,
+)
 
 /**
  * Dense marker list for the trend charts: per-day while the span fits
  * [maxSlots] days, otherwise ISO-week buckets (Monday start — same grouping
- * as [downsampleCalorieBars]) with the majority type and a majority-untracked
- * dash, so dots stay readable at 6M/1Y ranges.
+ * as [bucketCalorieSlots]) with the majority type and a majority-untracked
+ * dash, so dots stay readable at 6M/1Y ranges. Weeks holding untracked days
+ * below the majority carry [DayMarker.partialUntracked].
  */
 internal fun buildMarkerLane(
     start: LocalDate,
@@ -165,12 +154,200 @@ internal fun buildMarkerLane(
                 .groupingBy { it }
                 .eachCount()
                 .maxByOrNull { it.value }?.key
+            val untrackedCount = days.count { it.toString() in untracked }
+            val majority = untrackedCount * 2 > days.size
             DayMarker(
                 date = weekStart,
                 typeColor = majorityType?.let(typeColorOf),
-                untracked = days.count { it.toString() in untracked } * 2 > days.size,
+                untracked = majority,
+                partialUntracked = !majority && untrackedCount > 0,
             )
         }
+}
+
+/** One untracked backdrop band. [partial] marks a week bucket holding
+ *  untracked days below the majority — drawn at half alpha so stray
+ *  untracked days stay visible at 6M/1Y/All. */
+internal data class UntrackedBand(val range: ClosedRange<Long>, val partial: Boolean)
+
+/**
+ * Epoch-ms day-boundary bands (start-of-day inclusive, system zone) of
+ * untracked days inside [start, end] — the muted backdrop bands behind the
+ * trend plots. Ranges longer than [maxSlots] days bucket per ISO week
+ * (Monday start — same grouping as [buildMarkerLane]): a majority-untracked
+ * week yields a full band, a week holding any untracked days below the
+ * majority yields a [UntrackedBand.partial] band, and adjacent same-tier
+ * weeks merge into one band covering the full final week.
+ */
+internal fun buildUntrackedSpans(
+    start: LocalDate,
+    end: LocalDate,
+    untracked: Set<String>,
+    maxSlots: Int = 90,
+): List<UntrackedBand> {
+    if (start.isAfter(end) || untracked.isEmpty()) return emptyList()
+    val totalDays = ChronoUnit.DAYS.between(start, end).toInt() + 1
+    val weekly = totalDays > maxSlots
+    val step = if (weekly) 7L else 1L
+    // Marked dates with their tier: full for untracked days (daily mode) or
+    // majority-untracked weeks, partial for weeks below the majority.
+    val marked: List<Pair<LocalDate, Boolean>> = (0 until totalDays)
+        .map { start.plusDays(it.toLong()) }
+        .let { days ->
+            if (!weekly) days.filter { it.toString() in untracked }.map { it to false }
+            else days.groupBy { it.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)) }
+                .toSortedMap()
+                .flatMap { (weekStart, daysInWeek) ->
+                    val count = daysInWeek.count { it.toString() in untracked }
+                    if (count == 0) emptyList()
+                    else listOf(weekStart to (count * 2 <= daysInWeek.size))
+                }
+        }
+    if (marked.isEmpty()) return emptyList()
+    val zone = ZoneId.systemDefault()
+    fun epochMs(day: LocalDate) = day.atStartOfDay(zone).toInstant().toEpochMilli()
+    val tail = if (weekly) 6L else 0L
+    val bands = mutableListOf<UntrackedBand>()
+    var runStart = marked.first()
+    var runEnd = marked.first()
+    for (markedDay in marked.drop(1)) {
+        val (day, partial) = markedDay
+        if (partial == runStart.second && day.toEpochDay() - runEnd.first.toEpochDay() <= step) {
+            runEnd = markedDay
+        } else {
+            bands += UntrackedBand(
+                epochMs(runStart.first)..epochMs(runEnd.first.plusDays(tail).coerceAtMost(end)),
+                runStart.second,
+            )
+            runStart = markedDay
+            runEnd = markedDay
+        }
+    }
+    bands += UntrackedBand(
+        epochMs(runStart.first)..epochMs(runEnd.first.plusDays(tail).coerceAtMost(end)),
+        runStart.second,
+    )
+    return bands
+}
+
+/** One calendar day on the calorie axis: a logged value, an untracked dash,
+ *  or nothing — the day keeps its place instead of collapsing the bar row.
+ *  Public: exposed through [ProgressUiState]. */
+data class CalorieSlot(
+    val day: LocalDate,
+    val kcal: Int?,
+    val untracked: Boolean,
+)
+
+/** One [CalorieSlot] per calendar day in [start, end]; untracked days always
+ *  carry `kcal = null` even if somehow logged, logged-at-zero stays 0. */
+internal fun buildCalorieSlots(
+    start: LocalDate,
+    end: LocalDate,
+    logged: Map<LocalDate, Int>,
+    untracked: Set<String>,
+): List<CalorieSlot> {
+    if (start.isAfter(end)) return emptyList()
+    val totalDays = ChronoUnit.DAYS.between(start, end).toInt() + 1
+    return (0 until totalDays).map { i ->
+        val day = start.plusDays(i.toLong())
+        val untrackedDay = day.toString() in untracked
+        CalorieSlot(
+            day = day,
+            kcal = if (untrackedDay) null else logged[day],
+            untracked = untrackedDay,
+        )
+    }
+}
+
+/**
+ * Cap calorie-slot draw calls: within [maxSlots] the calendar-day slots pass
+ * through untouched; longer ranges roll up to ISO weeks (Monday start), summing
+ * logged kcal (null when nothing was logged that week) with a majority-untracked
+ * dash. Slot totals must use the unbucketed series — this is canvas-only.
+ */
+internal fun bucketCalorieSlots(
+    slots: List<CalorieSlot>,
+    maxSlots: Int = 90,
+): List<CalorieSlot> {
+    if (slots.size <= maxSlots) return slots
+    return slots
+        .groupBy { it.day.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)) }
+        .toSortedMap()
+        .map { (weekStart, days) ->
+            CalorieSlot(
+                day = weekStart,
+                kcal = days.mapNotNull { slot -> slot.kcal }
+                    .takeIf { days.any { slot -> slot.kcal != null } }
+                    ?.sum(),
+                untracked = days.count { it.untracked } * 2 > days.size,
+            )
+        }
+}
+
+/** Untracked backdrop bands for the chart window [tStart, tStart + tRange]
+ *  (same day-window derivation as the marker lane). */
+@Composable
+private fun rememberUntrackedSpans(
+    tStart: Long,
+    tRange: Long,
+    untrackedDays: Set<String>,
+): List<UntrackedBand> {
+    val zone = remember { ZoneId.systemDefault() }
+    return remember(tStart, tRange, untrackedDays, zone) {
+        buildUntrackedSpans(
+            start = Instant.ofEpochMilli(tStart).atZone(zone).toLocalDate(),
+            end = Instant.ofEpochMilli(tStart + tRange).atZone(zone).toLocalDate(),
+            untracked = untrackedDays,
+        )
+    }
+}
+
+/** Full-height muted rects behind the plot data; partial weeks draw at half
+ *  alpha so a stray untracked day marks its week without overstating it. */
+private fun DrawScope.drawUntrackedBands(
+    bands: List<UntrackedBand>,
+    tStart: Long,
+    tRange: Long,
+    color: Color,
+) {
+    if (tRange <= 0L) return
+    val dayMs = 86_400_000L
+    bands.forEach { band ->
+        val tierColor = if (band.partial) color.copy(alpha = color.alpha * 0.5f) else color
+        val x0 = ((band.range.start - tStart).toFloat() / tRange * size.width).coerceIn(0f, size.width)
+        val x1 = ((band.range.endInclusive + dayMs - tStart).toFloat() / tRange * size.width)
+            .coerceIn(0f, size.width)
+        if (x1 > x0) drawRect(tierColor, topLeft = Offset(x0, 0f), size = Size(x1 - x0, size.height))
+    }
+}
+
+/** [straightTrendPath] closed down to the canvas bottom — the flat trend fill
+ *  (flat alpha, no gradient — restyle D1/D10). */
+internal fun trendFillPath(points: List<Offset>, height: Float): Path {
+    if (points.isEmpty()) return Path()
+    val path = straightTrendPath(points)
+    path.lineTo(points.last().x, height)
+    path.lineTo(points.first().x, height)
+    path.close()
+    return path
+}
+
+/** Left-to-right partial of the straight path through [points] at [fraction]
+ *  (1f = full path) for the animated chart reveal, written into [dst]. */
+internal fun trimmedStraightPath(
+    points: List<Offset>,
+    fraction: Float,
+    measure: PathMeasure,
+    dst: Path,
+): Path {
+    dst.reset()
+    if (points.isEmpty()) return dst
+    measure.setPath(straightTrendPath(points), false)
+    val length = measure.length
+    if (length <= 0f) return dst
+    measure.getSegment(0f, length * fraction.coerceIn(0f, 1f), dst, true)
+    return dst
 }
 
 /** 8dp marker strip: 3dp type dots / 6dp untracked dashes at slot fractions. */
@@ -200,6 +377,13 @@ internal fun MarkerLane(
                     end = Offset(x + 3.dp.toPx(), midY),
                     strokeWidth = 1.5.dp.toPx(),
                 )
+                // Week bucket with untracked days below the majority.
+                marker.partialUntracked -> drawLine(
+                    color = onVariant.copy(alpha = 0.3f),
+                    start = Offset(x - 3.dp.toPx(), midY),
+                    end = Offset(x + 3.dp.toPx(), midY),
+                    strokeWidth = 1.5.dp.toPx(),
+                )
                 marker.typeColor != null -> drawCircle(
                     color = marker.typeColor,
                     radius = 1.5.dp.toPx(),
@@ -225,6 +409,22 @@ internal fun calorieBarGeometry(areaWidthPx: Float, n: Int, density: Density): C
     return CalorieBarGeometry(barWidth, gap, startX)
 }
 
+/** X-axis label picks for the calorie chart: every [slotStep]-th slot, with
+ *  the end slot always labeled — replacing the last uniform pick rather than
+ *  appending, so label boxes stay [slotStep] slots apart instead of
+ *  overlapping at the right edge. */
+internal fun calorieLabelIndices(n: Int, slotStep: Int): List<Int> {
+    if (n <= 0) return emptyList()
+    val picks = mutableListOf<Int>()
+    var i = 0
+    while (i < n) {
+        picks.add(i)
+        i += slotStep
+    }
+    picks[picks.size - 1] = n - 1
+    return picks
+}
+
 /** Averages a date-sorted series into equal date buckets once it outgrows
  *  [maxPoints]. Hundreds of raw readings drew every dot on top of its
  *  neighbours and turned the line into a solid band — ~60 bucket averages
@@ -245,30 +445,6 @@ internal fun downsampleTrend(points: List<TrendPoint>, maxPoints: Int = 60): Lis
                 value = bucket.map { it.value }.average()
             )
         }
-}
-
-/** Catmull-Rom smoothed path through [points] — same curve the iOS charts
- *  get from interpolationMethod(.catmullRom). */
-internal fun smoothTrendPath(points: List<Offset>): Path {
-    val path = Path()
-    if (points.isEmpty()) return path
-    // Lower tension than the default Catmull-Rom handles to avoid exaggerated
-    // bends when adjacent dates have sharp value changes.
-    val smoothing = 0.42f
-    path.moveTo(points.first().x, points.first().y)
-    for (i in 1 until points.size) {
-        val p0 = points[maxOf(i - 2, 0)]
-        val p1 = points[i - 1]
-        val p2 = points[i]
-        val p3 = points[minOf(i + 1, points.size - 1)]
-        val handleScale = smoothing / 6f
-        path.cubicTo(
-            p1.x + (p2.x - p0.x) * handleScale, p1.y + (p2.y - p0.y) * handleScale,
-            p2.x - (p3.x - p1.x) * handleScale, p2.y - (p3.y - p1.y) * handleScale,
-            p2.x, p2.y
-        )
-    }
-    return path
 }
 
 internal fun straightTrendPath(points: List<Offset>): Path {
@@ -467,21 +643,24 @@ internal fun WeightChartCanvas(
     val chartModel = remember(entries, goalKg, useMetric) {
         buildWeightChartModel(entries = entries, goalKg = goalKg, useMetric = useMetric)
     }
+    val untrackedSpans = rememberUntrackedSpans(chartModel.tStart, chartModel.tRange, untrackedDays)
+    val bandColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
+    val rawDotColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
     val goalLineColor = MaterialTheme.colorScheme.success.copy(alpha = 0.7f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
-    var chartRenderPhase by remember(entries, goalKg, useMetric, immediate) {
-        mutableStateOf(if (immediate) 2 else 0)
+    // 450ms draw-in: grid/goal/bands are instant, the trend sweeps in
+    // left-to-right, dots/labels/latest chip fade at the end. Keyed on the
+    // model so switching ranges re-runs the reveal; `immediate` (screenshot
+    // path) starts fully drawn for deterministic goldens.
+    val reveal = remember(chartModel, immediate) { Animatable(if (immediate) 1f else 0f) }
+    LaunchedEffect(chartModel, immediate) {
+        if (!immediate) reveal.animateTo(1f, tween(durationMillis = 450, easing = FastOutSlowInEasing))
     }
-    if (!immediate) {
-        LaunchedEffect(entries, goalKg, useMetric) {
-            chartRenderPhase = 0
-            withFrameNanos { }
-            chartRenderPhase = 1
-            withFrameNanos { }
-            chartRenderPhase = 2
-        }
-    }
+    val tailAlpha = ((reveal.value - 0.85f) / 0.15f).coerceIn(0f, 1f)
+    val pathMeasure = remember { PathMeasure() }
+    val trimDst = remember { Path() }
+    val tagPaint = remember { Paint() }
 
     var inspectedPoint by remember(chartModel) { mutableStateOf<Int?>(null) }
     val textMeasurer = rememberTextMeasurer()
@@ -567,43 +746,61 @@ internal fun WeightChartCanvas(
                     pathEffect = PathEffect.dashPathEffect(floatArrayOf(18f, 12f))
                 )
             }
-            val offsets = chartModel.points.map { p ->
-                Offset(
-                    if (chartModel.singleEntry) w / 2f
-                    else ((p.timeMs - chartModel.tStart).toDouble() / chartModel.tRange * w).toFloat(),
-                    h - (((p.value - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
-                )
-            }
             fun pointOffset(p: TrendPoint): Offset = Offset(
                 if (chartModel.singleEntry) w / 2f
                 else ((p.timeMs - chartModel.tStart).toDouble() / chartModel.tRange * w).toFloat(),
                 h - (((p.value - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
             )
+            val offsets = chartModel.points.map(::pointOffset)
+            // Untracked bands sit behind every plot layer (#106).
+            drawUntrackedBands(untrackedSpans, chartModel.tStart, chartModel.tRange, bandColor)
             clipRect {
-                // Raw weigh-ins: straight path. Catmull–Rom was cosmetic only and
-                // looked like a calculated trend. Trend overlay uses a dashed stroke.
-                if (chartRenderPhase >= 1) {
-                    for (segment in chartModel.trendSegments) {
-                        val trendOffsets = segment.map(::pointOffset)
+                // Raw weigh-ins stay honest as muted dots; the solid line is the
+                // labeled 7-day trend (dashes read as uncertainty, not style).
+                for (segment in chartModel.trendSegments) {
+                    val trendOffsets = segment.map(::pointOffset)
+                    drawPath(
+                        trendFillPath(trendOffsets, h),
+                        AppColors.Calorie.copy(alpha = 0.08f * reveal.value),
+                    )
+                    if (trendOffsets.size == 1) {
+                        drawCircle(AppColors.Calorie, radius = 3.dp.toPx(), center = trendOffsets.first())
+                    } else {
                         drawPath(
-                            straightTrendPath(trendOffsets),
-                            AppColors.Protein,
-                            style = Stroke(
-                                width = 4f,
-                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(14f, 10f)),
-                            ),
+                            trimmedStraightPath(trendOffsets, reveal.value, pathMeasure, trimDst),
+                            AppColors.Calorie,
+                            style = Stroke(width = 4f),
                         )
                     }
                 }
-                drawPath(straightTrendPath(offsets), AppColors.Calorie, style = Stroke(width = 5f))
-                if (chartRenderPhase >= 2 && chartModel.showsDots) {
-                    offsets.forEach { drawCircle(AppColors.Calorie, radius = 5.5f, center = it) }
+                if (chartModel.showsDots && tailAlpha > 0f) {
+                    offsets.forEach {
+                        drawCircle(rawDotColor.copy(alpha = 0.75f * tailAlpha), radius = 3.dp.toPx(), center = it)
+                    }
                 }
             }
             drawInspectedDot(offsets, inspectedPoint)
             val inspectedOffset = inspectedPoint?.takeIf { it < offsets.size }?.let { offsets[it] }
             if (inspectedOffset != null && inspectedLabel != null) {
                 drawInspectionTag(inspectedLabel, textMeasurer, inspectedOffset, w, chipBackground, chipForeground)
+            }
+            // Latest-value chip: the trend's end is the headline reading.
+            val trendTail = chartModel.trendSegments.lastOrNull()?.lastOrNull()
+                ?: chartModel.points.lastOrNull()?.takeIf { chartModel.trendSegments.isEmpty() }
+            if (inspectedPoint == null && trendTail != null && tailAlpha > 0f) {
+                drawIntoCanvas { canvas ->
+                    tagPaint.alpha = tailAlpha
+                    canvas.saveLayer(Rect(0f, 0f, w, h), tagPaint)
+                    drawInspectionTag(
+                        "${formatTick(trendTail.value)} $weightUnit",
+                        textMeasurer,
+                        pointOffset(trendTail),
+                        w,
+                        chipBackground,
+                        chipForeground,
+                    )
+                    canvas.restore()
+                }
             }
         }
         Column(
@@ -627,7 +824,7 @@ internal fun WeightChartCanvas(
         )
         Spacer(Modifier.width(36.dp))
     }
-    if (chartRenderPhase >= 1) {
+    Box(Modifier.alpha(tailAlpha)) {
         TrendXAxisLabels(
             chartModel.tStart,
             chartModel.tEnd,
@@ -653,21 +850,20 @@ internal fun BodyFatChartCanvas(
     val chartModel = remember(entries, goalFraction) {
         buildBodyFatChartModel(entries = entries, goalFraction = goalFraction)
     }
+    val untrackedSpans = rememberUntrackedSpans(chartModel.tStart, chartModel.tRange, untrackedDays)
+    val bandColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
+    val rawDotColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
     val goalLineColor = MaterialTheme.colorScheme.success.copy(alpha = 0.7f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
-    var chartRenderPhase by remember(entries, goalFraction, immediate) {
-        mutableStateOf(if (immediate) 2 else 0)
+    val reveal = remember(chartModel, immediate) { Animatable(if (immediate) 1f else 0f) }
+    LaunchedEffect(chartModel, immediate) {
+        if (!immediate) reveal.animateTo(1f, tween(durationMillis = 450, easing = FastOutSlowInEasing))
     }
-    if (!immediate) {
-        LaunchedEffect(entries, goalFraction) {
-            chartRenderPhase = 0
-            withFrameNanos { }
-            chartRenderPhase = 1
-            withFrameNanos { }
-            chartRenderPhase = 2
-        }
-    }
+    val tailAlpha = ((reveal.value - 0.85f) / 0.15f).coerceIn(0f, 1f)
+    val pathMeasure = remember { PathMeasure() }
+    val trimDst = remember { Path() }
+    val tagPaint = remember { Paint() }
 
     var inspectedPoint by remember(chartModel) { mutableStateOf<Int?>(null) }
     val textMeasurer = rememberTextMeasurer()
@@ -752,24 +948,59 @@ internal fun BodyFatChartCanvas(
                     pathEffect = PathEffect.dashPathEffect(floatArrayOf(18f, 12f))
                 )
             }
-            val offsets = chartModel.points.map { p ->
-                Offset(
-                    if (chartModel.singleEntry) w / 2f
-                    else ((p.timeMs - chartModel.tStart).toDouble() / chartModel.tRange * w).toFloat(),
-                    h - (((p.value - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
-                )
-            }
+            fun pointOffset(p: TrendPoint): Offset = Offset(
+                if (chartModel.singleEntry) w / 2f
+                else ((p.timeMs - chartModel.tStart).toDouble() / chartModel.tRange * w).toFloat(),
+                h - (((p.value - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
+            )
+            val offsets = chartModel.points.map(::pointOffset)
+            // Untracked bands sit behind every plot layer (#106).
+            drawUntrackedBands(untrackedSpans, chartModel.tStart, chartModel.tRange, bandColor)
             clipRect {
-                val trendPath = if (chartRenderPhase >= 1) smoothTrendPath(offsets) else straightTrendPath(offsets)
-                drawPath(trendPath, AppColors.Calorie, style = Stroke(width = 5f))
-                if (chartRenderPhase >= 2 && chartModel.showsDots) {
-                    offsets.forEach { drawCircle(AppColors.Calorie, radius = 5.5f, center = it) }
+                // Readings path straight, not smoothed — the curve implied a
+                // calculated trend; the muted dots carry the raw cadence.
+                if (chartModel.points.isNotEmpty()) {
+                    drawPath(
+                        trendFillPath(offsets, h),
+                        AppColors.Calorie.copy(alpha = 0.08f * reveal.value),
+                    )
+                    if (offsets.size == 1) {
+                        drawCircle(AppColors.Calorie, radius = 4f, center = offsets.first())
+                    } else {
+                        drawPath(
+                            trimmedStraightPath(offsets, reveal.value, pathMeasure, trimDst),
+                            AppColors.Calorie,
+                            style = Stroke(width = 4f),
+                        )
+                    }
+                }
+                if (chartModel.showsDots && tailAlpha > 0f) {
+                    offsets.forEach {
+                        drawCircle(rawDotColor.copy(alpha = 0.75f * tailAlpha), radius = 3.dp.toPx(), center = it)
+                    }
                 }
             }
             drawInspectedDot(offsets, inspectedPoint)
             val inspectedOffset = inspectedPoint?.takeIf { it < offsets.size }?.let { offsets[it] }
             if (inspectedOffset != null && inspectedLabel != null) {
                 drawInspectionTag(inspectedLabel, textMeasurer, inspectedOffset, w, chipBackground, chipForeground)
+            }
+            // Latest-value chip at the newest reading.
+            if (inspectedPoint == null && chartModel.points.isNotEmpty() && tailAlpha > 0f) {
+                val tail = chartModel.points.last()
+                drawIntoCanvas { canvas ->
+                    tagPaint.alpha = tailAlpha
+                    canvas.saveLayer(Rect(0f, 0f, w, h), tagPaint)
+                    drawInspectionTag(
+                        formatPercentTick(tail.value),
+                        textMeasurer,
+                        pointOffset(tail),
+                        w,
+                        chipBackground,
+                        chipForeground,
+                    )
+                    canvas.restore()
+                }
             }
         }
         Column(
@@ -793,7 +1024,7 @@ internal fun BodyFatChartCanvas(
         )
         Spacer(Modifier.width(40.dp))
     }
-    if (chartRenderPhase >= 1) {
+    Box(Modifier.alpha(tailAlpha)) {
         TrendXAxisLabels(
             chartModel.tStart,
             chartModel.tEnd,
@@ -872,20 +1103,17 @@ internal fun MeasurementChartCanvas(
     typeColorOf: (String) -> Color = { Color.Transparent },
 ) {
     val chartModel = remember(series) { buildMeasurementChartModel(series) }
+    val untrackedSpans = rememberUntrackedSpans(chartModel.tStart, chartModel.tRange, untrackedDays)
+    val bandColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
-    var chartRenderPhase by remember(series, immediate) {
-        mutableStateOf(if (immediate) 2 else 0)
+    val reveal = remember(chartModel, immediate) { Animatable(if (immediate) 1f else 0f) }
+    LaunchedEffect(chartModel, immediate) {
+        if (!immediate) reveal.animateTo(1f, tween(durationMillis = 450, easing = FastOutSlowInEasing))
     }
-    if (!immediate) {
-        LaunchedEffect(series) {
-            chartRenderPhase = 0
-            withFrameNanos { }
-            chartRenderPhase = 1
-            withFrameNanos { }
-            chartRenderPhase = 2
-        }
-    }
+    val tailAlpha = ((reveal.value - 0.85f) / 0.15f).coerceIn(0f, 1f)
+    val pathMeasure = remember { PathMeasure() }
+    val trimDst = remember { Path() }
 
     var inspectedPoint by remember(chartModel) { mutableStateOf<Int?>(null) }
     val textMeasurer = rememberTextMeasurer()
@@ -962,16 +1190,31 @@ internal fun MeasurementChartCanvas(
                     pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 6f))
                 )
             }
-            val offsets = chartModel.points.map { p ->
-                Offset(
-                    if (chartModel.singleEntry) w / 2f
-                    else ((p.timeMs - chartModel.tStart).toDouble() / chartModel.tRange * w).toFloat(),
-                    h - (((p.value - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
-                )
-            }
+            fun pointOffset(p: TrendPoint): Offset = Offset(
+                if (chartModel.singleEntry) w / 2f
+                else ((p.timeMs - chartModel.tStart).toDouble() / chartModel.tRange * w).toFloat(),
+                h - (((p.value - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
+            )
+            val offsets = chartModel.points.map(::pointOffset)
+            // Untracked bands sit behind every plot layer (#106).
+            drawUntrackedBands(untrackedSpans, chartModel.tStart, chartModel.tRange, bandColor)
             clipRect {
-                drawPath(straightTrendPath(offsets), AppColors.Calorie, style = Stroke(width = 5f))
-                if (chartRenderPhase >= 2 && chartModel.showsDots) {
+                if (offsets.isNotEmpty()) {
+                    drawPath(
+                        trendFillPath(offsets, h),
+                        AppColors.Calorie.copy(alpha = 0.08f * reveal.value),
+                    )
+                    if (offsets.size == 1) {
+                        drawCircle(AppColors.Calorie, radius = 5.5f, center = offsets.first())
+                    } else {
+                        drawPath(
+                            trimmedStraightPath(offsets, reveal.value, pathMeasure, trimDst),
+                            AppColors.Calorie,
+                            style = Stroke(width = 5f),
+                        )
+                    }
+                }
+                if (chartModel.showsDots && tailAlpha > 0f) {
                     offsets.forEach { drawCircle(AppColors.Calorie, radius = 5.5f, center = it) }
                 }
             }
@@ -1002,7 +1245,7 @@ internal fun MeasurementChartCanvas(
         )
         Spacer(Modifier.width(36.dp))
     }
-    if (chartRenderPhase >= 1) {
+    Box(Modifier.alpha(tailAlpha)) {
         TrendXAxisLabels(
             chartModel.tStart,
             chartModel.tEnd,
@@ -1016,25 +1259,29 @@ internal fun MeasurementChartCanvas(
 }
 
 /**
- * Per-day calorie bars against a goal rule line (#60 phase 3): [goal] is the
- * range average (MACRO-CYCLE-D); each bar colors over/under against its own
- * day's target from [dailyGoals] (journal-first; missing entries — e.g.
- * downsampled week buckets — fall back to [goal]).
+ * Calendar-day calorie bars against a goal rule line (#60 phase 3): [goal] is
+ * the range average (MACRO-CYCLE-D); each bar colors over/under against its
+ * own day's target from [dailyGoals] (journal-first; missing entries — e.g.
+ * bucketed week slots — fall back to [goal]). Untracked days draw a baseline
+ * dash; days with nothing logged leave a real gap on the axis.
  */
 @Composable
 internal fun CalorieBarChart(
-    dailyCalories: List<Pair<LocalDate, Int>>,
+    slots: List<CalorieSlot>,
     goal: Int,
     dailyGoals: Map<LocalDate, Int> = emptyMap(),
+    immediate: Boolean = false,
     /** Day-type/untracked marker lane inputs (UI-UX §10). */
     dayTypeByDay: Map<String, String> = emptyMap(),
     untrackedDays: Set<String> = emptySet(),
     typeColorOf: (String) -> Color = { Color.Transparent },
 ) {
-    val maxValue = dailyCalories.maxOf { it.second }.coerceAtLeast(goal).toDouble()
+    val maxValue = slots.mapNotNull { it.kcal }.maxOrNull()?.coerceAtLeast(goal)?.toDouble()
+        ?: goal.toDouble()
     val barColor = AppColors.Calorie
-    val overColor = MaterialTheme.colorScheme.error
-    val overColorSoft = overColor.copy(alpha = 0.75f)
+    // Over-goal bars are flat error (no gradient — restyle D1/D10).
+    val overColor = MaterialTheme.colorScheme.error.copy(alpha = 0.85f)
+    val dashColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
     val goalColor = AppColors.Calorie.copy(alpha = 0.4f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
@@ -1042,39 +1289,47 @@ internal fun CalorieBarChart(
     val ticks = niceAxisTicks(0.0, maxValue, count = 5)
     val yTop = ticks.last().coerceAtLeast(maxValue)
     val xLabelFmt = LocaleFormat.shortDate()
+    // Same 450ms draw-in as the trend charts: bars grow from the baseline,
+    // untracked dashes and x labels fade at the end; `immediate` (screenshot
+    // path) starts fully drawn for deterministic goldens.
+    val reveal = remember(slots, immediate) { Animatable(if (immediate) 1f else 0f) }
+    LaunchedEffect(slots, immediate) {
+        if (!immediate) reveal.animateTo(1f, tween(durationMillis = 450, easing = FastOutSlowInEasing))
+    }
+    val tailAlpha = ((reveal.value - 0.85f) / 0.15f).coerceIn(0f, 1f)
 
-    var inspectedBar by remember(dailyCalories) { mutableStateOf<Int?>(null) }
+    var inspectedBar by remember(slots) { mutableStateOf<Int?>(null) }
     val textMeasurer = rememberTextMeasurer()
     val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Strong)
     val chipForeground = MaterialTheme.colorScheme.surface
     val energyUnit = LocalEnergyUnit.current
     val inspectedTitle = stringResource(R.string.progress_calories_section)
-    val inspectedNow = inspectedBar?.let { dailyCalories.getOrNull(it) }
+    val inspectedNow = inspectedBar?.let { slots.getOrNull(it) }?.takeIf { it.kcal != null }
     val chartDescription = if (inspectedNow != null) {
         stringResource(
             R.string.a11y_chart_inspection,
             inspectedTitle,
-            xLabelFmt.format(inspectedNow.first),
-            "${LocaleFormat.integer(EnergyFormat.quantity(inspectedNow.second, energyUnit))} ${energyUnitLabel()}",
+            xLabelFmt.format(inspectedNow.day),
+            "${LocaleFormat.integer(EnergyFormat.quantity(inspectedNow.kcal ?: 0, energyUnit))} ${energyUnitLabel()}",
         )
     } else {
         inspectedTitle
     }
     val inspectedLabel = inspectedBar?.let { index ->
-        dailyCalories.getOrNull(index)?.let { (day, kcal) ->
-            "${xLabelFmt.format(day)} · ${LocaleFormat.integer(EnergyFormat.quantity(kcal, energyUnit))} ${energyUnitLabel()}"
+        slots.getOrNull(index)?.takeIf { it.kcal != null }?.let { slot ->
+            "${xLabelFmt.format(slot.day)} · ${LocaleFormat.integer(EnergyFormat.quantity(slot.kcal ?: 0, energyUnit))} ${energyUnitLabel()}"
         }
     }
-    // One marker per plotted bar (bucket key after downsampling), so dots
-    // align with bars at every range.
-    val dayMarkers = dailyCalories.map { (day, _) ->
-        DayMarker(day, dayTypeByDay[day.toString()]?.let(typeColorOf), day.toString() in untrackedDays)
+    // One marker per plotted slot (bucket day after roll-up), so dashes and
+    // dots align with bars at every range.
+    val dayMarkers = slots.map { slot ->
+        DayMarker(slot.day, dayTypeByDay[slot.day.toString()]?.let(typeColorOf), slot.untracked)
     }
     Column {
         Row(Modifier.fillMaxWidth().height(180.dp)) {
             BoxWithConstraints(Modifier.weight(1f).fillMaxSize()) {
                 val barAreaWidthPx = with(density) { maxWidth.toPx() }
-                val n = dailyCalories.size
+                val n = slots.size
                 val geometry = calorieBarGeometry(barAreaWidthPx, n, density)
                 val gap = geometry.gap
                 val barWidth = geometry.barWidth
@@ -1084,13 +1339,14 @@ internal fun CalorieBarChart(
                     Modifier
                         .fillMaxSize()
                         .semantics { contentDescription = chartDescription }
-                        .pointerInput(dailyCalories, startX, barWidth, gap) {
+                        .pointerInput(slots, startX, barWidth, gap) {
                             detectTapGestures { tap ->
                                 if (n == 0) return@detectTapGestures
                                 val raw = ((tap.x - startX) / (barWidth + gap)).toInt()
                                 // Taps past the last bar's right edge (label gutter,
-                                // y-axis spacer) do nothing instead of selecting it.
-                                if (raw < 0 || raw >= n) return@detectTapGestures
+                                // y-axis spacer) do nothing instead of selecting it;
+                                // only kcal-bearing slots are selectable.
+                                if (raw < 0 || raw >= n || slots[raw].kcal == null) return@detectTapGestures
                                 inspectedBar = if (inspectedBar == raw) null else raw
                             }
                         }
@@ -1116,33 +1372,40 @@ internal fun CalorieBarChart(
                         strokeWidth = 2f,
                         pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 6f))
                     )
-                    dailyCalories.forEachIndexed { i, (day, cals) ->
-                        val barH = ((cals / yTop).toFloat() * pxH)
+                    slots.forEachIndexed { i, slot ->
                         val x = startX + i * (barWidth + gap)
-                        val y = pxH - barH
-                        val overGoal = cals > (dailyGoals[day] ?: goal)
-                        if (overGoal) {
-                            drawRoundRect(
-                                brush = Brush.verticalGradient(
-                                    colors = listOf(overColorSoft, overColor),
-                                    startY = y, endY = pxH
-                                ),
-                                topLeft = Offset(x, y),
-                                size = Size(barWidth, barH),
-                                cornerRadius = CornerRadius(4f, 4f)
-                            )
-                        } else {
-                            drawRoundRect(
-                                color = barColor,
-                                topLeft = Offset(x, y),
-                                size = Size(barWidth, barH),
-                                cornerRadius = CornerRadius(4f, 4f)
-                            )
+                        val kcal = slot.kcal
+                        when {
+                            kcal != null -> {
+                                val barH = ((kcal / yTop).toFloat() * pxH) * reveal.value
+                                if (barH > 0f) {
+                                    val y = pxH - barH
+                                    val overGoal = kcal > (dailyGoals[slot.day] ?: goal)
+                                    drawRoundRect(
+                                        color = if (overGoal) overColor else barColor,
+                                        topLeft = Offset(x, y),
+                                        size = Size(barWidth, barH),
+                                        cornerRadius = CornerRadius(4f, 4f)
+                                    )
+                                }
+                            }
+                            // Untracked day: baseline dash, never a zero bar.
+                            slot.untracked && tailAlpha > 0f -> {
+                                val cx = x + barWidth / 2f
+                                drawLine(
+                                    color = dashColor.copy(alpha = 0.5f * tailAlpha),
+                                    start = Offset(cx - 3.dp.toPx(), pxH - 2.dp.toPx()),
+                                    end = Offset(cx + 3.dp.toPx(), pxH - 2.dp.toPx()),
+                                    strokeWidth = 2.dp.toPx(),
+                                )
+                            }
                         }
                     }
                     inspectedBar?.takeIf { it < n }?.let { index ->
+                        val slot = slots.getOrNull(index) ?: return@let
+                        val kcal = slot.kcal ?: return@let
                         val cx = startX + index * (barWidth + gap) + barWidth / 2f
-                        val topY = pxH - ((dailyCalories[index].second / yTop).toFloat() * pxH)
+                        val topY = pxH - ((kcal / yTop).toFloat() * pxH)
                         drawCircle(AppColors.Calorie.copy(alpha = 0.25f), radius = 16f, center = Offset(cx, topY))
                         if (inspectedLabel != null) {
                             drawInspectionTag(inspectedLabel, textMeasurer, Offset(cx, topY), pxW, chipBackground, chipForeground)
@@ -1162,7 +1425,7 @@ internal fun CalorieBarChart(
         Row(Modifier.fillMaxWidth()) {
             BoxWithConstraints(Modifier.weight(1f)) {
                 val areaWidthPx = with(density) { maxWidth.toPx() }
-                val geometry = calorieBarGeometry(areaWidthPx, dailyCalories.size, density)
+                val geometry = calorieBarGeometry(areaWidthPx, slots.size, density)
                 MarkerLane(
                     markers = dayMarkers,
                     xFraction = { i -> geometry.slotCenter(i) / areaWidthPx },
@@ -1174,7 +1437,7 @@ internal fun CalorieBarChart(
             BoxWithConstraints(Modifier.weight(1f)) {
                 val areaWidthDp = maxWidth
                 val areaWidthPx = with(density) { areaWidthDp.toPx() }
-                val n = dailyCalories.size
+                val n = slots.size
                 val geometry = calorieBarGeometry(areaWidthPx, n, density)
                 val gap = geometry.gap
                 val barWidth = geometry.barWidth
@@ -1184,23 +1447,29 @@ internal fun CalorieBarChart(
                 val minLabelDp = 40.dp
                 val slotStep = if (slotDp >= minLabelDp) 1
                     else Math.ceil((minLabelDp.value / slotDp.value).toDouble()).toInt().coerceAtLeast(1)
-                val pickedIndices = buildList {
-                    var i = 0
-                    while (i < n) { add(i); i += slotStep }
-                    if (last() != n - 1) add(n - 1)
-                }.distinct()
-                val labelBoxWidth = if (slotStep == 1) slotDp else minLabelDp.coerceAtLeast(slotDp)
+                val pickedIndices = calorieLabelIndices(n, slotStep)
+                // Boxes tile the slot pitch exactly: adjacent labels meet at
+                // their box edges without overlapping, and clamping the
+                // first/last box inward keeps every date fully visible.
+                val labelBoxWidth = slotDp * slotStep
                 pickedIndices.forEach { i ->
                     val cxPx = startX + i * (barWidth + gap) + barWidth / 2f
                     val cxDp = with(density) { cxPx.toDp() }
+                    // Keep the box inside the chart area — the first/last slot
+                    // centers sit within half a box of the edges.
+                    val offsetX = (cxDp - labelBoxWidth / 2).coerceIn(
+                        0.dp,
+                        (areaWidthDp - labelBoxWidth).coerceAtLeast(0.dp),
+                    )
                     Box(
                         Modifier
                             .width(labelBoxWidth)
-                            .offset(x = cxDp - labelBoxWidth / 2),
+                            .offset(x = offsetX)
+                            .alpha(tailAlpha),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            xLabelFmt.format(dailyCalories[i].first),
+                            xLabelFmt.format(slots[i].day),
                             fontSize = 11.sp,
                             color = secondaryColor,
                             maxLines = 1

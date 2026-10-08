@@ -383,6 +383,12 @@ internal object ScreenshotFixtures {
             today = snapshotDate,
         ),
         measurementSites = setOf(BodyMeasurement.Site.WAIST, BodyMeasurement.Site.HIPS, BodyMeasurement.Site.CHEST),
+        // Two untracked days inside the 6M window: bands behind the weight
+        // trend, dashes on the calorie axis, excluded-days caption.
+        untrackedDays = setOf(
+            snapshotDate.minusDays(11).toString(),
+            snapshotDate.minusDays(10).toString(),
+        ),
     )
 
     /** Progress variant with no weight/body-fat history so the enabled
@@ -400,6 +406,10 @@ internal object ScreenshotFixtures {
             today = snapshotDate,
         ),
         measurementSites = setOf(BodyMeasurement.Site.WAIST, BodyMeasurement.Site.HIPS, BodyMeasurement.Site.CHEST),
+        untrackedDays = setOf(
+            snapshotDate.minusDays(11).toString(),
+            snapshotDate.minusDays(10).toString(),
+        ),
     )
 
     fun coachUiState(): CoachUiState = CoachUiState(

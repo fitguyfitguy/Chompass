@@ -423,6 +423,13 @@
     <string name="progress_calories_section">Calorii</string>
     <string name="progress_avg_format">Med.: %1$d %2$s</string>
     <string name="progress_no_food">Niciun aliment înregistrat încă</string>
+    <string name="progress_untracked_legend">Zi neurmărită</string>
+    <plurals name="untracked_days_excluded">
+        <item quantity="one">S-a exclus %1$d zi neurmărită</item>
+        <item quantity="few">S-au exclus %1$d zile neurmărite</item>
+        <item quantity="many">S-au exclus %1$d de zile neurmărite</item>
+        <item quantity="other">S-au exclus %1$d de zile neurmărite</item>
+    </plurals>
 
     <string name="progress_macro_averages">Medii macronutrienți</string>
     <string name="progress_nutrient_averages">Medii de nutrienți</string>

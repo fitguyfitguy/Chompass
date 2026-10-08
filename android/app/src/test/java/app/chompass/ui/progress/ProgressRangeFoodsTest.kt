@@ -52,7 +52,7 @@ class ProgressRangeFoodsTest {
             timeRange = TimeRange.YEAR,
             anchorDate = today,
         )
-        assertEquals(full.dailyCalories, filtered.dailyCalories)
+        assertEquals(full.calorieSlots, filtered.calorieSlots)
         assertEquals(full.macroAverages, filtered.macroAverages)
     }
 
@@ -72,7 +72,7 @@ class ProgressRangeFoodsTest {
             timeRange = TimeRange.ALL_TIME,
             anchorDate = today,
         )
-        assertEquals(3, ui.dailyCalories.size)
+        assertEquals(3, ui.calorieSlots.count { it.kcal != null })
         assertEquals(2100, ui.calorieAverage)
     }
 

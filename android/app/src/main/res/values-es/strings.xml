@@ -422,6 +422,11 @@
     <string name="progress_calories_section">Calorías</string>
     <string name="progress_avg_format">Media: %1$d %2$s</string>
     <string name="progress_no_food">Aún no hay comida registrada</string>
+    <string name="progress_untracked_legend">Día sin registrar</string>
+    <plurals name="untracked_days_excluded">
+        <item quantity="one">Se excluye %1$d día sin registrar</item>
+        <item quantity="other">Se excluyen %1$d días sin registrar</item>
+    </plurals>
 
     <string name="progress_macro_averages">Promedios de macros</string>
     <string name="progress_nutrient_averages">Promedios de nutrientes</string>

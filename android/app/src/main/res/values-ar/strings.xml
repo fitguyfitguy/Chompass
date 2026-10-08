@@ -428,6 +428,15 @@
     <string name="progress_calories_section">السعرات الحرارية</string>
     <string name="progress_avg_format">المتوسط: %1$d %2$s</string>
     <string name="progress_no_food">لم يتم تسجيل أي طعام بعد</string>
+    <string name="progress_untracked_legend">يوم غير متتبَّع</string>
+    <plurals name="untracked_days_excluded">
+        <item quantity="zero">لم يُستبعد أي يوم غير متتبَّع</item>
+        <item quantity="one">استُبعد يوم غير متتبَّع واحد</item>
+        <item quantity="two">استُبعد يومان غير متتبَّعان</item>
+        <item quantity="few">استُبعدت %1$d أيام غير متتبَّعة</item>
+        <item quantity="many">استُبعد %1$d يومًا غير متتبَّع</item>
+        <item quantity="other">استُبعد %1$d يومًا غير متتبَّع</item>
+    </plurals>
 
     <string name="progress_macro_averages">متوسطات العناصر الكبرى</string>
     <string name="progress_nutrient_averages">متوسطات المغذيات</string>

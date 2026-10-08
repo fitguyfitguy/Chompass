@@ -251,7 +251,7 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                 item {
                     CardSection {
                         CalorieSection(
-                            dailyCalories = ui.dailyCalories,
+                            calorieSlots = ui.calorieSlots,
                             calorieGoal = ui.calorieGoal,
                             calorieAverage = ui.calorieAverage,
                             dailyCalorieGoals = ui.dailyCalorieGoals,
@@ -470,10 +470,11 @@ internal fun ProgressScreenPreviewContent(
             item {
                 CardSection {
                     CalorieSection(
-                        dailyCalories = ui.dailyCalories,
+                        calorieSlots = ui.calorieSlots,
                         calorieGoal = ui.calorieGoal,
                         calorieAverage = ui.calorieAverage,
                         dailyCalorieGoals = ui.dailyCalorieGoals,
+                        chartsImmediate = chartsImmediate,
                         dayTypeByDay = ui.dayTypeByDay,
                         untrackedDays = ui.untrackedDays,
                         typeColorOf = typeColorOf,

@@ -1400,6 +1400,11 @@ für dich ein</string>
     <string name="progress_avg_format">Durchschnitt: %1$d %2$s</string>
 
     <string name="progress_no_food">Noch keine Mahlzeiten erfasst</string>
+    <string name="progress_untracked_legend">Nicht erfasster Tag</string>
+    <plurals name="untracked_days_excluded">
+        <item quantity="one">%1$d nicht erfasster Tag ausgeschlossen</item>
+        <item quantity="other">%1$d nicht erfasste Tage ausgeschlossen</item>
+    </plurals>
 
     <string name="progress_macro_averages">Makro-Durchschnittswerte</string>
 
