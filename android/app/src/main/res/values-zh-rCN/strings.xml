@@ -1717,6 +1717,7 @@
     <string name="entry_analysis_placeholder_name">····</string>
     <string name="feet_inches_format">%1$d\' %2$d\"</string>
     <string name="food_search_source_off">Open Food Facts</string>
+    <string name="add_food_off_unreachable">Open Food Facts 暂时无法访问。已保存和离线结果仍会显示。</string>
     <string name="food_search_source_usda">USDA</string>
     <string name="ft_label_format">%1$d ft</string>
     <string name="grams_value_decimal_format">%1$sg</string>

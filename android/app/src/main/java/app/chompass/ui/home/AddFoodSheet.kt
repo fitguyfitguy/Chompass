@@ -140,6 +140,7 @@ fun AddFoodSheet(
     onQueryChange: (String) -> Unit = {},
     suggestions: List<FoodSuggestion> = emptyList(),
     suggestionsNetworkPending: Boolean = false,
+    suggestionsNetworkUnreachable: Boolean = false,
     packagedSearchEnabled: Boolean = false,
     onPackagedSearchChange: (Boolean) -> Unit = {},
     onOpenFoodSettings: () -> Unit = {},
@@ -235,6 +236,7 @@ fun AddFoodSheet(
             onQueryChange = onQueryChange,
             suggestions = suggestions,
             suggestionsNetworkPending = suggestionsNetworkPending,
+            suggestionsNetworkUnreachable = suggestionsNetworkUnreachable,
             packagedSearchEnabled = packagedSearchEnabled,
             // Toggling the opt-in re-runs the search; it must not dismiss.
             onPackagedSearchChange = onPackagedSearchChange,
@@ -318,6 +320,7 @@ internal fun AddFoodSheetContent(
     onQueryChange: (String) -> Unit = {},
     suggestions: List<FoodSuggestion> = emptyList(),
     suggestionsNetworkPending: Boolean = false,
+    suggestionsNetworkUnreachable: Boolean = false,
     packagedSearchEnabled: Boolean = false,
     onPackagedSearchChange: (Boolean) -> Unit = {},
     onOpenFoodSettings: () -> Unit = {},
@@ -541,6 +544,7 @@ internal fun AddFoodSheetContent(
         AddFoodSuggestionList(
             suggestions = if (searching) suggestions else savedRows,
             networkPending = suggestionsNetworkPending,
+            networkUnreachable = suggestionsNetworkUnreachable,
             searching = searching,
             // The query itself, not just "searching": every edit re-parks the
             // list at the top, and each one has to disarm the grow-on-scroll

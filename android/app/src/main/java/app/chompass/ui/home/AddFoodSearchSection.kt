@@ -422,6 +422,8 @@ private fun PackagedSearchOffChip(onOff: () -> Unit) {
 internal fun AddFoodSuggestionList(
     suggestions: List<FoodSuggestion>,
     networkPending: Boolean,
+    /** True when the last packaged leg ended without reaching Open Food Facts. */
+    networkUnreachable: Boolean = false,
     /** False renders the zero-query saved-meals rows. */
     searching: Boolean,
     /**
@@ -539,7 +541,11 @@ internal fun AddFoodSuggestionList(
                 // Said before the databases block rather than after it, so the
                 // list reads "nothing of yours matched — here is another place
                 // to look" instead of trailing the verdict after the offer.
-                if (localSections.isEmpty() && databaseRows.isEmpty() && !networkPending) {
+                // Superseded by the unreachable note: "OFF is down" is not
+                // "nothing matched", so the generic no-match line would lie.
+                if (localSections.isEmpty() && databaseRows.isEmpty() &&
+                    !networkPending && !networkUnreachable
+                ) {
                     item(key = "empty") { AddFoodEmptyLine(R.string.saved_meals_no_match) }
                 }
                 // Always, matched or not. The label lands ahead of its rows so
@@ -577,6 +583,15 @@ internal fun AddFoodSuggestionList(
                             }
                         },
                     )
+                }
+                // Said right under the databases heading: the rows above are
+                // local and complete, so an empty packaged section here means
+                // OFF did not answer, not that nothing matched (Codeberg #120
+                // facet).
+                if (networkUnreachable && !networkPending) {
+                    item(key = "off_unreachable") {
+                        AddFoodEmptyLine(R.string.add_food_off_unreachable)
+                    }
                 }
                 items(databaseRows, key = { it.key }, contentType = { it.kind }) { suggestion ->
                     AddFoodSuggestionRow(

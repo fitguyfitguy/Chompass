@@ -1229,6 +1229,7 @@ fun HomeScreen(
             onQueryChange = vm::onAddFoodQueryChange,
             suggestions = ui.addFoodSuggestions,
             suggestionsNetworkPending = ui.addFoodSuggestNetworkPending,
+            suggestionsNetworkUnreachable = ui.addFoodSuggestNetworkUnreachable,
             packagedSearchEnabled = ui.addFoodPackagedSearchEnabled,
             onPackagedSearchChange = vm::setAddFoodPackagedSearch,
             onOpenFoodSettings = { onOpenFoodSettings?.invoke() },

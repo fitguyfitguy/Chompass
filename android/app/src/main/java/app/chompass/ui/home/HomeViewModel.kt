@@ -61,6 +61,7 @@ import app.chompass.services.OpenFoodFactsService
 import app.chompass.services.PerfLog
 import app.chompass.services.WaterReminderPlanner
 import app.chompass.services.grounding.DatabaseSearchResult
+import app.chompass.services.grounding.FoodDatabaseSearch
 import app.chompass.services.grounding.FoodSuggestion
 import app.chompass.services.grounding.FoodSuggestionRanker
 import app.chompass.services.grounding.QueryNormalizer
@@ -222,6 +223,8 @@ data class HomeUiState(
     val addFoodSavedRows: List<FoodSuggestion> = emptyList(),
     /** True while the Open Food Facts leg is still outstanding for this query. */
     val addFoodSuggestNetworkPending: Boolean = false,
+    /** True when the last packaged leg ended without reaching Open Food Facts at all. */
+    val addFoodSuggestNetworkUnreachable: Boolean = false,
     /**
      * Whether the packaged-product (Open Food Facts) leg may run. Saved foods
      * come from the local index and USDA / Swiss from bundled SQLite on every
@@ -584,6 +587,7 @@ data class HomeUiState(
             addFoodSavedTab == other.addFoodSavedTab &&
             addFoodSavedRows == other.addFoodSavedRows &&
             addFoodSuggestNetworkPending == other.addFoodSuggestNetworkPending &&
+            addFoodSuggestNetworkUnreachable == other.addFoodSuggestNetworkUnreachable &&
             addFoodPackagedSearchEnabled == other.addFoodPackagedSearchEnabled &&
             pendingIdentityName == other.pendingIdentityName &&
             queueEntries == other.queueEntries &&
@@ -689,6 +693,7 @@ data class HomeUiState(
         result = 31 * result + addFoodSavedTab.hashCode()
         result = 31 * result + addFoodSavedRows.hashCode()
         result = 31 * result + addFoodSuggestNetworkPending.hashCode()
+        result = 31 * result + addFoodSuggestNetworkUnreachable.hashCode()
         result = 31 * result + addFoodPackagedSearchEnabled.hashCode()
         result = 31 * result + (pendingIdentityName?.hashCode() ?: 0)
         result = 31 * result + queueEntries.hashCode()
@@ -870,6 +875,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         val recipes: List<Recipe>,
         var offline: List<DatabaseSearchResult> = emptyList(),
         var online: List<DatabaseSearchResult> = emptyList(),
+        /** Last packaged leg ended without reaching Open Food Facts (Codeberg #120 facet). */
+        var onlineUnreachable: Boolean = false,
     )
 
     private var addFoodSearch: AddFoodSearchState? = null
@@ -2023,7 +2030,11 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         if (query.isEmpty()) {
             addFoodSearch = null
             _ui.update {
-                it.copy(addFoodSuggestions = emptyList(), addFoodSuggestNetworkPending = false)
+                it.copy(
+                    addFoodSuggestions = emptyList(),
+                    addFoodSuggestNetworkPending = false,
+                    addFoodSuggestNetworkUnreachable = false,
+                )
             }
             return
         }
@@ -2080,13 +2091,15 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         if (gen != suggestGeneration) return
         _ui.update {
             if (it.addFoodSuggestions == ranked &&
-                it.addFoodSuggestNetworkPending == networkPending
+                it.addFoodSuggestNetworkPending == networkPending &&
+                it.addFoodSuggestNetworkUnreachable == state.onlineUnreachable
             ) {
                 it
             } else {
                 it.copy(
                     addFoodSuggestions = ranked,
                     addFoodSuggestNetworkPending = networkPending,
+                    addFoodSuggestNetworkUnreachable = state.onlineUnreachable,
                 )
             }
         }
@@ -2113,20 +2126,26 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             // Open Food Facts walks a candidate-query chain with per-candidate
             // backoff, so its own budget runs to tens of seconds. Acceptable in a
             // dedicated search screen, not in the primary logging path.
-            val online = try {
+            val outcome = try {
                 withTimeoutOrNull(ONLINE_SEARCH_BUDGET_MS) {
                     container.foodDatabaseSearch.searchOnline(state.query)
-                } ?: emptyList()
+                } ?: FoodDatabaseSearch.OnlineSearchOutcome(
+                    results = emptyList(),
+                    // A leg that outlived its budget never answered: the sheet
+                    // must say "unreachable", not "nothing matched".
+                    unreachable = true,
+                )
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                emptyList()
+                FoodDatabaseSearch.OnlineSearchOutcome(emptyList(), unreachable = true)
             }
             // The switch may have gone off again while the request was out.
             // Landing those rows now would put back exactly what the user just
             // asked to remove.
             if (!_ui.value.addFoodPackagedSearchEnabled) return@launch
-            state.online = online
+            state.online = outcome.results
+            state.onlineUnreachable = outcome.unreachable
             publishAddFoodSuggestions(state, gen, networkPending = false)
         }
     }
@@ -2199,6 +2218,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             packagedJob?.cancel()
             packagedJob = null
             addFoodSearch?.online = emptyList()
+            addFoodSearch?.onlineUnreachable = false
         }
         // The switch adds or removes one source. It does not restart the
         // search: re-running the query would drop every row for a frame, redo
@@ -2240,6 +2260,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 addFoodQuery = "",
                 addFoodSuggestions = emptyList(),
                 addFoodSuggestNetworkPending = false,
+                addFoodSuggestNetworkUnreachable = false,
             )
         }
     }

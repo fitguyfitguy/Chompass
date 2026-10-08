@@ -1000,6 +1000,7 @@
     <string name="feet_inches_format">%1$d\' %2$d\"</string>
     <string name="finish_onboarding_hint">Terminez d\'abord l\'intégration pour comparer ce repas à vos objectifs quotidiens.</string>
     <string name="food_search_source_off">Open Food Facts</string>
+    <string name="add_food_off_unreachable">Open Food Facts est inaccessible pour le moment. Les résultats enregistrés et hors ligne s\'affichent toujours.</string>
     <string name="food_search_source_usda">USDA</string>
     <string name="frame_large">Grande</string>
     <string name="frame_medium">Moyenne</string>

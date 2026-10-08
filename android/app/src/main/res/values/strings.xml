@@ -400,6 +400,7 @@
     <string name="food_search_sheet_title">Search food databases</string>
     <string name="food_search_placeholder">e.g. Greek yogurt, Milch, quark</string>
     <string name="food_search_source_off">Open Food Facts</string>
+    <string name="add_food_off_unreachable">Open Food Facts is unreachable right now. Saved and offline results still show.</string>
     <string name="food_search_source_usda">USDA</string>
     <string name="food_search_source_swiss">Swiss</string>
     <string name="shortcut_camera_short">Camera</string>

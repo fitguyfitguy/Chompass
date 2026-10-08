@@ -657,6 +657,7 @@ für dich ein</string>
     <string name="food_search_placeholder">z. B. griechischer Joghurt, Milch, Quark</string>
 
     <string name="food_search_source_off">Open Food Facts</string>
+    <string name="add_food_off_unreachable">Open Food Facts ist gerade nicht erreichbar. Gespeicherte und Offline-Ergebnisse werden weiterhin angezeigt.</string>
 
     <string name="food_search_source_usda">USDA</string>
 

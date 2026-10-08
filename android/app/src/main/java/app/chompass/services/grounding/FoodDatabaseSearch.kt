@@ -116,8 +116,13 @@ class FoodDatabaseSearch(
      * state the offline legs have to survive, so it needs to be reachable in a
      * test without waiting out the real client's retry chain.
      */
-    private val offSearch: suspend (String) -> List<DatabaseSearchResult> = { query ->
-        OpenFoodFactsService.search(query, limit = 6).map(DatabaseSearchResult::fromOff)
+    private val offSearch: suspend (String) -> OnlineSearchOutcome = { query ->
+        OpenFoodFactsService.search(query, limit = 6).let { outcome ->
+            OnlineSearchOutcome(
+                results = outcome.hits.map(DatabaseSearchResult::fromOff),
+                unreachable = outcome.unreachable,
+            )
+        }
     },
 ) {
     /**
@@ -128,6 +133,18 @@ class FoodDatabaseSearch(
      * a cancelled search releases the lock and propagates.
      */
     private val offlineMutex = Mutex()
+
+    /**
+     * The Add Food packaged-search leg's outcome: the Open Food Facts rows
+     * (in [DatabaseSearchResult] space) plus whether the backend could be
+     * reached at all. Only [searchOnline] and its injectable seam produce it —
+     * the merged [search] keeps a plain list, since its per-source isolation
+     * already lets a dead OFF hide behind the offline rows.
+     */
+    data class OnlineSearchOutcome(
+        val results: List<DatabaseSearchResult>,
+        val unreachable: Boolean,
+    )
 
     enum class Source {
         OPEN_FOOD_FACTS,
@@ -208,7 +225,7 @@ class FoodDatabaseSearch(
                     }
                 }
                 if (Source.OPEN_FOOD_FACTS in active) {
-                    launch("off") { withContext(Dispatchers.IO) { offSearch(q) } }
+                    launch("off") { withContext(Dispatchers.IO) { offSearch(q).results } }
                 }
                 if (Source.USDA in active) {
                     launch("usda") {
@@ -243,9 +260,35 @@ class FoodDatabaseSearch(
     suspend fun searchOffline(query: String, limit: Int = 12): List<DatabaseSearchResult> =
         search(query, setOf(Source.USDA, Source.SWISS), limit)
 
-    /** Network-only leg (Open Food Facts). See [searchOffline]. */
-    suspend fun searchOnline(query: String, limit: Int = 6): List<DatabaseSearchResult> =
-        search(query, setOf(Source.OPEN_FOOD_FACTS), limit)
+    /**
+     * Network-only leg (Open Food Facts). See [searchOffline]. Returns the
+     * ranked results plus [OnlineSearchOutcome.unreachable]: the Add Food
+     * packaged leg is the only place that surfaces OFF's reachability, so a
+     * dead network must not read as "nothing matched" there (Codeberg #120
+     * facet). A source switched off in Settings reports neither results nor
+     * unreachability — the leg simply did not run.
+     */
+    suspend fun searchOnline(query: String, limit: Int = 6): OnlineSearchOutcome {
+        val q = query.trim()
+        if (q.isEmpty() || !isSourceEnabled(Source.OPEN_FOOD_FACTS)) {
+            return OnlineSearchOutcome(emptyList(), unreachable = false)
+        }
+        return try {
+            val outcome = withContext(Dispatchers.IO) { offSearch(q) }
+            OnlineSearchOutcome(
+                results = outcome.results.map { it.withNormalizedScore() }.take(limit),
+                unreachable = outcome.unreachable,
+            )
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            // Same contract as the merged search's per-source isolation: a
+            // dead OFF leg empties itself rather than throwing into the sheet —
+            // but here the death is surfaced as unreachable instead of
+            // silently swallowed.
+            OnlineSearchOutcome(emptyList(), unreachable = true)
+        }
+    }
 
     /**
      * Resolve a selected hit into a reviewable [FoodAnalysis] (full micronutrients):
