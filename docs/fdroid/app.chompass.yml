@@ -343,5 +343,5 @@ Builds:
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[0-9.]+$
-CurrentVersion: 5.4.0
-CurrentVersionCode: 85
+CurrentVersion: 5.5.0
+CurrentVersionCode: 86
