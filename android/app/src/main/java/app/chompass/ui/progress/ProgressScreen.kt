@@ -1,19 +1,18 @@
 package app.chompass.ui.progress
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,6 +30,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -45,8 +46,8 @@ import app.chompass.services.health.DailyActivity
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.components.ChompassSurface
-import app.chompass.ui.components.ChompassIconBubble
 import app.chompass.ui.navigation.BottomNavScrollPadding
+import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.dayTypeColor
 import androidx.compose.ui.graphics.Color
@@ -140,43 +141,39 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                // F6: progress display settings (default range, week start, trend
-                // plots) were only reachable via Settings → Display → Customize
-                // progress; this gives the tab a one-tap entry to the same screen.
-                // B6: was a right-aligned Tune + 13sp text link that read as a
-                // filter control next to the range chips; the same full-width
-                // glass row as the history links reads as a proper entry.
-                ChompassSurface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(enabled = onOpenCustomize != null, role = Role.Button) { onOpenCustomize?.invoke() },
-                    cornerRadius = 16.dp,
-                    padding = 14.dp,
+                // F6/B6 entry, condensed: the full-width glass row pushed real
+                // content below the fold. A trailing Tune glyph on the range row
+                // reads as "configure" — the 13sp text link B6 replaced read as a
+                // filter control. The same screen stays reachable via
+                // Settings → Display → Customize progress and hub search.
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        ChompassIconBubble(
-                            icon = Icons.Outlined.Tune,
-                            size = 28.dp,
-                            iconSize = 16.dp,
-                        )
-                        Spacer(Modifier.width(12.dp))
-                        Text(
-                            stringResource(R.string.settings_customize_progress),
-                            fontSize = 17.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.weight(1f),
-                        )
+                    Box(Modifier.weight(1f)) {
+                        TimeRangePicker(selected = ui.timeRange, onSelect = vm::setTimeRange)
+                    }
+                    // Plain Box: ChompassSurface's inner Box is fillMaxWidth,
+                    // which in a Row eats all width and zeroes the chips.
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                            .clickable(
+                                enabled = onOpenCustomize != null,
+                                role = Role.Button,
+                            ) { onOpenCustomize?.invoke() }
+                            .padding(7.dp),
+                    ) {
                         Icon(
-                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
-                            modifier = Modifier.size(18.dp),
+                            Icons.Outlined.Tune,
+                            contentDescription = stringResource(R.string.settings_customize_progress),
+                            tint = AppColors.Calorie,
+                            modifier = Modifier.size(22.dp),
                         )
                     }
                 }
             }
-
-            item { TimeRangePicker(selected = ui.timeRange, onSelect = vm::setTimeRange) }
 
             item {
                 if (bodyFatAvailable) {
