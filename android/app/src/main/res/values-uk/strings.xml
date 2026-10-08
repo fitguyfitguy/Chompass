@@ -446,6 +446,13 @@
     <string name="progress_calories_section">Калорії</string>
     <string name="progress_avg_format">Середнє: %1$d %2$s</string>
     <string name="progress_no_food">Їжу ще не внесено</string>
+    <string name="progress_untracked_legend">День без обліку</string>
+    <plurals name="untracked_days_excluded">
+        <item quantity="one">Виключено %1$d день без обліку</item>
+        <item quantity="few">Виключено %1$d дні без обліку</item>
+        <item quantity="many">Виключено %1$d днів без обліку</item>
+        <item quantity="other">Виключено %1$d дні без обліку</item>
+    </plurals>
     <string name="progress_macro_averages">Середні макронутрієнти</string>
     <string name="progress_nutrient_averages">Середні нутрієнти</string>
 

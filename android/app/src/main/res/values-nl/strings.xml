@@ -403,6 +403,11 @@
     <string name="progress_calories_section">Calorieën</string>
     <string name="progress_avg_format">Gem.: %1$d %2$s</string>
     <string name="progress_no_food">Nog geen eten geregistreerd</string>
+    <string name="progress_untracked_legend">Niet bijgehouden dag</string>
+    <plurals name="untracked_days_excluded">
+        <item quantity="one">%1$d niet bijgehouden dag uitgesloten</item>
+        <item quantity="other">%1$d niet bijgehouden dagen uitgesloten</item>
+    </plurals>
 
     <string name="progress_macro_averages">Macro-gemiddelden</string>
     <string name="progress_nutrient_averages">Voedingsgemiddelden</string>

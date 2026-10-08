@@ -428,6 +428,11 @@
     <string name="progress_calories_section">칼로리</string>
     <string name="progress_avg_format">평균: %1$d %2$s</string>
     <string name="progress_no_food">아직 기록된 음식이 없어요</string>
+    <string name="progress_untracked_legend">추적 안 된 날</string>
+    <plurals name="untracked_days_excluded">
+        <item quantity="one">추적 안 된 날 %1$d일 제외</item>
+        <item quantity="other">추적 안 된 날 %1$d일 제외</item>
+    </plurals>
 
     <string name="progress_macro_averages">매크로 평균</string>
     <string name="progress_nutrient_averages">영양소 평균</string>

@@ -524,6 +524,13 @@
     <string name="progress_calories_section">Калории</string>
     <string name="progress_avg_format">Сред.: %1$d %2$s</string>
     <string name="progress_no_food">Пока нет записей о еде</string>
+    <string name="progress_untracked_legend">День без учёта</string>
+    <plurals name="untracked_days_excluded">
+        <item quantity="one">Исключён %1$d день без учёта</item>
+        <item quantity="few">Исключено %1$d дня без учёта</item>
+        <item quantity="many">Исключено %1$d дней без учёта</item>
+        <item quantity="other">Исключено %1$d дня без учёта</item>
+    </plurals>
 
     <string name="progress_macro_averages">Средние макросы</string>
     <string name="progress_nutrient_averages">Средние нутриенты</string>
