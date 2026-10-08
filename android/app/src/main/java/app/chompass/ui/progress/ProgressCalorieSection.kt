@@ -6,6 +6,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -33,7 +35,7 @@ import app.chompass.ui.theme.AppTextOpacity
 
 @Composable
 internal fun CalorieSection(
-    dailyCalories: List<Pair<LocalDate, Int>>,
+    calorieSlots: List<CalorieSlot>,
     calorieGoal: Int,
     calorieAverage: Int? = null,
     dailyCalorieGoals: Map<LocalDate, Int> = emptyMap(),
@@ -43,6 +45,7 @@ internal fun CalorieSection(
     typeColorOf: (String) -> androidx.compose.ui.graphics.Color = { androidx.compose.ui.graphics.Color.Transparent },
 ) {
     var expanded by rememberSaveable { mutableStateOf(true) }
+    val untrackedCount = calorieSlots.count { it.untracked }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -50,6 +53,14 @@ internal fun CalorieSection(
         ) {
             Text(stringResource(R.string.progress_calories_section), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.weight(1f))
+            if (untrackedCount > 0) {
+                Text(
+                    pluralStringResource(R.plurals.untracked_days_excluded, untrackedCount, untrackedCount),
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                )
+            }
+            Spacer(Modifier.width(8.dp))
             if (calorieAverage != null) {
                 Text(
                     stringResource(R.string.progress_avg_format, EnergyFormat.quantity(calorieAverage, LocalEnergyUnit.current), energyUnitLabel()),
@@ -67,7 +78,7 @@ internal fun CalorieSection(
             exit = shrinkVertically(),
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                if (dailyCalories.isEmpty()) {
+                if (calorieSlots.none { it.kcal != null }) {
                     Box(Modifier.fillMaxWidth().padding(vertical = 24.dp), contentAlignment = Alignment.Center) {
                         Text(
                             stringResource(R.string.progress_no_food),
@@ -76,14 +87,27 @@ internal fun CalorieSection(
                         )
                     }
                 } else {
+                    val chartSlots = remember(calorieSlots) { bucketCalorieSlots(calorieSlots) }
                     CalorieBarChart(
-                        dailyCalories = downsampleCalorieBars(dailyCalories),
+                        slots = chartSlots,
                         goal = calorieGoal,
                         dailyGoals = dailyCalorieGoals,
                         dayTypeByDay = dayTypeByDay,
                         untrackedDays = untrackedDays,
                         typeColorOf = typeColorOf,
                     )
+                    if (untrackedCount > 0) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            LegendSwatch(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                label = stringResource(R.string.progress_untracked_legend),
+                                dashed = true,
+                            )
+                        }
+                    }
                 }
             }
         }
