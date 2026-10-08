@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -513,39 +512,24 @@ private fun BoxScope.SwipeBackground(
             if (isFavorite) stringResource(R.string.home_swipe_unfavorite) else stringResource(R.string.home_swipe_favorite)
         )
     }
-    // iOS Mail-style trailing reveal: paint only the area the foreground has
-    // moved out of, pinned to the matching edge. Width = absolute offset.
+    // iOS Mail-style trailing reveal, painted as the card's own background:
+    // one full-row silhouette in the row's shape, the icon centered in the
+    // strip the foreground has slid off of (maintainer finding M1 2026-10-08:
+    // a separate reveal-width tile read as a second card next to the row).
     val widthPx = kotlin.math.abs(offsetPx)
     val widthDp = with(LocalDensity.current) { widthPx.toDp() }
     val alignment = if (offsetPx < 0f) Alignment.CenterEnd else Alignment.CenterStart
-    // Round the reveal's seam edge with the row's mirrored corner radii so the
-    // panel follows the card shape instead of showing square corners against
-    // its rounded edge; the far edge is already clipped by SectionCardWrapper.
-    val deleteRevealShape = remember(rowShape) {
-        RoundedCornerShape(
-            topStart = rowShape.topEnd,
-            topEnd = CornerSize(0.dp),
-            bottomEnd = CornerSize(0.dp),
-            bottomStart = rowShape.bottomEnd,
-        )
-    }
-    val favoriteRevealShape = remember(rowShape) {
-        RoundedCornerShape(
-            topStart = CornerSize(0.dp),
-            topEnd = rowShape.topStart,
-            bottomEnd = rowShape.bottomStart,
-            bottomStart = CornerSize(0.dp),
-        )
-    }
-    val revealShape = if (offsetPx < 0f) deleteRevealShape else favoriteRevealShape
 
-    Box(Modifier.matchParentSize()) {
+    Box(
+        Modifier
+            .matchParentSize()
+            .background(bg, rowShape)
+    ) {
         Box(
             Modifier
                 .align(alignment)
                 .fillMaxHeight()
-                .width(widthDp)
-                .background(bg, revealShape),
+                .width(widthDp),
             contentAlignment = Alignment.Center
         ) {
             if (widthPx > 24f) {

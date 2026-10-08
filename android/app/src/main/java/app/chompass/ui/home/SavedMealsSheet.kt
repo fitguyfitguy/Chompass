@@ -664,10 +664,10 @@ private fun MoveButtons(
 }
 
 /**
- * iOS Mail-style trailing reveal: the Unfavorite panel is pinned to the
- * right edge and its width tracks the swipe distance, so only the area
- * that's been "revealed" by the foreground sliding left is tinted — the
- * still-visible portion of the row stays its normal color.
+ * iOS Mail-style trailing reveal, painted as the row's own background:
+ * one full-row silhouette in the row's corner shape, the heart centered in
+ * the strip the foreground has slid off of (maintainer finding M1
+ * 2026-10-08: a separate reveal-width tile read as a second card).
  */
 @Composable
 private fun BoxScope.FavoriteUnfavoriteBackground(offsetPx: Float) {
@@ -681,10 +681,14 @@ private fun BoxScope.FavoriteUnfavoriteBackground(offsetPx: Float) {
     Box(Modifier.matchParentSize()) {
         Box(
             Modifier
+                .matchParentSize()
+                .background(AppColors.Calorie, RoundedCornerShape(AppRadii.Container))
+        )
+        Box(
+            Modifier
                 .align(Alignment.CenterEnd)
                 .fillMaxHeight()
-                .width(revealWidthDp)
-                .background(AppColors.Calorie, RoundedCornerShape(AppRadii.Container)),
+                .width(revealWidthDp),
             contentAlignment = Alignment.Center
         ) {
             if (revealWidthPx > 24f) {
