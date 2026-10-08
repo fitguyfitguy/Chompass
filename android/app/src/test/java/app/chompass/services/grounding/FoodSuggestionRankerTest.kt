@@ -113,6 +113,45 @@ class FoodSuggestionRankerTest {
         assertTrue(out.isEmpty())
     }
 
+    /**
+     * Regression (#120 facet): every Open Food Facts hit for "cooked potatoes"
+     * fell below [FoodSuggestionRanker.MIN_LEXICAL] — none of the product names
+     * carries the verbatim phrase and there is no stemming, so "potatoes"
+     * never matched "potato" — and the whole provider leg vanished into "Keine
+     * passenden Lebensmittel gefunden" even though the provider had returned
+     * and ranked all six rows. Database hits are provider-gated now; the
+     * lexical score only orders the leg.
+     */
+    @Test
+    fun providerRankedDatabaseRowsSurviveTheLexicalFloor() {
+        val off = listOf(
+            db("raw kettle cooked", NutrientSourceKind.OPEN_FOOD_FACTS, "off-1", score = 0.20),
+            db("Kettle cooked potato chips", NutrientSourceKind.OPEN_FOOD_FACTS, "off-2", score = 0.30),
+            db("Cooking potato", NutrientSourceKind.OPEN_FOOD_FACTS, "off-3", score = 0.20),
+            db("Hand cooked potato", NutrientSourceKind.OPEN_FOOD_FACTS, "off-4", score = 0.25),
+            db("Cooked Potato Chips", NutrientSourceKind.OPEN_FOOD_FACTS, "off-5", score = 0.30),
+            db("Cooked Potato Chips", NutrientSourceKind.OPEN_FOOD_FACTS, "off-6", score = 0.28),
+        )
+
+        val out = FoodSuggestionRanker.rank("cooked potatoes", emptyList(), emptyList(), off, now)
+
+        // The barcode duplicate collapses, the rest survive.
+        assertEquals(5, out.size)
+        assertTrue(out.all { it is FoodSuggestion.DatabaseHit })
+        assertEquals(
+            listOf(
+                "Cooked Potato Chips",
+                "Kettle cooked potato chips",
+                "Hand cooked potato",
+                "raw kettle cooked",
+                // Zero lexical overlap still keeps its provider place — at the
+                // tail, not dropped.
+                "Cooking potato",
+            ),
+            out.map { it.name },
+        )
+    }
+
     @Test
     fun databaseHitsAreCappedIndependentlyOfSavedFoods() {
         val out = FoodSuggestionRanker.rank(
