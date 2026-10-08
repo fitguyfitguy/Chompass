@@ -420,6 +420,11 @@
     <string name="progress_calories_section">Calorie</string>
     <string name="progress_avg_format">Media: %1$d %2$s</string>
     <string name="progress_no_food">Nessun cibo ancora registrato</string>
+    <string name="progress_untracked_legend">Giorno non tracciato</string>
+    <plurals name="untracked_days_excluded">
+        <item quantity="one">%1$d giorno non tracciato escluso</item>
+        <item quantity="other">%1$d giorni non tracciati esclusi</item>
+    </plurals>
 
     <string name="progress_macro_averages">Medie macro</string>
     <string name="progress_nutrient_averages">Medie dei nutrienti</string>

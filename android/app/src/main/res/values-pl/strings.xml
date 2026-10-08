@@ -792,6 +792,13 @@
     <string name="progress_calories_section">Kalorie</string>
     <string name="progress_avg_format">Średnio: %1$d %2$s</string>
     <string name="progress_no_food">Brak zalogowanego jedzenia</string>
+    <string name="progress_untracked_legend">Dzień nieśledzony</string>
+    <plurals name="untracked_days_excluded">
+        <item quantity="one">Pominięto %1$d nieśledzony dzień</item>
+        <item quantity="few">Pominięto %1$d nieśledzone dni</item>
+        <item quantity="many">Pominięto %1$d nieśledzonych dni</item>
+        <item quantity="other">Pominięto %1$d nieśledzonego dnia</item>
+    </plurals>
 
     <string name="progress_macro_averages">Średnie makroskładniki</string>
     <string name="progress_nutrient_averages">Średnie składników</string>
