@@ -8,7 +8,6 @@ import org.junit.Test
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.temporal.TemporalAdjusters
 
 /**
  * Chart-math behind the progress visuals: untracked backdrop bands, the
