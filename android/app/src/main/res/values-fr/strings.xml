@@ -413,6 +413,11 @@
 
     <string name="progress_avg_format">Moy. : %1$d %2$s</string>
     <string name="progress_no_food">Aucun aliment enregistré pour le moment</string>
+    <string name="progress_untracked_legend">Jour non suivi</string>
+    <plurals name="untracked_days_excluded">
+        <item quantity="one">%1$d jour non suivi exclu</item>
+        <item quantity="other">%1$d jours non suivis exclus</item>
+    </plurals>
 
     <string name="progress_macro_averages">Moyennes des macros</string>
     <string name="progress_nutrient_averages">Moyennes des nutriments</string>

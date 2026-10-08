@@ -429,6 +429,11 @@
     <string name="progress_calories_section">卡路里</string>
     <string name="progress_avg_format">平均：%1$d %2$s</string>
     <string name="progress_no_food">尚未记录食物</string>
+    <string name="progress_untracked_legend">未记录日</string>
+    <plurals name="untracked_days_excluded">
+        <item quantity="one">已排除 %1$d 个未记录日</item>
+        <item quantity="other">已排除 %1$d 个未记录日</item>
+    </plurals>
 
     <string name="progress_macro_averages">宏量平均值</string>
     <string name="progress_nutrient_averages">营养素平均值</string>

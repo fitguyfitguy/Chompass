@@ -793,6 +793,11 @@
     <string name="progress_calories_section">Kalori</string>
     <string name="progress_avg_format">Ort: %1$d %2$s</string>
     <string name="progress_no_food">Henüz yiyecek kaydedilmedi</string>
+    <string name="progress_untracked_legend">İzlenmeyen gün</string>
+    <plurals name="untracked_days_excluded">
+        <item quantity="one">%1$d izlenmeyen gün hariç tutuldu</item>
+        <item quantity="other">%1$d izlenmeyen gün hariç tutuldu</item>
+    </plurals>
 
     <string name="progress_macro_averages">Makro Ortalamaları</string>
     <string name="progress_nutrient_averages">Besin ortalamaları</string>

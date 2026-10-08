@@ -427,6 +427,11 @@
     <string name="progress_calories_section">カロリー</string>
     <string name="progress_avg_format">平均: %1$d %2$s</string>
     <string name="progress_no_food">まだ食事が記録されていません</string>
+    <string name="progress_untracked_legend">追跡なしの日</string>
+    <plurals name="untracked_days_excluded">
+        <item quantity="one">追跡なしの日を%1$d日分除外</item>
+        <item quantity="other">追跡なしの日を%1$d日分除外</item>
+    </plurals>
 
     <string name="progress_macro_averages">マクロ平均</string>
     <string name="progress_nutrient_averages">栄養素の平均</string>

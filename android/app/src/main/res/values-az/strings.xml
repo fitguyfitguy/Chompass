@@ -422,6 +422,11 @@ bilirsən?</string>
     <string name="progress_calories_section">Kalorilər</string>
     <string name="progress_avg_format">Orta: %1$d %2$s</string>
     <string name="progress_no_food">Hələ yemək qeyd edilməyib</string>
+    <string name="progress_untracked_legend">İzlənməyən gün</string>
+    <plurals name="untracked_days_excluded">
+        <item quantity="one">%1$d izlənməyən gün istisna edildi</item>
+        <item quantity="other">%1$d izlənməyən gün istisna edildi</item>
+    </plurals>
 
     <string name="progress_macro_averages">Makro Ortalamaları</string>
     <string name="progress_nutrient_averages">Qida maddəsi ortalamaları</string>
