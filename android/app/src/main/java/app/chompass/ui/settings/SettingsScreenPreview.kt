@@ -8,11 +8,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Equalizer
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material.icons.filled.UnfoldMore
 import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.Height
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Key
+import androidx.compose.material.icons.outlined.LocalFireDepartment
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MonitorWeight
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Restaurant
@@ -176,6 +183,13 @@ internal fun SettingsScreenPreviewContent(
                     )
                     HorizontalDivider()
                     SettingsHubRow(
+                        label = stringResource(R.string.settings_section_nutrition_targets),
+                        summary = stringResource(R.string.settings_section_nutrition_targets_summary),
+                        icon = Icons.Outlined.LocalFireDepartment,
+                        onClick = {},
+                    )
+                    HorizontalDivider()
+                    SettingsHubRow(
                         label = stringResource(R.string.settings_group_food),
                         summary = stringResource(R.string.settings_group_food_summary),
                         icon = Icons.Outlined.Restaurant,
@@ -198,8 +212,29 @@ internal fun SettingsScreenPreviewContent(
                     HorizontalDivider()
                     SettingsHubRow(
                         label = stringResource(R.string.settings_group_ai),
-                        summary = stringResource(R.string.settings_group_ai_summary),
+                        summary = stringResource(R.string.settings_section_ai_summary),
                         icon = Icons.Outlined.SmartToy,
+                        onClick = {},
+                    )
+                    HorizontalDivider()
+                    SettingsHubRow(
+                        label = stringResource(R.string.settings_section_speech),
+                        summary = stringResource(R.string.settings_section_speech_summary),
+                        icon = Icons.Outlined.Mic,
+                        onClick = {},
+                    )
+                    HorizontalDivider()
+                    SettingsHubRow(
+                        label = stringResource(R.string.settings_group_coach),
+                        summary = stringResource(R.string.settings_group_coach_summary),
+                        icon = Icons.Outlined.Forum,
+                        onClick = {},
+                    )
+                    HorizontalDivider()
+                    SettingsHubRow(
+                        label = stringResource(R.string.settings_section_health),
+                        summary = stringResource(R.string.settings_section_health_summary),
+                        icon = Icons.Outlined.Favorite,
                         onClick = {},
                     )
                     HorizontalDivider()
@@ -207,6 +242,35 @@ internal fun SettingsScreenPreviewContent(
                         label = stringResource(R.string.settings_group_data),
                         summary = stringResource(R.string.settings_group_data_summary),
                         icon = Icons.Outlined.FolderOpen,
+                        onClick = {},
+                    )
+                }
+            }
+
+            ChompassSurface(
+                modifier = Modifier.fillMaxWidth(),
+                cornerRadius = AppRadii.Container,
+                padding = 0.dp,
+            ) {
+                Column(Modifier.padding(vertical = 4.dp)) {
+                    SettingsHubRow(
+                        label = stringResource(R.string.nav_about),
+                        summary = stringResource(R.string.settings_about_summary),
+                        icon = Icons.Outlined.Info,
+                        onClick = {},
+                    )
+                    HorizontalDivider()
+                    SettingsHubRow(
+                        label = stringResource(R.string.settings_group_support),
+                        summary = stringResource(R.string.settings_group_support_summary),
+                        icon = Icons.Outlined.BugReport,
+                        onClick = {},
+                    )
+                    HorizontalDivider()
+                    SettingsHubRow(
+                        label = stringResource(R.string.settings_group_legal),
+                        summary = stringResource(R.string.settings_group_legal_summary),
+                        icon = Icons.Outlined.Lock,
                         onClick = {},
                     )
                 }

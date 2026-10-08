@@ -1,5 +1,6 @@
 package app.chompass.ui.about
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
@@ -48,9 +49,11 @@ import androidx.compose.ui.text.font.FontWeight
 import app.chompass.R
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.services.update.AndroidUpdateChecker
 import app.chompass.services.update.AndroidUpdateState
+import app.chompass.ui.settings.SettingsSubScreen
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import kotlinx.coroutines.launch
@@ -61,17 +64,22 @@ private const val UPSTREAM_REPO = "https://github.com/apoorvdarshan/fud-ai"
 private const val PRIVACY_URL = "https://codeberg.org/fitguy/chompass/src/branch/main/docs/PRIVACY.md"
 private const val ASSET_CREDITS_URL = "https://codeberg.org/fitguy/chompass/src/branch/main/docs/ASSET_CREDITS.md"
 
+private fun open(context: Context, url: String) =
+    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+
+/** Version / update check / share. */
 @Composable
-fun AboutSettingsRows(container: AppContainer) {
+fun AboutSettingsScreen(
+    container: AppContainer,
+    nav: NavHostController,
+    onBack: () -> Unit,
+) {
     val ctx = LocalContext.current
     val shareText = stringResource(R.string.about_share_message)
     val shareChooser = stringResource(R.string.about_share_chooser)
     val currentVersion = remember(ctx) { AndroidUpdateChecker.currentVersion(ctx) }
     var updateState by remember { mutableStateOf<AndroidUpdateState>(AndroidUpdateState.Idle) }
     val scope = rememberCoroutineScope()
-
-    fun open(url: String) =
-        ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
 
     fun refreshUpdateState() {
         scope.launch {
@@ -95,49 +103,86 @@ fun AboutSettingsRows(container: AppContainer) {
         ))
     }
 
-    Column(Modifier.fillMaxWidth()) {
-        UpdateRow(
-            state = updateState,
-            currentVersion = currentVersion,
-            onRefresh = ::refreshUpdateState,
-        )
-        Hairline()
-        AboutRow(Icons.Filled.Share, stringResource(R.string.about_share), onClick = ::share)
-        Hairline()
-        AboutRow(Icons.Filled.Code, stringResource(R.string.about_open_source)) { open(CODEBERG_REPO) }
-        Hairline()
-        AboutRow(Icons.Filled.Description, stringResource(R.string.about_asset_credits)) { open(ASSET_CREDITS_URL) }
-        Hairline()
-        AboutRow(Icons.Filled.History, stringResource(R.string.about_upstream)) { open(UPSTREAM_REPO) }
-        Hairline()
-        AboutRow(Icons.Filled.BugReport, stringResource(R.string.about_report_issue)) {
-            open("$CODEBERG_REPO/issues/new")
-        }
-        Hairline()
-        AboutRow(Icons.Filled.Lightbulb, stringResource(R.string.about_request_feature)) {
-            open("$CODEBERG_REPO/issues/new")
-        }
-        Hairline()
-        AboutRow(Icons.Filled.Lock, stringResource(R.string.about_privacy)) { open(PRIVACY_URL) }
-        Hairline()
-        AboutRow(Icons.Filled.Favorite, stringResource(R.string.about_donate)) { open(DONATE_URL) }
+    SettingsSubScreen(
+        title = stringResource(R.string.nav_about),
+        onBack = onBack,
+    ) {
+        Column(Modifier.fillMaxWidth()) {
+            UpdateRow(
+                state = updateState,
+                currentVersion = currentVersion,
+                onRefresh = ::refreshUpdateState,
+            )
+            Hairline()
+            AboutRow(Icons.Filled.Share, stringResource(R.string.about_share), onClick = ::share)
 
-        Column(
-            Modifier.fillMaxWidth().padding(top = 14.dp, bottom = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                stringResource(R.string.about_made_by),
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
-            )
-            Text(
-                stringResource(R.string.about_with_care),
-                fontSize = 11.sp,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Disabled)
-            )
+            Column(
+                Modifier.fillMaxWidth().padding(top = 14.dp, bottom = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    stringResource(R.string.about_made_by),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
+                )
+                Text(
+                    stringResource(R.string.about_with_care),
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Disabled)
+                )
+            }
+        }
+    }
+}
+
+/** Report issue, request feature, open source, upstream, donate. */
+@Composable
+fun SupportSettingsScreen(
+    container: AppContainer,
+    nav: NavHostController,
+    onBack: () -> Unit,
+) {
+    val ctx = LocalContext.current
+    SettingsSubScreen(
+        title = stringResource(R.string.settings_group_support),
+        onBack = onBack,
+    ) {
+        Column(Modifier.fillMaxWidth()) {
+            AboutRow(Icons.Filled.BugReport, stringResource(R.string.about_report_issue)) {
+                open(ctx, "$CODEBERG_REPO/issues/new")
+            }
+            Hairline()
+            AboutRow(Icons.Filled.Lightbulb, stringResource(R.string.about_request_feature)) {
+                open(ctx, "$CODEBERG_REPO/issues/new")
+            }
+            Hairline()
+            AboutRow(Icons.Filled.Code, stringResource(R.string.about_open_source)) { open(ctx, CODEBERG_REPO) }
+            Hairline()
+            AboutRow(Icons.Filled.History, stringResource(R.string.about_upstream)) { open(ctx, UPSTREAM_REPO) }
+            Hairline()
+            AboutRow(Icons.Filled.Favorite, stringResource(R.string.about_donate)) { open(ctx, DONATE_URL) }
+        }
+    }
+}
+
+/** Privacy policy and asset credits. */
+@Composable
+fun LegalSettingsScreen(
+    container: AppContainer,
+    nav: NavHostController,
+    onBack: () -> Unit,
+) {
+    val ctx = LocalContext.current
+    SettingsSubScreen(
+        title = stringResource(R.string.settings_group_legal),
+        onBack = onBack,
+    ) {
+        Column(Modifier.fillMaxWidth()) {
+            AboutRow(Icons.Filled.Lock, stringResource(R.string.about_privacy)) { open(ctx, PRIVACY_URL) }
+            Hairline()
+            AboutRow(Icons.Filled.Description, stringResource(R.string.about_asset_credits)) { open(ctx, ASSET_CREDITS_URL) }
         }
     }
 }

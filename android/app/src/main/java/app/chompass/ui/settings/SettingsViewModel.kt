@@ -674,7 +674,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     id = "health_connect",
                     titleRes = R.string.settings_suggestion_health_connect,
                     actionRes = R.string.settings_suggestion_action_connect,
-                    route = ChompassRoutes.SETTINGS_DATA,
+                    route = ChompassRoutes.SETTINGS_HEALTH,
                     show = !state.healthConnectEnabled && ageDays >= SUGGEST_OPTIMIZATION_DAYS &&
                         state.profile != null,
                 ),

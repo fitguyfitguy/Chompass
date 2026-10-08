@@ -440,17 +440,29 @@
     <!-- Settings -->
     <string name="settings_section_personal">개인 정보</string>
     <string name="settings_section_goals">목표 및 영양</string>
-    <string name="settings_section_ai">AI 및 음성</string>
+    <string name="settings_section_nutrition_targets">영양 목표</string>
+    <string name="settings_section_nutrition_targets_summary">칼로리, 매크로, 에너지 소비 목표</string>
+    <string name="settings_section_ai">AI 제공자</string>
+    <string name="settings_section_ai_summary">제공자, 모델, 키, 폴백</string>
     <string name="settings_section_speech">음성 텍스트 변환</string>
-    <string name="settings_section_health">건강 및 데이터</string>
+    <string name="settings_section_speech_summary">제공자, 언어, 키</string>
+    <string name="settings_section_health">건강 데이터</string>
+    <string name="settings_section_health_summary">Health Connect, 백그라운드 동기화</string>
     <string name="settings_group_app_display">앱 및 표시</string>
-    <string name="settings_group_ai">AI 및 음성</string>
-    <string name="settings_group_data">건강 및 데이터</string>
+    <string name="settings_group_ai">AI 제공자</string>
+    <string name="settings_group_coach">코치</string>
+    <string name="settings_group_coach_summary">코치 탭, 사용자 지정 AI 지침</string>
+    <string name="settings_group_data">데이터 및 백업</string>
     <string name="settings_group_personal_summary">성별, 키, 체중, 측정</string>
     <string name="settings_group_goals_summary">식단, 매크로, 적응형 목표</string>
     <string name="settings_group_app_summary">모양, 홈, 알림</string>
-    <string name="settings_group_ai_summary">제공자, 모델, 음성</string>
-    <string name="settings_group_data_summary">Health Connect, 내보내기, 동기화</string>
+    <string name="settings_group_ai_summary">제공자, 모델, 키, 폴백</string>
+    <string name="settings_group_data_summary">내보내기, 가져오기, 동기화, 위험 구역</string>
+    <string name="settings_group_support">지원 및 피드백</string>
+    <string name="settings_group_support_summary">문제 신고, 기능 요청, 후원</string>
+    <string name="settings_group_legal">개인정보 및 법적 고지</string>
+    <string name="settings_group_legal_summary">개인정보 처리방침, 오픈소스 및 에셋</string>
+    <string name="settings_about_summary">버전, 업데이트, 공유</string>
 
     <string name="settings_gender">성별</string>
     <string name="settings_birthday">생일</string>

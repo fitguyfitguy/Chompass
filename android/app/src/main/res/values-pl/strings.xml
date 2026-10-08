@@ -820,19 +820,31 @@
     <!-- Settings -->
     <string name="settings_section_personal">Dane osobowe</string>
     <string name="settings_section_goals">Cele i odżywianie</string>
-    <string name="settings_section_ai">AI i mowa</string>
+    <string name="settings_section_nutrition_targets">Cele żywieniowe</string>
+    <string name="settings_section_nutrition_targets_summary">Kalorie, makroskładniki, cele energetyczne</string>
+    <string name="settings_section_ai">Dostawca AI</string>
+    <string name="settings_section_ai_summary">Dostawca, model, klucze, zapasowy</string>
     <string name="settings_section_speech">Zamiana mowy na tekst</string>
-    <string name="settings_section_health">Zdrowie i dane</string>
+    <string name="settings_section_speech_summary">Dostawca, język, klucz</string>
+    <string name="settings_section_health">Dane zdrowotne</string>
+    <string name="settings_section_health_summary">Health Connect, synchronizacja w tle</string>
     <string name="settings_group_app_display">Aplikacja i wygląd</string>
-    <string name="settings_group_ai">AI i mowa</string>
-    <string name="settings_group_data">Zdrowie i dane</string>
+    <string name="settings_group_ai">Dostawca AI</string>
+    <string name="settings_group_coach">Trener</string>
+    <string name="settings_group_coach_summary">Karta Trenera, własne instrukcje</string>
+    <string name="settings_group_data">Dane i kopia zapasowa</string>
     <string name="settings_group_food">Jedzenie i dodawanie</string>
     <string name="settings_group_personal_summary">Płeć, wzrost, waga, pomiary</string>
     <string name="settings_group_goals_summary">Dieta, makroskładniki, cele adaptacyjne</string>
     <string name="settings_group_food_summary">Dodawanie, wielkości porcji, analiza zdjęć</string>
     <string name="settings_group_app_summary">Wygląd, ekran główny, woda, powiadomienia</string>
-    <string name="settings_group_ai_summary">Dostawcy, modele, mowa</string>
-    <string name="settings_group_data_summary">Health Connect, eksport, synchronizacja</string>
+    <string name="settings_group_ai_summary">Dostawca, model, klucze, zapasowy</string>
+    <string name="settings_group_data_summary">Eksport, import, synchronizacja, strefa ryzyka</string>
+    <string name="settings_group_support">Wsparcie i opinie</string>
+    <string name="settings_group_support_summary">Zgłoś problem, zaproponuj funkcję, kup jogurt</string>
+    <string name="settings_group_legal">Prywatność i informacje prawne</string>
+    <string name="settings_group_legal_summary">Polityka prywatności, zasoby</string>
+    <string name="settings_about_summary">Wersja, aktualizacje, udostępnij</string>
 
     <string name="settings_water_title">Woda</string>
     <string name="settings_water_intro">Śledź, ile pijesz, ustaw dzienny cel i pozwól mu dostosowywać się do wagi, pogody i aktywności.</string>

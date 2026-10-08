@@ -1443,18 +1443,31 @@ für dich ein</string>
 
     <string name="settings_section_goals">Ziele &amp; Ernährung</string>
 
+    <string name="settings_section_nutrition_targets">Ernährungsziele</string>
 
-    <string name="settings_section_ai">KI &amp; Sprache</string>
+    <string name="settings_section_nutrition_targets_summary">Kalorien, Makros, Energieziele</string>
+
+    <string name="settings_section_ai">KI-Anbieter</string>
+
+    <string name="settings_section_ai_summary">Anbieter, Modell, Schlüssel, Fallback</string>
 
     <string name="settings_section_speech">Sprach-zu-Text</string>
 
-    <string name="settings_section_health">Gesundheit &amp; Daten</string>
+    <string name="settings_section_speech_summary">Anbieter, Sprache, Schlüssel</string>
+
+    <string name="settings_section_health">Gesundheitsdaten</string>
+
+    <string name="settings_section_health_summary">Health Connect, Hintergrundsynchronisierung</string>
 
     <string name="settings_group_app_display">App &amp; Anzeige</string>
 
-    <string name="settings_group_ai">KI &amp; Sprache</string>
+    <string name="settings_group_ai">KI-Anbieter</string>
 
-    <string name="settings_group_data">Gesundheit &amp; Daten</string>
+    <string name="settings_group_coach">Coach</string>
+
+    <string name="settings_group_coach_summary">Coach-Tab, benutzerdefinierte Anweisungen</string>
+
+    <string name="settings_group_data">Daten &amp; Backup</string>
 
     <string name="settings_group_food">Ernährung &amp; Erfassung</string>
 
@@ -1466,9 +1479,19 @@ für dich ein</string>
 
     <string name="settings_group_app_summary">Darstellung, Startseite, Wasser, Benachrichtigungen</string>
 
-    <string name="settings_group_ai_summary">Anbieter, Modelle, Sprache</string>
+    <string name="settings_group_ai_summary">Anbieter, Modell, Schlüssel, Fallback</string>
 
-    <string name="settings_group_data_summary">Health Connect, Export, Synchronisierung</string>
+    <string name="settings_group_data_summary">Export, Import, Synchronisierung, Gefahrenzone</string>
+
+    <string name="settings_group_support">Hilfe &amp; Feedback</string>
+
+    <string name="settings_group_support_summary">Probleme melden, Funktionen vorschlagen, Spenden</string>
+
+    <string name="settings_group_legal">Datenschutz &amp; Rechtliches</string>
+
+    <string name="settings_group_legal_summary">Datenschutzerklärung, Asset-Credits</string>
+
+    <string name="settings_about_summary">Version, Updates, Teilen</string>
 
     <string name="settings_water_title">Wasser</string>
 

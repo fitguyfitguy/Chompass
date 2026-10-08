@@ -428,16 +428,28 @@
     <!-- Settings -->
     <string name="settings_section_personal">Informations personnelles</string>
     <string name="settings_section_goals">Objectifs et nutrition</string>
+    <string name="settings_section_nutrition_targets">Objectifs nutritionnels</string>
+    <string name="settings_section_nutrition_targets_summary">Calories, macros, objectifs d\'énergie</string>
     <string name="settings_section_ai">Fournisseur d\'IA</string>
+    <string name="settings_section_ai_summary">Fournisseur, modèle, clés, secours</string>
     <string name="settings_section_speech">Reconnaissance vocale</string>
-    <string name="settings_section_health">Santé et données</string>
+    <string name="settings_section_speech_summary">Fournisseur, langue, clé</string>
+    <string name="settings_section_health">Données de santé</string>
+    <string name="settings_section_health_summary">Health Connect, synchronisation en arrière-plan</string>
     <string name="settings_group_app_display">App et affichage</string>
-    <string name="settings_group_ai">IA et voix</string>
-    <string name="settings_group_data">Santé, données et sync</string>
+    <string name="settings_group_ai">Fournisseur d\'IA</string>
+    <string name="settings_group_coach">Coach</string>
+    <string name="settings_group_coach_summary">Onglet Coach, instructions personnalisées</string>
+    <string name="settings_group_data">Données et sauvegarde</string>
     <string name="settings_group_personal_summary">Genre, taille, poids, mesures</string>
     <string name="settings_group_goals_summary">Régime, macros, objectifs adaptatifs</string>
     <string name="settings_group_app_summary">Apparence, accueil, notifications</string>
-    <string name="settings_group_ai_summary">Fournisseurs, modèles, voix</string>
+    <string name="settings_group_ai_summary">Fournisseur, modèle, clés, secours</string>
+    <string name="settings_group_support">Assistance et retours</string>
+    <string name="settings_group_support_summary">Signaler des problèmes, demander des fonctionnalités, faire un don</string>
+    <string name="settings_group_legal">Confidentialité et mentions légales</string>
+    <string name="settings_group_legal_summary">Politique de confidentialité, crédits des ressources</string>
+    <string name="settings_about_summary">Version, mises à jour, partage</string>
 
     <string name="settings_gender">Sexe</string>
     <string name="settings_birthday">Date de naissance</string>
@@ -1380,7 +1392,7 @@
     <string name="settings_goals_how_lock">Verrouillez une cible pour conserver votre propre valeur. Recalculer et les Objectifs adaptatifs la laissent intacte.</string>
     <string name="settings_goals_how_title">Comment fonctionnent vos objectifs</string>
     <string name="settings_goals_intro">Vos objectifs quotidiens de calories et de macros, et ce qui les détermine.</string>
-    <string name="settings_group_data_summary">Health Connect, export, synchronisation</string>
+    <string name="settings_group_data_summary">Export, import, synchronisation, zone de danger</string>
     <string name="settings_group_food">Aliments et saisie</string>
     <string name="settings_group_food_summary">Enregistrement, tailles de portion, analyse photo</string>
     <string name="settings_health_background_denied">La synchronisation en arrière-plan nécessite l\'autorisation de lire Health Connect quand Chompass est fermé. Retouchez l\'interrupteur et accordez-la.</string>

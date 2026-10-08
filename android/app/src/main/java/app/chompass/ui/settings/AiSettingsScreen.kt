@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.R
+import app.chompass.ui.navigation.ChompassRoutes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,20 +31,27 @@ fun AiSettingsScreen(
         SettingsAiSection(
             ui = ui,
             vm = vm,
-            nav = nav,
             onOpenSheet = { sheet = it },
         )
-        // Speech is its own concern (own provider/key/language); it sits right
-        // after the AI card so it is not buried below Fallback Provider.
-        SettingsSpeechSection(
-            ui = ui,
-            onOpenSheet = { sheet = it },
-        )
-        SettingsCustomInstructionsSection(ui = ui, vm = vm)
         SettingsFallbackSection(
             ui = ui,
             vm = vm,
             onOpenSheet = { sheet = it },
+        )
+        // Speech and Coach are their own screens now; serving-unit behavior is
+        // edited in Food & Entry.
+        RelatedLinks(
+            rows = listOf(
+                RelatedLink(label = stringResource(R.string.settings_section_speech)) {
+                    nav.navigate(ChompassRoutes.SETTINGS_SPEECH)
+                },
+                RelatedLink(label = stringResource(R.string.settings_group_coach)) {
+                    nav.navigate(ChompassRoutes.SETTINGS_COACH)
+                },
+                RelatedLink(label = stringResource(R.string.settings_group_food)) {
+                    nav.navigate(ChompassRoutes.SETTINGS_FOOD)
+                },
+            ),
         )
     }
 

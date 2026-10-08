@@ -126,7 +126,7 @@ fun NotificationsSettingsScreen(
                     vm = vm,
                     onOpenSheet = { sheet = it },
                     onOpenWater = { nav.navigate(ChompassRoutes.waterRoute("notifications")) },
-                    onOpenHealth = { nav.navigate(ChompassRoutes.SETTINGS_DATA) },
+                    onOpenHealth = { nav.navigate(ChompassRoutes.SETTINGS_HEALTH) },
                 )
                 HorizontalDivider()
                 SettingRow(

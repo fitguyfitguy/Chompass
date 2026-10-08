@@ -441,17 +441,29 @@
     <!-- Settings -->
     <string name="settings_section_personal">个人信息</string>
     <string name="settings_section_goals">目标与营养</string>
-    <string name="settings_section_ai">AI 与语音</string>
+    <string name="settings_section_nutrition_targets">营养目标</string>
+    <string name="settings_section_nutrition_targets_summary">卡路里、宏量营养素、能量消耗目标</string>
+    <string name="settings_section_ai">AI 提供商</string>
+    <string name="settings_section_ai_summary">提供商、模型、密钥、备用</string>
     <string name="settings_section_speech">语音转文字</string>
-    <string name="settings_section_health">健康与数据</string>
+    <string name="settings_section_speech_summary">提供商、语言、密钥</string>
+    <string name="settings_section_health">健康数据</string>
+    <string name="settings_section_health_summary">Health Connect、后台同步</string>
     <string name="settings_group_app_display">应用与显示</string>
-    <string name="settings_group_ai">AI 与语音</string>
-    <string name="settings_group_data">健康与数据</string>
+    <string name="settings_group_ai">AI 提供商</string>
+    <string name="settings_group_coach">教练</string>
+    <string name="settings_group_coach_summary">教练页、自定义 AI 指令</string>
+    <string name="settings_group_data">数据与备份</string>
     <string name="settings_group_personal_summary">性别、身高、体重、测量</string>
     <string name="settings_group_goals_summary">饮食、宏量营养素、自适应目标</string>
     <string name="settings_group_app_summary">外观、主页、通知</string>
-    <string name="settings_group_ai_summary">提供商、模型、语音</string>
-    <string name="settings_group_data_summary">Health Connect、导出、同步</string>
+    <string name="settings_group_ai_summary">提供商、模型、密钥、备用</string>
+    <string name="settings_group_data_summary">导出、导入、同步、危险区</string>
+    <string name="settings_group_support">支持与反馈</string>
+    <string name="settings_group_support_summary">报告问题、请求功能、捐赠</string>
+    <string name="settings_group_legal">隐私与法律</string>
+    <string name="settings_group_legal_summary">隐私政策、开源代码与资源</string>
+    <string name="settings_about_summary">版本、更新、分享</string>
 
     <string name="settings_gender">性别</string>
     <string name="settings_birthday">生日</string>

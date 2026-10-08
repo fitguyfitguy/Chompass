@@ -537,17 +537,29 @@
     
     <string name="settings_section_personal">Личные данные</string>
     <string name="settings_section_goals">Цели и питание</string>
+    <string name="settings_section_nutrition_targets">Цели питания</string>
+    <string name="settings_section_nutrition_targets_summary">Калории, макросы, цели по энергии</string>
     <string name="settings_section_ai">ИИ-провайдер</string>
+    <string name="settings_section_ai_summary">Провайдер, модель, ключи, резерв</string>
     <string name="settings_section_speech">Речь в текст</string>
-    <string name="settings_section_health">Здоровье и данные</string>
+    <string name="settings_section_speech_summary">Провайдер, язык, ключ</string>
+    <string name="settings_section_health">Данные о здоровье</string>
+    <string name="settings_section_health_summary">Health Connect, фоновая синхронизация</string>
     <string name="settings_group_app_display">Приложение и экран</string>
-    <string name="settings_group_ai">ИИ и речь</string>
-    <string name="settings_group_data">Здоровье, данные и синхронизация</string>
+    <string name="settings_group_ai">ИИ-провайдер</string>
+    <string name="settings_group_coach">Тренер</string>
+    <string name="settings_group_coach_summary">Вкладка тренера, свои инструкции</string>
+    <string name="settings_group_data">Данные и резервное копирование</string>
     <string name="settings_group_personal_summary">Пол, рост, вес, измерения</string>
     <string name="settings_group_goals_summary">Диета, макросы, адаптивные цели</string>
     <string name="settings_group_app_summary">Внешний вид, главная, уведомления</string>
-    <string name="settings_group_ai_summary">Провайдеры, модели, речь</string>
-    <string name="settings_group_data_summary">Health Connect, экспорт, синхронизация</string>
+    <string name="settings_group_ai_summary">Провайдер, модель, ключи, резерв</string>
+    <string name="settings_group_data_summary">Экспорт, импорт, синхронизация, опасная зона</string>
+    <string name="settings_group_support">Поддержка и отзывы</string>
+    <string name="settings_group_support_summary">Сообщить о проблеме, предложить функцию, купить йогурт</string>
+    <string name="settings_group_legal">Конфиденциальность и правовые сведения</string>
+    <string name="settings_group_legal_summary">Политика конфиденциальности, материалы</string>
+    <string name="settings_about_summary">Версия, обновления, поделиться</string>
 
     <string name="settings_gender">Пол</string>
     <string name="settings_birthday">Дата рождения</string>

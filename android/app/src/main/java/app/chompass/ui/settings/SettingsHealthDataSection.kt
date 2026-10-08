@@ -24,8 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -37,8 +35,9 @@ import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.warning
 
+/** Health Connect connection: toggle, manage access, background sync, safety notes. */
 @Composable
-internal fun SettingsHealthDataSection(
+internal fun SettingsHealthConnectSection(
     ui: SettingsUiState,
     safetyMedicalExpanded: Boolean,
     onToggleSafetyMedical: () -> Unit,
@@ -46,14 +45,6 @@ internal fun SettingsHealthDataSection(
     onManageHealthAccess: () -> Unit,
     backgroundSyncSupported: Boolean,
     onBackgroundSyncToggle: (Boolean) -> Unit,
-    onShowExportDiary: () -> Unit,
-    onShowExportBodyMetrics: () -> Unit,
-    onImportDiary: () -> Unit,
-    onImportBodyMetrics: () -> Unit,
-    onShowClearFoodDialog: () -> Unit,
-    onShowDeleteDialog: () -> Unit,
-    onOpenSync: () -> Unit,
-    syncSummary: String?,
 ) {
     SectionCard(title = stringResource(R.string.settings_section_health)) {
                 ToggleRow(stringResource(R.string.settings_health_connect), ui.healthConnectEnabled, icon = Icons.Outlined.Favorite, onChange = onHealthConnectToggle)
@@ -156,10 +147,23 @@ internal fun SettingsHealthDataSection(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
                         )
                     }
-                    HorizontalDivider()
-                } else {
-                    HorizontalDivider()
                 }
+    }
+}
+
+/** Export / import / sync rows plus the visually separated danger zone. */
+@Composable
+internal fun SettingsDataTransferSection(
+    onShowExportDiary: () -> Unit,
+    onShowExportBodyMetrics: () -> Unit,
+    onImportDiary: () -> Unit,
+    onImportBodyMetrics: () -> Unit,
+    onOpenSync: () -> Unit,
+    syncSummary: String?,
+    onShowClearFoodDialog: () -> Unit,
+    onShowDeleteDialog: () -> Unit,
+) {
+    SectionCard(title = stringResource(R.string.settings_group_data)) {
                 Row(
                     Modifier
                         .fillMaxWidth()

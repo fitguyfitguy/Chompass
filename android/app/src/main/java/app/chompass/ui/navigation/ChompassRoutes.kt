@@ -14,6 +14,13 @@ object ChompassRoutes {
     const val SETTINGS_TRACKERS = "settings/trackers"
     const val SETTINGS_AI = "settings/ai"
     const val SETTINGS_DATA = "settings/data"
+    const val SETTINGS_NUTRITION_TARGETS = "settings/nutrition-targets"
+    const val SETTINGS_SPEECH = "settings/speech"
+    const val SETTINGS_COACH = "settings/coach"
+    const val SETTINGS_HEALTH = "settings/health"
+    const val SETTINGS_ABOUT = "settings/about"
+    const val SETTINGS_SUPPORT = "settings/support"
+    const val SETTINGS_LEGAL = "settings/legal"
     const val OPTIONAL_NUTRIENT_GOALS = "settings/optional-nutrient-goals"
     const val HOME_DISPLAY = "settings/home-display"
     const val CUSTOMIZE_PROGRESS = "settings/customize-progress"
@@ -60,6 +67,13 @@ object ChompassRoutes {
         SETTINGS_TRACKERS,
         SETTINGS_AI,
         SETTINGS_DATA,
+        SETTINGS_NUTRITION_TARGETS,
+        SETTINGS_SPEECH,
+        SETTINGS_COACH,
+        SETTINGS_HEALTH,
+        SETTINGS_ABOUT,
+        SETTINGS_SUPPORT,
+        SETTINGS_LEGAL,
         OPTIONAL_NUTRIENT_GOALS,
         HOME_DISPLAY,
         CUSTOMIZE_PROGRESS,

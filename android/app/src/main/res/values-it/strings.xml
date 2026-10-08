@@ -432,16 +432,28 @@
     <!-- Settings -->
     <string name="settings_section_personal">Informazioni personali</string>
     <string name="settings_section_goals">Obiettivi e nutrizione</string>
+    <string name="settings_section_nutrition_targets">Obiettivi nutrizionali</string>
+    <string name="settings_section_nutrition_targets_summary">Calorie, macro, obiettivi energetici</string>
     <string name="settings_section_ai">Fornitore IA</string>
+    <string name="settings_section_ai_summary">Fornitore, modello, chiavi, riserva</string>
     <string name="settings_section_speech">Da voce a testo</string>
-    <string name="settings_section_health">Salute e dati</string>
+    <string name="settings_section_speech_summary">Fornitore, lingua, chiave</string>
+    <string name="settings_section_health">Dati sulla salute</string>
+    <string name="settings_section_health_summary">Health Connect, sincronizzazione in background</string>
     <string name="settings_group_app_display">App e visualizzazione</string>
-    <string name="settings_group_ai">IA e voce</string>
-    <string name="settings_group_data">Salute, dati e sync</string>
+    <string name="settings_group_ai">Fornitore IA</string>
+    <string name="settings_group_coach">Coach</string>
+    <string name="settings_group_coach_summary">Scheda Coach, istruzioni personalizzate</string>
+    <string name="settings_group_data">Dati e backup</string>
     <string name="settings_group_personal_summary">Genere, altezza, peso, misure</string>
     <string name="settings_group_goals_summary">Dieta, macro, obiettivi adattivi</string>
     <string name="settings_group_app_summary">Aspetto, home, notifiche</string>
-    <string name="settings_group_ai_summary">Fornitori, modelli, voce</string>
+    <string name="settings_group_ai_summary">Fornitore, modello, chiavi, riserva</string>
+    <string name="settings_group_support">Supporto e feedback</string>
+    <string name="settings_group_support_summary">Segnala problemi, richiedi funzioni, dona</string>
+    <string name="settings_group_legal">Privacy e legale</string>
+    <string name="settings_group_legal_summary">Informativa sulla privacy, crediti delle risorse</string>
+    <string name="settings_about_summary">Versione, aggiornamenti, condivisione</string>
 
     <string name="settings_gender">Genere</string>
     <string name="settings_birthday">Data di nascita</string>
@@ -1710,7 +1722,7 @@
     <string name="onboarding_diet_mode_subtitle">Scegli uno stile di raccomandazione predefinito</string>
     <string name="onboarding_diet_mode_title">Segui una modalità dietetica?</string>
     <string name="onboarding_no">No</string>
-    <string name="settings_group_data_summary">Health Connect, esportazione, sincronizzazione</string>
+    <string name="settings_group_data_summary">Esportazione, importazione, sincronizzazione, zona pericolosa</string>
     <string name="settings_health_background_denied">La sincronizzazione in background richiede l\'autorizzazione a leggere Health Connect quando Chompass è chiuso. Tocca di nuovo l\'interruttore e concedila.</string>
     <string name="settings_health_background_sync_unsupported">La sincronizzazione in background non è supportata dal modulo Health Connect di questo dispositivo. La sincronizzazione in primo piano funziona quando apri Chompass.</string>
     <string name="settings_health_manage_failed">Impossibile aprire le impostazioni di Health Connect su questo dispositivo.</string>
