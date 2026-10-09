@@ -1271,6 +1271,11 @@
     <string name="settings_ai_read_timeout">Timeout citire IA</string>
     <string name="settings_ai_read_timeout_unit">s</string>
     <string name="settings_ai_read_timeout_value">%1$d s</string>
+    <string name="settings_goal_tier">Prompt de recalculare a obiectivelor</string>
+    <string name="settings_goal_tier_footer">Cât de multe date trimite recalcularea obiectivelor către model. Sigur trimite rezumate compacte, potrivite pentru modele mici sau locale. Smart trimite tot istoricul tău de greutate și alimentație, astfel încât un model mare să evalueze singur tendințele. Auto alege după numele modelului.</string>
+    <string name="goal_tier_auto">Auto</string>
+    <string name="goal_tier_safe">Sigur (compact)</string>
+    <string name="goal_tier_smart">Smart (istoric complet)</string>
     <string name="settings_ai_reasoning_effort">Efort de raționare</string>
     <string name="settings_ai_reasoning_effort_footer">Modelele OpenRouter: setează bugetul de raționare. Servere proprii și Ollama: trimite reasoning_effort dacă serverul îl acceptă. Dacă serverul refuză cererea, alege Auto.</string>
     <string name="settings_ai_vision_model">Model de viziune</string>

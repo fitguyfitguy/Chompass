@@ -44,6 +44,7 @@ import app.chompass.services.PerfLog
 import app.chompass.data.SettingsPrefsHydration
 import app.chompass.data.loadLastGoalChangeSheet
 import app.chompass.data.saveLastGoalChangeSheet
+import app.chompass.data.GoalRecalcTierOverride
 import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.data.WeatherRepository
 import app.chompass.data.readSettingsHydration
@@ -222,6 +223,7 @@ data class SettingsUiState(
     val fallbackCustomBaseUrl: String = "",
     val geminiGoogleSearchEnabled: Boolean = false,
     val openRouterReasoningEffort: OpenRouterReasoningEffort = OpenRouterReasoningEffort.AUTO,
+    val goalRecalcTier: GoalRecalcTierOverride = GoalRecalcTierOverride.AUTO,
     val mealConstituentsEnabled: Boolean = true,
     /** Per-source switches for the Add Food database search. Open Food Facts is
      * the one that reaches the network; it ships on like the bundled indexes,
@@ -540,6 +542,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     fallbackCustomBaseUrl = snap.fallbackCustomBaseUrl,
                     geminiGoogleSearchEnabled = snap.geminiGoogleSearchEnabled,
                     openRouterReasoningEffort = snap.openRouterReasoningEffort,
+                    goalRecalcTier = snap.goalRecalcTier,
                     mealConstituentsEnabled = snap.mealConstituentsEnabled,
                     foodSearchOpenFoodFactsEnabled = snap.foodSearchOpenFoodFactsEnabled,
                     foodSearchUsdaEnabled = snap.foodSearchUsdaEnabled,
@@ -816,6 +819,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setOpenRouterReasoningEffort(e: OpenRouterReasoningEffort) = updateUiPref(
         { container.prefs.setOpenRouterReasoningEffort(e) },
         { copy(openRouterReasoningEffort = e) },
+    )
+
+    fun setGoalRecalcTier(v: GoalRecalcTierOverride) = updateUiPref(
+        { container.prefs.setGoalRecalcTier(v) },
+        { copy(goalRecalcTier = v) },
     )
 
     fun setAskPhotoNotePrompt(ask: Boolean) = updateUiPref(

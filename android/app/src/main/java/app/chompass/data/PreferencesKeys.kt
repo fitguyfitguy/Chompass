@@ -209,6 +209,8 @@ internal object Keys {
             stringPreferencesKey("customBaseURL_fallback_${provider.name}")
         val MAX_RESPONSE_TOKENS = intPreferencesKey("maxResponseTokens")
         val AI_READ_TIMEOUT_SECONDS = intPreferencesKey("aiReadTimeoutSeconds")
+        /** Goal-recalc prompt tier override (#123); missing = AUTO. */
+        val GOAL_RECALC_TIER = stringPreferencesKey("goalRecalcTier")
         val SERVING_UNIT_INFERENCE_MODE = stringPreferencesKey("servingUnitInferenceMode")
         val HEURISTIC_SERVING_UNIT_SETTINGS = stringPreferencesKey("heuristicServingUnitSettings")
         val USER_CONTEXT = stringPreferencesKey("userContext")

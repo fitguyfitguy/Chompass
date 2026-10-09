@@ -1579,6 +1579,11 @@
     <string name="settings_ai_read_timeout">AI okuma zaman aşımı</string>
     <string name="settings_ai_read_timeout_unit">s</string>
     <string name="settings_ai_read_timeout_value">%1$d s</string>
+    <string name="settings_goal_tier">Hedef yeniden hesaplama istemi</string>
+    <string name="settings_goal_tier_footer">Hedef yeniden hesaplaması modele ne kadar veri gönderdiğini belirler. Güvenli, küçük veya yerel modeller için uygun kompakt özetler gönderir. Akıllı, büyük bir modelin trendleri kendisi değerlendirebilmesi için tam kilo ve yemek geçmişinizi gönderir. Otomatik, model adına göre seçim yapar.</string>
+    <string name="goal_tier_auto">Otomatik</string>
+    <string name="goal_tier_safe">Güvenli (kompakt)</string>
+    <string name="goal_tier_smart">Akıllı (tam geçmiş)</string>
     <string name="settings_serving_unit_mode">Porsiyon boyutu tespiti</string>
     <string name="settings_serving_unit_heuristics">Porsiyon boyutu kuralları</string>
     <string name="sheet_serving_unit_mode">Porsiyon birimi çıkarımı</string>

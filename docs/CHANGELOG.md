@@ -9,6 +9,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Added
 
 - **Fill in missing nutrition** (Android): meals imported from Mealie or logged by name often carry no macros or micronutrients. The edit sheet now offers a Fill missing action that asks the AI for only the empty values, alongside Reanalyze (full re-read of the meal) and Recalculate (re-estimate for an edited ingredient mix). Existing values are never overwritten.
+- **Choose how much data the goal recalc sends** (Android): a new Goal recalc prompt option for Ollama and custom endpoints. Safe sends compact summaries (right for small or local models), Smart sends your full weight and food history for a large model to judge, Auto keeps deciding by model name. Follows Codeberg [#123](https://codeberg.org/fitguy/Chompass/issues/123) by [@mik112](https://codeberg.org/mik112).
 
 ### Fixed
 

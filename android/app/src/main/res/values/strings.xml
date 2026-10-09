@@ -2324,6 +2324,11 @@
     <string name="settings_ai_read_timeout">AI read timeout</string>
     <string name="settings_ai_read_timeout_unit">s</string>
     <string name="settings_ai_read_timeout_value">%1$d s</string>
+    <string name="settings_goal_tier">Goal recalc prompt</string>
+    <string name="settings_goal_tier_footer">How much data the goals recalculation sends the model. Safe sends compact summaries, right for small or local models. Smart sends your full weight and food history so a large model can judge trends itself. Auto picks by model name.</string>
+    <string name="goal_tier_auto">Auto</string>
+    <string name="goal_tier_safe">Safe (compact)</string>
+    <string name="goal_tier_smart">Smart (full history)</string>
     <string name="settings_serving_unit_mode">Serving size detection</string>
     <string name="settings_serving_unit_heuristics">Serving size rules</string>
     <string name="sheet_serving_unit_mode">Serving unit inference</string>

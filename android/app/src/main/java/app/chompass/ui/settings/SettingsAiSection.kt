@@ -162,6 +162,17 @@ internal fun SettingsAiSection(
                         icon = Icons.Outlined.Speed
                     ) { onOpenSheet(SettingsSheet.AI_READ_TIMEOUT) }
                 }
+                // #123: only the user-entered endpoints (Ollama / Custom
+                // OpenAI-compatible) host models the AUTO tier rules can't
+                // classify by name, so the manual override row shows there.
+                if (ui.selectedAI.usesConfigurableRequestTimeout) {
+                    HorizontalDivider()
+                    SettingRow(
+                        stringResource(R.string.settings_goal_tier),
+                        stringResource(ui.goalRecalcTier.displayNameRes),
+                        icon = Icons.Outlined.Tune,
+                    ) { onOpenSheet(SettingsSheet.GOAL_RECALC_TIER) }
+                }
                 val showGeminiSearch = ui.selectedAI == AIProvider.GEMINI ||
                     (ui.fallbackEnabled && ui.fallbackProvider == AIProvider.GEMINI)
                 if (showGeminiSearch) {

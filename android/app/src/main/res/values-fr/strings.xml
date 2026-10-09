@@ -1328,6 +1328,11 @@
     <string name="settings_ai_read_timeout">Délai de lecture de l\'IA</string>
     <string name="settings_ai_read_timeout_unit">s</string>
     <string name="settings_ai_read_timeout_value">%1$d s</string>
+    <string name="settings_goal_tier">Prompt de recalcul des objectifs</string>
+    <string name="settings_goal_tier_footer">La quantité de données que le recalcul des objectifs envoie au modèle. Sûr envoie des résumés compacts, adaptés aux petits modèles ou aux modèles locaux. Intelligent envoie tout votre historique de poids et d\'aliments pour qu\'un grand modèle juge lui-même les tendances. Automatique choisit selon le nom du modèle.</string>
+    <string name="goal_tier_auto">Automatique</string>
+    <string name="goal_tier_safe">Sûr (compact)</string>
+    <string name="goal_tier_smart">Intelligent (historique complet)</string>
     <string name="settings_ai_reasoning_effort">Effort de raisonnement</string>
     <string name="settings_ai_reasoning_effort_footer">Modèles OpenRouter : fixe le budget de raisonnement. Serveurs personnalisés et Ollama : envoie reasoning_effort si le serveur le prend en charge. Si votre serveur rejette la requête, choisissez Auto.</string>
     <string name="settings_ai_vision_model">Modèle de vision</string>

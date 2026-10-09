@@ -1277,6 +1277,11 @@
     <string name="settings_ai_read_timeout">مهلة قراءة الذكاء الاصطناعي</string>
     <string name="settings_ai_read_timeout_unit">ث</string>
     <string name="settings_ai_read_timeout_value">%1$d ث</string>
+    <string name="settings_goal_tier">مطالبة إعادة حساب الأهداف</string>
+    <string name="settings_goal_tier_footer">مقدار البيانات التي ترسلها إعادة حساب الأهداف إلى النموذج. آمن يرسل ملخصات موجزة، وهو مناسب للنماذج الصغيرة أو المحلية. ذكي يرسل سجل وزنك وطعامك الكامل ليقدّر نموذج كبير الاتجاهات بنفسه. تلقائي يختار حسب اسم النموذج.</string>
+    <string name="goal_tier_auto">تلقائي</string>
+    <string name="goal_tier_safe">آمن (موجز)</string>
+    <string name="goal_tier_smart">ذكي (السجل الكامل)</string>
     <string name="settings_ai_reasoning_effort">مستوى الاستدلال</string>
     <string name="settings_ai_reasoning_effort_footer">نماذج OpenRouter: تحدد ميزانية التفكير. خوادم مخصصة وخوادم Ollama: ترسل reasoning_effort عندما يدعمها الخادم. إذا رفض الخادم الطلب، اختر تلقائي.</string>
     <string name="settings_ai_vision_model">نموذج الرؤية</string>
