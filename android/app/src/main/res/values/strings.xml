@@ -2276,6 +2276,16 @@
     <string name="edit_reprocess_diff_unchanged">No fields changed. Adjust your note and try again.</string>
     <string name="edit_reprocess_diff_row">%1$s: %2$s → %3$s</string>
     <string name="edit_reprocess_review_hint">Review the updated values above, then tap Save to keep them.</string>
+    <!-- Edit sheet: AI fill-missing modes -->
+    <string name="edit_ai_mode_fill">Fill missing</string>
+    <string name="edit_ai_mode_reanalyze">Reanalyze</string>
+    <string name="edit_ai_mode_recalculate">Recalculate</string>
+    <string name="edit_ai_missing_line">Missing: %1$s</string>
+    <plurals name="edit_ai_missing_values">
+        <item quantity="one">%1$d value missing</item>
+        <item quantity="other">%1$d values missing</item>
+    </plurals>
+    <string name="edit_ai_missing_action">Fill</string>
     <string name="section_date_time">Date &amp; Time</string>
     <string name="section_share">Share</string>
     <string name="placeholder_hour">Hour</string>

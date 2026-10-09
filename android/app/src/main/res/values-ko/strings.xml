@@ -905,6 +905,16 @@
     <string name="edit_reprocess_diff_title">변경 사항</string>
     <string name="edit_reprocess_explain">AI가 메모에서 이름, 1인분, 칼로리, 매크로를 다시 계산해요. 변경 사항을 검토한 후 저장을 탭하세요.</string>
     <string name="edit_reprocess_review_hint">위의 업데이트된 값을 검토한 후 저장을 탭하여 유지하세요.</string>
+    <!-- Edit sheet: AI fill-missing modes -->
+    <string name="edit_ai_mode_fill">누락 값 채우기</string>
+    <string name="edit_ai_mode_reanalyze">다시 분석</string>
+    <string name="edit_ai_mode_recalculate">다시 계산</string>
+    <string name="edit_ai_missing_line">누락: %1$s</string>
+    <plurals name="edit_ai_missing_values">
+        <item quantity="one">값 %1$d개가 누락되었습니다</item>
+        <item quantity="other">값 %1$d개가 누락되었습니다</item>
+    </plurals>
+    <string name="edit_ai_missing_action">채우기</string>
     <string name="edit_reprocess_section">AI 수정 요청</string>
     <string name="edit_reprocessing">수정 중…</string>
     <string name="edit_reprocessing_failed">수정에 실패했어요</string>

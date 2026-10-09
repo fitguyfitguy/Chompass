@@ -879,6 +879,18 @@
     <string name="edit_reprocess_diff_title">Що змінилося</string>
     <string name="edit_reprocess_explain">ШІ перерахує назву, порцію, калорії та макроси за твоєю нотаткою. Переглянь зміни, потім натисни «Зберегти».</string>
     <string name="edit_reprocess_review_hint">Переглянь оновлені значення вище, потім натисни «Зберегти», щоб застосувати їх.</string>
+    <!-- Edit sheet: AI fill-missing modes -->
+    <string name="edit_ai_mode_fill">Заповнити відсутнє</string>
+    <string name="edit_ai_mode_reanalyze">Повторний аналіз</string>
+    <string name="edit_ai_mode_recalculate">Перерахувати</string>
+    <string name="edit_ai_missing_line">Відсутнє: %1$s</string>
+    <plurals name="edit_ai_missing_values">
+        <item quantity="one">Відсутнє %1$d значення</item>
+        <item quantity="few">Відсутні %1$d значення</item>
+        <item quantity="many">Відсутньо %1$d значень</item>
+        <item quantity="other">Відсутнє %1$d значення</item>
+    </plurals>
+    <string name="edit_ai_missing_action">Заповнити</string>
     <string name="edit_reprocess_section">Попросити ШІ виправити</string>
     <string name="edit_reprocessing">Виправлення…</string>
     <string name="edit_reprocessing_failed">Не вдалося виправити</string>

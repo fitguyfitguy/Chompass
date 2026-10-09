@@ -900,6 +900,17 @@
     <string name="edit_reprocess_diff_title">Ce s-a schimbat</string>
     <string name="edit_reprocess_explain">IA va recalcula numele, porția, caloriile și macrourile din nota ta. Verifică modificările, apoi atinge Salvează.</string>
     <string name="edit_reprocess_review_hint">Verifică valorile actualizate de mai sus, apoi atinge Salvează pentru a le păstra.</string>
+    <!-- Edit sheet: AI fill-missing modes -->
+    <string name="edit_ai_mode_fill">Completează</string>
+    <string name="edit_ai_mode_reanalyze">Reanalizează</string>
+    <string name="edit_ai_mode_recalculate">Recalculează</string>
+    <string name="edit_ai_missing_line">Lipsesc: %1$s</string>
+    <plurals name="edit_ai_missing_values">
+        <item quantity="one">Lipsește %1$d valoare</item>
+        <item quantity="few">Lipsesc %1$d valori</item>
+        <item quantity="other">Lipsesc %1$d de valori</item>
+    </plurals>
+    <string name="edit_ai_missing_action">Completează</string>
     <string name="edit_reprocess_section">Cere IA să corecteze</string>
     <string name="edit_reprocessing">Se corectează…</string>
     <string name="edit_reprocessing_failed">Corectarea a eșuat</string>

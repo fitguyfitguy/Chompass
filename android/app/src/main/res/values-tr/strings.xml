@@ -1531,6 +1531,16 @@
     <string name="edit_reprocess_diff_unchanged">Hiçbir alan değişmedi. Notunu ayarla ve tekrar dene.</string>
     <string name="edit_reprocess_diff_row">%1$s: %2$s → %3$s</string>
     <string name="edit_reprocess_review_hint">Yukarıdaki güncellenmiş değerleri incele, ardından korumak için Kaydet\'e dokun.</string>
+    <!-- Edit sheet: AI fill-missing modes -->
+    <string name="edit_ai_mode_fill">Eksikleri doldur</string>
+    <string name="edit_ai_mode_reanalyze">Yeniden analiz et</string>
+    <string name="edit_ai_mode_recalculate">Yeniden hesapla</string>
+    <string name="edit_ai_missing_line">Eksik: %1$s</string>
+    <plurals name="edit_ai_missing_values">
+        <item quantity="one">%1$d değer eksik</item>
+        <item quantity="other">%1$d değer eksik</item>
+    </plurals>
+    <string name="edit_ai_missing_action">Doldur</string>
     <string name="section_date_time">Tarih ve Saat</string>
     <string name="section_share">Paylaş</string>
     <string name="placeholder_hour">Saat</string>

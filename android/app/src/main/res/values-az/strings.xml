@@ -898,6 +898,16 @@ bilirsən?</string>
     <string name="edit_reprocess_diff_title">Nə dəyişdi</string>
     <string name="edit_reprocess_explain">AI qeydindən adı, porsiyanı, kaloriləri və makroları yenidən hesablayacaq. Dəyişiklikləri nəzərdən keçir, sonra Saxla düyməsinə toxun.</string>
     <string name="edit_reprocess_review_hint">Yuxarıdakı yenilənmiş dəyərləri nəzərdən keçir, saxlamaq üçün Saxla düyməsinə toxun.</string>
+    <!-- Edit sheet: AI fill-missing modes -->
+    <string name="edit_ai_mode_fill">Çatışmayanları doldur</string>
+    <string name="edit_ai_mode_reanalyze">Yenidən təhlil et</string>
+    <string name="edit_ai_mode_recalculate">Yenidən hesabla</string>
+    <string name="edit_ai_missing_line">Çatışmayan: %1$s</string>
+    <plurals name="edit_ai_missing_values">
+        <item quantity="one">%1$d dəyər çatışmur</item>
+        <item quantity="other">%1$d dəyər çatışmur</item>
+    </plurals>
+    <string name="edit_ai_missing_action">Doldur</string>
     <string name="edit_reprocess_section">AI-dən düzəltməyi xahiş et</string>
     <string name="edit_reprocessing">Düzəldilir…</string>
     <string name="edit_reprocessing_failed">Düzəltmə alınmadı</string>

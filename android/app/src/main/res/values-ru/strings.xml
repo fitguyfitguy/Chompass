@@ -1443,6 +1443,18 @@
     <string name="edit_reprocess_diff_title">Что изменилось</string>
     <string name="edit_reprocess_explain">ИИ пересчитает название, порцию, калории и макросы по твоей заметке. Проверь изменения и нажми «Сохранить».</string>
     <string name="edit_reprocess_review_hint">Проверь значения выше и нажми «Сохранить», чтобы применить их.</string>
+    <!-- Edit sheet: AI fill-missing modes -->
+    <string name="edit_ai_mode_fill">Заполнить недостающее</string>
+    <string name="edit_ai_mode_reanalyze">Повторный анализ</string>
+    <string name="edit_ai_mode_recalculate">Пересчитать</string>
+    <string name="edit_ai_missing_line">Отсутствует: %1$s</string>
+    <plurals name="edit_ai_missing_values">
+        <item quantity="one">Отсутствует %1$d значение</item>
+        <item quantity="few">Отсутствуют %1$d значения</item>
+        <item quantity="many">Отсутствует %1$d значений</item>
+        <item quantity="other">Отсутствует %1$d значения</item>
+    </plurals>
+    <string name="edit_ai_missing_action">Заполнить</string>
     <string name="entry_analysis_field_pending">Порция определяется…</string>
     <string name="entry_analysis_micros_found">Найдено ещё %d питательных веществ</string>
     <string name="entry_analysis_phase_filling_fields">Заполнение данных о питании…</string>

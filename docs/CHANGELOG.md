@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Added
+
+- **Fill in missing nutrition** (Android): meals imported from Mealie or logged by name often carry no macros or micronutrients. The edit sheet now offers a Fill missing action that asks the AI for only the empty values, alongside Reanalyze (full re-read of the meal) and Recalculate (re-estimate for an edited ingredient mix). Existing values are never overwritten.
+
 ### Fixed
 
 - **Portion edits update the totals right away** (Android): in the food review and edit sheets, the total grams and the calorie and macro numbers stayed at the old serving until you closed the quantity editor or saved. They now follow the amount wheel while you scroll it.

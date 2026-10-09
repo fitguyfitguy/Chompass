@@ -906,6 +906,16 @@
     <string name="edit_reprocess_diff_title">क्या बदला</string>
     <string name="edit_reprocess_explain">AI आपके नोट से नाम, सर्विंग, कैलोरी और मैक्रोज़ की पुनर्गणना करेगा। बदलाव देखें, फिर सहेजें पर टैप करें।</string>
     <string name="edit_reprocess_review_hint">ऊपर अपडेट किए गए मान देखें, फिर उन्हें रखने के लिए सहेजें पर टैप करें।</string>
+    <!-- Edit sheet: AI fill-missing modes -->
+    <string name="edit_ai_mode_fill">गुम मान भरें</string>
+    <string name="edit_ai_mode_reanalyze">फिर से विश्लेषण करें</string>
+    <string name="edit_ai_mode_recalculate">फिर से गणना करें</string>
+    <string name="edit_ai_missing_line">गुम: %1$s</string>
+    <plurals name="edit_ai_missing_values">
+        <item quantity="one">%1$d मान गुम है</item>
+        <item quantity="other">%1$d मान गुम हैं</item>
+    </plurals>
+    <string name="edit_ai_missing_action">भरें</string>
     <string name="edit_reprocess_section">AI से सुधारने को कहें</string>
     <string name="edit_reprocessing">सुधारा जा रहा है…</string>
     <string name="edit_reprocessing_failed">सुधार विफल</string>

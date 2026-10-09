@@ -910,6 +910,16 @@
     <string name="edit_reprocess_diff_title">ما الذي تغيّر</string>
     <string name="edit_reprocess_explain">سيعيد الذكاء الاصطناعي حساب الاسم والحصة والسعرات والمغذيات الكبرى من ملاحظتك. راجع التغييرات ثم انقر حفظ.</string>
     <string name="edit_reprocess_review_hint">راجع القيم المحدّثة أعلاه، ثم انقر حفظ للاحتفاظ بها.</string>
+    <!-- Edit sheet: AI fill-missing modes -->
+    <string name="edit_ai_mode_fill">تعبئة الناقص</string>
+    <string name="edit_ai_mode_reanalyze">إعادة تحليل</string>
+    <string name="edit_ai_mode_recalculate">إعادة حساب</string>
+    <string name="edit_ai_missing_line">ناقص: %1$s</string>
+    <plurals name="edit_ai_missing_values">
+        <item quantity="one">قيمة واحدة ناقصة</item>
+        <item quantity="other">%1$d قيم ناقصة</item>
+    </plurals>
+    <string name="edit_ai_missing_action">تعبئة</string>
     <string name="edit_reprocess_section">طلب تصحيح من الذكاء الاصطناعي</string>
     <string name="edit_reprocessing">جارٍ التصحيح…</string>
     <string name="edit_reprocessing_failed">فشل التصحيح</string>
