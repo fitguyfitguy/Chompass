@@ -142,10 +142,12 @@ fun EditFavoriteSheet(
         )
     }
     val selectedServingOption = ServingUnitOption.optionMatching(selectedServingUnitId, servingUnitOptions)
-    // Draft-while-typing (one commit model with the magnitude pickers): the
-    // quantity field only moves the visible draft; the grams conversion —
-    // deltas and expressions included — resolves on Save / collapse / unit
-    // switch, so macros don't rescale through intermediate digits.
+    // Quantity changes resolve live: each picker value rewrites the draft and
+    // immediately converts it to grams, so the Total row and locked macros
+    // track the wheel while scrolling. Typed mode still commits only on Done,
+    // so intermediate digits never reach the draft; the MagnitudeDrafts
+    // registration and the collapse / unit-switch flushes remain as safety
+    // nets for anything that lands unresolved.
     val resolveServingDraft = {
         val option = ServingUnitOption.optionMatching(selectedServingUnitId, servingUnitOptions)
         val currentQuantity = if (option.gramsPerUnit > 0) servingGrams / option.gramsPerUnit else servingGrams
@@ -392,6 +394,7 @@ fun EditFavoriteSheet(
                                 quantityText = servingQuantityText,
                                 onQuantityChange = { newValue ->
                                     servingQuantityText = newValue
+                                    resolveServingDraft()
                                 },
                                 selectedUnitId = selectedServingUnitId,
                                 onSelectedUnitChange = { optionId ->
