@@ -877,6 +877,16 @@
     <string name="edit_reprocess_diff_title">Wat is er veranderd</string>
     <string name="edit_reprocess_explain">AI herberekent naam, portie, calorieën en macro\'s op basis van je notitie. Bekijk de wijzigingen en tik op Opslaan.</string>
     <string name="edit_reprocess_review_hint">Bekijk de bijgewerkte waarden hierboven en tik op Opslaan om ze te behouden.</string>
+    <!-- Edit sheet: AI fill-missing modes -->
+    <string name="edit_ai_mode_fill">Ontbrekende aanvullen</string>
+    <string name="edit_ai_mode_reanalyze">Opnieuw analyseren</string>
+    <string name="edit_ai_mode_recalculate">Opnieuw berekenen</string>
+    <string name="edit_ai_missing_line">Ontbreekt: %1$s</string>
+    <plurals name="edit_ai_missing_values">
+        <item quantity="one">%1$d waarde ontbreekt</item>
+        <item quantity="other">%1$d waarden ontbreken</item>
+    </plurals>
+    <string name="edit_ai_missing_action">Aanvullen</string>
     <string name="edit_reprocess_section">AI om correctie vragen</string>
     <string name="edit_reprocessing">Corrigeren…</string>
     <string name="edit_reprocessing_failed">Correctie mislukt</string>

@@ -1535,6 +1535,18 @@
     <string name="edit_reprocess_diff_unchanged">Żadne pola się nie zmieniły. Dostosuj notatkę i spróbuj ponownie.</string>
     <string name="edit_reprocess_diff_row">%1$s: %2$s → %3$s</string>
     <string name="edit_reprocess_review_hint">Przejrzyj zaktualizowane wartości powyżej, a następnie stuknij Zapisz, aby je zachować.</string>
+    <!-- Edit sheet: AI fill-missing modes -->
+    <string name="edit_ai_mode_fill">Uzupełnij braki</string>
+    <string name="edit_ai_mode_reanalyze">Analizuj ponownie</string>
+    <string name="edit_ai_mode_recalculate">Przelicz ponownie</string>
+    <string name="edit_ai_missing_line">Brakuje: %1$s</string>
+    <plurals name="edit_ai_missing_values">
+        <item quantity="one">Brakuje %1$d wartości</item>
+        <item quantity="few">Brakuje %1$d wartości</item>
+        <item quantity="many">Brakuje %1$d wartości</item>
+        <item quantity="other">Brakuje %1$d wartości</item>
+    </plurals>
+    <string name="edit_ai_missing_action">Uzupełnij</string>
     <string name="section_date_time">Data i godzina</string>
     <string name="section_share">Udostępnij</string>
     <string name="placeholder_hour">Godzina</string>

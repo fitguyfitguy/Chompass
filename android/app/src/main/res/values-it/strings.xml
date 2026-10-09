@@ -887,6 +887,16 @@
     <string name="edit_reprocess_diff_title">Cosa è cambiato</string>
     <string name="edit_reprocess_explain">L\'IA ricalcolerà nome, porzione, calorie e macro dalla tua nota. Controlla le modifiche, poi tocca Salva.</string>
     <string name="edit_reprocess_review_hint">Controlla i valori aggiornati sopra, poi tocca Salva per tenerli.</string>
+    <!-- Edit sheet: AI fill-missing modes -->
+    <string name="edit_ai_mode_fill">Completa</string>
+    <string name="edit_ai_mode_reanalyze">Rianalizza</string>
+    <string name="edit_ai_mode_recalculate">Ricalcola</string>
+    <string name="edit_ai_missing_line">Mancante: %1$s</string>
+    <plurals name="edit_ai_missing_values">
+        <item quantity="one">%1$d valore mancante</item>
+        <item quantity="other">%1$d valori mancanti</item>
+    </plurals>
+    <string name="edit_ai_missing_action">Completa</string>
     <string name="edit_reprocess_section">Chiedi all\'IA di correggere</string>
     <string name="edit_reprocessing">Correzione…</string>
     <string name="edit_reprocessing_failed">Correzione non riuscita</string>

@@ -907,6 +907,16 @@
     <string name="edit_reprocess_diff_title">变化内容</string>
     <string name="edit_reprocess_explain">AI 将根据你的备注重新计算名称、份量、热量和宏量营养素。请查看修改后点击保存。</string>
     <string name="edit_reprocess_review_hint">请查看上方更新后的数值，点击保存以保留。</string>
+    <!-- Edit sheet: AI fill-missing modes -->
+    <string name="edit_ai_mode_fill">补全缺失</string>
+    <string name="edit_ai_mode_reanalyze">重新分析</string>
+    <string name="edit_ai_mode_recalculate">重新计算</string>
+    <string name="edit_ai_missing_line">缺失：%1$s</string>
+    <plurals name="edit_ai_missing_values">
+        <item quantity="one">缺失 %1$d 个数值</item>
+        <item quantity="other">缺失 %1$d 个数值</item>
+    </plurals>
+    <string name="edit_ai_missing_action">补全</string>
     <string name="edit_reprocess_section">请 AI 修正</string>
     <string name="edit_reprocessing">修正中…</string>
     <string name="edit_reprocessing_failed">修正失败</string>

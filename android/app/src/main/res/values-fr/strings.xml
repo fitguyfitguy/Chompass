@@ -958,6 +958,16 @@
     <string name="edit_reprocess_diff_title">Ce qui a changé</string>
     <string name="edit_reprocess_explain">L\'IA recalculera le nom, la portion, les calories et les macros à partir de votre note. Vérifiez les changements, puis touchez Enregistrer.</string>
     <string name="edit_reprocess_review_hint">Vérifiez les valeurs mises à jour ci-dessus, puis touchez Enregistrer pour les conserver.</string>
+    <!-- Edit sheet: AI fill-missing modes -->
+    <string name="edit_ai_mode_fill">Compléter</string>
+    <string name="edit_ai_mode_reanalyze">Réanalyser</string>
+    <string name="edit_ai_mode_recalculate">Recalculer</string>
+    <string name="edit_ai_missing_line">Manque : %1$s</string>
+    <plurals name="edit_ai_missing_values">
+        <item quantity="one">%1$d valeur manquante</item>
+        <item quantity="other">%1$d valeurs manquantes</item>
+    </plurals>
+    <string name="edit_ai_missing_action">Compléter</string>
     <string name="edit_note_section">Note</string>
     <string name="edit_note_placeholder">Note (facultatif)</string>
     <string name="edit_reprocess_section">Demander à l\'IA de corriger</string>

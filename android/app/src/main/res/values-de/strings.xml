@@ -2838,6 +2838,16 @@ für dich ein</string>
     <string name="edit_reprocess_diff_row">%1$s: %2$s → %3$s</string>
 
     <string name="edit_reprocess_review_hint">Überprüfe die oben angezeigten aktualisierten Werte und tippe anschließend auf „Speichern“, um sie zu übernehmen.</string>
+    <!-- Edit sheet: AI fill-missing modes -->
+    <string name="edit_ai_mode_fill">Fehlende ergänzen</string>
+    <string name="edit_ai_mode_reanalyze">Neu analysieren</string>
+    <string name="edit_ai_mode_recalculate">Neu berechnen</string>
+    <string name="edit_ai_missing_line">Fehlt: %1$s</string>
+    <plurals name="edit_ai_missing_values">
+        <item quantity="one">%1$d Wert fehlt</item>
+        <item quantity="other">%1$d Werte fehlen</item>
+    </plurals>
+    <string name="edit_ai_missing_action">Ergänzen</string>
 
     <string name="section_date_time">Datum und Uhrzeit</string>
 

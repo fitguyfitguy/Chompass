@@ -905,6 +905,16 @@
     <string name="edit_reprocess_diff_title">変更点</string>
     <string name="edit_reprocess_explain">AI がメモから名前、分量、カロリー、マクロを再計算します。変更を確認して保存をタップしてください。</string>
     <string name="edit_reprocess_review_hint">上の更新値を確認し、保存をタップして適用してください。</string>
+    <!-- Edit sheet: AI fill-missing modes -->
+    <string name="edit_ai_mode_fill">不足を埋める</string>
+    <string name="edit_ai_mode_reanalyze">再分析</string>
+    <string name="edit_ai_mode_recalculate">再計算</string>
+    <string name="edit_ai_missing_line">未入力: %1$s</string>
+    <plurals name="edit_ai_missing_values">
+        <item quantity="one">%1$d個の値が未入力です</item>
+        <item quantity="other">%1$d個の値が未入力です</item>
+    </plurals>
+    <string name="edit_ai_missing_action">埋める</string>
     <string name="edit_reprocess_section">AI に修正を依頼</string>
     <string name="edit_reprocessing">修正中…</string>
     <string name="edit_reprocessing_failed">修正に失敗しました</string>
