@@ -13,6 +13,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Fixed
 
 - **Portion edits update the totals right away** (Android): in the food review and edit sheets, the total grams and the calorie and macro numbers stayed at the old serving until you closed the quantity editor or saved. They now follow the amount wheel while you scroll it.
+- **Coach keeps talking to local servers that omit tool-call ids** (Android): LM Studio, llama.cpp and friends can return tool calls with empty ids; the coach then left one unanswered and every later request on that conversation could fail. Ids are now filled in so the pairing stays intact. Follows Codeberg [#123](https://codeberg.org/fitguy/Chompass/issues/123) by [@mik112](https://codeberg.org/mik112).
 
 ## [5.4.1] - 2026-10-08
 
