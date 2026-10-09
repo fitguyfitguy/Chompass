@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.models.MealType
 import app.chompass.models.ProgressiveMealDraft
 import app.chompass.models.ProgressiveMealItem
 import app.chompass.models.ServingUnitOption
@@ -453,6 +454,9 @@ private fun Double.roundToIntSafe(): Int = kotlin.math.round(this).toInt()
 
 /** Six-ingredient demo draft for the #84 overflow screenshot. */
 private val ScreenshotProgressiveDraft = ProgressiveMealDraft(
+    // Pin the meal type: the data-class default is MealType.currentMealId,
+    // which derives from the wall clock and flaps the golden across regens.
+    mealType = MealType.BREAKFAST.id,
     items = (1..6).map { i ->
         ProgressiveMealItem(
             analysis = FoodAnalysis(

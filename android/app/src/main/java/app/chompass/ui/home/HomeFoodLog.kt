@@ -76,6 +76,7 @@ import app.chompass.ui.util.clockTimePattern
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppSpacing
 import app.chompass.ui.theme.AppTextOpacity
+import java.time.Instant
 import java.time.ZoneId
 import androidx.compose.ui.semantics.Role
 import java.time.format.DateTimeFormatter
@@ -725,6 +726,7 @@ internal fun SwipeRevealScreenshotContent() {
         protein = 22.0,
         carbs = 32.0,
         fat = 6.0,
+        timestamp = Instant.parse("2026-06-15T12:00:00Z"),
         source = FoodSource.MANUAL,
         emoji = "\uD83E\uDD63",
     )
