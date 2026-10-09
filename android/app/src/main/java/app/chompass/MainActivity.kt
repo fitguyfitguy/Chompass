@@ -596,6 +596,13 @@ open class MainActivity : ComponentActivity() {
                 runCatching { container.testDataSeeder.seedAnalysisQueue() }
                     .onFailure { Log.e(PHOTO_IMPORT_TAG, "seedAnalysisQueue failed", it) }
             }
+            if (actions.seedGapFixture) {
+                runCatching { container.testDataSeeder.seedGapFixture() }
+                    .onFailure { Log.e(PHOTO_IMPORT_TAG, "seedGapFixture failed", it) }
+            }
+            if (actions.resetFillMissingBanner) {
+                container.prefs.setFillMissingBannerShown(0L)
+            }
             if (actions.seedActiveCalories) {
                 runCatching { container.testDataSeeder.seedActiveCalories(actions.activeTodayOverride) }
                     .onFailure { Log.e(PHOTO_IMPORT_TAG, "seedActiveCalories failed", it) }

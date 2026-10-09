@@ -2049,4 +2049,33 @@
     <string name="home_untracked_chip_a11y">此日已标记为不记录。点按更改。</string>
     <string name="home_mark_untracked_chip_a11y">将此日标记为不记录。</string>
     <string name="home_today">今天</string>
+
+    <plurals name="home_fill_gaps_banner">
+        <item quantity="one">1 餐缺少营养数据</item>
+        <item quantity="other">%1$d 餐缺少营养数据</item>
+    </plurals>
+    <string name="cd_dismiss_fill_gaps_banner">关闭横幅</string>
+    <string name="fill_gaps_title">补全缺失数据</string>
+    <string name="fill_gaps_adds_line">补全：%1$s</string>
+    <string name="fill_gaps_already_complete">已完整</string>
+    <string name="fill_gaps_run_all">全部补全</string>
+    <string name="fill_gaps_apply">应用</string>
+    <plurals name="fill_gaps_confirm_remote">
+        <item quantity="one">运行 1 个 AI 请求？</item>
+        <item quantity="other">运行 %1$d 个 AI 请求？</item>
+    </plurals>
+    <plurals name="fill_gaps_confirm_ondevice">
+        <item quantity="one">在设备上补全 1 餐？</item>
+        <item quantity="other">在设备上补全 %1$d 餐？</item>
+    </plurals>
+    <plurals name="fill_gaps_cascade">
+        <item quantity="one">同时更新今天的 1 条记录</item>
+        <item quantity="other">同时更新今天的 %1$d 条记录</item>
+    </plurals>
+    <plurals name="fill_gaps_snackbar">
+        <item quantity="one">已补全 1 条记录</item>
+        <item quantity="other">已补全 %1$d 条记录</item>
+    </plurals>
+    <string name="fill_gaps_empty">目前没有缺失</string>
+    <string name="settings_fill_missing_row">补全缺失数据</string>
 </resources>

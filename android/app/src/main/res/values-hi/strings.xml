@@ -2050,4 +2050,33 @@
     <string name="home_untracked_chip_a11y">यह दिन ट्रैक न किया गया चिह्नित है। बदलने के लिए टैप करें।</string>
     <string name="home_mark_untracked_chip_a11y">इस दिन को ट्रैक न किया गया चिह्नित करें।</string>
     <string name="home_today">आज</string>
+
+    <plurals name="home_fill_gaps_banner">
+        <item quantity="one">1 भोजन में पोषण डेटा गुम है</item>
+        <item quantity="other">%1$d भोजन में पोषण डेटा गुम है</item>
+    </plurals>
+    <string name="cd_dismiss_fill_gaps_banner">बैनर हटाएँ</string>
+    <string name="fill_gaps_title">गुम डेटा भरें</string>
+    <string name="fill_gaps_adds_line">जोड़ता है: %1$s</string>
+    <string name="fill_gaps_already_complete">पहले से पूर्ण</string>
+    <string name="fill_gaps_run_all">सभी भरें</string>
+    <string name="fill_gaps_apply">लागू करें</string>
+    <plurals name="fill_gaps_confirm_remote">
+        <item quantity="one">1 AI अनुरोध चलाएँ?</item>
+        <item quantity="other">%1$d AI अनुरोध चलाएँ?</item>
+    </plurals>
+    <plurals name="fill_gaps_confirm_ondevice">
+        <item quantity="one">डिवाइस पर 1 भोजन भरें?</item>
+        <item quantity="other">डिवाइस पर %1$d भोजन भरें?</item>
+    </plurals>
+    <plurals name="fill_gaps_cascade">
+        <item quantity="one">आज की 1 प्रविष्टि भी अपडेट करें</item>
+        <item quantity="other">आज की %1$d प्रविष्टियाँ भी अपडेट करें</item>
+    </plurals>
+    <plurals name="fill_gaps_snackbar">
+        <item quantity="one">1 प्रविष्टि भरी गई</item>
+        <item quantity="other">%1$d प्रविष्टियाँ भरी गईं</item>
+    </plurals>
+    <string name="fill_gaps_empty">अभी कुछ भी गुम नहीं है</string>
+    <string name="settings_fill_missing_row">गुम डेटा भरें</string>
 </resources>

@@ -2049,4 +2049,33 @@
     <string name="home_untracked_chip_a11y">この日は追跡しない設定です。タップして変更。</string>
     <string name="home_mark_untracked_chip_a11y">この日を追跡しないとしてマーク。</string>
     <string name="home_today">今日</string>
+
+    <plurals name="home_fill_gaps_banner">
+        <item quantity="one">栄養データが欠けている食事が1件あります</item>
+        <item quantity="other">栄養データが欠けている食事が%1$d件あります</item>
+    </plurals>
+    <string name="cd_dismiss_fill_gaps_banner">バナーを閉じる</string>
+    <string name="fill_gaps_title">欠落データを補完</string>
+    <string name="fill_gaps_adds_line">追加: %1$s</string>
+    <string name="fill_gaps_already_complete">すべて入力済み</string>
+    <string name="fill_gaps_run_all">すべて補完</string>
+    <string name="fill_gaps_apply">適用</string>
+    <plurals name="fill_gaps_confirm_remote">
+        <item quantity="one">AIリクエストを1件実行しますか？</item>
+        <item quantity="other">AIリクエストを%1$d件実行しますか？</item>
+    </plurals>
+    <plurals name="fill_gaps_confirm_ondevice">
+        <item quantity="one">端末内で1件の食事を補完しますか？</item>
+        <item quantity="other">端末内で%1$d件の食事を補完しますか？</item>
+    </plurals>
+    <plurals name="fill_gaps_cascade">
+        <item quantity="one">今日の記録1件も更新する</item>
+        <item quantity="other">今日の記録%1$d件も更新する</item>
+    </plurals>
+    <plurals name="fill_gaps_snackbar">
+        <item quantity="one">1件の記録を補完しました</item>
+        <item quantity="other">%1$d件の記録を補完しました</item>
+    </plurals>
+    <string name="fill_gaps_empty">現在、欠落しているものはありません</string>
+    <string name="settings_fill_missing_row">欠落データを補完</string>
 </resources>

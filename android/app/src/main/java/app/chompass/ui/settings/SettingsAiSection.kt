@@ -174,5 +174,19 @@ internal fun SettingsAiSection(
                     )
                     SettingFootnote(stringResource(R.string.settings_gemini_google_search_footer))
                 }
+                // AI fill-missing gaps sheet (Batch 2). Hidden when the master
+                // switch is off or nothing is gapped right now (cost guard).
+                if (ui.aiFeaturesEnabled) {
+                    val gapScan by vm.container.fillGapsEngine.scan.collectAsState(initial = null)
+                    val gapCount = gapScan?.count ?: 0
+                    if (gapCount > 0) {
+                        HorizontalDivider()
+                        SettingRow(
+                            stringResource(R.string.settings_fill_missing_row),
+                            gapCount.toString(),
+                            icon = Icons.Outlined.Tune
+                        ) { onOpenSheet(SettingsSheet.FILL_GAPS) }
+                    }
+                }
     }
 }

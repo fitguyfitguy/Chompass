@@ -35,6 +35,8 @@ class MainActivityDebugExtrasGateTest {
             putExtra("seed_macro_cycle", true)
             putExtra("macro_cycle", true)
             putExtra("seed_active_calories", true)
+            putExtra("seed_gap_fixture", true)
+            putExtra("reset_fill_missing_banner", true)
             putExtra("seed_over_goal", true)
             putExtra("restore_real_data", true)
             putExtra("clear_debug_activity", true)

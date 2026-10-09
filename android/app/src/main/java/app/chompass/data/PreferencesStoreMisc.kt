@@ -99,6 +99,24 @@ internal suspend fun PreferencesStore.setSuggestionDismissedImpl(id: String, dis
     }
 }
 
+// -- AI fill-missing banner (at most once per day, sticky dismissal) --------
+internal val PreferencesStore.fillMissingBannerLastShownDayImpl: Flow<Long>
+    get() = dataStore.data.map { it[Keys.FILL_MISSING_BANNER_LAST_SHOWN_DAY] ?: 0L }
+
+internal suspend fun PreferencesStore.setFillMissingBannerShownImpl(epochDay: Long) {
+    dataStore.edit { it[Keys.FILL_MISSING_BANNER_LAST_SHOWN_DAY] = epochDay }
+}
+
+internal val PreferencesStore.fillMissingDismissedSignaturesImpl: Flow<Set<String>>
+    get() = dataStore.data.map { it[Keys.FILL_MISSING_DISMISSED_SIGNATURES] ?: emptySet() }
+
+internal suspend fun PreferencesStore.setFillMissingSignatureDismissedImpl(signature: String) {
+    dataStore.edit { prefs ->
+        prefs[Keys.FILL_MISSING_DISMISSED_SIGNATURES] =
+            (prefs[Keys.FILL_MISSING_DISMISSED_SIGNATURES] ?: emptySet()) + signature
+    }
+}
+
 // -- Magnitude picker last mode (Codeberg #62) ------------------------
 internal val PreferencesStore.numericPickerEntryImpl: Flow<String>
     get() = dataStore.data.map { it[Keys.NUMERIC_PICKER_ENTRY] ?: "wheel" }

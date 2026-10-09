@@ -37,6 +37,10 @@ internal data class DebugIntentActions(
     val seedActiveCalories: Boolean = false,
     /** Debug-only: seed the analysis queue + prompt history (Codeberg #53). */
     val seedAnalysisQueue: Boolean = false,
+    /** Debug-only: one all-macro-zeros named diary row for the fill-missing device pass. */
+    val seedGapFixture: Boolean = false,
+    /** Debug-only: reset the fill-missing banner once-per-day gate (device-pass reruns). */
+    val resetFillMissingBanner: Boolean = false,
     /** Null = extra absent; Int = explicit today override (0 = measured-zero morning). */
     val activeTodayOverride: Int? = null,
     val setGaugeMode: String = "",
@@ -131,6 +135,8 @@ internal fun consumeDebugIntentExtras(
         seedFullMacroCycle = BuildConfig.DEBUG && intent.getBooleanExtra("macro_cycle", false),
         seedActiveCalories = intent.getBooleanExtra("seed_active_calories", false),
         seedAnalysisQueue = BuildConfig.DEBUG && intent.getBooleanExtra("seed_analysis_queue", false),
+        seedGapFixture = BuildConfig.DEBUG && intent.getBooleanExtra("seed_gap_fixture", false),
+        resetFillMissingBanner = BuildConfig.DEBUG && intent.getBooleanExtra("reset_fill_missing_banner", false),
         activeTodayOverride = intent.getIntExtra("active_today_override", Int.MIN_VALUE)
             .takeIf { it != Int.MIN_VALUE },
         setGaugeMode = intent.getStringExtra("set_gauge_mode") ?: "",
@@ -202,6 +208,8 @@ internal fun consumeDebugIntentExtras(
     if (actions.seedMacroCycle) intent.removeExtra("seed_macro_cycle")
     if (actions.seedFullMacroCycle) intent.removeExtra("macro_cycle")
     if (actions.seedAnalysisQueue) intent.removeExtra("seed_analysis_queue")
+    if (actions.seedGapFixture) intent.removeExtra("seed_gap_fixture")
+    if (actions.resetFillMissingBanner) intent.removeExtra("reset_fill_missing_banner")
     if (actions.seedActiveCalories) {
         intent.removeExtra("seed_active_calories")
         intent.removeExtra("active_today_override")

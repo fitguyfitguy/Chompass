@@ -261,6 +261,10 @@ internal fun SettingsSheets(
                     onSetOverWifiOnly = vm::setOnDeviceDownloadOverWifiOnly,
                     onSetHeadroomPercent = vm::setOnDeviceHeadroomPercent,
                 )
+                SettingsSheet.FILL_GAPS -> app.chompass.ui.home.FillGapsSheet(
+                    container = vm.container,
+                    onDismiss = onDismiss,
+                )
                 SettingsSheet.MAX_TOKENS -> {
                     var value by remember(ui.maxResponseTokens) { mutableIntStateOf(ui.maxResponseTokens) }
                     Text(stringResource(R.string.settings_max_tokens), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)

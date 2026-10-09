@@ -2049,4 +2049,33 @@
     <string name="home_untracked_chip_a11y">이 날은 추적하지 않음으로 표시되어 있습니다. 눌러서 변경하세요.</string>
     <string name="home_mark_untracked_chip_a11y">이 날을 추적하지 않음으로 표시합니다.</string>
     <string name="home_today">오늘</string>
+
+    <plurals name="home_fill_gaps_banner">
+        <item quantity="one">영양 데이터가 없는 식사 1개</item>
+        <item quantity="other">영양 데이터가 없는 식사 %1$d개</item>
+    </plurals>
+    <string name="cd_dismiss_fill_gaps_banner">배너 닫기</string>
+    <string name="fill_gaps_title">누락된 데이터 채우기</string>
+    <string name="fill_gaps_adds_line">추가: %1$s</string>
+    <string name="fill_gaps_already_complete">이미 완전함</string>
+    <string name="fill_gaps_run_all">모두 채우기</string>
+    <string name="fill_gaps_apply">적용</string>
+    <plurals name="fill_gaps_confirm_remote">
+        <item quantity="one">AI 요청 1개를 실행할까요?</item>
+        <item quantity="other">AI 요청 %1$d개를 실행할까요?</item>
+    </plurals>
+    <plurals name="fill_gaps_confirm_ondevice">
+        <item quantity="one">기기에서 식사 1개를 채울까요?</item>
+        <item quantity="other">기기에서 식사 %1$d개를 채울까요?</item>
+    </plurals>
+    <plurals name="fill_gaps_cascade">
+        <item quantity="one">오늘 기록 1개도 업데이트</item>
+        <item quantity="other">오늘 기록 %1$d개도 업데이트</item>
+    </plurals>
+    <plurals name="fill_gaps_snackbar">
+        <item quantity="one">기록 1개를 채웠습니다</item>
+        <item quantity="other">기록 %1$d개를 채웠습니다</item>
+    </plurals>
+    <string name="fill_gaps_empty">지금은 누락된 것이 없습니다</string>
+    <string name="settings_fill_missing_row">누락된 데이터 채우기</string>
 </resources>

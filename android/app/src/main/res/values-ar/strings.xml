@@ -2064,4 +2064,33 @@
     <string name="home_untracked_chip_a11y">هذا اليوم مُعلَّم بعدم التتبُّع. اضغط للتغيير.</string>
     <string name="home_mark_untracked_chip_a11y">علِّم هذا اليوم بعدم التتبُّع.</string>
     <string name="home_today">اليوم</string>
+
+    <plurals name="home_fill_gaps_banner">
+        <item quantity="one">وجبة واحدة تنقصها بيانات التغذية</item>
+        <item quantity="other">%1$d وجبات تنقصها بيانات التغذية</item>
+    </plurals>
+    <string name="cd_dismiss_fill_gaps_banner">إخفاء الشريط</string>
+    <string name="fill_gaps_title">ملء البيانات الناقصة</string>
+    <string name="fill_gaps_adds_line">يضيف: %1$s</string>
+    <string name="fill_gaps_already_complete">مكتمل بالفعل</string>
+    <string name="fill_gaps_run_all">ملء الكل</string>
+    <string name="fill_gaps_apply">تطبيق</string>
+    <plurals name="fill_gaps_confirm_remote">
+        <item quantity="one">تشغيل طلب ذكاء اصطناعي واحد؟</item>
+        <item quantity="other">تشغيل %1$d من طلبات الذكاء الاصطناعي؟</item>
+    </plurals>
+    <plurals name="fill_gaps_confirm_ondevice">
+        <item quantity="one">ملء وجبة واحدة على الجهاز؟</item>
+        <item quantity="other">ملء %1$d من الوجبات على الجهاز؟</item>
+    </plurals>
+    <plurals name="fill_gaps_cascade">
+        <item quantity="one">تحديث إدخال آخر من اليوم أيضًا</item>
+        <item quantity="other">تحديث %1$d من إدخالات اليوم أيضًا</item>
+    </plurals>
+    <plurals name="fill_gaps_snackbar">
+        <item quantity="one">تم ملء إدخال واحد</item>
+        <item quantity="other">تم ملء %1$d من الإدخالات</item>
+    </plurals>
+    <string name="fill_gaps_empty">لا يوجد شيء ناقص حاليًا</string>
+    <string name="settings_fill_missing_row">ملء البيانات الناقصة</string>
 </resources>

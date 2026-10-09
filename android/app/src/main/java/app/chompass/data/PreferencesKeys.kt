@@ -28,6 +28,10 @@ internal object Keys {
         val FIRST_LAUNCH_AT = longPreferencesKey("firstLaunchAt")
         /** Dismissed settings-suggestion ids ("water_tracking", "adaptive_goals", ...). */
         val DISMISSED_SUGGESTIONS = stringSetPreferencesKey("dismissedSuggestionIds")
+        /** Epoch day the AI fill-missing Home banner was last shown (at most once per day). */
+        val FILL_MISSING_BANNER_LAST_SHOWN_DAY = longPreferencesKey("fillMissingBannerLastShownDay")
+        /** Dismissed fill-missing scan signatures (sticky per scan shape). */
+        val FILL_MISSING_DISMISSED_SIGNATURES = stringSetPreferencesKey("fillMissingDismissedScanSignatures")
         val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notificationsEnabled")
         val STREAK_ENABLED = booleanPreferencesKey("streakReminderEnabled")
         val STREAK_HOUR = intPreferencesKey("streakReminderHour")

@@ -2054,4 +2054,38 @@ macro-urile reechilibrate la noul total caloric</string>
     <string name="home_untracked_chip_a11y">Această zi este marcată ca neurmărită. Atinge pentru a schimba.</string>
     <string name="home_mark_untracked_chip_a11y">Marchează această zi ca neurmărită.</string>
     <string name="home_today">Astăzi</string>
+
+    <plurals name="home_fill_gaps_banner">
+        <item quantity="one">1 masă nu are date nutriționale</item>
+        <item quantity="few">%1$d mese nu au date nutriționale</item>
+        <item quantity="other">%1$d de mese nu au date nutriționale</item>
+    </plurals>
+    <string name="cd_dismiss_fill_gaps_banner">Închide bannerul</string>
+    <string name="fill_gaps_title">Completează datele lipsă</string>
+    <string name="fill_gaps_adds_line">Adaugă: %1$s</string>
+    <string name="fill_gaps_already_complete">Deja complet</string>
+    <string name="fill_gaps_run_all">Completează tot</string>
+    <string name="fill_gaps_apply">Aplică</string>
+    <plurals name="fill_gaps_confirm_remote">
+        <item quantity="one">Rulez 1 cerere AI?</item>
+        <item quantity="few">Rulez %1$d cereri AI?</item>
+        <item quantity="other">Rulez %1$d de cereri AI?</item>
+    </plurals>
+    <plurals name="fill_gaps_confirm_ondevice">
+        <item quantity="one">Completez 1 masă pe dispozitiv?</item>
+        <item quantity="few">Completez %1$d mese pe dispozitiv?</item>
+        <item quantity="other">Completez %1$d de mese pe dispozitiv?</item>
+    </plurals>
+    <plurals name="fill_gaps_cascade">
+        <item quantity="one">Actualizează și 1 înregistrare de azi</item>
+        <item quantity="few">Actualizează și %1$d înregistrări de azi</item>
+        <item quantity="other">Actualizează și %1$d de înregistrări de azi</item>
+    </plurals>
+    <plurals name="fill_gaps_snackbar">
+        <item quantity="one">1 înregistrare completată</item>
+        <item quantity="few">%1$d înregistrări completate</item>
+        <item quantity="other">%1$d de înregistrări completate</item>
+    </plurals>
+    <string name="fill_gaps_empty">Nu lipsește nimic momentan</string>
+    <string name="settings_fill_missing_row">Completează datele lipsă</string>
 </resources>

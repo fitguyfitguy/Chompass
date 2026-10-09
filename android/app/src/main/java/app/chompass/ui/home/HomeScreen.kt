@@ -63,6 +63,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontFamily
@@ -176,6 +177,8 @@ fun HomeScreen(
     var showBarcodeScannerLocal by rememberSaveable { mutableStateOf(false) }
     var showCopyFromDay by rememberSaveable { mutableStateOf(false) }
     var showAddFoodSheet by rememberSaveable { mutableStateOf(false) }
+    // AI fill-missing gaps sheet (Batch 2); session state lives in the engine singleton.
+    var showFillGapsSheet by rememberSaveable { mutableStateOf(false) }
     var hubOpenedAtNs by remember { mutableLongStateOf(0L) }
     var showCustomWaterLog by rememberSaveable { mutableStateOf(false) }
     var showWaterHistory by rememberSaveable { mutableStateOf(false) }
@@ -1003,7 +1006,21 @@ fun HomeScreen(
             !showCameraCapture &&
             !showMultiPhotoCapture &&
             !inSelectionMode
-        if ((copied.isNotEmpty() && !inSelectionMode && !showProgressiveChip) || showRecoveredChip) {
+        // AI fill-missing banner (Batch 2): same guard family; the engine's
+        // once-per-day + sticky-dismissal gate already nulls it after first show.
+        val fillGapsBanner = ui.fillGapsBanner
+        val showFillGapsChip = fillGapsBanner != null &&
+            !ui.showFoodResultSheet &&
+            !ui.showProgressiveMealSheet &&
+            !ui.showAnalysisQueue &&
+            !showAddFoodSheet &&
+            !showCameraCapture &&
+            !showMultiPhotoCapture &&
+            !inSelectionMode
+        LaunchedEffect(fillGapsBanner != null) {
+            if (fillGapsBanner != null) vm.onFillGapsBannerShown()
+        }
+        if ((copied.isNotEmpty() && !inSelectionMode && !showProgressiveChip) || showRecoveredChip || showFillGapsChip) {
             val pasteBusy = ui.saving
             val paste: () -> Unit = {
                 if (!pasteBusy) vm.copyEntriesToSelectedDay(copied)
@@ -1017,6 +1034,46 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                if (showFillGapsChip && fillGapsBanner != null) {
+                    ChompassSurface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                showFillGapsSheet = true
+                            },
+                        cornerRadius = AppRadii.SectionCard,
+                        padding = 0.dp
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, end = 4.dp, top = 2.dp, bottom = 2.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                pluralStringResource(R.plurals.home_fill_gaps_banner, fillGapsBanner.count, fillGapsBanner.count),
+                                modifier = Modifier.weight(1f, fill = false),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 15.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            IconButton(
+                                onClick = { vm.onFillGapsBannerDismissed() },
+                                modifier = Modifier.size(44.dp)
+                            ) {
+                                Icon(
+                                    Icons.Filled.Close,
+                                    contentDescription = stringResource(R.string.cd_dismiss_fill_gaps_banner),
+                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
+                    }
+                }
                 if (showRecoveredChip && recoveredReview != null) {
                     ChompassSurface(
                         modifier = Modifier
@@ -1765,6 +1822,32 @@ fun HomeScreen(
                 returnToAddFoodGrid()
             },
         )
+    }
+    if (showFillGapsSheet) {
+        FillGapsSheet(
+            container = container,
+            onDismiss = { showFillGapsSheet = false },
+        )
+    }
+    // Apply→undo bridge: the engine is a singleton, so an apply made from the
+    // Settings-hosted gaps sheet surfaces the same snackbar back on Home. The
+    // snackbar waits for the Home-hosted sheet to close so its action window
+    // doesn't burn behind the modal.
+    val fillGapsUndo by container.fillGapsEngine.lastUndo.collectAsState()
+    LaunchedEffect(fillGapsUndo, showFillGapsSheet) {
+        val snapshot = fillGapsUndo ?: return@LaunchedEffect
+        if (showFillGapsSheet) return@LaunchedEffect
+        val result = snackbarHostState.showSnackbar(
+            message = ctx.resources.getQuantityString(R.plurals.fill_gaps_snackbar, snapshot.count, snapshot.count),
+            actionLabel = undoLabel,
+            duration = SnackbarDuration.Long,
+        )
+        if (result == SnackbarResult.ActionPerformed) {
+            haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+            vm.undoFillGaps()
+        } else {
+            vm.consumeFillGapsUndo()
+        }
     }
     editingEntry?.let { entry ->
         EditFoodEntrySheet(

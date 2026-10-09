@@ -29,6 +29,15 @@ data class EntryGapReport(
         get() = missingMacros.isNotEmpty() ||
             missingMicros.isNotEmpty() ||
             zeroMacroConstituents.isNotEmpty()
+
+    /**
+     * Gate for the MASS fill surfaces (Home banner, gaps sheet, Settings row):
+     * macro-level gaps only. Micro gaps stay per-entry in the edit sheet —
+     * with 23 optional micro fields, counting any null here would flag
+     * virtually every meal and make Fill-all fire dozens of AI requests.
+     */
+    val hasMacroGaps: Boolean
+        get() = missingMacros.isNotEmpty() || zeroMacroConstituents.isNotEmpty()
 }
 
 /**

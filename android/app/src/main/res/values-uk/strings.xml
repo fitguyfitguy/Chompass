@@ -1984,4 +1984,38 @@ LBM = вага × (1 − %жиру)</string>
     <string name="home_untracked_chip_a11y">Цей день позначено як невідстежуваний. Натисніть, щоб змінити.</string>
     <string name="home_mark_untracked_chip_a11y">Позначити цей день як невідстежуваний.</string>
     <string name="home_today">Сьогодні</string>
+
+    <plurals name="home_fill_gaps_banner">
+        <item quantity="one">1 прийом їжі без даних поживності</item>
+        <item quantity="few">%1$d прийоми їжі без даних поживності</item>
+        <item quantity="other">%1$d прийомів їжі без даних поживності</item>
+    </plurals>
+    <string name="cd_dismiss_fill_gaps_banner">Сховати банер</string>
+    <string name="fill_gaps_title">Заповнити відсутні дані</string>
+    <string name="fill_gaps_adds_line">Додає: %1$s</string>
+    <string name="fill_gaps_already_complete">Вже заповнено</string>
+    <string name="fill_gaps_run_all">Заповнити все</string>
+    <string name="fill_gaps_apply">Застосувати</string>
+    <plurals name="fill_gaps_confirm_remote">
+        <item quantity="one">Виконати 1 ШІ-запит?</item>
+        <item quantity="few">Виконати %1$d ШІ-запити?</item>
+        <item quantity="other">Виконати %1$d ШІ-запитів?</item>
+    </plurals>
+    <plurals name="fill_gaps_confirm_ondevice">
+        <item quantity="one">Заповнити 1 прийом їжі на пристрої?</item>
+        <item quantity="few">Заповнити %1$d прийоми їжі на пристрої?</item>
+        <item quantity="other">Заповнити %1$d прийомів їжі на пристрої?</item>
+    </plurals>
+    <plurals name="fill_gaps_cascade">
+        <item quantity="one">Оновити також 1 сьогоднішній запис</item>
+        <item quantity="few">Оновити також %1$d сьогоднішні записи</item>
+        <item quantity="other">Оновити також %1$d сьогоднішніх записів</item>
+    </plurals>
+    <plurals name="fill_gaps_snackbar">
+        <item quantity="one">Заповнено 1 запис</item>
+        <item quantity="few">Заповнено %1$d записи</item>
+        <item quantity="other">Заповнено %1$d записів</item>
+    </plurals>
+    <string name="fill_gaps_empty">Наразі нічого не бракує</string>
+    <string name="settings_fill_missing_row">Заповнити відсутні дані</string>
 </resources>

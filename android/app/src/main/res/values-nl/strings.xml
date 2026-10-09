@@ -2050,4 +2050,33 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
     <string name="home_untracked_chip_a11y">Deze dag is gemarkeerd als niet bijgehouden. Tik om te wijzigen.</string>
     <string name="home_mark_untracked_chip_a11y">Markeer deze dag als niet bijgehouden.</string>
     <string name="home_today">Vandaag</string>
+
+    <plurals name="home_fill_gaps_banner">
+        <item quantity="one">1 maaltijd mist voedingsdata</item>
+        <item quantity="other">%1$d maaltijden missen voedingsdata</item>
+    </plurals>
+    <string name="cd_dismiss_fill_gaps_banner">Banner sluiten</string>
+    <string name="fill_gaps_title">Ontbrekende gegevens aanvullen</string>
+    <string name="fill_gaps_adds_line">Voegt toe: %1$s</string>
+    <string name="fill_gaps_already_complete">Al compleet</string>
+    <string name="fill_gaps_run_all">Alles aanvullen</string>
+    <string name="fill_gaps_apply">Toepassen</string>
+    <plurals name="fill_gaps_confirm_remote">
+        <item quantity="one">1 AI-verzoek uitvoeren?</item>
+        <item quantity="other">%1$d AI-verzoeken uitvoeren?</item>
+    </plurals>
+    <plurals name="fill_gaps_confirm_ondevice">
+        <item quantity="one">1 maaltijd op het apparaat aanvullen?</item>
+        <item quantity="other">%1$d maaltijden op het apparaat aanvullen?</item>
+    </plurals>
+    <plurals name="fill_gaps_cascade">
+        <item quantity="one">Ook 1 invoer van vandaag bijwerken</item>
+        <item quantity="other">Ook %1$d invoeren van vandaag bijwerken</item>
+    </plurals>
+    <plurals name="fill_gaps_snackbar">
+        <item quantity="one">1 invoer aangevuld</item>
+        <item quantity="other">%1$d invoeren aangevuld</item>
+    </plurals>
+    <string name="fill_gaps_empty">Op dit moment ontbreekt er niets</string>
+    <string name="settings_fill_missing_row">Ontbrekende gegevens aanvullen</string>
 </resources>

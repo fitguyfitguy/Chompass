@@ -322,6 +322,27 @@ class FoodRepository(
         }
     }
 
+    /**
+     * Batch content refresh for existing rows (AI fill-missing apply/undo).
+     * Timestamps never move, so — unlike [updateEntry] — there are no
+     * cross-month removals: every entry lands in its own month bucket in one
+     * atomic DataStore edit regardless of month spread. Updates are not first
+     * logs, so the review prompt stays out, same as [updateEntry].
+     */
+    suspend fun updateEntries(entries: List<FoodEntry>) {
+        if (entries.isEmpty()) return
+        PerfLog.measure("save", "dataStore", "count=${entries.size}") {
+            prefs.applyFoodEntryBucketChanges(upsertsByMonth = entries.groupBy { it.month() })
+        }
+        sync?.touchMany(entries.map { it.id to "food" })
+        if (shouldSyncHealth()) {
+            healthRetry.syncAll(entries, isUpdate = true)
+        } else {
+            // Sync off: same stale-record cleanup as [updateEntry], batched.
+            entries.forEach { healthRetry.forget(it.id); health?.deleteNutrition(it.id) }
+        }
+    }
+
     suspend fun deleteEntry(entry: FoodEntry) {
         // Drop the queue key under the retry mutex, before the local row
         // disappears, so an in-flight retry cannot recreate Health Connect data.

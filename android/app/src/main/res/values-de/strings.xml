@@ -3529,4 +3529,34 @@ für dich ein</string>
     <string name="a11y_marker_lane">Tagestyp- und Nicht-Verfolgt-Marker</string>
     <string name="a11y_day_marker_type">Tagestyp %1$s</string>
     <string name="a11y_day_untracked">nicht verfolgt</string>
+
+    <!-- KI fehlende Daten füllen: Start-Banner + Lücken-Sheet (Batch 2) -->
+    <plurals name="home_fill_gaps_banner">
+        <item quantity="one">1 Mahlzeit ohne Nährwertdaten</item>
+        <item quantity="other">%1$d Mahlzeiten ohne Nährwertdaten</item>
+    </plurals>
+    <string name="cd_dismiss_fill_gaps_banner">Banner ausblenden</string>
+    <string name="fill_gaps_title">Fehlende Daten füllen</string>
+    <string name="fill_gaps_adds_line">Ergänzt: %1$s</string>
+    <string name="fill_gaps_already_complete">Bereits vollständig</string>
+    <string name="fill_gaps_run_all">Alle füllen</string>
+    <string name="fill_gaps_apply">Übernehmen</string>
+    <plurals name="fill_gaps_confirm_remote">
+        <item quantity="one">1 KI-Anfrage ausführen?</item>
+        <item quantity="other">%1$d KI-Anfragen ausführen?</item>
+    </plurals>
+    <plurals name="fill_gaps_confirm_ondevice">
+        <item quantity="one">1 Mahlzeit auf dem Gerät füllen?</item>
+        <item quantity="other">%1$d Mahlzeiten auf dem Gerät füllen?</item>
+    </plurals>
+    <plurals name="fill_gaps_cascade">
+        <item quantity="one">Auch 1 heutigen Eintrag aktualisieren</item>
+        <item quantity="other">Auch %1$d heutige Einträge aktualisieren</item>
+    </plurals>
+    <plurals name="fill_gaps_snackbar">
+        <item quantity="one">1 Eintrag gefüllt</item>
+        <item quantity="other">%1$d Einträge gefüllt</item>
+    </plurals>
+    <string name="fill_gaps_empty">Im Moment fehlt nichts</string>
+    <string name="settings_fill_missing_row">Fehlende Daten füllen</string>
 </resources>
