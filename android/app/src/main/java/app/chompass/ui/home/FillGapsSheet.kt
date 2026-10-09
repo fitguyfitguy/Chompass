@@ -1,0 +1,376 @@
+package app.chompass.ui.home
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import app.chompass.AppContainer
+import app.chompass.R
+import app.chompass.models.AIProvider
+import app.chompass.models.GapMacroField
+import app.chompass.models.gapReport
+import app.chompass.services.FillQueueItem
+import app.chompass.services.FillStatus
+import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.ChompassDialog
+import app.chompass.ui.components.ChompassDialogActions
+import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.components.rememberChompassSheetState
+import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.theme.AppTextOpacity
+import java.util.UUID
+import kotlinx.coroutines.launch
+
+/**
+ * AI fill-missing gaps sheet (Batch 2): the gapped favorites/diary rows of the
+ * current scan as a queue. Per-row or run-all AI fills run in place (nothing
+ * is written until Apply), each FILLED favorite offers a today-cascade
+ * checkbox (its logged copies are filled locally from the same analysis), and
+ * Apply publishes the engine's undo snapshot for the Home snackbar. Session
+ * state lives in the singleton [app.chompass.services.FillGapsEngine]; every
+ * close path resets it.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FillGapsSheet(
+    container: AppContainer,
+    onDismiss: () -> Unit,
+) {
+    val engine = container.fillGapsEngine
+    val queue by engine.queue.collectAsState()
+    val selectedAI by container.prefs.selectedAIProvider.collectAsState(initial = AIProvider.GEMINI)
+    val scope = rememberCoroutineScope()
+    val cascadeChecks = remember { mutableStateMapOf<UUID, Boolean>() }
+    var confirmRunAll by remember { mutableStateOf(false) }
+
+    // First scan arrival loads the session; an existing session is never
+    // clobbered mid-run (apply writes would otherwise re-enter with a new
+    // signature and wipe the APPLIED view before Done).
+    LaunchedEffect(engine) {
+        engine.scan.collect { scan ->
+            if (engine.queue.value == null) engine.loadQueue(scan)
+        }
+    }
+
+    val items = queue.orEmpty()
+    val pending = items.filter { it.status == FillStatus.PENDING }
+    val running = items.any { it.status == FillStatus.RUNNING }
+    val anyFilled = items.any { it.status == FillStatus.FILLED }
+    val allApplied = items.isNotEmpty() && items.all { it.status == FillStatus.APPLIED }
+
+    val close: () -> Unit = {
+        engine.resetQueue()
+        onDismiss()
+    }
+
+    ChompassBottomSheet(
+        onDismiss = close,
+        sheetState = rememberChompassSheetState(busy = running),
+        contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
+    ) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.92f)
+        ) {
+            // Utility-sheet pattern: the progressive action (Fill all → Apply →
+            // Done) lives in the toolbar, above the scroll body.
+            var primaryLabel: String? = null
+            var onPrimary: (() -> Unit)? = null
+            when {
+                // Hidden (null) while the confirm dialog is up so the dialog's
+                // primary "Fill all" is the only tap target with that label.
+                pending.isNotEmpty() && !confirmRunAll -> {
+                    primaryLabel = stringResource(R.string.fill_gaps_run_all)
+                    onPrimary = { confirmRunAll = true }
+                }
+                anyFilled -> {
+                    primaryLabel = stringResource(R.string.fill_gaps_apply)
+                    onPrimary = {
+                        scope.launch {
+                            // Stay enabled while fills run: a tap during the run
+                            // waits out the in-flight rows and applies the whole
+                            // batch (a dropped tap would look like a dead button).
+                            while (engine.isRunning()) kotlinx.coroutines.delay(150)
+                            engine.applyFilled(cascadeChecks.filterValues { it }.keys)
+                        }
+                    }
+                }
+                allApplied -> {
+                    primaryLabel = stringResource(R.string.action_done)
+                    onPrimary = close
+                }
+            }
+            SheetReviewToolbar(
+                title = stringResource(R.string.fill_gaps_title),
+                onCancel = close,
+                primaryLabel = primaryLabel,
+                onPrimary = onPrimary,
+            )
+            Column(
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+            ) {
+                if (items.isEmpty()) {
+                    GapEmptyState(text = stringResource(R.string.fill_gaps_empty))
+                } else {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        items(items, key = { it.target.entry.id }) { item ->
+                            GapRow(
+                                item = item,
+                                engine = engine,
+                                cascadeChecks = cascadeChecks,
+                                onRun = { scope.launch { engine.runOne(item) } },
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (confirmRunAll) {
+        // UX-7: the only place the request count is shown. Per-row runs skip it.
+        val confirmRes = if (selectedAI == AIProvider.ON_DEVICE) {
+            R.plurals.fill_gaps_confirm_ondevice
+        } else {
+            R.plurals.fill_gaps_confirm_remote
+        }
+        ChompassDialog(onDismissRequest = { confirmRunAll = false }) {
+            Text(
+                pluralStringResource(confirmRes, pending.size, pending.size),
+                fontSize = 17.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
+            ChompassDialogActions(
+                primaryText = stringResource(R.string.fill_gaps_run_all),
+                onPrimary = {
+                    confirmRunAll = false
+                    scope.launch { engine.runAll() }
+                },
+                dismissText = stringResource(R.string.action_cancel),
+                onDismiss = { confirmRunAll = false },
+            )
+        }
+    }
+}
+
+@Composable
+private fun GapEmptyState(text: String) {
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .height(340.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                Icons.Filled.Check,
+                contentDescription = null,
+                tint = AppColors.Calorie.copy(alpha = 0.4f),
+                modifier = Modifier.size(32.dp)
+            )
+            Text(
+                text,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+private fun GapRow(
+    item: FillQueueItem,
+    engine: app.chompass.services.FillGapsEngine,
+    cascadeChecks: MutableMap<UUID, Boolean>,
+    onRun: () -> Unit,
+) {
+    GapRowSurface {
+        Column(
+            Modifier
+                .weight(1f)
+                .padding(horizontal = 10.dp, vertical = 2.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            Text(
+                item.target.entry.name,
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            GapCaption(item)
+            if (item.target.favorite && item.status == FillStatus.FILLED) {
+                GapCascadeRow(item, engine, cascadeChecks)
+            }
+        }
+        when (item.status) {
+            FillStatus.PENDING, FillStatus.FAILED -> IconButton(onClick = onRun, modifier = Modifier.size(40.dp)) {
+                Icon(
+                    Icons.Filled.PlayArrow,
+                    contentDescription = stringResource(R.string.analysis_queue_run_now),
+                    tint = AppColors.Calorie,
+                )
+            }
+            FillStatus.RUNNING -> CircularProgressIndicator(
+                modifier = Modifier.size(22.dp),
+                strokeWidth = 2.5.dp,
+            )
+            FillStatus.APPLIED -> Icon(
+                Icons.Filled.Check,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(20.dp),
+            )
+            FillStatus.FILLED -> {}
+        }
+    }
+}
+
+@Composable
+private fun GapCaption(item: FillQueueItem) {
+    when (item.status) {
+        FillStatus.PENDING -> {
+            // Same missing-list semantics the edit sheet renders (macros first).
+            val gap = item.target.entry.gapReport()
+            val missingLabels = (
+                gap.missingMacros.map { stringResource(it.labelRes) } +
+                    gap.missingMicros.map { stringResource(it.labelRes) }
+                ).joinToString(", ")
+            GapMutedText(stringResource(R.string.edit_ai_missing_line, missingLabels))
+        }
+        FillStatus.FILLED -> {
+            if (item.filledLabels.isEmpty()) {
+                GapMutedText(stringResource(R.string.fill_gaps_already_complete))
+            } else {
+                val labelStrings = item.filledLabels.map { stringResource(it) }
+                GapMutedText(stringResource(R.string.fill_gaps_adds_line, labelStrings.joinToString(", ")))
+            }
+        }
+        FillStatus.FAILED -> item.errorText?.let { error ->
+            Text(
+                error,
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.error,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        else -> {}
+    }
+}
+
+@Composable
+private fun GapMutedText(text: String) {
+    Text(
+        text,
+        fontSize = 12.sp,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis,
+    )
+}
+
+/** UX-6: opt-in cascade for a filled favorite — fill its today-copies at Apply, no extra AI calls. */
+@Composable
+private fun GapCascadeRow(
+    item: FillQueueItem,
+    engine: app.chompass.services.FillGapsEngine,
+    cascadeChecks: MutableMap<UUID, Boolean>,
+) {
+    val cascadeCount by produceState(initialValue = -1, item.target.entry.id) {
+        value = engine.cascadeCandidates(item.target.entry).size
+    }
+    if (cascadeCount <= 0) return
+    val checked = cascadeChecks[item.target.entry.id] == true
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clickable { cascadeChecks[item.target.entry.id] = !checked },
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Checkbox(
+            checked = checked,
+            onCheckedChange = { cascadeChecks[item.target.entry.id] = it },
+        )
+        Text(
+            pluralStringResource(R.plurals.fill_gaps_cascade, cascadeCount, cascadeCount),
+            fontSize = 13.sp,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        )
+    }
+}
+
+@Composable
+private fun GapRowSurface(content: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit) {
+    val isDark = isDarkTheme()
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(AppRadii.Card))
+            .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
+            .border(
+                0.5.dp,
+                if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight,
+                RoundedCornerShape(AppRadii.Card),
+            )
+            .padding(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        content = content,
+    )
+}

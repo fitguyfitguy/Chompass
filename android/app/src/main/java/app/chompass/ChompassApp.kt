@@ -28,6 +28,7 @@ import app.chompass.services.AdaptiveGoalsService
 import app.chompass.services.FastingAutoPlanner
 import app.chompass.services.FastingGoalPlanner
 import app.chompass.services.FastingReminderPlanner
+import app.chompass.services.FillGapsEngine
 import app.chompass.services.FoodImageStore
 import app.chompass.services.FoodPhotoSession
 import app.chompass.services.GoalJournalService
@@ -285,6 +286,8 @@ class AppContainer(app: ChompassApp) {
             onDeviceModelDownloadManager.isDownloaded(ModelCatalog.forModelId(modelId))
         },
     )
+    /** AI fill-missing scan / banner / mass-fill session (Batch 2). */
+    val fillGapsEngine = FillGapsEngine(foodRepository, prefs, foodAnalysis, appContext)
     /**
      * Offline food-database indexes + the gated grounded orchestrator.
      * USDA (CC0) and Swiss (federal open data) SQLite assets ship in all build

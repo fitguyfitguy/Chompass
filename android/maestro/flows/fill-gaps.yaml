@@ -1,0 +1,76 @@
+# Device-pass flow: AI fill-missing Batch 2 (Home banner → gaps sheet →
+# Fill all (demo-replayed) → Apply → Done → undo snackbar).
+# The launch arms the persisted debug demo pref AND seeds the 0-kcal fixture
+# row (the manual-entry dialog refuses 0 kcal, so the flow cannot author it):
+#   adb shell am start -n app.chompass.debug/app.chompass.MainActivity \
+#     --ez demo_ai true --ez seed_gap_fixture true
+# Selectors use the German strings (device locale de-DE, values-de/strings.xml).
+appId: app.chompass.debug
+name: Fill missing gaps sheet round trip
+---
+- launchApp:
+    appId: app.chompass.debug
+    arguments:
+      demo_ai: true
+      seed_gap_fixture: true
+      seed_full: true
+      reset_fill_missing_banner: true
+# First launch after install seeds a year of fixture data; wait it out.
+- extendedWaitUntil:
+    visible: "Heute"
+    timeout: 90000
+# Banner: macro-gapped meals (seed_full carries legit zero-macro rows —
+# Apple/Banana/Chicken thigh — plus the fixture, so the count is >1 here).
+- extendedWaitUntil:
+    visible: ".*ohne Nährwertdaten"
+    timeout: 30000
+# Open the gaps sheet.
+- tapOn: ".*ohne Nährwertdaten"
+- extendedWaitUntil:
+    visible: "Fehlende Daten füllen"
+    timeout: 15000
+- assertVisible: ".*Lückentest Gericht.*"
+- assertVisible: ".*Fehlt: kcal.*"       # missing-fields caption (edit_ai_missing_line)
+# Fill all → confirm (UX-7: the only place the request count appears). The
+# dialog is a separate Compose window Maestro's indexer cannot see, so the
+# flow taps through it; the dialog copy is verified by hand (uiautomator dump).
+- tapOn: "Alle füllen"                    # footer → opens the confirm dialog
+- tapOn: "Alle füllen"                    # dialog primary (footer hidden while dialog is up)
+# Row FILLED: "Adds:" line from the demo fixture (kcal + macros + micros).
+- extendedWaitUntil:
+    visible: ".*Ergänzt:.*"
+    timeout: 60000
+# All rows must finish before the primary re-enables (disabled while running).
+- waitForAnimationToEnd:
+    timeout: 60000
+# Apply → rows APPLIED, toolbar primary becomes Done. The primary stays enabled
+# during fills; a mid-run tap waits out the in-flight rows and applies the batch.
+- tapOn: "Übernehmen"
+- extendedWaitUntil:
+    visible: "Fertig"
+    timeout: 15000
+- tapOn: "Fertig"
+# Sheet closed → undo snackbar. "Fertig" was only reachable after the writes
+# committed (statuses flip to APPLIED post-write), so reaching this point is
+# the on-device apply proof.
+- extendedWaitUntil:
+    visible: "Rückgängig"
+    timeout: 15000
+# Undo within the snackbar window restores the 0-kcal original.
+- tapOn: "Rückgängig"
+- assertNotVisible: "640 kcal"
+# Re-open: the missing-fields line is back (entry gapped again).
+- scrollUntilVisible:
+    element:
+      text: ".*Lückentest Gericht.*"
+    direction: down
+    timeout: 45000
+    speed: 90
+- tapOn: ".*Lückentest Gericht.*"
+- scrollUntilVisible:
+    element:
+      text: ".*Fehlt: kcal.*"
+    direction: down
+    timeout: 20000
+    speed: 40
+- tapOn: "Abbrechen"

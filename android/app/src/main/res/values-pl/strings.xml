@@ -2080,4 +2080,38 @@ makro rebalansowane do nowej sumy kalorii</string>
     <string name="home_untracked_chip_a11y">Ten dzień jest oznaczony jako nieśledzony. Dotknij, aby zmienić.</string>
     <string name="home_mark_untracked_chip_a11y">Oznacz ten dzień jako nieśledzony.</string>
     <string name="home_today">Dzisiaj</string>
+
+    <plurals name="home_fill_gaps_banner">
+        <item quantity="one">1 posiłek nie ma danych odżywczych</item>
+        <item quantity="few">%1$d posiłki nie mają danych odżywczych</item>
+        <item quantity="other">%1$d posiłków nie ma danych odżywczych</item>
+    </plurals>
+    <string name="cd_dismiss_fill_gaps_banner">Ukryj baner</string>
+    <string name="fill_gaps_title">Uzupełnij brakujące dane</string>
+    <string name="fill_gaps_adds_line">Dodaje: %1$s</string>
+    <string name="fill_gaps_already_complete">Już kompletne</string>
+    <string name="fill_gaps_run_all">Uzupełnij wszystko</string>
+    <string name="fill_gaps_apply">Zastosuj</string>
+    <plurals name="fill_gaps_confirm_remote">
+        <item quantity="one">Wykonać 1 żądanie AI?</item>
+        <item quantity="few">Wykonać %1$d żądania AI?</item>
+        <item quantity="other">Wykonać %1$d żądań AI?</item>
+    </plurals>
+    <plurals name="fill_gaps_confirm_ondevice">
+        <item quantity="one">Uzupełnić 1 posiłek na urządzeniu?</item>
+        <item quantity="few">Uzupełnić %1$d posiłki na urządzeniu?</item>
+        <item quantity="other">Uzupełnić %1$d posiłków na urządzeniu?</item>
+    </plurals>
+    <plurals name="fill_gaps_cascade">
+        <item quantity="one">Zaktualizuj też 1 dzisiejszy wpis</item>
+        <item quantity="few">Zaktualizuj też %1$d dzisiejsze wpisy</item>
+        <item quantity="other">Zaktualizuj też %1$d dzisiejszych wpisów</item>
+    </plurals>
+    <plurals name="fill_gaps_snackbar">
+        <item quantity="one">Uzupełniono 1 wpis</item>
+        <item quantity="few">Uzupełniono %1$d wpisy</item>
+        <item quantity="other">Uzupełniono %1$d wpisów</item>
+    </plurals>
+    <string name="fill_gaps_empty">Na razie niczego nie brakuje</string>
+    <string name="settings_fill_missing_row">Uzupełnij brakujące dane</string>
 </resources>

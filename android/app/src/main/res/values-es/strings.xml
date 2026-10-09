@@ -2070,4 +2070,33 @@ macros reequilibradas al nuevo total calórico</string>
     <string name="home_mark_untracked_chip">Marcar día</string>
     <string name="home_untracked_chip_a11y">Este día está marcado como no registrado. Toca para cambiar.</string>
     <string name="home_mark_untracked_chip_a11y">Marcar este día como no registrado.</string>
+
+    <plurals name="home_fill_gaps_banner">
+        <item quantity="one">Falta información nutricional de 1 comida</item>
+        <item quantity="other">Falta información nutricional de %1$d comidas</item>
+    </plurals>
+    <string name="cd_dismiss_fill_gaps_banner">Ocultar banner</string>
+    <string name="fill_gaps_title">Rellenar datos que faltan</string>
+    <string name="fill_gaps_adds_line">Añade: %1$s</string>
+    <string name="fill_gaps_already_complete">Ya está completo</string>
+    <string name="fill_gaps_run_all">Rellenar todo</string>
+    <string name="fill_gaps_apply">Aplicar</string>
+    <plurals name="fill_gaps_confirm_remote">
+        <item quantity="one">¿Ejecutar 1 solicitud de IA?</item>
+        <item quantity="other">¿Ejecutar %1$d solicitudes de IA?</item>
+    </plurals>
+    <plurals name="fill_gaps_confirm_ondevice">
+        <item quantity="one">¿Rellenar 1 comida en el dispositivo?</item>
+        <item quantity="other">¿Rellenar %1$d comidas en el dispositivo?</item>
+    </plurals>
+    <plurals name="fill_gaps_cascade">
+        <item quantity="one">También actualizar 1 registro de hoy</item>
+        <item quantity="other">También actualizar %1$d registros de hoy</item>
+    </plurals>
+    <plurals name="fill_gaps_snackbar">
+        <item quantity="one">1 registro rellenado</item>
+        <item quantity="other">%1$d registros rellenados</item>
+    </plurals>
+    <string name="fill_gaps_empty">Ahora mismo no falta nada</string>
+    <string name="settings_fill_missing_row">Rellenar datos que faltan</string>
 </resources>

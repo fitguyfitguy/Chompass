@@ -2594,4 +2594,34 @@
     <string name="a11y_marker_lane">Day type and untracked markers</string>
     <string name="a11y_day_marker_type">day type %1$s</string>
     <string name="a11y_day_untracked">not tracked</string>
+
+    <!-- AI fill-missing: Home banner + gaps sheet (Batch 2) -->
+    <plurals name="home_fill_gaps_banner">
+        <item quantity="one">1 meal is missing nutrition data</item>
+        <item quantity="other">%1$d meals are missing nutrition data</item>
+    </plurals>
+    <string name="cd_dismiss_fill_gaps_banner">Dismiss banner</string>
+    <string name="fill_gaps_title">Fill missing data</string>
+    <string name="fill_gaps_adds_line">Adds: %1$s</string>
+    <string name="fill_gaps_already_complete">Already complete</string>
+    <string name="fill_gaps_run_all">Fill all</string>
+    <string name="fill_gaps_apply">Apply</string>
+    <plurals name="fill_gaps_confirm_remote">
+        <item quantity="one">Run 1 AI request?</item>
+        <item quantity="other">Run %1$d AI requests?</item>
+    </plurals>
+    <plurals name="fill_gaps_confirm_ondevice">
+        <item quantity="one">Fill 1 meal on-device?</item>
+        <item quantity="other">Fill %1$d meals on-device?</item>
+    </plurals>
+    <plurals name="fill_gaps_cascade">
+        <item quantity="one">Also update 1 logged entry from today</item>
+        <item quantity="other">Also update %1$d logged entries from today</item>
+    </plurals>
+    <plurals name="fill_gaps_snackbar">
+        <item quantity="one">Filled 1 entry</item>
+        <item quantity="other">Filled %1$d entries</item>
+    </plurals>
+    <string name="fill_gaps_empty">Nothing is missing right now</string>
+    <string name="settings_fill_missing_row">Fill missing data</string>
 </resources>

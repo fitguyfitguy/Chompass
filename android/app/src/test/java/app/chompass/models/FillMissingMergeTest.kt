@@ -187,4 +187,29 @@ class FillMissingMergeTest {
         assertEquals(540, merged.constituents.single().calories)
         assertTrue(merged.gapReport().missingMacros.isEmpty())
     }
+
+    @Test
+    fun cascadeCopy_keepsOwnValuesAndServing_fillsOnlyMissing() {
+        // Cascade shape: a favorite template's fill analysis applied to a
+        // same-name today copy that carries its own serving and some filled
+        // values. Stored values stay; only zero/null fields take the analysis,
+        // scaled to the copy's grams (micros at 1 decimal).
+        val copy = mealieEntry(servingGrams = 300.0).copy(
+            calories = 500,
+            protein = 30.0,
+            fat = 0.0, // stays a gap
+        )
+        val merged = copy.fillMissingFrom(
+            analysis(calories = 640, protein = 42.0, carbs = 58.0, fat = 24.0, servingGrams = 420.0, fiber = 9.0),
+        )
+
+        assertEquals(500, merged.calories)
+        assertEquals(30.0, merged.protein, 1e-9)
+        assertEquals(2.0, merged.sugar!!, 1e-9) // own value kept
+        fun scale(v: Double) = kotlin.math.round(v * 300.0 / 420.0 * 10) / 10.0
+        assertEquals(scale(58.0), merged.carbs, 1e-9)
+        assertEquals(scale(24.0), merged.fat, 1e-9)
+        assertEquals(scale(9.0), merged.fiber!!, 1e-9)
+        assertEquals(300.0, merged.servingSizeGrams!!, 1e-9)
+    }
 }

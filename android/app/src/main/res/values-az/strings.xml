@@ -2051,4 +2051,33 @@ makrolar yeni kalori cəminə uyğun yenidən tarazlaşdırılır</string>
     <string name="home_untracked_chip_a11y">Bu gün izlənmir kimi işarələnib. Dəyişmək üçün toxun.</string>
     <string name="home_mark_untracked_chip_a11y">Bu günü izlənmir kimi işarələ.</string>
     <string name="home_today">Bu gün</string>
+
+    <plurals name="home_fill_gaps_banner">
+        <item quantity="one">1 yeməkdə qida məlumatı çatışır</item>
+        <item quantity="other">%1$d yeməkdə qida məlumatı çatışır</item>
+    </plurals>
+    <string name="cd_dismiss_fill_gaps_banner">Bandı bağla</string>
+    <string name="fill_gaps_title">Çatışmayan məlumatları doldur</string>
+    <string name="fill_gaps_adds_line">Əlavə edir: %1$s</string>
+    <string name="fill_gaps_already_complete">Artıq tamdır</string>
+    <string name="fill_gaps_run_all">Hamısını doldur</string>
+    <string name="fill_gaps_apply">Tətbiq et</string>
+    <plurals name="fill_gaps_confirm_remote">
+        <item quantity="one">1 Süni İntellekt sorğusu icra edilsin?</item>
+        <item quantity="other">%1$d Süni İntellekt sorğusu icra edilsin?</item>
+    </plurals>
+    <plurals name="fill_gaps_confirm_ondevice">
+        <item quantity="one">Cihazda 1 yemək doldurulsun?</item>
+        <item quantity="other">Cihazda %1$d yemək doldurulsun?</item>
+    </plurals>
+    <plurals name="fill_gaps_cascade">
+        <item quantity="one">Bu günün 1 qeydini də yenilə</item>
+        <item quantity="other">Bu günün %1$d qeydini də yenilə</item>
+    </plurals>
+    <plurals name="fill_gaps_snackbar">
+        <item quantity="one">1 qeyd dolduruldu</item>
+        <item quantity="other">%1$d qeyd dolduruldu</item>
+    </plurals>
+    <string name="fill_gaps_empty">Hazırda heç nə çatışmır</string>
+    <string name="settings_fill_missing_row">Çatışmayan məlumatları doldur</string>
 </resources>

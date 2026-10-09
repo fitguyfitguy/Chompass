@@ -2132,4 +2132,38 @@
     <string name="home_untracked_chip_a11y">Этот день отмечен как не отслеживаемый. Нажмите, чтобы изменить.</string>
     <string name="home_mark_untracked_chip_a11y">Отметить этот день как не отслеживаемый.</string>
     <string name="home_today">Сегодня</string>
+
+    <plurals name="home_fill_gaps_banner">
+        <item quantity="one">Для 1 приёма пищи не хватает данных о питании</item>
+        <item quantity="few">Для %1$d приёмов пищи не хватает данных о питании</item>
+        <item quantity="other">Для %1$d приёмов пищи не хватает данных о питании</item>
+    </plurals>
+    <string name="cd_dismiss_fill_gaps_banner">Скрыть баннер</string>
+    <string name="fill_gaps_title">Заполнить недостающие данные</string>
+    <string name="fill_gaps_adds_line">Добавляет: %1$s</string>
+    <string name="fill_gaps_already_complete">Уже заполнено</string>
+    <string name="fill_gaps_run_all">Заполнить всё</string>
+    <string name="fill_gaps_apply">Применить</string>
+    <plurals name="fill_gaps_confirm_remote">
+        <item quantity="one">Выполнить 1 ИИ-запрос?</item>
+        <item quantity="few">Выполнить %1$d ИИ-запроса?</item>
+        <item quantity="other">Выполнить %1$d ИИ-запросов?</item>
+    </plurals>
+    <plurals name="fill_gaps_confirm_ondevice">
+        <item quantity="one">Заполнить 1 приём пищи на устройстве?</item>
+        <item quantity="few">Заполнить %1$d приёма пищи на устройстве?</item>
+        <item quantity="other">Заполнить %1$d приёмов пищи на устройстве?</item>
+    </plurals>
+    <plurals name="fill_gaps_cascade">
+        <item quantity="one">Обновить также 1 сегодняшнюю запись</item>
+        <item quantity="few">Обновить также %1$d сегодняшние записи</item>
+        <item quantity="other">Обновить также %1$d сегодняшних записей</item>
+    </plurals>
+    <plurals name="fill_gaps_snackbar">
+        <item quantity="one">Заполнена 1 запись</item>
+        <item quantity="few">Заполнено %1$d записи</item>
+        <item quantity="other">Заполнено %1$d записей</item>
+    </plurals>
+    <string name="fill_gaps_empty">Сейчас ничего не отсутствует</string>
+    <string name="settings_fill_missing_row">Заполнить недостающие данные</string>
 </resources>

@@ -37,8 +37,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.YearMonth
 import java.time.ZoneId
 import java.util.UUID
 import kotlin.math.roundToInt
@@ -86,6 +88,33 @@ class TestDataSeeder(private val container: AppContainer) {
             )
         )
         container.prefs.setOnboardingCompleted(true)
+    }
+
+    /**
+     * Debug-only one-row fixture for the AI fill-missing device pass: an
+     * all-macro-zeros named entry in TODAY's diary (the manual-entry dialog
+     * refuses 0 kcal, so a Maestro flow cannot author this shape through the
+     * UI). Idempotent: same-name rows in the current month are removed first.
+     *
+     *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_gap_fixture true
+     */
+    suspend fun seedGapFixture(name: String = "Lückentest Gericht") {
+        if (!BuildConfig.DEBUG) return
+        container.prefs.foodEntriesForMonth(YearMonth.now()).first()
+            .filter { it.favoriteKey == name.trim().lowercase() }
+            .forEach { container.foodRepository.deleteEntry(it) }
+        container.foodRepository.addEntry(
+            FoodEntry(
+                name = name,
+                calories = 0,
+                protein = 0.0,
+                carbs = 0.0,
+                fat = 0.0,
+                timestamp = Instant.now(),
+                source = FoodSource.MANUAL,
+                mealType = MealType.LUNCH.id,
+            )
+        )
     }
 
     /**

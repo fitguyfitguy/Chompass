@@ -184,6 +184,8 @@ data class HomeUiState(
      * new AI call; discarding deletes the persisted draft for good.
      */
     val recoveredReview: PendingFoodAnalysisDraft? = null,
+    /** AI fill-missing Home banner (Batch 2); null = nothing gapped or already shown/dismissed today. */
+    val fillGapsBanner: app.chompass.services.FillGapsBanner? = null,
     val pendingInputImageBytes: ByteArray? = null,
     val pendingInputNote: String? = null,
     val pendingInputConfirmedPortionGrams: Double? = null,
@@ -645,6 +647,7 @@ data class HomeUiState(
             logTimeOverride == other.logTimeOverride &&
             copiedEntries == other.copiedEntries &&
             plannedAck == other.plannedAck &&
+            fillGapsBanner == other.fillGapsBanner &&
             untrackedDays == other.untrackedDays &&
             untrackedKcalByDay == other.untrackedKcalByDay &&
             healthSyncFailed == other.healthSyncFailed &&
@@ -787,6 +790,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     private val _ui = MutableStateFlow(HomeUiState())
     val ui: StateFlow<HomeUiState> = _ui.asStateFlow()
     private val _selectedDate = MutableStateFlow(LocalDate.now())
+    // Fill-missing Home banner: once-per-day gate + session latch (see init).
+    private var fillGapsBannerShownToday = false
+    private var fillGapsBannerLatched = false
+    private var fillGapsLatestBanner: app.chompass.services.FillGapsBanner? = null
     /** Typed analyze prompt. Lives here, not in the sheet, so Cancel keeps the draft (audit M5). */
     private val _textInputDraft = MutableStateFlow("")
     val textInputDraft: StateFlow<String> = _textInputDraft.asStateFlow()
@@ -1172,6 +1179,23 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 _ui.update { it.copy(queueEntries = entries) }
             }
         }
+        // Fill-missing banner: at most once per day. The shown-today pref is
+        // followed reactively (a debug seed can reset it mid-launch), but the
+        // session latch wins once the chip is on screen: the chip's own
+        // shown-write re-emits today without collapsing the chip, and after a
+        // process restart the chip stays hidden for the rest of the day.
+        container.prefs.fillMissingBannerLastShownDay
+            .onEach { day ->
+                fillGapsBannerShownToday = day == LocalDate.now().toEpochDay()
+                refreshFillGapsBanner()
+            }
+            .launchIn(viewModelScope)
+        container.fillGapsEngine.banner
+            .onEach { banner ->
+                fillGapsLatestBanner = banner
+                refreshFillGapsBanner()
+            }
+            .launchIn(viewModelScope)
         viewModelScope.launch {
             // Hero ⓘ → recalc details: restore the latest goal-change explanation
             // (AI Recalculate or Adaptive) so the link can open the sheet on demand.
@@ -3218,6 +3242,35 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
     fun clearQueueHistory() {
         viewModelScope.launch { container.analysisQueue.clearHistory() }
+    }
+
+    // -- AI fill-missing banner + undo (Batch 2) ----------------------------
+
+    /** First composition of a visible banner: latch it for the session + arm the once-per-day gate. */
+    fun onFillGapsBannerShown() {
+        if (fillGapsBannerLatched) return
+        fillGapsBannerLatched = true
+        viewModelScope.launch { container.fillGapsEngine.markBannerShown() }
+    }
+
+    private fun refreshFillGapsBanner() {
+        val banner = if (fillGapsBannerShownToday && !fillGapsBannerLatched) null else fillGapsLatestBanner
+        _ui.update { it.copy(fillGapsBanner = banner) }
+    }
+
+    /** Banner X: sticky dismissal for this exact scan shape. */
+    fun onFillGapsBannerDismissed() {
+        val banner = _ui.value.fillGapsBanner ?: return
+        viewModelScope.launch { container.fillGapsEngine.dismissBanner(banner.signature) }
+    }
+
+    fun undoFillGaps() {
+        viewModelScope.launch { container.fillGapsEngine.undo() }
+    }
+
+    /** Snackbar expired without Undo: drop the snapshot so it doesn't resurface. */
+    fun consumeFillGapsUndo() {
+        container.fillGapsEngine.clearUndo()
     }
 
     fun openQueue() {
