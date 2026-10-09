@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Fixed
+
+- **Portion edits update the totals right away** (Android): in the food review and edit sheets, the total grams and the calorie and macro numbers stayed at the old serving until you closed the quantity editor or saved. They now follow the amount wheel while you scroll it.
+
 ## [5.4.1] - 2026-10-08
 
 ### Fixed
