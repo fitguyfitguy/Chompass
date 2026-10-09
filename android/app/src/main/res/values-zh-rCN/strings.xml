@@ -1274,6 +1274,11 @@
     <string name="settings_ai_read_timeout">AI 读取超时</string>
     <string name="settings_ai_read_timeout_unit">秒</string>
     <string name="settings_ai_read_timeout_value">%1$d 秒</string>
+    <string name="settings_goal_tier">目标重新计算提示词</string>
+    <string name="settings_goal_tier_footer">目标重新计算向模型发送多少数据。“保守”发送精简摘要，适合小型或本地模型。“智能”发送完整的体重和饮食历史，让大型模型自行判断趋势。“自动”按模型名称选择。</string>
+    <string name="goal_tier_auto">自动</string>
+    <string name="goal_tier_safe">保守（精简）</string>
+    <string name="goal_tier_smart">智能（完整历史）</string>
     <string name="settings_ai_reasoning_effort">推理力度</string>
     <string name="settings_ai_reasoning_effort_footer">OpenRouter 模型：设定思考预算。自定义服务器和 Ollama：服务器支持时发送 reasoning_effort。如果服务器拒绝请求，请选择自动。</string>
     <string name="settings_ai_vision_model">视觉模型</string>

@@ -2923,6 +2923,16 @@ für dich ein</string>
 
     <string name="settings_ai_read_timeout_value">%1$d s</string>
 
+    <string name="settings_goal_tier">Prompt für Ziele-Neuberechnung</string>
+
+    <string name="settings_goal_tier_footer">Wie viele Daten die Neuberechnung der Ziele an das Modell sendet. Sicher sendet kompakte Zusammenfassungen, passend für kleine oder lokale Modelle. Smart sendet deinen vollständigen Gewichts- und Essensverlauf, damit ein großes Modell Trends selbst beurteilen kann. Automatisch wählt anhand des Modellnamens.</string>
+
+    <string name="goal_tier_auto">Automatisch</string>
+
+    <string name="goal_tier_safe">Sicher (kompakt)</string>
+
+    <string name="goal_tier_smart">Smart (vollständiger Verlauf)</string>
+
     <string name="settings_serving_unit_mode">Erkennung der Portionsgröße</string>
 
     <string name="settings_serving_unit_heuristics">Regeln für die Portionsgröße</string>

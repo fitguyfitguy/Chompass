@@ -480,6 +480,8 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setGeminiGoogleSearchEnabled(v: Boolean) = setGeminiGoogleSearchEnabledImpl(v)
     val openRouterReasoningEffort: Flow<OpenRouterReasoningEffort> get() = openRouterReasoningEffortImpl
     suspend fun setOpenRouterReasoningEffort(e: OpenRouterReasoningEffort) = setOpenRouterReasoningEffortImpl(e)
+    val goalRecalcTier: Flow<GoalRecalcTierOverride> get() = goalRecalcTierImpl
+    suspend fun setGoalRecalcTier(v: GoalRecalcTierOverride) = setGoalRecalcTierImpl(v)
     /** One-snapshot read of every AI-call setting — see [AiCallConfig]. */
     internal suspend fun aiCallConfig(): AiCallConfig = aiCallConfigImpl()
     val skipPhotoNotePrompt: Flow<Boolean> get() = skipPhotoNotePromptImpl
