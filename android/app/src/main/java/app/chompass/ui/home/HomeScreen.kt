@@ -1778,6 +1778,9 @@ fun HomeScreen(
             onReprocess = { updatedNote, onProgress ->
                 vm.reprocessFoodEntry(entry, updatedNote, onProgress)
             },
+            onFill = { onProgress ->
+                vm.fillFoodEntry(entry, onProgress)
+            },
             onSave = { updated, applyTimeToMeal ->
                 vm.updateEntry(entry, updated, applyTimeToMeal)
                 editingEntry = null
