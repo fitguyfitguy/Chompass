@@ -4017,6 +4017,16 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         return result.copy(customNote = updatedNote.takeIf { it.isNotBlank() })
     }
 
+    /**
+     * Fill-missing analysis for an already-logged entry: text-only metadata
+     * refresh, no photo reload, no note. The caller merges the result into
+     * the entry via [app.chompass.models.fillMissingFrom] (only-missing).
+     */
+    suspend fun fillFoodEntry(
+        entry: FoodEntry,
+        onProgress: (FoodAnalysisProgress) -> Unit = {},
+    ): FoodAnalysis = container.foodAnalysis.fillEntry(entry, onProgress)
+
     private fun reprocessDescription(entry: FoodEntry, note: String): String {
         val parts = mutableListOf<String>()
         entry.name.trim().takeIf { it.isNotEmpty() }?.let { parts += it }

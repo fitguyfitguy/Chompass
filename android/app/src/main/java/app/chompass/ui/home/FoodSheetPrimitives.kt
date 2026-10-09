@@ -49,6 +49,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -188,6 +189,40 @@ internal fun StaleCompositionNote(
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable(onClick = onReestimate),
+            )
+        }
+    }
+}
+
+/**
+ * Dim note under the macros card when the fill-missing scan found gaps:
+ * "<N> values missing" plus the Fill action that opens the Ask-AI section
+ * with the Fill mode preselected (WP2 UX-1).
+ */
+@Composable
+internal fun MissingValuesNote(
+    missingCount: Int,
+    onFill: (() -> Unit)? = null,
+) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 18.dp, vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(
+            pluralStringResource(R.plurals.edit_ai_missing_values, missingCount, missingCount),
+            fontSize = 13.sp,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            lineHeight = 18.sp,
+        )
+        if (onFill != null) {
+            Text(
+                stringResource(R.string.edit_ai_missing_action),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.clickable(onClick = onFill),
             )
         }
     }

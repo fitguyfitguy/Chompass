@@ -71,6 +71,7 @@ import app.chompass.ui.util.clockTimePattern
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -80,6 +81,9 @@ import app.chompass.models.LocaleFormat
 import app.chompass.models.EnergyFormat
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
+import app.chompass.models.GapMacroField
+import app.chompass.models.fillMissingFrom
+import app.chompass.models.gapReport
 import app.chompass.models.microsStaleFor
 import app.chompass.services.MealShare
 import app.chompass.models.MacroValueFormatter
@@ -94,6 +98,7 @@ import app.chompass.ui.components.DateWheelPicker
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.components.ChompassPrimaryButton
+import app.chompass.ui.components.ChompassSegmentedTabs
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
 import java.time.LocalDate
@@ -138,6 +143,10 @@ fun EditFoodEntrySheet(
     mealTimesEnabled: Boolean = true,
     onReprocess: suspend (
         updatedNote: String,
+        onProgress: (FoodAnalysisProgress) -> Unit,
+    ) -> FoodAnalysis,
+    /** Fill-missing analysis: text-only, no photo, no note; result merges into empty fields only. */
+    onFill: suspend (
         onProgress: (FoodAnalysisProgress) -> Unit,
     ) -> FoodAnalysis,
     onSave: (FoodEntry, applyTimeToMeal: Boolean) -> Unit,
@@ -250,6 +259,18 @@ fun EditFoodEntrySheet(
     var mealType by remember(entry) { mutableStateOf(currentBaseEntry.mealType) }
     var moreNutritionExpanded by remember { mutableStateOf(false) }
     var aiCorrectExpanded by remember { mutableStateOf(false) }
+    // WP2 fill-missing: which Ask-AI action the section runs. Null = the smart
+    // default (gaps → Fill, photo → Reanalyze, constituents edited this
+    // session → Recalculate); a pill tap pins the user's choice.
+    val entryGapReport = remember(currentBaseEntry) { currentBaseEntry.gapReport() }
+    var aiModeOverride by remember(entry) { mutableStateOf<AiActionMode?>(null) }
+    val constituentsEdited = editableConstituents != currentBaseEntry.constituents
+    val aiActionMode = aiModeOverride ?: when {
+        entryGapReport.hasGaps -> AiActionMode.FILL
+        currentBaseEntry.imageFilename != null -> AiActionMode.REANALYZE
+        constituentsEdited -> AiActionMode.RECALCULATE
+        else -> AiActionMode.REANALYZE
+    }
     var editableCalories by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.calories) }
     var editableProtein by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.protein) }
     var editableCarbs by remember(currentBaseEntry) { mutableStateOf(currentBaseEntry.carbs) }
@@ -423,6 +444,69 @@ fun EditFoodEntrySheet(
         }
     }
 
+    // Fill-missing run: text-only analysis whose result merges into EMPTY
+    // fields only (entry-level zero macros, null micros, all-zero ingredient
+    // rows). Name, serving, note, emoji, photo are untouched; the diff card
+    // shows exactly what the fill wrote.
+    fun fill() {
+        // Unreachable via UI when the master switch is off; belt-and-braces.
+        if (!aiFeaturesEnabled) return
+        scope.launch {
+            isReprocessing = true
+            errorText = null
+            changedFields = emptyList()
+            reprocessPhase = EntryAnalysisPhase.Preparing
+            reprocessPartial = null
+            val before = currentBaseEntry
+            try {
+                val newAnalysis = onFill { progress ->
+                    when (progress) {
+                        is FoodAnalysisProgress.Phase -> reprocessPhase = progress.phase
+                        is FoodAnalysisProgress.Partial -> {
+                            reprocessPartial = progress.partial
+                        }
+                        is FoodAnalysisProgress.Parsed -> {
+                            reprocessPartial = app.chompass.services.ai.PartialFoodAnalysis.fromComplete(
+                                progress.analysis,
+                                streaming = false,
+                            )
+                        }
+                        is FoodAnalysisProgress.Complete -> {
+                            reprocessPartial = app.chompass.services.ai.PartialFoodAnalysis.fromComplete(
+                                progress.analysis,
+                                streaming = false,
+                            )
+                        }
+                    }
+                }
+                val merged = before.fillMissingFrom(newAnalysis)
+                if (merged != before) {
+                    currentBaseEntry = merged
+                    editableCalories = merged.calories
+                    editableProtein = merged.protein
+                    editableCarbs = merged.carbs
+                    editableFat = merged.fat
+                    editableMicros = MicronutrientValues.from(merged)
+                    editableConstituents = merged.constituents
+                    constituentsExpanded = merged.constituents.isNotEmpty()
+                    changedFields = buildReprocessDiff(
+                        before,
+                        currentBaseEntry,
+                        reprocessLabels,
+                        reprocessEnergyLabel,
+                        reprocessGUnit,
+                    ) { EnergyFormat.quantity(it, reprocessEnergyUnit) }
+                }
+            } catch (e: Exception) {
+                errorText = (e as? AiError)?.userMessage(context) ?: context.getString(R.string.edit_reprocessing_failed)
+            } finally {
+                isReprocessing = false
+                reprocessPhase = null
+                reprocessPartial = null
+            }
+        }
+    }
+
     // Codeberg #30: block top-edge drag dismissal only while the user is
     // editing typed input. Focus covers active typing; the content diff
     // covers typed-but-blurred fields (name/note). Read-only scrolls keep
@@ -458,7 +542,10 @@ fun EditFoodEntrySheet(
         // "Reprocess"; once reprocessed (or unchanged) it reverts to "Save".
         // With the master AI switch off the note is a plain stored field, so the
         // button is always "Save" (no AI path exists to flip it).
-        val noteChanged = shouldOfferReprocess(aiFeaturesEnabled, noteText, currentBaseEntry.customNote)
+        // Save → "Correct with AI" flip applies to the Reanalyze mode only;
+        // Fill and Recalculate never flip the primary button (WP2 UX-1).
+        val noteChanged = shouldOfferReprocess(aiFeaturesEnabled, noteText, currentBaseEntry.customNote) &&
+            aiActionMode == AiActionMode.REANALYZE
         Column(
             Modifier
                 .fillMaxWidth()
@@ -782,6 +869,20 @@ fun EditFoodEntrySheet(
                         }
                     )
                 }
+                // WP2 fill-missing: unconditional slot right after the macros
+                // card (NOT inside More Nutrition — an all-null Mealie entry
+                // renders no More Nutrition card at all).
+                if (aiFeaturesEnabled && entryGapReport.hasGaps) {
+                    MissingValuesNote(
+                        missingCount = entryGapReport.missingMacros.size +
+                            entryGapReport.missingMicros.size +
+                            entryGapReport.zeroMacroConstituents.size,
+                        onFill = {
+                            aiModeOverride = AiActionMode.FILL
+                            aiCorrectExpanded = true
+                        },
+                    )
+                }
             }
 
             // "More Nutrition" — own pill row with chevron-right that flips to
@@ -806,7 +907,12 @@ fun EditFoodEntrySheet(
                                 editableConstituents,
                             )
                             if (stale) {
-                                StaleCompositionNote(onReestimate = { reprocess() })
+                                StaleCompositionNote(onReestimate = {
+                                    // Re-estimate IS Recalculate (WP2 UX-2):
+                                    // keep the segmented pills in sync.
+                                    aiModeOverride = AiActionMode.RECALCULATE
+                                    reprocess()
+                                })
                             }
                             MicronutrientField.MoreNutrition.forEachIndexed { idx, field ->
                                 if (idx > 0 || stale) SheetHairline()
@@ -871,62 +977,95 @@ fun EditFoodEntrySheet(
                     isReprocessing ||
                     changedFields.isNotEmpty() ||
                     errorText != null
+                // Cost guard (settled decision 6): the Fill pill only exists
+                // while the scan found gaps; Reanalyze / Recalculate are
+                // always available. Fill falls back to Reanalyze if gaps got
+                // filled while the override still points at Fill.
+                val aiModes = buildList {
+                    if (entryGapReport.hasGaps) add(AiActionMode.FILL)
+                    add(AiActionMode.REANALYZE)
+                    add(AiActionMode.RECALCULATE)
+                }
+                val selectedAiMode = if (aiActionMode in aiModes) aiActionMode else AiActionMode.REANALYZE
                 item {
-                    SheetPillRow(
-                        onClick = {
-                            if (!isReprocessing) aiCorrectExpanded = !aiCorrectExpanded
-                        },
-                    ) {
-                        Text(
-                            stringResource(R.string.edit_reprocess_section),
-                            fontSize = 17.sp,
-                            modifier = Modifier.weight(1f),
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        ChompassSegmentedTabs(
+                            options = aiModes,
+                            selected = selectedAiMode,
+                            onSelect = { mode ->
+                                aiModeOverride = mode
+                                if (!showAiCorrectBody) aiCorrectExpanded = true
+                            },
+                            label = { mode ->
+                                stringResource(
+                                    when (mode) {
+                                        AiActionMode.FILL -> R.string.edit_ai_mode_fill
+                                        AiActionMode.REANALYZE -> R.string.edit_ai_mode_reanalyze
+                                        AiActionMode.RECALCULATE -> R.string.edit_ai_mode_recalculate
+                                    },
+                                )
+                            },
                         )
-                        if (!showAiCorrectBody && noteText.isNotBlank()) {
+                        if (entryGapReport.hasGaps) {
+                            val missingLabels = (
+                                entryGapReport.missingMacros.map { stringResource(it.labelRes) } +
+                                    entryGapReport.missingMicros.map { stringResource(it.labelRes) }
+                                ).joinToString(", ")
                             Text(
-                                noteText,
-                                fontSize = 15.sp,
+                                stringResource(R.string.edit_ai_missing_line, missingLabels),
+                                fontSize = 13.sp,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(end = 8.dp),
+                                lineHeight = 18.sp,
+                                modifier = Modifier.padding(horizontal = 18.dp),
                             )
                         }
-                        Icon(
-                            if (showAiCorrectBody) Icons.Filled.KeyboardArrowDown
-                            else Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                        )
                     }
                 }
                 if (showAiCorrectBody) {
                     item {
                         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            Text(
-                                stringResource(R.string.edit_reprocess_explain),
-                                fontSize = 13.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                                lineHeight = 18.sp,
-                            )
-                            OutlinedTextField(
-                                value = noteText,
-                                onValueChange = {
-                                    noteText = it
-                                    changedFields = emptyList()
-                                },
-                                enabled = !isReprocessing,
-                                placeholder = {
-                                    Text(
-                                        stringResource(R.string.edit_reprocess_hint),
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled)
-                                    )
-                                },
-                                shape = RoundedCornerShape(AppRadii.Pill),
-                                modifier = Modifier.fillMaxWidth().heightIn(min = 90.dp)
-                            )
+                            // The note steers only the full Reanalyze; Fill and
+                            // Recalculate run on the entry as-is (settled UX-1).
+                            if (aiActionMode == AiActionMode.REANALYZE) {
+                                Text(
+                                    stringResource(R.string.edit_reprocess_explain),
+                                    fontSize = 13.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                    lineHeight = 18.sp,
+                                )
+                                OutlinedTextField(
+                                    value = noteText,
+                                    onValueChange = {
+                                        noteText = it
+                                        changedFields = emptyList()
+                                    },
+                                    enabled = !isReprocessing,
+                                    placeholder = {
+                                        Text(
+                                            stringResource(R.string.edit_reprocess_hint),
+                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled)
+                                        )
+                                    },
+                                    shape = RoundedCornerShape(AppRadii.Pill),
+                                    modifier = Modifier.fillMaxWidth().heightIn(min = 90.dp)
+                                )
+                            } else if (!isReprocessing) {
+                                Text(
+                                    stringResource(
+                                        if (aiActionMode == AiActionMode.FILL) {
+                                            R.string.edit_ai_mode_fill
+                                        } else {
+                                            R.string.edit_ai_mode_recalculate
+                                        },
+                                    ),
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.clickable {
+                                        if (aiActionMode == AiActionMode.FILL) fill() else reprocess()
+                                    },
+                                )
+                            }
 
                             if (isReprocessing) {
                                 val phase = reprocessPhase
@@ -1172,6 +1311,14 @@ fun EditFoodEntrySheet(
         )
     }
 }
+
+/**
+ * Which Ask-AI action the edit sheet's segmented pills run (WP2 fill-missing):
+ * FILL asks the AI only for the entry's empty values; REANALYZE is the full
+ * re-read (note + photo); RECALCULATE re-estimates over the current fields /
+ * edited ingredient mix.
+ */
+internal enum class AiActionMode { FILL, REANALYZE, RECALCULATE }
 
 /**
  * Primary-button decision for the edit sheet: a note edit flips Save →
