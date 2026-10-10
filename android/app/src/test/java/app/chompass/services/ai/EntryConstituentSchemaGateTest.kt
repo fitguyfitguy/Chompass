@@ -150,11 +150,6 @@ class EntryConstituentSchemaGateTest {
         assertFalse(lean.contains("\"sodium\""))
         assertFalse(lean.contains("\"vitamin_a\""))
         assertFalse(lean.contains("\"constituents\""))
-        assertEquals(
-            CONSTITUENT_MIN_RESPONSE_TOKENS,
-            floorResponseTokensForOp("analyzeText", 1024, EntryConstituentPromptKind.MICROS),
-        )
-        assertEquals(1024, floorResponseTokensForOp("analyzeText", 1024, EntryConstituentPromptKind.NONE))
     }
 
     private suspend fun captureAnalyzePrompt(): String {

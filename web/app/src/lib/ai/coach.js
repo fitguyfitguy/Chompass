@@ -17,6 +17,12 @@ Keep replies short: a sentence or two plus the tool call, not an essay. Never us
 
 const MAX_TOOL_ITERATIONS = 4;
 
+/** Reasoning models on capped providers (Anthropic is the only PWA provider
+ * that takes a client cap) bill hidden thinking against max_tokens, so the
+ * 1024 default truncated replies before any content. Mirrors Android
+ * FoodAnalysisService MIN_RESPONSE_TOKENS_CLOUD. */
+const RESPONSE_TOKEN_FLOOR = 4096;
+
 /**
  * Local-only fasting timer snapshot for the coach prompt (mirrors the Android
  * ChatService block): differ "should I eat now?" at hour 2 vs hour 15, with an
@@ -187,7 +193,7 @@ export async function runCoachTurn({ providerId, config, history, userText, imag
   ]);
 
   for (let iteration = 0; iteration < MAX_TOOL_ITERATIONS; iteration++) {
-    const response = await provider.send(config, { systemPrompt, messages, tools: AI_TOOLS });
+    const response = await provider.send(config, { systemPrompt, messages, tools: AI_TOOLS, maxTokens: RESPONSE_TOKEN_FLOOR });
     const readCalls = response.toolCalls.filter((tc) => READ_ONLY_TOOLS.has(tc.name));
     const writeCalls = response.toolCalls.filter((tc) => WRITE_TOOLS.has(tc.name));
 
