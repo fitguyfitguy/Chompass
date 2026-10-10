@@ -592,6 +592,9 @@ export const en = Object.freeze({
   "diary.duplicate": "Duplicate",
   "diary.edit_saved_food": "Edit saved food",
   "diary.favorite": "Favorite",
+  "diary.fill_applied": "Filled {n} entries",
+  "diary.fill_banner": "{n} meals are missing nutrition data",
+  "diary.fill_missing": "Fill missing",
   "diary.loading": "Loading…",
   "diary.macros": "Macros",
   "diary.meal_type": "Meal type",
@@ -696,6 +699,17 @@ export const en = Object.freeze({
   "entry.total": "Total",
   "entry.unfavorite": "Unfavorite",
   "entry.unlock": "Unlock",
+
+  // gaps.* (AI fill-missing: Home banner + gaps view)
+  "gaps.apply": "Apply",
+  "gaps.apply_all": "Apply all",
+  "gaps.retry": "Retry",
+  "gaps.run": "Fill with AI",
+  "gaps.state_failed": "Failed",
+  "gaps.state_filled": "Filled",
+  "gaps.state_pending": "Pending",
+  "gaps.state_running": "Filling…",
+  "gaps.title": "Fill missing data",
 
   // errors.* (PWA UI audit sweep, 2026-08)
   "errors.key_missing": "Provider key missing. Re-add it in Settings.",

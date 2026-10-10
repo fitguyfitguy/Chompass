@@ -73,6 +73,9 @@ import { resolveDay, resolveDayJournaled } from "../lib/chompass-core/macro-plan
 import { refreshGoalJournal, recordManualSwitchGoalJournal } from "../lib/goal-journal-store.js";
 import { escapeHtml, escapeAttr } from "../lib/ui/html.js";
 import { clampDiaryDate, DIARY_FUTURE_WEEKS, shiftDate, todayIso } from "../lib/date.js";
+import { gapReport } from "../lib/chompass-core/entry-gaps.js";
+import { pinEntryAiMode } from "./entry-form.js";
+import { maybeShowFillGapsBanner } from "./fill-gaps-view.js";
 import { chevronLeft, chevronRight } from "../lib/icons.js";
 import { showToast, showUndoToast } from "../lib/ui/toast.js";
 import { MEAL_ORDER, mealLabel } from "../lib/meal-label.js";
@@ -918,6 +921,9 @@ export class DiaryView extends HTMLElement {
 
   /** @param {Awaited<ReturnType<typeof prefs.load>>} appPrefs */
   afterHomeRender(appPrefs) {
+    // Fill-missing Home banner: AI on + non-empty scan + once-per-day +
+    // sticky per-scan dismissal (gate logic in lib/fill-gaps.js).
+    void maybeShowFillGapsBanner(appPrefs);
     if (consumeResumeProgressiveCapture()) {
       // Codeberg #78: Add next ingredient opens the full Add Food sheet.
       void this.openAddFoodSheet(appPrefs);
@@ -1313,12 +1319,17 @@ export class DiaryView extends HTMLElement {
   }
 
   /** @param {import('../lib/chompass-core/models.js').FoodEntry} entry */
-  openFoodMenu(entry) {
+  async openFoodMenu(entry) {
+    const appPrefs = await prefs.load();
+    // Fill-missing gate (Android parity): the ⋮ item is per-entry `hasGaps`
+    // (micro-only gaps included) while the mass surfaces use hasMacroGaps.
+    const canFill = appPrefs.aiFeaturesEnabled !== false && gapReport(entry).hasGaps;
     const sheet = openSheet({
       title: entry.name,
       body: `
         <div class="sheet-actions" role="menu">
           <button type="button" role="menuitem" data-act="edit">${t("action.edit")}</button>
+          ${canFill ? `<button type="button" role="menuitem" data-act="fill">${t("diary.fill_missing")}</button>` : ""}
           <button type="button" role="menuitem" data-act="meal">${t("diary.menu_change_meal")}</button>
           <button type="button" role="menuitem" data-act="fav">${t("diary.favorite")}</button>
           <button type="button" role="menuitem" data-act="share">${t("diary.share")}</button>
@@ -1330,6 +1341,10 @@ export class DiaryView extends HTMLElement {
     sheet.body.querySelector('[data-act="edit"]')?.addEventListener("click", () => {
       sheet.close();
       this.openEntryForm(entry);
+    });
+    sheet.body.querySelector('[data-act="fill"]')?.addEventListener("click", () => {
+      sheet.close();
+      this.openEntryForm(entry, { pinAiMode: "fill" });
     });
     sheet.body.querySelector('[data-act="fav"]')?.addEventListener("click", async () => {
       sheet.close();
@@ -2383,7 +2398,12 @@ export class DiaryView extends HTMLElement {
     });
   }
 
-  openEntryForm(entry) {
+  /**
+   * @param {import('../lib/chompass-core/models.js').FoodEntry | null} entry
+   * @param {{ pinAiMode?: "fill"|"reanalyze"|"recalculate" }} [options]
+   */
+  openEntryForm(entry, options = {}) {
+    if (options.pinAiMode) pinEntryAiMode(options.pinAiMode);
     location.hash = entry ? `#/entry/${entry.id}?date=${this.date}` : `#/entry/new?date=${this.date}`;
   }
 }
