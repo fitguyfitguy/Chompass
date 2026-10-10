@@ -1,0 +1,1 @@
+• Reasoning models no longer truncate mid-answer (Android & Web): cloud providers now always leave room for the model's hidden thinking, so replies and goal recalculations that came back empty or failed at the default response cap now go through. Your own higher cap still wins; local servers (Ollama) keep your cap as set.
