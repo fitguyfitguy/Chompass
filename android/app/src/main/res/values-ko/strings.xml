@@ -1272,6 +1272,11 @@
     <string name="settings_ai_read_timeout">AI 읽기 시간 제한</string>
     <string name="settings_ai_read_timeout_unit">초</string>
     <string name="settings_ai_read_timeout_value">%1$d초</string>
+    <string name="settings_goal_tier">목표 재계산 프롬프트</string>
+    <string name="settings_goal_tier_footer">목표 재계산이 모델에 보내는 데이터 양이에요. 안전은 간결한 요약을 보내요. 작은 모델이나 로컬 모델에 적합해요. 스마트는 체중과 음식 기록 전체를 보내서 큰 모델이 추세를 직접 판단해요. 자동은 모델 이름으로 골라요.</string>
+    <string name="goal_tier_auto">자동</string>
+    <string name="goal_tier_safe">안전(간결)</string>
+    <string name="goal_tier_smart">스마트(전체 기록)</string>
     <string name="settings_ai_reasoning_effort">추론 수준</string>
     <string name="settings_ai_reasoning_effort_footer">OpenRouter 모델: 사고 예산을 정해요. 커스텀 및 Ollama 서버: 서버가 지원하면 reasoning_effort를 보내요. 서버가 요청을 거부하면 자동을 선택하세요.</string>
     <string name="settings_ai_vision_model">비전 모델</string>

@@ -1272,6 +1272,11 @@ bilirsən?</string>
     <string name="settings_ai_read_timeout">AI oxuma vaxt limiti</string>
     <string name="settings_ai_read_timeout_unit">san</string>
     <string name="settings_ai_read_timeout_value">%1$d san</string>
+    <string name="settings_goal_tier">Hədəf yenidən hesablama promptu</string>
+    <string name="settings_goal_tier_footer">Hədəflərin yenidən hesablanması modelə nə qədər məlumat göndərir. Təhlükəsiz yığcam xülasələr göndərir, kiçik və ya lokal modellər üçün uyğundur. Ağıllı tam çəki və yemək tarixçəsini göndərir ki, böyük model trendləri özü qiymətləndirsin. Avto model adına görə seçir.</string>
+    <string name="goal_tier_auto">Avto</string>
+    <string name="goal_tier_safe">Təhlükəsiz (yığcam)</string>
+    <string name="goal_tier_smart">Ağıllı (tam tarixçə)</string>
     <string name="settings_ai_reasoning_effort">Düşünmə səviyyəsi</string>
     <string name="settings_ai_reasoning_effort_footer">OpenRouter modelləri: düşünmə büdcəsini təyin edir. Xüsusi və Ollama serverləri: server dəstəklədiyi halda reasoning_effort göndərir. Server sorğunu rədd edərsə, Avto seç.</string>
     <string name="settings_ai_vision_model">Görmə modeli</string>

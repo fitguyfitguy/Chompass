@@ -191,7 +191,7 @@ class ChatService(
         }
         messages.put(JSONObject().put("role", "user").put("content", openAIUserContent(newUserMessage, imageBytes)))
 
-        repeat(MAX_TOOL_ROUNDS) {
+        repeat(MAX_TOOL_ROUNDS) { round ->
             suspend fun request(compactRetry: Boolean): OpenAITextResponse {
                 val body = JSONObject().apply {
                     put("model", model)
@@ -237,7 +237,16 @@ class ChatService(
                     val call = toolCalls.optJSONObject(i) ?: continue
                     val function = call.optJSONObject("function") ?: continue
                     val name = function.optString("name").takeIf { it.isNotEmpty() } ?: continue
-                    val id = call.optString("id").takeIf { it.isNotEmpty() } ?: continue
+                    // Local servers (LM Studio, llama.cpp server) can return tool calls with
+                    // empty ids; skipping the result leaves the echoed assistant tool_call
+                    // unanswered and the next round's prompt is rejected (#123). Synthesize a
+                    // stable id and patch it into the already-appended assistant message —
+                    // parsed.toolCalls aliases messageJson["tool_calls"]
+                    // (OpenAICompatibleClient.kt:439), so the put propagates and request and
+                    // result stay paired.
+                    val id = call.optString("id").takeIf { it.isNotEmpty() } ?: "chompass-tool-$round-$i".also {
+                        call.put("id", it)
+                    }
                     val argsString = function.optString("arguments", "{}")
                     val args = runCatching { JSONObject(argsString) }.getOrNull() ?: JSONObject()
                     val result = tools.execute(name, args)
@@ -321,8 +330,14 @@ class ChatService(
             if (toolUses.isNotEmpty()) {
                 messages.put(JSONObject().put("role", "assistant").put("content", contentArr))
                 val toolResults = JSONArray()
-                for (use in toolUses) {
-                    val id = use.optString("id").takeIf { it.isNotEmpty() } ?: continue
+                // Same empty-id hazard as the OpenAI loop (#123): Anthropic-format
+                // local proxies can emit tool_use blocks without ids. Synthesize
+                // one and patch the block inside the already-appended contentArr
+                // so the tool_result pairs with it.
+                for ((i, use) in toolUses.withIndex()) {
+                    val id = use.optString("id").takeIf { it.isNotEmpty() } ?: "chompass-toolu-$i".also {
+                        use.put("id", it)
+                    }
                     val name = use.optString("name").takeIf { it.isNotEmpty() } ?: continue
                     val input = use.optJSONObject("input") ?: JSONObject()
                     val result = tools.execute(name, input)

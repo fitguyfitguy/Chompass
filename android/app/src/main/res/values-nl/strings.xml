@@ -1253,6 +1253,11 @@
     <string name="settings_ai_read_timeout">AI-leestimeout</string>
     <string name="settings_ai_read_timeout_unit">s</string>
     <string name="settings_ai_read_timeout_value">%1$d s</string>
+    <string name="settings_goal_tier">Prompt voor doelherberekening</string>
+    <string name="settings_goal_tier_footer">Hoeveel gegevens de doelherberekening naar het model stuurt. Veilig stuurt compacte samenvattingen, geschikt voor kleine of lokale modellen. Slim stuurt je volledige gewicht- en voedingsgeschiedenis, zodat een groot model trends zelf kan beoordelen. Auto kiest op basis van de modelnaam.</string>
+    <string name="goal_tier_auto">Auto</string>
+    <string name="goal_tier_safe">Veilig (compact)</string>
+    <string name="goal_tier_smart">Slim (volledige geschiedenis)</string>
     <string name="settings_ai_reasoning_effort">Redeneerinspanning</string>
     <string name="settings_ai_reasoning_effort_footer">OpenRouter-modellen: stelt het denkbudget in. Eigen servers en Ollama: stuurt reasoning_effort als de server dat ondersteunt. Weigert je server het verzoek, kies dan Auto.</string>
     <string name="settings_ai_vision_model">Visiemodel</string>

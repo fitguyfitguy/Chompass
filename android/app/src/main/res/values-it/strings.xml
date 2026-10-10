@@ -1236,6 +1236,11 @@
     <string name="settings_ai_read_timeout">Timeout lettura IA</string>
     <string name="settings_ai_read_timeout_unit">s</string>
     <string name="settings_ai_read_timeout_value">%1$d s</string>
+    <string name="settings_goal_tier">Prompt di ricalcolo obiettivi</string>
+    <string name="settings_goal_tier_footer">Quanti dati il ricalcolo degli obiettivi invia al modello. Sicuro invia riassunti compatti, adatto a modelli piccoli o locali. Intelligente invia tutta la cronologia di peso e alimentazione così un modello grande può giudicare le tendenze da solo. Auto sceglie in base al nome del modello.</string>
+    <string name="goal_tier_auto">Auto</string>
+    <string name="goal_tier_safe">Sicuro (compatto)</string>
+    <string name="goal_tier_smart">Intelligente (cronologia completa)</string>
     <string name="settings_ai_reasoning_effort">Sforzo di ragionamento</string>
     <string name="settings_ai_reasoning_effort_footer">Modelli OpenRouter: imposta il budget di ragionamento. Server personalizzati e Ollama: invia reasoning_effort se il server lo supporta. Se il tuo server rifiuta la richiesta, scegli Auto.</string>
     <string name="settings_ai_vision_model">Modello per foto</string>

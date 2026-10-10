@@ -4,6 +4,7 @@ import android.util.Log
 import app.chompass.data.KeyStore
 import app.chompass.data.AiCallConfig
 import app.chompass.data.OpenRouterReasoningEffort
+import app.chompass.data.GoalRecalcTierOverride
 import app.chompass.data.PreferencesStore
 import app.chompass.models.AIProvider
 import app.chompass.R
@@ -1807,6 +1808,13 @@ class FoodAnalysisService(
         }
 
         val cfg = prefs!!.aiCallConfig()
+        // #123: the Goal recalc prompt setting maps to a dispatch-level tier
+        // override; AUTO (null) keeps the model-name rules untouched.
+        val tierOverride = when (cfg.goalRecalcTier) {
+            GoalRecalcTierOverride.AUTO -> null
+            GoalRecalcTierOverride.SAFE -> GoalRecalcTier.SAFE
+            GoalRecalcTierOverride.SMART -> GoalRecalcTier.SMART
+        }
         val primary = cfg.provider
         val primaryModel = modelFor(primary, cfg.selectedModel)
         val kind = kindOverride ?: entryKind(primary, primaryModel)
@@ -1873,6 +1881,7 @@ class FoodAnalysisService(
                         onProgress = trackedProgress,
                         preferStreaming = reportPhases && !nonStreaming,
                         reasoningEffort = reasoningEffort,
+                        tierOverride = tierOverride,
                         assembler = assembler,
                         smartPrompt = finalSmartPrompt,
                         trace = trace,
@@ -1900,6 +1909,7 @@ class FoodAnalysisService(
                         onProgress = trackedProgress,
                         preferStreaming = reportPhases && !nonStreaming,
                         reasoningEffort = reasoningEffort,
+                        tierOverride = tierOverride,
                         assembler = assembler,
                         smartPrompt = finalSmartPrompt,
                         trace = trace,
@@ -2067,6 +2077,8 @@ class FoodAnalysisService(
         onProgress: (FoodAnalysisProgress) -> Unit = {},
         preferStreaming: Boolean = false,
         reasoningEffort: OpenRouterReasoningEffort = OpenRouterReasoningEffort.AUTO,
+        /** #123 user setting: force SAFE/SMART for goal recalc regardless of model-name rules. */
+        tierOverride: GoalRecalcTier? = null,
         assembler: FoodPartialJsonAssembler? = null,
         /** SMART-tier prompt; cloud legs run it, the on-device leg always runs [prompt] (SAFE). */
         smartPrompt: String? = null,
@@ -2083,7 +2095,9 @@ class FoodAnalysisService(
         // model anchors on whichever number is nearest, ~BMR, when handed a raw
         // series). The trace records which leg answered, so the result can report
         // provider/model/tier and any fallback. goalTierOverrideForTest (debug
-        // harness only) forces one tier regardless of provider.
+        // harness only) forces one tier regardless of provider; tierOverride
+        // (#123 Goal recalc prompt setting) does the same for Ollama/Custom
+        // endpoints whose model names the AUTO rules can't classify.
         val overrideTier = goalTierOverrideForTest
         // Small cloud models anchor on whichever maintenance number is nearest
         // (~BMR) when handed the SMART prompt's raw series — measured on-device
@@ -2092,6 +2106,7 @@ class FoodAnalysisService(
         // SAFE tier (aggregates + gates + snap) like the on-device model.
         val answeringTier = when {
             overrideTier != null -> overrideTier
+            tierOverride != null -> tierOverride
             provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE -> GoalRecalcTier.SAFE
             isSmallCloudModel(model) -> GoalRecalcTier.SAFE
             else -> GoalRecalcTier.SMART

@@ -1331,6 +1331,11 @@
     <string name="settings_ai_read_timeout">Tiempo de espera de lectura de IA</string>
     <string name="settings_ai_read_timeout_unit">s</string>
     <string name="settings_ai_read_timeout_value">%1$d s</string>
+    <string name="settings_goal_tier">Prompt de recálculo de objetivos</string>
+    <string name="settings_goal_tier_footer">Cuántos datos envía el recálculo de objetivos al modelo. Seguro envía resúmenes compactos, ideal para modelos pequeños o locales. Inteligente envía todo tu historial de peso y comidas para que un modelo grande juzgue las tendencias por sí mismo. Automático elige según el nombre del modelo.</string>
+    <string name="goal_tier_auto">Automático</string>
+    <string name="goal_tier_safe">Seguro (compacto)</string>
+    <string name="goal_tier_smart">Inteligente (historial completo)</string>
     <string name="settings_ai_reasoning_effort">Esfuerzo de razonamiento</string>
     <string name="settings_ai_reasoning_effort_footer">Modelos de OpenRouter: fija el presupuesto de razonamiento. Servidores personalizados y Ollama: envía reasoning_effort si el servidor lo admite. Si tu servidor rechaza la petición, elige Automático.</string>
     <string name="settings_ai_vision_model">Modelo de visión</string>

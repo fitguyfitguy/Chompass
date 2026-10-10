@@ -1606,6 +1606,11 @@
     <string name="settings_ai_read_timeout">Таймаут чтения ИИ</string>
     <string name="settings_ai_read_timeout_unit">с</string>
     <string name="settings_ai_read_timeout_value">%1$d с</string>
+    <string name="settings_goal_tier">Промпт пересчёта целей</string>
+    <string name="settings_goal_tier_footer">Сколько данных пересчёт целей отправляет модели. Безопасный отправляет краткие сводки — подходит для маленьких или локальных моделей. Умный отправляет всю твою историю веса и еды, чтобы большая модель сама оценила тренды. Авто выбирает по названию модели.</string>
+    <string name="goal_tier_auto">Авто</string>
+    <string name="goal_tier_safe">Безопасный (кратко)</string>
+    <string name="goal_tier_smart">Умный (полная история)</string>
     <string name="settings_ai_reasoning_effort">Уровень рассуждений</string>
     <string name="settings_ai_reasoning_effort_footer">Модели OpenRouter: задают бюджет размышлений. Свои серверы и Ollama: отправляют reasoning_effort, если сервер его поддерживает. Если сервер отклоняет запрос, выбери Авто.</string>
     <string name="settings_ai_vision_model">Модель для фото</string>
