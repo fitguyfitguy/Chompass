@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Added
+
+- **Mealie imports keep ingredient amounts and units** (Android): imported recipes now split each ingredient line into its amount, unit, and food name instead of one merged label, and the recipe builder shows them on the row. The recipe builder also shows how many servings the source recipe declared. Zeroed macros can still be filled with the Fill missing action. Follows Codeberg [#125](https://codeberg.org/fitguy/Chompass/issues/125) by [@mik112](https://codeberg.org/fitguy/mik112).
+
 ## [5.5.1] - 2026-10-10
 
 ### Fixed

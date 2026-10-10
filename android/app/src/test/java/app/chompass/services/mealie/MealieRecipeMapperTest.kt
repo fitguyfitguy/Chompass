@@ -82,9 +82,46 @@ class MealieRecipeMapperTest {
             """.trimIndent(),
         )!!
 
-        assertEquals("50 g rolled oats toasted", recipe.ingredients.single().name)
+        val oats = recipe.ingredients.single()
+        assertEquals("rolled oats (toasted)", oats.name)
+        assertEquals("50", oats.amountText)
+        assertEquals("g", oats.unitText)
+        assertNull(recipe.servingsPerRecipe)
         assertEquals(200, recipe.totalCalories)
         assertEquals(8.0, recipe.totalProtein, 0.001)
+    }
+
+    @Test
+    fun fromDetail_structuredIngredientAndServings() {
+        val recipe = MealieRecipeMapper.fromDetailJson(
+            """
+            {
+              "slug": "soup",
+              "name": "Soup",
+              "recipeServings": 4,
+              "recipeIngredient": [
+                {
+                  "quantity": 1.5,
+                  "unit": {"name": "l"},
+                  "food": {"name": "vegetable stock"},
+                  "note": "hot"
+                },
+                {"display": "salt to taste"}
+              ],
+              "nutrition": {"calories": "300"}
+            }
+            """.trimIndent(),
+        )!!
+
+        assertEquals(4.0, recipe.servingsPerRecipe!!, 0.001)
+        val structured = recipe.ingredients[0]
+        assertEquals("vegetable stock (hot)", structured.name)
+        assertEquals("1.5", structured.amountText)
+        assertEquals("l", structured.unitText)
+        val displayOnly = recipe.ingredients[1]
+        assertEquals("salt to taste", displayOnly.name)
+        assertNull(displayOnly.amountText)
+        assertNull(displayOnly.unitText)
     }
 
     @Test

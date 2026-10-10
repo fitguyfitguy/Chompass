@@ -1686,6 +1686,7 @@ LBM = вага × (1 − %жиру)</string>
     <string name="onboarding_building_percent_format">%1$d%%</string>
     <string name="progress_macro_progress_format">%1$dg / %2$dg</string>
     <string name="recipe_builder_scale_format">%1$.2fx</string>
+    <string name="recipe_servings_format">%1$s порцій</string>
     <string name="speech_provider_assemblyai">AssemblyAI</string>
     <string name="speech_provider_deepgram">Deepgram</string>
     <string name="speech_provider_gemini">Gemini Audio</string>

@@ -698,6 +698,7 @@
     <string name="recipe_builder_log_now">Şimdi Kaydet</string>
     <string name="recipe_builder_remove_ingredient">Malzemeyi kaldır</string>
     <string name="recipe_builder_scale_format">%1$.2fx</string>
+    <string name="recipe_servings_format">%1$s porsiyon</string>
     <string name="progressive_meal_title">Öğün oluşturuluyor</string>
     <string name="progressive_meal_name_placeholder">Öğün adı</string>
     <string name="progressive_meal_name_hint_empty">Her malzemeyi kaydetmek için boş bırak.</string>

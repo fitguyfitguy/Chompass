@@ -16,6 +16,10 @@ data class RecipeIngredient(
     val id: UUID = UUID.randomUUID(),
     val name: String,
     val emoji: String? = null,
+    /** Culinary amount from the source import (e.g. "50"), display-only. */
+    val amountText: String? = null,
+    /** Culinary unit from the source import (e.g. "g"), display-only. */
+    val unitText: String? = null,
     val baseCalories: Int,
     val baseProtein: Double,
     val baseCarbs: Double,
@@ -241,6 +245,8 @@ data class Recipe(
     val nutritionFiber: Double? = null,
     val nutritionSugar: Double? = null,
     val nutritionSodium: Double? = null,
+    /** Servings the source recipe declared (Mealie `recipeServings`); display-only. */
+    val servingsPerRecipe: Double? = null,
 ) {
     val totalCalories: Int get() = nutritionCalories ?: ingredients.sumOf { it.calories }
     val totalProtein: Double get() = nutritionProtein ?: ingredients.sumOf { it.protein }

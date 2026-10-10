@@ -860,6 +860,7 @@
     <string name="recipe_builder_log_now">Log Now</string>
     <string name="recipe_builder_remove_ingredient">Remove ingredient</string>
     <string name="recipe_builder_scale_format">%1$.2fx</string>
+    <string name="recipe_servings_format">%1$s servings</string>
     <!-- Recipe builder: AI fill-missing for gapped ingredients -->
     <plurals name="recipe_builder_fill_missing">
         <item quantity="one">%1$d ingredient is missing nutrition values</item>

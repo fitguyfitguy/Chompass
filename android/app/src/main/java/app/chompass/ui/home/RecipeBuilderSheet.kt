@@ -173,6 +173,13 @@ fun RecipeBuilderSheet(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(AppRadii.Field)
                     )
+                    recipe.servingsPerRecipe?.takeIf { it > 0 }?.let { servings ->
+                        Text(
+                            stringResource(R.string.recipe_servings_format, formatServings(servings)),
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                        )
+                    }
                 }
             }
 
@@ -386,8 +393,11 @@ private fun IngredientRow(
 
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(ingredient.name, fontSize = 15.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            val amountUnit = listOfNotNull(ingredient.amountText, ingredient.unitText)
+                .joinToString(" ")
+                .takeIf { it.isNotEmpty() }
             Text(
-                energyText(ingredient.calories),
+                listOfNotNull(amountUnit, energyText(ingredient.calories)).joinToString(" · "),
                 fontSize = 13.sp,
                 color = AppColors.Calorie
             )
@@ -418,6 +428,12 @@ private fun IngredientRow(
             )
         }
     }
+}
+
+/** Servings count for display: whole numbers without a trailing `.0`. */
+private fun formatServings(value: Double): String {
+    val asInt = value.toInt()
+    return if (value == asInt.toDouble()) asInt.toString() else value.toString()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
