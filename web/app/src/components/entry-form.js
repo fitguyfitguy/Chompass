@@ -26,6 +26,7 @@ import {
   commitConstituentDisplayEdit,
 } from "../lib/chompass-core/constituents.js";
 import { microsStaleFor } from "../lib/chompass-core/micros-composition.js";
+import { gapReport, fillMissingFrom } from "../lib/chompass-core/entry-gaps.js";
 import {
   ALL_MICRO_KEYS,
   NUTRITION_DETAIL_MICROS,
@@ -117,6 +118,38 @@ const MICRO_FIELDS = [
 
 const NUTRITION_KEYS = ["calories", "proteinG", "carbsG", "fatG", "fiberG", ...ALL_MICRO_KEYS.filter((k) => k !== "fiberG")];
 
+/** AI mode pins handed to the NEXT mounted EntryForm (diary ⋮ Fill missing
+ * opens the edit sheet with Fill preselected). The router recreates the
+ * element per navigation, so the pin rides on a one-shot module handoff. */
+let aiModePinHandoff = null;
+
+/** @param {"fill"|"reanalyze"|"recalculate"} mode */
+export function pinEntryAiMode(mode) {
+  aiModePinHandoff = mode;
+}
+
+function consumeEntryAiPin() {
+  const mode = aiModePinHandoff;
+  aiModePinHandoff = null;
+  return mode;
+}
+
+/** Display labels for an entry's missing macro + micro fields (scan line). */
+function missingFieldLabels(gaps) {
+  const macroLabels = {
+    calories: t("diary.calories"),
+    proteinG: t("day_types.protein_g"),
+    carbsG: t("day_types.carbs_g"),
+    fatG: t("day_types.fat_g"),
+  };
+  const labels = gaps.missingMacros.map((m) => macroLabels[m]);
+  for (const [modelKey, labelKey] of MICRO_FIELDS) {
+    if (gaps.missingMicros.includes(modelKey)) labels.push(t(labelKey));
+  }
+  if (gaps.missingMicros.includes("fiberG")) labels.push(t("entry.fiber_g"));
+  return labels.join(", ");
+}
+
 /** Manual food entry review/edit form. Also the landing spot for AI/barcode
  * prefill — those flows populate the same fields; the user always confirms
  * before save (never auto-committed). Section order mirrors Android FoodResultSheet. */
@@ -159,6 +192,9 @@ export class EntryForm extends HTMLElement {
     this.correctError = "";
     /** @type {AbortController|null} */
     this.correctAbort = null;
+    /** Smart-default override consumed from pinEntryAiMode; a user pill tap
+     * re-pins it for this instance. */
+    this.pinnedAiMode = consumeEntryAiPin();
     const prefillRaw = params.get("prefill");
     if (prefillRaw && (!this.entryId || this.entryId === "new")) {
       try {
@@ -854,6 +890,29 @@ export class EntryForm extends HTMLElement {
   }
 
   renderCorrectSection() {
+    // Master AI-features gate (Codeberg #20): off = the whole section stays
+    // hidden, like the Android edit sheet.
+    if (this._appPrefs?.aiFeaturesEnabled === false) return "";
+    const gaps = this.existing ? gapReport(this.existing) : null;
+    const fillAvailable = gaps?.hasGaps ?? false;
+    // Smart default recomputes per render (gaps → Fill); a pill tap pins.
+    let mode = this.pinnedAiMode ?? (fillAvailable ? "fill" : "reanalyze");
+    if (mode === "fill" && !fillAvailable) mode = "reanalyze";
+
+    const pill = (value, labelKey) =>
+      `<button type="button" class="metric-toggle__segment${mode === value ? " is-active" : ""}" data-ai-mode="${value}" aria-pressed="${mode === value}">${escapeHtml(t(labelKey))}</button>`;
+    const pillsHtml = `
+      <div class="metric-toggle" role="group" aria-label="${escapeAttr(t("entry.correct_title"))}">
+        ${fillAvailable ? pill("fill", "entry.ai.mode_fill") : ""}
+        ${pill("reanalyze", "entry.ai.mode_reanalyze")}
+        ${pill("recalculate", "entry.ai.mode_recalculate")}
+      </div>`;
+
+    const scanLineHtml =
+      gaps?.hasGaps && fillAvailable
+        ? `<p class="field-hint">${escapeHtml(t("entry.ai.missing_line", { labels: missingFieldLabels(gaps) }))}</p>`
+        : "";
+
     const diffHtml =
       this.correctDiff.length > 0
         ? `<div class="entry-correct-diff card">
@@ -875,19 +934,29 @@ export class EntryForm extends HTMLElement {
                 : t("entry.correcting")
           )}</p>`
       : "";
-    const open =
-      this.correcting || this.correctDiff.length > 0 || this.correctError || this.correctNote.trim()
-        ? " open"
-        : "";
-    return `
-      <details class="entry-section entry-correct"${open}>
-        <summary class="entry-section__title">${escapeHtml(t("entry.correct_title"))}</summary>
+    const noteDriven = mode !== "fill";
+    const modeBodyHtml = noteDriven
+      ? `
         <p class="field-hint">${escapeHtml(t("entry.correct_hint"))}</p>
         <label class="field-label" for="correct-note">${escapeHtml(t("entry.correct_prompt"))}</label>
         <textarea id="correct-note" rows="3" ${this.correcting ? "disabled" : ""} placeholder="${escapeAttr(t("entry.correct_note_placeholder"))}">${escapeHtml(this.correctNote)}</textarea>
         <button type="button" class="btn btn--primary" data-action="correct" ${this.correcting || !this.correctNote.trim() ? "disabled" : ""}>
           ${escapeHtml(this.correcting ? t("entry.correcting") : t("entry.correct_action"))}
-        </button>
+        </button>`
+      : `
+        <button type="button" class="btn btn--primary" data-action="fill-ai" ${this.correcting ? "disabled" : ""}>
+          ${escapeHtml(this.correcting ? t("entry.correcting") : t("entry.ai.mode_fill"))}
+        </button>`;
+    const open =
+      this.correcting || this.correctDiff.length > 0 || this.correctError || (noteDriven && this.correctNote.trim())
+        ? " open"
+        : "";
+    return `
+      <details class="entry-section entry-correct"${open}>
+        <summary class="entry-section__title">${escapeHtml(t("entry.correct_title"))}</summary>
+        ${pillsHtml}
+        ${scanLineHtml}
+        ${modeBodyHtml}
         ${progressHtml}
         ${this.correctError ? `<p class="entry-correct-error">${escapeHtml(this.correctError)}</p>` : ""}
         ${diffHtml}
@@ -896,6 +965,14 @@ export class EntryForm extends HTMLElement {
   }
 
   bindCorrectHandlers() {
+    for (const pill of this.querySelectorAll("[data-ai-mode]")) {
+      pill.addEventListener("click", () => {
+        this.captureFormIntoSource();
+        const mode = pill.getAttribute("data-ai-mode");
+        this.pinnedAiMode = /** @type {"fill"|"reanalyze"|"recalculate"} */ (mode);
+        this.render();
+      });
+    }
     const noteEl = /** @type {HTMLTextAreaElement|null} */ (this.querySelector("#correct-note"));
     noteEl?.addEventListener("input", () => {
       this.correctNote = noteEl.value;
@@ -904,22 +981,22 @@ export class EntryForm extends HTMLElement {
       if (btn) btn.disabled = this.correcting || !this.correctNote.trim();
     });
     this.querySelector('[data-action="correct"]')?.addEventListener("click", () => this.onCorrectWithAi());
+    this.querySelector('[data-action="fill-ai"]')?.addEventListener("click", () => this.onFillWithAi());
   }
 
-  async onCorrectWithAi() {
-    if (!this.existing || this.correcting) return;
-    const note = this.correctNote.trim();
-    if (!note) return;
-    this.captureFormIntoSource();
-    const before = { ...this.existing };
-
+  /**
+   * Resolve the configured provider for AI actions (correct / fill): picks
+   * the primary provider, redirects to Settings when none is configured, and
+   * surfaces a key error. Null = caller must stop.
+   */
+  async resolveAiProvider() {
     const { listConfiguredProviders, loadProviderKey } = await import(
       "../lib/ai/key-storage.js"
     );
     const providers = await listConfiguredProviders();
     if (!providers.length) {
       location.hash = "#/settings?section=ai";
-      return;
+      return null;
     }
     const appPrefs = await prefs.load();
     /** @type {import('../lib/ai/key-storage.js').ProviderId} */
@@ -934,8 +1011,20 @@ export class EntryForm extends HTMLElement {
     if (!config) {
       this.correctError = t("entry.error_key_missing");
       this.render();
-      return;
+      return null;
     }
+    return { providerId, config };
+  }
+
+  async onCorrectWithAi() {
+    if (!this.existing || this.correcting) return;
+    const note = this.correctNote.trim();
+    if (!note) return;
+    this.captureFormIntoSource();
+    const before = { ...this.existing };
+
+    const resolved = await this.resolveAiProvider();
+    if (!resolved) return;
 
     this.correctAbort?.abort();
     const ac = new AbortController();
@@ -960,8 +1049,8 @@ export class EntryForm extends HTMLElement {
       const { analyzeFoodEntry } = await import("../lib/ai/food-analyze.js");
       const { buildCorrectDiff } = await import("../lib/ai/correct-diff.js");
       const estimate = await analyzeFoodEntry({
-        providerId: /** @type {any} */ (providerId),
-        config,
+        providerId: /** @type {any} */ (resolved.providerId),
+        config: resolved.config,
         text: description,
         signal: ac.signal,
         onPhase: (phase) => {
@@ -984,6 +1073,82 @@ export class EntryForm extends HTMLElement {
         time: this.existing.time,
         note,
         source: this.existing.source || "ai_estimated",
+      };
+      this.servingReady = false;
+      this.initServingState(this.existing);
+      this.nutritionLocked = true;
+      this.correctDiff = buildCorrectDiff(before, this.existing);
+      this.correcting = false;
+      this.correctPhase = null;
+      this.correctPartial = null;
+      this.render();
+    } catch (err) {
+      if (isAbortError(err) || ac.signal.aborted) {
+        this.correcting = false;
+        this.correctPhase = null;
+        return;
+      }
+      this.correctError = err instanceof Error ? err.message : String(err);
+      this.correcting = false;
+      this.correctPhase = null;
+      this.correctPartial = null;
+      this.render();
+    }
+  }
+
+  /**
+   * Fill-missing run (Android edit-sheet Fill mode parity): the AI estimates
+   * ONLY the fields the current draft is missing; the merge writes empty
+   * fields exclusively, so saved values can never be overwritten.
+   */
+  async onFillWithAi() {
+    if (!this.existing || this.correcting) return;
+    this.captureFormIntoSource();
+    const before = { ...this.existing };
+
+    const resolved = await this.resolveAiProvider();
+    if (!resolved) return;
+
+    this.correctAbort?.abort();
+    const ac = new AbortController();
+    this.correctAbort = ac;
+    this.correcting = true;
+    this.correctError = "";
+    this.correctDiff = [];
+    this.correctPartial = null;
+    this.correctPhase = ANALYSIS_PHASE.PREPARING;
+    this.render();
+
+    const draft = this.buildEntryFromForm() ?? before;
+
+    try {
+      const { fillFoodEntry } = await import("../lib/ai/food-analyze.js");
+      const { buildCorrectDiff } = await import("../lib/ai/correct-diff.js");
+      const estimate = await fillFoodEntry({
+        providerId: resolved.providerId,
+        config: resolved.config,
+        entry: draft,
+        signal: ac.signal,
+        onPhase: (phase) => {
+          this.correctPhase = phase;
+          this.render();
+        },
+        onPartial: (partial) => {
+          this.correctPartial = partial;
+          this.correctPhase = ANALYSIS_PHASE.CALLING_AI;
+          this.render();
+        },
+      });
+      if (ac.signal.aborted) return;
+
+      const merged = fillMissingFrom(before, estimate);
+      this.existing = {
+        ...merged,
+        id: before.id,
+        date: before.date,
+        time: before.time,
+        note: before.note,
+        source: before.source || "ai_estimated",
       };
       this.servingReady = false;
       this.initServingState(this.existing);

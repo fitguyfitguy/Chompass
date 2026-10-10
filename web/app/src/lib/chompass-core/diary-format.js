@@ -13,7 +13,7 @@ export const DIARY_FORMAT_VERSION = "1.6";
 export const DIARY_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6"]);
 
 /** Micronutrient wire-key <-> model-field pairs, in ItemDto declaration order. */
-const MICRO_FIELDS = [
+export const MICRO_FIELDS = [
   ["sugar_g", "sugarG"],
   ["added_sugar_g", "addedSugarG"],
   ["fiber_g", "fiberG"],

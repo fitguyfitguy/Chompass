@@ -322,6 +322,10 @@ export const tr = Object.freeze({
   "toast.copied": "Kopyalandı",
 
   // Entry / meal constituents
+  "entry.ai.mode_fill": "Eksikleri doldur",
+  "entry.ai.mode_reanalyze": "Yeniden analiz",
+  "entry.ai.mode_recalculate": "Yeniden hesapla",
+  "entry.ai.missing_line": "Eksik: {labels}",
   "entry.constituents.title": "Malzemeler",
   "entry.constituents.count": "Malzemeler ({count})",
   "entry.constituents.add": "Malzeme ekle",
