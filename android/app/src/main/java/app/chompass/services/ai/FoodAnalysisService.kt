@@ -143,6 +143,16 @@ internal const val CONSTITUENT_MIN_RESPONSE_TOKENS = 4096
  */
 internal const val CONSTITUENT_MACROS_MIN_RESPONSE_TOKENS = 2048
 
+/**
+ * Reasoning-capable models on capped providers (Anthropic / OpenAI-compatible,
+ * incl. Ollama) bill thinking tokens against max_tokens, so the 1024 default
+ * truncated calculateGoals before any JSON was emitted (deepseek-flash:
+ * finish=length with empty content, 2026-10-10). Capped providers get this
+ * floor for the goal-recalc op; Gemini is never capped. A user cap above the
+ * floor wins. PWA twin: calculate-goals.js GOALS_MIN_RESPONSE_TOKENS.
+ */
+internal const val GOAL_RECALC_MIN_RESPONSE_TOKENS = 4096
+
 /** Entry ops whose prompt embeds the constituents schema. */
 internal val ENTRY_CONSTITUENT_OPS = setOf("analyzeText", "analyzeAuto", "analyzeFood", "analyzeFoodMulti", "fillEntry")
 
@@ -205,13 +215,18 @@ internal fun entryNutrientUnitsFor(kind: EntryConstituentPromptKind): String =
 /** Effective response-token cap for an op: raised to the constituent floor
  *  when the op's schema embeds constituent rows — micros rows floor at
  *  [CONSTITUENT_MIN_RESPONSE_TOKENS] (#86), macros-only rows at
- *  [CONSTITUENT_MACROS_MIN_RESPONSE_TOKENS] (#97). */
+ *  [CONSTITUENT_MACROS_MIN_RESPONSE_TOKENS] (#97) — and to
+ *  [GOAL_RECALC_MIN_RESPONSE_TOKENS] for the goal-recalc op, whose reasoning
+ *  output counts against the cap on every provider that takes one. */
 internal fun floorResponseTokensForOp(op: String, userCap: Int, kind: EntryConstituentPromptKind): Int =
-    if (op !in ENTRY_CONSTITUENT_OPS) userCap
-    else when (kind) {
-        EntryConstituentPromptKind.MICROS -> maxOf(userCap, CONSTITUENT_MIN_RESPONSE_TOKENS)
-        EntryConstituentPromptKind.MACROS -> maxOf(userCap, CONSTITUENT_MACROS_MIN_RESPONSE_TOKENS)
-        EntryConstituentPromptKind.NONE, EntryConstituentPromptKind.LEAN -> userCap
+    when {
+        op == "calculateGoals" -> maxOf(userCap, GOAL_RECALC_MIN_RESPONSE_TOKENS)
+        op !in ENTRY_CONSTITUENT_OPS -> userCap
+        else -> when (kind) {
+            EntryConstituentPromptKind.MICROS -> maxOf(userCap, CONSTITUENT_MIN_RESPONSE_TOKENS)
+            EntryConstituentPromptKind.MACROS -> maxOf(userCap, CONSTITUENT_MACROS_MIN_RESPONSE_TOKENS)
+            EntryConstituentPromptKind.NONE, EntryConstituentPromptKind.LEAN -> userCap
+        }
     }
 
 private const val ENTRY_EMOJI_NULL_RULE =
