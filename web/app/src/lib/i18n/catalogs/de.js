@@ -599,6 +599,11 @@ export const de = Object.freeze({
 
   // entry.* (PWA UI audit sweep, 2026-08)
 
+  "entry.ai.mode_fill": "Fehlendes ergänzen",
+  "entry.ai.mode_reanalyze": "Neu analysieren",
+  "entry.ai.mode_recalculate": "Neu berechnen",
+  "entry.ai.missing_line": "Fehlt: {labels}",
+
   "entry.correct_action": "Mit KI korrigieren",
   "entry.correct_diff_hint": "Prüfe die aktualisierten Werte oben und tippe auf Speichern, um sie zu übernehmen.",
   "entry.correct_diff_title": "Was hat sich geändert",

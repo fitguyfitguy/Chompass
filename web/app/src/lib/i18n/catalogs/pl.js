@@ -322,6 +322,10 @@ export const pl = Object.freeze({
   "toast.copied": "Skopiowano",
 
   // Entry / meal constituents
+  "entry.ai.mode_fill": "Uzupełnij braki",
+  "entry.ai.mode_reanalyze": "Analizuj ponownie",
+  "entry.ai.mode_recalculate": "Przelicz ponownie",
+  "entry.ai.missing_line": "Brakuje: {labels}",
   "entry.constituents.title": "Składniki",
   "entry.constituents.count": "Składniki ({count})",
   "entry.constituents.add": "Dodaj składnik",

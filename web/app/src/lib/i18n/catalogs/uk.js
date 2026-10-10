@@ -322,6 +322,10 @@ export const uk = Object.freeze({
   "toast.copied": "Скопійовано",
 
   // Entry / meal constituents
+  "entry.ai.mode_fill": "Заповнити нестачу",
+  "entry.ai.mode_reanalyze": "Переаналізувати",
+  "entry.ai.mode_recalculate": "Перерахувати",
+  "entry.ai.missing_line": "Відсутнє: {labels}",
   "entry.constituents.title": "Інгредієнти",
   "entry.constituents.count": "Інгредієнти ({count})",
   "entry.constituents.add": "Додати інгредієнт",
