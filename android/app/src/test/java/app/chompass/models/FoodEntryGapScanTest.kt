@@ -15,7 +15,6 @@ import org.junit.Test
  *    (partial zeros are legit keto-style rows; blank rows can never match).
  */
 class FoodEntryGapScanTest {
-
     private fun constituent(
         name: String,
         calories: Int = 0,

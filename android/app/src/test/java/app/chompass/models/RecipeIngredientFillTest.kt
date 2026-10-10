@@ -14,7 +14,6 @@ import org.junit.Test
  * touching identity (id, quantityScale) or known values.
  */
 class RecipeIngredientFillTest {
-
     private fun gappedIngredient() = RecipeIngredient(
         name = "Cooked potatoes",
         baseCalories = 0,

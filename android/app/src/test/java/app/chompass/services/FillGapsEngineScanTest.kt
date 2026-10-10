@@ -15,7 +15,6 @@ import java.time.Instant
  * once-per-day / sticky-dismissal banner rules.
  */
 class FillGapsEngineScanTest {
-
     private fun gapped(name: String, ts: Instant = Instant.parse("2026-10-10T12:00:00Z")) = FoodEntry(
         name = name,
         calories = 0,
