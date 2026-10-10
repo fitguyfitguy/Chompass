@@ -44,4 +44,19 @@ class EntryConstituentTokenFloorTest {
         assertEquals(256, floorResponseTokensForOp("analyzeFoodMulti", 256, EntryConstituentPromptKind.NONE))
         assertEquals(256, floorResponseTokensForOp("analyzeFoodMulti", 256, EntryConstituentPromptKind.LEAN))
     }
+
+    @Test
+    fun goalRecalcOpGetsTheReasoningFloor() {
+        // Reasoning models on capped providers bill thinking tokens against
+        // max_tokens; at the 1024 default deepseek-flash hit finish=length
+        // with empty content before emitting any goal JSON.
+        assertEquals(4096, floorResponseTokensForOp("calculateGoals", 1024, EntryConstituentPromptKind.NONE))
+        assertEquals(4096, floorResponseTokensForOp("calculateGoals", 1024, EntryConstituentPromptKind.MICROS))
+        assertEquals(4096, floorResponseTokensForOp("calculateGoals", 512, EntryConstituentPromptKind.NONE))
+    }
+
+    @Test
+    fun goalRecalcUserCapAboveFloorWins() {
+        assertEquals(8192, floorResponseTokensForOp("calculateGoals", 8192, EntryConstituentPromptKind.NONE))
+    }
 }

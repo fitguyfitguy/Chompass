@@ -10,7 +10,9 @@ import {
   applyingFormulaGoals,
   locksFromFilledCustoms,
   lockConstraintsSection,
+  calculateGoalsWithAi,
 } from "../ai/calculate-goals.js";
+import { PROVIDERS } from "../ai/providers.js";
 
 test("parseGoalCalculation_clampsRanges", () => {
   const goals = parseGoalCalculation(
@@ -200,4 +202,39 @@ test("applyingFormulaGoals_keepsLockedCalories", () => {
   assert.equal(next.customCarbs, null);
   assert.equal(next.customFat, null);
   assert.equal(next.caloriesLocked, true);
+});
+
+test("calculateGoalsWithAi_floorsCappedProviderTokensForReasoning", async () => {
+  // Reasoning models on capped providers bill thinking tokens against
+  // max_tokens; the goal send must carry the 4096 floor, not the 1024
+  // provider default.
+  const original = PROVIDERS.anthropic.send;
+  /** @type {any[]} */
+  const requests = [];
+  PROVIDERS.anthropic.send = async (_config, req) => {
+    requests.push(req);
+    return { text: `{"calories":2100,"protein":140,"carbs":180,"fat":70,"reason":"ok"}` };
+  };
+  try {
+    await calculateGoalsWithAi({
+      providerId: "anthropic",
+      config: { apiKey: "test-key", model: "claude-haiku-4-5" },
+      profile: /** @type {any} */ ({
+        sex: "female",
+        age: 28,
+        heightCm: 165,
+        weightKg: 62,
+        activityLevel: "light",
+        goal: "maintain",
+        weeklyChangeKg: null,
+        ketoMode: false,
+        customCalories: null,
+      }),
+      prefsOverride: /** @type {any} */ ({ aiFeaturesEnabled: true }),
+    });
+  } finally {
+    PROVIDERS.anthropic.send = original;
+  }
+  assert.equal(requests.length, 1);
+  assert.equal(requests[0].maxTokens, 4096);
 });

@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Fixed
+
+- **Goal recalculation works with reasoning models** (Android & Web): reasoning models (DeepSeek Flash and friends) spend their answer budget on hidden thinking first, and at the default response cap the goal recalculation could come back empty and fail. The cap for the recalculation now leaves room for the thinking, matching how meal analysis was already protected.
+
 ## [5.5.0] - 2026-10-10
 
 ### Added
