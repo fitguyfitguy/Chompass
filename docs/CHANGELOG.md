@@ -8,7 +8,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
-- **Goal recalculation works with reasoning models** (Android & Web): reasoning models (DeepSeek Flash and friends) spend their answer budget on hidden thinking first, and at the default response cap the goal recalculation could come back empty and fail. The cap for the recalculation now leaves room for the thinking, matching how meal analysis was already protected.
+- **Reasoning models no longer truncate mid-answer** (Android & Web): reasoning models (DeepSeek Flash and friends) spend their answer budget on hidden thinking first, and at the default response cap replies could come back empty and fail, which showed up as failed goal recalculations. Cloud providers now always leave room for the thinking across chat, meal analysis, and goal recalculation; a higher cap you set yourself still wins, and local servers (Ollama) keep your cap exactly as set.
 
 ## [5.5.0] - 2026-10-10
 

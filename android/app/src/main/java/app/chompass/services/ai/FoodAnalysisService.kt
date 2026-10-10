@@ -123,35 +123,27 @@ private const val ENTRY_CONSTITUENTS_MICROS_RULE =
         "MUST sum to the matching meal total within ±20%."
 
 /**
- * #86: constituent rows carry 22 micro fields each; a multi-item reply needs
- * roughly 800-1400 tokens, past the default 1024 [maxResponseTokens] cap.
- * Capped providers (Anthropic / OpenAI-compatible, incl. Ollama) get this
- * floor for entry ops that embed the constituents schema; Gemini is never
- * capped. A user cap above the floor wins. PWA twin: food-analyze.js
- * CONSTITUENTS_MIN_RESPONSE_TOKENS.
+ * Reasoning models on every major API bill hidden thinking against the output
+ * cap (OpenAI max_completion_tokens, DeepSeek max_tokens, Gemini thoughts in
+ * maxOutputTokens, GLM reasoning_content inside completion tokens), so the
+ * 1024 default truncated replies before any content — calculateGoals came
+ * back finish=length with empty content on deepseek-flash (2026-10-10).
+ * Cloud providers get this floor on every AI call; a cap is a ceiling, not a
+ * spend target, so billing is unchanged and a user cap above the floor still
+ * wins. Ollama keeps the user cap verbatim: local models are the
+ * context-constrained ones, and a forced 4096 num_predict can exceed a small
+ * local context. On-device takes no cap at all. Subsumes the per-op
+ * constituent floors (#86/#97) and the goal-recalc floor.
  */
-internal const val CONSTITUENT_MIN_RESPONSE_TOKENS = 4096
+internal const val MIN_RESPONSE_TOKENS_CLOUD = 4096
 
 /**
- * #97: macros-only constituent rows (small cloud models, and local
- * OpenAI-compatible servers where the user cap stays the 1024 default) run
- * ~100 tokens each; 12 rows plus the meal total land past that cap and the
- * truncated reply reads as "Could not understand the AI response". Capped
- * providers get this smaller floor for entry ops that embed the
- * macros-constituents schema. PWA twin: food-analyze.js
- * CONSTITUENTS_MACROS_MIN_RESPONSE_TOKENS.
+ * Effective response-token cap for a cloud call: raised to
+ * [MIN_RESPONSE_TOKENS_CLOUD] when the user cap is lower; Ollama passes the
+ * user cap through untouched.
  */
-internal const val CONSTITUENT_MACROS_MIN_RESPONSE_TOKENS = 2048
-
-/**
- * Reasoning-capable models on capped providers (Anthropic / OpenAI-compatible,
- * incl. Ollama) bill thinking tokens against max_tokens, so the 1024 default
- * truncated calculateGoals before any JSON was emitted (deepseek-flash:
- * finish=length with empty content, 2026-10-10). Capped providers get this
- * floor for the goal-recalc op; Gemini is never capped. A user cap above the
- * floor wins. PWA twin: calculate-goals.js GOALS_MIN_RESPONSE_TOKENS.
- */
-internal const val GOAL_RECALC_MIN_RESPONSE_TOKENS = 4096
+internal fun effectiveResponseTokens(provider: AIProvider, userCap: Int): Int =
+    if (provider == AIProvider.OLLAMA) userCap else maxOf(userCap, MIN_RESPONSE_TOKENS_CLOUD)
 
 /** Entry ops whose prompt embeds the constituents schema. */
 internal val ENTRY_CONSTITUENT_OPS = setOf("analyzeText", "analyzeAuto", "analyzeFood", "analyzeFoodMulti", "fillEntry")
@@ -211,23 +203,6 @@ internal fun entryConstituentsRuleFor(kind: EntryConstituentPromptKind): String 
 /** #68: the lean schema has no micro fields, so no mg/mcg units sentence. */
 internal fun entryNutrientUnitsFor(kind: EntryConstituentPromptKind): String =
     if (kind == EntryConstituentPromptKind.LEAN) ENTRY_NUTRIENT_UNITS_LEAN else ENTRY_NUTRIENT_UNITS
-
-/** Effective response-token cap for an op: raised to the constituent floor
- *  when the op's schema embeds constituent rows — micros rows floor at
- *  [CONSTITUENT_MIN_RESPONSE_TOKENS] (#86), macros-only rows at
- *  [CONSTITUENT_MACROS_MIN_RESPONSE_TOKENS] (#97) — and to
- *  [GOAL_RECALC_MIN_RESPONSE_TOKENS] for the goal-recalc op, whose reasoning
- *  output counts against the cap on every provider that takes one. */
-internal fun floorResponseTokensForOp(op: String, userCap: Int, kind: EntryConstituentPromptKind): Int =
-    when {
-        op == "calculateGoals" -> maxOf(userCap, GOAL_RECALC_MIN_RESPONSE_TOKENS)
-        op !in ENTRY_CONSTITUENT_OPS -> userCap
-        else -> when (kind) {
-            EntryConstituentPromptKind.MICROS -> maxOf(userCap, CONSTITUENT_MIN_RESPONSE_TOKENS)
-            EntryConstituentPromptKind.MACROS -> maxOf(userCap, CONSTITUENT_MACROS_MIN_RESPONSE_TOKENS)
-            EntryConstituentPromptKind.NONE, EntryConstituentPromptKind.LEAN -> userCap
-        }
-    }
 
 private const val ENTRY_EMOJI_NULL_RULE =
     "For \"emoji\" pick the single most specific food emoji for this dish. " +
@@ -1644,7 +1619,7 @@ class FoodAnalysisService(
         val primaryKey = keyLookup?.invoke(primary)
             ?: AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
         if (primary.requiresApiKey && primaryKey.isNullOrEmpty()) throw AiError.NoApiKey
-        val maxTokens = prefs.maxResponseTokens.first()
+        val maxTokens = effectiveResponseTokens(primary, prefs.maxResponseTokens.first())
         val readTimeoutSeconds = prefs.aiReadTimeoutSeconds.first()
         val httpClient = AiHttp.clientForProvider(okHttp, primary, readTimeoutSeconds)
         val context = prefs.userContext.first()
@@ -1858,7 +1833,7 @@ class FoodAnalysisService(
         val primaryKey = keyLookup?.invoke(primary)
             ?: AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
         val userCap = cfg.maxResponseTokens
-        val maxTokens = floorResponseTokensForOp(op, userCap, kind)
+        val maxTokens = effectiveResponseTokens(primary, userCap)
         if (PerfLog.enabled) {
             PerfLog.event(
                 "op=$op tokens model=$primaryModel kind=$kind userCap=$userCap effective=$maxTokens" +
@@ -1917,7 +1892,7 @@ class FoodAnalysisService(
                     assembler.reset()
                     val fallbackBody = rebuildPrompt?.invoke(fallback.provider, fallbackModel, fallbackKind) ?: prompt
                     val fallbackPrompt = if (rebuildPrompt != null) wrapPrompt(fallbackBody) else finalPrompt
-                    val fallbackMaxTokens = floorResponseTokensForOp(op, userCap, fallbackKind)
+                    val fallbackMaxTokens = effectiveResponseTokens(fallback.provider, userCap)
                     dispatch(
                         fallback.provider, fallbackModel, fallback.baseUrl, fallback.apiKey, fallbackPrompt, aiImages,
                         fallbackMaxTokens, geminiGoogleSearch, readTimeoutSeconds,

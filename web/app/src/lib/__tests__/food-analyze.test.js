@@ -501,7 +501,7 @@ test("openaiCompatible_imageRequest_usesVisionModel", async () => {
   }
 });
 
-test("analyzeFoodEntry_constituentsRaiseCappedProviderTokenFloor", async () => {
+test("analyzeFoodEntry_cappedProvidersCarryResponseTokenFloor", async () => {
   const original = PROVIDERS.anthropic.send;
   /** @type {Array<number|undefined>} */
   const maxTokensSeen = [];
@@ -534,11 +534,12 @@ test("analyzeFoodEntry_constituentsRaiseCappedProviderTokenFloor", async () => {
   } finally {
     PROVIDERS.anthropic.send = original;
   }
-  // Micros rows floor at 4096; macros-only rows (small model, #97) at 2048;
-  // constituents off keeps the caller default.
+  // Reasoning models bill hidden thinking against max_tokens, so every
+  // analyze request carries the 4096 floor regardless of prompt kind or
+  // constituents toggle.
   assert.equal(maxTokensSeen[0], 4096);
-  assert.equal(maxTokensSeen[1], 2048);
-  assert.equal(maxTokensSeen[2], undefined);
+  assert.equal(maxTokensSeen[1], 4096);
+  assert.equal(maxTokensSeen[2], 4096);
 });
 
 test("anthropicSend_threadsMaxTokensIntoBody", async () => {
@@ -620,7 +621,7 @@ test("analyzeFoodEntry_microsSendFailure_retriesOnceWithMacrosPrompt", async () 
     assert.ok(systems[1].includes("constituents"));
     assert.ok(!systems[1].includes("Each constituent micronutrient MUST sum"));
     assert.equal(maxTokens[0], 4096);
-    assert.equal(maxTokens[1], 2048);
+    assert.equal(maxTokens[1], 4096);
   } finally {
     PROVIDERS.anthropic.send = original;
   }

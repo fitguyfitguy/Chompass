@@ -26,8 +26,8 @@ import org.robolectric.annotation.Config
  * #97 (L2): MICROS-constituents entry prompts ask for 22 micro fields per
  * row; small local models truncate or mangle the reply and the entry fails
  * with "Could not understand the AI response" / "truncated twice". A failed
- * MICROS attempt retries once at the macros-only schema with its 2048-token
- * floor; a successful first attempt must stay a single request with the
+ * MICROS attempt retries once at the macros-only schema; a successful first
+ * attempt must stay a single request with the
  * unchanged MICROS prompt. Bounded: one finish-less one-shot retry and one
  * downshift per analysis.
  */
@@ -116,7 +116,7 @@ class EntryConstituentDownshiftTest {
         assertEquals(4096, firstBody.getInt("max_tokens"))
         assertTrue(promptOf(firstBody).contains("Each constituent micronutrient MUST sum"))
         val downshiftBody = bodyOf(requests[3])
-        assertEquals(2048, downshiftBody.getInt("max_tokens"))
+        assertEquals(4096, downshiftBody.getInt("max_tokens"))
         assertTrue("downshift keeps constituent rows", promptOf(downshiftBody).contains("\"constituents\""))
         assertFalse("downshift drops the per-row micros ask", promptOf(downshiftBody).contains("Each constituent micronutrient MUST sum"))
     }
@@ -194,7 +194,7 @@ class EntryConstituentDownshiftTest {
         val requests = (0 until 4).map { bodyOf(server.takeRequest()) }
         assertTrue(requests[0].getBoolean("stream"))
         assertFalse(requests[1].has("stream"))
-        assertEquals(2048, requests[3].getInt("max_tokens"))
+        assertEquals(4096, requests[3].getInt("max_tokens"))
         assertFalse("final leg is the MACROS downshift", promptOf(requests[3]).contains("Each constituent micronutrient MUST sum"))
     }
 }
