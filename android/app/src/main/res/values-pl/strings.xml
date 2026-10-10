@@ -1585,6 +1585,11 @@
     <string name="settings_ai_read_timeout">Limit czasu odczytu AI</string>
     <string name="settings_ai_read_timeout_unit">s</string>
     <string name="settings_ai_read_timeout_value">%1$d s</string>
+    <string name="settings_goal_tier">Prompt przeliczania celów</string>
+    <string name="settings_goal_tier_footer">Ile danych przeliczanie celów wysyła do modelu. Bezpieczne wysyła zwięzłe podsumowania, odpowiednie dla małych lub lokalnych modeli. Inteligentne wysyła pełną historię wagi i jedzenia, żeby duży model sam ocenił trendy. Automatycznie wybiera na podstawie nazwy modelu.</string>
+    <string name="goal_tier_auto">Automatycznie</string>
+    <string name="goal_tier_safe">Bezpieczne (zwięzłe)</string>
+    <string name="goal_tier_smart">Inteligentne (pełna historia)</string>
     <string name="settings_serving_unit_mode">Wykrywanie wielkości porcji</string>
     <string name="settings_serving_unit_heuristics">Reguły wielkości porcji</string>
     <string name="sheet_serving_unit_mode">Określanie jednostki porcji</string>

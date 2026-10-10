@@ -1,5 +1,6 @@
 package app.chompass.ui.settings
 
+import app.chompass.data.GoalRecalcTierOverride
 import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.data.WeatherRepository
 import app.chompass.ui.components.rememberChompassSheetState
@@ -217,6 +218,14 @@ internal fun SettingsSheets(
                     selected = { it == ui.openRouterReasoningEffort },
                     onSelect = { vm.setOpenRouterReasoningEffort(it); onDismiss() },
                     footer = stringResource(R.string.settings_ai_reasoning_effort_footer),
+                )
+                SettingsSheet.GOAL_RECALC_TIER -> ListSheet(
+                    title = stringResource(R.string.settings_goal_tier),
+                    items = GoalRecalcTierOverride.entries,
+                    label = { stringResource(it.displayNameRes) },
+                    selected = { it == ui.goalRecalcTier },
+                    onSelect = { vm.setGoalRecalcTier(it); onDismiss() },
+                    footer = stringResource(R.string.settings_goal_tier_footer),
                 )
                 SettingsSheet.VISION_MODEL -> ListSheet(
                     title = stringResource(R.string.settings_ai_vision_model),

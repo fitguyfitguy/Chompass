@@ -137,6 +137,33 @@ internal suspend fun PreferencesStore.setOpenRouterReasoningEffortImpl(e: OpenRo
     dataStore.edit { it[Keys.OPENROUTER_REASONING_EFFORT] = e.storageKey }
 }
 
+/** Manual override for the goal-recalc prompt tier (#123): local model names
+ *  can't be classified by isSmallCloudModel, so users on Ollama/Custom
+ *  endpoints can force the compact Safe prompt. AUTO keeps the model-name
+ *  rules (on-device and small cloud models get Safe, everything else Smart). */
+enum class GoalRecalcTierOverride(val storageKey: String) {
+    AUTO("auto"), SAFE("safe"), SMART("smart");
+
+    @get:StringRes
+    val displayNameRes: Int get() = when (this) {
+        AUTO -> R.string.goal_tier_auto
+        SAFE -> R.string.goal_tier_safe
+        SMART -> R.string.goal_tier_smart
+    }
+
+    companion object {
+        fun fromStorage(raw: String?): GoalRecalcTierOverride =
+            entries.firstOrNull { it.storageKey == raw } ?: AUTO
+    }
+}
+
+internal val PreferencesStore.goalRecalcTierImpl: Flow<GoalRecalcTierOverride> get() =
+    dataStore.data.map { GoalRecalcTierOverride.fromStorage(it[Keys.GOAL_RECALC_TIER]) }
+
+internal suspend fun PreferencesStore.setGoalRecalcTierImpl(v: GoalRecalcTierOverride) {
+    dataStore.edit { it[Keys.GOAL_RECALC_TIER] = v.storageKey }
+}
+
 internal const val MIN_MAX_RESPONSE_TOKENS = 256
 internal const val MAX_MAX_RESPONSE_TOKENS = 16384
 internal const val DEFAULT_AI_READ_TIMEOUT_SECONDS = 180
@@ -297,6 +324,7 @@ internal data class AiCallConfig(
     val aiReadTimeoutSeconds: Int,
     val geminiGoogleSearch: Boolean,
     val reasoningEffort: OpenRouterReasoningEffort,
+    val goalRecalcTier: GoalRecalcTierOverride,
     val fallbackEnabled: Boolean,
     val fallbackProvider: AIProvider,
     val fallbackModel: String?,
@@ -322,6 +350,7 @@ internal suspend fun PreferencesStore.aiCallConfigImpl(): AiCallConfig {
         aiReadTimeoutSeconds = clampAiReadTimeoutSeconds(prefs[Keys.AI_READ_TIMEOUT_SECONDS] ?: DEFAULT_AI_READ_TIMEOUT_SECONDS),
         geminiGoogleSearch = prefs[Keys.GEMINI_GOOGLE_SEARCH_ENABLED] ?: false,
         reasoningEffort = OpenRouterReasoningEffort.fromStorage(prefs[Keys.OPENROUTER_REASONING_EFFORT]),
+        goalRecalcTier = GoalRecalcTierOverride.fromStorage(prefs[Keys.GOAL_RECALC_TIER]),
         fallbackEnabled = prefs[Keys.FALLBACK_ENABLED] ?: true,
         fallbackProvider = fallbackProvider,
         fallbackModel = prefs[Keys.FALLBACK_MODEL],

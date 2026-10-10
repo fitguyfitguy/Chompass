@@ -1272,6 +1272,11 @@
     <string name="settings_ai_read_timeout">AI 読み取りタイムアウト</string>
     <string name="settings_ai_read_timeout_unit">秒</string>
     <string name="settings_ai_read_timeout_value">%1$d 秒</string>
+    <string name="settings_goal_tier">目標再計算プロンプト</string>
+    <string name="settings_goal_tier_footer">目標の再計算でモデルに送るデータの量です。安全はコンパクトな要約を送り、小さいモデルやローカルモデルに向いています。スマートは体重と食事の全履歴を送るので、大きなモデルが傾向を自ら判断できます。自動はモデル名で選びます。</string>
+    <string name="goal_tier_auto">自動</string>
+    <string name="goal_tier_safe">安全（コンパクト）</string>
+    <string name="goal_tier_smart">スマート（全履歴）</string>
     <string name="settings_ai_reasoning_effort">推論の深さ</string>
     <string name="settings_ai_reasoning_effort_footer">OpenRouter モデル：思考予算を設定します。カスタムサーバーと Ollama：サーバーが対応していれば reasoning_effort を送信します。サーバーがリクエストを拒否する場合は自動を選んでください。</string>
     <string name="settings_ai_vision_model">ビジョンモデル</string>

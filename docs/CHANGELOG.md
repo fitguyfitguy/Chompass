@@ -10,10 +10,12 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **Fill in missing nutrition** (Android): meals imported from Mealie or logged by name often carry no macros or micronutrients. The edit sheet now offers a Fill missing action that asks the AI for only the empty values, alongside Reanalyze (full re-read of the meal) and Recalculate (re-estimate for an edited ingredient mix). Existing values are never overwritten.
 - **Fill missing data for many meals at once** (Android): when favorites or this month's diary are missing calories, protein, carbs or fat (or carry empty ingredient rows), Home shows a banner that opens a list of everything affected. Fill meals one by one or all at once (the app tells you how many AI requests that means), review what each fill would add, and apply. Undo on the confirmation snackbar restores the originals, and a favorite can optionally update today's logged copies of the same meal without extra AI requests. The banner shows at most once a day and stays away for a list you dismissed.
+- **Choose how much data the goal recalc sends** (Android): a new Goal recalc prompt option for Ollama and custom endpoints. Safe sends compact summaries (right for small or local models), Smart sends your full weight and food history for a large model to judge, Auto keeps deciding by model name. Follows Codeberg [#123](https://codeberg.org/fitguy/Chompass/issues/123) by [@mik112](https://codeberg.org/mik112).
 
 ### Fixed
 
 - **Portion edits update the totals right away** (Android): in the food review and edit sheets, the total grams and the calorie and macro numbers stayed at the old serving until you closed the quantity editor or saved. They now follow the amount wheel while you scroll it.
+- **Coach keeps talking to local servers that omit tool-call ids** (Android): LM Studio, llama.cpp and friends can return tool calls with empty ids; the coach then left one unanswered and every later request on that conversation could fail. Ids are now filled in so the pairing stays intact. Follows Codeberg [#123](https://codeberg.org/fitguy/Chompass/issues/123) by [@mik112](https://codeberg.org/mik112).
 
 ## [5.4.1] - 2026-10-08
 

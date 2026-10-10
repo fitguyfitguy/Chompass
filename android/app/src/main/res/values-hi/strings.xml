@@ -1273,6 +1273,11 @@
     <string name="settings_ai_read_timeout">AI रीड टाइमआउट</string>
     <string name="settings_ai_read_timeout_unit">से</string>
     <string name="settings_ai_read_timeout_value">%1$d से</string>
+    <string name="settings_goal_tier">लक्ष्य पुनः गणना प्रॉम्प्ट</string>
+    <string name="settings_goal_tier_footer">लक्ष्य पुनः गणना मॉडल को कितना डेटा भेजती है। सुरक्षित कॉम्पैक्ट सारांश भेजता है, जो छोटे या लोकल मॉडल के लिए सही है। स्मार्ट आपका पूरा वज़न और भोजन इतिहास भेजता है ताकि बड़ा मॉडल रुझान खुद आँक सके। ऑटो मॉडल नाम से चुनता है।</string>
+    <string name="goal_tier_auto">ऑटो</string>
+    <string name="goal_tier_safe">सुरक्षित (कॉम्पैक्ट)</string>
+    <string name="goal_tier_smart">स्मार्ट (पूरा इतिहास)</string>
     <string name="settings_ai_reasoning_effort">तर्क प्रयास</string>
     <string name="settings_ai_reasoning_effort_footer">OpenRouter मॉडल: सोच बजट तय करता है। कस्टम और Ollama सर्वर: सर्वर समर्थन करे तो reasoning_effort भेजता है। अगर सर्वर अनुरोध अस्वीकार करे, तो ऑटो चुनें।</string>
     <string name="settings_ai_vision_model">विज़न मॉडल</string>
