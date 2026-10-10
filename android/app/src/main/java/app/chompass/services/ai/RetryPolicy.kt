@@ -50,8 +50,17 @@ object RetryPolicy {
     /** Like [execute], but keeps the response Content-Type for parse-failure logs. */
     internal suspend fun executeText(callFactory: () -> Call): AiHttpText {
         open(callFactory).use { response ->
+            // A server closing mid-body (llama.cpp context drop, Ollama crash)
+            // throws here, not in await(). Map it like every other IO failure
+            // (#123): the raw escape rendered as the generic "Chat failed" string
+            // and left no diagnostic.
+            val body = try {
+                response.body?.string().orEmpty()
+            } catch (io: IOException) {
+                throw AiError.Network(io)
+            }
             return AiHttpText(
-                body = response.body?.string().orEmpty(),
+                body = body,
                 contentType = response.header("Content-Type"),
             )
         }
@@ -81,10 +90,14 @@ object RetryPolicy {
             // Cap the buffered error body: an oversized (or hostile) body must
             // not be read in full just to parse one message string out of it.
             val bodyStr = response.use { resp ->
-                resp.body?.source()?.let { source ->
-                    source.request(MAX_ERROR_BODY_BYTES + 1)
-                    source.readUtf8(minOf(source.buffer.size, MAX_ERROR_BODY_BYTES))
-                }.orEmpty()
+                // A truncated error body must not mask the HTTP status: fall back to
+                // the empty string so the message becomes "HTTP <code>".
+                runCatching {
+                    resp.body?.source()?.let { source ->
+                        source.request(MAX_ERROR_BODY_BYTES + 1)
+                        source.readUtf8(minOf(source.buffer.size, MAX_ERROR_BODY_BYTES))
+                    }.orEmpty()
+                }.getOrDefault("")
             }
             val code = response.code
             val raw = parseErrorMessage(bodyStr)?.takeIf { it.isNotEmpty() } ?: "HTTP $code"
