@@ -15,7 +15,6 @@ import org.junit.Test
  * name match and unmatched analysis rows are dropped.
  */
 class FillMissingMergeTest {
-
     private fun mealieEntry(
         servingGrams: Double? = null,
         fiber: Double? = null,

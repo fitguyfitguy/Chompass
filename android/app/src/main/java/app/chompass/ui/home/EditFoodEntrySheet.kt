@@ -71,17 +71,14 @@ import app.chompass.ui.util.clockTimePattern
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.text.style.TextOverflow
 import app.chompass.R
 import app.chompass.models.LocaleFormat
 import app.chompass.models.EnergyFormat
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
-import app.chompass.models.GapMacroField
 import app.chompass.models.fillMissingFrom
 import app.chompass.models.gapReport
 import app.chompass.models.microsStaleFor
