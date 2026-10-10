@@ -1297,6 +1297,11 @@
     <string name="recipe_builder_log_now">Enregistrer maintenant</string>
     <string name="recipe_builder_name_placeholder">Nom de la recette</string>
     <string name="recipe_builder_no_ingredients">Aucun ingrédient pour le moment</string>
+    <plurals name="recipe_builder_fill_missing">
+        <item quantity="one">Il manque des valeurs nutritionnelles à un ingrédient</item>
+        <item quantity="other">Il manque des valeurs nutritionnelles à %1$d ingrédients</item>
+    </plurals>
+    <string name="recipe_builder_filling">Remplissage %1$d sur %2$d…</string>
     <string name="recipe_builder_remove_ingredient">Retirer l\'ingrédient</string>
     <string name="recipe_builder_save">Enregistrer</string>
     <string name="recipe_builder_scale_format">%1$.2fx</string>

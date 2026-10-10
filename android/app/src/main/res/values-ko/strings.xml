@@ -1240,6 +1240,11 @@
     <string name="recipe_builder_log_now">지금 기록</string>
     <string name="recipe_builder_name_placeholder">레시피 이름</string>
     <string name="recipe_builder_no_ingredients">아직 재료가 없어요</string>
+    <plurals name="recipe_builder_fill_missing">
+        <item quantity="one">영양값이 없는 재료가 %1$d개 있어요</item>
+        <item quantity="other">영양값이 없는 재료가 %1$d개 있어요</item>
+    </plurals>
+    <string name="recipe_builder_filling">%1$d / %2$d개 채우는 중…</string>
     <string name="recipe_builder_remove_ingredient">재료 제거</string>
     <string name="recipe_builder_save">저장</string>
     <string name="recipe_builder_title_edit">레시피 편집</string>

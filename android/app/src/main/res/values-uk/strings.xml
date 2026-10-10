@@ -1188,6 +1188,11 @@
     <string name="recipe_builder_log_now">Записати зараз</string>
     <string name="recipe_builder_name_placeholder">Назва рецепта</string>
     <string name="recipe_builder_no_ingredients">Інгредієнтів ще немає</string>
+    <plurals name="recipe_builder_fill_missing">
+        <item quantity="one">В %1$d інгредієнта немає значень харчової цінності</item>
+        <item quantity="other">У %1$d інгредієнтів немає значень харчової цінності</item>
+    </plurals>
+    <string name="recipe_builder_filling">Заповнення %1$d з %2$d…</string>
     <string name="recipe_builder_remove_ingredient">Прибрати інгредієнт</string>
     <string name="recipe_builder_save">Зберегти</string>
     <string name="recipe_builder_title_edit">Змінити рецепт</string>

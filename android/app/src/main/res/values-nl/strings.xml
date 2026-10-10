@@ -1220,6 +1220,11 @@
     <string name="recipe_builder_log_now">Nu loggen</string>
     <string name="recipe_builder_name_placeholder">Receptnaam</string>
     <string name="recipe_builder_no_ingredients">Nog geen ingrediënten</string>
+    <plurals name="recipe_builder_fill_missing">
+        <item quantity="one">Bij één ingrediënt ontbreken voedingswaarden</item>
+        <item quantity="other">Bij %1$d ingrediënten ontbreken voedingswaarden</item>
+    </plurals>
+    <string name="recipe_builder_filling">Invullen %1$d van %2$d…</string>
     <string name="recipe_builder_remove_ingredient">Ingrediënt verwijderen</string>
     <string name="recipe_builder_save">Opslaan</string>
     <string name="recipe_builder_title_edit">Recept bewerken</string>

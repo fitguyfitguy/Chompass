@@ -1237,6 +1237,11 @@
     <string name="recipe_builder_log_now">Registrar agora</string>
     <string name="recipe_builder_name_placeholder">Nome da receita</string>
     <string name="recipe_builder_no_ingredients">Ainda sem ingredientes</string>
+    <plurals name="recipe_builder_fill_missing">
+        <item quantity="one">Faltam valores nutricionais em um ingrediente</item>
+        <item quantity="other">Faltam valores nutricionais em %1$d ingredientes</item>
+    </plurals>
+    <string name="recipe_builder_filling">Preenchendo %1$d de %2$d…</string>
     <string name="recipe_builder_remove_ingredient">Remover ingrediente</string>
     <string name="recipe_builder_save">Salvar</string>
     <string name="recipe_builder_title_edit">Editar receita</string>

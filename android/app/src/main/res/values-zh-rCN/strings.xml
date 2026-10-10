@@ -1242,6 +1242,11 @@
     <string name="recipe_builder_log_now">立即记录</string>
     <string name="recipe_builder_name_placeholder">食谱名称</string>
     <string name="recipe_builder_no_ingredients">尚无配料</string>
+    <plurals name="recipe_builder_fill_missing">
+        <item quantity="one">%1$d 个食材缺少营养值</item>
+        <item quantity="other">%1$d 个食材缺少营养值</item>
+    </plurals>
+    <string name="recipe_builder_filling">正在填写第 %1$d 个，共 %2$d 个…</string>
     <string name="recipe_builder_remove_ingredient">移除配料</string>
     <string name="recipe_builder_save">保存</string>
     <string name="recipe_builder_title_edit">编辑食谱</string>

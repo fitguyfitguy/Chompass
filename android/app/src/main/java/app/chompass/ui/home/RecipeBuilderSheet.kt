@@ -35,10 +35,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -49,6 +52,10 @@ import app.chompass.R
 import app.chompass.models.FoodEntry
 import app.chompass.models.Recipe
 import app.chompass.models.RecipeIngredient
+import app.chompass.models.fillMissingFrom
+import app.chompass.models.gapReport
+import app.chompass.services.ai.AiError
+import app.chompass.services.ai.userMessage
 import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.energyText
@@ -56,6 +63,7 @@ import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
+import kotlinx.coroutines.launch
 
 /**
  * Bottom sheet for building/editing a [Recipe]: a name, a meal type, and an
@@ -69,6 +77,7 @@ import app.chompass.ui.theme.AppTextOpacity
 fun RecipeBuilderSheet(
     container: AppContainer,
     recipe: Recipe,
+    aiFeaturesEnabled: Boolean = true,
     onDismiss: () -> Unit,
     onSave: (Recipe) -> Unit,
     onLogNow: (Recipe) -> Unit
@@ -87,6 +96,50 @@ fun RecipeBuilderSheet(
     val canSave = name.isNotBlank()
     val canLog = canSave && ingredients.isNotEmpty()
     val isNew = recipe.ingredients.isEmpty() && recipe.name.isBlank()
+
+    // WP2 fill-missing: ingredients whose base (1x) macro values are gapped
+    // (Mealie-style zeros — the manual-entry dialog refuses 0 kcal, so gaps
+    // come from favorites-sourced or imported rows). Macro-only gate, same
+    // rationale as the Home banner: per-ingredient micros would flag nearly
+    // every row.
+    val scope = rememberCoroutineScope()
+    var fillingStep by remember { mutableStateOf<Int?>(null) }
+    var fillTotal by remember { mutableStateOf(0) }
+    var fillError by remember { mutableStateOf<String?>(null) }
+    val gappedIngredients = remember(ingredients) {
+        ingredients.filter { it.toFillCandidate().gapReport().hasMacroGaps }
+    }
+    val context = androidx.compose.ui.platform.LocalContext.current
+
+    // Sequential text-only fill of every gapped ingredient; each result lands
+    // in the ingredient list immediately (totals update live), Save commits,
+    // dismiss discards. Stops at the first failure; already-filled rows stay.
+    fun runFill() {
+        if (fillingStep != null) return
+        scope.launch {
+            fillError = null
+            try {
+                val queue = ingredients.filter { it.toFillCandidate().gapReport().hasMacroGaps }
+                fillTotal = queue.size
+                for ((step, ingredient) in queue.withIndex()) {
+                    fillingStep = step
+                    val candidate = ingredient.toFillCandidate()
+                    val analysis = container.foodAnalysis.fillEntry(candidate)
+                    val merged = candidate.fillMissingFrom(analysis)
+                    if (merged != candidate) {
+                        ingredients = ingredients.map {
+                            if (it.id == ingredient.id) it.filledFrom(merged) else it
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                fillError = (e as? AiError)?.userMessage(context)
+                    ?: context.getString(R.string.edit_reprocessing_failed)
+            } finally {
+                fillingStep = null
+            }
+        }
+    }
 
     ChompassBottomSheet(
         onDismiss = onDismiss,
@@ -205,6 +258,47 @@ fun RecipeBuilderSheet(
                             ingredients = ingredients.filterNot { it.id == ingredient.id }
                         }
                     )
+                }
+
+                // WP2 fill-missing: same note family as MissingValuesNote —
+                // muted scan line + primary action; Save commits, dismiss
+                // discards (undo for free).
+                if (aiFeaturesEnabled && gappedIngredients.isNotEmpty()) {
+                    item {
+                        Column(
+                            Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            val step = fillingStep
+                            if (step != null) {
+                                Text(
+                                    stringResource(R.string.recipe_builder_filling, step + 1, fillTotal),
+                                    fontSize = 13.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+                                )
+                            } else {
+                                Text(
+                                    pluralStringResource(
+                                        R.plurals.recipe_builder_fill_missing,
+                                        gappedIngredients.size,
+                                        gappedIngredients.size,
+                                    ),
+                                    fontSize = 13.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                )
+                                Text(
+                                    stringResource(R.string.edit_ai_missing_action),
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.clickable { runFill() },
+                                )
+                            }
+                            fillError?.let {
+                                Text(it, color = Color.Red, fontSize = 13.sp)
+                            }
+                        }
+                    }
                 }
 
                 item {
