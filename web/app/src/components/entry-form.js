@@ -143,10 +143,14 @@ function missingFieldLabels(gaps) {
     fatG: t("day_types.fat_g"),
   };
   const labels = gaps.missingMacros.map((m) => macroLabels[m]);
+  const microSet = new Set(gaps.missingMicros);
+  const microLabels = [];
   for (const [modelKey, labelKey] of MICRO_FIELDS) {
-    if (gaps.missingMicros.includes(modelKey)) labels.push(t(labelKey));
+    if (microSet.has(modelKey)) microLabels.push(t(labelKey));
   }
-  if (gaps.missingMicros.includes("fiberG")) labels.push(t("entry.fiber_g"));
+  // Canonical ItemDto micro order puts fiber third (after sugar/added sugar).
+  if (microSet.has("fiberG")) microLabels.splice(2, 0, t("entry.fiber_g"));
+  labels.push(...microLabels);
   return labels.join(", ");
 }
 

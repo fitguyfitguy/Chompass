@@ -556,6 +556,9 @@ export const de = Object.freeze({
   "diary.duplicate": "Duplizieren",
   "diary.edit_saved_food": "Gespeichertes Essen bearbeiten",
   "diary.favorite": "Favorit",
+  "diary.fill_applied": "{n} Einträge ergänzt",
+  "diary.fill_banner": "{n} Mahlzeiten haben fehlende Nährwertdaten",
+  "diary.fill_missing": "Fehlendes ergänzen",
   "diary.loading": "Lädt…",
   "diary.macros": "Makros",
   "diary.meal_type": "Mahlzeit",
@@ -661,6 +664,17 @@ export const de = Object.freeze({
   "entry.total": "Gesamt",
   "entry.unfavorite": "Favorit entfernen",
   "entry.unlock": "Entsperren",
+
+  // gaps.* (AI fill-missing: Home banner + gaps view)
+  "gaps.apply": "Übernehmen",
+  "gaps.apply_all": "Alle übernehmen",
+  "gaps.retry": "Erneut versuchen",
+  "gaps.run": "Mit KI ergänzen",
+  "gaps.state_failed": "Fehlgeschlagen",
+  "gaps.state_filled": "Ergänzt",
+  "gaps.state_pending": "Ausstehend",
+  "gaps.state_running": "Ergänze…",
+  "gaps.title": "Fehlende Daten ergänzen",
 
   // errors.* (PWA UI audit sweep, 2026-08)
   "errors.key_missing": "Anbieterschlüssel fehlt. Füge ihn in den Einstellungen neu hinzu.",
