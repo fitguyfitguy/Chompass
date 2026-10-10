@@ -12,8 +12,10 @@ import java.util.UUID
 /**
  * Mealie REST recipe JSON → Chompass [Recipe]. Pure; no network.
  *
- * Ingredients keep culinary display text and zero macros. Recipe-level
- * nutrition is copied only when Mealie sends parseable numbers.
+ * Ingredients keep zero macros; the food name is split from its amount/unit
+ * when Mealie sends structured parts, otherwise the display text is kept
+ * whole. Recipe-level nutrition is copied only when Mealie sends parseable
+ * numbers, as sent (Mealie does not scale by servings).
  */
 object MealieRecipeMapper {
     private const val TAG = "MealieRecipes"
@@ -51,6 +53,7 @@ object MealieRecipeMapper {
             nutritionFiber = nutrition.number("fiberContent", "fiber_content"),
             nutritionSugar = nutrition.number("sugarContent", "sugar_content"),
             nutritionSodium = nutrition.number("sodiumContent", "sodium_content"),
+            servingsPerRecipe = obj.number("recipeServings", "recipe_servings", "recipeYieldQuantity"),
         )
     }
 
@@ -76,21 +79,60 @@ object MealieRecipeMapper {
         if (arr == null) return emptyList()
         val out = ArrayList<RecipeIngredient>(arr.length())
         for (i in 0 until arr.length()) {
-            val display = when (val el = arr.opt(i)) {
-                is String -> el.trim()
-                is JSONObject -> ingredientDisplay(el)
-                else -> ""
+            when (val el = arr.opt(i)) {
+                is String -> {
+                    val display = el.trim()
+                    if (display.isNotEmpty()) out += importedIngredient(display)
+                }
+                is JSONObject -> {
+                    val parts = parseIngredientParts(el)
+                    if (parts != null) {
+                        val name = parts.food + parts.note?.let { " ($it)" }.orEmpty()
+                        out += importedIngredient(name, parts.quantityText, parts.unit)
+                    } else {
+                        val display = ingredientDisplay(el)
+                        if (display.isNotEmpty()) out += importedIngredient(display)
+                    }
+                }
+                else -> {}
             }
-            if (display.isEmpty()) continue
-            out += RecipeIngredient(
-                name = display,
-                baseCalories = 0,
-                baseProtein = 0.0,
-                baseCarbs = 0.0,
-                baseFat = 0.0,
-            )
         }
         return out
+    }
+
+    private fun importedIngredient(
+        name: String,
+        amountText: String? = null,
+        unitText: String? = null,
+    ): RecipeIngredient = RecipeIngredient(
+        name = name,
+        amountText = amountText,
+        unitText = unitText,
+        baseCalories = 0,
+        baseProtein = 0.0,
+        baseCarbs = 0.0,
+        baseFat = 0.0,
+    )
+
+    /**
+     * Structured parts of a Mealie ingredient object, or null when it names
+     * no food (display-only or string-shaped elements fall back to
+     * [ingredientDisplay]).
+     */
+    internal fun parseIngredientParts(obj: JSONObject): ParsedIngredient? {
+        val quantity = obj.optDouble("quantity", Double.NaN).takeIf { !it.isNaN() && it != 0.0 }
+        val unit = obj.optJSONObject("unit")?.str("name", "abbreviation")
+        val food = obj.optJSONObject("food")?.str("name")
+            ?: obj.optJSONObject("referencedRecipe")?.str("name")
+            ?: obj.optJSONObject("referenced_recipe")?.str("name")
+        if (food.isNullOrEmpty()) return null
+        val note = obj.str("note")
+        return ParsedIngredient(
+            quantityText = quantity?.let { formatQuantity(it) },
+            unit = unit?.takeIf { it.isNotEmpty() },
+            food = food,
+            note = note?.takeIf { it.isNotEmpty() },
+        )
     }
 
     internal fun ingredientDisplay(obj: JSONObject): String {
@@ -151,4 +193,12 @@ object MealieRecipeMapper {
 data class MealieRecipeSummary(
     val slug: String,
     val name: String,
+)
+
+/** Structured ingredient parts extracted by [MealieRecipeMapper.parseIngredientParts]. */
+internal data class ParsedIngredient(
+    val quantityText: String?,
+    val unit: String?,
+    val food: String,
+    val note: String?,
 )

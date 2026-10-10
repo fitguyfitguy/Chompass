@@ -698,6 +698,7 @@
     <string name="recipe_builder_log_now">Zapisz teraz</string>
     <string name="recipe_builder_remove_ingredient">Usuń składnik</string>
     <string name="recipe_builder_scale_format">%1$.2fx</string>
+    <string name="recipe_servings_format">%1$s porcji</string>
     <string name="progressive_meal_title">Budowanie posiłku</string>
     <string name="progressive_meal_name_placeholder">Nazwa posiłku</string>
     <string name="progressive_meal_name_hint_empty">Zostaw puste, aby zapisać każdy składnik.</string>

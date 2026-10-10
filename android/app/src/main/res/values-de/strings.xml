@@ -1205,6 +1205,7 @@ für dich ein</string>
     <string name="recipe_builder_remove_ingredient">Zutat entfernen</string>
 
     <string name="recipe_builder_scale_format">%1$.2fx</string>
+    <string name="recipe_servings_format">%1$s Portionen</string>
 
     <string name="progressive_meal_title">Mahlzeit erstellen</string>
 

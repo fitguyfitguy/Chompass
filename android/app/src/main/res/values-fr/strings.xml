@@ -1305,6 +1305,7 @@
     <string name="recipe_builder_remove_ingredient">Retirer l\'ingrédient</string>
     <string name="recipe_builder_save">Enregistrer</string>
     <string name="recipe_builder_scale_format">%1$.2fx</string>
+    <string name="recipe_servings_format">%1$s portions</string>
     <string name="recipe_builder_title_edit">Modifier la recette</string>
     <string name="recipe_builder_title_new">Nouvelle recette</string>
     <string name="recipe_ingredient_count_format">%1$d ingrédients</string>
