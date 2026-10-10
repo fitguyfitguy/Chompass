@@ -144,6 +144,81 @@ data class RecipeIngredient(
         caffeine = caffeine,
         recipeLogId = recipeLogId,
     )
+
+    /**
+     * FoodEntry view of this ingredient's base (1x) values, for the fill-missing
+     * scan and prompt ([app.chompass.models.gapReport] / `FoodAnalysisService.fillEntry`
+     * both speak FoodEntry). No serving info: the fill merge must run at factor 1.0
+     * so written values land 1x and [filledFrom] can map them straight back.
+     */
+    fun toFillCandidate(): FoodEntry = FoodEntry(
+        name = name,
+        calories = baseCalories,
+        protein = baseProtein,
+        carbs = baseCarbs,
+        fat = baseFat,
+        emoji = emoji,
+        source = FoodSource.MANUAL,
+        sugar = baseSugar,
+        addedSugar = baseAddedSugar,
+        fiber = baseFiber,
+        saturatedFat = baseSaturatedFat,
+        monounsaturatedFat = baseMonounsaturatedFat,
+        polyunsaturatedFat = basePolyunsaturatedFat,
+        cholesterol = baseCholesterol,
+        sodium = baseSodium,
+        potassium = basePotassium,
+        transFat = baseTransFat,
+        calcium = baseCalcium,
+        iron = baseIron,
+        magnesium = baseMagnesium,
+        zinc = baseZinc,
+        vitaminA = baseVitaminA,
+        vitaminC = baseVitaminC,
+        vitaminD = baseVitaminD,
+        vitaminB12 = baseVitaminB12,
+        vitaminE = baseVitaminE,
+        vitaminK = baseVitaminK,
+        folate = baseFolate,
+        omega3 = baseOmega3,
+        caffeine = baseCaffeine,
+    )
+
+    /**
+     * Maps a fill-merged candidate back onto this ingredient's base (1x)
+     * fields. Safe by construction: the fill merge writes only missing
+     * (zero / null) values, so id, name, emoji, and [quantityScale] are
+     * preserved and known values pass through unchanged.
+     */
+    fun filledFrom(entry: FoodEntry): RecipeIngredient = copy(
+        baseCalories = entry.calories,
+        baseProtein = entry.protein,
+        baseCarbs = entry.carbs,
+        baseFat = entry.fat,
+        baseSugar = entry.sugar,
+        baseAddedSugar = entry.addedSugar,
+        baseFiber = entry.fiber,
+        baseSaturatedFat = entry.saturatedFat,
+        baseMonounsaturatedFat = entry.monounsaturatedFat,
+        basePolyunsaturatedFat = entry.polyunsaturatedFat,
+        baseCholesterol = entry.cholesterol,
+        baseSodium = entry.sodium,
+        basePotassium = entry.potassium,
+        baseTransFat = entry.transFat,
+        baseCalcium = entry.calcium,
+        baseIron = entry.iron,
+        baseMagnesium = entry.magnesium,
+        baseZinc = entry.zinc,
+        baseVitaminA = entry.vitaminA,
+        baseVitaminC = entry.vitaminC,
+        baseVitaminD = entry.vitaminD,
+        baseVitaminB12 = entry.vitaminB12,
+        baseVitaminE = entry.vitaminE,
+        baseVitaminK = entry.vitaminK,
+        baseFolate = entry.folate,
+        baseOmega3 = entry.omega3,
+        baseCaffeine = entry.caffeine,
+    )
 }
 
 /** A named, ordered collection of independently scalable [RecipeIngredient]s — a composable saved meal. */

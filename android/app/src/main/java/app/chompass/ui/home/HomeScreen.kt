@@ -1599,6 +1599,13 @@ fun HomeScreen(
             container = container,
             entry = favorite,
             optionalGoals = ui.optionalNutrientGoals,
+            aiFeaturesEnabled = aiFeaturesEnabled,
+            onReprocess = { updatedNote, onProgress ->
+                vm.reprocessFoodEntry(favorite, updatedNote, onProgress)
+            },
+            onFill = { onProgress ->
+                vm.fillFoodEntry(favorite, onProgress)
+            },
             onSave = { updated ->
                 vm.updateFavorite(favorite, updated)
                 editingFavorite = null
@@ -1611,6 +1618,7 @@ fun HomeScreen(
         RecipeBuilderSheet(
             container = container,
             recipe = recipe,
+            aiFeaturesEnabled = aiFeaturesEnabled,
             onDismiss = { editingRecipe = null },
             onSave = { updated ->
                 vm.saveRecipe(updated)

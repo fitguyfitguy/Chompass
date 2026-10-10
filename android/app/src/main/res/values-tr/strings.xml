@@ -689,6 +689,11 @@
     <string name="recipe_builder_add_from_favorites">Favorilerden</string>
     <string name="recipe_builder_add_manual">Manuel giriş</string>
     <string name="recipe_builder_no_ingredients">Henüz malzeme yok</string>
+    <plurals name="recipe_builder_fill_missing">
+        <item quantity="one">Bir malzemede besin değerleri eksik</item>
+        <item quantity="other">%1$d malzemede besin değerleri eksik</item>
+    </plurals>
+    <string name="recipe_builder_filling">%1$d / %2$d dolduruluyor…</string>
     <string name="recipe_builder_save">Kaydet</string>
     <string name="recipe_builder_log_now">Şimdi Kaydet</string>
     <string name="recipe_builder_remove_ingredient">Malzemeyi kaldır</string>

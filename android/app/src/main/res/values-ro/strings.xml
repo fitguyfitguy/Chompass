@@ -1238,6 +1238,11 @@
     <string name="recipe_builder_log_now">Înregistrează acum</string>
     <string name="recipe_builder_name_placeholder">Numele rețetei</string>
     <string name="recipe_builder_no_ingredients">Încă fără ingrediente</string>
+    <plurals name="recipe_builder_fill_missing">
+        <item quantity="one">Un ingredient nu are valori nutriționale</item>
+        <item quantity="other">%1$d ingrediente nu au valori nutriționale</item>
+    </plurals>
+    <string name="recipe_builder_filling">Se completează %1$d din %2$d…</string>
     <string name="recipe_builder_remove_ingredient">Elimină ingredientul</string>
     <string name="recipe_builder_save">Salvează</string>
     <string name="recipe_builder_title_edit">Editează rețeta</string>

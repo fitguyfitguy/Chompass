@@ -689,6 +689,11 @@
     <string name="recipe_builder_add_from_favorites">Z ulubionych</string>
     <string name="recipe_builder_add_manual">Wprowadź ręcznie</string>
     <string name="recipe_builder_no_ingredients">Brak składników</string>
+    <plurals name="recipe_builder_fill_missing">
+        <item quantity="one">%1$d składnik nie ma wartości odżywczych</item>
+        <item quantity="other">%1$d składniki nie mają wartości odżywczych</item>
+    </plurals>
+    <string name="recipe_builder_filling">Uzupełnianie %1$d z %2$d…</string>
     <string name="recipe_builder_save">Zapisz</string>
     <string name="recipe_builder_log_now">Zapisz teraz</string>
     <string name="recipe_builder_remove_ingredient">Usuń składnik</string>

@@ -1239,6 +1239,11 @@ bilirsən?</string>
     <string name="recipe_builder_log_now">İndi qeyd et</string>
     <string name="recipe_builder_name_placeholder">Reseptin adı</string>
     <string name="recipe_builder_no_ingredients">Hələ inqrediyent yoxdur</string>
+    <plurals name="recipe_builder_fill_missing">
+        <item quantity="one">%1$d inqrediyentdə qida dəyərləri çatışmır</item>
+        <item quantity="other">%1$d inqrediyentdə qida dəyərləri çatışmır</item>
+    </plurals>
+    <string name="recipe_builder_filling">%1$d / %2$d doldurulur…</string>
     <string name="recipe_builder_remove_ingredient">İnqrediyenti sil</string>
     <string name="recipe_builder_save">Saxla</string>
     <string name="recipe_builder_title_edit">Resepti redaktə et</string>

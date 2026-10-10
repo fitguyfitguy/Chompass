@@ -1192,6 +1192,11 @@ für dich ein</string>
     <string name="recipe_builder_add_manual">Manuelle Eingabe</string>
 
     <string name="recipe_builder_no_ingredients">Noch keine Zutaten</string>
+    <plurals name="recipe_builder_fill_missing">
+        <item quantity="one">Bei einer Zutat fehlen Nährwertangaben</item>
+        <item quantity="other">Bei %1$d Zutaten fehlen Nährwertangaben</item>
+    </plurals>
+    <string name="recipe_builder_filling">Fülle %1$d von %2$d…</string>
 
     <string name="recipe_builder_save">Speichern</string>
 
