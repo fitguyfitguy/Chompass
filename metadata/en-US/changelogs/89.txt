@@ -1,0 +1,4 @@
+• Your own response-token limit is always sent as set (Android & Web): the built-in default is now 4096, and a cap you set yourself is honored exactly on every provider, including self-hosted OpenAI-compatible servers.
+• Retired Google Gemini 2.5 models removed (Android & Web): anyone still on a 2.5 model moves to the current default automatically.
+• Mealie imports keep ingredient amounts and units (Android).
+• Fill missing is temporarily unavailable while the feature is reworked (Android & Web).

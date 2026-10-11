@@ -6,9 +6,20 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+## [5.5.2] - 2026-10-11
+
 ### Added
 
-- **Mealie imports keep ingredient amounts and units** (Android): imported recipes now split each ingredient line into its amount, unit, and food name instead of one merged label, and the recipe builder shows them on the row. The recipe builder also shows how many servings the source recipe declared. Zeroed macros can still be filled with the Fill missing action. Follows Codeberg [#125](https://codeberg.org/fitguy/Chompass/issues/125) by [@mik112](https://codeberg.org/fitguy/mik112).
+- **Mealie imports keep ingredient amounts and units** (Android): imported recipes now split each ingredient line into its amount, unit, and food name instead of one merged label, and the recipe builder shows them on the row. The recipe builder also shows how many servings the source recipe declared. Follows Codeberg [#125](https://codeberg.org/fitguy/Chompass/issues/125) by [@mik112](https://codeberg.org/fitguy/mik112).
+
+### Fixed
+
+- **Your own response-token limit is always sent as set** (Android & Web): the previous release silently raised the cap on every cloud AI call, which broke meal logging on self-hosted OpenAI-compatible servers with small context windows. The built-in default is now 4096 for anyone who never changed it, and an explicitly set value is honored exactly on every provider.
+- **Retired Google Gemini 2.5 models removed** (Android & Web): Google is shutting the Gemini 2.5 family down in mid-October, and 2.5 Pro already answers with an error for new users. The two 2.5 entries are gone from the model lists, and anyone still on one moves to the current default automatically.
+
+### Removed
+
+- **Fill missing is temporarily unavailable** (Android & Web): the Fill missing action on entries, saved meals, and recipe ingredients, and the Home banner that lists meals with missing values, are hidden while the feature is reworked. Logged meals, favorites, and recipes are not touched.
 
 ## [5.5.1] - 2026-10-10
 
