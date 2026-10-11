@@ -53,7 +53,7 @@ export function messageImages(m) {
  * @property {AiTool[]} tools
  * @property {AbortSignal} [signal]
  * @property {(delta: string) => void} [onDelta] text fragments while streaming
- * @property {number} [maxTokens] response cap for providers that require one (Anthropic); default 1024
+ * @property {number} [maxTokens] response cap for providers that require one (Anthropic); default 4096
  */
 
 /**
@@ -72,7 +72,7 @@ export async function anthropicSend(config, req) {
   }
   const body = {
     model: config.model || PROVIDERS.anthropic.defaultModel,
-    max_tokens: req.maxTokens ?? 1024,
+    max_tokens: req.maxTokens ?? 4096,
     system: req.systemPrompt,
     messages: req.messages.map(anthropicMessage),
   };
@@ -107,7 +107,7 @@ export async function anthropicSend(config, req) {
 async function anthropicSendStreaming(config, req) {
   const body = {
     model: config.model || PROVIDERS.anthropic.defaultModel,
-    max_tokens: req.maxTokens ?? 1024,
+    max_tokens: req.maxTokens ?? 4096,
     stream: true,
     system: req.systemPrompt,
     messages: req.messages.map(anthropicMessage),
@@ -517,14 +517,11 @@ export const PROVIDERS = {
       "gemini-3.5-flash",
       "gemini-3.1-flash-lite",
       "gemini-3.1-pro-preview",
-      "gemini-2.5-flash",
-      "gemini-2.5-pro",
     ],
     modelTiers: {
       "gemini-3.8-flash": "varies",
       "gemini-3.7-flash": "varies",
       "gemini-3.1-pro-preview": "paid",
-      "gemini-2.5-pro": "paid",
     },
   },
   openai_compatible: {

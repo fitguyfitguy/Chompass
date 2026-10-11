@@ -72,9 +72,7 @@ enum class AIProvider {
             "gemini-3.5-flash-lite",
             "gemini-3.5-flash",
             "gemini-3.1-flash-lite",
-            "gemini-3.1-pro-preview",
-            "gemini-2.5-flash",
-            "gemini-2.5-pro"
+            "gemini-3.1-pro-preview"
         )
         OPENAI -> listOf(
             "gpt-5.4-mini",
@@ -161,7 +159,6 @@ enum class AIProvider {
             "gemini-3.8-flash" to "varies",
             "gemini-3.7-flash" to "varies",
             "gemini-3.1-pro-preview" to "paid",
-            "gemini-2.5-pro" to "paid",
         )
         else -> emptyMap()
     }

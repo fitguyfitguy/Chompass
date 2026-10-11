@@ -53,13 +53,6 @@ ${SYSTEM_CONSTITUENTS_RULE_MACROS}`;
 const SYSTEM_CONSTITUENTS_MICROS = `${SYSTEM_CONSTITUENTS_PREFIX},${CONSTITUENT_ROW_MICROS}
 ${SYSTEM_CONSTITUENTS_RULE_MICROS}`;
 
-/** Reasoning models on capped providers (Anthropic is the only PWA provider
- * that takes a client cap) bill hidden thinking against max_tokens, so the
- * 1024 default truncated replies before any content. The floor rides every
- * analyze request regardless of prompt kind. Mirrors Android
- * FoodAnalysisService MIN_RESPONSE_TOKENS_CLOUD. */
-const RESPONSE_TOKEN_FLOOR = 4096;
-
 /** @param {import('../db.js').AppPrefs} appPrefs */
 function mealConstituentsEnabled(appPrefs) {
   return appPrefs.mealConstituentsEnabled !== false;
@@ -199,7 +192,6 @@ async function runAnalyze(providerId, config, text, productContext, imageList, a
       tools: [],
       signal,
       onDelta,
-      maxTokens: RESPONSE_TOKEN_FLOOR,
     });
     if (signal?.aborted) throw abortError();
     onPhase?.(ANALYSIS_PHASE.PARSING);
@@ -458,7 +450,6 @@ async function runFill(providerId, config, entry, appPrefs, signal, onPhase, onP
       tools: [],
       signal,
       onDelta,
-      maxTokens: RESPONSE_TOKEN_FLOOR,
     });
     if (signal?.aborted) throw abortError();
     onPhase?.(ANALYSIS_PHASE.PARSING);

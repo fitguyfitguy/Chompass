@@ -501,7 +501,7 @@ test("openaiCompatible_imageRequest_usesVisionModel", async () => {
   }
 });
 
-test("analyzeFoodEntry_cappedProvidersCarryResponseTokenFloor", async () => {
+test("analyzeFoodEntry_leavesCapToProviderDefault", async () => {
   const original = PROVIDERS.anthropic.send;
   /** @type {Array<number|undefined>} */
   const maxTokensSeen = [];
@@ -534,12 +534,12 @@ test("analyzeFoodEntry_cappedProvidersCarryResponseTokenFloor", async () => {
   } finally {
     PROVIDERS.anthropic.send = original;
   }
-  // Reasoning models bill hidden thinking against max_tokens, so every
-  // analyze request carries the 4096 floor regardless of prompt kind or
-  // constituents toggle.
-  assert.equal(maxTokensSeen[0], 4096);
-  assert.equal(maxTokensSeen[1], 4096);
-  assert.equal(maxTokensSeen[2], 4096);
+  // The client no longer forces a response-token floor: analyze requests
+  // leave maxTokens unset so the provider default applies, regardless of
+  // prompt kind or constituents toggle.
+  assert.equal(maxTokensSeen[0], undefined);
+  assert.equal(maxTokensSeen[1], undefined);
+  assert.equal(maxTokensSeen[2], undefined);
 });
 
 test("anthropicSend_threadsMaxTokensIntoBody", async () => {
@@ -566,7 +566,7 @@ test("anthropicSend_threadsMaxTokensIntoBody", async () => {
     globalThis.fetch = originalFetch;
   }
   assert.equal(bodies[0].max_tokens, 4096);
-  assert.equal(bodies[1].max_tokens, 1024);
+  assert.equal(bodies[1].max_tokens, 4096);
 });
 
 test("stripThinkBlocks_matchesAndroidStripThinking", () => {
@@ -620,8 +620,8 @@ test("analyzeFoodEntry_microsSendFailure_retriesOnceWithMacrosPrompt", async () 
     assert.ok(systems[0].includes("Each constituent micronutrient MUST sum"));
     assert.ok(systems[1].includes("constituents"));
     assert.ok(!systems[1].includes("Each constituent micronutrient MUST sum"));
-    assert.equal(maxTokens[0], 4096);
-    assert.equal(maxTokens[1], 4096);
+    assert.equal(maxTokens[0], undefined);
+    assert.equal(maxTokens[1], undefined);
   } finally {
     PROVIDERS.anthropic.send = original;
   }

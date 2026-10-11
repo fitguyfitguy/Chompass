@@ -113,10 +113,10 @@ class EntryConstituentDownshiftTest {
         assertEquals(4, server.requestCount)
         val requests = (0 until 4).map { server.takeRequest() }
         val firstBody = bodyOf(requests[0])
-        assertEquals(4096, firstBody.getInt("max_tokens"))
+        assertEquals(1024, firstBody.getInt("max_tokens"))
         assertTrue(promptOf(firstBody).contains("Each constituent micronutrient MUST sum"))
         val downshiftBody = bodyOf(requests[3])
-        assertEquals(4096, downshiftBody.getInt("max_tokens"))
+        assertEquals(1024, downshiftBody.getInt("max_tokens"))
         assertTrue("downshift keeps constituent rows", promptOf(downshiftBody).contains("\"constituents\""))
         assertFalse("downshift drops the per-row micros ask", promptOf(downshiftBody).contains("Each constituent micronutrient MUST sum"))
     }
@@ -175,7 +175,7 @@ class EntryConstituentDownshiftTest {
         assertTrue(firstBody.getBoolean("stream"))
         assertFalse("one-shot retry is non-streaming", retryBody.has("stream"))
         assertTrue("one-shot retry keeps the MICROS schema", promptOf(retryBody).contains("Each constituent micronutrient MUST sum"))
-        assertEquals(4096, retryBody.getInt("max_tokens"))
+        assertEquals(1024, retryBody.getInt("max_tokens"))
     }
 
     @Test
@@ -194,7 +194,7 @@ class EntryConstituentDownshiftTest {
         val requests = (0 until 4).map { bodyOf(server.takeRequest()) }
         assertTrue(requests[0].getBoolean("stream"))
         assertFalse(requests[1].has("stream"))
-        assertEquals(4096, requests[3].getInt("max_tokens"))
+        assertEquals(1024, requests[3].getInt("max_tokens"))
         assertFalse("final leg is the MACROS downshift", promptOf(requests[3]).contains("Each constituent micronutrient MUST sum"))
     }
 }

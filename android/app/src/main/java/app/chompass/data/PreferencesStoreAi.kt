@@ -85,10 +85,10 @@ internal suspend fun PreferencesStore.setFallbackCustomBaseUrlImpl(provider: AIP
         }
     }
 
-    /** AI output-token cap sent with every request. Default 1024; raise it for local
-     *  models whose replies get truncated. */
+    /** AI output-token cap sent with every request. Default 4096; set a lower
+     *  cap for local models with small context windows. */
 internal val PreferencesStore.maxResponseTokensImpl: Flow<Int> get() = dataStore.data.map {
-        clampMaxResponseTokens(it[Keys.MAX_RESPONSE_TOKENS] ?: 1024)
+        clampMaxResponseTokens(it[Keys.MAX_RESPONSE_TOKENS] ?: DEFAULT_MAX_RESPONSE_TOKENS)
     }
 internal suspend fun PreferencesStore.setMaxResponseTokensImpl(v: Int) {
         dataStore.edit { it[Keys.MAX_RESPONSE_TOKENS] = clampMaxResponseTokens(v) }
@@ -166,6 +166,7 @@ internal suspend fun PreferencesStore.setGoalRecalcTierImpl(v: GoalRecalcTierOve
 
 internal const val MIN_MAX_RESPONSE_TOKENS = 256
 internal const val MAX_MAX_RESPONSE_TOKENS = 16384
+internal const val DEFAULT_MAX_RESPONSE_TOKENS = 4096
 internal const val DEFAULT_AI_READ_TIMEOUT_SECONDS = 180
 internal const val MIN_AI_READ_TIMEOUT_SECONDS = 30
 internal const val MAX_AI_READ_TIMEOUT_SECONDS = 900
@@ -346,7 +347,7 @@ internal suspend fun PreferencesStore.aiCallConfigImpl(): AiCallConfig {
         customBaseUrl = prefs[Keys.customBaseUrl(provider)],
         visionModel = prefs[Keys.visionModel(provider)],
         allowInsecureHttp = prefs[Keys.ALLOW_INSECURE_HTTP] ?: false,
-        maxResponseTokens = clampMaxResponseTokens(prefs[Keys.MAX_RESPONSE_TOKENS] ?: 1024),
+        maxResponseTokens = clampMaxResponseTokens(prefs[Keys.MAX_RESPONSE_TOKENS] ?: DEFAULT_MAX_RESPONSE_TOKENS),
         aiReadTimeoutSeconds = clampAiReadTimeoutSeconds(prefs[Keys.AI_READ_TIMEOUT_SECONDS] ?: DEFAULT_AI_READ_TIMEOUT_SECONDS),
         geminiGoogleSearch = prefs[Keys.GEMINI_GOOGLE_SEARCH_ENABLED] ?: false,
         reasoningEffort = OpenRouterReasoningEffort.fromStorage(prefs[Keys.OPENROUTER_REASONING_EFFORT]),

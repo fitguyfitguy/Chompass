@@ -37,8 +37,8 @@ class GeminiClientRequestConfigTest {
     }
 
     @Test
-    fun proAnd25Family_getNoThinkingConfig() {
-        for (model in listOf("gemini-3.1-pro-preview", "gemini-2.5-flash", "gemini-2.5-pro")) {
+    fun proFamily_getsNoThinkingConfig() {
+        for (model in listOf("gemini-3.1-pro-preview")) {
             val config = GeminiClient.generationConfig(model, maxTokens = 16384, jsonResponse = false)!!
 
             assertFalse(model, config.has("thinkingConfig"))
@@ -48,7 +48,7 @@ class GeminiClientRequestConfigTest {
 
     @Test
     fun generationConfig_returnsNull_whenNothingApplies() {
-        for (model in listOf("gemini-3.1-pro-preview", "gemini-2.5-flash", "gemini-2.5-pro")) {
+        for (model in listOf("gemini-3.1-pro-preview")) {
             assertNull(model, GeminiClient.generationConfig(model, maxTokens = null, jsonResponse = false))
         }
     }

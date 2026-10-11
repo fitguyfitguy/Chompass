@@ -122,28 +122,8 @@ private const val ENTRY_CONSTITUENTS_MICROS_RULE =
         "zinc, vitamins A/C/D/E/K/B12, folate, omega-3). Each constituent micronutrient " +
         "MUST sum to the matching meal total within ±20%."
 
-/**
- * Reasoning models on every major API bill hidden thinking against the output
- * cap (OpenAI max_completion_tokens, DeepSeek max_tokens, Gemini thoughts in
- * maxOutputTokens, GLM reasoning_content inside completion tokens), so the
- * 1024 default truncated replies before any content — calculateGoals came
- * back finish=length with empty content on deepseek-flash (2026-10-10).
- * Cloud providers get this floor on every AI call; a cap is a ceiling, not a
- * spend target, so billing is unchanged and a user cap above the floor still
- * wins. Ollama keeps the user cap verbatim: local models are the
- * context-constrained ones, and a forced 4096 num_predict can exceed a small
- * local context. On-device takes no cap at all. Subsumes the per-op
- * constituent floors (#86/#97) and the goal-recalc floor.
- */
-internal const val MIN_RESPONSE_TOKENS_CLOUD = 4096
-
-/**
- * Effective response-token cap for a cloud call: raised to
- * [MIN_RESPONSE_TOKENS_CLOUD] when the user cap is lower; Ollama passes the
- * user cap through untouched.
- */
-internal fun effectiveResponseTokens(provider: AIProvider, userCap: Int): Int =
-    if (provider == AIProvider.OLLAMA) userCap else maxOf(userCap, MIN_RESPONSE_TOKENS_CLOUD)
+/** Response-token cap: the user cap verbatim on every provider; unset means the
+ *  built-in default 4096 (PreferencesStore.DEFAULT_MAX_RESPONSE_TOKENS). */
 
 /** Entry ops whose prompt embeds the constituents schema. */
 internal val ENTRY_CONSTITUENT_OPS = setOf("analyzeText", "analyzeAuto", "analyzeFood", "analyzeFoodMulti", "fillEntry")
@@ -1619,7 +1599,7 @@ class FoodAnalysisService(
         val primaryKey = keyLookup?.invoke(primary)
             ?: AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
         if (primary.requiresApiKey && primaryKey.isNullOrEmpty()) throw AiError.NoApiKey
-        val maxTokens = effectiveResponseTokens(primary, prefs.maxResponseTokens.first())
+        val maxTokens = prefs.maxResponseTokens.first()
         val readTimeoutSeconds = prefs.aiReadTimeoutSeconds.first()
         val httpClient = AiHttp.clientForProvider(okHttp, primary, readTimeoutSeconds)
         val context = prefs.userContext.first()
@@ -1833,10 +1813,10 @@ class FoodAnalysisService(
         val primaryKey = keyLookup?.invoke(primary)
             ?: AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
         val userCap = cfg.maxResponseTokens
-        val maxTokens = effectiveResponseTokens(primary, userCap)
+        val maxTokens = userCap
         if (PerfLog.enabled) {
             PerfLog.event(
-                "op=$op tokens model=$primaryModel kind=$kind userCap=$userCap effective=$maxTokens" +
+                "op=$op tokens model=$primaryModel kind=$kind userCap=$userCap" +
                     if (kindOverride == EntryConstituentPromptKind.MACROS) " downshift=macros" else ""
             )
         }
@@ -1892,7 +1872,7 @@ class FoodAnalysisService(
                     assembler.reset()
                     val fallbackBody = rebuildPrompt?.invoke(fallback.provider, fallbackModel, fallbackKind) ?: prompt
                     val fallbackPrompt = if (rebuildPrompt != null) wrapPrompt(fallbackBody) else finalPrompt
-                    val fallbackMaxTokens = effectiveResponseTokens(fallback.provider, userCap)
+                    val fallbackMaxTokens = userCap
                     dispatch(
                         fallback.provider, fallbackModel, fallback.baseUrl, fallback.apiKey, fallbackPrompt, aiImages,
                         fallbackMaxTokens, geminiGoogleSearch, readTimeoutSeconds,

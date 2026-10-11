@@ -33,14 +33,6 @@ import { typicalForProfile } from "../chompass-core/day-type-active.js";
 /** @typedef {ReturnType<import('../chompass-core/forecast.js').computeWeightForecast>} WeightForecast */
 
 /**
- * Reasoning models on providers that take a cap (Anthropic; OpenAI-compatible
- * and Gemini sends carry no client cap here) bill thinking tokens against
- * max_tokens, so the 1024 default truncated calculateGoals before any JSON.
- * Mirrors Android FoodAnalysisService MIN_RESPONSE_TOKENS_CLOUD.
- */
-const RESPONSE_TOKEN_FLOOR = 4096;
-
-/**
  * @typedef {Object} GoalCalculation
  * @property {number} calories
  * @property {number} protein
@@ -214,7 +206,6 @@ export async function calculateGoalsWithAi({
     messages: [{ role: "user", text: prompt }],
     tools: [],
     signal,
-    maxTokens: RESPONSE_TOKEN_FLOOR,
   });
   const parsed = parseGoalCalculation(response.text);
   return { ...parsed, calories: clampAutoCalories(parsed.calories, profile) };
