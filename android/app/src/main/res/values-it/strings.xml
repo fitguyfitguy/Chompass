@@ -628,6 +628,18 @@
     <string name="settings_enable_fallback">Attiva provider di riserva</string>
     <string name="settings_fallback_footer">Se il tuo provider principale fallisce (sovraccarico, limite di velocità, errore di rete), l\'app riprova automaticamente con questo provider di riserva. È consentito lo stesso provider del principale - basta scegliere un modello diverso.</string>
     <string name="settings_fallback_on_device_switch_notice">Cambiare modello locale è lento: il modello di riserva si carica da zero, fino a un minuto o più. Tenere un solo modello è di solito più veloce.</string>
+
+    <!-- Profili IA con nome -->
+    <string name="settings_ai_profile">Profilo IA</string>
+    <string name="settings_profile_add">Aggiungi profilo</string>
+    <string name="settings_profile_rename">Rinomina profilo</string>
+    <string name="settings_profile_delete">Elimina profilo</string>
+    <string name="settings_profile_delete_confirm">Eliminare questo profilo? La sua chiave API verrà rimossa.</string>
+    <string name="settings_profile_fallback">Profilo di riserva</string>
+    <string name="settings_profile_fallback_none">Nessuno</string>
+    <string name="sheet_profile_name">Nome del profilo</string>
+    <string name="queue_run_with">Esegui con…</string>
+    <string name="queue_last_attempt">Ultimo tentativo: %1$s · %2$s</string>
     <string name="widget_all_metrics_label">Chompass Oggi</string>
     <string name="widget_all_metrics_description">Vedi calorie, proteine, carboidrati e grassi di oggi in un solo widget.</string>
     <string name="settings_needs_health_connect">Richiede Health Connect</string>

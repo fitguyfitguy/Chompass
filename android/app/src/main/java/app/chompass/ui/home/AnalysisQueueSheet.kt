@@ -6,6 +6,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.outlined.SwapHoriz
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -47,6 +49,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,6 +68,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.AppContainer
 import app.chompass.R
+import app.chompass.models.AiProfile
 import app.chompass.models.QueuedAnalysis
 import app.chompass.models.QueueStatus
 import app.chompass.ui.components.ChompassBottomSheet
@@ -104,6 +108,7 @@ fun AnalysisQueueSheet(
     entries: List<QueuedAnalysis>,
     runningId: UUID?,
     onRun: (UUID) -> Unit,
+    onRunWith: (UUID, AiProfile) -> Unit,
     onRunAll: () -> Unit,
     onUpdate: (UUID, String?, Double?, LocalDate) -> Unit,
     onAddPhotos: (UUID, List<ByteArray>) -> Unit,
@@ -116,6 +121,8 @@ fun AnalysisQueueSheet(
     var editing by remember { mutableStateOf<QueuedAnalysis?>(null) }
     var confirmDelete by remember { mutableStateOf<QueuedAnalysis?>(null) }
     var confirmClearHistory by remember { mutableStateOf(false) }
+    /** Entry waiting for a "Run with…" profile pick; null = picker closed. */
+    var runWithTarget by remember { mutableStateOf<QueuedAnalysis?>(null) }
     val busy = runningId != null
     val store = container.analysisQueue
 
@@ -167,6 +174,7 @@ fun AnalysisQueueSheet(
                                         running = item.id == runningId,
                                         store = store,
                                         onRun = { onRun(item.id) },
+                                        onRunWith = { runWithTarget = item },
                                         onEdit = { editing = item },
                                         onDelete = { confirmDelete = item },
                                     )
@@ -197,6 +205,7 @@ fun AnalysisQueueSheet(
                                         running = item.id == runningId,
                                         store = store,
                                         onRun = { onRun(item.id) },
+                                        onRunWith = { runWithTarget = item },
                                         onDelete = { confirmDelete = item },
                                     )
                                 }
@@ -261,6 +270,51 @@ fun AnalysisQueueSheet(
             )
         }
     }
+
+    // "Run with…" profile picker: one-off override for this entry only — the
+    // globally active profile stays untouched (AI-profiles work, Step 4).
+    runWithTarget?.let { target ->
+        val profiles by container.prefs.aiProfiles.collectAsState(initial = emptyList())
+        ChompassDialog(onDismissRequest = { runWithTarget = null }) {
+            Text(
+                stringResource(R.string.queue_run_with),
+                fontSize = 21.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                profiles.forEach { profile ->
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(AppRadii.Field))
+                            .clickable {
+                                onRunWith(target.id, profile)
+                                runWithTarget = null
+                            }
+                            .padding(horizontal = 14.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                profile.name,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Medium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            Text(
+                                stringResource(profile.provider.displayNameRes),
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 // -- Tabs ------------------------------------------------------------------
@@ -318,6 +372,7 @@ private fun QueueEntryRow(
     running: Boolean,
     store: app.chompass.data.AnalysisQueueStore,
     onRun: () -> Unit,
+    onRunWith: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
@@ -353,6 +408,7 @@ private fun QueueEntryRow(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
+            lastAttemptCaption(item)
         }
         if (running) {
             CircularProgressIndicator(
@@ -367,6 +423,14 @@ private fun QueueEntryRow(
                     tint = AppColors.Calorie,
                 )
             }
+        }
+        IconButton(onClick = onRunWith, modifier = Modifier.size(40.dp)) {
+            Icon(
+                Icons.Outlined.SwapHoriz,
+                contentDescription = stringResource(R.string.queue_run_with),
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                modifier = Modifier.size(18.dp),
+            )
         }
         IconButton(onClick = onEdit, modifier = Modifier.size(40.dp)) {
             Icon(
@@ -393,6 +457,7 @@ private fun HistoryEntryRow(
     running: Boolean,
     store: app.chompass.data.AnalysisQueueStore,
     onRun: () -> Unit,
+    onRunWith: () -> Unit,
     onDelete: () -> Unit,
 ) {
     QueueRowSurface {
@@ -437,6 +502,7 @@ private fun HistoryEntryRow(
                 )
                 QueueStatus.PENDING -> Unit
             }
+            lastAttemptCaption(item)
         }
         if (running) {
             CircularProgressIndicator(modifier = Modifier.size(22.dp), strokeWidth = 2.5.dp)
@@ -449,6 +515,14 @@ private fun HistoryEntryRow(
                 )
             }
         }
+        IconButton(onClick = onRunWith, modifier = Modifier.size(40.dp)) {
+            Icon(
+                Icons.Outlined.SwapHoriz,
+                contentDescription = stringResource(R.string.queue_run_with),
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                modifier = Modifier.size(18.dp),
+            )
+        }
         IconButton(onClick = onDelete, modifier = Modifier.size(40.dp)) {
             Icon(
                 Icons.Filled.Delete,
@@ -458,6 +532,23 @@ private fun HistoryEntryRow(
             )
         }
     }
+}
+
+/** "Last tried: <profile> · <model>" under the row subtitle ("—" when the model was the provider default). */
+@Composable
+private fun lastAttemptCaption(item: QueuedAnalysis) {
+    val profileName = item.lastAttemptProfile ?: return
+    Text(
+        stringResource(
+            R.string.queue_last_attempt,
+            profileName,
+            item.lastAttemptModel ?: "—",
+        ),
+        fontSize = 12.sp,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
 }
 
 @Composable

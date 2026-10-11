@@ -111,7 +111,7 @@ fun FoodEntrySettingsScreen(
             )
             SettingFootnote(stringResource(R.string.settings_photo_note_prompt_footer))
             HorizontalDivider()
-            val constituentsAvailable = ui.selectedAI != app.chompass.models.AIProvider.ON_DEVICE
+            val constituentsAvailable = ui.activeProvider != app.chompass.models.AIProvider.ON_DEVICE
             ToggleRow(
                 stringResource(R.string.settings_meal_constituents),
                 checked = constituentsAvailable && ui.mealConstituentsEnabled,

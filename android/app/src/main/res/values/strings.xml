@@ -1792,6 +1792,18 @@
     <string name="settings_fallback_footer">If your primary provider fails (overload, rate limit, network error), the app retries automatically with this fallback. Same provider as primary is allowed. Just pick a different model.</string>
     <string name="settings_fallback_on_device_switch_notice">Switching on-device models is slow: the fallback model starts from a cold load, up to a minute or more. Keeping one model is usually faster.</string>
 
+    <!-- Named AI profiles -->
+    <string name="settings_ai_profile">AI profile</string>
+    <string name="settings_profile_add">Add profile</string>
+    <string name="settings_profile_rename">Rename profile</string>
+    <string name="settings_profile_delete">Delete profile</string>
+    <string name="settings_profile_delete_confirm">Delete this profile? Its API key is removed too.</string>
+    <string name="settings_profile_fallback">Fallback profile</string>
+    <string name="settings_profile_fallback_none">None</string>
+    <string name="sheet_profile_name">Profile name</string>
+    <string name="queue_run_with">Run with…</string>
+    <string name="queue_last_attempt">Last tried: %1$s · %2$s</string>
+
     <string name="settings_health_connect">Health Connect</string>
     <string name="settings_manage_health_access">Manage Health Connect access</string>
     <string name="settings_permissions">Permissions</string>

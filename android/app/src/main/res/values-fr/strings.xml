@@ -629,6 +629,18 @@
     <string name="settings_enable_fallback">Activer le fournisseur de secours</string>
     <string name="settings_fallback_footer">Si ton fournisseur principal échoue (surcharge, limite de débit, erreur réseau), l\'app réessaie automatiquement avec ce fournisseur de secours. Le même fournisseur que le principal est autorisé - choisis simplement un modèle différent.</string>
     <string name="settings_fallback_on_device_switch_notice">Changer de modèle sur l\'appareil est lent : le modèle de secours doit se charger entièrement, jusqu\'à une minute ou plus. Garder un seul modèle est généralement plus rapide.</string>
+
+    <!-- Profils IA nommés -->
+    <string name="settings_ai_profile">Profil IA</string>
+    <string name="settings_profile_add">Ajouter un profil</string>
+    <string name="settings_profile_rename">Renommer le profil</string>
+    <string name="settings_profile_delete">Supprimer le profil</string>
+    <string name="settings_profile_delete_confirm">Supprimer ce profil ? Sa clé API sera aussi supprimée.</string>
+    <string name="settings_profile_fallback">Profil de secours</string>
+    <string name="settings_profile_fallback_none">Aucun</string>
+    <string name="sheet_profile_name">Nom du profil</string>
+    <string name="queue_run_with">Exécuter avec…</string>
+    <string name="queue_last_attempt">Dernier essai : %1$s · %2$s</string>
     <string name="widget_all_metrics_label">Chompass Aujourd\'hui</string>
     <string name="widget_all_metrics_description">Voyez les calories, protéines, glucides et lipides du jour dans un seul widget.</string>
     <string name="settings_needs_health_connect">Nécessite Health Connect</string>

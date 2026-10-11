@@ -23,8 +23,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.DataUsage
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.Restaurant
@@ -52,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.AIProvider
+import app.chompass.models.AiProfile
 import app.chompass.models.CalorieSafety
 import app.chompass.models.EnergyFormat
 import app.chompass.models.ActivityLevel
@@ -93,7 +96,9 @@ internal fun SettingsSheets(
     vm: SettingsViewModel,
     onDismiss: () -> Unit,
     onInvalidGoalWeight: (String) -> Unit,
-    onRebalanceBlocked: () -> Unit
+    onRebalanceBlocked: () -> Unit,
+    /** Sheet-to-sheet navigation (AI profile flows); null on hosts that never open those sheets. */
+    onOpenSheet: ((SettingsSheet) -> Unit)? = null,
 ) {
     val state = rememberChompassSheetState()
     val invalidLoseMsg = stringResource(R.string.settings_invalid_goal_lose)
@@ -111,14 +116,14 @@ internal fun SettingsSheets(
             onDismiss()
         }
     }
-    LaunchedEffect(sheet, ui.selectedAI) {
-        if (sheet == SettingsSheet.AI_MODEL && ui.selectedAI == AIProvider.OLLAMA) {
+    LaunchedEffect(sheet, ui.activeProvider) {
+        if (sheet == SettingsSheet.AI_MODEL && ui.activeProvider == AIProvider.OLLAMA) {
             vm.fetchOllamaModels()
         }
-        if (sheet == SettingsSheet.AI_MODEL && ui.selectedAI == AIProvider.CUSTOM_OPENAI) {
+        if (sheet == SettingsSheet.AI_MODEL && ui.activeProvider == AIProvider.CUSTOM_OPENAI) {
             vm.fetchCustomModels()
         }
-        if (sheet == SettingsSheet.AI_MODEL && ui.selectedAI == AIProvider.OPENAI) {
+        if (sheet == SettingsSheet.AI_MODEL && ui.activeProvider == AIProvider.OPENAI) {
             vm.fetchOpenAiModels()
         }
     }
@@ -162,52 +167,52 @@ internal fun SettingsSheets(
                             null
                         }
                     },
-                    selected = { it == ui.selectedAI },
-                    onSelect = { vm.selectProvider(it); onDismiss() }
+                    selected = { it == ui.activeProvider },
+                    onSelect = { vm.setProfileProvider(it); onDismiss() }
                 )
                 SettingsSheet.AI_MODEL -> ListSheet(
                     title = stringResource(R.string.sheet_model),
                     items = when {
-                        ui.selectedAI == AIProvider.OLLAMA && !ui.ollamaModels.isNullOrEmpty() ->
+                        ui.activeProvider == AIProvider.OLLAMA && !ui.ollamaModels.isNullOrEmpty() ->
                             ui.ollamaModels!!.map { it.id }
-                        ui.selectedAI == AIProvider.CUSTOM_OPENAI && !ui.customModels.isNullOrEmpty() ->
+                        ui.activeProvider == AIProvider.CUSTOM_OPENAI && !ui.customModels.isNullOrEmpty() ->
                             ui.customModels!!
-                        ui.selectedAI == AIProvider.ON_DEVICE && ui.onDeviceModels.isNotEmpty() ->
+                        ui.activeProvider == AIProvider.ON_DEVICE && ui.onDeviceModels.isNotEmpty() ->
                             ui.onDeviceModels
-                        ui.selectedAI == AIProvider.OPENAI ->
+                        ui.activeProvider == AIProvider.OPENAI ->
                             app.chompass.services.ai.OpenAiModelsClient.mergeOverCurated(
-                                ui.selectedAI.models,
+                                ui.activeProvider.models,
                                 ui.openAiModels,
                             )
-                        else -> ui.selectedAI.models
+                        else -> ui.activeProvider.models
                     },
                     label = { it },
                     subtitle = { model ->
-                        if (ui.selectedAI == AIProvider.OLLAMA) {
+                        if (ui.activeProvider == AIProvider.OLLAMA) {
                             ui.ollamaModels?.find { it.id == model }?.subtitle
-                        } else when (ui.selectedAI.modelTiers[model]) {
+                        } else when (ui.activeProvider.modelTiers[model]) {
                             "paid" -> stringResource(R.string.ai_model_tier_paid)
                             "varies" -> stringResource(R.string.ai_model_tier_varies)
                             else -> null
                         }
                     },
-                    selected = { it == ui.selectedModel },
-                    onSelect = { vm.selectModel(it); onDismiss() },
+                    selected = { it == ui.activeModel },
+                    onSelect = { vm.setProfileModel(it); onDismiss() },
                     footer = when {
-                        ui.selectedAI == AIProvider.OLLAMA && ui.ollamaModelsLoading ->
+                        ui.activeProvider == AIProvider.OLLAMA && ui.ollamaModelsLoading ->
                             stringResource(R.string.settings_ollama_models_loading)
-                        ui.selectedAI == AIProvider.OLLAMA && ui.ollamaModelsError ->
+                        ui.activeProvider == AIProvider.OLLAMA && ui.ollamaModelsError ->
                             stringResource(R.string.settings_ollama_models_error)
-                        ui.selectedAI == AIProvider.CUSTOM_OPENAI && ui.customModelsLoading ->
+                        ui.activeProvider == AIProvider.CUSTOM_OPENAI && ui.customModelsLoading ->
                             stringResource(R.string.settings_custom_models_loading)
-                        ui.selectedAI == AIProvider.CUSTOM_OPENAI && ui.customModelsError ->
+                        ui.activeProvider == AIProvider.CUSTOM_OPENAI && ui.customModelsError ->
                             stringResource(R.string.settings_custom_models_error)
-                        ui.selectedAI.supportsCustomModelName ->
+                        ui.activeProvider.supportsCustomModelName ->
                             stringResource(R.string.sheet_model_footer)
                         else -> null
                     },
-                    customField = if (ui.selectedAI.supportsCustomModelName) {
-                        { m -> vm.selectModel(m); onDismiss() }
+                    customField = if (ui.activeProvider.supportsCustomModelName) {
+                        { m -> vm.setProfileModel(m); onDismiss() }
                     } else null,
                     onDismiss = onDismiss
                 )
@@ -229,40 +234,40 @@ internal fun SettingsSheets(
                 )
                 SettingsSheet.VISION_MODEL -> ListSheet(
                     title = stringResource(R.string.settings_ai_vision_model),
-                    items = listOf("") + ui.selectedAI.models,
+                    items = listOf("") + ui.activeProvider.models,
                     label = { if (it.isEmpty()) stringResource(R.string.settings_ai_vision_model_unset) else it },
                     subtitle = { model ->
                         if (model.isEmpty()) null
-                        else when (ui.selectedAI.modelTiers[model]) {
+                        else when (ui.activeProvider.modelTiers[model]) {
                             "paid" -> stringResource(R.string.ai_model_tier_paid)
                             "varies" -> stringResource(R.string.ai_model_tier_varies)
                             else -> null
                         }
                     },
-                    selected = { it == ui.visionModel },
-                    onSelect = { vm.selectVisionModel(it.ifEmpty { null }); onDismiss() },
+                    selected = { it == ui.activeProfile?.visionModel.orEmpty() },
+                    onSelect = { vm.setProfileVisionModel(it.ifEmpty { null }); onDismiss() },
                     footer = stringResource(R.string.settings_ai_vision_model_footer),
-                    customField = if (ui.selectedAI.supportsCustomModelName) {
-                        { m -> vm.selectVisionModel(m); onDismiss() }
+                    customField = if (ui.activeProvider.supportsCustomModelName) {
+                        { m -> vm.setProfileVisionModel(m); onDismiss() }
                     } else null,
                     onDismiss = onDismiss
                 )
                 SettingsSheet.API_KEY -> ApiKeySheet(
-                    title = stringResource(R.string.sheet_api_key_format, stringResource(ui.selectedAI.displayNameRes)),
-                    placeholder = stringResource(ui.selectedAI.apiKeyPlaceholderRes),
-                    onSave = { vm.setApiKey(it); onDismiss() },
+                    title = stringResource(R.string.sheet_api_key_format, stringResource(ui.activeProvider.displayNameRes)),
+                    placeholder = stringResource(ui.activeProvider.apiKeyPlaceholderRes),
+                    onSave = { vm.setProfileApiKey(it); onDismiss() },
                     onDismiss = onDismiss
                 )
                 SettingsSheet.CUSTOM_BASE_URL -> TextFieldSheet(
                     title = stringResource(R.string.settings_custom_url_title),
-                    initial = ui.customBaseUrl,
+                    initial = ui.activeProfile?.baseUrl.orEmpty(),
                     placeholder = stringResource(R.string.settings_custom_url_placeholder),
-                    onSave = { vm.setCustomBaseUrl(ui.selectedAI, it); onDismiss() },
+                    onSave = { vm.setProfileBaseUrl(it); onDismiss() },
                     onDismiss = onDismiss
                 )
                 SettingsSheet.ON_DEVICE_MODEL -> OnDeviceModelSheet(
                     container = vm.container,
-                    selectedModelId = ui.selectedModel,
+                    selectedModelId = ui.activeModel,
                     onUnload = vm::unloadOnDeviceModel,
                     onDelete = vm::deleteOnDeviceModel,
                     onStartDownload = vm::startOnDeviceModelDownload,
@@ -353,53 +358,59 @@ internal fun SettingsSheets(
                     },
                     onDismiss = onDismiss
                 )
-                SettingsSheet.FALLBACK_PROVIDER -> ListSheet(
-                    title = stringResource(R.string.sheet_ai_provider),
-                    // ON_DEVICE is a valid fallback target when the feature is
-                    // available (mirror the primary picker gate); resolution in
-                    // currentFallbackConfig additionally requires the model file
-                    // to be downloaded, so the list stays honest.
-                    items = AIProvider.values().filter { it != AIProvider.ON_DEVICE || ui.onDeviceAvailable },
-                    label = { stringResource(it.displayNameRes) },
-                    selected = { it == ui.fallbackProvider },
-                    onSelect = { vm.selectFallbackProvider(it); onDismiss() }
-                )
-                SettingsSheet.FALLBACK_MODEL -> {
-                    // Same provider as primary → exclude primary's selected model so
-                    // fallback can't be a literal duplicate config. ON_DEVICE mirrors
-                    // the primary picker's per-model capability gate.
-                    val base = if (ui.fallbackProvider == AIProvider.ON_DEVICE && ui.onDeviceModels.isNotEmpty())
-                        ui.onDeviceModels
-                    else
-                        ui.fallbackProvider.models
-                    val opts = if (ui.fallbackProvider == ui.selectedAI)
-                        base.filter { it != ui.selectedModel }
-                    else base
+                SettingsSheet.AI_PROFILE -> {
                     ListSheet(
-                        title = stringResource(R.string.sheet_model),
-                        items = opts,
-                        label = { it },
-                        selected = { it == ui.fallbackModel },
-                        onSelect = { vm.selectFallbackModel(it); onDismiss() },
-                        footer = if (ui.fallbackProvider.supportsCustomModelName) stringResource(R.string.sheet_model_footer) else null,
-                        customField = if (ui.fallbackProvider.supportsCustomModelName) {
-                            { m -> vm.selectFallbackModel(m); onDismiss() }
-                        } else null,
-                        onDismiss = onDismiss
+                        title = stringResource(R.string.settings_ai_profile),
+                        items = ui.profiles,
+                        label = { it.name },
+                        subtitle = { profile ->
+                            val model = profile.model ?: profile.provider.defaultModel
+                            "${stringResource(profile.provider.displayNameRes)} · $model"
+                        },
+                        selected = { it.id == ui.activeProfile?.id },
+                        onSelect = { vm.selectProfile(it.id.toString()); onDismiss() },
                     )
+                    HorizontalDivider()
+                    SettingRow(
+                        stringResource(R.string.settings_profile_add),
+                        "",
+                        icon = Icons.Outlined.Add
+                    ) { onOpenSheet?.invoke(SettingsSheet.ADD_PROFILE_NAME) ?: onDismiss() }
+                    SettingRow(
+                        stringResource(R.string.settings_profile_rename),
+                        ui.activeProfile?.name ?: "",
+                        icon = Icons.Outlined.Edit
+                    ) { onOpenSheet?.invoke(SettingsSheet.PROFILE_RENAME) ?: onDismiss() }
                 }
-                SettingsSheet.FALLBACK_KEY -> ApiKeySheet(
-                    title = stringResource(R.string.sheet_api_key_format, stringResource(ui.fallbackProvider.displayNameRes)),
-                    placeholder = stringResource(ui.fallbackProvider.apiKeyPlaceholderRes),
-                    onSave = { vm.setFallbackApiKey(it); onDismiss() },
+                SettingsSheet.ADD_PROFILE_NAME -> TextFieldSheet(
+                    title = stringResource(R.string.settings_profile_add),
+                    initial = "",
+                    placeholder = stringResource(R.string.sheet_profile_name),
+                    onSave = { name ->
+                        // Activate-on-add means the provider picker that opens next
+                        // edits the fresh profile.
+                        vm.addProfile(name, AIProvider.GEMINI)
+                        onOpenSheet?.invoke(SettingsSheet.AI_PROVIDER) ?: onDismiss()
+                    },
                     onDismiss = onDismiss
                 )
-                SettingsSheet.FALLBACK_BASE_URL -> TextFieldSheet(
-                    title = stringResource(R.string.settings_custom_url_title),
-                    initial = ui.fallbackCustomBaseUrl,
-                    placeholder = stringResource(R.string.settings_custom_url_placeholder),
-                    onSave = { vm.setFallbackCustomBaseUrl(ui.fallbackProvider, it); onDismiss() },
+                SettingsSheet.PROFILE_RENAME -> TextFieldSheet(
+                    title = stringResource(R.string.settings_profile_rename),
+                    initial = ui.activeProfile?.name.orEmpty(),
+                    placeholder = stringResource(R.string.sheet_profile_name),
+                    onSave = { vm.renameActiveProfile(it); onDismiss() },
                     onDismiss = onDismiss
+                )
+                SettingsSheet.FALLBACK_PROFILE -> ListSheet(
+                    title = stringResource(R.string.settings_profile_fallback),
+                    items = listOf<AiProfile?>(null) + ui.profiles.filter { it.id != ui.activeProfile?.id },
+                    label = { it?.name ?: stringResource(R.string.settings_profile_fallback_none) },
+                    subtitle = { profile -> profile?.let { stringResource(it.provider.displayNameRes) } },
+                    selected = { profile ->
+                        if (profile == null) ui.fallbackProfileId == null
+                        else profile.id.toString() == ui.fallbackProfileId
+                    },
+                    onSelect = { vm.setFallbackProfile(it?.id?.toString()); onDismiss() },
                 )
                 SettingsSheet.GENDER -> ListSheet(
                     title = stringResource(R.string.sheet_gender),

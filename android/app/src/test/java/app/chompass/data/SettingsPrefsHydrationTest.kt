@@ -2,16 +2,20 @@ package app.chompass.data
 
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.preferencesOf
+import app.chompass.models.AiProfile
 import app.chompass.models.AIProvider
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.SpeechProvider
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.time.Instant
+import java.util.UUID
 
 class SettingsPrefsHydrationTest {
     private val json = Json { ignoreUnknownKeys = true }
@@ -53,7 +57,6 @@ class SettingsPrefsHydrationTest {
         assertTrue(snap.fastingGoalNotificationEnabled)
         assertTrue(snap.fastingStartReminderEnabled)
         assertEquals("", snap.customBaseUrl)
-        assertEquals("", snap.fallbackCustomBaseUrl)
     }
 
     @Test
@@ -96,14 +99,30 @@ class SettingsPrefsHydrationTest {
 
     @Test
     fun customBaseUrl_hydratesForSelectedAndFallbackProviders() {
+        val ollama = AiProfile(
+            id = UUID.fromString("11111111-1111-1111-1111-111111111111"),
+            name = "Ollama",
+            provider = AIProvider.OLLAMA,
+            baseUrl = "http://192.168.1.10:11434",
+            createdAt = Instant.EPOCH,
+        )
+        val custom = AiProfile(
+            id = UUID.fromString("22222222-2222-2222-2222-222222222222"),
+            name = "Custom fallback",
+            provider = AIProvider.CUSTOM_OPENAI,
+            baseUrl = "https://example.com/v1",
+            createdAt = Instant.EPOCH,
+        )
         val prefs = preferencesOf(
-            Keys.SELECTED_AI_PROVIDER to AIProvider.OLLAMA.name,
-            Keys.FALLBACK_PROVIDER to AIProvider.CUSTOM_OPENAI.name,
-            Keys.customBaseUrl(AIProvider.OLLAMA) to "http://192.168.1.10:11434",
-            Keys.fallbackCustomBaseUrl(AIProvider.CUSTOM_OPENAI) to "https://example.com/v1",
+            Keys.AI_PROFILES_JSON to json.encodeToString(
+                ListSerializer(AiProfile.serializer()),
+                listOf(ollama, custom),
+            ),
+            Keys.ACTIVE_AI_PROFILE_ID to ollama.id.toString(),
+            Keys.FALLBACK_AI_PROFILE_ID to custom.id.toString(),
         )
         val snap = prefs.toSettingsHydration(json)
+        assertEquals(AIProvider.OLLAMA, snap.selectedAI)
         assertEquals("http://192.168.1.10:11434", snap.customBaseUrl)
-        assertEquals("https://example.com/v1", snap.fallbackCustomBaseUrl)
     }
 }

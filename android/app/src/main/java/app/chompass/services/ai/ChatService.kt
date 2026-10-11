@@ -4,6 +4,7 @@ import app.chompass.data.KeyStore
 import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.data.PreferencesStore
 import app.chompass.models.AIProvider
+import app.chompass.models.AiProfile
 import app.chompass.R
 import app.chompass.models.ActivityLevel
 import app.chompass.models.CalorieSafety
@@ -54,9 +55,9 @@ class ChatService(
     private val keyStore: KeyStore? = null,
     private val foodAnalysisService: FoodAnalysisService,
     private val okHttp: OkHttpClient = FoodAnalysisService.defaultClient,
-    /** Test seam: supplies provider API keys without a real encrypted KeyStore
+    /** Test seam: supplies profile API keys without a real encrypted KeyStore
      *  (Robolectric has no AndroidKeyStore — same pattern as FoodAnalysisService). */
-    private val keyLookup: ((AIProvider) -> String?)? = null,
+    private val keyLookup: ((AiProfile) -> String?)? = null,
     /** Optional local-only fasting timer (docs/local/PLAN_FASTING_TRACKER.md):
      *  when set and fasting is enabled, the coach prompt carries a fasting
      *  snapshot so "should I eat now?" answers differ at hour 2 vs hour 15. */
@@ -123,8 +124,8 @@ class ChatService(
             hasImages = imageBytes != null,
         )
         val baseUrl = cfg.customBaseUrl?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: provider.baseUrl
-        val apiKey = keyLookup?.invoke(provider)
-            ?: AiHttp.sanitizeApiKey(keyStore!!.apiKey(provider))
+        val apiKey = keyLookup?.invoke(cfg.profile)
+            ?: AiHttp.sanitizeApiKey(keyStore!!.profileApiKey(cfg.profile.id))
 
         // Coach tool-calling (Tier C) stays debug/experimental for on-device — see docs/ON_DEVICE_LLM.md.
         if (provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE) {

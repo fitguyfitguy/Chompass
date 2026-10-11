@@ -2,6 +2,7 @@ package app.chompass.data
 
 import android.content.Context
 import app.chompass.models.AIProvider
+import app.chompass.models.AiProfile
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.ChatMessage
@@ -31,6 +32,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.util.UUID
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 
 /**
@@ -453,16 +455,28 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     val homeDisplayPreferences: Flow<HomeDisplayPreferences> get() = homeDisplayPreferencesImpl
     val optionalNutrientGoals: Flow<OptionalNutrientGoals> get() = optionalNutrientGoalsImpl
     suspend fun setOptionalNutrientGoals(goals: OptionalNutrientGoals) = setOptionalNutrientGoalsImpl(goals)
-    val selectedAIProvider: Flow<AIProvider> get() = selectedAIProviderImpl
-    suspend fun setSelectedAIProvider(p: AIProvider) = setSelectedAIProviderImpl(p)
-    val selectedAIModel: Flow<String?> get() = selectedAIModelImpl
-    suspend fun setSelectedAIModel(model: String) = setSelectedAIModelImpl(model)
+    val aiProfiles: Flow<List<AiProfile>> get() = aiProfilesImpl
+    suspend fun mutateProfiles(block: (MutableList<AiProfile>) -> Unit) = mutateProfilesImpl(block)
+    val activeAiProfileId: Flow<String?> get() = activeAiProfileIdImpl
+    suspend fun setActiveAiProfileId(id: String) = setActiveAiProfileIdImpl(id)
+    val activeAiProfile: Flow<AiProfile?> get() = activeAiProfileImpl
+    /** Single-edit transform of the active profile (settings/onboarding ops). */
+    suspend fun editActiveProfile(transform: (AiProfile) -> AiProfile) = editActiveProfileImpl(transform = transform)
+    val fallbackAiProfile: Flow<AiProfile?> get() = fallbackAiProfileImpl
+    val fallbackAiProfileId: Flow<String?> get() = dataStore.data.map { it[Keys.FALLBACK_AI_PROFILE_ID] }
+    suspend fun setFallbackAiProfileId(id: String?) = setFallbackAiProfileIdImpl(id)
+    /** Compat view over the active profile (single-slot legacy readers). */
+    val selectedAIProvider: Flow<AIProvider> get() = activeAiProfile.map { it?.provider ?: AIProvider.GEMINI }
+    val selectedAIModel: Flow<String?> get() = activeAiProfile.map { it?.model }
+    /** Legacy single-slot writers → active profile (compat shims, see editActiveProfileImpl). */
+    suspend fun setSelectedAIProvider(p: AIProvider) = setSelectedAIProviderCompatImpl(p)
+    suspend fun setSelectedAIModel(model: String) = setSelectedAIModelCompatImpl(model)
     fun visionModel(provider: AIProvider): Flow<String?> = visionModelImpl(provider)
-    suspend fun setVisionModel(provider: AIProvider, model: String?) = setVisionModelImpl(provider, model)
+    suspend fun setVisionModel(provider: AIProvider, model: String?) = setVisionModelCompatImpl(provider, model)
     fun customBaseUrl(provider: AIProvider): Flow<String?> = customBaseUrlImpl(provider)
-    suspend fun setCustomBaseUrl(provider: AIProvider, url: String?) = setCustomBaseUrlImpl(provider, url)
-    fun fallbackCustomBaseUrl(provider: AIProvider): Flow<String?> = fallbackCustomBaseUrlImpl(provider)
-    suspend fun setFallbackCustomBaseUrl(provider: AIProvider, url: String?) = setFallbackCustomBaseUrlImpl(provider, url)
+    suspend fun setCustomBaseUrl(provider: AIProvider, url: String?) = setCustomBaseUrlCompatImpl(provider, url)
+    fun fallbackCustomBaseUrl(provider: AIProvider): Flow<String?> = fallbackProfileBaseUrlImpl(provider)
+    suspend fun setFallbackCustomBaseUrl(provider: AIProvider, url: String?) = setFallbackCustomBaseUrlCompatImpl(provider, url)
     val maxResponseTokens: Flow<Int> get() = maxResponseTokensImpl
     suspend fun setMaxResponseTokens(v: Int) = setMaxResponseTokensImpl(v)
     val aiReadTimeoutSeconds: Flow<Int> get() = aiReadTimeoutSecondsImpl
@@ -478,17 +492,20 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     val fallbackEnabled: Flow<Boolean> get() = fallbackEnabledImpl
     suspend fun setFallbackEnabled(v: Boolean) = setFallbackEnabledImpl(v)
     val selectedFallbackProvider: Flow<AIProvider> get() = selectedFallbackProviderImpl
-    suspend fun setSelectedFallbackProvider(p: AIProvider) = setSelectedFallbackProviderImpl(p)
-    val selectedFallbackModel: Flow<String?> get() = selectedFallbackModelImpl
-    suspend fun setSelectedFallbackModel(model: String) = setSelectedFallbackModelImpl(model)
+    suspend fun setSelectedFallbackProvider(p: AIProvider) = setSelectedFallbackProviderCompatImpl(p)
+    val selectedFallbackModel: Flow<String?> get() = fallbackAiProfile.map { it?.model }
+    suspend fun setSelectedFallbackModel(model: String) = setSelectedFallbackModelCompatImpl(model)
+    val goalRecalcTier: Flow<GoalRecalcTierOverride> get() = goalRecalcTierImpl
     val geminiGoogleSearchEnabled: Flow<Boolean> get() = geminiGoogleSearchEnabledImpl
     suspend fun setGeminiGoogleSearchEnabled(v: Boolean) = setGeminiGoogleSearchEnabledImpl(v)
     val openRouterReasoningEffort: Flow<OpenRouterReasoningEffort> get() = openRouterReasoningEffortImpl
     suspend fun setOpenRouterReasoningEffort(e: OpenRouterReasoningEffort) = setOpenRouterReasoningEffortImpl(e)
-    val goalRecalcTier: Flow<GoalRecalcTierOverride> get() = goalRecalcTierImpl
     suspend fun setGoalRecalcTier(v: GoalRecalcTierOverride) = setGoalRecalcTierImpl(v)
     /** One-snapshot read of every AI-call setting — see [AiCallConfig]. */
-    internal suspend fun aiCallConfig(): AiCallConfig = aiCallConfigImpl()
+    internal suspend fun aiCallConfig(profileOverride: AiProfile? = null): AiCallConfig = aiCallConfigImpl(profileOverride)
+    /** One-shot legacy single-slot → named-profile migration (idempotent). */
+    internal suspend fun ensureAiProfilesMigrated(keyStore: KeyStore, context: Context) =
+        ensureAiProfilesMigratedImpl(keyStore, context)
     val skipPhotoNotePrompt: Flow<Boolean> get() = skipPhotoNotePromptImpl
     suspend fun setSkipPhotoNotePrompt(v: Boolean) = setSkipPhotoNotePromptImpl(v)
     val photoNoteSkipCount: Flow<Int> get() = photoNoteSkipCountImpl

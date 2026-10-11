@@ -1118,6 +1118,18 @@
     <string name="settings_fallback_footer">Jeśli główny dostawca zawiedzie (przeciążenie, limit zapytań, błąd sieci), aplikacja automatycznie ponawia z tym fallbackiem. Dozwolony jest ten sam dostawca co główny. Wybierz tylko inny model.</string>
     <string name="settings_fallback_on_device_switch_notice">Zmiana modelu na urządzeniu jest wolna: model zapasowy ładuje się od początku, do minuty lub dłużej. Używanie jednego modelu jest zwykle szybsze.</string>
 
+    <!-- Nazwane profile AI -->
+    <string name="settings_ai_profile">Profil AI</string>
+    <string name="settings_profile_add">Dodaj profil</string>
+    <string name="settings_profile_rename">Zmień nazwę profilu</string>
+    <string name="settings_profile_delete">Usuń profil</string>
+    <string name="settings_profile_delete_confirm">Usunąć ten profil? Jego klucz API również zostanie usunięty.</string>
+    <string name="settings_profile_fallback">Profil zapasowy</string>
+    <string name="settings_profile_fallback_none">Brak</string>
+    <string name="sheet_profile_name">Nazwa profilu</string>
+    <string name="queue_run_with">Uruchom z…</string>
+    <string name="queue_last_attempt">Ostatnia próba: %1$s · %2$s</string>
+
     <string name="settings_health_connect">Health Connect</string>
     <string name="settings_manage_health_access">Zarządzaj dostępem Health Connect</string>
     <string name="settings_permissions">Uprawnienia</string>
