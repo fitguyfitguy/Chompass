@@ -57,4 +57,8 @@ data class QueuedAnalysis(
     val error: String? = null,
     /** AI result of the last successful run (history inspection + re-log). */
     val result: FoodAnalysis? = null,
+    /** Profile name the last run tried ("Run with…" override bookkeeping); null = never run. */
+    val lastAttemptProfile: String? = null,
+    /** Model id resolved for that last attempt; null when recorded before this existed. */
+    val lastAttemptModel: String? = null,
 )

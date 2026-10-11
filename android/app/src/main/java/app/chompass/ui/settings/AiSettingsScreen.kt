@@ -63,6 +63,7 @@ fun AiSettingsScreen(
             onDismiss = { sheet = null },
             onInvalidGoalWeight = {},
             onRebalanceBlocked = {},
+            onOpenSheet = { sheet = it },
         )
     }
 }

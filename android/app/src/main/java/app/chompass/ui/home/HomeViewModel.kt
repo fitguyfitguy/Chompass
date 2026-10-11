@@ -11,6 +11,8 @@ import app.chompass.data.disambiguateFoodName
 import app.chompass.data.mergesWithSavedFood
 import app.chompass.data.loadLastGoalChangeSheet
 import app.chompass.models.ActiveBurnShade
+import app.chompass.models.AiProfile
+import app.chompass.models.resolveModelForRequest
 import app.chompass.models.ActiveCalorieSource
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
@@ -119,6 +121,26 @@ enum class FoodLogSortOrder(val storageValue: String, val displayName: String, v
  */
 internal fun needsActivitySnapshotFor(display: HomeDisplayPreferences): Boolean =
     display.showSteps || display.showActiveCalories
+
+/**
+ * Queued entry with the attempt record for its upcoming run (queue "Run with…"):
+ * profile display name + model resolved the way [app.chompass.services.ai.FoodAnalysisService]
+ * resolves it at dispatch time (vision slot only for image-bearing requests).
+ * Pure so the bookkeeping is unit-testable without a container.
+ */
+internal fun queuedEntryWithAttemptRecord(
+    item: QueuedAnalysis,
+    profile: AiProfile,
+    hasImages: Boolean,
+): QueuedAnalysis = item.copy(
+    lastAttemptProfile = profile.name,
+    lastAttemptModel = resolveModelForRequest(
+        profile.provider,
+        profile.model,
+        profile.visionModel,
+        hasImages,
+    ),
+)
 
 /**
  * Whether the hero needs a measured energy read (ADD_ACTIVE mode with a live
@@ -3118,6 +3140,15 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /**
+     * Runs one queued entry with a one-off profile override (queue "Run with…"):
+     * this run dispatches [profile]'s provider/model/key while the globally
+     * active profile stays untouched.
+     */
+    fun runQueuedItemWith(id: UUID, profile: AiProfile) {
+        viewModelScope.launch { runQueuedItemInternal(id, profileOverride = profile) }
+    }
+
+    /**
      * Runs each PENDING item in order; stops at the first success (the review
      * sheet opens). Failures stay PENDING with the error recorded and the next
      * item is tried.
@@ -3139,7 +3170,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
      * History entries (FAILED/DONE) re-run too (#99); [runAllQueued] stays
      * PENDING-only.
      */
-    private suspend fun runQueuedItemInternal(id: UUID): Boolean {
+    private suspend fun runQueuedItemInternal(id: UUID, profileOverride: AiProfile? = null): Boolean {
         val item = container.analysisQueue.item(id) ?: return false
         if (!item.status.reRunnable) return false
         if (_ui.value.isEntryAnalysisBusy) return false
@@ -3149,6 +3180,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             val images = item.imageFilenames.mapNotNull { filename ->
                 runCatching { container.analysisQueue.loadImage(filename) }.getOrNull()
             }
+            // Record what this run will try (one-off override or active profile)
+            // so the queue row can show "Last tried: profile · model".
+            val cfg = container.prefs.aiCallConfig(profileOverride)
+            container.analysisQueue.upsert(
+                queuedEntryWithAttemptRecord(item, cfg.profile, hasImages = images.isNotEmpty())
+            )
             val note = item.note?.trim()?.takeIf { it.isNotEmpty() }
             withFoodAnalysis(
                 phased = true,
@@ -3173,6 +3210,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     note,
                     singleIngredient = item.singleIngredient,
                     confirmedPortionGrams = item.confirmedPortionGrams,
+                    profileOverride = profileOverride,
                 ) { progress ->
                     onFoodAnalysisProgress(start.generation, progress)
                 }.copy(customNote = note)

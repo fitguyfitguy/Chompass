@@ -637,6 +637,18 @@
     <string name="settings_enable_fallback">Activar respaldo</string>
     <string name="settings_fallback_footer">Si tu proveedor principal falla (sobrecarga, límite de tasa, error de red), la app reintenta automáticamente con este respaldo. Se permite el mismo proveedor que el principal, solo elige un modelo diferente.</string>
     <string name="settings_fallback_on_device_switch_notice">Cambiar de modelo en el dispositivo es lento: el modelo de respaldo se carga desde cero, hasta un minuto o más. Mantener un solo modelo suele ser más rápido.</string>
+
+    <!-- Perfiles de IA con nombre -->
+    <string name="settings_ai_profile">Perfil de IA</string>
+    <string name="settings_profile_add">Añadir perfil</string>
+    <string name="settings_profile_rename">Renombrar perfil</string>
+    <string name="settings_profile_delete">Eliminar perfil</string>
+    <string name="settings_profile_delete_confirm">¿Eliminar este perfil? Su clave de API también se eliminará.</string>
+    <string name="settings_profile_fallback">Perfil de respaldo</string>
+    <string name="settings_profile_fallback_none">Ninguno</string>
+    <string name="sheet_profile_name">Nombre del perfil</string>
+    <string name="queue_run_with">Ejecutar con…</string>
+    <string name="queue_last_attempt">Último intento: %1$s · %2$s</string>
     <string name="widget_all_metrics_label">Chompass Hoy</string>
     <string name="widget_all_metrics_description">Mira las calorías, proteínas, carbohidratos y grasas de hoy en un widget.</string>
     <string name="settings_needs_health_connect">Requiere Health Connect</string>

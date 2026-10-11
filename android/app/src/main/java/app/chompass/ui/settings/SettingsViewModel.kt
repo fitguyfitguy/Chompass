@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.AIProvider
+import app.chompass.models.AiProfile
 import app.chompass.models.AutoBalanceMacro
 import app.chompass.models.DietMode
 import app.chompass.models.FoodLogMacroChip
@@ -62,7 +63,9 @@ import app.chompass.services.weather.OmCity
 import app.chompass.ui.home.FoodLogSortOrder
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppThemeColor
+import java.time.Instant
 import java.time.LocalDate
+import java.util.UUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -76,10 +79,11 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 
 data class SettingsUiState(
-    val selectedAI: AIProvider = AIProvider.GEMINI,
-    val selectedModel: String = AIProvider.GEMINI.defaultModel,
-    /** Resolved vision-model slot for [selectedAI]; empty = primary model handles images too (#195). */
-    val visionModel: String = "",
+    /** All saved AI profiles; [activeProfile] drives every AI feature. */
+    val profiles: List<AiProfile> = emptyList(),
+    val activeProfile: AiProfile? = null,
+    /** Profile used when the active one fails; null = no fallback. */
+    val fallbackProfileId: String? = null,
     val maxResponseTokens: Int = app.chompass.data.DEFAULT_MAX_RESPONSE_TOKENS,
     val aiReadTimeoutSeconds: Int = app.chompass.data.DEFAULT_AI_READ_TIMEOUT_SECONDS,
     val servingUnitInferenceMode: ServingUnitInferenceMode = ServingUnitInferenceMode.Default,
@@ -173,7 +177,6 @@ data class SettingsUiState(
     /** Localized error for the "Estimate with AI" call; null = no alert shown. */
     val optionalNutrientEstimateAlertMessage: String? = null,
     val apiKeyMasked: String = "",
-    val customBaseUrl: String = "",
     val speechApiKeyMasked: String = "",
     /** Rollout gate + device capability — whether ON_DEVICE should appear as a selectable provider. */
     val onDeviceAvailable: Boolean = false,
@@ -217,10 +220,6 @@ data class SettingsUiState(
 
     val userContext: String = "",
     val fallbackEnabled: Boolean = true,
-    val fallbackProvider: AIProvider = AIProvider.GEMINI,
-    val fallbackModel: String = AIProvider.GEMINI.defaultFallbackModel,
-    val fallbackApiKeyMasked: String = "",
-    val fallbackCustomBaseUrl: String = "",
     val geminiGoogleSearchEnabled: Boolean = false,
     val openRouterReasoningEffort: OpenRouterReasoningEffort = OpenRouterReasoningEffort.AUTO,
     val goalRecalcTier: GoalRecalcTierOverride = GoalRecalcTierOverride.AUTO,
@@ -247,6 +246,16 @@ data class SettingsUiState(
 ) {
     val heightMetric: Boolean get() = heightUnit == "cm"
     val weightMetric: Boolean get() = weightUnit == "kg"
+
+    /** Provider of the active profile (Gemini only as the no-profiles default). */
+    val activeProvider: AIProvider get() = activeProfile?.provider ?: AIProvider.GEMINI
+
+    /** Resolved model of the active profile; null model falls back to the provider default. */
+    val activeModel: String
+        get() = activeProfile?.model ?: activeProvider.defaultModel
+
+    /** Profile configured as fallback; null = fallback disabled-by-absence. */
+    val fallbackProfile: AiProfile? get() = profiles.firstOrNull { it.id.toString() == fallbackProfileId }
 }
 
 /** One row of the Settings hub Suggestions card. */
@@ -265,9 +274,9 @@ data class SettingsSuggestion(
  */
 private data class EarlyHydration(
     val snap: SettingsPrefsHydration,
-    val provider: AIProvider,
-    val effectiveModel: String,
-    val vision: String,
+    val profiles: List<AiProfile>,
+    val activeProfile: AiProfile?,
+    val fallbackProfileId: String?,
     val onDeviceAvailable: Boolean,
     val onDeviceModels: List<String>,
 )
@@ -293,7 +302,9 @@ internal fun commitSettingsHydrate(
         waterDynamicGoalPreview = incoming.waterDynamicGoalPreview,
         apiKeyMasked = incoming.apiKeyMasked.ifEmpty { current.apiKeyMasked },
         speechApiKeyMasked = incoming.speechApiKeyMasked.ifEmpty { current.speechApiKeyMasked },
-        fallbackApiKeyMasked = incoming.fallbackApiKeyMasked.ifEmpty { current.fallbackApiKeyMasked },
+        profiles = incoming.profiles.ifEmpty { current.profiles },
+        activeProfile = incoming.activeProfile ?: current.activeProfile,
+        fallbackProfileId = incoming.fallbackProfileId ?: current.fallbackProfileId,
         onDeviceAvailable = incoming.onDeviceAvailable,
         onDeviceModels = incoming.onDeviceModels.ifEmpty { current.onDeviceModels },
     )
@@ -345,29 +356,21 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val early = withContext(Dispatchers.IO) {
                 PerfLog.measure("settingsInit", "early", block = {
                     val snap = container.prefs.readSettingsHydration()
-                    val provider = snap.selectedAI
-                    val model = provider.supportedModelOrDefault(snap.selectedModelRaw)
-                    val vision = snap.visionModelRaw
-                        ?.takeIf { it.isNotBlank() }
-                        ?.let { provider.supportedModelOrDefault(it) }
-                        .orEmpty()
+                    val profiles = container.prefs.aiProfiles.first()
+                    val active = container.prefs.activeAiProfile.first()
+                    val fallbackProfileId = container.prefs.fallbackAiProfileId.first()
                     val onDeviceAvailable = snap.onDeviceFeatureVisible &&
                         OnDeviceCapability.isSupported(container.appContext)
-                    val onDeviceModels = if (provider == AIProvider.ON_DEVICE && onDeviceAvailable) {
+                    val onDeviceModels = if (active?.provider == AIProvider.ON_DEVICE && onDeviceAvailable) {
                         supportedOnDeviceModels()
                     } else {
                         emptyList()
                     }
-                    val effectiveModel = if (model !in onDeviceModels && onDeviceModels.isNotEmpty()) {
-                        onDeviceModels.first()
-                    } else {
-                        model
-                    }
                     EarlyHydration(
                         snap = snap,
-                        provider = provider,
-                        effectiveModel = effectiveModel,
-                        vision = vision,
+                        profiles = profiles,
+                        activeProfile = active,
+                        fallbackProfileId = fallbackProfileId,
                         onDeviceAvailable = onDeviceAvailable,
                         onDeviceModels = onDeviceModels,
                     )
@@ -377,8 +380,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             // hydrate cannot flash Gemini and hide On-Device.
             _ui.update {
                 it.copy(
-                    selectedAI = early.provider,
-                    selectedModel = early.effectiveModel,
+                    profiles = early.profiles,
+                    activeProfile = early.activeProfile,
+                    fallbackProfileId = early.fallbackProfileId,
                     onDeviceAvailable = early.onDeviceAvailable,
                     onDeviceModels = early.onDeviceModels,
                     aiFeaturesEnabled = early.snap.aiFeaturesEnabled,
@@ -406,7 +410,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             }
             val (state, sheet) = withContext(Dispatchers.IO) {
                 val snap = container.prefs.readSettingsHydration()
-                val provider = early.provider
                 val speech = snap.selectedSpeech
                 val weather = container.weatherRepository.state.first()
                 // Fragile, non-essential calls are guarded so a single failure
@@ -425,19 +428,19 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     HealthSyncWorker.cancel(container.appContext)
                     backgroundSync = false
                 }
-                val masked = runCatching { maskKey(container.keyStore.apiKey(provider)) }.getOrDefault("")
+                val profiles = container.prefs.aiProfiles.first()
+                val active = container.prefs.activeAiProfile.first()
+                val fallbackProfileId = container.prefs.fallbackAiProfileId.first()
+                val masked = runCatching { maskKey(active?.let { container.keyStore.profileApiKey(it.id) }) }.getOrDefault("")
                 val speechMasked = runCatching { maskKey(container.keyStore.speechApiKey(speech)) }.getOrDefault("")
-                val fbProvider = snap.fallbackProvider
-                val fbModel = fbProvider.supportedFallbackModelOrDefault(snap.fallbackModelRaw)
-                val fbMasked = runCatching { maskKey(container.keyStore.fallbackApiKey(fbProvider)) }.getOrDefault("")
                 lastRecalcSignature = snap.lastRecalcGoalSignature ?: profile?.goalInputSignature
                 if (snap.lastRecalcGoalSignature == null && profile != null) {
                     container.prefs.setLastRecalcGoalSignature(profile.goalInputSignature)
                 }
                 val state = SettingsUiState(
-                    selectedAI = provider,
-                    selectedModel = early.effectiveModel,
-                    visionModel = early.vision,
+                    profiles = profiles,
+                    activeProfile = active,
+                    fallbackProfileId = fallbackProfileId,
                     maxResponseTokens = snap.maxResponseTokens,
                     aiReadTimeoutSeconds = snap.aiReadTimeoutSeconds,
                     servingUnitInferenceMode = snap.servingUnitInferenceMode,
@@ -514,7 +517,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     healthBackgroundReadGranted = container.health.hasBackgroundRead(),
                     adaptiveGoalsEnabled = snap.adaptiveGoalsEnabled,
                     apiKeyMasked = masked,
-                    customBaseUrl = snap.customBaseUrl,
                     speechApiKeyMasked = speechMasked,
                     onDeviceAvailable = early.onDeviceAvailable,
                     onDeviceModels = early.onDeviceModels,
@@ -536,10 +538,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
 
                     userContext = snap.userContext,
                     fallbackEnabled = snap.fallbackEnabled,
-                    fallbackProvider = fbProvider,
-                    fallbackModel = fbModel,
-                    fallbackApiKeyMasked = fbMasked,
-                    fallbackCustomBaseUrl = snap.fallbackCustomBaseUrl,
                     geminiGoogleSearchEnabled = snap.geminiGoogleSearchEnabled,
                     openRouterReasoningEffort = snap.openRouterReasoningEffort,
                     goalRecalcTier = snap.goalRecalcTier,
@@ -883,55 +881,14 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setFallbackEnabled(v: Boolean) {
         viewModelScope.launch {
             container.prefs.setFallbackEnabled(v)
-            if (v && container.prefs.selectedFallbackModel.first().isNullOrBlank()) {
-                val provider = container.prefs.selectedFallbackProvider.first()
-                val model = provider.defaultFallbackModel
-                container.prefs.setSelectedFallbackModel(model)
-                _ui.value = _ui.value.copy(fallbackEnabled = v, fallbackModel = model)
-            } else {
-                _ui.value = _ui.value.copy(fallbackEnabled = v)
-            }
+            _ui.value = _ui.value.copy(fallbackEnabled = v)
         }
     }
 
-    fun selectFallbackProvider(p: AIProvider) {
+    fun setFallbackProfile(id: String?) {
         viewModelScope.launch {
-            container.prefs.setSelectedFallbackProvider(p)
-            // Reset model to provider default if old model isn't in the new provider's list.
-            val current = _ui.value.fallbackModel
-            val newModel = if (p == AIProvider.ON_DEVICE) {
-                // On-device fallback defaults to the catalog's canonical model
-                // (mirrors the primary picker's defaultModel).
-                ModelCatalog.default.modelId
-            } else {
-                p.supportedFallbackModelOrDefault(current)
-            }
-            container.prefs.setSelectedFallbackModel(newModel)
-            val masked = maskKey(container.keyStore.fallbackApiKey(p))
-            val fallbackUrl = container.prefs.fallbackCustomBaseUrl(p).first().orEmpty()
-            _ui.value = _ui.value.copy(
-                fallbackProvider = p,
-                fallbackModel = newModel,
-                fallbackApiKeyMasked = masked,
-                fallbackCustomBaseUrl = fallbackUrl,
-            )
-        }
-    }
-
-    fun selectFallbackModel(m: String) {
-        viewModelScope.launch {
-            val model = _ui.value.fallbackProvider.supportedFallbackModelOrDefault(m)
-            container.prefs.setSelectedFallbackModel(model)
-            _ui.value = _ui.value.copy(fallbackModel = model)
-        }
-    }
-
-    fun setFallbackApiKey(raw: String) {
-        viewModelScope.launch {
-            val p = _ui.value.fallbackProvider
-            val trimmed = raw.trim().takeIf { it.isNotEmpty() }
-            container.keyStore.setFallbackApiKey(p, trimmed)
-            _ui.value = _ui.value.copy(fallbackApiKeyMasked = maskKey(trimmed))
+            container.prefs.setFallbackAiProfileId(id)
+            _ui.value = _ui.value.copy(fallbackProfileId = id)
         }
     }
 
@@ -1027,26 +984,129 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         { copy(foodLogSortOrder = order) },
     )
 
-    fun selectProvider(p: AIProvider) {
+    // -- Named AI profiles ---------------------------------------------------------
+    // Every op below mutates the profile store and re-reads the AI slice so the
+    // Settings rows (name, model, masked key, on-device list) never drift from disk.
+
+    /** Re-reads profiles/active/fallback id + the active profile's masked key into [SettingsUiState]. */
+    private suspend fun refreshAiState(onDeviceModels: List<String>? = null) {
+        val active = container.prefs.activeAiProfile.first()
+        val models = onDeviceModels
+            ?: if (active?.provider == AIProvider.ON_DEVICE) supportedOnDeviceModels() else emptyList()
+        _ui.value = _ui.value.copy(
+            profiles = container.prefs.aiProfiles.first(),
+            activeProfile = active,
+            fallbackProfileId = container.prefs.fallbackAiProfileId.first(),
+            apiKeyMasked = runCatching {
+                maskKey(active?.let { container.keyStore.profileApiKey(it.id) })
+            }.getOrDefault(""),
+            onDeviceModels = models,
+        )
+    }
+
+    /** Switches the active profile; the profile keeps its own model, key and URL. */
+    fun selectProfile(id: String) {
         viewModelScope.launch {
-            container.prefs.setSelectedAIProvider(p)
-            val onDeviceModels = if (p == AIProvider.ON_DEVICE) supportedOnDeviceModels() else emptyList()
-            val newModel = if (onDeviceModels.isNotEmpty()) onDeviceModels.first() else p.defaultModel
-            container.prefs.setSelectedAIModel(newModel)
-            val masked = maskKey(container.keyStore.apiKey(p))
-            val vision = container.prefs.visionModel(p).first()
-                ?.takeIf { it.isNotBlank() }
-                ?.let { p.supportedModelOrDefault(it) }
-                .orEmpty()
-            val customBaseUrl = container.prefs.customBaseUrl(p).first().orEmpty()
-            _ui.value = _ui.value.copy(
-                selectedAI = p,
-                selectedModel = newModel,
-                apiKeyMasked = masked,
-                customBaseUrl = customBaseUrl,
-                visionModel = vision,
-                onDeviceModels = onDeviceModels,
+            container.prefs.setActiveAiProfileId(id)
+            refreshAiState()
+        }
+    }
+
+    /** Adds a profile named [name] (blank → provider display name) and activates it so the
+     *  following provider/model/key rows edit the new profile. */
+    fun addProfile(name: String, provider: AIProvider) {
+        viewModelScope.launch {
+            val profile = AiProfile(
+                id = UUID.randomUUID(),
+                name = name.ifBlank { container.appContext.getString(provider.displayNameRes) },
+                provider = provider,
+                model = provider.defaultModel,
+                createdAt = Instant.now(),
             )
+            container.prefs.mutateProfiles { it.add(profile) }
+            container.prefs.setActiveAiProfileId(profile.id.toString())
+            refreshAiState()
+        }
+    }
+
+    fun renameActiveProfile(name: String) {
+        val trimmed = name.trim()
+        if (trimmed.isEmpty()) return
+        viewModelScope.launch {
+            container.prefs.editActiveProfile { it.copy(name = trimmed) }
+            refreshAiState()
+        }
+    }
+
+    /** Deletes the active profile with its API key; activates the first remaining profile. */
+    fun deleteActiveProfile() {
+        viewModelScope.launch {
+            val id = _ui.value.activeProfile?.id ?: return@launch
+            container.prefs.mutateProfiles { list -> list.removeAll { it.id == id } }
+            container.keyStore.setProfileApiKey(id, null)
+            if (_ui.value.fallbackProfileId == id.toString()) {
+                container.prefs.setFallbackAiProfileId(null)
+            }
+            val remaining = container.prefs.aiProfiles.first()
+            if (remaining.isNotEmpty()) {
+                container.prefs.setActiveAiProfileId(remaining.first().id.toString())
+            }
+            refreshAiState()
+        }
+    }
+
+    /** Retargets the active profile's provider: model resets to the provider default (each
+     *  profile keeps its own), per-provider slots clear so stale Gemini/OpenAI values can't leak. */
+    fun setProfileProvider(p: AIProvider) {
+        viewModelScope.launch {
+            val onDeviceModels = if (p == AIProvider.ON_DEVICE) supportedOnDeviceModels() else emptyList()
+            val model = if (onDeviceModels.isNotEmpty()) onDeviceModels.first() else p.defaultModel
+            container.prefs.editActiveProfile {
+                it.copy(provider = p, model = model, baseUrl = null, visionModel = null)
+            }
+            refreshAiState(onDeviceModels = onDeviceModels)
+        }
+    }
+
+    fun setProfileModel(m: String) {
+        viewModelScope.launch {
+            val active = _ui.value.activeProfile ?: return@launch
+            val provider = active.provider
+            val model = provider.supportedModelOrDefault(AIProvider.normalizeModelId(m))
+            val prev = active.model
+            container.prefs.editActiveProfile { it.copy(model = model) }
+            if (provider == AIProvider.ON_DEVICE && prev != model) {
+                container.onDeviceLlmGateway.unload()
+            }
+            refreshAiState()
+        }
+    }
+
+    fun setProfileApiKey(raw: String) {
+        viewModelScope.launch {
+            val active = _ui.value.activeProfile ?: return@launch
+            val trimmed = raw.trim().takeIf { it.isNotEmpty() }
+            container.keyStore.setProfileApiKey(active.id, trimmed)
+            _ui.value = _ui.value.copy(apiKeyMasked = maskKey(trimmed))
+        }
+    }
+
+    /** [url] null/blank clears the profile's custom endpoint override. */
+    fun setProfileBaseUrl(url: String?) {
+        viewModelScope.launch {
+            val stored = url?.trim()?.takeIf { it.isNotBlank() }
+            container.prefs.editActiveProfile { it.copy(baseUrl = stored) }
+            refreshAiState()
+        }
+    }
+
+    /** Sets the per-profile vision-model slot; null/blank clears it back to "same as Model". */
+    fun setProfileVisionModel(m: String?) {
+        viewModelScope.launch {
+            val active = _ui.value.activeProfile ?: return@launch
+            val model = m?.takeIf { it.isNotBlank() }?.let { active.provider.supportedModelOrDefault(it) }
+            container.prefs.editActiveProfile { it.copy(visionModel = model) }
+            refreshAiState()
         }
     }
 
@@ -1076,7 +1136,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             // Codeberg #20 phase 2: with the master AI switch off, don't even
             // schedule the model download (the worker skips it as a backstop).
             if (container.prefs.aiFeaturesEnabled.first() == false) return@launch
-            val entry = ModelCatalog.forModelId(_ui.value.selectedModel)
+            val entry = ModelCatalog.forModelId(_ui.value.activeModel)
             val overWifiOnly = container.prefs.onDeviceDownloadOverWifiOnly.first()
             container.onDeviceModelDownloadManager.startDownload(entry, overWifiOnly)
         }
@@ -1094,26 +1154,15 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         viewModelScope.launch { container.prefs.setOnDeviceHeadroomPercent(v) }
     }
 
-    fun selectModel(m: String) {
-        viewModelScope.launch {
-            val prev = _ui.value.selectedModel
-            val model = _ui.value.selectedAI.supportedModelOrDefault(m)
-            container.prefs.setSelectedAIModel(model)
-            if (_ui.value.selectedAI == AIProvider.ON_DEVICE && prev != model) {
-                container.onDeviceLlmGateway.unload()
-            }
-            _ui.value = _ui.value.copy(selectedModel = model)
-        }
-    }
-
     fun fetchOllamaModels() {
-        if (_ui.value.selectedAI != AIProvider.OLLAMA) return
+        val active = _ui.value.activeProfile ?: return
+        if (active.provider != AIProvider.OLLAMA) return
         viewModelScope.launch {
             _ui.value = _ui.value.copy(ollamaModelsLoading = true, ollamaModelsError = false)
             val result = withContext(Dispatchers.IO) {
                 runCatching {
                     app.chompass.services.ai.OllamaClient.listModels(
-                        baseUrl = _ui.value.customBaseUrl.ifBlank { AIProvider.OLLAMA.baseUrl },
+                        baseUrl = active.baseUrl?.takeIf { it.isNotBlank() } ?: AIProvider.OLLAMA.baseUrl,
                         allowInsecureHttp = _ui.value.allowInsecureHttp,
                     )
                 }
@@ -1137,9 +1186,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     }
 
     fun fetchCustomModels() {
-        if (_ui.value.selectedAI != AIProvider.CUSTOM_OPENAI) return
+        val active = _ui.value.activeProfile ?: return
+        if (active.provider != AIProvider.CUSTOM_OPENAI) return
         viewModelScope.launch {
-            val baseUrl = _ui.value.customBaseUrl.takeIf { it.isNotBlank() }
+            val baseUrl = active.baseUrl?.takeIf { it.isNotBlank() }
             if (baseUrl == null) {
                 _ui.value = _ui.value.copy(customModels = null, customModelsLoading = false, customModelsError = true)
                 return@launch
@@ -1149,7 +1199,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 runCatching {
                     app.chompass.services.ai.OpenAiModelsClient.listModels(
                         baseUrl = baseUrl,
-                        apiKey = container.keyStore.apiKey(AIProvider.CUSTOM_OPENAI),
+                        apiKey = container.keyStore.profileApiKey(active.id),
                         allowInsecureHttp = _ui.value.allowInsecureHttp,
                     )
                 }
@@ -1163,8 +1213,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
 
     /** #107: refresh the built-in OpenAI lineup from /v1/models; silent fallback to the curated list. */
     fun fetchOpenAiModels() {
-        if (_ui.value.selectedAI != AIProvider.OPENAI) return
-        val key = container.keyStore.apiKey(AIProvider.OPENAI)
+        val active = _ui.value.activeProfile ?: return
+        if (active.provider != AIProvider.OPENAI) return
+        val key = container.keyStore.profileApiKey(active.id)
         if (key.isNullOrBlank()) {
             _ui.value = _ui.value.copy(openAiModels = null)
             return
@@ -1185,25 +1236,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     onFailure = { null },
                 ),
             )
-        }
-    }
-
-    /** Sets the per-provider vision-model slot; null/blank clears it back to "same as Model". */
-    fun selectVisionModel(m: String?) {
-        viewModelScope.launch {
-            val provider = _ui.value.selectedAI
-            val model = m?.takeIf { it.isNotBlank() }?.let { provider.supportedModelOrDefault(it) }
-            container.prefs.setVisionModel(provider, model)
-            _ui.value = _ui.value.copy(visionModel = model.orEmpty())
-        }
-    }
-
-    fun setApiKey(raw: String) {
-        viewModelScope.launch {
-            val p = _ui.value.selectedAI
-            val trimmed = raw.trim().takeIf { it.isNotEmpty() }
-            container.keyStore.setApiKey(p, trimmed)
-            _ui.value = _ui.value.copy(apiKeyMasked = maskKey(trimmed))
         }
     }
 
@@ -2355,29 +2387,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
 
     fun setDayTypesAssignment(date: LocalDate, profileId: String?) = editPlan {
         it?.let { plan -> MacroPlanEdit.setDayAssignment(plan, date, profileId) }
-    }
-
-    fun setCustomBaseUrl(provider: AIProvider, url: String) {
-        viewModelScope.launch {
-            val stored = url.trim().takeIf { it.isNotBlank() }
-            container.prefs.setCustomBaseUrl(provider, stored)
-            if (provider == _ui.value.selectedAI) {
-                _ui.value = _ui.value.copy(customBaseUrl = stored.orEmpty())
-            }
-        }
-    }
-
-    /** Fallback-slot base URL: stored under its own key so a fallback that reuses the
-     *  primary provider (e.g. a second OpenAI-compatible endpoint) can't clobber the
-     *  primary's URL — see customBaseURL_fallback_* in PreferencesStoreAi. */
-    fun setFallbackCustomBaseUrl(provider: AIProvider, url: String) {
-        viewModelScope.launch {
-            val stored = url.trim().takeIf { it.isNotBlank() }
-            container.prefs.setFallbackCustomBaseUrl(provider, stored)
-            if (provider == _ui.value.fallbackProvider) {
-                _ui.value = _ui.value.copy(fallbackCustomBaseUrl = stored.orEmpty())
-            }
-        }
     }
 
     private fun maskKey(key: String?): String =

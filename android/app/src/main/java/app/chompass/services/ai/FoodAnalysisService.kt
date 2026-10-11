@@ -6,7 +6,9 @@ import app.chompass.data.AiCallConfig
 import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.data.GoalRecalcTierOverride
 import app.chompass.data.PreferencesStore
+import app.chompass.data.defaultAiProfileSnapshot
 import app.chompass.models.AIProvider
+import app.chompass.models.AiProfile
 import app.chompass.R
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.CalorieSafety
@@ -254,8 +256,8 @@ class FoodAnalysisService(
     internal val callAiDelegate: (suspend (prompt: String, imageBytesList: List<ByteArray>, op: String) -> String)? = null,
     internal val inferenceModeForTest: ServingUnitInferenceMode? = null,
     internal val watchdogSecondsOverride: Int? = null,
-    /** Test seam: supplies provider API keys without a real encrypted KeyStore. */
-    internal val keyLookup: ((AIProvider) -> String?)? = null,
+    /** Test seam: supplies profile API keys without a real encrypted KeyStore. */
+    internal val keyLookup: ((AiProfile) -> String?)? = null,
 ) {
     init {
         require((prefs != null && (keyStore != null || keyLookup != null)) || callAiDelegate != null) {
@@ -1023,6 +1025,8 @@ class FoodAnalysisService(
         imageBytesList: List<ByteArray>,
         onProgress: (FoodAnalysisProgress) -> Unit,
         rebuildPrompt: (suspend (AIProvider, String, EntryConstituentPromptKind) -> String),
+        /** One-off profile override (queue "Run with…"); null = active profile. */
+        profileOverride: AiProfile? = null,
     ): FoodAnalysis {
         var finishlessAvailable = true
         var downshiftAvailable = true
@@ -1057,6 +1061,7 @@ class FoodAnalysisService(
                     attemptState = attempt,
                     nonStreaming = nonStreaming,
                     kindOverride = kindOverride,
+                    profileOverride = profileOverride,
                 )
             } catch (e: AiError) {
                 val recovery = entryRecoveryFor(e, op, attempt, finishlessAvailable, downshiftAvailable) ?: throw e
@@ -1380,6 +1385,8 @@ class FoodAnalysisService(
         description: String? = null,
         singleIngredient: Boolean = false,
         confirmedPortionGrams: Double? = null,
+        /** One-off profile override (queue "Run with…"); null = active profile. */
+        profileOverride: AiProfile? = null,
         onProgress: (FoodAnalysisProgress) -> Unit = {},
     ): FoodAnalysis {
         val off = collectOffBarcodeContext(listOf(imageBytes), onProgress)
@@ -1388,6 +1395,7 @@ class FoodAnalysisService(
                 op = "analyzeFood",
                 imageBytesList = listOf(imageBytes),
                 onProgress = onProgress,
+                profileOverride = profileOverride,
                 rebuildPrompt = { _, _, kind ->
                     val responseBlock = entryResponseBlock(kind)
                     var prompt = if (singleIngredient) {
@@ -1421,6 +1429,8 @@ class FoodAnalysisService(
         description: String? = null,
         singleIngredient: Boolean = false,
         confirmedPortionGrams: Double? = null,
+        /** One-off profile override (queue "Run with…"); null = active profile. */
+        profileOverride: AiProfile? = null,
         onProgress: (FoodAnalysisProgress) -> Unit = {},
     ): FoodAnalysis {
         if (imageBytesList.filter { it.isNotEmpty() }.size <= 1 && singleIngredient) {
@@ -1431,6 +1441,7 @@ class FoodAnalysisService(
                 singleIngredient = true,
                 confirmedPortionGrams = confirmedPortionGrams,
                 onProgress = onProgress,
+                profileOverride = profileOverride,
             )
         }
         val images = imageBytesList.filter { it.isNotEmpty() }
@@ -1441,6 +1452,7 @@ class FoodAnalysisService(
                 op = "analyzeFoodMulti",
                 imageBytesList = images,
                 onProgress = onProgress,
+                profileOverride = profileOverride,
                 rebuildPrompt = { _, _, kind ->
                     val responseBlock = entryResponseBlock(kind)
                     var prompt = if (singleIngredient) {
@@ -1585,19 +1597,20 @@ class FoodAnalysisService(
         if (callAiDelegate != null) {
             throw AiError.Api("Grounded tool loop requires a live AI provider.", messageRes = R.string.ai_error_grounded_requires_provider)
         }
-        val primary = prefs!!.selectedAIProvider.first()
+        val ap = prefs!!.activeAiProfile.first() ?: defaultAiProfileSnapshot()
+        val primary = ap.provider
         if (primary.apiFormat == AIProvider.ApiFormat.ON_DEVICE) {
             throw AiError.Api("Grounded tool loop is not available for on-device models.", messageRes = R.string.ai_error_grounded_on_device)
         }
         val primaryModel = resolveModelForRequest(
             provider = primary,
-            selectedModel = prefs!!.selectedAIModel.first(),
-            visionModel = prefs.visionModel(primary).first(),
+            selectedModel = ap.model,
+            visionModel = ap.visionModel,
             hasImages = imageBytesList.any { it.isNotEmpty() },
         )
-        val primaryBaseUrl = prefs.customBaseUrl(primary).first()?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: primary.baseUrl
-        val primaryKey = keyLookup?.invoke(primary)
-            ?: AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
+        val primaryBaseUrl = ap.baseUrl?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: primary.baseUrl
+        val primaryKey = keyLookup?.invoke(ap)
+            ?: AiHttp.sanitizeApiKey(keyStore!!.profileApiKey(ap.id))
         if (primary.requiresApiKey && primaryKey.isNullOrEmpty()) throw AiError.NoApiKey
         val maxTokens = prefs.maxResponseTokens.first()
         val readTimeoutSeconds = prefs.aiReadTimeoutSeconds.first()
@@ -1635,7 +1648,7 @@ class FoodAnalysisService(
             val fallbackModel = resolveModelForRequest(
                 provider = fallback.provider,
                 selectedModel = fallback.model,
-                visionModel = prefs!!.visionModel(fallback.provider).first(),
+                visionModel = fallback.visionModel,
                 hasImages = imageBytesList.any { it.isNotEmpty() },
             )
             GroundedToolLoop.run(
@@ -1701,6 +1714,7 @@ class FoodAnalysisService(
         smartPrompt: String? = null,
         trace: GoalCallTrace? = null,
         rebuildPrompt: (suspend (AIProvider, String, EntryConstituentPromptKind) -> String)? = null,
+        profileOverride: AiProfile? = null,
     ): String {
         return callAi(
             prompt,
@@ -1711,6 +1725,7 @@ class FoodAnalysisService(
             smartPrompt,
             trace,
             rebuildPrompt,
+            profileOverride = profileOverride,
         )
     }
 
@@ -1728,13 +1743,15 @@ class FoodAnalysisService(
         nonStreaming: Boolean = false,
         /** #97 downshift retry: run the entry legs with MACROS instead of the resolved kind. */
         kindOverride: EntryConstituentPromptKind? = null,
+        /** One-off profile override (queue "Run with…"); null = active profile. */
+        profileOverride: AiProfile? = null,
     ): String {
         val hasImages = imageBytesList.any { it.isNotEmpty() }
-        suspend fun modelFor(provider: AIProvider, selected: String?): String =
+        suspend fun modelFor(provider: AIProvider, selected: String?, visionModel: String?): String =
             resolveModelForRequest(
                 provider = provider,
                 selectedModel = selected,
-                visionModel = prefs?.visionModel(provider)?.first(),
+                visionModel = visionModel,
                 hasImages = hasImages,
             )
 
@@ -1744,9 +1761,9 @@ class FoodAnalysisService(
                 onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.CallingAi))
             }
             val body = if (rebuildPrompt != null) {
-                val provider = prefs?.selectedAIProvider?.first() ?: AIProvider.GEMINI
-                val selected = prefs?.selectedAIModel?.first() ?: provider.defaultModel
-                val delegateModel = modelFor(provider, selected)
+                val ap = prefs?.activeAiProfile?.first()
+                val provider = ap?.provider ?: AIProvider.GEMINI
+                val delegateModel = modelFor(provider, ap?.model, ap?.visionModel)
                 rebuildPrompt(provider, delegateModel, kindOverride ?: entryKind(provider, delegateModel))
             } else {
                 prompt
@@ -1777,7 +1794,7 @@ class FoodAnalysisService(
             return demoJson
         }
 
-        val cfg = prefs!!.aiCallConfig()
+        val cfg = prefs!!.aiCallConfig(profileOverride)
         // #123: the Goal recalc prompt setting maps to a dispatch-level tier
         // override; AUTO (null) keeps the model-name rules untouched.
         val tierOverride = when (cfg.goalRecalcTier) {
@@ -1786,7 +1803,7 @@ class FoodAnalysisService(
             GoalRecalcTierOverride.SMART -> GoalRecalcTier.SMART
         }
         val primary = cfg.provider
-        val primaryModel = modelFor(primary, cfg.selectedModel)
+        val primaryModel = modelFor(primary, cfg.selectedModel, cfg.profile.visionModel)
         val kind = kindOverride ?: entryKind(primary, primaryModel)
         attemptState?.kind = kind
         var wrapPrompt: (String) -> String = { it }
@@ -1810,8 +1827,8 @@ class FoodAnalysisService(
         }
 
         val primaryBaseUrl = cfg.customBaseUrl?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: primary.baseUrl
-        val primaryKey = keyLookup?.invoke(primary)
-            ?: AiHttp.sanitizeApiKey(keyStore!!.apiKey(primary))
+        val primaryKey = keyLookup?.invoke(cfg.profile)
+            ?: AiHttp.sanitizeApiKey(keyStore!!.profileApiKey(cfg.profile.id))
         val userCap = cfg.maxResponseTokens
         val maxTokens = userCap
         if (PerfLog.enabled) {
@@ -1866,7 +1883,7 @@ class FoodAnalysisService(
                         it.primaryProvider = primary
                         it.primaryError = primaryError.message
                     }
-                    val fallbackModel = modelFor(fallback.provider, fallback.model)
+                    val fallbackModel = modelFor(fallback.provider, fallback.model, cfg.fallbackProfile?.visionModel)
                     val fallbackKind = kindOverride ?: entryKind(fallback.provider, fallbackModel)
                     attemptState?.kind = fallbackKind
                     assembler.reset()
@@ -2164,8 +2181,9 @@ class FoodAnalysisService(
         cfg: AiCallConfig,
     ): FallbackConfig? {
         if (!cfg.fallbackEnabled) return null
-        val provider = cfg.fallbackProvider
-        val model = provider.supportedFallbackModelOrDefault(cfg.fallbackModel)
+        val fb = cfg.fallbackProfile ?: return null
+        val provider = fb.provider
+        val model = provider.supportedFallbackModelOrDefault(fb.model)
         // Fallback identical to primary would be a pointless retry of the same call.
         if (provider == primary && model == primaryModel) return null
         if (provider == AIProvider.ON_DEVICE) {
@@ -2175,21 +2193,23 @@ class FoodAnalysisService(
             // id explicitly via ModelCatalog.)
             val entry = ModelCatalog.forModelId(model)
             if (onDeviceModelDownloaded?.invoke(entry.modelId) != true) return null
-            return FallbackConfig(provider, model, baseUrl = "", apiKey = null)
+            return FallbackConfig(provider, model, baseUrl = "", apiKey = null, visionModel = fb.visionModel)
         }
-        val key = keyLookup?.invoke(provider)
-            ?: AiHttp.sanitizeApiKey(keyStore!!.fallbackApiKey(provider))
+        val key = keyLookup?.invoke(fb)
+            ?: AiHttp.sanitizeApiKey(keyStore!!.profileApiKey(fb.id))
         if (provider.requiresApiKey && key.isNullOrEmpty()) return null
-        val baseUrl = cfg.fallbackCustomBaseUrl?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: provider.baseUrl
+        val baseUrl = fb.baseUrl?.takeIf { it.isNotEmpty() }?.let(AiHttp::normalizeCustomBaseUrl) ?: provider.baseUrl
         if (baseUrl.isEmpty()) return null
-        return FallbackConfig(provider, model, baseUrl, key)
+        return FallbackConfig(provider, model, baseUrl, key, fb.visionModel)
     }
 
     private data class FallbackConfig(
         val provider: AIProvider,
         val model: String,
         val baseUrl: String,
-        val apiKey: String?
+        val apiKey: String?,
+        /** Fallback profile's vision slot (resolved like the primary's). */
+        val visionModel: String?,
     )
 
     companion object {

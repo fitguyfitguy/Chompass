@@ -1820,6 +1820,7 @@ fun HomeScreen(
             entries = ui.queueEntries,
             runningId = ui.queueRunningId,
             onRun = vm::runQueuedItem,
+            onRunWith = vm::runQueuedItemWith,
             onRunAll = vm::runAllQueued,
             onUpdate = vm::updateQueued,
             onAddPhotos = vm::addQueuedPhotos,

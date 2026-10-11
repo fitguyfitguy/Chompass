@@ -267,14 +267,14 @@ class GoalCalcMatrixTest(
         val prevProvider = prefs.selectedAIProvider.first()
         val prevModel = prefs.selectedAIModel.first()
         val prevFallback = prefs.fallbackEnabled.first()
-        val prevFallbackProvider = prefs.selectedFallbackProvider.first()
-        val prevFallbackModel = prefs.selectedFallbackModel.first()
-        val prevPrimaryKey = keyStore.apiKey(provider)
-        val prevTierOverride = container.foodAnalysis.goalTierOverrideForTest
+        val prevFallbackId = prefs.fallbackAiProfileId.first()
         prefs.setAiFeaturesEnabled(true)
         prefs.setSelectedAIProvider(provider)
         prefs.setSelectedAIModel(modelName.ifBlank { provider.defaultModel })
         prefs.setFallbackEnabled(false)
+        val activeProfile = prefs.activeAiProfile.first()
+        val prevPrimaryKey = activeProfile?.let { keyStore.profileApiKey(it.id) }
+        val prevTierOverride = container.foodAnalysis.goalTierOverrideForTest
         container.foodAnalysis.goalTierOverrideForTest = tierOverride
         try {
             list.forEachIndexed { i, s ->
@@ -285,7 +285,7 @@ class GoalCalcMatrixTest(
             // the result reports the fallback. Only in auto tier, where the two
             // legs genuinely differ.
             if (provider != AIProvider.ON_DEVICE && tierOverride == null) {
-                runFallbackScenario(keyStore, provider, prevPrimaryKey)
+                runFallbackScenario(keyStore, activeProfile, provider, prevPrimaryKey)
             }
             Log.i(tag, "op=goal_matrix phase=done scenarios=${list.size} repeat=$repeatCount")
         } finally {
@@ -294,13 +294,8 @@ class GoalCalcMatrixTest(
             prefs.setSelectedAIProvider(prevProvider)
             prevModel?.let { prefs.setSelectedAIModel(it) }
             prefs.setFallbackEnabled(prevFallback)
-            prefs.setSelectedFallbackProvider(prevFallbackProvider)
-            if (prevFallbackModel == null) {
-                prefs.dataStore.edit { it.remove(Keys.FALLBACK_MODEL) }
-            } else {
-                prefs.setSelectedFallbackModel(prevFallbackModel)
-            }
-            if (prevPrimaryKey == null) keyStore.setApiKey(provider, null) else keyStore.setApiKey(provider, prevPrimaryKey)
+            prefs.setFallbackAiProfileId(prevFallbackId)
+            if (activeProfile != null) keyStore.setProfileApiKey(activeProfile.id, prevPrimaryKey)
         }
     }
 
@@ -312,7 +307,12 @@ class GoalCalcMatrixTest(
      * key and prefs afterwards. Skips (with a log) when the model is not
      * downloaded.
      */
-    private suspend fun runFallbackScenario(keyStore: KeyStore, provider: AIProvider, prevPrimaryKey: String?) {
+    private suspend fun runFallbackScenario(
+        keyStore: KeyStore,
+        activeProfile: app.chompass.models.AiProfile?,
+        provider: AIProvider,
+        prevPrimaryKey: String?,
+    ) {
         val prefs = container.prefs
         val entry = ModelCatalog.forModelId(AIProvider.ON_DEVICE.defaultModel)
         if (!ModelDownloadManager(container.appContext).isDownloaded(entry)) {
@@ -320,24 +320,20 @@ class GoalCalcMatrixTest(
             return
         }
         val prevFallbackEnabled = prefs.fallbackEnabled.first()
-        val prevFallbackProvider = prefs.selectedFallbackProvider.first()
-        val prevFallbackModel = prefs.selectedFallbackModel.first()
+        val prevFallbackId = prefs.fallbackAiProfileId.first()
         prefs.setFallbackEnabled(true)
         prefs.setSelectedFallbackProvider(AIProvider.ON_DEVICE)
         prefs.setSelectedFallbackModel(AIProvider.ON_DEVICE.defaultModel)
-        if (prevPrimaryKey != null) keyStore.setApiKey(provider, "goal-matrix-invalid-key")
+        if (prevPrimaryKey != null && activeProfile != null) {
+            keyStore.setProfileApiKey(activeProfile.id, "goal-matrix-invalid-key")
+        }
         try {
             val s = scenarios.first { it.name == "sparse_up" }
             runScenario(s, scenarios.size + 1, scenarios.size + 1, rep = 0, fallback = true)
         } finally {
-            if (prevPrimaryKey != null) keyStore.setApiKey(provider, prevPrimaryKey)
+            if (activeProfile != null) keyStore.setProfileApiKey(activeProfile.id, prevPrimaryKey)
             prefs.setFallbackEnabled(prevFallbackEnabled)
-            prefs.setSelectedFallbackProvider(prevFallbackProvider)
-            if (prevFallbackModel == null) {
-                prefs.dataStore.edit { it.remove(Keys.FALLBACK_MODEL) }
-            } else {
-                prefs.setSelectedFallbackModel(prevFallbackModel)
-            }
+            prefs.setFallbackAiProfileId(prevFallbackId)
         }
     }
 

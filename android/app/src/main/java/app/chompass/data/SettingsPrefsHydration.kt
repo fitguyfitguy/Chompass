@@ -108,9 +108,6 @@ internal data class SettingsPrefsHydration(
     val servingUnitInferenceMode: ServingUnitInferenceMode,
     val heuristicServingUnitSettings: HeuristicServingUnitSettings,
     val fallbackEnabled: Boolean,
-    val fallbackProvider: AIProvider,
-    val fallbackModelRaw: String?,
-    val fallbackCustomBaseUrl: String,
     val geminiGoogleSearchEnabled: Boolean,
     val openRouterReasoningEffort: OpenRouterReasoningEffort,
     val goalRecalcTier: GoalRecalcTierOverride,
@@ -145,19 +142,19 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
         ),
     ).validatedOrDefault()
     val metric = this[Keys.USE_METRIC] ?: true
-    val provider = AIProvider.entries.firstOrNull { it.name == this[Keys.SELECTED_AI_PROVIDER] }
-        ?: AIProvider.GEMINI
+    val profiles = decodeAiProfilesJson(json, this[Keys.AI_PROFILES_JSON])
+    val activeProfile = profiles.firstOrNull { it.id.toString() == this[Keys.ACTIVE_AI_PROFILE_ID] }
+        ?: profiles.firstOrNull()
+    val provider = activeProfile?.provider ?: AIProvider.GEMINI
     val speech = SpeechProvider.entries.firstOrNull { it.name == this[Keys.SELECTED_SPEECH_PROVIDER] }
         ?: SpeechProvider.NATIVE
-    val fallbackProvider = AIProvider.entries.firstOrNull { it.name == this[Keys.FALLBACK_PROVIDER] }
-        ?: AIProvider.GEMINI
     val cardCount = this[Keys.HOME_NUTRIENT_CARD_COUNT] ?: HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT
     val nutrientsRaw = this[Keys.HOME_TOP_NUTRIENTS] ?: HomeTopNutrient.DefaultStorageValue
     return SettingsPrefsHydration(
         selectedAI = provider,
-        selectedModelRaw = this[Keys.SELECTED_AI_MODEL],
-        visionModelRaw = this[Keys.visionModel(provider)],
-        customBaseUrl = this[Keys.customBaseUrl(provider)].orEmpty(),
+        selectedModelRaw = activeProfile?.model,
+        visionModelRaw = activeProfile?.visionModel,
+        customBaseUrl = activeProfile?.baseUrl.orEmpty(),
         selectedSpeech = speech,
         selectedSpeechLanguage = SpeechLanguage.entries.firstOrNull {
             it.name == this[Keys.selectedSpeechLanguage(speech)]
@@ -253,9 +250,6 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
             runCatching { json.decodeFromString(HeuristicServingUnitSettings.serializer(), it) }.getOrNull()
         } ?: HeuristicServingUnitSettings.Default,
         fallbackEnabled = this[Keys.FALLBACK_ENABLED] ?: true,
-        fallbackProvider = fallbackProvider,
-        fallbackModelRaw = this[Keys.FALLBACK_MODEL],
-        fallbackCustomBaseUrl = this[Keys.fallbackCustomBaseUrl(fallbackProvider)].orEmpty(),
         geminiGoogleSearchEnabled = this[Keys.GEMINI_GOOGLE_SEARCH_ENABLED] ?: false,
         openRouterReasoningEffort = OpenRouterReasoningEffort.fromStorage(this[Keys.OPENROUTER_REASONING_EFFORT]),
         goalRecalcTier = GoalRecalcTierOverride.fromStorage(this[Keys.GOAL_RECALC_TIER]),

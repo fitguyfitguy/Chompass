@@ -643,6 +643,18 @@
     <string name="settings_enable_fallback">تفعيل الاحتياطي</string>
     <string name="settings_fallback_footer">إذا فشل المزود الأساسي (تحميل زائد، تجاوز الحد، خطأ في الشبكة)، يُعيد التطبيق المحاولة تلقائياً باستخدام هذا الاحتياطي. يُسمح بنفس المزود الأساسي. فقط اختر طرازاً مختلفاً.</string>
     <string name="settings_fallback_on_device_switch_notice">تبديل النماذج المحلية بطيء: يُحمَّل النموذج الاحتياطي من البداية، وقد يستغرق دقيقة أو أكثر. عادةً ما يكون إبقاء نموذج واحد أسرع.</string>
+
+    <!-- ملفات الذكاء الاصطناعي المسماة -->
+    <string name="settings_ai_profile">ملف الذكاء الاصطناعي</string>
+    <string name="settings_profile_add">إضافة ملف شخصي</string>
+    <string name="settings_profile_rename">إعادة تسمية الملف الشخصي</string>
+    <string name="settings_profile_delete">حذف الملف الشخصي</string>
+    <string name="settings_profile_delete_confirm">حذف هذا الملف الشخصي؟ سيتم إزالة مفتاح الـ API الخاص به أيضًا.</string>
+    <string name="settings_profile_fallback">الملف الشخصي الاحتياطي</string>
+    <string name="settings_profile_fallback_none">بلا</string>
+    <string name="sheet_profile_name">اسم الملف الشخصي</string>
+    <string name="queue_run_with">التشغيل باستخدام…</string>
+    <string name="queue_last_attempt">آخر محاولة: %1$s · %2$s</string>
     <string name="widget_all_metrics_label">Chompass اليوم</string>
     <string name="widget_all_metrics_description">شاهد سعرات اليوم والبروتين والكربوهيدرات والدهون في أداة واحدة.</string>
     <string name="settings_needs_health_connect">يتطلب Health Connect</string>

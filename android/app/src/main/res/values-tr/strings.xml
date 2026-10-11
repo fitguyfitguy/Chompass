@@ -1116,6 +1116,18 @@
     <string name="settings_fallback_footer">Birincil sağlayıcın başarısız olursa (aşırı yük, hız sınırı, ağ hatası), uygulama bu yedekle otomatik yeniden dener. Birincil ile aynı sağlayıcıya izin verilir. Yalnızca farklı bir model seç.</string>
     <string name="settings_fallback_on_device_switch_notice">Cihazdaki modeli değiştirmek yavaştır: yedek model sıfırdan yüklenir, bir dakika veya daha uzun sürebilir. Tek bir model kullanmak genellikle daha hızlıdır.</string>
 
+    <!-- Adlandırılmış yapay zekâ profilleri -->
+    <string name="settings_ai_profile">Yapay zekâ profili</string>
+    <string name="settings_profile_add">Profil ekle</string>
+    <string name="settings_profile_rename">Profili yeniden adlandır</string>
+    <string name="settings_profile_delete">Profili sil</string>
+    <string name="settings_profile_delete_confirm">Bu profil silinsin mi? API anahtarı da kaldırılır.</string>
+    <string name="settings_profile_fallback">Yedek profil</string>
+    <string name="settings_profile_fallback_none">Yok</string>
+    <string name="sheet_profile_name">Profil adı</string>
+    <string name="queue_run_with">Şununla çalıştır…</string>
+    <string name="queue_last_attempt">Son deneme: %1$s · %2$s</string>
+
     <string name="settings_health_connect">Health Connect</string>
     <string name="settings_manage_health_access">Health Connect erişimini yönet</string>
     <string name="settings_permissions">İzinler</string>

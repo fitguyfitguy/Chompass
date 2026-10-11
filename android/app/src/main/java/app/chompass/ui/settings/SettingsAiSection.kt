@@ -1,7 +1,11 @@
 package app.chompass.ui.settings
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Download
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Numbers
@@ -10,11 +14,16 @@ import androidx.compose.material.icons.outlined.SmartToy
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import app.chompass.R
 import app.chompass.models.AIProvider
@@ -37,6 +46,7 @@ internal fun SettingsAiSection(
     vm: SettingsViewModel,
     onOpenSheet: (SettingsSheet) -> Unit,
 ) {
+    var confirmDeleteProfile by remember { mutableStateOf(false) }
     SectionCard(title = stringResource(R.string.settings_section_ai)) {
                 // Phase 2 of Codeberg #20: the master AI-features switch. When
                 // off, nothing is sent to any LLM provider (gated at the service
@@ -49,31 +59,37 @@ internal fun SettingsAiSection(
                 )
                 SettingFootnote(stringResource(R.string.settings_ai_features_master_footer))
                 HorizontalDivider()
-                SettingRow(stringResource(R.string.settings_ai_provider), stringResource(ui.selectedAI.displayNameRes), icon = Icons.Outlined.SmartToy) { onOpenSheet(SettingsSheet.AI_PROVIDER) }
+                // Named AI profile: everything below edits the active profile; other
+                // profiles keep their own provider, model, endpoint and key.
+                SettingRow(
+                    stringResource(R.string.settings_ai_profile),
+                    "${ui.activeProfile?.name.orEmpty()} · ${stringResource(ui.activeProvider.displayNameRes)}",
+                    icon = Icons.Outlined.AccountCircle
+                ) { onOpenSheet(SettingsSheet.AI_PROFILE) }
                 // Privacy disclosure per provider: cloud providers receive food/chat/
                 // profile data; only on-device Gemma 4 keeps everything local.
                 SettingFootnote(
-                    when (ui.selectedAI) {
+                    when (ui.activeProvider) {
                         AIProvider.ON_DEVICE -> stringResource(R.string.settings_ai_privacy_ondevice)
                         AIProvider.OLLAMA -> stringResource(R.string.settings_ai_privacy_ollama)
                         else -> stringResource(R.string.settings_ai_privacy_cloud)
                     }
                 )
                 HorizontalDivider()
-                SettingRow(stringResource(R.string.settings_ai_model), ui.selectedModel.ifEmpty { stringResource(R.string.settings_ai_model_unset) }, icon = Icons.Outlined.Tune) { onOpenSheet(SettingsSheet.AI_MODEL) }
+                SettingRow(stringResource(R.string.settings_ai_model), ui.activeModel.ifEmpty { stringResource(R.string.settings_ai_model_unset) }, icon = Icons.Outlined.Tune) { onOpenSheet(SettingsSheet.AI_MODEL) }
                 // Vision-model slot: OpenAI-compatible hosts are where text-only
                 // ids can be picked/typed; curated Gemini/OpenAI/Anthropic lineups
                 // are all multimodal (#195).
-                if (ui.selectedAI.apiFormat == AIProvider.ApiFormat.OPENAI_COMPATIBLE) {
+                if (ui.activeProvider.apiFormat == AIProvider.ApiFormat.OPENAI_COMPATIBLE) {
                     HorizontalDivider()
                     SettingRow(
                         stringResource(R.string.settings_ai_vision_model),
-                        ui.visionModel.ifEmpty { stringResource(R.string.settings_ai_vision_model_unset) },
+                        ui.activeProfile?.visionModel.orEmpty().ifEmpty { stringResource(R.string.settings_ai_vision_model_unset) },
                         icon = Icons.Outlined.Tune,
                     ) { onOpenSheet(SettingsSheet.VISION_MODEL) }
                 }
-                val showReasoningEffort = OpenAICompatibleClient.usesReasoningEffort(ui.selectedAI) ||
-                    (ui.fallbackEnabled && OpenAICompatibleClient.usesReasoningEffort(ui.fallbackProvider))
+                val showReasoningEffort = OpenAICompatibleClient.usesReasoningEffort(ui.activeProvider) ||
+                    (ui.fallbackEnabled && ui.fallbackProfile?.provider?.let { OpenAICompatibleClient.usesReasoningEffort(it) } == true)
                 if (showReasoningEffort) {
                     HorizontalDivider()
                     SettingRow(
@@ -82,15 +98,15 @@ internal fun SettingsAiSection(
                         icon = Icons.Outlined.Tune,
                     ) { onOpenSheet(SettingsSheet.OPENROUTER_REASONING) }
                 }
-                if (ui.selectedAI.requiresApiKey) {
+                if (ui.activeProvider.requiresApiKey) {
                     HorizontalDivider()
                     SettingRow(stringResource(R.string.settings_api_key), ui.apiKeyMasked.ifEmpty { stringResource(R.string.settings_not_set) }, icon = Icons.Outlined.Key) { onOpenSheet(SettingsSheet.API_KEY) }
                 }
-                if (ui.selectedAI.requiresCustomEndpoint || ui.selectedAI == AIProvider.OLLAMA) {
+                if (ui.activeProvider.requiresCustomEndpoint || ui.activeProvider == AIProvider.OLLAMA) {
                     HorizontalDivider()
                     SettingRow(
-                        if (ui.selectedAI.requiresCustomEndpoint) stringResource(R.string.settings_base_url) else stringResource(R.string.settings_server_url),
-                        ui.customBaseUrl.ifEmpty { stringResource(R.string.settings_not_set) },
+                        if (ui.activeProvider.requiresCustomEndpoint) stringResource(R.string.settings_base_url) else stringResource(R.string.settings_server_url),
+                        ui.activeProfile?.baseUrl.orEmpty().ifEmpty { stringResource(R.string.settings_not_set) },
                         icon = Icons.Outlined.Link
                     ) { onOpenSheet(SettingsSheet.CUSTOM_BASE_URL) }
                     // Issue #8 follow-up: release builds allow cleartext only via this
@@ -104,12 +120,21 @@ internal fun SettingsAiSection(
                     )
                     SettingFootnote(stringResource(R.string.settings_ai_allow_insecure_http_footer))
                 }
+                // Profile management: add / rename / delete. Delete needs a second
+                // profile to switch to, so it hides on the last one.
+                HorizontalDivider()
+                SettingRow(stringResource(R.string.settings_profile_add), "", icon = Icons.Outlined.Add) { onOpenSheet(SettingsSheet.ADD_PROFILE_NAME) }
+                SettingRow(stringResource(R.string.settings_profile_rename), ui.activeProfile?.name.orEmpty(), icon = Icons.Outlined.Edit) { onOpenSheet(SettingsSheet.PROFILE_RENAME) }
+                if (ui.profiles.size > 1) {
+                    HorizontalDivider()
+                    SettingRow(stringResource(R.string.settings_profile_delete), "", icon = Icons.Outlined.Delete) { confirmDeleteProfile = true }
+                }
                 val downloadManager = vm.container.onDeviceModelDownloadManager
                 val storageEpoch by downloadManager.storageEpoch.collectAsState()
                 val leftoverBytes = remember(storageEpoch) { downloadManager.occupiedBytes() }
-                if (ui.selectedAI == AIProvider.ON_DEVICE) {
+                if (ui.activeProvider == AIProvider.ON_DEVICE) {
                     HorizontalDivider()
-                    val downloadState by downloadManager.state(ui.selectedModel)
+                    val downloadState by downloadManager.state(ui.activeModel)
                         .collectAsState(initial = OnDeviceDownloadState.NotDownloaded)
                     val subtitle = when (val s = downloadState) {
                         is OnDeviceDownloadState.Downloaded ->
@@ -147,7 +172,7 @@ internal fun SettingsAiSection(
                 // Only OpenAI-compatible + Anthropic send a token cap; Gemini is left
                 // uncapped and on-device dispatch doesn't take one at all, so hide this
                 // for both.
-                if (ui.selectedAI.apiFormat != AIProvider.ApiFormat.GEMINI && ui.selectedAI != AIProvider.ON_DEVICE) {
+                if (ui.activeProvider.apiFormat != AIProvider.ApiFormat.GEMINI && ui.activeProvider != AIProvider.ON_DEVICE) {
                     HorizontalDivider()
                     SettingRow(
                         stringResource(R.string.settings_max_tokens),
@@ -155,7 +180,7 @@ internal fun SettingsAiSection(
                         icon = Icons.Outlined.Numbers
                     ) { onOpenSheet(SettingsSheet.MAX_TOKENS) }
                 }
-                if (ui.selectedAI != AIProvider.ON_DEVICE) {
+                if (ui.activeProvider != AIProvider.ON_DEVICE) {
                     HorizontalDivider()
                     SettingRow(
                         stringResource(R.string.settings_ai_read_timeout),
@@ -166,7 +191,7 @@ internal fun SettingsAiSection(
                 // #123: only the user-entered endpoints (Ollama / Custom
                 // OpenAI-compatible) host models the AUTO tier rules can't
                 // classify by name, so the manual override row shows there.
-                if (ui.selectedAI.usesConfigurableRequestTimeout) {
+                if (ui.activeProvider.usesConfigurableRequestTimeout) {
                     HorizontalDivider()
                     SettingRow(
                         stringResource(R.string.settings_goal_tier),
@@ -174,8 +199,8 @@ internal fun SettingsAiSection(
                         icon = Icons.Outlined.Tune,
                     ) { onOpenSheet(SettingsSheet.GOAL_RECALC_TIER) }
                 }
-                val showGeminiSearch = ui.selectedAI == AIProvider.GEMINI ||
-                    (ui.fallbackEnabled && ui.fallbackProvider == AIProvider.GEMINI)
+                val showGeminiSearch = ui.activeProvider == AIProvider.GEMINI ||
+                    (ui.fallbackEnabled && ui.fallbackProfile?.provider == AIProvider.GEMINI)
                 if (showGeminiSearch) {
                     HorizontalDivider()
                     ToggleRow(
@@ -200,5 +225,23 @@ internal fun SettingsAiSection(
                         ) { onOpenSheet(SettingsSheet.FILL_GAPS) }
                     }
                 }
+    }
+    if (confirmDeleteProfile) {
+        AlertDialog(
+            onDismissRequest = { confirmDeleteProfile = false },
+            title = { Text(stringResource(R.string.settings_profile_delete)) },
+            text = { Text(stringResource(R.string.settings_profile_delete_confirm)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmDeleteProfile = false
+                    vm.deleteActiveProfile()
+                }) { Text(stringResource(R.string.action_delete)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmDeleteProfile = false }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            },
+        )
     }
 }

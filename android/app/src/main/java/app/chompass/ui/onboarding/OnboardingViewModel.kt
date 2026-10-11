@@ -7,6 +7,7 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.ActivityLevel
 import app.chompass.models.AIProvider
+import app.chompass.models.AiProfile
 import app.chompass.models.DietMode
 import app.chompass.models.Gender
 import app.chompass.models.KetoCarbMode
@@ -25,8 +26,10 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.util.UUID
 
 @Serializable
 enum class OnboardingStep {
@@ -180,8 +183,10 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
             val draft = container.prefs.onboardingDraft.first()
             _ui.value = if (draft != null) {
                 // The API key itself isn't in the draft; reload it from the KeyStore so the
-                // user doesn't have to re-paste it after resuming.
-                val restoredKey = container.keyStore.apiKey(draft.aiProvider) ?: ""
+                // user doesn't have to re-paste it after resuming. Keys live on the active
+                // profile now, so resolve the profile (not the draft's provider).
+                val profileId = container.prefs.activeAiProfile.first()?.id
+                val restoredKey = profileId?.let { container.keyStore.profileApiKey(it) } ?: ""
                 _ui.value.applyDraft(draft).copy(
                     heightMetric = heightMetric, weightMetric = weightMetric, apiKey = restoredKey,
                 )
@@ -235,14 +240,33 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
     fun setHealthConnectEnabled(v: Boolean) {
         _ui.value = _ui.value.copy(healthConnectEnabled = v)
     }
+    /**
+     * Active profile id for onboarding writes, creating a default profile named after
+     * [provider] first when the store is still empty (fresh install before migration
+     * had a chance to seed one).
+     */
+    private suspend fun activeProfileIdFor(provider: AIProvider): UUID {
+        container.prefs.activeAiProfile.first()?.let { return it.id }
+        val created = AiProfile(
+            id = UUID.randomUUID(),
+            name = container.appContext.getString(provider.displayNameRes),
+            provider = provider,
+            model = provider.defaultModel,
+            createdAt = Instant.now(),
+        )
+        container.prefs.mutateProfiles { it.add(created) }
+        container.prefs.setActiveAiProfileId(created.id.toString())
+        return created.id
+    }
+
     fun setAiProvider(p: AIProvider) {
         // Persist immediately so the Building Plan AI call (which runs before onboarding
-        // completes) can resolve the provider/model. Reset to the provider's default model and
-        // reload that provider's stored key.
+        // completes) can resolve the provider/model. Reset to the provider's default model
+        // and reload the active profile's stored key.
         viewModelScope.launch {
-            container.prefs.setSelectedAIProvider(p)
-            container.prefs.setSelectedAIModel(p.defaultModel)
-            val existing = container.keyStore.apiKey(p) ?: ""
+            val profileId = activeProfileIdFor(p)
+            container.prefs.editActiveProfile { it.copy(provider = p, model = p.defaultModel) }
+            val existing = container.keyStore.profileApiKey(profileId) ?: ""
             _ui.value = _ui.value.copy(
                 aiProvider = p,
                 aiModel = p.defaultModel,
@@ -256,7 +280,7 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
     }
     fun setAiModel(m: String) {
         _ui.value = _ui.value.copy(aiModel = m)
-        viewModelScope.launch { container.prefs.setSelectedAIModel(m) }
+        viewModelScope.launch { container.prefs.editActiveProfile { it.copy(model = m) } }
     }
     fun setApiKey(key: String) {
         val prev = _ui.value
@@ -269,7 +293,8 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
         )
         // Persist immediately so the in-onboarding AI plan calc can use it.
         viewModelScope.launch {
-            container.keyStore.setApiKey(_ui.value.aiProvider, key.trim().takeIf { it.isNotBlank() })
+            val profileId = activeProfileIdFor(_ui.value.aiProvider)
+            container.keyStore.setProfileApiKey(profileId, key.trim().takeIf { it.isNotBlank() })
         }
     }
 
@@ -422,8 +447,10 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
             val state = _ui.value
             if (state.step != OnboardingStep.PROVIDER) return@launch
             if (useOnDevice) {
-                container.prefs.setSelectedAIProvider(AIProvider.ON_DEVICE)
-                container.prefs.setSelectedAIModel(AIProvider.ON_DEVICE.defaultModel)
+                activeProfileIdFor(AIProvider.ON_DEVICE)
+                container.prefs.editActiveProfile {
+                    it.copy(provider = AIProvider.ON_DEVICE, model = AIProvider.ON_DEVICE.defaultModel)
+                }
                 _ui.value = state.copy(
                     aiProvider = AIProvider.ON_DEVICE,
                     aiModel = AIProvider.ON_DEVICE.defaultModel,
@@ -434,7 +461,9 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
                     apiKeyTesting = false,
                 )
             } else {
-                container.keyStore.setApiKey(state.aiProvider, null)
+                container.prefs.activeAiProfile.first()?.let {
+                    container.keyStore.setProfileApiKey(it.id, null)
+                }
                 _ui.value = state.copy(
                     apiKey = "",
                     validatedApiKey = "",
@@ -473,10 +502,14 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
             }
             container.prefs.setNotificationsEnabled(state.notificationsEnabled)
             container.prefs.setHealthConnectEnabled(state.healthConnectEnabled)
-            container.prefs.setSelectedAIProvider(state.aiProvider)
-            container.prefs.setSelectedAIModel(state.aiModel)
+            // Resolve (or lazily create) the onboarding profile, then persist the final
+            // provider/model choice and the entered key onto it.
+            val profileId = activeProfileIdFor(state.aiProvider)
+            container.prefs.editActiveProfile {
+                it.copy(provider = state.aiProvider, model = state.aiModel)
+            }
             if (state.apiKey.isNotBlank()) {
-                container.keyStore.setApiKey(state.aiProvider, state.apiKey.trim())
+                container.keyStore.setProfileApiKey(profileId, state.apiKey.trim())
             }
             // New installs start with Energy Burn on, and Adaptive Goals on unless the
             // user hand-tuned their plan (adaptive would overwrite it). Existing users are

@@ -68,10 +68,10 @@ class FoodAnalysisWatchdogTest {
                 .build(),
             watchdogSecondsOverride = watchdogSeconds,
             onDeviceModelDownloaded = onDeviceModelDownloaded,
-            keyLookup = { provider ->
+            keyLookup = { profile ->
                 // Any non-null key satisfies GEMINI's requiresApiKey check; the
                 // fallback slot returns a key only when the test configured one.
-                if (provider == AIProvider.GEMINI) fallbackKey ?: "test-key" else null
+                if (profile.provider == AIProvider.GEMINI) fallbackKey ?: "test-key" else null
             },
         )
 

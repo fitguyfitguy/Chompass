@@ -631,6 +631,18 @@
     <string name="settings_enable_fallback">Activează rezerva</string>
     <string name="settings_fallback_footer">Dacă furnizorul principal eșuează (suprasolicitare, limită de rată, eroare de rețea), aplicația reîncearcă automat cu această rezervă. Este permis același furnizor ca cel principal, doar alege un model diferit.</string>
     <string name="settings_fallback_on_device_switch_notice">Schimbarea modelului local este lentă: modelul de rezervă se încarcă de la zero, până la un minut sau mai mult. A păstra un singur model este de obicei mai rapid.</string>
+
+    <!-- Profile AI cu nume -->
+    <string name="settings_ai_profile">Profil AI</string>
+    <string name="settings_profile_add">Adaugă profil</string>
+    <string name="settings_profile_rename">Redenumește profilul</string>
+    <string name="settings_profile_delete">Șterge profilul</string>
+    <string name="settings_profile_delete_confirm">Ștergi acest profil? Cheia API a sa va fi ștearsă și ea.</string>
+    <string name="settings_profile_fallback">Profil de rezervă</string>
+    <string name="settings_profile_fallback_none">Niciunul</string>
+    <string name="sheet_profile_name">Numele profilului</string>
+    <string name="queue_run_with">Rulează cu…</string>
+    <string name="queue_last_attempt">Ultima încercare: %1$s · %2$s</string>
     <string name="widget_all_metrics_label">Chompass Astăzi</string>
     <string name="widget_all_metrics_description">Vezi caloriile, proteinele, carbohidrații și grăsimile de azi într-un singur widget.</string>
     <string name="settings_needs_health_connect">Necesită Health Connect</string>

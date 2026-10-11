@@ -203,6 +203,10 @@ internal object Keys {
         val OPTIONAL_NUTRIENT_GOALS = stringPreferencesKey("optionalNutrientGoals")
         val SELECTED_AI_PROVIDER = stringPreferencesKey("selectedAIProvider")
         val SELECTED_AI_MODEL = stringPreferencesKey("selectedAIModel")
+        // -- AI profiles (named provider+model+key configs; legacy keys above are migration inputs only) --
+        val AI_PROFILES_JSON = stringPreferencesKey("aiProfilesJson")
+        val ACTIVE_AI_PROFILE_ID = stringPreferencesKey("activeAiProfileId")
+        val FALLBACK_AI_PROFILE_ID = stringPreferencesKey("fallbackAiProfileId")
         /** Per-provider vision-model slot (upstream #195); empty = primary model handles images too. */
         fun visionModel(provider: AIProvider): Preferences.Key<String> =
             stringPreferencesKey("visionModel_${provider.name}")

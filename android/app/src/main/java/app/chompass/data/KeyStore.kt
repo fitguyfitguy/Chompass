@@ -7,13 +7,14 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import app.chompass.models.AIProvider
 import app.chompass.models.SpeechProvider
+import java.util.UUID
 
 /**
  * Encrypted per-provider API key storage — the Android equivalent of iOS Keychain.
  * Backed by EncryptedSharedPreferences (AES-256).
  */
-class KeyStore(context: Context) {
-    private val prefs: SharedPreferences = openOrRecover(context)
+class KeyStore(context: Context, prefsOverride: SharedPreferences? = null) {
+    private val prefs: SharedPreferences = prefsOverride ?: openOrRecover(context)
 
     fun save(key: String, value: String) {
         prefs.edit().putString(key, value.trim()).apply()
@@ -39,6 +40,29 @@ class KeyStore(context: Context) {
     fun setFallbackApiKey(provider: AIProvider, key: String?) {
         val storageKey = AI_FALLBACK_PREFIX + provider.name
         if (key.isNullOrEmpty()) delete(storageKey) else save(storageKey, key)
+    }
+
+    // AI profiles: each named profile owns its key, keyed by profile UUID, so
+    // switching profiles never shares or clobbers another profile's credential.
+    fun profileApiKey(id: UUID): String? = load(PROFILE_AI_PREFIX + id)
+    fun setProfileApiKey(id: UUID, key: String?) {
+        val storageKey = PROFILE_AI_PREFIX + id
+        if (key.isNullOrEmpty()) delete(storageKey) else save(storageKey, key)
+    }
+
+    /**
+     * Removes every legacy per-provider AI keychain entry (primary
+     * `apikey_<P>` and fallback `apikey_fallback_<P>` slots) after
+     * [ensureAiProfilesMigratedImpl] copied them into per-profile entries.
+     * Per-profile keys (`apikey_profile_…`) are NOT legacy and stay; speech /
+     * WebDAV / mealie keys are untouched.
+     */
+    fun clearLegacyAiKeys() {
+        val doomed = prefs.all.keys.filter {
+            it.startsWith(AI_PREFIX) && !it.startsWith(PROFILE_AI_PREFIX)
+        }
+        if (doomed.isEmpty()) return
+        prefs.edit().apply { doomed.forEach(::remove) }.apply()
     }
 
     // Speech providers
@@ -67,6 +91,7 @@ class KeyStore(context: Context) {
         private const val FILE_NAME = "fudai_keychain"
         private const val AI_PREFIX = "apikey_"
         private const val AI_FALLBACK_PREFIX = "apikey_fallback_"
+        private const val PROFILE_AI_PREFIX = "apikey_profile_"
         private const val STT_PREFIX = "speechApiKey_"
         private const val WEBDAV_PASSWORD_KEY = "webdav_password"
         private const val MEALIE_TOKEN_KEY = "mealie_token"

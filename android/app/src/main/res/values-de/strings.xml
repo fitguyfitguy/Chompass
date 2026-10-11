@@ -2020,6 +2020,18 @@ für dich ein</string>
     <string name="settings_fallback_footer">Sollte dein primärer Anbieter ausfallen (Überlastung, Ratenbegrenzung, Netzwerkfehler), versucht die App es automatisch erneut mit diesem Fallback-Anbieter. Der gleiche Anbieter wie der primäre ist zulässig – wähle einfach ein anderes Modell aus.</string>
     <string name="settings_fallback_on_device_switch_notice">Der Wechsel zwischen Geräte-Modellen ist langsam: Das Fallback-Modell lädt komplett neu, bis zu einer Minute oder länger. Bei einem Modell zu bleiben ist meist schneller.</string>
 
+    <!-- Benannte KI-Profile -->
+    <string name="settings_ai_profile">KI-Profil</string>
+    <string name="settings_profile_add">Profil hinzufügen</string>
+    <string name="settings_profile_rename">Profil umbenennen</string>
+    <string name="settings_profile_delete">Profil löschen</string>
+    <string name="settings_profile_delete_confirm">Dieses Profil löschen? Sein API-Schlüssel wird ebenfalls entfernt.</string>
+    <string name="settings_profile_fallback">Fallback-Profil</string>
+    <string name="settings_profile_fallback_none">Ohne</string>
+    <string name="sheet_profile_name">Profilname</string>
+    <string name="queue_run_with">Ausführen mit…</string>
+    <string name="queue_last_attempt">Zuletzt versucht: %1$s · %2$s</string>
+
     <string name="settings_health_connect">Health Connect</string>
 
     <string name="settings_manage_health_access">Health Connect-Zugriff verwalten</string>

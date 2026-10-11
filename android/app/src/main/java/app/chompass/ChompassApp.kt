@@ -100,6 +100,7 @@ class ChompassApp : Application() {
         LauncherShortcuts.publish(this)
         appScope.launch { container.prefs.migrateHomeDisplayLayoutIfNeeded() }
         appScope.launch { container.prefs.migrateCaffeineDailyLimitIfNeeded() }
+        appScope.launch { container.prefs.ensureAiProfilesMigrated(container.keyStore, this@ChompassApp) }
         container.prefs.mealCatalog
             .onEach {
                 CurrentMealCatalog.value = it
