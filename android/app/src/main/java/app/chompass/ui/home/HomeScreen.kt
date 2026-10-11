@@ -100,6 +100,7 @@ import app.chompass.models.builtinCaffeineDefaultMg
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.MilkKind
 import app.chompass.models.WaterEntry
+import app.chompass.services.FillGapsFeature
 import app.chompass.services.FoodPhotoSession
 import app.chompass.services.MealShare
 import app.chompass.services.OpenFoodFactsService
@@ -1009,7 +1010,7 @@ fun HomeScreen(
         // AI fill-missing banner (Batch 2): same guard family; the engine's
         // once-per-day + sticky-dismissal gate already nulls it after first show.
         val fillGapsBanner = ui.fillGapsBanner
-        val showFillGapsChip = fillGapsBanner != null &&
+        val showFillGapsChip = FillGapsFeature.ENABLED && fillGapsBanner != null &&
             !ui.showFoodResultSheet &&
             !ui.showProgressiveMealSheet &&
             !ui.showAnalysisQueue &&
@@ -1018,7 +1019,7 @@ fun HomeScreen(
             !showMultiPhotoCapture &&
             !inSelectionMode
         LaunchedEffect(fillGapsBanner != null) {
-            if (fillGapsBanner != null) vm.onFillGapsBannerShown()
+            if (FillGapsFeature.ENABLED && fillGapsBanner != null) vm.onFillGapsBannerShown()
         }
         if ((copied.isNotEmpty() && !inSelectionMode && !showProgressiveChip) || showRecoveredChip || showFillGapsChip) {
             val pasteBusy = ui.saving

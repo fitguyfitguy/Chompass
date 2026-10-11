@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import app.chompass.R
 import app.chompass.models.AIProvider
 import app.chompass.models.LocaleFormat
+import app.chompass.services.FillGapsFeature
 import app.chompass.services.ai.OpenAICompatibleClient
 import app.chompass.services.ondevice.OnDeviceDownloadState
 
@@ -187,7 +188,7 @@ internal fun SettingsAiSection(
                 }
                 // AI fill-missing gaps sheet (Batch 2). Hidden when the master
                 // switch is off or nothing is gapped right now (cost guard).
-                if (ui.aiFeaturesEnabled) {
+                if (FillGapsFeature.ENABLED && ui.aiFeaturesEnabled) {
                     val gapScan by vm.container.fillGapsEngine.scan.collectAsState(initial = null)
                     val gapCount = gapScan?.count ?: 0
                     if (gapCount > 0) {

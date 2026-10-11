@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
+import app.chompass.services.FillGapsFeature
 import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.toMicronutrients
 import app.chompass.services.ai.AiError
@@ -263,7 +264,7 @@ fun EditFoodEntrySheet(
     var aiModeOverride by remember(entry) { mutableStateOf<AiActionMode?>(null) }
     val constituentsEdited = editableConstituents != currentBaseEntry.constituents
     val aiActionMode = aiModeOverride ?: when {
-        entryGapReport.hasGaps -> AiActionMode.FILL
+        FillGapsFeature.ENABLED && entryGapReport.hasGaps -> AiActionMode.FILL
         currentBaseEntry.imageFilename != null -> AiActionMode.REANALYZE
         constituentsEdited -> AiActionMode.RECALCULATE
         else -> AiActionMode.REANALYZE
@@ -869,7 +870,7 @@ fun EditFoodEntrySheet(
                 // WP2 fill-missing: unconditional slot right after the macros
                 // card (NOT inside More Nutrition — an all-null Mealie entry
                 // renders no More Nutrition card at all).
-                if (aiFeaturesEnabled && entryGapReport.hasGaps) {
+                if (FillGapsFeature.ENABLED && aiFeaturesEnabled && entryGapReport.hasGaps) {
                     MissingValuesNote(
                         missingCount = entryGapReport.missingMacros.size +
                             entryGapReport.missingMicros.size +
@@ -979,7 +980,7 @@ fun EditFoodEntrySheet(
                 // always available. Fill falls back to Reanalyze if gaps got
                 // filled while the override still points at Fill.
                 val aiModes = buildList {
-                    if (entryGapReport.hasGaps) add(AiActionMode.FILL)
+                    if (FillGapsFeature.ENABLED && entryGapReport.hasGaps) add(AiActionMode.FILL)
                     add(AiActionMode.REANALYZE)
                     add(AiActionMode.RECALCULATE)
                 }
@@ -1003,7 +1004,7 @@ fun EditFoodEntrySheet(
                                 )
                             },
                         )
-                        if (entryGapReport.hasGaps) {
+                        if (FillGapsFeature.ENABLED && entryGapReport.hasGaps) {
                             val missingLabels = (
                                 entryGapReport.missingMacros.map { stringResource(it.labelRes) } +
                                     entryGapReport.missingMicros.map { stringResource(it.labelRes) }

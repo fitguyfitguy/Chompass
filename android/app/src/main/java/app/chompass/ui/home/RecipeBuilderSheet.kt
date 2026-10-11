@@ -54,6 +54,7 @@ import app.chompass.models.Recipe
 import app.chompass.models.RecipeIngredient
 import app.chompass.models.fillMissingFrom
 import app.chompass.models.gapReport
+import app.chompass.services.FillGapsFeature
 import app.chompass.services.ai.AiError
 import app.chompass.services.ai.userMessage
 import app.chompass.ui.components.MacroChip
@@ -107,7 +108,7 @@ fun RecipeBuilderSheet(
     var fillTotal by remember { mutableStateOf(0) }
     var fillError by remember { mutableStateOf<String?>(null) }
     val gappedIngredients = remember(ingredients) {
-        ingredients.filter { it.toFillCandidate().gapReport().hasMacroGaps }
+        if (FillGapsFeature.ENABLED) ingredients.filter { it.toFillCandidate().gapReport().hasMacroGaps } else emptyList()
     }
     val context = androidx.compose.ui.platform.LocalContext.current
 

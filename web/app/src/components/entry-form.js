@@ -27,6 +27,7 @@ import {
 } from "../lib/chompass-core/constituents.js";
 import { microsStaleFor } from "../lib/chompass-core/micros-composition.js";
 import { gapReport, fillMissingFrom } from "../lib/chompass-core/entry-gaps.js";
+import { FILL_GAPS_ENABLED } from "../lib/fill-gaps.js";
 import {
   ALL_MICRO_KEYS,
   NUTRITION_DETAIL_MICROS,
@@ -898,7 +899,7 @@ export class EntryForm extends HTMLElement {
     // hidden, like the Android edit sheet.
     if (this._appPrefs?.aiFeaturesEnabled === false) return "";
     const gaps = this.existing ? gapReport(this.existing) : null;
-    const fillAvailable = gaps?.hasGaps ?? false;
+    const fillAvailable = FILL_GAPS_ENABLED && (gaps?.hasGaps ?? false);
     // Smart default recomputes per render (gaps → Fill); a pill tap pins.
     let mode = this.pinnedAiMode ?? (fillAvailable ? "fill" : "reanalyze");
     if (mode === "fill" && !fillAvailable) mode = "reanalyze";
