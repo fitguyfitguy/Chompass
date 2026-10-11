@@ -33,10 +33,20 @@ class AIProviderFallbackTest {
     }
 
     @Test
-    fun geminiStoredFallbackIsPreserved() {
+    fun geminiRetired25FallbackFallsBackToDefault() {
+        // gemini-2.5 left the catalog (Google 2.5-family shutdown, 2026-10);
+        // stale selections resolve to the current default, not a catalog miss.
         assertEquals(
-            "gemini-2.5-flash",
+            AIProvider.GEMINI.defaultFallbackModel,
             AIProvider.GEMINI.supportedFallbackModelOrDefault("gemini-2.5-flash"),
+        )
+    }
+
+    @Test
+    fun geminiRetired25ModelFallsBackToDefault() {
+        assertEquals(
+            AIProvider.GEMINI.defaultModel,
+            AIProvider.GEMINI.supportedModelOrDefault("gemini-2.5-pro"),
         )
     }
 

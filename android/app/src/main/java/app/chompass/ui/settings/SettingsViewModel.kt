@@ -80,7 +80,7 @@ data class SettingsUiState(
     val selectedModel: String = AIProvider.GEMINI.defaultModel,
     /** Resolved vision-model slot for [selectedAI]; empty = primary model handles images too (#195). */
     val visionModel: String = "",
-    val maxResponseTokens: Int = 1024,
+    val maxResponseTokens: Int = app.chompass.data.DEFAULT_MAX_RESPONSE_TOKENS,
     val aiReadTimeoutSeconds: Int = app.chompass.data.DEFAULT_AI_READ_TIMEOUT_SECONDS,
     val servingUnitInferenceMode: ServingUnitInferenceMode = ServingUnitInferenceMode.Default,
     val heuristicServingUnitSettings: HeuristicServingUnitSettings = HeuristicServingUnitSettings.Default,

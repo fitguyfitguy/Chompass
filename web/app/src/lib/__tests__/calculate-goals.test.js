@@ -204,10 +204,10 @@ test("applyingFormulaGoals_keepsLockedCalories", () => {
   assert.equal(next.caloriesLocked, true);
 });
 
-test("calculateGoalsWithAi_floorsCappedProviderTokensForReasoning", async () => {
+test("calculateGoalsWithAi_leavesCapToProviderDefault", async () => {
   // Reasoning models on capped providers bill thinking tokens against
-  // max_tokens; the goal send must carry the 4096 floor, not the 1024
-  // provider default.
+  // max_tokens; the client no longer forces a floor — the send carries no
+  // cap and the provider default applies.
   const original = PROVIDERS.anthropic.send;
   /** @type {any[]} */
   const requests = [];
@@ -236,5 +236,5 @@ test("calculateGoalsWithAi_floorsCappedProviderTokensForReasoning", async () => 
     PROVIDERS.anthropic.send = original;
   }
   assert.equal(requests.length, 1);
-  assert.equal(requests[0].maxTokens, 4096);
+  assert.equal(requests[0].maxTokens, undefined);
 });

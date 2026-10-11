@@ -124,7 +124,7 @@ internal fun SettingRowAlignmentPreviewContent() {
                 HorizontalDivider()
                 SettingRow(
                     label = stringResource(R.string.settings_ai_model),
-                    value = "gemini-2.5-flash",
+                    value = "gemini-3.6-flash",
                     icon = Icons.Outlined.Tune,
                 ) {}
                 HorizontalDivider()

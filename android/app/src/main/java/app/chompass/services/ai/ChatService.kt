@@ -133,7 +133,7 @@ class ChatService(
         if (provider.requiresApiKey && apiKey.isNullOrEmpty()) throw AiError.NoApiKey
         if (baseUrl.isEmpty()) throw AiError.InvalidUrl(baseUrl)
         AiHttp.assertCleartextAllowed(baseUrl, cfg.allowInsecureHttp)
-        val maxTokens = effectiveResponseTokens(provider, cfg.maxResponseTokens)
+        val maxTokens = cfg.maxResponseTokens
         val geminiGoogleSearch = cfg.geminiGoogleSearch
         val readTimeoutSeconds = cfg.aiReadTimeoutSeconds
         val httpClient = AiHttp.clientForProvider(okHttp, provider, readTimeoutSeconds)

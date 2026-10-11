@@ -244,7 +244,7 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
                 ?: HomeTopNutrient.DefaultAveragesStorage,
 
         userContext = this[Keys.USER_CONTEXT].orEmpty(),
-        maxResponseTokens = clampMaxResponseTokens(this[Keys.MAX_RESPONSE_TOKENS] ?: 1024),
+        maxResponseTokens = clampMaxResponseTokens(this[Keys.MAX_RESPONSE_TOKENS] ?: DEFAULT_MAX_RESPONSE_TOKENS),
         aiReadTimeoutSeconds = clampAiReadTimeoutSeconds(
             this[Keys.AI_READ_TIMEOUT_SECONDS] ?: DEFAULT_AI_READ_TIMEOUT_SECONDS
         ),

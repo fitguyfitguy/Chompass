@@ -33,6 +33,7 @@ describe("AI provider model defaults (parity fixture)", () => {
     assert.equal(resolveProviderModel("openai_compatible", null, "primary"), "gpt-5.4-mini");
     assert.equal(resolveProviderModel("openai_compatible", "", "fallback"), "gpt-5.4-nano");
     assert.equal(resolveProviderModel("gemini", "not-a-real-model", "primary"), "gemini-3.8-flash");
-    assert.equal(resolveProviderModel("gemini", "gemini-2.5-pro", "primary"), "gemini-2.5-pro");
+    // Retired 2.5 ids resolve to the default, same as unknown ids.
+    assert.equal(resolveProviderModel("gemini", "gemini-2.5-pro", "primary"), "gemini-3.8-flash");
   });
 });
