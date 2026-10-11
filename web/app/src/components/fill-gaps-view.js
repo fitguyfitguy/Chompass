@@ -10,7 +10,7 @@
 
 import { foodEntries, prefs } from "../lib/db.js";
 import { listFavorites, updateFavorite } from "../lib/saved-meals.js";
-import { scanGaps, bannerVisible, markBannerShown, dismissBanner } from "../lib/fill-gaps.js";
+import { scanGaps, bannerVisible, markBannerShown, dismissBanner, FILL_GAPS_ENABLED } from "../lib/fill-gaps.js";
 import { fillMissingFrom } from "../lib/chompass-core/entry-gaps.js";
 import { buildCorrectDiff } from "../lib/ai/correct-diff.js";
 import { isAbortError } from "../lib/ai/analysis-phase.js";
@@ -288,7 +288,7 @@ export function openFillGapsSheet() {
  * live scan keeps the count honest right after fills / new logs; the gaps
  * sheet rescans on open regardless. */
 export async function maybeShowFillGapsBanner(appPrefs) {
-  if (appPrefs.aiFeaturesEnabled === false) {
+  if (!FILL_GAPS_ENABLED || appPrefs.aiFeaturesEnabled === false) {
     removeFillGapsBanner();
     return;
   }

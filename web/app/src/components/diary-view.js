@@ -76,6 +76,7 @@ import { clampDiaryDate, DIARY_FUTURE_WEEKS, shiftDate, todayIso } from "../lib/
 import { gapReport } from "../lib/chompass-core/entry-gaps.js";
 import { pinEntryAiMode } from "./entry-form.js";
 import { maybeShowFillGapsBanner } from "./fill-gaps-view.js";
+import { FILL_GAPS_ENABLED } from "../lib/fill-gaps.js";
 import { chevronLeft, chevronRight } from "../lib/icons.js";
 import { showToast, showUndoToast } from "../lib/ui/toast.js";
 import { MEAL_ORDER, mealLabel } from "../lib/meal-label.js";
@@ -1323,7 +1324,7 @@ export class DiaryView extends HTMLElement {
     const appPrefs = await prefs.load();
     // Fill-missing gate (Android parity): the ⋮ item is per-entry `hasGaps`
     // (micro-only gaps included) while the mass surfaces use hasMacroGaps.
-    const canFill = appPrefs.aiFeaturesEnabled !== false && gapReport(entry).hasGaps;
+    const canFill = FILL_GAPS_ENABLED && appPrefs.aiFeaturesEnabled !== false && gapReport(entry).hasGaps;
     const sheet = openSheet({
       title: entry.name,
       body: `
