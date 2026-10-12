@@ -148,6 +148,50 @@ class FillMissingMergeTest {
     }
 
     @Test
+    fun constituentRows_containmentFallback_mealieStyleNames() {
+        val entry = mealieEntry(
+            constituents = listOf(
+                FoodConstituent("200 g flour", 0, 0.0, 0.0, 0.0, servingSizeGrams = 200.0),
+                FoodConstituent("2 eggs", 0, 0.0, 0.0, 0.0, servingSizeGrams = 100.0),
+            ),
+        )
+        val merged = entry.fillMissingFrom(
+            analysis(
+                constituents = listOf(
+                    FoodConstituent("flour", 720, 26.0, 152.0, 2.0, servingSizeGrams = 200.0),
+                    FoodConstituent("eggs", 140, 12.0, 1.0, 10.0, servingSizeGrams = 100.0),
+                ),
+            ),
+        )
+
+        // Exact pass finds nothing (stored names carry grams prefixes);
+        // containment pairs "200 g flour" ↔ "flour" and "2 eggs" ↔ "eggs".
+        assertEquals(720, merged.constituents[0].calories)
+        assertEquals(26.0, merged.constituents[0].protein, 1e-9)
+        assertEquals(152.0, merged.constituents[0].carbs, 1e-9)
+        assertEquals(140, merged.constituents[1].calories)
+        assertEquals(12.0, merged.constituents[1].protein, 1e-9)
+    }
+
+    @Test
+    fun constituentRows_containment_noWordBoundary_noFill() {
+        val entry = mealieEntry(constituents = listOf(FoodConstituent("Rice", 0, 0.0, 0.0, 0.0, servingSizeGrams = 150.0)))
+        val analysis = analysis(constituents = listOf(FoodConstituent("Price", 200, 5.0, 40.0, 1.0, servingSizeGrams = 150.0)))
+
+        // "rice" sits inside "price" but not at a word boundary — no fill.
+        assertSame(entry, entry.fillMissingFrom(analysis))
+    }
+
+    @Test
+    fun constituentRows_containment_shortNameGuard() {
+        val entry = mealieEntry(constituents = listOf(FoodConstituent("Rye bread", 0, 0.0, 0.0, 0.0, servingSizeGrams = 60.0)))
+        val analysis = analysis(constituents = listOf(FoodConstituent("Ry", 250, 8.0, 48.0, 2.0, servingSizeGrams = 60.0)))
+
+        // Shorter side under 3 characters: boundary hit, still no fill.
+        assertSame(entry, entry.fillMissingFrom(analysis))
+    }
+
+    @Test
     fun nothingFillable_returnsSameInstance() {
         val entry = mealieEntry(
             fiber = 4.0,

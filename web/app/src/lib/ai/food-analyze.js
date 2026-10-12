@@ -478,7 +478,12 @@ async function runFill(providerId, config, entry, appPrefs, signal, onPhase, onP
   const optNum = (v) => (v == null || v === "" ? null : Math.max(0, Number(v)));
 
   const name = String(entry.name || parsed.name || "Food");
-  const quantityG = optNum(parsed.quantityG) ?? optNum(entry.quantityG);
+  // Fill grams parity (Android adaptFillServingGrams): trust the reply's
+  // grams only when usable (present and > 0); otherwise fall back to the
+  // logged entry's grams so the only-missing merge never scales by the
+  // 100 g default ensureServingUnits invents for a grams-less entry.
+  const replyGrams = optNum(parsed.quantityG);
+  const quantityG = replyGrams != null && replyGrams > 0 ? replyGrams : optNum(entry.quantityG);
   /** @type {"gramsOnly"|"heuristic"|"aiCall"} */
   const inferenceMode =
     appPrefs.servingUnitInferenceMode === "heuristic" || appPrefs.servingUnitInferenceMode === "aiCall"

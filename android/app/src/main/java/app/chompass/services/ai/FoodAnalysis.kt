@@ -490,7 +490,10 @@ internal object FoodJsonParser {
         throw e
     }
 
-    fun parseFood(text: String): FoodAnalysis = logParseFailure(text) {
+    fun parseFood(
+        text: String,
+        postParse: ((FoodAnalysis, JSONObject) -> FoodAnalysis)? = null,
+    ): FoodAnalysis = logParseFailure(text) {
         val json = runCatching { JSONObject(extractJson(text)) }.getOrNull()
             ?: throw AiError.InvalidResponse
         // Sanitize BEFORE persistence: the model reply is untrusted output that a
@@ -523,7 +526,8 @@ internal object FoodJsonParser {
                 constituents = parseConstituents(json),
             )
         )
-        return ConstituentReconcile.reconcile(parsed)
+        val reconciled = ConstituentReconcile.reconcile(parsed)
+        return postParse?.invoke(reconciled, json) ?: reconciled
     }
 
     fun parseRecognition(text: String): app.chompass.models.FoodRecognitionResult = logParseFailure(text) {

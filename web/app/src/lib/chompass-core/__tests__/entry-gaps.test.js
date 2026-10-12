@@ -273,3 +273,59 @@ test("merge: signature re-stamped after a real fill, untouched otherwise", () =>
   assert.ok(typeof filledRows.microsCompositionSignature === "string");
   assert.ok(filledRows.microsCompositionSignature.includes("rolled oats@1000"));
 });
+
+test("merge: containment fallback fills Mealie-style prefixed names", () => {
+  const before = entry({
+    constituents: [
+      constituent({ name: "200 g flour", servingSizeGrams: 200 }),
+      constituent({ name: "2 eggs", servingSizeGrams: 100 }),
+    ],
+  });
+  const merged = fillMissingFrom(before, {
+    calories: 0,
+    proteinG: 0,
+    carbsG: 0,
+    fatG: 0,
+    quantityG: null,
+    constituents: [
+      { name: "flour", calories: 720, proteinG: 26, carbsG: 152, fatG: 2 },
+      { name: "eggs", calories: 140, proteinG: 12, carbsG: 1, fatG: 10 },
+    ],
+  });
+  // Exact pass finds nothing (stored names carry grams prefixes); containment
+  // pairs "200 g flour" ↔ "flour" and "2 eggs" ↔ "eggs".
+  assert.equal(merged.constituents[0].calories, 720);
+  assert.equal(merged.constituents[0].proteinG, 26);
+  assert.equal(merged.constituents[0].carbsG, 152);
+  assert.equal(merged.constituents[1].calories, 140);
+  assert.equal(merged.constituents[1].proteinG, 12);
+});
+
+test("merge: containment needs a word boundary and a ≥3-char shorter side", () => {
+  // "rice" sits inside "price" but not at a word boundary — no fill.
+  const boundaryBlocked = entry({ constituents: [constituent({ name: "Rice" })] });
+  assert.strictEqual(
+    boundaryBlocked,
+    fillMissingFrom(boundaryBlocked, {
+      calories: 0,
+      proteinG: 0,
+      carbsG: 0,
+      fatG: 0,
+      quantityG: null,
+      constituents: [{ name: "Price", calories: 200, proteinG: 5, carbsG: 40, fatG: 1 }],
+    }),
+  );
+  // Shorter side under 3 characters: boundary hit, still no fill.
+  const shortBlocked = entry({ constituents: [constituent({ name: "Rye bread" })] });
+  assert.strictEqual(
+    shortBlocked,
+    fillMissingFrom(shortBlocked, {
+      calories: 0,
+      proteinG: 0,
+      carbsG: 0,
+      fatG: 0,
+      quantityG: null,
+      constituents: [{ name: "Ry", calories: 250, proteinG: 8, carbsG: 48, fatG: 2 }],
+    }),
+  );
+});

@@ -123,3 +123,32 @@ test("fillFoodEntry_promptsMissingFields_repeatsKnownValues_parsesEstimate", asy
     PROVIDERS.anthropic.send = original;
   }
 });
+
+test("fillFoodEntry_unusableReplyGrams_adoptsEntryGrams", async () => {
+  const original = PROVIDERS.anthropic.send;
+  PROVIDERS.anthropic.send = async () => ({
+    // quantityG 0 is unusable (mirrors a grams-less reply): the logged
+    // entry's grams must win over ensureServingUnits' 100 g default, or the
+    // only-missing merge would scale a 400 g entry's fills ×4.
+    text: JSON.stringify({
+      name: "Overnight oats",
+      calories: 540,
+      proteinG: 42,
+      carbsG: 60,
+      fatG: 12.5,
+      quantityG: 0,
+    }),
+    toolCalls: [],
+  });
+  try {
+    const result = await fillFoodEntry({
+      providerId: "anthropic",
+      config: { apiKey: "test-key" },
+      entry: gappedEntry({ quantityG: 400 }),
+      prefsOverride: /** @type {any} */ ({ aiFeaturesEnabled: true, aiFallbackEnabled: false }),
+    });
+    assert.equal(result.quantityG, 400);
+  } finally {
+    PROVIDERS.anthropic.send = original;
+  }
+});
