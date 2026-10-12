@@ -40,7 +40,14 @@ name: Fill missing gaps sheet round trip
 - extendedWaitUntil:
     visible: ".*Ergänzt:.*"
     timeout: 60000
-# All rows must finish before the primary re-enables (disabled while running).
+# Opt-in diff (UX-5): tapping the FILLED row expands a before→after list;
+# collapsed by default, never a forced review step.
+- tapOn: ".*Ergänzt:.*"
+- extendedWaitUntil:
+    visible: ".*→.*"
+    timeout: 10000
+# The forever opt-out is pinned below the queue list in every item state.
+- assertVisible: "Nicht mehr erinnern"
 - waitForAnimationToEnd:
     timeout: 60000
 # Apply → rows APPLIED, toolbar primary becomes Done. The primary stays enabled
@@ -74,3 +81,18 @@ name: Fill missing gaps sheet round trip
     timeout: 20000
     speed: 40
 - tapOn: "Abbrechen"
+
+# Never-remind path (same session — reset_fill_missing_banner would clear the
+# flag on relaunch, so the assertion runs before close): undo re-gapped the
+# row, the banner re-appears on Home; open the sheet, opt out, and the banner
+# chip must vanish while the sheet stays open.
+- extendedWaitUntil:
+    visible: ".*ohne Nährwertdaten"
+    timeout: 30000
+- tapOn: ".*ohne Nährwertdaten"
+- extendedWaitUntil:
+    visible: "Fehlende Daten füllen"
+    timeout: 15000
+- tapOn: "Nicht mehr erinnern"
+- tapOn: "Abbrechen"
+- assertNotVisible: ".*ohne Nährwertdaten"

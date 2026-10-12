@@ -3,7 +3,6 @@ package app.chompass.services
 import android.util.Log
 import app.chompass.AppContainer
 import app.chompass.data.KeyStore
-import app.chompass.data.Keys
 import app.chompass.models.ActivityLevel
 import app.chompass.models.AIProvider
 import app.chompass.models.CalorieSafety
@@ -22,7 +21,6 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
-import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeout
 

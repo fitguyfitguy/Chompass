@@ -11,12 +11,10 @@ import { gapReport } from "./chompass-core/entry-gaps.js";
 
 /**
  * Product gate for AI fill-missing (Home banner, review sheet, entry-form
- * pill, diary ⋮ item). WIP — disabled for release: the scan/merge logic stays
- * compiled and tested, this flag only hides the entry points. Flip to true
- * when the fill-missing device pass is green (mirrors Android
- * FillGapsFeature.ENABLED).
+ * pill, diary ⋮ item, Settings AI entry point). Enabled since the
+ * fill-missing rework (mirrors Android FillGapsFeature.ENABLED).
  */
-export const FILL_GAPS_ENABLED = false;
+export const FILL_GAPS_ENABLED = true;
 
 const DISMISSED_KEY = "chompass-fill-gaps-banner-dismissed";
 const LAST_SHOWN_KEY = "chompass-fill-gaps-banner-last-shown";

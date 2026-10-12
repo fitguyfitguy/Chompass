@@ -1252,7 +1252,6 @@ class FoodAnalysisService(
         }.trimIndent()
     }
 
-
     /** Known (non-zero / non-null) values worth repeating to the model. */
     private fun fillEntryKnownValues(entry: FoodEntry): String {
         val parts = mutableListOf<String>()
