@@ -2648,4 +2648,7 @@
     </plurals>
     <string name="fill_gaps_empty">Nothing is missing right now</string>
     <string name="settings_fill_missing_row">Fill missing data</string>
+    <string name="settings_fill_missing_reminders">Missing-value reminders</string>
+    <string name="settings_fill_missing_reminders_footer">Show the Home banner when logged meals or favorites have missing values</string>
+    <string name="fill_gaps_never_remind">Don\'t remind me again</string>
 </resources>

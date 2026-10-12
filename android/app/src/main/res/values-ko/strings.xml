@@ -2101,4 +2101,7 @@
     </plurals>
     <string name="fill_gaps_empty">지금은 누락된 것이 없습니다</string>
     <string name="settings_fill_missing_row">누락된 데이터 채우기</string>
+    <string name="settings_fill_missing_reminders">누락된 값 알림</string>
+    <string name="settings_fill_missing_reminders_footer">기록한 식사나 즐겨찾기에 누락된 값이 있으면 홈 배너를 표시합니다</string>
+    <string name="fill_gaps_never_remind">다시 알리지 않기</string>
 </resources>

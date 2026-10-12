@@ -2041,4 +2041,7 @@ LBM = вага × (1 − %жиру)</string>
     </plurals>
     <string name="fill_gaps_empty">Наразі нічого не бракує</string>
     <string name="settings_fill_missing_row">Заповнити відсутні дані</string>
+    <string name="settings_fill_missing_reminders">Нагадування про відсутні значення</string>
+    <string name="settings_fill_missing_reminders_footer">Показувати банер на головній, коли в стравах чи обраних бракує значень</string>
+    <string name="fill_gaps_never_remind">Більше не нагадувати</string>
 </resources>

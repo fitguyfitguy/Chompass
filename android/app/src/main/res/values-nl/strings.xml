@@ -2102,4 +2102,7 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
     </plurals>
     <string name="fill_gaps_empty">Op dit moment ontbreekt er niets</string>
     <string name="settings_fill_missing_row">Ontbrekende gegevens aanvullen</string>
+    <string name="settings_fill_missing_reminders">Herinneringen voor ontbrekende waarden</string>
+    <string name="settings_fill_missing_reminders_footer">Toont de startbanner wanneer maaltijden of favorieten ontbrekende waarden hebben</string>
+    <string name="fill_gaps_never_remind">Niet meer herinneren</string>
 </resources>

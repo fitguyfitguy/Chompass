@@ -2189,4 +2189,7 @@
     </plurals>
     <string name="fill_gaps_empty">Сейчас ничего не отсутствует</string>
     <string name="settings_fill_missing_row">Заполнить недостающие данные</string>
+    <string name="settings_fill_missing_reminders">Напоминания о пропущенных значениях</string>
+    <string name="settings_fill_missing_reminders_footer">Показывать баннер на главном экране, если в приёмах пищи или избранном есть пропущенные значения</string>
+    <string name="fill_gaps_never_remind">Больше не напоминать</string>
 </resources>

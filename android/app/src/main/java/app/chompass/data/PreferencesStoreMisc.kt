@@ -117,6 +117,13 @@ internal suspend fun PreferencesStore.setFillMissingSignatureDismissedImpl(signa
     }
 }
 
+internal val PreferencesStore.fillMissingBannerDisabledImpl: Flow<Boolean>
+    get() = dataStore.data.map { it[Keys.FILL_MISSING_BANNER_DISABLED] ?: false }
+
+internal suspend fun PreferencesStore.setFillMissingBannerDisabledImpl(v: Boolean) {
+    dataStore.edit { it[Keys.FILL_MISSING_BANNER_DISABLED] = v }
+}
+
 // -- Magnitude picker last mode (Codeberg #62) ------------------------
 internal val PreferencesStore.numericPickerEntryImpl: Flow<String>
     get() = dataStore.data.map { it[Keys.NUMERIC_PICKER_ENTRY] ?: "wheel" }

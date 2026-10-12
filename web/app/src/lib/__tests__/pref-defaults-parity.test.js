@@ -65,6 +65,7 @@ describe("pref defaults (parity fixture)", () => {
   it("DEFAULT_PREFS coach tab / AI-features defaults match fixture", () => {
     assert.equal(DEFAULT_PREFS.coachTabEnabled, fixture.coachTabEnabled);
     assert.equal(DEFAULT_PREFS.aiFeaturesEnabled, fixture.aiFeaturesEnabled);
+    assert.equal(DEFAULT_PREFS.fillMissingRemindersEnabled, fixture.fillMissingRemindersEnabled);
   });
 
   it("DEFAULT_PREFS schedule / gauge / week start match fixture", () => {

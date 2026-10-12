@@ -184,6 +184,8 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setFillMissingBannerShown(epochDay: Long) = setFillMissingBannerShownImpl(epochDay)
     val fillMissingDismissedSignatures: Flow<Set<String>> get() = fillMissingDismissedSignaturesImpl
     suspend fun setFillMissingSignatureDismissed(signature: String) = setFillMissingSignatureDismissedImpl(signature)
+    val fillMissingBannerDisabled: Flow<Boolean> get() = fillMissingBannerDisabledImpl
+    suspend fun setFillMissingBannerDisabled(v: Boolean) = setFillMissingBannerDisabledImpl(v)
     val notificationsEnabled: Flow<Boolean> get() = notificationsEnabledImpl
     suspend fun setNotificationsEnabled(v: Boolean) = setNotificationsEnabledImpl(v)
     val streakReminderEnabled: Flow<Boolean> get() = streakReminderEnabledImpl

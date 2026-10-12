@@ -224,6 +224,7 @@ data class SettingsUiState(
     val openRouterReasoningEffort: OpenRouterReasoningEffort = OpenRouterReasoningEffort.AUTO,
     val goalRecalcTier: GoalRecalcTierOverride = GoalRecalcTierOverride.AUTO,
     val mealConstituentsEnabled: Boolean = true,
+    val fillMissingRemindersEnabled: Boolean = true,
     /** Per-source switches for the Add Food database search. Open Food Facts is
      * the one that reaches the network; it ships on like the bundled indexes,
      * and either this row or the sheet's databases chip turns it off. */
@@ -542,6 +543,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     openRouterReasoningEffort = snap.openRouterReasoningEffort,
                     goalRecalcTier = snap.goalRecalcTier,
                     mealConstituentsEnabled = snap.mealConstituentsEnabled,
+                    fillMissingRemindersEnabled = snap.fillMissingRemindersEnabled,
                     foodSearchOpenFoodFactsEnabled = snap.foodSearchOpenFoodFactsEnabled,
                     foodSearchUsdaEnabled = snap.foodSearchUsdaEnabled,
                     foodSearchSwissEnabled = snap.foodSearchSwissEnabled,
@@ -812,6 +814,11 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     fun setGeminiGoogleSearchEnabled(v: Boolean) = updateUiPref(
         { container.prefs.setGeminiGoogleSearchEnabled(v) },
         { copy(geminiGoogleSearchEnabled = v) },
+    )
+
+    fun setFillMissingRemindersEnabled(v: Boolean) = updateUiPref(
+        { container.prefs.setFillMissingBannerDisabled(!v) },
+        { copy(fillMissingRemindersEnabled = v) },
     )
 
     fun setOpenRouterReasoningEffort(e: OpenRouterReasoningEffort) = updateUiPref(

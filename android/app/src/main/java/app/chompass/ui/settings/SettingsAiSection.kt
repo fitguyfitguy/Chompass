@@ -9,6 +9,7 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Numbers
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SmartToy
 import androidx.compose.material.icons.outlined.Speed
@@ -211,19 +212,26 @@ internal fun SettingsAiSection(
                     )
                     SettingFootnote(stringResource(R.string.settings_gemini_google_search_footer))
                 }
-                // AI fill-missing gaps sheet (Batch 2). Hidden when the master
-                // switch is off or nothing is gapped right now (cost guard).
+                // AI fill-missing: reminders toggle (the forever opt-out) and
+                // a stable entry point into the gaps sheet — always visible
+                // while the feature is on, count shown as-is (incl. 0).
                 if (FillGapsFeature.ENABLED && ui.aiFeaturesEnabled) {
                     val gapScan by vm.container.fillGapsEngine.scan.collectAsState(initial = null)
                     val gapCount = gapScan?.count ?: 0
-                    if (gapCount > 0) {
-                        HorizontalDivider()
-                        SettingRow(
-                            stringResource(R.string.settings_fill_missing_row),
-                            gapCount.toString(),
-                            icon = Icons.Outlined.Tune
-                        ) { onOpenSheet(SettingsSheet.FILL_GAPS) }
-                    }
+                    HorizontalDivider()
+                    ToggleRow(
+                        stringResource(R.string.settings_fill_missing_reminders),
+                        ui.fillMissingRemindersEnabled,
+                        icon = Icons.Outlined.Notifications,
+                        onChange = { vm.setFillMissingRemindersEnabled(it) }
+                    )
+                    SettingFootnote(stringResource(R.string.settings_fill_missing_reminders_footer))
+                    HorizontalDivider()
+                    SettingRow(
+                        stringResource(R.string.settings_fill_missing_row),
+                        gapCount.toString(),
+                        icon = Icons.Outlined.Tune
+                    ) { onOpenSheet(SettingsSheet.FILL_GAPS) }
                 }
     }
     if (confirmDeleteProfile) {

@@ -106,18 +106,20 @@ class FillGapsEngine(
             )
 
     /**
-     * Pure banner truth table: visible only when AI features are on, the scan
-     * is non-empty, and this exact scan was never dismissed. The once-per-day
-     * rule is NOT here: a reactive shown-today check would collapse the chip
-     * the moment its own shown-write re-emits, before anyone can tap it. It
-     * lives in HomeViewModel instead (startup pref gate + session latch).
+     * Pure banner truth table: visible only when reminders are not disabled
+     * forever, AI features are on, the scan is non-empty, and this exact
+     * scan was never dismissed. The once-per-day rule is NOT here: a
+     * reactive shown-today check would collapse the chip the moment its own
+     * shown-write re-emits, before anyone can tap it. It lives in
+     * HomeViewModel instead (startup pref gate + session latch).
      */
     internal fun bannerState(
         scan: GapScan,
         aiEnabled: Boolean,
+        disabled: Boolean = false,
         dismissed: Set<String>,
     ): FillGapsBanner? {
-        if (!aiEnabled || scan.items.isEmpty()) return null
+        if (disabled || !aiEnabled || scan.items.isEmpty()) return null
         if (scan.signature in dismissed) return null
         return FillGapsBanner(count = scan.count, signature = scan.signature)
     }
@@ -134,13 +136,14 @@ class FillGapsEngine(
         ::computeScan,
     )
 
-    /** Banner gate combining the scan with the master switch + sticky dismissals. */
+    /** Banner gate combining the scan with the master switch, the forever opt-out, and sticky dismissals. */
     val banner: Flow<FillGapsBanner?> = combine(
         scan,
         prefs.aiFeaturesEnabled,
+        prefs.fillMissingBannerDisabled,
         prefs.fillMissingDismissedSignatures,
-    ) { scan, aiEnabled, dismissed ->
-        bannerState(scan, aiEnabled, dismissed)
+    ) { scan, aiEnabled, disabled, dismissed ->
+        bannerState(scan, aiEnabled, disabled, dismissed)
     }
 
     suspend fun markBannerShown() {

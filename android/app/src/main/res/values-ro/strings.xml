@@ -2111,4 +2111,7 @@ macro-urile reechilibrate la noul total caloric</string>
     </plurals>
     <string name="fill_gaps_empty">Nu lipsește nimic momentan</string>
     <string name="settings_fill_missing_row">Completează datele lipsă</string>
+    <string name="settings_fill_missing_reminders">Memento pentru valori lipsă</string>
+    <string name="settings_fill_missing_reminders_footer">Afișează bannerul de pe ecranul principal când mesele sau favoritele au valori lipsă</string>
+    <string name="fill_gaps_never_remind">Nu-mi mai aminti</string>
 </resources>

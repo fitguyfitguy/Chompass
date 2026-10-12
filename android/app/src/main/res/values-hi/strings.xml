@@ -2102,4 +2102,7 @@
     </plurals>
     <string name="fill_gaps_empty">अभी कुछ भी गुम नहीं है</string>
     <string name="settings_fill_missing_row">गुम डेटा भरें</string>
+    <string name="settings_fill_missing_reminders">गुम मानों के अनुस्मारक</string>
+    <string name="settings_fill_missing_reminders_footer">जब लॉग किए भोजन या पसंदीदा में मान गुम हों तो होम बैनर दिखाएँ</string>
+    <string name="fill_gaps_never_remind">मुझे दोबारा याद न दिलाएँ</string>
 </resources>
