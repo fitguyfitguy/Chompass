@@ -282,6 +282,7 @@ export const ja = Object.freeze({
   "entry.ai.mode_fill": "欠けている項目を埋める",
   "entry.ai.mode_reanalyze": "再分析",
   "entry.ai.mode_recalculate": "再計算",
+  "entry.ai.mode_recalculate_hint": "現在の食材構成から合計値を再推定します。編集内容はそのまま、数値だけが変わります。",
   "entry.ai.missing_line": "未入力: {labels}",
   "gaps.apply": "適用",
   "gaps.apply_all": "すべて適用",

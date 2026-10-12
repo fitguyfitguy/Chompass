@@ -286,6 +286,7 @@ export const pt_BR = Object.freeze({
   "entry.ai.mode_fill": "Preencher o que falta",
   "entry.ai.mode_reanalyze": "Reanalisar",
   "entry.ai.mode_recalculate": "Recalcular",
+  "entry.ai.mode_recalculate_hint": "Reestima os totais a partir da mistura atual de ingredientes — suas edições ficam, só os números mudam.",
   "entry.ai.missing_line": "Faltando: {labels}",
   "gaps.apply": "Aplicar",
   "gaps.apply_all": "Aplicar tudo",

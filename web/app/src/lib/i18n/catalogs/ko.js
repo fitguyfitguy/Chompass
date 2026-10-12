@@ -282,6 +282,7 @@ export const ko = Object.freeze({
   "entry.ai.mode_fill": "빈 값 채우기",
   "entry.ai.mode_reanalyze": "다시 분석",
   "entry.ai.mode_recalculate": "다시 계산",
+  "entry.ai.mode_recalculate_hint": "현재 재료 구성으로 총합을 다시 추정합니다. 편집 내용은 유지되고 수치만 바뀌어요.",
   "entry.ai.missing_line": "누락: {labels}",
   "gaps.apply": "적용",
   "gaps.apply_all": "모두 적용",

@@ -328,6 +328,7 @@ export const pl = Object.freeze({
   "entry.ai.mode_fill": "Uzupełnij braki",
   "entry.ai.mode_reanalyze": "Analizuj ponownie",
   "entry.ai.mode_recalculate": "Przelicz ponownie",
+  "entry.ai.mode_recalculate_hint": "Szacuje ponownie sumy na podstawie bieżącego zestawu składników — Twoje edycje zostają, zmieniają się tylko liczby.",
   "entry.ai.missing_line": "Brakuje: {labels}",
   "gaps.apply": "Zastosuj",
   "gaps.apply_all": "Zastosuj wszystko",

@@ -328,6 +328,7 @@ export const uk = Object.freeze({
   "entry.ai.mode_fill": "Заповнити нестачу",
   "entry.ai.mode_reanalyze": "Переаналізувати",
   "entry.ai.mode_recalculate": "Перерахувати",
+  "entry.ai.mode_recalculate_hint": "Переоцінює підсумки за поточним складом інгредієнтів — ваші правки залишаються, змінюються лише числа.",
   "entry.ai.missing_line": "Відсутнє: {labels}",
   "gaps.apply": "Застосувати",
   "gaps.apply_all": "Застосувати все",

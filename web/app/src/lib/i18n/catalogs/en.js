@@ -644,6 +644,7 @@ export const en = Object.freeze({
   "entry.ai.mode_fill": "Fill missing",
   "entry.ai.mode_reanalyze": "Reanalyze",
   "entry.ai.mode_recalculate": "Recalculate",
+  "entry.ai.mode_recalculate_hint": "Re-estimate the totals from the current ingredient mix — your edits stay, only the numbers change.",
   "entry.ai.missing_line": "Missing: {labels}",
   "entry.correct_action": "Correct with AI",
   "entry.correct_diff_hint": "Review the updated values above, then tap Save to keep them.",

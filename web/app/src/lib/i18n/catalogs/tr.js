@@ -328,6 +328,7 @@ export const tr = Object.freeze({
   "entry.ai.mode_fill": "Eksikleri doldur",
   "entry.ai.mode_reanalyze": "Yeniden analiz",
   "entry.ai.mode_recalculate": "Yeniden hesapla",
+  "entry.ai.mode_recalculate_hint": "Toplamları mevcut malzeme kombininden yeniden tahmin eder — düzenlemeleriniz kalır, yalnızca sayılar değişir.",
   "entry.ai.missing_line": "Eksik: {labels}",
   "gaps.apply": "Uygula",
   "gaps.apply_all": "Tümünü uygula",

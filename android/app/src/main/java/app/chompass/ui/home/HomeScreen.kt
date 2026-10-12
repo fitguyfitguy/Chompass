@@ -1601,8 +1601,9 @@ fun HomeScreen(
             entry = favorite,
             optionalGoals = ui.optionalNutrientGoals,
             aiFeaturesEnabled = aiFeaturesEnabled,
-            onReprocess = { updatedNote, onProgress ->
-                vm.reprocessFoodEntry(favorite, updatedNote, onProgress)
+            onReprocess = { updatedNote, editedMix, onProgress ->
+                if (editedMix != null) vm.reestimateFoodEntry(editedMix, onProgress)
+                else vm.reprocessFoodEntry(favorite, updatedNote, onProgress)
             },
             onFill = { onProgress ->
                 vm.fillFoodEntry(favorite, onProgress)
@@ -1868,8 +1869,9 @@ fun HomeScreen(
             useSystemDateTimePickers = useSystemDateTimePickers,
             dayEntries = ui.todayEntries,
             mealTimesEnabled = ui.mealTimesEnabled,
-            onReprocess = { updatedNote, onProgress ->
-                vm.reprocessFoodEntry(entry, updatedNote, onProgress)
+            onReprocess = { updatedNote, editedMix, onProgress ->
+                if (editedMix != null) vm.reestimateFoodEntry(editedMix, onProgress)
+                else vm.reprocessFoodEntry(entry, updatedNote, onProgress)
             },
             onFill = { onProgress ->
                 vm.fillFoodEntry(entry, onProgress)

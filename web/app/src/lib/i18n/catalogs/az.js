@@ -282,6 +282,7 @@ export const az = Object.freeze({
   "entry.ai.mode_fill": "Əskikləri doldur",
   "entry.ai.mode_reanalyze": "Yenidən təhlil",
   "entry.ai.mode_recalculate": "Yenidən hesabla",
+  "entry.ai.mode_recalculate_hint": "Cari inqrediyent qarışığından ümumi dəyərləri yenidən qiymətləndirir — redaktələriniz qalır, yalnız rəqəmlər dəyişir.",
   "entry.ai.missing_line": "Əskiklər: {labels}",
   "gaps.apply": "Tətbiq et",
   "gaps.apply_all": "Hamısını tətbiq et",

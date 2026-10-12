@@ -109,6 +109,8 @@ fun EditFavoriteSheet(
     /** Reanalyze/Recalculate: full AI overwrite of the draft fields. */
     onReprocess: suspend (
         updatedNote: String,
+        /** RECALCULATE only: the sheet's current edited mix the estimate runs over; null = Reanalyze (stored entry + note). */
+        editedMix: FoodEntry?,
         onProgress: (FoodAnalysisProgress) -> Unit,
     ) -> FoodAnalysis,
     /** Fill-missing analysis: text-only; result merges into empty fields only. */
@@ -326,7 +328,8 @@ fun EditFavoriteSheet(
             reprocessPartial = null
             val before = currentBaseEntry
             try {
-                val newAnalysis = onReprocess(noteText) { progress ->
+                val editedMix = if (aiActionMode == AiActionMode.RECALCULATE) buildUpdated() else null
+                val newAnalysis = onReprocess(noteText, editedMix) { progress ->
                     when (progress) {
                         is FoodAnalysisProgress.Phase -> reprocessPhase = progress.phase
                         is FoodAnalysisProgress.Partial -> {
@@ -346,32 +349,47 @@ fun EditFavoriteSheet(
                         }
                     }
                 }
-                currentBaseEntry = currentBaseEntry.copy(
-                    name = newAnalysis.name,
-                    calories = newAnalysis.calories,
-                    protein = newAnalysis.protein,
-                    carbs = newAnalysis.carbs,
-                    fat = newAnalysis.fat,
-                    servingSizeGrams = newAnalysis.servingSizeGrams,
-                    servingUnitOptions = newAnalysis.servingUnitOptions,
-                    selectedServingUnit = newAnalysis.selectedServingUnit,
-                    selectedServingQuantity = newAnalysis.selectedServingQuantity,
-                    customNote = noteText.trim().takeIf { it.isNotEmpty() },
-                    emoji = newAnalysis.emoji,
-                    constituents = newAnalysis.constituents,
-                    microsCompositionSignature = app.chompass.models.microsCompositionSignature(newAnalysis.constituents),
-                ).let { newAnalysis.toMicronutrients().applyTo(it) }
+                currentBaseEntry = if (aiActionMode == AiActionMode.RECALCULATE) {
+                    // Totals-only overwrite: the estimate came FROM the edited
+                    // mix, so name, serving, units, emoji, photo, and the
+                    // constituents themselves stay exactly as edited.
+                    currentBaseEntry.copy(
+                        calories = newAnalysis.calories,
+                        protein = newAnalysis.protein,
+                        carbs = newAnalysis.carbs,
+                        fat = newAnalysis.fat,
+                        customNote = noteText.trim().takeIf { it.isNotEmpty() },
+                    ).let { newAnalysis.toMicronutrients().applyTo(it) }
+                } else {
+                    currentBaseEntry.copy(
+                        name = newAnalysis.name,
+                        calories = newAnalysis.calories,
+                        protein = newAnalysis.protein,
+                        carbs = newAnalysis.carbs,
+                        fat = newAnalysis.fat,
+                        servingSizeGrams = newAnalysis.servingSizeGrams,
+                        servingUnitOptions = newAnalysis.servingUnitOptions,
+                        selectedServingUnit = newAnalysis.selectedServingUnit,
+                        selectedServingQuantity = newAnalysis.selectedServingQuantity,
+                        customNote = noteText.trim().takeIf { it.isNotEmpty() },
+                        emoji = newAnalysis.emoji,
+                        constituents = newAnalysis.constituents,
+                        microsCompositionSignature = app.chompass.models.microsCompositionSignature(newAnalysis.constituents),
+                    ).let { newAnalysis.toMicronutrients().applyTo(it) }
+                }
                 editableCalories = newAnalysis.calories
                 editableProtein = newAnalysis.protein
                 editableCarbs = newAnalysis.carbs
                 editableFat = newAnalysis.fat
                 editableMicros = newAnalysis.toMicronutrients()
-                name = newAnalysis.name
-                servingGrams = newAnalysis.servingSizeGrams ?: 100.0
-                baseServingGrams = newAnalysis.servingSizeGrams ?: 100.0
-                editableConstituents = newAnalysis.constituents
-                constituentsExpanded = newAnalysis.constituents.isNotEmpty()
-                editableEmoji = newAnalysis.emoji
+                if (aiActionMode != AiActionMode.RECALCULATE) {
+                    name = newAnalysis.name
+                    servingGrams = newAnalysis.servingSizeGrams ?: 100.0
+                    baseServingGrams = newAnalysis.servingSizeGrams ?: 100.0
+                    editableConstituents = newAnalysis.constituents
+                    constituentsExpanded = newAnalysis.constituents.isNotEmpty()
+                    editableEmoji = newAnalysis.emoji
+                }
                 changedFields = buildReprocessDiff(
                     before,
                     currentBaseEntry,

@@ -608,6 +608,7 @@ export const de = Object.freeze({
   "entry.ai.mode_fill": "Fehlendes ergänzen",
   "entry.ai.mode_reanalyze": "Neu analysieren",
   "entry.ai.mode_recalculate": "Neu berechnen",
+  "entry.ai.mode_recalculate_hint": "Schätzt die Gesamtwerte anhand der aktuellen Zutatenmischung neu — deine Bearbeitungen bleiben, nur die Zahlen ändern sich.",
   "entry.ai.missing_line": "Fehlt: {labels}",
 
   "entry.correct_action": "Mit KI korrigieren",
