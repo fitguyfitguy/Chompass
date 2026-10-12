@@ -201,7 +201,7 @@ internal fun SettingsAiSection(
                     SettingRow(
                         stringResource(R.string.settings_max_tokens),
                         if (ui.activeProfile?.maxResponseTokens == null) {
-                            stringResource(R.string.settings_ai_value_default, LocaleFormat.integer(ui.maxResponseTokens))
+                            stringResource(R.string.settings_ai_value_default, ui.maxResponseTokens)
                         } else {
                             LocaleFormat.integer(ui.maxResponseTokens)
                         },
