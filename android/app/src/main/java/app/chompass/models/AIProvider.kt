@@ -224,6 +224,51 @@ enum class AIProvider {
         CUSTOM_OPENAI -> R.string.ai_key_placeholder_custom
         else -> R.string.api_key_placeholder
     }
+    /** Picker grouping; declaration order = display order. */
+    enum class ProviderGroup { RECOMMENDED, CLOUD, LOCAL, DEVICE }
+
+    val group: ProviderGroup get() = when (this) {
+        GEMINI -> ProviderGroup.RECOMMENDED
+        OPENAI, ANTHROPIC, XAI, OPENROUTER, TOGETHER_AI, GROQ, HUGGING_FACE,
+        FIREWORKS, DEEP_INFRA, MISTRAL -> ProviderGroup.CLOUD
+        OLLAMA, CUSTOM_OPENAI -> ProviderGroup.LOCAL
+        ON_DEVICE -> ProviderGroup.DEVICE
+    }
+
+    /** One-line description under the provider name in pickers. */
+    @get:StringRes
+    val subtitleRes: Int get() = when (this) {
+        GEMINI -> R.string.ai_provider_subtitle_gemini
+        OPENAI -> R.string.ai_provider_subtitle_openai
+        ANTHROPIC -> R.string.ai_provider_subtitle_anthropic
+        XAI -> R.string.ai_provider_subtitle_xai
+        OPENROUTER -> R.string.ai_provider_subtitle_openrouter
+        TOGETHER_AI -> R.string.ai_provider_subtitle_together
+        GROQ -> R.string.ai_provider_subtitle_groq
+        HUGGING_FACE -> R.string.ai_provider_subtitle_huggingface
+        FIREWORKS -> R.string.ai_provider_subtitle_fireworks
+        DEEP_INFRA -> R.string.ai_provider_subtitle_deepinfra
+        MISTRAL -> R.string.ai_provider_subtitle_mistral
+        OLLAMA -> R.string.ai_provider_subtitle_ollama
+        CUSTOM_OPENAI -> R.string.ai_provider_subtitle_custom
+        ON_DEVICE -> R.string.ai_provider_on_device_subtitle
+    }
+
+    /** Where to get an API key; null for local / self-hosted / on-device. */
+    val signupUrl: String? get() = when (this) {
+        GEMINI -> "https://aistudio.google.com/apikey"
+        OPENAI -> "https://platform.openai.com/api-keys"
+        ANTHROPIC -> "https://console.anthropic.com/settings/keys"
+        XAI -> "https://console.x.ai"
+        OPENROUTER -> "https://openrouter.ai/keys"
+        TOGETHER_AI -> "https://api.together.ai/settings/api-keys"
+        GROQ -> "https://console.groq.com/keys"
+        HUGGING_FACE -> "https://huggingface.co/settings/tokens"
+        FIREWORKS -> "https://fireworks.ai/api-keys"
+        DEEP_INFRA -> "https://deepinfra.com/dash/keys"
+        MISTRAL -> "https://console.mistral.ai/api-keys"
+        OLLAMA, CUSTOM_OPENAI, ON_DEVICE -> null
+    }
 
     enum class ApiFormat { GEMINI, OPENAI_COMPATIBLE, ANTHROPIC, ON_DEVICE }
 

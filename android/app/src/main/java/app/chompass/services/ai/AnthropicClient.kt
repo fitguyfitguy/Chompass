@@ -211,6 +211,28 @@ object AnthropicClient {
         return AnthropicResponseParser.parse(bodyStr).text ?: throw AiError.InvalidResponse
     }
 
+    /**
+     * Lightweight BYOK probe: GET /models with the same header pair the chat
+     * calls use. Success means the key is accepted; does not run a completion.
+     */
+    suspend fun validateApiKey(
+        client: OkHttpClient,
+        baseUrl: String,
+        apiKey: String,
+    ) {
+        val url = "${baseUrl.trimEnd('/')}/models"
+        RetryPolicy.execute {
+            client.newCall(
+                Request.Builder()
+                    .url(url)
+                    .addHeader("x-api-key", apiKey)
+                    .addHeader("anthropic-version", API_VERSION)
+                    .get()
+                    .build()
+            )
+        }
+    }
+
     private fun compactRetryPrompt(prompt: String, maxTokens: Int): String =
         "$prompt\n\nIMPORTANT: The previous response was truncated. Return only the requested compact JSON object, with no reasoning, explanation, or markdown. Keep the complete response under $maxTokens tokens."
 }

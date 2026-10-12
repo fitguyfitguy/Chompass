@@ -1,5 +1,6 @@
 package app.chompass.ui.settings
 
+import androidx.annotation.StringRes
 import app.chompass.data.GoalRecalcTierOverride
 import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.data.WeatherRepository
@@ -88,6 +89,13 @@ import app.chompass.ui.theme.AppThemeColor
 import app.chompass.ui.theme.macroAccentColor
 import java.time.Instant
 
+@StringRes
+private fun providerGroupLabelRes(group: AIProvider.ProviderGroup): Int = when (group) {
+    AIProvider.ProviderGroup.RECOMMENDED -> R.string.ai_provider_group_recommended
+    AIProvider.ProviderGroup.CLOUD -> R.string.ai_provider_group_cloud
+    AIProvider.ProviderGroup.LOCAL -> R.string.ai_provider_group_local
+    AIProvider.ProviderGroup.DEVICE -> R.string.ai_provider_group_device
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SettingsSheets(
@@ -158,15 +166,12 @@ internal fun SettingsSheets(
             when (sheet) {
                 SettingsSheet.AI_PROVIDER -> ListSheet(
                     title = stringResource(R.string.sheet_ai_provider),
-                    items = AIProvider.values().filter { it != AIProvider.ON_DEVICE || ui.onDeviceAvailable },
+                    items = AIProvider.values()
+                        .filter { it != AIProvider.ON_DEVICE || ui.onDeviceAvailable }
+                        .sortedBy { it.group.ordinal },
                     label = { stringResource(it.displayNameRes) },
-                    subtitle = { provider ->
-                        if (provider == AIProvider.ON_DEVICE) {
-                            stringResource(R.string.ai_provider_on_device_subtitle)
-                        } else {
-                            null
-                        }
-                    },
+                    subtitle = { stringResource(it.subtitleRes) },
+                    sectionHeader = { stringResource(providerGroupLabelRes(it.group)) },
                     selected = { it == ui.activeProvider },
                     onSelect = { vm.setProfileProvider(it); onDismiss() }
                 )
@@ -216,7 +221,7 @@ internal fun SettingsSheets(
                     } else null,
                     onDismiss = onDismiss
                 )
-                SettingsSheet.OPENROUTER_REASONING -> ListSheet(
+                SettingsSheet.AI_REASONING_EFFORT -> ListSheet(
                     title = stringResource(R.string.settings_ai_reasoning_effort),
                     items = OpenRouterReasoningEffort.entries,
                     label = { stringResource(it.displayNameRes) },
@@ -255,6 +260,12 @@ internal fun SettingsSheets(
                 SettingsSheet.API_KEY -> ApiKeySheet(
                     title = stringResource(R.string.sheet_api_key_format, stringResource(ui.activeProvider.displayNameRes)),
                     placeholder = stringResource(ui.activeProvider.apiKeyPlaceholderRes),
+                    initial = vm.currentProfileApiKey().orEmpty(),
+                    signupUrl = ui.activeProvider.signupUrl,
+                    onTest = { vm.testProfileApiKey(it) },
+                    testing = ui.apiKeyTesting,
+                    testOk = ui.apiKeyTestOk,
+                    testMessage = ui.apiKeyTestMessage,
                     onSave = { vm.setProfileApiKey(it); onDismiss() },
                     onDismiss = onDismiss
                 )

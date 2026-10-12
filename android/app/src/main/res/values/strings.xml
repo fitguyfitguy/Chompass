@@ -174,6 +174,36 @@
     <string name="ai_provider_custom">Custom (OpenAI-compatible)</string>
     <string name="ai_provider_on_device">On-Device (Private)</string>
     <string name="ai_provider_on_device_subtitle">Private and offline. Less accurate than cloud AI; ~2 to 4 GB download</string>
+    <string name="ai_provider_subtitle_gemini">Free API key · works out of the box</string>
+    <string name="ai_provider_subtitle_openai">GPT models</string>
+    <string name="ai_provider_subtitle_anthropic">Claude models</string>
+    <string name="ai_provider_subtitle_xai">Grok models</string>
+    <string name="ai_provider_subtitle_openrouter">One key, hundreds of models</string>
+    <string name="ai_provider_subtitle_together">Hosted open models</string>
+    <string name="ai_provider_subtitle_groq">Fast inference, free tier</string>
+    <string name="ai_provider_subtitle_huggingface">Hosted open models</string>
+    <string name="ai_provider_subtitle_fireworks">Hosted open models</string>
+    <string name="ai_provider_subtitle_deepinfra">Hosted open models</string>
+    <string name="ai_provider_subtitle_mistral">Mistral models</string>
+    <string name="ai_provider_subtitle_ollama">Your computer, no cloud</string>
+    <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp…</string>
+
+    <!-- AI provider picker groups (settings sheet + onboarding order) -->
+    <string name="ai_provider_group_recommended">Recommended</string>
+    <string name="ai_provider_group_cloud">Cloud providers</string>
+    <string name="ai_provider_group_local">Local &amp; self-hosted</string>
+    <string name="ai_provider_group_device">On-device</string>
+
+    <string name="settings_section_ai_profile">Profile</string>
+    <string name="settings_section_ai_connection">Connection</string>
+    <string name="settings_section_ai_advanced">Advanced</string>
+    <string name="settings_ai_key_test">Test</string>
+    <string name="settings_ai_key_test_failed">Key rejected: %1$s</string>
+    <string name="settings_ai_key_remove_title">Remove API key?</string>
+    <string name="settings_ai_key_remove_body">Saving an empty key clears the stored key for this profile.</string>
+    <string name="settings_ai_get_key">Get API key</string>
+    <string name="settings_ai_value_default">%1$,d (default)</string>
+    <string name="settings_ai_timeout_default">%1$,ds (default)</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="api_key_placeholder">Paste your API key</string>

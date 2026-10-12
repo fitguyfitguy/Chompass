@@ -10,12 +10,14 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **Named AI profiles** (Android): Settings → AI now manages saved profiles instead of one global provider slot. Each profile carries its own provider, model, vision model, base URL, and API key, and one active profile drives every AI feature. Switching profiles no longer resets your model, and more than one custom OpenAI-compatible endpoint can exist side by side. An optional fallback profile replaces the old separate fallback provider fields.
 - **Run a queued entry with a different profile** (Android): entries in the analysis queue get a Run with action that picks any saved profile for that one run, and each row shows which profile and model last tried it. The globally selected profile is not touched.
+- **Grouped provider picker and in-settings key test** (Android): Settings → AI is now split into Profile, Connection, and Advanced sections. The provider picker groups providers into Recommended, Cloud, Local, and On-device with a one-line description each and a link to get an API key, and the key sheet can test a key on the spot instead of only during onboarding. Advanced options (response length, read timeout, reasoning effort, Google Search grounding) are saved per profile, so an Ollama profile can keep a long timeout while a cloud profile stays at the default, and each row shows whether the value is the profile's own or the default.
 
 ### Fixed
 
 - **Adding a profile no longer overwrites the current one** (Android): the provider picker opens only after the new profile is saved, so picking Custom right away configures the new profile instead of rewriting the previous profile's provider, model, and endpoint. Changing a profile's provider also clears that profile's saved key, so a key saved for one provider is not sent to a different provider's host.
 - **Switching profiles no longer shows the previous endpoint's models** (Android): the model list from one custom or Ollama host is dropped as soon as the active profile or its base URL changes, so the sheet shows the new host's models or a loading row instead.
 - **AI settings no longer snap back to the previous profile** (Android): on a cold start, adding a profile and picking its provider could be undone on screen seconds later, showing the old profile's name, model and key while the new one was already saved. The screen now follows the stored profile.
+- **Empty key save no longer silently clears the stored API key** (Android): the key sheet opens with the saved key already filled in, and saving an empty one asks for confirmation before erasing it.
 
 ## [5.5.2] - 2026-10-11
 

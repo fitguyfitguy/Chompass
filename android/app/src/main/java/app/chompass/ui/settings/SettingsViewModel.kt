@@ -57,6 +57,13 @@ import app.chompass.services.WaterReminderPlanner
 import app.chompass.services.WeightAnalysisService
 import app.chompass.services.ai.AiError
 import app.chompass.services.ai.userMessage
+import app.chompass.services.ai.AiHttp
+import app.chompass.services.ai.AnthropicClient
+import app.chompass.services.ai.FoodAnalysisService
+import app.chompass.services.ai.GeminiClient
+import app.chompass.services.ai.OpenAiModelsClient
+import app.chompass.data.effectiveMaxResponseTokens
+import app.chompass.data.effectiveReadTimeoutSeconds
 import app.chompass.services.health.HealthConnectManager
 import app.chompass.services.health.HealthSyncWorker
 import app.chompass.services.weather.OmCity
@@ -179,6 +186,10 @@ data class SettingsUiState(
     val optionalNutrientEstimateAlertMessage: String? = null,
     val apiKeyMasked: String = "",
     val speechApiKeyMasked: String = "",
+    /** Settings key-test probe: in-flight flag + last result; reset on profile/provider change. */
+    val apiKeyTesting: Boolean = false,
+    val apiKeyTestOk: Boolean? = null,
+    val apiKeyTestMessage: String? = null,
     /** Rollout gate + device capability — whether ON_DEVICE should appear as a selectable provider. */
     val onDeviceAvailable: Boolean = false,
     /** ON_DEVICE model ids this device can actually run (E4B gated by the 7 GiB usable-RAM floor). */
@@ -823,36 +834,41 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         { copy(userContext = value.trim()) },
     )
 
+    /** Advanced knobs write the ACTIVE PROFILE's override field; global prefs stay as fallback. */
     fun setMaxResponseTokens(v: Int) {
         val clamped = app.chompass.data.clampMaxResponseTokens(v)
-        updateUiPref(
-            { container.prefs.setMaxResponseTokens(clamped) },
-            { copy(maxResponseTokens = clamped) },
-        )
+        viewModelScope.launch {
+            container.prefs.editActiveProfile { it.copy(maxResponseTokens = clamped) }
+            refreshAiState()
+        }
     }
 
     fun setAiReadTimeoutSeconds(v: Int) {
         val clamped = app.chompass.data.clampAiReadTimeoutSeconds(v)
-        updateUiPref(
-            { container.prefs.setAiReadTimeoutSeconds(clamped) },
-            { copy(aiReadTimeoutSeconds = clamped) },
-        )
+        viewModelScope.launch {
+            container.prefs.editActiveProfile { it.copy(readTimeoutSeconds = clamped) }
+            refreshAiState()
+        }
     }
 
-    fun setGeminiGoogleSearchEnabled(v: Boolean) = updateUiPref(
-        { container.prefs.setGeminiGoogleSearchEnabled(v) },
-        { copy(geminiGoogleSearchEnabled = v) },
-    )
+    fun setGeminiGoogleSearchEnabled(v: Boolean) {
+        viewModelScope.launch {
+            container.prefs.editActiveProfile { it.copy(geminiGoogleSearch = v) }
+            refreshAiState()
+        }
+    }
 
     fun setFillMissingRemindersEnabled(v: Boolean) = updateUiPref(
         { container.prefs.setFillMissingBannerDisabled(!v) },
         { copy(fillMissingRemindersEnabled = v) },
     )
 
-    fun setOpenRouterReasoningEffort(e: OpenRouterReasoningEffort) = updateUiPref(
-        { container.prefs.setOpenRouterReasoningEffort(e) },
-        { copy(openRouterReasoningEffort = e) },
-    )
+    fun setOpenRouterReasoningEffort(e: OpenRouterReasoningEffort) {
+        viewModelScope.launch {
+            container.prefs.editActiveProfile { it.copy(reasoningEffort = e.storageKey) }
+            refreshAiState()
+        }
+    }
 
     fun setGoalRecalcTier(v: GoalRecalcTierOverride) = updateUiPref(
         { container.prefs.setGoalRecalcTier(v) },
@@ -1035,6 +1051,15 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             apiKeyMasked = runCatching {
                 maskKey(active?.let { container.keyStore.profileApiKey(it.id) })
             }.getOrDefault(""),
+            maxResponseTokens = effectiveMaxResponseTokens(active, container.prefs.maxResponseTokens.first()),
+            aiReadTimeoutSeconds = effectiveReadTimeoutSeconds(active, container.prefs.aiReadTimeoutSeconds.first()),
+            geminiGoogleSearchEnabled = active?.geminiGoogleSearch
+                ?: container.prefs.geminiGoogleSearchEnabled.first(),
+            openRouterReasoningEffort = active?.reasoningEffort?.let(OpenRouterReasoningEffort::fromStorage)
+                ?: container.prefs.openRouterReasoningEffort.first(),
+            apiKeyTesting = false,
+            apiKeyTestOk = null,
+            apiKeyTestMessage = null,
             onDeviceModels = models,
             // Fetched lists belong to the endpoint they came from: drop them on every
             // profile/endpoint change so a second custom or Ollama profile never shows
@@ -1139,6 +1164,67 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val trimmed = raw.trim().takeIf { it.isNotEmpty() }
             container.keyStore.setProfileApiKey(active.id, trimmed)
             _ui.value = _ui.value.copy(apiKeyMasked = maskKey(trimmed))
+        }
+    }
+
+    /** Stored key of the active profile, for the key sheet's prefill (synchronous read). */
+    fun currentProfileApiKey(): String? =
+        _ui.value.activeProfile?.let { container.keyStore.profileApiKey(it.id) }
+
+    /**
+     * Settings-side API-key probe, routed by the active provider's API format:
+     * GeminiClient / AnthropicClient validate, or a /v1/models fetch for every
+     * OpenAI-compatible host (profile base URL for Custom/Ollama).
+     */
+    fun testProfileApiKey(raw: String) {
+        val key = raw.trim()
+        val active = _ui.value.activeProfile
+        if (key.isEmpty() || active == null) return
+        val provider = active.provider
+        if (provider.apiFormat == AIProvider.ApiFormat.ON_DEVICE) return
+        viewModelScope.launch {
+            _ui.value = _ui.value.copy(apiKeyTesting = true, apiKeyTestOk = null, apiKeyTestMessage = null)
+            val result = withContext(Dispatchers.IO) {
+                runCatching {
+                    when (provider.apiFormat) {
+                        AIProvider.ApiFormat.GEMINI -> GeminiClient.validateApiKey(
+                            client = FoodAnalysisService.defaultClient,
+                            baseUrl = AIProvider.GEMINI.baseUrl,
+                            apiKey = key,
+                        )
+                        AIProvider.ApiFormat.ANTHROPIC -> AnthropicClient.validateApiKey(
+                            client = FoodAnalysisService.defaultClient,
+                            baseUrl = AIProvider.ANTHROPIC.baseUrl,
+                            apiKey = key,
+                        )
+                        else -> {
+                            val base = active.baseUrl?.takeIf { it.isNotEmpty() }
+                                ?.let(AiHttp::normalizeCustomBaseUrl) ?: provider.baseUrl
+                            OpenAiModelsClient.listModelsWithMeta(base, key, _ui.value.allowInsecureHttp)
+                        }
+                    }
+                }
+            }
+            if (result.isSuccess) {
+                _ui.value = _ui.value.copy(
+                    apiKeyTesting = false,
+                    apiKeyTestOk = true,
+                    apiKeyTestMessage = container.appContext.getString(R.string.onboarding_api_key_works),
+                )
+            } else {
+                val err = result.exceptionOrNull()
+                val message = if (err is AiError.Network) {
+                    container.appContext.getString(R.string.onboarding_api_key_network)
+                } else {
+                    val detail = (err as? AiError)?.userMessage(container.appContext)
+                        ?: err?.message?.takeIf { it.isNotBlank() }
+                    container.appContext.getString(
+                        R.string.settings_ai_key_test_failed,
+                        detail ?: container.appContext.getString(R.string.ai_error_provider_error),
+                    )
+                }
+                _ui.value = _ui.value.copy(apiKeyTesting = false, apiKeyTestOk = false, apiKeyTestMessage = message)
+            }
         }
     }
 

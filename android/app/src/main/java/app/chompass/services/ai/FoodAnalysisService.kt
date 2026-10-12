@@ -6,6 +6,8 @@ import app.chompass.data.AiCallConfig
 import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.data.GoalRecalcTierOverride
 import app.chompass.data.PreferencesStore
+import app.chompass.data.effectiveMaxResponseTokens
+import app.chompass.data.effectiveReadTimeoutSeconds
 import app.chompass.data.defaultAiProfileSnapshot
 import app.chompass.models.AIProvider
 import app.chompass.models.AiProfile
@@ -1685,8 +1687,8 @@ class FoodAnalysisService(
         val primaryKey = keyLookup?.invoke(ap)
             ?: AiHttp.sanitizeApiKey(keyStore!!.profileApiKey(ap.id))
         if (primary.requiresApiKey && primaryKey.isNullOrEmpty()) throw AiError.NoApiKey
-        val maxTokens = prefs.maxResponseTokens.first()
-        val readTimeoutSeconds = prefs.aiReadTimeoutSeconds.first()
+        val maxTokens = effectiveMaxResponseTokens(ap, prefs.maxResponseTokens.first())
+        val readTimeoutSeconds = effectiveReadTimeoutSeconds(ap, prefs.aiReadTimeoutSeconds.first())
         val httpClient = AiHttp.clientForProvider(okHttp, primary, readTimeoutSeconds)
         val context = prefs.userContext.first()
         val languageLine = nonEnglishResponseLanguage()?.let {

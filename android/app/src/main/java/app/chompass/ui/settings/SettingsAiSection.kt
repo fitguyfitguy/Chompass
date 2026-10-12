@@ -48,7 +48,7 @@ internal fun SettingsAiSection(
     onOpenSheet: (SettingsSheet) -> Unit,
 ) {
     var confirmDeleteProfile by remember { mutableStateOf(false) }
-    SectionCard(title = stringResource(R.string.settings_section_ai)) {
+    SectionCard(title = stringResource(R.string.settings_section_ai_profile)) {
                 // Phase 2 of Codeberg #20: the master AI-features switch. When
                 // off, nothing is sent to any LLM provider (gated at the service
                 // choke points) and every AI entry point is hidden.
@@ -77,53 +77,8 @@ internal fun SettingsAiSection(
                     }
                 )
                 HorizontalDivider()
-                SettingRow(stringResource(R.string.settings_ai_model), ui.activeModel.ifEmpty { stringResource(R.string.settings_ai_model_unset) }, icon = Icons.Outlined.Tune) { onOpenSheet(SettingsSheet.AI_MODEL) }
-                // Vision-model slot: OpenAI-compatible hosts are where text-only
-                // ids can be picked/typed; curated Gemini/OpenAI/Anthropic lineups
-                // are all multimodal (#195).
-                if (ui.activeProvider.apiFormat == AIProvider.ApiFormat.OPENAI_COMPATIBLE) {
-                    HorizontalDivider()
-                    SettingRow(
-                        stringResource(R.string.settings_ai_vision_model),
-                        ui.activeProfile?.visionModel.orEmpty().ifEmpty { stringResource(R.string.settings_ai_vision_model_unset) },
-                        icon = Icons.Outlined.Tune,
-                    ) { onOpenSheet(SettingsSheet.VISION_MODEL) }
-                }
-                val showReasoningEffort = OpenAICompatibleClient.usesReasoningEffort(ui.activeProvider) ||
-                    (ui.fallbackEnabled && ui.fallbackProfile?.provider?.let { OpenAICompatibleClient.usesReasoningEffort(it) } == true)
-                if (showReasoningEffort) {
-                    HorizontalDivider()
-                    SettingRow(
-                        stringResource(R.string.settings_ai_reasoning_effort),
-                        stringResource(ui.openRouterReasoningEffort.displayNameRes),
-                        icon = Icons.Outlined.Tune,
-                    ) { onOpenSheet(SettingsSheet.OPENROUTER_REASONING) }
-                }
-                if (ui.activeProvider.requiresApiKey) {
-                    HorizontalDivider()
-                    SettingRow(stringResource(R.string.settings_api_key), ui.apiKeyMasked.ifEmpty { stringResource(R.string.settings_not_set) }, icon = Icons.Outlined.Key) { onOpenSheet(SettingsSheet.API_KEY) }
-                }
-                if (ui.activeProvider.requiresCustomEndpoint || ui.activeProvider == AIProvider.OLLAMA) {
-                    HorizontalDivider()
-                    SettingRow(
-                        if (ui.activeProvider.requiresCustomEndpoint) stringResource(R.string.settings_base_url) else stringResource(R.string.settings_server_url),
-                        ui.activeProfile?.baseUrl.orEmpty().ifEmpty { stringResource(R.string.settings_not_set) },
-                        icon = Icons.Outlined.Link
-                    ) { onOpenSheet(SettingsSheet.CUSTOM_BASE_URL) }
-                    // Issue #8 follow-up: release builds allow cleartext only via this
-                    // opt-in; the AI layer rejects http:// URLs while it is off.
-                    HorizontalDivider()
-                    ToggleRow(
-                        stringResource(R.string.settings_ai_allow_insecure_http),
-                        ui.allowInsecureHttp,
-                        icon = Icons.Outlined.Warning,
-                        onChange = { vm.setAllowInsecureHttp(it) }
-                    )
-                    SettingFootnote(stringResource(R.string.settings_ai_allow_insecure_http_footer))
-                }
                 // Profile management: add / rename / delete. Delete needs a second
                 // profile to switch to, so it hides on the last one.
-                HorizontalDivider()
                 SettingRow(stringResource(R.string.settings_profile_add), "", icon = Icons.Outlined.Add) { onOpenSheet(SettingsSheet.ADD_PROFILE_NAME) }
                 SettingRow(stringResource(R.string.settings_profile_rename), ui.activeProfile?.name.orEmpty(), icon = Icons.Outlined.Edit) { onOpenSheet(SettingsSheet.PROFILE_RENAME) }
                 if (ui.profiles.size > 1) {
@@ -170,40 +125,114 @@ internal fun SettingsAiSection(
                         stringResource(R.string.on_device_model_leftover_footer, leftoverGb(leftoverBytes))
                     )
                 }
-                // Only OpenAI-compatible + Anthropic send a token cap; Gemini is left
-                // uncapped and on-device dispatch doesn't take one at all, so hide this
-                // for both.
-                if (ui.activeProvider.apiFormat != AIProvider.ApiFormat.GEMINI && ui.activeProvider != AIProvider.ON_DEVICE) {
+    }
+    SectionCard(title = stringResource(R.string.settings_section_ai_connection)) {
+                // Provider picker: grouped Recommended / Cloud / Local / On-device
+                // with one-line subtitles (ListSheet sectionHeader).
+                SettingRow(
+                    stringResource(R.string.settings_ai_provider),
+                    stringResource(ui.activeProvider.displayNameRes),
+                    icon = Icons.Outlined.SmartToy
+                ) { onOpenSheet(SettingsSheet.AI_PROVIDER) }
+                HorizontalDivider()
+                SettingRow(stringResource(R.string.settings_ai_model), ui.activeModel.ifEmpty { stringResource(R.string.settings_ai_model_unset) }, icon = Icons.Outlined.Tune) { onOpenSheet(SettingsSheet.AI_MODEL) }
+                if (ui.activeProvider.requiresApiKey) {
+                    HorizontalDivider()
+                    // ✓/✗ mirrors the fresh key-test result from the key sheet.
+                    val keySubtitle = ui.apiKeyMasked.ifEmpty { stringResource(R.string.settings_not_set) } +
+                        when (ui.apiKeyTestOk) {
+                            true -> "  ✓"
+                            false -> "  ✗"
+                            null -> ""
+                        }
+                    SettingRow(stringResource(R.string.settings_api_key), keySubtitle, icon = Icons.Outlined.Key) { onOpenSheet(SettingsSheet.API_KEY) }
+                }
+                if (ui.activeProvider.requiresCustomEndpoint || ui.activeProvider == AIProvider.OLLAMA) {
                     HorizontalDivider()
                     SettingRow(
+                        if (ui.activeProvider.requiresCustomEndpoint) stringResource(R.string.settings_base_url) else stringResource(R.string.settings_server_url),
+                        ui.activeProfile?.baseUrl.orEmpty().ifEmpty { stringResource(R.string.settings_not_set) },
+                        icon = Icons.Outlined.Link
+                    ) { onOpenSheet(SettingsSheet.CUSTOM_BASE_URL) }
+                    // Issue #8 follow-up: release builds allow cleartext only via this
+                    // opt-in; the AI layer rejects http:// URLs while it is off.
+                    HorizontalDivider()
+                    ToggleRow(
+                        stringResource(R.string.settings_ai_allow_insecure_http),
+                        ui.allowInsecureHttp,
+                        icon = Icons.Outlined.Warning,
+                        onChange = { vm.setAllowInsecureHttp(it) }
+                    )
+                    SettingFootnote(stringResource(R.string.settings_ai_allow_insecure_http_footer))
+                }
+    }
+    SectionCard(title = stringResource(R.string.settings_section_ai_advanced)) {
+                // Advanced knobs are stored per profile; subtitles show the
+                // effective value with "(default)" while the profile has no override.
+                val showVisionModel = ui.activeProvider != AIProvider.ON_DEVICE
+                val showReasoningEffort = OpenAICompatibleClient.usesReasoningEffort(ui.activeProvider)
+                val showMaxTokens = ui.activeProvider.apiFormat != AIProvider.ApiFormat.GEMINI &&
+                    ui.activeProvider != AIProvider.ON_DEVICE
+                val showReadTimeout = ui.activeProvider != AIProvider.ON_DEVICE
+                val showGoalTier = ui.activeProvider.usesConfigurableRequestTimeout
+                val showGeminiSearch = ui.activeProvider == AIProvider.GEMINI
+                val showFillMissing = FillGapsFeature.ENABLED && ui.aiFeaturesEnabled
+                // Vision-model slot: routing is provider-generic (resolveModelForRequest),
+                // so any non-on-device provider can pin a separate vision model.
+                if (showVisionModel) {
+                    SettingRow(
+                        stringResource(R.string.settings_ai_vision_model),
+                        ui.activeProfile?.visionModel.orEmpty().ifEmpty { stringResource(R.string.settings_ai_vision_model_unset) },
+                        icon = Icons.Outlined.Tune,
+                    ) { onOpenSheet(SettingsSheet.VISION_MODEL) }
+                }
+                if (showReasoningEffort) {
+                    if (showVisionModel) HorizontalDivider()
+                    SettingRow(
+                        stringResource(R.string.settings_ai_reasoning_effort),
+                        stringResource(ui.openRouterReasoningEffort.displayNameRes),
+                        icon = Icons.Outlined.Tune,
+                    ) { onOpenSheet(SettingsSheet.AI_REASONING_EFFORT) }
+                }
+                // Only OpenAI-compatible + Anthropic send a token cap; Gemini is left
+                // uncapped and on-device dispatch doesn't take one at all.
+                if (showMaxTokens) {
+                    if (showVisionModel || showReasoningEffort) HorizontalDivider()
+                    SettingRow(
                         stringResource(R.string.settings_max_tokens),
-                        ui.maxResponseTokens.toString(),
+                        if (ui.activeProfile?.maxResponseTokens == null) {
+                            stringResource(R.string.settings_ai_value_default, LocaleFormat.integer(ui.maxResponseTokens))
+                        } else {
+                            LocaleFormat.integer(ui.maxResponseTokens)
+                        },
                         icon = Icons.Outlined.Numbers
                     ) { onOpenSheet(SettingsSheet.MAX_TOKENS) }
                 }
-                if (ui.activeProvider != AIProvider.ON_DEVICE) {
-                    HorizontalDivider()
+                if (showReadTimeout) {
+                    if (showVisionModel || showReasoningEffort || showMaxTokens) HorizontalDivider()
                     SettingRow(
                         stringResource(R.string.settings_ai_read_timeout),
-                        stringResource(R.string.settings_ai_read_timeout_value, ui.aiReadTimeoutSeconds),
+                        if (ui.activeProfile?.readTimeoutSeconds == null) {
+                            stringResource(R.string.settings_ai_timeout_default, ui.aiReadTimeoutSeconds)
+                        } else {
+                            stringResource(R.string.settings_ai_read_timeout_value, ui.aiReadTimeoutSeconds)
+                        },
                         icon = Icons.Outlined.Speed
                     ) { onOpenSheet(SettingsSheet.AI_READ_TIMEOUT) }
                 }
                 // #123: only the user-entered endpoints (Ollama / Custom
                 // OpenAI-compatible) host models the AUTO tier rules can't
                 // classify by name, so the manual override row shows there.
-                if (ui.activeProvider.usesConfigurableRequestTimeout) {
-                    HorizontalDivider()
+                if (showGoalTier) {
+                    if (showVisionModel || showReasoningEffort || showMaxTokens || showReadTimeout) HorizontalDivider()
                     SettingRow(
                         stringResource(R.string.settings_goal_tier),
                         stringResource(ui.goalRecalcTier.displayNameRes),
                         icon = Icons.Outlined.Tune,
                     ) { onOpenSheet(SettingsSheet.GOAL_RECALC_TIER) }
                 }
-                val showGeminiSearch = ui.activeProvider == AIProvider.GEMINI ||
-                    (ui.fallbackEnabled && ui.fallbackProfile?.provider == AIProvider.GEMINI)
                 if (showGeminiSearch) {
-                    HorizontalDivider()
+                    if (showVisionModel || showReasoningEffort || showMaxTokens || showReadTimeout || showGoalTier) HorizontalDivider()
                     ToggleRow(
                         stringResource(R.string.settings_gemini_google_search),
                         ui.geminiGoogleSearchEnabled,
@@ -215,10 +244,10 @@ internal fun SettingsAiSection(
                 // AI fill-missing: reminders toggle (the forever opt-out) and
                 // a stable entry point into the gaps sheet — always visible
                 // while the feature is on, count shown as-is (incl. 0).
-                if (FillGapsFeature.ENABLED && ui.aiFeaturesEnabled) {
+                if (showFillMissing) {
                     val gapScan by vm.container.fillGapsEngine.scan.collectAsState(initial = null)
                     val gapCount = gapScan?.count ?: 0
-                    HorizontalDivider()
+                    if (showVisionModel || showReasoningEffort || showMaxTokens || showReadTimeout || showGoalTier || showGeminiSearch) HorizontalDivider()
                     ToggleRow(
                         stringResource(R.string.settings_fill_missing_reminders),
                         ui.fillMissingRemindersEnabled,

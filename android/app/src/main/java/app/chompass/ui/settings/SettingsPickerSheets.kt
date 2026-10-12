@@ -1,4 +1,6 @@
 package app.chompass.ui.settings
+import android.content.Intent
+import android.net.Uri
 
 import app.chompass.ui.components.ChompassPrimaryButton
 import androidx.compose.foundation.background
@@ -17,12 +19,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -116,6 +119,8 @@ internal fun <T> ListSheet(
     onSelect: (T) -> Unit,
     icon: ((T) -> ImageVector?)? = null,
     subtitle: (@Composable (T) -> String?)? = null,
+    /** Group label for an item; rendered above the first item of each distinct group. */
+    sectionHeader: (@Composable (T) -> String?)? = null,
     footer: String? = null,
     customField: ((String) -> Unit)? = null,
     /** Composable leading slot (e.g. a color swatch) rendered before the label; overrides [icon]. */
@@ -127,10 +132,23 @@ internal fun <T> ListSheet(
     Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(12.dp))
     LazyColumn(Modifier.fillMaxWidth().heightIn(max = 420.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        items(items) { item ->
+        itemsIndexed(items) { index, item ->
             val isSel = selected(item)
             val rowIcon = icon?.invoke(item)
             val sub = subtitle?.invoke(item)
+            val header = sectionHeader?.invoke(item)
+            Column(Modifier.fillMaxWidth()) {
+            if (!header.isNullOrBlank() &&
+                (index == 0 || sectionHeader?.invoke(items[index - 1]) != header)
+            ) {
+                if (index > 0) Spacer(Modifier.height(6.dp))
+                Text(
+                    header,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                )
+                Spacer(Modifier.height(6.dp))
+            }
             val shape = MaterialTheme.shapes.medium
             Row(
                 Modifier
@@ -175,6 +193,7 @@ internal fun <T> ListSheet(
                     )
                 }
             }
+            }
         }
     }
     if (customField != null) {
@@ -199,8 +218,25 @@ internal fun <T> ListSheet(
 }
 
 @Composable
-internal fun ApiKeySheet(title: String, placeholder: String, onSave: (String) -> Unit, onDismiss: () -> Unit) {
-    var value by remember { mutableStateOf("") }
+internal fun ApiKeySheet(
+    title: String,
+    placeholder: String,
+    initial: String = "",
+    signupUrl: String? = null,
+    onTest: ((String) -> Unit)? = null,
+    testing: Boolean = false,
+    testOk: Boolean? = null,
+    testMessage: String? = null,
+    onSave: (String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var value by remember { mutableStateOf(initial) }
+    var confirmClear by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    // Saving an empty field over a stored key silently cleared it — confirm first.
+    fun save(v: String) {
+        if (v.isBlank() && initial.isNotBlank()) confirmClear = true else onSave(v)
+    }
     Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(12.dp))
     ChompassTextField(
@@ -212,10 +248,77 @@ internal fun ApiKeySheet(title: String, placeholder: String, onSave: (String) ->
         singleLine = true,
         modifier = Modifier.fillMaxWidth()
     )
+    if (signupUrl != null) {
+        Spacer(Modifier.height(8.dp))
+        TextButton(onClick = {
+            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(signupUrl)))
+        }) { Text(stringResource(R.string.settings_ai_get_key)) }
+    }
+    if (onTest != null) {
+        val resultLine = when {
+            testing -> stringResource(R.string.onboarding_api_key_testing)
+            testOk == true -> "✓ ${stringResource(R.string.onboarding_api_key_works)}"
+            testOk == false -> "✗ ${testMessage.orEmpty()}"
+            else -> null
+        }
+        if (resultLine != null) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                resultLine,
+                style = MaterialTheme.typography.bodySmall,
+                color = when (testOk) {
+                    true -> AppColors.SuccessLight
+                    false -> MaterialTheme.colorScheme.error
+                    else -> MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                }
+            )
+        }
+    }
     Spacer(Modifier.height(12.dp))
-    CancelSaveRow(onDismiss) { onSave(value) }
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ChompassTextButton(
+            text = stringResource(R.string.action_cancel),
+            onClick = onDismiss,
+            modifier = Modifier.weight(1f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+        )
+        if (onTest != null) {
+            TextButton(
+                onClick = { onTest(value) },
+                enabled = value.isNotBlank() && !testing,
+                modifier = Modifier.weight(1f),
+            ) {
+                if (testing) {
+                    CircularProgressIndicator(Modifier.size(14.dp), strokeWidth = 2.dp)
+                    Spacer(Modifier.width(6.dp))
+                }
+                Text(stringResource(R.string.settings_ai_key_test), style = MaterialTheme.typography.labelLarge)
+            }
+        }
+        ChompassPrimaryButton(flushDrafts = true, modifier = Modifier.weight(1f), onClick = { save(value) })
+    }
     Spacer(Modifier.height(4.dp))
     TextButton(onClick = { onSave("") }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.settings_clear_key)) }
+    if (confirmClear) {
+        AlertDialog(
+            onDismissRequest = { confirmClear = false },
+            title = { Text(stringResource(R.string.settings_ai_key_remove_title)) },
+            text = { Text(stringResource(R.string.settings_ai_key_remove_body)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmClear = false
+                    onSave("")
+                }) { Text(stringResource(R.string.action_delete)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmClear = false }) { Text(stringResource(R.string.action_cancel)) }
+            },
+        )
+    }
 }
 
 @Composable

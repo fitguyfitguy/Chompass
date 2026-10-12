@@ -29,4 +29,10 @@ data class AiProfile(
     val visionModel: String? = null,
     @Serializable(with = InstantSerializer::class)
     val createdAt: Instant,
+    /** Per-profile advanced overrides; null = fall back to the global preference. */
+    val maxResponseTokens: Int? = null,
+    val readTimeoutSeconds: Int? = null,
+    /** [app.chompass.data.OpenRouterReasoningEffort.storageKey]; null = global preference. */
+    val reasoningEffort: String? = null,
+    val geminiGoogleSearch: Boolean? = null,
 )
