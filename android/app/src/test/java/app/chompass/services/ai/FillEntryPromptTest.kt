@@ -15,7 +15,6 @@ import org.junit.Test
  * (which would scale a 400 g entry's fills ×4 in fillMissingFrom).
  */
 class FillEntryPromptTest {
-
     private fun gappedEntry() = FoodEntry(
         name = "Chicken bowl",
         calories = 0,

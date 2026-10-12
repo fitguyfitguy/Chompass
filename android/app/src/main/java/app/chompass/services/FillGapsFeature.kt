@@ -4,10 +4,11 @@ package app.chompass.services
  * Product gate for AI fill-missing (entry gaps: Home banner, FillGapsSheet,
  * Settings row, edit-sheet / favorite-editor / recipe-builder Fill missing).
  *
- * **WIP — disabled for release.** The engine, scan, sheet, and merge code stay
- * compiled and unit-tested; this flag only hides every user-facing entry
- * point. Flip to true when the fill-missing device pass is green.
+ * Enabled since the fill-missing rework: kind-scoped asks, grams-adapter,
+ * containment name matching, opt-in row diffs, "No new values returned"
+ * honesty, banner forever-opt-out (sheet action + Settings toggle), and
+ * Recalculate as an AI re-estimate over the edited mix.
  */
 object FillGapsFeature {
-    const val ENABLED: Boolean = false
+    const val ENABLED: Boolean = true
 }
