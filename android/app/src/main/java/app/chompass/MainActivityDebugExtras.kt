@@ -3,10 +3,14 @@ package app.chompass
 import android.content.Intent
 import app.chompass.debug.OnDeviceLlmDefaults
 import app.chompass.BuildConfig
+import app.chompass.services.DefectGroup
 
 /** Valid values for the `goal_matrix_tier` / `goal_matrix_provider` debug extras. */
 private val GOAL_MATRIX_TIERS = setOf("safe", "smart", "auto")
 private val GOAL_MATRIX_PROVIDERS = setOf("on_device", "gemini", "anthropic", "openai", "openrouter")
+
+/** Valid values for the `seed_profile_variant` debug extra. */
+private val PROFILE_VARIANTS = setOf("gain", "maintain", "pinned", "female")
 
 /**
  * Debug-only intent extras (seeders, benchmarks, on-device LLM smoke test).
@@ -39,6 +43,22 @@ internal data class DebugIntentActions(
     val seedAnalysisQueue: Boolean = false,
     /** Debug-only: one all-macro-zeros named diary row for the fill-missing device pass. */
     val seedGapFixture: Boolean = false,
+    /** Debug-only: install the stored-defect fixtures (all six groups). */
+    val seedDefects: Boolean = false,
+    /** Debug-only: fill-gaps defect rows (all-zero / partial rows, Mealie constituents). */
+    val defectGaps: Boolean = false,
+    /** Debug-only: stale + matching micros-composition signatures. */
+    val defectStaleMicros: Boolean = false,
+    /** Debug-only: legacy / hostile rows, unknown enum tokens, ceilings. */
+    val defectLegacy: Boolean = false,
+    /** Debug-only: whole-day gaps, untracked marks, note-only days. */
+    val defectDays: Boolean = false,
+    /** Debug-only: sparse reading windows, duplicates, absurd metrics. */
+    val defectMetrics: Boolean = false,
+    /** Debug-only: fasting session, empty quick kinds, tracker extremes. */
+    val defectTrackers: Boolean = false,
+    /** Debug-only: profile variant to apply ("gain" | "maintain" | "pinned" | "female"). */
+    val seedProfileVariant: String = "",
     /** Debug-only: reset the fill-missing banner once-per-day gate (device-pass reruns). */
     val resetFillMissingBanner: Boolean = false,
     /** Null = extra absent; Int = explicit today override (0 = measured-zero morning). */
@@ -109,6 +129,21 @@ internal data class DebugIntentActions(
             seedKetoSettings || seedActiveCalories || seedAnalysisQueue || seedMacroCycle
     /** Seeders that write onboarded=true before the heavy diary replace. */
     val writesOnboarded: Boolean get() = hasSeedAction
+
+    /**
+     * Stored-defect groups to install: the umbrella flag means all six, a
+     * sub-flag its own group, and both together the union.
+     */
+    val defectGroups: Set<DefectGroup>
+        get() = buildSet {
+            if (seedDefects) addAll(DefectGroup.entries)
+            if (defectGaps) add(DefectGroup.GAPS)
+            if (defectStaleMicros) add(DefectGroup.STALE_MICROS)
+            if (defectLegacy) add(DefectGroup.LEGACY)
+            if (defectDays) add(DefectGroup.DAYS)
+            if (defectMetrics) add(DefectGroup.METRICS)
+            if (defectTrackers) add(DefectGroup.TRACKERS)
+        }
 }
 
 /**
@@ -136,6 +171,18 @@ internal fun consumeDebugIntentExtras(
         seedActiveCalories = intent.getBooleanExtra("seed_active_calories", false),
         seedAnalysisQueue = BuildConfig.DEBUG && intent.getBooleanExtra("seed_analysis_queue", false),
         seedGapFixture = BuildConfig.DEBUG && intent.getBooleanExtra("seed_gap_fixture", false),
+        seedDefects = BuildConfig.DEBUG && intent.getBooleanExtra("seed_defects", false),
+        defectGaps = BuildConfig.DEBUG && intent.getBooleanExtra("defect_gaps", false),
+        defectStaleMicros = BuildConfig.DEBUG && intent.getBooleanExtra("defect_stale_micros", false),
+        defectLegacy = BuildConfig.DEBUG && intent.getBooleanExtra("defect_legacy", false),
+        defectDays = BuildConfig.DEBUG && intent.getBooleanExtra("defect_days", false),
+        defectMetrics = BuildConfig.DEBUG && intent.getBooleanExtra("defect_metrics", false),
+        defectTrackers = BuildConfig.DEBUG && intent.getBooleanExtra("defect_trackers", false),
+        seedProfileVariant = if (BuildConfig.DEBUG) {
+            (intent.getStringExtra("seed_profile_variant") ?: "").takeIf { it in PROFILE_VARIANTS } ?: ""
+        } else {
+            ""
+        },
         resetFillMissingBanner = BuildConfig.DEBUG && intent.getBooleanExtra("reset_fill_missing_banner", false),
         activeTodayOverride = intent.getIntExtra("active_today_override", Int.MIN_VALUE)
             .takeIf { it != Int.MIN_VALUE },
@@ -209,6 +256,14 @@ internal fun consumeDebugIntentExtras(
     if (actions.seedFullMacroCycle) intent.removeExtra("macro_cycle")
     if (actions.seedAnalysisQueue) intent.removeExtra("seed_analysis_queue")
     if (actions.seedGapFixture) intent.removeExtra("seed_gap_fixture")
+    if (actions.seedDefects) intent.removeExtra("seed_defects")
+    if (actions.defectGaps) intent.removeExtra("defect_gaps")
+    if (actions.defectStaleMicros) intent.removeExtra("defect_stale_micros")
+    if (actions.defectLegacy) intent.removeExtra("defect_legacy")
+    if (actions.defectDays) intent.removeExtra("defect_days")
+    if (actions.defectMetrics) intent.removeExtra("defect_metrics")
+    if (actions.defectTrackers) intent.removeExtra("defect_trackers")
+    if (actions.seedProfileVariant.isNotEmpty()) intent.removeExtra("seed_profile_variant")
     if (actions.resetFillMissingBanner) intent.removeExtra("reset_fill_missing_banner")
     if (actions.seedActiveCalories) {
         intent.removeExtra("seed_active_calories")
