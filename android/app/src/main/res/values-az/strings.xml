@@ -2103,4 +2103,7 @@ makrolar yeni kalori cəminə uyğun yenidən tarazlaşdırılır</string>
     </plurals>
     <string name="fill_gaps_empty">Hazırda heç nə çatışmır</string>
     <string name="settings_fill_missing_row">Çatışmayan məlumatları doldur</string>
+    <string name="settings_fill_missing_reminders">Çatışmayan dəyərlər xatırlatması</string>
+    <string name="settings_fill_missing_reminders_footer">Qeyd edilmiş yeməklərdə və ya sevimlilərdə dəyər çatışmadıqda ana səhifə banneri göstər</string>
+    <string name="fill_gaps_never_remind">Bir daha xatırlatma</string>
 </resources>

@@ -2101,4 +2101,7 @@
     </plurals>
     <string name="fill_gaps_empty">目前没有缺失</string>
     <string name="settings_fill_missing_row">补全缺失数据</string>
+    <string name="settings_fill_missing_reminders">缺失值提醒</string>
+    <string name="settings_fill_missing_reminders_footer">当记录的餐食或收藏缺少数值时显示主页横幅</string>
+    <string name="fill_gaps_never_remind">不再提醒</string>
 </resources>

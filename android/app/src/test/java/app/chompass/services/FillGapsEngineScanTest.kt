@@ -85,4 +85,16 @@ class FillGapsEngineScanTest {
             FillGapsEngine.bannerState(scan, aiEnabled = true, dismissed = emptySet()),
         )
     }
+
+    @Test
+    fun banner_hiddenWhenDisabledForever_evenWithGapsAndAiOn() {
+        val scan = FillGapsEngine.computeScan(listOf(gapped("D1")), emptyList())
+
+        assertNull(FillGapsEngine.bannerState(scan, aiEnabled = true, disabled = true, dismissed = emptySet()))
+        // Toggle back on restores visibility.
+        assertEquals(
+            FillGapsBanner(scan.count, scan.signature),
+            FillGapsEngine.bannerState(scan, aiEnabled = true, disabled = false, dismissed = emptySet()),
+        )
+    }
 }

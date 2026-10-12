@@ -2122,4 +2122,7 @@ makrolar yeni kalori toplamına göre yeniden dengelenir</string>
     </plurals>
     <string name="fill_gaps_empty">Şu anda eksik bir şey yok</string>
     <string name="settings_fill_missing_row">Eksik verileri doldur</string>
+    <string name="settings_fill_missing_reminders">Eksik değer hatırlatmaları</string>
+    <string name="settings_fill_missing_reminders_footer">Kayıtlı öğünlerde veya favorilerde eksik değer olduğunda ana sayfa bannerını göster</string>
+    <string name="fill_gaps_never_remind">Bir daha hatırlatma</string>
 </resources>

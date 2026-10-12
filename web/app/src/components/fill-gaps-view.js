@@ -10,7 +10,7 @@
 
 import { foodEntries, prefs } from "../lib/db.js";
 import { listFavorites, updateFavorite } from "../lib/saved-meals.js";
-import { scanGaps, bannerVisible, markBannerShown, dismissBanner, FILL_GAPS_ENABLED } from "../lib/fill-gaps.js";
+import { scanGaps, bannerVisible, markBannerShown, dismissBanner, disableBannerForever, FILL_GAPS_ENABLED } from "../lib/fill-gaps.js";
 import { fillMissingFrom } from "../lib/chompass-core/entry-gaps.js";
 import { buildCorrectDiff } from "../lib/ai/correct-diff.js";
 import { isAbortError } from "../lib/ai/analysis-phase.js";
@@ -80,6 +80,7 @@ export class FillGapsView extends HTMLElement {
         <div class="copy-select">
           ${this.rows.map((row, i) => this.rowHtml(row, i)).join("")}
         </div>
+        <button type="button" class="btn btn--ghost btn--sm" data-gaps-never-remind>${escapeHtml(t("gaps.never_remind"))}</button>
       </div>
     `;
     this.querySelector("[data-gaps-apply-all]")?.addEventListener("click", () => {
@@ -90,6 +91,13 @@ export class FillGapsView extends HTMLElement {
         void this.runRow(Number(el.getAttribute("data-gaps-run")));
       });
     }
+    this.querySelector("[data-gaps-never-remind]")?.addEventListener("click", async () => {
+      // Forever opt-out: bannerVisible re-checks on the next home render; the
+      // sheet stays open. Mirrors the Android sheet action.
+      disableBannerForever();
+      removeFillGapsBanner();
+      await prefs.save({ fillMissingRemindersEnabled: false });
+    });
     for (const el of this.querySelectorAll("[data-gaps-apply]")) {
       el.addEventListener("click", () => {
         void this.applyRow(Number(el.getAttribute("data-gaps-apply")));

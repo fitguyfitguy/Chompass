@@ -20,6 +20,7 @@ export const FILL_GAPS_ENABLED = false;
 
 const DISMISSED_KEY = "chompass-fill-gaps-banner-dismissed";
 const LAST_SHOWN_KEY = "chompass-fill-gaps-banner-last-shown";
+const DISABLED_KEY = "chompass-fill-gaps-banner-disabled";
 
 /**
  * Session latch: a banner shown this session stays visible across the
@@ -72,6 +73,7 @@ export function scanSignature(items) {
 export function bannerVisible(scan) {
   if (scan.count === 0) return false;
   try {
+    if (localStorage.getItem(DISABLED_KEY) === "1") return false;
     if (localStorage.getItem(DISMISSED_KEY) === scan.signature) return false;
     if (!bannerShownThisSession && localStorage.getItem(LAST_SHOWN_KEY) === todayIso()) return false;
   } catch {
@@ -103,5 +105,26 @@ export function dismissBanner(scan) {
     localStorage.setItem(DISMISSED_KEY, scan.signature);
   } catch {
     // Ignore: banner is removed for the session regardless.
+  }
+}
+
+/**
+ * Forever opt-out (Android fillMissingBannerDisabled parity): hides the
+ * banner across sessions; per-scan dismissals keep their own key.
+ */
+export function disableBannerForever() {
+  try {
+    localStorage.setItem(DISABLED_KEY, "1");
+  } catch {
+    // Ignore: banner is removed for the session regardless.
+  }
+}
+
+/** Re-enable reminders (Settings toggle): clears the forever opt-out. */
+export function enableBannerReminders() {
+  try {
+    localStorage.removeItem(DISABLED_KEY);
+  } catch {
+    // Ignore.
   }
 }

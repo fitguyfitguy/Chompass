@@ -2116,4 +2116,7 @@
     </plurals>
     <string name="fill_gaps_empty">لا يوجد شيء ناقص حاليًا</string>
     <string name="settings_fill_missing_row">ملء البيانات الناقصة</string>
+    <string name="settings_fill_missing_reminders">تذكيرات القيم الناقصة</string>
+    <string name="settings_fill_missing_reminders_footer">إظهار شريط الصفحة الرئيسية عندما تنقص قيم الوجبات أو المفضلة</string>
+    <string name="fill_gaps_never_remind">لا تذكّرني مرة أخرى</string>
 </resources>

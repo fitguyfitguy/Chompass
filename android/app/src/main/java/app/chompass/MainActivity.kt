@@ -602,6 +602,7 @@ open class MainActivity : ComponentActivity() {
             }
             if (actions.resetFillMissingBanner) {
                 container.prefs.setFillMissingBannerShown(0L)
+                container.prefs.setFillMissingBannerDisabled(false)
             }
             if (actions.seedActiveCalories) {
                 runCatching { container.testDataSeeder.seedActiveCalories(actions.activeTodayOverride) }

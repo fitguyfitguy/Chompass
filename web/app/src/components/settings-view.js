@@ -44,6 +44,9 @@ import {
   syncWebDavNow,
 } from "../lib/sync.js";
 import { minutesToTimeInput, timeInputToMinutes } from "../lib/meal-schedule.js";
+import { scanGaps, FILL_GAPS_ENABLED, disableBannerForever, enableBannerReminders } from "../lib/fill-gaps.js";
+import { listFavorites } from "../lib/saved-meals.js";
+import { openFillGapsSheet } from "./fill-gaps-view.js";
 import {
   HOME_TOP_NUTRIENTS,
   FOOD_LOG_CHIP_KEYS,
@@ -1568,6 +1571,16 @@ export class SettingsView extends HTMLElement {
     const primaryModel = resolveProviderModel(initialProvider, saved?.model, "primary");
     const fallbackModel = resolveProviderModel(fallbackProvider, p.fallbackAiModel, "fallback");
 
+    // Fill-missing entry point count (same data access as the Home banner).
+    let gapCount = 0;
+    if (FILL_GAPS_ENABLED && p.aiFeaturesEnabled !== false) {
+      const [favs, all] = await Promise.all([listFavorites(), foodEntries.all()]);
+      const monthPrefix = todayIso().slice(0, 7);
+      gapCount = scanGaps({
+        favorites: favs,
+        monthEntries: all.filter((e) => typeof e?.date === "string" && e.date.startsWith(monthPrefix)),
+      }).count;
+    }
     const keyStatusLabel = saved ? t("settings.ai.key_configured") : t("settings.ai.key_missing");
     const keyStatusClass = saved ? "ai-key-status ai-key-status--ok" : "ai-key-status";
     const configuredList = configuredProviders.length
@@ -1702,6 +1715,17 @@ export class SettingsView extends HTMLElement {
             <input id="fallbackAiModel-custom" name="fallbackAiModelCustom" type="text" placeholder="${t("settings.ai.custom_model_placeholder")}" style="display:none;margin-top:0.4rem;" />
           </div>
         </div>
+        <div class="field">
+          <label class="checkbox-row">
+            <input type="checkbox" name="fillMissingRemindersEnabled" value="true" ${p.fillMissingRemindersEnabled !== false ? "checked" : ""} />
+            <span>${escapeHtml(t("settings.ai.fill_reminders"))}</span>
+          </label>
+          <p class="field-hint">${escapeHtml(t("settings.ai.fill_reminders_hint"))}</p>
+        </div>
+        ${FILL_GAPS_ENABLED && p.aiFeaturesEnabled !== false ? `
+        <div class="field">
+          <button type="button" class="btn btn--ghost" id="open-fill-gaps">${escapeHtml(t("settings.ai.fill_open", { n: gapCount }))}</button>
+        </div>` : ""}
         <button type="submit" class="btn btn--primary">${t("settings.ai.save_prefs")}</button>
       </form>
       <nav class="settings-nav" aria-label="${t("settings.ai.speech_link")}">
@@ -1790,12 +1814,20 @@ export class SettingsView extends HTMLElement {
         aiFeaturesEnabled: fd.get("aiFeaturesEnabled") === "true",
         userContext: String(fd.get("userContext") || ""),
         mealConstituentsEnabled: fd.get("mealConstituentsEnabled") === "true",
-        servingUnitInferenceMode: /** @type {any} */ (String(fd.get("servingUnitInferenceMode") || "gramsOnly")),
+        fillMissingRemindersEnabled: fd.get("fillMissingRemindersEnabled") === "true",
         aiFallbackEnabled: fd.get("aiFallbackEnabled") === "true",
         fallbackAiProvider: fbProvider,
         fallbackAiModel: resolveProviderModel(fbProvider, fbModel, "fallback"),
       });
       location.hash = SETTINGS_PARENT.ai;
+    });
+    const reminders = /** @type {HTMLInputElement} */ (this.querySelector('[name="fillMissingRemindersEnabled"]'));
+    if (reminders) {
+      if (reminders.checked) enableBannerReminders();
+      else disableBannerForever();
+    }
+    this.querySelector("#open-fill-gaps")?.addEventListener("click", () => {
+      void openFillGapsSheet();
     });
     bindSubpageBack(this, SETTINGS_PARENT.ai);
   }

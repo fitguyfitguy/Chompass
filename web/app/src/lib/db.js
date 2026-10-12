@@ -487,6 +487,7 @@ export const profile = {
  * @property {string} [primaryAiProvider]
  * @property {string} [openrouterReasoningEffort] "auto"|"low"|"medium"|"high" — OpenRouter thinking budget (auto = omit param)
  * @property {boolean} [mealConstituentsEnabled] Ask AI for optional meal ingredient rows (default true)
+ * @property {boolean} [fillMissingRemindersEnabled] Show the fill-missing Home banner (default true)
  * @property {"gramsOnly"|"heuristic"|"aiCall"} [servingUnitInferenceMode] How to fill non-gram units when AI omits them
  * @property {Array<{id: string, date: string, name: string, calories: number}>} [manualActiveEntries] Local-only active burn logs
  * @property {boolean} [showFasting] Optional local-only intermittent-fasting timer (off by default)
@@ -548,6 +549,7 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   primaryAiProvider: "gemini",
   openrouterReasoningEffort: ANDROID_PREF_DEFAULTS.openrouterReasoningEffort,
   mealConstituentsEnabled: true,
+  fillMissingRemindersEnabled: true,
   servingUnitInferenceMode: "gramsOnly",
   manualActiveEntries: [],
   showFasting: false,

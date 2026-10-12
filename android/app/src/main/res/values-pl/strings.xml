@@ -2137,4 +2137,7 @@ makro rebalansowane do nowej sumy kalorii</string>
     </plurals>
     <string name="fill_gaps_empty">Na razie niczego nie brakuje</string>
     <string name="settings_fill_missing_row">Uzupełnij brakujące dane</string>
+    <string name="settings_fill_missing_reminders">Przypomnienia o brakujących wartościach</string>
+    <string name="settings_fill_missing_reminders_footer">Pokazuj baner na ekranie głównym, gdy posiłki lub ulubione mają brakujące wartości</string>
+    <string name="fill_gaps_never_remind">Nie przypominaj mi więcej</string>
 </resources>

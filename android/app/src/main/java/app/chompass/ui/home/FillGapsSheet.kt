@@ -27,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -181,6 +182,21 @@ fun FillGapsSheet(
                                 onToggleExpand = { expanded = !expanded },
                             )
                         }
+                    }
+                }
+
+                // Forever opt-out (step 4): kills the Home banner without
+                // touching per-list X dismissals; the sheet stays open.
+                if (items.isNotEmpty()) {
+                    TextButton(
+                        onClick = { scope.launch { container.prefs.setFillMissingBannerDisabled(true) } },
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                    ) {
+                        Text(
+                            stringResource(R.string.fill_gaps_never_remind),
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        )
                     }
                 }
             }

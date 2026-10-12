@@ -2122,4 +2122,7 @@ macros reequilibradas al nuevo total calórico</string>
     </plurals>
     <string name="fill_gaps_empty">Ahora mismo no falta nada</string>
     <string name="settings_fill_missing_row">Rellenar datos que faltan</string>
+    <string name="settings_fill_missing_reminders">Recordatorios de valores faltantes</string>
+    <string name="settings_fill_missing_reminders_footer">Muestra el banner de inicio cuando comidas o favoritos tienen valores faltantes</string>
+    <string name="fill_gaps_never_remind">No volver a recordarme</string>
 </resources>

@@ -2101,4 +2101,7 @@
     </plurals>
     <string name="fill_gaps_empty">現在、欠落しているものはありません</string>
     <string name="settings_fill_missing_row">欠落データを補完</string>
+    <string name="settings_fill_missing_reminders">不足値のリマインダー</string>
+    <string name="settings_fill_missing_reminders_footer">記録された食事やお気に入りに不足値があるときホームバナーを表示します</string>
+    <string name="fill_gaps_never_remind">今後表示しない</string>
 </resources>

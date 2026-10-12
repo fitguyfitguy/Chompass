@@ -3587,4 +3587,7 @@ für dich ein</string>
     </plurals>
     <string name="fill_gaps_empty">Im Moment fehlt nichts</string>
     <string name="settings_fill_missing_row">Fehlende Daten füllen</string>
+    <string name="settings_fill_missing_reminders">Erinnerungen an fehlende Werte</string>
+    <string name="settings_fill_missing_reminders_footer">Zeigt das Start-Banner, wenn Mahlzeiten oder Favoriten fehlende Werte haben</string>
+    <string name="fill_gaps_never_remind">Nicht mehr erinnern</string>
 </resources>

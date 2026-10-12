@@ -32,6 +32,8 @@ internal object Keys {
         val FILL_MISSING_BANNER_LAST_SHOWN_DAY = longPreferencesKey("fillMissingBannerLastShownDay")
         /** Dismissed fill-missing scan signatures (sticky per scan shape). */
         val FILL_MISSING_DISMISSED_SIGNATURES = stringSetPreferencesKey("fillMissingDismissedScanSignatures")
+        /** Forever opt-out of the AI fill-missing Home banner (sheet action / Settings). */
+        val FILL_MISSING_BANNER_DISABLED = booleanPreferencesKey("fillMissingBannerDisabled")
         val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notificationsEnabled")
         val STREAK_ENABLED = booleanPreferencesKey("streakReminderEnabled")
         val STREAK_HOUR = intPreferencesKey("streakReminderHour")
