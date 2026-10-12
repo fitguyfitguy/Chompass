@@ -282,6 +282,7 @@ export const ro = Object.freeze({
   "entry.ai.mode_fill": "Completează lipsurile",
   "entry.ai.mode_reanalyze": "Reanalizează",
   "entry.ai.mode_recalculate": "Recalculează",
+  "entry.ai.mode_recalculate_hint": "Reestimează totalurile din amestecul curent de ingrediente — modificările rămân, se schimbă doar cifrele.",
   "entry.ai.missing_line": "Lipsesc: {labels}",
   "gaps.apply": "Aplică",
   "gaps.apply_all": "Aplică tot",

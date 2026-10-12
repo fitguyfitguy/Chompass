@@ -282,6 +282,7 @@ export const hi = Object.freeze({
   "entry.ai.mode_fill": "लापता मान भरें",
   "entry.ai.mode_reanalyze": "पुनः विश्लेषण",
   "entry.ai.mode_recalculate": "पुनः गणना",
+  "entry.ai.mode_recalculate_hint": "वर्तमान सामग्री मिश्रण से कुल मानों को फिर से आकलित करता है — आपके संपादन बने रहते हैं, केवल संख्याएँ बदलती हैं।",
   "entry.ai.missing_line": "अनुपलब्ध: {labels}",
   "gaps.apply": "लागू करें",
   "gaps.apply_all": "सभी लागू करें",

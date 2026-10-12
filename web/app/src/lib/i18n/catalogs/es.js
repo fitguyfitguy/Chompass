@@ -288,6 +288,7 @@ export const es = Object.freeze({
   "entry.ai.mode_fill": "Rellenar lo que falta",
   "entry.ai.mode_reanalyze": "Reanalizar",
   "entry.ai.mode_recalculate": "Recalcular",
+  "entry.ai.mode_recalculate_hint": "Reestima los totales a partir de la mezcla actual de ingredientes: tus ediciones se conservan, solo cambian los números.",
   "entry.ai.missing_line": "Falta: {labels}",
   "gaps.apply": "Aplicar",
   "gaps.apply_all": "Aplicar todo",

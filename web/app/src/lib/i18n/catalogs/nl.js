@@ -282,6 +282,7 @@ export const nl = Object.freeze({
   "entry.ai.mode_fill": "Ontbrekende aanvullen",
   "entry.ai.mode_reanalyze": "Opnieuw analyseren",
   "entry.ai.mode_recalculate": "Opnieuw berekenen",
+  "entry.ai.mode_recalculate_hint": "Schat de totalen opnieuw in op basis van de huidige ingrediëntenmix — je bewerkingen blijven, alleen de cijfers veranderen.",
   "entry.ai.missing_line": "Ontbreekt: {labels}",
   "gaps.apply": "Toepassen",
   "gaps.apply_all": "Alles toepassen",

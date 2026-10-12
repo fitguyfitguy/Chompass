@@ -282,6 +282,7 @@ export const ru = Object.freeze({
   "entry.ai.mode_fill": "Заполнить недостающее",
   "entry.ai.mode_reanalyze": "Переанализировать",
   "entry.ai.mode_recalculate": "Пересчитать",
+  "entry.ai.mode_recalculate_hint": "Заново оценивает итоговые значения по текущему набору ингредиентов — правки сохраняются, меняются только числа.",
   "entry.ai.missing_line": "Отсутствует: {labels}",
   "gaps.apply": "Применить",
   "gaps.apply_all": "Применить всё",

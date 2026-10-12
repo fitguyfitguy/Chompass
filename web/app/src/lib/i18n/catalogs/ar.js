@@ -282,6 +282,7 @@ export const ar = Object.freeze({
   "entry.ai.mode_fill": "ملء الناقص",
   "entry.ai.mode_reanalyze": "إعادة تحليل",
   "entry.ai.mode_recalculate": "إعادة حساب",
+  "entry.ai.mode_recalculate_hint": "يعيد تقدير الإجماليات من مزيج المكونات الحالي — تبقى تعديلاتك، وتتغير الأرقام فقط.",
   "entry.ai.missing_line": "الناقص: {labels}",
   "gaps.apply": "تطبيق",
   "gaps.apply_all": "تطبيق الكل",

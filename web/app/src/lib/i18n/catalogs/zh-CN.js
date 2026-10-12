@@ -282,6 +282,7 @@ export const zh_CN = Object.freeze({
   "entry.ai.mode_fill": "补全缺失",
   "entry.ai.mode_reanalyze": "重新分析",
   "entry.ai.mode_recalculate": "重新计算",
+  "entry.ai.mode_recalculate_hint": "根据当前食材构成重新估算总量——保留你的编辑，只更新数值。",
   "entry.ai.missing_line": "缺失：{labels}",
   "gaps.apply": "应用",
   "gaps.apply_all": "全部应用",

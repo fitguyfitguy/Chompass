@@ -4109,6 +4109,17 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /**
+     * Recalculate: AI re-estimate of the entry's totals over the EDITED mix
+     * the edit sheet passes (its Save-path snapshot). No photo, no note
+     * steering — the mix is the whole input. The sheet applies the reply as
+     * a totals-only overwrite.
+     */
+    suspend fun reestimateFoodEntry(
+        edited: FoodEntry,
+        onProgress: (FoodAnalysisProgress) -> Unit = {},
+    ): FoodAnalysis = container.foodAnalysis.reestimateEntry(edited, onProgress)
+
+    /**
      * Fill-missing analysis for an already-logged entry: text-only metadata
      * refresh, no photo reload, no note. The caller merges the result into
      * the entry via [app.chompass.models.fillMissingFrom] (only-missing).

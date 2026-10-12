@@ -13,7 +13,7 @@ import kotlinx.coroutines.delay
  */
 internal object DemoFoodAnalysis {
     /** Entry-analysis ops that get the demo response; other calls stay real. */
-    val ENTRY_OPS = setOf("analyzeText", "analyzeAuto", "analyzeFood", "analyzeFoodMulti", "fillEntry")
+    val ENTRY_OPS = setOf("analyzeText", "analyzeAuto", "analyzeFood", "analyzeFoodMulti", "fillEntry", "reestimateEntry")
 
     private const val DEMO_FOOD_NAME = "Chicken rice bowl with avocado"
 

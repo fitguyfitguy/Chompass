@@ -939,7 +939,7 @@ export class EntryForm extends HTMLElement {
                 : t("entry.correcting")
           )}</p>`
       : "";
-    const noteDriven = mode !== "fill";
+    const noteDriven = mode === "reanalyze";
     const modeBodyHtml = noteDriven
       ? `
         <p class="field-hint">${escapeHtml(t("entry.correct_hint"))}</p>
@@ -948,7 +948,13 @@ export class EntryForm extends HTMLElement {
         <button type="button" class="btn btn--primary" data-action="correct" ${this.correcting || !this.correctNote.trim() ? "disabled" : ""}>
           ${escapeHtml(this.correcting ? t("entry.correcting") : t("entry.correct_action"))}
         </button>`
-      : `
+      : mode === "recalculate"
+        ? `
+        <p class="field-hint">${escapeHtml(t("entry.ai.mode_recalculate_hint"))}</p>
+        <button type="button" class="btn btn--primary" data-action="recalculate" ${this.correcting ? "disabled" : ""}>
+          ${escapeHtml(this.correcting ? t("entry.correcting") : t("entry.ai.mode_recalculate"))}
+        </button>`
+        : `
         <button type="button" class="btn btn--primary" data-action="fill-ai" ${this.correcting ? "disabled" : ""}>
           ${escapeHtml(this.correcting ? t("entry.correcting") : t("entry.ai.mode_fill"))}
         </button>`;
@@ -987,6 +993,7 @@ export class EntryForm extends HTMLElement {
     });
     this.querySelector('[data-action="correct"]')?.addEventListener("click", () => this.onCorrectWithAi());
     this.querySelector('[data-action="fill-ai"]')?.addEventListener("click", () => this.onFillWithAi());
+    this.querySelector('[data-action="recalculate"]')?.addEventListener("click", () => this.onRecalculateWithAi());
   }
 
   /**
@@ -1154,6 +1161,85 @@ export class EntryForm extends HTMLElement {
         time: before.time,
         note: before.note,
         source: before.source || "ai_estimated",
+      };
+      this.servingReady = false;
+      this.initServingState(this.existing);
+      this.nutritionLocked = true;
+      this.correctDiff = buildCorrectDiff(before, this.existing);
+      this.correcting = false;
+      this.correctPhase = null;
+      this.correctPartial = null;
+      this.render();
+    } catch (err) {
+      if (isAbortError(err) || ac.signal.aborted) {
+        this.correcting = false;
+        this.correctPhase = null;
+        return;
+      }
+      this.correctError = err instanceof Error ? err.message : String(err);
+      this.correcting = false;
+      this.correctPhase = null;
+      this.correctPartial = null;
+      this.render();
+    }
+  }
+
+  /**
+   * Recalculate run (Android RECALCULATE parity): a fresh AI estimate of
+   * the totals over the CURRENT form state — the snapshot the save path
+   * would commit. Applies macros + micros only; the edited name, serving,
+   * and ingredient mix stay untouched. The diff card shows the change.
+   */
+  async onRecalculateWithAi() {
+    if (!this.existing || this.correcting) return;
+    this.captureFormIntoSource();
+    const before = { ...this.existing };
+
+    const resolved = await this.resolveAiProvider();
+    if (!resolved) return;
+
+    this.correctAbort?.abort();
+    const ac = new AbortController();
+    this.correctAbort = ac;
+    this.correcting = true;
+    this.correctError = "";
+    this.correctDiff = [];
+    this.correctPartial = null;
+    this.correctPhase = ANALYSIS_PHASE.PREPARING;
+    this.render();
+
+    const draft = this.buildEntryFromForm() ?? before;
+
+    try {
+      const { reestimateEntry } = await import("../lib/ai/food-analyze.js");
+      const { buildCorrectDiff } = await import("../lib/ai/correct-diff.js");
+      const estimate = await reestimateEntry({
+        providerId: resolved.providerId,
+        config: resolved.config,
+        entry: draft,
+        signal: ac.signal,
+        onPhase: (phase) => {
+          this.correctPhase = phase;
+          this.render();
+        },
+        onPartial: (partial) => {
+          this.correctPartial = partial;
+          this.correctPhase = ANALYSIS_PHASE.CALLING_AI;
+          this.render();
+        },
+      });
+      if (ac.signal.aborted) return;
+
+      this.existing = {
+        ...this.existing,
+        calories: estimate.calories,
+        proteinG: estimate.proteinG,
+        carbsG: estimate.carbsG,
+        fatG: estimate.fatG,
+        ...Object.fromEntries(ALL_MICRO_KEYS.map((key) => [key, estimate[key] ?? null])),
+        id: this.existing.id,
+        date: this.existing.date,
+        time: this.existing.time,
       };
       this.servingReady = false;
       this.initServingState(this.existing);
