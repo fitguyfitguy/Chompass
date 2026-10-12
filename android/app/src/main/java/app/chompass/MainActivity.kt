@@ -600,6 +600,14 @@ open class MainActivity : ComponentActivity() {
                 runCatching { container.testDataSeeder.seedGapFixture() }
                     .onFailure { Log.e(PHOTO_IMPORT_TAG, "seedGapFixture failed", it) }
             }
+            if (actions.defectGroups.isNotEmpty()) {
+                runCatching { container.testDataSeeder.seedDefects(actions.defectGroups) }
+                    .onFailure { Log.e(PHOTO_IMPORT_TAG, "seedDefects failed", it) }
+            }
+            if (actions.seedProfileVariant.isNotEmpty()) {
+                runCatching { container.testDataSeeder.seedProfileVariant(actions.seedProfileVariant) }
+                    .onFailure { Log.e(PHOTO_IMPORT_TAG, "seedProfileVariant failed", it) }
+            }
             if (actions.resetFillMissingBanner) {
                 container.prefs.setFillMissingBannerShown(0L)
                 container.prefs.setFillMissingBannerDisabled(false)

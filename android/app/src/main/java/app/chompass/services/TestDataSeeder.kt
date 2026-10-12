@@ -2,17 +2,24 @@ package app.chompass.services
 
 import app.chompass.AppContainer
 import app.chompass.BuildConfig
+import app.chompass.data.WeatherRepository
 import app.chompass.models.ActivityLevel
+import app.chompass.models.AutoBalanceMacro
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.BodyMeasurement
+import app.chompass.models.CaffeineEntry
+import app.chompass.models.CaffeineKind
 import app.chompass.models.CalorieSafety
 import app.chompass.models.ChatMessage
+import app.chompass.models.DailyNote
 import app.chompass.models.DietMode
 import app.chompass.models.FoodEntry
+import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.FoodSource
 import app.chompass.models.Gender
 import app.chompass.models.GoalJournalEntry
 import app.chompass.models.GoalJournalSource
+import app.chompass.models.HabitPresetCatalog
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.KetoCarbMode
@@ -20,8 +27,14 @@ import app.chompass.models.MacroDayProfile
 import app.chompass.models.MacroPlan
 import app.chompass.models.MacroPlanMode
 import app.chompass.models.MacroPlanResolver
+import app.chompass.models.ManualActiveEntry
+import app.chompass.models.MealCatalog
 import app.chompass.models.MealType
+import app.chompass.models.MilkKind
+import app.chompass.models.NicotineEntry
+import app.chompass.models.NicotineKind
 import app.chompass.models.OptionalNutrientGoals
+import app.chompass.models.ProteinTargetMode
 import app.chompass.models.QueuedAnalysis
 import app.chompass.models.QueueStatus
 import app.chompass.models.Recipe
@@ -29,7 +42,9 @@ import app.chompass.models.UserProfile
 import app.chompass.models.WaterEntry
 import app.chompass.models.WeightEntry
 import app.chompass.models.WeightGoal
+import app.chompass.models.toFoodEntry
 import app.chompass.services.health.DebugActivityDay
+import app.chompass.services.weather.OmCity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -205,14 +220,22 @@ class TestDataSeeder(private val container: AppContainer) {
     }
 
     /**
-     * One atomic power-user fixture: year of food, 2y metrics, water, recipes,
-     * favorites, chat, optional nutrients, and a handful of photo thumbs.
-     * Idempotent: replaceAll / set* overwrite, they do not stack.
+     * One atomic power-user fixture: year of enriched food (full micros,
+     * serving units, notes, product cards, composite meals, planned rows,
+     * custom meal slot), 2y metrics + all eight measurement sites, water,
+     * recipes (hand-built + Mealie imports), favorites, notes, chat with an
+     * attachment, tracker presets, caffeine milk sidecars, manual active burn
+     * and a fresh weather cache. Idempotent: replaceAll / set* overwrite, they
+     * do not stack.
      *
      *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_full true
      *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_full true --ez seed_keto_settings true
      *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_full true --ez seed_busy_home true
      *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_full true --ez macro_cycle true
+     *
+     * `busy_home` additionally turns on the extra Home/Progress cards (steps,
+     * active calories, 4 nutrient cards, Progress nutrient averages + its
+     * selection, food-log macro chips) — the "everything switched on" state.
      */
     suspend fun seedFullyUtilized(keto: Boolean = false, busyHome: Boolean = false, macroCycle: Boolean = false) {
         if (!BuildConfig.DEBUG) return
@@ -244,45 +267,174 @@ class TestDataSeeder(private val container: AppContainer) {
             container.profileRepository.save(profile)
             container.prefs.setOnboardingCompleted(true)
 
-            val foods = attachSeedPhotos(SampleDataGenerators.fullFoodEntries())
-            container.foodRepository.replaceAll(foods)
+            val today = LocalDate.now()
+            val zone = ZoneId.systemDefault()
+
+            // Diary: the year of mixed-source rows, enriched per index with full
+            // micros / serving units / notes / product cards, plus composite
+            // meals, the custom-slot rows, the planned rows and the milk
+            // sidecars the caffeine logs link to. Deterministic ids on the rows
+            // this seeder authors directly (defect-layer invariant).
+            val enrichedFoods = attachSeedPhotos(SampleDataGenerators.fullFoodEntries())
+                .mapIndexed { i, entry ->
+                    var row = entry
+                    if (i % 3 == 0) row = SampleDataGenerators.withFullMicros(row, seed = 0xF00D000L + i)
+                    if (i % 5 == 0) row = SampleDataGenerators.withServingUnits(row)
+                    if (i % 4 == 0) row = row.copy(customNote = SEED_NOTES[i % SEED_NOTES.size])
+                    if (row.source == FoodSource.BARCODE) row = SampleDataGenerators.withProductMetadata(row)
+                    when {
+                        i % 97 == 0 -> row.copy(source = FoodSource.NUTRITION_LABEL)
+                        i % 89 == 0 -> row.copy(source = FoodSource.SEARCH)
+                        else -> row
+                    }
+                }
+            val milkRows = (0 until 5).map { week ->
+                val day = today.minusDays(week * 7L)
+                MilkKind.OAT.toFoodEntry(
+                    ml = 30,
+                    at = day.atTime(7, 45).atZone(zone).toInstant(),
+                    mealId = MealType.BREAKFAST.id,
+                    name = container.appContext.getString(MilkKind.OAT.labelRes) + " 30 ml",
+                ).copy(id = seedId("milk:$week"))
+            }
+            val customSlotRows = listOf(3L, 9L).mapIndexed { i, daysAgo ->
+                val day = today.minusDays(daysAgo)
+                FoodEntry(
+                    id = seedId("custom-slot:$daysAgo"),
+                    name = if (i == 0) "Seed brunch plate" else "Seed brunch bowl",
+                    calories = if (i == 0) 520 else 610,
+                    protein = if (i == 0) 32.0 else 27.0,
+                    carbs = if (i == 0) 48.0 else 74.0,
+                    fat = if (i == 0) 22.0 else 19.0,
+                    timestamp = day.atTime(11, 30).atZone(zone).toInstant(),
+                    emoji = "\uD83E\uDD5E",
+                    source = FoodSource.MANUAL,
+                    mealType = SampleDataGenerators.SEED_CUSTOM_MEAL_ID,
+                )
+            }
+            // Planned rows live in the FUTURE only (today's Home totals stay put)
+            // and use the custom slot so the planned chip + Plan-week screen render.
+            val plannedRows = listOf(1L, 2L).mapIndexed { i, offset ->
+                FoodEntry(
+                    id = seedId("planned:$offset"),
+                    name = if (i == 0) "Planned chicken bowl" else "Planned lentil curry",
+                    calories = if (i == 0) 640 else 560,
+                    protein = if (i == 0) 44.0 else 24.0,
+                    carbs = if (i == 0) 62.0 else 68.0,
+                    fat = if (i == 0) 21.0 else 18.0,
+                    timestamp = today.plusDays(offset).atTime(12, 30).atZone(zone).toInstant(),
+                    emoji = "\uD83E\uDD69",
+                    source = FoodSource.MANUAL,
+                    mealType = SampleDataGenerators.SEED_CUSTOM_MEAL_ID,
+                    planned = true,
+                )
+            }
+            container.foodRepository.replaceAll(
+                enrichedFoods +
+                    SampleDataGenerators.compositeEntries() +
+                    milkRows +
+                    customSlotRows +
+                    plannedRows
+            )
             container.weightRepository.replaceAll(
                 SampleDataGenerators.weightSeries(totalDays = 730, startKg = 82.0, endKg = 73.5, seed = 0x2BEEF)
             )
             container.bodyFatRepository.replaceAll(
                 SampleDataGenerators.bodyFatSeries(totalDays = 730, startFraction = 0.240, endFraction = 0.175, seed = 0x2FA7)
             )
+            // All eight tape sites (measurementSeries only logs the four the
+            // Progress plots used to ship with).
             container.bodyMeasurementRepository.replaceAll(
-                SampleDataGenerators.measurementSeries(totalDays = 180, seed = 0x7A1)
+                SampleDataGenerators.allSitesMeasurementSeries(totalDays = 180, seed = 0x7A1)
             )
             seedDebugHomeActivity(totalDays = 365)
             if (macroCycle && !keto) seedDayTypeActiveHistory(profile)
 
-            val favorites = SampleDataGenerators.sampleFavorites()
+            val favorites = SampleDataGenerators.sampleFavorites() + SampleDataGenerators.richFavorites()
             container.prefs.setFavoriteFoodEntries(favorites)
             container.prefs.setFavoriteKeys(favorites.map { it.favoriteKey }.toSet())
-            container.prefs.setRecipes(SampleDataGenerators.sampleRecipes())
+            container.prefs.setRecipes(
+                SampleDataGenerators.sampleRecipes() + SampleDataGenerators.sampleMealieRecipes()
+            )
             container.prefs.setWaterTrackingEnabled(true)
             container.prefs.setWaterDynamicEnabled(true)
             container.prefs.setWaterFoodWaterEnabled(true)
             container.prefs.setWaterDailyGoalMl(2_500)
+            container.prefs.setWaterQuickPresetsMl(listOf(200, 330, 500, 750))
             container.prefs.setWaterEntries(SampleDataGenerators.waterEntries())
             container.prefs.setNicotineTrackingEnabled(true)
             container.prefs.setNicotineDailyLimit(10)
             container.prefs.setNicotineEntries(SampleDataGenerators.nicotineEntries())
             container.prefs.setCaffeineTrackingEnabled(true)
-            container.prefs.setCaffeineEntries(SampleDataGenerators.caffeineEntries())
+            val (caffeinePresets, nicotinePresets) = SampleDataGenerators.trackerPresets()
+            container.prefs.setCaffeinePresets(caffeinePresets)
+            container.prefs.setNicotinePresets(nicotinePresets)
+            container.prefs.setCaffeineQuickKinds(
+                listOf(CaffeineKind.COFFEE.storageKey, SampleDataGenerators.SEED_CAFFEINE_PRESET_ID)
+            )
+            container.prefs.setNicotineQuickKinds(listOf(NicotineKind.CIGARETTE.storageKey))
+            container.prefs.setCaffeineEntries(
+                SampleDataGenerators.caffeineEntries() +
+                    milkRows.map { row ->
+                        // Milk sidecar logs so CaffeineMilkSection has something to show.
+                        CaffeineEntry(
+                            id = seedId("caffeine-milk:" + row.id),
+                            date = row.timestamp.plusSeconds(600),
+                            kind = CaffeineKind.COFFEE.storageKey,
+                            mg = CaffeineKind.COFFEE.defaultMg ?: 95.0,
+                            linkedFoodEntryId = row.id,
+                        )
+                    } +
+                    listOf(
+                        CaffeineEntry(
+                            id = seedId("caffeine-custom:0"),
+                            date = today.atTime(15, 10).atZone(zone).toInstant(),
+                            kind = SampleDataGenerators.SEED_CAFFEINE_PRESET_ID,
+                            mg = 42.0,
+                        ),
+                        CaffeineEntry(
+                            id = seedId("caffeine-custom:1"),
+                            date = today.minusDays(2).atTime(15, 20).atZone(zone).toInstant(),
+                            kind = SampleDataGenerators.SEED_CAFFEINE_PRESET_ID,
+                            mg = 42.0,
+                        ),
+                    )
+            )
+            container.prefs.setManualActiveEntries(
+                listOf(
+                    ManualActiveEntry(
+                        id = seedId("active-walk").toString(),
+                        date = today.toString(),
+                        name = "Seed Walk",
+                        calories = 180,
+                    ),
+                    ManualActiveEntry(
+                        id = seedId("active-ride").toString(),
+                        date = today.minusDays(4).toString(),
+                        name = "Seed Ride",
+                        calories = 320,
+                    ),
+                )
+            )
             container.prefs.setDailyNotesEnabled(true)
-            container.chatRepository.replaceAll(SampleDataGenerators.sampleChat())
+            SampleDataGenerators.sampleNotes(today).forEach {
+                container.notesRepository.setNote(it.date, it.text)
+            }
+            container.prefs.setMealCatalog(SampleDataGenerators.sampleMealCatalog())
+            container.prefs.setMealPlanningEnabled(true)
+            container.chatRepository.replaceAll(SampleDataGenerators.sampleChat(withAttachment = true))
             container.prefs.setCoachTabEnabled(true)
 
+            // Water dynamic goal: a fresh Open-Meteo cache for today, so the
+            // temperature factor actually applies (31 °C → factor 1.24).
+            container.prefs.setWeatherSource(WeatherRepository.SOURCE_OPEN_METEO)
+            container.prefs.setWeatherOmCity(json.encodeToString(OmCity.serializer(), SEED_OM_CITY))
+            container.prefs.setWeatherOmHighC(31)
+            container.prefs.setWeatherOmDate(today.toString())
+            container.prefs.setWeatherOmUpdatedAt(System.currentTimeMillis())
+
             container.prefs.setProgressMeasurementSites(
-                setOf(
-                    BodyMeasurement.Site.WAIST.storageId,
-                    BodyMeasurement.Site.HIPS.storageId,
-                    BodyMeasurement.Site.CHEST.storageId,
-                    BodyMeasurement.Site.NECK.storageId,
-                )
+                BodyMeasurement.Site.entries.map { it.storageId }.toSet()
             )
             container.prefs.setOptionalNutrientGoals(
                 OptionalNutrientGoals.Default.copy(fiber = 30, sodium = 2300, potassium = 3500)
@@ -310,11 +462,45 @@ class TestDataSeeder(private val container: AppContainer) {
                         cardCount = 4,
                     )
                 )
+                // The "extra buttons" half of busy_home: the Progress nutrient
+                // averages card, its selection, and the food-log macro chips.
+                container.prefs.setProgressNutrientAverages(true)
+                container.prefs.setProgressNutrientAveragesSelection(
+                    HomeTopNutrient
+                        .toStorage(
+                            listOf(
+                                HomeTopNutrient.FIBER,
+                                HomeTopNutrient.SUGAR,
+                                HomeTopNutrient.SODIUM,
+                                HomeTopNutrient.POTASSIUM,
+                            ),
+                            cardCount = 4,
+                        )
+                        .split(",")
+                        .filter { it.isNotBlank() }
+                        .toSet()
+                )
+                container.prefs.setFoodLogMacroChips(
+                    FoodLogMacroChip.toStorage(
+                        listOf(
+                            FoodLogMacroChip.PROTEIN,
+                            FoodLogMacroChip.CARBS,
+                            FoodLogMacroChip.FAT,
+                            FoodLogMacroChip.FIBER,
+                            FoodLogMacroChip.SUGAR,
+                        )
+                    )
+                )
             }
         } finally {
             _seeding.value = false
         }
     }
+
+    /** Deterministic fixture id: the bucket stores upsert by id, so re-seeding a
+     *  row must produce the same id instead of stacking a duplicate. */
+    internal fun seedId(slug: String): UUID =
+        UUID.nameUUIDFromBytes("chompass-seed:$slug".toByteArray())
 
     private fun attachSeedPhotos(entries: List<FoodEntry>): List<FoodEntry> {
         val fixtures = SEED_PHOTO_ASSETS.mapNotNull { path ->
@@ -333,7 +519,11 @@ class TestDataSeeder(private val container: AppContainer) {
         return out
     }
 
-    /** Debug-only: 28 days of journal + per-type active so Training vs Rest typicals differ. */
+    /**
+     * Debug-only: 28 days of journal + per-type active so Training vs Rest
+     * typicals differ. Journal provenance is covered too: one MANUAL_SWITCH,
+     * one OVERRIDE, one GAP_FILL, the rest PLAN.
+     */
     private suspend fun seedDayTypeActiveHistory(profile: UserProfile) {
         val plan = profile.macroPlan ?: return
         val today = LocalDate.now()
@@ -352,7 +542,12 @@ class TestDataSeeder(private val container: AppContainer) {
                 profileId = id,
                 profileName = resolved.profileName,
                 updatedAtMillis = System.currentTimeMillis(),
-                source = GoalJournalSource.PLAN,
+                source = when (i) {
+                    1 -> GoalJournalSource.MANUAL_SWITCH
+                    2 -> GoalJournalSource.OVERRIDE
+                    3 -> GoalJournalSource.GAP_FILL
+                    else -> GoalJournalSource.PLAN
+                },
             )
             val isTraining = id.contains("training", ignoreCase = true)
             active[day.toString()] = if (isTraining) 620 else 320
@@ -601,7 +796,91 @@ class TestDataSeeder(private val container: AppContainer) {
                 homeTopNutrients = container.prefs.homeTopNutrients.first(),
                 homeNutrientCardCount = container.prefs.homeNutrientCardCount.first(),
                 homeCalorieDisplayMode = container.prefs.homeCalorieDisplayMode.first(),
+                dailyNotesEnabled = container.prefs.dailyNotesEnabled.first(),
+                mealPlanningEnabled = container.prefs.mealPlanningEnabled.first(),
+                foodLogMacroChips = container.prefs.foodLogMacroChips.first(),
+                progressNutrientAverages = container.prefs.progressNutrientAverages.first(),
+                progressNutrientAveragesSelection = container.prefs.progressNutrientAveragesSelection.first(),
             ),
+            notesJson = json.encodeToString(
+                ListSerializer(DailyNote.serializer()),
+                container.prefs.noteEntries.first(),
+            ),
+            nicotineJson = json.encodeToString(
+                ListSerializer(NicotineEntry.serializer()),
+                container.prefs.nicotineEntries.first(),
+            ),
+            caffeineJson = json.encodeToString(
+                ListSerializer(CaffeineEntry.serializer()),
+                container.prefs.caffeineEntries.first(),
+            ),
+            manualActiveJson = json.encodeToString(
+                ListSerializer(ManualActiveEntry.serializer()),
+                container.prefs.manualActiveEntries.first(),
+            ),
+            goalJournalJson = json.encodeToString(
+                ListSerializer(GoalJournalEntry.serializer()),
+                container.prefs.goalJournal.first(),
+            ),
+            mealCatalogJson = json.encodeToString(
+                MealCatalog.serializer(),
+                container.prefs.mealCatalog.first(),
+            ),
+            untrackedJson = json.encodeToString(
+                SeedUntrackedSnapshot.serializer(),
+                SeedUntrackedSnapshot(
+                    days = container.prefs.untrackedDays.first(),
+                    kcalByDay = container.prefs.untrackedKcalByDay.first(),
+                ),
+            ),
+            trackerPresetsJson = json.encodeToString(
+                SeedTrackerSnapshot.serializer(),
+                SeedTrackerSnapshot(
+                    caffeinePresets = container.prefs.caffeinePresets.first(),
+                    nicotinePresets = container.prefs.nicotinePresets.first(),
+                    caffeineQuickKinds = container.prefs.caffeineQuickKinds.first(),
+                    nicotineQuickKinds = container.prefs.nicotineQuickKinds.first(),
+                    waterQuickPresetsMl = container.prefs.waterQuickPresetsMl.first(),
+                ),
+            ),
+            energyJson = json.encodeToString(
+                SeedEnergySnapshot.serializer(),
+                SeedEnergySnapshot(
+                    activeByDay = container.prefs.healthEnergyActiveByDay.first(),
+                    measuredActive = container.prefs.healthEnergyMeasuredActive.first(),
+                ),
+            ),
+            weatherJson = json.encodeToString(
+                SeedWeatherSnapshot.serializer(),
+                SeedWeatherSnapshot(
+                    source = container.prefs.weatherSource.first(),
+                    omCity = container.prefs.weatherOmCity.first(),
+                    omHighC = container.prefs.weatherOmHighC.first(),
+                    omDate = container.prefs.weatherOmDate.first(),
+                ),
+            ),
+            fastingJson = container.prefs.fastingSession.first().let { session ->
+                json.encodeToString(
+                    SeedFastingSnapshot.serializer(),
+                    SeedFastingSnapshot(
+                        enabled = container.prefs.fastingEnabled.first(),
+                        goalHours = container.prefs.fastingGoalHours.first(),
+                        eatHours = container.prefs.fastingEatHours.first(),
+                        goalNotificationEnabled = container.prefs.fastingGoalNotificationEnabled.first(),
+                        autoWindows = container.prefs.fastingAutoWindows.first(),
+                        startHour = container.prefs.fastingStartHour.first(),
+                        startMinute = container.prefs.fastingStartMinute.first(),
+                        startReminderEnabled = container.prefs.fastingStartReminderEnabled.first(),
+                        startReminderLeadMinutes = container.prefs.fastingStartReminderLeadMinutes.first(),
+                        endReminderLeadMinutes = container.prefs.fastingEndReminderLeadMinutes.first(),
+                        sessionStartedAtMillis = session.startedAtMillis,
+                        lastEndedAtMillis = session.lastEndedAtMillis,
+                        lastFastStartedAtMillis = session.lastFastStartedAtMillis,
+                        goalReachedNotified = session.goalReachedNotified,
+                        autoStarted = session.autoStarted,
+                    ),
+                )
+            },
         )
         container.prefs.setTestSeedBackupJson(json.encodeToString(SeedBackup.serializer(), backup))
     }
@@ -658,6 +937,85 @@ class TestDataSeeder(private val container: AppContainer) {
                 json.decodeFromString(ListSerializer(BodyMeasurement.serializer()), it)
             )
         }
+        // Notes have no bulk setter (setNote/deleteNote only): diff the wanted
+        // day set against what is stored. Skipped entirely when the backup
+        // predates the field, so real notes are never deleted from an old blob.
+        backup.notesJson?.let { raw ->
+            val wanted = json.decodeFromString(ListSerializer(DailyNote.serializer()), raw)
+                .associateBy { it.date }
+            container.prefs.noteEntries.first()
+                .filter { it.date !in wanted }
+                .forEach { container.notesRepository.deleteNote(it.date) }
+            wanted.values.forEach { container.notesRepository.setNote(it.date, it.text) }
+        }
+        backup.nicotineJson?.let {
+            container.prefs.setNicotineEntries(
+                json.decodeFromString(ListSerializer(NicotineEntry.serializer()), it)
+            )
+        }
+        backup.caffeineJson?.let {
+            container.prefs.setCaffeineEntries(
+                json.decodeFromString(ListSerializer(CaffeineEntry.serializer()), it)
+            )
+        }
+        backup.manualActiveJson?.let {
+            container.prefs.setManualActiveEntries(
+                json.decodeFromString(ListSerializer(ManualActiveEntry.serializer()), it)
+            )
+        }
+        backup.goalJournalJson?.let {
+            container.prefs.setGoalJournal(
+                json.decodeFromString(ListSerializer(GoalJournalEntry.serializer()), it)
+            )
+        }
+        backup.mealCatalogJson?.let {
+            container.prefs.setMealCatalog(json.decodeFromString(MealCatalog.serializer(), it))
+        }
+        backup.untrackedJson?.let {
+            val snapshot = json.decodeFromString(SeedUntrackedSnapshot.serializer(), it)
+            container.prefs.setUntrackedDays(snapshot.days)
+            container.prefs.setUntrackedKcalByDay(snapshot.kcalByDay)
+        }
+        backup.trackerPresetsJson?.let {
+            val snapshot = json.decodeFromString(SeedTrackerSnapshot.serializer(), it)
+            snapshot.caffeinePresets?.let { catalog -> container.prefs.setCaffeinePresets(catalog) }
+            snapshot.nicotinePresets?.let { catalog -> container.prefs.setNicotinePresets(catalog) }
+            snapshot.caffeineQuickKinds?.let { ids -> container.prefs.setCaffeineQuickKinds(ids) }
+            snapshot.nicotineQuickKinds?.let { ids -> container.prefs.setNicotineQuickKinds(ids) }
+            snapshot.waterQuickPresetsMl?.let { ml -> container.prefs.setWaterQuickPresetsMl(ml) }
+        }
+        backup.energyJson?.let {
+            val snapshot = json.decodeFromString(SeedEnergySnapshot.serializer(), it)
+            container.prefs.setHealthEnergyActiveByDay(snapshot.activeByDay)
+            container.prefs.setHealthEnergyMeasuredActive(snapshot.measuredActive)
+        }
+        backup.weatherJson?.let {
+            val snapshot = json.decodeFromString(SeedWeatherSnapshot.serializer(), it)
+            snapshot.source?.let { source -> container.prefs.setWeatherSource(source) }
+            container.prefs.setWeatherOmCity(snapshot.omCity)
+            snapshot.omHighC?.let { highC -> container.prefs.setWeatherOmHighC(highC) }
+            container.prefs.setWeatherOmDate(snapshot.omDate)
+        }
+        backup.fastingJson?.let {
+            val snapshot = json.decodeFromString(SeedFastingSnapshot.serializer(), it)
+            container.prefs.setFastingEnabled(snapshot.enabled)
+            container.prefs.setFastingGoalHours(snapshot.goalHours)
+            container.prefs.setFastingEatHours(snapshot.eatHours)
+            container.prefs.setFastingGoalNotificationEnabled(snapshot.goalNotificationEnabled)
+            container.prefs.setFastingAutoWindows(snapshot.autoWindows)
+            container.prefs.setFastingStartHour(snapshot.startHour)
+            container.prefs.setFastingStartMinute(snapshot.startMinute)
+            container.prefs.setFastingStartReminderEnabled(snapshot.startReminderEnabled)
+            container.prefs.setFastingStartReminderLeadMinutes(snapshot.startReminderLeadMinutes)
+            container.prefs.setFastingEndReminderLeadMinutes(snapshot.endReminderLeadMinutes)
+            container.prefs.setFastingSessionFields(
+                startedAtMillis = snapshot.sessionStartedAtMillis,
+                lastEndedAtMillis = snapshot.lastEndedAtMillis,
+                lastFastStartedAtMillis = snapshot.lastFastStartedAtMillis,
+                goalReachedNotified = snapshot.goalReachedNotified,
+                autoStarted = snapshot.autoStarted,
+            )
+        }
         backup.settings?.let { settings ->
             container.prefs.setWaterTrackingEnabled(settings.waterTrackingEnabled)
             container.prefs.setWaterDynamicEnabled(settings.waterDynamicEnabled)
@@ -679,6 +1037,13 @@ class TestDataSeeder(private val container: AppContainer) {
             settings.homeTopNutrients?.let { container.prefs.setHomeTopNutrients(it) }
             settings.homeNutrientCardCount?.let { container.prefs.setHomeNutrientCardCount(it) }
             settings.homeCalorieDisplayMode?.let { container.prefs.setHomeCalorieDisplayMode(it) }
+            settings.dailyNotesEnabled?.let { container.prefs.setDailyNotesEnabled(it) }
+            settings.mealPlanningEnabled?.let { container.prefs.setMealPlanningEnabled(it) }
+            settings.foodLogMacroChips?.let { container.prefs.setFoodLogMacroChips(it) }
+            settings.progressNutrientAverages?.let { container.prefs.setProgressNutrientAverages(it) }
+            settings.progressNutrientAveragesSelection?.let {
+                container.prefs.setProgressNutrientAveragesSelection(it)
+            }
         }
         backup.profileJson?.let {
             container.profileRepository.save(json.decodeFromString(UserProfile.serializer(), it))
@@ -690,7 +1055,10 @@ class TestDataSeeder(private val container: AppContainer) {
 
     /**
      * Seeds the analysis queue + prompt history (Codeberg #53) with two pending
-     * photo items, one finished analysis, and one failed attempt:
+     * photo items, one finished analysis, one failed attempt, and (defect
+     * shapes) a 10-photo row, a text-only row, a future-target row, a
+     * future-timestamp row, a row naming its last attempt, a single-ingredient
+     * row, and one row whose photo file is gone (placeholder thumbnail):
      *
      *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_analysis_queue true
      */
@@ -704,6 +1072,13 @@ class TestDataSeeder(private val container: AppContainer) {
         val pending2 = UUID.randomUUID()
         val done = UUID.randomUUID()
         val failed = UUID.randomUUID()
+        val bulk = UUID.randomUUID()
+        val textOnly = UUID.randomUUID()
+        val futureTarget = UUID.randomUUID()
+        val futureCreated = UUID.randomUUID()
+        val attempted = UUID.randomUUID()
+        val singleIngredient = UUID.randomUUID()
+        val missingPhoto = UUID.randomUUID()
         container.analysisQueue.upsert(
             QueuedAnalysis(
                 id = pending1,
@@ -765,13 +1140,340 @@ class TestDataSeeder(private val container: AppContainer) {
                 error = "Analysis failed",
             )
         )
+        // Defect shapes: the queue tolerates all of these and the sheet has to
+        // render each (bulk badge, text-only row, future day, "missing photo"
+        // placeholder, run-with bookkeeping, single-ingredient prompt).
+        container.analysisQueue.upsert(
+            QueuedAnalysis(
+                id = bulk,
+                createdAt = now.minusSeconds(20 * 60),
+                targetDate = LocalDate.now(),
+                imageFilenames = container.analysisQueue.storeImages(
+                    bulk,
+                    List(FoodPhotoSession.MAX_IMAGES) { fixtures[it % fixtures.size] },
+                ),
+                note = "Big batch cook (${FoodPhotoSession.MAX_IMAGES} photos)",
+                confirmedPortionGrams = 480.0,
+                source = FoodSource.SNAP_FOOD,
+                status = QueueStatus.PENDING,
+            )
+        )
+        container.analysisQueue.upsert(
+            QueuedAnalysis(
+                id = textOnly,
+                createdAt = now.minusSeconds(35 * 60),
+                targetDate = LocalDate.now(),
+                note = "Text only, no photo attached",
+                source = FoodSource.TEXT_INPUT,
+                status = QueueStatus.PENDING,
+            )
+        )
+        container.analysisQueue.upsert(
+            QueuedAnalysis(
+                id = futureTarget,
+                createdAt = now.minusSeconds(8 * 3600),
+                targetDate = LocalDate.now().plusDays(3),
+                imageFilenames = container.analysisQueue.storeImages(
+                    futureTarget, fixtures.take(1)
+                ),
+                note = "Planned dinner prep",
+                source = FoodSource.SNAP_FOOD,
+                status = QueueStatus.PENDING,
+            )
+        )
+        container.analysisQueue.upsert(
+            QueuedAnalysis(
+                id = futureCreated,
+                createdAt = now.plusSeconds(2 * 24 * 3600),
+                targetDate = LocalDate.now(),
+                note = "Clock skew from a sync import",
+                source = FoodSource.TEXT_INPUT,
+                status = QueueStatus.PENDING,
+            )
+        )
+        container.analysisQueue.upsert(
+            QueuedAnalysis(
+                id = attempted,
+                createdAt = now.minusSeconds(30 * 3600),
+                targetDate = LocalDate.now().minusDays(1),
+                imageFilenames = container.analysisQueue.storeImages(
+                    attempted, fixtures.drop(2).take(1)
+                ),
+                note = "Ran with an explicit profile",
+                source = FoodSource.SNAP_FOOD,
+                status = QueueStatus.DONE,
+                result = app.chompass.services.ai.FoodAnalysis(
+                    name = "Seed bowl",
+                    calories = 520,
+                    protein = 30.0,
+                    carbs = 48.0,
+                    fat = 22.0,
+                    servingSizeGrams = 300.0,
+                ),
+                lastAttemptProfile = "Seed Profile",
+                lastAttemptModel = "seed-model",
+            )
+        )
+        container.analysisQueue.upsert(
+            QueuedAnalysis(
+                id = singleIngredient,
+                createdAt = now.minusSeconds(15 * 60),
+                targetDate = LocalDate.now(),
+                imageFilenames = container.analysisQueue.storeImages(
+                    singleIngredient, fixtures.drop(1).take(1)
+                ),
+                note = "Single ingredient (progressive meal)",
+                singleIngredient = true,
+                source = FoodSource.SNAP_FOOD,
+                status = QueueStatus.PENDING,
+            )
+        )
+        container.analysisQueue.upsert(
+            QueuedAnalysis(
+                id = missingPhoto,
+                createdAt = now.minusSeconds(9 * 3600),
+                targetDate = LocalDate.now(),
+                // Reference to a file the queue image dir does not contain:
+                // the list row falls back to the placeholder thumbnail.
+                imageFilenames = listOf("${missingPhoto}_0.jpg"),
+                note = "Photo file pruned",
+                source = FoodSource.SNAP_FOOD,
+                status = QueueStatus.PENDING,
+            )
+        )
     }
+
+    /**
+     * Installs the stored-defect fixtures ([SampleDataDefects]) so every shape
+     * the app tolerates is reachable on a device — no UI path can author most
+     * of them. Groups run in [DefectGroup] declaration order, so a later group
+     * sees the rows an earlier one wrote (e.g. METRICS' sparse window sits
+     * inside DAYS' entry-free stretch).
+     *
+     * Reversible: snapshots first (like every other seeder), so
+     * `restore_real_data` undoes a defect pass on a real diary.
+     *
+     *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_defects true
+     *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_full true --ez defect_gaps true
+     */
+    internal suspend fun seedDefects(groups: Set<DefectGroup>) {
+        if (!BuildConfig.DEBUG) return
+        if (groups.isEmpty()) return
+        snapshotRealDataIfNeeded()
+        val today = LocalDate.now()
+        val zone = ZoneId.systemDefault()
+        val fixtureIds = SampleDataDefects.fixtureIds(today)
+
+        // Whole-day gaps first, so the rows this pass writes survive the clear
+        // (the month-boundary fixture can fall inside the cleared window).
+        if (DefectGroup.DAYS in groups) {
+            val clearedDays = SampleDataDefects.entryFreeDayOffsets
+                .map { today.minusDays(it) }
+                .toSet()
+            val removals = container.foodRepository.entries.first()
+                .filter { row ->
+                    row.id !in fixtureIds &&
+                        LocalDate.from(row.timestamp.atZone(zone)) in clearedDays
+                }
+            if (removals.isNotEmpty()) {
+                container.prefs.applyFoodEntryBucketChanges(
+                    removalIdsByMonth = removals
+                        .groupBy { YearMonth.from(it.timestamp.atZone(zone)) }
+                        .mapValues { (_, rows) -> rows.map { it.id }.toSet() },
+                )
+            }
+            container.prefs.setUntrackedDays(SampleDataDefects.untrackedDays(today))
+            container.prefs.setUntrackedKcalByDay(SampleDataDefects.untrackedKcalByDay(today))
+            val note = SampleDataDefects.noteOnlyNote(today)
+            container.notesRepository.setNote(note.date, note.text)
+        }
+
+        val diary = mutableListOf<FoodEntry>()
+        val favorites = mutableListOf<FoodEntry>()
+        DefectGroup.entries.filter { it in groups }.forEach { group ->
+            when (group) {
+                DefectGroup.GAPS -> {
+                    diary += SampleDataDefects.gapRows(today)
+                    favorites += SampleDataDefects.gapFavorites(today)
+                }
+                DefectGroup.STALE_MICROS -> {
+                    diary += SampleDataDefects.staleMicrosRows(today)
+                    favorites += SampleDataDefects.staleMicrosFavorite(today)
+                }
+                DefectGroup.LEGACY -> {
+                    diary += SampleDataDefects.legacyRows(today)
+                    favorites += SampleDataDefects.legacyFavorite(today)
+                    container.prefs.setRecipes(
+                        container.prefs.recipes.first() + SampleDataDefects.legacyRecipe(today)
+                    )
+                    val (caffeine, nicotine) = SampleDataDefects.legacyTrackerEntries(today)
+                    container.prefs.setCaffeineEntries(container.prefs.caffeineEntries.first() + caffeine)
+                    container.prefs.setNicotineEntries(container.prefs.nicotineEntries.first() + nicotine)
+                    // The all-null measurement row (same id the METRICS group uses).
+                    container.prefs.applyMeasurementBucketChanges(
+                        upsertsByMonth = byMonth(
+                            SampleDataDefects.measurementDefectRows(today).filterNot { it.hasAnyValue },
+                            zone,
+                        ) { it.date },
+                    )
+                }
+                DefectGroup.DAYS -> {
+                    diary += SampleDataDefects.sharedFavoriteKeyRows(today)
+                    diary += SampleDataDefects.futureRow(today)
+                }
+                DefectGroup.METRICS -> {
+                    // Explicit 3-week reading gap: delete, never random skips.
+                    val (from, to) = SampleDataDefects.readingGapRange(today)
+                    container.weightRepository.entriesInRange(from, to)
+                        .forEach { container.weightRepository.deleteEntry(it.id) }
+                    container.bodyFatRepository.entriesInRange(from, to)
+                        .forEach { container.bodyFatRepository.deleteEntry(it.id) }
+                    val (duplicateWeights, duplicateFats) = SampleDataDefects.duplicateReadingRows(today)
+                    val (absurdWeights, absurdFats) = SampleDataDefects.absurdReadingRows(today)
+                    // Bucket façades (not the repositories): the profile's own
+                    // weight / body-fat stay at the seeded values.
+                    container.prefs.applyWeightBucketChanges(
+                        upsertsByMonth = byMonth(duplicateWeights + absurdWeights, zone) { it.date },
+                    )
+                    container.prefs.applyBodyFatBucketChanges(
+                        upsertsByMonth = byMonth(duplicateFats + absurdFats, zone) { it.date },
+                    )
+                    container.prefs.applyMeasurementBucketChanges(
+                        upsertsByMonth = byMonth(SampleDataDefects.measurementDefectRows(today), zone) { it.date },
+                    )
+                    val defectDays = SampleDataDefects.activityDefectDays(today)
+                    val existing = container.prefs.debugActivityDaysJson()?.let { raw ->
+                        runCatching {
+                            json.decodeFromString(ListSerializer(DebugActivityDay.serializer()), raw)
+                        }.getOrNull()
+                    }.orEmpty()
+                    container.prefs.setDebugActivityDays(
+                        existing.filterNot { day -> defectDays.any { it.date == day.date } } + defectDays
+                    )
+                }
+                DefectGroup.TRACKERS -> {
+                    val now = System.currentTimeMillis()
+                    container.prefs.setFastingEnabled(true)
+                    container.prefs.setFastingGoalHours(16)
+                    container.prefs.setFastingEatHours(8)
+                    container.prefs.setFastingGoalNotificationEnabled(true)
+                    container.prefs.setFastingAutoWindows(true)
+                    container.prefs.setFastingStartHour(20)
+                    container.prefs.setFastingStartMinute(0)
+                    // One running fast, already past its goal, auto-started, with
+                    // the previous completed fast as the eating-window input.
+                    container.prefs.setFastingSessionFields(
+                        startedAtMillis = now - 20 * MILLIS_PER_HOUR,
+                        lastEndedAtMillis = now - 20 * MILLIS_PER_HOUR,
+                        lastFastStartedAtMillis = now - 38 * MILLIS_PER_HOUR,
+                        goalReachedNotified = false,
+                        autoStarted = true,
+                    )
+                    container.prefs.setCaffeineQuickKinds(emptyList())
+                    container.prefs.setNicotineQuickKinds(emptyList())
+                    container.prefs.setNicotineEntries(
+                        container.prefs.nicotineEntries.first() + SampleDataDefects.nicotineDefectRows(today)
+                    )
+                    val linked = container.prefs.foodEntriesForMonth(YearMonth.now()).first()
+                        .maxByOrNull { it.timestamp }?.id
+                    container.prefs.setCaffeineEntries(
+                        container.prefs.caffeineEntries.first() + SampleDataDefects.caffeineDefectRow(today, linked)
+                    )
+                    container.prefs.setWaterEntries(
+                        container.prefs.waterEntries.first() + SampleDataDefects.waterDefectRows(today)
+                    )
+                }
+            }
+        }
+
+        if (diary.isNotEmpty()) {
+            container.prefs.applyFoodEntryBucketChanges(
+                upsertsByMonth = byMonth(diary, zone) { it.timestamp },
+            )
+        }
+        if (favorites.isNotEmpty()) {
+            val addedIds = favorites.map { it.id }.toSet()
+            val merged = container.prefs.favoriteFoodEntries.first().filterNot { it.id in addedIds } + favorites
+            container.prefs.setFavoriteFoodEntries(merged)
+            container.prefs.setFavoriteKeys(merged.map { it.favoriteKey }.toSet())
+        }
+    }
+
+    /**
+     * Debug-only profile variants that compose with `seed_full`. The birthday is
+     * pinned so the Settings age row and the BMR demo age stay stable.
+     *
+     *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_profile_variant gain
+     */
+    suspend fun seedProfileVariant(name: String) {
+        if (!BuildConfig.DEBUG) return
+        val variant = name.trim().lowercase()
+        if (variant.isEmpty()) return
+        snapshotRealDataIfNeeded()
+        val base = container.profileRepository.profile.first() ?: return
+        val birthday = Instant.parse("1992-06-15T00:00:00Z")
+        container.profileRepository.save(
+            when (variant) {
+                "gain" -> base.copy(goal = WeightGoal.GAIN, weeklyChangeKg = 0.25, birthday = birthday)
+                "maintain" -> base.copy(
+                    goal = WeightGoal.MAINTAIN,
+                    weeklyChangeKg = null,
+                    goalWeightKg = null,
+                    birthday = birthday,
+                )
+                "pinned" -> base.copy(
+                    customCalories = 1_850,
+                    customProtein = 150,
+                    customCarbs = 180,
+                    customFat = 60,
+                    caloriesLocked = true,
+                    lockedMacros = setOf(AutoBalanceMacro.PROTEIN),
+                    birthday = birthday,
+                )
+                "female" -> base.copy(
+                    gender = Gender.FEMALE,
+                    useBodyFatInBMR = false,
+                    proteinGramsPerKg = 2.2,
+                    proteinTargetMode = ProteinTargetMode.G_PER_KG_TOTAL,
+                    birthday = birthday,
+                )
+                // Unknown value: leave the seeder's profile alone.
+                else -> return
+            }
+        )
+    }
+
+    /** Bucket stores key month files by the row's own date. */
+    private fun <T> byMonth(items: List<T>, zone: ZoneId, date: (T) -> Instant): Map<YearMonth, List<T>> =
+        items.groupBy { YearMonth.from(date(it).atZone(zone)) }
 
     private companion object {
         val SEED_PHOTO_ASSETS = listOf(
             "ondevice_llm/food_plate.jpg",
             "ondevice_llm/pizza_slices.jpg",
             "ondevice_llm/fast_food_combo.jpg",
+        )
+
+        /** Custom notes sprinkled over the enriched diary rows (every 4th). */
+        val SEED_NOTES = listOf(
+            "Meal-prepped on Sunday",
+            "Ate out, portion estimated",
+            "Shared the plate with the kid",
+            "Skipped the sauce this time",
+        )
+
+        /** Fasting/seeding hour arithmetic. */
+        const val MILLIS_PER_HOUR = 3_600_000L
+
+        /** The seeded Open-Meteo city (valid [OmCity] JSON; no network needed). */
+        val SEED_OM_CITY = OmCity(
+            id = 2_957_159,
+            name = "Seedville",
+            country = "Germany",
+            admin1 = "Seedland",
+            latitude = 52.52,
+            longitude = 13.405,
+            timezone = "Europe/Berlin",
         )
     }
 
@@ -793,6 +1495,73 @@ internal data class SeedBackup(
     val chatJson: String? = null,
     val measurementsJson: String? = null,
     val settings: SeedSettingsSnapshot? = null,
+    // Added with the full coverage pass (seed_full writes these too, and the
+    // defect seeders touch them) — null in older backups, so restore leaves the
+    // real value untouched instead of clearing it.
+    val notesJson: String? = null,
+    val nicotineJson: String? = null,
+    val caffeineJson: String? = null,
+    val manualActiveJson: String? = null,
+    val goalJournalJson: String? = null,
+    val mealCatalogJson: String? = null,
+    val untrackedJson: String? = null,
+    val trackerPresetsJson: String? = null,
+    val energyJson: String? = null,
+    val weatherJson: String? = null,
+    val fastingJson: String? = null,
+)
+
+/** Untracked-day marks: the day set plus the per-day "assumed kcal" map. */
+@Serializable
+internal data class SeedUntrackedSnapshot(
+    val days: Set<String> = emptySet(),
+    val kcalByDay: Map<String, Int> = emptyMap(),
+)
+
+/** Custom/renamed tracker presets + the hub quick-chip selections + water presets. */
+@Serializable
+internal data class SeedTrackerSnapshot(
+    val caffeinePresets: HabitPresetCatalog? = null,
+    val nicotinePresets: HabitPresetCatalog? = null,
+    val caffeineQuickKinds: List<String>? = null,
+    val nicotineQuickKinds: List<String>? = null,
+    val waterQuickPresetsMl: List<Int>? = null,
+)
+
+/** Health-Connect energy cache (per-day active map + the single measured value). */
+@Serializable
+internal data class SeedEnergySnapshot(
+    val activeByDay: Map<String, Int> = emptyMap(),
+    val measuredActive: Int = 0,
+)
+
+/** Water dynamic-goal temperature cache (Open-Meteo) + its source selector. */
+@Serializable
+internal data class SeedWeatherSnapshot(
+    val source: String? = null,
+    val omCity: String? = null,
+    val omHighC: Int? = null,
+    val omDate: String? = null,
+)
+
+/** Optional intermittent-fasting timer: settings + the session scalars. */
+@Serializable
+internal data class SeedFastingSnapshot(
+    val enabled: Boolean = false,
+    val goalHours: Int = 0,
+    val eatHours: Int = 0,
+    val goalNotificationEnabled: Boolean = false,
+    val autoWindows: Boolean = false,
+    val startHour: Int = 0,
+    val startMinute: Int = 0,
+    val startReminderEnabled: Boolean = false,
+    val startReminderLeadMinutes: Int = 0,
+    val endReminderLeadMinutes: Int = 0,
+    val sessionStartedAtMillis: Long? = null,
+    val lastEndedAtMillis: Long? = null,
+    val lastFastStartedAtMillis: Long? = null,
+    val goalReachedNotified: Boolean = false,
+    val autoStarted: Boolean = false,
 )
 
 @Serializable
@@ -813,4 +1582,11 @@ internal data class SeedSettingsSnapshot(
     val homeTopNutrients: String? = null,
     val homeNutrientCardCount: Int? = null,
     val homeCalorieDisplayMode: String? = null,
+    // Added with the full coverage pass. Nullable so an older blob leaves the
+    // real value alone (the Boolean fields above predate that convention).
+    val dailyNotesEnabled: Boolean? = null,
+    val mealPlanningEnabled: Boolean? = null,
+    val foodLogMacroChips: String? = null,
+    val progressNutrientAverages: Boolean? = null,
+    val progressNutrientAveragesSelection: Set<String>? = null,
 )

@@ -3,9 +3,21 @@ package app.chompass.services
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.ChatMessage
+import app.chompass.models.DailyNote
+import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodEntry
+import app.chompass.models.FoodProductMetadata
 import app.chompass.models.FoodSource
+import app.chompass.models.HabitPreset
+import app.chompass.models.HabitPresetCatalog
+import app.chompass.models.HabitPresetDomain
+import app.chompass.models.MealCatalog
+import app.chompass.models.MealDef
 import app.chompass.models.MealType
+import app.chompass.models.MicronutrientValues
+import app.chompass.models.MilkKind
+import app.chompass.models.ServingUnitOption
+import app.chompass.models.microsCompositionSignature
 import app.chompass.models.CaffeineEntry
 import app.chompass.models.CaffeineKind
 import app.chompass.models.NicotineEntry
@@ -20,6 +32,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.util.UUID
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 /** Shared synthetic food / weight / body-fat generators for dev seeding and screenshot fixtures. */
@@ -252,18 +265,7 @@ internal object SampleDataGenerators {
             MealTemplate("Banana", 105, 1, 27, 0, "\uD83C\uDF4C", fiber = 3.0, sodium = 1.0, sugar = 14.0),
             MealTemplate("Greek yogurt", 130, 18, 8, 4, "\uD83E\uDD5B", fiber = 0.0, sodium = 55.0, sugar = 6.0),
         )
-        val recipeMains = listOf(
-            Triple(
-                MealTemplate("Chicken thigh", 240, 28, 0, 14, "\uD83C\uDF57", fiber = 0.0, sodium = 90.0),
-                MealTemplate("Brown rice", 220, 5, 46, 2, "\uD83C\uDF5A", fiber = 3.0, sodium = 8.0),
-                MealTemplate("Roasted broccoli", 80, 4, 12, 3, "\uD83E\uDD66", fiber = 4.0, sodium = 30.0),
-            ),
-            Triple(
-                MealTemplate("Tofu", 180, 16, 6, 10, "\uD83E\uDDC6", fiber = 1.0, sodium = 20.0),
-                MealTemplate("Soba noodles", 250, 8, 48, 2, "\uD83C\uDF5C", fiber = 2.0, sodium = 240.0),
-                MealTemplate("Peanut sauce", 140, 4, 8, 11, "\uD83E\uDD5C", fiber = 1.0, sodium = 310.0),
-            ),
-        )
+        val recipeMains = RecipeMains
 
         val out = mutableListOf<FoodEntry>()
         for (daysAgo in totalDays downTo 0) {
@@ -506,7 +508,7 @@ internal object SampleDataGenerators {
         }
     }
 
-    fun sampleChat(now: Instant = Instant.now()): List<ChatMessage> {
+    fun sampleChat(now: Instant = Instant.now(), withAttachment: Boolean = false): List<ChatMessage> {
         val turns = listOf(
             ChatMessage.Role.USER to "How am I doing on protein this week?",
             ChatMessage.Role.ASSISTANT to "You are averaging about 140 g of protein a day, a bit under your 150 g target. A Greek yogurt or an extra chicken serving at lunch would close the gap.",
@@ -525,15 +527,416 @@ internal object SampleDataGenerators {
             ChatMessage.Role.USER to "Thanks.",
             ChatMessage.Role.ASSISTANT to "Anytime. Log dinner when you can and I will keep an eye on the macros.",
         )
-        return turns.mapIndexed { i, (role, content) ->
+        val messages = turns.mapIndexed { i, (role, content) ->
             ChatMessage(
                 role = role,
                 content = content,
                 timestamp = now.minusSeconds(120L * (turns.size - i).toLong()),
             )
         }
+        if (!withAttachment) return messages
+        // One image bubble (Coach attachment rendering); default off so the
+        // 16-message pin in SampleDataGeneratorsTest stays true.
+        return messages + ChatMessage(
+            role = ChatMessage.Role.USER,
+            content = "Here is the plate, does the portion look right?",
+            attachmentImageBase64 = ONE_PIXEL_PNG_BASE64,
+            timestamp = now,
+        )
     }
+
+    // ---- Coverage layer: full micros, serving units, composites, imports ----
+
+    /**
+     * Deterministic plausible per-serving micros: all 23 fields set, none null,
+     * so every micro row in the edit sheet has a value to render. Values are
+     * rounded to 1 decimal like the sheet preview.
+     */
+    fun microsForSeed(seed: Long): MicronutrientValues {
+        val rng = Random(seed)
+        fun v(lo: Double, hi: Double): Double = round1(rng.nextDouble(lo, hi))
+        return MicronutrientValues(
+            sugar = v(8.0, 30.0),
+            addedSugar = v(0.0, 25.0),
+            fiber = v(1.0, 10.0),
+            saturatedFat = v(1.0, 12.0),
+            monounsaturatedFat = v(1.0, 15.0),
+            polyunsaturatedFat = v(0.5, 8.0),
+            cholesterol = v(0.0, 180.0),
+            sodium = v(100.0, 1200.0),
+            potassium = v(200.0, 1500.0),
+            transFat = v(0.0, 1.0),
+            calcium = v(50.0, 400.0),
+            iron = v(1.0, 8.0),
+            magnesium = v(20.0, 120.0),
+            zinc = v(1.0, 6.0),
+            vitaminA = v(50.0, 800.0),
+            vitaminC = v(2.0, 60.0),
+            vitaminD = v(0.5, 6.0),
+            vitaminB12 = v(0.2, 3.0),
+            vitaminE = v(0.5, 6.0),
+            vitaminK = v(5.0, 120.0),
+            folate = v(20.0, 200.0),
+            omega3 = v(0.1, 2.0),
+            caffeine = v(0.0, 120.0),
+        )
+    }
+
+    /** [entry] with every one of the 23 micro fields overwritten from [seed]. */
+    fun withFullMicros(entry: FoodEntry, seed: Long): FoodEntry = microsForSeed(seed).applyTo(entry)
+
+    /** [entry] carrying a g + cup serving option, cup selected at 1.5 (320 g). */
+    fun withServingUnits(entry: FoodEntry): FoodEntry = entry.copy(
+        servingSizeGrams = 320.0,
+        servingUnitOptions = listOf(
+            ServingUnitOption(unit = "g", gramsPerUnit = 1.0),
+            ServingUnitOption(unit = "cup", gramsPerUnit = 240.0, quantity = 1.5),
+        ),
+        selectedServingUnit = "cup",
+        selectedServingQuantity = 1.5,
+    )
+
+    /** [entry] plus an Open Food Facts style product card (renders ungated in the edit sheet). */
+    fun withProductMetadata(entry: FoodEntry): FoodEntry = entry.copy(
+        productMetadata = FoodProductMetadata(
+            barcode = "4001234567890",
+            packageQuantity = "250 g",
+            ingredientsText = "Zucker, Haferflocken, Milch",
+            allergens = listOf("milk"),
+            traces = listOf("nuts"),
+            nutriScore = "b",
+            novaGroup = 4,
+            ecoScore = "c",
+            labels = listOf("organic"),
+            categories = listOf("snacks"),
+            imageUrl = null,
+        )
+    )
+
+    /**
+     * Composite-meal coverage: every 11th day logs each triple main as ONE
+     * [FoodEntry] with 3 [FoodConstituent] rows (grams and macros sum to the
+     * totals, per-row micros on 2 of 3 rows, composition signature stamped) —
+     * distinct from [fullFoodEntries]' 3-row recipe-log groups. Deterministic
+     * ids so re-seeding upserts instead of stacking.
+     */
+    fun compositeEntries(totalDays: Int = 365, today: LocalDate = LocalDate.now()): List<FoodEntry> {
+        val zone = ZoneId.systemDefault()
+        val grams = listOf(150.0, 200.0, 120.0)
+        val notes = listOf(
+            "Meal-prepped, split into three rows",
+            "Leftovers from Sunday",
+            "Cooked with the wok, oil not counted",
+        )
+        val out = mutableListOf<FoodEntry>()
+        for (daysAgo in totalDays downTo 0) {
+            if (daysAgo % 11 != 0) continue
+            val parts = RecipeMains[(daysAgo / 11) % RecipeMains.size].toList()
+            val constituents = parts.mapIndexed { i, template ->
+                val row = FoodConstituent(
+                    name = template.name,
+                    calories = template.cal,
+                    protein = template.p.toDouble(),
+                    carbs = template.c.toDouble(),
+                    fat = template.f.toDouble(),
+                    servingSizeGrams = grams[i],
+                    emoji = template.emoji,
+                )
+                // Micros on 2 of 3 rows: the real AI constituent shape is partial.
+                if (i < 2) row.withMicros(microsForSeed(0xC0110L + daysAgo + i)) else row
+            }
+            val day = today.minusDays(daysAgo.toLong())
+            out.add(
+                FoodEntry(
+                    id = UUID.nameUUIDFromBytes("chompass-seed-composite:$daysAgo".toByteArray()),
+                    name = parts.joinToString(" + ") { it.name },
+                    calories = constituents.sumOf { it.calories },
+                    protein = round1(constituents.sumOf { it.protein }),
+                    carbs = round1(constituents.sumOf { it.carbs }),
+                    fat = round1(constituents.sumOf { it.fat }),
+                    timestamp = day.atTime(18, 15).atZone(zone).toInstant(),
+                    emoji = parts.first().emoji,
+                    source = FoodSource.MANUAL,
+                    mealType = MealType.DINNER.id,
+                    servingSizeGrams = constituents.sumOf { it.servingSizeGrams },
+                    customNote = if (daysAgo / 11 % 3 == 0) notes.random(Random(daysAgo)) else null,
+                    constituents = constituents,
+                    microsCompositionSignature = microsCompositionSignature(constituents),
+                ),
+            )
+        }
+        return out
+    }
+
+    /**
+     * Two recipes in the Mealie import shape: `mealie:<slug>` source, declared
+     * servings, recipe-level nutrition, and ingredients carrying only the
+     * culinary amount/unit (zero base macros) — the exact signature the
+     * recipe-builder fill-missing pill targets.
+     */
+    fun sampleMealieRecipes(now: Instant = Instant.now()): List<Recipe> {
+        fun ing(name: String, amount: String, unit: String, emoji: String?) = RecipeIngredient(
+            name = name,
+            emoji = emoji,
+            amountText = amount,
+            unitText = unit,
+            baseCalories = 0,
+            baseProtein = 0.0,
+            baseCarbs = 0.0,
+            baseFat = 0.0,
+        )
+        return listOf(
+            Recipe(
+                name = "Mealie French toast",
+                emoji = "\uD83C\uDF5E",
+                mealType = MealType.BREAKFAST.id,
+                createdAt = now.minusSeconds(86_400L * 12),
+                source = "mealie:french-toast",
+                servingsPerRecipe = 4.0,
+                nutritionCalories = 1_480,
+                nutritionProtein = 52.0,
+                nutritionCarbs = 196.0,
+                nutritionFat = 48.0,
+                nutritionFiber = 8.0,
+                nutritionSugar = 44.0,
+                nutritionSodium = 940.0,
+                ingredients = listOf(
+                    ing("Bread", "8", "slices", "\uD83C\uDF5E"),
+                    ing("Eggs", "3", "pcs", "\uD83E\uDD5A"),
+                    ing("Milk", "200", "ml", "\uD83E\uDD5B"),
+                    ing("Cinnamon", "2", "g", null),
+                ),
+            ),
+            Recipe(
+                name = "Mealie lentil soup",
+                emoji = "\uD83C\uDF72",
+                mealType = MealType.DINNER.id,
+                createdAt = now.minusSeconds(86_400L * 5),
+                source = "mealie:lentil-soup",
+                servingsPerRecipe = 4.0,
+                nutritionCalories = 1_120,
+                nutritionProtein = 62.0,
+                nutritionCarbs = 148.0,
+                nutritionFat = 22.0,
+                nutritionFiber = 34.0,
+                nutritionSugar = 14.0,
+                nutritionSodium = 2_100.0,
+                ingredients = listOf(
+                    ing("Red lentils", "300", "g", "\uD83E\uDD56"),
+                    ing("Carrots", "2", "pcs", "\uD83E\uDD55"),
+                    ing("Vegetable stock", "800", "ml", null),
+                ),
+            ),
+        )
+    }
+
+    /**
+     * Three favorites the plain [sampleFavorites] set does not cover: full
+     * micros, a cup serving option + note, and a composite meal with a stamped
+     * composition signature. Names stay distinct from [sampleFavorites]
+     * (favorite identity is the lowercased name).
+     */
+    fun richFavorites(now: Instant = Instant.now()): List<FoodEntry> {
+        val micros = withFullMicros(
+            FoodEntry(
+                name = "Seed micros bowl",
+                calories = 520,
+                protein = 34.0,
+                carbs = 52.0,
+                fat = 18.0,
+                timestamp = now.minusSeconds(86_400L * 11),
+                emoji = "\uD83E\uDD63",
+                source = FoodSource.TEXT_INPUT,
+                mealType = MealType.LUNCH.id,
+            ),
+            seed = 0xF4B0,
+        )
+        val cup = withServingUnits(
+            FoodEntry(
+                name = "Seed cup granola",
+                calories = 430,
+                protein = 12.0,
+                carbs = 66.0,
+                fat = 14.0,
+                timestamp = now.minusSeconds(86_400L * 12),
+                emoji = "\uD83E\uDD63",
+                source = FoodSource.BARCODE,
+                mealType = MealType.BREAKFAST.id,
+                customNote = "One and a half cups, weighed once",
+            )
+        )
+        val constituents = RecipeMains.first().toList().mapIndexed { i, template ->
+            FoodConstituent(
+                name = template.name,
+                calories = template.cal,
+                protein = template.p.toDouble(),
+                carbs = template.c.toDouble(),
+                fat = template.f.toDouble(),
+                servingSizeGrams = listOf(150.0, 200.0, 120.0)[i],
+                emoji = template.emoji,
+            )
+        }
+        val composite = FoodEntry(
+            name = "Seed composite plate",
+            calories = constituents.sumOf { it.calories },
+            protein = round1(constituents.sumOf { it.protein }),
+            carbs = round1(constituents.sumOf { it.carbs }),
+            fat = round1(constituents.sumOf { it.fat }),
+            timestamp = now.minusSeconds(86_400L * 13),
+            emoji = constituents.first().emoji,
+            source = FoodSource.MANUAL,
+            mealType = MealType.DINNER.id,
+            servingSizeGrams = constituents.sumOf { it.servingSizeGrams },
+            constituents = constituents,
+            microsCompositionSignature = microsCompositionSignature(constituents),
+        )
+        return listOf(micros, cup, composite)
+    }
+
+    /** Three daily notes (today, −10, −25) built with the stable per-day id. */
+    fun sampleNotes(today: LocalDate = LocalDate.now()): List<DailyNote> = listOf(
+        today to "Felt strong today. Hit the protein target without a shake and walked after lunch.",
+        today.minusDays(10) to "Late dinner, so the day came in over target. Logged everything anyway, no guilt.",
+        today.minusDays(25) to "Rest day: ate close to maintenance and the tape says the waist is holding.",
+    ).map { (date, text) -> DailyNote(id = DailyNote.idFor(date), date = date, text = text) }
+
+    /**
+     * Default meal catalog plus one custom "Seed Brunch" slot (id matches
+     * [MealCatalog.CUSTOM_ID_REGEX]; validated: the start keeps the ≥15 min gap
+     * to the builtin lunch window).
+     */
+    fun sampleMealCatalog(): MealCatalog = MealCatalog().let { catalog ->
+        catalog.copy(
+            meals = catalog.meals + MealDef(
+                id = SEED_CUSTOM_MEAL_ID,
+                label = "Seed Brunch",
+                startMinutes = 690,
+                enabled = true,
+            ),
+        )
+    }
+
+    /**
+     * Caffeine + nicotine preset catalogs: builtins in enum order, one renamed
+     * builtin, and one custom preset each (`t_` hex id, within MAX_CUSTOM).
+     */
+    fun trackerPresets(): Pair<HabitPresetCatalog, HabitPresetCatalog> {
+        val caffeine = HabitPresetDomain.CAFFEINE.defaultCatalog.copy(
+            presets = HabitPresetDomain.CAFFEINE.defaultCatalog.presets.map {
+                if (it.id == CaffeineKind.COFFEE.storageKey) it.copy(label = "Flat White") else it
+            } + HabitPreset(
+                id = SEED_CAFFEINE_PRESET_ID,
+                label = "Seed Latte",
+                defaultMg = 42.0,
+                milkKind = MilkKind.OAT.storageKey,
+                milkMl = 30,
+            ),
+        )
+        val nicotine = HabitPresetDomain.NICOTINE.defaultCatalog.copy(
+            presets = HabitPresetDomain.NICOTINE.defaultCatalog.presets + HabitPreset(
+                id = SEED_NICOTINE_PRESET_ID,
+                label = "Seed Pouch",
+                defaultCount = 2,
+                defaultDoseMg = 6.0,
+            ),
+        )
+        return caffeine to nicotine
+    }
+
+    /**
+     * Weekly measurement snapshots covering all eight [BodyMeasurement.Site]s
+     * with per-site linear trends + noise (the coverage twin of
+     * [measurementSeries], which only logs the four tape sites).
+     */
+    fun allSitesMeasurementSeries(
+        totalDays: Int = 180,
+        seed: Long,
+        today: LocalDate = LocalDate.now(),
+    ): List<BodyMeasurement> {
+        val zone = ZoneId.systemDefault()
+        val rng = Random(seed)
+        val trends = mapOf(
+            BodyMeasurement.Site.NECK to (39.0 to 38.0),
+            BodyMeasurement.Site.WAIST to (88.0 to 82.5),
+            BodyMeasurement.Site.HIPS to (104.0 to 100.5),
+            BodyMeasurement.Site.CHEST to (100.0 to 97.0),
+            BodyMeasurement.Site.UPPER_ARM to (34.0 to 32.8),
+            BodyMeasurement.Site.THIGH to (58.0 to 56.0),
+            BodyMeasurement.Site.CALF to (38.0 to 37.2),
+            BodyMeasurement.Site.WRIST to (17.6 to 17.6),
+        )
+        val out = mutableListOf<BodyMeasurement>()
+        for (daysAgo in (totalDays - 1) downTo 0 step 7) {
+            val day = today.minusDays(daysAgo.toLong())
+            val progress = (totalDays - 1 - daysAgo).toDouble() / (totalDays - 1)
+            val ts = day.atTime(7, rng.nextInt(0, 60)).atZone(zone).toInstant()
+            var row = BodyMeasurement(date = ts)
+            BodyMeasurement.Site.entries.forEach { site ->
+                val (start, end) = trends.getValue(site)
+                val trend = start - (start - end) * progress
+                row = row.setting(site, round1(trend + rng.nextDouble(-0.3, 0.3)))
+            }
+            out.add(row)
+        }
+        return out
+    }
+
+    /** [values] mapped onto a constituent row (per-row micros, #86). */
+    private fun FoodConstituent.withMicros(values: MicronutrientValues): FoodConstituent = copy(
+        sugar = values.sugar,
+        addedSugar = values.addedSugar,
+        fiber = values.fiber,
+        saturatedFat = values.saturatedFat,
+        monounsaturatedFat = values.monounsaturatedFat,
+        polyunsaturatedFat = values.polyunsaturatedFat,
+        cholesterol = values.cholesterol,
+        sodium = values.sodium,
+        potassium = values.potassium,
+        transFat = values.transFat,
+        calcium = values.calcium,
+        iron = values.iron,
+        magnesium = values.magnesium,
+        zinc = values.zinc,
+        vitaminA = values.vitaminA,
+        vitaminC = values.vitaminC,
+        vitaminD = values.vitaminD,
+        vitaminB12 = values.vitaminB12,
+        vitaminE = values.vitaminE,
+        vitaminK = values.vitaminK,
+        folate = values.folate,
+        omega3 = values.omega3,
+        caffeine = values.caffeine,
+    )
+
+    /** The two triple main courses [fullFoodEntries] logs as 3-row recipe groups
+     *  and [compositeEntries] folds into one composite row. */
+    private val RecipeMains = listOf(
+        Triple(
+            MealTemplate("Chicken thigh", 240, 28, 0, 14, "\uD83C\uDF57", fiber = 0.0, sodium = 90.0),
+            MealTemplate("Brown rice", 220, 5, 46, 2, "\uD83C\uDF5A", fiber = 3.0, sodium = 8.0),
+            MealTemplate("Roasted broccoli", 80, 4, 12, 3, "\uD83E\uDD66", fiber = 4.0, sodium = 30.0),
+        ),
+        Triple(
+            MealTemplate("Tofu", 180, 16, 6, 10, "\uD83E\uDDC6", fiber = 1.0, sodium = 20.0),
+            MealTemplate("Soba noodles", 250, 8, 48, 2, "\uD83C\uDF5C", fiber = 2.0, sodium = 240.0),
+            MealTemplate("Peanut sauce", 140, 4, 8, 11, "\uD83E\uDD5C", fiber = 1.0, sodium = 310.0),
+        ),
+    )
+
+    /** Custom meal-slot id used by [sampleMealCatalog] and the planned-row seeder. */
+    const val SEED_CUSTOM_MEAL_ID = "c_5eed0001"
+
+    /** Custom tracker presets seeded by [trackerPresets] (valid `t_` hex ids). */
+    const val SEED_CAFFEINE_PRESET_ID = "t_0f1e2d3c"
+    const val SEED_NICOTINE_PRESET_ID = "t_0f1e2d3d"
+
+    /** 1×1 PNG for the seeded Coach image bubble (valid PNG, 70 bytes). */
+    internal const val ONE_PIXEL_PNG_BASE64 =
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg=="
 }
+
+/** 1-decimal rounding shared by the coverage generators (sheet preview convention). */
+private fun round1(value: Double): Double = (value * 10.0).roundToInt() / 10.0
 
 private data class MealTemplate(
     val name: String,
