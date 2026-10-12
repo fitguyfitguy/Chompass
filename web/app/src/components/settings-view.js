@@ -1819,13 +1819,15 @@ export class SettingsView extends HTMLElement {
         fallbackAiProvider: fbProvider,
         fallbackAiModel: resolveProviderModel(fbProvider, fbModel, "fallback"),
       });
+      // Keep the banner's localStorage gate in step with the pref (Android
+      // setFillMissingBannerDisabled parity) — on save, not render.
+      const reminders = /** @type {HTMLFormElement} */ (ev.target).elements.namedItem("fillMissingRemindersEnabled");
+      if (reminders instanceof HTMLInputElement) {
+        if (reminders.checked) enableBannerReminders();
+        else disableBannerForever();
+      }
       location.hash = SETTINGS_PARENT.ai;
     });
-    const reminders = /** @type {HTMLInputElement} */ (this.querySelector('[name="fillMissingRemindersEnabled"]'));
-    if (reminders) {
-      if (reminders.checked) enableBannerReminders();
-      else disableBannerForever();
-    }
     this.querySelector("#open-fill-gaps")?.addEventListener("click", () => {
       void openFillGapsSheet();
     });
