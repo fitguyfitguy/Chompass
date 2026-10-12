@@ -70,6 +70,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -268,16 +269,14 @@ data class SettingsSuggestion(
 )
 
 /**
- * Snapshot + AI-selection resolution from the first (off-main) hydration
- * phase of [SettingsViewModel]. Kept separate from the slow tail (Health
- * Connect, weather, profile, water preview) so the provider picker paints
- * the resolved On-Device/Gemini selection before that tail finishes.
+ * Snapshot + on-device resolution from the first (off-main) hydration phase of
+ * [SettingsViewModel]. Kept separate from the slow tail (Health Connect,
+ * weather, profile, water preview) so the provider picker paints the resolved
+ * On-Device/Gemini availability before that tail finishes. The AI profile
+ * slice itself is not carried here: it comes from the store collector.
  */
 private data class EarlyHydration(
     val snap: SettingsPrefsHydration,
-    val profiles: List<AiProfile>,
-    val activeProfile: AiProfile?,
-    val fallbackProfileId: String?,
     val onDeviceAvailable: Boolean,
     val onDeviceModels: List<String>,
 )
@@ -287,8 +286,8 @@ internal fun commitSettingsHydrate(
     incoming: SettingsUiState,
     writeGenAtStart: Int,
     writeGenNow: Int,
-): SettingsUiState =
-    if (writeGenAtStart == writeGenNow) incoming
+): SettingsUiState {
+    val hydrated = if (writeGenAtStart == writeGenNow) incoming
     else current.copy(
         healthConnectEnabled = incoming.healthConnectEnabled,
         healthEnergyGoalsEnabled = incoming.healthEnergyGoalsEnabled,
@@ -301,14 +300,21 @@ internal fun commitSettingsHydrate(
         weatherOmHighC = incoming.weatherOmHighC,
         weatherOmUpdatedAtMillis = incoming.weatherOmUpdatedAtMillis,
         waterDynamicGoalPreview = incoming.waterDynamicGoalPreview,
-        apiKeyMasked = incoming.apiKeyMasked.ifEmpty { current.apiKeyMasked },
         speechApiKeyMasked = incoming.speechApiKeyMasked.ifEmpty { current.speechApiKeyMasked },
-        profiles = incoming.profiles.ifEmpty { current.profiles },
-        activeProfile = incoming.activeProfile ?: current.activeProfile,
-        fallbackProfileId = incoming.fallbackProfileId ?: current.fallbackProfileId,
         onDeviceAvailable = incoming.onDeviceAvailable,
         onDeviceModels = incoming.onDeviceModels.ifEmpty { current.onDeviceModels },
     )
+    // The AI profile slice is store-driven: profile operations run from this
+    // screen (add, provider, key, select) and a hydrate that started before them
+    // must never repaint the pre-action profile. The init snapshot is only a
+    // first paint, so anything the live state already holds wins.
+    return hydrated.copy(
+        profiles = current.profiles.ifEmpty { incoming.profiles },
+        activeProfile = current.activeProfile ?: incoming.activeProfile,
+        fallbackProfileId = current.fallbackProfileId ?: incoming.fallbackProfileId,
+        apiKeyMasked = current.apiKeyMasked.ifEmpty { incoming.apiKeyMasked },
+    )
+}
 
 class SettingsViewModel(val container: AppContainer) : ViewModel() {
     private val _ui = MutableStateFlow(
@@ -342,6 +348,33 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         }
 
         viewModelScope.launch {
+            // The AI profile slice follows the store rather than the one-shot
+            // hydration snapshot: profile operations run from this screen, and the
+            // slow hydrate (Health Connect, KeyStore, weather) can otherwise land
+            // after them and repaint the profile they just replaced. This also
+            // paints the AI selection within a frame of VM creation, which is what
+            // the early hydrate paint used to do.
+            combine(
+                container.prefs.aiProfiles,
+                container.prefs.activeAiProfile,
+                container.prefs.fallbackAiProfileId,
+            ) { profiles, active, fallbackId -> Triple(profiles, active, fallbackId) }
+                .collect { (profiles, active, fallbackId) ->
+                    val masked = runCatching {
+                        maskKey(active?.let { container.keyStore.profileApiKey(it.id) })
+                    }.getOrDefault("")
+                    _ui.update {
+                        it.copy(
+                            profiles = profiles,
+                            activeProfile = active,
+                            fallbackProfileId = fallbackId,
+                            apiKeyMasked = masked,
+                        )
+                    }
+                }
+        }
+
+        viewModelScope.launch {
             container.prefs.heuristicServingUnitSettings.collect { settings ->
                 _ui.value = _ui.value.copy(heuristicServingUnitSettings = settings)
             }
@@ -357,9 +390,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val early = withContext(Dispatchers.IO) {
                 PerfLog.measure("settingsInit", "early", block = {
                     val snap = container.prefs.readSettingsHydration()
-                    val profiles = container.prefs.aiProfiles.first()
+                    // Only the provider drives the on-device model list here; the
+                    // profile slice itself is store-collected, not snapshotted.
                     val active = container.prefs.activeAiProfile.first()
-                    val fallbackProfileId = container.prefs.fallbackAiProfileId.first()
                     val onDeviceAvailable = snap.onDeviceFeatureVisible &&
                         OnDeviceCapability.isSupported(container.appContext)
                     val onDeviceModels = if (active?.provider == AIProvider.ON_DEVICE && onDeviceAvailable) {
@@ -369,21 +402,16 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     }
                     EarlyHydration(
                         snap = snap,
-                        profiles = profiles,
-                        activeProfile = active,
-                        fallbackProfileId = fallbackProfileId,
                         onDeviceAvailable = onDeviceAvailable,
                         onDeviceModels = onDeviceModels,
                     )
                 })
             }
-            // Paint AI selection before Health Connect / weather so a slow
-            // hydrate cannot flash Gemini and hide On-Device.
+            // Paint the on-device availability + list before Health Connect /
+            // weather so a slow hydrate cannot hide On-Device. The AI profile
+            // slice is painted by its own store collector, not from this snapshot.
             _ui.update {
                 it.copy(
-                    profiles = early.profiles,
-                    activeProfile = early.activeProfile,
-                    fallbackProfileId = early.fallbackProfileId,
                     onDeviceAvailable = early.onDeviceAvailable,
                     onDeviceModels = early.onDeviceModels,
                     aiFeaturesEnabled = early.snap.aiFeaturesEnabled,

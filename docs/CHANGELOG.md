@@ -15,6 +15,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **Adding a profile no longer overwrites the current one** (Android): the provider picker opens only after the new profile is saved, so picking Custom right away configures the new profile instead of rewriting the previous profile's provider, model, and endpoint. Changing a profile's provider also clears that profile's saved key, so a key saved for one provider is not sent to a different provider's host.
 - **Switching profiles no longer shows the previous endpoint's models** (Android): the model list from one custom or Ollama host is dropped as soon as the active profile or its base URL changes, so the sheet shows the new host's models or a loading row instead.
+- **AI settings no longer snap back to the previous profile** (Android): on a cold start, adding a profile and picking its provider could be undone on screen seconds later, showing the old profile's name, model and key while the new one was already saved. The screen now follows the stored profile.
 
 ## [5.5.2] - 2026-10-11
 

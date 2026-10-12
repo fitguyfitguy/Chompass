@@ -1,0 +1,94 @@
+# Device-pass flow: named AI profiles — add-activate commit + custom endpoint.
+#
+# Guards the 2026-10-12 fix batch: the provider sheet opens only after the new
+# profile row and active id commit in ONE store edit (otherwise a fast Custom
+# tap rewrites the previously active profile), and a fetched model list is
+# dropped when the active endpoint changes.
+#
+# Provider sheet entry point: Settings > KI-Anbieter > Profil hinzufügen. That
+# sheet is not reachable for an existing profile, so the "re-tap the selected
+# provider" case cannot be exercised here (see docs/local/DEBUG_AI_ENDPOINT.md).
+#
+# The flow settles leftovers from an interrupted run first and deletes its own
+# profile at the end, so it is safe to re-run.
+#
+# Selectors use the German strings (device locale de-DE, values-de/strings.xml).
+appId: app.chompass.debug
+name: AI profile add and custom endpoint workflow
+---
+- launchApp
+# First launch after install seeds a year of fixture data; wait it out.
+- extendedWaitUntil:
+    visible: "Heute"
+    timeout: 90000
+- tapOn: "Einstellungen"
+- tapOn: "KI-Anbieter"        # settings hub row → AI section
+# Seeded default profile: row label is the name, subtitle is "provider · model".
+- tapOn: "KI-Profil"
+- assertVisible: "Google Gemini · .*"
+- back
+# Settle: delete a leftover flow-custom profile from an interrupted earlier run.
+# Bounded on purpose: the delete row only shows for the ACTIVE profile, so each
+# pass checks the section subtitle (name · provider) after deleting one, and a
+# never-satisfied condition must not spin (an unbounded while-loop hung run 4).
+- repeat:
+    times: 3
+    commands:
+      - runFlow:
+          when:
+            visible: "flow-custom .*"
+          commands:
+            - tapOn: "Profil löschen"
+            - tapOn: "Löschen"
+- tapOn: "Profil hinzufügen"
+- assertVisible: "Profilname"
+- tapOn: "Profilname"
+- inputText: "flow-custom"
+- tapOn: "Speichern"
+# The provider sheet must appear only after the row + active id are committed;
+# before the fix it opened while the new profile was still not active.
+- extendedWaitUntil:
+    visible: "Anthropic Claude"      # a provider row that exists only in this sheet
+    timeout: 15000
+# The provider list is a LazyColumn that ignores Maestro's synthesized swipe, so
+# scroll it with explicit gestures (1080x2400: 58% → 29% is a full list pan).
+- swipe:
+    start: "50%, 58%"
+    end: "50%, 29%"
+- swipe:
+    start: "50%, 58%"
+    end: "50%, 29%"
+- assertVisible: "^Benutzerdefiniert.*"   # anchored: not the row subtitle behind the sheet
+- tapOn: "^Benutzerdefiniert.*"
+# Activate-on-add plus the provider write both landed on the NEW profile.
+- assertVisible: "flow-custom · Benutzerdefiniert .*"
+# Custom endpoint over loopback: cleartext is allowed without the insecure toggle.
+- tapOn: "Basis-URL"
+- assertVisible: "https://your-endpoint.com/v1"
+- tapOn: "https://your-endpoint.com/v1"
+- inputText: "http://127.0.0.1:9/v1"
+- tapOn: "Speichern"
+- assertVisible: "http://127.0.0.1:9/v1"
+# Key for the new profile only; shown masked as first4 + "..." + last4.
+- tapOn: "API-Schlüssel"
+- tapOn: ".*falls der Endpunkt keinen benötigt.*"
+- inputText: "sk-flowsk-flow"
+- tapOn: "Speichern"
+- assertVisible: "sk-f...flow"
+# Model sheet on a dead endpoint: the fetch fails, so the error footer shows and
+# no ids from another host can appear.
+- tapOn: "Modell"
+- extendedWaitUntil:
+    visible: "Server nicht erreichbar.*"
+    timeout: 30000
+- tapOn: "Abbrechen"
+# Switch back to the Gemini profile: its own provider/model survived the whole run.
+- tapOn: "KI-Profil"
+- tapOn: "Google Gemini"
+- assertVisible: "Google Gemini · Google Gemini"
+# Back to the flow profile, delete it, and the Gemini row is still intact.
+- tapOn: "KI-Profil"
+- tapOn: "flow-custom"
+- tapOn: "Profil löschen"
+- tapOn: "Löschen"
+- assertVisible: "Google Gemini · Google Gemini"
