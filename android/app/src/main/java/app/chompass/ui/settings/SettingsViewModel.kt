@@ -1008,6 +1008,14 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 maskKey(active?.let { container.keyStore.profileApiKey(it.id) })
             }.getOrDefault(""),
             onDeviceModels = models,
+            // Fetched lists belong to the endpoint they came from: drop them on every
+            // profile/endpoint change so a second custom or Ollama profile never shows
+            // the previous host's ids while its own fetch is pending.
+            customModels = null,
+            customModelsError = false,
+            ollamaModels = null,
+            ollamaModelsError = false,
+            openAiModels = null,
         )
     }
 
@@ -1019,9 +1027,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         }
     }
 
-    /** Adds a profile named [name] (blank → provider display name) and activates it so the
-     *  following provider/model/key rows edit the new profile. */
-    fun addProfile(name: String, provider: AIProvider) {
+    /** Adds a profile named [name] (blank → provider display name) and activates it in ONE
+     *  store edit, so the provider picker that opens next edits the new profile. [onCommitted]
+     *  runs after the UI state refresh — i.e. once the new row is active and visible. */
+    fun addProfile(name: String, provider: AIProvider, onCommitted: () -> Unit = {}) {
         viewModelScope.launch {
             val profile = AiProfile(
                 id = UUID.randomUUID(),
@@ -1030,9 +1039,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 model = provider.defaultModel,
                 createdAt = Instant.now(),
             )
-            container.prefs.mutateProfiles { it.add(profile) }
-            container.prefs.setActiveAiProfileId(profile.id.toString())
+            container.prefs.addAndActivateProfile(profile)
             refreshAiState()
+            onCommitted()
         }
     }
 
@@ -1063,14 +1072,21 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     }
 
     /** Retargets the active profile's provider: model resets to the provider default (each
-     *  profile keeps its own), per-provider slots clear so stale Gemini/OpenAI values can't leak. */
+     *  profile keeps its own), per-profile slots clear so stale values can't leak, and the
+     *  profile's own saved key is dropped (it belongs to the old provider's host). Re-tapping
+     *  the already-selected provider is a no-op — it must not reset model/URL/vision/key. */
     fun setProfileProvider(p: AIProvider) {
         viewModelScope.launch {
+            if (_ui.value.activeProfile?.provider == p) return@launch
             val onDeviceModels = if (p == AIProvider.ON_DEVICE) supportedOnDeviceModels() else emptyList()
             val model = if (onDeviceModels.isNotEmpty()) onDeviceModels.first() else p.defaultModel
+            var changedId: UUID? = null
             container.prefs.editActiveProfile {
+                changedId = it.id
                 it.copy(provider = p, model = model, baseUrl = null, visionModel = null)
             }
+            // Only this profile's key: every other profile's key stays on its own id.
+            changedId?.let { container.keyStore.setProfileApiKey(it, null) }
             refreshAiState(onDeviceModels = onDeviceModels)
         }
     }
@@ -1165,7 +1181,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         val active = _ui.value.activeProfile ?: return
         if (active.provider != AIProvider.OLLAMA) return
         viewModelScope.launch {
-            _ui.value = _ui.value.copy(ollamaModelsLoading = true, ollamaModelsError = false)
+            _ui.value = _ui.value.copy(ollamaModels = null, ollamaModelsLoading = true, ollamaModelsError = false)
             val result = withContext(Dispatchers.IO) {
                 runCatching {
                     app.chompass.services.ai.OllamaClient.listModels(
@@ -1201,7 +1217,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 _ui.value = _ui.value.copy(customModels = null, customModelsLoading = false, customModelsError = true)
                 return@launch
             }
-            _ui.value = _ui.value.copy(customModelsLoading = true, customModelsError = false)
+            _ui.value = _ui.value.copy(customModels = null, customModelsLoading = true, customModelsError = false)
             val result = withContext(Dispatchers.IO) {
                 runCatching {
                     app.chompass.services.ai.OpenAiModelsClient.listModels(

@@ -459,6 +459,8 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setOptionalNutrientGoals(goals: OptionalNutrientGoals) = setOptionalNutrientGoalsImpl(goals)
     val aiProfiles: Flow<List<AiProfile>> get() = aiProfilesImpl
     suspend fun mutateProfiles(block: (MutableList<AiProfile>) -> Unit) = mutateProfilesImpl(block)
+    /** Append + activate in one edit; see [addAndActivateProfileImpl]. */
+    suspend fun addAndActivateProfile(profile: AiProfile) = addAndActivateProfileImpl(profile)
     val activeAiProfileId: Flow<String?> get() = activeAiProfileIdImpl
     suspend fun setActiveAiProfileId(id: String) = setActiveAiProfileIdImpl(id)
     val activeAiProfile: Flow<AiProfile?> get() = activeAiProfileImpl
