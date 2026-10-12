@@ -403,10 +403,11 @@ fun EditFoodEntrySheet(
                     }
                 }
                 currentBaseEntry = if (aiActionMode == AiActionMode.RECALCULATE) {
-                    // Totals-only overwrite: the estimate came FROM the edited
-                    // mix, so name, serving, units, emoji, photo, and the
-                    // constituents themselves stay exactly as edited.
-                    currentBaseEntry.copy(
+                    // Totals-only overwrite over the EDITED snapshot the
+                    // estimate ran from. Building on the stored base would
+                    // reset every edited field (name, constituents, serving,
+                    // emoji) — each is remember(currentBaseEntry)-keyed.
+                    buildUpdated().copy(
                         calories = newAnalysis.calories,
                         protein = newAnalysis.protein,
                         carbs = newAnalysis.carbs,
@@ -443,13 +444,25 @@ fun EditFoodEntrySheet(
                     constituentsExpanded = newAnalysis.constituents.isNotEmpty()
                     editableEmoji = newAnalysis.emoji
                 }
-                changedFields = buildReprocessDiff(
+                val structuralDiff = buildReprocessDiff(
                     before,
                     currentBaseEntry,
                     reprocessLabels,
                     reprocessEnergyLabel,
                     reprocessGUnit,
                 ) { EnergyFormat.quantity(it, reprocessEnergyUnit) }
+                changedFields = if (aiActionMode == AiActionMode.RECALCULATE) {
+                    // The re-estimate rewrites every micro; show those rows too
+                    // or a micro-only change looks like a no-op.
+                    structuralDiff + buildMicroChangeDiff(
+                        before,
+                        currentBaseEntry,
+                        labelFor = { context.getString(it.labelRes) },
+                        unitFor = { context.getString(it.unitRes) },
+                    )
+                } else {
+                    structuralDiff
+                }
             } catch (e: Exception) {
                 errorText = (e as? AiError)?.userMessage(context) ?: context.getString(R.string.edit_reprocessing_failed)
             } finally {
@@ -1624,5 +1637,31 @@ internal fun buildReprocessDiff(
     val beforeG = before.servingSizeGrams?.let { "${LocaleFormat.integer(it.toInt())} $gUnit" } ?: "—"
     val afterG = after.servingSizeGrams?.let { "${LocaleFormat.integer(it.toInt())} $gUnit" } ?: "—"
     add(labels.serving, beforeG, afterG)
+    return rows
+}
+
+/**
+ * Recalculate diff add-on: micro rows [buildReprocessDiff] cannot see (it
+ * covers name/kcal/macros/serving only). Every changed field renders
+ * before → after like the diary — the em dash for absent, one-decimal +
+ * unit otherwise. Rows appear only for values that actually changed.
+ */
+internal fun buildMicroChangeDiff(
+    before: FoodEntry,
+    after: FoodEntry,
+    labelFor: (MicronutrientField) -> String,
+    unitFor: (MicronutrientField) -> String,
+): List<ReprocessDiffRow> {
+    val beforeMicros = MicronutrientValues.from(before)
+    val afterMicros = MicronutrientValues.from(after)
+    val rows = mutableListOf<ReprocessDiffRow>()
+    for (field in MicronutrientField.entries) {
+        val b = beforeMicros[field]
+        val a = afterMicros[field]
+        if (b != a) {
+            fun fmt(v: Double?) = v?.let { "${MacroValueFormatter.string(it)} ${unitFor(field)}" } ?: "—"
+            rows += ReprocessDiffRow(labelFor(field), fmt(b), fmt(a))
+        }
+    }
     return rows
 }
