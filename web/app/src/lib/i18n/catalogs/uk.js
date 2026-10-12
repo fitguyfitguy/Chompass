@@ -331,6 +331,7 @@ export const uk = Object.freeze({
   "entry.ai.missing_line": "Відсутнє: {labels}",
   "gaps.apply": "Застосувати",
   "gaps.apply_all": "Застосувати все",
+  "gaps.no_values": "Нових значень не повернуто",
   "gaps.retry": "Повторити",
   "gaps.run": "Заповнити з ШІ",
   "gaps.state_failed": "Не вдалося",

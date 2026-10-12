@@ -285,6 +285,7 @@ export const nl = Object.freeze({
   "entry.ai.missing_line": "Ontbreekt: {labels}",
   "gaps.apply": "Toepassen",
   "gaps.apply_all": "Alles toepassen",
+  "gaps.no_values": "Geen nieuwe waarden geretourneerd",
   "gaps.retry": "Opnieuw proberen",
   "gaps.run": "Aanvullen met AI",
   "gaps.state_failed": "Mislukt",

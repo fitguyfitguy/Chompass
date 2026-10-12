@@ -285,6 +285,7 @@ export const ru = Object.freeze({
   "entry.ai.missing_line": "Отсутствует: {labels}",
   "gaps.apply": "Применить",
   "gaps.apply_all": "Применить всё",
+  "gaps.no_values": "Новых значений не получено",
   "gaps.retry": "Повторить",
   "gaps.run": "Заполнить с ИИ",
   "gaps.state_failed": "Не удалось",

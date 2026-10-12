@@ -2101,7 +2101,7 @@ makrolar yeni kalori toplamına göre yeniden dengelenir</string>
     <string name="cd_dismiss_fill_gaps_banner">Bannerı kapat</string>
     <string name="fill_gaps_title">Eksik verileri doldur</string>
     <string name="fill_gaps_adds_line">Ekler: %1$s</string>
-    <string name="fill_gaps_already_complete">Zaten tam</string>
+    <string name="fill_gaps_no_values">Yeni değer döndürülmedi</string>
     <string name="fill_gaps_run_all">Tümünü doldur</string>
     <string name="fill_gaps_apply">Uygula</string>
     <plurals name="fill_gaps_confirm_remote">

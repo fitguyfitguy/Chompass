@@ -2627,7 +2627,7 @@
     <string name="cd_dismiss_fill_gaps_banner">Dismiss banner</string>
     <string name="fill_gaps_title">Fill missing data</string>
     <string name="fill_gaps_adds_line">Adds: %1$s</string>
-    <string name="fill_gaps_already_complete">Already complete</string>
+    <string name="fill_gaps_no_values">No new values returned</string>
     <string name="fill_gaps_run_all">Fill all</string>
     <string name="fill_gaps_apply">Apply</string>
     <plurals name="fill_gaps_confirm_remote">

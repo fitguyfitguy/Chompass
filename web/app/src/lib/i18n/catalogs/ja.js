@@ -285,6 +285,7 @@ export const ja = Object.freeze({
   "entry.ai.missing_line": "未入力: {labels}",
   "gaps.apply": "適用",
   "gaps.apply_all": "すべて適用",
+  "gaps.no_values": "新しい値は返されませんでした",
   "gaps.retry": "再試行",
   "gaps.run": "AI で埋める",
   "gaps.state_failed": "失敗",

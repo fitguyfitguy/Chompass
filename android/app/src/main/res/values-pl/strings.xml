@@ -2112,7 +2112,7 @@ makro rebalansowane do nowej sumy kalorii</string>
     <string name="cd_dismiss_fill_gaps_banner">Ukryj baner</string>
     <string name="fill_gaps_title">Uzupełnij brakujące dane</string>
     <string name="fill_gaps_adds_line">Dodaje: %1$s</string>
-    <string name="fill_gaps_already_complete">Już kompletne</string>
+    <string name="fill_gaps_no_values">Nie zwrócono nowych wartości</string>
     <string name="fill_gaps_run_all">Uzupełnij wszystko</string>
     <string name="fill_gaps_apply">Zastosuj</string>
     <plurals name="fill_gaps_confirm_remote">

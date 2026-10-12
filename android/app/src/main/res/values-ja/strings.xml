@@ -2080,7 +2080,7 @@
     <string name="cd_dismiss_fill_gaps_banner">バナーを閉じる</string>
     <string name="fill_gaps_title">欠落データを補完</string>
     <string name="fill_gaps_adds_line">追加: %1$s</string>
-    <string name="fill_gaps_already_complete">すべて入力済み</string>
+    <string name="fill_gaps_no_values">新しい値は返されませんでした</string>
     <string name="fill_gaps_run_all">すべて補完</string>
     <string name="fill_gaps_apply">適用</string>
     <plurals name="fill_gaps_confirm_remote">

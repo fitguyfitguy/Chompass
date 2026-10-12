@@ -285,6 +285,7 @@ export const ar = Object.freeze({
   "entry.ai.missing_line": "الناقص: {labels}",
   "gaps.apply": "تطبيق",
   "gaps.apply_all": "تطبيق الكل",
+  "gaps.no_values": "لم يتم إرجاع قيم جديدة",
   "gaps.retry": "إعادة المحاولة",
   "gaps.run": "ملء بالذكاء الاصطناعي",
   "gaps.state_failed": "فشل",

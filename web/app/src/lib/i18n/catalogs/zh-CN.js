@@ -285,6 +285,7 @@ export const zh_CN = Object.freeze({
   "entry.ai.missing_line": "缺失：{labels}",
   "gaps.apply": "应用",
   "gaps.apply_all": "全部应用",
+  "gaps.no_values": "未返回新数值",
   "gaps.retry": "重试",
   "gaps.run": "AI 补全",
   "gaps.state_failed": "失败",

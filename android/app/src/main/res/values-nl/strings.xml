@@ -2081,7 +2081,7 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
     <string name="cd_dismiss_fill_gaps_banner">Banner sluiten</string>
     <string name="fill_gaps_title">Ontbrekende gegevens aanvullen</string>
     <string name="fill_gaps_adds_line">Voegt toe: %1$s</string>
-    <string name="fill_gaps_already_complete">Al compleet</string>
+    <string name="fill_gaps_no_values">Geen nieuwe waarden geretourneerd</string>
     <string name="fill_gaps_run_all">Alles aanvullen</string>
     <string name="fill_gaps_apply">Toepassen</string>
     <plurals name="fill_gaps_confirm_remote">

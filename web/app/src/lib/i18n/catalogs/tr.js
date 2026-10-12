@@ -331,6 +331,7 @@ export const tr = Object.freeze({
   "entry.ai.missing_line": "Eksik: {labels}",
   "gaps.apply": "Uygula",
   "gaps.apply_all": "Tümünü uygula",
+  "gaps.no_values": "Yeni değer döndürülmedi",
   "gaps.retry": "Yeniden dene",
   "gaps.run": "AI ile doldur",
   "gaps.state_failed": "Başarısız",
