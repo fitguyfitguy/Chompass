@@ -81,6 +81,22 @@ internal suspend fun PreferencesStore.mutateProfilesImpl(block: (MutableList<AiP
     }
 }
 
+/**
+ * Appends [profile] and makes it active inside ONE `dataStore.edit`, so a UI
+ * that selects a provider right after "Add profile" can never target the
+ * previously active row (the two-edit add-then-activate left a window where
+ * `editActiveProfile` rewrote the old profile). Leaves the fallback id and
+ * every other profile untouched.
+ */
+internal suspend fun PreferencesStore.addAndActivateProfileImpl(profile: AiProfile) {
+    dataStore.edit { prefs ->
+        val list = decodeAiProfiles(prefs[Keys.AI_PROFILES_JSON]).toMutableList()
+        list += profile
+        prefs[Keys.AI_PROFILES_JSON] = json.encodeToString(aiProfileListSerializer, list)
+        prefs[Keys.ACTIVE_AI_PROFILE_ID] = profile.id.toString()
+    }
+}
+
 internal val PreferencesStore.activeAiProfileIdImpl: Flow<String?> get() = dataStore.data.map { it[Keys.ACTIVE_AI_PROFILE_ID] }
 internal suspend fun PreferencesStore.setActiveAiProfileIdImpl(id: String) {
     dataStore.edit { it[Keys.ACTIVE_AI_PROFILE_ID] = id }

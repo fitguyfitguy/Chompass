@@ -11,6 +11,11 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Named AI profiles** (Android): Settings → AI now manages saved profiles instead of one global provider slot. Each profile carries its own provider, model, vision model, base URL, and API key, and one active profile drives every AI feature. Switching profiles no longer resets your model, and more than one custom OpenAI-compatible endpoint can exist side by side. An optional fallback profile replaces the old separate fallback provider fields.
 - **Run a queued entry with a different profile** (Android): entries in the analysis queue get a Run with action that picks any saved profile for that one run, and each row shows which profile and model last tried it. The globally selected profile is not touched.
 
+### Fixed
+
+- **Adding a profile no longer overwrites the current one** (Android): the provider picker opens only after the new profile is saved, so picking Custom right away configures the new profile instead of rewriting the previous profile's provider, model, and endpoint. Changing a profile's provider also clears that profile's saved key, so a key saved for one provider is not sent to a different provider's host.
+- **Switching profiles no longer shows the previous endpoint's models** (Android): the model list from one custom or Ollama host is dropped as soon as the active profile or its base URL changes, so the sheet shows the new host's models or a loading row instead.
+
 ## [5.5.2] - 2026-10-11
 
 ### Added

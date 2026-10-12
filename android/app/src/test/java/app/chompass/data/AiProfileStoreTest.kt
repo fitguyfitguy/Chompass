@@ -218,4 +218,28 @@ class AiProfileStoreTest {
         ks.setProfileApiKey(id, "  ")
         assertNull(ks.profileApiKey(id))
     }
+
+    @Test
+    fun addAndActivateProfile_appendsActivatesAndLeavesOthersUntouched() = runBlocking {
+        val prefs = prefs()
+        val existing = profile("Gemini", model = "gemini-3.8-flash")
+        prefs.mutateProfiles { it += existing }
+        prefs.setActiveAiProfileId(existing.id.toString())
+
+        val added = AiProfile(
+            id = UUID.randomUUID(),
+            name = "LM Studio",
+            provider = AIProvider.CUSTOM_OPENAI,
+            model = "local-model",
+            baseUrl = "http://192.168.1.10:1234/v1",
+            createdAt = Instant.ofEpochMilli(1_700_000_000_000),
+        )
+        prefs.addAndActivateProfile(added)
+
+        val profiles = prefs.aiProfiles.first()
+        assertEquals(listOf(existing, added), profiles)
+        assertEquals(added.id.toString(), prefs.activeAiProfileId.first())
+        assertEquals(added, prefs.activeAiProfile.first())
+        assertNull(prefs.fallbackAiProfileId.first())
+    }
 }

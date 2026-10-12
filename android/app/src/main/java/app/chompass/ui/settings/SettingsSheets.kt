@@ -116,7 +116,7 @@ internal fun SettingsSheets(
             onDismiss()
         }
     }
-    LaunchedEffect(sheet, ui.activeProvider) {
+    LaunchedEffect(sheet, ui.activeProfile?.id, ui.activeProfile?.baseUrl, ui.activeProvider) {
         if (sheet == SettingsSheet.AI_MODEL && ui.activeProvider == AIProvider.OLLAMA) {
             vm.fetchOllamaModels()
         }
@@ -387,10 +387,13 @@ internal fun SettingsSheets(
                     initial = "",
                     placeholder = stringResource(R.string.sheet_profile_name),
                     onSave = { name ->
-                        // Activate-on-add means the provider picker that opens next
-                        // edits the fresh profile.
-                        vm.addProfile(name, AIProvider.GEMINI)
-                        onOpenSheet?.invoke(SettingsSheet.AI_PROVIDER) ?: onDismiss()
+                        // Activate-on-add means the provider picker that opens next edits
+                        // the fresh profile — but only once the new row + active id are
+                        // committed in one edit, or a fast provider tap would rewrite the
+                        // previously active profile.
+                        vm.addProfile(name, AIProvider.GEMINI) {
+                            onOpenSheet?.invoke(SettingsSheet.AI_PROVIDER) ?: onDismiss()
+                        }
                     },
                     onDismiss = onDismiss
                 )
