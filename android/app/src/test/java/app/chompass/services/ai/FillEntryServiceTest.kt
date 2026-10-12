@@ -57,6 +57,14 @@ class FillEntryServiceTest {
         "serving_size_grams":400.0}],"unit_options":[]}
     """.trimIndent().replace("\n", "")
 
+    /** Fill reply whose top-level serving_size_grams the model omitted. */
+    private fun fillJsonNoEntryGrams(): String = """
+        {"name":"Chicken bowl","calories":540,"protein":42.0,"carbs":60.0,"fat":0.0,
+        "emoji":"🍲","fiber":4.0,
+        "constituents":[{"name":"chicken and rice","calories":540,"protein":42.0,"carbs":60.0,"fat":0.0,
+        "serving_size_grams":400.0}],"unit_options":[]}
+    """.trimIndent().replace("\n", "")
+
     /** Mealie-import shape: zero macros, all-zero constituent rows, null micros. */
     private fun mealieEntry(): FoodEntry = FoodEntry(
         name = "Chicken bowl",
@@ -127,9 +135,11 @@ class FillEntryServiceTest {
         assertTrue(splitLogLines().isEmpty())
 
         val prompt = promptOf(bodyOf(server.takeRequest()))
-        assertTrue(prompt.contains("Missing fields to estimate"))
-        assertTrue(prompt.contains("calories, protein, carbs, fat"))
-        assertTrue(prompt.contains("fiber"))
+        // flash-lite routes the fill to the MACROS constituents kind: the
+        // estimate line stops at the macros — micros are unanswerable in
+        // that schema (fiber still appears in the JSON schema itself).
+        val missingLine = prompt.lineSequence().first { it.startsWith("Missing fields to estimate:") }
+        assertEquals("Missing fields to estimate: calories, protein, carbs, fat", missingLine)
         assertTrue(prompt.contains("Chicken bowl"))
         assertTrue(prompt.contains("chicken and rice"))
     }
@@ -147,5 +157,19 @@ class FillEntryServiceTest {
         // No finalize pass, no serving-unit inference call behind the parse.
         assertEquals(1, server.requestCount)
         assertTrue(splitLogLines().isEmpty())
+    }
+
+    @Test
+    fun replyWithoutGrams_adoptsEntryGrams_notParserDefault() = runBlocking {
+        server.enqueue(MockResponse().setBody(chunk(fillJsonNoEntryGrams(), finishReason = "stop")))
+
+        val result = newService().fillEntry(mealieEntry().copy(servingSizeGrams = 400.0))
+
+        // The parser defaults a grams-less reply to 100 g; the fill adapter
+        // adopts the logged entry's grams so the only-missing merge factor
+        // stays 1 (a 400 g entry must not get ×4-scaled fills).
+        assertEquals(400.0, result.servingSizeGrams!!, 1e-9)
+        assertEquals(540, result.calories)
+        assertEquals(1, server.requestCount)
     }
 }

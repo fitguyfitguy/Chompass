@@ -42,6 +42,44 @@ function isFillableRow(row) {
   );
 }
 
+/** An estimate row can donate values only when it carries at least one non-zero macro. */
+function analysisRowHasMacros(row) {
+  return (
+    (row.calories ?? 0) !== 0 ||
+    (row.proteinG ?? 0) !== 0 ||
+    (row.carbsG ?? 0) !== 0 ||
+    (row.fatG ?? 0) !== 0
+  );
+}
+
+/** Substring hit guarded by non-alphanumerics (or string edges) on both sides. */
+function containsAtWordBoundary(haystack, needle) {
+  let start = 0;
+  while (start + needle.length <= haystack.length) {
+    const at = haystack.indexOf(needle, start);
+    if (at < 0) return false;
+    const end = at + needle.length;
+    const beforeOk = at === 0 || !isAlnumChar(haystack[at - 1]);
+    const afterOk = end === haystack.length || !isAlnumChar(haystack[end]);
+    if (beforeOk && afterOk) return true;
+    start = at + 1;
+  }
+  return false;
+}
+
+const isAlnumChar = (ch) => /[\p{L}\p{N}]/u.test(ch);
+
+/**
+ * Containment fallback for stored↔estimate names the exact pass left
+ * unmatched: one normalized name contains the other at a word boundary
+ * (Mealie "200 g flour" ↔ AI "flour"; "rice" inside "price" is blocked by
+ * the boundary) and the shorter side has ≥ 3 characters.
+ */
+function namesMatchByContainment(a, b) {
+  if (Math.min(a.length, b.length) < 3) return false;
+  return a.length >= b.length ? containsAtWordBoundary(a, b) : containsAtWordBoundary(b, a);
+}
+
 /**
  * Scan an entry for values the Fill-missing action may ask the AI for.
  * @param {import("./models.js").FoodEntry} entry
@@ -73,7 +111,9 @@ export function gapReport(entry) {
 /**
  * Merge an AI analysis into an entry, writing ONLY missing values: entry
  * macros where the stored value is zero, micros where the stored field is
- * null, and all-zero constituent rows matched by normalized name. Stored
+ * null, and all-zero constituent rows matched by normalized name — exact
+ * names first, then a word-boundary containment fallback (Mealie "200 g
+ * flour" ↔ AI "flour"). Stored
  * non-zero / non-null values are never overwritten; analysis constituents
  * without a stored name match are dropped, never appended.
  *
@@ -138,48 +178,68 @@ export function fillMissingFrom(entry, estimate) {
     changed = true;
   }
 
-  // Constituent rows: match by normalized name (favoriteKey convention),
-  // fill each stored all-zero row from the first unmatched estimate row with
-  // the same name — the candidate is consumed even when the stored row is
-  // not fillable, mirroring FoodEntryGaps.kt. Unmatched estimate rows are
-  // dropped.
-  /** @type {Map<string, Record<string, any>[]>} */
-  const estimateRowsByName = new Map();
-  for (const row of estimate.constituents ?? []) {
+  const fillFrom = (row, candidate) => ({
+    ...row,
+    calories: Math.round((candidate.calories ?? 0) * gramsFactor),
+    proteinG: scaleG(candidate.proteinG ?? 0),
+    carbsG: scaleG(candidate.carbsG ?? 0),
+    fatG: scaleG(candidate.fatG ?? 0),
+  });
+
+  const storedConstituents = entry.constituents ?? [];
+
+  // Constituent rows, pass 1: match by normalized name (favoriteKey
+  // convention), filling each stored all-zero row from the first unmatched
+  // estimate row with the same name. The exact candidate is consumed even
+  // when the stored row is not fillable, so pass 2 never re-uses it.
+  const analysisRows = estimate.constituents ?? [];
+  const analysisTaken = new Array(analysisRows.length).fill(false);
+  /** @type {Map<string, number[]>} */
+  const analysisQueuesByName = new Map();
+  analysisRows.forEach((row, index) => {
     const key = String(row.name ?? "").trim().toLowerCase();
-    let queue = estimateRowsByName.get(key);
+    let queue = analysisQueuesByName.get(key);
     if (!queue) {
       queue = [];
-      estimateRowsByName.set(key, queue);
+      analysisQueuesByName.set(key, queue);
     }
-    queue.push(row);
-  }
-  const storedConstituents = entry.constituents ?? [];
-  const filledConstituents =
-    storedConstituents.length === 0
-      ? storedConstituents
-      : storedConstituents.map((row) => {
-          const candidate = estimateRowsByName
-            .get(row.name.trim().toLowerCase())
-            ?.shift();
-          const candidateHasMacros =
-            candidate != null &&
-            ((candidate.calories ?? 0) !== 0 ||
-              (candidate.proteinG ?? 0) !== 0 ||
-              (candidate.carbsG ?? 0) !== 0 ||
-              (candidate.fatG ?? 0) !== 0);
-          if (candidate != null && candidateHasMacros && isFillableRow(row)) {
-            changed = true;
-            return {
-              ...row,
-              calories: Math.round((candidate.calories ?? 0) * gramsFactor),
-              proteinG: scaleG(candidate.proteinG ?? 0),
-              carbsG: scaleG(candidate.carbsG ?? 0),
-              fatG: scaleG(candidate.fatG ?? 0),
-            };
-          }
-          return row;
-        });
+    queue.push(index);
+  });
+  /** @type {Map<number, Record<string, any>>} */
+  const filledByStoredIndex = new Map();
+  storedConstituents.forEach((row, storedIndex) => {
+    const exact = analysisQueuesByName.get(row.name.trim().toLowerCase())?.shift();
+    if (exact == null) return;
+    analysisTaken[exact] = true;
+    const candidate = analysisRows[exact];
+    if (analysisRowHasMacros(candidate) && isFillableRow(row)) {
+      filledByStoredIndex.set(storedIndex, fillFrom(row, candidate));
+      changed = true;
+    }
+  });
+
+  // Pass 2: containment fallback for pairs the exact pass left unmatched —
+  // Mealie-style stored names ("200 g flour") never equal the AI's bare
+  // name ("flour"). Still-unmatched stored fillable rows × still-unmatched
+  // estimate rows, first match in stored-then-analysis order. Unmatched
+  // estimate rows are dropped, never appended.
+  storedConstituents.forEach((row, storedIndex) => {
+    if (filledByStoredIndex.has(storedIndex) || !isFillableRow(row)) return;
+    const storedName = row.name.trim().toLowerCase();
+    for (let analysisIndex = 0; analysisIndex < analysisRows.length; analysisIndex++) {
+      if (analysisTaken[analysisIndex]) continue;
+      const candidate = analysisRows[analysisIndex];
+      if (!analysisRowHasMacros(candidate)) continue;
+      if (!namesMatchByContainment(storedName, String(candidate.name ?? "").trim().toLowerCase())) continue;
+      analysisTaken[analysisIndex] = true;
+      filledByStoredIndex.set(storedIndex, fillFrom(row, candidate));
+      changed = true;
+      break;
+    }
+  });
+  const filledConstituents = storedConstituents.map(
+    (row, storedIndex) => filledByStoredIndex.get(storedIndex) ?? row,
+  );
 
   if (!changed) return entry;
 
