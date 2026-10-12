@@ -286,6 +286,7 @@ export const hi = Object.freeze({
   "gaps.apply": "लागू करें",
   "gaps.apply_all": "सभी लागू करें",
   "gaps.no_values": "कोई नया मान नहीं लौटाया गया",
+  "gaps.show_diff": "बदलाव दिखाएँ",
   "gaps.retry": "पुनः प्रयास",
   "gaps.run": "AI से भरें",
   "gaps.state_failed": "विफल",

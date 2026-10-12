@@ -286,6 +286,7 @@ export const nl = Object.freeze({
   "gaps.apply": "Toepassen",
   "gaps.apply_all": "Alles toepassen",
   "gaps.no_values": "Geen nieuwe waarden geretourneerd",
+  "gaps.show_diff": "Wijzigingen tonen",
   "gaps.retry": "Opnieuw proberen",
   "gaps.run": "Aanvullen met AI",
   "gaps.state_failed": "Mislukt",

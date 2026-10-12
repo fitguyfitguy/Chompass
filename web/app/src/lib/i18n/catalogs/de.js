@@ -669,6 +669,7 @@ export const de = Object.freeze({
   "gaps.apply": "Übernehmen",
   "gaps.apply_all": "Alle übernehmen",
   "gaps.no_values": "Keine neuen Werte zurückgegeben",
+  "gaps.show_diff": "Änderungen anzeigen",
   "gaps.retry": "Erneut versuchen",
   "gaps.run": "Mit KI ergänzen",
   "gaps.state_failed": "Fehlgeschlagen",

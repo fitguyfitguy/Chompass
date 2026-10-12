@@ -704,6 +704,7 @@ export const en = Object.freeze({
   "gaps.apply": "Apply",
   "gaps.apply_all": "Apply all",
   "gaps.no_values": "No new values returned",
+  "gaps.show_diff": "Show changes",
   "gaps.retry": "Retry",
   "gaps.run": "Fill with AI",
   "gaps.state_failed": "Failed",

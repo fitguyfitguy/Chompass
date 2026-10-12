@@ -286,6 +286,7 @@ export const ar = Object.freeze({
   "gaps.apply": "تطبيق",
   "gaps.apply_all": "تطبيق الكل",
   "gaps.no_values": "لم يتم إرجاع قيم جديدة",
+  "gaps.show_diff": "إظهار التغييرات",
   "gaps.retry": "إعادة المحاولة",
   "gaps.run": "ملء بالذكاء الاصطناعي",
   "gaps.state_failed": "فشل",

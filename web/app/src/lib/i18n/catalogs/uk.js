@@ -332,6 +332,7 @@ export const uk = Object.freeze({
   "gaps.apply": "Застосувати",
   "gaps.apply_all": "Застосувати все",
   "gaps.no_values": "Нових значень не повернуто",
+  "gaps.show_diff": "Показати зміни",
   "gaps.retry": "Повторити",
   "gaps.run": "Заповнити з ШІ",
   "gaps.state_failed": "Не вдалося",

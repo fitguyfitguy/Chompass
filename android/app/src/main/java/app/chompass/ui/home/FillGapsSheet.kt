@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
@@ -39,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -49,6 +51,12 @@ import androidx.compose.ui.unit.sp
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.AIProvider
+import app.chompass.models.FoodEntry
+import app.chompass.models.GapMacroField
+import app.chompass.models.LocaleFormat
+import app.chompass.models.MacroValueFormatter
+import app.chompass.models.MicronutrientField
+import app.chompass.models.MicronutrientValues
 import app.chompass.models.gapReport
 import app.chompass.services.FillQueueItem
 import app.chompass.services.FillStatus
@@ -163,11 +171,14 @@ fun FillGapsSheet(
                         modifier = Modifier.weight(1f),
                     ) {
                         items(items, key = { it.target.entry.id }) { item ->
+                            var expanded by remember(item.target.entry.id) { mutableStateOf(false) }
                             GapRow(
                                 item = item,
                                 engine = engine,
                                 cascadeChecks = cascadeChecks,
                                 onRun = { scope.launch { engine.runOne(item) } },
+                                expanded = expanded,
+                                onToggleExpand = { expanded = !expanded },
                             )
                         }
                     }
@@ -236,8 +247,17 @@ private fun GapRow(
     engine: app.chompass.services.FillGapsEngine,
     cascadeChecks: MutableMap<UUID, Boolean>,
     onRun: () -> Unit,
+    expanded: Boolean,
+    onToggleExpand: () -> Unit,
 ) {
-    GapRowSurface {
+    // Opt-in diff (UX-5): only fields the fill actually wrote, never a forced
+    // review step — rows stay collapsed until tapped.
+    val diffRows = if (item.status == FillStatus.FILLED && item.merged != null && item.merged != item.target.entry) {
+        buildFillDiff(before = item.target.entry, after = item.merged!!)
+    } else {
+        emptyList()
+    }
+    GapRowSurface(onClick = if (diffRows.isEmpty()) null else onToggleExpand) {
         Column(
             Modifier
                 .weight(1f)
@@ -252,6 +272,11 @@ private fun GapRow(
                 overflow = TextOverflow.Ellipsis,
             )
             GapCaption(item)
+            if (expanded && diffRows.isNotEmpty()) {
+                diffRows.forEach { row ->
+                    GapMutedText(stringResource(R.string.edit_reprocess_diff_row, row.label, row.before, row.after))
+                }
+            }
             if (item.target.favorite && item.status == FillStatus.FILLED) {
                 GapCascadeRow(item, engine, cascadeChecks)
             }
@@ -274,9 +299,63 @@ private fun GapRow(
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(20.dp),
             )
-            FillStatus.FILLED -> {}
+            FillStatus.FILLED -> if (diffRows.isNotEmpty()) {
+                Icon(
+                    Icons.Filled.KeyboardArrowDown,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    modifier = Modifier
+                        .size(20.dp)
+                        .rotate(if (expanded) 180f else 0f),
+                )
+            }
         }
     }
+}
+
+/**
+ * Fill-only diff for an expanded gap row: exactly the fields the fill wrote
+ * — zero→value macros, null→value micros, all-zero→valued constituent rows
+ * (paired by index; the merge never reorders). Unlike [buildReprocessDiff]
+ * there is no name/serving line (a fill never touches them) and unchanged
+ * fields never appear; before renders as the diary's zero em dash.
+ */
+@Composable
+private fun buildFillDiff(before: FoodEntry, after: FoodEntry): List<ReprocessDiffRow> {
+    val res: @Composable (Int) -> String = { stringResource(it) }
+    val kcalUnit = stringResource(R.string.unit_kcal)
+    val gUnit = stringResource(R.string.unit_g)
+    val rows = mutableListOf<ReprocessDiffRow>()
+    fun macro(v: Double) = "${MacroValueFormatter.string(v)}$gUnit"
+    if (before.calories == 0 && after.calories != 0) {
+        rows += ReprocessDiffRow(res(GapMacroField.CALORIES.labelRes), "—", "${LocaleFormat.integer(after.calories)} $kcalUnit")
+    }
+    if (before.protein == 0.0 && after.protein != 0.0) {
+        rows += ReprocessDiffRow(res(GapMacroField.PROTEIN.labelRes), "—", macro(after.protein))
+    }
+    if (before.carbs == 0.0 && after.carbs != 0.0) {
+        rows += ReprocessDiffRow(res(GapMacroField.CARBS.labelRes), "—", macro(after.carbs))
+    }
+    if (before.fat == 0.0 && after.fat != 0.0) {
+        rows += ReprocessDiffRow(res(GapMacroField.FAT.labelRes), "—", macro(after.fat))
+    }
+    val beforeMicros = MicronutrientValues.from(before)
+    val afterMicros = MicronutrientValues.from(after)
+    for (field in MicronutrientField.entries) {
+        val newValue = afterMicros[field]
+        if (beforeMicros[field] == null && newValue != null) {
+            rows += ReprocessDiffRow(res(field.labelRes), "—", "${MacroValueFormatter.string(newValue)} ${res(field.unitRes)}")
+        }
+    }
+    before.constituents.forEachIndexed { index, row ->
+        val filled = after.constituents.getOrNull(index) ?: return@forEachIndexed
+        val wasZero = row.calories == 0 && row.protein == 0.0 && row.carbs == 0.0 && row.fat == 0.0
+        val hasValues = filled.calories != 0 || filled.protein != 0.0 || filled.carbs != 0.0 || filled.fat != 0.0
+        if (wasZero && hasValues) {
+            rows += ReprocessDiffRow(row.name, "—", "${LocaleFormat.integer(filled.calories)} $kcalUnit")
+        }
+    }
+    return rows
 }
 
 @Composable
@@ -354,7 +433,10 @@ private fun GapCascadeRow(
 }
 
 @Composable
-private fun GapRowSurface(content: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit) {
+private fun GapRowSurface(
+    onClick: (() -> Unit)? = null,
+    content: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit,
+) {
     val isDark = isDarkTheme()
     Row(
         Modifier
@@ -366,6 +448,7 @@ private fun GapRowSurface(content: @Composable androidx.compose.foundation.layou
                 if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight,
                 RoundedCornerShape(AppRadii.Card),
             )
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically,
         content = content,

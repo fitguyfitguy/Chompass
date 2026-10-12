@@ -286,6 +286,7 @@ export const it = Object.freeze({
   "gaps.apply": "Applica",
   "gaps.apply_all": "Applica tutto",
   "gaps.no_values": "Nessun nuovo valore restituito",
+  "gaps.show_diff": "Mostra modifiche",
   "gaps.retry": "Riprova",
   "gaps.run": "Completa con IA",
   "gaps.state_failed": "Fallito",
