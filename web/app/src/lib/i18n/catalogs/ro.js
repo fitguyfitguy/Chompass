@@ -286,6 +286,7 @@ export const ro = Object.freeze({
   "gaps.apply": "Aplică",
   "gaps.apply_all": "Aplică tot",
   "gaps.no_values": "Nicio valoare nouă returnată",
+  "gaps.show_diff": "Afișează modificările",
   "gaps.retry": "Încearcă din nou",
   "gaps.run": "Completează cu AI",
   "gaps.state_failed": "Eșuat",

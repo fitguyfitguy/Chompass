@@ -332,6 +332,7 @@ export const tr = Object.freeze({
   "gaps.apply": "Uygula",
   "gaps.apply_all": "Tümünü uygula",
   "gaps.no_values": "Yeni değer döndürülmedi",
+  "gaps.show_diff": "Değişiklikleri göster",
   "gaps.retry": "Yeniden dene",
   "gaps.run": "AI ile doldur",
   "gaps.state_failed": "Başarısız",

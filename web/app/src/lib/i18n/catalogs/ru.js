@@ -286,6 +286,7 @@ export const ru = Object.freeze({
   "gaps.apply": "Применить",
   "gaps.apply_all": "Применить всё",
   "gaps.no_values": "Новых значений не получено",
+  "gaps.show_diff": "Показать изменения",
   "gaps.retry": "Повторить",
   "gaps.run": "Заполнить с ИИ",
   "gaps.state_failed": "Не удалось",

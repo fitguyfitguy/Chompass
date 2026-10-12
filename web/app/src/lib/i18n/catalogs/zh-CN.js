@@ -286,6 +286,7 @@ export const zh_CN = Object.freeze({
   "gaps.apply": "应用",
   "gaps.apply_all": "全部应用",
   "gaps.no_values": "未返回新数值",
+  "gaps.show_diff": "显示变更",
   "gaps.retry": "重试",
   "gaps.run": "AI 补全",
   "gaps.state_failed": "失败",

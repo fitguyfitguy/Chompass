@@ -2997,6 +2997,12 @@ form.entry-form > button.btn--primary,
   font-size: 0.82rem;
 }
 
+.fill-gaps-row__details summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
 .fill-gaps-row__actions {
   display: flex;
   flex-direction: column;

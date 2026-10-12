@@ -286,6 +286,7 @@ export const ko = Object.freeze({
   "gaps.apply": "적용",
   "gaps.apply_all": "모두 적용",
   "gaps.no_values": "새 값이 반환되지 않음",
+  "gaps.show_diff": "변경 사항 보기",
   "gaps.retry": "다시 시도",
   "gaps.run": "AI로 채우기",
   "gaps.state_failed": "실패",

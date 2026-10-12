@@ -286,6 +286,7 @@ export const az = Object.freeze({
   "gaps.apply": "Tətbiq et",
   "gaps.apply_all": "Hamısını tətbiq et",
   "gaps.no_values": "Yeni dəyər qaytarılmadı",
+  "gaps.show_diff": "Dəyişiklikləri göstər",
   "gaps.retry": "Yenidən cəhd et",
   "gaps.run": "AI ilə doldur",
   "gaps.state_failed": "Uğursuz",

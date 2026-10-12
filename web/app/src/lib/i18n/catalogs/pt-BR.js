@@ -290,6 +290,7 @@ export const pt_BR = Object.freeze({
   "gaps.apply": "Aplicar",
   "gaps.apply_all": "Aplicar tudo",
   "gaps.no_values": "Nenhum valor novo retornado",
+  "gaps.show_diff": "Mostrar alterações",
   "gaps.retry": "Tentar novamente",
   "gaps.run": "Preencher com IA",
   "gaps.state_failed": "Falhou",
