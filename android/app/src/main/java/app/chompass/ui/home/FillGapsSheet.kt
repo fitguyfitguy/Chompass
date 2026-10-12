@@ -293,7 +293,7 @@ private fun GapCaption(item: FillQueueItem) {
         }
         FillStatus.FILLED -> {
             if (item.filledLabels.isEmpty()) {
-                GapMutedText(stringResource(R.string.fill_gaps_already_complete))
+                GapMutedText(stringResource(R.string.fill_gaps_no_values))
             } else {
                 val labelStrings = item.filledLabels.map { stringResource(it) }
                 GapMutedText(stringResource(R.string.fill_gaps_adds_line, labelStrings.joinToString(", ")))

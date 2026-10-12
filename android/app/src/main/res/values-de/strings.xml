@@ -3566,7 +3566,7 @@ für dich ein</string>
     <string name="cd_dismiss_fill_gaps_banner">Banner ausblenden</string>
     <string name="fill_gaps_title">Fehlende Daten füllen</string>
     <string name="fill_gaps_adds_line">Ergänzt: %1$s</string>
-    <string name="fill_gaps_already_complete">Bereits vollständig</string>
+    <string name="fill_gaps_no_values">Keine neuen Werte zurückgegeben</string>
     <string name="fill_gaps_run_all">Alle füllen</string>
     <string name="fill_gaps_apply">Übernehmen</string>
     <plurals name="fill_gaps_confirm_remote">

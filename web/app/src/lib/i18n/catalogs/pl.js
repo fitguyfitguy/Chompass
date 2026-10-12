@@ -331,6 +331,7 @@ export const pl = Object.freeze({
   "entry.ai.missing_line": "Brakuje: {labels}",
   "gaps.apply": "Zastosuj",
   "gaps.apply_all": "Zastosuj wszystko",
+  "gaps.no_values": "Nie zwrócono nowych wartości",
   "gaps.retry": "Ponów",
   "gaps.run": "Uzupełnij przez AI",
   "gaps.state_failed": "Niepowodzenie",

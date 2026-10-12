@@ -2084,7 +2084,7 @@ macros reequilibradas ao novo total calórico</string>
     <string name="cd_dismiss_fill_gaps_banner">Dispensar banner</string>
     <string name="fill_gaps_title">Preencher dados que faltam</string>
     <string name="fill_gaps_adds_line">Adiciona: %1$s</string>
-    <string name="fill_gaps_already_complete">Já está completo</string>
+    <string name="fill_gaps_no_values">Nenhum valor novo retornado</string>
     <string name="fill_gaps_run_all">Preencher tudo</string>
     <string name="fill_gaps_apply">Aplicar</string>
     <plurals name="fill_gaps_confirm_remote">

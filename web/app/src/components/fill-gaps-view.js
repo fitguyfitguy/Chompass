@@ -106,7 +106,10 @@ export class FillGapsView extends HTMLElement {
       row.status === "pending" || row.status === "running" || row.status === "failed"
         ? `<span class="field-hint">${escapeHtml(t(`gaps.state_${row.status}`))}</span>`
         : "";
-    const diff = row.merged ? buildCorrectDiff(row.original, row.merged) : [];
+    const noValuesHint =
+      row.status === "filled" && !diff.length
+        ? `<span class="field-hint">${escapeHtml(t("gaps.no_values"))}</span>`
+        : "";
     const diffHtml = diff.length
       ? `<div class="fill-gaps-row__diff">${diff
           .map((d) => `${escapeHtml(d.label)}: ${escapeHtml(d.before)} → ${escapeHtml(d.after)}`)
@@ -130,6 +133,7 @@ export class FillGapsView extends HTMLElement {
         <div class="fill-gaps-row__info">
           <strong>${escapeHtml(row.original.name)}</strong>
           ${statusLabel}
+          ${noValuesHint}
           ${diffHtml}
           ${errorHtml}
         </div>

@@ -289,6 +289,7 @@ export const pt_BR = Object.freeze({
   "entry.ai.missing_line": "Faltando: {labels}",
   "gaps.apply": "Aplicar",
   "gaps.apply_all": "Aplicar tudo",
+  "gaps.no_values": "Nenhum valor novo retornado",
   "gaps.retry": "Tentar novamente",
   "gaps.run": "Preencher com IA",
   "gaps.state_failed": "Falhou",

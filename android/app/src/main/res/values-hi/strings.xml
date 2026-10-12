@@ -2081,7 +2081,7 @@
     <string name="cd_dismiss_fill_gaps_banner">बैनर हटाएँ</string>
     <string name="fill_gaps_title">गुम डेटा भरें</string>
     <string name="fill_gaps_adds_line">जोड़ता है: %1$s</string>
-    <string name="fill_gaps_already_complete">पहले से पूर्ण</string>
+    <string name="fill_gaps_no_values">कोई नया मान नहीं लौटाया गया</string>
     <string name="fill_gaps_run_all">सभी भरें</string>
     <string name="fill_gaps_apply">लागू करें</string>
     <plurals name="fill_gaps_confirm_remote">

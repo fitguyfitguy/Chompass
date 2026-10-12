@@ -2080,7 +2080,7 @@
     <string name="cd_dismiss_fill_gaps_banner">배너 닫기</string>
     <string name="fill_gaps_title">누락된 데이터 채우기</string>
     <string name="fill_gaps_adds_line">추가: %1$s</string>
-    <string name="fill_gaps_already_complete">이미 완전함</string>
+    <string name="fill_gaps_no_values">새 값이 반환되지 않음</string>
     <string name="fill_gaps_run_all">모두 채우기</string>
     <string name="fill_gaps_apply">적용</string>
     <plurals name="fill_gaps_confirm_remote">

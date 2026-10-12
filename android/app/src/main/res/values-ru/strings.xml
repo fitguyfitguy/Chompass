@@ -2164,7 +2164,7 @@
     <string name="cd_dismiss_fill_gaps_banner">Скрыть баннер</string>
     <string name="fill_gaps_title">Заполнить недостающие данные</string>
     <string name="fill_gaps_adds_line">Добавляет: %1$s</string>
-    <string name="fill_gaps_already_complete">Уже заполнено</string>
+    <string name="fill_gaps_no_values">Новых значений не получено</string>
     <string name="fill_gaps_run_all">Заполнить всё</string>
     <string name="fill_gaps_apply">Применить</string>
     <plurals name="fill_gaps_confirm_remote">

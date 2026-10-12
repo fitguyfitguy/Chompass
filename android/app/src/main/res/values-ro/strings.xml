@@ -2086,7 +2086,7 @@ macro-urile reechilibrate la noul total caloric</string>
     <string name="cd_dismiss_fill_gaps_banner">Închide bannerul</string>
     <string name="fill_gaps_title">Completează datele lipsă</string>
     <string name="fill_gaps_adds_line">Adaugă: %1$s</string>
-    <string name="fill_gaps_already_complete">Deja complet</string>
+    <string name="fill_gaps_no_values">Nicio valoare nouă returnată</string>
     <string name="fill_gaps_run_all">Completează tot</string>
     <string name="fill_gaps_apply">Aplică</string>
     <plurals name="fill_gaps_confirm_remote">

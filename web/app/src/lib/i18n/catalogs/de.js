@@ -668,6 +668,7 @@ export const de = Object.freeze({
   // gaps.* (AI fill-missing: Home banner + gaps view)
   "gaps.apply": "Übernehmen",
   "gaps.apply_all": "Alle übernehmen",
+  "gaps.no_values": "Keine neuen Werte zurückgegeben",
   "gaps.retry": "Erneut versuchen",
   "gaps.run": "Mit KI ergänzen",
   "gaps.state_failed": "Fehlgeschlagen",

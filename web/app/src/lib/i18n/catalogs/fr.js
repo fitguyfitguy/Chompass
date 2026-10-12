@@ -291,6 +291,7 @@ export const fr = Object.freeze({
   "entry.ai.missing_line": "Manquant : {labels}",
   "gaps.apply": "Appliquer",
   "gaps.apply_all": "Tout appliquer",
+  "gaps.no_values": "Aucune nouvelle valeur renvoyée",
   "gaps.retry": "Réessayer",
   "gaps.run": "Compléter avec l'IA",
   "gaps.state_failed": "Échec",
