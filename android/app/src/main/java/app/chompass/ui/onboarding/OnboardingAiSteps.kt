@@ -98,7 +98,9 @@ internal fun ProviderStep(
     var howtoExpanded by remember { mutableStateOf(false) }
     val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
     val providerChoices = remember(onDeviceAvailable) {
-        AIProvider.values().filter { it != AIProvider.ON_DEVICE || onDeviceAvailable }
+        AIProvider.values()
+            .filter { it != AIProvider.ON_DEVICE || onDeviceAvailable }
+            .sortedBy { it.group.ordinal }
     }
     Column(
         Modifier
@@ -340,10 +342,7 @@ internal fun ProviderStep(
             title = stringResource(R.string.sheet_ai_provider),
             items = providerChoices,
             label = { stringResource(it.displayNameRes) },
-            subtitle = {
-                if (it == AIProvider.ON_DEVICE) stringResource(R.string.ai_provider_on_device_subtitle)
-                else null
-            },
+            subtitle = { stringResource(it.subtitleRes) },
             selected = { it == provider },
             onSelect = { onProviderChange(it); selectorSheet = null },
             onDismiss = { selectorSheet = null }

@@ -286,6 +286,60 @@
 
     <string name="ai_provider_on_device_subtitle">Privat und offline. Geringere Genauigkeit als Cloud-KI; ~2–4 GB Download</string>
 
+    <string name="ai_provider_subtitle_gemini">Kostenloser API-Schlüssel · funktioniert sofort</string>
+
+    <string name="ai_provider_subtitle_openai">GPT-Modelle</string>
+
+    <string name="ai_provider_subtitle_anthropic">Claude-Modelle</string>
+
+    <string name="ai_provider_subtitle_xai">Grok-Modelle</string>
+
+    <string name="ai_provider_subtitle_openrouter">Ein Schlüssel, hunderte Modelle</string>
+
+    <string name="ai_provider_subtitle_together">Gehostete offene Modelle</string>
+
+    <string name="ai_provider_subtitle_groq">Schnelle Inferenz, Gratis-Stufe</string>
+
+    <string name="ai_provider_subtitle_huggingface">Gehostete offene Modelle</string>
+
+    <string name="ai_provider_subtitle_fireworks">Gehostete offene Modelle</string>
+
+    <string name="ai_provider_subtitle_deepinfra">Gehostete offene Modelle</string>
+
+    <string name="ai_provider_subtitle_mistral">Mistral-Modelle</string>
+
+    <string name="ai_provider_subtitle_ollama">Dein Rechner, keine Cloud</string>
+
+    <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp u. a.</string>
+
+    <string name="ai_provider_group_recommended">Empfohlen</string>
+
+    <string name="ai_provider_group_cloud">Cloud-Anbieter</string>
+
+    <string name="ai_provider_group_local">Lokal &amp; selbst gehostet</string>
+
+    <string name="ai_provider_group_device">Auf dem Gerät</string>
+
+    <string name="settings_section_ai_profile">Profil</string>
+
+    <string name="settings_section_ai_connection">Verbindung</string>
+
+    <string name="settings_section_ai_advanced">Erweitert</string>
+
+    <string name="settings_ai_key_test">Testen</string>
+
+    <string name="settings_ai_key_test_failed">Schlüssel abgelehnt: %1$s</string>
+
+    <string name="settings_ai_key_remove_title">API-Schlüssel entfernen?</string>
+
+    <string name="settings_ai_key_remove_body">Ein leerer Schlüssel löscht den für dieses Profil gespeicherten Schlüssel.</string>
+
+    <string name="settings_ai_get_key">API-Schlüssel holen</string>
+
+    <string name="settings_ai_value_default">%1$,d (Standard)</string>
+
+    <string name="settings_ai_timeout_default">%1$,ds (Standard)</string>
+
     <string name="api_key_placeholder">API-Schlüssel einfügen</string>
 
     <string name="ai_key_placeholder_ollama">Kein Schlüssel erforderlich</string>

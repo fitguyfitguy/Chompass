@@ -170,6 +170,33 @@
     <string name="ai_provider_custom">Niestandardowy (zgodny z OpenAI)</string>
     <string name="ai_provider_on_device">Na urządzeniu (prywatnie)</string>
     <string name="ai_provider_on_device_subtitle">Prywatnie i offline. Mniej dokładne niż chmurowe AI; pobieranie ~2 do 4 GB</string>
+    <string name="ai_provider_subtitle_gemini">Darmowy klucz API · działa od razu</string>
+    <string name="ai_provider_subtitle_openai">Modele GPT</string>
+    <string name="ai_provider_subtitle_anthropic">Modele Claude</string>
+    <string name="ai_provider_subtitle_xai">Modele Grok</string>
+    <string name="ai_provider_subtitle_openrouter">Jeden klucz, setki modeli</string>
+    <string name="ai_provider_subtitle_together">Hostowane modele open source</string>
+    <string name="ai_provider_subtitle_groq">Szybka inferencja, darmowy plan</string>
+    <string name="ai_provider_subtitle_huggingface">Hostowane modele open source</string>
+    <string name="ai_provider_subtitle_fireworks">Hostowane modele open source</string>
+    <string name="ai_provider_subtitle_deepinfra">Hostowane modele open source</string>
+    <string name="ai_provider_subtitle_mistral">Modele Mistral</string>
+    <string name="ai_provider_subtitle_ollama">Twój komputer, bez chmury</string>
+    <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp itd.</string>
+    <string name="ai_provider_group_recommended">Polecany</string>
+    <string name="ai_provider_group_cloud">Dostawcy chmurowi</string>
+    <string name="ai_provider_group_local">Lokalnie i self-hosted</string>
+    <string name="ai_provider_group_device">Na urządzeniu</string>
+    <string name="settings_section_ai_profile">Profil</string>
+    <string name="settings_section_ai_connection">Połączenie</string>
+    <string name="settings_section_ai_advanced">Zaawansowane</string>
+    <string name="settings_ai_key_test">Testuj</string>
+    <string name="settings_ai_key_test_failed">Klucz odrzucony: %1$s</string>
+    <string name="settings_ai_key_remove_title">Usunąć klucz API?</string>
+    <string name="settings_ai_key_remove_body">Zapisanie pustego klucza usuwa klucz zapisany w tym profilu.</string>
+    <string name="settings_ai_get_key">Uzyskaj klucz API</string>
+    <string name="settings_ai_value_default">%1$,d (domyślnie)</string>
+    <string name="settings_ai_timeout_default">%1$,ds (domyślnie)</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="api_key_placeholder">Wklej klucz API</string>

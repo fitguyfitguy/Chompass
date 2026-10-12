@@ -170,6 +170,33 @@
     <string name="ai_provider_custom">Özel (OpenAI uyumlu)</string>
     <string name="ai_provider_on_device">Cihazda (Gizli)</string>
     <string name="ai_provider_on_device_subtitle">Gizli ve çevrimdışı. Bulut AI\'dan daha az doğru; ~2 ila 4 GB indirme</string>
+    <string name="ai_provider_subtitle_gemini">Ücretsiz API anahtarı · hemen çalışır</string>
+    <string name="ai_provider_subtitle_openai">GPT modelleri</string>
+    <string name="ai_provider_subtitle_anthropic">Claude modelleri</string>
+    <string name="ai_provider_subtitle_xai">Grok modelleri</string>
+    <string name="ai_provider_subtitle_openrouter">Tek anahtar, yüzlerce model</string>
+    <string name="ai_provider_subtitle_together">Barındırılan açık modeller</string>
+    <string name="ai_provider_subtitle_groq">Hızlı çıkarım, ücretsiz katman</string>
+    <string name="ai_provider_subtitle_huggingface">Barındırılan açık modeller</string>
+    <string name="ai_provider_subtitle_fireworks">Barındırılan açık modeller</string>
+    <string name="ai_provider_subtitle_deepinfra">Barındırılan açık modeller</string>
+    <string name="ai_provider_subtitle_mistral">Mistral modelleri</string>
+    <string name="ai_provider_subtitle_ollama">Bilgisayarın, bulut yok</string>
+    <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp vb.</string>
+    <string name="ai_provider_group_recommended">Önerilen</string>
+    <string name="ai_provider_group_cloud">Bulut sağlayıcıları</string>
+    <string name="ai_provider_group_local">Yerel ve kendi sunucun</string>
+    <string name="ai_provider_group_device">Cihazda</string>
+    <string name="settings_section_ai_profile">Profil</string>
+    <string name="settings_section_ai_connection">Bağlantı</string>
+    <string name="settings_section_ai_advanced">Gelişmiş</string>
+    <string name="settings_ai_key_test">Test et</string>
+    <string name="settings_ai_key_test_failed">Anahtar reddedildi: %1$s</string>
+    <string name="settings_ai_key_remove_title">API anahtarı kaldırılsın mı?</string>
+    <string name="settings_ai_key_remove_body">Boş anahtar kaydetmek, bu profilin kayıtlı anahtarını siler.</string>
+    <string name="settings_ai_get_key">API anahtarı al</string>
+    <string name="settings_ai_value_default">%1$,d (varsayılan)</string>
+    <string name="settings_ai_timeout_default">%1$,ds (varsayılan)</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="api_key_placeholder">API anahtarını yapıştır</string>

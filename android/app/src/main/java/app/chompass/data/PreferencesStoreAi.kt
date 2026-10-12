@@ -491,6 +491,13 @@ internal fun clampMaxResponseTokens(v: Int): Int =
 internal fun clampAiReadTimeoutSeconds(v: Int): Int =
     v.coerceIn(MIN_AI_READ_TIMEOUT_SECONDS, MAX_AI_READ_TIMEOUT_SECONDS)
 
+/** Effective advanced-setting value: per-profile override (clamped) over the global (clamped). */
+internal fun effectiveMaxResponseTokens(profile: AiProfile?, global: Int): Int =
+    profile?.maxResponseTokens?.let(::clampMaxResponseTokens) ?: clampMaxResponseTokens(global)
+
+internal fun effectiveReadTimeoutSeconds(profile: AiProfile?, global: Int): Int =
+    profile?.readTimeoutSeconds?.let(::clampAiReadTimeoutSeconds) ?: clampAiReadTimeoutSeconds(global)
+
     // -- Serving unit inference --------------------------------------------
 internal val PreferencesStore.servingUnitInferenceModeImpl: Flow<ServingUnitInferenceMode> get() = dataStore.data.map { prefs ->
         ServingUnitInferenceMode.fromStorage(prefs[Keys.SERVING_UNIT_INFERENCE_MODE])
@@ -670,10 +677,11 @@ internal suspend fun PreferencesStore.aiCallConfigImpl(profileOverride: AiProfil
         aiFeaturesEnabled = prefs[Keys.AI_FEATURES_ENABLED] ?: true,
         userContext = prefs[Keys.USER_CONTEXT].orEmpty(),
         allowInsecureHttp = prefs[Keys.ALLOW_INSECURE_HTTP] ?: false,
-        maxResponseTokens = clampMaxResponseTokens(prefs[Keys.MAX_RESPONSE_TOKENS] ?: DEFAULT_MAX_RESPONSE_TOKENS),
-        aiReadTimeoutSeconds = clampAiReadTimeoutSeconds(prefs[Keys.AI_READ_TIMEOUT_SECONDS] ?: DEFAULT_AI_READ_TIMEOUT_SECONDS),
-        geminiGoogleSearch = prefs[Keys.GEMINI_GOOGLE_SEARCH_ENABLED] ?: false,
-        reasoningEffort = OpenRouterReasoningEffort.fromStorage(prefs[Keys.OPENROUTER_REASONING_EFFORT]),
+        maxResponseTokens = effectiveMaxResponseTokens(profile, prefs[Keys.MAX_RESPONSE_TOKENS] ?: DEFAULT_MAX_RESPONSE_TOKENS),
+        aiReadTimeoutSeconds = effectiveReadTimeoutSeconds(profile, prefs[Keys.AI_READ_TIMEOUT_SECONDS] ?: DEFAULT_AI_READ_TIMEOUT_SECONDS),
+        geminiGoogleSearch = profile.geminiGoogleSearch ?: (prefs[Keys.GEMINI_GOOGLE_SEARCH_ENABLED] ?: false),
+        reasoningEffort = profile.reasoningEffort?.let(OpenRouterReasoningEffort::fromStorage)
+            ?: OpenRouterReasoningEffort.fromStorage(prefs[Keys.OPENROUTER_REASONING_EFFORT]),
         goalRecalcTier = GoalRecalcTierOverride.fromStorage(prefs[Keys.GOAL_RECALC_TIER]),
         fallbackEnabled = prefs[Keys.FALLBACK_ENABLED] ?: true,
     )
