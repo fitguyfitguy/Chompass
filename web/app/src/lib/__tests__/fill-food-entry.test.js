@@ -152,3 +152,46 @@ test("fillFoodEntry_unusableReplyGrams_adoptsEntryGrams", async () => {
     PROVIDERS.anthropic.send = original;
   }
 });
+
+test("fillFoodEntry_capsConstituentRowsInPayload", async () => {
+  const original = PROVIDERS.anthropic.send;
+  /** @type {{systemPrompt: string, messages: {role: string, text: string}[]} | null} */
+  let sent = null;
+  PROVIDERS.anthropic.send = async (_config, args) => {
+    sent = /** @type {any} */ (args);
+    return {
+      text: JSON.stringify({
+        name: "Overnight oats",
+        calories: 540,
+        proteinG: 42,
+        carbsG: 60,
+        fatG: 12.5,
+        quantityG: 300,
+      }),
+      toolCalls: [],
+    };
+  };
+  try {
+    await fillFoodEntry({
+      providerId: "anthropic",
+      config: { apiKey: "test-key" },
+      entry: gappedEntry({
+        constituents: Array.from({ length: 45 }, (_, i) => ({
+          name: `item ${i + 1}`,
+          servingSizeGrams: 10,
+          calories: 10,
+          proteinG: 1,
+          carbsG: 1,
+          fatG: 1,
+        })),
+      }),
+      prefsOverride: /** @type {any} */ ({ aiFeaturesEnabled: true, aiFallbackEnabled: false }),
+    });
+    const userText = /** @type {any} */ (sent).messages[0].text;
+    assert.ok(userText.includes("- item 40 10 g: 10 kcal"), `row 40 absent: ${userText}`);
+    assert.ok(!userText.includes("- item 41"), `row 41 not capped: ${userText}`);
+    assert.ok(userText.includes("(+ 5 more ingredients not listed)"), `truncation line absent: ${userText}`);
+  } finally {
+    PROVIDERS.anthropic.send = original;
+  }
+});

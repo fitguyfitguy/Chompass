@@ -404,12 +404,17 @@ function fillEntryData(entry) {
   if (known) lines.push(`known values: ${known}`);
   if (entry.constituents?.length) {
     lines.push("ingredients:");
-    for (const row of entry.constituents) {
+    // Payload cap (R11, Android MAX_FILL_CONSTITUENT_ROWS parity): oversized
+    // Mealie imports stress small local models.
+    const shown = entry.constituents.slice(0, 40);
+    for (const row of shown) {
       const gramsPart = row.servingSizeGrams > 0 ? ` ${row.servingSizeGrams} g` : "";
       lines.push(
         `- ${row.name}${gramsPart}: ${row.calories} kcal, ${row.proteinG} P, ${row.carbsG} C, ${row.fatG} F`,
       );
     }
+    const hidden = entry.constituents.length - shown.length;
+    if (hidden > 0) lines.push(`(+ ${hidden} more ingredients not listed)`);
   }
   return lines.join("\n");
 }
