@@ -30,6 +30,7 @@ LOGIN="${CODEBERG_LOGIN:-codeberg}"
 WITH_SCREENSHOTS=0
 ASSETS_ONLY=0
 SKIP_PAGES=0
+PRERELEASE=0
 POSITIONAL=()
 for arg in "$@"; do
   case "$arg" in
@@ -38,6 +39,10 @@ for arg in "$@"; do
       ;;
     --assets-only)
       ASSETS_ONLY=1
+      ;;
+    --prerelease)
+      PRERELEASE=1
+      SKIP_PAGES=1
       ;;
     --skip-pages)
       SKIP_PAGES=1
@@ -49,6 +54,8 @@ Usage: publish_release.sh <version> [options]
 Options:
   --with-screenshots   Also attach release-screenshots/*.png (needs extra quota)
   --assets-only        Skip release creation; upload missing assets to an existing tag
+  --prerelease         Publish as a beta: prerelease flag, Chompass-beta-<version>.apk,
+                      no Pages deploy, no F-Droid metadata touch
   --skip-pages         Do not rebuild/redeploy the Codeberg Pages site
 
 After uploading assets, redeploys the Hugo site (scripts/deploy_pages.sh) unless
@@ -73,10 +80,29 @@ CHECKSUMS="$ROOT/releases/SHA256SUMS"
 SCREENSHOT_DIR="$ROOT/release-screenshots"
 TOKEN="${CODEBERG_TOKEN:-${GITEA_SERVER_TOKEN:-}}"
 
-# Quota policy: universal APK only (no per-ABI splits).
-FDROID_ASSETS=(
-  "$ROOT/releases/Chompass-fdroid-${VERSION}.apk"
-)
+# Quota policy: universal APK only (no per-ABI splits). Betas ship the same
+# universal APK under the Chompass-beta- prefix so F-Droid's stable download
+# URL pattern (Chompass-fdroid-<version>.apk) never matches a prerelease.
+if [[ "$PRERELEASE" -eq 1 ]]; then
+  BASE_VERSION="${VERSION%%-*}"
+  BETA_APK="$ROOT/releases/Chompass-beta-${VERSION}.apk"
+  if [[ ! -f "$BETA_APK" && -f "$ROOT/releases/Chompass-fdroid-${VERSION}.apk" ]]; then
+    cp "$ROOT/releases/Chompass-fdroid-${VERSION}.apk" "$BETA_APK"
+  elif [[ ! -f "$BETA_APK" && -f "$ROOT/releases/Chompass-fdroid-${BASE_VERSION}.apk" ]]; then
+    cp "$ROOT/releases/Chompass-fdroid-${BASE_VERSION}.apk" "$BETA_APK"
+  fi
+  if [[ ! -f "$BETA_APK" ]]; then
+    echo "Missing $BETA_APK (and no Chompass-fdroid-${BASE_VERSION}.apk to copy)." >&2
+    exit 1
+  fi
+  CHECKSUMS="$ROOT/releases/SHA256SUMS-beta"
+  (cd "$ROOT/releases" && sha256sum "Chompass-beta-${VERSION}.apk" > SHA256SUMS-beta)
+  FDROID_ASSETS=("$BETA_APK")
+else
+  FDROID_ASSETS=(
+    "$ROOT/releases/Chompass-fdroid-${VERSION}.apk"
+  )
+fi
 CHECKSUM_ASSETS=("$CHECKSUMS")
 SCREENSHOT_ASSETS=()
 
@@ -242,7 +268,21 @@ EOF
   exit 1
 fi
 
-NOTES="$(awk '/^## \['"${VERSION}"'\]/{flag=1; next} /^## \[/{flag=0} flag' "$ROOT/docs/CHANGELOG.md")"
+NOTES_VERSION="${VERSION%%-*}"
+NOTES="$(awk '/^## \['"${NOTES_VERSION}"'\]/{flag=1; next} /^## \[/{flag=0} flag' "$ROOT/docs/CHANGELOG.md")"
+if [[ -z "$NOTES" ]]; then
+  echo "No CHANGELOG section for ${NOTES_VERSION}." >&2
+  exit 1
+fi
+TITLE="Chompass ${VERSION}"
+RELEASE_FLAGS=()
+if [[ "$PRERELEASE" -eq 1 ]]; then
+  TITLE="Chompass ${VERSION} (beta)"
+  RELEASE_FLAGS=(--prerelease)
+  NOTES="Beta build. Same app, same data: installing it replaces the installed Chompass. The notes below are the changes since the last stable release.
+
+${NOTES}"
+fi
 
 if [[ "$ASSETS_ONLY" -eq 0 ]]; then
   if release_exists; then
@@ -253,8 +293,9 @@ if [[ "$ASSETS_ONLY" -eq 0 ]]; then
     if ! err="$(run_tea releases create \
       --login "$LOGIN" \
       --repo "$CODEBERG_REPO" \
+      "${RELEASE_FLAGS[@]}" \
       --tag "$TAG" \
-      --title "Chompass ${VERSION}" \
+      --title "$TITLE" \
       --note "$NOTES" 2>&1)"; then
       if echo "$err" | rg -qi 'already a release'; then
         echo "Release $TAG already exists — uploading any missing assets."
