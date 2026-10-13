@@ -97,6 +97,27 @@ The script auto-runs `nix shell nixpkgs#tea` / `nixpkgs#hugo` when those tools a
 
 Stable download URL pattern: `https://codeberg.org/fitguy/chompass/releases/download/v<version>/Chompass-fdroid-<version>.apk`
 
+### Beta channel
+
+A beta is the same packaged APK, published as a Codeberg **prerelease** so it never
+disturbs the stable channel:
+
+- Tag `v<version>-beta.N` (F-Droid's `UpdateCheckMode: Tags ^v[0-9.]+$` ignores it)
+- Asset `Chompass-beta-<version>.apk` (stable `Chompass-fdroid-*` URL pattern never matches)
+- No `docs/fdroid/app.chompass.yml` / `metadata/` entry, no Pages deploy
+- Same `versionCode` as the eventual stable: when the stable ships, F-Droid users
+  update from the previous stable and beta testers are already on that code
+
+```bash
+export CODEBERG_LOGIN=codeberg-release
+./scripts/publish_release.sh 5.6.0-beta.1 --prerelease
+```
+
+Notes come from the CHANGELOG section of the base version (`5.6.0` for
+`5.6.0-beta.1`) with a beta preamble. When the beta graduates, re-tag the final
+commit `v<version>` and publish normally; delete the beta tag if you want a clean
+history.
+
 ### Codeberg storage quota
 
 Codeberg applies a combined quota for **releases, packages, LFS, and attachments** (default **1.5 GiB** per user/org, separate from the 750 MiB git-repo limit).
