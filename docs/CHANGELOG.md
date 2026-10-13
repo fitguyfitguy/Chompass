@@ -6,6 +6,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+## [5.6.0] - 2026-10-13
+
 ### Added
 
 - **Named AI profiles** (Android): Settings → AI now manages saved profiles instead of one global provider slot. Each profile carries its own provider, model, vision model, base URL, and API key, and one active profile drives every AI feature. Switching profiles no longer resets your model, and more than one custom OpenAI-compatible endpoint can exist side by side. An optional fallback profile replaces the old separate fallback provider fields.
