@@ -11,6 +11,7 @@ import app.chompass.models.ServingUnitInferenceMode
 import app.chompass.models.SpeechLanguage
 import app.chompass.models.SpeechProvider
 import android.content.Context
+import android.util.Log
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import java.time.Instant
@@ -62,6 +63,24 @@ internal fun decodeAiProfilesJson(json: Json, raw: String?): List<AiProfile> {
     } catch (_: IllegalArgumentException) {
         // SerializationException (unknown enum/shape) extends IllegalArgumentException.
         emptyList()
+    }
+}
+
+/**
+ * Ids in a readable profile blob. Null or blank raw is an empty set (nothing
+ * to retain). Unreadable JSON returns null so a startup sweep does not treat
+ * a corrupt blob as "no profiles" and delete every stored key.
+ */
+internal fun decodeAiProfileIdsOrNull(json: Json, raw: String?): Set<UUID>? {
+    val text = raw?.trim().orEmpty()
+    if (text.isEmpty()) return emptySet()
+    return try {
+        json.decodeFromString(aiProfileListSerializer, text).map { it.id }.toSet()
+    } catch (e: IllegalArgumentException) {
+        // SerializationException (unknown enum/shape) extends IllegalArgumentException.
+        // runCatching: a JVM test with a corrupt blob must not die on an unmocked Log.
+        runCatching { Log.w("PreferencesStoreAi", "AI profile JSON unreadable; keeping stored keys", e) }
+        null
     }
 }
 
@@ -402,6 +421,8 @@ internal suspend fun PreferencesStore.ensureAiProfilesMigratedImpl(keyStore: Key
             prefs.remove(Keys.fallbackCustomBaseUrl(p))
         }
     }
+    val raw = dataStore.data.first()[Keys.AI_PROFILES_JSON]
+    decodeAiProfileIdsOrNull(json, raw)?.let { keyStore.retainProfileKeys(it) }
     keyStore.clearLegacyAiKeys()
 }
 
