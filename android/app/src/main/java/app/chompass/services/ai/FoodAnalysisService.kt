@@ -112,6 +112,9 @@ private const val ENTRY_UNIT_OPTIONS_RULE =
         "the whole analyzed amount and its weight per unit. Use [] only when no non-gram unit " +
         "fits; never use g/grams as a unit."
 
+/** Fill/reestimate payload cap (R11): unbounded Mealie imports stress small local models. */
+private const val MAX_FILL_CONSTITUENT_ROWS = 40
+
 private const val ENTRY_CONSTITUENTS_RULE =
     "constituents is optional. For multi-item meals, list each distinct edible item " +
         "(egg, toast, butter, drink, side) with its own macros, serving_size_grams, and " +
@@ -1310,10 +1313,13 @@ class FoodAnalysisService(
         fillEntryKnownValues(entry).takeIf { it.isNotEmpty() }?.let { lines += "known values: $it" }
         if (entry.constituents.isNotEmpty()) {
             lines += "ingredients:"
-            for (row in entry.constituents) {
+            val shown = entry.constituents.take(MAX_FILL_CONSTITUENT_ROWS)
+            for (row in shown) {
                 val grams = if (row.servingSizeGrams > 0) " ${row.servingSizeGrams.toInt()} g" else ""
                 lines += "- ${row.name}$grams: ${row.calories} kcal, ${row.protein} P, ${row.carbs} C, ${row.fat} F"
             }
+            val hidden = entry.constituents.size - shown.size
+            if (hidden > 0) lines += "(+ $hidden more ingredients not listed)"
         }
         return lines.joinToString("\n")
     }
