@@ -38,6 +38,17 @@ uv run --with httpx python docs/benchmarks/food_accuracy/run_eval.py \
   --out docs/benchmarks/food_accuracy/results/constituents/strong
 ```
 
+## Fill-missing hole-fill
+
+Production fill prompt, then the same merge the app uses (a zero is fillable, a stored non-zero stays). Two arms on `manifest/eval_text.jsonl`: `holes` blanks calories and macros; `kept` leaves fat stored.
+
+```bash
+uv run python docs/benchmarks/food_accuracy/run_fill_missing_eval.py \
+  --model gemini-3.5-flash-lite
+```
+
+5.6.0 run (Gemini Flash-Lite, 41 of 42 answered): holes calories within 20% on 37/41, weighted average error 6.2%. Kept fat was unchanged on 41/41, and the model did not rewrite it.
+
 ## Prompt A/B (text)
 
 ```bash
