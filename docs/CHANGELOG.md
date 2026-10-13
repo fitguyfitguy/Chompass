@@ -9,6 +9,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Fixed
 
 - **A failed keychain open gets a second try before anything is wiped** (Android): a temporary error when opening the encrypted keychain (for example a full disk) no longer erases every saved AI key, speech key, WebDAV password, and Mealie token. Only a second consecutive failure still resets the keychain, as before.
+- **Fill and recalculate requests are hardened on the web like on Android** (Web): the entry data and your preference text now travel in a tagged data-only block, so a food name or preference that contains AI markup can no longer inject instructions into a fill or recalculate request.
 
 ## [5.6.0] - 2026-10-13
 
