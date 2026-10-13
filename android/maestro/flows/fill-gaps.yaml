@@ -21,9 +21,10 @@ name: Fill missing gaps sheet round trip
     timeout: 90000
 # Banner: macro-gapped meals (seed_full carries legit zero-macro rows —
 # Apple/Banana/Chicken thigh — plus the fixture, so the count is >1 here).
+# Same budget as Heute: on a reseed the banner can land a second after 30s.
 - extendedWaitUntil:
     visible: ".*ohne Nährwertdaten"
-    timeout: 30000
+    timeout: 90000
 # Open the gaps sheet.
 - tapOn: ".*ohne Nährwertdaten"
 - extendedWaitUntil:
@@ -88,7 +89,7 @@ name: Fill missing gaps sheet round trip
 # chip must vanish while the sheet stays open.
 - extendedWaitUntil:
     visible: ".*ohne Nährwertdaten"
-    timeout: 30000
+    timeout: 90000
 - tapOn: ".*ohne Nährwertdaten"
 - extendedWaitUntil:
     visible: "Fehlende Daten füllen"
