@@ -54,6 +54,7 @@ describe("pref defaults (parity fixture)", () => {
     assert.equal(ANDROID_PREF_DEFAULTS.fallbackAiProvider, fixture.fallbackAiProvider);
     assert.equal(ANDROID_PREF_DEFAULTS.fallbackAiModel, fixture.fallbackAiModel);
     assert.equal(ANDROID_PREF_DEFAULTS.openrouterReasoningEffort, fixture.openrouterReasoningEffort);
+    assert.equal(ANDROID_PREF_DEFAULTS.allowInsecureHttp, fixture.allowInsecureHttp);
   });
 
   it("home tubes / chips / card count match fixture", () => {
@@ -65,6 +66,7 @@ describe("pref defaults (parity fixture)", () => {
   it("DEFAULT_PREFS coach tab / AI-features defaults match fixture", () => {
     assert.equal(DEFAULT_PREFS.coachTabEnabled, fixture.coachTabEnabled);
     assert.equal(DEFAULT_PREFS.aiFeaturesEnabled, fixture.aiFeaturesEnabled);
+    assert.equal(DEFAULT_PREFS.allowInsecureHttp, fixture.allowInsecureHttp);
     assert.equal(DEFAULT_PREFS.fillMissingRemindersEnabled, fixture.fillMissingRemindersEnabled);
   });
 

@@ -4,6 +4,7 @@
 // to. No SDKs — these are plain REST calls, matching the public Messages /
 // generateContent / chat.completions APIs directly.
 import { escapeAttr } from "../ui/html.js";
+import { t } from "../i18n/index.js";
 
 /**
  * @typedef {Object} AiTool
@@ -302,6 +303,37 @@ export function stripThinkBlocks(text) {
 /** Official OpenAI endpoint, as opposed to a self-hosted OpenAI-compatible base. */
 function isOfficialOpenAi(base) {
   return /^https:\/\/api\.openai\.com(\/|$)/.test(base);
+}
+
+/**
+ * True when a URL would send credentials over unencrypted http:// to a
+ * non-loopback host. Shared by the settings save-time guard and the dispatch
+ * gate. Unparsable URLs fail closed.
+ * @param {string|undefined} url
+ * @returns {boolean}
+ */
+export function isInsecureHttpUrl(url) {
+  if (!url || !url.startsWith("http://")) return false;
+  try {
+    const host = new URL(url).hostname.toLowerCase();
+    return host !== "localhost" && host !== "127.0.0.1" && host !== "::1" && host !== "[::1]";
+  } catch {
+    return true;
+  }
+}
+
+/**
+ * Cleartext gate (Android AiHttp.assertCleartextAllowed parity): an http://
+ * URL to a non-loopback host would send the API key unencrypted, so dispatch
+ * sites reject it unless the user enabled "Allow insecure HTTP" in Settings →
+ * AI. Loopback (localhost / 127.0.0.1 / ::1) stays allowed unconditionally —
+ * that is the default local LLM setup.
+ * @param {string|undefined} url
+ * @param {boolean} allowInsecureHttp
+ */
+export function assertCleartextAllowed(url, allowInsecureHttp) {
+  if (allowInsecureHttp || !isInsecureHttpUrl(url)) return;
+  throw new Error(t("errors.insecure_http_blocked"));
 }
 
 /**

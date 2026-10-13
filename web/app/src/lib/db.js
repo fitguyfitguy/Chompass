@@ -462,6 +462,7 @@ export const profile = {
  * @property {boolean} [showNotes]
  * @property {boolean} [coachTabEnabled] Hide the coach tab (Android parity; default true)
  * @property {boolean} [aiFeaturesEnabled] Master AI-features switch; off = no data to any LLM provider (default true)
+ * @property {boolean} [allowInsecureHttp] Opt-in to send API keys over plain http:// to non-loopback custom endpoints (default false)
  * @property {"static"|"add_active"} [calorieGaugeMode]
  * @property {number} [waterGoalMl]
  * @property {boolean} [adaptiveGoals]
@@ -526,6 +527,7 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   showNotes: ANDROID_PREF_DEFAULTS.showNotes,
   coachTabEnabled: true,
   aiFeaturesEnabled: true,
+  allowInsecureHttp: ANDROID_PREF_DEFAULTS.allowInsecureHttp,
   calorieGaugeMode: "static",
   waterGoalMl: ANDROID_PREF_DEFAULTS.waterGoalMl,
   adaptiveGoals: false,
