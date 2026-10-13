@@ -26,7 +26,7 @@ name: Diary import notes untracked catalog
     visible: "Einstellungen"
     timeout: 20000
 - tapOn: "Einstellungen"
-- tapOn: "Gesundheit & Daten"                # group card expands to its entries
+- tapOn: "Gesundheitsdaten"                  # group card expands to its entries
 - tapOn: "JSON-Datei des Ernährungstagebuchs importieren"   # row opens the picker
 - extendedWaitUntil:                         # picker root: recents list (file is
     visible: ".*diary-import-test.*"         # MediaStore-indexed, newest row)
