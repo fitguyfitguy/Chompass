@@ -119,23 +119,31 @@ class KeyStore(context: Context, prefsOverride: SharedPreferences? = null) {
          * `AEADBadTagException` on the first read because the surviving alias
          * can't decrypt a freshly-generated keyset header.
          *
-         * Recovery path: catch the failure, wipe both the prefs file AND the
-         * AndroidKeystore alias, then rebuild. The user only loses cached API
-         * keys, which they'd re-enter on first run anyway. Without this, the
-         * app crashes on Application.onCreate before showing any UI.
+         * Recovery path: a transient open failure (I/O error, disk full) gets
+         * one retry first — no data loss. Only when the retry also fails do we
+         * wipe both the prefs file AND the AndroidKeystore alias, then rebuild.
+         * The documented reinstall `AEADBadTagException` fails both attempts
+         * deterministically and still takes the wipe path. The user only loses
+         * cached API keys, which they'd re-enter on first run anyway. Without
+         * this, the app crashes on Application.onCreate before showing any UI.
          */
         private fun openOrRecover(context: Context): SharedPreferences {
             return try {
                 build(context)
-            } catch (e: Exception) {
-                Log.w(TAG, "EncryptedSharedPreferences open failed; recovering", e)
-                runCatching { context.deleteSharedPreferences(FILE_NAME) }
-                runCatching {
-                    val ks = java.security.KeyStore.getInstance("AndroidKeyStore")
-                    ks.load(null)
-                    ks.deleteEntry(MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+            } catch (first: Exception) {
+                Log.w(TAG, "EncryptedSharedPreferences open failed; retrying before wipe", first)
+                try {
+                    build(context)
+                } catch (second: Exception) {
+                    Log.w(TAG, "EncryptedSharedPreferences open failed twice; wiping keychain", second)
+                    runCatching { context.deleteSharedPreferences(FILE_NAME) }
+                    runCatching {
+                        val ks = java.security.KeyStore.getInstance("AndroidKeyStore")
+                        ks.load(null)
+                        ks.deleteEntry(MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+                    }
+                    build(context)
                 }
-                build(context)
             }
         }
 
