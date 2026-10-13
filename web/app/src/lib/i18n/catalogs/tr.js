@@ -324,6 +324,7 @@ export const tr = Object.freeze({
   // Entry / meal constituents
   "diary.fill_applied": "{n} kayıt dolduruldu",
   "diary.fill_banner": "{n} öğünde besin verileri eksik",
+  "diary.fill_banner_plural": "{n} öğünde besin verileri eksik",
   "diary.fill_missing": "Eksikleri doldur",
   "entry.ai.mode_fill": "Eksikleri doldur",
   "entry.ai.mode_reanalyze": "Yeniden analiz",
@@ -410,6 +411,9 @@ export const tr = Object.freeze({
   "voice.use": "Kullan",
   "voice.hint": "Bir yemek tanımı söyle, ardından analiz için Kullan'a dokun.",
   "errors.insecure_http_blocked": "Güvensiz HTTP engellendi. Ayarlar → AI bölümünde «Güvensiz HTTP'ye izin ver» seçeneğini açın ya da https:// adresi kullanın.",
+  "errors.key_rejected": "Bu API anahtarı reddedildi. aistudio.google.com/apikey adresinde yeni bir anahtar oluşturun ve yeniden yapıştırın.",
+  "errors.key_unverified": "Anahtar doğrulanamadı (HTTP {status}).",
+  "errors.key_unverified_retry": "Anahtar doğrulanamadı (HTTP {status}). Birazdan yeniden deneyin.",
   "errors.paste_key_first": "Önce bir API anahtarı yapıştır.",
   "errors.network_check": "Ağ hatası. Bağlantını kontrol et ve tekrar dene.",
   "errors.ai_features_disabled": "AI özellikleri Ayarlar → AI ve Ses bölümünde kapatılmış.",
