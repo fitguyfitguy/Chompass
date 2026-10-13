@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Fixed
+
+- **A failed keychain open gets a second try before anything is wiped** (Android): a temporary error when opening the encrypted keychain (for example a full disk) no longer erases every saved AI key, speech key, WebDAV password, and Mealie token. Only a second consecutive failure still resets the keychain, as before.
+
 ## [5.6.0] - 2026-10-13
 
 ### Added
