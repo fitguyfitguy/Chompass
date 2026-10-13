@@ -64,9 +64,11 @@ name: Fill missing gaps sheet round trip
 - extendedWaitUntil:
     visible: "Rückgängig"
     timeout: 15000
-# Undo within the snackbar window restores the 0-kcal original.
+# Undo within the snackbar window restores the 0-kcal original. The re-gap is
+# proven by the Fehlt:-kcal caption below; do NOT assertNotVisible the filled
+# "640 kcal" here — the seeded favorites strip (Grilled salmon and rice) shows
+# the same value on Home and trips the check spuriously.
 - tapOn: "Rückgängig"
-- assertNotVisible: "640 kcal"
 # Re-open: the missing-fields line is back (entry gapped again).
 - scrollUntilVisible:
     element:
