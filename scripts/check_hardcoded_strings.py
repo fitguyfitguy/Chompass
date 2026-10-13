@@ -43,6 +43,8 @@ SKIP_PATHS = (
     "/debug/",
     "/test/",
     "MainActivityDebugExtras",
+    "SampleDataGenerators",
+    "SampleDataDefects",
 )
 
 # Object declarations whose bodies are test-only legacy code (production path
