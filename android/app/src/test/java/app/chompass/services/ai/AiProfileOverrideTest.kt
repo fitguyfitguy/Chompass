@@ -162,4 +162,23 @@ class AiProfileOverrideTest {
         assertEquals("Bearer key-b", request.getHeader("Authorization"))
         assertEquals("model-b", bodyOf(request).getString("model"))
     }
+
+    @Test
+    fun override_doesNotFallBackToGlobalFallback() = runBlocking {
+        prefs.setFallbackEnabled(true)
+        prefs.setFallbackAiProfileId(profileA.id.toString())
+        serverB.enqueue(MockResponse().setResponseCode(400).setBody("""{"error":{"message":"boom"}}"""))
+        serverA.enqueue(MockResponse().setBody(chunk(mealJson(), "stop")))
+
+        val error = runCatching {
+            newService().analyzeFood(
+                byteArrayOf(1, 2, 3, 4),
+                profileOverride = profileB,
+            ) { }
+        }.exceptionOrNull()
+
+        assertTrue("override failure must not fall through to the fallback profile", error is AiError.Api)
+        assertEquals(1, serverB.requestCount)
+        assertEquals(0, serverA.requestCount)
+    }
 }

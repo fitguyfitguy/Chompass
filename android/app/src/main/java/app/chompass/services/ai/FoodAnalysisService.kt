@@ -1952,6 +1952,8 @@ class FoodAnalysisService(
                     )
                 } catch (primaryError: Throwable) {
                     if (partialsEmitted) throw primaryError
+                    // A queue Run-with override must not fall through to the global fallback profile.
+                    if (profileOverride != null) throw primaryError
                     val fallback = currentFallbackConfig(primary, primaryModel, cfg) ?: throw primaryError
                     trace?.let {
                         it.fallbackFired = true
