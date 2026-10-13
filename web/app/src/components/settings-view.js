@@ -23,7 +23,7 @@ import {
   filterDiaryRange,
 } from "../lib/chompass-core/export-text.js";
 import { CAFFEINE_QUICK_KINDS, NICOTINE_QUICK_KINDS } from "../lib/chompass-core/models.js";
-import { PROVIDERS, modelSelectOptionsHtml, resolveProviderModel, visionModelOptionsHtml } from "../lib/ai/providers.js";
+import { PROVIDERS, modelSelectOptionsHtml, resolveProviderModel, visionModelOptionsHtml, isInsecureHttpUrl } from "../lib/ai/providers.js";
 import { saveProviderKey, deleteProviderKey, listConfiguredProviders, loadProviderKey } from "../lib/ai/key-storage.js";
 import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
 import {
@@ -1656,6 +1656,13 @@ export class SettingsView extends HTMLElement {
               <input id="ai-base-url" name="baseUrl" type="text" placeholder="https://api.openai.com/v1" value="${escapeAttr(saved?.baseUrl || "")}" />
             </div>
           </div>
+          <div class="field" id="ai-insecure-field" style="display:${initialProvider === "openai_compatible" ? "" : "none"}">
+            <label class="checkbox-row">
+              <input type="checkbox" name="allowInsecureHttp" value="true" ${p.allowInsecureHttp === true ? "checked" : ""} />
+              <span>${escapeHtml(t("settings.ai.allow_insecure_http"))}</span>
+            </label>
+            <p class="field-hint">${escapeHtml(t("settings.ai.allow_insecure_http_hint"))}</p>
+          </div>
           <div class="btn-row">
             <button type="submit" class="btn btn--primary">${t("settings.ai.save_key")}</button>
             <button type="button" class="btn" id="ai-key-test">${t("onboarding.ai.test_key")}</button>
@@ -1787,6 +1794,8 @@ export class SettingsView extends HTMLElement {
       if (reasoningField) reasoningField.style.display = isOpenAiCompatible ? "" : "none";
       const visionField = /** @type {HTMLElement|null} */ (this.querySelector("#ai-vision-field"));
       if (visionField) visionField.style.display = isOpenAiCompatible ? "" : "none";
+      const insecureField = /** @type {HTMLElement|null} */ (this.querySelector("#ai-insecure-field"));
+      if (insecureField) insecureField.style.display = isOpenAiCompatible ? "" : "none";
     });
     modelSel.addEventListener("change", () => syncCustomVisibility(modelSel, modelCustom));
     const visionModelSel = /** @type {HTMLSelectElement|null} */ (this.querySelector("#ai-vision-model"));
@@ -1959,6 +1968,11 @@ export class SettingsView extends HTMLElement {
     let visionModel = String(fd.get("visionModel") || "").trim();
     if (visionModel === "__custom__") visionModel = String(fd.get("visionModelCustom") || "").trim();
     const baseUrl = String(fd.get("baseUrl") || "").trim();
+    const allowInsecureHttp = fd.get("allowInsecureHttp") === "true";
+    if (isInsecureHttpUrl(baseUrl) && !allowInsecureHttp) {
+      this.setAiKeyFeedback(t("errors.insecure_http_blocked"), "err");
+      return;
+    }
     await saveProviderKey(provider, apiKey, {
       model: model || undefined,
       baseUrl: baseUrl || undefined,
@@ -1967,6 +1981,7 @@ export class SettingsView extends HTMLElement {
     await prefs.save({
       primaryAiProvider: provider,
       openrouterReasoningEffort: String(fd.get("reasoningEffort") || "auto"),
+      allowInsecureHttp,
     });
     this._aiFlash = typed ? t("settings.ai.key_saved") : t("settings.ai.provider_updated");
     this.render();

@@ -164,6 +164,7 @@ export const ANDROID_PREF_DEFAULTS = {
   fastingStartHour: 20,
   fastingStartMinute: 0,
   aiFallbackEnabled: true,
+  allowInsecureHttp: false,
   fallbackAiProvider: "gemini",
   fallbackAiModel: "gemini-3.5-flash-lite",
   openrouterReasoningEffort: "auto",

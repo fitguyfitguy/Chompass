@@ -1,7 +1,7 @@
 // @ts-check
 // Diary-oriented food analysis (photo or text) — separate from Coach chat.
 // Always returns a proposal object for entry-form review; never writes.
-import { PROVIDERS, resolveProviderModel, resolveVisionModel } from "./providers.js";
+import { PROVIDERS, resolveProviderModel, resolveVisionModel, assertCleartextAllowed } from "./providers.js";
 import { prefs } from "../db.js";
 import { loadProviderKey } from "./key-storage.js";
 import { guessMealTypeFromPrefs } from "../meal-schedule.js";
@@ -97,6 +97,7 @@ export async function analyzeFoodEntry({
   // Codeberg #20 phase 2: the master AI-features switch gates food analysis
   // before any provider request; barcode/offline search + manual stay.
   if (appPrefs.aiFeaturesEnabled === false) throw new Error(t("errors.ai_features_disabled"));
+  assertCleartextAllowed(config.baseUrl, appPrefs.allowInsecureHttp === true);
   const imageList = images?.length ? images : image ? [image] : [];
   if (!text && !imageList.length) throw new Error(t("errors.provide_photo_or_text"));
 
@@ -302,6 +303,7 @@ export async function fillFoodEntry({
   const appPrefs = prefsOverride ?? (await prefs.load());
   // Same master switch as analyzeFoodEntry: off = no data to any provider.
   if (appPrefs.aiFeaturesEnabled === false) throw new Error(t("errors.ai_features_disabled"));
+  assertCleartextAllowed(config.baseUrl, appPrefs.allowInsecureHttp === true);
   return estimateWithFallback(
     providerId, config, entry, appPrefs, signal, onPhase, onPartial, fillEntryUserText(entry),
   );
@@ -333,6 +335,7 @@ export async function reestimateEntry({
 }) {
   const appPrefs = prefsOverride ?? (await prefs.load());
   if (appPrefs.aiFeaturesEnabled === false) throw new Error(t("errors.ai_features_disabled"));
+  assertCleartextAllowed(config.baseUrl, appPrefs.allowInsecureHttp === true);
   return estimateWithFallback(
     providerId, config, entry, appPrefs, signal, onPhase, onPartial, reestimateUserText(entry),
   );

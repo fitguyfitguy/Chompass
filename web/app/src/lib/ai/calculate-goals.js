@@ -4,7 +4,7 @@
  * AI path pins customCalories from the model; without a configured provider the caller
  * should fall back to clearing customCalories (live formula targets).
  */
-import { PROVIDERS, resolveProviderModel } from "./providers.js";
+import { PROVIDERS, resolveProviderModel, assertCleartextAllowed } from "./providers.js";
 import { prefs } from "../db.js";
 import { loadProviderKey, listConfiguredProviders } from "./key-storage.js";
 import { t } from "../i18n/index.js";
@@ -188,6 +188,7 @@ export async function calculateGoalsWithAi({
       reason: "Calculated from the built-in formulas.",
     };
   }
+  assertCleartextAllowed(config.baseUrl, appPrefs.allowInsecureHttp === true);
   config = { ...config, model: resolveProviderModel(providerId, config.model, "primary") };
 
   const prompt = buildCalculateGoalsPrompt(profile, forecast, heightMetric, weightMetric);
@@ -226,6 +227,7 @@ export async function resolveGoalsAiClient() {
   const providerId = /** @type {keyof typeof PROVIDERS} */ (preferred);
   const config = await loadProviderKey(/** @type {import('./key-storage.js').ProviderId} */ (providerId));
   if (!config?.apiKey) return null;
+  assertCleartextAllowed(config.baseUrl, appPrefs.allowInsecureHttp === true);
   return { providerId, config };
 }
 

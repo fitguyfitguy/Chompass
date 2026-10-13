@@ -2,7 +2,7 @@
 import { foodEntries, weights, water, bodyFat, profile as profileStore, prefs, goalJournal } from "../db.js";
 import { dailyTargets, bmr, tdee } from "../chompass-core/formulas.js";
 import { averageForward, resolveDayJournaled } from "../chompass-core/macro-plan.js";
-import { PROVIDERS, resolveVisionModel, resolveProviderModel } from "./providers.js";
+import { PROVIDERS, resolveVisionModel, resolveProviderModel, assertCleartextAllowed } from "./providers.js";
 import { AI_TOOLS, READ_ONLY_TOOLS, WRITE_TOOLS } from "./tools.js";
 import { t } from "../i18n/index.js";
 import { localIsoDate, todayIso } from "../date.js";
@@ -155,6 +155,7 @@ export async function runCoachTurn({ providerId, config, history, userText, imag
   // Codeberg #20 phase 2: the master AI-features switch gates the coach
   // before the system prompt (profile + diary) is assembled.
   if (appPrefs.aiFeaturesEnabled === false) throw new Error(t("errors.ai_features_disabled"));
+  assertCleartextAllowed(config.baseUrl, appPrefs.allowInsecureHttp === true);
   if (providerId === "openai_compatible") {
     config = { ...config, reasoningEffort: appPrefs.openrouterReasoningEffort || "auto" };
   }
