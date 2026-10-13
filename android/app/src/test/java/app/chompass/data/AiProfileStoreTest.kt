@@ -9,6 +9,7 @@ import app.chompass.models.SpeechProvider
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -285,5 +286,48 @@ class AiProfileStoreTest {
         assertNull(decoded[0].readTimeoutSeconds)
         assertNull(decoded[0].reasoningEffort)
         assertNull(decoded[0].geminiGoogleSearch)
+    }
+
+    @Test
+    fun switchActiveProfileProvider_clearsKeyAndEndpoint() = runBlocking {
+        val prefs = prefs()
+        val ks = keyStore()
+        val gemini = profile("Gemini", model = "gemini-custom").copy(
+            baseUrl = "https://old.example",
+            visionModel = "old-vision",
+        )
+        prefs.mutateProfiles { it += gemini }
+        prefs.setActiveAiProfileId(gemini.id.toString())
+        ks.setProfileApiKey(gemini.id, "gemini-key")
+
+        val switched = prefs.switchActiveProfileProvider(ks, AIProvider.OPENAI, AIProvider.OPENAI.defaultModel)
+
+        assertTrue(switched)
+        val active = prefs.activeAiProfile.first()
+        assertEquals(AIProvider.OPENAI, active?.provider)
+        assertEquals(AIProvider.OPENAI.defaultModel, active?.model)
+        assertNull(active?.baseUrl)
+        assertNull(active?.visionModel)
+        assertNull(ks.profileApiKey(gemini.id))
+    }
+
+    @Test
+    fun switchActiveProfileProvider_sameProviderKeepsKey() = runBlocking {
+        val prefs = prefs()
+        val ks = keyStore()
+        val gemini = profile("Gemini", model = "gemini-custom").copy(
+            baseUrl = "https://old.example",
+            visionModel = "old-vision",
+        )
+        prefs.mutateProfiles { it += gemini }
+        prefs.setActiveAiProfileId(gemini.id.toString())
+        ks.setProfileApiKey(gemini.id, "gemini-key")
+
+        val switched = prefs.switchActiveProfileProvider(ks, AIProvider.GEMINI, AIProvider.GEMINI.defaultModel)
+
+        assertFalse(switched)
+        val active = prefs.activeAiProfile.first()
+        assertEquals(gemini, active)
+        assertEquals("gemini-key", ks.profileApiKey(gemini.id))
     }
 }

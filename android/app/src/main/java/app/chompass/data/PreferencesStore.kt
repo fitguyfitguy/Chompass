@@ -466,6 +466,12 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     val activeAiProfile: Flow<AiProfile?> get() = activeAiProfileImpl
     /** Single-edit transform of the active profile (settings/onboarding ops). */
     suspend fun editActiveProfile(transform: (AiProfile) -> AiProfile) = editActiveProfileImpl(transform = transform)
+    /**
+     * Provider change on the active profile: drops key, base URL, and vision
+     * model. False when there is no profile or the provider is unchanged.
+     */
+    suspend fun switchActiveProfileProvider(keyStore: KeyStore, provider: AIProvider, model: String): Boolean =
+        switchActiveProfileProviderImpl(keyStore, provider, model)
     val fallbackAiProfile: Flow<AiProfile?> get() = fallbackAiProfileImpl
     val fallbackAiProfileId: Flow<String?> get() = dataStore.data.map { it[Keys.FALLBACK_AI_PROFILE_ID] }
     suspend fun setFallbackAiProfileId(id: String?) = setFallbackAiProfileIdImpl(id)

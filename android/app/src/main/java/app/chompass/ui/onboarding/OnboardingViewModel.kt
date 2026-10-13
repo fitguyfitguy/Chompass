@@ -260,22 +260,25 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun setAiProvider(p: AIProvider) {
-        // Persist immediately so the Building Plan AI call (which runs before onboarding
-        // completes) can resolve the provider/model. Reset to the provider's default model
-        // and reload the active profile's stored key.
+        if (_ui.value.aiProvider == p) return
+        // A provider change drops the key, base URL, and vision model because
+        // they belong to the old host; re-selecting the current provider is a no-op.
+        // Blank the draft before the store write so complete() cannot race-save
+        // the previous provider's key onto the new host.
+        _ui.value = _ui.value.copy(
+            aiProvider = p,
+            aiModel = p.defaultModel,
+            apiKey = "",
+            validatedApiKey = "",
+            apiKeyTestMessage = "",
+            apiKeyTestOk = null,
+            apiKeyTesting = false,
+        )
         viewModelScope.launch {
-            val profileId = activeProfileIdFor(p)
-            container.prefs.editActiveProfile { it.copy(provider = p, model = p.defaultModel) }
-            val existing = container.keyStore.profileApiKey(profileId) ?: ""
-            _ui.value = _ui.value.copy(
-                aiProvider = p,
-                aiModel = p.defaultModel,
-                apiKey = existing,
-                validatedApiKey = "",
-                apiKeyTestMessage = "",
-                apiKeyTestOk = null,
-                apiKeyTesting = false,
+            val switched = container.prefs.switchActiveProfileProvider(
+                container.keyStore, p, p.defaultModel,
             )
+            if (!switched) activeProfileIdFor(p)
         }
     }
     fun setAiModel(m: String) {
