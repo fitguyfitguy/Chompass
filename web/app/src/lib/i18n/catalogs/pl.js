@@ -323,7 +323,8 @@ export const pl = Object.freeze({
 
   // Entry / meal constituents
   "diary.fill_applied": "Uzupełniono {n} wpisów",
-  "diary.fill_banner": "{n} posiłków ma brakujące dane odżywcze",
+  "diary.fill_banner": "{n} posiłek ma brakujące dane odżywcze",
+  "diary.fill_banner_plural": "{n} posiłków ma brakujące dane odżywcze",
   "diary.fill_missing": "Uzupełnij braki",
   "entry.ai.mode_fill": "Uzupełnij braki",
   "entry.ai.mode_reanalyze": "Analizuj ponownie",
@@ -410,6 +411,9 @@ export const pl = Object.freeze({
   "voice.use": "Użyj",
   "voice.hint": "Opowiedz o jedzeniu, a następnie stuknij „Użyj”, aby przeanalizować.",
   "errors.insecure_http_blocked": "Nieszyfrowany HTTP jest zablokowany. Włącz «Zezwól na nieszyfrowany HTTP» w Ustawienia → AI albo użyj adresu https://.",
+  "errors.key_rejected": "Ten klucz API został odrzucony. Utwórz nowy klucz na aistudio.google.com/apikey i wklej go ponownie.",
+  "errors.key_unverified": "Nie udało się zweryfikować klucza (HTTP {status}).",
+  "errors.key_unverified_retry": "Nie udało się zweryfikować klucza (HTTP {status}). Spróbuj ponownie za chwilę.",
   "errors.paste_key_first": "Najpierw wklej klucz API.",
   "errors.network_check": "Błąd sieci. Sprawdź połączenie i spróbuj ponownie.",
   "errors.ai_features_disabled": "Funkcje AI są wyłączone w Ustawieniach → AI i mowa.",

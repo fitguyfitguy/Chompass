@@ -29,14 +29,14 @@ export async function validateGeminiApiKey(apiKey) {
   if (res.ok) return { ok: true };
 
   if (res.status === 400 || res.status === 401 || res.status === 403) {
-    return { ok: false, message: "That API key was rejected. Create a new key at aistudio.google.com/apikey and paste it again." };
+    return { ok: false, message: t("errors.key_rejected") };
   }
 
   const detail = await res.text().catch(() => "");
   return {
     ok: false,
     message: detail?.trim()
-      ? `Could not verify key (HTTP ${res.status}).`
-      : `Could not verify key (HTTP ${res.status}). Try again in a moment.`,
+      ? t("errors.key_unverified", { status: res.status })
+      : t("errors.key_unverified_retry", { status: res.status }),
   };
 }

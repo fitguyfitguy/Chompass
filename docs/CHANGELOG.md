@@ -12,6 +12,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Fill and recalculate requests are hardened on the web like on Android** (Web): the entry data and your preference text now travel in a tagged data-only block, so a food name or preference that contains AI markup can no longer inject instructions into a fill or recalculate request.
 - **Plain http:// endpoints need an explicit opt-in on the web like on Android** (Web): a custom endpoint using an http:// address outside your own device now refuses to send your API key until you turn on Allow insecure HTTP in Settings → AI, and saving such a URL warns first. Local addresses like localhost keep working without the switch.
 - **Very long ingredient lists no longer overload AI fill requests** (Android & Web): fill and recalculate send the first 40 ingredients and note how many were left out, so a large recipe import cannot blow past a small local model's context.
+- **The fill banner and key-test messages speak your language properly** (Web): the banner now says "1 meal is missing nutrition data" instead of "1 meals", and the Gemini key-test error messages use your language instead of hardcoded English.
 
 ## [5.6.0] - 2026-10-13
 

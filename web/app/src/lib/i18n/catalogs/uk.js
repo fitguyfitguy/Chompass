@@ -323,7 +323,8 @@ export const uk = Object.freeze({
 
   // Entry / meal constituents
   "diary.fill_applied": "Заповнено записів: {n}",
-  "diary.fill_banner": "{n} страв бракує даних про поживність",
+  "diary.fill_banner": "{n} страві бракує даних про поживність",
+  "diary.fill_banner_plural": "{n} страв бракує даних про поживність",
   "diary.fill_missing": "Заповнити нестачу",
   "entry.ai.mode_fill": "Заповнити нестачу",
   "entry.ai.mode_reanalyze": "Переаналізувати",
@@ -408,6 +409,9 @@ export const uk = Object.freeze({
   "voice.use": "Використати",
   "voice.hint": "Опишіть їжу голосом, потім торкніться «Використати» для аналізу.",
   "errors.insecure_http_blocked": "Небезпечний HTTP заблоковано. Увімкніть «Дозволити небезпечний HTTP» у Налаштування → ШІ або використайте адресу https://.",
+  "errors.key_rejected": "Цей API-ключ відхилено. Створіть новий ключ на aistudio.google.com/apikey і вставте його знову.",
+  "errors.key_unverified": "Не вдалося перевірити ключ (HTTP {status}).",
+  "errors.key_unverified_retry": "Не вдалося перевірити ключ (HTTP {status}). Повторіть спробу за мить.",
   "errors.paste_key_first": "Спочатку вставте API-ключ.",
   "errors.network_check": "Помилка мережі. Перевірте з'єднання та спробуйте ще раз.",
   "errors.coach_tool_limit": "Коуч перевищив ліміт викликів інструментів. Спробуйте переформулювати питання.",

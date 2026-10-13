@@ -16,7 +16,7 @@ import { buildCorrectDiff } from "../lib/ai/correct-diff.js";
 import { isAbortError } from "../lib/ai/analysis-phase.js";
 import { todayIso } from "../lib/date.js";
 import { escapeHtml, escapeAttr } from "../lib/ui/html.js";
-import { t } from "../lib/i18n/index.js";
+import { t, tp } from "../lib/i18n/index.js";
 import { showUndoToast } from "../lib/ui/toast.js";
 import { openSheet } from "../lib/ui/sheet.js";
 
@@ -346,7 +346,7 @@ export async function maybeShowFillGapsBanner(appPrefs) {
     document.body.appendChild(banner);
   }
   const text = banner.querySelector(".fill-gaps-banner__text");
-  if (text) text.textContent = t("diary.fill_banner", { n: scan.count });
+  if (text) text.textContent = tp("diary.fill_banner", scan.count, { n: scan.count });
   markBannerShown();
 }
 
