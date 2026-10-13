@@ -715,6 +715,21 @@ open class MainActivity : ComponentActivity() {
                 // stripped right after parsing so it cannot re-fire.
                 container.keyStore.setApiKey(AIProvider.OPENROUTER, actions.setOpenRouterKey.trim())
             }
+            if (actions.seedDebugProfileKey) {
+                // Debug-only. The baked key used to land in the legacy slot, which
+                // the profile migration deletes. Copy it onto the Gemini profile
+                // and make that profile active. Never log the key.
+                val key = BuildConfig.GEMINI_API_KEY
+                if (key.isNotBlank()) {
+                    val gemini = container.prefs.aiProfiles.first()
+                        .firstOrNull { it.provider == AIProvider.GEMINI }
+                    if (gemini != null) {
+                        container.keyStore.setProfileApiKey(gemini.id, key)
+                        container.prefs.setActiveAiProfileId(gemini.id.toString())
+                        container.prefs.setFallbackEnabled(false)
+                    }
+                }
+            }
             if (actions.diagnoseHealthConnect) {
                 HealthConnectDiagnostics.log(
                     this@MainActivity,

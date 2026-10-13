@@ -115,6 +115,8 @@ internal data class DebugIntentActions(
     val goalMatrixModel: String = "",
     /** Debug-only: store an OpenRouter API key in the encrypted KeyStore (benchmark key import). */
     val setOpenRouterKey: String = "",
+    /** Debug-only: copy the baked Gemini key onto the Gemini profile and activate it. */
+    val seedDebugProfileKey: Boolean = false,
     val diagnoseHealthConnect: Boolean = false,
     val previewDailySummary: Boolean = false,
     /** Debug-only: open the meal-builder sheet seeded with 6 ingredients (Codeberg #84 repro). */
@@ -234,6 +236,7 @@ internal fun consumeDebugIntentExtras(
             .takeIf { it in GOAL_MATRIX_PROVIDERS } ?: "on_device",
         goalMatrixModel = intent.getStringExtra("goal_matrix_model") ?: "",
         setOpenRouterKey = if (BuildConfig.DEBUG) intent.getStringExtra("set_openrouter_key") ?: "" else "",
+        seedDebugProfileKey = BuildConfig.DEBUG && intent.getBooleanExtra("seed_debug_profile_key", false),
         diagnoseHealthConnect = BuildConfig.DEBUG &&
             intent.getBooleanExtra("diagnose_health_connect", false),
         previewDailySummary = BuildConfig.DEBUG &&
@@ -307,6 +310,7 @@ internal fun consumeDebugIntentExtras(
     if (actions.runFlipBenchmark) intent.removeExtra("run_flip_benchmark")
     if (actions.diagnoseHealthConnect) intent.removeExtra("diagnose_health_connect")
     if (actions.previewDailySummary) intent.removeExtra("preview_daily_summary")
+    if (actions.seedDebugProfileKey) intent.removeExtra("seed_debug_profile_key")
     if (actions.runOnDeviceLlmTest) {
         intent.removeExtra("run_ondevice_llm_test")
         intent.removeExtra("ondevice_llm_backend")
