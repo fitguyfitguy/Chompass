@@ -11,6 +11,9 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Named AI profiles** (Android): Settings → AI now manages saved profiles instead of one global provider slot. Each profile carries its own provider, model, vision model, base URL, and API key, and one active profile drives every AI feature. Switching profiles no longer resets your model, and more than one custom OpenAI-compatible endpoint can exist side by side. An optional fallback profile replaces the old separate fallback provider fields.
 - **Run a queued entry with a different profile** (Android): entries in the analysis queue get a Run with action that picks any saved profile for that one run, and each row shows which profile and model last tried it. The globally selected profile is not touched.
 - **Grouped provider picker and in-settings key test** (Android): Settings → AI is now split into Profile, Connection, and Advanced sections. The provider picker groups providers into Recommended, Cloud, Local, and On-device with a one-line description each and a link to get an API key, and the key sheet can test a key on the spot instead of only during onboarding. Advanced options (response length, read timeout, reasoning effort, Google Search grounding) are saved per profile, so an Ollama profile can keep a long timeout while a cloud profile stays at the default, and each row shows whether the value is the profile's own or the default.
+- **Fill missing is back** (Android & Web): the Fill missing action on entries, saved meals, and recipe ingredients is available again, and Home can list meals that are missing calories or macros. Fill asks only for the empty values. Values you already have stay as they are.
+- **Recalculate follows the mix you edited** (Android & Web): Recalculate on the edit sheet asks the AI for new totals from the ingredients currently on the sheet. The change list shows calorie, macro, and micronutrient changes.
+- **Turn off missing-value reminders** (Android & Web): Don't remind me again on the fill list, and Settings has a Missing-value reminders switch. The Fill missing data row stays available either way.
 
 ### Fixed
 
@@ -18,6 +21,11 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Switching profiles no longer shows the previous endpoint's models** (Android): the model list from one custom or Ollama host is dropped as soon as the active profile or its base URL changes, so the sheet shows the new host's models or a loading row instead.
 - **AI settings no longer snap back to the previous profile** (Android): on a cold start, adding a profile and picking its provider could be undone on screen seconds later, showing the old profile's name, model and key while the new one was already saved. The screen now follows the stored profile.
 - **Empty key save no longer silently clears the stored API key** (Android): the key sheet opens with the saved key already filled in, and saving an empty one asks for confirmation before erasing it.
+- **Fill missing says when nothing new came back** (Android & Web): a fill that adds no values says "No new values returned" instead of "Already complete".
+- **The web fill banner waits for Save** (Web): editing AI settings no longer shows or hides the fill banner on each keystroke. The banner updates when you save the form.
+- **AI settings opens with the response length left at the default** (Android): the Max response length row no longer crashes when it is still on the built-in default.
+- **Setup drops the previous provider's key** (Android): picking a different provider during onboarding clears that profile's saved key, endpoint, and vision model. Picking the provider you are already on leaves the key in place.
+- **A one-off queue run stays on the profile you picked** (Android): Run with does not try the fallback profile when that run fails.
 
 ## [5.5.2] - 2026-10-11
 
