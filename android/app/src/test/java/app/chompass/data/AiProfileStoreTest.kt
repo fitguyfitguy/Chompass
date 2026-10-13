@@ -211,6 +211,24 @@ class AiProfileStoreTest {
     }
 
     @Test
+    fun ensureAiProfilesMigrated_sweepsLegacyKeys_evenWhenAlreadyMigrated() = runBlocking {
+        // Crash-window replay (REVIEW_UNRELEASED_2026-10-12 R6): AI_PROFILES_JSON
+        // is already committed, so the migration guard early-returns the edit —
+        // the legacy keychain sweep must STILL run (retainProfileKeys +
+        // clearLegacyAiKeys sit after the edit, outside the guard, and
+        // ChompassApp.onCreate re-runs the migration every cold start).
+        val ks = keyStore()
+        ks.setApiKey(AIProvider.GEMINI, "legacy-primary")
+        val live = profile("Gemini")
+        prefs().mutateProfiles { it += live }
+
+        prefs().ensureAiProfilesMigrated(ks, context)
+
+        assertNull(ks.apiKey(AIProvider.GEMINI))
+        assertEquals(listOf(live), prefs().aiProfiles.first())
+    }
+
+    @Test
     fun setProfileApiKey_blankDeletesEntry() = runBlocking {
         val ks = keyStore()
         val id = UUID.randomUUID()
