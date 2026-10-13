@@ -1133,13 +1133,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             if (_ui.value.activeProfile?.provider == p) return@launch
             val onDeviceModels = if (p == AIProvider.ON_DEVICE) supportedOnDeviceModels() else emptyList()
             val model = if (onDeviceModels.isNotEmpty()) onDeviceModels.first() else p.defaultModel
-            var changedId: UUID? = null
-            container.prefs.editActiveProfile {
-                changedId = it.id
-                it.copy(provider = p, model = model, baseUrl = null, visionModel = null)
-            }
-            // Only this profile's key: every other profile's key stays on its own id.
-            changedId?.let { container.keyStore.setProfileApiKey(it, null) }
+            container.prefs.switchActiveProfileProvider(container.keyStore, p, model)
             refreshAiState(onDeviceModels = onDeviceModels)
         }
     }

@@ -155,6 +155,26 @@ internal suspend fun PreferencesStore.editActiveProfileImpl(
 }
 
 /**
+ * Retargets the active profile. Same provider is a no-op (key, base URL,
+ * vision model, and model stay). A real switch clears base URL and vision
+ * model — they belong to the old host — and deletes that profile's key.
+ * Returns false when there is no profile or the provider did not change.
+ */
+internal suspend fun PreferencesStore.switchActiveProfileProviderImpl(
+    keyStore: KeyStore,
+    provider: AIProvider,
+    model: String,
+): Boolean {
+    val active = activeAiProfile.first() ?: return false
+    if (active.provider == provider) return false
+    editActiveProfileImpl {
+        it.copy(provider = provider, model = model, baseUrl = null, visionModel = null)
+    }
+    keyStore.setProfileApiKey(active.id, null)
+    return true
+}
+
+/**
  * Legacy single-slot setters, kept only for not-yet-migrated call sites
  * (settings/onboarding UI, debug goal-matrix harness, JVM tests). They now
  * address the two profile slots — ACTIVE (primary) and FALLBACK — because the
