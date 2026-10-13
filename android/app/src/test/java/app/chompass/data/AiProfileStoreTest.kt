@@ -330,4 +330,42 @@ class AiProfileStoreTest {
         assertEquals(gemini, active)
         assertEquals("gemini-key", ks.profileApiKey(gemini.id))
     }
+
+    @Test
+    fun retainProfileKeys_dropsOrphansAndKeepsLive() = runBlocking {
+        val prefs = prefs()
+        val ks = keyStore()
+        val live = profile("Live")
+        val gone = profile("Gone")
+        prefs.mutateProfiles {
+            it += live
+            it += gone
+        }
+        ks.setProfileApiKey(live.id, "live-key")
+        ks.setProfileApiKey(gone.id, "gone-key")
+        ks.setSpeechApiKey(SpeechProvider.OPENAI, "speech")
+        keychain().edit().putString("apikey_profile_not-a-uuid", "bad").commit()
+        prefs.mutateProfiles { list -> list.removeAll { it.id == gone.id } }
+
+        prefs.ensureAiProfilesMigrated(ks, context)
+
+        assertNull(ks.profileApiKey(gone.id))
+        assertEquals("live-key", ks.profileApiKey(live.id))
+        assertEquals("speech", ks.speechApiKey(SpeechProvider.OPENAI))
+        assertNull(keychain().getString("apikey_profile_not-a-uuid", null))
+    }
+
+    @Test
+    fun corruptProfileJson_doesNotSweepProfileKeys() = runBlocking {
+        val prefs = prefs()
+        val ks = keyStore()
+        val id = UUID.randomUUID()
+        prefs.dataStore.edit { it[Keys.AI_PROFILES_JSON] = "{" }
+        ks.setProfileApiKey(id, "keep-me")
+
+        prefs.ensureAiProfilesMigrated(ks, context)
+
+        assertEquals("keep-me", ks.profileApiKey(id))
+        assertEquals("{", prefs.dataStore.data.first()[Keys.AI_PROFILES_JSON])
+    }
 }

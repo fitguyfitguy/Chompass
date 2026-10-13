@@ -65,6 +65,21 @@ class KeyStore(context: Context, prefsOverride: SharedPreferences? = null) {
         prefs.edit().apply { doomed.forEach(::remove) }.apply()
     }
 
+    /**
+     * Deletes `apikey_profile_*` entries whose id is not in [liveIds], including
+     * malformed suffixes. Speech, WebDAV, Mealie, and legacy `apikey_` /
+     * `apikey_fallback_` keys are left for [clearLegacyAiKeys].
+     */
+    fun retainProfileKeys(liveIds: Set<UUID>) {
+        val doomed = prefs.all.keys.filter { key ->
+            if (!key.startsWith(PROFILE_AI_PREFIX)) return@filter false
+            val id = runCatching { UUID.fromString(key.removePrefix(PROFILE_AI_PREFIX)) }.getOrNull()
+            id == null || id !in liveIds
+        }
+        if (doomed.isEmpty()) return
+        prefs.edit().apply { doomed.forEach(::remove) }.apply()
+    }
+
     // Speech providers
     fun speechApiKey(provider: SpeechProvider): String? = load(STT_PREFIX + provider.name)
     fun setSpeechApiKey(provider: SpeechProvider, key: String?) {
