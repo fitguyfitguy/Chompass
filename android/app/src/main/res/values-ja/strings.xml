@@ -2136,4 +2136,6 @@
     <string name="home_budget_clamped_ceiling_hint">安全上限 %1$s を超えています。</string>
     <string name="home_budget_bf_stale">体脂肪の測定から %1$d 日 — Mifflin-St Jeor を使用</string>
     <string name="recalc_sheet_clamped_row">安全上限を適用：%1$s → %2$s</string>
+    <string name="onboarding_goal_suggested">おすすめ</string>
+    <string name="onboarding_goal_suggested_bmi">BMI %1$.1f に基づく</string>
 </resources>

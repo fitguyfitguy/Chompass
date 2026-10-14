@@ -74,6 +74,7 @@ internal fun SelectionCard(
     icon: ImageVector,
     title: String,
     subtitle: String? = null,
+    badge: String? = null,
     selected: Boolean,
     onClick: () -> Unit
 ) {
@@ -104,6 +105,15 @@ internal fun SelectionCard(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
+                badge?.let {
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        it,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = AppColors.Calorie
+                    )
+                }
                 subtitle?.let {
                     Spacer(Modifier.height(2.dp))
                     Text(

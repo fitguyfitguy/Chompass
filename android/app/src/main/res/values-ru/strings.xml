@@ -2224,4 +2224,6 @@
     <string name="home_budget_clamped_ceiling_hint">Выше потолка безопасности %1$s.</string>
     <string name="home_budget_bf_stale">Замер жира %1$d дн. назад — используется Миффлина—Сан-Жеора</string>
     <string name="recalc_sheet_clamped_row">Применено ограничение безопасности: %1$s → %2$s</string>
+    <string name="onboarding_goal_suggested">Рекомендуется</string>
+    <string name="onboarding_goal_suggested_bmi">При ИМТ %1$.1f</string>
 </resources>

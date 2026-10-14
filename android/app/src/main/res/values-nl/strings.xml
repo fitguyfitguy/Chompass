@@ -2137,4 +2137,6 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
     <string name="home_budget_clamped_ceiling_hint">Boven het veiligheidsplafond van %1$s.</string>
     <string name="home_budget_bf_stale">Vetmeting %1$d dagen oud — Mifflin-St Jeor wordt gebruikt</string>
     <string name="recalc_sheet_clamped_row">Veiligheidsgrens toegepast: %1$s → %2$s</string>
+    <string name="onboarding_goal_suggested">Aanbevolen</string>
+    <string name="onboarding_goal_suggested_bmi">Op basis van een BMI van %1$.1f</string>
 </resources>

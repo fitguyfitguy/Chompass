@@ -2146,4 +2146,6 @@ macro-urile reechilibrate la noul total caloric</string>
     <string name="home_budget_clamped_ceiling_hint">Peste plafonul de siguranță de %1$s.</string>
     <string name="home_budget_bf_stale">Măsurătoarea grăsimii corporale are %1$d zile — se folosește Mifflin-St Jeor</string>
     <string name="recalc_sheet_clamped_row">Limită de siguranță aplicată: %1$s → %2$s</string>
+    <string name="onboarding_goal_suggested">Sugerat</string>
+    <string name="onboarding_goal_suggested_bmi">Pe baza unui IMC de %1$.1f</string>
 </resources>

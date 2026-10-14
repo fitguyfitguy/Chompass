@@ -2136,4 +2136,6 @@
     <string name="home_budget_clamped_ceiling_hint">안전 상한 %1$s을(를) 초과합니다.</string>
     <string name="home_budget_bf_stale">체지방 측정 %1$d일 전 — Mifflin-St Jeor 사용</string>
     <string name="recalc_sheet_clamped_row">안전 한도 적용: %1$s → %2$s</string>
+    <string name="onboarding_goal_suggested">추천</string>
+    <string name="onboarding_goal_suggested_bmi">BMI %1$.1f 기준</string>
 </resources>

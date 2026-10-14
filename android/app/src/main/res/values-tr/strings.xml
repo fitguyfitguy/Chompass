@@ -2157,4 +2157,6 @@ makrolar yeni kalori toplamına göre yeniden dengelenir</string>
     <string name="home_budget_clamped_ceiling_hint">%1$s güvenlik tavanının üzerinde.</string>
     <string name="home_budget_bf_stale">Yağ ölçümü %1$d gün önce — Mifflin-St Jeor kullanılıyor</string>
     <string name="recalc_sheet_clamped_row">Güvenlik sınırı uygulandı: %1$s → %2$s</string>
+    <string name="onboarding_goal_suggested">Önerilen</string>
+    <string name="onboarding_goal_suggested_bmi">BMI %1$.1f temel alınarak</string>
 </resources>

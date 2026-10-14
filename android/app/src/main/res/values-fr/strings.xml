@@ -2160,4 +2160,6 @@ macros rééquilibrées au nouveau total calorique</string>
     <string name="home_budget_clamped_ceiling_hint">Au-dessus du plafond de sécurité de %1$s.</string>
     <string name="home_budget_bf_stale">Mesure de masse grasse datant de %1$d jours — Mifflin-St Jeor utilisé</string>
     <string name="recalc_sheet_clamped_row">Limite de sécurité appliquée : %1$s → %2$s</string>
+    <string name="onboarding_goal_suggested">Suggéré</string>
+    <string name="onboarding_goal_suggested_bmi">D’après un IMC de %1$.1f</string>
 </resources>
