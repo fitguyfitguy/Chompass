@@ -37,6 +37,7 @@ import app.chompass.models.WaterGoalCalculator
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WeightEntry
 import app.chompass.services.ai.RecalcSheetData
+import app.chompass.services.ai.RecalcSheetSource
 import app.chompass.services.FastingAutoPlanner
 import app.chompass.services.FastingGoalPlanner
 import app.chompass.services.FastingReminderPlanner
@@ -56,6 +57,7 @@ import app.chompass.services.KetoCarbRecommendationService
 import app.chompass.services.WaterReminderPlanner
 import app.chompass.services.WeightAnalysisService
 import app.chompass.services.ai.AiError
+import app.chompass.services.ai.GoalCalculation
 import app.chompass.services.ai.userMessage
 import app.chompass.services.ai.AiHttp
 import app.chompass.services.ai.AnthropicClient
@@ -68,6 +70,7 @@ import app.chompass.services.health.HealthConnectManager
 import app.chompass.services.health.HealthSyncWorker
 import app.chompass.services.weather.OmCity
 import app.chompass.ui.home.FoodLogSortOrder
+import app.chompass.ui.components.PlanField
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppThemeColor
 import java.time.Instant
@@ -178,6 +181,9 @@ data class SettingsUiState(
     val adaptiveGoalAlertMessage: String? = null,
     /** Recalculate transparency sheet (structured result); null = not shown. */
     val recalcSheet: RecalcSheetData? = null,
+    /** Confirmed-but-not-saved AI Recalculate (edit-before-apply); non-null while the
+     *  confirm sheet is up and its editable = true. Null after Apply/Discard. */
+    val pendingRecalc: PendingRecalc? = null,
     /** Latest persisted goal-change explanation (AI or Adaptive) for the on-demand details row. */
     val lastRecalcSheet: RecalcSheetData? = null,
     /** Settings → Other Nutrient Goals: in-flight flag for the opt-in "Estimate with AI" call. */
@@ -277,6 +283,18 @@ data class SettingsSuggestion(
     val title: String,
     val actionLabel: String,
     val targetRoute: String,
+)
+
+/**
+ * AI Recalculate outcome held for user review before anything is persisted
+ * (edit-before-apply): the raw model result, the profile it was computed from,
+ * and the profile that Apply would write ([UserProfile.applyingAiGoalsToPlan]
+ * of [result] — recomputed after every field edit).
+ */
+data class PendingRecalc(
+    val result: GoalCalculation,
+    val before: UserProfile,
+    val preview: UserProfile,
 )
 
 /**
@@ -2312,30 +2330,17 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     weights = weights, foods = foods,
                 )
                 Log.d("Chompass", "recalculateGoals: got ${result.calories} kcal")
-                // Write unlocked fields only. Locked calories/macros survive Recalculate.
-                // #60 phase 4: with day types enabled this also moves every
-                // day-type profile (explicit model rows when present, else the
-                // kcal delta the base change implies).
-                val next = current.applyingAiGoalsToPlan(result)
-                container.profileRepository.save(next)
-                lastRecalcSignature = next.goalInputSignature
-                container.prefs.setLastRecalcGoalSignature(next.goalInputSignature)
-                // Show the transparency sheet now (new targets, who/how it decided,
-                // formula baseline, data used, before → after, full reason) and keep
-                // it persisted so the details row can reopen it on demand.
-                // Optional-nutrient AI is a second Gemini round-trip (can 503 / sit for
-                // minutes) and must not hold the spinner or the sheet.
-                val sheet = RecalcSheetData(
-                    result = result, before = current, after = next,
-                    savedAtMillis = System.currentTimeMillis(),
-                )
-                container.prefs.saveLastGoalChangeSheet(sheet)
+                // Edit-before-apply: compute what Apply would write but save nothing
+                // yet. The sheet opens in confirm mode (editable) — Save persists,
+                // Cancel discards, and each field stays tappable until then.
+                val preview = current.applyingAiGoalsToPlan(result)
                 _ui.value = _ui.value.copy(
                     recalculatingGoals = false,
-                    profile = next,
-                    recalcSheet = sheet,
-                    lastRecalcSheet = sheet,
-                    goalsNeedRecalc = false
+                    pendingRecalc = PendingRecalc(result = result, before = current, preview = preview),
+                    recalcSheet = RecalcSheetData(
+                        result = result, before = current, after = preview,
+                        source = RecalcSheetSource.AI,
+                    ),
                 )
                 // Optional-nutrient AI is a separate Gemini call. Do not run it here:
                 // it kept the screen feeling busy after Recalculate had already finished.
@@ -2348,6 +2353,58 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 )
             }
         }
+    }
+
+    /** Edit one field of the pending (not yet saved) recalculate result. Day-type rows
+     *  shift by the implied kcal delta — the same fallback the apply path uses when the
+     *  model returns no explicit rows; the sheet's before → after shows the result. */
+    internal fun editPendingRecalc(field: PlanField, value: Int) {
+        val pending = _ui.value.pendingRecalc ?: return
+        val edited = when (field) {
+            PlanField.CALORIES -> pending.result.copy(calories = value)
+            PlanField.PROTEIN -> pending.result.copy(protein = value)
+            PlanField.CARBS -> pending.result.copy(carbs = value)
+            PlanField.FAT -> pending.result.copy(fat = value)
+        }
+        val preview = pending.before.applyingAiGoalsToPlan(edited)
+        _ui.value = _ui.value.copy(
+            pendingRecalc = PendingRecalc(result = edited, before = pending.before, preview = preview),
+            recalcSheet = RecalcSheetData(
+                result = edited, before = pending.before, after = preview,
+                source = RecalcSheetSource.AI,
+            ),
+        )
+    }
+
+    /** Persist the pending recalculate result (unedited or edited) and keep the
+     *  transparency sheet as the reopenable record, now read-only. */
+    fun applyPendingRecalc() {
+        val pending = _ui.value.pendingRecalc ?: return
+        viewModelScope.launch {
+            // Write unlocked fields only. Locked calories/macros survive Recalculate.
+            val next = pending.preview
+            container.profileRepository.save(next)
+            lastRecalcSignature = next.goalInputSignature
+            container.prefs.setLastRecalcGoalSignature(next.goalInputSignature)
+            val sheet = RecalcSheetData(
+                result = pending.result, before = pending.before, after = next,
+                savedAtMillis = System.currentTimeMillis(),
+                source = RecalcSheetSource.AI,
+            )
+            container.prefs.saveLastGoalChangeSheet(sheet)
+            _ui.value = _ui.value.copy(
+                pendingRecalc = null,
+                profile = next,
+                recalcSheet = sheet,
+                lastRecalcSheet = sheet,
+                goalsNeedRecalc = false
+            )
+        }
+    }
+
+    /** Throw the pending recalculate away — nothing was ever saved. */
+    fun discardPendingRecalc() {
+        _ui.value = _ui.value.copy(pendingRecalc = null, recalcSheet = null)
     }
 
     /**
