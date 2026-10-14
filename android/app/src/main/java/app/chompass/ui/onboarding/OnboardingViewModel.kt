@@ -10,6 +10,7 @@ import app.chompass.models.AIProvider
 import app.chompass.models.AiProfile
 import app.chompass.models.DietMode
 import app.chompass.models.Gender
+import app.chompass.models.InstantSerializer
 import app.chompass.models.KetoCarbMode
 import app.chompass.models.LocalDateSerializer
 import app.chompass.models.UserProfile
@@ -53,6 +54,8 @@ data class OnboardingDraft(
     val heightCm: Int,
     val weightKg: Double,
     val bodyFatPercentage: Double? = null,
+    @Serializable(with = InstantSerializer::class)
+    val bodyFatUpdatedAt: Instant? = null,
     val goalBodyFatPercentage: Double? = null,
     val activity: ActivityLevel,
     val goal: WeightGoal,
@@ -73,7 +76,8 @@ data class OnboardingDraft(
 
 private fun OnboardingState.toDraft() = OnboardingDraft(
     step = step, gender = gender, birthday = birthday, heightCm = heightCm, weightKg = weightKg,
-    bodyFatPercentage = bodyFatPercentage, goalBodyFatPercentage = goalBodyFatPercentage,
+    bodyFatPercentage = bodyFatPercentage, bodyFatUpdatedAt = bodyFatUpdatedAt,
+    goalBodyFatPercentage = goalBodyFatPercentage,
     activity = activity, goal = goal, dietMode = dietMode, ketoCarbMode = ketoCarbMode,
     ketoCarbManualTarget = ketoCarbManualTarget, goalWeightKg = goalWeightKg, weeklyChangeKg = weeklyChangeKg,
     notificationsEnabled = notificationsEnabled, healthConnectEnabled = healthConnectEnabled,
@@ -84,6 +88,7 @@ private fun OnboardingState.toDraft() = OnboardingDraft(
 private fun OnboardingState.applyDraft(draft: OnboardingDraft) = copy(
     step = draft.step, gender = draft.gender, birthday = draft.birthday, heightCm = draft.heightCm,
     weightKg = draft.weightKg, bodyFatPercentage = draft.bodyFatPercentage,
+    bodyFatUpdatedAt = draft.bodyFatUpdatedAt,
     goalBodyFatPercentage = draft.goalBodyFatPercentage,
     activity = draft.activity, goal = draft.goal, dietMode = draft.dietMode, ketoCarbMode = draft.ketoCarbMode,
     ketoCarbManualTarget = draft.ketoCarbManualTarget, goalWeightKg = draft.goalWeightKg,
@@ -101,6 +106,9 @@ data class OnboardingState(
     val heightCm: Int = 175,
     val weightKg: Double = 70.0,
     val bodyFatPercentage: Double? = null,
+    /** When the body-fat reading was entered; mirrors UserProfile.bodyFatUpdatedAt so the
+     *  90-day Katch-McArdle recency gate survives onboarding resume. */
+    val bodyFatUpdatedAt: Instant? = null,
     /** Optional target body-fat fraction. Only meaningful when bodyFatPercentage
      *  is non-null (i.e. user picked "Yes I know my body fat" + opted into
      *  setting a goal). Display-only — does NOT participate in BMR/TDEE/macro math. */
@@ -162,6 +170,7 @@ data class OnboardingState(
         ketoCarbMode = ketoCarbMode,
         ketoCarbManualTarget = ketoCarbManualTarget,
         bodyFatPercentage = bodyFatPercentage,
+        bodyFatUpdatedAt = bodyFatUpdatedAt,
         goalBodyFatPercentage = if (bodyFatPercentage != null) goalBodyFatPercentage else null,
         weeklyChangeKg = if (goal == WeightGoal.MAINTAIN) null else weeklyChangeKg,
         goalWeightKg = if (goal == WeightGoal.MAINTAIN) null else goalWeightKg,
@@ -212,6 +221,7 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
         // linger when the user backs out of "Yes I know my body fat".
         _ui.value = _ui.value.copy(
             bodyFatPercentage = pct,
+            bodyFatUpdatedAt = if (pct == null) null else Instant.now(),
             goalBodyFatPercentage = if (pct == null) null else _ui.value.goalBodyFatPercentage
         )
     }
@@ -501,7 +511,10 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
             // (the "Yes I know my body fat %" branch); the "No" branch leaves
             // bodyFatPercentage null and the store stays empty.
             profile.bodyFatPercentage?.let {
-                container.bodyFatRepository.seedInitialBodyFatIfEmpty(it)
+                container.bodyFatRepository.seedInitialBodyFatIfEmpty(
+                    it,
+                    at = profile.bodyFatUpdatedAt ?: Instant.now()
+                )
             }
             container.prefs.setNotificationsEnabled(state.notificationsEnabled)
             container.prefs.setHealthConnectEnabled(state.healthConnectEnabled)

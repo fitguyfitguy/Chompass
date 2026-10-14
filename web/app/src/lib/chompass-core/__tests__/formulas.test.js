@@ -71,3 +71,34 @@ for (const scenario of scenarios) {
     }
   });
 }
+
+// BF-recency gate: Katch-McArdle only when the reading is undated (legacy) or
+// logged within BODY_FAT_RECENCY_DAYS; dated-but-stale falls back to Mifflin-St
+// Jeor. Mirrors Android UserProfileCalculationTest staleness cases.
+test("katchStale_fallsBackToMifflin", () => {
+  const at = new Date("2026-06-01T00:00:00Z");
+  const dated = {
+    sex: "male", age: 30, heightCm: 180, weightKg: 80,
+    bodyFatPercentage: 0.20, bodyFatUpdatedAt: "2026-02-01T00:00:00Z",
+    activityLevel: "moderate", goal: "maintain",
+  };
+  assert.equal(bmr(dated, at), 10 * 80 + 6.25 * 180 - 5 * 30 + 5);
+});
+
+test("katchFreshDated_usesKatch", () => {
+  const at = new Date("2026-06-01T00:00:00Z");
+  const dated = {
+    sex: "male", age: 30, heightCm: 180, weightKg: 80,
+    bodyFatPercentage: 0.20, bodyFatUpdatedAt: "2026-05-02T00:00:00Z",
+    activityLevel: "moderate", goal: "maintain",
+  };
+  assert.ok(Math.abs(bmr(dated, at) - (370 + 21.6 * 80 * 0.8)) <= 1e-9);
+});
+
+test("katchLegacyNullDate_usesKatch", () => {
+  const legacy = {
+    sex: "male", age: 30, heightCm: 180, weightKg: 80,
+    bodyFatPercentage: 0.20, activityLevel: "moderate", goal: "maintain",
+  };
+  assert.ok(Math.abs(bmr(legacy) - (370 + 21.6 * 80 * 0.8)) <= 1e-9);
+});

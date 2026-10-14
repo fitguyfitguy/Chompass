@@ -49,6 +49,27 @@
       }
     },
     {
+      "id": "golden_femaleCut_katchStale_mifflinFallback",
+      "profile": {
+        "sex": "female",
+        "age": 35,
+        "heightCm": 165,
+        "weightKg": 70,
+        "bodyFatPercentage": 0.28,
+        "bodyFatUpdatedAt": "2026-01-01T00:00:00Z",
+        "activityLevel": "light",
+        "goal": "lose",
+        "weeklyChangeKg": 0.5,
+        "ketoMode": false
+      },
+      "expect": {
+        "bmr": 1395.25,
+        "bmrTol": 1.0,
+        "calorieAdjustment": -550,
+        "proteinGoal": 98
+      }
+    },
+    {
       "id": "golden_ketoLose_sedentaryCarbsClamped",
       "profile": {
         "sex": "male",

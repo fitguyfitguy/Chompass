@@ -17,6 +17,10 @@ internal object Keys {
         /** Per-day goal journal (Codeberg #60, MACRO-CYCLE-D); see models/GoalJournal.kt. */
         val GOAL_JOURNAL = stringPreferencesKey("goalJournal")
         val LAST_RECALC_GOAL_SIGNATURE = stringPreferencesKey("lastRecalcGoalSignature")
+        /** Version of the goalInputSignature format the stored baseline was captured with.
+         *  Bumped when the signature format changes so existing baselines are re-captured
+         *  once instead of nudging every existing user to recalculate. 0 = pre-versioning. */
+        val LAST_RECALC_SIGNATURE_VERSION = intPreferencesKey("lastRecalcSignatureVersion")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("hasCompletedOnboarding")
         val ONBOARDING_DRAFT = stringPreferencesKey("onboardingDraft")
         /** Release cleartext opt-in for user-entered AI endpoints (issue #8 follow-up, design doc D2 Option B). */

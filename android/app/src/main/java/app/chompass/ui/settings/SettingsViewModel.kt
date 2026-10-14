@@ -477,6 +477,17 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 if (snap.lastRecalcGoalSignature == null && profile != null) {
                     container.prefs.setLastRecalcGoalSignature(profile.goalInputSignature)
                 }
+                // One-time re-baseline for signature-format v1 (bodyFatUpdatedAt joined
+                // goalInputSignature). Baselines stored before the change would otherwise
+                // mismatch every existing profile and nudge the whole user base to
+                // recalculate once; re-capture instead. New recalcs keep updating the
+                // baseline as today, always writing version 1.
+                if (snap.lastRecalcSignatureVersion < 1 && profile != null) {
+                    if (snap.lastRecalcGoalSignature != null) {
+                        container.prefs.setLastRecalcGoalSignature(profile.goalInputSignature)
+                    }
+                    container.prefs.setLastRecalcSignatureVersion(1)
+                }
                 val state = SettingsUiState(
                     profiles = profiles,
                     activeProfile = active,

@@ -499,6 +499,8 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setUserContext(value: String) = setUserContextImpl(value)
     val lastRecalcGoalSignature: Flow<String?> get() = lastRecalcGoalSignatureImpl
     suspend fun setLastRecalcGoalSignature(value: String) = setLastRecalcGoalSignatureImpl(value)
+    val lastRecalcSignatureVersion: Flow<Int> get() = lastRecalcSignatureVersionImpl
+    suspend fun setLastRecalcSignatureVersion(value: Int) = setLastRecalcSignatureVersionImpl(value)
     val fallbackEnabled: Flow<Boolean> get() = fallbackEnabledImpl
     suspend fun setFallbackEnabled(v: Boolean) = setFallbackEnabledImpl(v)
     val selectedFallbackProvider: Flow<AIProvider> get() = selectedFallbackProviderImpl

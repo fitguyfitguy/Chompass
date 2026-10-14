@@ -2,7 +2,7 @@
 
 Canonical reference for nutrition and sports-science math in Chompass. In-app copy lives under **Settings → Calculation Methods**; this document is the maintainer audit trail.
 
-**Last audited:** 2026-08-22
+**Last audited:** 2026-10-14
 
 ## How goals are produced
 
@@ -28,8 +28,8 @@ Deterministic formulas are the **reference layer**. AI recalculation and adaptiv
 
 | ID      | Name                     | Type          | Implementation                                 | Units    |
 | ------- | ------------------------ | ------------- | ---------------------------------------------- | -------- |
-| BMR-MSJ | Mifflin-St Jeor BMR      | Deterministic | `UserProfile.bmr` when no body fat %           | kcal/day |
-| BMR-KM  | Katch-McArdle BMR        | Deterministic | `UserProfile.bmr` when `bodyFatPercentage` set | kcal/day |
+| BMR-MSJ | Mifflin-St Jeor BMR      | Deterministic | `UserProfile.bmr` when no body fat %, or the reading is stale (older than 90 days / `BODY_FAT_RECENCY_DAYS`) | kcal/day |
+| BMR-KM  | Katch-McArdle BMR        | Deterministic | `UserProfile.bmr` when `bodyFatPercentage` set and the reading is fresh (undated legacy readings count as fresh) | kcal/day |
 | TDEE    | Activity multiplier TDEE | Deterministic | `UserProfile.tdee`                             | kcal/day |
 | ACT-EST | Estimated daily active   | Deterministic | `UserProfile.estimatedDailyActiveCalories`     | kcal/day |
 | CAL-ADJ | Goal calorie adjustment  | Deterministic | `UserProfile.calorieAdjustment`                | kcal/day |
@@ -70,7 +70,7 @@ Other: same as women (no +5 sex term)
 
 ### BMR-KM: Katch-McArdle
 
-**When:** `bodyFatPercentage` is set (fraction 0–1) and `useBodyFatInBMR` is not false (default on).
+**When:** `bodyFatPercentage` is set (fraction 0–1), `useBodyFatInBMR` is not false (default on), and the reading is fresh. "Fresh" means `bodyFatUpdatedAt` is null (legacy reading — existing users' numbers never change silently on update) or at most `BODY_FAT_RECENCY_DAYS` = 90 days old. A dated reading older than 90 days silently falls back to Mifflin-St Jeor; the profile is re-stamped whenever a new reading is saved (Settings sheet, onboarding, body-fat entry sync).
 
 ```
 LBM(kg) = weight(kg) × (1 − bodyFat%)

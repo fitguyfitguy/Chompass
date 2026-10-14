@@ -5,6 +5,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -65,6 +66,37 @@ class UserProfileCalculationTest {
     assertTrue(katch.usesBodyFatForBMR)
     assertFalse(msj.usesBodyFatForBMR)
     assertTrue(msj.bmr > katch.bmr)
+  }
+
+  @Test
+  fun katchStale_fallsBackToMifflin() {
+    val at = Instant.now()
+    val dated = profile(weightKg = 80.0, bodyFatPercentage = 0.20)
+      .copy(bodyFatUpdatedAt = at.minus(java.time.Duration.ofDays(120)))
+    assertFalse(dated.usesBodyFatForBMR)
+    // Mifflin-St Jeor: 10*80 + 6.25*180 - 5*30 - 161 + 166 = 1780
+    assertEquals(1780.0, dated.bmr, 0.5)
+    assertEquals(120L, dated.bodyFatAgeDays(at))
+  }
+
+  @Test
+  fun katchFreshDated_usesKatch() {
+    val at = Instant.now()
+    val dated = profile(weightKg = 80.0, bodyFatPercentage = 0.20)
+      .copy(bodyFatUpdatedAt = at.minus(java.time.Duration.ofDays(30)))
+    assertTrue(dated.usesBodyFatForBMR)
+    // Katch-McArdle: 370 + 21.6*64 = 1752.4
+    assertEquals(1752.4, dated.bmr, 0.5)
+    assertFalse(dated.isBodyFatStale(at))
+  }
+
+  @Test
+  fun katchLegacyNullDate_usesKatch() {
+    val legacy = profile(weightKg = 80.0, bodyFatPercentage = 0.20)
+    assertTrue(legacy.bodyFatUpdatedAt == null)
+    assertTrue(legacy.usesBodyFatForBMR)
+    assertFalse(legacy.isBodyFatStale())
+    assertEquals(null, legacy.bodyFatAgeDays())
   }
 
   @Test

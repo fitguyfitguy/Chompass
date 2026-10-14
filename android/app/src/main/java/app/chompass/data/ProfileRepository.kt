@@ -44,6 +44,7 @@ internal fun UserProfile.withOnboardingInputs(onboarded: UserProfile): UserProfi
     ketoCarbMode = onboarded.ketoCarbMode,
     ketoCarbManualTarget = onboarded.ketoCarbManualTarget,
     bodyFatPercentage = onboarded.bodyFatPercentage,
+    bodyFatUpdatedAt = onboarded.bodyFatUpdatedAt,
     goalBodyFatPercentage = onboarded.goalBodyFatPercentage,
     weeklyChangeKg = onboarded.weeklyChangeKg,
     goalWeightKg = onboarded.goalWeightKg,

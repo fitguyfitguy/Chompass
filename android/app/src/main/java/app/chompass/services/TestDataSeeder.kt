@@ -99,6 +99,7 @@ class TestDataSeeder(private val container: AppContainer) {
                 ketoCarbMode = KetoCarbMode.MANUAL,
                 ketoCarbManualTarget = 25,
                 bodyFatPercentage = baseProfile.bodyFatPercentage ?: 0.22,
+                bodyFatUpdatedAt = Instant.now(),
                 goalBodyFatPercentage = baseProfile.goalBodyFatPercentage ?: 0.15
             )
         )
@@ -206,6 +207,7 @@ class TestDataSeeder(private val container: AppContainer) {
                 weightKg = 73.5,
                 goalWeightKg = 70.0,
                 bodyFatPercentage = 0.175,
+                bodyFatUpdatedAt = Instant.now(),
                 goalBodyFatPercentage = 0.15
             )
         )
@@ -255,6 +257,7 @@ class TestDataSeeder(private val container: AppContainer) {
                 ketoCarbMode = if (keto) KetoCarbMode.MANUAL else KetoCarbMode.ADAPTIVE,
                 ketoCarbManualTarget = if (keto) 25 else null,
                 bodyFatPercentage = 0.175,
+                bodyFatUpdatedAt = Instant.now(),
                 goalBodyFatPercentage = 0.15,
                 goalWeightKg = 70.0,
                 weeklyChangeKg = 0.5,
@@ -681,6 +684,7 @@ class TestDataSeeder(private val container: AppContainer) {
                 weightKg = 73.0,
                 goalWeightKg = 68.0,
                 bodyFatPercentage = 0.18,
+                bodyFatUpdatedAt = Instant.now(),
                 goalBodyFatPercentage = 0.12
             )
         )
@@ -718,6 +722,7 @@ class TestDataSeeder(private val container: AppContainer) {
                 weightKg = 73.0,
                 goalWeightKg = 70.0,
                 bodyFatPercentage = 0.165,
+                bodyFatUpdatedAt = Instant.now(),
                 goalBodyFatPercentage = 0.15
             )
         )

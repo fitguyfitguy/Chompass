@@ -12,6 +12,12 @@ object NutritionConstants {
      */
     const val KCAL_PER_KG_BODY_MASS = 7_700.0
 
+    /**
+     * Body-fat readings older than this many days no longer feed Katch-McArdle; BMR falls
+     * back to Mifflin-St Jeor. Undated (legacy) readings count as fresh.
+     */
+    const val BODY_FAT_RECENCY_DAYS = 90L
+
     /** Daily calorie adjustment (signed) for a weekly body-mass change rate in kg/week. */
     fun dailyCalorieAdjustmentForWeeklyRateKg(weeklyChangeKg: Double): Int =
         (weeklyChangeKg * KCAL_PER_KG_BODY_MASS / 7.0).toInt()

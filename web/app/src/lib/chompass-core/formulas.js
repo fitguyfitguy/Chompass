@@ -16,6 +16,13 @@
 
 export const KCAL_PER_KG_BODY_MASS = 7700;
 
+/**
+ * Body-fat readings older than this many days no longer feed Katch-McArdle;
+ * bmr() falls back to Mifflin-St Jeor. Undated (legacy) readings count as fresh.
+ * @type {number}
+ */
+export const BODY_FAT_RECENCY_DAYS = 90;
+
 /** @type {Record<import('./models.js').ActivityLevel, number>} */
 export const PAL_MULTIPLIERS = {
   sedentary: 1.2,
@@ -64,9 +71,30 @@ export function bmrKatchMcArdle(profile) {
   return 370 + 21.6 * lbmKg;
 }
 
-/** @param {UserProfile} profile */
-export function bmr(profile) {
-  const useKatch = profile.bodyFatPercentage != null && profile.useBodyFatInBMR !== false;
+/**
+ * True when the body-fat reading is dated and older than BODY_FAT_RECENCY_DAYS
+ * (Android UserProfile.isBodyFatStale). Null/undefined = legacy reading = fresh.
+ * @param {UserProfile} profile
+ * @param {Date} [now]
+ * @returns {boolean}
+ */
+export function bodyFatStale(profile, now = new Date()) {
+  if (profile.bodyFatUpdatedAt == null) return false;
+  const ageDays = (now.getTime() - Date.parse(profile.bodyFatUpdatedAt)) / 86_400_000;
+  return ageDays > BODY_FAT_RECENCY_DAYS;
+}
+
+/**
+ * BMR dispatcher: Katch-McArdle when body fat is set, opted in, and fresh
+ * (logged within BODY_FAT_RECENCY_DAYS); Mifflin-St Jeor otherwise.
+ * @param {UserProfile} profile
+ * @param {Date} [now]
+ */
+export function bmr(profile, now = new Date()) {
+  const useKatch =
+    profile.bodyFatPercentage != null &&
+    profile.useBodyFatInBMR !== false &&
+    !bodyFatStale(profile, now);
   return useKatch ? bmrKatchMcArdle(profile) : bmrMifflinStJeor(profile);
 }
 

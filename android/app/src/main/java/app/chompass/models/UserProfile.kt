@@ -23,6 +23,11 @@ data class UserProfile(
     val ketoCarbMode: KetoCarbMode = KetoCarbMode.ADAPTIVE,
     val ketoCarbManualTarget: Int? = null,
     val bodyFatPercentage: Double? = null,
+    /** When the body-fat reading was taken. Null = legacy reading, treated as fresh so existing
+     *  users' numbers do not change on update. Dated readings older than
+     *  [NutritionConstants.BODY_FAT_RECENCY_DAYS] fall back to Mifflin-St Jeor. */
+    @Serializable(with = InstantSerializer::class)
+    val bodyFatUpdatedAt: Instant? = null,
     /** Display-only goal — explicitly NOT used in BMR/TDEE/macro math. */
     val goalBodyFatPercentage: Double? = null,
     /** Nullable so older serialized profiles decode as null = treat as true. When false,
@@ -67,10 +72,19 @@ data class UserProfile(
         return Period.between(birthDate, LocalDate.now()).years.coerceAtLeast(0)
     }
 
-    /** True when BMR uses Katch-McArdle. Default on whenever body fat % is set;
-     *  [useBodyFatInBMR] false falls back to Mifflin-St Jeor without clearing BF%. */
-    val usesBodyFatForBMR: Boolean get() =
-        bodyFatPercentage != null && useBodyFatInBMR != false
+    /** True when BMR uses Katch-McArdle. Default on whenever body fat % is set and the reading
+     *  is fresh; [useBodyFatInBMR] false falls back to Mifflin-St Jeor without clearing BF%,
+     *  and a stale reading (older than [NutritionConstants.BODY_FAT_RECENCY_DAYS]) does too. */
+    val usesBodyFatForBMR: Boolean
+        get() = bodyFatPercentage != null && useBodyFatInBMR != false && !isBodyFatStale()
+
+    /** Age of the body-fat reading in whole days, or null when undated (legacy). */
+    fun bodyFatAgeDays(at: Instant = Instant.now()): Long? =
+        bodyFatUpdatedAt?.let { java.time.Duration.between(it, at).toDays() }
+
+    /** Dated body-fat reading older than [NutritionConstants.BODY_FAT_RECENCY_DAYS]. */
+    fun isBodyFatStale(at: Instant = Instant.now()): Boolean =
+        (bodyFatAgeDays(at) ?: -1L) > NutritionConstants.BODY_FAT_RECENCY_DAYS
 
     val bmr: Double get() = if (usesBodyFatForBMR) {
         // Katch-McArdle
@@ -223,7 +237,7 @@ data class UserProfile(
     val goalInputSignature: String get() = listOf(
         gender, birthday.epochSecond, heightCm, weightKg, activityLevel, goal, dietMode,
         ketoCarbMode, ketoCarbManualTarget,
-        weeklyChangeKg, goalWeightKg, bodyFatPercentage, useBodyFatInBMR,
+        weeklyChangeKg, goalWeightKg, bodyFatPercentage, bodyFatUpdatedAt?.epochSecond, useBodyFatInBMR,
         macroPlan?.signature() ?: "-"
     ).joinToString("|")
 
