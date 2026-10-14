@@ -2131,4 +2131,9 @@
     <string name="settings_fill_missing_reminders">不足値のリマインダー</string>
     <string name="settings_fill_missing_reminders_footer">記録された食事やお気に入りに不足値があるときホームバナーを表示します</string>
     <string name="fill_gaps_never_remind">今後表示しない</string>
+    <string name="home_budget_clamped_row">安全上限：計算式では %1$s、目標は %2$s のままです</string>
+    <string name="home_budget_clamped_floor_hint">推定安静時カロリー以上に保たれます。</string>
+    <string name="home_budget_clamped_ceiling_hint">安全上限 %1$s を超えています。</string>
+    <string name="home_budget_bf_stale">体脂肪の測定から %1$d 日 — Mifflin-St Jeor を使用</string>
+    <string name="recalc_sheet_clamped_row">安全上限を適用：%1$s → %2$s</string>
 </resources>

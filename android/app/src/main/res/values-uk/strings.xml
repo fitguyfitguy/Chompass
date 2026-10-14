@@ -2071,4 +2071,9 @@ LBM = вага × (1 − %жиру)</string>
     <string name="settings_fill_missing_reminders">Нагадування про відсутні значення</string>
     <string name="settings_fill_missing_reminders_footer">Показувати банер на головній, коли в стравах чи обраних бракує значень</string>
     <string name="fill_gaps_never_remind">Більше не нагадувати</string>
+    <string name="home_budget_clamped_row">Обмеження безпеки: за формулою %1$s, ціль залишається %2$s</string>
+    <string name="home_budget_clamped_floor_hint">Не нижче розрахункового витрат у стані спокою.</string>
+    <string name="home_budget_clamped_ceiling_hint">Вище стелі безпеки %1$s.</string>
+    <string name="home_budget_bf_stale">Замір жиру %1$d дн. тому — використано Міффліна—Сан-Жеора</string>
+    <string name="recalc_sheet_clamped_row">Застосовано обмеження безпеки: %1$s → %2$s</string>
 </resources>

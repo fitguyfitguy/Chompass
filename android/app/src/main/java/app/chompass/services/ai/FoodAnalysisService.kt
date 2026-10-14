@@ -519,15 +519,21 @@ class FoodAnalysisService(
                 smartPrompt = smartPrompt, trace = trace,
             ),
         )
+        val safeCalories = CalorieSafety.clampAuto(parsed.calories, profile)
+        val baseReport = buildGoalReport(profile, forecast, measuredTdee, signals, activeStats)
         val clamped = parsed.copy(
-            calories = CalorieSafety.clampAuto(parsed.calories, profile),
+            calories = safeCalories,
             tier = trace.tier,
             provider = trace.provider,
             model = trace.model,
             fallbackFired = trace.fallbackFired,
             primaryProvider = trace.primaryProvider,
             primaryError = trace.primaryError,
-            report = buildGoalReport(profile, forecast, measuredTdee, signals, activeStats),
+            report = if (safeCalories != parsed.calories) {
+                baseReport.copy(clampedFrom = parsed.calories)
+            } else {
+                baseReport
+            },
         )
         if (profile.caloriesLocked) return clamped
         // SMART (cloud) tier: the model judged the raw series itself — no deterministic
@@ -555,6 +561,7 @@ class FoodAnalysisService(
                 carbs = profile.carbsGoal,
                 fat = profile.fatGoal,
                 profiles = emptyList(),
+                report = clamped.report?.copy(clampedFrom = clamped.calories),
                 reason = when {
                     measuredTdee != null ->
                         "Calculated from your measured Health Connect energy burn plus your weekly goal pace."

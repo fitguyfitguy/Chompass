@@ -2132,4 +2132,9 @@
     <string name="settings_fill_missing_reminders">गुम मानों के अनुस्मारक</string>
     <string name="settings_fill_missing_reminders_footer">जब लॉग किए भोजन या पसंदीदा में मान गुम हों तो होम बैनर दिखाएँ</string>
     <string name="fill_gaps_never_remind">मुझे दोबारा याद न दिलाएँ</string>
+    <string name="home_budget_clamped_row">सुरक्षा सीमा: सूत्र %1$s कहता है, लक्ष्य %2$s पर बना रहेगा</string>
+    <string name="home_budget_clamped_floor_hint">आपकी अनुमानित आराम कैलोरी या उससे ऊपर रखा गया।</string>
+    <string name="home_budget_clamped_ceiling_hint">%1$s सुरक्षा सीमा से ऊपर।</string>
+    <string name="home_budget_bf_stale">बॉडी फैट माप %1$d दिन पुराना — Mifflin-St Jeor का उपयोग</string>
+    <string name="recalc_sheet_clamped_row">सुरक्षा सीमा लागू: %1$s → %2$s</string>
 </resources>

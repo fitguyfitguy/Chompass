@@ -2133,4 +2133,9 @@ macro riequilibrate al nuovo totale calorico</string>
     <string name="settings_fill_missing_reminders">Promemoria valori mancanti</string>
     <string name="settings_fill_missing_reminders_footer">Mostra il banner nella home quando pasti o preferiti hanno valori mancanti</string>
     <string name="fill_gaps_never_remind">Non ricordarmelo più</string>
+    <string name="home_budget_clamped_row">Limite di sicurezza: la formula indica %1$s, l’obiettivo resta a %2$s</string>
+    <string name="home_budget_clamped_floor_hint">Mantenuto a o sopra le calorie a riposo stimate.</string>
+    <string name="home_budget_clamped_ceiling_hint">Sopra il tetto di sicurezza di %1$s.</string>
+    <string name="home_budget_bf_stale">Misurazione del grasso corporeo di %1$d giorni — si usa Mifflin-St Jeor</string>
+    <string name="recalc_sheet_clamped_row">Limite di sicurezza applicato: %1$s → %2$s</string>
 </resources>

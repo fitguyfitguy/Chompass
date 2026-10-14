@@ -17,8 +17,10 @@ import app.chompass.models.ActiveCalorieSource
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.FoodLogMacroChip
+import app.chompass.models.GoalDerivation
 import app.chompass.models.HomeCalorieDisplay
 import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.models.toGoalDerivation
 import app.chompass.models.DietMode
 import app.chompass.models.DayTargets
 import app.chompass.models.GoalJournal
@@ -389,6 +391,13 @@ data class HomeUiState(
     val carbsToday: Double get() = todayEntries.sumOf { it.carbs }
     val fatToday: Double get() = todayEntries.sumOf { it.fat }
     val baseCalorieGoal: Int get() = resolvedDayTargets.targets.calories
+
+    /**
+     * Standing goal derivation (BMR → TDEE × activity → pace → clamp) for the
+     * hero ⓘ budget dialog's formula-baseline block; computed from the same
+     * profile that feeds [gaugeBaseCalorieGoal]. Null without a profile.
+     */
+    val goalDerivation: GoalDerivation? get() = profile?.toGoalDerivation()
 
     /**
      * MACRO-CYCLE-A (#60): the viewed day's targets. Past days read the goal

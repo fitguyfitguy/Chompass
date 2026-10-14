@@ -2219,4 +2219,9 @@
     <string name="settings_fill_missing_reminders">Напоминания о пропущенных значениях</string>
     <string name="settings_fill_missing_reminders_footer">Показывать баннер на главном экране, если в приёмах пищи или избранном есть пропущенные значения</string>
     <string name="fill_gaps_never_remind">Больше не напоминать</string>
+    <string name="home_budget_clamped_row">Ограничение безопасности: по формуле %1$s, цель остаётся %2$s</string>
+    <string name="home_budget_clamped_floor_hint">Не ниже расчётного расхода в состоянии покоя.</string>
+    <string name="home_budget_clamped_ceiling_hint">Выше потолка безопасности %1$s.</string>
+    <string name="home_budget_bf_stale">Замер жира %1$d дн. назад — используется Миффлина—Сан-Жеора</string>
+    <string name="recalc_sheet_clamped_row">Применено ограничение безопасности: %1$s → %2$s</string>
 </resources>

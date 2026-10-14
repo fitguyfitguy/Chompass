@@ -2167,4 +2167,9 @@ makro rebalansowane do nowej sumy kalorii</string>
     <string name="settings_fill_missing_reminders">Przypomnienia o brakujących wartościach</string>
     <string name="settings_fill_missing_reminders_footer">Pokazuj baner na ekranie głównym, gdy posiłki lub ulubione mają brakujące wartości</string>
     <string name="fill_gaps_never_remind">Nie przypominaj mi więcej</string>
+    <string name="home_budget_clamped_row">Limit bezpieczeństwa: formuła podaje %1$s, cel pozostaje na %2$s</string>
+    <string name="home_budget_clamped_floor_hint">Pozostaje na poziomie lub powyżej szacowanych kalorii spoczynkowych.</string>
+    <string name="home_budget_clamped_ceiling_hint">Powyżej bezpiecznego limitu %1$s.</string>
+    <string name="home_budget_bf_stale">Pomiar tkanki tłuszczowej sprzed %1$d dni — użyto Mifflina-St Jeora</string>
+    <string name="recalc_sheet_clamped_row">Zastosowano limit bezpieczeństwa: %1$s → %2$s</string>
 </resources>
