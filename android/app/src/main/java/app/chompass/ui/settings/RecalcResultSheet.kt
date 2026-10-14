@@ -1,22 +1,38 @@
 package app.chompass.ui.settings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.chompass.R
+import app.chompass.models.AutoBalanceMacro
+import app.chompass.models.CalorieSafety
 import app.chompass.models.LocaleFormat
 import app.chompass.models.EnergyFormat
 import app.chompass.models.GoalFormulaReference
@@ -26,6 +42,8 @@ import app.chompass.services.ai.ImpliedWithheldReason
 import app.chompass.services.ai.RecalcSheetData
 import app.chompass.services.ai.RecalcSheetSource
 import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.PlanEditDialog
+import app.chompass.ui.components.PlanField
 import app.chompass.ui.components.energyText
 import app.chompass.ui.components.blockSheetDragAtScrollEdges
 import app.chompass.ui.components.energyUnitLabel
@@ -46,6 +64,13 @@ import app.chompass.ui.theme.AppTextOpacity
 internal fun RecalcResultSheet(
     data: RecalcSheetData,
     onDismiss: () -> Unit,
+    /** Confirm mode (edit-before-apply): targets are tappable and the bottom
+     *  actions become Save/Cancel. Non-editable reopen (persisted details,
+     *  Adaptive, Home ⓘ) stays byte-identical to the old behavior. */
+    editable: Boolean = false,
+    onEdit: ((PlanField, Int) -> Unit)? = null,
+    onApply: (() -> Unit)? = null,
+    onDiscard: (() -> Unit)? = null,
 ) {
     val result = data.result
     val report = result.report
@@ -54,6 +79,7 @@ internal fun RecalcResultSheet(
     val unit = LocalEnergyUnit.current
     val unitLabel = energyUnitLabel()
     val scroll = rememberScrollState()
+    var editing by remember { mutableStateOf<PlanField?>(null) }
     ChompassBottomSheet(onDismiss = onDismiss) {
         Column(
             Modifier
@@ -73,22 +99,83 @@ internal fun RecalcResultSheet(
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
             )
-            // 1. New targets
+            // 1. New targets — tappable in confirm mode; fields locked on the
+            // after-profile stay dim + locked and are NOT editable (applying
+            // keeps locks, so editing them would be a lie).
             SheetSectionHeader(stringResource(R.string.recalc_sheet_new_targets))
-            Text(
-                energyText(result.calories),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = AppColors.Calorie,
-            )
-            Text(
-                stringResource(
-                    R.string.recalc_sheet_macros_format,
-                    result.protein, result.carbs, result.fat,
-                ),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-            )
+            val caloriesLocked = after.caloriesLocked
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(
+                        if (editable && !caloriesLocked) {
+                            Modifier.clickable { editing = PlanField.CALORIES }
+                        } else {
+                            Modifier
+                        }
+                    ),
+            ) {
+                Text(
+                    energyText(result.calories),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = if (editable && caloriesLocked) {
+                        AppColors.Calorie.copy(alpha = AppTextOpacity.Faint)
+                    } else {
+                        AppColors.Calorie
+                    },
+                )
+                if (editable && caloriesLocked) {
+                    Spacer(Modifier.width(6.dp))
+                    Icon(
+                        Icons.Outlined.Lock,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
+            }
+            if (editable) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(18.dp),
+                ) {
+                    editableMacro(
+                        label = stringResource(R.string.macro_protein),
+                        grams = result.protein,
+                        color = AppColors.Protein,
+                        locked = AutoBalanceMacro.PROTEIN in after.lockedMacros,
+                        onClick = { editing = PlanField.PROTEIN },
+                        modifier = Modifier.weight(1f),
+                    )
+                    editableMacro(
+                        label = stringResource(R.string.macro_carbs),
+                        grams = result.carbs,
+                        color = AppColors.Carbs,
+                        locked = AutoBalanceMacro.CARBS in after.lockedMacros,
+                        onClick = { editing = PlanField.CARBS },
+                        modifier = Modifier.weight(1f),
+                    )
+                    editableMacro(
+                        label = stringResource(R.string.macro_fat),
+                        grams = result.fat,
+                        color = AppColors.Fat,
+                        locked = AutoBalanceMacro.FAT in after.lockedMacros,
+                        onClick = { editing = PlanField.FAT },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            } else {
+                Text(
+                    stringResource(
+                        R.string.recalc_sheet_macros_format,
+                        result.protein, result.carbs, result.fat,
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                )
+            }
             HorizontalDivider()
             // 2. Who decided
             SheetSectionHeader(stringResource(R.string.recalc_sheet_who_decided))
@@ -276,15 +363,55 @@ internal fun RecalcResultSheet(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 )
             }
-            Button(
-                onClick = onDismiss,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 6.dp),
-            ) {
-                Text(stringResource(R.string.action_done))
+            if (editable) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    OutlinedButton(
+                        onClick = { onDiscard?.invoke() },
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        Text(stringResource(R.string.action_cancel))
+                    }
+                    Button(
+                        onClick = { onApply?.invoke() },
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        Text(stringResource(R.string.action_save))
+                    }
+                }
+            } else {
+                Button(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 6.dp),
+                ) {
+                    Text(stringResource(R.string.action_done))
+                }
             }
         }
+    }
+    editing?.let { field ->
+        PlanEditDialog(
+            field = field,
+            calorieFloor = CalorieSafety.floorKcal(after.bmr),
+            currentValue = when (field) {
+                PlanField.CALORIES -> after.effectiveCalories
+                PlanField.PROTEIN -> after.effectiveProtein
+                PlanField.CARBS -> after.effectiveCarbs
+                PlanField.FAT -> after.effectiveFat
+            },
+            onDismiss = { editing = null },
+            onSave = { newValue ->
+                onEdit?.invoke(field, newValue)
+                editing = null
+            },
+            onReset = null,
+        )
     }
 }
 
@@ -296,6 +423,48 @@ private fun SheetSectionHeader(text: String) {
         fontWeight = FontWeight.SemiBold,
         color = MaterialTheme.colorScheme.primary,
     )
+}
+
+/** One tappable macro value in the confirm sheet's NEW TARGETS row; locked
+ *  macros render dim with the lock icon and ignore taps. */
+@Composable
+private fun editableMacro(
+    label: String,
+    grams: Int,
+    color: androidx.compose.ui.graphics.Color,
+    locked: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.then(if (locked) Modifier else Modifier.clickable(onClick = onClick)),
+    ) {
+        Column {
+            Text(
+                label,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    LocaleFormat.integer(grams) + " " + stringResource(R.string.unit_g),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = if (locked) color.copy(alpha = AppTextOpacity.Faint) else color,
+                )
+                if (locked) {
+                    Spacer(Modifier.width(4.dp))
+                    Icon(
+                        Icons.Outlined.Lock,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        modifier = Modifier.size(14.dp),
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable

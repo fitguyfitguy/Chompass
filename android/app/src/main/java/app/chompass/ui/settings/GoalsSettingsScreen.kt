@@ -134,7 +134,19 @@ fun GoalsSettingsScreen(
     }
 
     ui.recalcSheet?.let { sheet ->
-        RecalcResultSheet(data = sheet, onDismiss = { vm.dismissRecalcSheet() })
+        val pending = ui.pendingRecalc
+        if (pending != null) {
+            RecalcResultSheet(
+                data = sheet,
+                onDismiss = { vm.discardPendingRecalc() },
+                editable = true,
+                onEdit = { field, value -> vm.editPendingRecalc(field, value) },
+                onApply = { vm.applyPendingRecalc() },
+                onDiscard = { vm.discardPendingRecalc() },
+            )
+        } else {
+            RecalcResultSheet(data = sheet, onDismiss = { vm.dismissRecalcSheet() })
+        }
     }
 
     invalidGoalWeightMessage?.let { msg ->
