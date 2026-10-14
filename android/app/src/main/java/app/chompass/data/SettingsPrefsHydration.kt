@@ -122,6 +122,7 @@ internal data class SettingsPrefsHydration(
     val mealSchedule: MealSchedule,
     val mealCatalog: app.chompass.models.MealCatalog,
     val lastRecalcGoalSignature: String?,
+    val lastRecalcSignatureVersion: Int,
 )
 
 internal suspend fun PreferencesStore.readSettingsHydration(): SettingsPrefsHydration =
@@ -289,5 +290,6 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
         mealSchedule = mealCatalog.toLegacySchedule(),
         mealCatalog = mealCatalog,
         lastRecalcGoalSignature = this[Keys.LAST_RECALC_GOAL_SIGNATURE],
+        lastRecalcSignatureVersion = this[Keys.LAST_RECALC_SIGNATURE_VERSION] ?: 0,
     )
 }

@@ -283,6 +283,14 @@ internal suspend fun PreferencesStore.setLastRecalcGoalSignatureImpl(value: Stri
     dataStore.edit { it[Keys.LAST_RECALC_GOAL_SIGNATURE] = value }
 }
 
+/** goalInputSignature format version the stored baseline was captured with; see
+ *  [Keys.LAST_RECALC_SIGNATURE_VERSION]. */
+internal val PreferencesStore.lastRecalcSignatureVersionImpl: Flow<Int> get() =
+    dataStore.data.map { it[Keys.LAST_RECALC_SIGNATURE_VERSION] ?: 0 }
+internal suspend fun PreferencesStore.setLastRecalcSignatureVersionImpl(value: Int) {
+    dataStore.edit { it[Keys.LAST_RECALC_SIGNATURE_VERSION] = value }
+}
+
 /** Splash-path prefs from one DataStore read (onboarding + theme + language). */
 data class ColdStartPrefs(
     val onboarded: Boolean,

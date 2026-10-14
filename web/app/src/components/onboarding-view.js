@@ -204,6 +204,7 @@ export class OnboardingView extends HTMLElement {
     });
     this.querySelector("[data-skip-bf]")?.addEventListener("click", () => {
       this.draft.bodyFatPercentage = null;
+      this.draft.bodyFatUpdatedAt = null;
       this.draft.goalBodyFatPercentage = null;
       this.goNext();
     });
@@ -649,6 +650,7 @@ export class OnboardingView extends HTMLElement {
     if (this.querySelector("#bodyFatPercentage")) {
       const v = val("bodyFatPercentage");
       this.draft.bodyFatPercentage = v ? Number(v) / 100 : null;
+      this.draft.bodyFatUpdatedAt = v ? new Date().toISOString() : null;
     }
     if (this.querySelector("#goalBodyFatPercentage")) {
       const v = val("goalBodyFatPercentage");

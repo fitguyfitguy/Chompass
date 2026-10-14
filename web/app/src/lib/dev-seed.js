@@ -32,6 +32,7 @@ export async function seedProfile() {
     heightCm: 178,
     weightKg: 82,
     bodyFatPercentage: 0.22,
+    bodyFatUpdatedAt: isoDaysAgo(3) + "T08:00:00Z",
     activityLevel: "moderate",
     goal: "lose",
     weeklyChangeKg: 0.5,

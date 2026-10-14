@@ -9,6 +9,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -135,6 +136,7 @@ class CalculationGoldenScenariosTest(
                 heightCm = p.optDouble("heightCm", 170.0),
                 weightKg = p.getDouble("weightKg"),
                 bodyFatPercentage = if (p.isNull("bodyFatPercentage")) null else p.getDouble("bodyFatPercentage"),
+                bodyFatUpdatedAt = if (p.isNull("bodyFatUpdatedAt")) null else Instant.parse(p.getString("bodyFatUpdatedAt")),
                 activityLevel = activityLevel(p.getString("activityLevel")),
                 goal = goal,
                 weeklyChangeKg = if (p.isNull("weeklyChangeKg")) null else p.getDouble("weeklyChangeKg"),

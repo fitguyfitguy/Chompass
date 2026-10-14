@@ -464,6 +464,7 @@ internal fun SettingsSheets(
                         vm.updateProfile {
                             it.copy(
                                 bodyFatPercentage = bf,
+                                bodyFatUpdatedAt = if (bf == null) null else Instant.now(),
                                 goalBodyFatPercentage = if (bf == null) null else it.goalBodyFatPercentage
                             )
                         }

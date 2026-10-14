@@ -425,6 +425,7 @@ export class SettingsView extends HTMLElement {
         heightCm: appPrefs.heightUnit === "in" ? height * 2.54 : height,
         weightKg: appPrefs.weightUnit === "lb" ? weight / 2.20462 : weight,
         bodyFatPercentage: bfRaw ? Number(bfRaw) / 100 : null,
+        bodyFatUpdatedAt: bfRaw ? new Date().toISOString() : null,
         useBodyFatInBMR: fd.get("useBodyFatInBMR") === "on",
         activityLevel: /** @type {any} */ (fd.get("activityLevel")),
       });

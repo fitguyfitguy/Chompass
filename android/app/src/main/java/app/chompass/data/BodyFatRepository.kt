@@ -35,10 +35,11 @@ class BodyFatRepository(
     }
 
     /** Safe to call repeatedly — no-ops once any entries exist. Mirrors
-     *  WeightRepository.seedInitialWeightIfEmpty. */
-    suspend fun seedInitialBodyFatIfEmpty(fraction: Double) {
+     *  WeightRepository.seedInitialWeightIfEmpty. [at] aligns the entry date with
+     *  the profile's bodyFatUpdatedAt stamp so the recency gate sees one truth. */
+    suspend fun seedInitialBodyFatIfEmpty(fraction: Double, at: Instant = Instant.now()) {
         if (prefs.bodyFatEntries.first().isNotEmpty()) return
-        addEntry(BodyFatEntry(bodyFatFraction = fraction))
+        addEntry(BodyFatEntry(date = at, bodyFatFraction = fraction))
     }
 
     suspend fun addEntry(entry: BodyFatEntry) {
@@ -152,8 +153,15 @@ class BodyFatRepository(
     private suspend fun syncProfileBodyFatToLatest() {
         val profile = profileRepository.current() ?: return
         val newest = prefs.bodyFatEntries.first().maxByOrNull { it.date } ?: return
-        if (abs((profile.bodyFatPercentage ?: -1.0) - newest.bodyFatFraction) > 0.0001) {
-            profileRepository.save(profile.copy(bodyFatPercentage = newest.bodyFatFraction))
+        if (abs((profile.bodyFatPercentage ?: -1.0) - newest.bodyFatFraction) > 0.0001 ||
+            profile.bodyFatUpdatedAt != newest.date
+        ) {
+            profileRepository.save(
+                profile.copy(
+                    bodyFatPercentage = newest.bodyFatFraction,
+                    bodyFatUpdatedAt = newest.date,
+                )
+            )
         }
     }
 
