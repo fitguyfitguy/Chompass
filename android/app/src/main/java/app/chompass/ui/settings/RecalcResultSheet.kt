@@ -142,6 +142,16 @@ internal fun RecalcResultSheet(
                 )
                 SheetInfoRow(stringResource(R.string.recalc_sheet_pace_row, signed(EnergyFormat.quantity(report.calorieAdjustment, unit)), unitLabel))
                 SheetInfoRow(stringResource(R.string.recalc_sheet_formula_target_row, LocaleFormat.integer(EnergyFormat.quantity(report.formulaCalories, unit)), unitLabel))
+                report.clampedFrom?.let { pre ->
+                    SheetInfoRow(
+                        stringResource(
+                            R.string.recalc_sheet_clamped_row,
+                            LocaleFormat.integer(EnergyFormat.quantity(pre, unit)),
+                            LocaleFormat.integer(EnergyFormat.quantity(result.calories, unit)),
+                        ),
+                        dim = true,
+                    )
+                }
                 report.measuredTdee?.let {
                     SheetInfoRow(stringResource(R.string.recalc_sheet_measured_row, LocaleFormat.integer(EnergyFormat.quantity(it, unit)), unitLabel))
                 }

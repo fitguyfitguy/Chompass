@@ -2141,4 +2141,9 @@ macro-urile reechilibrate la noul total caloric</string>
     <string name="settings_fill_missing_reminders">Memento pentru valori lipsă</string>
     <string name="settings_fill_missing_reminders_footer">Afișează bannerul de pe ecranul principal când mesele sau favoritele au valori lipsă</string>
     <string name="fill_gaps_never_remind">Nu-mi mai aminti</string>
+    <string name="home_budget_clamped_row">Limită de siguranță: formula indică %1$s, obiectivul rămâne la %2$s</string>
+    <string name="home_budget_clamped_floor_hint">Păstrat la sau peste caloriile estimate de repaus.</string>
+    <string name="home_budget_clamped_ceiling_hint">Peste plafonul de siguranță de %1$s.</string>
+    <string name="home_budget_bf_stale">Măsurătoarea grăsimii corporale are %1$d zile — se folosește Mifflin-St Jeor</string>
+    <string name="recalc_sheet_clamped_row">Limită de siguranță aplicată: %1$s → %2$s</string>
 </resources>

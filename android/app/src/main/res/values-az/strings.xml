@@ -2133,4 +2133,9 @@ makrolar yeni kalori cəminə uyğun yenidən tarazlaşdırılır</string>
     <string name="settings_fill_missing_reminders">Çatışmayan dəyərlər xatırlatması</string>
     <string name="settings_fill_missing_reminders_footer">Qeyd edilmiş yeməklərdə və ya sevimlilərdə dəyər çatışmadıqda ana səhifə banneri göstər</string>
     <string name="fill_gaps_never_remind">Bir daha xatırlatma</string>
+    <string name="home_budget_clamped_row">Təhlükəsizlik həddi: formula %1$s deyir, məqsəd %2$s qalır</string>
+    <string name="home_budget_clamped_floor_hint">Təxmini istirahət kaloriyalarında və ya ondan yuxarı saxlanılır.</string>
+    <string name="home_budget_clamped_ceiling_hint">%1$s təhlükəsizlik tavanının üstündə.</string>
+    <string name="home_budget_bf_stale">Yağ ölçmə %1$d gün əvvəl — Mifflin-St Jeor istifadə olunur</string>
+    <string name="recalc_sheet_clamped_row">Təhlükəsizlik həddi tətbiq edildi: %1$s → %2$s</string>
 </resources>

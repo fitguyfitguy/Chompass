@@ -2226,6 +2226,10 @@
     <string name="home_active_burn_over">+%1$d over typical</string>
     <string name="home_active_burn_over_a11y">Active burn %1$d, %2$d over a typical day</string>
     <string name="home_budget_burned_today">Burned today: %1$d %2$s</string>
+    <string name="home_budget_clamped_row">Safety limit: formula says %1$s, goal stays at %2$s</string>
+    <string name="home_budget_clamped_floor_hint">Kept at or above your estimated resting calories.</string>
+    <string name="home_budget_clamped_ceiling_hint">Above the %1$s safety ceiling.</string>
+    <string name="home_budget_bf_stale">Body-fat reading %1$d days old — using Mifflin-St Jeor</string>
     <string name="home_display_show_active_calories">Show active calories</string>
     <string name="home_display_show_active_calories_desc">Show today’s active burn in the calorie gauge.</string>
     <string name="home_calories_left">%1$s left</string>
@@ -2443,6 +2447,7 @@
     <string name="recalc_sheet_tdee_row">Maintenance × activity %1$s: %2$s %3$s</string>
     <string name="recalc_sheet_pace_row">Goal pace: %1$s %2$s/day</string>
     <string name="recalc_sheet_formula_target_row">Formula target: %1$s %2$s</string>
+    <string name="recalc_sheet_clamped_row">Safety limit applied: %1$s → %2$s</string>
     <string name="recalc_sheet_measured_row">Measured Health Connect burn: %1$s %2$s</string>
     <string name="recalc_sheet_day_type_active">%1$s: typically %2$d %4$s active (%3$d of last 28 days)</string>
     <string name="recalc_sheet_data_used">Data used</string>

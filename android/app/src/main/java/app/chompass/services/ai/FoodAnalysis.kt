@@ -328,6 +328,10 @@ data class GoalCalculationReport(
     val impliedWithheld: ImpliedWithheldReason? = null,
     val trendsDisagree: Boolean = false,
     val dayTypeActiveTypical: List<DayTypeActiveTypicalLine> = emptyList(),
+    /** Pre-clamp calories when CAL-SAFE (or the deterministic anchor snap) moved the
+     *  final number; null when the model's answer survived untouched. @Serializable
+     *  default keeps persisted sheet JSON from older builds decoding. */
+    val clampedFrom: Int? = null,
 )
 
 @Serializable

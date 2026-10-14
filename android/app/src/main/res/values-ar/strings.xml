@@ -2146,4 +2146,9 @@
     <string name="settings_fill_missing_reminders">تذكيرات القيم الناقصة</string>
     <string name="settings_fill_missing_reminders_footer">إظهار شريط الصفحة الرئيسية عندما تنقص قيم الوجبات أو المفضلة</string>
     <string name="fill_gaps_never_remind">لا تذكّرني مرة أخرى</string>
+    <string name="home_budget_clamped_row">حد الأمان: الصيغة تقول %1$s، يبقى الهدف عند %2$s</string>
+    <string name="home_budget_clamped_floor_hint">يُبقى عند سعرات الراحة المقدرة أو أعلى منها.</string>
+    <string name="home_budget_clamped_ceiling_hint">أعلى من سقف الأمان %1$s.</string>
+    <string name="home_budget_bf_stale">قياس الدهون قبل %1$d يوم — يستخدم Mifflin-St Jeor</string>
+    <string name="recalc_sheet_clamped_row">طُبِّق حد الأمان: %1$s → %2$s</string>
 </resources>

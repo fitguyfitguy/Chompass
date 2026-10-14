@@ -2132,4 +2132,9 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
     <string name="settings_fill_missing_reminders">Herinneringen voor ontbrekende waarden</string>
     <string name="settings_fill_missing_reminders_footer">Toont de startbanner wanneer maaltijden of favorieten ontbrekende waarden hebben</string>
     <string name="fill_gaps_never_remind">Niet meer herinneren</string>
+    <string name="home_budget_clamped_row">Veiligheidsgrens: formule zegt %1$s, doel blijft op %2$s</string>
+    <string name="home_budget_clamped_floor_hint">Blijft op of boven je geschatte rustverbranding.</string>
+    <string name="home_budget_clamped_ceiling_hint">Boven het veiligheidsplafond van %1$s.</string>
+    <string name="home_budget_bf_stale">Vetmeting %1$d dagen oud — Mifflin-St Jeor wordt gebruikt</string>
+    <string name="recalc_sheet_clamped_row">Veiligheidsgrens toegepast: %1$s → %2$s</string>
 </resources>

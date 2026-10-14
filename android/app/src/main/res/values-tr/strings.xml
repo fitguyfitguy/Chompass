@@ -2152,4 +2152,9 @@ makrolar yeni kalori toplamına göre yeniden dengelenir</string>
     <string name="settings_fill_missing_reminders">Eksik değer hatırlatmaları</string>
     <string name="settings_fill_missing_reminders_footer">Kayıtlı öğünlerde veya favorilerde eksik değer olduğunda ana sayfa bannerını göster</string>
     <string name="fill_gaps_never_remind">Bir daha hatırlatma</string>
+    <string name="home_budget_clamped_row">Güvenlik sınırı: formül %1$s diyor, hedef %2$s olarak kalıyor</string>
+    <string name="home_budget_clamped_floor_hint">Tahmini dinlenme kalorinin üzerinde tutuldu.</string>
+    <string name="home_budget_clamped_ceiling_hint">%1$s güvenlik tavanının üzerinde.</string>
+    <string name="home_budget_bf_stale">Yağ ölçümü %1$d gün önce — Mifflin-St Jeor kullanılıyor</string>
+    <string name="recalc_sheet_clamped_row">Güvenlik sınırı uygulandı: %1$s → %2$s</string>
 </resources>

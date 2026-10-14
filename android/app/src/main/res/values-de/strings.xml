@@ -3644,4 +3644,9 @@ für dich ein</string>
     <string name="settings_fill_missing_reminders">Erinnerungen an fehlende Werte</string>
     <string name="settings_fill_missing_reminders_footer">Zeigt das Start-Banner, wenn Mahlzeiten oder Favoriten fehlende Werte haben</string>
     <string name="fill_gaps_never_remind">Nicht mehr erinnern</string>
+    <string name="home_budget_clamped_row">Sicherheitsgrenze: Formel sagt %1$s, Ziel bleibt bei %2$s</string>
+    <string name="home_budget_clamped_floor_hint">Bleibt auf oder über deinem geschätzten Ruheumsatz.</string>
+    <string name="home_budget_clamped_ceiling_hint">Über der %1$s-Sicherheitsgrenze.</string>
+    <string name="home_budget_bf_stale">Körperfett-Messung %1$d Tage alt — Mifflin-St Jeor wird verwendet</string>
+    <string name="recalc_sheet_clamped_row">Sicherheitsgrenze angewendet: %1$s → %2$s</string>
 </resources>

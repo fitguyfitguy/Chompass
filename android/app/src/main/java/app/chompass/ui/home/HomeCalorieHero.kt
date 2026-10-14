@@ -57,9 +57,12 @@ import app.chompass.R
 import app.chompass.models.ActiveBurnShade
 import app.chompass.models.ActiveCalorieSource
 import app.chompass.models.EnergyFormat
+import app.chompass.models.GoalDerivation
+import app.chompass.models.GoalFormulaReference
 import app.chompass.models.HomeCalorieDisplay
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.LocaleFormat
+import app.chompass.models.NutritionConstants
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.components.energyUnitLabel
@@ -138,6 +141,8 @@ internal fun CalorieHero(
     recalcDetailsAvailable: Boolean = false,
     /** Opens the recalc details sheet (closes the ⓘ budget dialog first). */
     onShowRecalcDetails: (() -> Unit)? = null,
+    /** Standing goal derivation for the ⓘ dialog's formula-baseline block. */
+    goalDerivation: GoalDerivation? = null,
 ) {
     val ratio = HomeCalorieDisplay.progressRatio(displayMode, current, baseGoal, activeCalories)
     val effectiveGoal = HomeCalorieDisplay.effectiveGoal(displayMode, baseGoal, activeCalories)
@@ -468,6 +473,7 @@ internal fun CalorieHero(
             onDismiss = { showBudgetSheet = false },
             recalcDetailsAvailable = recalcDetailsAvailable && onShowRecalcDetails != null,
             onShowRecalcDetails = onShowRecalcDetails,
+            goalDerivation = goalDerivation,
         )
     }
 }
@@ -637,6 +643,7 @@ private fun BudgetExplanationDialog(
     onDismiss: () -> Unit,
     recalcDetailsAvailable: Boolean = false,
     onShowRecalcDetails: (() -> Unit)? = null,
+    goalDerivation: GoalDerivation? = null,
 ) {
     val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
     val unit = LocalEnergyUnit.current
@@ -698,6 +705,85 @@ private fun BudgetExplanationDialog(
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
+            }
+            // Standing goal derivation (checkable chain): where today's target
+            // came from — same baseline the recalc sheet shows, but computed
+            // from the live profile so it is always current.
+            goalDerivation?.let { d ->
+                HorizontalDivider(Modifier.padding(vertical = 2.dp))
+                Text(
+                    stringResource(R.string.recalc_sheet_formula_baseline),
+                    fontSize = 13.sp,
+                    color = muted,
+                )
+                Text(
+                    stringResource(
+                        R.string.recalc_sheet_bmr_row,
+                        LocaleFormat.integer(EnergyFormat.quantity(d.bmrKcal, unit)),
+                        unitLabel,
+                    ),
+                    fontSize = 13.sp,
+                    color = muted,
+                )
+                Text(
+                    stringResource(
+                        R.string.recalc_sheet_tdee_row,
+                        GoalFormulaReference.formatMultiplier(d.activityMultiplier),
+                        LocaleFormat.integer(EnergyFormat.quantity(d.tdeeKcal, unit)),
+                        unitLabel,
+                    ),
+                    fontSize = 13.sp,
+                    color = muted,
+                )
+                Text(
+                    stringResource(
+                        R.string.recalc_sheet_pace_row,
+                        signedKcal(EnergyFormat.quantity(d.paceKcal, unit)),
+                        unitLabel,
+                    ),
+                    fontSize = 13.sp,
+                    color = muted,
+                )
+                Text(
+                    stringResource(
+                        R.string.recalc_sheet_formula_target_row,
+                        LocaleFormat.integer(EnergyFormat.quantity(d.formulaTargetKcal, unit)),
+                        unitLabel,
+                    ),
+                    fontSize = 13.sp,
+                    color = muted,
+                )
+                if (d.formulaClamped) {
+                    Text(
+                        stringResource(
+                            R.string.home_budget_clamped_row,
+                            LocaleFormat.integer(EnergyFormat.quantity(d.rawTargetKcal, unit)),
+                            LocaleFormat.integer(EnergyFormat.quantity(d.formulaTargetKcal, unit)),
+                        ),
+                        fontSize = 13.sp,
+                        color = muted,
+                    )
+                    Text(
+                        if (d.rawTargetKcal < d.formulaTargetKcal) {
+                            stringResource(R.string.home_budget_clamped_floor_hint)
+                        } else {
+                            stringResource(
+                                R.string.home_budget_clamped_ceiling_hint,
+                                LocaleFormat.integer(EnergyFormat.quantity(d.ceilingKcal, unit)),
+                            )
+                        },
+                        fontSize = 13.sp,
+                        color = muted,
+                    )
+                }
+                val bfAge = d.bfAgeDays
+                if (bfAge != null && bfAge > NutritionConstants.BODY_FAT_RECENCY_DAYS) {
+                    Text(
+                        stringResource(R.string.home_budget_bf_stale, bfAge.toInt()),
+                        fontSize = 13.sp,
+                        color = muted,
+                    )
+                }
             }
             // Hero ⓘ → recalc details: one tappable row into the persisted goal-change
             // explanation (AI Recalculate or Adaptive) — closes this dialog first.
@@ -773,3 +859,7 @@ internal fun ViewMoreButton() {
         )
     }
 }
+
+/** Signed kcal for the derivation rows: "+250" / "-250" / "0" (mirrors RecalcResultSheet). */
+private fun signedKcal(value: Int): String =
+    if (value > 0) "+" + LocaleFormat.integer(value) else LocaleFormat.integer(value)
