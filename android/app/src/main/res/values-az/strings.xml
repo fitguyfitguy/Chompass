@@ -1346,7 +1346,7 @@ bilirsən?</string>
     <string name="settings_calc_intro">Gündəlik kalori və makro məqsədlərin AI tərəfindən təyin edilir. «Məqsədləri yenidən hesabla» düyməsinə toxunduqda və ya adaptiv məqsədlər aktivdirsə həftədə təxminən bir dəfə avtomatik olaraq, Chompass profilini, aşağıdakı istinad tənliklərini, son qeyd olunmuş yeməklərini və çəki trendini AI provayderinə göndərir. Bu rəy keçirmiş düsturlardan başlayır, sonra onları məlumatlarına uyğunlaşdıraraq saxlanma və məqsədlərini təxmin edir.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21,6 × LBM(kq)\nLBM = çəki × (1 − %yağ)</string>
     <string name="settings_calc_katch_name">Katch-McArdle tənliyi</string>
-    <string name="settings_calc_katch_used">Bədən yağı % daxil etdikdə avtomatik istifadə olunur. BMR-ni ümumi çəki əvəzinə arıq kütlədən törətdiyi üçün arıq və idmançı istifadəçilər üçün daha dəqiqdir.</string>
+    <string name="settings_calc_katch_used">Bədən yağı % daxil etdikdə avtomatik istifadə olunur. BMR-ni ümumi çəki əvəzinə arıq kütlədən törətdiyi üçün arıq və idmançı istifadəçilər üçün daha dəqiqdir. 90 gündən köhnə ölçmələr Mifflin-St Jeor\'a qayıdır.</string>
     <string name="settings_calc_macro_split">Makronutrient bölgüsü</string>
     <string name="settings_calc_maintenance">Saxlanma və məqsəd tənzimləməsi</string>
     <string name="settings_calc_methods">Hesablama metodları</string>

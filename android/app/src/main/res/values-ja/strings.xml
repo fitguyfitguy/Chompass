@@ -1346,7 +1346,7 @@
     <string name="settings_calc_intro">1日のカロリーとマクロの目標は AI が設定します。「目標を再計算」をタップするか、適応型目標オンの場合に週1回程度自動で、Chompass はプロフィール、下記の参照式、最近記録した食事、体重傾向を AI プロバイダーに送信します。査読済みの計算式から始め、データに合わせて調整して維持量と目標を推定します。</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21.6 × LBM(kg)\nLBM = 体重 × (1 − %体脂肪)</string>
     <string name="settings_calc_katch_name">Katch-McArdle 式</string>
-    <string name="settings_calc_katch_used">体脂肪率を入力すると自動で使用されます。総体重ではなく除脂肪体重から BMR を導出するため、痩せ型・アスリートに正確です。</string>
+    <string name="settings_calc_katch_used">体脂肪率を入力すると自動で使用されます。総体重ではなく除脂肪体重から BMR を導出するため、痩せ型・アスリートに正確です。 90日より古い測定値はMifflin-St Jeorにフォールバックします。</string>
     <string name="settings_calc_macro_split">マクロ栄養素の配分</string>
     <string name="settings_calc_maintenance">維持量と目標調整</string>
     <string name="settings_calc_methods">計算方法</string>

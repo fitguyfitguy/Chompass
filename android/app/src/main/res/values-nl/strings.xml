@@ -1327,7 +1327,7 @@
     <string name="settings_calc_intro">Je dagelijkse calorie- en macrodoelen worden door AI ingesteld. Wanneer je op «Doelen herberekenen» tikt, of automatisch ongeveer één keer per week als adaptieve doelen aan staan, stuurt Chompass je profiel, de referentieformules hieronder, je recent gelogde voedsel en je gewichtstrend naar je AI-provider. Het start vanuit deze peer-reviewed formules en past ze dan aan je gegevens aan om je onderhoud en doelen te schatten.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21,6 × LBM(kg)\nLBM = gewicht × (1 − %lichaamsvet)</string>
     <string name="settings_calc_katch_name">Katch-McArdle-vergelijking</string>
-    <string name="settings_calc_katch_used">Automatisch gebruikt wanneer je een lichaamsvet-% hebt ingevoerd. Nauwkeuriger voor slanke en sportieve gebruikers omdat het BMR afleidt uit vetvrije massa in plaats van totaal gewicht.</string>
+    <string name="settings_calc_katch_used">Automatisch gebruikt wanneer je een lichaamsvet-% hebt ingevoerd. Nauwkeuriger voor slanke en sportieve gebruikers omdat het BMR afleidt uit vetvrije massa in plaats van totaal gewicht. Metingen ouder dan 90 dagen vallen terug op Mifflin-St Jeor.</string>
     <string name="settings_calc_macro_split">Macronutriëntenverdeling</string>
     <string name="settings_calc_maintenance">Onderhoud en doelaanpassing</string>
     <string name="settings_calc_methods">Berekeningsmethoden</string>

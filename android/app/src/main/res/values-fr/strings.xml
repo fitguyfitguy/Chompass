@@ -1403,7 +1403,7 @@
     <string name="settings_calc_intro">Vos objectifs quotidiens de calories et de macros sont définis par l\'IA. Quand vous touchez Recalculer les objectifs, ou automatiquement environ une fois par semaine si les Objectifs adaptatifs sont activés, Chompass envoie votre profil, les équations de référence ci-dessous, vos aliments récemment enregistrés et votre tendance de poids à votre fournisseur d\'IA. Il part de ces formules évaluées par les pairs, puis les ajuste à vos données pour estimer votre maintien et vos objectifs.</string>
     <string name="settings_calc_katch_formula" formatted="false">BMR = 370 + 21,6 × MM (kg)\nMM = poids × (1 − % de masse grasse)</string>
     <string name="settings_calc_katch_name">Équation de Katch-McArdle</string>
-    <string name="settings_calc_katch_used" formatted="false">Utilisée automatiquement quand vous avez saisi un % de masse grasse. Plus précise pour les utilisateurs minces et sportifs car elle dérive le BMR de la masse maigre au lieu du poids total.</string>
+    <string name="settings_calc_katch_used" formatted="false">Utilisée automatiquement quand vous avez saisi un % de masse grasse. Plus précise pour les utilisateurs minces et sportifs car elle dérive le BMR de la masse maigre au lieu du poids total. Les mesures de plus de 90 jours repassent à Mifflin-St Jeor.</string>
     <string name="settings_calc_macro_split">Répartition des macronutriments</string>
     <string name="settings_calc_maintenance">Maintien et ajustement de la cible</string>
     <string name="settings_calc_methods">Méthodes de calcul</string>

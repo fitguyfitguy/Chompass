@@ -34,7 +34,6 @@ import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.Restaurant
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -68,7 +67,6 @@ import app.chompass.models.AIProvider
 import app.chompass.models.CalorieSafety
 import app.chompass.models.EnergyFormat
 import app.chompass.ui.components.ChompassTextField
-import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.PlanEditDialog
 import app.chompass.ui.components.PlanField
 import app.chompass.ui.components.OptionPickerSheet
@@ -920,4 +918,3 @@ private fun MacroCard(
         }
     }
 }
-

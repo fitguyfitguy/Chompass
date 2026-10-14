@@ -1348,7 +1348,7 @@
     <string name="settings_calc_intro">你的每日热量和宏量目标由 AI 设定。当你点按“重新计算目标”，或在自适应目标开启时每周自动进行一次，Chompass 会把你的资料、下方参考公式、近期记录的食物和体重趋势发送给 AI 提供商。它从这些同行评审的公式出发，再根据你的数据调整，估算你的维持量和目标。</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21.6 × LBM(公斤)\nLBM = 体重 × (1 − %体脂)</string>
     <string name="settings_calc_katch_name">Katch-McArdle 公式</string>
-    <string name="settings_calc_katch_used">输入体脂百分比后自动使用。对偏瘦和运动型用户更准确，因为它从瘦体重而非总体重推导 BMR。</string>
+    <string name="settings_calc_katch_used">输入体脂百分比后自动使用。对偏瘦和运动型用户更准确，因为它从瘦体重而非总体重推导 BMR。 超过 90 天的测量值将改用 Mifflin-St Jeor。</string>
     <string name="settings_calc_macro_split">宏量营养素分配</string>
     <string name="settings_calc_maintenance">维持量与目标调整</string>
     <string name="settings_calc_methods">计算方法</string>

@@ -6,6 +6,13 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Added
+
+- **Your calorie goal now shows its math** (Android): tapping the info icon next to the Home calorie ring lists the standing chain behind your target, resting burn, activity multiplier, goal pace, and the final number, matching what Settings → Goals shows. When the safety limit moved your target, the sheet says what the formula asked for and where it landed instead of clamping silently. On the web, Settings → Goals shows a note in the same situations.
+- **Recalculate waits for your OK** (Android): after asking the AI for new goals, the results open in a review sheet with Save and Cancel instead of saving right away. Tap the calorie or macro number to adjust it with the wheel before saving, and locked fields stay locked and dimmed.
+- **New body-fat readings go stale after 90 days** (Android & Web): a body-fat percentage logged more than 90 days ago no longer drives the Katch-McArdle formula; the calculation falls back to Mifflin-St Jeor until you log a fresh reading. Existing users with no date on their reading keep their current numbers. The goal dialog notes when a stale reading caused the fallback.
+- **Onboarding suggests a goal from your BMI** (Android): the goal step marks the option your BMI band suggests with a Suggested badge and the number behind it. Nothing is preselected; you still choose.
+
 ### Fixed
 
 - **A failed keychain open gets a second try before anything is wiped** (Android): a temporary error when opening the encrypted keychain (for example a full disk) no longer erases every saved AI key, speech key, WebDAV password, and Mealie token. Only a second consecutive failure still resets the keychain, as before.

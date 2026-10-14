@@ -3240,7 +3240,7 @@ für dich ein</string>
 
     <string name="settings_calc_katch_name">Katch-McArdle-Gleichung</string>
 
-    <string name="settings_calc_katch_used">Wird automatisch verwendet, wenn du einen Körperfettanteil eingegeben hast. Genauere Berechnung für schlanke und sportliche Nutzer, da der Grundumsatz (BMR) aus der fettfreien Körpermasse statt aus dem Gesamtgewicht abgeleitet wird.</string>
+    <string name="settings_calc_katch_used">Wird automatisch verwendet, wenn du einen Körperfettanteil eingegeben hast. Genauere Berechnung für schlanke und sportliche Nutzer, da der Grundumsatz (BMR) aus der fettfreien Körpermasse statt aus dem Gesamtgewicht abgeleitet wird. Messungen, die älter als 90 Tage sind, fallen auf Mifflin-St Jeor zurück.</string>
 
     <string name="settings_calc_katch_formula">BMR = 370 + 21,6 × LBM (kg)\nLBM = Gewicht × (1 − Körperfettanteil in %)</string>
 
