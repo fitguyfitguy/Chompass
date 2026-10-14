@@ -1,6 +1,7 @@
 // @ts-check
 import { profile as profileStore, prefs } from "../lib/db.js";
-import { dailyTargets, safetyFloorKcal, calorieAdjustment, tdee } from "../lib/chompass-core/formulas.js";
+import { dailyTargets, safetyFloorKcal } from "../lib/chompass-core/formulas.js";
+import { clampNoteText } from "../lib/chompass-core/clamp-note.js";
 import { PROVIDERS, modelSelectOptionsHtml, resolveProviderModel } from "../lib/ai/providers.js";
 import { saveProviderKey } from "../lib/ai/key-storage.js";
 import { validateGeminiApiKey } from "../lib/ai/validate-key.js";
@@ -845,15 +846,10 @@ function choiceGrid(field, options, selected) {
 
 /** @param {"kcal"|"kj"} [unit] */
 function planSafetyNote(draft, targets, unit = "kcal") {
-  const formulaDraft = { ...draft, customCalories: null };
-  const raw = Math.trunc(tdee(formulaDraft)) + calorieAdjustment(formulaDraft);
-  if (raw < targets.calories) {
-    return `<p style="color:var(--warning, #b45309);margin:0.6rem 0 0;font-size:0.85rem;">This pace isn't possible at your size without going below your estimated resting calories. Your target will be ${formatEnergy(targets.calories, unit)}.</p>`;
-  }
-  if (targets.calories < safetyFloorKcal(draft)) {
-    return `<p style="color:var(--warning, #b45309);margin:0.6rem 0 0;font-size:0.85rem;">Please consult with a doctor. This is below your estimated resting calories or ${formatEnergy(1200, unit)} a day.</p>`;
-  }
-  return "";
+  const note = clampNoteText(draft, targets, unit);
+  return note
+    ? `<p style="color:var(--warning, #b45309);margin:0.6rem 0 0;font-size:0.85rem;">${note}</p>`
+    : "";
 }
 
 /** @param {string} iso */

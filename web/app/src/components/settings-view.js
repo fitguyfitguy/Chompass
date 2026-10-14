@@ -13,6 +13,7 @@ import {
   clearAllUserData,
 } from "../lib/db.js";
 import { dailyTargets, bmr, tdee, safetyFloorKcal, CALORIE_PARSER_CEILING_KCAL } from "../lib/chompass-core/formulas.js";
+import { clampNoteText } from "../lib/chompass-core/clamp-note.js";
 import { computeWeightForecast } from "../lib/chompass-core/forecast.js";
 import { exportDiary, importDiary, importDiaryUntracked } from "../lib/chompass-core/diary-format.js";
 import { exportBodyMetrics, importBodyMetrics } from "../lib/chompass-core/body-metrics-format.js";
@@ -471,6 +472,10 @@ export class SettingsView extends HTMLElement {
           </div>
         </div>
         <p style="color:var(--muted);font-size:0.82rem;margin:0 0 0.5rem;">${t("settings.goals.formula_targets", { kcal: formatNumber(energyQuantity(targets.calories, energyUnit)), unit: energyUnitLabel(energyUnit), protein: Math.round(targets.proteinG), carbs: Math.round(targets.carbsG), fat: Math.round(targets.fatG) })}</p>
+        ${(() => {
+          const note = clampNoteText(p, targets, energyUnit);
+          return note ? `<p style="color:var(--warning, #b45309);font-size:0.82rem;margin:0 0 0.5rem;">${note}</p>` : "";
+        })()}
         <div class="field-row">
           <div class="field">
             <label for="proteinTargetMode">${t("settings.goals.protein_target")}</label>
