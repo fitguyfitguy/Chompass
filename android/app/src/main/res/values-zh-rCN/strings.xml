@@ -2136,4 +2136,6 @@
     <string name="home_budget_clamped_ceiling_hint">高于 %1$s 的安全上限。</string>
     <string name="home_budget_bf_stale">体脂测量已过去 %1$d 天 — 改用 Mifflin-St Jeor</string>
     <string name="recalc_sheet_clamped_row">已应用安全限制：%1$s → %2$s</string>
+    <string name="onboarding_goal_suggested">建议</string>
+    <string name="onboarding_goal_suggested_bmi">基于 BMI %1$.1f</string>
 </resources>

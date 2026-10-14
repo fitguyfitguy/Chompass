@@ -41,6 +41,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.CalorieSafety
+import app.chompass.models.WeightGoal
 import java.time.LocalDate
 import java.time.Period
 import app.chompass.services.ondevice.OnDeviceCapability
@@ -126,7 +127,28 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                     selected = ui.activity,
                     onSelect = vm::setActivity
                 )
-                OnboardingStep.GOAL -> GoalStep(selected = ui.goal, onSelect = vm::setGoal)
+                OnboardingStep.GOAL -> {
+                    // WHO BMI bands suggest the starting goal; the badge marks it,
+                    // selection default stays MAINTAIN (never preselects).
+                    val bmi = if (ui.heightCm > 0 && ui.weightKg > 0.0) {
+                        ui.weightKg / Math.pow(ui.heightCm / 100.0, 2.0)
+                    } else {
+                        null
+                    }
+                    val suggested = bmi?.let {
+                        when {
+                            it < 18.5 -> WeightGoal.GAIN
+                            it < 25.0 -> WeightGoal.MAINTAIN
+                            else -> WeightGoal.LOSE
+                        }
+                    }
+                    GoalStep(
+                        selected = ui.goal,
+                        onSelect = vm::setGoal,
+                        suggested = suggested,
+                        bmi = bmi,
+                    )
+                }
                 OnboardingStep.DIET_MODE -> DietModeStep(
                     selected = ui.dietMode,
                     ketoCarbMode = ui.ketoCarbMode,

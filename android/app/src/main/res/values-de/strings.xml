@@ -3649,4 +3649,6 @@ für dich ein</string>
     <string name="home_budget_clamped_ceiling_hint">Über der %1$s-Sicherheitsgrenze.</string>
     <string name="home_budget_bf_stale">Körperfett-Messung %1$d Tage alt — Mifflin-St Jeor wird verwendet</string>
     <string name="recalc_sheet_clamped_row">Sicherheitsgrenze angewendet: %1$s → %2$s</string>
+    <string name="onboarding_goal_suggested">Empfohlen</string>
+    <string name="onboarding_goal_suggested_bmi">Auf Basis eines BMI von %1$.1f</string>
 </resources>

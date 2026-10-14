@@ -2076,4 +2076,6 @@ LBM = вага × (1 − %жиру)</string>
     <string name="home_budget_clamped_ceiling_hint">Вище стелі безпеки %1$s.</string>
     <string name="home_budget_bf_stale">Замір жиру %1$d дн. тому — використано Міффліна—Сан-Жеора</string>
     <string name="recalc_sheet_clamped_row">Застосовано обмеження безпеки: %1$s → %2$s</string>
+    <string name="onboarding_goal_suggested">Рекомендовано</string>
+    <string name="onboarding_goal_suggested_bmi">При ІМТ %1$.1f</string>
 </resources>

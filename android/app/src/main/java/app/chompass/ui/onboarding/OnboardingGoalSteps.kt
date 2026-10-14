@@ -88,7 +88,14 @@ internal fun activityIcon(level: ActivityLevel): ImageVector = when (level) {
 }
 
 @Composable
-internal fun GoalStep(selected: WeightGoal, onSelect: (WeightGoal) -> Unit) {
+internal fun GoalStep(
+    selected: WeightGoal,
+    onSelect: (WeightGoal) -> Unit,
+    /** WHO-BMI-band suggestion to badge on one card; null = no badge. Never preselects. */
+    suggested: WeightGoal? = null,
+    /** BMI behind the badge, shown as the reason line. */
+    bmi: Double? = null,
+) {
     Column(Modifier.fillMaxSize()) {
         StepHeader(
             stringResource(R.string.onboarding_goal_title),
@@ -96,9 +103,16 @@ internal fun GoalStep(selected: WeightGoal, onSelect: (WeightGoal) -> Unit) {
         )
         Spacer(Modifier.weight(1f))
         for (g in WeightGoal.values()) {
+            val isSuggested = g == suggested
             SelectionCard(
                 icon = goalIcon(g),
                 title = stringResource(g.displayNameRes),
+                badge = if (isSuggested) stringResource(R.string.onboarding_goal_suggested) else null,
+                subtitle = if (isSuggested && bmi != null) {
+                    stringResource(R.string.onboarding_goal_suggested_bmi, bmi)
+                } else {
+                    null
+                },
                 selected = g == selected
             ) { onSelect(g) }
             Spacer(Modifier.height(12.dp))

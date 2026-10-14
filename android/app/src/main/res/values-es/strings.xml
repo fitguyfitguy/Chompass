@@ -2157,4 +2157,6 @@ macros reequilibradas al nuevo total calórico</string>
     <string name="home_budget_clamped_ceiling_hint">Por encima del techo de seguridad de %1$s.</string>
     <string name="home_budget_bf_stale">Lectura de grasa corporal de %1$d días — se usa Mifflin-St Jeor</string>
     <string name="recalc_sheet_clamped_row">Límite de seguridad aplicado: %1$s → %2$s</string>
+    <string name="onboarding_goal_suggested">Sugerido</string>
+    <string name="onboarding_goal_suggested_bmi">Según un IMC de %1$.1f</string>
 </resources>

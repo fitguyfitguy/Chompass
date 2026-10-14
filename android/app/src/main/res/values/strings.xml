@@ -300,6 +300,8 @@
     <string name="onboarding_activity_subtitle">Your typical week</string>
 
     <string name="onboarding_goal_title">What\'s your goal?</string>
+    <string name="onboarding_goal_suggested">Suggested</string>
+    <string name="onboarding_goal_suggested_bmi">Based on a BMI of %1$.1f</string>
     <string name="onboarding_goal_subtitle">You can change this anytime</string>
     <string name="onboarding_diet_mode_title">Do you follow a diet mode?</string>
     <string name="onboarding_diet_mode_subtitle">Choose your default coaching style</string>

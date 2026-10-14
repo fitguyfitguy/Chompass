@@ -2137,4 +2137,6 @@
     <string name="home_budget_clamped_ceiling_hint">%1$s सुरक्षा सीमा से ऊपर।</string>
     <string name="home_budget_bf_stale">बॉडी फैट माप %1$d दिन पुराना — Mifflin-St Jeor का उपयोग</string>
     <string name="recalc_sheet_clamped_row">सुरक्षा सीमा लागू: %1$s → %2$s</string>
+    <string name="onboarding_goal_suggested">सुझावित</string>
+    <string name="onboarding_goal_suggested_bmi">BMI %1$.1f के आधार पर</string>
 </resources>

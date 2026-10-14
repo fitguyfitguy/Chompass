@@ -2151,4 +2151,6 @@
     <string name="home_budget_clamped_ceiling_hint">أعلى من سقف الأمان %1$s.</string>
     <string name="home_budget_bf_stale">قياس الدهون قبل %1$d يوم — يستخدم Mifflin-St Jeor</string>
     <string name="recalc_sheet_clamped_row">طُبِّق حد الأمان: %1$s → %2$s</string>
+    <string name="onboarding_goal_suggested">مقترح</string>
+    <string name="onboarding_goal_suggested_bmi">بناءً على مؤشر كتلة الجسم %1$.1f</string>
 </resources>
