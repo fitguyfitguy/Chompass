@@ -1345,7 +1345,7 @@
     <string name="settings_calc_intro">Obiectivele tale zilnice de calorii și macrouri sunt setate de IA. Când atingi «Recalculează obiectivele», sau automat cam o dată pe săptămână dacă obiectivele adaptive sunt active, Chompass trimite profilul tău, formulele de referință de mai jos, mâncarea înregistrată recent și tendința de greutate către furnizorul tău IA. Pornește de la aceste formule verificate, apoi le ajustează la datele tale pentru a estima menținerea și obiectivele.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21,6 × LBM(kg)\nLBM = greutate × (1 − %grăsime)</string>
     <string name="settings_calc_katch_name">Ecuația Katch-McArdle</string>
-    <string name="settings_calc_katch_used">Folosită automat când ai introdus un % de grăsime corporală. Mai precisă pentru utilizatorii slabi și sportivi, deoarece derivă BMR din masa slabă în loc de greutatea totală.</string>
+    <string name="settings_calc_katch_used">Folosită automat când ai introdus un % de grăsime corporală. Mai precisă pentru utilizatorii slabi și sportivi, deoarece derivă BMR din masa slabă în loc de greutatea totală. Măsurătorile mai vechi de 90 de zile trec la Mifflin-St Jeor.</string>
     <string name="settings_calc_macro_split">Împărțirea macronutrienților</string>
     <string name="settings_calc_maintenance">Menținere și ajustarea obiectivului</string>
     <string name="settings_calc_methods">Metode de calcul</string>

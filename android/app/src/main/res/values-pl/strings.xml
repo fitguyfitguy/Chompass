@@ -1773,7 +1773,7 @@
     <string name="settings_calc_mifflin_used">Domyślny wzór na metabolizm spoczynkowy. Używany, gdy nie podano tkanki tłuszczowej.</string>
     <string name="settings_calc_mifflin_formula">Mężczyźni: 10×waga(kg) + 6.25×wzrost(cm) − 5×wiek + 5\nKobiety: 10×waga(kg) + 6.25×wzrost(cm) − 5×wiek − 161</string>
     <string name="settings_calc_katch_name">Równanie Katch-McArdle</string>
-    <string name="settings_calc_katch_used">Używany automatycznie, gdy podano tkankę tłuszczową. Dokładniejszy dla szczupłych i wysportowanych użytkowników, ponieważ wyprowadza BMR z beztłuszczowej masy ciała zamiast całkowitej wagi.</string>
+    <string name="settings_calc_katch_used">Używany automatycznie, gdy podano tkankę tłuszczową. Dokładniejszy dla szczupłych i wysportowanych użytkowników, ponieważ wyprowadza BMR z beztłuszczowej masy ciała zamiast całkowitej wagi. Pomiary starsze niż 90 dni przełączają się na Mifflin-St Jeor.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21.6 × LBM(kg)\nLBM = waga × (1 − bodyFat%)</string>
     <string name="settings_calc_tdee_name">Metoda mnożnika aktywności</string>
     <string name="settings_calc_tdee_used">TDEE = BMR × mnożnik aktywności. Mnożnik odpowiada wybranemu poziomowi aktywności. Umiarkowany używa 1.465 (między FAO/WHO lekkim 1.375 a umiarkowanym 1.55) dla aktywnych przy biurku użytkowników ćwiczących kilka razy w tygodniu. To linia bazowa utrzymania, od której zaczyna AI (chyba że Energy Burn dostarcza zmierzonej wartości).</string>

@@ -1305,7 +1305,7 @@
     <string name="settings_calc_katch_formula">BMR = 370 + 21,6 × LBM(кг)
 LBM = вага × (1 − %жиру)</string>
     <string name="settings_calc_katch_name">Рівняння Katch-McArdle</string>
-    <string name="settings_calc_katch_used">Використовується автоматично, якщо вказано відсоток жиру. Точніша для худих і спортивних користувачів, оскільки обчислює BMR із сухої маси замість загальної ваги.</string>
+    <string name="settings_calc_katch_used">Використовується автоматично, якщо вказано відсоток жиру. Точніша для худих і спортивних користувачів, оскільки обчислює BMR із сухої маси замість загальної ваги. Заміри старше 90 днів перемикаються на Міффліна—Сан-Жеора.</string>
     <string name="settings_calc_macro_split">Розподіл макронутрієнтів</string>
     <string name="settings_calc_maintenance">Підтримання та коригування цілі</string>
     <string name="settings_calc_methods">Методи розрахунку</string>

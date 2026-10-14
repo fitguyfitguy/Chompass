@@ -1346,7 +1346,7 @@
     <string name="settings_calc_intro">일일 칼로리와 매크로 목표는 AI가 설정해요. "목표 재계산"을 탭하거나 적응형 목표가 켜져 있으면 주 1회 자동으로, Chompass가 프로필, 아래 참조 공식, 최근 기록 음식, 체중 추세를 AI 제공자에게 보내요. 검증된 공식에서 시작하여 데이터에 맞게 조정해 유지량과 목표를 추정해요.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21.6 × LBM(kg)\nLBM = 체중 × (1 − %체지방)</string>
     <string name="settings_calc_katch_name">Katch-McArdle 공식</string>
-    <string name="settings_calc_katch_used">체지방률을 입력하면 자동으로 사용돼요. 총 체중 대신 제지방량에서 BMR을 도출하므로 마른 체형과 운동선수에게 더 정확해요.</string>
+    <string name="settings_calc_katch_used">체지방률을 입력하면 자동으로 사용돼요. 총 체중 대신 제지방량에서 BMR을 도출하므로 마른 체형과 운동선수에게 더 정확해요. 90일이 지난 측정값은 Mifflin-St Jeor로 전환됩니다.</string>
     <string name="settings_calc_macro_split">매크로 영양소 배분</string>
     <string name="settings_calc_maintenance">유지량 및 목표 조정</string>
     <string name="settings_calc_methods">계산 방법</string>

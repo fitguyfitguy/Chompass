@@ -1765,7 +1765,7 @@
     <string name="settings_calc_mifflin_used">Dinlenme metabolizması için varsayılan formül. Vücut yağı yüzdesi girmediğinde kullanılır.</string>
     <string name="settings_calc_mifflin_formula">Erkekler: 10×kilo(kg) + 6.25×boy(cm) − 5×yaş + 5\nKadınlar: 10×kilo(kg) + 6.25×boy(cm) − 5×yaş − 161</string>
     <string name="settings_calc_katch_name">Katch-McArdle denklemi</string>
-    <string name="settings_calc_katch_used">Vücut yağı yüzdesi girdiğinde otomatik kullanılır. BMR\'yi toplam kilo yerine yağsız vücut kütlesinden türettiği için zayıf ve atletik kullanıcılar için daha doğrudur.</string>
+    <string name="settings_calc_katch_used">Vücut yağı yüzdesi girdiğinde otomatik kullanılır. BMR\'yi toplam kilo yerine yağsız vücut kütlesinden türettiği için zayıf ve atletik kullanıcılar için daha doğrudur. 90 günden eski ölçümler Mifflin-St Jeor\'a döner.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21.6 × LBM(kg)\nLBM = kilo × (1 − bodyFat%)</string>
     <string name="settings_calc_tdee_name">Aktivite çarpanı yöntemi</string>
     <string name="settings_calc_tdee_used">TDEE = BMR × aktivite çarpanı. Çarpan, seçtiğin aktivite seviyesine karşılık gelir. Orta, haftada birkaç kez egzersiz yapan masa başı aktif kullanıcılar için 1.465 kullanır (FAO/WHO hafif 1.375 ile orta 1.55 arası). Bu, AI\'nın başladığı bakım taban çizgisidir (Enerji Yakımı ölçülen bir değer sağlamadıkça).</string>

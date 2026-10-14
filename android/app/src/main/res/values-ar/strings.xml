@@ -1351,7 +1351,7 @@
     <string name="settings_calc_intro">تحدد الذكاء الاصطناعي أهداف السعرات والمغذيات الكبرى اليومية. عند النقر على «إعادة حساب الأهداف»، أو تلقائيًا مرة أسبوعيًا تقريبًا إذا كانت الأهداف التكيفية مفعّلة، يرسل Chompass ملفك والمعادلات المرجعية أدناه وطعامك المسجل مؤخرًا واتجاه وزنك إلى مزوّد الذكاء الاصطناعي. يبدأ من هذه المعادلات المحكّمة، ثم يعدلها على بياناتك لتقدير الصيانة والأهداف.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21,6 × LBM(كغ)\nLBM = الوزن × (1 − %الدهون)</string>
     <string name="settings_calc_katch_name">معادلة Katch-McArdle</string>
-    <string name="settings_calc_katch_used">تُستخدم تلقائيًا عند إدخال نسبة دهون الجسم. أدق للنحفاء والرياضيين لأنها تشتق BMR من الكتلة الخالية من الدهون بدل الوزن الكلي.</string>
+    <string name="settings_calc_katch_used">تُستخدم تلقائيًا عند إدخال نسبة دهون الجسم. أدق للنحفاء والرياضيين لأنها تشتق BMR من الكتلة الخالية من الدهون بدل الوزن الكلي. القياسات الأقدم من 90 يومًا تعود إلى Mifflin-St Jeor.</string>
     <string name="settings_calc_macro_split">تقسيم المغذيات الكبرى</string>
     <string name="settings_calc_maintenance">الصيانة وتعديل الهدف</string>
     <string name="settings_calc_methods">طرق الحساب</string>
