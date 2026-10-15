@@ -17,18 +17,21 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import app.chompass.AppContainer
 import app.chompass.ChompassApp
 import app.chompass.R
 import app.chompass.models.WaterAmountFormat
 import java.time.Instant
 import java.time.LocalDate
-import java.util.Calendar
+import java.time.ZoneId
 
 /**
  * Schedules + fires the local reminders the app supports:
  *   - Weight log reminder: daily at 8:00am — gated by the master Notifications
  *     toggle so it tracks the system permission state and never fires silently
  *   - Streak reminder: skip when food is already logged today
+ *   - Weight and body-fat reminders: skip when that reading already exists
+ *     for the local day (issue #133)
  *   - Daily summary: evening energy-balance notification (measured burn vs
  *     eaten). Toggle + time live under Settings → Notifications. Off by default.
  *     Copy is computed at fire time ([DailySummaryPolicy]); static extras are
@@ -402,16 +405,11 @@ class NotificationService(private val context: Context) {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        val now = Calendar.getInstance()
-        val fire = (now.clone() as Calendar).apply {
-            set(Calendar.HOUR_OF_DAY, hour)
-            set(Calendar.MINUTE, minute)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-            if (before(now)) add(Calendar.DAY_OF_MONTH, 1)
-        }
-
-        am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, fire.timeInMillis, pi)
+        am.setAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            nextDailyFireMillis(hour, minute),
+            pi,
+        )
     }
 
     private fun cancel(requestCode: Int) {
@@ -482,6 +480,35 @@ fun shouldNotifyStreak(
     hasFoodLoggedToday: Boolean,
     todayUntracked: Boolean = false,
 ): Boolean = !hasFoodLoggedToday && !todayUntracked
+
+/**
+ * Pure gate for weight and body-fat log reminders: skip the nudge when a
+ * reading for the local day already exists (issue #133). The call site fails
+ * open (posts) when the store read fails.
+ */
+fun shouldNotifyBodyMetric(hasEntryToday: Boolean): Boolean = !hasEntryToday
+
+/** True when [entry] falls on [day] in [zone]. */
+internal fun entryFallsOnLocalDay(entry: Instant, day: LocalDate, zone: ZoneId): Boolean =
+    entry.atZone(zone).toLocalDate() == day
+
+/**
+ * Next instant strictly after [nowMillis] at [hour]:[minute] local in [zone].
+ * A fire at that clock time arms tomorrow, not the instant that just passed.
+ */
+internal fun nextDailyFireMillis(
+    hour: Int,
+    minute: Int,
+    nowMillis: Long = System.currentTimeMillis(),
+    zone: ZoneId = ZoneId.systemDefault(),
+): Long {
+    val now = Instant.ofEpochMilli(nowMillis).atZone(zone)
+    var fire = now.toLocalDate().atTime(hour, minute).atZone(zone)
+    if (!fire.toInstant().isAfter(now.toInstant())) {
+        fire = fire.plusDays(1)
+    }
+    return fire.toInstant().toEpochMilli()
+}
 
 /**
  * Pure: millis of the first instant strictly after [nowMillis]'s local
@@ -677,6 +704,16 @@ class ReminderReceiver : BroadcastReceiver() {
                         NotificationService.REQUEST_FASTING_START -> fastingStartNudge
                         else -> false
                     }
+                } else if (
+                    channel == NotificationService.CHANNEL_WEIGHT_LOG ||
+                    channel == NotificationService.CHANNEL_BODY_FAT_LOG
+                ) {
+                    // Fail open: a store miss still posts, matching the streak gate.
+                    val hasEntryToday = runCatching {
+                        val c = container ?: return@runCatching false
+                        hasBodyMetricEntryToday(c, channel)
+                    }.getOrDefault(false)
+                    shouldNotifyBodyMetric(hasEntryToday)
                 } else {
                     true
                 }
@@ -729,7 +766,7 @@ class ReminderReceiver : BroadcastReceiver() {
                     } else {
                         NotificationService(context).cancelWaterReminder()
                     }
-                } else {
+                } else if (!rearmConfiguredBodyMetric(context, container, channel)) {
                     // Re-arm at the next local midnight so the reminder fires
                     // daily (even when the streak post was skipped) and stays
                     // anchored to calendar days instead of drifting by the
@@ -748,6 +785,66 @@ class ReminderReceiver : BroadcastReceiver() {
             }
         }
     }
+}
+
+private suspend fun hasBodyMetricEntryToday(container: AppContainer, channel: String): Boolean {
+    val zone = ZoneId.systemDefault()
+    val today = LocalDate.now(zone)
+    val start = today.atStartOfDay(zone).toInstant()
+    // Inclusive end may include the next local midnight; the day filter drops it.
+    val end = today.plusDays(1).atStartOfDay(zone).toInstant()
+    val dates = if (channel == NotificationService.CHANNEL_WEIGHT_LOG) {
+        container.weightRepository.entriesInRange(start, end).map { it.date }
+    } else {
+        container.bodyFatRepository.entriesInRange(start, end).map { it.date }
+    }
+    return dates.any { entryFallsOnLocalDay(it, today, zone) }
+}
+
+/**
+ * Re-arm weight and body-fat reminders at the configured clock time (issue #133).
+ * Returns false when this channel is not one of those two, or when the container
+ * is missing, so the caller keeps the midnight fallback and the chain is not dropped.
+ * A disabled reminder is cancelled here so the fire does not resurrect it.
+ */
+private suspend fun rearmConfiguredBodyMetric(
+    context: Context,
+    container: AppContainer?,
+    channel: String,
+): Boolean {
+    if (channel != NotificationService.CHANNEL_WEIGHT_LOG &&
+        channel != NotificationService.CHANNEL_BODY_FAT_LOG
+    ) {
+        return false
+    }
+    if (container == null) return false
+    val notifications = NotificationService(context)
+    val masterOn = container.prefs.notificationsEnabled.first() &&
+        notifications.canPostNotifications()
+    if (channel == NotificationService.CHANNEL_WEIGHT_LOG) {
+        if (masterOn && container.prefs.weightReminderEnabled.first()) {
+            notifications.scheduleWeightReminder(
+                container.prefs.weightReminderHour.first(),
+                container.prefs.weightReminderMinute.first(),
+            )
+        } else {
+            notifications.cancelWeightReminder()
+        }
+    } else {
+        val profile = container.profileRepository.current()
+        if (masterOn &&
+            container.prefs.bodyFatReminderEnabled.first() &&
+            profile?.bodyFatPercentage != null
+        ) {
+            notifications.scheduleBodyFatReminder(
+                container.prefs.bodyFatReminderHour.first(),
+                container.prefs.bodyFatReminderMinute.first(),
+            )
+        } else {
+            notifications.cancelBodyFatReminder()
+        }
+    }
+    return true
 }
 
 private fun NotificationManagerCompat.notifySafely(id: Int, notif: android.app.Notification) {

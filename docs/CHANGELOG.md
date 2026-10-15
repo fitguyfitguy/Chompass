@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Fixed
+
+- **Weigh-in and body-fat reminders skip a day you already logged** (Android): the reminder does not fire when that day's weight or body fat is already entered. The next reminder stays at the time you chose. Closes Codeberg [#133](https://codeberg.org/fitguy/Chompass/issues/133) by [@NiklasMM](https://codeberg.org/NiklasMM).
+
 ## [5.6.0] - 2026-10-15
 
 ### Added
