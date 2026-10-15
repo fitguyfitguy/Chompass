@@ -66,6 +66,7 @@ import kotlinx.coroutines.withContext
 import app.chompass.R
 import app.chompass.models.ServingUnitOption
 import app.chompass.services.FoodPhotoSession
+import app.chompass.services.decodeSampledBitmap
 import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.rememberDecodedBitmap
 import app.chompass.ui.components.ChompassPrimaryButton
@@ -433,7 +434,7 @@ fun MultiPhotoCaptureSheet(
                 ) {
                     itemsIndexed(imageBytesList, key = { index, bytes -> "$index-${bytes.size}" }) { index, bytes ->
                         val bitmap by produceState<android.graphics.Bitmap?>(initialValue = null, bytes) {
-                            value = withContext(Dispatchers.IO) { decodePreviewBitmap(bytes) }
+                            value = withContext(Dispatchers.IO) { decodeSampledBitmap(bytes, maxDimension = 720) }
                         }
                         Box {
                             val preview = bitmap
@@ -650,16 +651,3 @@ internal fun parsePositiveGrams(text: String): Double? =
  */
 internal fun needsAnalyzeConfirm(requireNote: Boolean, noteBlank: Boolean, imageCount: Int): Boolean =
     requireNote && (noteBlank || imageCount < 2)
-
-private fun decodePreviewBitmap(bytes: ByteArray): android.graphics.Bitmap? {
-    val bounds = android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }
-    android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
-    var sample = 1
-    while (maxOf(bounds.outWidth, bounds.outHeight) / sample > 720) sample *= 2
-    return android.graphics.BitmapFactory.decodeByteArray(
-        bytes,
-        0,
-        bytes.size,
-        android.graphics.BitmapFactory.Options().apply { inSampleSize = sample },
-    )
-}
