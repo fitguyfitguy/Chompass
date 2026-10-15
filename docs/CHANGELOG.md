@@ -4,7 +4,7 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [Unreleased]
+## [5.6.0] - 2026-10-13
 
 ### Added
 
@@ -12,19 +12,6 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Recalculate waits for your OK** (Android): after asking the AI for new goals, the results open in a review sheet with Save and Cancel instead of saving right away. Tap the calorie or macro number to adjust it with the wheel before saving, and locked fields stay locked and dimmed.
 - **New body-fat readings go stale after 90 days** (Android & Web): a body-fat percentage logged more than 90 days ago no longer drives the Katch-McArdle formula; the calculation falls back to Mifflin-St Jeor until you log a fresh reading. Existing users with no date on their reading keep their current numbers. The goal dialog notes when a stale reading caused the fallback.
 - **Onboarding suggests a goal from your BMI** (Android): the goal step marks the option your BMI band suggests with a Suggested badge and the number behind it. Nothing is preselected; you still choose.
-
-### Fixed
-
-- **A failed keychain open gets a second try before anything is wiped** (Android): a temporary error when opening the encrypted keychain (for example a full disk) no longer erases every saved AI key, speech key, WebDAV password, and Mealie token. Only a second consecutive failure still resets the keychain, as before.
-- **Fill and recalculate requests are hardened on the web like on Android** (Web): the entry data and your preference text now travel in a tagged data-only block, so a food name or preference that contains AI markup can no longer inject instructions into a fill or recalculate request.
-- **Plain http:// endpoints need an explicit opt-in on the web like on Android** (Web): a custom endpoint using an http:// address outside your own device now refuses to send your API key until you turn on Allow insecure HTTP in Settings → AI, and saving such a URL warns first. Local addresses like localhost keep working without the switch.
-- **Very long ingredient lists no longer overload AI fill requests** (Android & Web): fill and recalculate send the first 40 ingredients and note how many were left out, so a large recipe import cannot blow past a small local model's context.
-- **The fill banner and key-test messages speak your language properly** (Web): the banner now says "1 meal is missing nutrition data" instead of "1 meals", and the Gemini key-test error messages use your language instead of hardcoded English.
-
-## [5.6.0] - 2026-10-13
-
-### Added
-
 - **Named AI profiles** (Android): Settings → AI now manages saved profiles instead of one global provider slot. Each profile carries its own provider, model, vision model, base URL, and API key, and one active profile drives every AI feature. Switching profiles no longer resets your model, and more than one custom OpenAI-compatible endpoint can exist side by side. An optional fallback profile replaces the old separate fallback provider fields.
 - **Run a queued entry with a different profile** (Android): entries in the analysis queue get a Run with action that picks any saved profile for that one run, and each row shows which profile and model last tried it. The globally selected profile is not touched.
 - **Grouped provider picker and in-settings key test** (Android): Settings → AI is now split into Profile, Connection, and Advanced sections. The provider picker groups providers into Recommended, Cloud, Local, and On-device with a one-line description each and a link to get an API key, and the key sheet can test a key on the spot instead of only during onboarding. Advanced options (response length, read timeout, reasoning effort, Google Search grounding) are saved per profile, so an Ollama profile can keep a long timeout while a cloud profile stays at the default, and each row shows whether the value is the profile's own or the default.
@@ -34,6 +21,11 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
+- **A failed keychain open gets a second try before anything is wiped** (Android): a temporary error when opening the encrypted keychain (for example a full disk) no longer erases every saved AI key, speech key, WebDAV password, and Mealie token. Only a second consecutive failure still resets the keychain, as before.
+- **Fill and recalculate requests are hardened on the web like on Android** (Web): the entry data and your preference text now travel in a tagged data-only block, so a food name or preference that contains AI markup can no longer inject instructions into a fill or recalculate request.
+- **Plain http:// endpoints need an explicit opt-in on the web like on Android** (Web): a custom endpoint using an http:// address outside your own device now refuses to send your API key until you turn on Allow insecure HTTP in Settings → AI, and saving such a URL warns first. Local addresses like localhost keep working without the switch.
+- **Very long ingredient lists no longer overload AI fill requests** (Android & Web): fill and recalculate send the first 40 ingredients and note how many were left out, so a large recipe import cannot blow past a small local model's context.
+- **The fill banner and key-test messages speak your language properly** (Web): the banner now says "1 meal is missing nutrition data" instead of "1 meals", and the Gemini key-test error messages use your language instead of hardcoded English.
 - **Adding a profile no longer overwrites the current one** (Android): the provider picker opens only after the new profile is saved, so picking Custom right away configures the new profile instead of rewriting the previous profile's provider, model, and endpoint. Changing a profile's provider also clears that profile's saved key, so a key saved for one provider is not sent to a different provider's host.
 - **Switching profiles no longer shows the previous endpoint's models** (Android): the model list from one custom or Ollama host is dropped as soon as the active profile or its base URL changes, so the sheet shows the new host's models or a loading row instead.
 - **AI settings no longer snap back to the previous profile** (Android): on a cold start, adding a profile and picking its provider could be undone on screen seconds later, showing the old profile's name, model and key while the new one was already saved. The screen now follows the stored profile.

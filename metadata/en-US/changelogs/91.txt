@@ -1,0 +1,7 @@
+• Your calorie goal now shows its math (Android): the info icon next to the Home calorie ring lists the chain behind your target: resting burn, activity level, goal pace, and the final number. When the safety limit moved your target, the sheet says what the formula asked for and where it landed.
+• Recalculate waits for your OK (Android): new AI goals open in a review sheet with Save and Cancel. Adjust any number with the wheel before saving; locked fields stay locked.
+• Body-fat readings go stale after 90 days (Android & Web): an old reading no longer drives the Katch-McArdle formula; it falls back to Mifflin-St Jeor until you log a fresh one.
+• Onboarding suggests a goal from your BMI (Android): a Suggested badge marks the option your BMI band points at. Nothing is preselected.
+• A failed keychain open gets a second try before anything is wiped (Android).
+• Fill and recalculate requests are hardened on the web like on Android (Web).
+• Very long ingredient lists no longer overload AI fill requests (Android & Web).
