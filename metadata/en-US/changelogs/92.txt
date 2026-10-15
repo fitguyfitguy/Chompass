@@ -1,0 +1,8 @@
+• Your calorie goal now shows its math (Android): the info icon next to the Home calorie ring lists the chain behind your target: resting burn, activity level, goal pace, and the final number. When the safety limit moved your target, the sheet says what the formula asked for and where it landed.
+• Recalculate waits for your OK (Android): new AI goals open in a review sheet with Save and Cancel. Adjust any number with the wheel before saving; locked fields stay locked.
+• Body-fat readings go stale after 90 days (Android & Web): an old reading no longer drives the Katch-McArdle formula; it falls back to Mifflin-St Jeor until you log a fresh one.
+• Onboarding suggests a goal from your BMI (Android): a Suggested badge marks the option your BMI band points at. Nothing is preselected.
+• Named AI profiles (Android): Settings → AI keeps a profile per provider, with its own model, key, and endpoint. One profile is active. A queued entry can run once on a different profile.
+• A failed keychain open gets a second try before anything is wiped (Android).
+• Fill missing is unavailable again (Android & Web): the Fill missing action and the Home list of meals missing calories or macros are hidden while that flow is reworked. Logged meals are not touched.
+• Photo previews stay upright (Android): camera and gallery photos in the review sheet show right-side up.
