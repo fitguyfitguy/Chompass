@@ -4,7 +4,7 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [5.6.0] - 2026-10-13
+## [5.6.0] - 2026-10-15
 
 ### Added
 
@@ -15,26 +15,27 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Named AI profiles** (Android): Settings → AI now manages saved profiles instead of one global provider slot. Each profile carries its own provider, model, vision model, base URL, and API key, and one active profile drives every AI feature. Switching profiles no longer resets your model, and more than one custom OpenAI-compatible endpoint can exist side by side. An optional fallback profile replaces the old separate fallback provider fields.
 - **Run a queued entry with a different profile** (Android): entries in the analysis queue get a Run with action that picks any saved profile for that one run, and each row shows which profile and model last tried it. The globally selected profile is not touched.
 - **Grouped provider picker and in-settings key test** (Android): Settings → AI is now split into Profile, Connection, and Advanced sections. The provider picker groups providers into Recommended, Cloud, Local, and On-device with a one-line description each and a link to get an API key, and the key sheet can test a key on the spot instead of only during onboarding. Advanced options (response length, read timeout, reasoning effort, Google Search grounding) are saved per profile, so an Ollama profile can keep a long timeout while a cloud profile stays at the default, and each row shows whether the value is the profile's own or the default.
-- **Fill missing is back** (Android & Web): the Fill missing action on entries, saved meals, and recipe ingredients is available again, and Home can list meals that are missing calories or macros. Fill asks only for the empty values. Values you already have stay as they are. Checked on 41 USDA portions with Gemini Flash-Lite: when calories and macros were blank, filled calories landed within 20% of the USDA number on 37 of them (average error 6.2%). When fat was already stored, that number was never replaced.
 - **Recalculate follows the mix you edited** (Android & Web): Recalculate on the edit sheet asks the AI for new totals from the ingredients currently on the sheet. The change list shows calorie, macro, and micronutrient changes.
-- **Turn off missing-value reminders** (Android & Web): Don't remind me again on the fill list, and Settings has a Missing-value reminders switch. The Fill missing data row stays available either way.
 
 ### Fixed
 
 - **A failed keychain open gets a second try before anything is wiped** (Android): a temporary error when opening the encrypted keychain (for example a full disk) no longer erases every saved AI key, speech key, WebDAV password, and Mealie token. Only a second consecutive failure still resets the keychain, as before.
-- **Fill and recalculate requests are hardened on the web like on Android** (Web): the entry data and your preference text now travel in a tagged data-only block, so a food name or preference that contains AI markup can no longer inject instructions into a fill or recalculate request.
+- **Recalculate requests are hardened on the web like on Android** (Web): the entry data and your preference text now travel in a tagged data-only block, so a food name or preference that contains AI markup can no longer inject instructions into a recalculate request.
 - **Plain http:// endpoints need an explicit opt-in on the web like on Android** (Web): a custom endpoint using an http:// address outside your own device now refuses to send your API key until you turn on Allow insecure HTTP in Settings → AI, and saving such a URL warns first. Local addresses like localhost keep working without the switch.
-- **Very long ingredient lists no longer overload AI fill requests** (Android & Web): fill and recalculate send the first 40 ingredients and note how many were left out, so a large recipe import cannot blow past a small local model's context.
-- **The fill banner and key-test messages speak your language properly** (Web): the banner now says "1 meal is missing nutrition data" instead of "1 meals", and the Gemini key-test error messages use your language instead of hardcoded English.
+- **Very long ingredient lists no longer overload AI recalculate requests** (Android & Web): recalculate sends the first 40 ingredients and notes how many were left out, so a large recipe cannot blow past a small local model's context.
+- **Key-test messages speak your language** (Web): the Gemini key-test error messages use your language instead of hardcoded English.
 - **Adding a profile no longer overwrites the current one** (Android): the provider picker opens only after the new profile is saved, so picking Custom right away configures the new profile instead of rewriting the previous profile's provider, model, and endpoint. Changing a profile's provider also clears that profile's saved key, so a key saved for one provider is not sent to a different provider's host.
 - **Switching profiles no longer shows the previous endpoint's models** (Android): the model list from one custom or Ollama host is dropped as soon as the active profile or its base URL changes, so the sheet shows the new host's models or a loading row instead.
 - **AI settings no longer snap back to the previous profile** (Android): on a cold start, adding a profile and picking its provider could be undone on screen seconds later, showing the old profile's name, model and key while the new one was already saved. The screen now follows the stored profile.
 - **Empty key save no longer silently clears the stored API key** (Android): the key sheet opens with the saved key already filled in, and saving an empty one asks for confirmation before erasing it.
-- **Fill missing says when nothing new came back** (Android & Web): a fill that adds no values says "No new values returned" instead of "Already complete".
-- **The web fill banner waits for Save** (Web): editing AI settings no longer shows or hides the fill banner on each keystroke. The banner updates when you save the form.
 - **AI settings opens with the response length left at the default** (Android): the Max response length row no longer crashes when it is still on the built-in default.
 - **Setup drops the previous provider's key** (Android): picking a different provider during onboarding clears that profile's saved key, endpoint, and vision model. Picking the provider you are already on leaves the key in place.
 - **A one-off queue run stays on the profile you picked** (Android): Run with does not try the fallback profile when that run fails.
+- **Photo previews stay upright** (Android): camera and gallery photos in the review sheet show right-side up, the same way analysis and saved photos do. Follows Codeberg [#130](https://codeberg.org/fitguy/Chompass/pulls/130) by [@NuperSu](https://codeberg.org/NuperSu).
+
+### Removed
+
+- **Fill missing is unavailable again** (Android & Web): the Fill missing action on entries, saved meals, and recipe ingredients, and the Home list of meals missing calories or macros, are hidden again while that flow is reworked. Logged meals, favorites, and recipes are not touched. The beta builds of this version still had the action.
 
 ## [5.5.2] - 2026-10-11
 
