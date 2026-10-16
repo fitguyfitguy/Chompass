@@ -556,6 +556,8 @@
     <string name="sheet_model_footer">或在下方输入任意自定义模型 ID。</string>
     <string name="sheet_any_model_id">任意模型 ID</string>
     <string name="sheet_api_key_format">API 密钥：%1$s</string>
+    <string name="sheet_model_search_hint">搜索模型</string>
+    <string name="sheet_no_match">没有匹配的模型</string>
     <string name="sheet_speech_api_key_format">语音 API 密钥：%1$s</string>
     <string name="sheet_speech_engine">语音引擎</string>
     <string name="sheet_gender">性别</string>

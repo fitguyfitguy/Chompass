@@ -1930,6 +1930,8 @@
     <string name="settings_ollama_models_error">Couldn\'t reach Ollama. Showing the default list.</string>
     <string name="sheet_any_model_id">Any model ID</string>
     <string name="sheet_api_key_format">API key: %1$s</string>
+    <string name="sheet_model_search_hint">Search models</string>
+    <string name="sheet_no_match">No matching models</string>
     <string name="sheet_speech_api_key_format">Speech API key: %1$s</string>
     <string name="sheet_speech_engine">Speech Engine</string>
     <string name="sheet_gender">Gender</string>

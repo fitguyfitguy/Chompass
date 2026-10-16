@@ -554,6 +554,8 @@
     <string name="sheet_model_footer">または下にカスタムモデルIDを入力してください。</string>
     <string name="sheet_any_model_id">任意のモデルID</string>
     <string name="sheet_api_key_format">APIキー: %1$s</string>
+    <string name="sheet_model_search_hint">モデルを検索</string>
+    <string name="sheet_no_match">一致するモデルがありません</string>
     <string name="sheet_speech_api_key_format">音声APIキー: %1$s</string>
     <string name="sheet_speech_engine">音声エンジン</string>
     <string name="sheet_gender">性別</string>

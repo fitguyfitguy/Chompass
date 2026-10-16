@@ -99,12 +99,19 @@ object OpenAiModelsClient {
     /**
      * Curated list keeps its order, tier tags, and offline role; runtime ids
      * already curated stay put, new ones append (#107). Null runtime (no key,
-     * fetch failed) leaves the curated list intact.
+     * fetch failed) leaves the curated list intact. With [sortRuntime], the
+     * appended ids sort case-insensitively so long multi-vendor lineups
+     * (#132) scan predictably; stable on case-ties.
      */
-    fun mergeOverCurated(curated: List<String>, runtime: List<String>?): List<String> {
+    fun mergeOverCurated(
+        curated: List<String>,
+        runtime: List<String>?,
+        sortRuntime: Boolean = false,
+    ): List<String> {
         if (runtime.isNullOrEmpty()) return curated.toList()
         val known = curated.toHashSet()
-        return curated + runtime.filterNot(known::contains).distinct()
+        val appended = runtime.filterNot(known::contains).distinct()
+        return curated + if (sortRuntime) appended.sortedWith(String.CASE_INSENSITIVE_ORDER) else appended
     }
 
     suspend fun listModels(

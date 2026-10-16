@@ -545,6 +545,8 @@
     <string name="sheet_model_footer">Oppure digita un ID modello personalizzato qui sotto.</string>
     <string name="sheet_any_model_id">Qualsiasi ID modello</string>
     <string name="sheet_api_key_format">Chiave API - %1$s</string>
+    <string name="sheet_model_search_hint">Cerca modelli</string>
+    <string name="sheet_no_match">Nessun modello corrispondente</string>
     <string name="sheet_speech_api_key_format">Chiave API vocale - %1$s</string>
     <string name="sheet_speech_engine">Motore vocale</string>
     <string name="sheet_gender">Genere</string>

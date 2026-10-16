@@ -1245,6 +1245,8 @@
     <string name="sheet_model_footer">Veya aşağıya herhangi bir özel model kimliği yaz.</string>
     <string name="sheet_any_model_id">Herhangi bir model kimliği</string>
     <string name="sheet_api_key_format">API anahtarı: %1$s</string>
+    <string name="sheet_model_search_hint">Modelleri ara</string>
+    <string name="sheet_no_match">Eşleşen model yok</string>
     <string name="sheet_speech_api_key_format">Konuşma API anahtarı: %1$s</string>
     <string name="sheet_speech_engine">Konuşma Motoru</string>
     <string name="sheet_gender">Cinsiyet</string>

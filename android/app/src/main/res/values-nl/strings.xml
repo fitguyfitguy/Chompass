@@ -525,6 +525,8 @@
     <string name="sheet_model_footer">Of typ hieronder een aangepaste model-ID.</string>
     <string name="sheet_any_model_id">Elke model-ID</string>
     <string name="sheet_api_key_format">API-sleutel: %1$s</string>
+    <string name="sheet_model_search_hint">Modellen zoeken</string>
+    <string name="sheet_no_match">Geen overeenkomende modellen</string>
     <string name="sheet_speech_api_key_format">Spraak-API-sleutel: %1$s</string>
     <string name="sheet_speech_engine">Spraakengine</string>
     <string name="sheet_gender">Geslacht</string>

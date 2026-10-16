@@ -546,6 +546,8 @@ bilirsən?</string>
     <string name="sheet_model_footer">Və ya aşağıda istənilən fərdi model ID-sini yaz.</string>
     <string name="sheet_any_model_id">İstənilən model ID</string>
     <string name="sheet_api_key_format">API Açarı: %1$s</string>
+    <string name="sheet_model_search_hint">Modelləri axtar</string>
+    <string name="sheet_no_match">Uyğun model yoxdur</string>
     <string name="sheet_speech_api_key_format">Nitq API Açarı: %1$s</string>
     <string name="sheet_speech_engine">Nitq Mühərriki</string>
     <string name="sheet_gender">Cins</string>
