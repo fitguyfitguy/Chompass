@@ -150,6 +150,24 @@ class OpenAiModelsClientTest {
     }
 
     @Test
+    fun mergeOverCurated_sortRuntime_appendsCaseInsensitiveSorted() {
+        val curated = listOf("Curated-A", "curated-b")
+        // Exact dupes drop (dedupe is case-sensitive); appended ids sort
+        // case-insensitively; case-ties keep fetch order.
+        val runtime = listOf("zai-org/GLM-5.3", "Curated-A", "ABC/model", "abc/model", "Moonshot/Kimi")
+
+        assertEquals(
+            listOf("Curated-A", "curated-b", "ABC/model", "abc/model", "Moonshot/Kimi", "zai-org/GLM-5.3"),
+            OpenAiModelsClient.mergeOverCurated(curated, runtime, sortRuntime = true),
+        )
+        // Default stays unsorted (curated + append order).
+        assertEquals(
+            listOf("Curated-A", "curated-b", "zai-org/GLM-5.3", "ABC/model", "abc/model", "Moonshot/Kimi"),
+            OpenAiModelsClient.mergeOverCurated(curated, runtime),
+        )
+    }
+
+    @Test
     fun offlineFallback_malformedFetch_yieldsCuratedList() {
         // Fetch failure -> empty parse -> empty filter -> curated picker list.
         val curated = app.chompass.models.AIProvider.OPENAI.models

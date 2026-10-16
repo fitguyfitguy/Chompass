@@ -1247,6 +1247,8 @@
     <string name="sheet_model_footer">Albo wpisz dowolny niestandardowy identyfikator modelu poniżej.</string>
     <string name="sheet_any_model_id">Dowolny identyfikator modelu</string>
     <string name="sheet_api_key_format">Klucz API: %1$s</string>
+    <string name="sheet_model_search_hint">Szukaj modeli</string>
+    <string name="sheet_no_match">Brak pasujących modeli</string>
     <string name="sheet_speech_api_key_format">Klucz API mowy: %1$s</string>
     <string name="sheet_speech_engine">Silnik mowy</string>
     <string name="sheet_gender">Płeć</string>

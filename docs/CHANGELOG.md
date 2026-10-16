@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Changed
+
+- **Find models fast in the picker** (Android): the Model sheet in Settings → AI has a search field — type to filter the list live, with a clear button and a "no matching models" note when nothing fits. Live model lists from the provider (DeepInfra, Groq, xAI, and friends) now sort alphabetically beneath the curated defaults, so a long lineup no longer means endless scrolling.
+
 ## [5.7.0] - 2026-10-16
 
 ### Added

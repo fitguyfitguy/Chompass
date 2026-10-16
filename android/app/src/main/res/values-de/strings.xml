@@ -2231,6 +2231,8 @@ für dich ein</string>
 
     <string name="sheet_any_model_id">Beliebige Modell-ID</string>
 
+    <string name="sheet_model_search_hint">Modelle suchen</string>
+    <string name="sheet_no_match">Keine passenden Modelle</string>
     <string name="sheet_api_key_format">API-Schlüssel – %1$s</string>
 
     <string name="sheet_speech_api_key_format">Sprach-API-Schlüssel – %1$s</string>

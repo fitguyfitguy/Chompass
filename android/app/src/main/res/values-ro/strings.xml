@@ -548,6 +548,8 @@
     <string name="sheet_model_footer">Sau scrie orice ID de model personalizat mai jos.</string>
     <string name="sheet_any_model_id">Orice ID de model</string>
     <string name="sheet_api_key_format">Cheie API: %1$s</string>
+    <string name="sheet_model_search_hint">Caută modele</string>
+    <string name="sheet_no_match">Niciun model potrivit</string>
     <string name="sheet_speech_api_key_format">Cheie API voce: %1$s</string>
     <string name="sheet_speech_engine">Motor vocal</string>
     <string name="sheet_gender">Sex</string>

@@ -555,6 +555,8 @@
     <string name="sheet_model_footer">या नीचे कोई कस्टम मॉडल ID टाइप करें।</string>
     <string name="sheet_any_model_id">कोई भी मॉडल ID</string>
     <string name="sheet_api_key_format">API कुंजी: %1$s</string>
+    <string name="sheet_model_search_hint">मॉडल खोजें</string>
+    <string name="sheet_no_match">कोई मैचिंग मॉडल नहीं</string>
     <string name="sheet_speech_api_key_format">स्पीच API कुंजी: %1$s</string>
     <string name="sheet_speech_engine">स्पीच इंजन</string>
     <string name="sheet_gender">लिंग</string>

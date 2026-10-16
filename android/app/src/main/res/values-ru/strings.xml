@@ -657,6 +657,8 @@
     <string name="sheet_model_footer">Или введи любой свой ID модели ниже.</string>
     <string name="sheet_any_model_id">Любой ID модели</string>
     <string name="sheet_api_key_format">Ключ API: %1$s</string>
+    <string name="sheet_model_search_hint">Поиск моделей</string>
+    <string name="sheet_no_match">Нет подходящих моделей</string>
     <string name="sheet_speech_api_key_format">Ключ API речи: %1$s</string>
     <string name="sheet_speech_engine">Движок речи</string>
     <string name="sheet_gender">Пол</string>

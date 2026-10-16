@@ -633,6 +633,8 @@
     <string name="sheet_model_footer">Або введи будь-який власний ID моделі нижче.</string>
     <string name="sheet_any_model_id">Будь-який ID моделі</string>
     <string name="sheet_api_key_format">API-ключ: %1$s</string>
+    <string name="sheet_model_search_hint">Пошук моделей</string>
+    <string name="sheet_no_match">Немає відповідних моделей</string>
     <string name="sheet_speech_api_key_format">Мовленнєвий API-ключ: %1$s</string>
     <string name="sheet_speech_engine">Мовленнєвий рушій</string>
     <string name="sheet_gender">Стать</string>

@@ -559,6 +559,8 @@
     <string name="sheet_model_footer">أو اكتب أي معرّف نموذج مخصص أدناه.</string>
     <string name="sheet_any_model_id">أي معرّف نموذج</string>
     <string name="sheet_api_key_format">مفتاح API: %1$s</string>
+    <string name="sheet_model_search_hint">البحث عن النماذج</string>
+    <string name="sheet_no_match">لا توجد نماذج مطابقة</string>
     <string name="sheet_speech_api_key_format">مفتاح API للكلام: %1$s</string>
     <string name="sheet_speech_engine">محرك الكلام</string>
     <string name="sheet_gender">الجنس</string>

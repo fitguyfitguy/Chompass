@@ -555,6 +555,8 @@
     <string name="sheet_model_footer">또는 아래에 사용자 지정 모델 ID를 입력하세요.</string>
     <string name="sheet_any_model_id">모델 ID</string>
     <string name="sheet_api_key_format">API 키: %1$s</string>
+    <string name="sheet_model_search_hint">모델 검색</string>
+    <string name="sheet_no_match">일치하는 모델이 없습니다</string>
     <string name="sheet_speech_api_key_format">음성 API 키: %1$s</string>
     <string name="sheet_speech_engine">음성 엔진</string>
     <string name="sheet_gender">성별</string>

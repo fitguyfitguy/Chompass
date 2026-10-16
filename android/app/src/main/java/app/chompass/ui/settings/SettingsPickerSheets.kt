@@ -24,6 +24,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -78,6 +80,7 @@ import app.chompass.ui.theme.AppTextOpacity
 import java.time.LocalDate
 import java.time.ZoneId
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import app.chompass.models.UnitFormat
 
 internal fun optionalNutrientSummary(goals: OptionalNutrientGoals): String =
@@ -121,6 +124,9 @@ internal fun <T> ListSheet(
     subtitle: (@Composable (T) -> String?)? = null,
     /** Group label for an item; rendered above the first item of each distinct group. */
     sectionHeader: (@Composable (T) -> String?)? = null,
+    /** Renders a search field above the list; queries match [filterText] (default toString). */
+    searchable: Boolean = false,
+    filterText: ((T) -> String)? = null,
     footer: String? = null,
     customField: ((String) -> Unit)? = null,
     /** Composable leading slot (e.g. a color swatch) rendered before the label; overrides [icon]. */
@@ -131,15 +137,59 @@ internal fun <T> ListSheet(
     val isDark = isDarkTheme()
     Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(12.dp))
+    var query by remember { mutableStateOf("") }
+    if (searchable) {
+        ChompassTextField(
+            value = query,
+            onValueChange = { query = it },
+            placeholder = stringResource(R.string.sheet_model_search_hint),
+            modifier = Modifier.fillMaxWidth(),
+            leadingIcon = {
+                Icon(
+                    Icons.Filled.Search,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    modifier = Modifier.size(18.dp),
+                )
+            },
+            trailingIcon = if (query.isNotEmpty()) {
+                {
+                    IconButton(onClick = { query = "" }) {
+                        Icon(
+                            Icons.Filled.Close,
+                            contentDescription = stringResource(R.string.action_clear),
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
+                }
+            } else null,
+        )
+        Spacer(Modifier.height(12.dp))
+    }
+    val needle = query.trim()
+    val visible = if (!searchable || needle.isEmpty()) items else items.filter {
+        (filterText?.invoke(it) ?: it.toString()).contains(needle, ignoreCase = true)
+    }
     LazyColumn(Modifier.fillMaxWidth().heightIn(max = 420.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        itemsIndexed(items) { index, item ->
+        if (visible.isEmpty()) {
+            item {
+                Text(
+                    stringResource(R.string.sheet_no_match),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp),
+                )
+            }
+        }
+        itemsIndexed(visible) { index, item ->
             val isSel = selected(item)
             val rowIcon = icon?.invoke(item)
             val sub = subtitle?.invoke(item)
             val header = sectionHeader?.invoke(item)
             Column(Modifier.fillMaxWidth()) {
             if (!header.isNullOrBlank() &&
-                (index == 0 || sectionHeader?.invoke(items[index - 1]) != header)
+                (index == 0 || sectionHeader?.invoke(visible[index - 1]) != header)
             ) {
                 if (index > 0) Spacer(Modifier.height(6.dp))
                 Text(

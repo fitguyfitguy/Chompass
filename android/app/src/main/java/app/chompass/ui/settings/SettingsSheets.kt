@@ -188,9 +188,12 @@ internal fun SettingsSheets(
                             app.chompass.services.ai.OpenAiModelsClient.mergeOverCurated(
                                 ui.activeProvider.models,
                                 ui.runtimeModels,
+                                sortRuntime = true,
                             )
                         else -> ui.activeProvider.models
                     },
+                    searchable = true,
+                    filterText = { it },
                     label = { it },
                     subtitle = { model ->
                         if (ui.activeProvider == AIProvider.OLLAMA) {

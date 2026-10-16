@@ -543,6 +543,8 @@
     <string name="sheet_model_footer">Ou tapez n\'importe quel ID de modèle personnalisé ci-dessous.</string>
     <string name="sheet_any_model_id">N\'importe quel ID de modèle</string>
     <string name="sheet_api_key_format">Clé API - %1$s</string>
+    <string name="sheet_model_search_hint">Rechercher des modèles</string>
+    <string name="sheet_no_match">Aucun modèle correspondant</string>
     <string name="sheet_speech_api_key_format">Clé API vocale - %1$s</string>
     <string name="sheet_speech_engine">Moteur vocal</string>
     <string name="sheet_gender">Sexe</string>
