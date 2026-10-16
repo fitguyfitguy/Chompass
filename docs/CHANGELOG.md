@@ -6,6 +6,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+## [5.7.0] - 2026-10-16
+
 ### Added
 
 - **The burn control now lives under Goals, with a full workout credit** (Android & Web): the Calorie gauge setting moved from Customize Home to Settings → Goals & Nutrition. Add active burn stays the default and keeps holding back a typical day's burn, so a high reading is not eaten back twice. A new Credit the full workout switch (off by default) skips that split and adds your measured workout on top of the full calorie goal. With no measured burn, the goal stays the full target. The Home widget follows the same choice.
