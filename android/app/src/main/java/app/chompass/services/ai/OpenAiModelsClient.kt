@@ -78,6 +78,25 @@ object OpenAiModelsClient {
         }.sortedByDescending { it.created }.map { it.id }
 
     /**
+     * Drops non-chat families that OpenAI-compatible /models listings mix in
+     * (embeddings, rerankers, audio, image generation) for the multi-vendor
+     * providers (#132). Segment match on separator boundaries so "qwen3.5" and
+     * "...-VL-..." chat ids survive while "whisper-large-v3", "bge-large",
+     * "llama-guard-4-8b", "grok-2-image" drop. Order preserved; no dedupe
+     * (mergeOverCurated dedupes).
+     */
+    fun filterChatLineup(ids: List<String>): List<String> =
+        ids.filter { id ->
+            id.lowercase().split('/', '-', '.', '_', ' ', ':').none(NON_CHAT_FAMILIES::contains)
+        }
+
+    private val NON_CHAT_FAMILIES = setOf(
+        "whisper", "tts", "guard", "embed", "embedding", "bge", "rerank", "e5",
+        "clip", "moderation", "transcribe", "audio", "image", "dall", "diffusion",
+        "flux", "sdxl", "sentinel", "sentence", "speech",
+    )
+
+    /**
      * Curated list keeps its order, tier tags, and offline role; runtime ids
      * already curated stay put, new ones append (#107). Null runtime (no key,
      * fetch failed) leaves the curated list intact.

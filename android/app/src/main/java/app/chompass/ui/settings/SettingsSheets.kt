@@ -131,8 +131,8 @@ internal fun SettingsSheets(
         if (sheet == SettingsSheet.AI_MODEL && ui.activeProvider == AIProvider.CUSTOM_OPENAI) {
             vm.fetchCustomModels()
         }
-        if (sheet == SettingsSheet.AI_MODEL && ui.activeProvider == AIProvider.OPENAI) {
-            vm.fetchOpenAiModels()
+        if (sheet == SettingsSheet.AI_MODEL && ui.activeProvider.supportsRuntimeLineup) {
+            vm.fetchRuntimeModels()
         }
     }
     if (confirmDiscardMeals) {
@@ -184,10 +184,10 @@ internal fun SettingsSheets(
                             ui.customModels!!
                         ui.activeProvider == AIProvider.ON_DEVICE && ui.onDeviceModels.isNotEmpty() ->
                             ui.onDeviceModels
-                        ui.activeProvider == AIProvider.OPENAI ->
+                        ui.activeProvider.supportsRuntimeLineup ->
                             app.chompass.services.ai.OpenAiModelsClient.mergeOverCurated(
                                 ui.activeProvider.models,
-                                ui.openAiModels,
+                                ui.runtimeModels,
                             )
                         else -> ui.activeProvider.models
                     },

@@ -186,9 +186,12 @@ enum class AIProvider {
             normalized.isNullOrBlank() -> defaultModel
             supportsCustomModelName -> normalized
             models.contains(normalized) -> normalized
-            // #107: a runtime lineup id picked from the refreshed list must
-            // survive select, restore, and request routing.
+            // #107/#132: a runtime lineup id picked from a fetched /models list must
+            // survive select, restore, and request routing. OpenAI keeps its id-shape
+            // gate; the multi-vendor providers have no stable id shape, and a stored id
+            // can only enter through the picker, so any stored id survives.
             this == OPENAI && isOpenAiLineupId(normalized) -> normalized
+            this != OPENAI && supportsRuntimeLineup -> normalized
             else -> defaultModel
         }
     }
@@ -199,6 +202,12 @@ enum class AIProvider {
             normalized.isNullOrBlank() -> defaultFallbackModel
             supportsCustomModelName -> normalized
             models.contains(normalized) -> normalized
+            // #107/#132: a runtime lineup id picked from a fetched /models list must
+            // survive select, restore, and request routing. OpenAI keeps its id-shape
+            // gate; the multi-vendor providers have no stable id shape, and a stored id
+            // can only enter through the picker, so any stored id survives.
+            this == OPENAI && isOpenAiLineupId(normalized) -> normalized
+            this != OPENAI && supportsRuntimeLineup -> normalized
             else -> defaultFallbackModel
         }
     }
@@ -209,6 +218,15 @@ enum class AIProvider {
     val usesConfigurableRequestTimeout: Boolean get() = this == OLLAMA || this == CUSTOM_OPENAI
     val supportsCustomModelName: Boolean
         get() = this == OPENROUTER || this == HUGGING_FACE || this == CUSTOM_OPENAI || this == OLLAMA
+
+    /**
+     * Serves a usable GET /models listing on the built-in [baseUrl] (#107/#132):
+     * the model sheet merges the fetched lineup over the curated list, and the
+     * curated default stays the fallback when no key is saved or the fetch fails.
+     */
+    val supportsRuntimeLineup: Boolean
+        get() = this == OPENAI || this == XAI || this == TOGETHER_AI || this == GROQ ||
+            this == HUGGING_FACE || this == FIREWORKS || this == DEEP_INFRA || this == MISTRAL
 
     val apiFormat: ApiFormat get() = when (this) {
         GEMINI -> ApiFormat.GEMINI

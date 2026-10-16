@@ -73,4 +73,18 @@ class AIProviderFallbackTest {
         assertEquals("gpt-6-astra", AIProvider.OPENAI.supportedModelOrDefault("gpt-6-astra"))
         assertEquals("gpt-5.4-mini", AIProvider.OPENAI.supportedModelOrDefault("gpt-3.5-turbo"))
     }
+
+    @Test
+    fun groqRuntimeLineupIdIsPreserved() {
+        // #132: multi-vendor providers have no stable id shape; a runtime-picked
+        // id survives select and request routing (and the fallback-profile gate).
+        val id = "meta-llama/llama-4-scout-17b-16e-instruct"
+        assertEquals(id, AIProvider.GROQ.supportedModelOrDefault(id))
+        assertEquals(id, AIProvider.GROQ.supportedFallbackModelOrDefault(id))
+    }
+
+    @Test
+    fun xaiRuntimeLineupIdIsPreserved() {
+        assertEquals("grok-4.3-canary", AIProvider.XAI.supportedModelOrDefault("grok-4.3-canary"))
+    }
 }
