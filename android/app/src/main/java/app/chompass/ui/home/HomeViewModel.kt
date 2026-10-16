@@ -11,6 +11,7 @@ import app.chompass.data.disambiguateFoodName
 import app.chompass.data.mergesWithSavedFood
 import app.chompass.data.loadLastGoalChangeSheet
 import app.chompass.models.ActiveBurnShade
+import app.chompass.models.GaugeBudget
 import app.chompass.models.AiProfile
 import app.chompass.models.resolveModelForRequest
 import app.chompass.models.ActiveCalorieSource
@@ -156,6 +157,13 @@ internal fun needsMeasuredEnergyFor(
 ): Boolean =
     display.calorieDisplayMode == HomeCalorieDisplayMode.ADD_ACTIVE &&
         (healthConnectEnabled || hasDebugActivityDays)
+
+/** One-shot favorite-save confirmation for the Home snackbar. */
+data class SavedFavoriteAck(
+    val entry: FoodEntry,
+    /** True when the upsert appended a new favorite (false = replaced an existing one). */
+    val inserted: Boolean,
+)
 
 data class HomeUiState(
     val date: LocalDate = LocalDate.now(),
@@ -369,6 +377,13 @@ data class HomeUiState(
     val copiedEntries: List<FoodEntry> = emptyList(),
     /** Last plan action (tick to target day); Home shows the "planned for" snackbar once. */
     val plannedAck: Pair<Int, LocalDate>? = null,
+    /**
+     * Set after [HomeViewModel.saveScannedFavorite] upserts a barcode review
+     * into favorites: Home shows the saved snackbar once, with Undo
+     * (toggle off) only when the save inserted a new favorite — a replace of
+     * an existing one is not undoable because the previous copy is not kept.
+     */
+    val savedFavoriteAck: SavedFavoriteAck? = null,
     /** ISO dates marked not tracked (#106). */
     val untrackedDays: Set<String> = emptySet(),
     /** True once the diary flow has emitted at least once; gates the empty-diary text. */
@@ -444,14 +459,35 @@ data class HomeUiState(
     }
     val effectiveCalorieMode: HomeCalorieDisplayMode get() =
         HomeCalorieDisplay.effectiveMode(homeDisplay.calorieDisplayMode, resolvedActiveBurn)
-    val gaugeBaseCalorieGoal: Int get() {
-        val p = profile ?: return baseCalorieGoal
+
+    /**
+     * One budget decision for hero + widget ([HomeCalorieDisplay.resolveGaugeBudget]):
+     * hold-back splits the stored goal into a sedentary base plus the active
+     * layer; full credit keeps the full goal and stacks today's measured burn
+     * plus manual burns on top. Without a profile there is no split — the
+     * stored goal stands alone.
+     */
+    private val gaugeBudget: GaugeBudget get() {
+        val p = profile
+            ?: return GaugeBudget(baseCalorieGoal, 0, baseCalorieGoal, false)
         val sedentary = measuredActiveAverageCalories.takeIf { it > 0 }
             ?.let { (baseCalorieGoal - it).coerceAtLeast(0) }
             ?: p.sedentaryCalorieBudget(baseCalorieGoal)
-        return HomeCalorieDisplay.gaugeBaseGoal(effectiveCalorieMode, baseCalorieGoal, sedentary)
+        return HomeCalorieDisplay.resolveGaugeBudget(
+            mode = homeDisplay.calorieDisplayMode,
+            fullCredit = homeDisplay.fullCreditActiveBurn,
+            fullGoal = baseCalorieGoal,
+            sedentaryBudget = sedentary,
+            energyLive = activitySnapshot.energyLive,
+            measuredToday = activitySnapshot.activeCalories,
+            estimatedDailyActive = measuredActiveAverageCalories.takeIf { it > 0 }
+                ?: p.estimatedDailyActiveCalories,
+            manual = manualActiveKcal,
+            typical = activeBurnTypical,
+        )
     }
-    val displayActiveCalories: Int get() = resolvedActiveBurn?.calories ?: 0
+    val gaugeBaseCalorieGoal: Int get() = gaugeBudget.base
+    val displayActiveCalories: Int get() = gaugeBudget.creditedBurn
     /**
      * Today's live active burn regardless of gauge mode: measured Health Connect
      * burn (or debug data) plus manual entries. Mode-independent — in STATIC
@@ -492,21 +528,13 @@ data class HomeUiState(
     val activeBurnTypical: Int get() = typicalResolution.kcal
 
     /**
-     * The hero ring's displayed calorie goal — ADD_ACTIVE: base + active burn,
-     * growing to the expected-day target when live burn exceeds the norm;
-     * STATIC: the base goal. Macro cards scale against this so they can never
-     * disagree with the ring (#38).
+     * The hero ring's displayed calorie goal — the budget's display target:
+     * ADD_ACTIVE hold-back grows to the expected-day target when live burn
+     * exceeds the norm, full credit stacks measured burn on the full goal,
+     * STATIC stays the base goal. Macro cards scale against this so they can
+     * never disagree with the ring (#38).
      */
-    val heroCalorieGoal: Int get() {
-        val base = gaugeBaseCalorieGoal
-        val mode = effectiveCalorieMode
-        val shade = activeBurnShade
-        return if (mode == HomeCalorieDisplayMode.ADD_ACTIVE && shade != null && shade.typical > 0) {
-            HomeCalorieDisplay.expectedTarget(base, shade.typical, shade.live)
-        } else {
-            HomeCalorieDisplay.effectiveGoal(mode, base, displayActiveCalories)
-        }
-    }
+    val heroCalorieGoal: Int get() = gaugeBudget.displayTarget
 
     /**
      * Display scale for P/C/F goals (#38): 1 on typical days (the ring shows
@@ -525,19 +553,18 @@ data class HomeUiState(
     }
 
     /**
-     * Hero burn shades: only in ADD_ACTIVE when the day's active norm is known
-     * and a live measured source exists (Health Connect energy, or debug data)
-     * — including the measured-0 morning, so the projected day (base + typical)
-     * is visible before the first sync. Manual-only and PAL-estimate-only days
-     * stay on the legacy budget tail so the drawing never fabricates a burn
-     * story. Intrinsic to ADD_ACTIVE: not gated by the "show active calories"
-     * toggle, which now only controls the STATIC caption.
+     * Hero burn shades: only when the budget draws the expected-day arc
+     * (ADD_ACTIVE hold-back with a live measured source — Health Connect
+     * energy, or debug data — including the measured-0 morning, so the
+     * projected day (base + typical) is visible before the first sync).
+     * Manual-only, PAL-estimate-only, and full-credit days stay on the legacy
+     * budget tail so the drawing never fabricates a burn story. Intrinsic to
+     * ADD_ACTIVE: not gated by the "show active calories" toggle, which now
+     * only controls the STATIC caption.
      */
     val activeBurnShade: ActiveBurnShade? get() {
-        if (effectiveCalorieMode != HomeCalorieDisplayMode.ADD_ACTIVE) return null
-        if (!activitySnapshot.energyLive) return null
+        if (!gaugeBudget.useExpectedArc) return null
         val typical = activeBurnTypical
-        if (typical <= 0) return null
         val source = if (measuredActiveAverageCalories > 0) {
             ActiveCalorieSource.MEASURED
         } else {
@@ -2399,6 +2426,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         _ui.update { it.copy(plannedAck = null) }
     }
 
+    fun clearSavedFavoriteAck() {
+        _ui.update { it.copy(savedFavoriteAck = null) }
+    }
+
     private var healthNudgeShown = false
 
     /**
@@ -2674,6 +2705,106 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     pendingDraftImageFilename = null,
                     pendingReviewSource = null
                 ) }
+                }
+            } finally {
+                _ui.update { it.copy(saving = false) }
+            }
+        }
+    }
+
+    /**
+     * Saves a fresh barcode review straight to favorites without a diary row
+     * Builds the same entry [saveAnalysis] would, then upserts it into
+     * the favorites list only: no addEntry, no Health Connect mirror, no
+     * saved-index promotion — the food can be logged later from Saved Meals.
+     * Favorite identity stays the trimmed lowercase name, so two products
+     * sharing a name replace each other (inserted=false, no Undo).
+     */
+    fun saveScannedFavorite(
+        name: String? = null,
+        servingGrams: Double? = null,
+        scale: Double = 1.0,
+        mealType: String = MealType.currentMealId,
+        selectedServingUnit: String? = null,
+        selectedServingQuantity: Double? = null,
+        editedAnalysis: FoodAnalysis? = null,
+        logTime: LocalTime? = null,
+    ) {
+        val pendingAnalysis = _ui.value.pendingAnalysis
+        val analysis = editedAnalysis ?: pendingAnalysis ?: return
+        if (_ui.value.saving) return
+        // Favorites save is for fresh barcode reviews only: saved-meals
+        // relogs and progressive meals keep their own flows.
+        if (_ui.value.pendingReviewSource != null) return
+        if (_ui.value.pendingFoodSource != FoodSource.BARCODE) return
+        val pendingDraftImageFilename = _ui.value.pendingDraftImageFilename
+        viewModelScope.launch {
+            if (_ui.value.saving) return@launch
+            _ui.update { it.copy(saving = true) }
+            try {
+                withContext(Dispatchers.Default) {
+                    val imageBytes = _ui.value.pendingImageBytes
+                    val id = UUID.randomUUID()
+                    val filename = pendingDraftImageFilename
+                        ?: imageBytes?.let { persistImage(it, id) }
+                    // The sheet's editedAnalysis already carries the serving scale.
+                    val effectiveScale = if (editedAnalysis != null) 1.0 else scale
+                    fun s(v: Int) = (v * effectiveScale).roundToInt()
+                    fun macro(v: Double) = v * effectiveScale
+                    val resolvedName = name?.takeIf { it.isNotBlank() } ?: analysis.name
+                    if (resolvedName.isBlank()) return@withContext
+                    val constituents = if (effectiveScale == 1.0) {
+                        analysis.constituents
+                    } else {
+                        app.chompass.services.ai.ConstituentReconcile.scaleAll(
+                            analysis.constituents,
+                            effectiveScale,
+                        )
+                    }
+                    val entry = analysis.toMicronutrients().scaled(effectiveScale, round1 = false).applyTo(
+                        FoodEntry(
+                            id = id,
+                            name = resolvedName,
+                            calories = s(analysis.calories),
+                            protein = macro(analysis.protein),
+                            carbs = macro(analysis.carbs),
+                            fat = macro(analysis.fat),
+                            timestamp = timestampForLogging(
+                                _selectedDate.value,
+                                Instant.now(),
+                                ZoneId.systemDefault(),
+                                logTime ?: _ui.value.logTimeOverride,
+                            ),
+                            imageFilename = filename,
+                            emoji = analysis.emoji,
+                            source = FoodSource.BARCODE,
+                            mealType = mealType,
+                            servingSizeGrams = servingGrams ?: analysis.servingSizeGrams,
+                            servingUnitOptions = analysis.servingUnitOptions,
+                            selectedServingUnit = if (analysis.servingUnitOptions.isEmpty()) null else selectedServingUnit,
+                            selectedServingQuantity = if (analysis.servingUnitOptions.isEmpty()) null else selectedServingQuantity,
+                            customNote = analysis.customNote,
+                            grounding = analysis.grounding,
+                            constituents = constituents,
+                            productMetadata = analysis.productMetadata,
+                            microsCompositionSignature = app.chompass.models.microsCompositionSignature(constituents),
+                            planned = false,
+                        )
+                    )
+                    val existed = container.foodRepository.isFavorite(entry)
+                    val stored = container.foodRepository.upsertFavorite(entry)
+                    // Clear the consumed review; the diary is untouched.
+                    container.prefs.setPendingFoodAnalysisDraft(null)
+                    _ui.update { it.copy(
+                        pendingAnalysis = null,
+                        pendingIdentityName = null,
+                        pendingImageBytes = null,
+                        pendingAnalysisImages = emptyList(),
+                        pendingFoodSource = null,
+                        pendingDraftImageFilename = null,
+                        pendingReviewSource = null,
+                        savedFavoriteAck = SavedFavoriteAck(stored, inserted = !existed),
+                    ) }
                 }
             } finally {
                 _ui.update { it.copy(saving = false) }

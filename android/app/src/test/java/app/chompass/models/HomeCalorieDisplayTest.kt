@@ -71,6 +71,108 @@ class HomeCalorieDisplayTest {
         assertEquals(1575, HomeCalorieDisplay.remaining(mode, eaten = 501, baseGoal = base, activeCalories = active))
     }
 
+    // --- resolveGaugeBudget: hold-back default + full credit ---
+
+    @Test
+    fun gaugeBudget_holdBack_projectsExpectedDay_notDoubleCredit() {
+        val budget = HomeCalorieDisplay.resolveGaugeBudget(
+            mode = HomeCalorieDisplayMode.ADD_ACTIVE,
+            fullCredit = false,
+            fullGoal = 2000,
+            sedentaryBudget = 1898,
+            energyLive = true,
+            measuredToday = 469,
+            estimatedDailyActive = 102,
+            manual = 0,
+            typical = 102,
+        )
+        assertEquals(1898, budget.base)
+        assertEquals(469, budget.creditedBurn)
+        // The ring projects the expected day (base + typical) — NOT base +
+        // measured, and never the full-credit 2469 either.
+        assertEquals(2367, budget.displayTarget)
+        assertEquals(2367, HomeCalorieDisplay.expectedTarget(1898, 102, 469))
+        assertTrue(budget.useExpectedArc)
+    }
+
+    @Test
+    fun gaugeBudget_fullCredit_stacksMeasuredOnFullGoal() {
+        val budget = HomeCalorieDisplay.resolveGaugeBudget(
+            mode = HomeCalorieDisplayMode.ADD_ACTIVE,
+            fullCredit = true,
+            fullGoal = 2000,
+            sedentaryBudget = 1898,
+            energyLive = true,
+            measuredToday = 469,
+            estimatedDailyActive = 102,
+            manual = 0,
+            typical = 102,
+        )
+        assertEquals(2000, budget.base)
+        assertEquals(469, budget.creditedBurn)
+        // 2469, not 2000 − 102 + 469 = 2367: the 14-day average is not subtracted.
+        assertEquals(2469, budget.displayTarget)
+        assertFalse(budget.useExpectedArc)
+    }
+
+    @Test
+    fun gaugeBudget_fullCredit_morningZeroBurn_showsFullGoal() {
+        val budget = HomeCalorieDisplay.resolveGaugeBudget(
+            mode = HomeCalorieDisplayMode.ADD_ACTIVE,
+            fullCredit = true,
+            fullGoal = 2000,
+            sedentaryBudget = 1898,
+            energyLive = true,
+            measuredToday = 0,
+            estimatedDailyActive = 102,
+            manual = 0,
+            typical = 102,
+        )
+        // A morning with measured 0 keeps the full goal, not the sedentary budget.
+        assertEquals(2000, budget.displayTarget)
+        assertEquals(0, budget.creditedBurn)
+    }
+
+    @Test
+    fun gaugeBudget_fullCredit_noLiveMeasurement_skipsPalEstimate() {
+        val budget = HomeCalorieDisplay.resolveGaugeBudget(
+            mode = HomeCalorieDisplayMode.ADD_ACTIVE,
+            fullCredit = true,
+            fullGoal = 2000,
+            sedentaryBudget = 1600,
+            energyLive = false,
+            measuredToday = 0,
+            estimatedDailyActive = 400,
+            manual = 50,
+            typical = 400,
+        )
+        // The PAL estimate already sits inside the full goal — only the manual
+        // eat-back is added on top.
+        assertEquals(2050, budget.displayTarget)
+        assertEquals(50, budget.creditedBurn)
+        assertFalse(budget.useExpectedArc)
+    }
+
+    @Test
+    fun gaugeBudget_static_ignoresFullCredit_keepsManualEatBack() {
+        val budget = HomeCalorieDisplay.resolveGaugeBudget(
+            mode = HomeCalorieDisplayMode.STATIC,
+            fullCredit = true,
+            fullGoal = 2000,
+            sedentaryBudget = 1600,
+            energyLive = false,
+            measuredToday = 0,
+            estimatedDailyActive = 400,
+            manual = 50,
+            typical = 400,
+        )
+        // The flag never turns STATIC into ADD_ACTIVE.
+        assertEquals(2000, budget.base)
+        assertEquals(50, budget.creditedBurn)
+        assertEquals(2050, budget.displayTarget)
+        assertFalse(budget.useExpectedArc)
+    }
+
     @Test
     fun static_automaticSourcesStillIgnored() {
         val snapshot = HomeActivitySnapshot(

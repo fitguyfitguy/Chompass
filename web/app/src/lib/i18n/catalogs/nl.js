@@ -1,6 +1,9 @@
 // @ts-check
 /** @type {Readonly<Record<string, string>>} */
 export const nl = Object.freeze({
+  "entry.save_to_favorites": "Opslaan in favorieten",
+  "settings.goals.full_credit": "Volledige training meetellen",
+  "settings.goals.full_credit_hint": "Telt de gemeten verbranding van vandaag op bij je volledige doel. Standaard uit. Gemeten verbranding is alleen op Android; hier blijft je budget het volledige doel plus handmatige verbranding.",
   "nav.home": "Home",
   "nav.progress": "Voortgang",
   "nav.coach": "Coach",

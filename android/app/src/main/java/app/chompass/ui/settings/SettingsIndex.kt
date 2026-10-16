@@ -155,6 +155,13 @@ internal val SETTINGS_INDEX: List<SettingsIndexEntry> = listOf(
         R.array.settings_search_kw_keto_net_carbs, ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Restaurant),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_activity_level,
         R.array.settings_search_kw_activity_level, ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Speed),
+    SettingsIndexEntry(
+        R.string.settings_section_goals,
+        R.string.home_display_calorie_mode,
+        R.array.settings_search_kw_calorie_gauge,
+        ChompassRoutes.SETTINGS_GOALS,
+        Icons.Outlined.LocalFireDepartment,
+    ),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_weekly_change,
         R.array.settings_search_kw_weekly_change, ChompassRoutes.SETTINGS_GOALS, Icons.Outlined.Speed),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_goal_weight,

@@ -1,6 +1,9 @@
 // @ts-check
 /** @type {Readonly<Record<string, string>>} */
 export const ro = Object.freeze({
+  "entry.save_to_favorites": "Salvează în favorite",
+  "settings.goals.full_credit": "Creditează antrenamentul complet",
+  "settings.goals.full_credit_hint": "Adaugă arderea măsurată de azi peste obiectivul complet. Oprit implicit. Arderea măsurată există doar pe Android; aici bugetul rămâne obiectivul complet plus arderile manuale.",
   "nav.home": "Acasă",
   "nav.progress": "Progres",
   "nav.coach": "Coach",

@@ -451,6 +451,8 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setHomeStepGoal(v: Int) = setHomeStepGoalImpl(v)
     val homeCalorieDisplayMode: Flow<String> get() = homeCalorieDisplayModeImpl
     suspend fun setHomeCalorieDisplayMode(v: String) = setHomeCalorieDisplayModeImpl(v)
+    val homeCalorieFullCredit: Flow<Boolean> get() = homeCalorieFullCreditImpl
+    suspend fun setHomeCalorieFullCredit(v: Boolean) = setHomeCalorieFullCreditImpl(v)
     val foodLogMacroChips: Flow<String> get() = foodLogMacroChipsImpl
     suspend fun setFoodLogMacroChips(v: String) = setFoodLogMacroChipsImpl(v)
     suspend fun migrateHomeDisplayLayoutIfNeeded() = migrateHomeDisplayLayoutIfNeededImpl()

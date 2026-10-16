@@ -209,6 +209,45 @@ export async function updateFavorite(entry) {
 }
 
 /**
+ * Pure insert-or-replace plan for [upsertFavorite] (Android
+ * FoodRepository.upsertFavorite parity): the same [favoriteKey] replaces in
+ * place keeping the stored id (recipeLogId normalized to null); a new key
+ * appends with the entry's own id. Never removes — saving the same product
+ * twice must not delete anything.
+ * @param {import('./chompass-core/models.js').FoodEntry[]} list current favorites
+ * @param {import('./chompass-core/models.js').FoodEntry} entry entry to store
+ * @returns {{ next: import('./chompass-core/models.js').FoodEntry[], stored: import('./chompass-core/models.js').FoodEntry, inserted: boolean }}
+ */
+export function favoriteUpsertPlan(list, entry) {
+  const idx = list.findIndex((f) => favoriteKey(f) === favoriteKey(entry));
+  if (idx >= 0) {
+    const stored = normalizedFavoriteUpdate({ ...entry, id: list[idx].id });
+    const next = list.slice();
+    next[idx] = stored;
+    return { next, stored, inserted: false };
+  }
+  const stored = normalizedFavoriteUpdate({ ...entry });
+  return { next: [...list, stored], stored, inserted: true };
+}
+
+/**
+ * Insert-or-replace a favorite by favoriteKey without writing a diary row
+ * A fresh barcode review can be saved straight to favorites. A
+ * replace keeps the stored favorite's id (sync LWW chain survives), a new
+ * key appends a new id; `favorites.put` touches the sync revision either
+ * way. Never removes — callers own removal via [toggleFavorite].
+ * @param {import('./chompass-core/models.js').FoodEntry} entry
+ * @returns {Promise<import('./chompass-core/models.js').FoodEntry>} the stored favorite
+ */
+export async function upsertFavorite(entry) {
+  if (!favoriteKey(entry)) return entry;
+  const list = await favoritesStore.all();
+  const { stored } = favoriteUpsertPlan(list, entry);
+  await favoritesStore.put(stored);
+  return stored;
+}
+
+/**
  * Pure rename-collision check (Android FoodRepository.favoriteRenameBlocklist
  * parity): true when [name] identifies any diary row or any favorite other
  * than the one being renamed — the name is the identity key, so a taken name

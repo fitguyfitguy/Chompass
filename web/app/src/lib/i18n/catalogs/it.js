@@ -1,6 +1,9 @@
 // @ts-check
 /** @type {Readonly<Record<string, string>>} */
 export const it = Object.freeze({
+  "entry.save_to_favorites": "Salva nei preferiti",
+  "settings.goals.full_credit": "Accredita l'allenamento completo",
+  "settings.goals.full_credit_hint": "Aggiunge il consumo misurato di oggi al tuo obiettivo completo. Spento per impostazione predefinita. Il consumo misurato è solo su Android; qui il budget resta l'obiettivo completo più il consumo manuale.",
   "nav.home": "Home",
   "nav.progress": "Progressi",
   "nav.coach": "Coach",

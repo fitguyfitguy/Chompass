@@ -468,6 +468,24 @@ fun HomeScreen(
     val undoLabel = stringResource(R.string.action_undo)
     val dayTypeSwitchedMessage = stringResource(R.string.home_day_type_switched)
 
+    // One-shot "saved to favorites" confirmation after a barcode favorites
+    // save. Undo removes the favorite again; a replace (same name) is
+    // not undoable — the previous copy was not kept.
+    val savedToFavoritesMessage = stringResource(R.string.saved_to_favorites)
+    LaunchedEffect(ui.savedFavoriteAck) {
+        val ack = ui.savedFavoriteAck ?: return@LaunchedEffect
+        val result = snackbarHostState.showSnackbar(
+            message = savedToFavoritesMessage,
+            actionLabel = if (ack.inserted) undoLabel else null,
+            duration = SnackbarDuration.Short,
+        )
+        if (result == SnackbarResult.ActionPerformed) {
+            haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+            vm.toggleFavorite(ack.entry)
+        }
+        vm.clearSavedFavoriteAck()
+    }
+
     // Codeberg #30: add-food flow helper. Backing out of a flow-launched
     // destination reopens the grid instead of closing the whole flow. No-op
     // when the destination came from outside the flow (shortcut, share,
@@ -2086,6 +2104,27 @@ fun HomeScreen(
                     editedAnalysis = editedAnalysis,
                     logTime = logTime,
                 )
+            },
+            // Fresh barcode reviews only — a saved-meals relog review or
+            // an in-progress progressive meal keeps its own flows.
+            onSaveFavorite = if (
+                ui.pendingFoodSource == FoodSource.BARCODE &&
+                ui.pendingReviewSource == null
+            ) {
+                { name, grams, scale, mealType, selectedServingUnit, selectedServingQuantity, editedAnalysis, logTime ->
+                    vm.saveScannedFavorite(
+                        name = name,
+                        servingGrams = grams,
+                        scale = scale,
+                        mealType = mealType,
+                        selectedServingUnit = selectedServingUnit,
+                        selectedServingQuantity = selectedServingQuantity,
+                        editedAnalysis = editedAnalysis,
+                        logTime = logTime,
+                    )
+                }
+            } else {
+                null
             },
             onAddToProgressiveMeal = { name, grams, _, mealType, selectedServingUnit, selectedServingQuantity, editedAnalysis, resumeCapture, logTime ->
                 vm.addToProgressiveMeal(

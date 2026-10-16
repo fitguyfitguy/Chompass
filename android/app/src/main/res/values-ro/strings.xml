@@ -717,6 +717,8 @@
     <string name="home_calorie_mode_add_active">Adaugă arderea activă la buget</string>
     <string name="home_calorie_mode_add_active_desc">Caloriile active din Health Connect (sau estimarea după nivelul de activitate) se adaugă la bugetul caloric de azi. Mănâncă înapoi ce arzi. Setează nivelul de activitate ca bază zilnică ca antrenamentele să nu fie numărate de două ori. Conectează Health Connect în Setări → Sănătate pentru arderea măsurată.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Sfat: activează Health Connect pentru calorii active de la ceas/telefon în loc de estimarea după nivelul de activitate.</string>
+    <string name="home_calorie_full_credit">Creditează antrenamentul complet</string>
+    <string name="home_calorie_full_credit_desc">Adaugă arderea măsurată de azi peste obiectivul tău caloric complet. Oprit, indicatorul reține arderea unei zile tipice ca o valoare mare să nu fie mâncată de două ori.</string>
     <string name="home_calorie_mode_static_desc">Obiectivul caloric rămâne fix. O ardere activă introdusă manual mărește bugetul acelei zile.</string>
     <string name="home_menu_manual_active">Ardere activă</string>
     <string name="manual_active_kcal_hint">Calorii arse</string>
@@ -817,6 +819,8 @@
     <string name="action_retry">Reîncearcă</string>
     <string name="action_show">Arată</string>
     <string name="action_undo">Revocă</string>
+    <string name="action_save_to_favorites">Salvează în favorite</string>
+    <string name="saved_to_favorites">Salvat în favorite</string>
     <string name="action_what_if">Ce-ar fi?</string>
     <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="ai_error_coach_on_device">Antrenorul nu este încă disponibil cu furnizorul local. Comută la un furnizor cloud în Setări → Furnizor IA.</string>
@@ -1339,7 +1343,7 @@
     <string name="settings_calc_forecast_formula">prevăzut kg/săptămână = (calorii medii zilnice − TDEE) × 7 ÷ 7700\nobservat kg/săptămână = panta Theil–Sen × 7\nînregistrare rară: consum mediu ÷ zile calendaristice când zilele înregistrate &lt; 50%% din fereastră</string>
     <string name="settings_calc_forecast_name">Prognoza bilanțului energetic</string>
     <string name="settings_calc_forecast_used">Graficele de progres și prognoza ETA folosesc înregistrările tale recente de mâncare și cântăririle (până la 90 de zile). Când înregistrezi în mai puțin de jumătate din zilele ferestrei, consumul este mediat pe zile calendaristice, ca zilele rare «mari» să nu umfle prognoza. Altfel, consumul este mediat doar pe zilele înregistrate. Tendința de greutate folosește o regresie mediană robustă (Theil–Sen) pe cântăriri.</string>
-    <string name="settings_calc_home_gauge_formula">activ estimat = TDEE − BMR\nbuget sedentar = obiectiv caloric − activ estimat\nobiectiv cu activitate = buget sedentar + (activ măsurat sau estimat)</string>
+    <string name="settings_calc_home_gauge_formula">activ estimat = TDEE − BMR\nbuget sedentar = obiectiv caloric − activ estimat\nobiectiv cu activitate = buget sedentar + (activ măsurat sau estimat)\nCreditarea completă, oprită implicit, sare peste această împărțire și adaugă arderea măsurată de azi peste obiectivul caloric complet. Fără măsurătoare, obiectivul rămâne cel complet.</string>
     <string name="settings_calc_home_gauge_name">Ardere activă pe inelul principal</string>
     <string name="settings_calc_home_gauge_used">Aspectul ecranului principal îți permite să adaugi arderea activă la obiectiv, să urmărești consumul net sau să arăți o sugestie de ardere. Estimarea nivelului de activitate este TDEE minus BMR (partea din multiplicatorul PAL). «Adaugă active» și «Dublu» folosesc această estimare când Health Connect este oprit; «Net» necesită ardere măsurată din Health Connect. «Adaugă active» împarte obiectivul salvat într-o bază sedentară plus stratul activ de azi, ca activitatea să nu fie numărată de două ori. Cu «Adaugă active», setează nivelul de activitate ca viață cotidiană fără antrenamente; activitatea măsurată sau estimată acoperă antrenamentele, ca să nu se adune peste un PAL ridicat.</string>
     <string name="settings_calc_intro">Obiectivele tale zilnice de calorii și macrouri sunt setate de IA. Când atingi «Recalculează obiectivele», sau automat cam o dată pe săptămână dacă obiectivele adaptive sunt active, Chompass trimite profilul tău, formulele de referință de mai jos, mâncarea înregistrată recent și tendința de greutate către furnizorul tău IA. Pornește de la aceste formule verificate, apoi le ajustează la datele tale pentru a estima menținerea și obiectivele.</string>

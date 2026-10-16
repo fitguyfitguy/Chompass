@@ -693,6 +693,8 @@
     <string name="home_calorie_mode_add_active">Actieve verbranding aan budget toevoegen</string>
     <string name="home_calorie_mode_add_active_desc">Actieve calorieën uit Health Connect (of je schatting op activiteitsniveau) worden aan het caloriebudget van vandaag toegevoegd. Eet terug wat je verbrandt. Stel Activiteitsniveau in op dagelijkse basislijn zodat workouts niet dubbel worden geteld. Verbind Health Connect via Instellingen → Gezondheid voor gemeten verbranding.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Tip: schakel Health Connect in om actieve calorieën van horloge/telefoon te gebruiken in plaats van de schatting op activiteitsniveau.</string>
+    <string name="home_calorie_full_credit">Volledige training meetellen</string>
+    <string name="home_calorie_full_credit_desc">Telt de gemeten verbranding van vandaag op bij je volledige caloriedoel. Uit: de meter houdt de verbranding van een gemiddelde dag achter zodat een hoge meting niet twee keer wordt terugegeten.</string>
     <string name="home_calorie_mode_static_desc">Je caloriedoel blijft vast. Een handmatig gelogde actieve verbranding verhoogt het budget van die dag.</string>
     <string name="home_menu_manual_active">Actieve verbranding</string>
     <string name="manual_active_kcal_hint">Verbrande calorieën</string>
@@ -794,6 +796,8 @@
     <string name="action_retry">Opnieuw</string>
     <string name="action_show">Toon</string>
     <string name="action_undo">Herstel</string>
+    <string name="action_save_to_favorites">Opslaan in favorieten</string>
+    <string name="saved_to_favorites">Opgeslagen in favorieten</string>
     <string name="action_what_if">Wat als?</string>
     <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="ai_error_coach_on_device">Coach is nog niet beschikbaar met de on-device provider. Schakel over naar een cloudprovider in Instellingen → AI-provider.</string>
@@ -1321,7 +1325,7 @@
     <string name="settings_calc_forecast_formula">voorspeld kg/week = (gemiddelde dagelijkse calorieën − TDEE) × 7 ÷ 7700\nwaargenomen kg/week = Theil–Sen-helling × 7\nschaarse logging: gemiddelde inname ÷ kalenderdagen wanneer gelogde dagen &lt; 50%% van het venster</string>
     <string name="settings_calc_forecast_name">Energiebalansprognose</string>
     <string name="settings_calc_forecast_used">Voortgangsgrafieken en doel-ETA gebruiken je recente voedingslogs en weegmomenten (tot 90 dagen). Wanneer je op minder dan de helft van de dagen in het venster logt, wordt de inname gemiddeld over kalenderdagen, zodat zeldzame «grote» dagen de prognose niet opblazen. Anders wordt de inname alleen over gelogde dagen gemiddeld. De waargenomen gewichtstrend gebruikt een robuuste mediaanhelling (Theil–Sen) op weeggegevens.</string>
-    <string name="settings_calc_home_gauge_formula">geschat actief = TDEE − BMR\nsedentair budget = caloriedoel − geschat actief\ndoel met activiteit = sedentair budget + (gemeten of geschat actief)</string>
+    <string name="settings_calc_home_gauge_formula">geschat actief = TDEE − BMR\nsedentair budget = caloriedoel − geschat actief\ndoel met activiteit = sedentair budget + (gemeten of geschat actief)\nVolledig meetellen, standaard uit, slaat die splitsing over en telt de gemeten verbranding van vandaag op bij het volledige caloriedoel. Zonder meting blijft het doel volledig.</string>
     <string name="settings_calc_home_gauge_name">Actief verbruik op de home-ring</string>
     <string name="settings_calc_home_gauge_used">Home-weergave laat je actief verbruik aan je doel toevoegen, netto-inname volgen of een verbruikstip tonen. Je activiteitsniveauschatting is TDEE min BMR (het PAL-multiplierdeel). «Activiteit toevoegen» en «Dubbel» gebruiken die schatting wanneer Health Connect uit staat; «Netto» vereist gemeten Health Connect-verbruik. «Activiteit toevoegen» splitst je opgeslagen doel in een sedentaire basis plus de actieve laag van vandaag, zodat activiteit niet dubbel telt. Stel met «Activiteit toevoegen» het activiteitsniveau in als dagelijks leven zonder trainingen; gemeten of geschatte activiteit dekt trainingen, zodat ze niet bovenop een hoge PAL komen.</string>
     <string name="settings_calc_intro">Je dagelijkse calorie- en macrodoelen worden door AI ingesteld. Wanneer je op «Doelen herberekenen» tikt, of automatisch ongeveer één keer per week als adaptieve doelen aan staan, stuurt Chompass je profiel, de referentieformules hieronder, je recent gelogde voedsel en je gewichtstrend naar je AI-provider. Het start vanuit deze peer-reviewed formules en past ze dan aan je gegevens aan om je onderhoud en doelen te schatten.</string>

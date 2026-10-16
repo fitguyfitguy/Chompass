@@ -1,6 +1,9 @@
 // @ts-check
 /** @type {Readonly<Record<string, string>>} */
 export const ru = Object.freeze({
+  "entry.save_to_favorites": "Сохранить в избранное",
+  "settings.goals.full_credit": "Засчитать тренировку целиком",
+  "settings.goals.full_credit_hint": "Прибавляет измеренный расход за сегодня к полной цели. По умолчанию выключено. Измеренный расход есть только на Android; здесь бюджет — полная цель плюс ручной расход.",
   "nav.home": "Главная",
   "nav.progress": "Прогресс",
   "nav.coach": "Коуч",

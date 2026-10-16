@@ -3,6 +3,9 @@
 
 /** @type {Readonly<Record<string, string>>} */
 export const pl = Object.freeze({
+  "entry.save_to_favorites": "Zapisz do ulubionych",
+  "settings.goals.full_credit": "Zalicz pełny trening",
+  "settings.goals.full_credit_hint": "Dodaje dzisiejsze zmierzone spalanie do pełnego celu. Domyślnie wyłączone. Mierzone spalanie działa tylko na Androidzie; tu budżet to pełny cel plus ręcznie dodane spalanie.",
 
   // Shell / nav
   "nav.home": "Start",

@@ -1,6 +1,14 @@
 package app.chompass.ui.settings
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -12,15 +20,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.R
+import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.navigation.ChompassRoutes
+import app.chompass.ui.theme.AppColors
+import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,6 +58,7 @@ fun GoalsSettingsScreen(
     var invalidGoalWeightMessage by remember { mutableStateOf<String?>(null) }
     var showRebalanceBlockedAlert by remember { mutableStateOf(false) }
     var showAdaptiveGoalsInfo by remember { mutableStateOf(false) }
+    var showCalorieModePicker by remember { mutableStateOf(false) }
 
     SettingsSubScreen(
         title = stringResource(R.string.settings_section_goals),
@@ -62,6 +78,50 @@ fun GoalsSettingsScreen(
             onOpenSheet = { sheet = it },
             onShowAdaptiveGoalsInfo = { showAdaptiveGoalsInfo = true },
         )
+
+        // Calorie gauge mode: moved here from Customize Home because people
+        // look for the burn control under Goals. Not a profile field — the
+        // card stays visible even without a profile, unlike the goals card
+        // above. The full-credit toggle only exists in Add Active mode.
+        val display = ui.homeDisplay
+        SectionCard(title = stringResource(R.string.home_display_calorie_mode)) {
+            SettingRow(
+                label = stringResource(R.string.home_display_calorie_mode),
+                value = stringResource(display.calorieDisplayMode.displayNameRes),
+                onClick = { showCalorieModePicker = true },
+            )
+            Text(
+                stringResource(
+                    when (display.calorieDisplayMode) {
+                        HomeCalorieDisplayMode.STATIC -> R.string.home_calorie_mode_static_desc
+                        HomeCalorieDisplayMode.ADD_ACTIVE -> R.string.home_calorie_mode_add_active_desc
+                    }
+                ),
+                fontSize = 13.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+            )
+            if (display.calorieDisplayMode == HomeCalorieDisplayMode.ADD_ACTIVE) {
+                Text(
+                    stringResource(R.string.home_calorie_mode_add_active_hc_hint),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
+                    modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 12.dp)
+                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+                ToggleRow(
+                    label = stringResource(R.string.home_calorie_full_credit),
+                    checked = display.fullCreditActiveBurn,
+                    onChange = vm::setHomeCalorieFullCredit,
+                )
+                Text(
+                    stringResource(R.string.home_calorie_full_credit_desc),
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+                )
+            }
+        }
 
         // Rule C footer: destinations related to goals that live elsewhere
         // (Water goal is edited on the Water screen; the formula register is a
@@ -158,5 +218,51 @@ fun GoalsSettingsScreen(
                 onPrimary = { invalidGoalWeightMessage = null }
             )
         }
+    }
+
+    if (showCalorieModePicker) {
+        CalorieModePickerDialog(
+            selected = ui.homeDisplay.calorieDisplayMode,
+            onSelect = {
+                vm.setHomeCalorieDisplayMode(it)
+                showCalorieModePicker = false
+            },
+            onDismiss = { showCalorieModePicker = false }
+        )
+    }
+}
+
+@Composable
+private fun CalorieModePickerDialog(
+    selected: HomeCalorieDisplayMode,
+    onSelect: (HomeCalorieDisplayMode) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    ChompassDialog(onDismissRequest = onDismiss) {
+        Text(stringResource(R.string.home_display_calorie_mode), fontSize = 22.sp, fontWeight = FontWeight.Bold)
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            HomeCalorieDisplayMode.entries.forEach { mode ->
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(AppRadii.Field))
+                        .clickable { onSelect(mode) }
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        stringResource(mode.displayNameRes),
+                        fontWeight = if (mode == selected) FontWeight.Bold else FontWeight.Normal,
+                        color = if (mode == selected) AppColors.Calorie else MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        }
+        ChompassDialogActions(
+            primaryText = stringResource(R.string.action_done),
+            onPrimary = onDismiss,
+            dismissText = stringResource(R.string.action_cancel),
+            onDismiss = onDismiss
+        )
     }
 }

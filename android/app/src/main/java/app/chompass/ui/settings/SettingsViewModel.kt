@@ -808,6 +808,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         container.prefs.setHomeCalorieDisplayMode(mode.storageKey)
     }
 
+    fun setHomeCalorieFullCredit(enabled: Boolean) = launchPref {
+        container.prefs.setHomeCalorieFullCredit(enabled)
+    }
+
     fun setFoodLogMacroChips(chips: List<FoodLogMacroChip>) = launchPref {
         container.prefs.setFoodLogMacroChips(FoodLogMacroChip.toStorage(chips))
     }

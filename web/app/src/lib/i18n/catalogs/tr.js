@@ -3,6 +3,9 @@
 
 /** @type {Readonly<Record<string, string>>} */
 export const tr = Object.freeze({
+  "entry.save_to_favorites": "Favorilere kaydet",
+  "settings.goals.full_credit": "Tam antrenmanı say",
+  "settings.goals.full_credit_hint": "Bugün ölçülen harcamayı tam hedefin üstüne ekler. Varsayılan olarak kapalı. Ölçülen harcama yalnızca Android'de var; burada bütçe tam hedef artı manuel harcama olur.",
 
   // Shell / nav
   "nav.home": "Ana Sayfa",

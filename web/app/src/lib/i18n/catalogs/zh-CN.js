@@ -1,6 +1,9 @@
 // @ts-check
 /** @type {Readonly<Record<string, string>>} */
 export const zh_CN = Object.freeze({
+  "entry.save_to_favorites": "保存到收藏",
+  "settings.goals.full_credit": "计入全部运动消耗",
+  "settings.goals.full_credit_hint": "在今天测得的消耗之上叠加完整目标。默认关闭。实测消耗仅 Android 支持；这里预算保持完整目标加手动记录的消耗。",
   "nav.home": "首页",
   "nav.progress": "进度",
   "nav.coach": "教练",

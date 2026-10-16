@@ -69,11 +69,6 @@ internal fun SettingRowStressPreviewContent() {
                 ) {}
                 HorizontalDivider()
                 SettingRow(
-                    label = stringResource(R.string.home_display_calorie_mode),
-                    value = stringResource(R.string.home_calorie_mode_add_active_hc_hint),
-                ) {}
-                HorizontalDivider()
-                SettingRow(
                     label = stringResource(R.string.home_display_nutrient_cards),
                     value = stringResource(R.string.home_display_show_active_calories_desc),
                 ) {}

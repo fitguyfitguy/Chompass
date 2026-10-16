@@ -473,6 +473,8 @@
     <string name="home_food_removed">Yiyecek silindi</string>
     <string name="home_day_type_switched">Gün türü değiştirildi</string>
     <string name="action_undo">Geri al</string>
+    <string name="action_save_to_favorites">Favorilere kaydet</string>
+    <string name="saved_to_favorites">Favorilere kaydedildi</string>
     <string name="add_food_photo_source_title">Fotoğraf ekle</string>
     <string name="add_food_photo_camera">Fotoğraf Çek</string>
     <string name="add_food_photo_gallery">Galeriden Seç</string>
@@ -1474,6 +1476,8 @@
     <string name="home_calorie_mode_static_desc">Kalori hedefin sabit kalır. Elle kaydedilen aktif yanma o günün bütçesini yine de artırır.</string>
     <string name="home_calorie_mode_add_active_desc">Health Connect\'ten (veya aktivite seviyesi tahmininden) aktif kaloriler bugünün kalori bütçesine eklenir. Yaktığını geri ye. Aktivite Seviyesini günlük taban çizgisine ayarla ki egzersizler çift sayılmasın. Ölçülen yakım için Ayarlar → Sağlık bölümünden Health Connect\'i aç.</string>
     <string name="home_calorie_mode_add_active_hc_hint">İpucu: aktivite seviyesi tahmini yerine saat/telefon aktif kalorilerini kullanmak için Health Connect\'i etkinleştir.</string>
+    <string name="home_calorie_full_credit">Tam antrenmanı say</string>
+    <string name="home_calorie_full_credit_desc">Bugün ölçülen harcamayı tam kalori hedefinin üstüne ekler. Kapalıyken gösterge tipik bir günün harcamasını geri tutar, böylece yüksek değer iki kez yenmez.</string>
     <string name="home_nutrients_pick_count">Ana ekran için en fazla %1$d besin seç.</string>
     <string name="home_steps_label">Adımlar</string>
     <string name="home_steps_goal_format">Hedef %1$s</string>
@@ -1773,7 +1777,7 @@
     <string name="settings_calc_sec_home_gauge">Ana ekran kalori göstergesi</string>
     <string name="settings_calc_home_gauge_name">Ana ekran halkasında aktif yakım</string>
     <string name="settings_calc_home_gauge_used">Ana Ekran Görünümü, hedefine aktif yakım eklemene, net alımı takip etmene veya bir yakım ipucu göstermene izin verir. Aktivite seviyesi tahminin TDEE eksi BMR\'dir (PAL çarpanı kısmı). Aktif Ekle ve Çift, Health Connect kapalıyken bu tahmini kullanır; Net, ölçülen Health Connect yakımı gerektirir. Aktif Ekle, depolanan hedefini hareketsiz taban artı bugünün aktif katmanı olarak böler, böylece aktivite iki kez sayılmaz. Aktif Ekle ile Aktivite Seviyesini günlük antrenmansız yaşam olarak ayarla; ölçülen veya tahmin edilen aktif, antrenmanları karşılar, böylece yüksek bir PAL üzerine yığılmazlar.</string>
-    <string name="settings_calc_home_gauge_formula">tahmini aktif = TDEE − BMR\nhareketsiz bütçe = kalori hedefi − tahmini aktif\nAktif Ekle hedefi = hareketsiz bütçe + (ölçülen veya tahmini aktif)</string>
+    <string name="settings_calc_home_gauge_formula">tahmini aktif = TDEE − BMR\nhareketsiz bütçe = kalori hedefi − tahmini aktif\nAktif Ekle hedefi = hareketsiz bütçe + (ölçülen veya tahmini aktif)\nTam sayma, varsayılan olarak kapalı, bu bölmeyi atlar ve bugün ölçülen harcamayı tam kalori hedefinin üstüne ekler. Ölçüm yoksa hedef tam olarak kalır.</string>
     <string name="settings_calc_target_name">Bakım ve hedef ayarı</string>
     <string name="settings_calc_target_used">Bakım TDEE\'nden başlar. Enerji Yakımı açıkken bunun yerine ölçülen Health Connect yakımından (14 günlük Aktif + Bazal ortalaması) başlar. AI, bakımı kaydedilen alımın ve kilo trendine karşı iyileştirir, ardından hedefini uygular: haftalık kilo değişim oranı, günlük kalori açığı (Kilo Verme) veya fazlası (Kilo Alma) olur.</string>
     <string name="settings_calc_target_formula">1 lb vücut yağı ≈ 3,500 kcal · 1 kg ≈ 7,700 kcal\nHaftalık oranın ÷ 7, günlük kalori hedefini ayarlamak için bakımdan çıkarılır (Kilo Verme) veya eklenir (Kilo Alma).</string>

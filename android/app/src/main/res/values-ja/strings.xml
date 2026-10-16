@@ -723,6 +723,8 @@
     <string name="home_calorie_mode_add_active">アクティブ消費を予算に追加</string>
     <string name="home_calorie_mode_add_active_desc">Health Connect（または活動レベルの推定値）からのアクティブカロリーが今日のカロリー予算に加算されます。消費分を食べ返せます。運動の二重カウントを避けるため、活動レベルは日常の基準に設定してください。実測値を使うには、設定 → ヘルスで Health Connect を接続してください。</string>
     <string name="home_calorie_mode_add_active_hc_hint">ヒント: Health Connect を有効にすると、活動レベルの推定値の代わりにウォッチ/スマホのアクティブカロリーを使えます。</string>
+    <string name="home_calorie_full_credit">ワークアウト消費を全額足す</string>
+    <string name="home_calorie_full_credit_desc">今日の実測消費カロリーを満額のカロリー目標に上乗せします。オフのときはゲージが典型的な 1 日の消費分を差し引いておくため、高い値を二重に食べ戻しません。</string>
     <string name="home_calorie_mode_static_desc">カロリー目標は固定のまま。手動で記録した消費カロリーはその日の予算に加算されます。</string>
     <string name="home_menu_manual_active">アクティブ消費</string>
     <string name="manual_active_kcal_hint">消費カロリー</string>
@@ -823,6 +825,8 @@
     <string name="action_retry">再試行</string>
     <string name="action_show">表示</string>
     <string name="action_undo">戻す</string>
+    <string name="action_save_to_favorites">お気に入りに保存</string>
+    <string name="saved_to_favorites">お気に入りに保存しました</string>
     <string name="action_what_if">どうなる？</string>
     <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="ai_error_coach_on_device">コーチはまだオンデバイスプロバイダーに対応していません。設定 → AI プロバイダーでクラウドプロバイダーに切り替えてください。</string>
@@ -1340,7 +1344,7 @@
     <string name="settings_calc_forecast_formula">予測 kg/週 =（1日平均カロリー − TDEE）× 7 ÷ 7700\n観測 kg/週 = Theil–Sen 傾き × 7\nまばらな記録：記録日がウィンドウの 50%% 未満の場合、平均摂取量 ÷ 暦日</string>
     <string name="settings_calc_forecast_name">エネルギーバランス予測</string>
     <string name="settings_calc_forecast_used">進捗グラフと ETA 予測は、最近の食事記録と体重測定（最大90日）を使用します。ウィンドウの半分未満の日にしか記録しない場合、摂取量は暦日で平均され、まれな「食べ過ぎ」の日が予測を膨らませません。それ以外は記録のある日のみで平均されます。観測体重傾向は、秤の記録に対するロバストな中央値傾き（Theil–Sen）フィットを使用します。</string>
-    <string name="settings_calc_home_gauge_formula">推定活動 = TDEE − BMR\n座位予算 = カロリー目標 − 推定活動\n活動追加目標 = 座位予算 +（測定または推定活動）</string>
+    <string name="settings_calc_home_gauge_formula">推定活動 = TDEE − BMR\n座位予算 = カロリー目標 − 推定活動\n活動追加目標 = 座位予算 +（測定または推定活動）\n全額加算（デフォルトはオフ）はこの分割を省き、今日の実測消費を満額のカロリー目標に上乗せします。測定がなければ目標は満額のままです。</string>
     <string name="settings_calc_home_gauge_name">ホームリングの活動消費</string>
     <string name="settings_calc_home_gauge_used">ホーム表示では、活動消費を目標に追加したり、ネット摂取を追跡したり、消費ヒントを表示したりできます。活動レベルの推定値は TDEE マイナス BMR です（PAL 乗数の部分）。「活動を追加」と「二重」は Health Connect オフ時にその推定値を使用し、「ネット」は Health Connect の測定消費が必要です。「活動を追加」は保存済み目標を座位ベースと今日の活動レイヤーに分割し、活動が二重計上されないようにします。「活動を追加」では、活動レベルをトレーニングなしの日常に設定してください。測定または推定の活動がワークアウトをカバーし、高い PAL に積み上がりません。</string>
     <string name="settings_calc_intro">1日のカロリーとマクロの目標は AI が設定します。「目標を再計算」をタップするか、適応型目標オンの場合に週1回程度自動で、Chompass はプロフィール、下記の参照式、最近記録した食事、体重傾向を AI プロバイダーに送信します。査読済みの計算式から始め、データに合わせて調整して維持量と目標を推定します。</string>

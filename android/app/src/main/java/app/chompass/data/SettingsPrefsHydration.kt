@@ -285,6 +285,7 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
             showActiveCalories = this[Keys.HOME_SHOW_ACTIVE_CALORIES] ?: false,
             stepGoal = this[Keys.HOME_STEP_GOAL] ?: HomeDisplayPreferences.DEFAULT_STEP_GOAL,
             calorieDisplayMode = HomeCalorieDisplayMode.fromStorage(this[Keys.HOME_CALORIE_DISPLAY_MODE]),
+            fullCreditActiveBurn = this[Keys.HOME_CALORIE_FULL_CREDIT] ?: false,
             foodLogMacroChips = FoodLogMacroChip.fromStorage(this[Keys.FOOD_LOG_MACRO_CHIPS]),
         ),
         mealSchedule = mealCatalog.toLegacySchedule(),

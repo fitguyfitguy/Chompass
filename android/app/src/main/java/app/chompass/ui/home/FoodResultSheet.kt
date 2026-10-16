@@ -181,6 +181,21 @@ fun FoodResultSheet(
         logTime: LocalTime,
     ) -> Unit,
     /**
+     * Save this review to favorites without a diary row. Only passed
+     * for a fresh barcode review — the text action slot would otherwise
+     * collide with the progressive "add next" action.
+     */
+    onSaveFavorite: ((
+        name: String,
+        servingGrams: Double?,
+        scale: Double,
+        mealType: String,
+        selectedServingUnit: String?,
+        selectedServingQuantity: Double?,
+        editedAnalysis: FoodAnalysis,
+        logTime: LocalTime,
+    ) -> Unit)? = null,
+    /**
      * Commit this review into the progressive meal draft.
      * [resumeCapture] true → reopen camera; false → show the meal sheet.
      */
@@ -545,6 +560,20 @@ fun FoodResultSheet(
                 if (servingUnitOptions.isEmpty()) null else saveQuantity(),
                 editedAnalysis(),
                 true,
+                logTime,
+            )
+        }
+        fun commitSaveFavorite() {
+            if (isSaving || !analysisReady || analysis == null) return
+            val save = onSaveFavorite ?: return
+            save(
+                name.trim().ifEmpty { analysis.name },
+                ServingUnitOption.persistedServingGrams(recordedServing, servingTouched, servingGrams),
+                saveScale(),
+                mealType,
+                if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
+                if (servingUnitOptions.isEmpty()) null else saveQuantity(),
+                editedAnalysis(),
                 logTime,
             )
         }
@@ -1116,15 +1145,24 @@ fun FoodResultSheet(
                 primaryLabel = busyPrimaryLabel,
                 primaryEnabled = analysisReady && !isSaving && analysis != null,
                 onPrimary = { commitLog() },
-                textActionLabel = if (onAddToProgressiveMeal != null && analysisReady && !isSaving) {
-                    stringResource(R.string.progressive_meal_add_next)
-                } else {
-                    null
+                // A fresh barcode review offers Save to favorites in the
+                // text slot; with a progressive meal in progress that slot is
+                // "add next" and favorites save is not offered.
+                textActionLabel = when {
+                    onAddToProgressiveMeal != null && analysisReady && !isSaving ->
+                        stringResource(R.string.progressive_meal_add_next)
+                    onSaveFavorite != null && source == FoodSource.BARCODE && analysisReady && !isSaving ->
+                        stringResource(R.string.action_save_to_favorites)
+                    else -> null
                 },
-                onTextAction = if (onAddToProgressiveMeal != null && analysisReady) {
-                    { commitAddNext() }
-                } else {
-                    null
+                onTextAction = when {
+                    onAddToProgressiveMeal != null && analysisReady -> {
+                        { commitAddNext() }
+                    }
+                    onSaveFavorite != null && source == FoodSource.BARCODE && analysisReady -> {
+                        { commitSaveFavorite() }
+                    }
+                    else -> null
                 },
             )
         }

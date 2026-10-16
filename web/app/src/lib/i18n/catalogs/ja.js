@@ -1,6 +1,9 @@
 // @ts-check
 /** @type {Readonly<Record<string, string>>} */
 export const ja = Object.freeze({
+  "entry.save_to_favorites": "お気に入りに保存",
+  "settings.goals.full_credit": "ワークアウト消費を全額足す",
+  "settings.goals.full_credit_hint": "今日の実測消費を満額の目標に上乗せします。デフォルトはオフ。実測消費は Android のみ。ここでは予算は満額の目標＋手動記録の消費のままです。",
   "nav.home": "ホーム",
   "nav.progress": "進捗",
   "nav.coach": "コーチ",

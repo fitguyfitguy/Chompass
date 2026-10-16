@@ -1,6 +1,9 @@
 // @ts-check
 /** @type {Readonly<Record<string, string>>} */
 export const ko = Object.freeze({
+  "entry.save_to_favorites": "즐겨찾기에 저장",
+  "settings.goals.full_credit": "운동 소모 전액 더하기",
+  "settings.goals.full_credit_hint": "오늘 측정된 소모를 전체 목표 위에 더해요. 기본은 꺼져 있어요. 측정된 소모는 Android 전용이에요. 여기서는 예산이 전체 목표에 직접 기록한 소모가 더해진 그대로예요.",
   "nav.home": "홈",
   "nav.progress": "진행",
   "nav.coach": "코치",

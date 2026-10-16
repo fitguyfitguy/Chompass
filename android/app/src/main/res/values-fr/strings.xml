@@ -746,6 +746,8 @@
     <string name="home_calorie_mode_add_active">Ajouter la dépense active au budget</string>
     <string name="home_calorie_mode_add_active_desc">Les calories actives de Health Connect (ou votre estimation de niveau d\'activité) sont ajoutées au budget calorique du jour. Mangez ce que vous brûlez. Réglez le niveau d\'activité sur la base quotidienne pour éviter de compter deux fois les entraînements. Connectez Health Connect dans Réglages → Santé pour une dépense mesurée.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Astuce : activez Health Connect pour utiliser les calories actives de la montre/téléphone au lieu de l\'estimation de niveau d\'activité.</string>
+    <string name="home_calorie_full_credit">Créditer la séance complète</string>
+    <string name="home_calorie_full_credit_desc">Ajoute le brûlage mesuré du jour à ton objectif calorique complet. Désactivé, l\'anneau retient le brûlage d\'une journée type pour qu\'une mesure haute ne soit pas mangée deux fois.</string>
     <string name="home_calorie_mode_static_desc">Votre objectif calorique reste fixe. Une dépense active saisie manuellement augmente le budget du jour.</string>
     <string name="home_menu_manual_active">Dépense active</string>
     <string name="manual_active_kcal_hint">Calories brûlées</string>
@@ -853,6 +855,8 @@
     <string name="action_retry">Réessayer</string>
     <string name="action_show">Afficher</string>
     <string name="action_undo">Défaire</string>
+    <string name="action_save_to_favorites">Enregistrer dans les favoris</string>
+    <string name="saved_to_favorites">Enregistré dans les favoris</string>
     <string name="action_what_if">Et si…?</string>
     <string name="activity_active">Active</string>
     <string name="add_food_hero_note">Note</string>
@@ -1397,7 +1401,7 @@
     <string name="settings_calc_forecast_formula">kg/semaine prévus = (calories quotidiennes moyennes − TDEE) × 7 ÷ 7 700\nkg/semaine observés = pente de Theil–Sen × 7\njournal clairsemé : apport moyen ÷ jours calendaires quand les jours enregistrés &lt; 50 %% de la période</string>
     <string name="settings_calc_forecast_name">Prévision du bilan énergétique</string>
     <string name="settings_calc_forecast_used">Les graphiques de progression et la date estimée de la cible utilisent vos journaux alimentaires et pesées récents (jusqu\'à 90 jours). Quand vous enregistrez moins de la moitié des jours de la période, l\'apport est moyenné sur les jours calendaires pour que les gros jours de journal ne gonflent pas la prévision. Sinon, l\'apport est moyenné uniquement sur les jours enregistrés. La tendance de poids observée utilise un ajustement de pente médiane robuste (Theil–Sen) sur les entrées de balance.</string>
-    <string name="settings_calc_home_gauge_formula">activité estimée = TDEE − BMR\nbudget sédentaire = objectif calorique − activité estimée\nobjectif « Ajouter actif » = budget sédentaire + (activité mesurée ou estimée)</string>
+    <string name="settings_calc_home_gauge_formula">activité estimée = TDEE − BMR\nbudget sédentaire = objectif calorique − activité estimée\nobjectif « Ajouter actif » = budget sédentaire + (activité mesurée ou estimée)\nLe crédit complet, désactivé par défaut, saute ce partage et ajoute le brûlage mesuré du jour à l\'objectif calorique complet. Sans mesure, l\'objectif reste le complet.</string>
     <string name="settings_calc_home_gauge_name">Dépense active sur l\'anneau de l\'accueil</string>
     <string name="settings_calc_home_gauge_used">L\'affichage de l\'accueil vous permet d\'ajouter la dépense active à votre objectif, de suivre l\'apport net ou d\'afficher une indication de dépense. Votre estimation de niveau d\'activité est TDEE moins BMR (la part du multiplicateur PAL). « Ajouter actif » et « Double » utilisent cette estimation quand Health Connect est désactivé ; « Net » nécessite la dépense mesurée de Health Connect. « Ajouter actif » divise votre objectif stocké en une base sédentaire plus la couche active du jour, pour que l\'activité ne soit pas comptée deux fois. Avec « Ajouter actif », réglez le niveau d\'activité sur votre vie quotidienne sans entraînement ; l\'activité mesurée ou estimée couvre les séances pour qu\'elles ne s\'empilent pas sur un PAL élevé.</string>
     <string name="settings_calc_intro">Vos objectifs quotidiens de calories et de macros sont définis par l\'IA. Quand vous touchez Recalculer les objectifs, ou automatiquement environ une fois par semaine si les Objectifs adaptatifs sont activés, Chompass envoie votre profil, les équations de référence ci-dessous, vos aliments récemment enregistrés et votre tendance de poids à votre fournisseur d\'IA. Il part de ces formules évaluées par les pairs, puis les ajuste à vos données pour estimer votre maintien et vos objectifs.</string>
