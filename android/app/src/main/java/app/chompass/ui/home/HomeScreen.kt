@@ -2126,17 +2126,27 @@ fun HomeScreen(
             } else {
                 null
             },
-            onAddToProgressiveMeal = { name, grams, _, mealType, selectedServingUnit, selectedServingQuantity, editedAnalysis, resumeCapture, logTime ->
-                vm.addToProgressiveMeal(
-                    name = name,
-                    servingGrams = grams,
-                    mealType = mealType,
-                    selectedServingUnit = selectedServingUnit,
-                    selectedServingQuantity = selectedServingQuantity,
-                    editedAnalysis = editedAnalysis,
-                    resumeCapture = resumeCapture,
-                    logTime = logTime,
-                )
+            // Fresh barcode reviews give the text slot to Save to favorites;
+            // with a progressive draft in progress "add next" keeps the slot.
+            onAddToProgressiveMeal = if (
+                ui.pendingFoodSource == FoodSource.BARCODE &&
+                ui.pendingReviewSource == null &&
+                ui.progressiveMeal?.items?.isNotEmpty() != true
+            ) {
+                null
+            } else {
+                { name, grams, _, mealType, selectedServingUnit, selectedServingQuantity, editedAnalysis, resumeCapture, logTime ->
+                    vm.addToProgressiveMeal(
+                        name = name,
+                        servingGrams = grams,
+                        mealType = mealType,
+                        selectedServingUnit = selectedServingUnit,
+                        selectedServingQuantity = selectedServingQuantity,
+                        editedAnalysis = editedAnalysis,
+                        resumeCapture = resumeCapture,
+                        logTime = logTime,
+                    )
+                }
             },
             onDismiss = {
                 val hasDraft = ui.progressiveMeal?.items?.isNotEmpty() == true
