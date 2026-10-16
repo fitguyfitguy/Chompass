@@ -652,6 +652,7 @@
     <string name="sheet_profile_name">프로필 이름</string>
     <string name="queue_run_with">다음으로 실행…</string>
     <string name="queue_last_attempt">마지막 시도: %1$s · %2$s</string>
+    <string name="queue_run_with_direct_note">“%1$s”이(가) 직접 사용되었어요. 폴백 프로필은 건너뛰었어요.</string>
     <string name="widget_all_metrics_label">Chompass 오늘</string>
     <string name="widget_all_metrics_description">오늘의 칼로리, 단백질, 탄수화물, 지방을 위젯 하나로 확인하세요.</string>
     <string name="settings_needs_health_connect">Health Connect 필요</string>

@@ -642,6 +642,7 @@
     <string name="sheet_profile_name">Nome do perfil</string>
     <string name="queue_run_with">Executar com…</string>
     <string name="queue_last_attempt">Última tentativa: %1$s · %2$s</string>
+    <string name="queue_run_with_direct_note">“%1$s” foi usado diretamente — o perfil de fallback foi ignorado.</string>
     <string name="widget_all_metrics_label">Chompass Hoje</string>
     <string name="widget_all_metrics_description">Veja calorias, proteínas, carboidratos e gordura de hoje em um widget.</string>
     <string name="settings_needs_health_connect">Requer Health Connect</string>

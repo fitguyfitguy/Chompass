@@ -621,6 +621,7 @@
     <string name="sheet_profile_name">Profielnaam</string>
     <string name="queue_run_with">Uitvoeren met…</string>
     <string name="queue_last_attempt">Laatst geprobeerd: %1$s · %2$s</string>
+    <string name="queue_run_with_direct_note">„%1$s“ werd rechtstreeks gebruikt — het reserveprofiel werd overgeslagen.</string>
     <string name="widget_all_metrics_label">Chompass Vandaag</string>
     <string name="widget_all_metrics_description">Bekijk de calorieën, eiwitten, koolhydraten en vetten van vandaag in één widget.</string>
     <string name="settings_needs_health_connect">Vereist Health Connect</string>
