@@ -105,6 +105,32 @@ class OpenAiModelsClientTest {
     }
 
     @Test
+    fun filterChatLineup_dropsNonChatFamilies_keepsChatIds() {
+        // #132: Groq-style mixed /models body — audio, tts, guard, and embedding
+        // families drop; chat ids survive on separator boundaries (dot and VL).
+        val mixed = listOf(
+            "whisper-large-v3",
+            "playai-tts",
+            "meta-llama/llama-guard-4-8b",
+            "openai/gpt-oss-120b",
+            "qwen/qwen3.6-27b",
+            "Qwen/Qwen3.5-9B",
+            "Qwen/Qwen2.5-VL-72B-Instruct",
+            "BAAI/bge-large-en-v1.5",
+        )
+
+        assertEquals(
+            listOf(
+                "openai/gpt-oss-120b",
+                "qwen/qwen3.6-27b",
+                "Qwen/Qwen3.5-9B",
+                "Qwen/Qwen2.5-VL-72B-Instruct",
+            ),
+            OpenAiModelsClient.filterChatLineup(mixed),
+        )
+    }
+
+    @Test
     fun mergeOverCurated_keepsCuratedOrder_appendsRuntimeIds() {
         val curated = app.chompass.models.AIProvider.OPENAI.models
         // sol and 4o-mini are already curated; only astra appends.

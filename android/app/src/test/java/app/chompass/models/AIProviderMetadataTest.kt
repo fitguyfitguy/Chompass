@@ -51,4 +51,19 @@ class AIProviderMetadataTest {
                 sorted.indexOf(AIProvider.OPENAI) < sorted.indexOf(AIProvider.OLLAMA),
         )
     }
+
+    @Test
+    fun runtimeLineup_exactlyForModelsServingProviders() {
+        // #107/#132: providers with a usable GET /models on their built-in base
+        // fetch a runtime lineup; GEMINI/ANTHROPIC keep curated lists, and the
+        // local/device entries have no hosted /models.
+        val expected = setOf(
+            AIProvider.OPENAI, AIProvider.XAI, AIProvider.TOGETHER_AI, AIProvider.GROQ,
+            AIProvider.HUGGING_FACE, AIProvider.FIREWORKS, AIProvider.DEEP_INFRA,
+            AIProvider.MISTRAL,
+        )
+        for (p in AIProvider.entries) {
+            assertEquals("supportsRuntimeLineup wrong for $p", p in expected, p.supportsRuntimeLineup)
+        }
+    }
 }
