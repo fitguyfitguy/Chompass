@@ -1179,7 +1179,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         block: suspend (AnalysisStart) -> Unit,
     ) {
         viewModelScope.launch {
-            withFoodAnalysis(phased, defaultErrorRes, shouldEnd, configure, block)
+            withFoodAnalysis(phased, defaultErrorRes, shouldEnd, configure = configure, block = block)
         }
     }
 
@@ -1187,6 +1187,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         phased: Boolean = false,
         defaultErrorRes: Int = R.string.error_analysis_failed,
         shouldEnd: () -> Boolean = { true },
+        /** Appended to the localized AiError message when non-blank (queue "Run with…" no-fallback note). */
+        aiErrorSuffix: String? = null,
         configure: (HomeUiState) -> HomeUiState,
         block: suspend (AnalysisStart) -> Unit,
     ) {
@@ -1197,7 +1199,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         try {
             block(start)
         } catch (e: AiError) {
-            failAnalysis(start.generation, e.userMessage(container.appContext))
+            val msg = listOf(e.userMessage(container.appContext), aiErrorSuffix)
+                .filter { !it.isNullOrBlank() }
+                .joinToString(" ")
+            failAnalysis(start.generation, msg)
         } catch (e: OpenFoodFactsService.LookupException) {
             // LookupException messages are the barcode surface's user copy
             // (not-found / trouble / unreadable), so they render verbatim;
@@ -3329,6 +3334,11 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             val note = item.note?.trim()?.takeIf { it.isNotEmpty() }
             withFoodAnalysis(
                 phased = true,
+                // "Run with…" skips the global fallback chain on purpose — say
+                // so on failures (rate-limit surprise on the queue sheet).
+                aiErrorSuffix = profileOverride?.let {
+                    container.appContext.getString(R.string.queue_run_with_direct_note, it.name)
+                },
                 configure = { state ->
                     state.copy(
                         pendingImageBytes = images.firstOrNull(),

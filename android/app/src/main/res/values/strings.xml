@@ -1844,6 +1844,7 @@
     <string name="sheet_profile_name">Profile name</string>
     <string name="queue_run_with">Run with…</string>
     <string name="queue_last_attempt">Last tried: %1$s · %2$s</string>
+    <string name="queue_run_with_direct_note">%1$s was used directly — the fallback profile was skipped.</string>
 
     <string name="settings_health_connect">Health Connect</string>
     <string name="settings_manage_health_access">Manage Health Connect access</string>

@@ -657,6 +657,7 @@
     <string name="sheet_profile_name">اسم الملف الشخصي</string>
     <string name="queue_run_with">التشغيل باستخدام…</string>
     <string name="queue_last_attempt">آخر محاولة: %1$s · %2$s</string>
+    <string name="queue_run_with_direct_note">تم استخدام «%1$s» مباشرةً — تم تخطي الملف الشخصي الاحتياطي.</string>
     <string name="widget_all_metrics_label">Chompass اليوم</string>
     <string name="widget_all_metrics_description">شاهد سعرات اليوم والبروتين والكربوهيدرات والدهون في أداة واحدة.</string>
     <string name="settings_needs_health_connect">يتطلب Health Connect</string>

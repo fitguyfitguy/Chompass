@@ -643,6 +643,7 @@
     <string name="sheet_profile_name">Nom du profil</string>
     <string name="queue_run_with">Exécuter avec…</string>
     <string name="queue_last_attempt">Dernier essai : %1$s · %2$s</string>
+    <string name="queue_run_with_direct_note">« %1$s » a été utilisé directement — le profil de secours a été ignoré.</string>
     <string name="widget_all_metrics_label">Chompass Aujourd\'hui</string>
     <string name="widget_all_metrics_description">Voyez les calories, protéines, glucides et lipides du jour dans un seul widget.</string>
     <string name="settings_needs_health_connect">Nécessite Health Connect</string>
