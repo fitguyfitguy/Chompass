@@ -714,6 +714,8 @@
     <string name="home_calorie_mode_add_active">Aggiungi consumo attivo al budget</string>
     <string name="home_calorie_mode_add_active_desc">Le calorie attive da Health Connect (o la stima dal livello di attività) vengono aggiunte al budget calorico di oggi. Recupera ciò che bruci. Imposta il livello di attività come baseline quotidiana per non contare due volte gli allenamenti. Collega Health Connect in Impostazioni → Salute per il consumo misurato.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Suggerimento: attiva Health Connect per usare le calorie attive da orologio/telefono invece della stima per livello di attività.</string>
+    <string name="home_calorie_full_credit">Accredita l\'allenamento completo</string>
+    <string name="home_calorie_full_credit_desc">Aggiunge il consumo misurato di oggi al tuo obiettivo calorico completo. Spento, l\'indicatore trattiene il consumo di una giornata tipica perché una lettura alta non venga mangiata due volte.</string>
     <string name="home_calorie_mode_static_desc">Il tuo obiettivo calorico resta fisso. Un consumo attivo registrato manualmente aumenta il budget di quel giorno.</string>
     <string name="home_menu_manual_active">Consumo attivo</string>
     <string name="manual_active_kcal_hint">Calorie bruciate</string>
@@ -814,6 +816,8 @@
     <string name="action_retry">Riprova</string>
     <string name="action_show">Mostra</string>
     <string name="action_undo">Ripristina</string>
+    <string name="action_save_to_favorites">Salva nei preferiti</string>
+    <string name="saved_to_favorites">Salvato nei preferiti</string>
     <string name="action_what_if">E se...?</string>
     <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="ai_error_coach_on_device">Coach non è ancora disponibile con il fornitore locale. Passa a un fornitore cloud in Impostazioni → Fornitore IA.</string>
@@ -1304,7 +1308,7 @@
     <string name="settings_calc_forecast_formula">previsto kg/settimana = (calorie medie giornaliere − TDEE) × 7 ÷ 7700\nosservato kg/settimana = pendenza Theil–Sen × 7\nregistrazione scarsa: assunzione media ÷ giorni di calendario quando i giorni registrati &lt; 50%% del periodo</string>
     <string name="settings_calc_forecast_name">Previsione del bilancio energetico</string>
     <string name="settings_calc_forecast_used">I grafici dei progressi e la stima ETA usano le tue recenti registrazioni alimentari e pesate (fino a 90 giorni). Se registri il cibo in meno della metà dei giorni del periodo, l\'assunzione viene mediata sui giorni di calendario, così i rari giorni «abbondanti» non gonfiano la previsione. Altrimenti l\'assunzione viene mediata solo sui giorni registrati. Il trend del peso usa una regressione mediana robusta (Theil–Sen) sulle pesate.</string>
-    <string name="settings_calc_home_gauge_formula">attività stimata = TDEE − BMR\nbudget sedentario = obiettivo calorico − attività stimata\nobiettivo con attività = budget sedentario + (attività misurata o stimata)</string>
+    <string name="settings_calc_home_gauge_formula">attività stimata = TDEE − BMR\nbudget sedentario = obiettivo calorico − attività stimata\nobiettivo con attività = budget sedentario + (attività misurata o stimata)\nL\'accredito completo, spento per impostazione predefinita, salta quella divisione e aggiunge il consumo misurato di oggi all\'obiettivo calorico completo. Senza misurazioni, l\'obiettivo resta quello completo.</string>
     <string name="settings_calc_home_gauge_name">Dispendio attivo sull\'anello Home</string>
     <string name="settings_calc_home_gauge_used">Aspetto Home ti permette di aggiungere il dispendio attivo all\'obiettivo, monitorare l\'assunzione netta o mostrare un suggerimento sul dispendio. La stima del livello di attività è TDEE meno BMR (la parte del moltiplicatore PAL). «Aggiungi attività» e «Doppio» usano questa stima quando Health Connect è spento; «Netto» richiede il dispendio misurato da Health Connect. «Aggiungi attività» divide l\'obiettivo salvato in una base sedentaria più lo strato attivo di oggi, così l\'attività non viene contata due volte. Con «Aggiungi attività», imposta il livello di attività come vita quotidiana senza allenamenti; l\'attività misurata o stimata copre gli allenamenti, evitando che si sommino a un PAL alto.</string>
     <string name="settings_calc_intro">I tuoi obiettivi giornalieri di calorie e macro sono impostati dall\'IA. Quando tocchi «Ricalcola obiettivi», o automaticamente circa una volta a settimana se gli obiettivi adattivi sono attivi, Chompass invia al tuo fornitore IA il profilo, le formule di riferimento qui sotto, il cibo registrato di recente e il trend del peso. Parte da queste formule sottoposte a revisione, poi le adatta ai tuoi dati per stimare mantenimento e obiettivi.</string>

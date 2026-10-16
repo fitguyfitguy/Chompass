@@ -724,6 +724,8 @@
     <string name="home_calorie_mode_add_active">활동 소모를 예산에 추가</string>
     <string name="home_calorie_mode_add_active_desc">Health Connect(또는 활동 수준 추정치)의 활동 칼로리가 오늘 칼로리 예산에 더해져요. 소모한 만큼 먹으세요. 운동이 중복 계산되지 않도록 활동 수준을 일상 기준으로 설정하세요. 측정값을 쓰려면 설정 → 건강에서 Health Connect를 연결하세요.</string>
     <string name="home_calorie_mode_add_active_hc_hint">팁: Health Connect를 켜면 활동 수준 추정치 대신 시계/휴대폰의 활동 칼로리를 사용할 수 있어요.</string>
+    <string name="home_calorie_full_credit">운동 소모 전액 더하기</string>
+    <string name="home_calorie_full_credit_desc">오늘 측정된 소모 칼로리를 전체 칼로리 목표 위에 더해요. 꺼져 있으면 게이지가 평범한 하루 소모분을 남겨 둬서 높은 값이 두 번 먹히지 않아요.</string>
     <string name="home_calorie_mode_static_desc">칼로리 목표는 고정돼요. 직접 기록한 활동 소모는 그날의 예산을 늘려요.</string>
     <string name="home_menu_manual_active">활동 소모</string>
     <string name="manual_active_kcal_hint">소모 칼로리</string>
@@ -823,6 +825,8 @@
     <string name="action_retry">다시 시도</string>
     <string name="action_show">표시</string>
     <string name="action_undo">실행 취소</string>
+    <string name="action_save_to_favorites">즐겨찾기에 저장</string>
+    <string name="saved_to_favorites">즐겨찾기에 저장했어요</string>
     <string name="action_what_if">어떻게 될까?</string>
     <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="ai_error_coach_on_device">코치는 아직 온디바이스 제공자에서 지원되지 않아요. 설정 → AI 제공자에서 클라우드 제공자로 전환하세요.</string>
@@ -1340,7 +1344,7 @@
     <string name="settings_calc_forecast_formula">예측 kg/주 = (일평균 칼로리 − TDEE) × 7 ÷ 7700\n관측 kg/주 = Theil–Sen 기울기 × 7\n드문 기록: 기록일이 창의 50%% 미만일 때 평균 섭취 ÷ 역일</string>
     <string name="settings_calc_forecast_name">에너지 균형 예측</string>
     <string name="settings_calc_forecast_used">진행 차트와 ETA 예측은 최근 음식 기록과 체중 측정(최대 90일)을 사용해요. 창의 절반 미만의 날에 기록하면 섭취가 역일 기준으로 평균화되어 드문 "폭식" 날이 예측을 부풀리지 않아요. 그 외에는 기록된 날만 평균화돼요. 관측 체중 추세는 체중계 기록에 대한 강건한 중앙값 기울기(Theil–Sen) 피팅을 사용해요.</string>
-    <string name="settings_calc_home_gauge_formula">추정 활동 = TDEE − BMR\n좌식 예산 = 칼로리 목표 − 추정 활동\n활동 추가 목표 = 좌식 예산 + (측정 또는 추정 활동)</string>
+    <string name="settings_calc_home_gauge_formula">추정 활동 = TDEE − BMR\n좌식 예산 = 칼로리 목표 − 추정 활동\n활동 추가 목표 = 좌식 예산 + (측정 또는 추정 활동)\n전액 더하기(기본 꺼짐)는 이 분할을 건너뛰고 오늘 측정된 소모를 전체 칼로리 목표 위에 더해요. 측정이 없으면 목표는 전체 그대로예요.</string>
     <string name="settings_calc_home_gauge_name">홈 링의 활동 소비</string>
     <string name="settings_calc_home_gauge_used">홈 표시에서 활동 소비를 목표에 추가하거나, 순 섭취를 추적하거나, 소비 힌트를 표시할 수 있어요. 활동 수준 추정치는 TDEE − BMR이에요(PAL 배수 부분). "활동 추가"와 "이중"은 Health Connect가 꺼져 있을 때 그 추정치를 사용하고, "순"은 Health Connect 측정 소비가 필요해요. "활동 추가"는 저장된 목표를 좌식 기준 + 오늘의 활동 계층으로 나누어 활동이 이중 계산되지 않게 해요. "활동 추가" 사용 시 활동 수준을 운동 없는 일상으로 설정하세요. 측정 또는 추정 활동이 운동을 커버하여 높은 PAL 위에 쌓이지 않아요.</string>
     <string name="settings_calc_intro">일일 칼로리와 매크로 목표는 AI가 설정해요. "목표 재계산"을 탭하거나 적응형 목표가 켜져 있으면 주 1회 자동으로, Chompass가 프로필, 아래 참조 공식, 최근 기록 음식, 체중 추세를 AI 제공자에게 보내요. 검증된 공식에서 시작하여 데이터에 맞게 조정해 유지량과 목표를 추정해요.</string>

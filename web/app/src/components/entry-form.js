@@ -4,7 +4,7 @@ import { foodEntries, prefs } from "../lib/db.js";
 import { subpageBar, bindSubpageBack } from "../lib/ui/subpage.js";
 import { openConfirm } from "../lib/ui/dialog.js";
 import { guessMealTypeFromPrefs } from "../lib/meal-schedule.js";
-import { toggleFavorite, isFavorite, listFavorites, updateFavorite, favoriteNameTaken } from "../lib/saved-meals.js";
+import { toggleFavorite, isFavorite, listFavorites, updateFavorite, upsertFavorite, favoriteNameTaken } from "../lib/saved-meals.js";
 import {
   ensureServingUnits,
   pickerOptions,
@@ -563,6 +563,14 @@ export class EntryForm extends HTMLElement {
               ? `<button type="button" class="btn btn--ghost" data-action="progressive-next" ${this.correcting ? "disabled" : ""}>${escapeHtml(t("progressive_meal.add_next"))}</button>`
               : ""
           }
+          ${
+            // A fresh barcode review can be saved straight to favorites
+            // without a diary row. Not for search hits, photo/text analysis,
+            // saved-meal relogs, or an in-progress progressive meal.
+            !this.existing && !this.favoriteMode && this.prefill?.source === "barcode" && !hasProgressiveMealItems()
+              ? `<button type="button" class="btn btn--ghost" data-action="save-favorite" ${this.correcting ? "disabled" : ""}>${escapeHtml(t("entry.save_to_favorites"))}</button>`
+              : ""
+          }
           <button type="button" class="btn btn--ghost" data-action="cancel">${escapeHtml(t("action.cancel"))}</button>
         </div>
       </form>
@@ -578,6 +586,15 @@ export class EntryForm extends HTMLElement {
     });
     this.querySelector('[data-action="progressive-next"]')?.addEventListener("click", () => {
       void this.commitToProgressiveMeal({ resumeCapture: true });
+    });
+    this.querySelector('[data-action="save-favorite"]')?.addEventListener("click", async () => {
+      // Favorites only — no diary row, no toggleFavorite (a second tap
+      // would delete). buildEntryFromForm returns null while a nutrition
+      // field is invalid; stay on the form then.
+      const entry = this.buildEntryFromForm();
+      if (!entry) return;
+      await upsertFavorite(entry);
+      location.hash = "#/home";
     });
     this.querySelector('[data-action="delete"]')?.addEventListener("click", () => this.onDelete());
     this.querySelector('[data-action="favorite"]')?.addEventListener("click", async () => {

@@ -6,6 +6,11 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Added
+
+- **The burn control now lives under Goals, with a full workout credit** (Android & Web): the Calorie gauge setting moved from Customize Home to Settings → Goals & Nutrition. Add active burn stays the default and keeps holding back a typical day's burn, so a high reading is not eaten back twice. A new Credit the full workout switch (off by default) skips that split and adds your measured workout on top of the full calorie goal. With no measured burn, the goal stays the full target. The Home widget follows the same choice.
+- **Save a barcode scan to favorites without logging it** (Android & Web): a fresh barcode review has a Save to favorites action that stores the product in your favorites without writing a diary row, so you can log it later from Saved Meals. Saving a product whose name already has a favorite updates that favorite instead. The undo hint appears only when a new favorite was created.
+
 ### Fixed
 
 - **Weigh-in and body-fat reminders skip a day you already logged** (Android): the reminder does not fire when that day's weight or body fat is already entered. The next reminder stays at the time you chose. Closes Codeberg [#133](https://codeberg.org/fitguy/Chompass/issues/133) by [@NiklasMM](https://codeberg.org/NiklasMM).

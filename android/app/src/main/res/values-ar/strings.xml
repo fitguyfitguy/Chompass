@@ -729,6 +729,8 @@
     <string name="home_calorie_mode_add_active">إضافة الحرق النشط إلى الميزانية</string>
     <string name="home_calorie_mode_add_active_desc">تُضاف السعرات النشطة من Health Connect (أو تقدير مستوى النشاط) إلى ميزانية السعرات اليوم. كُل ما تحرقه. اضبط مستوى النشاط على خط الأساس اليومي حتى لا تُحسب التمارين مرتين. اربط Health Connect من الإعدادات ← الصحة للحرق المقاس.</string>
     <string name="home_calorie_mode_add_active_hc_hint">نصيحة: فعّل Health Connect لاستخدام سعرات الساعة/الهاتف النشطة بدل تقدير مستوى النشاط.</string>
+    <string name="home_calorie_full_credit">احتساب الحرق الكامل</string>
+    <string name="home_calorie_full_credit_desc">يضيف حرق اليوم المقاس فوق هدف سعراتك الكامل. عند الإيقاف، يحتجز المؤشر حرق يوم نموذجي حتى لا تُؤكل القراءة المرتفعة مرتين.</string>
     <string name="home_calorie_mode_static_desc">هدف السعرات يبقى ثابتًا. الحرق النشط المسجَّل يدويًا يرفع ميزانية ذلك اليوم.</string>
     <string name="home_menu_manual_active">الحرق النشط</string>
     <string name="manual_active_kcal_hint">السعرات المحروقة</string>
@@ -828,6 +830,8 @@
     <string name="action_retry">أعد المحاولة</string>
     <string name="action_show">إظهار</string>
     <string name="action_undo">تراجع</string>
+    <string name="action_save_to_favorites">حفظ في المفضلة</string>
+    <string name="saved_to_favorites">تم الحفظ في المفضلة</string>
     <string name="action_what_if">ماذا لو؟</string>
     <string name="add_food_relog_kcal">%1$d سعرة %2$s</string>
     <string name="ai_error_coach_on_device">المدرب غير متاح بعد مع المزوّد المحلي. انتقل إلى مزوّد سحابي في الإعدادات ← مزوّد الذكاء الاصطناعي.</string>
@@ -1345,7 +1349,7 @@
     <string name="settings_calc_forecast_formula">المتوقع كغ/أسبوع = (متوسط السعرات اليومية − TDEE) × 7 ÷ 7700\nالملاحَظ كغ/أسبوع = ميل Theil–Sen × 7\nالتسجيل المتقطع: متوسط الاستهلاك ÷ الأيام التقويمية عندما تكون الأيام المسجلة &lt; 50%% من النافذة</string>
     <string name="settings_calc_forecast_name">توقع توازن الطاقة</string>
     <string name="settings_calc_forecast_used">تستخدم رسوم التقدم وتوقع ETA سجلات طعامك ووزنك الأخيرة (حتى 90 يومًا). عندما تسجل في أقل من نصف أيام النافذة، يُحسب متوسط الاستهلاك على الأيام التقويمية حتى لا تضخّم أيام «الأكل الكبير» النادرة التوقع. وإلا يُحسب المتوسط على الأيام المسجلة فقط. يستخدم اتجاه الوزن الملاحَظ ملاءمة ميل وسيطي قوية (Theil–Sen) على سجلات الميزان.</string>
-    <string name="settings_calc_home_gauge_formula">النشاط المقدر = TDEE − BMR\nالميزانية المستقرة = هدف السعرات − النشاط المقدر\nالهدف مع النشاط = الميزانية المستقرة + (النشاط المقاس أو المقدر)</string>
+    <string name="settings_calc_home_gauge_formula">النشاط المقدر = TDEE − BMR\nالميزانية المستقرة = هدف السعرات − النشاط المقدر\nالهدف مع النشاط = الميزانية المستقرة + (النشاط المقاس أو المقدر)\nالاحتساب الكامل، متوقف افتراضيًا، يتخطى هذا التقسيم ويضيف حرق اليوم المقاس فوق هدف السعرات الكامل. بدون حرق مقاس، يبقى الهدف الكامل.</string>
     <string name="settings_calc_home_gauge_name">الحرق النشط في حلقة الرئيسية</string>
     <string name="settings_calc_home_gauge_used">تتيح لك شاشة الرئيسية إضافة الحرق النشط إلى هدفك، أو تتبع الاستهلاك الصافي، أو إظهار تلميح للحرق. تقدير مستوى نشاطك هو TDEE ناقص BMR (جزء مضاعف PAL). يستخدم «إضافة نشاط» و«مزدوج» هذا التقدير عندما يكون Health Connect متوقفًا؛ يتطلب «الصافي» حرقًا مقاسًا من Health Connect. يقسم «إضافة نشاط» هدفك المحفوظ إلى أساس مستقر زائد طبقة النشاط لليوم حتى لا يُحتسب النشاط مرتين. مع «إضافة نشاط»، عيّن مستوى النشاط كحياة يومية دون تمارين؛ يغطي النشاط المقاس أو المقدر التمارين حتى لا تتراكم على PAL مرتفع.</string>
     <string name="settings_calc_intro">تحدد الذكاء الاصطناعي أهداف السعرات والمغذيات الكبرى اليومية. عند النقر على «إعادة حساب الأهداف»، أو تلقائيًا مرة أسبوعيًا تقريبًا إذا كانت الأهداف التكيفية مفعّلة، يرسل Chompass ملفك والمعادلات المرجعية أدناه وطعامك المسجل مؤخرًا واتجاه وزنك إلى مزوّد الذكاء الاصطناعي. يبدأ من هذه المعادلات المحكّمة، ثم يعدلها على بياناتك لتقدير الصيانة والأهداف.</string>

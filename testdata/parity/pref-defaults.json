@@ -28,6 +28,7 @@
   "foodLogMacroChips": ["protein", "carbs", "fat"],
   "homeNutrientCardCount": 4,
   "calorieGaugeMode": "static",
+  "calorieGaugeFullCredit": false,
   "weekStartsOnMonday": true,
   "weekStartDay": "monday",
   "energyUnit": "kcal",

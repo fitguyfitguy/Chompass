@@ -1,6 +1,9 @@
 // @ts-check
 /** @type {Readonly<Record<string, string>>} */
 export const az = Object.freeze({
+  "entry.save_to_favorites": "Sevimlilərə saxla",
+  "settings.goals.full_credit": "Tam hərəkəti hesabla",
+  "settings.goals.full_credit_hint": "Bu günün ölçülən hərəkətini tam hədəfin üzərinə əlavə edir. Standart olaraq bağlı. Ölçülən hərəkət yalnız Android-də var; burada büdcə tam hədəf üstəgəl əl ilə qeyd olunan hərəkət qalır.",
   "nav.home": "Əsas",
   "nav.progress": "İrəliləyiş",
   "nav.coach": "Kouç",

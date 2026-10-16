@@ -3,6 +3,9 @@
 
 /** @type {Readonly<Record<string, string>>} */
 export const uk = Object.freeze({
+  "entry.save_to_favorites": "Зберегти в обране",
+  "settings.goals.full_credit": "Зарахувати повне тренування",
+  "settings.goals.full_credit_hint": "Додає виміряні витрати сьогодні до повної цілі. Типово вимкнено. Виміряні витрати лише на Android; тут бюджет — повна ціль плюс ручні витрати.",
 
   // Shell / nav
   "nav.home": "Головна",

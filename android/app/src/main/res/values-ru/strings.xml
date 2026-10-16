@@ -1353,6 +1353,8 @@
     <string name="entry_analysis_tip_apply">Повторный анализ с подсказкой</string>
     <string name="entry_analysis_tip_cta">Добавить подсказку для ИИ (необязательно)</string>
     <string name="home_calorie_mode_add_active_hc_hint">Совет: включи Health Connect, чтобы использовать активные калории с часов/телефона вместо оценки по уровню активности.</string>
+    <string name="home_calorie_full_credit">Засчитать тренировку целиком</string>
+    <string name="home_calorie_full_credit_desc">Прибавляет измеренный расход за сегодня к полной цели по калориям. Выключено: шкала придерживает расход типичного дня, чтобы высокое значение не съели дважды.</string>
     <string name="home_menu_manual_active">Активный расход</string>
     <string name="manual_active_kcal_hint">Сожжённые калории</string>
     <string name="manual_active_name_hint">Название активности (необязательно)</string>
@@ -1411,6 +1413,8 @@
     <string name="about_donate">Купи мне йогурт</string>
     <string name="action_close">Закрыть</string>
     <string name="action_undo">Отменить</string>
+    <string name="action_save_to_favorites">Сохранить в избранное</string>
+    <string name="saved_to_favorites">Сохранено в избранное</string>
     <string name="ai_error_coach_on_device">Тренер пока недоступен с локальным провайдером. Переключись на облачного провайдера в Настройки → ИИ-провайдер.</string>
     <string name="ai_error_coach_round_limit">Тренер не смог ответить. Попробуй переформулировать вопрос.</string>
     <string name="ai_error_disabled">ИИ-функции отключены в Настройки → ИИ и речь.</string>
@@ -1673,7 +1677,8 @@
 редкие записи: среднее потребление ÷ календарные дни, если дней с записями &lt; 50%% окна</string>
     <string name="settings_calc_home_gauge_formula">оценка активности = TDEE − BMR
 сидячий бюджет = цель калорий − оценка активности
-цель с активностью = сидячий бюджет + (измеренная или оценённая активность)</string>
+цель с активностью = сидячий бюджет + (измеренная или оценённая активность)
+Полный зачёт, по умолчанию выключен, пропускает это разделение и прибавляет измеренный расход за сегодня к полной цели по калориям. Без измерения остаётся полная цель.</string>
     <string name="settings_custom_url_placeholder">https://ваш-сервер.com/v1</string>
     <string name="settings_customize_progress">Настроить прогресс</string>
     <string name="settings_danger_zone">Опасная зона</string>

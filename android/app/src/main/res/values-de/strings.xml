@@ -810,6 +810,8 @@ für dich ein</string>
     <string name="home_day_type_switched">Tagstyp gewechselt</string>
 
     <string name="action_undo">Rückgängig</string>
+    <string name="action_save_to_favorites">Zu Favoriten speichern</string>
+    <string name="saved_to_favorites">In Favoriten gespeichert</string>
 
     <string name="add_food_photo_source_title">Foto hinzufügen</string>
 
@@ -2715,6 +2717,8 @@ für dich ein</string>
     <string name="home_calorie_mode_add_active_desc">Aktive Kalorien aus Health Connect (oder deine geschätzte Aktivitätsstufe) werden zum heutigen Kalorienbudget hinzugefügt. Nimm so viel zu dir, wie du verbrennst. Stelle das Aktivitätsniveau auf den täglichen Grundwert ein, damit Trainingseinheiten nicht doppelt gezählt werden. Verbinde Health Connect unter „Einstellungen“ → „Gesundheit“, um den gemessenen Kalorienverbrauch zu erfassen.</string>
 
     <string name="home_calorie_mode_add_active_hc_hint">Tipp: Aktiviere Health Connect, um die aktiven Kalorien der Uhr/des Smartphones anstelle der geschätzten Aktivität zu verwenden.</string>
+    <string name="home_calorie_full_credit">Vollen Verbrauch anrechnen</string>
+    <string name="home_calorie_full_credit_desc">Zählt den heutigen gemessenen Verbrauch auf dein volles Kalorienziel. Aus: die Anzeige hält einen typischen Tag zurück, damit ein hoher Wert nicht doppelt gegessen wird.</string>
 
     <string name="home_nutrients_pick_count">Wähle bis zu %1$d Nährstoffe für den Startbildschirm aus.</string>
 
@@ -3256,7 +3260,7 @@ für dich ein</string>
 
     <string name="settings_calc_home_gauge_used">Mit der Anzeige zu Hause kannst du den aktiven Kalorienverbrauch zu deinem Ziel hinzufügen, die Nettoaufnahme verfolgen oder einen Kalorienverbrauch-Hinweis anzeigen. Deine geschätzte Aktivitätsstufe entspricht dem TDEE abzüglich des BMR (dem PAL-Multiplikatoranteil). „Aktive Kalorien hinzufügen“ und „Dual“ verwenden diese Schätzung, wenn Health Connect deaktiviert ist; „Netto“ erfordert den gemessenen Kalorienverbrauch über Health Connect. „Aktive Kalorien hinzufügen“ teilt dein gespeichertes Ziel in eine sitzende Basis und die heutige aktive Komponente auf, damit die Aktivität nicht doppelt gezählt wird. Stell bei „Aktive Kalorien hinzufügen“ die Aktivitätsstufe auf den alltäglichen Lebensstil ohne Training ein; „Gemessene“ oder „Geschätzte aktive Kalorien“ decken Trainingseinheiten ab, damit diese nicht auf einen hohen PAL-Wert aufgeschlagen werden.</string>
 
-    <string name="settings_calc_home_gauge_formula">geschätzte Aktivität = TDEE − BMR\nsitzendes Budget = Kalorienziel − geschätzte Aktivität\n„Add Active“-Ziel = sitzendes Budget + (gemessene oder geschätzte Aktivität)</string>
+    <string name="settings_calc_home_gauge_formula">geschätzte Aktivität = TDEE − BMR\nsitzendes Budget = Kalorienziel − geschätzte Aktivität\n„Add Active“-Ziel = sitzendes Budget + (gemessene oder geschätzte Aktivität)\nVoller Verbrauch, standard aus, überspringt diese Aufteilung und zählt den heutigen gemessenen Verbrauch auf das volle Kalorienziel. Ohne Messung bleibt das volle Ziel.</string>
 
     <string name="settings_calc_target_name">Erhaltung &amp;amp; Zielanpassung</string>
 

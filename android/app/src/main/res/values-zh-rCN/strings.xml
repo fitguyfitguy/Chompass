@@ -726,6 +726,8 @@
     <string name="home_calorie_mode_add_active">将活动消耗加入预算</string>
     <string name="home_calorie_mode_add_active_desc">来自 Health Connect（或你的活动水平估算）的活动热量会加入今日卡路里预算。消耗多少可以再吃回来。将活动水平设为日常基准，避免运动被重复计算。要在设置 → 健康中连接 Health Connect 以使用实测消耗。</string>
     <string name="home_calorie_mode_add_active_hc_hint">提示：启用 Health Connect 后，可使用手表/手机的活动热量，而不是活动水平估算。</string>
+    <string name="home_calorie_full_credit">计入全部运动消耗</string>
+    <string name="home_calorie_full_credit_desc">在今天测得的消耗之上，直接叠加你的完整热量目标。关闭时，仪表会预留典型一天的消耗，避免高读数被重复吃回。</string>
     <string name="home_calorie_mode_static_desc">卡路里目标保持不变。手动记录的活动消耗仍会增加当日预算。</string>
     <string name="home_menu_manual_active">活动消耗</string>
     <string name="manual_active_kcal_hint">消耗热量</string>
@@ -825,6 +827,8 @@
     <string name="action_retry">重试</string>
     <string name="action_show">显示</string>
     <string name="action_undo">撤销</string>
+    <string name="action_save_to_favorites">保存到收藏</string>
+    <string name="saved_to_favorites">已保存到收藏</string>
     <string name="action_what_if">会怎样？</string>
     <string name="add_food_relog_kcal">%1$d 千卡 %2$s</string>
     <string name="ai_error_coach_on_device">教练暂不支持端侧提供商，请在设置 → AI 提供商中切换到云端提供商。</string>
@@ -1342,7 +1346,7 @@
     <string name="settings_calc_forecast_formula">预计 公斤/周 =（日均热量 − TDEE）× 7 ÷ 7700\n观察 公斤/周 = Theil–Sen 斜率 × 7\n稀疏记录：当记录天数 &lt; 窗口 50%% 时，平均摄入 ÷ 日历天数</string>
     <string name="settings_calc_forecast_name">能量平衡预测</string>
     <string name="settings_calc_forecast_used">进度图表和 ETA 预测使用你近期的食物记录和称重（最多 90 天）。当你在窗口内不足一半天数记录时，摄入按日历天数平均，以免偶发“大吃”日夸大预测。否则摄入仅按有记录的天数平均。观察体重趋势使用秤上记录的稳健中位数斜率（Theil–Sen）拟合。</string>
-    <string name="settings_calc_home_gauge_formula">估算主动 = TDEE − BMR\n久坐预算 = 热量目标 − 估算主动\n加主动目标 = 久坐预算 +（测量或估算主动）</string>
+    <string name="settings_calc_home_gauge_formula">估算主动 = TDEE − BMR\n久坐预算 = 热量目标 − 估算主动\n加主动目标 = 久坐预算 +（测量或估算主动）\n全额计入（默认关闭）会跳过这一拆分，把今天测得的消耗直接加到完整热量目标上。没有测量时，目标保持完整值。</string>
     <string name="settings_calc_home_gauge_name">主页圆环主动消耗</string>
     <string name="settings_calc_home_gauge_used">主页显示可让你把主动消耗加入目标、跟踪净摄入或显示消耗提示。你的活动水平估算是 TDEE 减 BMR（PAL 乘数部分）。“加主动”和“双计”在 Health Connect 关闭时使用该估算；“净摄入”需要 Health Connect 实测消耗。“加主动”把你的已存目标拆成久坐基础加今日主动层，避免活动被重复计算。使用“加主动”时，请把活动水平设为不训练的日常，实测或估算的主动消耗覆盖锻炼，避免叠加在高 PAL 之上。</string>
     <string name="settings_calc_intro">你的每日热量和宏量目标由 AI 设定。当你点按“重新计算目标”，或在自适应目标开启时每周自动进行一次，Chompass 会把你的资料、下方参考公式、近期记录的食物和体重趋势发送给 AI 提供商。它从这些同行评审的公式出发，再根据你的数据调整，估算你的维持量和目标。</string>

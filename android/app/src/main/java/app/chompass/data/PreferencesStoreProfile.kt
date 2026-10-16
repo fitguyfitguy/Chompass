@@ -229,6 +229,13 @@ internal suspend fun PreferencesStore.setHomeCalorieDisplayModeImpl(v: String) {
         dataStore.edit { it[Keys.HOME_CALORIE_DISPLAY_MODE] = v }
     }
 
+internal val PreferencesStore.homeCalorieFullCreditImpl: Flow<Boolean> get() = dataStore.data.map {
+        it[Keys.HOME_CALORIE_FULL_CREDIT] ?: false
+    }
+internal suspend fun PreferencesStore.setHomeCalorieFullCreditImpl(v: Boolean) {
+        dataStore.edit { it[Keys.HOME_CALORIE_FULL_CREDIT] = v }
+    }
+
 internal val PreferencesStore.foodLogMacroChipsImpl: Flow<String> get() = dataStore.data.map {
         it[Keys.FOOD_LOG_MACRO_CHIPS] ?: FoodLogMacroChip.DefaultStorageValue
     }
@@ -263,6 +270,7 @@ internal val PreferencesStore.homeDisplayPreferencesImpl: Flow<HomeDisplayPrefer
             showActiveCalories = prefs[Keys.HOME_SHOW_ACTIVE_CALORIES] ?: false,
             stepGoal = prefs[Keys.HOME_STEP_GOAL] ?: HomeDisplayPreferences.DEFAULT_STEP_GOAL,
             calorieDisplayMode = HomeCalorieDisplayMode.fromStorage(prefs[Keys.HOME_CALORIE_DISPLAY_MODE]),
+            fullCreditActiveBurn = prefs[Keys.HOME_CALORIE_FULL_CREDIT] ?: false,
             foodLogMacroChips = FoodLogMacroChip.fromStorage(prefs[Keys.FOOD_LOG_MACRO_CHIPS]),
         )
     }

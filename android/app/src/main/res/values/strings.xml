@@ -638,6 +638,8 @@
     <string name="home_food_removed">Food removed</string>
     <string name="home_day_type_switched">Day type switched</string>
     <string name="action_undo">Undo</string>
+    <string name="action_save_to_favorites">Save to favorites</string>
+    <string name="saved_to_favorites">Saved to favorites</string>
     <string name="add_food_photo_source_title">Add a photo</string>
     <string name="add_food_photo_camera">Take Photo</string>
     <string name="add_food_photo_gallery">Choose from Gallery</string>
@@ -1311,7 +1313,14 @@
         <item>home</item>
         <item>cards</item>
         <item>nutrients</item>
+    </string-array>
+    <string-array name="settings_search_kw_calorie_gauge">
         <item>gauge</item>
+        <item>active</item>
+        <item>burn</item>
+        <item>eat back</item>
+        <item>health connect</item>
+        <item>workout</item>
     </string-array>
     <string-array name="settings_search_kw_appearance">
         <item>dark</item>
@@ -2215,6 +2224,8 @@
     <string name="home_calorie_mode_static_desc">Your calorie goal stays fixed. A manually logged active burn still raises that day’s budget.</string>
     <string name="home_calorie_mode_add_active_desc">Active calories from Health Connect (or your activity-level estimate) are added to today’s calorie budget. Eat back what you burn. Set Activity Level to everyday baseline so workouts are not double-counted. Turn on Health Connect under Settings → Health for measured burn.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Tip: enable Health Connect to use watch/phone active calories instead of the activity-level estimate.</string>
+    <string name="home_calorie_full_credit">Credit the full workout</string>
+    <string name="home_calorie_full_credit_desc">Adds today’s measured burn on top of your full calorie goal. Off, the gauge holds back a typical day’s burn so a high reading is not eaten back twice.</string>
     <string name="home_nutrients_pick_count">Pick up to %1$d nutrients for the home screen.</string>
     <string name="home_steps_label">Steps</string>
     <string name="home_steps_goal_format">Goal %1$s</string>
@@ -2549,7 +2560,7 @@
     <string name="settings_calc_sec_home_gauge">Home calorie gauge</string>
     <string name="settings_calc_home_gauge_name">Active burn on the home ring</string>
     <string name="settings_calc_home_gauge_used">Home Display lets you add active burn to your goal, track net intake, or show a burn hint. Your activity-level estimate is TDEE minus BMR (the PAL multiplier portion). Add Active and Dual use that estimate when Health Connect is off; Net requires measured Health Connect burn. Add Active splits your stored goal into a sedentary base plus today\'s active layer so activity is not counted twice. With Add Active, set Activity Level to everyday non-training life; measured or estimated active covers workouts so they are not stacked on a high PAL.</string>
-    <string name="settings_calc_home_gauge_formula">estimated active = TDEE − BMR\nsedentary budget = calorie goal − estimated active\nAdd Active goal = sedentary budget + (measured or estimated active)</string>
+    <string name="settings_calc_home_gauge_formula">estimated active = TDEE − BMR\nsedentary budget = calorie goal − estimated active\nAdd Active goal = sedentary budget + (measured or estimated active)\nFull credit, off by default, skips that split and adds today\'s measured burn on top of the full calorie goal. With no measured burn, the goal stays the full target.</string>
     <string name="settings_calc_target_name">Maintenance &amp;amp; goal adjustment</string>
     <string name="settings_calc_target_used">Maintenance starts from your TDEE. With Energy Burn on, it starts from your measured Health Connect burn (a 14-day Active + Basal average) instead. The AI refines maintenance against your logged intake and weight trend, then applies your goal: a weekly weight-change rate becomes a daily calorie deficit (Lose) or surplus (Gain).</string>
     <string name="settings_calc_target_formula">1 lb of body fat ≈ 3,500 kcal · 1 kg ≈ 7,700 kcal\nYour weekly rate ÷ 7 is subtracted from (Lose) or added to (Gain) maintenance to set the daily calorie target.</string>

@@ -204,6 +204,7 @@ internal object Keys {
         val HOME_SHOW_ACTIVE_CALORIES = booleanPreferencesKey("homeShowActiveCalories")
         val HOME_STEP_GOAL = intPreferencesKey("homeStepGoal")
         val HOME_CALORIE_DISPLAY_MODE = stringPreferencesKey("homeCalorieDisplayMode")
+        val HOME_CALORIE_FULL_CREDIT = booleanPreferencesKey("homeCalorieFullCredit")
         val HOME_DISPLAY_LAYOUT_VERSION = intPreferencesKey("homeDisplayLayoutVersion")
         val FOOD_LOG_MACRO_CHIPS = stringPreferencesKey("foodLogMacroChips")
         val OPTIONAL_NUTRIENT_GOALS = stringPreferencesKey("optionalNutrientGoals")

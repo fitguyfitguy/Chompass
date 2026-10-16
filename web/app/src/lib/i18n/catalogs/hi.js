@@ -1,6 +1,9 @@
 // @ts-check
 /** @type {Readonly<Record<string, string>>} */
 export const hi = Object.freeze({
+  "entry.save_to_favorites": "पसंदीदा में सहेजें",
+  "settings.goals.full_credit": "पूरा वर्कआउट जोड़ें",
+  "settings.goals.full_credit_hint": "आज की मापी गई कैलोरी को आपके पूरे लक्ष्य के ऊपर जोड़ता है। डिफ़ॉल्ट रूप से बंद। मापी गई कैलोरी केवल Android पर है; यहाँ बजट पूरा लक्ष्य और मैन्युअल बर्न के साथ रहता है।",
   "nav.home": "होम",
   "nav.progress": "प्रगति",
   "nav.coach": "कोच",

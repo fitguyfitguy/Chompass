@@ -60,6 +60,7 @@ import {
   makeManualActiveEntry,
   manualActiveKcalForDate,
   loadManualActiveEntries,
+  resolveGaugeTarget,
   resolveWebActiveBurn,
   updateManualActiveEntry,
 } from "../lib/manual-active.js";
@@ -634,7 +635,17 @@ export class DiaryView extends HTMLElement {
       const typicalRes = resolveActiveTypical(dayResolved?.profileId, stats, 0, estimatedDailyActive);
       const typical = typicalRes.kcal;
       const burn = resolveWebActiveBurn(typical, manualKcal);
-      calorieTarget = addActiveGaugeTarget(targets.calories, sedentaryBudget, burn);
+      // Full credit stacks the manual eat-back (and a measured
+      // burn, which web does not have) on the full goal; hold-back delegates
+      // to addActiveGaugeTarget. The numbers coincide on web — the estimate
+      // already sits inside the full goal.
+      calorieTarget = resolveGaugeTarget(
+        targets.calories,
+        sedentaryBudget,
+        burn,
+        manualKcal,
+        appPrefs.calorieGaugeFullCredit === true,
+      );
       gaugeInfo = burn
         ? {
             goal: sedentaryBudget,

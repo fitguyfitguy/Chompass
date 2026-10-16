@@ -72,6 +72,9 @@ describe("pref defaults (parity fixture)", () => {
 
   it("DEFAULT_PREFS schedule / gauge / week start match fixture", () => {
     assert.equal(DEFAULT_PREFS.calorieGaugeMode, fixture.calorieGaugeMode);
+    // Full credit ships off on both platforms: hold-back stays the default.
+    assert.equal(DEFAULT_PREFS.calorieGaugeFullCredit, fixture.calorieGaugeFullCredit);
+    assert.equal(DEFAULT_PREFS.calorieGaugeFullCredit, false);
     assert.equal(DEFAULT_PREFS.weekStartsOnMonday, fixture.weekStartsOnMonday);
     assert.equal(DEFAULT_PREFS.weekStartDay, fixture.weekStartDay);
     assert.equal(DEFAULT_PREFS.mealBreakfastStart, fixture.mealBreakfastStart);

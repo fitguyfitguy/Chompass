@@ -1,7 +1,6 @@
 package app.chompass.ui.settings
 
 import androidx.navigation.NavHostController
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Add
@@ -27,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -37,10 +34,10 @@ import app.chompass.R
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.ui.navigation.BottomNavScrollPadding
+import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.home.FoodLogMacroChipPickerDialog
 import app.chompass.ui.home.HomeTopNutrientPickerDialog
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
 @Composable
@@ -54,7 +51,6 @@ fun HomeDisplaySettingsScreen(
     val display = ui.homeDisplay
     var showNutrientPicker by remember { mutableStateOf(false) }
     var showChipPicker by remember { mutableStateOf(false) }
-    var showCalorieModePicker by remember { mutableStateOf(false) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -144,34 +140,15 @@ fun HomeDisplaySettingsScreen(
                 }
             }
 
+            // The gauge mode editor lives on Settings → Goals now; this row is
+            // only a pointer so Customize Home never holds a second editor.
             item {
                 ChompassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp) {
-                    Column {
-                        SettingRow(
-                            label = stringResource(R.string.home_display_calorie_mode),
-                            value = stringResource(display.calorieDisplayMode.displayNameRes),
-                            onClick = { showCalorieModePicker = true },
-                        )
-                        Text(
-                            stringResource(
-                                when (display.calorieDisplayMode) {
-                                    HomeCalorieDisplayMode.STATIC -> R.string.home_calorie_mode_static_desc
-                                    HomeCalorieDisplayMode.ADD_ACTIVE -> R.string.home_calorie_mode_add_active_desc
-                                }
-                            ),
-                            fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
-                        )
-                        if (display.calorieDisplayMode == HomeCalorieDisplayMode.ADD_ACTIVE) {
-                            Text(
-                                stringResource(R.string.home_calorie_mode_add_active_hc_hint),
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
-                                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
-                            )
-                        }
-                    }
+                    SettingRow(
+                        label = stringResource(R.string.home_display_calorie_mode),
+                        value = stringResource(display.calorieDisplayMode.displayNameRes),
+                        onClick = { nav?.navigate(ChompassRoutes.SETTINGS_GOALS) },
+                    )
                 }
             }
 
@@ -200,16 +177,6 @@ fun HomeDisplaySettingsScreen(
             selected = display.foodLogMacroChips,
             onSave = vm::setFoodLogMacroChips,
             onDismiss = { showChipPicker = false }
-        )
-    }
-    if (showCalorieModePicker) {
-        CalorieModePickerDialog(
-            selected = display.calorieDisplayMode,
-            onSelect = {
-                vm.setHomeCalorieDisplayMode(it)
-                showCalorieModePicker = false
-            },
-            onDismiss = { showCalorieModePicker = false }
         )
     }
 }
@@ -245,40 +212,5 @@ private fun StepGoalRow(goal: Int, onDecrement: () -> Unit, onIncrement: () -> U
         IconButton(onClick = onDecrement) { Icon(Icons.Filled.Remove, contentDescription = stringResource(R.string.cd_decrease)) }
         Text(goal.toString(), fontWeight = FontWeight.SemiBold, fontSize = 17.sp)
         IconButton(onClick = onIncrement) { Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.cd_increase)) }
-    }
-}
-
-@Composable
-private fun CalorieModePickerDialog(
-    selected: HomeCalorieDisplayMode,
-    onSelect: (HomeCalorieDisplayMode) -> Unit,
-    onDismiss: () -> Unit,
-) {
-    app.chompass.ui.components.ChompassDialog(onDismissRequest = onDismiss) {
-        Text(stringResource(R.string.home_display_calorie_mode), fontSize = 22.sp, fontWeight = FontWeight.Bold)
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            HomeCalorieDisplayMode.entries.forEach { mode ->
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(AppRadii.Field))
-                        .clickable { onSelect(mode) }
-                        .padding(horizontal = 14.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        stringResource(mode.displayNameRes),
-                        fontWeight = if (mode == selected) FontWeight.Bold else FontWeight.Normal,
-                        color = if (mode == selected) AppColors.Calorie else MaterialTheme.colorScheme.onSurface
-                    )
-                }
-            }
-        }
-        app.chompass.ui.components.ChompassDialogActions(
-            primaryText = stringResource(R.string.action_done),
-            onPrimary = onDismiss,
-            dismissText = stringResource(R.string.action_cancel),
-            onDismiss = onDismiss
-        )
     }
 }

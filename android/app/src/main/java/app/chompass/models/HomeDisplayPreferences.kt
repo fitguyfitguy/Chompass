@@ -97,6 +97,8 @@ data class HomeDisplayPreferences(
     val showActiveCalories: Boolean = false,
     val stepGoal: Int = DEFAULT_STEP_GOAL,
     val calorieDisplayMode: HomeCalorieDisplayMode = HomeCalorieDisplayMode.Default,
+    /** Add Active only: credit today's measured burn on top of the full goal instead of the sedentary split. */
+    val fullCreditActiveBurn: Boolean = false,
     val foodLogMacroChips: List<FoodLogMacroChip> = FoodLogMacroChip.DefaultSelection,
 ) {
     companion object {
@@ -139,6 +141,18 @@ data class ActiveBurnShade(
     val typicalIsDayType: Boolean = false,
     val typicalDayTypeName: String? = null,
     val blendedTypical: Int = 0,
+)
+
+/** The gauge's single budget decision — see [HomeCalorieDisplay.resolveGaugeBudget]. */
+data class GaugeBudget(
+    /** Goal the ring is anchored on (full goal, or the sedentary split). */
+    val base: Int,
+    /** Active burn credited on top of [base]. */
+    val creditedBurn: Int,
+    /** Number the hero's goal / ring end shows. */
+    val displayTarget: Int,
+    /** True when the ring draws the expected-day arc (ADD_ACTIVE hold-back with a live source). */
+    val useExpectedArc: Boolean,
 )
 
 object HomeCalorieDisplay {
@@ -210,6 +224,73 @@ object HomeCalorieDisplay {
      *  raises that day's goal without turning on automatic estimates. */
     fun effectiveGoal(mode: HomeCalorieDisplayMode, baseGoal: Int, activeCalories: Int): Int =
         baseGoal + activeCalories.coerceAtLeast(0)
+
+    /**
+     * One budget decision for the home gauge and the widget snapshot, so the
+     * hero and the widget can never disagree. [fullCredit] only means anything
+     * in ADD_ACTIVE; in STATIC it is ignored (manual burns stay the only
+     * credited burn).
+     *
+     * Hold-back (default, fullCredit == false): the ADD_ACTIVE split — the
+     * stored goal minus a typical day's active burn becomes the sedentary
+     * base, today's burn is layered on top, and with a live measured source
+     * the ring projects the expected day ([expectedTarget]).
+     *
+     * Full credit: the base is the full stored goal (no split, no 14-day
+     * average, no PAL estimate) and only today's measured burn plus manual
+     * burns are added. A morning with measured 0 keeps the full goal; a big
+     * workout is not eaten back twice through the average.
+     */
+    fun resolveGaugeBudget(
+        mode: HomeCalorieDisplayMode,
+        fullCredit: Boolean,
+        fullGoal: Int,
+        sedentaryBudget: Int,
+        energyLive: Boolean,
+        measuredToday: Int,
+        estimatedDailyActive: Int,
+        manual: Int,
+        typical: Int,
+    ): GaugeBudget {
+        val goal = fullGoal.coerceAtLeast(0)
+        val sedentary = sedentaryBudget.coerceAtLeast(0)
+        val manualKcal = manual.coerceAtLeast(0)
+        if (mode != HomeCalorieDisplayMode.ADD_ACTIVE) {
+            // STATIC: full goal + deliberate manual eat-backs only.
+            return GaugeBudget(
+                base = goal,
+                creditedBurn = manualKcal,
+                displayTarget = goal + manualKcal,
+                useExpectedArc = false,
+            )
+        }
+        val measured = measuredToday.coerceAtLeast(0)
+        if (fullCredit) {
+            val credited = (if (energyLive) measured else 0) + manualKcal
+            return GaugeBudget(
+                base = goal,
+                creditedBurn = credited,
+                displayTarget = goal + credited,
+                useExpectedArc = false,
+            )
+        }
+        val credited = (if (energyLive) {
+            measured
+        } else {
+            estimatedDailyActive.takeIf { it > 0 } ?: 0
+        }) + manualKcal
+        val useExpectedArc = energyLive && typical > 0
+        return GaugeBudget(
+            base = sedentary,
+            creditedBurn = credited,
+            displayTarget = if (useExpectedArc) {
+                expectedTarget(sedentary, typical, measured + manualKcal)
+            } else {
+                effectiveGoal(HomeCalorieDisplayMode.ADD_ACTIVE, sedentary, credited)
+            },
+            useExpectedArc = useExpectedArc,
+        )
+    }
 
     fun progressRatio(
         mode: HomeCalorieDisplayMode,

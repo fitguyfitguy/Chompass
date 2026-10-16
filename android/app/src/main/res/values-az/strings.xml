@@ -715,6 +715,8 @@ bilirsən?</string>
     <string name="home_calorie_mode_add_active">Aktiv yanmanı büdcəyə əlavə et</string>
     <string name="home_calorie_mode_add_active_desc">Health Connect-dən (və ya fəaliyyət səviyyəsi təxminindən) aktiv kalorilər bu günkü kalori büdcəsinə əlavə olunur. Nə yandırsan, onu ye. Məşqlərin iki dəfə sayılmaması üçün Fəaliyyət Səviyyəsini gündəlik baza kimi təyin et. Ölçülü yanma üçün Parametrlər → Sağlamlıq altında Health Connect qoş.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Məsləhət: saat/telefon aktiv kalorilərini fəaliyyət səviyyəsi təxmininə görə istifadə etmək üçün Health Connect-i aktiv et.</string>
+    <string name="home_calorie_full_credit">Tam hərəkəti hesabla</string>
+    <string name="home_calorie_full_credit_desc">Bu günün ölçülən hərəkətini tam kalori hədəfinin üzərinə əlavə edir. Bağlı olanda göstərici adi bir günün hərəkətini saxlayır ki, yüksək göstərici iki dəfə yenilməsin.</string>
     <string name="home_calorie_mode_static_desc">Kalori hədəfin sabit qalır. Əl ilə qeyd edilən aktiv yanma həmin günün büdcəsini artırır.</string>
     <string name="home_menu_manual_active">Aktiv yanma</string>
     <string name="manual_active_kcal_hint">Yanan kalorilər</string>
@@ -815,6 +817,8 @@ bilirsən?</string>
     <string name="action_retry">Yenidən</string>
     <string name="action_show">Göstər</string>
     <string name="action_undo">Geri al</string>
+    <string name="action_save_to_favorites">Sevimlilərə saxla</string>
+    <string name="saved_to_favorites">Sevimlilərə saxlanıldı</string>
     <string name="action_what_if">Nə olardı?</string>
     <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="ai_error_coach_on_device">Məşqçi hələlik cihazdaxili provayderlə mövcud deyil. Parametrlər → AI Provayderi bölməsində bulud provayderinə keç.</string>
@@ -1340,7 +1344,7 @@ bilirsən?</string>
     <string name="settings_calc_forecast_formula">proqnoz kq/həftə = (orta gündəlik kalori − TDEE) × 7 ÷ 7700\nmüşahidə kq/həftə = Theil–Sen meyli × 7\nnadir qeyd: qeyd olunmuş günlər pəncərənin &lt; 50%%-i olduqda orta qəbul ÷ təqvim günləri</string>
     <string name="settings_calc_forecast_name">Enerji balansı proqnozu</string>
     <string name="settings_calc_forecast_used">Tərəqqi qrafikləri və ETA proqnozu son yemək qeydlərini və çəkilmələrini (90 günə qədər) istifadə edir. Pəncərənin yarısından az günündə qeyd etsən, qəbul təqvim günləri üzrə ortalanır ki, nadir «böyük» günlər proqnozu şişirtməsin. Əks halda qəbul yalnız qeyd olunmuş günlər üzrə ortalanır. Müşahidə olunan çəki trendi çəkilmələrdə möhkəm median meyli (Theil–Sen) istifadə edir.</string>
-    <string name="settings_calc_home_gauge_formula">təxmini aktiv = TDEE − BMR\noturaq büdcə = kalori məqsədi − təxmini aktiv\naktivli məqsəd = oturaq büdcə + (ölçülmüş və ya təxmini aktiv)</string>
+    <string name="settings_calc_home_gauge_formula">təxmini aktiv = TDEE − BMR\noturaq büdcə = kalori məqsədi − təxmini aktiv\naktivli məqsəd = oturaq büdcə + (ölçülmüş və ya təxmini aktiv)\nTam hərəkət, standart olaraq bağlı, bu bölməni keçir və bu günün ölçülən hərəkətini tam kalori hədəfinin üzərinə əlavə edir. Ölçülən hərəkət yoxdursa tam hədəf qalır.</string>
     <string name="settings_calc_home_gauge_name">Ana səhifə halqasında aktiv yanma</string>
     <string name="settings_calc_home_gauge_used">Ana Səhifə Görünüşü aktiv yanmanı məqsədə əlavə etməyə, xalis qəbulu izləməyə və ya yanma ipucu göstərməyə imkan verir. Aktivlik səviyyəsi təxminin TDEE minus BMR-dir (PAL çarpanının hissəsi). «Aktiv əlavə et» və «İkili» Health Connect söndürüldükdə bu təxmini istifadə edir; «Xalis» ölçülmüş Health Connect yanması tələb edir. «Aktiv əlavə et» saxlanılmış məqsədi oturaq bazaya üstəgəl bugünkü aktiv təbəqəyə bölür ki, aktivlik iki dəfə sayılmasın. «Aktiv əlavə et» rejimində Aktivlik Səviyyəsini təlimsiz gündəlik həyat kimi təyin et; ölçülmüş və ya təxmini aktiv məşqləri qarşılayır ki, yüksək PAL üzərinə yığılmasın.</string>
     <string name="settings_calc_intro">Gündəlik kalori və makro məqsədlərin AI tərəfindən təyin edilir. «Məqsədləri yenidən hesabla» düyməsinə toxunduqda və ya adaptiv məqsədlər aktivdirsə həftədə təxminən bir dəfə avtomatik olaraq, Chompass profilini, aşağıdakı istinad tənliklərini, son qeyd olunmuş yeməklərini və çəki trendini AI provayderinə göndərir. Bu rəy keçirmiş düsturlardan başlayır, sonra onları məlumatlarına uyğunlaşdıraraq saxlanma və məqsədlərini təxmin edir.</string>

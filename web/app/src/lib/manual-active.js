@@ -114,3 +114,23 @@ export function addActiveGaugeTarget(fullTarget, sedentaryBudget, burn) {
   if (!burn || burn.calories <= 0) return Math.max(0, fullTarget);
   return Math.max(0, sedentaryBudget) + burn.calories;
 }
+
+/**
+ * Gauge target with the full-credit toggle. Mirrors Android
+ * HomeCalorieDisplay.resolveGaugeBudget's ADD_ACTIVE paths. Hold-back
+ * (fullCredit false) delegates to [addActiveGaugeTarget] unchanged. Full
+ * credit keeps the full goal and adds only the manual eat-back plus a
+ * measured burn — web has no measured source today (estimate-only), so the
+ * estimate already inside the full goal is never stacked on top.
+ * @param {number} fullTarget  dailyTargets.calories
+ * @param {number} sedentaryBudget
+ * @param {{ calories: number, source?: string }|null} burn
+ * @param {number} manualKcal
+ * @param {boolean} fullCredit
+ */
+export function resolveGaugeTarget(fullTarget, sedentaryBudget, burn, manualKcal, fullCredit) {
+  if (!fullCredit) return addActiveGaugeTarget(fullTarget, sedentaryBudget, burn);
+  const manual = Math.max(0, Math.round(manualKcal) || 0);
+  const measured = burn && burn.source === "measured" ? burn.calories : 0;
+  return Math.max(0, fullTarget) + manual + measured;
+}

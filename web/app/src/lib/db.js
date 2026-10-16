@@ -464,6 +464,7 @@ export const profile = {
  * @property {boolean} [aiFeaturesEnabled] Master AI-features switch; off = no data to any LLM provider (default true)
  * @property {boolean} [allowInsecureHttp] Opt-in to send API keys over plain http:// to non-loopback custom endpoints (default false)
  * @property {"static"|"add_active"} [calorieGaugeMode]
+ * @property {boolean} [calorieGaugeFullCredit] Add Active only: stack today's measured burn on the full goal instead of the sedentary split (off by default; Android parity)
  * @property {number} [waterGoalMl]
  * @property {boolean} [adaptiveGoals]
  * @property {"RECENTS"|"FREQUENT"|"FAVORITES"|"RECIPES"} [lastSavedMealsSegment]
@@ -529,6 +530,7 @@ export const DEFAULT_PREFS = /** @type {AppPrefs} */ ({
   aiFeaturesEnabled: true,
   allowInsecureHttp: ANDROID_PREF_DEFAULTS.allowInsecureHttp,
   calorieGaugeMode: "static",
+  calorieGaugeFullCredit: false,
   waterGoalMl: ANDROID_PREF_DEFAULTS.waterGoalMl,
   adaptiveGoals: false,
   lastSavedMealsSegment: "RECENTS",

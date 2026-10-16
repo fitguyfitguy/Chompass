@@ -13,7 +13,6 @@ import app.chompass.models.nutritionTotals
 import app.chompass.models.CaffeineEntry
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.HomeCalorieDisplay
-import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.MacroPlanResolver
 import app.chompass.models.UserProfile
 import app.chompass.models.WaterEntry
@@ -241,36 +240,42 @@ class WidgetSnapshotWriter(
             val estimatedActive = dayTypeTypical
                 ?: measuredActive.takeIf { it > 0 }
                 ?: profile.estimatedDailyActiveCalories
+            val manualToday = prefs.manualActiveEntries.first()
+                .filter { it.date == LocalDate.now().toString() }
+                .sumOf { it.calories }
+            // Source label only (widget caption); the numbers below come from
+            // the same resolveGaugeBudget call the home hero uses, so the two
+            // can never disagree.
             val burn = HomeCalorieDisplay.resolveActiveBurn(
                 display.calorieDisplayMode,
                 activity,
                 estimatedActive,
-                prefs.manualActiveEntries.first()
-                    .filter { it.date == LocalDate.now().toString() }
-                    .sumOf { it.calories },
+                manualToday,
             )
-            val mode = HomeCalorieDisplay.effectiveMode(display.calorieDisplayMode, burn)
             val sedentary = measuredActive.takeIf { it > 0 }
                 ?.let { (effectiveCalories - it).coerceAtLeast(0) }
                 ?: profile.sedentaryCalorieBudget(effectiveCalories)
-            val gaugeBase = HomeCalorieDisplay.gaugeBaseGoal(
-                mode,
-                effectiveCalories,
-                sedentary,
+            val gaugeBudget = HomeCalorieDisplay.resolveGaugeBudget(
+                mode = display.calorieDisplayMode,
+                fullCredit = display.fullCreditActiveBurn,
+                fullGoal = effectiveCalories,
+                sedentaryBudget = sedentary,
+                energyLive = activity.energyLive,
+                measuredToday = activity.activeCalories,
+                estimatedDailyActive = estimatedActive,
+                manual = manualToday,
+                typical = estimatedActive,
             )
-            val activeCalories = burn?.calories ?: 0
-            val effectiveGoal = HomeCalorieDisplay.effectiveGoal(mode, gaugeBase, activeCalories)
+            val gaugeBase = gaugeBudget.base
+            val activeCalories = gaugeBudget.creditedBurn
+            val effectiveGoal = gaugeBudget.displayTarget
             // Expected-day target mirroring the hero: base + the larger of the active
-            // norm and live burn. Written only when a live measured source exists
-            // (Health Connect energy or debug data, even at 0 in the morning);
-            // estimate/manual-only days keep the effective goal, which equals the
-            // target there, and no active-burn caption in the widget.
-            val liveStory = activity.energyLive
-            val displayGoalTarget = if (mode == HomeCalorieDisplayMode.ADD_ACTIVE && liveStory) {
-                HomeCalorieDisplay.expectedTarget(gaugeBase, estimatedActive, activeCalories)
-            } else {
-                null
-            }
+            // norm and live burn. Written only when the budget draws the expected arc
+            // (ADD_ACTIVE hold-back with a live measured source — Health Connect
+            // energy or debug data, even at 0 in the morning); estimate/manual-only
+            // and full-credit days keep the effective goal and no active-burn
+            // caption in the widget.
+            val displayGoalTarget = if (gaugeBudget.useExpectedArc) effectiveGoal else null
             val waterTodayMl = water.entries
                 .filter { it.date.atZone(ZoneId.systemDefault()).toLocalDate() == LocalDate.now() }
                 .sumOf { it.milliliters }

@@ -474,6 +474,37 @@ class FoodRepository(
     }
 
     /**
+     * Insert-or-replace by [FoodEntry.favoriteKey] without touching the diary
+     * A fresh barcode review can be saved straight to favorites. Same
+     * replace semantics as [updateFavorite] — the stored favorite keeps its id,
+     * recipeLogId is normalized to null, sync is touched, and a replaced photo
+     * is deleted once nothing else references it; a new key appends a copy.
+     * Never removes: callers own removal via [toggleFavorite].
+     */
+    suspend fun upsertFavorite(entry: FoodEntry): FoodEntry {
+        ensureFavoritesMigrated()
+        val current = prefs.favoriteFoodEntries.first().toMutableList()
+        val idx = current.indexOfFirst { it.favoriteKey == entry.favoriteKey }
+        if (idx >= 0) {
+            val storedId = current[idx].id
+            val oldImage = current[idx].imageFilename
+            val stored = entry.copy(id = storedId, recipeLogId = null)
+            current[idx] = stored
+            prefs.setFavoritesAtomic(current)
+            sync?.touch(storedId, "favorite")
+            if (stored.imageFilename != oldImage) {
+                deleteImageIfUnreferenced(oldImage)
+            }
+            return stored
+        }
+        val stored = entry.copy(recipeLogId = null)
+        current.add(stored)
+        prefs.setFavoritesAtomic(current)
+        sync?.touch(stored.id, "favorite")
+        return stored
+    }
+
+    /**
      * One-time migration: if the new ordered favoriteFoodEntries list is
      * empty but the legacy favoriteKeys Set has entries, reconstruct the
      * ordered list from current food log entries (best-effort — no preserved

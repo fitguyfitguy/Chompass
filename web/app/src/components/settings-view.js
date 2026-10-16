@@ -438,7 +438,8 @@ export class SettingsView extends HTMLElement {
   async renderGoals() {
     const p = await this.loadProfile();
     const targets = dailyTargets(p);
-    const energyUnit = energyUnitFromPrefs(await prefs.load());
+    const appPrefs = await prefs.load();
+    const energyUnit = energyUnitFromPrefs(appPrefs);
     this.innerHTML = `
       ${subpageBar(t("settings.hub.goals"), { backHref: SETTINGS_PARENT.goals })}
       <form class="entry-form card" id="goals-form">
@@ -504,6 +505,22 @@ export class SettingsView extends HTMLElement {
             <label for="customFat">${t("settings.goals.custom_fat")}</label>
             <input id="customFat" name="customFat" type="number" min="0" value="${p.customFat ?? ""}" placeholder="${Math.round(targets.fatG)}" />
           </div>
+        </div>
+        <div class="field">
+          <label for="calorieGaugeMode">${t("settings.home.calorie_gauge")}</label>
+          <select id="calorieGaugeMode" name="calorieGaugeMode">
+            <option value="static" ${appPrefs.calorieGaugeMode !== "add_active" ? "selected" : ""}>${t("settings.home.gauge_static")}</option>
+            <option value="add_active" ${appPrefs.calorieGaugeMode === "add_active" ? "selected" : ""}>${t("settings.home.gauge_add_active")}</option>
+          </select>
+          <p class="nutrient-picker__hint">${t("settings.home.gauge_hint")}</p>
+        </div>
+        <div class="field">
+          <label for="calorieGaugeFullCredit">${t("settings.goals.full_credit")}</label>
+          <select id="calorieGaugeFullCredit" name="calorieGaugeFullCredit">
+            <option value="false" ${appPrefs.calorieGaugeFullCredit !== true ? "selected" : ""}>${t("settings.toggle.off")}</option>
+            <option value="true" ${appPrefs.calorieGaugeFullCredit === true ? "selected" : ""}>${t("settings.toggle.on")}</option>
+          </select>
+          <p class="nutrient-picker__hint">${t("settings.goals.full_credit_hint")}</p>
         </div>
         <button type="submit" class="btn btn--primary">${t("settings.goals.save")}</button>
         <button type="button" class="btn btn--ghost" id="clear-custom">${t("settings.goals.clear_custom")}</button>
@@ -588,6 +605,20 @@ export class SettingsView extends HTMLElement {
         caloriesLocked: locks.caloriesLocked,
         lockedMacros: locks.lockedMacros,
       });
+      // Gauge mode + full credit are app prefs, not profile fields, so the
+      // profile save is separate. Guarded so a form without the fields never
+      // writes null/undefined over the stored mode.
+      /** @type {import('../lib/db.js').AppPrefs} */
+      const gaugePatch = {};
+      const gaugeRaw = fd.get("calorieGaugeMode");
+      if (gaugeRaw === "static" || gaugeRaw === "add_active") {
+        gaugePatch.calorieGaugeMode = gaugeRaw;
+      }
+      const fullCreditRaw = fd.get("calorieGaugeFullCredit");
+      if (fullCreditRaw === "true" || fullCreditRaw === "false") {
+        gaugePatch.calorieGaugeFullCredit = fullCreditRaw === "true";
+      }
+      if (Object.keys(gaugePatch).length) await prefs.save(gaugePatch);
       location.hash = SETTINGS_PARENT.goals;
     });
     this.querySelector("#clear-custom")?.addEventListener("click", async () => {
@@ -1276,14 +1307,6 @@ export class SettingsView extends HTMLElement {
           <p class="nutrient-picker__hint">${t("settings.home.auto_windows_hint")}</p>
         </div>
         <div class="field">
-          <label for="calorieGaugeMode">${t("settings.home.calorie_gauge")}</label>
-          <select id="calorieGaugeMode" name="calorieGaugeMode">
-            <option value="static" ${p.calorieGaugeMode !== "add_active" ? "selected" : ""}>${t("settings.home.gauge_static")}</option>
-            <option value="add_active" ${p.calorieGaugeMode === "add_active" ? "selected" : ""}>${t("settings.home.gauge_add_active")}</option>
-          </select>
-          <p class="nutrient-picker__hint">${t("settings.home.gauge_hint")}</p>
-        </div>
-        <div class="field">
           <label for="adaptiveGoals">${t("settings.home.adaptive_goals")}</label>
           <select id="adaptiveGoals" name="adaptiveGoals">
             <option value="false" ${!p.adaptiveGoals ? "selected" : ""}>${t("settings.toggle.off")}</option>
@@ -1347,7 +1370,9 @@ export class SettingsView extends HTMLElement {
         fastingGoalHours: Math.min(48, Math.max(0, Number(fd.get("fastingGoalHours") || 0))),
         fastingEatHours: Math.min(24, Math.max(0, Number(fd.get("fastingEatHours") || 0))),
         fastingAutoWindows: fd.get("fastingAutoWindows") === "true",
-        ...parseFastStartTime(fd.get("fastingStartTime")),        calorieGaugeMode: /** @type {any} */ (fd.get("calorieGaugeMode")),
+        ...parseFastStartTime(fd.get("fastingStartTime")),
+        // calorieGaugeMode moved to the Goals form (Android parity): the home
+        // save must not touch it — a missing field must never wipe the pref.
         adaptiveGoals: fd.get("adaptiveGoals") === "true",
         homeNutrientCardCount: cardCount,
         homeTopNutrients: normalizeHomeTopNutrients(tubeRaw, cardCount),

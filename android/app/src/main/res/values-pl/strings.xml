@@ -473,6 +473,8 @@
     <string name="home_food_removed">Usunięto jedzenie</string>
     <string name="home_day_type_switched">Zmieniono typ dnia</string>
     <string name="action_undo">Cofnij</string>
+    <string name="action_save_to_favorites">Zapisz do ulubionych</string>
+    <string name="saved_to_favorites">Zapisano w ulubionych</string>
     <string name="add_food_photo_source_title">Dodaj zdjęcie</string>
     <string name="add_food_photo_camera">Zrób zdjęcie</string>
     <string name="add_food_photo_gallery">Wybierz z galerii</string>
@@ -1476,6 +1478,8 @@
     <string name="home_calorie_mode_static_desc">Twój cel kaloryczny pozostaje stały. Ręcznie zapisane spalone kalorie nadal zwiększają budżet tego dnia.</string>
     <string name="home_calorie_mode_add_active_desc">Aktywne kalorie z Health Connect (lub szacunek z poziomu aktywności) są dodawane do dzisiejszego budżetu kalorii. Odzyskuj to, co spalasz. Ustaw poziom aktywności na codzienną bazę bez treningów, aby nie liczyć ćwiczeń podwójnie. Włącz Health Connect w Ustawienia → Zdrowie, aby mieć zmierzone spalanie.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Wskazówka: włącz Health Connect, aby używać aktywnych kalorii z zegarka/telefonu zamiast szacunku z poziomu aktywności.</string>
+    <string name="home_calorie_full_credit">Zalicz pełny trening</string>
+    <string name="home_calorie_full_credit_desc">Dodaje dzisiejsze zmierzone spalanie do pełnego celu kalorycznego. Wyłączone: wskaźnik zatrzymuje spalanie typowego dnia, żeby wysokiego odczytu nie zjeść dwa razy.</string>
     <string name="home_nutrients_pick_count">Wybierz do %1$d składników odżywczych na ekran główny.</string>
     <string name="home_steps_label">Kroki</string>
     <string name="home_steps_goal_format">Cel %1$s</string>
@@ -1781,7 +1785,7 @@
     <string name="settings_calc_sec_home_gauge">Wskaźnik kalorii na ekranie głównym</string>
     <string name="settings_calc_home_gauge_name">Aktywne spalanie na pierścieniu ekranu głównego</string>
     <string name="settings_calc_home_gauge_used">Ekran główny pozwala dodać aktywne spalanie do celu, śledzić spożycie netto lub pokazać podpowiedź spalania. Szacunek z poziomu aktywności to TDEE minus BMR (część mnożnika PAL). Dodawaj aktywne i Dual używają tego szacunku, gdy Health Connect jest wyłączone; Net wymaga zmierzonego spalania z Health Connect. Dodawaj aktywne dzieli zapisany cel na bazę siedzącą plus dzisiejszą warstwę aktywną, aby aktywność nie była liczona podwójnie. Przy Dodawaj aktywne ustaw poziom aktywności na codzienne życie bez treningów; zmierzone lub szacowane spalanie pokrywa treningi, więc nie nakładają się na wysoki PAL.</string>
-    <string name="settings_calc_home_gauge_formula">szacowane aktywne = TDEE − BMR\nbudżet siedzący = cel kaloryczny − szacowane aktywne\ncel Dodawaj aktywne = budżet siedzący + (zmierzone lub szacowane aktywne)</string>
+    <string name="settings_calc_home_gauge_formula">szacowane aktywne = TDEE − BMR\nbudżet siedzący = cel kaloryczny − szacowane aktywne\ncel Dodawaj aktywne = budżet siedzący + (zmierzone lub szacowane aktywne)\nPełne zaliczenie, domyślnie wyłączone, pomija ten podział i dodaje dzisiejsze zmierzone spalanie do pełnego celu kalorycznego. Bez pomiaru cel pozostaje pełny.</string>
     <string name="settings_calc_target_name">Utrzymanie i korekta celu</string>
     <string name="settings_calc_target_used">Utrzymanie zaczyna się od TDEE. Przy włączonym Energy Burn zaczyna się od zmierzonego spalania z Health Connect (średnia 14-dniowa Aktywne + Bazowe) zamiast tego. AI doprecyzowuje utrzymanie względem zalogowanego spożycia i trendu wagi, a następnie stosuje Twój cel: tygodniowa zmiana wagi staje się dziennym deficytem (Schudnąć) lub nadwyżką (Przybrać).</string>
     <string name="settings_calc_target_formula">1 funt tkanki tłuszczowej ≈ 3,500 kcal · 1 kg ≈ 7,700 kcal\nTwój tygodniowy wskaźnik ÷ 7 jest odejmowany (Schudnąć) lub dodawany (Przybrać) do utrzymania, aby ustawić dzienny cel kaloryczny.</string>
