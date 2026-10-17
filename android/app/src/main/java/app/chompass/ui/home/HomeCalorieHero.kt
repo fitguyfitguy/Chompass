@@ -147,16 +147,10 @@ internal fun CalorieHero(
     onShowRecalcDetails: (() -> Unit)? = null,
     /** Standing goal derivation for the ⓘ dialog's formula-baseline block. */
     goalDerivation: GoalDerivation? = null,
-4:     layout: HomeCalorieHeroLayout? = null,
+    layout: HomeCalorieHeroLayout? = null,
     modifier: Modifier = Modifier,
 ) {
     val input = CalorieHeroInput(
-5:     )
-    when (layout) {
-        HomeCalorieHeroLayout.COMPACT_HORIZONTAL -> CompactHorizontalCalorieHero(input)
-        null -> DefaultCalorieHero(input, modifier)
-    }
-}
         current = current,
         baseGoal = baseGoal,
         planned = planned,
@@ -176,13 +170,10 @@ internal fun CalorieHero(
         recalcDetailsAvailable = recalcDetailsAvailable,
         onShowRecalcDetails = onShowRecalcDetails,
         goalDerivation = goalDerivation,
-4:     layout: HomeCalorieHeroLayout? = null,
-    modifier: Modifier = Modifier,
-) {
-    val input = CalorieHeroInput(
-5:     )
+    )
     when (layout) {
         HomeCalorieHeroLayout.COMPACT_HORIZONTAL -> CompactHorizontalCalorieHero(input)
+        HomeCalorieHeroLayout.HIDDEN -> Unit
         null -> DefaultCalorieHero(input, modifier)
     }
 }

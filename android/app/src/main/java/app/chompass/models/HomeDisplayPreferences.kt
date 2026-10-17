@@ -19,7 +19,8 @@ enum class HomeCalorieDisplayMode(val storageKey: String, val displayNameRes: In
 
 /** Presentation options for the home calorie hero. Null preserves the existing layout. */
 enum class HomeCalorieHeroLayout(val storageKey: String) {
-    COMPACT_HORIZONTAL("compactHorizontal");
+    COMPACT_HORIZONTAL("compactHorizontal"),
+    HIDDEN("hidden");
 
     companion object {
         fun fromStorage(raw: String?): HomeCalorieHeroLayout? =

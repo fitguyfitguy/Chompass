@@ -2186,6 +2186,7 @@
     <string name="home_display_calorie_layout">Calorie layout</string>
     <string name="home_calorie_layout_default">Default</string>
     <string name="home_calorie_layout_compact_horizontal">Compact Horizontal</string>
+    <string name="home_calorie_layout_hidden">Hidden</string>
     <string name="home_display_food_log_chips">Food log macros</string>
         <string name="home_display_food_log_layout">Food log layout</string>
         <string name="home_food_log_layout_default">Default</string>

@@ -655,10 +655,11 @@ fun HomeScreen(
                     val baseGoal = ui.gaugeBaseCalorieGoal
                     val activeCalories = ui.displayActiveCalories
                     val calorieMode = ui.effectiveCalorieMode
-                    CalorieHero(
+                    if (ui.homeDisplay.calorieHeroLayout != HomeCalorieHeroLayout.HIDDEN) {
+                        CalorieHero(
                             current = ui.loggedCaloriesToday,
                             baseGoal = baseGoal,
-                        planned = ui.plannedCaloriesToday,
+                            planned = ui.plannedCaloriesToday,
                         activeCalories = activeCalories,
                         displayMode = calorieMode,
                         dayTypeLabel = ui.dayTypeLabel,
@@ -676,9 +677,10 @@ fun HomeScreen(
                         restingBurn = ui.restingBurnToday,
                         recalcDetailsAvailable = ui.lastRecalcSheet != null,
                         onShowRecalcDetails = { vm.openRecalcDetails() },
-                        goalDerivation = ui.goalDerivation,
-                        layout = ui.homeDisplay.calorieHeroLayout,
-                    )
+                            goalDerivation = ui.goalDerivation,
+                            layout = ui.homeDisplay.calorieHeroLayout,
+                        )
+                    }
                     if (ui.homeDisplay.showSteps) {
                         Spacer(Modifier.height(12.dp))
                         Row(
@@ -2300,10 +2302,11 @@ internal fun HomeScreenPreviewContent(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )
-                        CalorieHero(
+                        if (ui.homeDisplay.calorieHeroLayout != HomeCalorieHeroLayout.HIDDEN) {
+                            CalorieHero(
                                 current = ui.loggedCaloriesToday,
                                 baseGoal = ui.gaugeBaseCalorieGoal,
-                            planned = ui.plannedCaloriesToday,
+                                planned = ui.plannedCaloriesToday,
                             activeCalories = ui.displayActiveCalories,
                             displayMode = ui.effectiveCalorieMode,
                             untracked = ui.viewedDayUntracked,
@@ -2314,9 +2317,10 @@ internal fun HomeScreenPreviewContent(
                             burnShade = ui.activeBurnShade,
                             restingBurn = ui.restingBurnToday,
                             freezeProgress = freezeAnimations,
-                            goalDerivation = ui.goalDerivation,
-                            layout = ui.homeDisplay.calorieHeroLayout,
-                        )
+                                goalDerivation = ui.goalDerivation,
+                                layout = ui.homeDisplay.calorieHeroLayout,
+                            )
+                        }
                         val previewResolvedTargets = remember(ui.profile, ui.date, ui.goalJournal) { ui.resolvedDayTargets }
                         Row(
                             Modifier.fillMaxWidth().padding(horizontal = 16.dp),
