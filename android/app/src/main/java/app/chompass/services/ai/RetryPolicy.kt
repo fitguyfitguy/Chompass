@@ -107,7 +107,12 @@ object RetryPolicy {
                 delay(retryDelaysMs[attempt])
                 continue
             }
-            throw AiError.Api(lastMessage, messageRes = friendlyMessageRes(code, raw), httpStatus = code)
+            throw AiError.Api(
+                lastMessage,
+                messageRes = friendlyMessageRes(code, raw),
+                httpStatus = code,
+                providerMessage = raw.takeIf { it != "HTTP $code" },
+            )
         }
         throw AiError.Api(lastMessage)
     }

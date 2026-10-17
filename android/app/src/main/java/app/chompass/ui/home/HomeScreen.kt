@@ -1978,6 +1978,16 @@ fun HomeScreen(
         ChompassDialog(onDismissRequest = { vm.clearError() }) {
             Text(stringResource(R.string.error_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(err, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
+            ui.errorDetail?.let { detail ->
+                SelectionContainer {
+                    Text(
+                        detail,
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+                    )
+                }
+            }
             ui.errorNotFoundBarcode?.let { barcode ->
                 SelectionContainer {
                     Text(

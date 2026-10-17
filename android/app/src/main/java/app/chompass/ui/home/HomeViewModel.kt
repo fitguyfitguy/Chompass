@@ -79,6 +79,7 @@ import app.chompass.services.ai.FoodAnalysis
 import app.chompass.services.ai.applyTo
 import app.chompass.services.ai.toMicronutrients
 import app.chompass.services.ai.userMessage
+import app.chompass.services.ai.errorDetail
 import app.chompass.models.MicronutrientValues
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
@@ -295,6 +296,8 @@ data class HomeUiState(
     val error: String? = null,
     /** OFF product code when [error] is a barcode not-found; drives the add-to-OFF action. */
     val errorNotFoundBarcode: String? = null,
+    /** Secondary technical detail (HTTP status · provider message) shown under [error]. */
+    val errorDetail: String? = null,
     val waterTrackingEnabled: Boolean = false,
     val waterDailyGoalMl: Int = 2_000,
     val waterQuickPresetsMl: List<Int> = WaterQuickPresets.DEFAULT_AMOUNTS_ML,
@@ -662,6 +665,7 @@ data class HomeUiState(
             saving == other.saving &&
             error == other.error &&
             errorNotFoundBarcode == other.errorNotFoundBarcode &&
+            errorDetail == other.errorDetail &&
             waterTrackingEnabled == other.waterTrackingEnabled &&
             waterDailyGoalMl == other.waterDailyGoalMl &&
             waterQuickPresetsMl == other.waterQuickPresetsMl &&
@@ -769,6 +773,7 @@ data class HomeUiState(
         result = 31 * result + saving.hashCode()
         result = 31 * result + (error?.hashCode() ?: 0)
         result = 31 * result + (errorNotFoundBarcode?.hashCode() ?: 0)
+        result = 31 * result + (errorDetail?.hashCode() ?: 0)
         result = 31 * result + waterTrackingEnabled.hashCode()
         result = 31 * result + waterDailyGoalMl
         result = 31 * result + waterQuickPresetsMl.hashCode()
@@ -1006,6 +1011,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 _ui.value.copy(
                     error = null,
                     errorNotFoundBarcode = null,
+                    errorDetail = null,
                     pendingAnalysis = null,
                     pendingIdentityName = null,
                     pendingReviewSource = null,
@@ -1041,6 +1047,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             inferringUnits = false,
             error = null,
             errorNotFoundBarcode = null,
+            errorDetail = null,
         ) }
     }
 
@@ -1093,7 +1100,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
-    private fun failAnalysis(gen: Int, message: String?, notFoundBarcode: String? = null) {
+    private fun failAnalysis(gen: Int, message: String?, notFoundBarcode: String? = null, detail: String? = null) {
         if (gen != analysisGeneration) return
         autoSaveFailedInput(message)
         _ui.update { it.copy(
@@ -1104,6 +1111,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             inferringUnits = false,
             error = message,
             errorNotFoundBarcode = notFoundBarcode,
+            errorDetail = detail,
         ) }
     }
 
@@ -1202,7 +1210,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             val msg = listOf(e.userMessage(container.appContext), aiErrorSuffix)
                 .filter { !it.isNullOrBlank() }
                 .joinToString(" ")
-            failAnalysis(start.generation, msg)
+            failAnalysis(start.generation, msg, detail = errorDetail(e))
         } catch (e: OpenFoodFactsService.LookupException) {
             // LookupException messages are the barcode surface's user copy
             // (not-found / trouble / unreadable), so they render verbatim;
@@ -1213,7 +1221,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 notFoundBarcode = (e as? OpenFoodFactsService.LookupException.NotFound)?.code,
             )
         } catch (e: Throwable) {
-            failAnalysis(start.generation, container.appContext.getString(defaultErrorRes))
+            failAnalysis(start.generation, container.appContext.getString(defaultErrorRes), detail = errorDetail(e))
         } finally {
             if (shouldEnd()) endAnalysis(start.generation)
         }
@@ -3144,7 +3152,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             inferringUnits = false,
             analyzing = false,
             error = null,
-            errorNotFoundBarcode = null
+            errorNotFoundBarcode = null,
+            errorDetail = null,
         ) }
         container.analyzingFood.value = false
         viewModelScope.launch {
@@ -3221,6 +3230,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     pendingQueueEntryId = null,
                     error = container.appContext.getString(R.string.error_failed_input_missing),
                     errorNotFoundBarcode = null,
+                    errorDetail = null,
                 ) }
                 return@launch
             }
@@ -3239,7 +3249,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     fun dismissFailedInput() {
         viewModelScope.launch {
             clearPendingInputDraft()
-            _ui.update { it.copy(error = null, errorNotFoundBarcode = null, pendingQueueEntryId = null, pendingPromptText = null) }
+            _ui.update { it.copy(error = null, errorNotFoundBarcode = null, errorDetail = null, pendingQueueEntryId = null, pendingPromptText = null) }
         }
     }
 
@@ -3247,7 +3257,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         // No retryable input left: the failed prompt stays in the analysis
         // queue (Codeberg #53), but the retry link is dropped so the next
         // failure creates a fresh entry.
-        _ui.update { it.copy(error = null, errorNotFoundBarcode = null, pendingQueueEntryId = null, pendingPromptText = null) }
+        _ui.update { it.copy(error = null, errorNotFoundBarcode = null, errorDetail = null, pendingQueueEntryId = null, pendingPromptText = null) }
     }
 
     // -- Analysis queue (Codeberg #53) ------------------------------------
@@ -3495,7 +3505,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 // and any strip left over from a previous analysis is stale.
                 pendingIdentityName = template.name,
                 error = null,
-                errorNotFoundBarcode = null
+                errorNotFoundBarcode = null,
+                errorDetail = null,
             ) }
         }
     }
@@ -3881,7 +3892,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 pendingQueueEntryId = null,
                 pendingPromptText = null,
                 error = null,
-                errorNotFoundBarcode = null
+                errorNotFoundBarcode = null,
+                errorDetail = null,
             ) }
         }
     }
@@ -3959,6 +3971,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             _ui.update { it.copy(
                 error = container.appContext.getString(R.string.error_failed_input_missing),
                 errorNotFoundBarcode = null,
+                errorDetail = null,
             ) }
             return
         }
@@ -3969,7 +3982,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             pendingInputDraftImageFilenames = draft.resolvedImageFilenames,
             pendingQueueEntryId = draft.queueEntryId,
             error = null,
-            errorNotFoundBarcode = null
+            errorNotFoundBarcode = null,
+            errorDetail = null,
         ) }
     }
 
