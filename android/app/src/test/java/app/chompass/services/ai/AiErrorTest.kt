@@ -1,7 +1,10 @@
 package app.chompass.services.ai
 
+import app.chompass.R
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
+import java.net.SocketTimeoutException
 
 class AiErrorTest {
     private val keyRejected = "Your API key was rejected. Open Settings → AI Provider and re-paste a valid key."
@@ -114,6 +117,48 @@ class AiErrorTest {
     @Test
     fun notFoundOn404WithoutMarkerReturnsRaw() {
         assertEquals("404 page gone", friendlyMessage(404, "404 page gone"))
+    }
+
+    @Test
+    fun apiErrorDetailJoinsStatusAndProviderMessage() {
+        assertEquals(
+            "HTTP 401 · Invalid API Key",
+            errorDetail(AiError.Api("rejected", messageRes = R.string.ai_error_key_rejected, httpStatus = 401, providerMessage = "Invalid API Key")),
+        )
+    }
+
+    @Test
+    fun apiErrorDetailIsStatusOnlyWhenProviderMessageBlank() {
+        assertEquals("HTTP 429", errorDetail(AiError.Api("rate limited", httpStatus = 429, providerMessage = null)))
+        assertEquals("HTTP 429", errorDetail(AiError.Api("rate limited", httpStatus = 429, providerMessage = "  ")))
+    }
+
+    @Test
+    fun apiErrorDetailIsNullWithoutStatusAndProviderMessage() {
+        assertNull(errorDetail(AiError.Api("rejected")))
+    }
+
+    @Test
+    fun nonApiAiErrorDetailIsNull() {
+        assertNull(errorDetail(AiError.Timeout))
+        assertNull(errorDetail(AiError.InvalidResponse))
+    }
+
+    @Test
+    fun foreignThrowableDetailUsesClassNameAndMessage() {
+        assertEquals("SocketTimeoutException: timeout", errorDetail(SocketTimeoutException("timeout")))
+    }
+
+    @Test
+    fun foreignThrowableWithoutMessageUsesClassNameOnly() {
+        assertEquals("IllegalStateException", errorDetail(IllegalStateException()))
+    }
+
+    @Test
+    fun longProviderMessageIsCappedForDialog() {
+        val detail = errorDetail(AiError.Api("rejected", httpStatus = 500, providerMessage = "x".repeat(601)))
+        assertEquals(601, detail!!.length)
+        assertEquals("HTTP 500 · " + "x".repeat(589) + "…", detail)
     }
 
     private val locationUnsupported =

@@ -34,7 +34,17 @@ sealed class AiError(
         "The AI provider took too long to answer. Try again, or raise the timeout in Settings → AI & Speech.",
         messageRes = R.string.ai_error_timeout,
     )
-    class Api(raw: String, @StringRes messageRes: Int = 0, val httpStatus: Int? = null) : AiError(raw, messageRes = messageRes)
+    /**
+     * HTTP-level failure from a provider. [providerMessage] holds the raw parsed
+     * provider error text for the dialog detail line (null when the body had no
+     * parsable message and the raw text is just the "HTTP <code>" sentinel).
+     */
+    class Api(
+        raw: String,
+        @StringRes messageRes: Int = 0,
+        val httpStatus: Int? = null,
+        val providerMessage: String? = null,
+    ) : AiError(raw, messageRes = messageRes)
     class InvalidUrl(val url: String) : AiError("Invalid API URL. Check your provider settings.", messageRes = R.string.ai_error_invalid_url)
     /** Issue #8 follow-up: user-entered http:// URL with the "Allow insecure HTTP" toggle off. */
     object InsecureHttpBlocked : AiError(
@@ -57,6 +67,26 @@ sealed class AiError(
  */
 fun AiError.userMessage(context: Context): String =
     if (messageRes != 0) context.getString(messageRes, *formatArgs) else message.orEmpty()
+
+/** Secondary technical detail for the analysis error dialog: HTTP status and/or
+ *  raw provider message for [Api], exception class + message for foreign errors.
+ *  Null when the friendly message already says everything. */
+internal fun errorDetail(e: Throwable): String? {
+    val detail = when (e) {
+        is AiError.Api -> listOfNotNull(
+            e.httpStatus?.let { "HTTP $it" },
+            e.providerMessage?.takeIf { it.isNotBlank() },
+        ).joinToString(" · ")
+        is AiError -> return null
+        else -> listOfNotNull(
+            e::class.java.simpleName,
+            e.message?.takeIf { it.isNotBlank() },
+        ).joinToString(": ")
+    }
+    if (detail.isBlank()) return null
+    // Error bodies can be up to 64 KB (RetryPolicy.MAX_ERROR_BODY_BYTES); the dialog shows a capped line.
+    return if (detail.length > 600) detail.take(600) + "…" else detail
+}
 
 internal fun friendlyMessage(status: Int, raw: String): String {
     val keyRejected = "Your API key was rejected. Open Settings → AI Provider and re-paste a valid key."

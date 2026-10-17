@@ -9,6 +9,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.SocketPolicy
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.concurrent.TimeUnit
@@ -72,6 +73,50 @@ class RetryPolicyBodyReadTest {
             val api = error as? AiError.Api
             assertTrue("expected AiError.Api, got $error", api != null)
             assertEquals(500, api?.httpStatus)
+        } finally {
+            server.shutdown()
+        }
+    }
+
+    @Test
+    fun parsedErrorBody_carriesProviderMessage() = runBlocking {
+        val server = MockWebServer()
+        server.start()
+        try {
+            server.enqueue(
+                MockResponse()
+                    .setResponseCode(401)
+                    .setBody("{\"error\":{\"message\":\"Invalid API Key\"}}")
+            )
+            val error = runCatching {
+                RetryPolicy.execute(postCall(server, OkHttpClient()))
+            }.exceptionOrNull()
+            val api = error as? AiError.Api
+            assertTrue("expected AiError.Api, got $error", api != null)
+            assertEquals(401, api?.httpStatus)
+            assertEquals("Invalid API Key", api?.providerMessage)
+        } finally {
+            server.shutdown()
+        }
+    }
+
+    @Test
+    fun unparsableErrorBody_hasNullProviderMessage() = runBlocking {
+        val server = MockWebServer()
+        server.start()
+        try {
+            server.enqueue(
+                MockResponse()
+                    .setResponseCode(500)
+                    .setBody("<html>gateway oops</html>")
+            )
+            val error = runCatching {
+                RetryPolicy.execute(postCall(server, OkHttpClient()))
+            }.exceptionOrNull()
+            val api = error as? AiError.Api
+            assertTrue("expected AiError.Api, got $error", api != null)
+            assertEquals(500, api?.httpStatus)
+            assertNull(api?.providerMessage)
         } finally {
             server.shutdown()
         }
