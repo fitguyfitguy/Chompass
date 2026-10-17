@@ -33,8 +33,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.models.EnergyFormat
 import app.chompass.models.HomeMacroCardLayout
 import app.chompass.models.MacroValueFormatter
+import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.navigation.LocalLaunchFillEpoch
 
 /**
@@ -51,6 +53,7 @@ private data class MacroCardInput(
     val freezeProgress: Boolean,
     val planned: Double,
     val fatFloor: Boolean,
+    val isEnergy: Boolean,
 )
 
 @Composable
@@ -66,6 +69,7 @@ fun MacroCard(
     planned: Double = 0.0,
     /** Fat is a floor target: at or above it reads "minimum met", never over. */
     fatFloor: Boolean = false,
+    isEnergy: Boolean = false,
     layout: HomeMacroCardLayout? = null,
 ) {
     val input = MacroCardInput(
@@ -78,6 +82,7 @@ fun MacroCard(
         freezeProgress = freezeProgress,
         planned = planned,
         fatFloor = fatFloor,
+        isEnergy = isEnergy,
     )
     when (layout) {
         HomeMacroCardLayout.COMPACT_HORIZONTAL -> CompactHorizontalMacroCard(input)
@@ -88,6 +93,13 @@ fun MacroCard(
 @Composable
 private fun DefaultMacroCard(input: MacroCardInput) {
     with(input) {
+    val energyUnit = LocalEnergyUnit.current
+    fun formatted(value: Double): String = if (isEnergy) {
+        EnergyFormat.quantity(value.toInt(), energyUnit).toString()
+    } else {
+        MacroValueFormatter.string(value)
+    }
+    val displayUnit = if (isEnergy) energyUnitLabel() else unit
     val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
     val goalValue = goal.toDouble()
     val epoch = LocalLaunchFillEpoch.current
@@ -112,7 +124,7 @@ private fun DefaultMacroCard(input: MacroCardInput) {
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text(
-            MacroValueFormatter.string(current),
+            formatted(current),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = accentColor,
@@ -175,13 +187,13 @@ private fun DefaultMacroCard(input: MacroCardInput) {
                     current == goalValue -> stringResource(R.string.macro_status_goal_reached)
                     current < goalValue -> stringResource(
                         R.string.macro_status_left,
-                        MacroValueFormatter.string(goalValue - current),
-                        unit,
+                        formatted(goalValue - current),
+                        displayUnit,
                     )
                     else -> stringResource(
                         R.string.macro_status_over,
-                        MacroValueFormatter.string(current - goalValue),
-                        unit,
+                        formatted(current - goalValue),
+                        displayUnit,
                     )
                 },
                 fontSize = 11.sp,
@@ -204,6 +216,13 @@ private fun DefaultMacroCard(input: MacroCardInput) {
 @Composable
 private fun CompactHorizontalMacroCard(input: MacroCardInput) {
     with(input) {
+        val energyUnit = LocalEnergyUnit.current
+        fun formatted(value: Double): String = if (isEnergy) {
+            EnergyFormat.quantity(value.toInt(), energyUnit).toString()
+        } else {
+            MacroValueFormatter.string(value)
+        }
+        val displayUnit = if (isEnergy) energyUnitLabel() else unit
         val goalValue = goal.toDouble()
         val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
         val combined = if (goal > 0) ((current + planned).toFloat() / goal).coerceIn(0f, 1f) else 0f
@@ -227,12 +246,12 @@ private fun CompactHorizontalMacroCard(input: MacroCardInput) {
             fatFloor && current >= goalValue -> stringResource(R.string.macro_status_left, "0", "")
             current <= goalValue -> stringResource(
                 R.string.macro_status_left,
-                MacroValueFormatter.string(goalValue - current),
+                formatted(goalValue - current),
                 "",
             )
             else -> stringResource(
                 R.string.macro_status_over,
-                MacroValueFormatter.string(current - goalValue),
+                formatted(current - goalValue),
                 "",
             )
         }
@@ -277,7 +296,7 @@ private fun CompactHorizontalMacroCard(input: MacroCardInput) {
             }
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(
-                        "${MacroValueFormatter.string(current)}$unit",
+                        "${formatted(current)}$displayUnit",
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = accentColor,

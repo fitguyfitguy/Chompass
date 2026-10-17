@@ -68,6 +68,7 @@ data class MacroPalette(
     fun fiberArgb(): Int = fiber.toArgb() and 0xFFFFFF
 
     fun colorFor(nutrient: HomeTopNutrient): Color = when (nutrient) {
+        HomeTopNutrient.CALORIES -> muted
         HomeTopNutrient.PROTEIN -> protein
         HomeTopNutrient.CARBS -> carbs
         HomeTopNutrient.FAT -> fat
