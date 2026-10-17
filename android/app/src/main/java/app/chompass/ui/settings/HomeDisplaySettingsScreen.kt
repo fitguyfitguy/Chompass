@@ -343,6 +343,7 @@ private fun calorieHeroLayoutLabel(layout: HomeCalorieHeroLayout?): String = str
     when (layout) {
         null -> R.string.home_calorie_layout_default
         HomeCalorieHeroLayout.COMPACT_HORIZONTAL -> R.string.home_calorie_layout_compact_horizontal
+        HomeCalorieHeroLayout.HIDDEN -> R.string.home_calorie_layout_hidden
     }
 )
 
