@@ -9,6 +9,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Changed
 
 - **Find models fast in the picker** (Android): the Model sheet in Settings → AI has a search field — type to filter the list live, with a clear button and a "no matching models" note when nothing fits. Live model lists from the provider (DeepInfra, Groq, xAI, and friends) now sort alphabetically beneath the curated defaults, so a long lineup no longer means endless scrolling.
+- **Run-with failures explain the missing fallback** (Android): a queued entry run with a picked profile uses exactly that profile. When it fails, the error now names the profile and notes that the fallback profile was skipped, so a rate-limited pick no longer fails the same way on every retry without explanation.
 
 ## [5.7.0] - 2026-10-16
 
