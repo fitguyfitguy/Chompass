@@ -77,6 +77,28 @@ class ProgressRangeFoodsTest {
     }
 
     @Test
+    fun allRangeAxisStartsAtFirstLoggedDay() {
+        val today = LocalDate.of(2026, 8, 21)
+        val firstDay = today.minusDays(40)
+        val foods = listOf(
+            entry("A", firstDay, calories = 2000),
+            entry("B", today.minusDays(1), calories = 2200),
+        )
+        val ui = buildProgressPreviewUiState(
+            profile = null,
+            weights = emptyList(),
+            bodyFatEntries = emptyList(),
+            foods = foods,
+            timeRange = TimeRange.ALL_TIME,
+            anchorDate = today,
+        )
+        // Axis spans first-log → today (41 daily slots), not the 10-year window.
+        assertEquals(41, ui.calorieSlots.size)
+        assertEquals(firstDay, ui.calorieSlots.first().day)
+        assertEquals(today, ui.calorieSlots.last().day)
+    }
+
+    @Test
     fun nutrientAveragesExcludeToday() {
         val today = LocalDate.of(2026, 8, 21)
         val foods = listOf(

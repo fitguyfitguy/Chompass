@@ -1025,6 +1025,7 @@
     <string name="progress_avg_format">Avg: %1$d %2$s</string>
     <string name="progress_no_food">No food logged yet</string>
     <string name="progress_no_entries_in_range">No entries in this range</string>
+    <string name="progress_no_series_selected">Tap a metric above to show it here</string>
     <plurals name="untracked_days_excluded">
         <item quantity="one">%1$d untracked day excluded</item>
         <item quantity="other">%1$d untracked days excluded</item>

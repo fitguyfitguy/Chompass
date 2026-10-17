@@ -1,8 +1,5 @@
 package app.chompass.ui.progress
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -95,7 +92,6 @@ internal fun BodySection(
     onLogWeight: () -> Unit = {},
     onLogBodyFat: () -> Unit = {},
 ) {
-    var expanded by rememberSaveable { mutableStateOf(true) }
     // Last chip toggled on becomes primary; falls back to weight when the
     // selection changes underneath (pref restore, range without data).
     var primary by rememberSaveable { mutableStateOf(OVERLAY_KEY_WEIGHT) }
@@ -155,10 +151,10 @@ internal fun BodySection(
 
     CardSection {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.progressCollapseHeader(expanded) { expanded = !expanded },
-            ) {
+            // Static header: title anchors the card, the pills add entries.
+            // No collapse toggle — tapping the title used to fold the chart
+            // away, which read as a broken affordance.
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     stringResource(R.string.progress_body_section),
                     fontSize = 17.sp,
@@ -170,116 +166,116 @@ internal fun BodySection(
                     Spacer(Modifier.width(8.dp))
                     LogPill(stringResource(R.string.progress_log_body_fat), onLogBodyFat)
                 }
-                Spacer(Modifier.width(8.dp))
-                CollapseChevron(expanded)
             }
-            AnimatedVisibility(
-                visible = expanded,
-                enter = expandVertically(),
-                exit = shrinkVertically(),
-            ) {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    SeriesChip(
+                        label = weightLabel,
+                        selected = OVERLAY_KEY_WEIGHT in selectedKeys,
+                        enabled = true,
+                        onClick = {
+                            if (OVERLAY_KEY_WEIGHT !in selectedKeys) {
+                                primary = OVERLAY_KEY_WEIGHT
+                            }
+                            onToggleSeries(OVERLAY_KEY_WEIGHT)
+                        },
+                    )
+                    if (bodyFatAvailable) {
                         SeriesChip(
-                            label = weightLabel,
-                            selected = true,
-                            enabled = false,
-                            onClick = {},
+                            label = bodyFatLabel,
+                            selected = OVERLAY_KEY_BODY_FAT in selectedKeys,
+                            enabled = true,
+                            onClick = {
+                                if (OVERLAY_KEY_BODY_FAT !in selectedKeys) {
+                                    primary = OVERLAY_KEY_BODY_FAT
+                                }
+                                onToggleSeries(OVERLAY_KEY_BODY_FAT)
+                            },
                         )
-                        if (bodyFatAvailable) {
-                            SeriesChip(
-                                label = bodyFatLabel,
-                                selected = OVERLAY_KEY_BODY_FAT in selectedKeys,
-                                enabled = true,
-                                onClick = {
-                                    if (OVERLAY_KEY_BODY_FAT !in selectedKeys) {
-                                        primary = OVERLAY_KEY_BODY_FAT
-                                    }
-                                    onToggleSeries(OVERLAY_KEY_BODY_FAT)
-                                },
-                            )
-                        }
-                        for (site in sites) {
-                            val key = site.storageId
-                            SeriesChip(
-                                label = siteLabels.getValue(key),
-                                selected = key in selectedKeys,
-                                enabled = true,
-                                onClick = {
-                                    if (key !in selectedKeys) primary = key
-                                    onToggleSeries(key)
-                                },
-                            )
-                        }
                     }
-                    if (model.series.isEmpty()) {
-                        Box(
-                            Modifier.fillMaxWidth().padding(vertical = 24.dp),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                stringResource(
-                                    if (weights.isEmpty()) R.string.progress_log_first_weight
-                                    else R.string.progress_no_entries_in_range
-                                ),
-                                fontSize = 15.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                            )
-                        }
-                    } else {
-                        DeferredChart(immediate = chartsImmediate) {
-                            OverlayChartCanvas(
-                                model = model,
-                                immediate = chartsImmediate,
-                                title = stringResource(R.string.progress_body_section),
-                                untrackedDays = untrackedDays,
-                            )
-                        }
-                        // Legend chips: real value + signed range delta per
-                        // series. Sign coloring is neutral (no good/bad read):
-                        // negative takes the accent, positive stays on-surface.
-                        FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        ) {
-                            for (series in model.series) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                ) {
-                                    Box(
-                                        Modifier
-                                            .size(8.dp)
-                                            .background(series.color, CircleShape)
-                                    )
+                    for (site in sites) {
+                        val key = site.storageId
+                        SeriesChip(
+                            label = siteLabels.getValue(key),
+                            selected = key in selectedKeys,
+                            enabled = true,
+                            onClick = {
+                                if (key !in selectedKeys) primary = key
+                                onToggleSeries(key)
+                            },
+                        )
+                    }
+                }
+                if (model.series.isEmpty()) {
+                    Box(
+                        Modifier.fillMaxWidth().padding(vertical = 24.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            stringResource(
+                                when {
+                                    selectedKeys.isEmpty() -> R.string.progress_no_series_selected
+                                    weights.isEmpty() -> R.string.progress_log_first_weight
+                                    else -> R.string.progress_no_entries_in_range
+                                }
+                            ),
+                            fontSize = 15.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        )
+                    }
+                } else {
+                    DeferredChart(immediate = chartsImmediate) {
+                        OverlayChartCanvas(
+                            model = model,
+                            immediate = chartsImmediate,
+                            title = stringResource(R.string.progress_body_section),
+                            untrackedDays = untrackedDays,
+                        )
+                    }
+                    // Legend chips: real value + signed range delta per
+                    // series. Sign coloring is neutral (no good/bad read):
+                    // negative takes the accent, positive stays on-surface.
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        for (series in model.series) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            ) {
+                                Box(
+                                    Modifier
+                                        .size(8.dp)
+                                        .background(series.color, CircleShape)
+                                )
+                                Text(
+                                    "${series.label} ${series.currentValue?.let { formatTick(it) + series.unitLabel } ?: "–"}",
+                                    fontSize = 12.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+                                )
+                                series.deltaOverRange?.let { delta ->
                                     Text(
-                                        "${series.label} ${series.currentValue?.let { formatTick(it) + series.unitLabel } ?: "–"}",
+                                        UnitFormat.signedDelta(delta) + series.unitLabel,
                                         fontSize = 12.sp,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+                                        color = if (delta < 0) AppColors.Calorie
+                                        else MaterialTheme.colorScheme.onSurface,
                                     )
-                                    series.deltaOverRange?.let { delta ->
-                                        Text(
-                                            UnitFormat.signedDelta(delta) + series.unitLabel,
-                                            fontSize = 12.sp,
-                                            color = if (delta < 0) AppColors.Calorie
-                                            else MaterialTheme.colorScheme.onSurface,
-                                        )
-                                    }
                                 }
                             }
                         }
-                        PrimaryStatBadges(
-                            series = primarySeries,
-                            primary = effectivePrimary,
-                            weightStats = weightStats,
-                            bodyFatStats = bodyFatStats,
-                            profileBodyFatFraction = profileBodyFatFraction,
-                            goalWeightKg = goalWeightKg,
-                            goalBodyFatFraction = goalBodyFatFraction,
-                            useMetricWeight = useMetricWeight,
-                        )
                     }
+                    PrimaryStatBadges(
+                        series = primarySeries,
+                        primary = effectivePrimary,
+                        weightStats = weightStats,
+                        bodyFatStats = bodyFatStats,
+                        profileBodyFatFraction = profileBodyFatFraction,
+                        goalWeightKg = goalWeightKg,
+                        goalBodyFatFraction = goalBodyFatFraction,
+                        useMetricWeight = useMetricWeight,
+                    )
                 }
             }
         }

@@ -2152,6 +2152,7 @@ macro riequilibrate al nuovo totale calorico</string>
     <string name="progress_body_section">Corpo</string>
     <string name="progress_overlay_off">Off</string>
     <string name="progress_no_entries_in_range">Nessuna voce in questo periodo</string>
+    <string name="progress_no_series_selected">Tocca una metrica qui sopra per mostrarla qui</string>
     <string name="settings_goal_phases_title">Fasi obiettivo</string>
     <string name="settings_goal_phases_intro">Pianifica finestre di definizione, mantenimento o massa. Una fase applica i suoi obiettivi a ogni giorno del periodo, come un tipo di giorno con date.</string>
     <string name="settings_goal_phases_add">Aggiungi fase</string>

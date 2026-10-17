@@ -201,7 +201,8 @@ internal fun CalorieSection(
                             )
                         }
                     }
-                    val chartSlots = remember(calorieSlots) { bucketCalorieSlots(calorieSlots) }
+                    // Daily bars at every range: bucketing up to weekly sums
+                    // hid per-day goal hits and read as weekly calories.
                     overlay?.let { data ->
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                             LegendSwatch(
@@ -212,7 +213,7 @@ internal fun CalorieSection(
                         }
                     }
                     CalorieBarChart(
-                        slots = chartSlots,
+                        slots = calorieSlots,
                         goal = calorieGoal,
                         dailyGoals = dailyCalorieGoals,
                         immediate = chartsImmediate,

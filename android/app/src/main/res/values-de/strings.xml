@@ -3663,6 +3663,7 @@ für dich ein</string>
     <string name="progress_body_section">Körper</string>
     <string name="progress_overlay_off">Aus</string>
     <string name="progress_no_entries_in_range">Keine Einträge in diesem Zeitraum</string>
+    <string name="progress_no_series_selected">Tippe oben auf eine Metrik, um sie hier anzuzeigen</string>
     <string name="settings_goal_phases_title">Zielphasen</string>
     <string name="settings_goal_phases_intro">Plane Cut-, Halt- oder Masse-Phasen. Eine Phase legt ihre Ziele für jeden Tag im Zeitraum fest – wie ein Tagestyp mit Datum.</string>
     <string name="settings_goal_phases_add">Phase hinzufügen</string>

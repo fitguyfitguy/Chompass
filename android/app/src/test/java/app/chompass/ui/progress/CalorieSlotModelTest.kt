@@ -1,8 +1,8 @@
 package app.chompass.ui.progress
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Density
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.DayOfWeek
@@ -10,8 +10,8 @@ import java.time.LocalDate
 import java.time.ZoneId
 
 /**
- * Chart-math behind the progress visuals: untracked backdrop bands, the
- * calendar-day calorie axis, and its weekly roll-up. Pure functions — the
+ * Chart-math behind the progress visuals: untracked backdrop bands and the
+ * calendar-day calorie axis (daily at every range). Pure functions — the
  * drawing lives in DrawScope code verified by screenshots.
  */
 class CalorieSlotModelTest {
@@ -217,59 +217,19 @@ class CalorieSlotModelTest {
         assertTrue(buildCalorieSlots(day.plusDays(1), day, emptyMap(), emptySet()).isEmpty())
     }
 
-    // -- bucketCalorieSlots -------------------------------------------------
-
     @Test
-    fun buckets_passthroughWithinMax() {
-        val day = LocalDate.of(2026, 10, 5)
-        val slots = listOf(CalorieSlot(day, 1500, untracked = false))
-        assertEquals(slots, bucketCalorieSlots(slots))
-        assertTrue(bucketCalorieSlots(emptyList()).isEmpty())
-    }
-
-    @Test
-    fun buckets_rollUpToIsoWeeksWithSums() {
-        // 100 days forces weekly buckets; logs land inside the first two weeks.
-        val start = LocalDate.of(2026, 1, 5)
-        val end = start.plusDays(99)
-        val logged = mapOf(
-            LocalDate.of(2026, 1, 5) to 2000,
-            LocalDate.of(2026, 1, 7) to 1500,
-            LocalDate.of(2026, 1, 13) to 900,
-        )
-        val slots = buildCalorieSlots(start, end, logged, emptySet())
-        val buckets = bucketCalorieSlots(slots)
-        assertEquals(15, buckets.size)
-        assertEquals(CalorieSlot(LocalDate.of(2026, 1, 5), 3500, untracked = false), buckets[0])
-        assertEquals(CalorieSlot(LocalDate.of(2026, 1, 12), 900, untracked = false), buckets[1])
-        // No logs that week -> null kcal, not 0.
-        assertNull(buckets[2].kcal)
-        buckets.forEach { assertEquals(DayOfWeek.MONDAY, it.day.dayOfWeek) }
-    }
-
-    @Test
-    fun buckets_allUntrackedWeekBecomesDashSlot() {
-        val start = LocalDate.of(2026, 1, 5)
-        val end = start.plusDays(99)
-        // First week fully untracked -> one dash slot with null kcal.
-        val untracked = (0..6).map { start.plusDays(it.toLong()).toString() }.toSet()
-        val buckets = bucketCalorieSlots(buildCalorieSlots(start, end, emptyMap(), untracked))
-        assertEquals(
-            CalorieSlot(LocalDate.of(2026, 1, 5), null, untracked = true),
-            buckets.first(),
-        )
-    }
-
-    @Test
-    fun buckets_mixedWeekMajorityUntrackedNullKcal() {
-        val start = LocalDate.of(2026, 1, 5)
-        val end = start.plusDays(99)
-        // 4 of 7 days untracked, nothing logged -> dash slot, null kcal.
-        val untracked = (0..3).map { start.plusDays(it.toLong()).toString() }.toSet()
-        val buckets = bucketCalorieSlots(buildCalorieSlots(start, end, emptyMap(), untracked))
-        assertEquals(
-            CalorieSlot(LocalDate.of(2026, 1, 5), null, untracked = true),
-            buckets.first(),
-        )
+    fun geometry_denseDailyModeFitsEverySlot() {
+        val density = Density(1f)
+        // More days than 4px gaps fit (6M/1Y/All): gap compresses, the last
+        // bar still ends inside the area instead of overflowing off-axis.
+        val dense = calorieBarGeometry(areaWidthPx = 1000f, n = 365, density = density)
+        assertEquals(2f, dense.barWidth)
+        assertTrue(dense.gap < 4f)
+        assertEquals(1000f, dense.startX + 364 * (dense.barWidth + dense.gap) + dense.barWidth, 1f)
+        // Sparse mode unchanged: 4px gaps, capped width, centered group.
+        val sparse = calorieBarGeometry(areaWidthPx = 1000f, n = 5, density = density)
+        assertEquals(4f, sparse.gap)
+        assertEquals(60f, sparse.barWidth)
+        assertEquals(342f, sparse.startX, 0.01f)
     }
 }

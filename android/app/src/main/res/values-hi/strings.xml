@@ -2151,6 +2151,7 @@
     <string name="progress_body_section">शरीर</string>
     <string name="progress_overlay_off">बंद</string>
     <string name="progress_no_entries_in_range">इस अवधि में कोई एंट्री नहीं</string>
+    <string name="progress_no_series_selected">इसे यहाँ दिखाने के लिए ऊपर किसी मीट्रिक पर टैप करें</string>
     <string name="settings_goal_phases_title">लक्ष्य चरण</string>
     <string name="settings_goal_phases_intro">कट, मेंटेन या बल्क अवधियाँ योजना करें। एक चरण अपनी अवधि के हर दिन पर अपने लक्ष्य लागू करता है — तारीखों वाले दिन-प्रकार की तरह।</string>
     <string name="settings_goal_phases_add">चरण जोड़ें</string>

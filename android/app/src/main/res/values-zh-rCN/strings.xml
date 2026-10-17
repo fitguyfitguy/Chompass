@@ -2150,6 +2150,7 @@
     <string name="progress_body_section">身体</string>
     <string name="progress_overlay_off">关闭</string>
     <string name="progress_no_entries_in_range">该时间段内暂无记录</string>
+    <string name="progress_no_series_selected">点按上方的指标以在此显示</string>
     <string name="settings_goal_phases_title">目标阶段</string>
     <string name="settings_goal_phases_intro">规划减脂、维持或增肌阶段。阶段会把目标应用到范围内的每一天，就像带日期的日类型。</string>
     <string name="settings_goal_phases_add">添加阶段</string>
