@@ -3398,14 +3398,26 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 if (images.isEmpty() && note.isNullOrBlank()) {
                     throw AiError.InvalidResponse
                 }
-                val analysis = container.foodAnalysis.analyzeFood(
-                    images,
-                    note,
-                    singleIngredient = item.singleIngredient,
-                    confirmedPortionGrams = item.confirmedPortionGrams,
-                    profileOverride = profileOverride,
-                ) { progress ->
-                    onFoodAnalysisProgress(start.generation, progress)
+                // Text-only rows must take the text path: the multi-image
+                // analyzeFood refuses an empty image list, so note-only
+                // entries failed every retry before any provider call (#136).
+                val analysis = if (images.isEmpty()) {
+                    container.foodAnalysis.analyzeText(
+                        note!!,
+                        profileOverride = profileOverride,
+                    ) { progress ->
+                        onFoodAnalysisProgress(start.generation, progress)
+                    }
+                } else {
+                    container.foodAnalysis.analyzeFood(
+                        images,
+                        note,
+                        singleIngredient = item.singleIngredient,
+                        confirmedPortionGrams = item.confirmedPortionGrams,
+                        profileOverride = profileOverride,
+                    ) { progress ->
+                        onFoodAnalysisProgress(start.generation, progress)
+                    }
                 }.copy(customNote = note)
                 savePendingDraft(
                     analysis,
