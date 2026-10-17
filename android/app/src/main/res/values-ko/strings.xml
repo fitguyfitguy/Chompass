@@ -2150,6 +2150,7 @@
     <string name="progress_body_section">신체</string>
     <string name="progress_overlay_off">끄기</string>
     <string name="progress_no_entries_in_range">이 기간에 기록 없음</string>
+    <string name="progress_no_series_selected">표시하려면 위에서 항목을 탭하세요</string>
     <string name="settings_goal_phases_title">목표 페이즈</string>
     <string name="settings_goal_phases_intro">감량·유지·증량 기간을 계획하세요. 페이즈는 기간 내 모든 날에 목표를 적용합니다 — 날짜가 있는 날 유형과 같습니다.</string>
     <string name="settings_goal_phases_add">페이즈 추가</string>

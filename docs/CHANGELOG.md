@@ -18,6 +18,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Goal phases stay inside safe bounds** (Android): a phase target below the calorie floor is lifted to it on save, and the phase wheel can no longer spin below that floor or past the ceiling. The wheel now also shows correct bounds when the energy unit is kJ, and saving the first phase no longer wipes a keto-paused day-type plan: its Training and Rest days come back when the plan resumes.
 - **Phase edits clean up after themselves** (Android): shortening or deleting a phase now clears the per-day overrides on all days it no longer covers, including days far in the past. Phases that start far in the future apply automatically once their window comes within reach, without a re-save.
 - **Progress charts read true** (Android): the trend line on the calorie card sits on the bars' centers at every zoom level, tapping a week bar shows that week's average instead of an empty tag, single weigh-in days render centered, and the body badges no longer show "+0.0 kg" when the selected range has no weigh-ins.
+- **The weight chip on the body chart toggles again** (Android): turning weight off now leaves a chip you can tap back on, instead of a permanently selected button that ignored the saved selection. With every chip off, the card shows a short hint instead of an empty chart.
+- **A calmer body card header** (Android): the Body title no longer collapses the whole card when tapped. The collapse arrow is gone; the Log weight and Log body fat actions stay.
+- **The calorie chart starts where your log starts** (Android): on the All range the chart now spans from your first logged meal to today instead of padding years of empty space.
+- **Daily calorie bars at every range** (Android): 6M, 1Y, and All keep one bar per day instead of rolling weeks up into weekly sums, so each day keeps its own color against its own goal.
 
 ## [5.7.1] - 2026-10-17
 

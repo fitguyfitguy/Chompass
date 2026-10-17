@@ -2154,6 +2154,7 @@ macros reequilibradas ao novo total calórico</string>
     <string name="progress_body_section">Corpo</string>
     <string name="progress_overlay_off">Desligado</string>
     <string name="progress_no_entries_in_range">Nenhum registro neste período</string>
+    <string name="progress_no_series_selected">Toque em uma métrica acima para exibi-la aqui</string>
     <string name="settings_goal_phases_title">Fases de meta</string>
     <string name="settings_goal_phases_intro">Planeje janelas de cutting, manutenção ou bulking. Uma fase aplica as metas a cada dia do período, como um tipo de dia com datas.</string>
     <string name="settings_goal_phases_add">Adicionar fase</string>

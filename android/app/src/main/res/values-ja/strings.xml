@@ -2150,6 +2150,7 @@
     <string name="progress_body_section">体</string>
     <string name="progress_overlay_off">オフ</string>
     <string name="progress_no_entries_in_range">この期間の記録はありません</string>
+    <string name="progress_no_series_selected">表示するには上の項目をタップしてください</string>
     <string name="settings_goal_phases_title">目標フェーズ</string>
     <string name="settings_goal_phases_intro">減量・維持・増量の期間を計画します。フェーズは期間内の毎日に目標を適用します。日付付きの一日タイプです。</string>
     <string name="settings_goal_phases_add">フェーズを追加</string>

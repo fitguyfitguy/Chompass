@@ -308,10 +308,9 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /**
-     * Toggles one series on the unified body overlay chart, persisted as a
-     * single atomic edit (no read-modify-write race between rapid taps).
-     * Weight stays selected permanently — its chip is hardwired
-     * selected+disabled, so it is never toggled and never leaves the set.
+     * Toggles one series on the unified body overlay chart — weight included,
+     * every chip is a symmetric on/off — persisted as a single atomic edit
+     * (no read-modify-write race between rapid taps).
      */
     fun toggleBodySeries(key: String) {
         viewModelScope.launch {
@@ -376,8 +375,16 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
         .filter { it.date.toString() !in untrackedDays }
         .associate { it.date to it }
     val (rangeStartDay, rangeEndDay) = selectedRange.dateRange(anchorDate)
+    // "All" spans from the first logged day to today, not the fixed 10-year
+    // window — an axis padded with years of empty slots read as a broken
+    // range. Fixed ranges keep their windows.
+    val chartStartDay = if (selectedRange == TimeRange.ALL_TIME) {
+        foodByDay.keys.minOrNull() ?: rangeStartDay
+    } else {
+        rangeStartDay
+    }
     val calorieSlots = buildCalorieSlots(
-        start = rangeStartDay,
+        start = chartStartDay,
         end = rangeEndDay,
         logged = foodByDay.mapValues { (_, aggregate) -> aggregate.calories },
         untracked = untrackedDays,
@@ -428,7 +435,7 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
         }
     // Marker-lane inputs: one resolver pass per day in range (pure math).
     val dayTypeByDay = buildMap {
-        var day = rangeStartDay
+        var day = chartStartDay
         while (!day.isAfter(rangeEndDay)) {
             val id = MacroPlanResolver
                 .targetsForJournaled(base.goalJournal, base.profile, day, anchorDate)
@@ -478,7 +485,7 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
                 dayTypeByDay = dayTypeByDay,
                 untrackedDays = untrackedDays,
                 phases = base.profile?.goalPhases.orEmpty(),
-                range = rangeStartDay..rangeEndDay,
+                range = chartStartDay..rangeEndDay,
                 today = anchorDate,
             )
             .takeIf { it.loggedDays > 0 },

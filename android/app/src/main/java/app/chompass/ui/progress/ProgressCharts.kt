@@ -110,10 +110,10 @@ internal data class DayMarker(
 
 /**
  * Dense marker list for the trend charts: per-day while the span fits
- * [maxSlots] days, otherwise ISO-week buckets (Monday start — same grouping
- * as [bucketCalorieSlots]) with the majority type and a majority-untracked
- * dash, so dots stay readable at 6M/1Y ranges. Weeks holding untracked days
- * below the majority carry [DayMarker.partialUntracked].
+ * [maxSlots] days, otherwise ISO-week buckets (Monday start) with the majority
+ * type and a majority-untracked dash, so dots stay readable at 6M/1Y ranges.
+ * Weeks holding untracked days below the majority carry
+ * [DayMarker.partialUntracked].
  */
 internal fun buildMarkerLane(
     start: LocalDate,
@@ -242,49 +242,6 @@ internal fun buildCalorieSlots(
     }
 }
 
-/**
- * Overlay value behind a calorie slot: the direct day hit, else — slot days
- * are ISO-week starts once `bucketCalorieSlots` rolls up — the average of the
- * readings inside that week `[slotDay, slotDay+6]`, else null.
- */
-internal fun overlayValueForSlot(valuesByDay: Map<LocalDate, Double>, slotDay: LocalDate): Double? {
-    valuesByDay[slotDay]?.let { return it }
-    var sum = 0.0
-    var count = 0
-    for (offset in 0..6) {
-        valuesByDay[slotDay.plusDays(offset.toLong())]?.let {
-            sum += it
-            count++
-        }
-    }
-    return if (count == 0) null else sum / count
-}
-
-/**
- * Cap calorie-slot draw calls: within [maxSlots] the calendar-day slots pass
- * through untouched; longer ranges roll up to ISO weeks (Monday start), summing
- * logged kcal (null when nothing was logged that week) with a majority-untracked
- * dash. Slot totals must use the unbucketed series — this is canvas-only.
- */
-internal fun bucketCalorieSlots(
-    slots: List<CalorieSlot>,
-    maxSlots: Int = 90,
-): List<CalorieSlot> {
-    if (slots.size <= maxSlots) return slots
-    return slots
-        .groupBy { it.day.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)) }
-        .toSortedMap()
-        .map { (weekStart, days) ->
-            CalorieSlot(
-                day = weekStart,
-                kcal = days.mapNotNull { slot -> slot.kcal }
-                    .takeIf { days.any { slot -> slot.kcal != null } }
-                    ?.sum(),
-                untracked = days.count { it.untracked } * 2 > days.size,
-            )
-        }
-}
-
 /** Untracked backdrop bands for the chart window [tStart, tStart + tRange]
  *  (same day-window derivation as the marker lane). */
 @Composable
@@ -395,18 +352,22 @@ internal fun MarkerLane(
 }
 
 /** Shared bar geometry for the calorie chart canvas, marker lane, and labels. */
-internal data class CalorieBarGeometry(val barWidth: Float, val gap: Float, val startX: Float) {
-    fun slotCenter(index: Int): Float = startX + index * (barWidth + gap) + barWidth / 2f
-}
+internal data class CalorieBarGeometry(val barWidth: Float, val gap: Float, val startX: Float)
 
 internal fun calorieBarGeometry(areaWidthPx: Float, n: Int, density: Density): CalorieBarGeometry {
     val gap = 4f
     val maxBarPx = with(density) { 60.dp.toPx() }
     val rawWidth = (areaWidthPx - gap * (n - 1)) / n
-    val barWidth = rawWidth.coerceIn(2f, maxBarPx)
-    val totalGroupW = barWidth * n + gap * (n - 1)
-    val startX = ((areaWidthPx - totalGroupW) / 2f).coerceAtLeast(0f)
-    return CalorieBarGeometry(barWidth, gap, startX)
+    if (rawWidth >= 2f) {
+        val barWidth = rawWidth.coerceAtMost(maxBarPx)
+        val totalGroupW = barWidth * n + gap * (n - 1)
+        return CalorieBarGeometry(barWidth, gap, ((areaWidthPx - totalGroupW) / 2f).coerceAtLeast(0f))
+    }
+    // Dense daily mode (6M/1Y/All, one bar per day): the 4px gap no longer
+    // fits, so it shrinks until every day keeps its slot on the axis; bars
+    // keep the 2px floor and may touch.
+    val pitch = areaWidthPx / n.coerceAtLeast(1)
+    return CalorieBarGeometry(2f, (pitch - 2f).coerceIn(0f, gap), 0f)
 }
 
 /**
@@ -1213,9 +1174,10 @@ internal fun MeasurementChartCanvas(
 /**
  * Calendar-day calorie bars against a goal rule line (#60 phase 3): [goal] is
  * the range average (MACRO-CYCLE-D); each bar colors over/under against its
- * own day's target from [dailyGoals] (journal-first; missing entries — e.g.
- * bucketed week slots — fall back to [goal]). Untracked days draw a baseline
- * dash; days with nothing logged leave a real gap on the axis.
+ * own day's target from [dailyGoals] (journal-first; days without a journal
+ * entry fall back to [goal]). Untracked days draw a baseline dash; days with
+ * nothing logged leave a real gap on the axis. Daily at every range — long
+ * ranges shrink the bar pitch instead of rolling up to weekly sums.
  */
 @Composable
 internal fun CalorieBarChart(
@@ -1274,18 +1236,33 @@ internal fun CalorieBarChart(
     val inspectedLabel = inspectedBar?.let { index ->
         slots.getOrNull(index)?.takeIf { it.kcal != null }?.let { slot ->
             val kcalText = "${xLabelFmt.format(slot.day)} · ${LocaleFormat.integer(EnergyFormat.quantity(slot.kcal ?: 0, energyUnit))} ${energyUnitLabel()}"
-            // Combo mode: append the overlaid metric's real value for that day
-            // (week-start buckets fall back to the week's average).
-            val overlayText = overlay?.valuesByDay
-                ?.let { values -> overlayValueForSlot(values, slot.day) }
+            // Combo mode: append the overlaid metric's real value for that day.
+            val overlayText = overlay?.valuesByDay?.get(slot.day)
                 ?.let { " · ${formatTick(it)}${overlay.unitSuffix}" } ?: ""
             kcalText + overlayText
         }
     }
-    // One marker per plotted slot (bucket day after roll-up), so dashes and
-    // dots align with bars at every range.
-    val dayMarkers = slots.map { slot ->
-        DayMarker(slot.day, dayTypeByDay[slot.day.toString()]?.let(typeColorOf), slot.untracked)
+    // Marker lane over the slot span: per-day dots while the span fits the
+    // budget, ISO-week buckets beyond, so dashes/dots stay readable at
+    // 6M/1Y/All. Aligned by time, not slot index — see the xFraction below.
+    val laneZone = ZoneId.systemDefault()
+    val laneStartMs = slots.firstOrNull()?.day
+        ?.atStartOfDay(laneZone)?.toInstant()?.toEpochMilli() ?: 0L
+    val laneEndMs = slots.lastOrNull()?.day
+        ?.plusDays(1)?.atStartOfDay(laneZone)?.toInstant()?.toEpochMilli() ?: 0L
+    val laneSpanMs = (laneEndMs - laneStartMs).coerceAtLeast(1L)
+    val laneMarkers = remember(slots, dayTypeByDay, untrackedDays, typeColorOf) {
+        if (slots.isEmpty()) {
+            emptyList()
+        } else {
+            buildMarkerLane(
+                start = slots.first().day,
+                end = slots.last().day,
+                types = dayTypeByDay,
+                untracked = untrackedDays,
+                typeColorOf = typeColorOf,
+            )
+        }
     }
     val goalStepColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
     // Overlay draw domain: the plotted slot span in epoch-ms plus the series'
@@ -1449,8 +1426,17 @@ internal fun CalorieBarChart(
                 val areaWidthPx = with(density) { maxWidth.toPx() }
                 val geometry = calorieBarGeometry(areaWidthPx, slots.size, density)
                 MarkerLane(
-                    markers = dayMarkers,
-                    xFraction = { i -> geometry.slotCenter(i) / areaWidthPx },
+                    markers = laneMarkers,
+                    // Time → bar-slot fraction: bars span [startX, startX +
+                    // n · pitch] with day 0 at laneStartMs, so a marker lands
+                    // on its day's bar center (or its week's first bar).
+                    xFraction = { i ->
+                        val marker = laneMarkers.getOrNull(i) ?: return@MarkerLane 0.5f
+                        val f = (marker.date.atStartOfDay(laneZone).toInstant().toEpochMilli() - laneStartMs)
+                            .toFloat() / laneSpanMs
+                        ((geometry.startX + f.coerceIn(0f, 1f) * slots.size * (geometry.barWidth + geometry.gap) +
+                            geometry.barWidth / 2f) / areaWidthPx).coerceIn(0f, 1f)
+                    },
                 )
             }
             Spacer(Modifier.width(44.dp))

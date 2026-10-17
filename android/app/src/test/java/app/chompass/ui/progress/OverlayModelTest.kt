@@ -273,21 +273,6 @@ class OverlayModelTest {
     }
 
     @Test
-    fun overlayValueForSlotDirectHitWeekAverageOrEmpty() {
-        val monday = LocalDate.of(2026, 8, 3) // ISO Monday
-        // Direct hit returns itself.
-        assertEquals(72.5, overlayValueForSlot(mapOf(monday to 72.5), monday)!!, 1e-9)
-        // Week-start bucket: average of readings inside [monday, monday+6].
-        val values = mapOf(
-            monday.plusDays(2) to 80.0,
-            monday.plusDays(4) to 82.0,
-        )
-        assertEquals(81.0, overlayValueForSlot(values, monday)!!, 1e-9)
-        // Nothing in the week → null (tag drops the overlay part).
-        assertNull(overlayValueForSlot(emptyMap(), monday))
-    }
-
-    @Test
     fun singleEntryTrueOnlyWhenAllPointsShareOneDay() {
         val day = LocalDate.of(2026, 8, 1)
         fun model(weights: List<WeightEntry>) = buildOverlayChartModel(

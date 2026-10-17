@@ -2186,6 +2186,7 @@ makro rebalansowane do nowej sumy kalorii</string>
     <string name="progress_body_section">Ciało</string>
     <string name="progress_overlay_off">Wył.</string>
     <string name="progress_no_entries_in_range">Brak wpisów w tym zakresie</string>
+    <string name="progress_no_series_selected">Dotknij metryki powyżej, aby wyświetlić ją tutaj</string>
     <string name="settings_goal_phases_title">Fazy celów</string>
     <string name="settings_goal_phases_intro">Planuj okna redukcji, utrzymania lub budowania masy. Faza stosuje swoje cele do każdego dnia w zakresie, jak typ dnia z datami.</string>
     <string name="settings_goal_phases_add">Dodaj fazę</string>

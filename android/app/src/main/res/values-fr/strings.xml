@@ -2174,6 +2174,7 @@ macros rééquilibrées au nouveau total calorique</string>
     <string name="progress_body_section">Corps</string>
     <string name="progress_overlay_off">Désactivé</string>
     <string name="progress_no_entries_in_range">Aucune entrée sur cette période</string>
+    <string name="progress_no_series_selected">Touchez une métrique ci-dessus pour l\'afficher ici</string>
     <string name="settings_goal_phases_title">Phases d\'objectif</string>
     <string name="settings_goal_phases_intro">Planifie des fenêtres de sèche, de maintien ou de prise de masse. Une phase applique ses objectifs à chaque jour de sa période, comme un type de jour avec des dates.</string>
     <string name="settings_goal_phases_add">Ajouter une phase</string>
