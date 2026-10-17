@@ -5,6 +5,7 @@ import app.chompass.data.ProfileRepository
 import app.chompass.models.GoalJournal
 import app.chompass.models.GoalJournalEntry
 import app.chompass.models.GoalJournalSource
+import app.chompass.models.GoalPhaseEdit
 import app.chompass.models.MacroPlanResolver
 import app.chompass.models.UserProfile
 import java.time.LocalDate
@@ -52,8 +53,19 @@ class GoalJournalService(
      */
     suspend fun refresh(source: GoalJournalSource = GoalJournalSource.PLAN) {
         mutex.withLock {
+            // Roll phase stamps with the keep window before resolving: far-
+            // future phases self-activate as their range arrives. restamp is
+            // idempotent, so the save → observe → refresh loop converges.
+            var profile = profileRepository.current()
+            if (profile != null) {
+                val restamped = GoalPhaseEdit.restampAssignments(profile, LocalDate.now())
+                if (restamped != profile) {
+                    profileRepository.save(restamped)
+                    profile = restamped
+                }
+            }
             val updated = updatedJournal(
-                profile = profileRepository.current(),
+                profile = profile,
                 current = prefs.goalJournal.first(),
                 today = LocalDate.now(),
                 nowMillis = System.currentTimeMillis(),

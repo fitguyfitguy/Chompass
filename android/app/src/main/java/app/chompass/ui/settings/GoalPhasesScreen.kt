@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import app.chompass.AppContainer
 import app.chompass.R
+import app.chompass.models.CalorieSafety
 import app.chompass.models.DayTargets
 import app.chompass.models.EnergyFormat
 import app.chompass.models.GoalJournal
@@ -60,6 +61,7 @@ import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalEnergyUnit
+import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.success
 import java.time.LocalDate
@@ -85,7 +87,6 @@ fun GoalPhasesScreen(
     )
     var sheetPhase by remember { mutableStateOf<GoalPhase?>(null) }
     var showSheet by remember { mutableStateOf(false) }
-    var deleting by remember { mutableStateOf<GoalPhase?>(null) }
 
     // Per-phase adherence lines (avg Δ kcal/day · net over the window), loaded
     // from the diary aggregates + journal-resolved goals.
@@ -145,6 +146,11 @@ fun GoalPhasesScreen(
         GoalPhaseEditSheet(
             editing = sheetPhase,
             base = baseTargets,
+            calorieFloor = ui.profile?.let { CalorieSafety.floorKcal(it.bmr) }
+                ?: CalorieSafety.ABSOLUTE_FLOOR_KCAL,
+            calorieCeiling = ui.profile?.let {
+                CalorieSafety.ceilingKcal(it.tdee, CalorieSafety.floorKcal(it.bmr))
+            } ?: CalorieSafety.PARSER_CEILING_KCAL,
             onSave = { draft, onResult ->
                 vm.saveGoalPhase(draft) { error ->
                     if (error == null) showSheet = false
@@ -157,26 +163,6 @@ fun GoalPhasesScreen(
             },
             onDismiss = { showSheet = false },
         )
-    }
-    if (deleting != null) {
-        ChompassDialog(onDismissRequest = { deleting = null }) {
-            Text(
-                stringResource(R.string.settings_goal_phases_delete_title, deleting!!.name),
-                fontSize = 21.sp,
-                fontWeight = FontWeight.Bold,
-            )
-            Text(
-                stringResource(R.string.settings_goal_phases_delete_message),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
-            )
-            ChompassDialogActions(
-                primaryText = stringResource(R.string.action_delete),
-                onPrimary = {
-                    vm.deleteGoalPhase(deleting!!.id)
-                    deleting = null
-                },
-            )
-        }
     }
 }
 
@@ -202,12 +188,13 @@ private fun PhaseRow(
             Spacer(Modifier.height(2.dp))
             val zone = ZoneId.systemDefault()
             val fmt = remember { LocaleFormat.shortDate() }
+            val unit = LocalEnergyUnit.current
             val start = GoalJournal.parseDateOrNull(phase.startDate)
             val end = GoalJournal.parseDateOrNull(phase.endDate)
             val range = if (start != null && end != null) {
-                "${fmt.format(start.atStartOfDay(zone))} – ${fmt.format(end.atStartOfDay(zone))} · ${LocaleFormat.integer(phase.calories)} ${energyUnitLabel()}"
+                "${fmt.format(start.atStartOfDay(zone))} – ${fmt.format(end.atStartOfDay(zone))} · ${LocaleFormat.integer(EnergyFormat.quantity(phase.calories, unit))} ${energyUnitLabel()}"
             } else {
-                LocaleFormat.integer(phase.calories).toString()
+                LocaleFormat.integer(EnergyFormat.quantity(phase.calories, unit)).toString()
             }
             Text(
                 range,
@@ -215,7 +202,6 @@ private fun PhaseRow(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
             )
             if (adherence != null && adherence.avgDelta != null) {
-                val unit = LocalEnergyUnit.current
                 Text(
                     stringResource(
                         R.string.settings_goal_phases_adherence_format,
@@ -270,6 +256,8 @@ private fun IntentChip(intent: PhaseIntent) {
 private fun GoalPhaseEditSheet(
     editing: GoalPhase?,
     base: DayTargets?,
+    calorieFloor: Int,
+    calorieCeiling: Int,
     onSave: (GoalPhase, onResult: (PhaseEditError?) -> Unit) -> Unit,
     onDelete: (GoalPhase) -> Unit,
     onDismiss: () -> Unit,
@@ -283,7 +271,7 @@ private fun GoalPhaseEditSheet(
         mutableStateOf(editing?.endDate ?: today.plusDays(13).toString())
     }
     var calories by remember(editing) {
-        mutableIntStateOf(editing?.calories ?: base?.calories ?: 2000)
+        mutableIntStateOf((editing?.calories ?: base?.calories ?: 2000).coerceIn(calorieFloor, calorieCeiling))
     }
     var protein by remember(editing) { mutableIntStateOf(editing?.proteinG ?: base?.proteinG ?: 150) }
     var carbs by remember(editing) { mutableIntStateOf(editing?.carbsG ?: base?.carbsG ?: 200) }
@@ -391,11 +379,18 @@ private fun GoalPhaseEditSheet(
             NumericWheelPicker(
                 value = EnergyFormat.quantity(calories, unit),
                 onValueChange = { calories = EnergyFormat.toKcal(it, unit) },
-                min = 800,
-                max = 6000,
+                min = EnergyFormat.quantity(calorieFloor, unit),
+                max = EnergyFormat.quantity(calorieCeiling, unit),
                 unit = energyUnitLabel(),
                 step = EnergyFormat.wheelStep(25, unit),
             )
+            if (calories <= calorieFloor) {
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    stringResource(R.string.settings_day_types_floor_warning, EnergyFormat.quantity(calorieFloor, unit), energyUnitLabel()),
+                    color = AppColors.Calorie,
+                )
+            }
             Spacer(Modifier.height(12.dp))
             EditorWheelLabel(stringResource(R.string.macro_protein), unit = stringResource(R.string.unit_g))
             NumericWheelPicker(
@@ -482,8 +477,4 @@ private fun GoalPhaseEditSheet(
             )
         }
     }
-}
-
-private fun showDeleteConfirmImplicit() {
-    // placeholder — replaced below
 }

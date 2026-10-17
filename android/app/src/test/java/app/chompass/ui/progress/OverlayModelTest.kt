@@ -13,6 +13,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
 import java.util.TimeZone
@@ -240,5 +241,107 @@ class OverlayModelTest {
             typeColorOf = { Color.Transparent },
         ).series.single()
         assertEquals(30, doubled.points.size)
+    }
+
+    @Test
+    fun overlaySlotCenterXMatchesBarCenters() {
+        val dayMs = 86_400_000L
+        val start = LocalDate.of(2026, 8, 1).atStartOfDay(zone).toInstant().toEpochMilli()
+        // Day 0 → first slot center.
+        assertEquals(
+            100f + 20f / 2f,
+            overlaySlotCenterX(start, start, start + 10 * dayMs, 10, 100f, 30f, 20f),
+            0.01f,
+        )
+        // Mid-range daily slots: day d lands on slot d's center.
+        assertEquals(
+            100f + 3 * 30f + 20f / 2f,
+            overlaySlotCenterX(start + 3 * dayMs, start, start + 10 * dayMs, 10, 100f, 30f, 20f),
+            0.01f,
+        )
+        // Timestamps outside the span clamp to the first/last slot centers.
+        assertEquals(
+            100f + 20f / 2f,
+            overlaySlotCenterX(start - dayMs, start, start + 10 * dayMs, 10, 100f, 30f, 20f),
+            0.01f,
+        )
+        assertEquals(
+            100f + 9 * 30f + 20f / 2f,
+            overlaySlotCenterX(start + 100 * dayMs, start, start + 10 * dayMs, 10, 100f, 30f, 20f),
+            0.01f,
+        )
+    }
+
+    @Test
+    fun overlayValueForSlotDirectHitWeekAverageOrEmpty() {
+        val monday = LocalDate.of(2026, 8, 3) // ISO Monday
+        // Direct hit returns itself.
+        assertEquals(72.5, overlayValueForSlot(mapOf(monday to 72.5), monday)!!, 1e-9)
+        // Week-start bucket: average of readings inside [monday, monday+6].
+        val values = mapOf(
+            monday.plusDays(2) to 80.0,
+            monday.plusDays(4) to 82.0,
+        )
+        assertEquals(81.0, overlayValueForSlot(values, monday)!!, 1e-9)
+        // Nothing in the week → null (tag drops the overlay part).
+        assertNull(overlayValueForSlot(emptyMap(), monday))
+    }
+
+    @Test
+    fun singleEntryTrueOnlyWhenAllPointsShareOneDay() {
+        val day = LocalDate.of(2026, 8, 1)
+        fun model(weights: List<WeightEntry>) = buildOverlayChartModel(
+            weights = weights, bodyFats = emptyList(), measurements = emptyList(),
+            sites = emptyList(), goalWeightKg = null, goalBodyFatFraction = null,
+            useMetricWeight = true, useMetricLength = true, meta = meta(OVERLAY_KEY_WEIGHT),
+            dayTypeByDay = emptyMap(), untrackedDays = emptySet(),
+            typeColorOf = { Color.Transparent },
+        )
+        // Two same-day weigh-ins: one slot wide → centered rendering fires.
+        val sameDay = model(
+            listOf(
+                WeightEntry(weightKg = 80.0, date = at(day)),
+                WeightEntry(weightKg = 80.4, date = at(day).plusSeconds(3600)),
+            ),
+        )
+        assertTrue(sameDay.series.isNotEmpty())
+        assertTrue(sameDay.singleEntry)
+        // Two distinct days → normal axis.
+        val twoDays = model(
+            listOf(
+                WeightEntry(weightKg = 80.0, date = at(day)),
+                WeightEntry(weightKg = 81.0, date = at(day.plusDays(1))),
+            ),
+        )
+        assertFalse(twoDays.singleEntry)
+    }
+
+    @Test
+    fun dayValuesKeepBucketsDroppedByDownsampling() {
+        val start = LocalDate.of(2026, 1, 1)
+        val weights = daysFrom(start, 200).mapIndexed { i, day ->
+            WeightEntry(weightKg = 80.0 + (i % 5) * 0.1, date = at(day))
+        }
+        val model = buildOverlayChartModel(
+            weights = weights, bodyFats = emptyList(), measurements = emptyList(),
+            sites = emptyList(), goalWeightKg = null, goalBodyFatFraction = null,
+            useMetricWeight = true, useMetricLength = true, meta = meta(OVERLAY_KEY_WEIGHT),
+            dayTypeByDay = emptyMap(), untrackedDays = emptySet(),
+            typeColorOf = { Color.Transparent },
+        )
+        val series = model.series.single()
+        assertTrue("raw points downsampled", series.points.size < 200)
+        // Full-resolution daily values: every day resolves in the tap tag,
+        // including buckets the downsampler dropped from the visual series.
+        val pointDays = series.points
+            .map { Instant.ofEpochMilli(it.timeMs).atZone(zone).toLocalDate().toString() }
+            .toSet()
+        assertTrue(pointDays.size < 200)
+        val droppedDay = daysFrom(start, 200).map { it.toString() }.first { it !in pointDays }
+        assertEquals(
+            80.0 + (LocalDate.parse(droppedDay).dayOfYear - 1).mod(5) * 0.1,
+            model.dayValues[droppedDay]!![OVERLAY_KEY_WEIGHT]!!,
+            1e-9,
+        )
     }
 }

@@ -64,6 +64,8 @@ internal fun calorieOverlayData(
     weights: List<WeightEntry>,
     bodyFats: List<BodyFatEntry>,
     useMetricWeight: Boolean,
+    /** Resolved at composable scope (" kg" / " lbs") — no hardcoded units here. */
+    weightUnitSuffix: String,
 ): CalorieOverlayData? {
     if (key == "off") return null
     val zone = ZoneId.systemDefault()
@@ -79,7 +81,7 @@ internal fun calorieOverlayData(
                 trend = downsampleTrend(trend.map { TrendPoint(dayMs(it.day), display(it.value)) }),
                 dots = downsampleTrend(daily.map { TrendPoint(dayMs(it.day), display(it.value)) }),
                 color = overlaySeriesColor(OVERLAY_KEY_WEIGHT),
-                unitSuffix = if (useMetricWeight) " kg" else " lbs",
+                unitSuffix = weightUnitSuffix,
                 valuesByDay = daily.associate { it.day to display(it.value) },
             )
         }
@@ -121,8 +123,16 @@ internal fun CalorieSection(
 ) {
     var expanded by rememberSaveable { mutableStateOf(true) }
     val untrackedCount = calorieSlots.count { it.untracked }
-    val overlay = remember(overlayKey, overlayWeights, overlayBodyFats, useMetricWeight) {
-        calorieOverlayData(overlayKey, overlayWeights, overlayBodyFats, useMetricWeight)
+    val weightSuffix = " " + stringResource(if (useMetricWeight) R.string.unit_kg else R.string.unit_lbs)
+    val overlay = remember(overlayKey, overlayWeights, overlayBodyFats, useMetricWeight, weightSuffix) {
+        calorieOverlayData(overlayKey, overlayWeights, overlayBodyFats, useMetricWeight, weightSuffix)
+    }
+    // A stored key whose series lost its in-range data reads as "off" so the
+    // chips never claim an overlay the chart isn't drawing.
+    val effectiveKey = when {
+        overlayKey == OVERLAY_KEY_WEIGHT && overlayWeights.isEmpty() -> "off"
+        overlayKey == OVERLAY_KEY_BODY_FAT && overlayBodyFats.isEmpty() -> "off"
+        else -> overlayKey
     }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Column(
@@ -173,20 +183,20 @@ internal fun CalorieSection(
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OverlayPickChip(
                             label = stringResource(R.string.progress_overlay_off),
-                            selected = overlayKey == "off",
+                            selected = effectiveKey == "off",
                             onClick = { onOverlayKeyChange("off") },
                         )
                         if (overlayWeights.isNotEmpty()) {
                             OverlayPickChip(
                                 label = stringResource(R.string.progress_metric_weight),
-                                selected = overlayKey == OVERLAY_KEY_WEIGHT,
+                                selected = effectiveKey == OVERLAY_KEY_WEIGHT,
                                 onClick = { onOverlayKeyChange(OVERLAY_KEY_WEIGHT) },
                             )
                         }
                         if (overlayBodyFats.isNotEmpty()) {
                             OverlayPickChip(
                                 label = stringResource(R.string.progress_metric_body_fat),
-                                selected = overlayKey == OVERLAY_KEY_BODY_FAT,
+                                selected = effectiveKey == OVERLAY_KEY_BODY_FAT,
                                 onClick = { onOverlayKeyChange(OVERLAY_KEY_BODY_FAT) },
                             )
                         }
@@ -196,7 +206,7 @@ internal fun CalorieSection(
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                             LegendSwatch(
                                 color = data.color,
-                                label = stringResource(overlayLegendLabel(overlayKey)) +
+                                label = stringResource(overlayLegendLabel(effectiveKey)) +
                                     (data.dots.lastOrNull()?.value?.let { " ${formatTick(it)}${data.unitSuffix}" } ?: ""),
                             )
                         }

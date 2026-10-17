@@ -4,6 +4,21 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Added
+
+- **Progress now tracks goal phases** (Android): Settings → Goals & Nutrition has a Goal phases screen where you define dated cut, maintain, or bulk windows with their own targets. Every day inside a window uses the phase's calorie and macro goals automatically, and the Progress tab shows each phase's own adherence line (average over or under the phase goal and the net total across the window). Phases compose with day types, survive a keto pause, and their overrides end exactly where the phase ends.
+- **A unified body chart on Progress** (Android): weight, body fat, and body measurements share one overlay chart. Chips pick which series to draw, the last one you tapped leads the stat badges, and tapping the chart inspects any logged day.
+- **The calorie card can overlay your trend** (Android): the daily calorie bars can draw your weight or body-fat trend behind them, with a legend and a tap tag that shows the real number next to the bar's calories.
+- **An adherence card on Progress** (Android): a summary of how closely your logged days landed on their calorie goals, overall, per day type, and per phase, with the share of days inside a ±100 kcal band.
+
+### Fixed
+
+- **Goal phases stay inside safe bounds** (Android): a phase target below the calorie floor is lifted to it on save, and the phase wheel can no longer spin below that floor or past the ceiling. The wheel now also shows correct bounds when the energy unit is kJ, and saving the first phase no longer wipes a keto-paused day-type plan: its Training and Rest days come back when the plan resumes.
+- **Phase edits clean up after themselves** (Android): shortening or deleting a phase now clears the per-day overrides on all days it no longer covers, including days far in the past. Phases that start far in the future apply automatically once their window comes within reach, without a re-save.
+- **Progress charts read true** (Android): the trend line on the calorie card sits on the bars' centers at every zoom level, tapping a week bar shows that week's average instead of an empty tag, single weigh-in days render centered, and the body badges no longer show "+0.0 kg" when the selected range has no weigh-ins.
+
 ## [5.7.1] - 2026-10-17
 
 ### Added

@@ -2209,7 +2209,6 @@
     <string name="settings_day_types_floor_warning">This target sits at your calorie floor (%1$d %2$s). Aggressive for a day type.</string>
     <!-- Goal phases (Progress v2): dedicated editor + adherence read-outs. -->
     <string name="settings_goal_phases_title">Goal phases</string>
-    <string name="settings_goal_phases_summary_format">%1$d phases</string>
     <string name="settings_goal_phases_intro">Plan cut, maintain, or bulk windows. A phase applies its targets to every day in its range, like a day type with dates.</string>
     <string name="settings_goal_phases_add">Add phase</string>
     <string name="settings_goal_phases_edit">Edit phase</string>

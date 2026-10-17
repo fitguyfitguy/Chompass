@@ -102,8 +102,14 @@ class GoalPhaseEditTest {
         // An existing phase profile (update path) still validates.
         val existing = phase(profileId = "p1")
         assertNull(GoalPhaseEdit.validate(full, existing))
-        // Disabled or absent plans never trip the capacity check.
-        assertNull(GoalPhaseEdit.validate(profile(MacroPlan(enabled = false, profiles = profiles)), phase()))
+        // Disabled plans revive: a fresh Base appends on top of the phase
+        // profile, so a full plan refuses too.
+        assertEquals(
+            PhaseEditError.NoProfileSlot,
+            GoalPhaseEdit.validate(profile(MacroPlan(enabled = false, profiles = profiles)), phase()),
+        )
+        val roomy = profiles.take(MacroPlanEdit.MAX_PROFILES - 2)
+        assertNull(GoalPhaseEdit.validate(profile(MacroPlan(enabled = false, profiles = roomy)), phase()))
         assertNull(GoalPhaseEdit.validate(profile(), phase()))
     }
 
@@ -163,12 +169,14 @@ class GoalPhaseEditTest {
         assertEquals(extra.id, plan1.defaultProfileId)
 
         // Re-apply with different targets: updates the same profile + phase id,
-        // createdAtMillis stable.
-        val edited = stored.copy(calories = 1600, createdAtMillis = 12345L)
+        // createdAtMillis stable. Calories clamp to the safety floor, so the
+        // new value rides just above it.
+        val newKcal = CalorieSafety.floorKcal(profile(plan).bmr) + 100
+        val edited = stored.copy(calories = newKcal, createdAtMillis = 12345L)
         val second = GoalPhaseEdit.applyPhase(first, edited, today)
         val plan2 = second.macroPlan!!
         assertEquals(2, plan2.profiles.size)
-        assertEquals(1600, plan2.profileById(stored.profileId)!!.calories)
+        assertEquals(newKcal, plan2.profileById(stored.profileId)!!.calories)
         assertEquals(12345L, second.goalPhases.single().createdAtMillis)
         assertEquals(stored.id, second.goalPhases.single().id)
     }
@@ -250,5 +258,193 @@ class GoalPhaseEditTest {
         assertTrue("2026-08-10" in p)
         assertFalse("2026-08-11" in p)
         assertEquals(10L, p.spanDays)
+    }
+
+    @Test
+    fun shrinkClearsStaleAssignments() {
+        val start = today.plusDays(1)
+        val applied = GoalPhaseEdit.applyPhase(profile(), phase(start = start, end = today.plusDays(30)), today)
+        val stored = applied.goalPhases.single()
+        // Shrink the end date: everything past it must lose the stamp.
+        val shrunk = GoalPhaseEdit.applyPhase(applied, stored.copy(endDate = today.plusDays(10).toString()), today)
+        val targets = assignmentTargets(shrunk.macroPlan!!, stored.profileId!!)
+        assertEquals(today.plusDays(10).toString(), targets.last())
+        assertFalse(today.plusDays(11).toString() in targets)
+        assertEquals(
+            start.toString(),
+            targets.first(),
+        )
+    }
+
+    @Test
+    fun removePhaseAfterShrinkLeavesNoTrace() {
+        val applied = GoalPhaseEdit.applyPhase(profile(), phase(start = today.plusDays(1), end = today.plusDays(30)), today)
+        val stored = applied.goalPhases.single()
+        val shrunk = GoalPhaseEdit.applyPhase(applied, stored.copy(endDate = today.plusDays(10).toString()), today)
+        val removed = GoalPhaseEdit.removePhase(shrunk, stored.id, today)
+        assertTrue(removed.goalPhases.isEmpty())
+        assertTrue(assignmentTargets(removed.macroPlan!!, stored.profileId!!).isEmpty())
+        assertNull(removed.macroPlan!!.profileById(stored.profileId))
+    }
+
+    @Test
+    fun resavingOlderPhaseDoesNotReclaimNewerOwnedDays() {
+        val cut = phase(name = "Cut", start = today.plusDays(1), end = today.plusDays(20))
+            .copy(createdAtMillis = 1_000L)
+        val first = GoalPhaseEdit.applyPhase(profile(), cut, today)
+        val bulk = phase(name = "Bulk", intent = PhaseIntent.BULK, start = today.plusDays(10), end = today.plusDays(30))
+            .copy(createdAtMillis = 2_000L)
+        val both = GoalPhaseEdit.applyPhase(first, bulk, today)
+        // Re-save the older cut (edited targets): newer bulk keeps the overlap.
+        val cutRow = both.goalPhases.first { it.name == "Cut" }
+        val newKcal = CalorieSafety.floorKcal(profile().bmr) + 50
+        val reSaved = GoalPhaseEdit.applyPhase(both, cutRow.copy(calories = newKcal), today)
+        val map = reSaved.macroPlan!!.dayAssignments
+        val bulkRow = reSaved.goalPhases.first { it.name == "Bulk" }
+        assertEquals(bulkRow.profileId, map[today.plusDays(15).toString()])
+        val cutRowAfter = reSaved.goalPhases.first { it.name == "Cut" }
+        assertEquals(cutRowAfter.profileId, map[today.plusDays(5).toString()])
+        // Targets still updated on the shared profile.
+        assertEquals(newKcal, reSaved.macroPlan!!.profileById(cutRowAfter.profileId!!)!!.calories)
+    }
+
+    @Test
+    fun applyOnDisabledPlanRevivesKeepingSchedule() {
+        val paused = MacroPlan(
+            enabled = false,
+            profiles = listOf(
+                MacroDayProfile(id = "training", name = "Training", calories = 2800, proteinG = 1, carbsG = 1, fatG = 1),
+                MacroDayProfile(id = "rest", name = "Rest", calories = 2200, proteinG = 1, carbsG = 1, fatG = 1),
+            ),
+            mode = MacroPlanMode.WEEKDAYS,
+            defaultProfileId = "rest",
+            weekdayProfileIds = mapOf("MONDAY" to "training"),
+        )
+        val next = GoalPhaseEdit.applyPhase(profile(paused), phase(), today)
+        val plan = next.macroPlan!!
+        assertTrue(plan.enabled)
+        assertEquals(MacroPlanMode.WEEKDAYS, plan.mode)
+        assertEquals("training", plan.weekdayProfileIds["MONDAY"])
+        val ids = plan.profiles.map { it.id }.toSet()
+        assertTrue("training" in ids && "rest" in ids)
+        val base = plan.profiles.first { it.name == GoalPhaseEdit.BASE_PROFILE_NAME }
+        assertEquals(base.id, plan.defaultProfileId)
+        // Base mirrors the profile's effective targets, not the phase's.
+        assertEquals(MacroPlanResolver.baseTargets(profile(paused)).calories, base.calories)
+        // The phase row links to its profile and stamps its range.
+        val stored = next.goalPhases.single()
+        assertNotNull(stored.profileId)
+        assertFalse(assignmentTargets(plan, stored.profileId!!).isEmpty())
+    }
+
+    @Test
+    fun applyClampsPhaseCaloriesToSafetyFloor() {
+        val p = profile()
+        val floor = CalorieSafety.floorKcal(p.bmr)
+        val next = GoalPhaseEdit.applyPhase(p, phase().copy(calories = 800), today)
+        val stored = next.goalPhases.single()
+        assertEquals(floor, stored.calories)
+        assertEquals(floor, next.macroPlan!!.profileById(stored.profileId!!)!!.calories)
+        // Stored phase and plan profile cannot disagree.
+        assertEquals(stored.calories, next.macroPlan!!.profileById(stored.profileId!!)!!.calories)
+    }
+
+    private fun baseAndPhaseProfiles(phaseId: String, phaseCalories: Int = 1800): List<MacroDayProfile> = listOf(
+        MacroDayProfile(id = "base", name = GoalPhaseEdit.BASE_PROFILE_NAME, calories = 2200, proteinG = 1, carbsG = 1, fatG = 1),
+        MacroDayProfile(id = phaseId, name = "Phased", calories = phaseCalories, proteinG = 1, carbsG = 1, fatG = 1),
+    )
+
+    private fun stamped(range: ClosedRange<LocalDate>, id: String): Map<String, String> =
+        generateSequence(range.start) { it.plusDays(1) }
+            .takeWhile { !it.isAfter(range.endInclusive) }
+            .associate { it.toString() to id }
+
+    @Test
+    fun restampAssignmentsFillsTailOnlyAsWindowRolls() {
+        val phaseId = "farPhase"
+        val start = today.plusDays(300)
+        val end = today.plusDays(665) // 366-day span, tail beyond today + keep.
+        val far = phase(name = "Far", start = start, end = end).copy(profileId = phaseId, createdAtMillis = 1_000L)
+        val plan = MacroPlan(
+            enabled = true,
+            profiles = baseAndPhaseProfiles(phaseId),
+            mode = MacroPlanMode.MANUAL,
+            defaultProfileId = "base",
+            dayAssignments = stamped(start..today.plusDays(MacroPlan.ASSIGNMENT_KEEP_DAYS), phaseId),
+        )
+        val p = profile(plan).copy(goalPhases = listOf(far))
+        // Today: the tail sits outside the keep window → unchanged.
+        assertEquals(p, GoalPhaseEdit.restampAssignments(p, today))
+        // Tomorrow: today + 367 enters the window → filled.
+        val rolled = GoalPhaseEdit.restampAssignments(p, today.plusDays(1))
+        assertNull(p.macroPlan!!.dayAssignments[today.plusDays(MacroPlan.ASSIGNMENT_KEEP_DAYS + 1).toString()])
+        assertEquals(phaseId, rolled.macroPlan!!.dayAssignments[today.plusDays(MacroPlan.ASSIGNMENT_KEEP_DAYS + 1).toString()])
+        assertEquals(phaseId, rolled.macroPlan!!.dayAssignments[start.toString()])
+    }
+
+    @Test
+    fun restampAssignmentsFillsNewestFirstOnOverlap() {
+        val cutId = "cutP"
+        val bulkId = "bulkP"
+        val cut = phase(name = "Cut", start = today, end = today.plusDays(20))
+            .copy(profileId = cutId, createdAtMillis = 1_000L)
+        val bulk = phase(name = "Bulk", intent = PhaseIntent.BULK, start = today.plusDays(10), end = today.plusDays(30))
+            .copy(profileId = bulkId, createdAtMillis = 2_000L)
+        val plan = MacroPlan(
+            enabled = true,
+            profiles = baseAndPhaseProfiles(cutId) +
+                MacroDayProfile(id = bulkId, name = "Bulk", calories = 2900, proteinG = 1, carbsG = 1, fatG = 1),
+            mode = MacroPlanMode.MANUAL,
+            defaultProfileId = "base",
+            dayAssignments = mapOf(
+                today.plusDays(15).toString() to bulkId,
+                today.plusDays(16).toString() to bulkId,
+            ),
+        )
+        val map = GoalPhaseEdit.restampAssignments(
+            profile(plan).copy(goalPhases = listOf(cut, bulk)),
+            today,
+        ).macroPlan!!.dayAssignments
+        // Overlap keeps the newer bulk; cut fills only the leftovers.
+        assertEquals(bulkId, map[today.plusDays(15).toString()])
+        assertEquals(bulkId, map[today.plusDays(25).toString()])
+        assertEquals(cutId, map[today.toString()])
+        assertEquals(cutId, map[today.plusDays(9).toString()])
+    }
+
+    @Test
+    fun restampAssignmentsPreservesManualAssignmentInsidePhase() {
+        val phaseId = "cutP"
+        val manualDay = today.plusDays(5)
+        val plan = MacroPlan(
+            enabled = true,
+            profiles = baseAndPhaseProfiles(phaseId) +
+                MacroDayProfile(id = "extra", name = "Extra", calories = 1900, proteinG = 1, carbsG = 1, fatG = 1),
+            mode = MacroPlanMode.MANUAL,
+            defaultProfileId = "base",
+            dayAssignments = mapOf(manualDay.toString() to "extra"),
+        )
+        val manualPhase = phase(name = "Phased", start = today, end = today.plusDays(10))
+            .copy(profileId = phaseId, createdAtMillis = 1_000L)
+        val map = GoalPhaseEdit.restampAssignments(
+            profile(plan).copy(goalPhases = listOf(manualPhase)),
+            today,
+        ).macroPlan!!.dayAssignments
+        assertEquals("extra", map[manualDay.toString()])
+        assertEquals(phaseId, map[today.plusDays(1).toString()])
+        assertEquals(phaseId, map[today.plusDays(10).toString()])
+    }
+
+    @Test
+    fun restampAssignmentsIsIdempotent() {
+        val applied = GoalPhaseEdit.applyPhase(profile(), phase(start = today, end = today.plusDays(30)), today)
+        val once = GoalPhaseEdit.restampAssignments(applied, today)
+        val twice = GoalPhaseEdit.restampAssignments(once, today)
+        assertEquals(once, twice)
+        // And it actually did work the first time (window already covers it).
+        assertEquals(
+            assignmentTargets(applied.macroPlan!!, applied.goalPhases.single().profileId!!),
+            assignmentTargets(once.macroPlan!!, applied.goalPhases.single().profileId!!),
+        )
     }
 }

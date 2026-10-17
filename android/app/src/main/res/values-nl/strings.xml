@@ -2152,7 +2152,6 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
     <string name="progress_overlay_off">Uit</string>
     <string name="progress_no_entries_in_range">Geen registraties in deze periode</string>
     <string name="settings_goal_phases_title">Doelfases</string>
-    <string name="settings_goal_phases_summary_format">%1$d fases</string>
     <string name="settings_goal_phases_intro">Plan fases om af te vallen, te onderhouden of op te bouwen. Een fase past haar doelen toe op elke dag in de periode, zoals een dagtype met data.</string>
     <string name="settings_goal_phases_add">Fase toevoegen</string>
     <string name="settings_goal_phases_edit">Fase bewerken</string>

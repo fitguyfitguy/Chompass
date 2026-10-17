@@ -243,6 +243,24 @@ internal fun buildCalorieSlots(
 }
 
 /**
+ * Overlay value behind a calorie slot: the direct day hit, else — slot days
+ * are ISO-week starts once `bucketCalorieSlots` rolls up — the average of the
+ * readings inside that week `[slotDay, slotDay+6]`, else null.
+ */
+internal fun overlayValueForSlot(valuesByDay: Map<LocalDate, Double>, slotDay: LocalDate): Double? {
+    valuesByDay[slotDay]?.let { return it }
+    var sum = 0.0
+    var count = 0
+    for (offset in 0..6) {
+        valuesByDay[slotDay.plusDays(offset.toLong())]?.let {
+            sum += it
+            count++
+        }
+    }
+    return if (count == 0) null else sum / count
+}
+
+/**
  * Cap calorie-slot draw calls: within [maxSlots] the calendar-day slots pass
  * through untouched; longer ranges roll up to ISO weeks (Monday start), summing
  * logged kcal (null when nothing was logged that week) with a majority-untracked
@@ -391,6 +409,27 @@ internal fun calorieBarGeometry(areaWidthPx: Float, n: Int, density: Density): C
     return CalorieBarGeometry(barWidth, gap, startX)
 }
 
+/**
+ * X position for a combo-overlay timestamp on the calorie chart: the linear
+ * time→slot mapping snapped to the **centered bar slot geometry** the bars
+ * themselves use, so trend line/dots sit on their bars' centers at every
+ * range (daily slots and ISO-week buckets alike).
+ */
+internal fun overlaySlotCenterX(
+    timeMs: Long,
+    startMs: Long,
+    endMs: Long,
+    slotCount: Int,
+    startX: Float,
+    slotPitch: Float,
+    barWidth: Float,
+): Float {
+    val span = (endMs - startMs).coerceAtLeast(1L)
+    val slot = (((timeMs - startMs).toDouble() / span).coerceIn(0.0, 1.0) * slotCount)
+        .coerceIn(0.0, (slotCount - 1).toDouble())
+    return startX + (slot * slotPitch).toFloat() + barWidth / 2f
+}
+
 /** X-axis label picks for the calorie chart: every [slotStep]-th slot, with
  *  the end slot always labeled — replacing the last uniform pick rather than
  *  appending, so label boxes stay [slotStep] slots apart instead of
@@ -519,7 +558,9 @@ internal data class OverlayChartModel(
     val dayValues: Map<String, Map<String, Double>>,
 ) {
     val tRange: Long get() = maxOf(1L, xToMs - xFromMs)
-    val singleEntry: Boolean get() = xToMs - xFromMs <= 1L
+
+    /** All points inside one calendar day → center the lone column of data. */
+    val singleEntry: Boolean get() = series.isNotEmpty() && xToMs - xFromMs < 86_400_000L
 }
 
 /**
@@ -580,7 +621,8 @@ internal fun buildOverlayChartModel(
     fun kgDisplay(kg: Double) = if (useMetricWeight) kg else UnitFormat.kgToLbs(kg)
     fun cmDisplay(cm: Double) = if (useMetricLength) cm else UnitFormat.cmToInches(cm)
 
-    fun buildSeries(key: String, inputs: List<MetricTrendInput>, goal: Double?): OverlaySeries? {
+    /** Series plus its full-resolution daily values (pre-downsampling) for the tap tag. */
+    fun buildSeries(key: String, inputs: List<MetricTrendInput>, goal: Double?): Pair<OverlaySeries, Map<String, Double>>? {
         val seriesMeta = meta[key] ?: return null
         val daily = averageMetricByDay(inputs, zone)
         if (daily.isEmpty()) return null
@@ -605,10 +647,10 @@ internal fun buildOverlayChartModel(
                 null
             },
             goalDisplayValue = goal,
-        )
+        ) to daily.associate { it.day.toString() to it.value }
     }
 
-    val seriesList = buildList {
+    val built = buildList {
         buildSeries(
             OVERLAY_KEY_WEIGHT,
             weights.map { MetricTrendInput(at = it.date, value = kgDisplay(it.weightKg)) },
@@ -629,6 +671,7 @@ internal fun buildOverlayChartModel(
             )?.let { add(it) }
         }
     }
+    val seriesList = built.map { it.first }
     if (seriesList.isEmpty()) {
         return OverlayChartModel(emptyList(), emptyList(), 0L, 1L, emptyMap())
     }
@@ -642,10 +685,11 @@ internal fun buildOverlayChartModel(
     val endDay = Instant.ofEpochMilli(xToMs).atZone(zone).toLocalDate()
     val markers = buildMarkerLane(startDay, endDay, dayTypeByDay, untrackedDays, typeColorOf)
     val dayValues = HashMap<String, MutableMap<String, Double>>()
-    for (s in seriesList) {
-        for (p in s.points) {
-            val day = Instant.ofEpochMilli(p.timeMs).atZone(zone).toLocalDate().toString()
-            dayValues.getOrPut(day) { HashMap() }[s.key] = p.value
+    // Full-resolution daily values: buckets dropped by downsampling still
+    // resolve in the tap inspection tag.
+    for ((s, dailyValues) in built) {
+        for ((day, value) in dailyValues) {
+            dayValues.getOrPut(day) { HashMap() }[s.key] = value
         }
     }
     return OverlayChartModel(
@@ -1230,8 +1274,10 @@ internal fun CalorieBarChart(
     val inspectedLabel = inspectedBar?.let { index ->
         slots.getOrNull(index)?.takeIf { it.kcal != null }?.let { slot ->
             val kcalText = "${xLabelFmt.format(slot.day)} · ${LocaleFormat.integer(EnergyFormat.quantity(slot.kcal ?: 0, energyUnit))} ${energyUnitLabel()}"
-            // Combo mode: append the overlaid metric's real value for that day.
-            val overlayText = overlay?.valuesByDay?.get(slot.day)
+            // Combo mode: append the overlaid metric's real value for that day
+            // (week-start buckets fall back to the week's average).
+            val overlayText = overlay?.valuesByDay
+                ?.let { values -> overlayValueForSlot(values, slot.day) }
                 ?.let { " · ${formatTick(it)}${overlay.unitSuffix}" } ?: ""
             kcalText + overlayText
         }
@@ -1337,8 +1383,9 @@ internal fun CalorieBarChart(
                             values = data.trend.map { it.value } + data.dots.map { it.value },
                             goal = null,
                         )
-                        fun oX(timeMs: Long): Float =
-                            (((timeMs - startMs).toDouble() / (endMs - startMs)).coerceIn(0.0, 1.0) * pxW).toFloat()
+                        fun oX(timeMs: Long): Float = overlaySlotCenterX(
+                            timeMs, startMs, endMs, slots.size, startX, barWidth + gap, barWidth,
+                        )
                         fun oY(value: Double): Float = pxH - (scale.fraction(value) * pxH)
                         slots.forEachIndexed { i, slot ->
                             val target = dailyGoals[slot.day] ?: goal
