@@ -320,13 +320,15 @@ class WidgetSnapshotWriter(
                         id = nutrient.storageKey,
                         label = context.getString(nutrient.displayNameRes),
                         unit = context.getString(nutrient.unitRes),
-                        value = if (nutrient == HomeTopNutrient.CAFFEINE) {
+                        value = when (nutrient) {
+                            HomeTopNutrient.CALORIES -> totals.calories.toDouble()
+                            HomeTopNutrient.CAFFEINE -> {
                             val todayCaffeine = caffeineEntries.filter {
                                 it.date.atZone(ZoneId.systemDefault()).toLocalDate() == LocalDate.now()
                             }
                             CaffeineEntry.dayCaffeineMg(todaysEntries, todayCaffeine)
-                        } else {
-                            nutrient.current(todaysEntries)
+                            }
+                            else -> nutrient.current(todaysEntries)
                         },
                         goal = nutrient.goal(resolvedToday, profile, optionalGoals).toDouble()
                     )

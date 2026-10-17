@@ -656,8 +656,8 @@ fun HomeScreen(
                     val activeCalories = ui.displayActiveCalories
                     val calorieMode = ui.effectiveCalorieMode
                     CalorieHero(
-                        current = ui.loggedCaloriesToday,
-                        baseGoal = baseGoal,
+                            current = ui.loggedCaloriesToday,
+                            baseGoal = baseGoal,
                         planned = ui.plannedCaloriesToday,
                         activeCalories = activeCalories,
                         displayMode = calorieMode,
@@ -709,17 +709,22 @@ fun HomeScreen(
                         ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale, ui.caffeineTodayMg,
                     ) {
                         ui.homeTopNutrients.associateWith { nutrient ->
-                            val logged = if (nutrient == HomeTopNutrient.CAFFEINE) {
-                                ui.caffeineTodayMg
-                            } else {
-                                nutrient.current(loggedEntries)
+                            val logged = when (nutrient) {
+                                HomeTopNutrient.CALORIES -> ui.loggedCaloriesToday.toDouble()
+                                HomeTopNutrient.CAFFEINE -> ui.caffeineTodayMg
+                                else -> nutrient.current(loggedEntries)
                             }
-                            val planned = if (nutrient == HomeTopNutrient.CAFFEINE) {
-                                0.0
-                            } else {
-                                nutrient.current(plannedEntries)
+                            val planned = when (nutrient) {
+                                HomeTopNutrient.CALORIES -> ui.plannedCaloriesToday.toDouble()
+                                HomeTopNutrient.CAFFEINE -> 0.0
+                                else -> nutrient.current(plannedEntries)
                             }
-                            Triple(logged, planned, nutrient.goal(resolvedTargets, ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale))
+                            val goal = if (nutrient == HomeTopNutrient.CALORIES) {
+                                ui.heroCalorieGoal
+                            } else {
+                                nutrient.goal(resolvedTargets, ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale)
+                            }
+                            Triple(logged, planned, goal)
                         }
                     }
                     Row(
@@ -735,6 +740,7 @@ fun HomeScreen(
                                 current = current,
                                 goal = goal,
                                 fatFloor = nutrient == HomeTopNutrient.FAT,
+                                isEnergy = nutrient == HomeTopNutrient.CALORIES,
                                 unit = stringResource(nutrient.unitRes),
                                 accentColor = nutrientAccentColor(nutrient),
                                 modifier = Modifier.weight(1f),
@@ -2295,8 +2301,8 @@ internal fun HomeScreenPreviewContent(
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )
                         CalorieHero(
-                            current = ui.loggedCaloriesToday,
-                            baseGoal = ui.gaugeBaseCalorieGoal,
+                                current = ui.loggedCaloriesToday,
+                                baseGoal = ui.gaugeBaseCalorieGoal,
                             planned = ui.plannedCaloriesToday,
                             activeCalories = ui.displayActiveCalories,
                             displayMode = ui.effectiveCalorieMode,
@@ -2326,9 +2332,18 @@ internal fun HomeScreenPreviewContent(
                             ui.homeTopNutrients.forEach { nutrient ->
                                 MacroCard(
                                     label = stringResource(nutrient.displayNameRes),
-                                    current = if (nutrient == HomeTopNutrient.CAFFEINE) ui.caffeineTodayMg else nutrient.current(ui.todayEntries),
-                                    goal = nutrient.goal(previewResolvedTargets, ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale),
+                                    current = when (nutrient) {
+                                        HomeTopNutrient.CALORIES -> ui.loggedCaloriesToday.toDouble()
+                                        HomeTopNutrient.CAFFEINE -> ui.caffeineTodayMg
+                                        else -> nutrient.current(ui.todayEntries)
+                                    },
+                                    goal = if (nutrient == HomeTopNutrient.CALORIES) {
+                                        ui.heroCalorieGoal
+                                    } else {
+                                        nutrient.goal(previewResolvedTargets, ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale)
+                                    },
                                     fatFloor = nutrient == HomeTopNutrient.FAT,
+                                    isEnergy = nutrient == HomeTopNutrient.CALORIES,
                                     unit = stringResource(nutrient.unitRes),
                                     accentColor = nutrientAccentColor(nutrient),
                                     modifier = Modifier.weight(1f),

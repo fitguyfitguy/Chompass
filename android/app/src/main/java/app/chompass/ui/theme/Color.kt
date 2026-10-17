@@ -357,6 +357,7 @@ val androidx.compose.material3.ColorScheme.mutedNutrient: Color
  */
 @Composable
 fun nutrientAccentColor(nutrient: HomeTopNutrient): Color = when (nutrient) {
+    HomeTopNutrient.CALORIES -> AppColors.Calorie
     HomeTopNutrient.PROTEIN, HomeTopNutrient.CARBS, HomeTopNutrient.FAT, HomeTopNutrient.FIBER ->
         AppColors.nutrientColor(nutrient)
     else -> MaterialTheme.colorScheme.mutedNutrient
