@@ -2,6 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { scanGaps, scanSignature, bannerVisible } from "../fill-gaps.js";
+import { todayIso } from "../date.js";
 
 /**
  * Scan shaping + banner gate (FillGapsEngine.computeScan / bannerState
@@ -127,7 +128,7 @@ test("bannerVisible: empty scan hidden, dismissed hash hidden, shown-today hidde
     // Shown earlier today, no session latch yet (fresh page load).
     globalThis.localStorage.setItem(
       "chompass-fill-gaps-banner-last-shown",
-      new Date().toISOString().slice(0, 10),
+      todayIso(),
     );
     assert.equal(bannerVisible(scan), false);
   } finally {
