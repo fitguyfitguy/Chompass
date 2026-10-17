@@ -266,7 +266,7 @@ private fun FoodLogLayoutPickerDialog(
     onSelect: (HomeFoodLogLayout?) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    app.chompass.ui.components.FudGlassDialog(onDismissRequest = onDismiss) {
+    app.chompass.ui.components.ChompassDialog(onDismissRequest = onDismiss) {
         Text(stringResource(R.string.home_display_food_log_layout), fontSize = 22.sp, fontWeight = FontWeight.Bold)
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             (listOf<HomeFoodLogLayout?>(null) + HomeFoodLogLayout.entries).forEach { layout ->
@@ -286,7 +286,7 @@ private fun FoodLogLayoutPickerDialog(
                 }
             }
         }
-        app.chompass.ui.components.FudGlassDialogActions(
+        app.chompass.ui.components.ChompassDialogActions(
             primaryText = stringResource(R.string.action_done),
             onPrimary = onDismiss,
             dismissText = stringResource(R.string.action_cancel),
@@ -309,7 +309,7 @@ private fun NutrientCardLayoutPickerDialog(
     onSelect: (HomeMacroCardLayout?) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    app.chompass.ui.components.FudGlassDialog(onDismissRequest = onDismiss) {
+    app.chompass.ui.components.ChompassDialog(onDismissRequest = onDismiss) {
         Text(stringResource(R.string.home_display_nutrient_card_layout), fontSize = 22.sp, fontWeight = FontWeight.Bold)
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             (listOf<HomeMacroCardLayout?>(null) + HomeMacroCardLayout.entries).forEach { layout ->
@@ -329,7 +329,7 @@ private fun NutrientCardLayoutPickerDialog(
                 }
             }
         }
-        app.chompass.ui.components.FudGlassDialogActions(
+        app.chompass.ui.components.ChompassDialogActions(
             primaryText = stringResource(R.string.action_done),
             onPrimary = onDismiss,
             dismissText = stringResource(R.string.action_cancel),
@@ -352,7 +352,7 @@ private fun CalorieLayoutPickerDialog(
     onSelect: (HomeCalorieHeroLayout?) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    app.chompass.ui.components.FudGlassDialog(onDismissRequest = onDismiss) {
+    app.chompass.ui.components.ChompassDialog(onDismissRequest = onDismiss) {
         Text(stringResource(R.string.home_display_calorie_layout), fontSize = 22.sp, fontWeight = FontWeight.Bold)
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             (listOf<HomeCalorieHeroLayout?>(null) + HomeCalorieHeroLayout.entries).forEach { layout ->
@@ -372,7 +372,7 @@ private fun CalorieLayoutPickerDialog(
                 }
             }
         }
-        app.chompass.ui.components.FudGlassDialogActions(
+        app.chompass.ui.components.ChompassDialogActions(
             primaryText = stringResource(R.string.action_done),
             onPrimary = onDismiss,
             dismissText = stringResource(R.string.action_cancel),
