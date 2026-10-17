@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -112,7 +111,6 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
     var showAddBodyFatDialog by remember { mutableStateOf(false) }
     var showAllWeights by remember { mutableStateOf(false) }
     var showAllBodyFats by remember { mutableStateOf(false) }
-    var bodyMetric by remember { mutableStateOf(BodyMetric.WEIGHT) }
     var heavySectionsReady by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         repeat(2) { withFrameNanos { } }
@@ -174,47 +172,28 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
             }
 
             item {
-                if (bodyFatAvailable) {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        BodyMetricToggle(selected = bodyMetric, onSelect = { bodyMetric = it })
-                        CardSection {
-                            when (bodyMetric) {
-                                BodyMetric.WEIGHT -> WeightSection(
-                                    entries = ui.filteredWeights,
-                                    stats = ui.weightStats,
-                                    goalKg = ui.profile?.goalWeightKg,
-                                    useMetric = weightMetric,
-                                    onLogWeight = { showAddDialog = true },
-                                    dayTypeByDay = ui.dayTypeByDay,
-                                    untrackedDays = ui.untrackedDays,
-                                    typeColorOf = typeColorOf,
-                                )
-                                BodyMetric.BODY_FAT -> BodyFatSection(
-                                    entries = ui.filteredBodyFats,
-                                    stats = ui.bodyFatStats,
-                                    profileBodyFatFraction = ui.profile?.bodyFatPercentage,
-                                    goalFraction = ui.profile?.goalBodyFatPercentage,
-                                    onLogBodyFat = { showAddBodyFatDialog = true },
-                                    dayTypeByDay = ui.dayTypeByDay,
-                                    untrackedDays = ui.untrackedDays,
-                                    typeColorOf = typeColorOf,
-                                )
-                            }
-                        }
-                    }
-                } else {
-                    CardSection {
-                        WeightSection(
-                            entries = ui.filteredWeights,
-                            stats = ui.weightStats,
-                            goalKg = ui.profile?.goalWeightKg,
-                            useMetric = weightMetric,
-                            onLogWeight = { showAddDialog = true },
-                            dayTypeByDay = ui.dayTypeByDay,
-                            untrackedDays = ui.untrackedDays,
-                            typeColorOf = typeColorOf,
-                        )
-                    }
+                CardSection {
+                    BodySection(
+                        weights = ui.filteredWeights,
+                        bodyFats = ui.filteredBodyFats,
+                        measurements = ui.filteredMeasurements,
+                        sites = BodyMeasurement.Site.values().filter { it in ui.measurementSites },
+                        selectedKeys = ui.selectedBodySeries,
+                        onToggleSeries = vm::toggleBodySeries,
+                        weightStats = ui.weightStats,
+                        bodyFatStats = ui.bodyFatStats,
+                        profileBodyFatFraction = ui.profile?.bodyFatPercentage,
+                        goalWeightKg = ui.profile?.goalWeightKg,
+                        goalBodyFatFraction = ui.profile?.goalBodyFatPercentage,
+                        useMetricWeight = weightMetric,
+                        useMetricLength = heightMetric,
+                        bodyFatAvailable = bodyFatAvailable,
+                        onLogWeight = { showAddDialog = true },
+                        onLogBodyFat = { showAddBodyFatDialog = true },
+                        dayTypeByDay = ui.dayTypeByDay,
+                        untrackedDays = ui.untrackedDays,
+                        typeColorOf = typeColorOf,
+                    )
                 }
             }
 
@@ -255,10 +234,25 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                             calorieGoal = ui.calorieGoal,
                             calorieAverage = ui.calorieAverage,
                             dailyCalorieGoals = ui.dailyCalorieGoals,
+                            overlayKey = ui.calorieOverlay,
+                            onOverlayKeyChange = vm::setCalorieOverlay,
+                            overlayWeights = ui.filteredWeights,
+                            overlayBodyFats = ui.filteredBodyFats,
+                            useMetricWeight = weightMetric,
                             dayTypeByDay = ui.dayTypeByDay,
                             untrackedDays = ui.untrackedDays,
                             typeColorOf = typeColorOf,
                         )
+                    }
+                }
+                ui.adherence?.let { adherence ->
+                    item {
+                        CardSection {
+                            ProgressAdherenceSection(
+                                adherence = adherence,
+                                plan = ui.profile?.macroPlan,
+                            )
+                        }
                     }
                 }
             } else {
@@ -372,7 +366,7 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
 internal fun ProgressScreenPreviewContent(
     ui: ProgressUiState,
     activity: List<DailyActivity> = emptyList(),
-    bodyMetric: BodyMetric = BodyMetric.WEIGHT,
+    selectedBodySeries: Set<String> = setOf(OVERLAY_KEY_WEIGHT, OVERLAY_KEY_BODY_FAT),
     chartsImmediate: Boolean = true,
     measurementMetric: Boolean = true,
 ) {
@@ -400,50 +394,29 @@ internal fun ProgressScreenPreviewContent(
         ) {
             item { TimeRangePicker(selected = ui.timeRange, onSelect = {}) }
             item {
-                if (bodyFatAvailable) {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        BodyMetricToggle(selected = bodyMetric, onSelect = {})
-                        CardSection {
-                            when (bodyMetric) {
-                                BodyMetric.WEIGHT -> WeightSection(
-                                    entries = ui.filteredWeights,
-                                    stats = ui.weightStats,
-                                    goalKg = ui.profile?.goalWeightKg,
-                                    useMetric = weightMetric,
-                                    onLogWeight = {},
-                                    chartsImmediate = chartsImmediate,
-                                    dayTypeByDay = ui.dayTypeByDay,
-                                    untrackedDays = ui.untrackedDays,
-                                    typeColorOf = typeColorOf,
-                                )
-                                BodyMetric.BODY_FAT -> BodyFatSection(
-                                    entries = ui.filteredBodyFats,
-                                    stats = ui.bodyFatStats,
-                                    profileBodyFatFraction = ui.profile?.bodyFatPercentage,
-                                    goalFraction = ui.profile?.goalBodyFatPercentage,
-                                    onLogBodyFat = {},
-                                    chartsImmediate = chartsImmediate,
-                                    dayTypeByDay = ui.dayTypeByDay,
-                                    untrackedDays = ui.untrackedDays,
-                                    typeColorOf = typeColorOf,
-                                )
-                            }
-                        }
-                    }
-                } else {
-                    CardSection {
-                        WeightSection(
-                            entries = ui.filteredWeights,
-                            stats = ui.weightStats,
-                            goalKg = ui.profile?.goalWeightKg,
-                            useMetric = weightMetric,
-                            onLogWeight = {},
-                            chartsImmediate = chartsImmediate,
-                            dayTypeByDay = ui.dayTypeByDay,
-                            untrackedDays = ui.untrackedDays,
-                            typeColorOf = typeColorOf,
-                        )
-                    }
+                CardSection {
+                    BodySection(
+                        weights = ui.filteredWeights,
+                        bodyFats = ui.filteredBodyFats,
+                        measurements = ui.filteredMeasurements,
+                        sites = BodyMeasurement.Site.values().filter { it in ui.measurementSites },
+                        selectedKeys = selectedBodySeries,
+                        onToggleSeries = {},
+                        weightStats = ui.weightStats,
+                        bodyFatStats = ui.bodyFatStats,
+                        profileBodyFatFraction = ui.profile?.bodyFatPercentage,
+                        goalWeightKg = ui.profile?.goalWeightKg,
+                        goalBodyFatFraction = ui.profile?.goalBodyFatPercentage,
+                        useMetricWeight = weightMetric,
+                        useMetricLength = heightMetric,
+                        bodyFatAvailable = bodyFatAvailable,
+                        chartsImmediate = chartsImmediate,
+                        onLogWeight = {},
+                        onLogBodyFat = {},
+                        dayTypeByDay = ui.dayTypeByDay,
+                        untrackedDays = ui.untrackedDays,
+                        typeColorOf = typeColorOf,
+                    )
                 }
             }
             if (ui.weightCount > 0) {
@@ -474,11 +447,26 @@ internal fun ProgressScreenPreviewContent(
                         calorieGoal = ui.calorieGoal,
                         calorieAverage = ui.calorieAverage,
                         dailyCalorieGoals = ui.dailyCalorieGoals,
+                        overlayKey = if (ui.filteredWeights.isNotEmpty()) OVERLAY_KEY_WEIGHT else "off",
+                        onOverlayKeyChange = {},
+                        overlayWeights = ui.filteredWeights,
+                        overlayBodyFats = ui.filteredBodyFats,
+                        useMetricWeight = weightMetric,
                         chartsImmediate = chartsImmediate,
                         dayTypeByDay = ui.dayTypeByDay,
                         untrackedDays = ui.untrackedDays,
                         typeColorOf = typeColorOf,
                     )
+                }
+            }
+            ui.adherence?.let { adherence ->
+                item {
+                    CardSection {
+                        ProgressAdherenceSection(
+                            adherence = adherence,
+                            plan = ui.profile?.macroPlan,
+                        )
+                    }
                 }
             }
             ui.profile?.let { _ ->

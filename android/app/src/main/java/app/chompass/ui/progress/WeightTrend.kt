@@ -29,21 +29,27 @@ data class WeightTrendPoint(
     val valueKg: Double,
 )
 
+/** Generic (unit-agnostic) daily sample for Progress trend math. */
+data class MetricTrendInput(
+    val at: Instant,
+    val value: Double,
+)
+
+/** Generic (unit-agnostic) daily-average trend point. */
+data class MetricTrendPoint(
+    val day: LocalDate,
+    val value: Double,
+)
+
 /** Average same-calendar-day weigh-ins. */
 fun averageWeightByDay(
     weighIns: List<WeightTrendInput>,
     zone: ZoneId,
-): List<WeightTrendPoint> {
-    if (weighIns.isEmpty()) return emptyList()
-    return weighIns
-        .asSequence()
-        .filter { it.weightKg > 0.0 }
-        .groupBy { it.at.atZone(zone).toLocalDate() }
-        .toSortedMap()
-        .map { (day, group) ->
-            WeightTrendPoint(day = day, valueKg = group.map { it.weightKg }.average())
-        }
-}
+): List<WeightTrendPoint> =
+    averageMetricByDay(
+        weighIns.map { MetricTrendInput(at = it.at, value = it.weightKg) },
+        zone,
+    ).map { WeightTrendPoint(day = it.day, valueKg = it.value) }
 
 /**
  * Trailing calendar-day moving average of daily weight averages.
@@ -53,11 +59,56 @@ fun computeWeightTrend(
     zone: ZoneId,
     windowDays: Int = WEIGHT_TREND_WINDOW_DAYS,
     minDaysInWindow: Int = WEIGHT_TREND_MIN_DAYS,
-): List<WeightTrendPoint> {
-    val daily = averageWeightByDay(weighIns, zone)
+): List<WeightTrendPoint> =
+    computeMetricTrend(
+        weighIns.map { MetricTrendInput(at = it.at, value = it.weightKg) },
+        zone,
+        windowDays = windowDays,
+        minDaysInWindow = minDaysInWindow,
+    ).map { WeightTrendPoint(day = it.day, valueKg = it.value) }
+
+/**
+ * Split trend points into contiguous segments when calendar gaps exceed [maxGapDays].
+ */
+fun splitTrendSegments(
+    points: List<WeightTrendPoint>,
+    maxGapDays: Long = WEIGHT_TREND_WINDOW_DAYS.toLong(),
+): List<List<WeightTrendPoint>> =
+    splitMetricSegments(
+        points.map { MetricTrendPoint(day = it.day, value = it.valueKg) },
+        maxGapDays,
+    ).map { segment -> segment.map { WeightTrendPoint(day = it.day, valueKg = it.value) } }
+
+/** Average same-calendar-day samples; non-positive values are ignored. */
+fun averageMetricByDay(
+    inputs: List<MetricTrendInput>,
+    zone: ZoneId,
+): List<MetricTrendPoint> {
+    if (inputs.isEmpty()) return emptyList()
+    return inputs
+        .asSequence()
+        .filter { it.value > 0.0 }
+        .groupBy { it.at.atZone(zone).toLocalDate() }
+        .toSortedMap()
+        .map { (day, group) ->
+            MetricTrendPoint(day = day, value = group.map { it.value }.average())
+        }
+}
+
+/**
+ * Trailing calendar-day moving average of daily metric averages.
+ * Mirrors [computeWeightTrend]; shared by weight, body fat, and measurements.
+ */
+fun computeMetricTrend(
+    inputs: List<MetricTrendInput>,
+    zone: ZoneId,
+    windowDays: Int = WEIGHT_TREND_WINDOW_DAYS,
+    minDaysInWindow: Int = WEIGHT_TREND_MIN_DAYS,
+): List<MetricTrendPoint> {
+    val daily = averageMetricByDay(inputs, zone)
     if (daily.isEmpty()) return emptyList()
-    val valueByDay = daily.associate { it.day to it.valueKg }
-    val out = ArrayList<WeightTrendPoint>(daily.size)
+    val valueByDay = daily.associate { it.day to it.value }
+    val out = ArrayList<MetricTrendPoint>(daily.size)
     for (point in daily) {
         val end = point.day
         val start = end.minusDays((windowDays - 1).toLong())
@@ -73,7 +124,7 @@ fun computeWeightTrend(
             day = day.plusDays(1)
         }
         if (count >= minDaysInWindow) {
-            out.add(WeightTrendPoint(day = end, valueKg = sum / count))
+            out.add(MetricTrendPoint(day = end, value = sum / count))
         }
     }
     return out
@@ -82,12 +133,12 @@ fun computeWeightTrend(
 /**
  * Split trend points into contiguous segments when calendar gaps exceed [maxGapDays].
  */
-fun splitTrendSegments(
-    points: List<WeightTrendPoint>,
+fun splitMetricSegments(
+    points: List<MetricTrendPoint>,
     maxGapDays: Long = WEIGHT_TREND_WINDOW_DAYS.toLong(),
-): List<List<WeightTrendPoint>> {
+): List<List<MetricTrendPoint>> {
     if (points.isEmpty()) return emptyList()
-    val segments = mutableListOf<MutableList<WeightTrendPoint>>()
+    val segments = mutableListOf<MutableList<MetricTrendPoint>>()
     var current = mutableListOf(points.first())
     for (i in 1 until points.size) {
         val gap = ChronoUnit.DAYS.between(points[i - 1].day, points[i].day)

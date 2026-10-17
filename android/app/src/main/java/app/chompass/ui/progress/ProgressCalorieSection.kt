@@ -3,6 +3,8 @@ package app.chompass.ui.progress
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -16,23 +18,89 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.models.BodyFatEntry
 import app.chompass.models.EnergyFormat
+import app.chompass.models.UnitFormat
+import app.chompass.models.WeightEntry
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalEnergyUnit
 import java.time.LocalDate
+import java.time.ZoneId
 import app.chompass.ui.theme.AppTextOpacity
 
+/**
+ * Overlay payload for the calorie card: smoothed trend + raw daily dots in
+ * display units, plus the per-day lookup the tap inspection tag appends.
+ */
+internal data class CalorieOverlayData(
+    val trend: List<TrendPoint>,
+    val dots: List<TrendPoint>,
+    val color: Color,
+    val unitSuffix: String,
+    val valuesByDay: Map<LocalDate, Double>,
+)
+
+/**
+ * Builds the calorie-card metric overlay: weight (kg→lb when imperial) or
+ * body fat (fraction→percent), same daily-bucket + trailing-average math as
+ * the body overlay chart. Null when the key is off or the series has no data
+ * in range — the card then draws bars only.
+ */
+internal fun calorieOverlayData(
+    key: String,
+    weights: List<WeightEntry>,
+    bodyFats: List<BodyFatEntry>,
+    useMetricWeight: Boolean,
+): CalorieOverlayData? {
+    if (key == "off") return null
+    val zone = ZoneId.systemDefault()
+    fun dayMs(day: LocalDate) = day.atStartOfDay(zone).toInstant().toEpochMilli()
+    return when (key) {
+        OVERLAY_KEY_WEIGHT -> {
+            if (weights.isEmpty()) return null
+            val display = { kg: Double -> if (useMetricWeight) kg else UnitFormat.kgToLbs(kg) }
+            val inputs = weights.map { MetricTrendInput(at = it.date, value = it.weightKg) }
+            val trend = computeMetricTrend(inputs, zone)
+            val daily = averageMetricByDay(inputs, zone)
+            CalorieOverlayData(
+                trend = downsampleTrend(trend.map { TrendPoint(dayMs(it.day), display(it.value)) }),
+                dots = downsampleTrend(daily.map { TrendPoint(dayMs(it.day), display(it.value)) }),
+                color = overlaySeriesColor(OVERLAY_KEY_WEIGHT),
+                unitSuffix = if (useMetricWeight) " kg" else " lbs",
+                valuesByDay = daily.associate { it.day to display(it.value) },
+            )
+        }
+        OVERLAY_KEY_BODY_FAT -> {
+            if (bodyFats.isEmpty()) return null
+            val inputs = bodyFats.map { MetricTrendInput(at = it.date, value = it.bodyFatFraction * 100.0) }
+            val trend = computeMetricTrend(inputs, zone)
+            val daily = averageMetricByDay(inputs, zone)
+            CalorieOverlayData(
+                trend = downsampleTrend(trend.map { TrendPoint(dayMs(it.day), it.value) }),
+                dots = downsampleTrend(daily.map { TrendPoint(dayMs(it.day), it.value) }),
+                color = overlaySeriesColor(OVERLAY_KEY_BODY_FAT),
+                unitSuffix = "%",
+                valuesByDay = daily.associate { it.day to it.value },
+            )
+        }
+        else -> null
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun CalorieSection(
     calorieSlots: List<CalorieSlot>,
@@ -40,6 +108,12 @@ internal fun CalorieSection(
     calorieAverage: Int? = null,
     dailyCalorieGoals: Map<LocalDate, Int> = emptyMap(),
     chartsImmediate: Boolean = false,
+    /** Metric overlay: "off" | "weight" | "bodyfat". */
+    overlayKey: String = "off",
+    onOverlayKeyChange: (String) -> Unit = {},
+    overlayWeights: List<WeightEntry> = emptyList(),
+    overlayBodyFats: List<BodyFatEntry> = emptyList(),
+    useMetricWeight: Boolean = true,
     /** Day-type/untracked marker lane inputs (UI-UX §10). */
     dayTypeByDay: Map<String, String> = emptyMap(),
     untrackedDays: Set<String> = emptySet(),
@@ -47,6 +121,9 @@ internal fun CalorieSection(
 ) {
     var expanded by rememberSaveable { mutableStateOf(true) }
     val untrackedCount = calorieSlots.count { it.untracked }
+    val overlay = remember(overlayKey, overlayWeights, overlayBodyFats, useMetricWeight) {
+        calorieOverlayData(overlayKey, overlayWeights, overlayBodyFats, useMetricWeight)
+    }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Column(
             verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -91,12 +168,45 @@ internal fun CalorieSection(
                         )
                     }
                 } else {
+                    // Metric combo chips: single-select; a metric chip appears
+                    // only when that series has data in range (plan §4).
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OverlayPickChip(
+                            label = stringResource(R.string.progress_overlay_off),
+                            selected = overlayKey == "off",
+                            onClick = { onOverlayKeyChange("off") },
+                        )
+                        if (overlayWeights.isNotEmpty()) {
+                            OverlayPickChip(
+                                label = stringResource(R.string.progress_metric_weight),
+                                selected = overlayKey == OVERLAY_KEY_WEIGHT,
+                                onClick = { onOverlayKeyChange(OVERLAY_KEY_WEIGHT) },
+                            )
+                        }
+                        if (overlayBodyFats.isNotEmpty()) {
+                            OverlayPickChip(
+                                label = stringResource(R.string.progress_metric_body_fat),
+                                selected = overlayKey == OVERLAY_KEY_BODY_FAT,
+                                onClick = { onOverlayKeyChange(OVERLAY_KEY_BODY_FAT) },
+                            )
+                        }
+                    }
                     val chartSlots = remember(calorieSlots) { bucketCalorieSlots(calorieSlots) }
+                    overlay?.let { data ->
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                            LegendSwatch(
+                                color = data.color,
+                                label = stringResource(overlayLegendLabel(overlayKey)) +
+                                    (data.dots.lastOrNull()?.value?.let { " ${formatTick(it)}${data.unitSuffix}" } ?: ""),
+                            )
+                        }
+                    }
                     CalorieBarChart(
                         slots = chartSlots,
                         goal = calorieGoal,
                         dailyGoals = dailyCalorieGoals,
                         immediate = chartsImmediate,
+                        overlay = overlay,
                         dayTypeByDay = dayTypeByDay,
                         untrackedDays = untrackedDays,
                         typeColorOf = typeColorOf,
@@ -117,4 +227,22 @@ internal fun CalorieSection(
             }
         }
     }
+}
+
+private fun overlayLegendLabel(key: String): Int = when (key) {
+    OVERLAY_KEY_BODY_FAT -> R.string.progress_metric_body_fat
+    else -> R.string.progress_metric_weight
+}
+
+@Composable
+private fun OverlayPickChip(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    FilterChip(
+        selected = selected,
+        onClick = onClick,
+        label = { Text(label, fontSize = 12.sp, maxLines = 1) },
+    )
 }

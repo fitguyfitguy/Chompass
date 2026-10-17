@@ -1,8 +1,5 @@
 package app.chompass.ui.progress
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,38 +10,28 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ListAlt
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
-import app.chompass.models.WeightEntry
+import app.chompass.models.UnitFormat
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.ChompassIconBubble
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
-import app.chompass.models.UnitFormat
-import java.time.LocalDate
-import java.time.ZoneId
 
 internal fun formatWeight(kg: Double, useMetric: Boolean): String =
     UnitFormat.weight(kg, useMetric)
@@ -56,141 +43,8 @@ internal fun formatWeightChange(deltaKg: Double, useMetric: Boolean): String {
 }
 
 @Composable
-internal fun WeightSection(
-    entries: List<WeightEntry>,
-    stats: WeightSummaryStats,
-    goalKg: Double?,
-    useMetric: Boolean,
-    onLogWeight: () -> Unit,
-    chartsImmediate: Boolean = false,
-    /** Day-type/untracked marker lane inputs (UI-UX §10). */
-    dayTypeByDay: Map<String, String> = emptyMap(),
-    untrackedDays: Set<String> = emptySet(),
-    typeColorOf: (String) -> androidx.compose.ui.graphics.Color = { androidx.compose.ui.graphics.Color.Transparent },
-) {
-    var expanded by rememberSaveable { mutableStateOf(true) }
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.progressCollapseHeader(expanded) { expanded = !expanded },
-        ) {
-            Text(stringResource(R.string.progress_weight_section), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
-            Spacer(Modifier.weight(1f))
-            Row(
-                modifier = Modifier.clickable(onClick = onLogWeight),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(Icons.Filled.AddCircle, null, tint = AppColors.Calorie, modifier = Modifier.size(16.dp))
-                Spacer(Modifier.width(4.dp))
-                Text(stringResource(R.string.progress_log_weight), fontSize = 15.sp, fontWeight = FontWeight.Medium, color = AppColors.Calorie)
-            }
-            Spacer(Modifier.width(8.dp))
-            CollapseChevron(expanded)
-        }
-        AnimatedVisibility(
-            visible = expanded,
-            enter = expandVertically(),
-            exit = shrinkVertically(),
-        ) {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                if (entries.isEmpty()) {
-                    Box(Modifier.fillMaxWidth().padding(vertical = 24.dp), contentAlignment = Alignment.Center) {
-                        Text(
-                            stringResource(R.string.progress_log_first_weight),
-                            fontSize = 15.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
-                        )
-                    }
-                } else {
-                    val currentLabel = stringResource(R.string.progress_stat_current)
-                    val goalLabel = stringResource(R.string.progress_stat_goal)
-                    val netChangeLabel = stringResource(R.string.progress_stat_net_change)
-                    val averageLabel = stringResource(R.string.progress_stat_average)
-                    StatBadgeRow(
-                        buildList {
-                            stats.currentKg?.let {
-                                add(currentLabel to formatWeight(it, useMetric))
-                            }
-                            goalKg?.let {
-                                add(goalLabel to formatWeight(it, useMetric))
-                            }
-                            add(netChangeLabel to formatWeightChange(stats.netChangeKg, useMetric))
-                            add(averageLabel to formatWeight(stats.averageKg, useMetric))
-                        }
-                    )
-                    val hasTrend = remember(entries) {
-                        computeWeightTrend(
-                            weighIns = entries.map { WeightTrendInput(at = it.date, weightKg = it.weightKg) },
-                            zone = ZoneId.systemDefault(),
-                        ).isNotEmpty()
-                    }
-                    val hasUntracked = remember(entries, untrackedDays) {
-                        val zone = ZoneId.systemDefault()
-                        val days = entries.map { it.date.atZone(zone).toLocalDate() }
-                        val first = days.minOrNull()
-                        val last = days.maxOrNull()
-                        first != null && last != null && untrackedDays.any { day ->
-                            val date = runCatching { LocalDate.parse(day) }.getOrNull()
-                            date != null && !date.isBefore(first) && !date.isAfter(last)
-                        }
-                    }
-                    WeightChartLegend(hasTrend = hasTrend, hasUntracked = hasUntracked)
-                    DeferredChart(immediate = chartsImmediate) {
-                        WeightChartCanvas(
-                            entries = entries,
-                            goalKg = goalKg,
-                            useMetric = useMetric,
-                            immediate = chartsImmediate,
-                            dayTypeByDay = dayTypeByDay,
-                            untrackedDays = untrackedDays,
-                            typeColorOf = typeColorOf,
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun WeightChartLegend(hasTrend: Boolean, hasUntracked: Boolean) {
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            LegendSwatch(
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                label = stringResource(R.string.progress_weight_raw_legend),
-                dot = true,
-            )
-            if (hasTrend) {
-                LegendSwatch(
-                    color = AppColors.Calorie,
-                    label = stringResource(R.string.progress_weight_trend_legend),
-                )
-            }
-            if (hasUntracked) {
-                LegendSwatch(
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    label = stringResource(R.string.progress_untracked_legend),
-                    dashed = true,
-                )
-            }
-        }
-        if (!hasTrend) {
-            Text(
-                stringResource(R.string.progress_weight_trend_need_more),
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-            )
-        }
-    }
-}
-
-@Composable
 internal fun LegendSwatch(
-    color: androidx.compose.ui.graphics.Color,
+    color: Color,
     label: String,
     dashed: Boolean = false,
     /** Hollow 8dp ring — raw readings drawn without a connecting line. */

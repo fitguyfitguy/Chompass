@@ -53,6 +53,7 @@ import app.chompass.models.MacroPlanMode
 import app.chompass.models.MacroPlanResolver
 import app.chompass.models.UserProfile
 import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.models.GoalJournal
 import app.chompass.ui.theme.AppColors
@@ -101,6 +102,15 @@ fun DayTypesSettingsScreen(
             stringResource(R.string.settings_day_types_intro),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        )
+
+        // Phases are dated day-type windows — the natural cross-link (Rule C).
+        RelatedLinks(
+            rows = listOf(
+                RelatedLink(label = stringResource(R.string.settings_goal_phases_title)) {
+                    nav.navigate(ChompassRoutes.GOAL_PHASES)
+                },
+            ),
         )
 
         SectionCard(title = stringResource(R.string.settings_day_types_title)) {

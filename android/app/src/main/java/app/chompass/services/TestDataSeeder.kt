@@ -19,6 +19,9 @@ import app.chompass.models.FoodSource
 import app.chompass.models.Gender
 import app.chompass.models.GoalJournalEntry
 import app.chompass.models.GoalJournalSource
+import app.chompass.models.GoalPhase
+import app.chompass.models.GoalPhaseEdit
+import app.chompass.models.PhaseIntent
 import app.chompass.models.HabitPresetCatalog
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeTopNutrient
@@ -153,6 +156,61 @@ class TestDataSeeder(private val container: AppContainer) {
         container.prefs.setOnboardingCompleted(true)
     }
 
+    /**
+     * Standalone goal-phase fixture (Progress v2): applies the phase examples
+     * to the current profile without touching diary/weight data.
+     *
+     *   adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_goal_phases true
+     */
+    suspend fun seedGoalPhases() {
+        if (!BuildConfig.DEBUG) return
+        snapshotRealDataIfNeeded()
+
+        val baseProfile = container.profileRepository.profile.first()
+            ?: UserProfile(weightKg = 80.0, goalWeightKg = 72.0)
+        container.profileRepository.save(goalPhaseSeededProfile(baseProfile))
+        container.prefs.setOnboardingCompleted(true)
+    }
+
+    /**
+     * The phase examples: a past CUT inside the seeded diary history
+     * (journal-backed adherence line) and a current BULK spanning ±2 weeks.
+     * Applied through [GoalPhaseEdit.applyPhase] so seeds exercise the exact
+     * production write path (Base profile + range assignments). Composes with
+     * the macro-cycle plan; skipped in keto (STANDARD-only).
+     */
+    internal fun goalPhaseSeededProfile(profile: UserProfile): UserProfile {
+        val today = LocalDate.now()
+        val base = MacroPlanResolver.baseTargets(profile)
+        val cut = GoalPhase(
+            id = seedId("phase-cut"),
+            name = "Winter cut",
+            intent = PhaseIntent.CUT,
+            startDate = today.minusDays(21).toString(),
+            endDate = today.minusDays(7).toString(),
+            calories = (base.calories - 400).coerceAtLeast(CalorieSafety.ABSOLUTE_FLOOR_KCAL),
+            proteinG = base.proteinG,
+            carbsG = (base.carbsG - 50).coerceAtLeast(20),
+            fatG = base.fatG,
+        )
+        val bulk = GoalPhase(
+            id = seedId("phase-bulk"),
+            name = "Lean bulk",
+            intent = PhaseIntent.BULK,
+            startDate = today.minusDays(14).toString(),
+            endDate = today.plusDays(14).toString(),
+            calories = base.calories + 300,
+            proteinG = base.proteinG + 10,
+            carbsG = base.carbsG + 60,
+            fatG = base.fatG + 10,
+        )
+        var next = profile
+        for (phase in listOf(cut, bulk)) {
+            next = GoalPhaseEdit.applyPhase(next, phase, today)
+        }
+        return next
+    }
+
     /** The seeded plan: ±300 kcal Training/Rest spread around the base targets. */
     internal fun macroCyclePlan(profile: UserProfile): MacroPlan {
         val base = MacroPlanResolver.baseTargets(profile)
@@ -239,7 +297,12 @@ class TestDataSeeder(private val container: AppContainer) {
      * active calories, 4 nutrient cards, Progress nutrient averages + its
      * selection, food-log macro chips) — the "everything switched on" state.
      */
-    suspend fun seedFullyUtilized(keto: Boolean = false, busyHome: Boolean = false, macroCycle: Boolean = false) {
+    suspend fun seedFullyUtilized(
+        keto: Boolean = false,
+        busyHome: Boolean = false,
+        macroCycle: Boolean = false,
+        goalPhases: Boolean = false,
+    ) {
         if (!BuildConfig.DEBUG) return
         _seeding.value = true
         try {
@@ -265,7 +328,11 @@ class TestDataSeeder(private val container: AppContainer) {
                 // #60 macro_cycle flag: Training/Rest day types on the fixture
                 // profile. Ignored with keto (STANDARD-only, Q4) — the plan is
                 // stored disabled instead.
-                if (macroCycle) base.copy(macroPlan = macroCyclePlan(base)) else base
+                var p = if (macroCycle) base.copy(macroPlan = macroCyclePlan(base)) else base
+                // Progress v2 `seed_goal_phases` flag: CUT + BULK phase windows
+                // via the production GoalPhaseEdit write path (also keto-skipped).
+                if (goalPhases && !keto) p = goalPhaseSeededProfile(p)
+                p
             }
             container.profileRepository.save(profile)
             container.prefs.setOnboardingCompleted(true)

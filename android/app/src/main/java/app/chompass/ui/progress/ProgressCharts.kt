@@ -44,16 +44,13 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
@@ -62,10 +59,10 @@ import androidx.compose.ui.unit.dp
 import app.chompass.ui.components.energyUnitLabel
 import androidx.compose.ui.unit.sp
 import app.chompass.models.BodyFatEntry
+import app.chompass.models.BodyMeasurement
 import app.chompass.models.WeightEntry
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
-import app.chompass.ui.theme.success
 import app.chompass.ui.navigation.LocalEnergyUnit
 import java.time.DayOfWeek
 import java.time.Instant
@@ -98,21 +95,6 @@ internal data class WeightChartModel(
     val trendSegments: List<List<TrendPoint>>,
     val showsDots: Boolean,
     val goalDisplayValue: Double?
-)
-
-internal data class BodyFatChartModel(
-    val yMin: Double,
-    val yMax: Double,
-    val ticks: List<Double>,
-    val tStart: Long,
-    val tEnd: Long,
-    val tRange: Long,
-    val singleEntry: Boolean,
-    val showsYear: Boolean,
-    val xLabelFmt: DateTimeFormatter,
-    val points: List<TrendPoint>,
-    val showsDots: Boolean,
-    val goalPercent: Double?
 )
 
 /** One day's marker under a chart: day-type dot, untracked dash (UI-UX §10).
@@ -485,15 +467,6 @@ internal fun formatTick(value: Double): String =
     else if (value == value.toInt().toDouble()) value.toInt().toString()
     else LocaleFormat.decimal(value, 1)
 
-/** Format a body-fat tick value for the Y-axis label (e.g. 17.5 → "17.5%"
- *  when the tick has a fractional part, otherwise "18%" — keeps short ticks
- *  short and falls back to one decimal when the chart is zoomed in). */
-internal fun formatPercentTick(value: Double): String {
-    val rounded = (value * 10).toInt() / 10.0
-    return if (rounded == rounded.toInt().toDouble()) "${rounded.toInt()}%"
-    else "${LocaleFormat.decimal(rounded, 1)}%"
-}
-
 /** Pick at most [maxLabels] evenly-spaced bar indices for x-axis labelling. */
 internal fun pickXLabelIndices(n: Int, maxLabels: Int = 7): List<Int> {
     if (n <= 0) return emptyList()
@@ -502,101 +475,189 @@ internal fun pickXLabelIndices(n: Int, maxLabels: Int = 7): List<Int> {
     return (0 until maxLabels).map { i -> (i * step).toInt().coerceIn(0, n - 1) }.distinct()
 }
 
-internal fun buildWeightChartModel(entries: List<WeightEntry>, goalKg: Double?, useMetric: Boolean): WeightChartModel {
-    val displayKg = { kg: Double -> if (useMetric) kg else UnitFormat.kgToLbs(kg) }
+// region Unified body overlay chart (Progress v2)
+
+internal const val OVERLAY_KEY_WEIGHT = "weight"
+internal const val OVERLAY_KEY_BODY_FAT = "bodyfat"
+
+/** Per-series display metadata, resolved by the caller (string resources,
+ *  units, palette); keeps [buildOverlayChartModel] pure. [unitLabel] is the
+ *  value suffix (" kg", "%", " cm") used by the legend and inspection tag. */
+internal data class OverlaySeriesMeta(
+    val label: String,
+    val unitLabel: String,
+    val color: Color,
+)
+
+/** One plotted series in the unified body overlay chart: weight, body fat, or
+ *  a measurement site. Points are display-unit daily buckets; the draw-time
+ *  normalization is per series (no dual axis — legend chips + tap inspection
+ *  carry the real values). */
+internal data class OverlaySeries(
+    /** `"weight" | "bodyfat" | `BodyMeasurement.Site.storageId`. */
+    val key: String,
+    val label: String,
+    val color: Color,
+    val unitLabel: String,
+    /** Daily-averaged raw readings, display units. */
+    val points: List<TrendPoint>,
+    /** Analytical trailing moving average ([computeMetricTrend]), display units. */
+    val trendPoints: List<TrendPoint>,
+    val trendSegments: List<List<TrendPoint>>,
+    val showsDots: Boolean,
+    val currentValue: Double?,
+    val deltaOverRange: Double?,
+    val goalDisplayValue: Double?,
+)
+
+/** Day → seriesKey → display value, for the tap inspection tag. */
+internal data class OverlayChartModel(
+    val series: List<OverlaySeries>,
+    val markers: List<DayMarker>,
+    val xFromMs: Long,
+    val xToMs: Long,
+    val dayValues: Map<String, Map<String, Double>>,
+) {
+    val tRange: Long get() = maxOf(1L, xToMs - xFromMs)
+    val singleEntry: Boolean get() = xToMs - xFromMs <= 1L
+}
+
+/**
+ * Per-series draw scale: min–max over that series' own data. A goal outside
+ * the data range extends the scale so the goal rule sits 5% inset from the
+ * edge instead of on it; a constant series maps to the vertical mid-line
+ * ([fraction] guards the divide-by-zero).
+ */
+internal data class OverlayScale(val min: Double, val max: Double) {
+    fun fraction(value: Double): Float {
+        val range = max - min
+        if (range <= 1e-9) return 0.5f
+        return ((value - min) / range).toFloat().coerceIn(0f, 1f)
+    }
+
+    companion object {
+        fun of(
+            values: List<Double>,
+            goal: Double?,
+            goalPadFraction: Double = 0.05,
+        ): OverlayScale {
+            if (values.isEmpty()) return OverlayScale(0.0, 1.0)
+            var lo = values.min()
+            var hi = values.max()
+            if (goal != null) {
+                if (goal < lo) lo = goal - (hi - lo) * goalPadFraction
+                if (goal > hi) hi = goal + (hi - lo) * goalPadFraction
+            }
+            return OverlayScale(lo, hi)
+        }
+    }
+}
+
+/**
+ * Builds the unified body overlay model: one series per source that has data
+ * in range (empty-after-filter sources are dropped; an all-empty result yields
+ * an empty model the caller renders as a placeholder). Pure so the
+ * normalization invariants stay JVM-testable. Values are converted to display
+ * units here (kg→lb, cm→in, fraction→percent), mirroring the retired
+ * weight/body-fat chart builders.
+ */
+internal fun buildOverlayChartModel(
+    weights: List<WeightEntry>,
+    bodyFats: List<BodyFatEntry>,
+    measurements: List<BodyMeasurement>,
+    sites: List<BodyMeasurement.Site>,
+    goalWeightKg: Double?,
+    goalBodyFatFraction: Double?,
+    useMetricWeight: Boolean,
+    useMetricLength: Boolean,
+    meta: Map<String, OverlaySeriesMeta>,
+    dayTypeByDay: Map<String, String>,
+    untrackedDays: Set<String>,
+    typeColorOf: (String) -> Color,
+): OverlayChartModel {
     val zone = ZoneId.systemDefault()
-    val trendKg = computeWeightTrend(
-        weighIns = entries.map { WeightTrendInput(at = it.date, weightKg = it.weightKg) },
-        zone = zone,
-    )
-    val trendDisplay = trendKg.map {
-        TrendPoint(
-            timeMs = it.day.atStartOfDay(zone).toInstant().toEpochMilli(),
-            value = displayKg(it.valueKg),
+    fun dayMs(day: LocalDate) = day.atStartOfDay(zone).toInstant().toEpochMilli()
+    fun kgDisplay(kg: Double) = if (useMetricWeight) kg else UnitFormat.kgToLbs(kg)
+    fun cmDisplay(cm: Double) = if (useMetricLength) cm else UnitFormat.cmToInches(cm)
+
+    fun buildSeries(key: String, inputs: List<MetricTrendInput>, goal: Double?): OverlaySeries? {
+        val seriesMeta = meta[key] ?: return null
+        val daily = averageMetricByDay(inputs, zone)
+        if (daily.isEmpty()) return null
+        val points = downsampleTrend(daily.map { TrendPoint(dayMs(it.day), it.value) })
+        val trend = computeMetricTrend(inputs, zone)
+        val trendPoints = downsampleTrend(trend.map { TrendPoint(dayMs(it.day), it.value) })
+        val trendSegments = splitMetricSegments(trend)
+            .map { segment -> downsampleTrend(segment.map { TrendPoint(dayMs(it.day), it.value) }) }
+        return OverlaySeries(
+            key = key,
+            label = seriesMeta.label,
+            color = seriesMeta.color,
+            unitLabel = seriesMeta.unitLabel,
+            points = points,
+            trendPoints = trendPoints,
+            trendSegments = trendSegments,
+            showsDots = points.size <= 31,
+            currentValue = points.lastOrNull()?.value,
+            deltaOverRange = if (points.size >= 2) {
+                points.last().value - points.first().value
+            } else {
+                null
+            },
+            goalDisplayValue = goal,
         )
     }
-    val displayWeights = entries.map { displayKg(it.weightKg) } +
-        trendDisplay.map { it.value } +
-        listOfNotNull(goalKg?.let(displayKg))
-    val minW = displayWeights.min()
-    val maxW = displayWeights.max()
-    val pad = maxOf((maxW - minW) * 0.15, 2.0)
-    val yMin = minW - pad
-    val yMax = maxW + pad
-    val tStart = entries.first().date.toEpochMilli()
-    val tEnd = entries.last().date.toEpochMilli()
-    val singleEntry = entries.size == 1
-    val tRange = maxOf(1L, tEnd - tStart)
-    val ticks = niceAxisTicks(yMin, yMax, count = 5)
-    val spanDays = maxOf(1L, (tEnd - tStart) / 86_400_000L)
-    val showsYear = spanDays > 150 &&
-        Instant.ofEpochMilli(tStart).atZone(zone).year != Instant.ofEpochMilli(tEnd).atZone(zone).year
-    val xLabelFmt = LocaleFormat.monthOrDayZoned(showsYear, zone)
-    // Analytical trend first, then visual downsampling of raw weigh-ins.
-    val points = downsampleTrend(entries.map { TrendPoint(it.date.toEpochMilli(), displayKg(it.weightKg)) })
-    val trendForDraw = downsampleTrend(trendDisplay)
-    val trendSegments = splitTrendSegments(trendKg).map { segment ->
-        downsampleTrend(
-            segment.map {
-                TrendPoint(
-                    timeMs = it.day.atStartOfDay(zone).toInstant().toEpochMilli(),
-                    value = displayKg(it.valueKg),
-                )
-            }
-        )
-    }.filter { it.size >= 2 }
-    val showsDots = points.size <= 31
-    return WeightChartModel(
-        yMin = yMin,
-        yMax = yMax,
-        ticks = ticks,
-        tStart = tStart,
-        tEnd = tEnd,
-        tRange = tRange,
-        singleEntry = singleEntry,
-        showsYear = showsYear,
-        xLabelFmt = xLabelFmt,
-        points = points,
-        trendPoints = trendForDraw,
-        trendSegments = trendSegments,
-        showsDots = showsDots,
-        goalDisplayValue = goalKg?.let(displayKg)
+
+    val seriesList = buildList {
+        buildSeries(
+            OVERLAY_KEY_WEIGHT,
+            weights.map { MetricTrendInput(at = it.date, value = kgDisplay(it.weightKg)) },
+            goalWeightKg?.let(::kgDisplay),
+        )?.let { add(it) }
+        buildSeries(
+            OVERLAY_KEY_BODY_FAT,
+            bodyFats.map { MetricTrendInput(at = it.date, value = it.bodyFatFraction * 100.0) },
+            goalBodyFatFraction?.times(100.0),
+        )?.let { add(it) }
+        for (site in sites) {
+            buildSeries(
+                site.storageId,
+                measurements.mapNotNull { entry ->
+                    entry.value(site)?.let { cm -> MetricTrendInput(at = entry.date, value = cmDisplay(cm)) }
+                },
+                null,
+            )?.let { add(it) }
+        }
+    }
+    if (seriesList.isEmpty()) {
+        return OverlayChartModel(emptyList(), emptyList(), 0L, 1L, emptyMap())
+    }
+
+    // Shared x axis: day-start of the earliest bucket through the end of the
+    // latest day, so the newest point sits one slot short of the right edge
+    // instead of the range collapsing to entry timestamps.
+    val xFromMs = seriesList.minOf { s -> s.points.minOf { it.timeMs } }
+    val xToMs = seriesList.maxOf { s -> s.points.maxOf { it.timeMs } } + 86_400_000L - 1
+    val startDay = Instant.ofEpochMilli(xFromMs).atZone(zone).toLocalDate()
+    val endDay = Instant.ofEpochMilli(xToMs).atZone(zone).toLocalDate()
+    val markers = buildMarkerLane(startDay, endDay, dayTypeByDay, untrackedDays, typeColorOf)
+    val dayValues = HashMap<String, MutableMap<String, Double>>()
+    for (s in seriesList) {
+        for (p in s.points) {
+            val day = Instant.ofEpochMilli(p.timeMs).atZone(zone).toLocalDate().toString()
+            dayValues.getOrPut(day) { HashMap() }[s.key] = p.value
+        }
+    }
+    return OverlayChartModel(
+        series = seriesList,
+        markers = markers,
+        xFromMs = xFromMs,
+        xToMs = xToMs,
+        dayValues = dayValues,
     )
 }
 
-internal fun buildBodyFatChartModel(entries: List<BodyFatEntry>, goalFraction: Double?): BodyFatChartModel {    val percents = entries.map { it.bodyFatFraction * 100 } + listOfNotNull(goalFraction?.let { it * 100 })
-    val minP = percents.min()
-    val maxP = percents.max()
-    val pad = maxOf((maxP - minP) * 0.15, 1.0)
-    val yMin = (minP - pad).coerceAtLeast(0.0)
-    val yMax = maxP + pad
-    val tStart = entries.first().date.toEpochMilli()
-    val tEnd = entries.last().date.toEpochMilli()
-    val singleEntry = entries.size == 1
-    val tRange = maxOf(1L, tEnd - tStart)
-    val ticks = niceAxisTicks(yMin, yMax, count = 5)
-    val zone = ZoneId.systemDefault()
-    val spanDays = maxOf(1L, (tEnd - tStart) / 86_400_000L)
-    val showsYear = spanDays > 150 &&
-        Instant.ofEpochMilli(tStart).atZone(zone).year != Instant.ofEpochMilli(tEnd).atZone(zone).year
-    val xLabelFmt = LocaleFormat.monthOrDayZoned(showsYear, zone)
-    val points = downsampleTrend(entries.map { TrendPoint(it.date.toEpochMilli(), it.bodyFatFraction * 100) })
-    val showsDots = points.size <= 31
-    return BodyFatChartModel(
-        yMin = yMin,
-        yMax = yMax,
-        ticks = ticks,
-        tStart = tStart,
-        tEnd = tEnd,
-        tRange = tRange,
-        singleEntry = singleEntry,
-        showsYear = showsYear,
-        xLabelFmt = xLabelFmt,
-        points = points,
-        showsDots = showsDots,
-        goalPercent = goalFraction?.times(100)
-    )
-}
+// endregion
 
 /** X-axis labels under a trend chart, matching the label density of the iOS
  *  charts: five dates aligned with the canvas' quarter gridlines, or
@@ -629,78 +690,94 @@ internal fun TrendXAxisLabels(
     }
 }
 
+/**
+ * Unified body overlay chart: one normalized trend line per series over a
+ * shared x axis. Per-series min–max normalization happens here ([OverlayScale])
+ * — real values live in the legend chips and the tap inspection tag, which
+ * lists every series' value for the tapped day ("–" when a series has no
+ * reading that day). The legend itself is the chip row in the body section.
+ */
 @Composable
-internal fun WeightChartCanvas(
-    entries: List<WeightEntry>,
-    goalKg: Double?,
-    useMetric: Boolean,
+internal fun OverlayChartCanvas(
+    model: OverlayChartModel,
     immediate: Boolean = false,
-    /** Day-type/untracked marker lane inputs (UI-UX §10). */
-    dayTypeByDay: Map<String, String> = emptyMap(),
+    /** Section title for the TalkBack inspection description. */
+    title: String,
     untrackedDays: Set<String> = emptySet(),
-    typeColorOf: (String) -> Color = { Color.Transparent },
 ) {
-    val chartModel = remember(entries, goalKg, useMetric) {
-        buildWeightChartModel(entries = entries, goalKg = goalKg, useMetric = useMetric)
-    }
-    val untrackedSpans = rememberUntrackedSpans(chartModel.tStart, chartModel.tRange, untrackedDays)
+    val zone = remember { ZoneId.systemDefault() }
+    val untrackedSpans = rememberUntrackedSpans(model.xFromMs, model.tRange, untrackedDays)
     val bandColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
     val rawDotColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
-    val goalLineColor = MaterialTheme.colorScheme.success.copy(alpha = 0.7f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
-    // 450ms draw-in: grid/goal/bands are instant, the trend sweeps in
-    // left-to-right, dots/labels/latest chip fade at the end. Keyed on the
-    // model so switching ranges re-runs the reveal; `immediate` (screenshot
-    // path) starts fully drawn for deterministic goldens.
-    val reveal = remember(chartModel, immediate) { Animatable(if (immediate) 1f else 0f) }
-    LaunchedEffect(chartModel, immediate) {
+    val reveal = remember(model, immediate) { Animatable(if (immediate) 1f else 0f) }
+    LaunchedEffect(model, immediate) {
         if (!immediate) reveal.animateTo(1f, tween(durationMillis = 450, easing = FastOutSlowInEasing))
     }
     val tailAlpha = ((reveal.value - 0.85f) / 0.15f).coerceIn(0f, 1f)
     val pathMeasure = remember { PathMeasure() }
     val trimDst = remember { Path() }
-    val tagPaint = remember { Paint() }
 
-    var inspectedPoint by remember(chartModel) { mutableStateOf<Int?>(null) }
+    // Per-series draw scales (min–max ∪ goal clamp), keyed for O(1) lookups.
+    val scales = remember(model) {
+        model.series.associate { s ->
+            s.key to OverlayScale.of(
+                values = s.trendPoints.map { it.value } + s.points.map { it.value },
+                goal = s.goalDisplayValue,
+            )
+        }
+    }
+    // Tap hit-testing runs on the merged day buckets of every series, so days
+    // that only a non-weight series covers stay inspectable.
+    val hitTimes = remember(model) {
+        model.series.flatMap { s -> s.points.map { it.timeMs } }.distinct().sorted()
+    }
+    var inspectedIndex by remember(model) { mutableStateOf<Int?>(null) }
     val textMeasurer = rememberTextMeasurer()
     val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Strong)
     val chipForeground = MaterialTheme.colorScheme.surface
-    val weightUnit = stringResource(if (useMetric) R.string.unit_kg else R.string.unit_lbs)
-    val metricTitle = stringResource(R.string.progress_weight_section)
-    val inspectedNow = inspectedPoint?.let { chartModel.points.getOrNull(it) }
-    val chartDescription = if (inspectedNow != null) {
+    val guideColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+    val spanDays = model.tRange / 86_400_000L
+    val showsYear = spanDays > 150 &&
+        Instant.ofEpochMilli(model.xFromMs).atZone(zone).year !=
+        Instant.ofEpochMilli(model.xToMs).atZone(zone).year
+    val xLabelFmt = remember(showsYear, zone) { LocaleFormat.monthOrDayZoned(showsYear, zone) }
+
+    val inspectedTime = inspectedIndex?.let { hitTimes.getOrNull(it) }
+    val inspectedDayIso = inspectedTime
+        ?.let { Instant.ofEpochMilli(it).atZone(zone).toLocalDate().toString() }
+    val inspectedValues = inspectedDayIso?.let { model.dayValues[it] }
+    fun valueText(series: OverlaySeries, value: Double?) =
+        if (value == null) "–" else "${formatTick(value)}${series.unitLabel}"
+    val inspectedSummary = inspectedValues?.let { values ->
+        model.series.joinToString(" · ") { s -> valueText(s, values[s.key]) }
+    }
+    val chartDescription = if (inspectedTime != null && inspectedSummary != null) {
         stringResource(
             R.string.a11y_chart_inspection,
-            metricTitle,
-            chartModel.xLabelFmt.format(Instant.ofEpochMilli(inspectedNow.timeMs)),
-            "${formatTick(inspectedNow.value)} $weightUnit",
+            title,
+            xLabelFmt.format(Instant.ofEpochMilli(inspectedTime)),
+            inspectedSummary,
         )
     } else {
-        metricTitle
+        title
     }
-    val inspectedLabel = inspectedPoint?.let { index ->
-        chartModel.points.getOrNull(index)?.let { point ->
-            "${chartModel.xLabelFmt.format(Instant.ofEpochMilli(point.timeMs))} · ${formatTick(point.value)} $weightUnit"
+    val inspectedLabel = inspectedTime?.let { time ->
+        if (inspectedSummary != null) {
+            "${xLabelFmt.format(Instant.ofEpochMilli(time))} · $inspectedSummary"
+        } else {
+            null
         }
     }
-    val laneZone = remember { ZoneId.systemDefault() }
-    val laneMarkers = remember(chartModel, dayTypeByDay, untrackedDays, typeColorOf) {
-        buildMarkerLane(
-            start = Instant.ofEpochMilli(chartModel.tStart).atZone(laneZone).toLocalDate(),
-            end = Instant.ofEpochMilli(chartModel.tStart + chartModel.tRange).atZone(laneZone).toLocalDate(),
-            types = dayTypeByDay,
-            untracked = untrackedDays,
-            typeColorOf = typeColorOf,
-        )
-    }
+    val laneMarkers = model.markers
     val laneXFraction: (Int) -> Float = { i ->
         val marker = laneMarkers.getOrNull(i)
-        if (marker == null || chartModel.singleEntry || chartModel.tRange <= 0L) {
+        if (marker == null || model.singleEntry || model.tRange <= 0L) {
             0.5f
         } else {
-            ((marker.date.atStartOfDay(laneZone).toInstant().toEpochMilli() - chartModel.tStart)
-                .toFloat() / chartModel.tRange).coerceIn(0f, 1f)
+            ((marker.date.atStartOfDay(zone).toInstant().toEpochMilli() - model.xFromMs)
+                .toFloat() / model.tRange).coerceIn(0f, 1f)
         }
     }
     Row(Modifier.fillMaxWidth().height(180.dp)) {
@@ -709,24 +786,42 @@ internal fun WeightChartCanvas(
                 .weight(1f)
                 .fillMaxSize()
                 .semantics { contentDescription = chartDescription }
-                .pointerInput(chartModel) {
+                .pointerInput(model) {
                     detectTapGestures { tap ->
-                        val index = nearestTrendIndex(
-                            chartModel.points, chartModel.tStart, chartModel.tRange,
-                            chartModel.singleEntry, tap.x, size.width.toFloat(),
-                        )
-                        inspectedPoint = if (inspectedPoint == index) null else index
+                        if (hitTimes.isEmpty()) return@detectTapGestures
+                        val index = if (model.singleEntry || hitTimes.size == 1) {
+                            0
+                        } else {
+                            var best = 0
+                            var bestDx = Float.MAX_VALUE
+                            for ((index, time) in hitTimes.withIndex()) {
+                                val px = ((time - model.xFromMs).toDouble() / model.tRange * size.width).toFloat()
+                                val dx = abs(px - tap.x)
+                                if (dx < bestDx) {
+                                    bestDx = dx
+                                    best = index
+                                }
+                            }
+                            best
+                        }
+                        inspectedIndex = if (inspectedIndex == index) null else index
                     }
                 }
         ) {
             val w = size.width; val h = size.height
-            chartModel.ticks.forEach { tick ->
-                val y = h - (((tick - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
-                drawLine(
-                    color = gridColor,
-                    start = Offset(0f, y), end = Offset(w, y),
-                    strokeWidth = 1f
-                )
+            fun xOf(timeMs: Long): Float =
+                if (model.singleEntry) w / 2f
+                else ((timeMs - model.xFromMs).toDouble() / model.tRange * w).toFloat()
+            fun yOf(series: OverlaySeries, value: Double): Float =
+                h - (scales.getValue(series.key).fraction(value) * h)
+            fun offsetOf(series: OverlaySeries, p: TrendPoint): Offset =
+                Offset(xOf(p.timeMs), yOf(series, p.value))
+            // Structure: 5 horizontal divisions + dashed quarter columns
+            // (no y tick labels — per-series scales make shared labels wrong;
+            // the legend chips carry the real values).
+            for (i in 0..4) {
+                val y = (i.toFloat() / 4f) * h
+                drawLine(gridColor, Offset(0f, y), Offset(w, y), strokeWidth = 1f)
             }
             for (i in 0..4) {
                 val x = (i.toFloat() / 4f) * w
@@ -734,85 +829,81 @@ internal fun WeightChartCanvas(
                     color = gridColor,
                     start = Offset(x, 0f), end = Offset(x, h),
                     strokeWidth = 1f,
-                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 6f))
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 6f)),
                 )
             }
-            chartModel.goalDisplayValue?.let { gv ->
-                val y = h - (((gv - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
+            // Untracked bands sit behind every plot layer (#106).
+            drawUntrackedBands(untrackedSpans, model.xFromMs, model.tRange, bandColor)
+            // Per-series goal rules, right above the data.
+            for (s in model.series) {
+                val goal = s.goalDisplayValue ?: continue
+                val y = yOf(s, goal)
                 drawLine(
-                    color = goalLineColor,
+                    color = s.color.copy(alpha = 0.7f),
                     start = Offset(0f, y), end = Offset(w, y),
                     strokeWidth = 3f,
-                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(18f, 12f))
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(18f, 12f)),
                 )
             }
-            fun pointOffset(p: TrendPoint): Offset = Offset(
-                if (chartModel.singleEntry) w / 2f
-                else ((p.timeMs - chartModel.tStart).toDouble() / chartModel.tRange * w).toFloat(),
-                h - (((p.value - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
-            )
-            val offsets = chartModel.points.map(::pointOffset)
-            // Untracked bands sit behind every plot layer (#106).
-            drawUntrackedBands(untrackedSpans, chartModel.tStart, chartModel.tRange, bandColor)
             clipRect {
-                // Raw weigh-ins stay honest as muted dots; the solid line is the
-                // labeled 7-day trend (dashes read as uncertainty, not style).
-                for (segment in chartModel.trendSegments) {
-                    val trendOffsets = segment.map(::pointOffset)
-                    drawPath(
-                        trendFillPath(trendOffsets, h),
-                        AppColors.Calorie.copy(alpha = 0.08f * reveal.value),
-                    )
-                    if (trendOffsets.size == 1) {
-                        drawCircle(AppColors.Calorie, radius = 3.dp.toPx(), center = trendOffsets.first())
-                    } else {
+                for (s in model.series) {
+                    // Smoothed trend is the line; when the series is too sparse
+                    // for the moving average, fall back to the raw path so the
+                    // series still reads.
+                    val segments = s.trendSegments.ifEmpty {
+                        if (s.points.size >= 2) listOf(s.points) else emptyList()
+                    }
+                    for (segment in segments) {
+                        val offsets = segment.map { offsetOf(s, it) }
                         drawPath(
-                            trimmedStraightPath(trendOffsets, reveal.value, pathMeasure, trimDst),
-                            AppColors.Calorie,
-                            style = Stroke(width = 4f),
+                            trendFillPath(offsets, h),
+                            s.color.copy(alpha = 0.08f * reveal.value),
                         )
+                        if (offsets.size == 1) {
+                            drawCircle(s.color, radius = 3.dp.toPx(), center = offsets.first())
+                        } else {
+                            drawPath(
+                                trimmedStraightPath(offsets, reveal.value, pathMeasure, trimDst),
+                                s.color,
+                                style = Stroke(width = 3.dp.toPx()),
+                            )
+                        }
                     }
-                }
-                if (chartModel.showsDots && tailAlpha > 0f) {
-                    offsets.forEach {
-                        drawCircle(rawDotColor.copy(alpha = 0.75f * tailAlpha), radius = 3.dp.toPx(), center = it)
+                    if (s.showsDots && tailAlpha > 0f) {
+                        s.points.forEach { p ->
+                            drawCircle(
+                                rawDotColor.copy(alpha = 0.75f * tailAlpha),
+                                radius = 3.dp.toPx(),
+                                center = offsetOf(s, p),
+                            )
+                        }
                     }
                 }
             }
-            drawInspectedDot(offsets, inspectedPoint)
-            val inspectedOffset = inspectedPoint?.takeIf { it < offsets.size }?.let { offsets[it] }
-            if (inspectedOffset != null && inspectedLabel != null) {
-                drawInspectionTag(inspectedLabel, textMeasurer, inspectedOffset, w, chipBackground, chipForeground)
-            }
-            // Latest-value chip: the trend's end is the headline reading.
-            val trendTail = chartModel.trendSegments.lastOrNull()?.lastOrNull()
-                ?: chartModel.points.lastOrNull()?.takeIf { chartModel.trendSegments.isEmpty() }
-            if (inspectedPoint == null && trendTail != null && tailAlpha > 0f) {
-                drawIntoCanvas { canvas ->
-                    tagPaint.alpha = tailAlpha
-                    canvas.saveLayer(Rect(0f, 0f, w, h), tagPaint)
+            // Tap inspection: guide line + per-series halos at the tapped day.
+            if (inspectedTime != null) {
+                val x = xOf(inspectedTime)
+                drawLine(
+                    color = guideColor,
+                    start = Offset(x, 0f), end = Offset(x, h),
+                    strokeWidth = 1f,
+                )
+                for (s in model.series) {
+                    val p = s.points.firstOrNull { it.timeMs == inspectedTime } ?: continue
+                    val center = offsetOf(s, p)
+                    drawCircle(s.color.copy(alpha = 0.25f), radius = 16f, center = center)
+                    drawCircle(s.color, radius = 7f, center = center)
+                }
+                if (inspectedLabel != null) {
                     drawInspectionTag(
-                        "${formatTick(trendTail.value)} $weightUnit",
+                        inspectedLabel,
                         textMeasurer,
-                        pointOffset(trendTail),
+                        Offset(x, h / 2f),
                         w,
                         chipBackground,
                         chipForeground,
                     )
-                    canvas.restore()
                 }
-            }
-        }
-        Column(
-            Modifier.width(36.dp).fillMaxSize().padding(start = 4.dp),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            chartModel.ticks.reversed().forEach { tick ->
-                Text(
-                    formatTick(tick),
-                    fontSize = 11.sp,
-                    color = secondaryColor
-                )
             }
         }
     }
@@ -822,224 +913,26 @@ internal fun WeightChartCanvas(
             xFraction = laneXFraction,
             modifier = Modifier.weight(1f),
         )
-        Spacer(Modifier.width(36.dp))
     }
     Box(Modifier.alpha(tailAlpha)) {
         TrendXAxisLabels(
-            chartModel.tStart,
-            chartModel.tEnd,
-            chartModel.showsYear,
-            chartModel.singleEntry,
-            chartModel.xLabelFmt,
+            model.xFromMs,
+            model.xToMs,
+            showsYear,
+            model.singleEntry,
+            xLabelFmt,
             secondaryColor,
-            endPadding = 36.dp
-        )
-    }
-}
-
-@Composable
-internal fun BodyFatChartCanvas(
-    entries: List<BodyFatEntry>,
-    goalFraction: Double?,
-    immediate: Boolean = false,
-    /** Day-type/untracked marker lane inputs (UI-UX §10). */
-    dayTypeByDay: Map<String, String> = emptyMap(),
-    untrackedDays: Set<String> = emptySet(),
-    typeColorOf: (String) -> Color = { Color.Transparent },
-) {
-    val chartModel = remember(entries, goalFraction) {
-        buildBodyFatChartModel(entries = entries, goalFraction = goalFraction)
-    }
-    val untrackedSpans = rememberUntrackedSpans(chartModel.tStart, chartModel.tRange, untrackedDays)
-    val bandColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
-    val rawDotColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
-    val goalLineColor = MaterialTheme.colorScheme.success.copy(alpha = 0.7f)
-    val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
-    val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
-    val reveal = remember(chartModel, immediate) { Animatable(if (immediate) 1f else 0f) }
-    LaunchedEffect(chartModel, immediate) {
-        if (!immediate) reveal.animateTo(1f, tween(durationMillis = 450, easing = FastOutSlowInEasing))
-    }
-    val tailAlpha = ((reveal.value - 0.85f) / 0.15f).coerceIn(0f, 1f)
-    val pathMeasure = remember { PathMeasure() }
-    val trimDst = remember { Path() }
-    val tagPaint = remember { Paint() }
-
-    var inspectedPoint by remember(chartModel) { mutableStateOf<Int?>(null) }
-    val textMeasurer = rememberTextMeasurer()
-    val chipBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Strong)
-    val chipForeground = MaterialTheme.colorScheme.surface
-    val metricTitle = stringResource(R.string.progress_metric_body_fat)
-    val inspectedNow = inspectedPoint?.let { chartModel.points.getOrNull(it) }
-    val chartDescription = if (inspectedNow != null) {
-        stringResource(
-            R.string.a11y_chart_inspection,
-            metricTitle,
-            chartModel.xLabelFmt.format(Instant.ofEpochMilli(inspectedNow.timeMs)),
-            UnitFormat.percent(inspectedNow.value),
-        )
-    } else {
-        metricTitle
-    }
-    val inspectedLabel = inspectedPoint?.let { index ->
-        chartModel.points.getOrNull(index)?.let { point ->
-            "${chartModel.xLabelFmt.format(Instant.ofEpochMilli(point.timeMs))} · ${UnitFormat.percent(point.value)}"
-        }
-    }
-    val laneZone = remember { ZoneId.systemDefault() }
-    val laneMarkers = remember(chartModel, dayTypeByDay, untrackedDays, typeColorOf) {
-        buildMarkerLane(
-            start = Instant.ofEpochMilli(chartModel.tStart).atZone(laneZone).toLocalDate(),
-            end = Instant.ofEpochMilli(chartModel.tStart + chartModel.tRange).atZone(laneZone).toLocalDate(),
-            types = dayTypeByDay,
-            untracked = untrackedDays,
-            typeColorOf = typeColorOf,
-        )
-    }
-    val laneXFraction: (Int) -> Float = { i ->
-        val marker = laneMarkers.getOrNull(i)
-        if (marker == null || chartModel.singleEntry || chartModel.tRange <= 0L) {
-            0.5f
-        } else {
-            ((marker.date.atStartOfDay(laneZone).toInstant().toEpochMilli() - chartModel.tStart)
-                .toFloat() / chartModel.tRange).coerceIn(0f, 1f)
-        }
-    }
-    Row(Modifier.fillMaxWidth().height(180.dp)) {
-        Canvas(
-            Modifier
-                .weight(1f)
-                .fillMaxSize()
-                .semantics { contentDescription = chartDescription }
-                .pointerInput(chartModel) {
-                    detectTapGestures { tap ->
-                        val index = nearestTrendIndex(
-                            chartModel.points, chartModel.tStart, chartModel.tRange,
-                            chartModel.singleEntry, tap.x, size.width.toFloat(),
-                        )
-                        inspectedPoint = if (inspectedPoint == index) null else index
-                    }
-                }
-        ) {
-            val w = size.width; val h = size.height
-            chartModel.ticks.forEach { tick ->
-                val y = h - (((tick - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
-                drawLine(
-                    color = gridColor,
-                    start = Offset(0f, y), end = Offset(w, y),
-                    strokeWidth = 1f
-                )
-            }
-            for (i in 0..4) {
-                val x = (i.toFloat() / 4f) * w
-                drawLine(
-                    color = gridColor,
-                    start = Offset(x, 0f), end = Offset(x, h),
-                    strokeWidth = 1f,
-                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 6f))
-                )
-            }
-            chartModel.goalPercent?.let { gPct ->
-                val y = h - (((gPct - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
-                drawLine(
-                    color = goalLineColor,
-                    start = Offset(0f, y), end = Offset(w, y),
-                    strokeWidth = 3f,
-                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(18f, 12f))
-                )
-            }
-            fun pointOffset(p: TrendPoint): Offset = Offset(
-                if (chartModel.singleEntry) w / 2f
-                else ((p.timeMs - chartModel.tStart).toDouble() / chartModel.tRange * w).toFloat(),
-                h - (((p.value - chartModel.yMin) / (chartModel.yMax - chartModel.yMin)).toFloat() * h)
-            )
-            val offsets = chartModel.points.map(::pointOffset)
-            // Untracked bands sit behind every plot layer (#106).
-            drawUntrackedBands(untrackedSpans, chartModel.tStart, chartModel.tRange, bandColor)
-            clipRect {
-                // Readings path straight, not smoothed — the curve implied a
-                // calculated trend; the muted dots carry the raw cadence.
-                if (chartModel.points.isNotEmpty()) {
-                    drawPath(
-                        trendFillPath(offsets, h),
-                        AppColors.Calorie.copy(alpha = 0.08f * reveal.value),
-                    )
-                    if (offsets.size == 1) {
-                        drawCircle(AppColors.Calorie, radius = 4f, center = offsets.first())
-                    } else {
-                        drawPath(
-                            trimmedStraightPath(offsets, reveal.value, pathMeasure, trimDst),
-                            AppColors.Calorie,
-                            style = Stroke(width = 4f),
-                        )
-                    }
-                }
-                if (chartModel.showsDots && tailAlpha > 0f) {
-                    offsets.forEach {
-                        drawCircle(rawDotColor.copy(alpha = 0.75f * tailAlpha), radius = 3.dp.toPx(), center = it)
-                    }
-                }
-            }
-            drawInspectedDot(offsets, inspectedPoint)
-            val inspectedOffset = inspectedPoint?.takeIf { it < offsets.size }?.let { offsets[it] }
-            if (inspectedOffset != null && inspectedLabel != null) {
-                drawInspectionTag(inspectedLabel, textMeasurer, inspectedOffset, w, chipBackground, chipForeground)
-            }
-            // Latest-value chip at the newest reading.
-            if (inspectedPoint == null && chartModel.points.isNotEmpty() && tailAlpha > 0f) {
-                val tail = chartModel.points.last()
-                drawIntoCanvas { canvas ->
-                    tagPaint.alpha = tailAlpha
-                    canvas.saveLayer(Rect(0f, 0f, w, h), tagPaint)
-                    drawInspectionTag(
-                        formatPercentTick(tail.value),
-                        textMeasurer,
-                        pointOffset(tail),
-                        w,
-                        chipBackground,
-                        chipForeground,
-                    )
-                    canvas.restore()
-                }
-            }
-        }
-        Column(
-            Modifier.width(40.dp).fillMaxSize().padding(start = 4.dp),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            chartModel.ticks.reversed().forEach { tick ->
-                Text(
-                    formatPercentTick(tick),
-                    fontSize = 11.sp,
-                    color = secondaryColor
-                )
-            }
-        }
-    }
-    Row(Modifier.fillMaxWidth()) {
-        MarkerLane(
-            markers = laneMarkers,
-            xFraction = laneXFraction,
-            modifier = Modifier.weight(1f),
-        )
-        Spacer(Modifier.width(40.dp))
-    }
-    Box(Modifier.alpha(tailAlpha)) {
-        TrendXAxisLabels(
-            chartModel.tStart,
-            chartModel.tEnd,
-            chartModel.showsYear,
-            chartModel.singleEntry,
-            chartModel.xLabelFmt,
-            secondaryColor,
-            endPadding = 40.dp
+            endPadding = 4.dp,
         )
     }
 }
 
 /** Y-axis / time-range model for a body-measurement trend plot. Reuses the
- *  weight chart model shape — trend overlay and goal rule fields stay empty.
- *  Series values are plain cm (or inches once converted by the caller). */
+ *  weight chart model shape. Series values are plain cm (or inches once
+ *  converted by the caller); the trend is the same Step-1 trailing moving
+ *  average the weight/body-fat overlay uses ([computeMetricTrend]) — sparse
+ *  site cadence yields an empty trend and the canvas falls back to the raw
+ *  readings path. */
 internal fun buildMeasurementChartModel(series: List<TrendPoint>): WeightChartModel {
     if (series.isEmpty()) {
         return WeightChartModel(
@@ -1067,6 +960,11 @@ internal fun buildMeasurementChartModel(series: List<TrendPoint>): WeightChartMo
     val showsYear = spanDays > 150 &&
         Instant.ofEpochMilli(tStart).atZone(zone).year != Instant.ofEpochMilli(tEnd).atZone(zone).year
     val xLabelFmt = LocaleFormat.monthOrDayZoned(showsYear, zone)
+    fun dayMs(day: LocalDate) = day.atStartOfDay(zone).toInstant().toEpochMilli()
+    val trend = computeMetricTrend(
+        series.map { MetricTrendInput(at = Instant.ofEpochMilli(it.timeMs), value = it.value) },
+        zone,
+    )
     return WeightChartModel(
         yMin = yMin,
         yMax = yMax,
@@ -1078,17 +976,18 @@ internal fun buildMeasurementChartModel(series: List<TrendPoint>): WeightChartMo
         showsYear = showsYear,
         xLabelFmt = xLabelFmt,
         points = downsampleTrend(series),
-        trendPoints = emptyList(),
-        trendSegments = emptyList(),
+        trendPoints = downsampleTrend(trend.map { TrendPoint(dayMs(it.day), it.value) }),
+        trendSegments = splitMetricSegments(trend)
+            .map { segment -> downsampleTrend(segment.map { TrendPoint(dayMs(it.day), it.value) }) },
         showsDots = series.size <= 31,
         goalDisplayValue = null
     )
 }
 
-/** Compact per-site circumference trend: grid, straight line, dots, x labels.
- *  No goal rule and no dashed analytical overlay — measurement cadence is far
- *  too sparse for either to mean anything. Mirrors the weight chart's render
- *  phases so several plot cards don't land on the first frame. */
+/** Compact per-site circumference trend: grid, smoothed trend line (raw
+ *  fallback when the cadence is too sparse for the moving average), muted raw
+ *  dots, x labels. No goal rule. Mirrors the weight chart's render phases so
+ *  several plot cards don't land on the first frame. */
 @Composable
 internal fun MeasurementChartCanvas(
     series: List<TrendPoint>,
@@ -1105,6 +1004,7 @@ internal fun MeasurementChartCanvas(
     val chartModel = remember(series) { buildMeasurementChartModel(series) }
     val untrackedSpans = rememberUntrackedSpans(chartModel.tStart, chartModel.tRange, untrackedDays)
     val bandColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
+    val rawDotColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
     val reveal = remember(chartModel, immediate) { Animatable(if (immediate) 1f else 0f) }
@@ -1199,23 +1099,31 @@ internal fun MeasurementChartCanvas(
             // Untracked bands sit behind every plot layer (#106).
             drawUntrackedBands(untrackedSpans, chartModel.tStart, chartModel.tRange, bandColor)
             clipRect {
-                if (offsets.isNotEmpty()) {
+                // Smoothed trend is the line; too-few-in-window cadences fall
+                // back to the raw readings path so the site still reads.
+                val segments = chartModel.trendSegments.ifEmpty {
+                    if (chartModel.points.size >= 2) listOf(chartModel.points) else emptyList()
+                }
+                for (segment in segments) {
+                    val trendOffsets = segment.map(::pointOffset)
                     drawPath(
-                        trendFillPath(offsets, h),
+                        trendFillPath(trendOffsets, h),
                         AppColors.Calorie.copy(alpha = 0.08f * reveal.value),
                     )
-                    if (offsets.size == 1) {
-                        drawCircle(AppColors.Calorie, radius = 5.5f, center = offsets.first())
+                    if (trendOffsets.size == 1) {
+                        drawCircle(AppColors.Calorie, radius = 5.5f, center = trendOffsets.first())
                     } else {
                         drawPath(
-                            trimmedStraightPath(offsets, reveal.value, pathMeasure, trimDst),
+                            trimmedStraightPath(trendOffsets, reveal.value, pathMeasure, trimDst),
                             AppColors.Calorie,
                             style = Stroke(width = 5f),
                         )
                     }
                 }
                 if (chartModel.showsDots && tailAlpha > 0f) {
-                    offsets.forEach { drawCircle(AppColors.Calorie, radius = 5.5f, center = it) }
+                    offsets.forEach {
+                        drawCircle(rawDotColor.copy(alpha = 0.75f * tailAlpha), radius = 3.dp.toPx(), center = it)
+                    }
                 }
             }
             drawInspectedDot(offsets, inspectedPoint)
@@ -1271,6 +1179,8 @@ internal fun CalorieBarChart(
     goal: Int,
     dailyGoals: Map<LocalDate, Int> = emptyMap(),
     immediate: Boolean = false,
+    /** Metric overlay (weight/body-fat trend), null = bars only (plan §4). */
+    overlay: CalorieOverlayData? = null,
     /** Day-type/untracked marker lane inputs (UI-UX §10). */
     dayTypeByDay: Map<String, String> = emptyMap(),
     untrackedDays: Set<String> = emptySet(),
@@ -1297,6 +1207,8 @@ internal fun CalorieBarChart(
         if (!immediate) reveal.animateTo(1f, tween(durationMillis = 450, easing = FastOutSlowInEasing))
     }
     val tailAlpha = ((reveal.value - 0.85f) / 0.15f).coerceIn(0f, 1f)
+    val pathMeasure = remember { PathMeasure() }
+    val trimDst = remember { Path() }
 
     var inspectedBar by remember(slots) { mutableStateOf<Int?>(null) }
     val textMeasurer = rememberTextMeasurer()
@@ -1317,7 +1229,11 @@ internal fun CalorieBarChart(
     }
     val inspectedLabel = inspectedBar?.let { index ->
         slots.getOrNull(index)?.takeIf { it.kcal != null }?.let { slot ->
-            "${xLabelFmt.format(slot.day)} · ${LocaleFormat.integer(EnergyFormat.quantity(slot.kcal ?: 0, energyUnit))} ${energyUnitLabel()}"
+            val kcalText = "${xLabelFmt.format(slot.day)} · ${LocaleFormat.integer(EnergyFormat.quantity(slot.kcal ?: 0, energyUnit))} ${energyUnitLabel()}"
+            // Combo mode: append the overlaid metric's real value for that day.
+            val overlayText = overlay?.valuesByDay?.get(slot.day)
+                ?.let { " · ${formatTick(it)}${overlay.unitSuffix}" } ?: ""
+            kcalText + overlayText
         }
     }
     // One marker per plotted slot (bucket day after roll-up), so dashes and
@@ -1325,6 +1241,19 @@ internal fun CalorieBarChart(
     val dayMarkers = slots.map { slot ->
         DayMarker(slot.day, dayTypeByDay[slot.day.toString()]?.let(typeColorOf), slot.untracked)
     }
+    val goalStepColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+    // Overlay draw domain: the plotted slot span in epoch-ms plus the series'
+    // own min–max scale (plan §4 — no dual axis; legend + tap tag carry real
+    // values). Null when off, no data, or no slots.
+    val overlayDraw = overlay
+        ?.takeIf { it.trend.isNotEmpty() || it.dots.isNotEmpty() }
+        ?.takeIf { slots.isNotEmpty() }
+        ?.let { data ->
+            val zone = ZoneId.systemDefault()
+            val startMs = slots.first().day.atStartOfDay(zone).toInstant().toEpochMilli()
+            val endMs = slots.last().day.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()
+            Triple(data, startMs, maxOf(startMs + 1, endMs))
+        }
     Column {
         Row(Modifier.fillMaxWidth().height(180.dp)) {
             BoxWithConstraints(Modifier.weight(1f).fillMaxSize()) {
@@ -1398,6 +1327,52 @@ internal fun CalorieBarChart(
                                     end = Offset(cx + 3.dp.toPx(), pxH - 2.dp.toPx()),
                                     strokeWidth = 2.dp.toPx(),
                                 )
+                            }
+                        }
+                    }
+                    // Metric combo (plan §4): per-day goal step-line over the
+                    // slots, then the normalized body trend on the same span.
+                    overlayDraw?.let { (data, startMs, endMs) ->
+                        val scale = OverlayScale.of(
+                            values = data.trend.map { it.value } + data.dots.map { it.value },
+                            goal = null,
+                        )
+                        fun oX(timeMs: Long): Float =
+                            (((timeMs - startMs).toDouble() / (endMs - startMs)).coerceIn(0.0, 1.0) * pxW).toFloat()
+                        fun oY(value: Double): Float = pxH - (scale.fraction(value) * pxH)
+                        slots.forEachIndexed { i, slot ->
+                            val target = dailyGoals[slot.day] ?: goal
+                            val y = pxH - ((target / yTop).toFloat() * pxH)
+                            val x0 = startX + i * (barWidth + gap)
+                            drawLine(
+                                color = goalStepColor,
+                                start = Offset(x0, y),
+                                end = Offset(x0 + barWidth, y),
+                                strokeWidth = 1f,
+                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(6f, 4f)),
+                            )
+                        }
+                        clipRect {
+                            val offsets = data.trend.map { Offset(oX(it.timeMs), oY(it.value)) }
+                            if (offsets.isNotEmpty()) {
+                                if (offsets.size == 1) {
+                                    drawCircle(data.color, radius = 3.dp.toPx(), center = offsets.first())
+                                } else {
+                                    drawPath(
+                                        trimmedStraightPath(offsets, reveal.value, pathMeasure, trimDst),
+                                        data.color,
+                                        style = Stroke(width = 3.dp.toPx()),
+                                    )
+                                }
+                            }
+                            if (data.dots.size <= 31 && tailAlpha > 0f) {
+                                data.dots.forEach { p ->
+                                    drawCircle(
+                                        data.color.copy(alpha = 0.55f * tailAlpha),
+                                        radius = 2.5.dp.toPx(),
+                                        center = Offset(oX(p.timeMs), oY(p.value)),
+                                    )
+                                }
                             }
                         }
                     }

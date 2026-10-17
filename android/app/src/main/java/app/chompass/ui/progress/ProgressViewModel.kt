@@ -103,6 +103,12 @@ data class ProgressUiState(
     val untrackedDays: Set<String> = emptySet(),
     /** ISO date -> resolved day-type profile id for the marker lanes (UI-UX §10). */
     val dayTypeByDay: Map<String, String> = emptyMap(),
+    /** Unified body overlay: series keys currently shown ("weight", "bodyfat", site ids). */
+    val selectedBodySeries: Set<String> = setOf(OVERLAY_KEY_WEIGHT),
+    /** Calorie-card metric overlay: "off" | "weight" | "bodyfat". */
+    val calorieOverlay: String = "off",
+    /** Range adherence rollup; null when the range has no complete logged days. */
+    val adherence: AdherenceSummary? = null,
     val goalReached: Boolean = false
 )
 
@@ -196,8 +202,19 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
                 container.prefs.weightUnit,
                 timeRange,
                 goalReached,
-            ) { base, weightUnit, selectedRange, showGoalReached ->
-                ProgressRangeInputs(base, weightUnit, selectedRange, showGoalReached)
+                combine(
+                    container.prefs.progressOverlaySeries,
+                    container.prefs.progressCalorieOverlay,
+                ) { series, calorie -> series to calorie },
+            ) { base, weightUnit, selectedRange, showGoalReached, overlayPrefs ->
+                ProgressRangeInputs(
+                    base = base,
+                    weightUnit = weightUnit,
+                    selectedRange = selectedRange,
+                    showGoalReached = showGoalReached,
+                    overlaySeriesPref = overlayPrefs.first,
+                    calorieOverlayPref = overlayPrefs.second,
+                )
             }.flatMapLatest { inputs ->
                 val (start, end) = inputs.selectedRange.dateRange()
                 // Daily aggregates (flippidity C.1): one small row per logged
@@ -214,6 +231,8 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
                         selectedRange = inputs.selectedRange,
                         showGoalReached = inputs.showGoalReached,
                         untrackedDays = untracked,
+                        overlaySeriesPref = inputs.overlaySeriesPref,
+                        calorieOverlayPref = inputs.calorieOverlayPref,
                     )
                 }
             }.mapLatest { snapshot ->
@@ -288,6 +307,25 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
+    /**
+     * Toggles one series on the unified body overlay chart and persists the
+     * selection. Weight is the anchor series — the resolved set always keeps
+     * at least it, so an empty toggle can never blank the chart.
+     */
+    fun toggleBodySeries(key: String) {
+        viewModelScope.launch {
+            val current = _ui.value.selectedBodySeries
+            val next = if (key in current) current - key else current + key
+            val resolved = if (OVERLAY_KEY_WEIGHT in next) next else next + OVERLAY_KEY_WEIGHT
+            container.prefs.setProgressOverlaySeries(resolved)
+        }
+    }
+
+    /** Calorie-card metric overlay: "off" | "weight" | "bodyfat". */
+    fun setCalorieOverlay(value: String) {
+        viewModelScope.launch { container.prefs.setProgressCalorieOverlay(value) }
+    }
+
     class Factory(private val container: AppContainer) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
@@ -300,6 +338,8 @@ private data class ProgressRangeInputs(
     val weightUnit: String,
     val selectedRange: TimeRange,
     val showGoalReached: Boolean,
+    val overlaySeriesPref: Set<String>?,
+    val calorieOverlayPref: String?,
 )
 
 private data class ProgressSnapshot(
@@ -310,6 +350,10 @@ private data class ProgressSnapshot(
     val selectedRange: TimeRange,
     val showGoalReached: Boolean,
     val untrackedDays: Set<String> = emptySet(),
+    /** Unified body overlay selection; null = apply the data-dependent default. */
+    val overlaySeriesPref: Set<String>? = null,
+    /** Calorie-card metric overlay; null = apply the data-dependent default. */
+    val calorieOverlayPref: String? = null,
 )
 
 private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()): ProgressUiState {
@@ -422,6 +466,24 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
 
         weightStats = filteredWeights.toWeightStats(),
         bodyFatStats = filteredBodyFats.toBodyFatStats(),
+        selectedBodySeries = overlaySeriesPref
+            ?: buildSet {
+                if (filteredWeights.isNotEmpty()) add(OVERLAY_KEY_WEIGHT)
+                if (filteredBodyFats.isNotEmpty()) add(OVERLAY_KEY_BODY_FAT)
+            }.ifEmpty { setOf(OVERLAY_KEY_WEIGHT) },
+        calorieOverlay = calorieOverlayPref
+            ?: if (filteredWeights.isNotEmpty()) "weight" else "off",
+        adherence = ProgressAdherence
+            .computeAdherence(
+                slots = calorieSlots,
+                goals = dailyCalorieGoals,
+                dayTypeByDay = dayTypeByDay,
+                untrackedDays = untrackedDays,
+                phases = base.profile?.goalPhases.orEmpty(),
+                range = rangeStartDay..rangeEndDay,
+                today = anchorDate,
+            )
+            .takeIf { it.loggedDays > 0 },
         goalReached = showGoalReached
     )
 }

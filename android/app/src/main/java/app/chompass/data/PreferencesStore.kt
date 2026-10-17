@@ -423,6 +423,10 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setProgressLastRangeId(v: String) = setProgressLastRangeIdImpl(v)
     val progressMeasurementSites: Flow<Set<String>> get() = progressMeasurementSitesImpl
     suspend fun setProgressMeasurementSites(sites: Set<String>) = setProgressMeasurementSitesImpl(sites)
+    val progressOverlaySeries: Flow<Set<String>?> get() = progressOverlaySeriesImpl
+    suspend fun setProgressOverlaySeries(keys: Set<String>) = setProgressOverlaySeriesImpl(keys)
+    val progressCalorieOverlay: Flow<String?> get() = progressCalorieOverlayImpl
+    suspend fun setProgressCalorieOverlay(v: String) = setProgressCalorieOverlayImpl(v)
     val progressNutrientAverages: Flow<Boolean> get() = progressNutrientAveragesImpl
     suspend fun setProgressNutrientAverages(v: Boolean) = setProgressNutrientAveragesImpl(v)
     val progressNutrientAveragesSelection: Flow<Set<String>> get() = progressNutrientAveragesSelectionImpl
