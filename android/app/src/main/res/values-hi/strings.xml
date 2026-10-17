@@ -654,6 +654,7 @@
     <string name="queue_run_with">इसके साथ चलाएँ…</string>
     <string name="queue_last_attempt">आख़िरी कोशिश: %1$s · %2$s</string>
     <string name="queue_run_with_direct_note">%1$s को सीधे उपयोग किया गया — फ़ॉलबैक प्रोफ़ाइल छोड़ दिया गया।</string>
+    <string name="queue_run_refused_busy">एक और विश्लेषण पहले से चल रहा है। इसके पूरा होने का इंतज़ार करें, फिर प्रविष्टि को फिर से चलाएँ।</string>
     <string name="widget_all_metrics_label">Chompass आज</string>
     <string name="widget_all_metrics_description">आज की कैलोरी, प्रोटीन, कार्ब्स और फैट एक ही विजेट में देखें।</string>
     <string name="settings_needs_health_connect">Health Connect ज़रूरी है</string>

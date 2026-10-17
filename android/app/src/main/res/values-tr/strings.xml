@@ -1157,6 +1157,7 @@
     <string name="queue_run_with">Şununla çalıştır…</string>
     <string name="queue_last_attempt">Son deneme: %1$s · %2$s</string>
     <string name="queue_run_with_direct_note">%1$s doğrudan kullanıldı — yedek profil atlandı.</string>
+    <string name="queue_run_refused_busy">Başka bir analiz şu anda çalışıyor. Bitmesini bekleyin, sonra kaydı yeniden çalıştırın.</string>
 
     <string name="settings_health_connect">Health Connect</string>
     <string name="settings_manage_health_access">Health Connect erişimini yönet</string>

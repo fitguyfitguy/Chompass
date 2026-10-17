@@ -652,6 +652,7 @@
     <string name="queue_run_with">Ejecutar con…</string>
     <string name="queue_last_attempt">Último intento: %1$s · %2$s</string>
     <string name="queue_run_with_direct_note">«%1$s» se usó directamente; el perfil de respaldo se omitió.</string>
+    <string name="queue_run_refused_busy">Ya hay otro análisis en curso. Espera a que termine y vuelve a ejecutar la entrada.</string>
     <string name="widget_all_metrics_label">Chompass Hoy</string>
     <string name="widget_all_metrics_description">Mira las calorías, proteínas, carbohidratos y grasas de hoy en un widget.</string>
     <string name="settings_needs_health_connect">Requiere Health Connect</string>

@@ -655,6 +655,7 @@
     <string name="queue_run_with">使用…运行</string>
     <string name="queue_last_attempt">上次尝试：%1$s · %2$s</string>
     <string name="queue_run_with_direct_note">已直接使用“%1$s”，已跳过备用配置文件。</string>
+    <string name="queue_run_refused_busy">另一个分析已在运行中。请等待其完成，然后再次运行该条目。</string>
     <string name="widget_all_metrics_label">Chompass 今天</string>
     <string name="widget_all_metrics_description">在一个小部件中查看今天的卡路里、蛋白质、碳水和脂肪。</string>
     <string name="settings_needs_health_connect">需要 Health Connect</string>

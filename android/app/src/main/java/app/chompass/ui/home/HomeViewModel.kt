@@ -836,8 +836,8 @@ private fun elapsedDayFraction(day: LocalDate): Float {
  * back), so an older day's read can land after a newer one and overwrite the
  * snapshot — the "active calories of the previous day stick" bug (Codeberg
  * #22). Each refresh calls [begin]; only the read holding the current token
- * may write the snapshot ([isCurrent]). Mirrors the analysisGeneration idiom
- * used for food analysis.
+ * may write the snapshot ([isCurrent]). Mirrors the generation idiom used for food
+ * analysis ([AnalysisRunGate]).
  */
 internal class ActivitySnapshotRefreshGuard {
     private var generation = 0
@@ -847,6 +847,40 @@ internal class ActivitySnapshotRefreshGuard {
 
     /** True only for the most recently begun refresh. */
     fun isCurrent(gen: Int): Boolean = gen == generation
+}
+
+/**
+ * Live-run slot for food analysis (Codeberg #136). Generation-gated like
+ * [ActivitySnapshotRefreshGuard], but also tracks whether a run currently
+ * holds the slot: only a genuinely in-flight run refuses a new one, so a
+ * stale busy flag can no longer wedge every later run.
+ */
+internal class AnalysisRunGate {
+    private val lock = Any()
+    private var inFlight = false
+    private var generation = 0
+
+    /** Begins a run unless one is in flight; returns the new generation or null. */
+    fun tryBegin(): Int? = synchronized(lock) {
+        if (inFlight) return null
+        inFlight = true
+        ++generation
+    }
+
+    /** Cheap pre-probe for UI affordances; [tryBegin] stays authoritative. */
+    fun canBegin(): Boolean = synchronized(lock) { !inFlight }
+
+    /** Supersedes the current run: bumps the generation and releases the slot. */
+    fun invalidate() = synchronized(lock) {
+        ++generation
+        inFlight = false
+    }
+
+    /** Releases the slot only if [gen] is still the current run. */
+    fun end(gen: Int) = synchronized(lock) { if (gen == generation) inFlight = false }
+
+    /** Callback guard: true while [gen] is the current run. */
+    fun isCurrent(gen: Int) = synchronized(lock) { gen == generation }
 }
 
 class HomeViewModel(private val container: AppContainer) : ViewModel() {
@@ -882,9 +916,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         const val ADD_FOOD_SAVED_ROW_CAP = 60
     }
 
-    @Volatile
-    private var analysisInFlight = false
-    private var analysisGeneration = 0
+    /** Live-run slot for food analysis; the busy UI flags are no longer a gate (Codeberg #136). */
+    private val analysisRunGate = AnalysisRunGate()
     /** Last-requested-wins guard for [refreshActivitySnapshot] (Codeberg #22). */
     private val activitySnapshotGuard = ActivitySnapshotRefreshGuard()
 
@@ -1000,41 +1033,38 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     private fun beginAnalysis(
         phased: Boolean = false,
         configure: (HomeUiState) -> HomeUiState,
-    ): AnalysisStart? =
-        synchronized(this) {
-            if (analysisInFlight || _ui.value.isEntryAnalysisBusy) return null
-            analysisInFlight = true
-            val gen = ++analysisGeneration
-            val previousDraftImage = _ui.value.pendingDraftImageFilename
-            container.analyzingFood.value = true
-            _ui.value = configure(
-                _ui.value.copy(
-                    error = null,
-                    errorNotFoundBarcode = null,
-                    errorDetail = null,
-                    pendingAnalysis = null,
-                    pendingIdentityName = null,
-                    pendingReviewSource = null,
-                    pendingPortionPreConfirmed = false,
-                    analyzing = true,
-                    analysisPhase = if (phased) EntryAnalysisPhase.Preparing else null,
-                    analysisPreview = null,
-                    analysisPartial = null,
-                    inferringUnits = false,
-                )
+    ): AnalysisStart? {
+        // Gate only on the live-run slot: the busy UI flags are overwritten by
+        // the configure copy below, so refusing on them wedges stale state
+        // instead of real runs (Codeberg #136).
+        val gen = analysisRunGate.tryBegin() ?: return null
+        val previousDraftImage = _ui.value.pendingDraftImageFilename
+        container.analyzingFood.value = true
+        _ui.value = configure(
+            _ui.value.copy(
+                error = null,
+                errorNotFoundBarcode = null,
+                errorDetail = null,
+                pendingAnalysis = null,
+                pendingIdentityName = null,
+                pendingReviewSource = null,
+                pendingPortionPreConfirmed = false,
+                analyzing = true,
+                analysisPhase = if (phased) EntryAnalysisPhase.Preparing else null,
+                analysisPreview = null,
+                analysisPartial = null,
+                inferringUnits = false,
             )
-            AnalysisStart(gen, previousDraftImage)
-        }
+        )
+        return AnalysisStart(gen, previousDraftImage)
+    }
 
     /**
      * Invalidate any in-flight analysis so a tip / add-photo restart can call
      * [beginAnalysis] immediately. Keeps staged image bytes for re-analyze.
      */
     private fun cancelInFlightAnalysisKeepInput() {
-        synchronized(this) {
-            ++analysisGeneration
-            analysisInFlight = false
-        }
+        analysisRunGate.invalidate()
         container.analyzingFood.value = false
         _ui.update { it.copy(
             pendingAnalysis = null,
@@ -1052,7 +1082,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     private fun onFoodAnalysisProgress(generation: Int, progress: FoodAnalysisProgress) {
-        if (generation != analysisGeneration) return
+        if (!analysisRunGate.isCurrent(generation)) return
         when (progress) {
             is FoodAnalysisProgress.Phase -> {
                 _ui.update { it.copy(analysisPhase = progress.phase) }
@@ -1101,7 +1131,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     private fun failAnalysis(gen: Int, message: String?, notFoundBarcode: String? = null, detail: String? = null) {
-        if (gen != analysisGeneration) return
+        if (!analysisRunGate.isCurrent(gen)) return
         autoSaveFailedInput(message)
         _ui.update { it.copy(
             analyzing = false,
@@ -1165,11 +1195,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     private fun endAnalysis(gen: Int) {
-        synchronized(this) {
-            if (gen != analysisGeneration) return
-            analysisInFlight = false
-        }
-        if (gen == analysisGeneration) {
+        analysisRunGate.end(gen)
+        if (analysisRunGate.isCurrent(gen)) {
             container.analyzingFood.value = false
         }
     }
@@ -1191,6 +1218,11 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
+    /**
+     * Shared begin → discard draft → try/catch AiError → end envelope for food
+     * analysis entry points. Returns true when the run started; false when
+     * [beginAnalysis] refused it (slot busy — callers may surface that).
+     */
     private suspend fun withFoodAnalysis(
         phased: Boolean = false,
         defaultErrorRes: Int = R.string.error_analysis_failed,
@@ -1199,12 +1231,14 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         aiErrorSuffix: String? = null,
         configure: (HomeUiState) -> HomeUiState,
         block: suspend (AnalysisStart) -> Unit,
-    ) {
-        val start = beginAnalysis(phased = phased, configure = configure) ?: return
-        discardPendingDraft(start.previousDraftImage)
+    ): Boolean {
+        val start = beginAnalysis(phased = phased, configure = configure) ?: return false
         // A fresh analysis supersedes any recovered review chip.
         _ui.update { it.copy(recoveredReview = null) }
         try {
+            // Inside the try: a failed draft discard (DataStore write) must not
+            // strand the run slot (#136) — the finally below always releases it.
+            discardPendingDraft(start.previousDraftImage)
             block(start)
         } catch (e: AiError) {
             val msg = listOf(e.userMessage(container.appContext), aiErrorSuffix)
@@ -1225,6 +1259,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         } finally {
             if (shouldEnd()) endAnalysis(start.generation)
         }
+        return true
     }
 
     init {
@@ -2525,10 +2560,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             )
             val needsReview = result.resolutions.any { it.needsUserChoice }
             if (needsReview) {
-                if (start.generation != analysisGeneration) return@runFoodAnalysis
-                synchronized(this@HomeViewModel) {
-                    analysisInFlight = false
-                }
+                if (!analysisRunGate.isCurrent(start.generation)) return@runFoodAnalysis
+                analysisRunGate.end(start.generation)
                 container.analyzingFood.value = false
                 _ui.update { it.copy(
                     pendingGroundedReview = PendingGroundedReview(
@@ -3132,10 +3165,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         // persisted draft for the recovered-review chip instead of discarding.
         // Saved Meals / favorites reviews cost no AI call and stay dismissible.
         val keepForRecovery = snapshot.analysisReadyForEdit && snapshot.pendingReviewSource == null
-        synchronized(this) {
-            ++analysisGeneration
-            analysisInFlight = false
-        }
+        analysisRunGate.invalidate()
         _ui.update { it.copy(
             pendingAnalysis = null,
             pendingIdentityName = null,
@@ -3328,7 +3358,10 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     private suspend fun runQueuedItemInternal(id: UUID, profileOverride: AiProfile? = null): Boolean {
         val item = container.analysisQueue.item(id) ?: return false
         if (!item.status.reRunnable) return false
-        if (_ui.value.isEntryAnalysisBusy) return false
+        if (!analysisRunGate.canBegin()) {
+            _ui.update { it.copy(error = container.appContext.getString(R.string.queue_run_refused_busy)) }
+            return false
+        }
         _ui.update { it.copy(queueRunningId = id, showAnalysisQueue = false) }
         try {
             _selectedDate.value = item.targetDate
@@ -3342,7 +3375,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 queuedEntryWithAttemptRecord(item, cfg.profile, hasImages = images.isNotEmpty())
             )
             val note = item.note?.trim()?.takeIf { it.isNotEmpty() }
-            withFoodAnalysis(
+            val started = withFoodAnalysis(
                 phased = true,
                 // "Run with…" skips the global fallback chain on purpose — say
                 // so on failures (rate-limit surprise on the queue sheet).
@@ -3380,6 +3413,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                     source = item.source,
                     generation = start.generation,
                 )
+            }
+            // Lost the race between the probe above and beginAnalysis: say
+            // why instead of failing silently (#136).
+            if (!started) {
+                _ui.update { it.copy(error = container.appContext.getString(R.string.queue_run_refused_busy)) }
+                return false
             }
             return _ui.value.pendingAnalysis != null
         } finally {
@@ -3767,7 +3806,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         generation: Int,
         portionPreConfirmed: Boolean = false,
     ) {
-        if (generation != analysisGeneration) return
+        if (!analysisRunGate.isCurrent(generation)) return
         // Scan / AI-analysis identity reuse (#98): a re-encountered saved food
         // (same barcode, or the name *is* a saved identity) keeps its raw name
         // so the log merges into that identity instead of forking into
@@ -3790,7 +3829,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 targetDate = _selectedDate.value
             )
         )
-        if (generation != analysisGeneration) return
+        if (!analysisRunGate.isCurrent(generation)) return
         resolveQueueEntryOnSuccess(uniqueAnalysis, source)
         _ui.update { it.copy(
             analyzing = false,

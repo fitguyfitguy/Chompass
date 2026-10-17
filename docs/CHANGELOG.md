@@ -20,6 +20,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Fixed
 
 - **Weigh-in and body-fat reminders skip a day you already logged** (Android): the reminder does not fire when that day's weight or body fat is already entered. The next reminder stays at the time you chose. Closes Codeberg [#133](https://codeberg.org/fitguy/Chompass/issues/133) by [@NiklasMM](https://codeberg.org/NiklasMM).
+- **Queue retries no longer stay stuck after a failed run** (Android): after an entry analysis failed once, "Run with…" retries from the analysis queue could do nothing, leaving the previous error dialog on screen. A retry now starts unless another analysis is genuinely running, and a refused retry says so instead of failing silently. Closes Codeberg [#136](https://codeberg.org/fitguy/Chompass/issues/136).
 
 ## [5.6.0] - 2026-10-15
 

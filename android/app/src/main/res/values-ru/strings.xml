@@ -757,6 +757,7 @@
     <string name="queue_run_with">Запустить через…</string>
     <string name="queue_last_attempt">Последняя попытка: %1$s · %2$s</string>
     <string name="queue_run_with_direct_note">«%1$s» использован напрямую — резервный профиль пропущен.</string>
+    <string name="queue_run_refused_busy">Другой анализ уже выполняется. Дождитесь его завершения, а затем снова запустите запись.</string>
     <string name="widget_all_metrics_label">Chompass Сегодня</string>
     <string name="widget_all_metrics_description">Смотри калории, белки, углеводы и жиры за сегодня в одном виджете.</string>
     <string name="settings_needs_health_connect">Требуется Health Connect</string>

@@ -646,6 +646,7 @@
     <string name="queue_run_with">Rulează cu…</string>
     <string name="queue_last_attempt">Ultima încercare: %1$s · %2$s</string>
     <string name="queue_run_with_direct_note">„%1$s” a fost folosit direct — profilul de rezervă a fost omis.</string>
+    <string name="queue_run_refused_busy">O altă analiză rulează deja. Așteaptă să se termine, apoi rulează din nou intrarea.</string>
     <string name="widget_all_metrics_label">Chompass Astăzi</string>
     <string name="widget_all_metrics_description">Vezi caloriile, proteinele, carbohidrații și grăsimile de azi într-un singur widget.</string>
     <string name="settings_needs_health_connect">Necesită Health Connect</string>
