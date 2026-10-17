@@ -4,6 +4,16 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [5.7.1] - 2026-10-17
+
+### Added
+
+- **Analysis errors show the provider's detail** (Android): when an entry analysis fails, the error dialog now adds a copyable line under the friendly message with the HTTP status and the provider's own error text (or the underlying exception for other failures), so a bad key, a quota limit, or a provider outage is visible right in the dialog. Closes Codeberg [#137](https://codeberg.org/fitguy/Chompass/issues/137).
+
+### Fixed
+
+- **Queue retries no longer stay stuck after a failed run** (Android): after an entry analysis failed once, "Run with…" retries from the analysis queue could do nothing, leaving the previous error dialog on screen. A retry now starts unless another analysis is genuinely running, and a refused retry says so instead of failing silently. Note-only queue entries (no photo) run again at all: they went through the photo analysis path, which rejected them before any provider call. Closes Codeberg [#136](https://codeberg.org/fitguy/Chompass/issues/136).
+
 ## [5.7.0] - 2026-10-17
 
 ### Added
@@ -20,7 +30,6 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Fixed
 
 - **Weigh-in and body-fat reminders skip a day you already logged** (Android): the reminder does not fire when that day's weight or body fat is already entered. The next reminder stays at the time you chose. Closes Codeberg [#133](https://codeberg.org/fitguy/Chompass/issues/133) by [@NiklasMM](https://codeberg.org/NiklasMM).
-- **Queue retries no longer stay stuck after a failed run** (Android): after an entry analysis failed once, "Run with…" retries from the analysis queue could do nothing, leaving the previous error dialog on screen. A retry now starts unless another analysis is genuinely running, and a refused retry says so instead of failing silently. Note-only queue entries (no photo) run again at all: they went through the photo analysis path, which rejected them before any provider call. Closes Codeberg [#136](https://codeberg.org/fitguy/Chompass/issues/136).
 
 ## [5.6.0] - 2026-10-15
 
