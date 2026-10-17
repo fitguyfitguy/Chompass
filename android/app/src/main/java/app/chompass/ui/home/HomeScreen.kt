@@ -97,6 +97,7 @@ import app.chompass.models.CaffeineEntry
 import app.chompass.models.NicotineEntry
 import app.chompass.models.WaterAmountFormat
 import app.chompass.models.builtinCaffeineDefaultMg
+import app.chompass.models.HomeCalorieHeroLayout
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.MilkKind
 import app.chompass.models.WaterEntry
