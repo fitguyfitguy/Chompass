@@ -152,6 +152,27 @@ internal suspend fun PreferencesStore.setProgressMeasurementSitesImpl(sites: Set
     dataStore.edit { it[Keys.PROGRESS_MEASUREMENT_SITES] = sites }
 }
 
+/** Valid calorie-overlay storage values; anything else reads/writes as "off". */
+private val CalorieOverlayValues = setOf("off", "weight", "bodyfat")
+
+/**
+ * Unified body overlay chart series: "weight", "bodyfat", and measurement-site
+ * storage ids. Null = never set — the caller applies the data-dependent
+ * default (weight + body fat when body-fat data exists).
+ */
+internal val PreferencesStore.progressOverlaySeriesImpl: Flow<Set<String>?> get() =
+    dataStore.data.map { it[Keys.PROGRESS_OVERLAY_SERIES] }
+internal suspend fun PreferencesStore.setProgressOverlaySeriesImpl(keys: Set<String>) {
+    dataStore.edit { it[Keys.PROGRESS_OVERLAY_SERIES] = keys }
+}
+
+/** Calorie-card metric overlay ("off" | "weight" | "bodyfat"); null = unset. */
+internal val PreferencesStore.progressCalorieOverlayImpl: Flow<String?> get() =
+    dataStore.data.map { prefs -> prefs[Keys.PROGRESS_CALORIE_OVERLAY]?.takeIf { it in CalorieOverlayValues } }
+internal suspend fun PreferencesStore.setProgressCalorieOverlayImpl(v: String) {
+    dataStore.edit { it[Keys.PROGRESS_CALORIE_OVERLAY] = if (v in CalorieOverlayValues) v else "off" }
+}
+
 /** Progress fiber/sugar/sodium averages; default off (incomplete barcode/photo micros). */
 internal val PreferencesStore.progressNutrientAveragesImpl: Flow<Boolean> get() =
     dataStore.data.map { it[Keys.PROGRESS_NUTRIENT_AVERAGES] ?: false }

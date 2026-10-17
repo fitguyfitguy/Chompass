@@ -581,6 +581,7 @@ open class MainActivity : ComponentActivity() {
                     keto = actions.seedKetoSettings,
                     busyHome = actions.seedBusyHome,
                     macroCycle = actions.seedFullMacroCycle,
+                    goalPhases = actions.seedGoalPhases,
                 )
             } else {
                 if (actions.seedTestData) container.testDataSeeder.seedYear()
@@ -590,6 +591,10 @@ open class MainActivity : ComponentActivity() {
                 if (actions.seedMacroCycle) {
                     runCatching { container.testDataSeeder.seedMacroCycle() }
                         .onFailure { Log.e(PHOTO_IMPORT_TAG, "seedMacroCycle failed", it) }
+                }
+                if (actions.seedGoalPhases) {
+                    runCatching { container.testDataSeeder.seedGoalPhases() }
+                        .onFailure { Log.e(PHOTO_IMPORT_TAG, "seedGoalPhases failed", it) }
                 }
             }
             if (actions.seedAnalysisQueue) {

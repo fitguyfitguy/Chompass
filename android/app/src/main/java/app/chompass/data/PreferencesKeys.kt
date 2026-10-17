@@ -184,6 +184,10 @@ internal object Keys {
         val PROGRESS_LAST_RANGE_ID = stringPreferencesKey("progressLastRangeId")
         /** Body-measurement sites with a trend plot on the Progress tab; empty = plots off. */
         val PROGRESS_MEASUREMENT_SITES = stringSetPreferencesKey("progressMeasurementSites")
+        /** Unified body overlay chart series ("weight", "bodyfat", site ids); null = unset. */
+        val PROGRESS_OVERLAY_SERIES = stringSetPreferencesKey("progressOverlaySeries")
+        /** Calorie-card metric overlay: "off" | "weight" | "bodyfat"; null = unset. */
+        val PROGRESS_CALORIE_OVERLAY = stringPreferencesKey("progressCalorieOverlay")
         /** Codeberg #75: Progress nutrient averages; default off. */
         val PROGRESS_NUTRIENT_AVERAGES = booleanPreferencesKey("progressNutrientAverages")
         /** Codeberg #75: which nutrients Progress averages (HomeTopNutrient storage keys, macros excluded). */

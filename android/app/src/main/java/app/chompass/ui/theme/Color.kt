@@ -227,6 +227,21 @@ object AppColors {
     val Calorie: Color
         get() = CalorieStart
 
+    /**
+     * Fixed chart-series palette for the unified body overlay chart: a single
+     * set for light and dark, Material-400 family per the day-type palette
+     * convention (DayTypePalette.kt). [0] is body fat; measurement sites cycle
+     * [1..size-1]. Weight keeps [Calorie] (the theme accent) so the primary
+     * metric stays visually first.
+     */
+    val ChartSeries: List<Color> = listOf(
+        Color(0xFFAB47BC), // purple — body fat
+        Color(0xFF42A5F5), // blue
+        Color(0xFFFFB300), // amber
+        Color(0xFFEC407A), // pink
+        Color(0xFF66BB6A), // green
+    )
+
     val Protein: Color
         get() = activeThemeColor.macroPalette.protein
 

@@ -13,6 +13,7 @@ import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Equalizer
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FilterAlt
+import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material.icons.outlined.Key
@@ -174,6 +175,8 @@ internal val SETTINGS_INDEX: List<SettingsIndexEntry> = listOf(
         R.array.settings_search_kw_calc_methods, ChompassRoutes.CALCULATION_METHODS, Icons.Outlined.Calculate),
     SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_day_types_title,
         R.array.settings_search_kw_day_types, ChompassRoutes.SETTINGS_DAY_TYPES, Icons.Outlined.CalendarToday),
+    SettingsIndexEntry(R.string.settings_section_goals, R.string.settings_goal_phases_title,
+        R.array.settings_search_kw_goal_phases, ChompassRoutes.GOAL_PHASES, Icons.Outlined.Flag),
 
     // — Calories & Macros —
     SettingsIndexEntry(R.string.settings_section_nutrition_targets, R.string.settings_energy_goals,

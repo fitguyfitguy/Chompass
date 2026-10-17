@@ -128,6 +128,9 @@ fun GoalsSettingsScreen(
         // reference, not a goal).
         RelatedLinks(
             rows = listOf(
+                RelatedLink(label = stringResource(R.string.settings_goal_phases_title)) {
+                    nav.navigate(ChompassRoutes.GOAL_PHASES)
+                },
                 RelatedLink(label = stringResource(R.string.settings_water_title)) {
                     nav.navigate(ChompassRoutes.waterRoute("goals"))
                 },

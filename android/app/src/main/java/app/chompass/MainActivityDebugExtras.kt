@@ -38,6 +38,8 @@ internal data class DebugIntentActions(
     val seedMacroCycle: Boolean = false,
     /** Debug-only: adds the #60 day-type plan to seed_full (ignored with keto). */
     val seedFullMacroCycle: Boolean = false,
+    /** Debug-only: goal-phase examples (Progress v2); composes with seed_full. */
+    val seedGoalPhases: Boolean = false,
     val seedActiveCalories: Boolean = false,
     /** Debug-only: seed the analysis queue + prompt history (Codeberg #53). */
     val seedAnalysisQueue: Boolean = false,
@@ -170,6 +172,7 @@ internal fun consumeDebugIntentExtras(
         seedKetoSettings = intent.getBooleanExtra("seed_keto_settings", false),
         seedMacroCycle = BuildConfig.DEBUG && intent.getBooleanExtra("seed_macro_cycle", false),
         seedFullMacroCycle = BuildConfig.DEBUG && intent.getBooleanExtra("macro_cycle", false),
+        seedGoalPhases = BuildConfig.DEBUG && intent.getBooleanExtra("seed_goal_phases", false),
         seedActiveCalories = intent.getBooleanExtra("seed_active_calories", false),
         seedAnalysisQueue = BuildConfig.DEBUG && intent.getBooleanExtra("seed_analysis_queue", false),
         seedGapFixture = BuildConfig.DEBUG && intent.getBooleanExtra("seed_gap_fixture", false),
@@ -257,6 +260,7 @@ internal fun consumeDebugIntentExtras(
     if (actions.seedKetoSettings) intent.removeExtra("seed_keto_settings")
     if (actions.seedMacroCycle) intent.removeExtra("seed_macro_cycle")
     if (actions.seedFullMacroCycle) intent.removeExtra("macro_cycle")
+    if (actions.seedGoalPhases) intent.removeExtra("seed_goal_phases")
     if (actions.seedAnalysisQueue) intent.removeExtra("seed_analysis_queue")
     if (actions.seedGapFixture) intent.removeExtra("seed_gap_fixture")
     if (actions.seedDefects) intent.removeExtra("seed_defects")

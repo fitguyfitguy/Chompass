@@ -1004,6 +1004,8 @@
     <string name="progress_range_all">All</string>
 
     <string name="progress_weight_section">Weight</string>
+    <string name="progress_body_section">Body</string>
+    <string name="progress_overlay_off">Off</string>
     <string name="progress_log_weight">Log Weight</string>
     <string name="progress_stat_current">Current</string>
     <string name="progress_stat_goal">Goal</string>
@@ -1022,6 +1024,7 @@
     <string name="progress_calories_section">Calories</string>
     <string name="progress_avg_format">Avg: %1$d %2$s</string>
     <string name="progress_no_food">No food logged yet</string>
+    <string name="progress_no_entries_in_range">No entries in this range</string>
     <plurals name="untracked_days_excluded">
         <item quantity="one">%1$d untracked day excluded</item>
         <item quantity="other">%1$d untracked days excluded</item>
@@ -1256,6 +1259,15 @@
         <item>rest day</item>
         <item>schedule</item>
         <item>weekdays</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_phases">
+        <item>cut</item>
+        <item>bulk</item>
+        <item>maintain</item>
+        <item>phase</item>
+        <item>shred</item>
+        <item>weight loss phase</item>
+        <item>muscle gain phase</item>
     </string-array>
     <string-array name="settings_search_kw_calc_methods">
         <item>formula</item>
@@ -2195,6 +2207,39 @@
     <string name="settings_day_types_name_taken">This name is already used</string>
     <string name="settings_day_types_copy_current">Copy from current goals</string>
     <string name="settings_day_types_floor_warning">This target sits at your calorie floor (%1$d %2$s). Aggressive for a day type.</string>
+    <!-- Goal phases (Progress v2): dedicated editor + adherence read-outs. -->
+    <string name="settings_goal_phases_title">Goal phases</string>
+    <string name="settings_goal_phases_summary_format">%1$d phases</string>
+    <string name="settings_goal_phases_intro">Plan cut, maintain, or bulk windows. A phase applies its targets to every day in its range, like a day type with dates.</string>
+    <string name="settings_goal_phases_add">Add phase</string>
+    <string name="settings_goal_phases_edit">Edit phase</string>
+    <string name="settings_goal_phases_none">No phases yet. Add one to plan a cut or bulk window.</string>
+    <string name="settings_goal_phases_name_placeholder">e.g. Shred</string>
+    <string name="settings_goal_phases_start">Start</string>
+    <string name="settings_goal_phases_end">End</string>
+    <string name="settings_goal_phases_targets">Targets</string>
+    <string name="settings_goal_phases_range_clip_hint">Ranges are clipped to the %1$d-day planning window, like day types.</string>
+    <string name="settings_goal_phases_delete">Delete phase</string>
+    <string name="settings_goal_phases_delete_title">Delete “%1$s”?</string>
+    <string name="settings_goal_phases_delete_message">Days in the range fall back to your default targets. Manual day switches stay.</string>
+    <string name="settings_goal_phases_error_blank_name">Enter a name</string>
+    <string name="settings_goal_phases_error_bad_range">The end date must be on or after the start date</string>
+    <string name="settings_goal_phases_error_too_long">The range is longer than %1$d days</string>
+    <string name="settings_goal_phases_error_no_slot">Your day types plan is full (7 day types). Free a slot first.</string>
+    <string name="phase_intent_cut">Cut</string>
+    <string name="phase_intent_maintain">Maintain</string>
+    <string name="phase_intent_bulk">Bulk</string>
+    <string name="settings_goal_phases_adherence_format">avg %1$s/day · net %2$s</string>
+    <string name="settings_goal_phases_overlap_days">%1$d days logged</string>
+    <!-- Progress adherence card (Progress v2). -->
+    <string name="progress_adherence_title">Adherence</string>
+    <string name="progress_adherence_headline_format">%1$s avg vs %2$s goal · %3$s/day</string>
+    <string name="progress_adherence_net_format">net %1$s</string>
+    <string name="progress_adherence_band_format">%1$d%% on target · %2$d under · %3$d over</string>
+    <string name="progress_adherence_by_day_type">By day type</string>
+    <string name="progress_adherence_by_phase">By phase</string>
+    <string name="progress_adherence_row_format">%1$s avg · %2$s · %3$d days</string>
+    <string name="progress_adherence_overlap_days">%1$d days</string>
     <string name="settings_day_types_delete">Delete day type</string>
     <string name="settings_day_types_delete_used_title">Delete “%1$s”?</string>
     <string name="settings_day_types_delete_used_message">It is used in your schedule. Choose what happens to those days.</string>

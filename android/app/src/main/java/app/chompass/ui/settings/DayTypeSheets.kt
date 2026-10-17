@@ -443,7 +443,7 @@ internal fun DayTypeProfileEditorSheet(
 }
 
 @Composable
-private fun EditorWheelLabel(label: String, unit: String) {
+internal fun EditorWheelLabel(label: String, unit: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             label,

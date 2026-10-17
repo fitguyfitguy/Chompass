@@ -54,7 +54,12 @@ data class UserProfile(
     /** Macro day-type plan (Codeberg #60): named profiles with explicit targets assigned by
      *  manual toggle / weekday map / repeating cycle. Null = feature off (base targets
      *  everywhere). Rides this object through sync-1.2 + backup; see MacroPlanResolver. */
-    val macroPlan: MacroPlan? = null
+    val macroPlan: MacroPlan? = null,
+    /** Goal phases (Progress v2): dated cut/maintain/bulk windows applied via
+     *  macroPlan day-type profiles + dayAssignments — no new journal semantics.
+     *  Default-empty so old payloads decode; rides the same sync/backup profile
+     *  envelope as [macroPlan]. */
+    val goalPhases: List<GoalPhase> = emptyList()
 ) {
     val displayName: String get() = name?.takeIf { it.isNotEmpty() } ?: "User"
 

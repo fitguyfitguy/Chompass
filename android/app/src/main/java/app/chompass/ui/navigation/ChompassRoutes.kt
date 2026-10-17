@@ -24,6 +24,7 @@ object ChompassRoutes {
     const val OPTIONAL_NUTRIENT_GOALS = "settings/optional-nutrient-goals"
     const val HOME_DISPLAY = "settings/home-display"
     const val CUSTOMIZE_PROGRESS = "settings/customize-progress"
+    const val GOAL_PHASES = "settings/goal-phases"
     const val CALCULATION_METHODS = "settings/calculation-methods"
     const val BODY_MEASUREMENTS = "settings/body-measurements"
     const val SETTINGS_FOOD = "settings/food"
@@ -77,6 +78,7 @@ object ChompassRoutes {
         OPTIONAL_NUTRIENT_GOALS,
         HOME_DISPLAY,
         CUSTOMIZE_PROGRESS,
+        GOAL_PHASES,
         CALCULATION_METHODS,
         BODY_MEASUREMENTS,
         SETTINGS_FOOD,

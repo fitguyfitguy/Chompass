@@ -20,6 +20,13 @@ import app.chompass.models.KetoCarbMode
 import app.chompass.models.MacroDayProfile
 import app.chompass.models.MacroPlan
 import app.chompass.models.MacroPlanEdit
+import app.chompass.models.MacroPlanResolver
+import app.chompass.models.GoalJournal
+import app.chompass.models.GoalPhase
+import app.chompass.models.GoalPhaseEdit
+import app.chompass.models.PhaseEditError
+import app.chompass.ui.progress.ProgressAdherence
+import app.chompass.ui.progress.buildCalorieSlots
 import app.chompass.models.MacroPlanMode
 import app.chompass.models.CaffeineKind
 import app.chompass.models.HabitPresetCatalog
@@ -344,6 +351,13 @@ internal fun commitSettingsHydrate(
         apiKeyMasked = current.apiKeyMasked.ifEmpty { incoming.apiKeyMasked },
     )
 }
+
+/** One phase's adherence line for the phases screen ("avg −412/day · net −18,400"). */
+data class PhaseAdherenceLine(
+    val overlapDays: Int,
+    val avgDelta: Int?,
+    val netKcal: Long?,
+)
 
 class SettingsViewModel(val container: AppContainer) : ViewModel() {
     private val _ui = MutableStateFlow(
@@ -2600,6 +2614,85 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
 
     fun setDayTypesAssignment(date: LocalDate, profileId: String?) = editPlan {
         it?.let { plan -> MacroPlanEdit.setDayAssignment(plan, date, profileId) }
+    }
+
+    // -- Goal phases (Progress v2) ------------------------------------------------
+    // Phases ride the same write path as day types (MacroPlanEdit invariants +
+    // profile save); GoalJournalService.observe refreshes today's entry for free.
+
+    /**
+     * Validates + applies [draft] (day-type profile + range assignments) and
+     * saves. [onResult] carries the typed validation error, null on success —
+     * the editor sheet surfaces it inline.
+     */
+    fun saveGoalPhase(draft: GoalPhase, onResult: (PhaseEditError?) -> Unit) {
+        viewModelScope.launch {
+            val profile = container.profileRepository.current()
+            if (profile == null) {
+                onResult(null)
+                return@launch
+            }
+            val error = GoalPhaseEdit.validate(profile, draft)
+            if (error != null) {
+                onResult(error)
+                return@launch
+            }
+            val next = GoalPhaseEdit.applyPhase(profile, draft, LocalDate.now())
+            container.profileRepository.save(next)
+            applyProfile(next)
+            onResult(null)
+        }
+    }
+
+    fun deleteGoalPhase(id: UUID) {
+        viewModelScope.launch {
+            val profile = container.profileRepository.current() ?: return@launch
+            val next = GoalPhaseEdit.removePhase(profile, id, LocalDate.now())
+            container.profileRepository.save(next)
+            applyProfile(next)
+        }
+    }
+
+    /**
+     * Adherence read-out for one phase ("avg −412 kcal/day · net −18,400"):
+     * diary totals in the phase window against journal-resolved per-day goals
+     * (MACRO-CYCLE-D). Null when the window has no logged days.
+     */
+    suspend fun phaseAdherence(phase: GoalPhase): PhaseAdherenceLine? {
+        val today = LocalDate.now()
+        val start = GoalJournal.parseDateOrNull(phase.startDate) ?: return null
+        val end = GoalJournal.parseDateOrNull(phase.endDate) ?: return null
+        if (end.isBefore(start)) return null
+        val profile = container.profileRepository.current()
+        val journal = container.prefs.goalJournal.first()
+        val untracked = container.prefs.untrackedDays.first()
+        val totals = container.foodRepository.dailyTotalsBetween(start, end).first()
+        val slots = buildCalorieSlots(
+            start = start,
+            end = end,
+            logged = totals.associate { it.date to it.calories },
+            untracked = untracked,
+        )
+        val goals = HashMap<LocalDate, Int>()
+        var day = start
+        while (!day.isAfter(end)) {
+            goals[day] = MacroPlanResolver
+                .targetsForJournaled(journal, profile, day, today)
+                .targets.calories
+            day = day.plusDays(1)
+        }
+        val summary = ProgressAdherence.computeAdherence(
+            slots = slots,
+            goals = goals,
+            dayTypeByDay = emptyMap(),
+            untrackedDays = untracked,
+            phases = listOf(phase),
+            range = start..end,
+            today = today,
+        )
+        return summary.byPhase.firstOrNull()?.let {
+            PhaseAdherenceLine(it.overlapDays, it.avgDelta, it.netKcal)
+        }
     }
 
     private fun maskKey(key: String?): String =

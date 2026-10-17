@@ -12,6 +12,8 @@ import app.chompass.models.FoodEntry
 import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.FoodSource
 import app.chompass.models.Gender
+import app.chompass.models.GoalPhase
+import app.chompass.models.GoalPhaseEdit
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.MealType
@@ -364,8 +366,54 @@ internal object ScreenshotFixtures {
         ),
     )
 
+    /** Progress v2: phase fixtures — a past CUT (journal-backed adherence) and
+     *  a current BULK spanning ±2 weeks, applied through the production
+     *  GoalPhaseEdit write path. Generated ids (Base + unlinked phases) are
+     *  remapped to fixed strings afterwards: auto day-type colors hash the
+     *  profile id, so random UUIDs would break golden determinism. */
+    fun profileWithGoalPhases(): UserProfile {
+        val cut = GoalPhase(
+            name = "Cut",
+            intent = app.chompass.models.PhaseIntent.CUT,
+            startDate = snapshotDate.minusDays(21).toString(),
+            endDate = snapshotDate.minusDays(7).toString(),
+            calories = 1800,
+            proteinG = 150,
+            carbsG = 150,
+            fatG = 55,
+            profileId = "fixture-phase-cut",
+            createdAtMillis = 1L,
+        )
+        val bulk = GoalPhase(
+            name = "Bulk",
+            intent = app.chompass.models.PhaseIntent.BULK,
+            startDate = snapshotDate.minusDays(14).toString(),
+            endDate = snapshotDate.plusDays(14).toString(),
+            calories = 2600,
+            proteinG = 165,
+            carbsG = 330,
+            fatG = 80,
+            profileId = "fixture-phase-bulk",
+            createdAtMillis = 2L,
+        )
+        var p = profile.copy(macroPlan = null)
+        p = GoalPhaseEdit.applyPhase(p, cut, snapshotDate)
+        p = GoalPhaseEdit.applyPhase(p, bulk, snapshotDate)
+        val plan = p.macroPlan!!
+        val baseOldId = plan.profiles
+            .first { it.name == GoalPhaseEdit.BASE_PROFILE_NAME }
+            .id
+        fun remap(id: String) = if (id == baseOldId) "fixture-base" else id
+        val pinned = plan.copy(
+            profiles = plan.profiles.map { it.copy(id = remap(it.id)) },
+            defaultProfileId = plan.defaultProfileId?.let(::remap),
+            dayAssignments = plan.dayAssignments.mapValues { (_, id) -> remap(id) },
+        )
+        return p.copy(macroPlan = pinned)
+    }
+
     fun progressUiState() = buildProgressPreviewUiState(
-        profile = profile,
+        profile = profileWithGoalPhases(),
         weights = SampleDataGenerators.yearWeights(today = snapshotDate),
         bodyFatEntries = SampleDataGenerators.bodyFatSeries(
             totalDays = 365,
@@ -394,7 +442,7 @@ internal object ScreenshotFixtures {
     /** Progress variant with no weight/body-fat history so the enabled
      *  measurement plot cards sit high enough to be fully visible in one shot. */
     fun progressPlotsUiState() = buildProgressPreviewUiState(
-        profile = profile,
+        profile = profileWithGoalPhases(),
         weights = emptyList(),
         bodyFatEntries = emptyList(),
         foods = SampleDataGenerators.foodEntries(totalDays = 365, today = snapshotDate),
