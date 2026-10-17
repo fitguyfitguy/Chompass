@@ -1,0 +1,7 @@
+• Progress now tracks goal phases (Android).
+• A unified body chart on Progress (Android).
+• The calorie card can overlay your trend (Android).
+• An adherence card on Progress (Android).
+• Goal phases stay inside safe bounds (Android).
+• Phase edits clean up after themselves (Android).
+• Progress charts read true (Android).
