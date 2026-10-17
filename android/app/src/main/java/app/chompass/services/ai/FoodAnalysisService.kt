@@ -1136,6 +1136,8 @@ class FoodAnalysisService(
 
     suspend fun analyzeText(
         description: String,
+        /** One-off profile override (queue "Run with…"); null = active profile. */
+        profileOverride: AiProfile? = null,
         onProgress: (FoodAnalysisProgress) -> Unit = {},
     ): FoodAnalysis {
         val analysis = try {
@@ -1143,6 +1145,7 @@ class FoodAnalysisService(
                 op = "analyzeText",
                 imageBytesList = emptyList(),
                 onProgress = onProgress,
+                profileOverride = profileOverride,
                 rebuildPrompt = { _, _, kind -> textEntryPrompt(description, kind) },
             )
         } catch (e: AiError) {
