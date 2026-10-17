@@ -382,7 +382,6 @@ private fun CalorieLayoutPickerDialog(
     }
 }
 
-
 @Composable
 private fun CardCountRow(count: Int, onDecrement: () -> Unit, onIncrement: () -> Unit) {
     Row(
