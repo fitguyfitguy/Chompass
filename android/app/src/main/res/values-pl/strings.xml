@@ -1473,6 +1473,10 @@
     <string name="home_display_show_steps_desc">Opcjonalna karta pod wskaźnikiem. Wymaga Health Connect.</string>
     <string name="home_display_step_goal">Dzienny cel kroków</string>
     <string name="home_display_calorie_mode">Wskaźnik kalorii</string>
+    <string name="home_display_calorie_layout">Układ kalorii</string>
+    <string name="home_calorie_layout_default">Domyślny</string>
+    <string name="home_calorie_layout_compact_horizontal">Kompaktowy poziomy</string>
+    <string name="home_calorie_layout_hidden">Ukryty</string>
     <string name="home_display_food_log_chips">Makroskładniki w dzienniku</string>
     <string name="home_display_needs_health">Wymaga Health Connect z uprawnieniem do kroków</string>
     <string name="home_calorie_of_goal">z %1$s %2$s</string>

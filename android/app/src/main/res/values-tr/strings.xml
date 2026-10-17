@@ -1471,6 +1471,10 @@
     <string name="home_display_show_steps_desc">Göstergenin altında isteğe bağlı kart. Health Connect gerektirir.</string>
     <string name="home_display_step_goal">Günlük adım hedefi</string>
     <string name="home_display_calorie_mode">Kalori göstergesi</string>
+    <string name="home_display_calorie_layout">Kalori düzeni</string>
+    <string name="home_calorie_layout_default">Varsayılan</string>
+    <string name="home_calorie_layout_compact_horizontal">Kompakt yatay</string>
+    <string name="home_calorie_layout_hidden">Gizli</string>
     <string name="home_display_food_log_chips">Yiyecek kaydı makroları</string>
     <string name="home_display_needs_health">Adım izniyle Health Connect gerektirir</string>
     <string name="home_calorie_of_goal">%1$s üzerinden %2$s</string>

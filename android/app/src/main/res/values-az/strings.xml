@@ -1058,6 +1058,10 @@ bilirsən?</string>
     <string name="home_calories_left">%1$s qalıb</string>
     <string name="home_calories_eaten_a11y">Yeyilən %1$s</string>
     <string name="home_display_calorie_mode">Kalori göstəricisi</string>
+    <string name="home_display_calorie_layout">Kalori düzümü</string>
+    <string name="home_calorie_layout_default">Standart</string>
+    <string name="home_calorie_layout_compact_horizontal">Kompakt üfüqi</string>
+    <string name="home_calorie_layout_hidden">Gizli</string>
     <string name="home_display_card_count">Göstərilən kartlar</string>
     <string name="home_display_food_log_chips">Yemək jurnalında makrolar</string>
     <string name="home_display_needs_health">Addımlara girişi olan Health Connect tələb olunur</string>
