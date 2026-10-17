@@ -366,7 +366,6 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
 internal fun ProgressScreenPreviewContent(
     ui: ProgressUiState,
     activity: List<DailyActivity> = emptyList(),
-    selectedBodySeries: Set<String> = setOf(OVERLAY_KEY_WEIGHT, OVERLAY_KEY_BODY_FAT),
     chartsImmediate: Boolean = true,
     measurementMetric: Boolean = true,
 ) {
@@ -400,7 +399,7 @@ internal fun ProgressScreenPreviewContent(
                         bodyFats = ui.filteredBodyFats,
                         measurements = ui.filteredMeasurements,
                         sites = BodyMeasurement.Site.values().filter { it in ui.measurementSites },
-                        selectedKeys = selectedBodySeries,
+                        selectedKeys = ui.selectedBodySeries,
                         onToggleSeries = {},
                         weightStats = ui.weightStats,
                         bodyFatStats = ui.bodyFatStats,

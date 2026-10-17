@@ -308,16 +308,14 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /**
-     * Toggles one series on the unified body overlay chart and persists the
-     * selection. Weight is the anchor series — the resolved set always keeps
-     * at least it, so an empty toggle can never blank the chart.
+     * Toggles one series on the unified body overlay chart, persisted as a
+     * single atomic edit (no read-modify-write race between rapid taps).
+     * Weight stays selected permanently — its chip is hardwired
+     * selected+disabled, so it is never toggled and never leaves the set.
      */
     fun toggleBodySeries(key: String) {
         viewModelScope.launch {
-            val current = _ui.value.selectedBodySeries
-            val next = if (key in current) current - key else current + key
-            val resolved = if (OVERLAY_KEY_WEIGHT in next) next else next + OVERLAY_KEY_WEIGHT
-            container.prefs.setProgressOverlaySeries(resolved)
+            container.prefs.toggleProgressOverlaySeriesKey(key)
         }
     }
 
@@ -468,9 +466,9 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
         bodyFatStats = filteredBodyFats.toBodyFatStats(),
         selectedBodySeries = overlaySeriesPref
             ?: buildSet {
-                if (filteredWeights.isNotEmpty()) add(OVERLAY_KEY_WEIGHT)
+                add(OVERLAY_KEY_WEIGHT)
                 if (filteredBodyFats.isNotEmpty()) add(OVERLAY_KEY_BODY_FAT)
-            }.ifEmpty { setOf(OVERLAY_KEY_WEIGHT) },
+            },
         calorieOverlay = calorieOverlayPref
             ?: if (filteredWeights.isNotEmpty()) "weight" else "off",
         adherence = ProgressAdherence

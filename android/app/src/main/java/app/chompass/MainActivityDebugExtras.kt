@@ -130,7 +130,8 @@ internal data class DebugIntentActions(
 ) {
     val hasSeedAction: Boolean
         get() = seedTestData || seedFull || seedBodyMetrics || seedBodyMetricsTwoYears ||
-            seedKetoSettings || seedActiveCalories || seedAnalysisQueue || seedMacroCycle
+            seedKetoSettings || seedActiveCalories || seedAnalysisQueue || seedMacroCycle ||
+            seedGoalPhases
     /** Seeders that write onboarded=true before the heavy diary replace. */
     val writesOnboarded: Boolean get() = hasSeedAction
 

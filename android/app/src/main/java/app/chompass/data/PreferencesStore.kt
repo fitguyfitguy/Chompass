@@ -424,7 +424,7 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     val progressMeasurementSites: Flow<Set<String>> get() = progressMeasurementSitesImpl
     suspend fun setProgressMeasurementSites(sites: Set<String>) = setProgressMeasurementSitesImpl(sites)
     val progressOverlaySeries: Flow<Set<String>?> get() = progressOverlaySeriesImpl
-    suspend fun setProgressOverlaySeries(keys: Set<String>) = setProgressOverlaySeriesImpl(keys)
+    suspend fun toggleProgressOverlaySeriesKey(key: String) = toggleProgressOverlaySeriesKeyImpl(key)
     val progressCalorieOverlay: Flow<String?> get() = progressCalorieOverlayImpl
     suspend fun setProgressCalorieOverlay(v: String) = setProgressCalorieOverlayImpl(v)
     val progressNutrientAverages: Flow<Boolean> get() = progressNutrientAveragesImpl

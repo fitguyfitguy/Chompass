@@ -2175,7 +2175,6 @@ macros rééquilibrées au nouveau total calorique</string>
     <string name="progress_overlay_off">Désactivé</string>
     <string name="progress_no_entries_in_range">Aucune entrée sur cette période</string>
     <string name="settings_goal_phases_title">Phases d\'objectif</string>
-    <string name="settings_goal_phases_summary_format">%1$d phases</string>
     <string name="settings_goal_phases_intro">Planifie des fenêtres de sèche, de maintien ou de prise de masse. Une phase applique ses objectifs à chaque jour de sa période, comme un type de jour avec des dates.</string>
     <string name="settings_goal_phases_add">Ajouter une phase</string>
     <string name="settings_goal_phases_edit">Modifier la phase</string>

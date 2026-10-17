@@ -87,6 +87,29 @@ class ProgressAdherenceTest {
     }
 
     @Test
+    fun loggedDaysWithoutGoalsYieldNullGoalAggregates() {
+        // Logged days, but none carries a goal → goal-derived aggregates stay
+        // null instead of averaging an empty list (NaN → 0 fabrications).
+        val summary = ProgressAdherence.computeAdherence(
+            slots = slots(0 to 2050, 1 to 1950, 2 to 2100),
+            goals = emptyMap(),
+            dayTypeByDay = emptyMap(),
+            untrackedDays = emptySet(),
+            phases = emptyList(),
+            range = start..start.plusDays(7),
+            today = today,
+        )
+        assertEquals(3, summary.loggedDays)
+        assertEquals(2033, summary.avgIntake)
+        assertNull(summary.avgGoal)
+        assertNull(summary.avgDelta)
+        assertNull(summary.netKcal)
+        assertNull(summary.withinBandPct)
+        assertEquals(0, summary.overDays)
+        assertEquals(0, summary.underDays)
+    }
+
+    @Test
     fun excludesTodayUntrackedAndMissingEntries() {
         val today2 = start.plusDays(3)
         val slots = listOf(

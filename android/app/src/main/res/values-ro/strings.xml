@@ -2161,7 +2161,6 @@ macro-urile reechilibrate la noul total caloric</string>
     <string name="progress_overlay_off">Dezactivat</string>
     <string name="progress_no_entries_in_range">Nicio înregistrare în această perioadă</string>
     <string name="settings_goal_phases_title">Faze de obiectiv</string>
-    <string name="settings_goal_phases_summary_format">%1$d faze</string>
     <string name="settings_goal_phases_intro">Planifică ferestre de definire, menținere sau masă. O fază își aplică obiectivele fiecărei zile din interval, ca un tip de zi cu date.</string>
     <string name="settings_goal_phases_add">Adaugă fază</string>
     <string name="settings_goal_phases_edit">Editează faza</string>

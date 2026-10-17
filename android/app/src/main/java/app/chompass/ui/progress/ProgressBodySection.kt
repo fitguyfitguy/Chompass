@@ -99,7 +99,6 @@ internal fun BodySection(
     // Last chip toggled on becomes primary; falls back to weight when the
     // selection changes underneath (pref restore, range without data).
     var primary by rememberSaveable { mutableStateOf(OVERLAY_KEY_WEIGHT) }
-    val effectivePrimary = if (primary in selectedKeys) primary else OVERLAY_KEY_WEIGHT
 
     val weightUnitSuffix = " " + stringResource(if (useMetricWeight) R.string.unit_kg else R.string.unit_lbs)
     val lengthUnitSuffix = " " + stringResource(if (useMetricLength) R.string.unit_cm else R.string.unit_in)
@@ -112,7 +111,7 @@ internal fun BodySection(
         weights, bodyFats, measurements, selectedSites, selectedKeys,
         goalWeightKg, goalBodyFatFraction, useMetricWeight, useMetricLength,
         weightLabel, bodyFatLabel, siteLabels, weightUnitSuffix, lengthUnitSuffix,
-        dayTypeByDay, untrackedDays,
+        dayTypeByDay, untrackedDays, typeColorOf,
     ) {
         val meta = buildMap {
             for (key in selectedKeys) {
@@ -142,6 +141,15 @@ internal fun BodySection(
             untrackedDays = untrackedDays,
             typeColorOf = typeColorOf,
         )
+    }
+    // Last chip toggled on becomes primary; falls back through the series
+    // that actually has data when the selection changes underneath (pref
+    // restore, range without data) — never fabricates weight stats from a
+    // series with no readings.
+    val effectivePrimary = if (primary in selectedKeys) {
+        primary
+    } else {
+        model.series.firstOrNull()?.key ?: OVERLAY_KEY_WEIGHT
     }
     val primarySeries = model.series.firstOrNull { it.key == effectivePrimary }
 
@@ -334,8 +342,11 @@ private fun PrimaryStatBadges(
             buildList {
                 weightStats.currentKg?.let { add(currentLabel to formatWeight(it, useMetricWeight)) }
                 goalWeightKg?.let { add(goalLabel to formatWeight(it, useMetricWeight)) }
-                add(netChangeLabel to formatWeightChange(weightStats.netChangeKg, useMetricWeight))
-                add(averageLabel to formatWeight(weightStats.averageKg, useMetricWeight))
+                // No in-range readings → no fabricated "+0.0 kg" rows.
+                if (weightStats.currentKg != null) {
+                    add(netChangeLabel to formatWeightChange(weightStats.netChangeKg, useMetricWeight))
+                    add(averageLabel to formatWeight(weightStats.averageKg, useMetricWeight))
+                }
             }
         )
         primary == OVERLAY_KEY_BODY_FAT -> StatBadgeRow(

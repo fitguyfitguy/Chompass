@@ -88,14 +88,18 @@ object ProgressAdherence {
         }
         val withGoal = days.filter { it.goalKcal != null }
         val avgIntake = days.map { it.intakeKcal!! }.average().toInt()
-        val avgGoal = withGoal.map { it.goalKcal!! }.average().toInt()
-        val deltas = withGoal.map { it.intakeKcal!! - it.goalKcal!! }
-        val avgDelta = deltas.average().toInt()
-        val netKcal = deltas.sumOf { it.toLong() }
-        val within = deltas.count { kotlin.math.abs(it) <= TARGET_BAND_KCAL }
-        val withinBandPct = if (withGoal.isEmpty()) null else (within * 100) / withGoal.size
-        val overDays = deltas.count { it > TARGET_BAND_KCAL }
-        val underDays = deltas.count { it < -TARGET_BAND_KCAL }
+        // No logged day carries a goal → the goal-derived aggregates stay
+        // null (mirrors withinBandPct) instead of averaging an empty list.
+        val avgGoal = if (withGoal.isEmpty()) null else withGoal.map { it.goalKcal!! }.average().toInt()
+        val avgDelta = if (withGoal.isEmpty()) null else withGoal.map { it.intakeKcal!! - it.goalKcal!! }.average().toInt()
+        val netKcal = if (withGoal.isEmpty()) null else withGoal.sumOf { (it.intakeKcal!! - it.goalKcal!!).toLong() }
+        val withinBandPct = if (withGoal.isEmpty()) null else {
+            val deltas = withGoal.map { it.intakeKcal!! - it.goalKcal!! }
+            val within = deltas.count { kotlin.math.abs(it) <= TARGET_BAND_KCAL }
+            (within * 100) / withGoal.size
+        }
+        val overDays = if (withGoal.isEmpty()) 0 else withGoal.count { it.intakeKcal!! - it.goalKcal!! > TARGET_BAND_KCAL }
+        val underDays = if (withGoal.isEmpty()) 0 else withGoal.count { it.intakeKcal!! - it.goalKcal!! < -TARGET_BAND_KCAL }
 
         val byDayType = days.filter { it.profileId != null && it.goalKcal != null }
             .groupBy { it.profileId!! }

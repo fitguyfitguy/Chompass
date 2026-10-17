@@ -162,8 +162,14 @@ private val CalorieOverlayValues = setOf("off", "weight", "bodyfat")
  */
 internal val PreferencesStore.progressOverlaySeriesImpl: Flow<Set<String>?> get() =
     dataStore.data.map { it[Keys.PROGRESS_OVERLAY_SERIES] }
-internal suspend fun PreferencesStore.setProgressOverlaySeriesImpl(keys: Set<String>) {
-    dataStore.edit { it[Keys.PROGRESS_OVERLAY_SERIES] = keys }
+
+/** Atomic flip of one series in the selection — no read-modify-write race
+ *  between two rapid chip taps (each edit sees the freshest stored set). */
+internal suspend fun PreferencesStore.toggleProgressOverlaySeriesKeyImpl(key: String) {
+    dataStore.edit { prefs ->
+        val cur = prefs[Keys.PROGRESS_OVERLAY_SERIES] ?: emptySet()
+        prefs[Keys.PROGRESS_OVERLAY_SERIES] = if (key in cur) cur - key else cur + key
+    }
 }
 
 /** Calorie-card metric overlay ("off" | "weight" | "bodyfat"); null = unset. */
