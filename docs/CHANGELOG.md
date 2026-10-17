@@ -4,14 +4,7 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [Unreleased]
-
-### Changed
-
-- **Find models fast in the picker** (Android): the Model sheet in Settings → AI has a search field — type to filter the list live, with a clear button and a "no matching models" note when nothing fits. Live model lists from the provider (DeepInfra, Groq, xAI, and friends) now sort alphabetically beneath the curated defaults, so a long lineup no longer means endless scrolling.
-- **Run-with failures explain the missing fallback** (Android): a queued entry run with a picked profile uses exactly that profile. When it fails, the error now names the profile and notes that the fallback profile was skipped, so a rate-limited pick no longer fails the same way on every retry without explanation.
-
-## [5.7.0] - 2026-10-16
+## [5.7.0] - 2026-10-17
 
 ### Added
 
@@ -21,6 +14,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Changed
 
 - **Cloud model lists refresh from the provider** (Android): on providers that serve a model list (OpenAI, Groq, xAI, Together, Hugging Face, Fireworks, DeepInfra, Mistral), the model picker now fetches the live lineup with your saved key and lists it under the built-in default, so you can pick an id your account actually serves. Audio, embedding, and guard models are filtered out. Without a key or offline, the built-in list shows as before. Closes Codeberg [#132](https://codeberg.org/fitguy/Chompass/issues/132) by [@Yaroslav-Ch](https://codeberg.org/Yaroslav-Ch).
+- **Find models fast in the picker** (Android): the Model sheet in Settings → AI has a search field — type to filter the list live, with a clear button and a "no matching models" note when nothing fits. Live model lists from the provider (DeepInfra, Groq, xAI, and friends) now sort alphabetically beneath the curated defaults, so a long lineup no longer means endless scrolling.
+- **Run-with failures explain the missing fallback** (Android): a queued entry run with a picked profile uses exactly that profile. When it fails, the error now names the profile and notes that the fallback profile was skipped, so a rate-limited pick no longer fails the same way on every retry without explanation.
 
 ### Fixed
 

@@ -2,3 +2,5 @@
 • Save a barcode scan to favorites without logging it (Android & Web).
 • Cloud model lists refresh from the provider (Android).
 • Weigh-in and body-fat reminders skip a day you already logged (Android).
+• Find models fast in the picker (Android).
+• Run-with failures explain the missing fallback (Android).
