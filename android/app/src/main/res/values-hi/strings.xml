@@ -1066,6 +1066,10 @@
     <string name="home_calories_left">%1$s शेष</string>
     <string name="home_calories_eaten_a11y">खाया %1$s</string>
     <string name="home_display_calorie_mode">कैलोरी गेज</string>
+    <string name="home_display_calorie_layout">कैलोरी लेआउट</string>
+    <string name="home_calorie_layout_default">डिफ़ॉल्ट</string>
+    <string name="home_calorie_layout_compact_horizontal">कॉम्पैक्ट क्षैतिज</string>
+    <string name="home_calorie_layout_hidden">छिपा हुआ</string>
     <string name="home_display_card_count">दिखाए गए कार्ड</string>
     <string name="home_display_food_log_chips">खाद्य लॉग मैक्रोज़</string>
     <string name="home_display_needs_health">कदम अनुमति वाला Health Connect आवश्यक है</string>

@@ -180,8 +180,10 @@
     <string name="macro_goal_of">von %1$d%2$s</string>
 
     <string name="macro_status_left">%1$s%2$s übrig</string>
+    <string name="macro_status_left_compact">%1$s übrig</string>
 
     <string name="macro_status_over">%1$s%2$s drüber</string>
+    <string name="macro_status_over_compact">%1$s drüber</string>
     <string name="macro_status_floor_met">Minimum erreicht</string>
 
     <string name="macro_status_goal_reached">Ziel erreicht</string>
@@ -2633,6 +2635,10 @@ für dich ein</string>
 
     <string name="home_display_nutrient_cards">Nährstoffkarten</string>
 
+    <string name="home_display_nutrient_card_layout">Nährstoffkartenlayout</string>
+    <string name="home_nutrient_card_layout_default">Standard</string>
+    <string name="home_nutrient_card_layout_compact_horizontal">Kompakt horizontal</string>
+
     <string name="home_display_card_count">Angezeigte Karten</string>
 
     <string name="home_display_show_steps">Schrittzähler auf dem Startbildschirm anzeigen</string>
@@ -2642,8 +2648,15 @@ für dich ein</string>
     <string name="home_display_step_goal">Tägliches Schrittziel</string>
 
     <string name="home_display_calorie_mode">Kalorienanzeige</string>
+    <string name="home_display_calorie_layout">Kalorienlayout</string>
+    <string name="home_calorie_layout_default">Standard</string>
+    <string name="home_calorie_layout_compact_horizontal">Kompakt horizontal</string>
+    <string name="home_calorie_layout_hidden">Ausgeblendet</string>
 
     <string name="home_display_food_log_chips">Makros im Ernährungstagebuch</string>
+    <string name="home_display_food_log_layout">Ernährungstagebuchlayout</string>
+    <string name="home_food_log_layout_default">Standard</string>
+    <string name="home_food_log_layout_compact_horizontal">Kompakt horizontal</string>
 
     <string name="home_display_needs_health">Erfordert Health Connect mit Schritt-Berechtigung</string>
 

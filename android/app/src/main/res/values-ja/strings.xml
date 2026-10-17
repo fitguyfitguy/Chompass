@@ -1065,6 +1065,10 @@
     <string name="home_calories_left">残り %1$s</string>
     <string name="home_calories_eaten_a11y">摂取 %1$s</string>
     <string name="home_display_calorie_mode">カロリーゲージ</string>
+    <string name="home_display_calorie_layout">カロリーレイアウト</string>
+    <string name="home_calorie_layout_default">デフォルト</string>
+    <string name="home_calorie_layout_compact_horizontal">コンパクト横型</string>
+    <string name="home_calorie_layout_hidden">非表示</string>
     <string name="home_display_card_count">表示するカード</string>
     <string name="home_display_food_log_chips">食事記録のマクロ</string>
     <string name="home_display_needs_health">歩数アクセス権のある Health Connect が必要</string>

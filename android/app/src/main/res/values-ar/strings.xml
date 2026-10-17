@@ -1070,6 +1070,10 @@
     <string name="home_calories_left">متبقٍ %1$s</string>
     <string name="home_calories_eaten_a11y">مأكول %1$s</string>
     <string name="home_display_calorie_mode">مقياس السعرات</string>
+    <string name="home_display_calorie_layout">تخطيط مقياس السعرات</string>
+    <string name="home_calorie_layout_default">افتراضي</string>
+    <string name="home_calorie_layout_compact_horizontal">أفقي مدمج</string>
+    <string name="home_calorie_layout_hidden">مخفي</string>
     <string name="home_display_card_count">البطاقات المعروضة</string>
     <string name="home_display_food_log_chips">مغذيات سجل الطعام</string>
     <string name="home_display_needs_health">يتطلب Health Connect مع إذن الخطوات</string>

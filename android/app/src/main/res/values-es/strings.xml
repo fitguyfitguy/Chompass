@@ -1102,6 +1102,10 @@
     <string name="home_calories_left">%1$s restantes</string>
     <string name="home_calories_eaten_a11y">Ingeridas %1$s</string>
     <string name="home_display_calorie_mode">Medidor de calorías</string>
+    <string name="home_display_calorie_layout">Diseño de calorías</string>
+    <string name="home_calorie_layout_default">Predeterminado</string>
+    <string name="home_calorie_layout_compact_horizontal">Horizontal compacto</string>
+    <string name="home_calorie_layout_hidden">Oculto</string>
     <string name="home_display_card_count">Tarjetas mostradas</string>
     <string name="home_display_food_log_chips">Macros del registro de comida</string>
     <string name="home_display_needs_health">Requiere Health Connect con permiso de pasos</string>

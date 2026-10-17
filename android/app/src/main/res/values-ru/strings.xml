@@ -1169,6 +1169,10 @@
     <string name="home_calories_left">Осталось %1$s</string>
     <string name="home_calories_eaten_a11y">Съедено %1$s</string>
     <string name="home_display_calorie_mode">Шкала калорий</string>
+    <string name="home_display_calorie_layout">Макет калорий</string>
+    <string name="home_calorie_layout_default">По умолчанию</string>
+    <string name="home_calorie_layout_compact_horizontal">Компактный горизонтальный</string>
+    <string name="home_calorie_layout_hidden">Скрыто</string>
     <string name="home_display_card_count">Отображаемые карточки</string>
     <string name="home_display_food_log_chips">Макрос в журнале еды</string>
     <string name="home_display_needs_health">Требуется Health Connect с доступом к шагам</string>
