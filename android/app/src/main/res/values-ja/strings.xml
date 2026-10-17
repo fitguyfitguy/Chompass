@@ -652,6 +652,7 @@
     <string name="queue_run_with">実行に使用…</string>
     <string name="queue_last_attempt">最終試行: %1$s · %2$s</string>
     <string name="queue_run_with_direct_note">「%1$s」を直接使用しました。フォールバックプロファイルはスキップされました。</string>
+    <string name="queue_run_refused_busy">別の解析がすでに実行中です。終了するまで待ってから、エントリをもう一度実行してください。</string>
     <string name="widget_all_metrics_label">Chompass 今日</string>
     <string name="widget_all_metrics_description">今日のカロリー・タンパク質・炭水化物・脂質を1つのウィジェットで確認。</string>
     <string name="settings_needs_health_connect">Health Connectが必要</string>

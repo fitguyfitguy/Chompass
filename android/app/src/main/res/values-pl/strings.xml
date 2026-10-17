@@ -1159,6 +1159,7 @@
     <string name="queue_run_with">Uruchom z…</string>
     <string name="queue_last_attempt">Ostatnia próba: %1$s · %2$s</string>
     <string name="queue_run_with_direct_note">„%1$s” użyto bezpośrednio — profil zapasowy został pominięty.</string>
+    <string name="queue_run_refused_busy">Inna analiza jest już uruchomiona. Poczekaj na jej zakończenie, a następnie uruchom wpis ponownie.</string>
 
     <string name="settings_health_connect">Health Connect</string>
     <string name="settings_manage_health_access">Zarządzaj dostępem Health Connect</string>

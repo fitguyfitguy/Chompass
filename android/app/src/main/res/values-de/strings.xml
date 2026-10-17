@@ -2088,6 +2088,7 @@ für dich ein</string>
     <string name="queue_run_with">Ausführen mit…</string>
     <string name="queue_last_attempt">Zuletzt versucht: %1$s · %2$s</string>
     <string name="queue_run_with_direct_note">„%1$s“ wurde direkt verwendet – das Fallback-Profil wurde übergangen.</string>
+    <string name="queue_run_refused_busy">Eine andere Analyse läuft bereits. Warte, bis sie fertig ist, und führe den Eintrag dann erneut aus.</string>
 
     <string name="settings_health_connect">Health Connect</string>
 
