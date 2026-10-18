@@ -98,6 +98,7 @@ import app.chompass.models.NicotineEntry
 import app.chompass.models.WaterAmountFormat
 import app.chompass.models.builtinCaffeineDefaultMg
 import app.chompass.models.HomeCalorieHeroLayout
+import app.chompass.models.HomeFoodLogLayout
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.MilkKind
 import app.chompass.models.WaterEntry
@@ -697,7 +698,7 @@ fun HomeScreen(
                             )
                         }
                     }
-                    Spacer(Modifier.height(20.dp))
+                    Spacer(Modifier.height(12.dp))
                     // Current/goal resolved once per state change instead of
                     // per card per recomposition (current() scans the day's
                     // entries; goal() re-derives from the resolved targets).
@@ -939,7 +940,7 @@ fun HomeScreen(
                                         rowShape = rowShape,
                                         isSelected = isSelected,
                                         macroChips = ui.foodLogMacroChips,
-                                        compact = ui.homeDisplay.foodLogLayout != null,
+                                        compact = ui.homeDisplay.foodLogLayout != HomeFoodLogLayout.CLASSIC,
                                     )
                                 }
                             } else {
@@ -949,7 +950,7 @@ fun HomeScreen(
                                     isFavorite = isFav,
                                     rowShape = rowShape,
                                     macroChips = ui.foodLogMacroChips,
-                                    compact = ui.homeDisplay.foodLogLayout != null,
+                                    compact = ui.homeDisplay.foodLogLayout != HomeFoodLogLayout.CLASSIC,
                                     onTap = { editingEntry = entry },
                                     onLongPress = { selectedEntryIds = setOf(entry.id) },
                                     onDelete = {
@@ -2408,7 +2409,7 @@ internal fun HomeScreenPreviewContent(
                                     isFavorite = ui.isFavorite(entry),
                                     rowShape = rowShape,
                                     macroChips = ui.foodLogMacroChips,
-                                    compact = ui.homeDisplay.foodLogLayout != null,
+                                    compact = ui.homeDisplay.foodLogLayout != HomeFoodLogLayout.CLASSIC,
                                 )
                                 if (index != group.entries.lastIndex) Divider()
                             }
