@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
@@ -85,13 +86,14 @@ fun MacroCard(
         isEnergy = isEnergy,
     )
     when (layout) {
-        HomeMacroCardLayout.COMPACT_HORIZONTAL -> CompactHorizontalMacroCard(input)
-        null -> DefaultMacroCard(input)
+        HomeMacroCardLayout.SLIM_LINE -> SlimLineMacroCard(input)
+        HomeMacroCardLayout.CLASSIC -> ClassicMacroCard(input)
+        null -> CompactBarsMacroCard(input)
     }
 }
 
 @Composable
-private fun DefaultMacroCard(input: MacroCardInput) {
+private fun ClassicMacroCard(input: MacroCardInput) {
     with(input) {
     val energyUnit = LocalEnergyUnit.current
     fun formatted(value: Double): String = if (isEnergy) {
@@ -102,21 +104,7 @@ private fun DefaultMacroCard(input: MacroCardInput) {
     val displayUnit = if (isEnergy) energyUnitLabel() else unit
     val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
     val goalValue = goal.toDouble()
-    val epoch = LocalLaunchFillEpoch.current
-    var lastEpoch by rememberSaveable { mutableIntStateOf(0) }
-    val animatable = remember { Animatable(if (lastEpoch == epoch) progress else 0f) }
-    LaunchedEffect(epoch, progress) {
-        if (freezeProgress) return@LaunchedEffect
-        val spec = spring<Float>(dampingRatio = 0.85f, stiffness = 55f)
-        if (lastEpoch != epoch) {
-            animatable.snapTo(0f)
-            animatable.animateTo(progress, spec)
-            lastEpoch = epoch
-        } else {
-            animatable.animateTo(progress, spec)
-        }
-    }
-    val animated = if (freezeProgress) progress else animatable.value
+    val animated = rememberMacroAnimation(progress, freezeProgress)
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -205,7 +193,7 @@ private fun DefaultMacroCard(input: MacroCardInput) {
                 },
                 maxLines = 1,
                 // Shrink to fit the card at max font scale: long values + long
-                // suffixes (ru "91,5g осталось") clipped at 1.3× without this.
+                // suffixes (ru "91,5g übrig") clipped at 1.3× without this.
                 autoSize = TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = 11.sp, stepSize = 0.5.sp),
             )
         }
@@ -213,8 +201,79 @@ private fun DefaultMacroCard(input: MacroCardInput) {
     }
 }
 
+/** Shared fill animation: launch-epoch restart + spring; frozen cards hold their value. */
 @Composable
-private fun CompactHorizontalMacroCard(input: MacroCardInput) {
+private fun rememberMacroAnimation(progress: Float, freezeProgress: Boolean): Float {
+    val epoch = LocalLaunchFillEpoch.current
+    var lastEpoch by rememberSaveable { mutableIntStateOf(0) }
+    val animatable = remember { Animatable(if (lastEpoch == epoch) progress else 0f) }
+    LaunchedEffect(epoch, progress) {
+        if (freezeProgress) return@LaunchedEffect
+        val spec = spring<Float>(dampingRatio = 0.85f, stiffness = 55f)
+        if (lastEpoch != epoch) {
+            animatable.snapTo(0f)
+            animatable.animateTo(progress, spec)
+            lastEpoch = epoch
+        } else {
+            animatable.animateTo(progress, spec)
+        }
+    }
+    return if (freezeProgress) progress else animatable.value
+}
+
+/** Compact status text without the unit placeholder ("8 left" / "3 over"). */
+@Composable
+private fun macroStatusText(input: MacroCardInput, format: (Double) -> String): String = with(input) {
+    val goalValue = goal.toDouble()
+    when {
+        goal <= 0 -> stringResource(R.string.macro_status_no_goal)
+        fatFloor && current >= goalValue -> stringResource(R.string.macro_status_floor_met)
+        current == goalValue -> stringResource(R.string.macro_status_goal_reached)
+        current < goalValue -> stringResource(R.string.macro_status_left_compact, format(goalValue - current))
+        else -> stringResource(R.string.macro_status_over_compact, format(current - goalValue))
+    }
+}
+
+/** 6dp progress bar shared by the band and slim-line layouts: ghost + animated fill. */
+@Composable
+private fun MacroSlimBar(
+    animated: Float,
+    combined: Float,
+    planned: Double,
+    accentColor: Color,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(6.dp)
+            .clip(CircleShape)
+            .background(accentColor.copy(alpha = 0.16f)),
+        contentAlignment = Alignment.CenterStart,
+    ) {
+        if (planned > 0.0 && combined > animated) {
+            Box(
+                Modifier
+                    .fillMaxWidth(combined)
+                    .height(6.dp)
+                    .background(accentColor.copy(alpha = 0.38f)),
+            )
+        }
+        // 16dp minimum nub matches the classic tube's visible-fill rule.
+        if (animated > 0f) {
+            Box(
+                Modifier
+                    .fillMaxWidth(animated)
+                    .widthIn(min = 16.dp)
+                    .height(6.dp)
+                    .background(accentColor),
+            )
+        }
+    }
+}
+
+/** Default band card: label / 6dp bar / value + status line. */
+@Composable
+private fun CompactBarsMacroCard(input: MacroCardInput) {
     with(input) {
         val energyUnit = LocalEnergyUnit.current
         fun formatted(value: Double): String = if (isEnergy) {
@@ -223,96 +282,122 @@ private fun CompactHorizontalMacroCard(input: MacroCardInput) {
             MacroValueFormatter.string(value)
         }
         val displayUnit = if (isEnergy) energyUnitLabel() else unit
-        val goalValue = goal.toDouble()
         val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
         val combined = if (goal > 0) ((current + planned).toFloat() / goal).coerceIn(0f, 1f) else 0f
-        val epoch = LocalLaunchFillEpoch.current
-        var lastEpoch by rememberSaveable { mutableIntStateOf(0) }
-        val animatable = remember { Animatable(if (lastEpoch == epoch) progress else 0f) }
-        LaunchedEffect(epoch, progress) {
-            if (freezeProgress) return@LaunchedEffect
-            val spec = spring<Float>(dampingRatio = 0.85f, stiffness = 55f)
-            if (lastEpoch != epoch) {
-                animatable.snapTo(0f)
-                animatable.animateTo(progress, spec)
-                lastEpoch = epoch
-            } else {
-                animatable.animateTo(progress, spec)
-            }
-        }
-        val animated = if (freezeProgress) progress else animatable.value
-        val status = when {
-            goal <= 0 -> stringResource(R.string.macro_status_no_goal)
-            fatFloor && current >= goalValue -> stringResource(R.string.macro_status_left, "0", "")
-            current <= goalValue -> stringResource(
-                R.string.macro_status_left,
-                formatted(goalValue - current),
-                "",
-            )
-            else -> stringResource(
-                R.string.macro_status_over,
-                formatted(current - goalValue),
-                "",
-            )
-        }
+        val animated = rememberMacroAnimation(progress, freezeProgress)
+        val status = macroStatusText(input) { formatted(it) }
 
         Column(
             modifier = modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(0.dp),
+            verticalArrangement = Arrangement.spacedBy(3.dp),
         ) {
             Text(
                 label,
-                fontSize = 12.sp,
+                fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp)
-                    .clip(CircleShape)
-                    .background(accentColor.copy(alpha = 0.16f)),
-                contentAlignment = Alignment.CenterStart,
+            MacroSlimBar(
+                animated = animated,
+                combined = combined,
+                planned = planned,
+                accentColor = accentColor,
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(3.dp),
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                if (planned > 0.0 && combined > animated) {
-                    Box(
-                        Modifier
-                            .fillMaxWidth(combined)
-                            .fillMaxSize()
-                            .background(accentColor.copy(alpha = 0.38f)),
-                    )
-                }
-                if (animated > 0f) {
-                    Box(
-                        Modifier
-                            .fillMaxWidth(animated)
-                            .fillMaxSize()
-                            .background(accentColor),
-                    )
-                }
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(
-                        "${formatted(current)}$displayUnit",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = accentColor,
-                        maxLines = 1,
-                    )
-                    Text("|", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text(
-                        status,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = if (goal > 0 && current > goalValue && !fatFloor) accentColor
-                            else MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
+                Text(
+                    "${formatted(current)}$displayUnit",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = accentColor,
+                    maxLines = 1,
+                    modifier = Modifier.alignByBaseline(),
+                )
+                Text(
+                    status,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = if (goal > 0 && current > goal.toDouble() && !fatFloor) accentColor
+                        else MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    autoSize = TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = 11.sp, stepSize = 0.5.sp),
+                    modifier = Modifier
+                        .weight(1f, fill = false)
+                        .alignByBaseline(),
+                )
             }
         }
     }
+}
+
+/** Two-line slim card: label + value + status on one line, the bar under it. */
+@Composable
+private fun SlimLineMacroCard(input: MacroCardInput) {
+    with(input) {
+        val energyUnit = LocalEnergyUnit.current
+        fun formatted(value: Double): String = if (isEnergy) {
+            EnergyFormat.quantity(value.toInt(), energyUnit).toString()
+        } else {
+            MacroValueFormatter.string(value)
+        }
+        val displayUnit = if (isEnergy) energyUnitLabel() else unit
+        val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
+        val combined = if (goal > 0) ((current + planned).toFloat() / goal).coerceIn(0f, 1f) else 0f
+        val animated = rememberMacroAnimation(progress, freezeProgress)
+        val status = macroStatusText(input) { formatted(it) }
+
+        Column(
+            modifier = modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(3.dp),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(3.dp),
+            ) {
+                Row(
+                    modifier = Modifier.weight(1f),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(3.dp),
+                ) {
+                    Text(
+                        label,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Text(
+                        "${formatted(current)}$displayUnit",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = accentColor,
+                        maxLines = 1,
+                    )
+                }
+                Text(
+                    status,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = if (goal > 0 && current > goal.toDouble() && !fatFloor) accentColor
+                        else MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            MacroSlimBar(
+                animated = animated,
+                combined = combined,
+                planned = planned,
+                accentColor = accentColor,
+            )
+        }
+    }
+}
+
