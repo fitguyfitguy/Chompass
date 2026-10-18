@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -18,8 +20,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -58,8 +60,9 @@ import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.ChompassPrimaryButton
 import app.chompass.ui.components.DateWheelPicker
 import app.chompass.ui.components.NumericWheelPicker
-import app.chompass.ui.components.ChompassBottomSheet
+import app.chompass.ui.components.ChompassPinnedFooterSheet
 import app.chompass.ui.components.energyUnitLabel
+import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
@@ -253,7 +256,7 @@ private fun IntentChip(intent: PhaseIntent) {
 /** Add/edit sheet: name, intent chips, start/end date wheels, target wheels. */
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-private fun GoalPhaseEditSheet(
+internal fun GoalPhaseEditSheet(
     editing: GoalPhase?,
     base: DayTargets?,
     calorieFloor: Int,
@@ -292,170 +295,184 @@ private fun GoalPhaseEditSheet(
         createdAtMillis = editing?.createdAtMillis ?: 0L,
     )
 
-    ChompassBottomSheet(onDismiss = onDismiss) {
-        Text(
-            stringResource(
-                if (editing != null) R.string.settings_goal_phases_edit
-                else R.string.settings_goal_phases_add
-            ),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 18.dp),
-        )
-        Spacer(Modifier.height(12.dp))
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .weight(1f, fill = false)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 18.dp),
-        ) {
-            ChompassTextField(
-                value = name,
-                onValueChange = { if (it.length <= 32) name = it },
-                placeholder = stringResource(R.string.settings_goal_phases_name_placeholder),
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Spacer(Modifier.height(12.dp))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                PhaseIntent.entries.forEach { candidate ->
-                    FilterChip(
-                        selected = candidate == intent,
-                        onClick = { intent = candidate },
-                        label = {
-                            Text(
-                                stringResource(
-                                    when (candidate) {
-                                        PhaseIntent.CUT -> R.string.phase_intent_cut
-                                        PhaseIntent.MAINTAIN -> R.string.phase_intent_maintain
-                                        PhaseIntent.BULK -> R.string.phase_intent_bulk
-                                    }
-                                ),
-                                fontSize = 12.sp,
-                            )
-                        },
-                    )
-                }
-            }
-            Spacer(Modifier.height(12.dp))
+    ChompassPinnedFooterSheet(
+        onDismiss = onDismiss,
+        sheetState = rememberChompassSheetState(),
+        toolbar = {
             Text(
-                stringResource(R.string.settings_goal_phases_start),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                stringResource(
+                    if (editing != null) R.string.settings_goal_phases_edit
+                    else R.string.settings_goal_phases_add
+                ),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(horizontal = 18.dp),
             )
-            DateWheelPicker(
-                selected = GoalJournal.parseDateOrNull(start) ?: today,
-                onSelect = { start = it.toString() },
-                maxYear = today.year + 3,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                stringResource(R.string.settings_goal_phases_end),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-            )
-            DateWheelPicker(
-                selected = GoalJournal.parseDateOrNull(end) ?: today.plusDays(13),
-                onSelect = { end = it.toString() },
-                maxYear = today.year + 3,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Text(
-                stringResource(R.string.settings_goal_phases_range_clip_hint, app.chompass.models.MacroPlan.ASSIGNMENT_KEEP_DAYS.toInt()),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
-            )
-            Spacer(Modifier.height(12.dp))
-            Text(
-                stringResource(R.string.settings_goal_phases_targets),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-            )
-            Spacer(Modifier.height(6.dp))
-            val unit = LocalEnergyUnit.current
-            EditorWheelLabel(stringResource(R.string.macro_calories), unit = energyUnitLabel())
-            NumericWheelPicker(
-                value = EnergyFormat.quantity(calories, unit),
-                onValueChange = { calories = EnergyFormat.toKcal(it, unit) },
-                min = EnergyFormat.quantity(calorieFloor, unit),
-                max = EnergyFormat.quantity(calorieCeiling, unit),
-                unit = energyUnitLabel(),
-                step = EnergyFormat.wheelStep(25, unit),
-            )
-            if (calories <= calorieFloor) {
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    stringResource(R.string.settings_day_types_floor_warning, EnergyFormat.quantity(calorieFloor, unit), energyUnitLabel()),
-                    color = AppColors.Calorie,
+        },
+        body = {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 18.dp)
+                    .padding(top = 12.dp),
+            ) {
+                ChompassTextField(
+                    value = name,
+                    onValueChange = { if (it.length <= 32) name = it },
+                    placeholder = stringResource(R.string.settings_goal_phases_name_placeholder),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
                 )
-            }
-            Spacer(Modifier.height(12.dp))
-            EditorWheelLabel(stringResource(R.string.macro_protein), unit = stringResource(R.string.unit_g))
-            NumericWheelPicker(
-                value = protein,
-                onValueChange = { protein = it },
-                min = 0,
-                max = 400,
-                unit = stringResource(R.string.unit_g),
-                step = 5,
-            )
-            Spacer(Modifier.height(12.dp))
-            EditorWheelLabel(stringResource(R.string.macro_carbs), unit = stringResource(R.string.unit_g))
-            NumericWheelPicker(
-                value = carbs,
-                onValueChange = { carbs = it },
-                min = 0,
-                max = 800,
-                unit = stringResource(R.string.unit_g),
-                step = 5,
-            )
-            Spacer(Modifier.height(12.dp))
-            EditorWheelLabel(stringResource(R.string.macro_fat), unit = stringResource(R.string.unit_g))
-            NumericWheelPicker(
-                value = fat,
-                onValueChange = { fat = it },
-                min = 10,
-                max = 300,
-                unit = stringResource(R.string.unit_g),
-                step = 5,
-            )
-            Spacer(Modifier.height(8.dp))
-            error?.let { err ->
+                Spacer(Modifier.height(12.dp))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    PhaseIntent.entries.forEach { candidate ->
+                        FilterChip(
+                            selected = candidate == intent,
+                            onClick = { intent = candidate },
+                            label = {
+                                Text(
+                                    stringResource(
+                                        when (candidate) {
+                                            PhaseIntent.CUT -> R.string.phase_intent_cut
+                                            PhaseIntent.MAINTAIN -> R.string.phase_intent_maintain
+                                            PhaseIntent.BULK -> R.string.phase_intent_bulk
+                                        }
+                                    ),
+                                    fontSize = 12.sp,
+                                )
+                            },
+                        )
+                    }
+                }
+                Spacer(Modifier.height(12.dp))
                 Text(
-                    text = when (err) {
-                        PhaseEditError.BlankName -> stringResource(R.string.settings_goal_phases_error_blank_name)
-                        PhaseEditError.BadRange -> stringResource(R.string.settings_goal_phases_error_bad_range)
-                        is PhaseEditError.TooLong -> stringResource(R.string.settings_goal_phases_error_too_long, app.chompass.models.MacroPlan.ASSIGNMENT_KEEP_DAYS.toInt())
-                        PhaseEditError.NoProfileSlot -> stringResource(R.string.settings_goal_phases_error_no_slot)
-                    },
-                    color = MaterialTheme.colorScheme.error,
+                    stringResource(R.string.settings_goal_phases_start),
                     style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                )
+                DateWheelPicker(
+                    selected = GoalJournal.parseDateOrNull(start) ?: today,
+                    onSelect = { start = it.toString() },
+                    maxYear = today.year + 3,
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.settings_goal_phases_end),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                )
+                DateWheelPicker(
+                    selected = GoalJournal.parseDateOrNull(end) ?: today.plusDays(13),
+                    onSelect = { end = it.toString() },
+                    maxYear = today.year + 3,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Text(
+                    stringResource(R.string.settings_goal_phases_range_clip_hint, app.chompass.models.MacroPlan.ASSIGNMENT_KEEP_DAYS.toInt()),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
+                )
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    stringResource(R.string.settings_goal_phases_targets),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                )
+                Spacer(Modifier.height(6.dp))
+                val unit = LocalEnergyUnit.current
+                EditorWheelLabel(stringResource(R.string.macro_calories), unit = energyUnitLabel())
+                NumericWheelPicker(
+                    value = EnergyFormat.quantity(calories, unit),
+                    onValueChange = { calories = EnergyFormat.toKcal(it, unit) },
+                    min = EnergyFormat.quantity(calorieFloor, unit),
+                    max = EnergyFormat.quantity(calorieCeiling, unit),
+                    unit = energyUnitLabel(),
+                    step = EnergyFormat.wheelStep(25, unit),
+                )
+                if (calories <= calorieFloor) {
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        stringResource(R.string.settings_day_types_floor_warning, EnergyFormat.quantity(calorieFloor, unit), energyUnitLabel()),
+                        color = AppColors.Calorie,
+                    )
+                }
+                Spacer(Modifier.height(12.dp))
+                EditorWheelLabel(stringResource(R.string.macro_protein), unit = stringResource(R.string.unit_g))
+                NumericWheelPicker(
+                    value = protein,
+                    onValueChange = { protein = it },
+                    min = 0,
+                    max = 400,
+                    unit = stringResource(R.string.unit_g),
+                    step = 5,
+                )
+                Spacer(Modifier.height(12.dp))
+                EditorWheelLabel(stringResource(R.string.macro_carbs), unit = stringResource(R.string.unit_g))
+                NumericWheelPicker(
+                    value = carbs,
+                    onValueChange = { carbs = it },
+                    min = 0,
+                    max = 800,
+                    unit = stringResource(R.string.unit_g),
+                    step = 5,
+                )
+                Spacer(Modifier.height(12.dp))
+                EditorWheelLabel(stringResource(R.string.macro_fat), unit = stringResource(R.string.unit_g))
+                NumericWheelPicker(
+                    value = fat,
+                    onValueChange = { fat = it },
+                    min = 10,
+                    max = 300,
+                    unit = stringResource(R.string.unit_g),
+                    step = 5,
+                )
+                Spacer(Modifier.height(8.dp))
+                error?.let { err ->
+                    Text(
+                        text = when (err) {
+                            PhaseEditError.BlankName -> stringResource(R.string.settings_goal_phases_error_blank_name)
+                            PhaseEditError.BadRange -> stringResource(R.string.settings_goal_phases_error_bad_range)
+                            is PhaseEditError.TooLong -> stringResource(R.string.settings_goal_phases_error_too_long, app.chompass.models.MacroPlan.ASSIGNMENT_KEEP_DAYS.toInt())
+                            PhaseEditError.NoProfileSlot -> stringResource(R.string.settings_goal_phases_error_no_slot)
+                        },
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                    Spacer(Modifier.height(8.dp))
+                }
             }
-        }
-        ChompassPrimaryButton(
-            flushDrafts = true,
-            enabled = name.isNotBlank(),
-            modifier = Modifier.padding(horizontal = 18.dp),
-            onClick = {
-                error = null
-                onSave(draft()) { result -> error = result }
-            },
-        )
-        if (editing != null) {
-            Spacer(Modifier.height(4.dp))
-            TextButton(
-                onClick = { confirmDelete = true },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+        },
+        footer = {
+            Column(
+                Modifier
+                    .navigationBarsPadding()
+                    .imePadding()
+                    .padding(horizontal = 18.dp, vertical = 8.dp),
             ) {
-                Text(stringResource(R.string.settings_goal_phases_delete), color = MaterialTheme.colorScheme.error)
+                ChompassPrimaryButton(
+                    flushDrafts = true,
+                    enabled = name.isNotBlank(),
+                    onClick = {
+                        error = null
+                        onSave(draft()) { result -> error = result }
+                    },
+                )
+                if (editing != null) {
+                    TextButton(
+                        onClick = { confirmDelete = true },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(
+                            stringResource(R.string.settings_goal_phases_delete),
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    }
+                }
             }
-        }
-        Spacer(Modifier.height(8.dp))
-    }
+        },
+    )
 
     if (confirmDelete && editing != null) {
         ChompassDialog(onDismissRequest = { confirmDelete = false }) {
