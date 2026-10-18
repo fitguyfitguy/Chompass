@@ -255,5 +255,6 @@ private fun OverlayPickChip(
         selected = selected,
         onClick = onClick,
         label = { Text(label, fontSize = 12.sp, maxLines = 1) },
+        modifier = Modifier.debugChipState(label, selected),
     )
 }

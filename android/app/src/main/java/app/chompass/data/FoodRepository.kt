@@ -1,5 +1,6 @@
 package app.chompass.data
 
+import app.chompass.debug.DebugTrace
 import app.chompass.models.DailyFoodTotals
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
@@ -404,6 +405,9 @@ class FoodRepository(
         if (idx >= 0) {
             val removed = current.removeAt(idx)
             prefs.setFavoritesAtomic(current)
+            DebugTrace.event(
+                "op=favorite phase=remove key=${entry.favoriteKey.replace(' ', '_')} count=${current.size}",
+            )
             sync?.tombstone(removed.id, "favorite")
             pruneOrphanedImages()
             return
@@ -414,6 +418,9 @@ class FoodRepository(
             current.add(entry)
         }
         prefs.setFavoritesAtomic(current)
+        DebugTrace.event(
+            "op=favorite phase=add key=${entry.favoriteKey.replace(' ', '_')} count=${current.size}",
+        )
         sync?.touch(entry.id, "favorite")
     }
 
@@ -491,6 +498,9 @@ class FoodRepository(
             val stored = entry.copy(id = storedId, recipeLogId = null)
             current[idx] = stored
             prefs.setFavoritesAtomic(current)
+            DebugTrace.event(
+                "op=favorite phase=replace key=${entry.favoriteKey.replace(' ', '_')} count=${current.size}",
+            )
             sync?.touch(storedId, "favorite")
             if (stored.imageFilename != oldImage) {
                 deleteImageIfUnreferenced(oldImage)
@@ -500,6 +510,9 @@ class FoodRepository(
         val stored = entry.copy(recipeLogId = null)
         current.add(stored)
         prefs.setFavoritesAtomic(current)
+        DebugTrace.event(
+            "op=favorite phase=add key=${entry.favoriteKey.replace(' ', '_')} count=${current.size}",
+        )
         sync?.touch(stored.id, "favorite")
         return stored
     }

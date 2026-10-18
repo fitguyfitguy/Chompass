@@ -54,6 +54,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.chompass.BuildConfig
 import app.chompass.R
 import app.chompass.models.ServingUnitOption
 import app.chompass.models.MacroValueFormatter
@@ -180,7 +181,12 @@ fun <T> WheelPicker(
     Box(
         modifier = modifier
             .height(ROW_HEIGHT)
-            .semantics { stateDescription = currentStateLabel },
+            .semantics {
+                stateDescription = currentStateLabel
+                // Debug-only: dumps otherwise show only the centered row, which
+                // can differ from the committed selection mid-scroll.
+                if (BuildConfig.DEBUG) contentDescription = "wheel value: $currentStateLabel"
+            },
         contentAlignment = Alignment.Center
     ) {
         // Shared selected-row band. Parents that paint one band across several
@@ -231,7 +237,12 @@ fun <T> WheelPicker(
                         // text announcement TalkBack had before.
                         .semantics(mergeDescendants = true) {
                             this[SemanticsProperties.Selected] = isSelected
-                            contentDescription = rowText
+                            // Debug builds append the real selected state: the
+                            // accessibility bridge reports selected="false" for
+                            // every row, so the label is the only dump-visible
+                            // channel. Release keeps the normal announced label.
+                            contentDescription =
+                                if (BuildConfig.DEBUG && isSelected) "$rowText, selected" else rowText
                         },
                     contentAlignment = Alignment.Center
                 ) {

@@ -58,6 +58,7 @@ import app.chompass.models.WaterGoalCalculator
 import app.chompass.models.WaterQuickPresets
 import app.chompass.models.WaterEntry
 import app.chompass.BuildConfig
+import app.chompass.debug.DebugTrace
 import app.chompass.services.FoodImageComposer
 import app.chompass.services.FastingAutoPlanner
 import app.chompass.services.nextFastingStartMillis
@@ -1272,6 +1273,18 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 if (count == null) return@onEach
                 container.progressiveSeedInbox.value = null
                 seedProgressiveMealDemo(count)
+            }
+            .launchIn(viewModelScope)
+        // Debug-only: `debug_barcode` hands a raw scan to the real lookup path.
+        container.barcodeLookupInbox
+            .onEach { code ->
+                if (code == null) return@onEach
+                container.barcodeLookupInbox.value = null
+                if (_ui.value.isEntryAnalysisBusy) {
+                    DebugTrace.event("op=barcode phase=drop code=$code reason=analysisBusy")
+                } else {
+                    lookupBarcode(code)
+                }
             }
             .launchIn(viewModelScope)
         // Analysis queue + prompt history (Codeberg #53): load once (with
@@ -2851,6 +2864,9 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         pendingReviewSource = null,
                         savedFavoriteAck = SavedFavoriteAck(stored, inserted = !existed),
                     ) }
+                    DebugTrace.event(
+                        "op=favorite phase=barcodeSave key=${stored.favoriteKey.replace(' ', '_')} inserted=${!existed}",
+                    )
                 }
             } finally {
                 _ui.update { it.copy(saving = false) }

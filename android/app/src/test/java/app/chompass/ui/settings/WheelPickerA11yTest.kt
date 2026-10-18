@@ -17,6 +17,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import app.chompass.BuildConfig
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.WheelPicker
 import org.junit.Rule
@@ -79,7 +80,14 @@ class WheelPickerA11yTest {
         assert(center.getOrNull(SemanticsProperties.Selected) == true) {
             "center wheel row must expose selected=true (audit H1)"
         }
-        assert(center.getOrNull(SemanticsProperties.ContentDescription)?.contains("3") == true) {
+        // Debug builds append ", selected" so device dumps can tell which row
+        // is centred (uiautomator reports selected="false" for every row);
+        // release announces the bare label.
+        val expectedCenterDescription = if (BuildConfig.DEBUG) "3, selected" else "3"
+        assert(
+            center.getOrNull(SemanticsProperties.ContentDescription) ==
+                listOf(expectedCenterDescription)
+        ) {
             "center wheel row must expose its label as contentDescription (audit H1)"
         }
 

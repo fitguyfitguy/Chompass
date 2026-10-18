@@ -3,6 +3,7 @@ package app.chompass.data
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.first
+import app.chompass.debug.DebugTrace
 import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.GoalJournalEntry
 import app.chompass.models.HomeCalorieDisplayMode
@@ -166,17 +167,26 @@ internal val PreferencesStore.progressOverlaySeriesImpl: Flow<Set<String>?> get(
 /** Atomic flip of one series in the selection — no read-modify-write race
  *  between two rapid chip taps (each edit sees the freshest stored set). */
 internal suspend fun PreferencesStore.toggleProgressOverlaySeriesKeyImpl(key: String) {
-    dataStore.edit { prefs ->
+    val updated = dataStore.edit { prefs ->
         val cur = prefs[Keys.PROGRESS_OVERLAY_SERIES] ?: emptySet()
         prefs[Keys.PROGRESS_OVERLAY_SERIES] = if (key in cur) cur - key else cur + key
     }
+    DebugTrace.event(
+        "op=progressOverlay phase=set key=$key " +
+            "series=${updated[Keys.PROGRESS_OVERLAY_SERIES]?.sorted()?.joinToString(",") ?: ""}",
+    )
 }
 
 /** Calorie-card metric overlay ("off" | "weight" | "bodyfat"); null = unset. */
 internal val PreferencesStore.progressCalorieOverlayImpl: Flow<String?> get() =
     dataStore.data.map { prefs -> prefs[Keys.PROGRESS_CALORIE_OVERLAY]?.takeIf { it in CalorieOverlayValues } }
 internal suspend fun PreferencesStore.setProgressCalorieOverlayImpl(v: String) {
-    dataStore.edit { it[Keys.PROGRESS_CALORIE_OVERLAY] = if (v in CalorieOverlayValues) v else "off" }
+    val updated = dataStore.edit {
+        it[Keys.PROGRESS_CALORIE_OVERLAY] = if (v in CalorieOverlayValues) v else "off"
+    }
+    DebugTrace.event(
+        "op=progressCalorieOverlay phase=set value=${updated[Keys.PROGRESS_CALORIE_OVERLAY]}",
+    )
 }
 
 /** Progress fiber/sugar/sodium averages; default off (incomplete barcode/photo micros). */

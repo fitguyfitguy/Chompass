@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Debug-only export of ReminderReceiver so `adb shell am broadcast` can
+     reproduce a reminder fire without waiting for the alarm. Release keeps
+     android:exported="false" from the main manifest. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <application>
+        <receiver
+            android:name="app.chompass.services.ReminderReceiver"
+            android:exported="true"
+            tools:replace="android:exported" />
+    </application>
+</manifest>

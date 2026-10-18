@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import app.chompass.AppContainer
 import app.chompass.ChompassApp
 import app.chompass.R
+import app.chompass.debug.DebugTrace
 import app.chompass.models.WaterAmountFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -405,9 +406,14 @@ class NotificationService(private val context: Context) {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
+        val nextFire = nextDailyFireMillis(hour, minute)
+        DebugTrace.event(
+            "op=alarm phase=schedule channel=$channel request=$requestCode " +
+                "hour=$hour minute=$minute next=$nextFire",
+        )
         am.setAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
-            nextDailyFireMillis(hour, minute),
+            nextFire,
             pi,
         )
     }
@@ -420,6 +426,7 @@ class NotificationService(private val context: Context) {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE
         )
         if (pi != null) {
+            DebugTrace.event("op=alarm phase=cancel request=$requestCode")
             am.cancel(pi)
             pi.cancel()
         }
@@ -568,6 +575,10 @@ class ReminderReceiver : BroadcastReceiver() {
         // closes and ends at its goal. No notification is posted; re-arm the
         // next transition from the resulting session.
         val request = intent.getIntExtra(NotificationService.EXTRA_REQUEST, -1)
+        DebugTrace.event(
+            "op=reminder phase=fire channel=$channel request=$request " +
+                "perm=${NotificationService(context).canPostNotifications()}",
+        )
         if (channel == NotificationService.CHANNEL_FASTING &&
             (request == NotificationService.REQUEST_FASTING_AUTO_START ||
                 request == NotificationService.REQUEST_FASTING_AUTO_END)
@@ -651,6 +662,7 @@ class ReminderReceiver : BroadcastReceiver() {
                 // Fasting goal reached: post only while the fast is still running
                 // and this goal wasn't already notified; latch it in the same step
                 // so the one-shot alarm can never double-notify.
+                var fastingGoalSkipReason = "none"
                 val fastingGoalReached = if (
                     channel == NotificationService.CHANNEL_FASTING &&
                     request == NotificationService.REQUEST_FASTING_GOAL &&
@@ -661,6 +673,8 @@ class ReminderReceiver : BroadcastReceiver() {
                         container.fastingRepository.markGoalReachedNotified()
                         true
                     } else {
+                        fastingGoalSkipReason =
+                            if (session.isFasting) "goalAlreadyNotified" else "fastEnded"
                         false
                     }
                 } else {
@@ -679,6 +693,22 @@ class ReminderReceiver : BroadcastReceiver() {
                     false
                 }
 
+                // Weight/body-fat entry presence is computed once so the gate
+                // log and the post decision cannot disagree.
+                val isBodyMetricChannel =
+                    channel == NotificationService.CHANNEL_WEIGHT_LOG ||
+                        channel == NotificationService.CHANNEL_BODY_FAT_LOG
+                val hasBodyMetricToday = if (isBodyMetricChannel) {
+                    // Fail open: a store miss still posts, matching the streak gate.
+                    runCatching {
+                        val c = container ?: return@runCatching false
+                        hasBodyMetricEntryToday(c, channel)
+                    }.getOrDefault(false)
+                } else {
+                    false
+                }
+
+                var skipReason = "none"
                 val shouldPost = if (channel == NotificationService.CHANNEL_STREAK) {
                     val hasFoodToday = runCatching {
                         val c = (context.applicationContext as? ChompassApp)?.container
@@ -690,32 +720,49 @@ class ReminderReceiver : BroadcastReceiver() {
                             ?: return@runCatching false
                         LocalDate.now().toString() in c.prefs.untrackedDays.first()
                     }.getOrDefault(false)
-                    shouldNotifyStreak(hasFoodToday, todayUntracked)
+                    shouldNotifyStreak(hasFoodToday, todayUntracked).also { post ->
+                        if (!post) {
+                            skipReason =
+                                if (hasFoodToday) "foodLogged" else if (todayUntracked) "dayUntracked" else "none"
+                        }
+                    }
                 } else if (channel == NotificationService.CHANNEL_WATER) {
                     // Nothing to post when the reminder got disabled since arming.
-                    waterPlan != null
+                    (waterPlan != null).also { post ->
+                        if (!post) skipReason = "reminderDisabled"
+                    }
                 } else if (channel == NotificationService.CHANNEL_DAILY && container != null) {
-                    dailyCopy != null
+                    (dailyCopy != null).also { post ->
+                        if (!post) skipReason = "summaryUnavailable"
+                    }
                 } else if (channel == NotificationService.CHANNEL_FASTING) {
                     // Nothing to post when the fast ended / was already notified,
                     // or (start nudge) when a fast is already running.
                     when (request) {
-                        NotificationService.REQUEST_FASTING_GOAL -> fastingGoalReached
-                        NotificationService.REQUEST_FASTING_START -> fastingStartNudge
+                        NotificationService.REQUEST_FASTING_GOAL -> fastingGoalReached.also { post ->
+                            if (!post) skipReason = fastingGoalSkipReason
+                        }
+                        NotificationService.REQUEST_FASTING_START -> fastingStartNudge.also { post ->
+                            if (!post) skipReason = "fastRunning"
+                        }
                         else -> false
                     }
-                } else if (
-                    channel == NotificationService.CHANNEL_WEIGHT_LOG ||
-                    channel == NotificationService.CHANNEL_BODY_FAT_LOG
-                ) {
-                    // Fail open: a store miss still posts, matching the streak gate.
-                    val hasEntryToday = runCatching {
-                        val c = container ?: return@runCatching false
-                        hasBodyMetricEntryToday(c, channel)
-                    }.getOrDefault(false)
-                    shouldNotifyBodyMetric(hasEntryToday)
+                } else if (isBodyMetricChannel) {
+                    shouldNotifyBodyMetric(hasBodyMetricToday).also { post ->
+                        if (!post) skipReason = "bodyMetricLogged"
+                    }
                 } else {
                     true
+                }
+
+                DebugTrace.event(
+                    "op=reminder phase=gate channel=$channel request=$request post=$shouldPost" +
+                        if (isBodyMetricChannel) " hasEntryToday=$hasBodyMetricToday" else "",
+                )
+                if (!shouldPost) {
+                    DebugTrace.event(
+                        "op=reminder phase=skip channel=$channel request=$request reason=$skipReason",
+                    )
                 }
 
                 if (shouldPost) {
@@ -756,6 +803,9 @@ class ReminderReceiver : BroadcastReceiver() {
                     if (bigText != null) {
                         builder.setStyle(NotificationCompat.BigTextStyle().bigText(bigText))
                     }
+                    DebugTrace.event(
+                        "op=reminder phase=post channel=$channel request=$request",
+                    )
                     NotificationManagerCompat.from(context).notifySafely(request, builder.build())
                 }
 
@@ -777,6 +827,10 @@ class ReminderReceiver : BroadcastReceiver() {
                     val pi = PendingIntent.getBroadcast(
                         context, request, reIntent,
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+                    DebugTrace.event(
+                        "op=alarm phase=rearm channel=$channel request=$request " +
+                            "next=$nextFire fallback=true",
                     )
                     am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextFire, pi)
                 }
@@ -848,5 +902,9 @@ private suspend fun rearmConfiguredBodyMetric(
 }
 
 private fun NotificationManagerCompat.notifySafely(id: Int, notif: android.app.Notification) {
-    runCatching { notify(id, notif) } // swallow SecurityException if permission revoked.
+    // Swallow SecurityException if permission revoked.
+    runCatching { notify(id, notif) }
+        .onFailure {
+            DebugTrace.event("op=notify phase=error id=$id error=${it.javaClass.simpleName}")
+        }
 }

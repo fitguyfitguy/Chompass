@@ -5,6 +5,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.foundation.clickable
@@ -26,9 +27,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.chompass.BuildConfig
 import app.chompass.R
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.theme.AppTextOpacity
+
+/**
+ * uiautomator reports every Compose FilterChip as selected="false". Debug
+ * builds append the real state to the description so device passes can assert
+ * it from a dump; release keeps the normal announced label.
+ */
+internal fun Modifier.debugChipState(label: String, selected: Boolean): Modifier =
+    if (BuildConfig.DEBUG) semantics { contentDescription = "$label, selected=$selected" }
+    else this
 
 @Composable
 internal fun TimeRangePicker(selected: TimeRange, onSelect: (TimeRange) -> Unit) {
@@ -37,6 +48,7 @@ internal fun TimeRangePicker(selected: TimeRange, onSelect: (TimeRange) -> Unit)
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         TimeRange.entries.forEach { range ->
+            val labelText = stringResource(range.labelRes)
             FilterChip(
                 selected = range == selected,
                 onClick = { onSelect(range) },
@@ -44,7 +56,7 @@ internal fun TimeRangePicker(selected: TimeRange, onSelect: (TimeRange) -> Unit)
                 // (PLAN_UI_STRING_FIT: "Alle" wrapped to "All/e" at 1.3×).
                 label = {
                     Text(
-                        stringResource(range.labelRes),
+                        labelText,
                         maxLines = 1,
                         softWrap = false,
                         overflow = TextOverflow.Clip,
@@ -55,7 +67,9 @@ internal fun TimeRangePicker(selected: TimeRange, onSelect: (TimeRange) -> Unit)
                         modifier = Modifier.fillMaxWidth(),
                     )
                 },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .debugChipState(labelText, range == selected),
             )
         }
     }

@@ -12,6 +12,9 @@ private val GOAL_MATRIX_PROVIDERS = setOf("on_device", "gemini", "anthropic", "o
 /** Valid values for the `seed_profile_variant` debug extra. */
 private val PROFILE_VARIANTS = setOf("gain", "maintain", "pinned", "female")
 
+/** 24h `H:MM` / `HH:MM` — the only accepted `set_weight_reminder` shape. */
+private val REMINDER_TIME = Regex("""^([01]?\d|2[0-3]):([0-5]\d)$""")
+
 /**
  * Debug-only intent extras (seeders, benchmarks, on-device LLM smoke test).
  * Parsed once and stripped so `Activity.recreate()` does not re-fire them.
@@ -127,6 +130,16 @@ internal data class DebugIntentActions(
     val runMealieImportTest: Boolean = false,
     val mealieTestUrl: String = "",
     val mealieTestToken: String = "",
+    /** Debug-only: barcode handed to the real Home lookup path (`debug_barcode`). */
+    val debugBarcode: String = "",
+    /** Debug-only: keep the saved-to-favorites snackbar (with Undo) on screen. */
+    val debugSnackbarPersistent: Boolean = false,
+    /** Debug-only: restore AI profiles wiped by a seed launch (`keep_ai`). */
+    val keepAiProfiles: Boolean = false,
+    /** Debug-only: `HH:MM` weight reminder time to persist without the wheel. */
+    val weightReminderTime: String = "",
+    /** Debug-only: delete today's weight readings (`clear_today_weight`). */
+    val clearTodayWeight: Boolean = false,
 ) {
     val hasSeedAction: Boolean
         get() = seedTestData || seedFull || seedBodyMetrics || seedBodyMetricsTwoYears ||
@@ -251,6 +264,16 @@ internal fun consumeDebugIntentExtras(
             intent.getBooleanExtra("run_mealie_import_test", false),
         mealieTestUrl = if (BuildConfig.DEBUG) intent.getStringExtra("mealie_url") ?: "" else "",
         mealieTestToken = if (BuildConfig.DEBUG) intent.getStringExtra("mealie_token") ?: "" else "",
+        debugBarcode = if (BuildConfig.DEBUG) intent.getStringExtra("debug_barcode") ?: "" else "",
+        debugSnackbarPersistent = BuildConfig.DEBUG &&
+            intent.getBooleanExtra("debug_snackbar_persistent", false),
+        keepAiProfiles = BuildConfig.DEBUG && intent.getBooleanExtra("keep_ai", false),
+        weightReminderTime = if (BuildConfig.DEBUG) {
+            (intent.getStringExtra("set_weight_reminder") ?: "").takeIf { REMINDER_TIME.matches(it) } ?: ""
+        } else {
+            ""
+        },
+        clearTodayWeight = BuildConfig.DEBUG && intent.getBooleanExtra("clear_today_weight", false),
     )
     if (actions.resetOnboarding) intent.removeExtra("reset_onboarding")
     if (actions.seedTestData) intent.removeExtra("seed_test_data")
@@ -334,5 +357,12 @@ internal fun consumeDebugIntentExtras(
     if (actions.goalMatrixModel.isNotBlank()) intent.removeExtra("goal_matrix_model")
     if (actions.setOpenRouterKey.isNotEmpty()) intent.removeExtra("set_openrouter_key")
     }
+    // Injected once, never on recreate: the barcode and the reminder time are
+    // stripped whenever present (as parsed, even when rejected).
+    if (intent.hasExtra("debug_barcode")) intent.removeExtra("debug_barcode")
+    if (intent.hasExtra("set_weight_reminder")) intent.removeExtra("set_weight_reminder")
+    if (actions.debugSnackbarPersistent) intent.removeExtra("debug_snackbar_persistent")
+    if (actions.keepAiProfiles) intent.removeExtra("keep_ai")
+    if (actions.clearTodayWeight) intent.removeExtra("clear_today_weight")
     return actions
 }
