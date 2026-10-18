@@ -1103,7 +1103,7 @@
     <string name="home_calories_eaten_a11y">Ingeridas %1$s</string>
     <string name="home_display_calorie_mode">Medidor de calorías</string>
     <string name="home_display_calorie_layout">Diseño de calorías</string>
-    <string name="home_calorie_layout_default">Arco amplio</string>
+    <string name="home_calorie_layout_default">Predeterminado</string>
     <string name="home_calorie_layout_gauge">Medidor de arco + números</string>
     <string name="home_calorie_layout_compact_arc">Arco compacto</string>
     <string name="home_calorie_layout_compact_horizontal">Barra de progreso</string>

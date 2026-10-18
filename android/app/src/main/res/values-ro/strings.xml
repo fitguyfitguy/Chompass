@@ -1062,7 +1062,7 @@
     <string name="home_calories_eaten_a11y">Ingerate %1$s</string>
     <string name="home_display_calorie_mode">Contor de calorii</string>
     <string name="home_display_calorie_layout">Aspect calorii</string>
-    <string name="home_calorie_layout_default">Arc lat</string>
+    <string name="home_calorie_layout_default">Implicit</string>
     <string name="home_calorie_layout_gauge">Indicator în arc + cifre</string>
     <string name="home_calorie_layout_compact_arc">Arc compact</string>
     <string name="home_calorie_layout_compact_horizontal">Bară de progres</string>

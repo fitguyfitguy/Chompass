@@ -1007,7 +1007,7 @@
     <string name="home_calories_eaten_a11y">З\'їдено %1$s</string>
     <string name="home_display_calorie_mode">Шкала калорій</string>
     <string name="home_display_calorie_layout">Макет калорій</string>
-    <string name="home_calorie_layout_default">Широка дуга</string>
+    <string name="home_calorie_layout_default">Типовий</string>
     <string name="home_calorie_layout_gauge">Дуговий індикатор + числа</string>
     <string name="home_calorie_layout_compact_arc">Компактна дуга</string>
     <string name="home_calorie_layout_compact_horizontal">Смуга прогресу</string>

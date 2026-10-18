@@ -1066,7 +1066,7 @@
     <string name="home_calories_eaten_a11y">摂取 %1$s</string>
     <string name="home_display_calorie_mode">カロリーゲージ</string>
     <string name="home_display_calorie_layout">カロリーレイアウト</string>
-    <string name="home_calorie_layout_default">ワイドアーク</string>
+    <string name="home_calorie_layout_default">デフォルト</string>
     <string name="home_calorie_layout_gauge">アークゲージ＋数値</string>
     <string name="home_calorie_layout_compact_arc">コンパクトアーク</string>
     <string name="home_calorie_layout_compact_horizontal">プログレスバー</string>

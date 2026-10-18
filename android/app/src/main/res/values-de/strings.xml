@@ -2650,7 +2650,7 @@ für dich ein</string>
 
     <string name="home_display_calorie_mode">Kalorienanzeige</string>
     <string name="home_display_calorie_layout">Kalorienlayout</string>
-    <string name="home_calorie_layout_default">Breiter Bogen</string>
+    <string name="home_calorie_layout_default">Standard</string>
     <string name="home_calorie_layout_gauge">Bogenanzeige + Zahlen</string>
     <string name="home_calorie_layout_compact_arc">Kompakter Bogen</string>
     <string name="home_calorie_layout_compact_horizontal">Fortschrittsbalken</string>

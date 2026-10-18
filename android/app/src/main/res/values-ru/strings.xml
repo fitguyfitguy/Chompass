@@ -1170,7 +1170,7 @@
     <string name="home_calories_eaten_a11y">Съедено %1$s</string>
     <string name="home_display_calorie_mode">Шкала калорий</string>
     <string name="home_display_calorie_layout">Макет калорий</string>
-    <string name="home_calorie_layout_default">Широкая дуга</string>
+    <string name="home_calorie_layout_default">По умолчанию</string>
     <string name="home_calorie_layout_gauge">Датчик-дуга + числа</string>
     <string name="home_calorie_layout_compact_arc">Компактная дуга</string>
     <string name="home_calorie_layout_compact_horizontal">Полоса прогресса</string>

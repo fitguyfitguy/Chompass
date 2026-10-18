@@ -1071,7 +1071,7 @@
     <string name="home_calories_eaten_a11y">مأكول %1$s</string>
     <string name="home_display_calorie_mode">مقياس السعرات</string>
     <string name="home_display_calorie_layout">تخطيط مقياس السعرات</string>
-    <string name="home_calorie_layout_default">قوس عريض</string>
+    <string name="home_calorie_layout_default">افتراضي</string>
     <string name="home_calorie_layout_gauge">مقياس قوسي + أرقام</string>
     <string name="home_calorie_layout_compact_arc">قوس مدمج</string>
     <string name="home_calorie_layout_compact_horizontal">شريط تقدم</string>

@@ -1098,7 +1098,7 @@
     <string name="home_calories_eaten_a11y">Ingérées %1$s</string>
     <string name="home_display_calorie_mode">Jauge de calories</string>
     <string name="home_display_calorie_layout">Disposition des calories</string>
-    <string name="home_calorie_layout_default">Arc large</string>
+    <string name="home_calorie_layout_default">Par défaut</string>
     <string name="home_calorie_layout_gauge">Jauge en arc + chiffres</string>
     <string name="home_calorie_layout_compact_arc">Arc compact</string>
     <string name="home_calorie_layout_compact_horizontal">Barre de progression</string>
