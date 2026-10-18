@@ -198,7 +198,7 @@ internal fun CalorieHero(
         HomeCalorieHeroLayout.SIDE_GAUGE -> SideGaugeCalorieHero(input)
         HomeCalorieHeroLayout.COMPACT_ARC -> CompactArcCalorieHero(input)
         HomeCalorieHeroLayout.HIDDEN -> Unit
-        null -> SquatArcCalorieHero(input)
+        null -> DefaultCalorieHero(input)
     }
 }
 
@@ -563,9 +563,9 @@ private fun CalorieBurnCaption(input: CalorieHeroInput, shadesActive: Boolean) {
     }
 }
 
-/** Default hero: full-width squat arc, number inside the bowl, one caption line below. */
+/** The tall hero arc users know: 260dp circle, label + number + goal line inside. */
 @Composable
-private fun SquatArcCalorieHero(input: CalorieHeroInput) {
+private fun DefaultCalorieHero(input: CalorieHeroInput) {
     with(input) {
         val unit = LocalEnergyUnit.current
         val d = calorieHeroDerived(input)
@@ -587,93 +587,118 @@ private fun SquatArcCalorieHero(input: CalorieHeroInput) {
         val tertiary = MaterialTheme.colorScheme.tertiary
         val successColor = MaterialTheme.colorScheme.success
 
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 2.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+                .padding(top = 8.dp, bottom = 4.dp),
+            contentAlignment = Alignment.TopCenter
         ) {
-            Box(modifier = Modifier.fillMaxWidth().height(64.dp)) {
-                CalorieArcCanvas(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .height(64.dp),
-                    stroke = 12.dp,
-                    fillRatio = d.fillRatio,
-                    plannedFillRatio = d.plannedFillRatio,
-                    freezeProgress = freezeProgress,
-                    animatedRatio = animatedRatio,
-                    trackColor = trackColor,
-                    progressColor = progressColor,
-                    bonusColor = bonusColor,
-                    liveBurnColor = liveBurnColor,
-                    successColor = successColor,
-                    muted = muted,
-                    shadesActive = d.shadesActive,
-                    shade = burnShade,
-                    baseGoal = baseGoal,
-                    effectiveGoal = d.effectiveGoal,
-                    displayMode = displayMode,
-                    activeCalories = activeCalories,
-                    semanticsRatio = animatedRatio.value,
+            CalorieArcCanvas(
+                modifier = Modifier
+                    .width(260.dp)
+                    .aspectRatio(2f),
+                stroke = 16.dp,
+                fillRatio = d.fillRatio,
+                plannedFillRatio = d.plannedFillRatio,
+                freezeProgress = freezeProgress,
+                animatedRatio = animatedRatio,
+                trackColor = trackColor,
+                progressColor = progressColor,
+                bonusColor = bonusColor,
+                liveBurnColor = liveBurnColor,
+                successColor = successColor,
+                muted = muted,
+                shadesActive = d.shadesActive,
+                shade = burnShade,
+                baseGoal = baseGoal,
+                effectiveGoal = d.effectiveGoal,
+                displayMode = displayMode,
+                activeCalories = activeCalories,
+                semanticsRatio = animatedRatio.value,
+            )
+
+            Column(
+                modifier = Modifier.padding(top = 44.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Text(
+                    stringResource(R.string.home_calories_label),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 0.5.sp,
+                    color = muted
                 )
-                // Bowl stack: the kcal number sits inside the arc with the
-                // goal line under it. The "Calories" word stays semantic-only,
-                // folded into the number's contentDescription together with the
-                // budget truth (UI-audit 2.7).
-                val number = LocaleFormat.integer(EnergyFormat.quantity(current, unit))
-                val numberDescription = stringResource(R.string.home_calories_label) + ", " + number +
-                    (budgetDescription?.let { ", $it" } ?: "")
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .padding(bottom = 2.dp),
-                    contentAlignment = Alignment.BottomCenter,
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(1.dp),
-                    ) {
-                        Text(
-                            number,
-                            style = MaterialTheme.typography.headlineMedium,
-                            lineHeight = 30.sp,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1,
-                            modifier = Modifier.semantics {
-                                contentDescription = numberDescription
-                            },
+                Text(
+                    LocaleFormat.integer(EnergyFormat.quantity(current, unit)),
+                    style = MaterialTheme.typography.displayMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                )
+                // Decluttered goal line: "of <expected day>". The ⓘ affordance opens a sheet that
+                // explains the breakdown (expected day, burned today, source) instead of jamming
+                // the active figures into this one-line caption. The a11y keeps the budget truth
+                // (base + live burn); the burn caption carries the live-vs-typical read.
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        stringResource(R.string.home_calorie_of_goal, LocaleFormat.integer(EnergyFormat.quantity(d.target, unit)), unitLabel),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = muted,
+                        modifier = budgetDescription?.let { desc ->
+                            Modifier.semantics { contentDescription = desc }
+                        } ?: Modifier,
+                    )
+                    if (budgetDescription != null) {
+                        Spacer(Modifier.width(4.dp))
+                        Icon(
+                            Icons.Filled.Info,
+                            contentDescription = stringResource(R.string.home_calorie_budget_info),
+                            tint = tertiary,
+                            modifier = Modifier
+                                .minimumInteractiveComponentSize()
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null,
+                                    onClick = { showBudgetSheet = true },
+                                ),
                         )
-                        if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE) {
-                            BudgetGoalLine(
-                                goalText = stringResource(
-                                    R.string.home_calorie_of_goal,
-                                    LocaleFormat.integer(EnergyFormat.quantity(d.target, unit)),
-                                    unitLabel,
-                                ),
-                                color = muted,
-                                tint = tertiary,
-                                onOpen = { showBudgetSheet = true },
-                            )
-                        } else {
-                            Text(
-                                stringResource(
-                                    R.string.home_calorie_of_goal,
-                                    LocaleFormat.integer(EnergyFormat.quantity(d.target, unit)),
-                                    unitLabel,
-                                ),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = muted,
-                            )
-                        }
                     }
                 }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    Icon(
+                        Icons.Filled.LocalFireDepartment,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(13.dp)
+                    )
+                    Text(
+                        stringResource(R.string.home_calories_left, LocaleFormat.integer(EnergyFormat.quantity(d.remaining, unit))),
+                        modifier = Modifier.weight(1f, fill = false),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    // Day-type chip rides the remaining caption's line (#60) — one
+                    // row instead of its own, keeping the hero compact. Hidden when
+                    // the plan is off / past-day view (dayTypeLabel == null).
+                    if (dayTypeLabel != null && onDayTypeClick != null) {
+                        Spacer(Modifier.width(5.dp))
+                        DayTypeChip(label = dayTypeLabel, color = dayTypeColor, onClick = onDayTypeClick)
+                    }
+                    if (onUntrackedClick != null) {
+                        Spacer(Modifier.width(5.dp))
+                        UntrackedChip(untracked = untracked, onClick = onUntrackedClick)
+                    }
+                }
+                CalorieBurnCaption(input = input, shadesActive = d.shadesActive)
             }
-            CalorieRemainingCaption(input = input, remaining = d.remaining)
-            CalorieBurnCaption(input = input, shadesActive = d.shadesActive)
         }
         if (showBudgetSheet) {
             BudgetExplanationDialog(
@@ -744,16 +769,6 @@ private fun SideGaugeCalorieHero(input: CalorieHeroInput) {
                     displayMode = displayMode,
                     activeCalories = activeCalories,
                     semanticsRatio = animatedRatio.value,
-                )
-                Text(
-                    LocaleFormat.integer(EnergyFormat.quantity(current, unit)),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 2.dp),
                 )
             }
             Column(

@@ -1068,7 +1068,7 @@
     <string name="home_calories_eaten_a11y">摄入 %1$s</string>
     <string name="home_display_calorie_mode">热量表盘</string>
     <string name="home_display_calorie_layout">热量布局</string>
-    <string name="home_calorie_layout_default">宽弧形</string>
+    <string name="home_calorie_layout_default">默认</string>
     <string name="home_calorie_layout_gauge">弧形仪表 + 数字</string>
     <string name="home_calorie_layout_compact_arc">紧凑弧形</string>
     <string name="home_calorie_layout_compact_horizontal">进度条</string>

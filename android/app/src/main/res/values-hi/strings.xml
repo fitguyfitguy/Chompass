@@ -1067,7 +1067,7 @@
     <string name="home_calories_eaten_a11y">खाया %1$s</string>
     <string name="home_display_calorie_mode">कैलोरी गेज</string>
     <string name="home_display_calorie_layout">कैलोरी लेआउट</string>
-    <string name="home_calorie_layout_default">चौड़ा चाप</string>
+    <string name="home_calorie_layout_default">डिफ़ॉल्ट</string>
     <string name="home_calorie_layout_gauge">चाप गेज + संख्याएँ</string>
     <string name="home_calorie_layout_compact_arc">कॉम्पैक्ट चाप</string>
     <string name="home_calorie_layout_compact_horizontal">प्रोग्रेस बार</string>

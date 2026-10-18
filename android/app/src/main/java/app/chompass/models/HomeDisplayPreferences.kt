@@ -17,7 +17,7 @@ enum class HomeCalorieDisplayMode(val storageKey: String, val displayNameRes: In
     }
 }
 
-/** Presentation options for the home calorie hero. Null = wide squat arc (default). */
+/** Presentation options for the home calorie hero. Null preserves the legacy tall arc. */
 enum class HomeCalorieHeroLayout(val storageKey: String) {
     COMPACT_HORIZONTAL("compactHorizontal"),
     SIDE_GAUGE("sideGauge"),

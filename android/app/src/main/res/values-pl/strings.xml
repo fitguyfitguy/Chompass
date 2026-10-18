@@ -1476,7 +1476,7 @@
     <string name="home_display_step_goal">Dzienny cel kroków</string>
     <string name="home_display_calorie_mode">Wskaźnik kalorii</string>
     <string name="home_display_calorie_layout">Układ kalorii</string>
-    <string name="home_calorie_layout_default">Szeroki łuk</string>
+    <string name="home_calorie_layout_default">Domyślny</string>
     <string name="home_calorie_layout_gauge">Łukowy wskaźnik + liczby</string>
     <string name="home_calorie_layout_compact_arc">Kompaktowy łuk</string>
     <string name="home_calorie_layout_compact_horizontal">Pasek postępu</string>

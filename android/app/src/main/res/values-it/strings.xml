@@ -1034,7 +1034,7 @@
     <string name="home_calories_eaten_a11y">Ingerite %1$s</string>
     <string name="home_display_calorie_mode">Anello calorie</string>
     <string name="home_display_calorie_layout">Layout calorie</string>
-    <string name="home_calorie_layout_default">Arco largo</string>
+    <string name="home_calorie_layout_default">Predefinito</string>
     <string name="home_calorie_layout_gauge">Misuratore ad arco + numeri</string>
     <string name="home_calorie_layout_compact_arc">Arco compatto</string>
     <string name="home_calorie_layout_compact_horizontal">Barra di avanzamento</string>

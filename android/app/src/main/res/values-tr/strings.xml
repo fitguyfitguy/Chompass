@@ -1474,7 +1474,7 @@
     <string name="home_display_step_goal">Günlük adım hedefi</string>
     <string name="home_display_calorie_mode">Kalori göstergesi</string>
     <string name="home_display_calorie_layout">Kalori düzeni</string>
-    <string name="home_calorie_layout_default">Geniş yay</string>
+    <string name="home_calorie_layout_default">Varsayılan</string>
     <string name="home_calorie_layout_gauge">Yay göstergesi + sayılar</string>
     <string name="home_calorie_layout_compact_arc">Kompakt yay</string>
     <string name="home_calorie_layout_compact_horizontal">İlerleme çubuğu</string>

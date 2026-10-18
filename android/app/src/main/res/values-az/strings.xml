@@ -1059,7 +1059,7 @@ bilirsən?</string>
     <string name="home_calories_eaten_a11y">Yeyilən %1$s</string>
     <string name="home_display_calorie_mode">Kalori göstəricisi</string>
     <string name="home_display_calorie_layout">Kalori düzümü</string>
-    <string name="home_calorie_layout_default">Geniş qövs</string>
+    <string name="home_calorie_layout_default">Standart</string>
     <string name="home_calorie_layout_gauge">Qövs göstəricisi + rəqəmlər</string>
     <string name="home_calorie_layout_compact_arc">Kompakt qövs</string>
     <string name="home_calorie_layout_compact_horizontal">İrəliləmə zolağı</string>

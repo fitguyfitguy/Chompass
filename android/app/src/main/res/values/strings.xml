@@ -2185,7 +2185,7 @@
     <string name="home_display_step_goal">Daily step goal</string>
     <string name="home_display_calorie_mode">Calorie gauge</string>
     <string name="home_display_calorie_layout">Calorie layout</string>
-    <string name="home_calorie_layout_default">Wide arc</string>
+    <string name="home_calorie_layout_default">Default</string>
     <string name="home_calorie_layout_gauge">Arc gauge + numbers</string>
     <string name="home_calorie_layout_compact_arc">Compact arc</string>
     <string name="home_calorie_layout_compact_horizontal">Progress bar</string>

@@ -1038,7 +1038,7 @@
     <string name="home_calories_eaten_a11y">Gegeten %1$s</string>
     <string name="home_display_calorie_mode">Caloriemeter</string>
     <string name="home_display_calorie_layout">Calorie-indeling</string>
-    <string name="home_calorie_layout_default">Brede boog</string>
+    <string name="home_calorie_layout_default">Standaard</string>
     <string name="home_calorie_layout_gauge">Boogmeter + cijfers</string>
     <string name="home_calorie_layout_compact_arc">Compacte boog</string>
     <string name="home_calorie_layout_compact_horizontal">Voortgangsbalk</string>
