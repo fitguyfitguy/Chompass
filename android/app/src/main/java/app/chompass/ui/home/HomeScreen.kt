@@ -477,7 +477,13 @@ fun HomeScreen(
         val result = snackbarHostState.showSnackbar(
             message = savedToFavoritesMessage,
             actionLabel = if (ack.inserted) undoLabel else null,
-            duration = SnackbarDuration.Short,
+            // Debug-only: `debug_snackbar_persistent` keeps the Undo action
+            // dumpable for a device pass instead of auto-dismissing.
+            duration = if (container.debugPersistentSnackbars) {
+                SnackbarDuration.Indefinite
+            } else {
+                SnackbarDuration.Short
+            },
         )
         if (result == SnackbarResult.ActionPerformed) {
             haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)

@@ -58,6 +58,11 @@ class MainActivityDebugExtrasGateTest {
             putExtra("preview_daily_summary", true)
             putExtra("seed_progressive_meal", true)
             putExtra("run_mealie_import_test", true)
+            putExtra("debug_barcode", "3017620422003")
+            putExtra("debug_snackbar_persistent", true)
+            putExtra("keep_ai", true)
+            putExtra("set_weight_reminder", "16:05")
+            putExtra("clear_today_weight", true)
         }
         val actions = consumeDebugIntentExtras(intent, debugEnabled = false)
         // Every flag/extra comes back at its default: no seed, no restore, no reset.
@@ -114,6 +119,37 @@ class MainActivityDebugExtrasGateTest {
         assertFalse(actions.runOnDeviceLlmTest)
         assertFalse(actions.runMealieImportTest)
         assertEquals(3, actions.entryBenchmarkCount)
+    }
+
+    @Test
+    fun debugBuild_parsesAndStripsDevicePassExtras() {
+        val intent = Intent().apply {
+            putExtra("debug_barcode", "3017620422003")
+            putExtra("debug_snackbar_persistent", true)
+            putExtra("keep_ai", true)
+            putExtra("set_weight_reminder", "16:00")
+            putExtra("clear_today_weight", true)
+        }
+        val actions = consumeDebugIntentExtras(intent, debugEnabled = true)
+        assertEquals("3017620422003", actions.debugBarcode)
+        assertTrue(actions.debugSnackbarPersistent)
+        assertTrue(actions.keepAiProfiles)
+        assertEquals("16:00", actions.weightReminderTime)
+        assertTrue(actions.clearTodayWeight)
+        assertFalse(intent.hasExtra("debug_barcode"))
+        assertFalse(intent.hasExtra("debug_snackbar_persistent"))
+        assertFalse(intent.hasExtra("keep_ai"))
+        assertFalse(intent.hasExtra("set_weight_reminder"))
+        assertFalse(intent.hasExtra("clear_today_weight"))
+    }
+
+    @Test
+    fun debugBuild_rejectsInvalidReminderTime() {
+        val intent = Intent().apply { putExtra("set_weight_reminder", "25:99") }
+        val actions = consumeDebugIntentExtras(intent, debugEnabled = true)
+        assertEquals("", actions.weightReminderTime)
+        // Rejected values are still consumed: no re-fire on recreate.
+        assertFalse(intent.hasExtra("set_weight_reminder"))
     }
 
     @Test

@@ -1223,12 +1223,18 @@ internal fun CalorieBarChart(
     val energyUnit = LocalEnergyUnit.current
     val inspectedTitle = stringResource(R.string.progress_calories_section)
     val inspectedNow = inspectedBar?.let { slots.getOrNull(it) }?.takeIf { it.kcal != null }
+    // Combo mode: the overlaid metric's real value for that day, appended to
+    // both the inspection tag and the a11y description so a dump proves it.
+    val overlaySuffixFor: (LocalDate) -> String = { day ->
+        overlay?.valuesByDay?.get(day)?.let { " · ${formatTick(it)}${overlay.unitSuffix}" } ?: ""
+    }
     val chartDescription = if (inspectedNow != null) {
         stringResource(
             R.string.a11y_chart_inspection,
             inspectedTitle,
             xLabelFmt.format(inspectedNow.day),
-            "${LocaleFormat.integer(EnergyFormat.quantity(inspectedNow.kcal ?: 0, energyUnit))} ${energyUnitLabel()}",
+            "${LocaleFormat.integer(EnergyFormat.quantity(inspectedNow.kcal ?: 0, energyUnit))} " +
+                "${energyUnitLabel()}${overlaySuffixFor(inspectedNow.day)}",
         )
     } else {
         inspectedTitle
@@ -1236,10 +1242,7 @@ internal fun CalorieBarChart(
     val inspectedLabel = inspectedBar?.let { index ->
         slots.getOrNull(index)?.takeIf { it.kcal != null }?.let { slot ->
             val kcalText = "${xLabelFmt.format(slot.day)} · ${LocaleFormat.integer(EnergyFormat.quantity(slot.kcal ?: 0, energyUnit))} ${energyUnitLabel()}"
-            // Combo mode: append the overlaid metric's real value for that day.
-            val overlayText = overlay?.valuesByDay?.get(slot.day)
-                ?.let { " · ${formatTick(it)}${overlay.unitSuffix}" } ?: ""
-            kcalText + overlayText
+            kcalText + overlaySuffixFor(slot.day)
         }
     }
     // Marker lane over the slot span: per-day dots while the span fits the

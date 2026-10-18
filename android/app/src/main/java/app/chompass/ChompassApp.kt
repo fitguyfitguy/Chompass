@@ -394,6 +394,12 @@ class AppContainer(app: ChompassApp) {
     /** Debug-only: HomeViewModel seeds the meal-builder sheet (Codeberg #84 repro). */
     val progressiveSeedInbox: MutableStateFlow<Int?> = MutableStateFlow(null)
 
+    /** Debug-only: barcode injected by `debug_barcode`, consumed by HomeViewModel. */
+    val barcodeLookupInbox: MutableStateFlow<String?> = MutableStateFlow(null)
+
+    /** Debug-only: extend the saved-to-favorites snackbar to Indefinite. */
+    @Volatile var debugPersistentSnackbars: Boolean = false
+
     /** See [HealthConnectReadSync.sync]. */
     suspend fun syncHealthConnectReads() = healthConnectReadSync.sync()
 

@@ -11,6 +11,7 @@
 #   ./scripts/install_debug.sh --no-seed    # build + install + plain launch
 #   ./scripts/install_debug.sh --no-launch  # build + install only
 #   ./scripts/install_debug.sh --reseed     # skip build/install; force-stop + seed
+#   ./scripts/install_debug.sh --keep-ai    # preserve AI profiles across the seed
 #   ./scripts/install_debug.sh --full       # explicit full seed (the default)
 #   ./scripts/install_debug.sh --slim       # old trio: seed_test_data + 30d metrics + keto
 #   ./scripts/install_debug.sh --keto       # full seed in keto diet mode (or slim + keto)
@@ -49,6 +50,7 @@ SEED_KETO=0
 SEED_BUSY_HOME=0
 SEED_DEFECTS=0
 SEED_2Y=0
+KEEP_AI=0
 PREFER_UNIVERSAL=0
 DO_REINSTALL=0
 DO_WIFI=0
@@ -60,6 +62,7 @@ while [ $# -gt 0 ]; do
     --no-seed) DO_SEED=0 ;;
     --no-launch) DO_LAUNCH=0 ;;
     --reseed) DO_BUILD=0; DO_INSTALL=0; DO_LAUNCH=1; DO_SEED=1 ;;
+    --keep-ai) KEEP_AI=1 ;;
     --reinstall) DO_REINSTALL=1 ;;
     --wifi) DO_WIFI=1 ;;
     --full) SEED_MODE=full ;;
@@ -70,7 +73,7 @@ while [ $# -gt 0 ]; do
     --2y) SEED_2Y=1 ;;
     --universal) PREFER_UNIVERSAL=1 ;;
     -h|--help)
-      sed -n '2,26p' "$0"
+      sed -n '2,27p' "$0"
       exit 0
       ;;
     *)
@@ -173,6 +176,10 @@ if [ "${DO_SEED}" -eq 1 ]; then
   fi
 else
   echo "Launching (no seed)"
+fi
+
+if [ "${KEEP_AI}" -eq 1 ]; then
+  START_ARGS+=(--ez keep_ai true)
 fi
 
 "${ADB_BIN}" shell "${START_ARGS[@]}"

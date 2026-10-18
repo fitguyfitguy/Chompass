@@ -312,6 +312,7 @@ private fun SeriesChip(
                 maxLines = 1,
             )
         },
+        modifier = Modifier.debugChipState(label, selected),
     )
 }
 

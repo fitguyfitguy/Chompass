@@ -38,7 +38,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import app.chompass.models.FoodEntry
 import app.chompass.models.AIProvider
+import app.chompass.models.AiProfile
+import app.chompass.debug.DebugTrace
 import app.chompass.services.AndroidAppIconManager
+import app.chompass.services.BarcodeCodeNormalizer
 import app.chompass.debug.OnDeviceLlmDebugConfig
 import app.chompass.debug.OnDeviceLlmDebugLauncher
 import app.chompass.debug.GoalCalcMatrixDebugLauncher
@@ -64,6 +67,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
+import java.time.ZoneId
 
 open class MainActivity : ComponentActivity() {
     // Shared-meal deep link (issue #107). Non-empty -> the confirm sheet is shown over the app.
@@ -572,6 +577,26 @@ open class MainActivity : ComponentActivity() {
         if (actions == DebugIntentActions()) return
         Log.d(PHOTO_IMPORT_TAG, "Debug extras: $actions")
         lifecycleScope.launch {
+            // keep_ai snapshot first: any seed below may wipe the profiles.
+            val aiSnapshot = if (actions.keepAiProfiles) {
+                AiProfileSnapshot(
+                    profiles = container.prefs.aiProfiles.first(),
+                    activeId = container.prefs.activeAiProfileId.first(),
+                    fallbackId = container.prefs.fallbackAiProfileId.first(),
+                )
+            } else {
+                null
+            }
+            container.debugPersistentSnackbars = actions.debugSnackbarPersistent
+            if (actions.debugBarcode.isNotBlank()) {
+                val normalized = BarcodeCodeNormalizer.normalize(actions.debugBarcode)
+                if (normalized != null) {
+                    container.barcodeLookupInbox.value = normalized
+                    DebugTrace.event("op=barcode phase=inject code=$normalized")
+                } else {
+                    DebugTrace.event("op=barcode phase=reject raw=${actions.debugBarcode.take(32)}")
+                }
+            }
             if (actions.resetOnboarding) {
                 app.container.prefs.setOnboardingCompleted(false)
                 app.container.prefs.setOnboardingDraft(null)
@@ -661,6 +686,50 @@ open class MainActivity : ComponentActivity() {
             if (actions.clearPendingDraft) {
                 container.prefs.setPendingFoodAnalysisDraft(null)
                 container.prefs.setPendingFoodInputDraft(null)
+            }
+
+            // keep_ai: put the snapshot back after the seed wiped the list.
+            // Empty snapshots are skipped — writing [] would suppress the
+            // first-run ensureAiProfilesMigrated (AI_PROFILES_JSON != null).
+            if (aiSnapshot != null) {
+                if (aiSnapshot.profiles.isNotEmpty()) {
+                    container.prefs.mutateProfiles { list ->
+                        list.clear()
+                        list.addAll(aiSnapshot.profiles)
+                    }
+                    aiSnapshot.activeId?.let { container.prefs.setActiveAiProfileId(it) }
+                    container.prefs.setFallbackAiProfileId(aiSnapshot.fallbackId)
+                }
+                DebugTrace.event(
+                    "op=seed phase=keepAi profiles=${aiSnapshot.profiles.size} " +
+                        "active=${aiSnapshot.activeId != null}",
+                )
+            }
+
+            // Reminder-chase extras: after the seeds so seed_full cannot
+            // overwrite them, before the benchmarks.
+            if (actions.weightReminderTime.isNotBlank()) {
+                val (h, m) = actions.weightReminderTime.split(":").let { it[0].toInt() to it[1].toInt() }
+                container.prefs.setWeightReminderEnabled(true)
+                container.prefs.setWeightReminderHour(h)
+                container.prefs.setWeightReminderMinute(m)
+                val armed = container.prefs.notificationsEnabled.first() &&
+                    container.notifications.canPostNotifications()
+                if (armed) container.notifications.scheduleWeightReminder(h, m)
+                else container.notifications.cancelWeightReminder()
+                DebugTrace.event("op=seed phase=weightReminder hour=$h minute=$m armed=$armed")
+            }
+            if (actions.clearTodayWeight) {
+                val zone = ZoneId.systemDefault()
+                val today = LocalDate.now(zone)
+                val removed = container.weightRepository
+                    .entriesInRange(
+                        today.atStartOfDay(zone).toInstant(),
+                        today.plusDays(1).atStartOfDay(zone).toInstant(),
+                    )
+                    .filter { it.date.atZone(zone).toLocalDate() == today }
+                removed.forEach { container.weightRepository.deleteEntry(it.id) }
+                DebugTrace.event("op=seed phase=clearTodayWeight removed=${removed.size}")
             }
 
             // Flippidity benches go through HomeViewModel (chip cache, uiAck).
@@ -757,3 +826,10 @@ open class MainActivity : ComponentActivity() {
         }
     }
 }
+
+/** `keep_ai` state captured before a seed launch wipes the AI profile list. */
+private data class AiProfileSnapshot(
+    val profiles: List<AiProfile>,
+    val activeId: String?,
+    val fallbackId: String?,
+)

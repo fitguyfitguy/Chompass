@@ -6,9 +6,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import app.chompass.AppContainer
 import app.chompass.R
+import app.chompass.debug.DebugTrace
 import app.chompass.models.AIProvider
 import app.chompass.models.AiProfile
 import app.chompass.models.AutoBalanceMacro
+import app.chompass.models.CalorieSafety
 import app.chompass.models.DietMode
 import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.HeuristicRuleOverride
@@ -2639,6 +2641,14 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             }
             val next = GoalPhaseEdit.applyPhase(profile, draft, LocalDate.now())
             container.profileRepository.save(next)
+            val floor = CalorieSafety.floorKcal(profile.bmr)
+            val ceiling = CalorieSafety.ceilingKcal(profile.tdee, floor)
+            val stored = next.goalPhases.firstOrNull { it.id == draft.id }
+            DebugTrace.event(
+                "op=goalPhase phase=save id=${draft.id} requested=${draft.calories} " +
+                    "stored=${stored?.calories ?: -1} floor=$floor ceiling=$ceiling " +
+                    "clamped=${stored?.calories != draft.calories}",
+            )
             applyProfile(next)
             onResult(null)
         }
