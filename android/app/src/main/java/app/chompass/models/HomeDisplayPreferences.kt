@@ -17,9 +17,11 @@ enum class HomeCalorieDisplayMode(val storageKey: String, val displayNameRes: In
     }
 }
 
-/** Presentation options for the home calorie hero. Null preserves the existing layout. */
+/** Presentation options for the home calorie hero. Null = wide squat arc (default). */
 enum class HomeCalorieHeroLayout(val storageKey: String) {
     COMPACT_HORIZONTAL("compactHorizontal"),
+    SIDE_GAUGE("sideGauge"),
+    COMPACT_ARC("compactArc"),
     HIDDEN("hidden");
 
     companion object {
@@ -28,9 +30,10 @@ enum class HomeCalorieHeroLayout(val storageKey: String) {
     }
 }
 
-/** Presentation options for home nutrient cards. Null preserves the existing layout. */
+/** Presentation options for home nutrient cards. Null = compact bars band (default). */
 enum class HomeMacroCardLayout(val storageKey: String) {
-    COMPACT_HORIZONTAL("compactHorizontal");
+    SLIM_LINE("slimLine"),
+    CLASSIC("classic");
 
     companion object {
         fun fromStorage(raw: String?): HomeMacroCardLayout? =
@@ -38,9 +41,9 @@ enum class HomeMacroCardLayout(val storageKey: String) {
     }
 }
 
-/** Presentation options for food-log rows. Null preserves the existing layout. */
+/** Presentation options for food-log rows. Null = compact rows (default). */
 enum class HomeFoodLogLayout(val storageKey: String) {
-    COMPACT_HORIZONTAL("compactHorizontal");
+    CLASSIC("classic");
 
     companion object {
         fun fromStorage(raw: String?): HomeFoodLogLayout? =

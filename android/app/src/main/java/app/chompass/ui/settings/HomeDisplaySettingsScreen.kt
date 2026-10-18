@@ -256,7 +256,7 @@ fun HomeDisplaySettingsScreen(
 private fun foodLogLayoutLabel(layout: HomeFoodLogLayout?): String = stringResource(
     when (layout) {
         null -> R.string.home_food_log_layout_default
-        HomeFoodLogLayout.COMPACT_HORIZONTAL -> R.string.home_food_log_layout_compact_horizontal
+        HomeFoodLogLayout.CLASSIC -> R.string.home_food_log_layout_classic
     }
 )
 
@@ -299,7 +299,8 @@ private fun FoodLogLayoutPickerDialog(
 private fun nutrientCardLayoutLabel(layout: HomeMacroCardLayout?): String = stringResource(
     when (layout) {
         null -> R.string.home_nutrient_card_layout_default
-        HomeMacroCardLayout.COMPACT_HORIZONTAL -> R.string.home_nutrient_card_layout_compact_horizontal
+        HomeMacroCardLayout.SLIM_LINE -> R.string.home_nutrient_card_layout_slim_line
+        HomeMacroCardLayout.CLASSIC -> R.string.home_nutrient_card_layout_classic
     }
 )
 
@@ -342,6 +343,8 @@ private fun NutrientCardLayoutPickerDialog(
 private fun calorieHeroLayoutLabel(layout: HomeCalorieHeroLayout?): String = stringResource(
     when (layout) {
         null -> R.string.home_calorie_layout_default
+        HomeCalorieHeroLayout.SIDE_GAUGE -> R.string.home_calorie_layout_gauge
+        HomeCalorieHeroLayout.COMPACT_ARC -> R.string.home_calorie_layout_compact_arc
         HomeCalorieHeroLayout.COMPACT_HORIZONTAL -> R.string.home_calorie_layout_compact_horizontal
         HomeCalorieHeroLayout.HIDDEN -> R.string.home_calorie_layout_hidden
     }
@@ -356,7 +359,7 @@ private fun CalorieLayoutPickerDialog(
     app.chompass.ui.components.ChompassDialog(onDismissRequest = onDismiss) {
         Text(stringResource(R.string.home_display_calorie_layout), fontSize = 22.sp, fontWeight = FontWeight.Bold)
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            (listOf<HomeCalorieHeroLayout?>(null) + HomeCalorieHeroLayout.entries).forEach { layout ->
+            (listOf<HomeCalorieHeroLayout?>(null, HomeCalorieHeroLayout.SIDE_GAUGE, HomeCalorieHeroLayout.COMPACT_ARC, HomeCalorieHeroLayout.COMPACT_HORIZONTAL, HomeCalorieHeroLayout.HIDDEN)).forEach { layout ->
                 Row(
                     Modifier
                         .fillMaxWidth()

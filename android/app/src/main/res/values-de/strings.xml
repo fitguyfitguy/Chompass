@@ -2636,8 +2636,9 @@ für dich ein</string>
     <string name="home_display_nutrient_cards">Nährstoffkarten</string>
 
     <string name="home_display_nutrient_card_layout">Nährstoffkartenlayout</string>
-    <string name="home_nutrient_card_layout_default">Standard</string>
-    <string name="home_nutrient_card_layout_compact_horizontal">Kompakt horizontal</string>
+    <string name="home_nutrient_card_layout_default">Kompakte Balken</string>
+    <string name="home_nutrient_card_layout_slim_line">Schlanke Linien</string>
+    <string name="home_nutrient_card_layout_classic">Klassische Karten</string>
 
     <string name="home_display_card_count">Angezeigte Karten</string>
 
@@ -2649,14 +2650,16 @@ für dich ein</string>
 
     <string name="home_display_calorie_mode">Kalorienanzeige</string>
     <string name="home_display_calorie_layout">Kalorienlayout</string>
-    <string name="home_calorie_layout_default">Standard</string>
-    <string name="home_calorie_layout_compact_horizontal">Kompakt horizontal</string>
+    <string name="home_calorie_layout_default">Breiter Bogen</string>
+    <string name="home_calorie_layout_gauge">Bogenanzeige + Zahlen</string>
+    <string name="home_calorie_layout_compact_arc">Kompakter Bogen</string>
+    <string name="home_calorie_layout_compact_horizontal">Fortschrittsbalken</string>
     <string name="home_calorie_layout_hidden">Ausgeblendet</string>
 
     <string name="home_display_food_log_chips">Makros im Ernährungstagebuch</string>
     <string name="home_display_food_log_layout">Ernährungstagebuchlayout</string>
-    <string name="home_food_log_layout_default">Standard</string>
-    <string name="home_food_log_layout_compact_horizontal">Kompakt horizontal</string>
+    <string name="home_food_log_layout_default">Kompakt</string>
+    <string name="home_food_log_layout_classic">Klassisch</string>
 
     <string name="home_display_needs_health">Erfordert Health Connect mit Schritt-Berechtigung</string>
 
