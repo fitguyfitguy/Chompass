@@ -1067,7 +1067,6 @@
     <string name="home_calorie_layout_compact_arc">Arc compact</string>
     <string name="home_calorie_layout_compact_horizontal">Bară de progres</string>
     <string name="home_calorie_layout_hidden">Ascuns</string>
-    <string name="home_food_log_layout_default">Compact</string>
     <string name="home_food_log_layout_classic">Clasic</string>
     <string name="home_nutrient_card_layout_default">Bare compacte</string>
     <string name="home_nutrient_card_layout_slim_line">Linii subțiri</string>

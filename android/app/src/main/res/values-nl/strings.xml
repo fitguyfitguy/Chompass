@@ -1043,7 +1043,6 @@
     <string name="home_calorie_layout_compact_arc">Compacte boog</string>
     <string name="home_calorie_layout_compact_horizontal">Voortgangsbalk</string>
     <string name="home_calorie_layout_hidden">Verborgen</string>
-    <string name="home_food_log_layout_default">Compact</string>
     <string name="home_food_log_layout_classic">Klassiek</string>
     <string name="home_nutrient_card_layout_default">Compacte balken</string>
     <string name="home_nutrient_card_layout_slim_line">Smalle lijnen</string>
