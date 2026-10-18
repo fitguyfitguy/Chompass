@@ -93,6 +93,11 @@ def main() -> int:
                 in_skipped_object = True
                 skip_depth = 1
                 continue
+            # Debug-only semantics (a11y dumps, device-pass assertions) are not
+            # user-facing prose: release builds never render them. Matches the
+            # "debug-only code" exemption documented above.
+            if "BuildConfig.DEBUG" in line:
+                continue
             for m in USER_FACING_PARAMS.finditer(line):
                 # The param regex consumed the opening quote; capture up to the
                 # next unescaped closing quote.
