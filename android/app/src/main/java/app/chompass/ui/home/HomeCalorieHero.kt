@@ -593,12 +593,12 @@ private fun SquatArcCalorieHero(input: CalorieHeroInput) {
                 .padding(top = 8.dp, bottom = 2.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Box(modifier = Modifier.fillMaxWidth().height(52.dp)) {
+            Box(modifier = Modifier.fillMaxWidth().height(64.dp)) {
                 CalorieArcCanvas(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .height(52.dp),
+                        .height(64.dp),
                     stroke = 12.dp,
                     fillRatio = d.fillRatio,
                     plannedFillRatio = d.plannedFillRatio,
@@ -628,7 +628,7 @@ private fun SquatArcCalorieHero(input: CalorieHeroInput) {
                 Box(
                     modifier = Modifier
                         .matchParentSize()
-                        .padding(bottom = 4.dp),
+                        .padding(bottom = 2.dp),
                     contentAlignment = Alignment.BottomCenter,
                 ) {
                     Column(
@@ -638,7 +638,7 @@ private fun SquatArcCalorieHero(input: CalorieHeroInput) {
                         Text(
                             number,
                             style = MaterialTheme.typography.headlineMedium,
-                            lineHeight = 32.sp,
+                            lineHeight = 30.sp,
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold,
                             maxLines = 1,
@@ -901,7 +901,7 @@ private fun CompactArcCalorieHero(input: CalorieHeroInput) {
                 Column(
                     modifier = Modifier
                         .align(Alignment.TopCenter)
-                        .padding(top = 28.dp),
+                        .padding(top = 24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(1.dp),
                 ) {
