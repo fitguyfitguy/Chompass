@@ -400,4 +400,3 @@ private fun SlimLineMacroCard(input: MacroCardInput) {
         }
     }
 }
-

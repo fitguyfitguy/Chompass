@@ -1103,7 +1103,6 @@
     <string name="home_calorie_layout_compact_arc">Arc compact</string>
     <string name="home_calorie_layout_compact_horizontal">Barre de progression</string>
     <string name="home_calorie_layout_hidden">Masqué</string>
-    <string name="home_food_log_layout_default">Compact</string>
     <string name="home_food_log_layout_classic">Classique</string>
     <string name="home_nutrient_card_layout_default">Barres compactes</string>
     <string name="home_nutrient_card_layout_slim_line">Lignes fines</string>
