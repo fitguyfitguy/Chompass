@@ -703,12 +703,8 @@ internal fun FoodRow(
                 }
             }
 
-            // Pink kcal · gray serving size. The serving echoes the logged
-            // unit ("2 oz", "1 bowl") when the entry still has a resolvable
-            // non-gram selection; otherwise today's grams line (Codeberg #65).
-            // Compact chips stay on this line at their own size. The serving
-            // ellipsizes; extra chips wrap beside the calories instead of
-            // stretching the pills or shrinking the text.
+            // Pink kcal · gray serving size. Compact macros sit on this same
+            // line, content-sized, pinned to the row's trailing edge.
             val echo = ServingUnitOption.homeDisplaySelection(
                 entry.selectedServingUnit,
                 entry.selectedServingQuantity,
@@ -725,45 +721,42 @@ internal fun FoodRow(
                     culinaryUnitLabels(),
                 )
             } ?: entry.servingSizeGrams?.takeIf { it > 0 }?.let { gramsText(it) }
-            BoxWithConstraints(Modifier.fillMaxWidth()) {
-                val chipMax = (maxWidth - if (servingText != null) 96.dp else 72.dp).coerceAtLeast(120.dp)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    energyText(entry.calories),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                    softWrap = false,
+                )
+                if (servingText != null) {
+                    Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled))
                     Text(
-                        energyText(entry.calories),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary,
+                        servingText,
+                        modifier = Modifier.widthIn(max = 96.dp),
+                        fontSize = 12.sp,
                         maxLines = 1,
-                        softWrap = false,
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                     )
-                    if (servingText != null) {
-                        Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled))
-                        Text(
-                            servingText,
-                            modifier = Modifier.weight(1f, fill = false),
-                            fontSize = 12.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                        )
-                    } else {
-                        Spacer(Modifier.weight(1f))
-                    }
-                    if (compact && macroChips.isNotEmpty()) {
-                        FlowRow(
-                            Modifier.widthIn(max = chipMax),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End),
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
-                        ) {
-                            macroChips.forEach { chip ->
-                                FoodLogMacroChipView(chip, chip.valueFrom(entry))
-                            }
+                }
+                if (compact && macroChips.isNotEmpty()) {
+                    FlowRow(
+                        Modifier.weight(1f),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        macroChips.forEach { chip ->
+                            FoodLogMacroChipView(chip, chip.valueFrom(entry))
                         }
                     }
+                } else {
+                    Spacer(Modifier.weight(1f))
                 }
             }
 
@@ -774,7 +767,7 @@ internal fun FoodRow(
     }
 }
 
-/** Chips wrap inside the row instead of running off the card at four or five macros. */
+/** Classic chips, content-sized and pinned to the trailing edge of the row. */
 @Composable
 private fun FoodLogMacroChipLine(
     chips: List<FoodLogMacroChip>,
@@ -783,7 +776,7 @@ private fun FoodLogMacroChipLine(
 ) {
     FlowRow(
         Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(spacedBy),
+        horizontalArrangement = Arrangement.spacedBy(spacedBy, Alignment.End),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         chips.forEach { chip ->
