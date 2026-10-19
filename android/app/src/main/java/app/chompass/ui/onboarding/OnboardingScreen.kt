@@ -186,6 +186,16 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                     enabled = ui.healthConnectEnabled,
                     onToggle = vm::setHealthConnectEnabled
                 )
+                OnboardingStep.HOME_LOOK -> HomeLookStep(
+                    display = ui.homeDisplay,
+                    onCalorieMode = vm::setHomeCalorieDisplayMode,
+                    onShowActiveCalories = vm::setHomeShowActiveCalories,
+                    onShowSteps = vm::setHomeShowSteps,
+                    onStepGoal = vm::setHomeStepGoal,
+                    onNutrientCardCount = vm::setHomeNutrientCardCount,
+                    onTopNutrients = vm::setHomeTopNutrients,
+                    onFoodLogChips = vm::setFoodLogMacroChips,
+                )
                 OnboardingStep.PROVIDER -> ProviderStep(
                     provider = ui.aiProvider,
                     model = ui.aiModel,

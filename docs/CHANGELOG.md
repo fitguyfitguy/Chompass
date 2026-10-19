@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Added
+
+- **See Home before you log** (Android): Settings → Customize Home opens with a sample day of the real calorie gauge, nutrient cards, and food log. The same preview is a setup step after Health Connect, so the gauge, cards, steps, and food-log chips can be set before the first meal.
+
 ## [5.8.0] - 2026-10-19
 
 ### Added
