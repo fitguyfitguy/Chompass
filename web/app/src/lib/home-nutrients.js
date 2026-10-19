@@ -230,16 +230,19 @@ export function normalizeHomeTopNutrients(selection) {
 }
 
 /**
+ * Food-log chips. The selection is what is shown. Empty falls back to protein, carbs, and fat.
  * @param {string[]|null|undefined} selection
  * @returns {string[]}
  */
 export function normalizeFoodLogChips(selection) {
   const allowed = new Set(FOOD_LOG_CHIP_KEYS);
-  const picked = (selection || [])
-    .map((k) => String(k).trim())
-    .filter((k) => allowed.has(k));
-  const merged = [...new Set([...(picked.length ? picked : DEFAULT_FOOD_CHIPS), ...DEFAULT_FOOD_CHIPS])];
-  return merged.slice(0, 5);
+  const picked = [...new Set(
+    (selection || [])
+      .map((k) => String(k).trim())
+      .filter((k) => allowed.has(k)),
+  )];
+  if (picked.length === 0) return [...DEFAULT_FOOD_CHIPS];
+  return picked.slice(0, 5);
 }
 
 /**
