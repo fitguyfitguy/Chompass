@@ -71,8 +71,8 @@ internal fun HomeLookStep(
     val nutrientValue = display.homeTopNutrients.joinToString(", ") {
         context.getString(it.displayNameRes)
     }
-    val chipValue = display.foodLogMacroChips.joinToString(" ") {
-        context.getString(it.glyphRes())
+    val chipValue = display.foodLogMacroChips.joinToString(", ") {
+        context.getString(it.kindLabelRes())
     }
 
     Column(
