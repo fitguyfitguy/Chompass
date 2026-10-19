@@ -192,7 +192,6 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                     onShowActiveCalories = vm::setHomeShowActiveCalories,
                     onShowSteps = vm::setHomeShowSteps,
                     onStepGoal = vm::setHomeStepGoal,
-                    onNutrientCardCount = vm::setHomeNutrientCardCount,
                     onTopNutrients = vm::setHomeTopNutrients,
                     onFoodLogChips = vm::setFoodLogMacroChips,
                 )

@@ -234,7 +234,11 @@ internal val PreferencesStore.homeTopNutrientsImpl: Flow<String> get() = dataSto
         it[Keys.HOME_TOP_NUTRIENTS] ?: HomeTopNutrient.DefaultStorageValue
     }
 internal suspend fun PreferencesStore.setHomeTopNutrientsImpl(v: String) {
-        dataStore.edit { it[Keys.HOME_TOP_NUTRIENTS] = v }
+        val shown = HomeTopNutrient.fromStorage(v)
+        dataStore.edit {
+            it[Keys.HOME_TOP_NUTRIENTS] = HomeTopNutrient.toStorage(shown)
+            it[Keys.HOME_NUTRIENT_CARD_COUNT] = shown.size
+        }
     }
 
 internal val PreferencesStore.homeNutrientCardCountImpl: Flow<Int> get() = dataStore.data.map {
@@ -322,11 +326,10 @@ internal suspend fun PreferencesStore.migrateHomeDisplayLayoutIfNeededImpl() {
     }
 
 internal val PreferencesStore.homeDisplayPreferencesImpl: Flow<HomeDisplayPreferences> get() = dataStore.data.map { prefs ->
-        val cardCount = prefs[Keys.HOME_NUTRIENT_CARD_COUNT] ?: HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT
-        val nutrientsRaw = prefs[Keys.HOME_TOP_NUTRIENTS] ?: HomeTopNutrient.DefaultStorageValue
+        val nutrients = HomeTopNutrient.fromStorage(prefs[Keys.HOME_TOP_NUTRIENTS])
         HomeDisplayPreferences(
-            nutrientCardCount = cardCount,
-            homeTopNutrients = HomeTopNutrient.fromStorage(nutrientsRaw, cardCount),
+            nutrientCardCount = nutrients.size,
+            homeTopNutrients = nutrients,
             showSteps = prefs[Keys.HOME_SHOW_STEPS] ?: false,
             showActiveCalories = prefs[Keys.HOME_SHOW_ACTIVE_CALORIES] ?: false,
             stepGoal = prefs[Keys.HOME_STEP_GOAL] ?: HomeDisplayPreferences.DEFAULT_STEP_GOAL,

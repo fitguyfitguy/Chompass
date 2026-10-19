@@ -684,7 +684,7 @@ fun HomeScreen(
                         )
                     }
                     if (ui.homeDisplay.showSteps) {
-                        Spacer(Modifier.height(12.dp))
+                        Spacer(Modifier.height(4.dp))
                         Row(
                             Modifier
                                 .fillMaxWidth()
@@ -697,8 +697,10 @@ fun HomeScreen(
                                 modifier = Modifier.weight(1f),
                             )
                         }
+                        Spacer(Modifier.height(4.dp))
+                    } else {
+                        Spacer(Modifier.height(12.dp))
                     }
-                    Spacer(Modifier.height(12.dp))
                     // Current/goal resolved once per state change instead of
                     // per card per recomposition (current() scans the day's
                     // entries; goal() re-derives from the resolved targets).

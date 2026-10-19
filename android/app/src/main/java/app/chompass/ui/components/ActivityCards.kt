@@ -43,7 +43,7 @@ fun StepsCard(
         modifier = modifier
             .clip(RoundedCornerShape(AppRadii.Container))
             .fillMaxWidth()
-            .padding(horizontal = 10.dp, vertical = 12.dp),
+            .padding(horizontal = 10.dp, vertical = 4.dp),
         verticalArrangement = Arrangement.Center
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {

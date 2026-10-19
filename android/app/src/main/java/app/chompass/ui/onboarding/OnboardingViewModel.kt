@@ -278,35 +278,16 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
         _ui.value = _ui.value.copy(homeDisplay = _ui.value.homeDisplay.copy(stepGoal = safe))
         viewModelScope.launch { container.prefs.setHomeStepGoal(goal) }
     }
-    fun setHomeNutrientCardCount(count: Int) {
-        val safe = count.coerceIn(
-            HomeDisplayPreferences.MIN_NUTRIENT_CARD_COUNT,
-            HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT,
-        )
-        val current = _ui.value.homeDisplay.homeTopNutrients.joinToString(",") { it.storageKey }
-        val normalized = HomeTopNutrient.fromStorage(current, count)
-        _ui.value = _ui.value.copy(
-            homeDisplay = _ui.value.homeDisplay.copy(
-                nutrientCardCount = safe,
-                homeTopNutrients = normalized,
-            )
-        )
-        viewModelScope.launch {
-            container.prefs.setHomeNutrientCardCount(count)
-            container.prefs.setHomeTopNutrients(
-                HomeTopNutrient.toStorage(HomeTopNutrient.fromStorage(current, count), count)
-            )
-        }
-    }
     fun setHomeTopNutrients(selection: List<HomeTopNutrient>) {
-        val cardCount = _ui.value.homeDisplay.nutrientCardCount
+        val shown = HomeTopNutrient.normalized(selection)
         _ui.value = _ui.value.copy(
             homeDisplay = _ui.value.homeDisplay.copy(
-                homeTopNutrients = HomeTopNutrient.normalized(selection, cardCount),
+                nutrientCardCount = shown.size,
+                homeTopNutrients = shown,
             )
         )
         viewModelScope.launch {
-            container.prefs.setHomeTopNutrients(HomeTopNutrient.toStorage(selection, cardCount))
+            container.prefs.setHomeTopNutrients(HomeTopNutrient.toStorage(shown))
         }
     }
     fun setFoodLogMacroChips(chips: List<FoodLogMacroChip>) {

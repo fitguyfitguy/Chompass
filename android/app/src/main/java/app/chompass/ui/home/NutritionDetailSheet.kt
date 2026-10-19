@@ -263,7 +263,6 @@ fun NutritionDetailSheet(
     if (showHomeCardsPicker) {
         HomeTopNutrientPickerDialog(
             selected = homeTopNutrients,
-            cardCount = homeTopNutrients.size.coerceIn(1, 4),
             onSave = onHomeTopNutrientsChange,
             onDismiss = { showHomeCardsPicker = false }
         )

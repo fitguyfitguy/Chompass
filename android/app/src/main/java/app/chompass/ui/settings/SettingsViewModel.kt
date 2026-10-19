@@ -798,17 +798,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         const val MAX_SUGGESTIONS = 3
     }
 
-    fun setHomeNutrientCardCount(count: Int) = launchPref {
-        container.prefs.setHomeNutrientCardCount(count)
-        val nutrients = container.prefs.homeTopNutrients.first()
-        container.prefs.setHomeTopNutrients(
-            HomeTopNutrient.toStorage(HomeTopNutrient.fromStorage(nutrients, count), count)
-        )
-    }
-
     fun setHomeTopNutrients(selection: List<HomeTopNutrient>) = launchPref {
-        val cardCount = container.prefs.homeNutrientCardCount.first()
-        container.prefs.setHomeTopNutrients(HomeTopNutrient.toStorage(selection, cardCount))
+        container.prefs.setHomeTopNutrients(HomeTopNutrient.toStorage(selection))
     }
 
     fun setHomeShowSteps(enabled: Boolean) = launchPref {

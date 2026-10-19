@@ -53,23 +53,19 @@ import java.util.Locale
 @Composable
 fun HomeTopNutrientPickerDialog(
     selected: List<HomeTopNutrient>,
-    cardCount: Int = HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT,
     onSave: (List<HomeTopNutrient>) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    var draft by remember(selected, cardCount) {
-        mutableStateOf(HomeTopNutrient.normalized(selected, cardCount))
+    var draft by remember(selected) {
+        mutableStateOf(HomeTopNutrient.normalized(selected))
     }
-    val maxCards = cardCount.coerceIn(
-        HomeDisplayPreferences.MIN_NUTRIENT_CARD_COUNT,
-        HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT
-    )
+    val maxCards = HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT
 
     fun toggle(nutrient: HomeTopNutrient) {
-        draft = if (nutrient in draft) {
-            if (draft.size <= 1) draft else draft - nutrient
-        } else {
-            if (draft.size >= maxCards) draft.dropLast(1) + nutrient else draft + nutrient
+        draft = when {
+            nutrient in draft -> if (draft.size <= 1) draft else draft - nutrient
+            draft.size >= maxCards -> draft
+            else -> draft + nutrient
         }
     }
 
@@ -99,7 +95,7 @@ fun HomeTopNutrientPickerDialog(
         ChompassDialogActions(
             primaryText = stringResource(R.string.action_done),
             onPrimary = {
-                onSave(HomeTopNutrient.normalized(draft, cardCount))
+                onSave(HomeTopNutrient.normalized(draft))
                 onDismiss()
             },
             dismissText = stringResource(R.string.action_cancel),

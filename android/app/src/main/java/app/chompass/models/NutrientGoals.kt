@@ -157,27 +157,23 @@ enum class HomeTopNutrient(
         val DefaultSelection = listOf(PROTEIN, CARBS, FAT, FIBER)
         val DefaultStorageValue = DefaultSelection.joinToString(",") { it.storageKey }
 
-        fun fromStorage(raw: String?, cardCount: Int = HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT): List<HomeTopNutrient> {
-            val selected = raw
-                ?.split(",")
-                ?.mapNotNull { part ->
-                    val key = part.trim()
-                    values().firstOrNull { it.storageKey == key || it.name == key }
-                }
-                .orEmpty()
-            return normalized(selected, cardCount)
+        fun fromStorage(raw: String?): List<HomeTopNutrient> {
+            if (raw.isNullOrBlank()) return DefaultSelection
+            val selected = raw.split(",").mapNotNull { part ->
+                val key = part.trim()
+                values().firstOrNull { it.storageKey == key || it.name == key }
+            }
+            return normalized(selected)
         }
 
-        fun toStorage(selection: List<HomeTopNutrient>, cardCount: Int = HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT): String =
-            normalized(selection, cardCount).joinToString(",") { it.storageKey }
+        fun toStorage(selection: List<HomeTopNutrient>): String =
+            normalized(selection).joinToString(",") { it.storageKey }
 
-        fun normalized(
-            selection: List<HomeTopNutrient>,
-            cardCount: Int = HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT,
-        ): List<HomeTopNutrient> =
-            (selection.distinct() + DefaultSelection)
-                .distinct()
-                .take(cardCount.coerceIn(HomeDisplayPreferences.MIN_NUTRIENT_CARD_COUNT, HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT))
+        /** Distinct picks, 1 to [HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT]. Empty falls back to the default row. */
+        fun normalized(selection: List<HomeTopNutrient>): List<HomeTopNutrient> {
+            val picked = selection.distinct().take(HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT)
+            return picked.ifEmpty { DefaultSelection }
+        }
     }
 }
 
