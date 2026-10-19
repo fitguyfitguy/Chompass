@@ -19,6 +19,8 @@ import app.chompass.models.ActiveCalorieSource
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
 import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.models.HomeCalorieHeroLayout
+import app.chompass.models.HomeFoodLogLayout
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
 import app.chompass.ui.components.ChompassSurface
@@ -75,25 +77,28 @@ internal fun HomeLookPreview(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 modifier = Modifier.padding(start = 16.dp, top = 12.dp, end = 16.dp),
             )
-            CalorieHero(
-                current = HomeLookSample.EATEN,
-                baseGoal = HomeLookSample.BASE_GOAL,
-                planned = 0,
-                displayMode = display.calorieDisplayMode,
-                activeCalories = if (addActive) HomeLookSample.ACTIVE else 0,
-                activeCalorieSource = if (addActive) ActiveCalorieSource.ESTIMATED else null,
-                showActiveCalories = display.showActiveCalories,
-                liveActiveBurn = HomeLookSample.ACTIVE,
-                burnShade = null,
-                restingBurn = null,
-                goalDerivation = null,
-                recalcDetailsAvailable = false,
-                onShowRecalcDetails = null,
-                dayTypeLabel = null,
-                onDayTypeClick = null,
-                onUntrackedClick = null,
-                freezeProgress = true,
-            )
+            if (display.calorieHeroLayout != HomeCalorieHeroLayout.HIDDEN) {
+                CalorieHero(
+                    current = HomeLookSample.EATEN,
+                    baseGoal = HomeLookSample.BASE_GOAL,
+                    planned = 0,
+                    displayMode = display.calorieDisplayMode,
+                    activeCalories = if (addActive) HomeLookSample.ACTIVE else 0,
+                    activeCalorieSource = if (addActive) ActiveCalorieSource.ESTIMATED else null,
+                    showActiveCalories = display.showActiveCalories,
+                    liveActiveBurn = HomeLookSample.ACTIVE,
+                    burnShade = null,
+                    restingBurn = null,
+                    goalDerivation = null,
+                    recalcDetailsAvailable = false,
+                    onShowRecalcDetails = null,
+                    dayTypeLabel = null,
+                    onDayTypeClick = null,
+                    onUntrackedClick = null,
+                    freezeProgress = true,
+                    layout = display.calorieHeroLayout,
+                )
+            }
             if (display.showSteps) {
                 Spacer(Modifier.height(12.dp))
                 Row(
@@ -128,6 +133,7 @@ internal fun HomeLookPreview(
                         planned = 0.0,
                         fatFloor = nutrient == HomeTopNutrient.FAT,
                         accentColor = nutrientAccentColor(nutrient),
+                        layout = display.macroCardLayout,
                     )
                 }
             }
@@ -143,6 +149,7 @@ internal fun HomeLookPreview(
                     FoodRow(
                         entry = entry,
                         macroChips = display.foodLogMacroChips,
+                        compact = display.foodLogLayout != HomeFoodLogLayout.CLASSIC,
                     )
                 }
             }
