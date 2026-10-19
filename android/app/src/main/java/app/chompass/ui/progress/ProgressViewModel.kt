@@ -292,6 +292,11 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch { container.bodyMeasurementRepository.addEntry(entry) }
     }
 
+    /** One-site edit from the Progress body card's `+` action (today's snapshot). */
+    fun setBodyMeasurement(site: BodyMeasurement.Site, cm: Double?) {
+        viewModelScope.launch { container.bodyMeasurementRepository.setValue(site, cm) }
+    }
+
     fun deleteBodyMeasurement(id: UUID) {
         viewModelScope.launch { container.bodyMeasurementRepository.deleteEntry(id) }
     }

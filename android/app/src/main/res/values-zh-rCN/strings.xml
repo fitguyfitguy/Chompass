@@ -418,6 +418,7 @@
 
     <string name="progress_weight_section">体重</string>
     <string name="progress_log_weight">记录体重</string>
+    <string name="progress_log_measurement_format">记录%1$s</string>
     <string name="progress_stat_current">当前</string>
     <string name="progress_stat_goal">目标</string>
     <string name="progress_log_first_weight">记录你的第一个体重以查看趋势</string>

@@ -812,6 +812,7 @@
 
     <string name="progress_weight_section">Waga</string>
     <string name="progress_log_weight">Dodaj wagę</string>
+    <string name="progress_log_measurement_format">Zapisz %1$s</string>
     <string name="progress_stat_current">Obecna</string>
     <string name="progress_stat_goal">Cel</string>
     <string name="progress_stat_net_change">Zmiana netto</string>

@@ -416,6 +416,7 @@
 
     <string name="progress_weight_section">体重</string>
     <string name="progress_log_weight">体重を記録</string>
+    <string name="progress_log_measurement_format">%1$sを記録</string>
     <string name="progress_stat_current">現在</string>
     <string name="progress_stat_goal">目標</string>
     <string name="progress_log_first_weight">最初の体重を記録して傾向を確認</string>

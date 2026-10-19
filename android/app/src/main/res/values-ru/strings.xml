@@ -513,6 +513,7 @@
 
     <string name="progress_weight_section">Вес</string>
     <string name="progress_log_weight">Записать вес</string>
+    <string name="progress_log_measurement_format">Записать %1$s</string>
     <string name="progress_stat_current">Текущий</string>
     <string name="progress_stat_goal">Цель</string>
     <string name="progress_log_first_weight">Запиши первый вес, чтобы увидеть динамику</string>

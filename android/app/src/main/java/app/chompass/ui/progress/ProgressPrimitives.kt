@@ -2,9 +2,14 @@ package app.chompass.ui.progress
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -30,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.BuildConfig
 import app.chompass.R
 import app.chompass.ui.components.ChompassSurface
+import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 
 /**
@@ -49,6 +55,27 @@ internal fun Modifier.debugChipState(label: String, selected: Boolean): Modifier
 internal fun Modifier.chipAccessibility(label: String, selected: Boolean): Modifier =
     if (BuildConfig.DEBUG) semantics { contentDescription = "$label, selected=$selected" }
     else semantics { contentDescription = label }
+
+/** Compact `+` beside a measurement card title: opens that site's value wheel. */
+@Composable
+internal fun MeasurementAddButton(siteLabel: String, onClick: () -> Unit) {
+    val description = stringResource(R.string.progress_log_measurement_format, siteLabel)
+    Box(
+        modifier = Modifier
+            .size(32.dp)
+            .clip(CircleShape)
+            .clickable(role = Role.Button, onClick = onClick)
+            .semantics { contentDescription = description },
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            Icons.Filled.AddCircle,
+            contentDescription = null,
+            tint = AppColors.Calorie,
+            modifier = Modifier.size(17.dp),
+        )
+    }
+}
 
 @Composable
 internal fun TimeRangePicker(selected: TimeRange, onSelect: (TimeRange) -> Unit) {

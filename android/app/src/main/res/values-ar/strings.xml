@@ -416,7 +416,8 @@
     <string name="progress_range_all">الكل</string>
 
     <string name="progress_weight_section">الوزن</string>
-    <string name="progress_log_weight">تسجيل الوزن</string>
+    <string name="progress_log_weight">سجل الوزن</string>
+    <string name="progress_log_measurement_format">تسجيل %1$s</string>
     <string name="progress_stat_current">الحالي</string>
     <string name="progress_stat_goal">الهدف</string>
     <string name="progress_log_first_weight">سجّل وزنك الأول لرؤية الاتجاهات</string>

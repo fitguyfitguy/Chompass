@@ -3,6 +3,7 @@
 • The calorie card can overlay your trend (Android).
 • An adherence card on Progress (Android).
 • Progress body card: symbol toggles, short site labels, and shorter add actions (Android).
+• Progress: + actions on the body-measurement cards (Android).
 • Goal phases stay inside safe bounds (Android).
 • The goal phase editor keeps both buttons on screen (Android).
 • Phase edits clean up after themselves (Android).

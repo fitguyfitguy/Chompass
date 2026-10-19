@@ -461,6 +461,7 @@
     <string name="progress_range_all">Все</string>
     <string name="progress_weight_section">Вага</string>
     <string name="progress_log_weight">Внести вагу</string>
+    <string name="progress_log_measurement_format">Записати %1$s</string>
     <string name="progress_stat_current">Поточна</string>
     <string name="progress_stat_goal">Ціль</string>
     <string name="progress_log_first_weight">Внеси першу вагу, щоб бачити динаміку</string>

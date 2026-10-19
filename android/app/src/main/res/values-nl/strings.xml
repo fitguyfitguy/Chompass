@@ -392,6 +392,7 @@
 
     <string name="progress_weight_section">Gewicht</string>
     <string name="progress_log_weight">Gewicht loggen</string>
+    <string name="progress_log_measurement_format">%1$s loggen</string>
     <string name="progress_stat_current">Huidig</string>
     <string name="progress_stat_goal">Doel</string>
     <string name="progress_log_first_weight">Log je eerste gewicht om trends te zien</string>

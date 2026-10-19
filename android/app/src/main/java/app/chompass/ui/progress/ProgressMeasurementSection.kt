@@ -53,6 +53,7 @@ internal fun MeasurementPlotCard(
     dayTypeByDay: Map<String, String> = emptyMap(),
     untrackedDays: Set<String> = emptySet(),
     typeColorOf: (String) -> androidx.compose.ui.graphics.Color = { androidx.compose.ui.graphics.Color.Transparent },
+    onLog: () -> Unit = {},
 ) {
     val series = remember(entries, site) {
         entries.mapNotNull { entry ->
@@ -83,7 +84,12 @@ internal fun MeasurementPlotCard(
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 )
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(4.dp))
+                MeasurementAddButton(
+                    siteLabel = stringResource(site.labelRes),
+                    onClick = onLog,
+                )
+                Spacer(Modifier.width(4.dp))
                 CollapseChevron(expanded)
             }
             AnimatedVisibility(

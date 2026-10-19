@@ -812,6 +812,7 @@
 
     <string name="progress_weight_section">Kilo</string>
     <string name="progress_log_weight">Kilo ekle</string>
+    <string name="progress_log_measurement_format">%1$s kaydet</string>
     <string name="progress_stat_current">Güncel</string>
     <string name="progress_stat_goal">Hedef</string>
     <string name="progress_stat_net_change">Net değişim</string>

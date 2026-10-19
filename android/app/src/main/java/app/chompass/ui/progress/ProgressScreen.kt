@@ -109,6 +109,7 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
 
     var showAddDialog by remember { mutableStateOf(false) }
     var showAddBodyFatDialog by remember { mutableStateOf(false) }
+    var editingMeasurementSite by remember { mutableStateOf<BodyMeasurement.Site?>(null) }
     var showAllWeights by remember { mutableStateOf(false) }
     var showAllBodyFats by remember { mutableStateOf(false) }
     var heavySectionsReady by remember { mutableStateOf(false) }
@@ -221,6 +222,7 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                                 dayTypeByDay = ui.dayTypeByDay,
                                 untrackedDays = ui.untrackedDays,
                                 typeColorOf = typeColorOf,
+                                onLog = { editingMeasurementSite = site },
                             )
                         }
                     }
@@ -331,6 +333,23 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
     // entry, nothing to scroll).
     val allWeights by container.weightRepository.entries.collectAsState(initial = emptyList())
     val allBodyFats by container.bodyFatRepository.entries.collectAsState(initial = emptyList())
+    val allMeasurements by container.bodyMeasurementRepository.entries.collectAsState(initial = emptyList())
+    editingMeasurementSite?.let { site ->
+        val scope = rememberCoroutineScope()
+        BodyMeasurementEntryDialog(
+            site = site,
+            currentCm = allMeasurements.maxByOrNull { it.date }?.value(site),
+            useMetric = heightMetric,
+            onUnitChange = { metric ->
+                scope.launch { container.prefs.setHeightUnit(if (metric) "cm" else "ftin") }
+            },
+            onSave = { cm ->
+                vm.setBodyMeasurement(site, cm)
+                editingMeasurementSite = null
+            },
+            onDismiss = { editingMeasurementSite = null },
+        )
+    }
     if (showAllWeights) {
         AllWeightHistorySheet(
             entries = allWeights.sortedByDescending { it.date },

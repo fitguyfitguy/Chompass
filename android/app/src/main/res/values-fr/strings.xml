@@ -403,6 +403,7 @@
 
     <string name="progress_weight_section">Poids</string>
     <string name="progress_log_weight">Enregistrer le poids</string>
+    <string name="progress_log_measurement_format">Enregistrer %1$s</string>
     <string name="progress_stat_current">Actuel</string>
     <string name="progress_stat_goal">Objectif</string>
     <string name="progress_log_first_weight">Enregistrez votre premier poids pour voir les tendances</string>
