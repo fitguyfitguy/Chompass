@@ -12,7 +12,10 @@ import app.chompass.models.DietMode
 import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.Gender
 import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.models.HomeCalorieHeroLayout
 import app.chompass.models.HomeDisplayPreferences
+import app.chompass.models.HomeFoodLogLayout
+import app.chompass.models.HomeMacroCardLayout
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.InstantSerializer
 import app.chompass.models.KetoCarbMode
@@ -278,35 +281,16 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
         _ui.value = _ui.value.copy(homeDisplay = _ui.value.homeDisplay.copy(stepGoal = safe))
         viewModelScope.launch { container.prefs.setHomeStepGoal(goal) }
     }
-    fun setHomeNutrientCardCount(count: Int) {
-        val safe = count.coerceIn(
-            HomeDisplayPreferences.MIN_NUTRIENT_CARD_COUNT,
-            HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT,
-        )
-        val current = _ui.value.homeDisplay.homeTopNutrients.joinToString(",") { it.storageKey }
-        val normalized = HomeTopNutrient.fromStorage(current, count)
-        _ui.value = _ui.value.copy(
-            homeDisplay = _ui.value.homeDisplay.copy(
-                nutrientCardCount = safe,
-                homeTopNutrients = normalized,
-            )
-        )
-        viewModelScope.launch {
-            container.prefs.setHomeNutrientCardCount(count)
-            container.prefs.setHomeTopNutrients(
-                HomeTopNutrient.toStorage(HomeTopNutrient.fromStorage(current, count), count)
-            )
-        }
-    }
     fun setHomeTopNutrients(selection: List<HomeTopNutrient>) {
-        val cardCount = _ui.value.homeDisplay.nutrientCardCount
+        val shown = HomeTopNutrient.normalized(selection)
         _ui.value = _ui.value.copy(
             homeDisplay = _ui.value.homeDisplay.copy(
-                homeTopNutrients = HomeTopNutrient.normalized(selection, cardCount),
+                nutrientCardCount = shown.size,
+                homeTopNutrients = shown,
             )
         )
         viewModelScope.launch {
-            container.prefs.setHomeTopNutrients(HomeTopNutrient.toStorage(selection, cardCount))
+            container.prefs.setHomeTopNutrients(HomeTopNutrient.toStorage(shown))
         }
     }
     fun setFoodLogMacroChips(chips: List<FoodLogMacroChip>) {
@@ -318,6 +302,18 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             container.prefs.setFoodLogMacroChips(FoodLogMacroChip.toStorage(chips))
         }
+    }
+    fun setHomeCalorieHeroLayout(layout: HomeCalorieHeroLayout?) {
+        _ui.value = _ui.value.copy(homeDisplay = _ui.value.homeDisplay.copy(calorieHeroLayout = layout))
+        viewModelScope.launch { container.prefs.setHomeCalorieHeroLayout(layout?.storageKey) }
+    }
+    fun setHomeMacroCardLayout(layout: HomeMacroCardLayout?) {
+        _ui.value = _ui.value.copy(homeDisplay = _ui.value.homeDisplay.copy(macroCardLayout = layout))
+        viewModelScope.launch { container.prefs.setHomeMacroCardLayout(layout?.storageKey) }
+    }
+    fun setHomeFoodLogLayout(layout: HomeFoodLogLayout?) {
+        _ui.value = _ui.value.copy(homeDisplay = _ui.value.homeDisplay.copy(foodLogLayout = layout))
+        viewModelScope.launch { container.prefs.setHomeFoodLogLayout(layout?.storageKey) }
     }
     /**
      * Active profile id for onboarding writes, creating a default profile named after

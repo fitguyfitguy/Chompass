@@ -5,6 +5,9 @@ import app.chompass.models.AIProvider
 import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.HeuristicServingUnitSettings
 import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.models.HomeCalorieHeroLayout
+import app.chompass.models.HomeMacroCardLayout
+import app.chompass.models.HomeFoodLogLayout
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.MealSchedule
@@ -150,8 +153,7 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
     val provider = activeProfile?.provider ?: AIProvider.GEMINI
     val speech = SpeechProvider.entries.firstOrNull { it.name == this[Keys.SELECTED_SPEECH_PROVIDER] }
         ?: SpeechProvider.NATIVE
-    val cardCount = this[Keys.HOME_NUTRIENT_CARD_COUNT] ?: HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT
-    val nutrientsRaw = this[Keys.HOME_TOP_NUTRIENTS] ?: HomeTopNutrient.DefaultStorageValue
+    val nutrients = HomeTopNutrient.fromStorage(this[Keys.HOME_TOP_NUTRIENTS])
     return SettingsPrefsHydration(
         selectedAI = provider,
         selectedModelRaw = activeProfile?.model,
@@ -279,13 +281,16 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
             }
         },
         homeDisplay = HomeDisplayPreferences(
-            nutrientCardCount = cardCount,
-            homeTopNutrients = HomeTopNutrient.fromStorage(nutrientsRaw, cardCount),
+            nutrientCardCount = nutrients.size,
+            homeTopNutrients = nutrients,
             showSteps = this[Keys.HOME_SHOW_STEPS] ?: false,
             showActiveCalories = this[Keys.HOME_SHOW_ACTIVE_CALORIES] ?: false,
             stepGoal = this[Keys.HOME_STEP_GOAL] ?: HomeDisplayPreferences.DEFAULT_STEP_GOAL,
             calorieDisplayMode = HomeCalorieDisplayMode.fromStorage(this[Keys.HOME_CALORIE_DISPLAY_MODE]),
             fullCreditActiveBurn = this[Keys.HOME_CALORIE_FULL_CREDIT] ?: false,
+            calorieHeroLayout = HomeCalorieHeroLayout.fromStorage(this[Keys.HOME_CALORIE_HERO_LAYOUT]),
+            macroCardLayout = HomeMacroCardLayout.fromStorage(this[Keys.HOME_MACRO_CARD_LAYOUT]),
+            foodLogLayout = HomeFoodLogLayout.fromStorage(this[Keys.HOME_FOOD_LOG_LAYOUT]),
             foodLogMacroChips = FoodLogMacroChip.fromStorage(this[Keys.FOOD_LOG_MACRO_CHIPS]),
         ),
         mealSchedule = mealCatalog.toLegacySchedule(),

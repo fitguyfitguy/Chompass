@@ -17,6 +17,40 @@ enum class HomeCalorieDisplayMode(val storageKey: String, val displayNameRes: In
     }
 }
 
+/** Presentation options for the home calorie hero. Null preserves the legacy tall arc. */
+enum class HomeCalorieHeroLayout(val storageKey: String) {
+    COMPACT_HORIZONTAL("compactHorizontal"),
+    SIDE_GAUGE("sideGauge"),
+    COMPACT_ARC("compactArc"),
+    HIDDEN("hidden");
+
+    companion object {
+        fun fromStorage(raw: String?): HomeCalorieHeroLayout? =
+            entries.firstOrNull { it.storageKey == raw }
+    }
+}
+
+/** Presentation options for home nutrient cards. Null = compact bars band (default). */
+enum class HomeMacroCardLayout(val storageKey: String) {
+    SLIM_LINE("slimLine"),
+    CLASSIC("classic");
+
+    companion object {
+        fun fromStorage(raw: String?): HomeMacroCardLayout? =
+            entries.firstOrNull { it.storageKey == raw }
+    }
+}
+
+/** Presentation options for food-log rows. Null = compact rows (default). */
+enum class HomeFoodLogLayout(val storageKey: String) {
+    CLASSIC("classic");
+
+    companion object {
+        fun fromStorage(raw: String?): HomeFoodLogLayout? =
+            entries.firstOrNull { it.storageKey == raw }
+    }
+}
+
 /** Macros shown on food-log rows (subset of core nutrients). */
 enum class FoodLogMacroChip(val storageKey: String) {
     PROTEIN("protein"),
@@ -40,6 +74,15 @@ enum class FoodLogMacroChip(val storageKey: String) {
         FAT -> MacroKind.FAT
         FIBER -> MacroKind.FIBER
         SUGAR -> null
+    }
+
+    /** Full nutrient name for settings summaries (the picker rows lead with it). */
+    fun kindLabelRes(): Int = when (this) {
+        PROTEIN -> HomeTopNutrient.PROTEIN.displayNameRes
+        CARBS -> HomeTopNutrient.CARBS.displayNameRes
+        FAT -> HomeTopNutrient.FAT.displayNameRes
+        FIBER -> HomeTopNutrient.FIBER.displayNameRes
+        SUGAR -> HomeTopNutrient.SUGAR.displayNameRes
     }
 
     fun valueFrom(entry: FoodEntry): Double = when (this) {
@@ -83,10 +126,11 @@ enum class FoodLogMacroChip(val storageKey: String) {
         fun toStorage(selection: List<FoodLogMacroChip>): String =
             normalized(selection).joinToString(",") { it.storageKey }
 
-        fun normalized(selection: List<FoodLogMacroChip>): List<FoodLogMacroChip> =
-            (selection.distinct().ifEmpty { DefaultSelection } + DefaultSelection)
-                .distinct()
-                .take(5)
+        /** Distinct picks, at least one. Empty falls back to protein, carbs, and fat. */
+        fun normalized(selection: List<FoodLogMacroChip>): List<FoodLogMacroChip> {
+            val picked = selection.distinct().take(5)
+            return picked.ifEmpty { DefaultSelection }
+        }
     }
 }
 
@@ -99,6 +143,9 @@ data class HomeDisplayPreferences(
     val calorieDisplayMode: HomeCalorieDisplayMode = HomeCalorieDisplayMode.Default,
     /** Add Active only: credit today's measured burn on top of the full goal instead of the sedentary split. */
     val fullCreditActiveBurn: Boolean = false,
+    val calorieHeroLayout: HomeCalorieHeroLayout? = null,
+    val macroCardLayout: HomeMacroCardLayout? = null,
+    val foodLogLayout: HomeFoodLogLayout? = null,
     val foodLogMacroChips: List<FoodLogMacroChip> = FoodLogMacroChip.DefaultSelection,
 ) {
     companion object {

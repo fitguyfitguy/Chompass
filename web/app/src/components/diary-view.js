@@ -699,7 +699,7 @@ export class DiaryView extends HTMLElement {
         fatG: Math.round(targets.fatG * s),
       };
     }
-    const tubeKeys = normalizeHomeTopNutrients(appPrefs.homeTopNutrients, appPrefs.homeNutrientCardCount);
+    const tubeKeys = normalizeHomeTopNutrients(appPrefs.homeTopNutrients);
     const chipKeys = normalizeFoodLogChips(appPrefs.foodLogMacroChips);
     const optionalGoals = mergeOptionalGoals(appPrefs.optionalNutrientGoals);
     const weekStart =

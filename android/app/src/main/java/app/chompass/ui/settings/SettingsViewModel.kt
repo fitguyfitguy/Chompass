@@ -16,6 +16,9 @@ import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.HeuristicRuleOverride
 import app.chompass.models.HeuristicServingUnitSettings
 import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.models.HomeCalorieHeroLayout
+import app.chompass.models.HomeMacroCardLayout
+import app.chompass.models.HomeFoodLogLayout
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.KetoCarbMode
@@ -795,17 +798,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         const val MAX_SUGGESTIONS = 3
     }
 
-    fun setHomeNutrientCardCount(count: Int) = launchPref {
-        container.prefs.setHomeNutrientCardCount(count)
-        val nutrients = container.prefs.homeTopNutrients.first()
-        container.prefs.setHomeTopNutrients(
-            HomeTopNutrient.toStorage(HomeTopNutrient.fromStorage(nutrients, count), count)
-        )
-    }
-
     fun setHomeTopNutrients(selection: List<HomeTopNutrient>) = launchPref {
-        val cardCount = container.prefs.homeNutrientCardCount.first()
-        container.prefs.setHomeTopNutrients(HomeTopNutrient.toStorage(selection, cardCount))
+        container.prefs.setHomeTopNutrients(HomeTopNutrient.toStorage(selection))
     }
 
     fun setHomeShowSteps(enabled: Boolean) = launchPref {
@@ -826,6 +820,18 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
 
     fun setHomeCalorieFullCredit(enabled: Boolean) = launchPref {
         container.prefs.setHomeCalorieFullCredit(enabled)
+    }
+
+    fun setHomeCalorieHeroLayout(layout: HomeCalorieHeroLayout?) = launchPref {
+        container.prefs.setHomeCalorieHeroLayout(layout?.storageKey)
+    }
+
+    fun setHomeMacroCardLayout(layout: HomeMacroCardLayout?) = launchPref {
+        container.prefs.setHomeMacroCardLayout(layout?.storageKey)
+    }
+
+    fun setHomeFoodLogLayout(layout: HomeFoodLogLayout?) = launchPref {
+        container.prefs.setHomeFoodLogLayout(layout?.storageKey)
     }
 
     fun setFoodLogMacroChips(chips: List<FoodLogMacroChip>) = launchPref {

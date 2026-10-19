@@ -13,12 +13,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -112,7 +114,9 @@ internal fun MealSectionHeader(
 ) {
     // iOS layout: small dim icon + sentence-case label, regular weight ~17sp.
     val nutritionCd = stringResource(R.string.nutrition_details_title)
-    Row(
+    val calories = totalCalories
+    val summaryOnOwnLine = calories != null && macroChips.size >= 4
+    Column(
         Modifier
             .fillMaxWidth()
             .then(
@@ -122,54 +126,84 @@ internal fun MealSectionHeader(
                     Modifier
                 },
             )
-            .padding(start = 22.dp, end = 24.dp, top = 12.dp, bottom = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            sheetMealIcon(meal),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
-            modifier = Modifier.size(16.dp)
-        )
-        Spacer(Modifier.width(8.dp))
-        Text(
-            mealLabel(meal),
-            modifier = Modifier.weight(1f),
-            fontSize = 17.sp,
-            fontWeight = FontWeight.Medium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Strong)
-        )
-        // Combined nutrients for this meal (issue #103: chicken + pasta + sauce = one total)
-        if (totalCalories != null) {
-            val chipGlyphs = macroChips.associateWith { stringResource(it.glyphRes()) }
-            val summary = buildAnnotatedString {
-                append(energyText(totalCalories))
-                if (macroChips.isNotEmpty()) {
-                    append(" · ")
-                    macroChips.forEachIndexed { index, chip ->
-                        if (index > 0) append(' ')
-                        val value = chip.valueFromMeal(
-                            totalProtein,
-                            totalCarbs,
-                            totalFat,
-                            totalFiber,
-                            totalSugar,
-                        ).roundToInt()
-                        val color = chip.macroKind()?.color() ?: AppColors.Calorie
-                        withStyle(SpanStyle(color = color)) { append("${value}${chipGlyphs[chip]}") }
-                    }
-                }
-            }
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(start = 22.dp, end = 24.dp, top = 12.dp, bottom = if (summaryOnOwnLine) 0.dp else 6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                sheetMealIcon(meal),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
+                modifier = Modifier.size(16.dp)
+            )
+            Spacer(Modifier.width(8.dp))
             Text(
-                summary,
-                fontSize = 12.sp,
+                mealLabel(meal),
+                modifier = Modifier.weight(1f),
+                fontSize = 17.sp,
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Strong)
+            )
+            // Combined nutrients for this meal (issue #103: chicken + pasta + sauce = one total)
+            if (calories != null && !summaryOnOwnLine) {
+                Text(
+                    mealMacroSummary(calories, macroChips, totalProtein, totalCarbs, totalFat, totalFiber, totalSugar),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Subtle),
+                )
+            }
+        }
+        if (calories != null && macroChips.size >= 4) {
+            Text(
+                mealMacroSummary(calories, macroChips, totalProtein, totalCarbs, totalFat, totalFiber, totalSugar),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 46.dp, end = 24.dp, bottom = 6.dp),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Subtle),
             )
+        }
+    }
+}
+
+@Composable
+private fun mealMacroSummary(
+    totalCalories: Int,
+    macroChips: List<FoodLogMacroChip>,
+    totalProtein: Double,
+    totalCarbs: Double,
+    totalFat: Double,
+    totalFiber: Double,
+    totalSugar: Double,
+): androidx.compose.ui.text.AnnotatedString {
+    val chipGlyphs = macroChips.associateWith { stringResource(it.glyphRes()) }
+    return buildAnnotatedString {
+        append(energyText(totalCalories))
+        if (macroChips.isNotEmpty()) {
+            append(" · ")
+            macroChips.forEachIndexed { index, chip ->
+                if (index > 0) append(' ')
+                val value = chip.valueFromMeal(
+                    totalProtein,
+                    totalCarbs,
+                    totalFat,
+                    totalFiber,
+                    totalSugar,
+                ).roundToInt()
+                val color = chip.macroKind()?.color() ?: AppColors.Calorie
+                withStyle(SpanStyle(color = color)) { append("${value}${chipGlyphs[chip]}") }
+            }
         }
     }
 }
@@ -404,6 +438,7 @@ internal fun SwipeableFoodRow(
     isFavorite: Boolean,
     rowShape: RoundedCornerShape,
     macroChips: List<FoodLogMacroChip>,
+    compact: Boolean = false,
     onTap: () -> Unit,
     onLongPress: () -> Unit,
     onDelete: () -> Unit,
@@ -482,6 +517,7 @@ internal fun SwipeableFoodRow(
                     isFavorite = isFavorite,
                     rowShape = rowShape,
                     macroChips = macroChips,
+                    compact = compact,
                     planningMode = planningMode,
                     onLogNow = onLogNow,
                 )
@@ -547,6 +583,7 @@ internal fun FoodRow(
     rowShape: RoundedCornerShape = RoundedCornerShape(AppRadii.SectionCard),
     isSelected: Boolean = false,
     macroChips: List<FoodLogMacroChip> = FoodLogMacroChip.DefaultSelection,
+    compact: Boolean = false,
     /** Meal planning mode: planned rows show the chip and the Log-now action. */
     planningMode: Boolean = false,
     onLogNow: ((FoodEntry) -> Unit)? = null,
@@ -577,13 +614,13 @@ internal fun FoodRow(
                 else AppColors.HairlineBorderLight,
                 rowShape
             )
-            .padding(horizontal = 14.dp, vertical = 12.dp),
+            .padding(horizontal = 14.dp, vertical = if (compact) 8.dp else 12.dp),
         verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(if (compact) 10.dp else 12.dp)
     ) {
         Box(
             Modifier
-                .size(76.dp)
+                .size(if (compact) 57.dp else 76.dp)
                 .clip(RoundedCornerShape(AppRadii.Field))
                 .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)),
             contentAlignment = Alignment.Center
@@ -599,19 +636,19 @@ internal fun FoodRow(
                     },
                     modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(AppRadii.Field))
                 )
-                entry.emoji != null -> Text(entry.emoji ?: "", fontSize = 36.sp)
+                entry.emoji != null -> Text(entry.emoji ?: "", fontSize = if (compact) 26.sp else 36.sp)
                 else -> Icon(
                     Icons.Filled.Restaurant,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(if (compact) 22.dp else 28.dp)
                 )
             }
         }
 
         Column(
             Modifier.weight(1f).padding(top = 2.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            verticalArrangement = Arrangement.spacedBy(if (compact) 2.dp else 6.dp)
         ) {
             // Name (+ heart) on the left, time on the top-right.
             Row(
@@ -627,7 +664,7 @@ internal fun FoodRow(
                         entry.name,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
-                        maxLines = 2,
+                        maxLines = if (compact) 1 else 2,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false)
                     )
@@ -666,53 +703,84 @@ internal fun FoodRow(
                 }
             }
 
-            // Pink kcal · gray serving size. The serving echoes the logged
-            // unit ("2 oz", "1 bowl") when the entry still has a resolvable
-            // non-gram selection; otherwise today's grams line (Codeberg #65).
+            // Pink kcal · gray serving size. Compact macros sit on this same
+            // line, content-sized, pinned to the row's trailing edge.
+            val echo = ServingUnitOption.homeDisplaySelection(
+                entry.selectedServingUnit,
+                entry.selectedServingQuantity,
+                entry.servingSizeGrams?.takeIf { it > 0 },
+                entry.servingUnitOptions,
+            )
+            val servingText = echo?.let { (qty, option) ->
+                "${ServingUnitOption.formatQuantity(qty)} " + option.displayUnit(
+                    qty,
+                    stringResource(R.string.unit_serving),
+                    stringResource(R.string.unit_serving_plural),
+                    stringResource(R.string.unit_package),
+                    stringResource(R.string.unit_package_plural),
+                    culinaryUnitLabels(),
+                )
+            } ?: entry.servingSizeGrams?.takeIf { it > 0 }?.let { gramsText(it) }
             Row(
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Text(
                     energyText(entry.calories),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                    softWrap = false,
                 )
-                val echo = ServingUnitOption.homeDisplaySelection(
-                    entry.selectedServingUnit,
-                    entry.selectedServingQuantity,
-                    entry.servingSizeGrams?.takeIf { it > 0 },
-                    entry.servingUnitOptions,
-                )
-                val servingText = echo?.let { (qty, option) ->
-                    "${ServingUnitOption.formatQuantity(qty)} " + option.displayUnit(
-                        qty,
-                        stringResource(R.string.unit_serving),
-                        stringResource(R.string.unit_serving_plural),
-                        stringResource(R.string.unit_package),
-                        stringResource(R.string.unit_package_plural),
-                        culinaryUnitLabels(),
-                    )
-                } ?: entry.servingSizeGrams?.takeIf { it > 0 }?.let { gramsText(it) }
                 if (servingText != null) {
                     Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled))
                     Text(
                         servingText,
+                        modifier = Modifier.widthIn(max = 96.dp),
                         fontSize = 12.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                     )
+                }
+                if (compact && macroChips.isNotEmpty()) {
+                    FlowRow(
+                        Modifier.weight(1f),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        macroChips.forEach { chip ->
+                            FoodLogMacroChipView(chip, chip.valueFrom(entry))
+                        }
+                    }
+                } else {
+                    Spacer(Modifier.weight(1f))
                 }
             }
 
-            // Macro pills (P / C / F) — tinted dark capsules with gray text.
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                macroChips.forEach { chip ->
-                    FoodLogMacroChipView(chip, chip.valueFrom(entry))
-                }
+            if (!compact && macroChips.isNotEmpty()) {
+                FoodLogMacroChipLine(macroChips, entry, spacedBy = 6.dp)
             }
+        }
+    }
+}
+
+/** Classic chips, content-sized and pinned to the trailing edge of the row. */
+@Composable
+private fun FoodLogMacroChipLine(
+    chips: List<FoodLogMacroChip>,
+    entry: FoodEntry,
+    spacedBy: androidx.compose.ui.unit.Dp,
+) {
+    FlowRow(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(spacedBy, Alignment.End),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        chips.forEach { chip ->
+            FoodLogMacroChipView(chip, chip.valueFrom(entry))
         }
     }
 }

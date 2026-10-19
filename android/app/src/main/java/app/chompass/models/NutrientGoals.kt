@@ -12,6 +12,7 @@ enum class HomeTopNutrient(
     val displayNameRes: Int,
     val unitRes: Int
 ) {
+    CALORIES("calories", "Calories", "kcal", R.string.nutrition_label_calories, R.string.unit_kcal),
     PROTEIN("protein", "Protein", "g", R.string.nutrition_label_protein, R.string.unit_g),
     CARBS("carbs", "Carbs", "g", R.string.nutrition_label_carbs, R.string.unit_g),
     FAT("fat", "Fat", "g", R.string.nutrition_label_fat, R.string.unit_g),
@@ -38,6 +39,7 @@ enum class HomeTopNutrient(
     CAFFEINE("caffeine", "Caffeine", "mg", R.string.nutrition_label_caffeine, R.string.unit_mg);
 
     fun current(entries: List<FoodEntry>): Double = when (this) {
+        CALORIES -> entries.sumOf { it.calories }.toDouble()
         PROTEIN -> entries.sumOf { it.protein }
         CARBS -> entries.sumOf { it.carbs }
         FAT -> entries.sumOf { it.fat }
@@ -70,6 +72,7 @@ enum class HomeTopNutrient(
      * optional micronutrient goals are fixed daily targets and never scale.
      */
     fun goal(profile: UserProfile?, optionalGoals: OptionalNutrientGoals, macroScale: Float = 1f): Int = when (this) {
+        CALORIES -> profile?.effectiveCalories ?: 2_000
         PROTEIN -> scaleMacro(profile?.effectiveProtein ?: 150, macroScale)
         CARBS -> scaleMacro(profile?.effectiveCarbs ?: 220, macroScale)
         FAT -> scaleMacro(profile?.effectiveFat ?: 70, macroScale)
@@ -108,6 +111,7 @@ enum class HomeTopNutrient(
         optionalGoals: OptionalNutrientGoals,
         macroScale: Float = 1f,
     ): Int = when (this) {
+        CALORIES -> resolved?.targets?.calories ?: profile?.effectiveCalories ?: 2_000
         PROTEIN -> scaleMacro(resolved?.targets?.proteinG ?: profile?.effectiveProtein ?: 150, macroScale)
         CARBS -> scaleMacro(resolved?.targets?.carbsG ?: profile?.effectiveCarbs ?: 220, macroScale)
         FAT -> scaleMacro(resolved?.targets?.fatG ?: profile?.effectiveFat ?: 70, macroScale)
@@ -119,7 +123,7 @@ enum class HomeTopNutrient(
 
     companion object {
         /** #75: P/C/F — never part of the Progress averages selection (the macro card covers them). */
-        val Macros = setOf(PROTEIN, CARBS, FAT)
+        val Macros = setOf(CALORIES, PROTEIN, CARBS, FAT)
 
         /**
          * #75: nutrients the Progress averages card can show, in canonical
@@ -153,27 +157,23 @@ enum class HomeTopNutrient(
         val DefaultSelection = listOf(PROTEIN, CARBS, FAT, FIBER)
         val DefaultStorageValue = DefaultSelection.joinToString(",") { it.storageKey }
 
-        fun fromStorage(raw: String?, cardCount: Int = HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT): List<HomeTopNutrient> {
-            val selected = raw
-                ?.split(",")
-                ?.mapNotNull { part ->
-                    val key = part.trim()
-                    values().firstOrNull { it.storageKey == key || it.name == key }
-                }
-                .orEmpty()
-            return normalized(selected, cardCount)
+        fun fromStorage(raw: String?): List<HomeTopNutrient> {
+            if (raw.isNullOrBlank()) return DefaultSelection
+            val selected = raw.split(",").mapNotNull { part ->
+                val key = part.trim()
+                values().firstOrNull { it.storageKey == key || it.name == key }
+            }
+            return normalized(selected)
         }
 
-        fun toStorage(selection: List<HomeTopNutrient>, cardCount: Int = HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT): String =
-            normalized(selection, cardCount).joinToString(",") { it.storageKey }
+        fun toStorage(selection: List<HomeTopNutrient>): String =
+            normalized(selection).joinToString(",") { it.storageKey }
 
-        fun normalized(
-            selection: List<HomeTopNutrient>,
-            cardCount: Int = HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT,
-        ): List<HomeTopNutrient> =
-            (selection.distinct() + DefaultSelection)
-                .distinct()
-                .take(cardCount.coerceIn(HomeDisplayPreferences.MIN_NUTRIENT_CARD_COUNT, HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT))
+        /** Distinct picks, 1 to [HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT]. Empty falls back to the default row. */
+        fun normalized(selection: List<HomeTopNutrient>): List<HomeTopNutrient> {
+            val picked = selection.distinct().take(HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT)
+            return picked.ifEmpty { DefaultSelection }
+        }
     }
 }
 

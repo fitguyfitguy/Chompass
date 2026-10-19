@@ -529,7 +529,6 @@ class TestDataSeeder(private val container: AppContainer) {
                             HomeTopNutrient.SODIUM,
                             HomeTopNutrient.POTASSIUM,
                         ),
-                        cardCount = 4,
                     )
                 )
                 // The "extra buttons" half of busy_home: the Progress nutrient
@@ -544,7 +543,6 @@ class TestDataSeeder(private val container: AppContainer) {
                                 HomeTopNutrient.SODIUM,
                                 HomeTopNutrient.POTASSIUM,
                             ),
-                            cardCount = 4,
                         )
                         .split(",")
                         .filter { it.isNotBlank() }
@@ -1106,8 +1104,8 @@ class TestDataSeeder(private val container: AppContainer) {
             }
             container.prefs.setHomeShowSteps(settings.homeShowSteps)
             container.prefs.setHomeShowActiveCalories(settings.homeShowActiveCalories)
-            settings.homeTopNutrients?.let { container.prefs.setHomeTopNutrients(it) }
             settings.homeNutrientCardCount?.let { container.prefs.setHomeNutrientCardCount(it) }
+            settings.homeTopNutrients?.let { container.prefs.setHomeTopNutrients(it) }
             settings.homeCalorieDisplayMode?.let { container.prefs.setHomeCalorieDisplayMode(it) }
             settings.dailyNotesEnabled?.let { container.prefs.setDailyNotesEnabled(it) }
             settings.mealPlanningEnabled?.let { container.prefs.setMealPlanningEnabled(it) }
