@@ -2194,7 +2194,6 @@
     <string name="home_display_food_log_layout">Food log layout</string>
     <string name="home_food_log_layout_default">Compact</string>
     <string name="home_food_log_layout_classic">Classic</string>
-    <string name="home_calories_label">CALORIES</string>
     <string name="home_display_needs_health">Requires Health Connect with steps permission</string>
     <string name="home_calorie_of_goal">of %1$s %2$s</string>
     <!-- Macro day types (#60): hero chip + quick-switch sheet. -->
