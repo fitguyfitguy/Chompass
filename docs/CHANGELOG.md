@@ -14,7 +14,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **An adherence card on Progress** (Android): a summary of how closely your logged days landed on their calorie goals, overall, per day type, and per phase, with the share of days inside a ±100 kcal band.
 - **Customize Home opens on a sample day** (Android): the screen starts with a preview built from the real calorie gauge, nutrient cards, and food log, and the same preview is a setup step after Health Connect. The sample carries the Today label, a meal header with that meal's macro totals, and a serving line, so its rows wrap the way the real Home does.
 - **Pick the calorie gauge layout** (Android): Home keeps its ring by default and gains an arc with the numbers beside it, a compact arc, a plain progress bar, and a hidden option. The choice redraws Home and the preview right away.
-- **Pick the nutrient card style** (Android): cards can be compact bars (the new default), slim lines, or the classic cards. Calories can also be shown as a nutrient card.
+- **Pick the nutrient card style** (Android): cards can be compact bars (the new default), slim lines, or the classic cards. Calories can also be shown as a nutrient card. From Codeberg PR [#138](https://codeberg.org/fitguy/Chompass/pulls/138) by [@PhilipWhiteside](https://codeberg.org/PhilipWhiteside).
 - **Pick the food-log row style** (Android): the compact row keeps the extra macros on the calorie line at their normal size while the serving line gives up space, and the classic row wraps the macros onto a second line.
 - **Layout pickers show every option** (Android): each option draws a small schematic of the layout and applies as soon as it is tapped, with no separate confirm button.
 
