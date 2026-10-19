@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -736,25 +737,38 @@ internal fun FoodRow(
                     Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled))
                     Text(
                         servingText,
-                        modifier = Modifier.weight(1f, fill = false),
+                        modifier = Modifier
+                            .weight(1f, fill = false)
+                            .widthIn(max = if (compact && macroChips.size >= 4) 56.dp else 120.dp),
                         fontSize = 12.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                     )
-                }
-                if (compact && macroChips.size <= 3) {
+                } else if (!compact || macroChips.isEmpty()) {
                     Spacer(Modifier.weight(1f))
-                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                }
+                if (compact && macroChips.isNotEmpty()) {
+                    val shrink = macroChips.size >= 4
+                    Row(
+                        Modifier.weight(1f),
+                        horizontalArrangement = Arrangement.spacedBy(if (shrink) 2.dp else 4.dp, Alignment.End),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         macroChips.forEach { chip ->
-                            FoodLogMacroChipView(chip, chip.valueFrom(entry))
+                            FoodLogMacroChipView(
+                                chip,
+                                chip.valueFrom(entry),
+                                modifier = if (shrink) Modifier.weight(1f) else Modifier,
+                                shrinkToFit = shrink,
+                            )
                         }
                     }
                 }
             }
 
-            if (macroChips.isNotEmpty() && !(compact && macroChips.size <= 3)) {
-                FoodLogMacroChipLine(macroChips, entry, spacedBy = if (compact) 4.dp else 6.dp)
+            if (!compact && macroChips.isNotEmpty()) {
+                FoodLogMacroChipLine(macroChips, entry, spacedBy = 6.dp)
             }
         }
     }
