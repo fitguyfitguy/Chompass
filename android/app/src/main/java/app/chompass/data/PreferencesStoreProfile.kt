@@ -7,6 +7,9 @@ import app.chompass.debug.DebugTrace
 import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.GoalJournalEntry
 import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.models.HomeCalorieHeroLayout
+import app.chompass.models.HomeMacroCardLayout
+import app.chompass.models.HomeFoodLogLayout
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.OptionalNutrientGoals
@@ -231,7 +234,11 @@ internal val PreferencesStore.homeTopNutrientsImpl: Flow<String> get() = dataSto
         it[Keys.HOME_TOP_NUTRIENTS] ?: HomeTopNutrient.DefaultStorageValue
     }
 internal suspend fun PreferencesStore.setHomeTopNutrientsImpl(v: String) {
-        dataStore.edit { it[Keys.HOME_TOP_NUTRIENTS] = v }
+        val shown = HomeTopNutrient.fromStorage(v)
+        dataStore.edit {
+            it[Keys.HOME_TOP_NUTRIENTS] = HomeTopNutrient.toStorage(shown)
+            it[Keys.HOME_NUTRIENT_CARD_COUNT] = shown.size
+        }
     }
 
 internal val PreferencesStore.homeNutrientCardCountImpl: Flow<Int> get() = dataStore.data.map {
@@ -273,6 +280,27 @@ internal suspend fun PreferencesStore.setHomeCalorieFullCreditImpl(v: Boolean) {
         dataStore.edit { it[Keys.HOME_CALORIE_FULL_CREDIT] = v }
     }
 
+internal suspend fun PreferencesStore.setHomeCalorieHeroLayoutImpl(v: String?) {
+        dataStore.edit { prefs ->
+            if (v == null) prefs.remove(Keys.HOME_CALORIE_HERO_LAYOUT)
+            else prefs[Keys.HOME_CALORIE_HERO_LAYOUT] = v
+        }
+    }
+
+internal suspend fun PreferencesStore.setHomeMacroCardLayoutImpl(v: String?) {
+        dataStore.edit { prefs ->
+            if (v == null) prefs.remove(Keys.HOME_MACRO_CARD_LAYOUT)
+            else prefs[Keys.HOME_MACRO_CARD_LAYOUT] = v
+        }
+    }
+
+internal suspend fun PreferencesStore.setHomeFoodLogLayoutImpl(v: String?) {
+        dataStore.edit { prefs ->
+            if (v == null) prefs.remove(Keys.HOME_FOOD_LOG_LAYOUT)
+            else prefs[Keys.HOME_FOOD_LOG_LAYOUT] = v
+        }
+    }
+
 internal val PreferencesStore.foodLogMacroChipsImpl: Flow<String> get() = dataStore.data.map {
         it[Keys.FOOD_LOG_MACRO_CHIPS] ?: FoodLogMacroChip.DefaultStorageValue
     }
@@ -298,16 +326,18 @@ internal suspend fun PreferencesStore.migrateHomeDisplayLayoutIfNeededImpl() {
     }
 
 internal val PreferencesStore.homeDisplayPreferencesImpl: Flow<HomeDisplayPreferences> get() = dataStore.data.map { prefs ->
-        val cardCount = prefs[Keys.HOME_NUTRIENT_CARD_COUNT] ?: HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT
-        val nutrientsRaw = prefs[Keys.HOME_TOP_NUTRIENTS] ?: HomeTopNutrient.DefaultStorageValue
+        val nutrients = HomeTopNutrient.fromStorage(prefs[Keys.HOME_TOP_NUTRIENTS])
         HomeDisplayPreferences(
-            nutrientCardCount = cardCount,
-            homeTopNutrients = HomeTopNutrient.fromStorage(nutrientsRaw, cardCount),
+            nutrientCardCount = nutrients.size,
+            homeTopNutrients = nutrients,
             showSteps = prefs[Keys.HOME_SHOW_STEPS] ?: false,
             showActiveCalories = prefs[Keys.HOME_SHOW_ACTIVE_CALORIES] ?: false,
             stepGoal = prefs[Keys.HOME_STEP_GOAL] ?: HomeDisplayPreferences.DEFAULT_STEP_GOAL,
             calorieDisplayMode = HomeCalorieDisplayMode.fromStorage(prefs[Keys.HOME_CALORIE_DISPLAY_MODE]),
             fullCreditActiveBurn = prefs[Keys.HOME_CALORIE_FULL_CREDIT] ?: false,
+            calorieHeroLayout = HomeCalorieHeroLayout.fromStorage(prefs[Keys.HOME_CALORIE_HERO_LAYOUT]),
+            macroCardLayout = HomeMacroCardLayout.fromStorage(prefs[Keys.HOME_MACRO_CARD_LAYOUT]),
+            foodLogLayout = HomeFoodLogLayout.fromStorage(prefs[Keys.HOME_FOOD_LOG_LAYOUT]),
             foodLogMacroChips = FoodLogMacroChip.fromStorage(prefs[Keys.FOOD_LOG_MACRO_CHIPS]),
         )
     }

@@ -97,6 +97,8 @@ import app.chompass.models.CaffeineEntry
 import app.chompass.models.NicotineEntry
 import app.chompass.models.WaterAmountFormat
 import app.chompass.models.builtinCaffeineDefaultMg
+import app.chompass.models.HomeCalorieHeroLayout
+import app.chompass.models.HomeFoodLogLayout
 import app.chompass.models.HomeTopNutrient
 import app.chompass.models.MilkKind
 import app.chompass.models.WaterEntry
@@ -655,10 +657,11 @@ fun HomeScreen(
                     val baseGoal = ui.gaugeBaseCalorieGoal
                     val activeCalories = ui.displayActiveCalories
                     val calorieMode = ui.effectiveCalorieMode
-                    CalorieHero(
-                        current = ui.loggedCaloriesToday,
-                        baseGoal = baseGoal,
-                        planned = ui.plannedCaloriesToday,
+                    if (ui.homeDisplay.calorieHeroLayout != HomeCalorieHeroLayout.HIDDEN) {
+                        CalorieHero(
+                            current = ui.loggedCaloriesToday,
+                            baseGoal = baseGoal,
+                            planned = ui.plannedCaloriesToday,
                         activeCalories = activeCalories,
                         displayMode = calorieMode,
                         dayTypeLabel = ui.dayTypeLabel,
@@ -676,10 +679,12 @@ fun HomeScreen(
                         restingBurn = ui.restingBurnToday,
                         recalcDetailsAvailable = ui.lastRecalcSheet != null,
                         onShowRecalcDetails = { vm.openRecalcDetails() },
-                        goalDerivation = ui.goalDerivation,
-                    )
+                            goalDerivation = ui.goalDerivation,
+                            layout = ui.homeDisplay.calorieHeroLayout,
+                        )
+                    }
                     if (ui.homeDisplay.showSteps) {
-                        Spacer(Modifier.height(12.dp))
+                        Spacer(Modifier.height(4.dp))
                         Row(
                             Modifier
                                 .fillMaxWidth()
@@ -692,8 +697,10 @@ fun HomeScreen(
                                 modifier = Modifier.weight(1f),
                             )
                         }
+                        Spacer(Modifier.height(4.dp))
+                    } else {
+                        Spacer(Modifier.height(12.dp))
                     }
-                    Spacer(Modifier.height(20.dp))
                     // Current/goal resolved once per state change instead of
                     // per card per recomposition (current() scans the day's
                     // entries; goal() re-derives from the resolved targets).
@@ -708,17 +715,22 @@ fun HomeScreen(
                         ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale, ui.caffeineTodayMg,
                     ) {
                         ui.homeTopNutrients.associateWith { nutrient ->
-                            val logged = if (nutrient == HomeTopNutrient.CAFFEINE) {
-                                ui.caffeineTodayMg
-                            } else {
-                                nutrient.current(loggedEntries)
+                            val logged = when (nutrient) {
+                                HomeTopNutrient.CALORIES -> ui.loggedCaloriesToday.toDouble()
+                                HomeTopNutrient.CAFFEINE -> ui.caffeineTodayMg
+                                else -> nutrient.current(loggedEntries)
                             }
-                            val planned = if (nutrient == HomeTopNutrient.CAFFEINE) {
-                                0.0
-                            } else {
-                                nutrient.current(plannedEntries)
+                            val planned = when (nutrient) {
+                                HomeTopNutrient.CALORIES -> ui.plannedCaloriesToday.toDouble()
+                                HomeTopNutrient.CAFFEINE -> 0.0
+                                else -> nutrient.current(plannedEntries)
                             }
-                            Triple(logged, planned, nutrient.goal(resolvedTargets, ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale))
+                            val goal = if (nutrient == HomeTopNutrient.CALORIES) {
+                                ui.heroCalorieGoal
+                            } else {
+                                nutrient.goal(resolvedTargets, ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale)
+                            }
+                            Triple(logged, planned, goal)
                         }
                     }
                     Row(
@@ -734,10 +746,12 @@ fun HomeScreen(
                                 current = current,
                                 goal = goal,
                                 fatFloor = nutrient == HomeTopNutrient.FAT,
+                                isEnergy = nutrient == HomeTopNutrient.CALORIES,
                                 unit = stringResource(nutrient.unitRes),
                                 accentColor = nutrientAccentColor(nutrient),
                                 modifier = Modifier.weight(1f),
                                 planned = planned,
+                                layout = ui.homeDisplay.macroCardLayout,
                             )
                         }
                     }
@@ -928,6 +942,7 @@ fun HomeScreen(
                                         rowShape = rowShape,
                                         isSelected = isSelected,
                                         macroChips = ui.foodLogMacroChips,
+                                        compact = ui.homeDisplay.foodLogLayout != HomeFoodLogLayout.CLASSIC,
                                     )
                                 }
                             } else {
@@ -937,6 +952,7 @@ fun HomeScreen(
                                     isFavorite = isFav,
                                     rowShape = rowShape,
                                     macroChips = ui.foodLogMacroChips,
+                                    compact = ui.homeDisplay.foodLogLayout != HomeFoodLogLayout.CLASSIC,
                                     onTap = { editingEntry = entry },
                                     onLongPress = { selectedEntryIds = setOf(entry.id) },
                                     onDelete = {
@@ -2290,10 +2306,11 @@ internal fun HomeScreenPreviewContent(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )
-                        CalorieHero(
-                            current = ui.loggedCaloriesToday,
-                            baseGoal = ui.gaugeBaseCalorieGoal,
-                            planned = ui.plannedCaloriesToday,
+                        if (ui.homeDisplay.calorieHeroLayout != HomeCalorieHeroLayout.HIDDEN) {
+                            CalorieHero(
+                                current = ui.loggedCaloriesToday,
+                                baseGoal = ui.gaugeBaseCalorieGoal,
+                                planned = ui.plannedCaloriesToday,
                             activeCalories = ui.displayActiveCalories,
                             displayMode = ui.effectiveCalorieMode,
                             untracked = ui.viewedDayUntracked,
@@ -2304,8 +2321,10 @@ internal fun HomeScreenPreviewContent(
                             burnShade = ui.activeBurnShade,
                             restingBurn = ui.restingBurnToday,
                             freezeProgress = freezeAnimations,
-                            goalDerivation = ui.goalDerivation,
-                        )
+                                goalDerivation = ui.goalDerivation,
+                                layout = ui.homeDisplay.calorieHeroLayout,
+                            )
+                        }
                         val previewResolvedTargets = remember(ui.profile, ui.date, ui.goalJournal) { ui.resolvedDayTargets }
                         Row(
                             Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -2321,13 +2340,23 @@ internal fun HomeScreenPreviewContent(
                             ui.homeTopNutrients.forEach { nutrient ->
                                 MacroCard(
                                     label = stringResource(nutrient.displayNameRes),
-                                    current = if (nutrient == HomeTopNutrient.CAFFEINE) ui.caffeineTodayMg else nutrient.current(ui.todayEntries),
-                                    goal = nutrient.goal(previewResolvedTargets, ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale),
+                                    current = when (nutrient) {
+                                        HomeTopNutrient.CALORIES -> ui.loggedCaloriesToday.toDouble()
+                                        HomeTopNutrient.CAFFEINE -> ui.caffeineTodayMg
+                                        else -> nutrient.current(ui.todayEntries)
+                                    },
+                                    goal = if (nutrient == HomeTopNutrient.CALORIES) {
+                                        ui.heroCalorieGoal
+                                    } else {
+                                        nutrient.goal(previewResolvedTargets, ui.profile, ui.optionalNutrientGoals, ui.macroGoalScale)
+                                    },
                                     fatFloor = nutrient == HomeTopNutrient.FAT,
+                                    isEnergy = nutrient == HomeTopNutrient.CALORIES,
                                     unit = stringResource(nutrient.unitRes),
                                     accentColor = nutrientAccentColor(nutrient),
                                     modifier = Modifier.weight(1f),
                                     freezeProgress = freezeAnimations,
+                                    layout = ui.homeDisplay.macroCardLayout,
                                 )
                             }
                         }
@@ -2382,6 +2411,7 @@ internal fun HomeScreenPreviewContent(
                                     isFavorite = ui.isFavorite(entry),
                                     rowShape = rowShape,
                                     macroChips = ui.foodLogMacroChips,
+                                    compact = ui.homeDisplay.foodLogLayout != HomeFoodLogLayout.CLASSIC,
                                 )
                                 if (index != group.entries.lastIndex) Divider()
                             }

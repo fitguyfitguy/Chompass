@@ -1,6 +1,7 @@
 package app.chompass
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -9,6 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
+import app.chompass.models.HomeCalorieHeroLayout
+import app.chompass.models.HomeMacroCardLayout
 import app.chompass.ui.coach.CoachScreenPreviewContent
 import app.chompass.ui.home.EntryAnalysisOverlay
 import app.chompass.ui.home.EntryAnalysisPhase
@@ -471,5 +474,45 @@ fun SwipeRevealLightScreenshot() {
     // first-row, and last-row section shapes.
     ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = false, showNavBar = false) {
         SwipeRevealScreenshotContent()
+    }
+}
+
+@PreviewTest
+@Preview(name = "28-home-display-variants", device = PHONE)
+@Composable
+fun HomeDisplayVariantsScreenshot() {
+    // Non-default home layout opt-ins (shipped surfaces): arc gauge + slim-line
+    // cards, and compact arc + classic cards. The defaults (wide squat arc +
+    // compact bars band) are covered by 01-home-light / 05-home-dark.
+    ReleaseScreenshotFrame(currentRoute = ChompassRoutes.HOME, darkTheme = false, showNavBar = false) {
+        HomeDisplayVariantsScreenshotContent()
+    }
+}
+
+/** Two stacked half-height home screens showing the non-default layout pairings. */
+@Composable
+internal fun HomeDisplayVariantsScreenshotContent() {
+    val base = ScreenshotFixtures.homeUiState()
+    Column(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.weight(1f, fill = false)) {
+            HomeScreenPreviewContent(
+                ui = base.copy(
+                    homeDisplay = base.homeDisplay.copy(
+                        calorieHeroLayout = HomeCalorieHeroLayout.SIDE_GAUGE,
+                        macroCardLayout = HomeMacroCardLayout.SLIM_LINE,
+                    ),
+                ),
+            )
+        }
+        Box(modifier = Modifier.weight(1f, fill = false)) {
+            HomeScreenPreviewContent(
+                ui = base.copy(
+                    homeDisplay = base.homeDisplay.copy(
+                        calorieHeroLayout = HomeCalorieHeroLayout.COMPACT_ARC,
+                        macroCardLayout = HomeMacroCardLayout.CLASSIC,
+                    ),
+                ),
+            )
+        }
     }
 }

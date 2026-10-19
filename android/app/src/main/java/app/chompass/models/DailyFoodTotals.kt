@@ -58,6 +58,7 @@ data class DailyFoodTotals(
      * averages are non-macro only.
      */
     fun amountOf(nutrient: HomeTopNutrient): Double = when (nutrient) {
+        HomeTopNutrient.CALORIES -> calories.toDouble()
         HomeTopNutrient.PROTEIN -> protein
         HomeTopNutrient.CARBS -> carbs
         HomeTopNutrient.FAT -> fat

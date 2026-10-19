@@ -56,24 +56,24 @@ test("migrateLegacyCaffeineLimit never overwrites a customized goal", () => {
   assert.equal(goals.caffeineMg, 500);
 });
 
-test("normalizeHomeTopNutrients_padsAndTruncates", () => {
-  assert.deepEqual(normalizeHomeTopNutrients([], 4), DEFAULT_HOME_TOP);
-  assert.deepEqual(normalizeHomeTopNutrients(["sodiumMg"], 4), [
-    "sodiumMg",
-    "proteinG",
-    "carbsG",
-    "fatG",
-  ]);
-  assert.deepEqual(normalizeHomeTopNutrients(["proteinG", "carbsG", "fatG", "fiberG", "sugarG"], 3), [
-    "proteinG",
-    "carbsG",
-    "fatG",
-  ]);
+test("normalizeHomeTopNutrients_selectionLengthIsTheCount", () => {
+  assert.deepEqual(normalizeHomeTopNutrients([]), DEFAULT_HOME_TOP);
+  assert.deepEqual(normalizeHomeTopNutrients(["sodiumMg"]), ["sodiumMg"]);
+  assert.deepEqual(
+    normalizeHomeTopNutrients(["proteinG", "carbsG", "fatG", "fiberG", "sugarG"]),
+    ["proteinG", "carbsG", "fatG", "fiberG"],
+  );
 });
 
-test("normalizeFoodLogChips_defaultsAndFiber", () => {
+test("normalizeFoodLogChips_keepsTheSelection", () => {
   assert.deepEqual(normalizeFoodLogChips(null), DEFAULT_FOOD_CHIPS);
-  assert.deepEqual(normalizeFoodLogChips(["fiberG"]), ["fiberG", "proteinG", "carbsG", "fatG"]);
+  assert.deepEqual(normalizeFoodLogChips(["fiberG"]), ["fiberG"]);
+  assert.deepEqual(normalizeFoodLogChips(["proteinG", "carbsG", "fatG", "fiberG"]), [
+    "proteinG",
+    "carbsG",
+    "fatG",
+    "fiberG",
+  ]);
 });
 
 test("sumNutrient_and_goal", () => {

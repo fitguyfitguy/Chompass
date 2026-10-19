@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,37 +49,45 @@ import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.macroGramsText
 import app.chompass.ui.theme.AppRadii
-import java.util.Locale
 
 @Composable
 fun HomeTopNutrientPickerDialog(
     selected: List<HomeTopNutrient>,
-    cardCount: Int = HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT,
     onSave: (List<HomeTopNutrient>) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    var draft by remember(selected, cardCount) {
-        mutableStateOf(HomeTopNutrient.normalized(selected, cardCount))
+    var draft by remember(selected) {
+        mutableStateOf(HomeTopNutrient.normalized(selected))
     }
-    val maxCards = cardCount.coerceIn(
-        HomeDisplayPreferences.MIN_NUTRIENT_CARD_COUNT,
-        HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT
-    )
+    val maxCards = HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT
+    var flashMax by remember { mutableStateOf(false) }
+    LaunchedEffect(flashMax) {
+        if (flashMax) {
+            kotlinx.coroutines.delay(600)
+            flashMax = false
+        }
+    }
 
     fun toggle(nutrient: HomeTopNutrient) {
-        draft = if (nutrient in draft) {
-            if (draft.size <= 1) draft else draft - nutrient
-        } else {
-            if (draft.size >= maxCards) draft.dropLast(1) + nutrient else draft + nutrient
+        draft = when {
+            nutrient in draft -> if (draft.size <= 1) draft else draft - nutrient
+            draft.size >= maxCards -> {
+                // 5th pick is refused: flash the cap line so the limit reads
+                // as intentional instead of a dead tap.
+                flashMax = true
+                draft
+            }
+            else -> draft + nutrient
         }
     }
 
     ChompassDialog(onDismissRequest = onDismiss) {
-        Text(stringResource(R.string.home_nutrients), fontSize = 22.sp, fontWeight = FontWeight.Bold)
         Text(
-            stringResource(R.string.home_nutrients_pick_count, maxCards),
+            if (flashMax) stringResource(R.string.home_nutrients_pick_max, maxCards)
+            else stringResource(R.string.home_nutrients_pick_count, maxCards),
             fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle)
+            color = if (flashMax) AppColors.Calorie
+            else MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle)
         )
         LazyColumn(
             Modifier
@@ -99,7 +108,7 @@ fun HomeTopNutrientPickerDialog(
         ChompassDialogActions(
             primaryText = stringResource(R.string.action_done),
             onPrimary = {
-                onSave(HomeTopNutrient.normalized(draft, cardCount))
+                onSave(HomeTopNutrient.normalized(draft))
                 onDismiss()
             },
             dismissText = stringResource(R.string.action_cancel),
@@ -136,8 +145,8 @@ fun FoodLogMacroChipPickerDialog(
                 val kind = chip.macroKind()
                 val accent = kind?.color() ?: AppColors.Calorie
                 NutrientPickerRow(
-                    label = stringResource(chip.glyphRes()),
-                    unit = kind?.name?.lowercase(Locale.ROOT)?.replaceFirstChar { it.titlecase() } ?: "Sugar",
+                    label = stringResource(chip.kindLabelRes()),
+                    unit = stringResource(chip.glyphRes()),
                     checked = chip in draft,
                     accentColor = accent,
                     onClick = { toggle(chip) }

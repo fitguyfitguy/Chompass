@@ -1969,8 +1969,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
     fun setHomeTopNutrients(selection: List<HomeTopNutrient>) {
         viewModelScope.launch {
-            val cardCount = container.prefs.homeNutrientCardCount.first()
-            container.prefs.setHomeTopNutrients(HomeTopNutrient.toStorage(selection, cardCount))
+            container.prefs.setHomeTopNutrients(HomeTopNutrient.toStorage(selection))
         }
     }
 

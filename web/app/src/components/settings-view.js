@@ -52,7 +52,6 @@ import {
   HOME_TOP_NUTRIENTS,
   FOOD_LOG_CHIP_KEYS,
   DEFAULT_OPTIONAL_NUTRIENT_GOALS,
-  DEFAULT_NUTRIENT_CARD_COUNT,
   normalizeHomeTopNutrients,
   normalizeFoodLogChips,
   normalizeAveragesSelection,
@@ -1191,9 +1190,7 @@ export class SettingsView extends HTMLElement {
 
   async renderHome() {
     const p = await prefs.load();
-    const selectedTubes = new Set(
-      normalizeHomeTopNutrients(p.homeTopNutrients, p.homeNutrientCardCount ?? DEFAULT_NUTRIENT_CARD_COUNT)
-    );
+    const selectedTubes = new Set(normalizeHomeTopNutrients(p.homeTopNutrients));
     const selectedChips = new Set(normalizeFoodLogChips(p.foodLogMacroChips));
     const selNicotineQuick = new Set(p.nicotineQuickKinds ?? NICOTINE_QUICK_KINDS);
     const selCaffeineQuick = new Set(p.caffeineQuickKinds ?? CAFFEINE_QUICK_KINDS);
@@ -1313,10 +1310,7 @@ export class SettingsView extends HTMLElement {
             <option value="true" ${p.adaptiveGoals ? "selected" : ""}>${t("settings.toggle.on")}</option>
           </select>
         </div>
-        <div class="field">
-          <label for="homeNutrientCardCount">${t("settings.home.tube_count")}</label>
-          <input id="homeNutrientCardCount" name="homeNutrientCardCount" type="number" min="1" max="4" value="${p.homeNutrientCardCount ?? DEFAULT_NUTRIENT_CARD_COUNT}" />
-        </div>
+
         <fieldset class="nutrient-picker">
           <legend>${t("settings.home.tube_nutrients")}</legend>
           <p class="nutrient-picker__hint">${t("settings.home.tube_order_hint")}</p>
@@ -1350,8 +1344,8 @@ export class SettingsView extends HTMLElement {
     this.querySelector("#home-form")?.addEventListener("submit", async (ev) => {
       ev.preventDefault();
       const fd = new FormData(/** @type {HTMLFormElement} */ (ev.target));
-      const cardCount = Math.min(4, Math.max(1, Number(fd.get("homeNutrientCardCount") || DEFAULT_NUTRIENT_CARD_COUNT)));
       const tubeRaw = fd.getAll("homeTopNutrients").map(String);
+      const shownTubes = normalizeHomeTopNutrients(tubeRaw);
       const chipRaw = fd.getAll("foodLogMacroChips").map(String);
       await prefs.save({
         showWater: fd.get("showWater") === "true",
@@ -1374,8 +1368,8 @@ export class SettingsView extends HTMLElement {
         // calorieGaugeMode moved to the Goals form (Android parity): the home
         // save must not touch it — a missing field must never wipe the pref.
         adaptiveGoals: fd.get("adaptiveGoals") === "true",
-        homeNutrientCardCount: cardCount,
-        homeTopNutrients: normalizeHomeTopNutrients(tubeRaw, cardCount),
+        homeNutrientCardCount: shownTubes.length,
+        homeTopNutrients: shownTubes,
         foodLogMacroChips: normalizeFoodLogChips(chipRaw),
       });
       location.hash = SETTINGS_PARENT.home;

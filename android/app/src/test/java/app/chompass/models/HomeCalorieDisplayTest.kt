@@ -332,13 +332,14 @@ class HomeCalorieDisplayTest {
     }
 
     @Test
-    fun homeTopNutrient_respectsCardCount() {
-        val three = HomeTopNutrient.normalized(
+    fun homeTopNutrient_selectionLengthIsTheShownCount() {
+        val four = HomeTopNutrient.normalized(
             listOf(HomeTopNutrient.PROTEIN, HomeTopNutrient.CARBS, HomeTopNutrient.FAT, HomeTopNutrient.FIBER),
-            cardCount = 3
         )
-        assertEquals(3, three.size)
-        assertTrue(three.contains(HomeTopNutrient.PROTEIN))
+        assertEquals(4, four.size)
+        val one = HomeTopNutrient.normalized(listOf(HomeTopNutrient.SODIUM))
+        assertEquals(listOf(HomeTopNutrient.SODIUM), one)
+        assertEquals(HomeTopNutrient.DefaultSelection, HomeTopNutrient.normalized(emptyList()))
     }
 
     @Test

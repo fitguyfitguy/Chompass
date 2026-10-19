@@ -214,34 +214,35 @@ export function mergeOptionalGoals(stored) {
 }
 
 /**
+ * Shown home cards. The selection length is the count (1 to 4). Empty falls back to the default row.
  * @param {string[]|null|undefined} selection
- * @param {number} [cardCount]
  * @returns {string[]}
  */
-export function normalizeHomeTopNutrients(selection, cardCount = DEFAULT_NUTRIENT_CARD_COUNT) {
-  const count = Math.min(
-    MAX_NUTRIENT_CARD_COUNT,
-    Math.max(MIN_NUTRIENT_CARD_COUNT, Number(cardCount) || DEFAULT_NUTRIENT_CARD_COUNT)
-  );
+export function normalizeHomeTopNutrients(selection) {
   const allowed = new Set(HOME_TOP_NUTRIENTS.map((n) => n.key));
-  const picked = (selection || [])
-    .map((k) => String(k).trim())
-    .filter((k) => allowed.has(k));
-  const merged = [...new Set([...picked, ...DEFAULT_HOME_TOP])];
-  return merged.slice(0, count);
+  const picked = [...new Set(
+    (selection || [])
+      .map((k) => String(k).trim())
+      .filter((k) => allowed.has(k)),
+  )];
+  if (picked.length === 0) return [...DEFAULT_HOME_TOP];
+  return picked.slice(0, MAX_NUTRIENT_CARD_COUNT);
 }
 
 /**
+ * Food-log chips. The selection is what is shown. Empty falls back to protein, carbs, and fat.
  * @param {string[]|null|undefined} selection
  * @returns {string[]}
  */
 export function normalizeFoodLogChips(selection) {
   const allowed = new Set(FOOD_LOG_CHIP_KEYS);
-  const picked = (selection || [])
-    .map((k) => String(k).trim())
-    .filter((k) => allowed.has(k));
-  const merged = [...new Set([...(picked.length ? picked : DEFAULT_FOOD_CHIPS), ...DEFAULT_FOOD_CHIPS])];
-  return merged.slice(0, 5);
+  const picked = [...new Set(
+    (selection || [])
+      .map((k) => String(k).trim())
+      .filter((k) => allowed.has(k)),
+  )];
+  if (picked.length === 0) return [...DEFAULT_FOOD_CHIPS];
+  return picked.slice(0, 5);
 }
 
 /**
