@@ -1434,6 +1434,7 @@ für dich ein</string>
     <string name="progress_weight_section">Gewicht</string>
 
     <string name="progress_log_weight">Gewicht eintragen</string>
+    <string name="progress_log_measurement_format">%1$s erfassen</string>
 
     <string name="progress_stat_current">Aktuell</string>
 

@@ -1007,6 +1007,7 @@
     <string name="progress_body_section">Body</string>
     <string name="progress_overlay_off">Off</string>
     <string name="progress_log_weight">Log Weight</string>
+    <string name="progress_log_measurement_format">Log %1$s</string>
     <string name="progress_stat_current">Current</string>
     <string name="progress_stat_goal">Goal</string>
     <string name="progress_stat_net_change">Net Change</string>

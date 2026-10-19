@@ -97,5 +97,7 @@ class ProgressBodySectionLayoutTest {
 
         // The site chip itself is abbreviated; the legend below keeps the name.
         composeRule.onNodeWithText("Ta").assertIsDisplayed()
+        // The + lives on the singular measurement cards below, not this row.
+        composeRule.onNodeWithContentDescription("Taille erfassen").assertDoesNotExist()
     }
 }

@@ -411,6 +411,7 @@ bilirsən?</string>
 
     <string name="progress_weight_section">Çəki</string>
     <string name="progress_log_weight">Çəkini Qeyd Et</string>
+    <string name="progress_log_measurement_format">%1$s qeyd et</string>
     <string name="progress_stat_current">Cari</string>
     <string name="progress_stat_goal">Hədəf</string>
     <string name="progress_log_first_weight">Tendensiyaları görmək üçün ilk çəkini qeyd et</string>

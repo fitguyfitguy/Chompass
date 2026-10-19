@@ -417,6 +417,7 @@
 
     <string name="progress_weight_section">वज़न</string>
     <string name="progress_log_weight">वज़न लॉग करें</string>
+    <string name="progress_log_measurement_format">%1$s दर्ज करें</string>
     <string name="progress_stat_current">वर्तमान</string>
     <string name="progress_stat_goal">लक्ष्य</string>
     <string name="progress_log_first_weight">ट्रेंड देखने के लिए अपना पहला वज़न लॉग करें</string>

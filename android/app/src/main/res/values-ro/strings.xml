@@ -412,6 +412,7 @@
 
     <string name="progress_weight_section">Greutate</string>
     <string name="progress_log_weight">Înregistrează greutatea</string>
+    <string name="progress_log_measurement_format">Înregistrează %1$s</string>
     <string name="progress_stat_current">Actual</string>
     <string name="progress_stat_goal">Obiectiv</string>
     <string name="progress_log_first_weight">Înregistrează prima greutate pentru a vedea tendințele</string>

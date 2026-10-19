@@ -417,6 +417,7 @@
 
     <string name="progress_weight_section">체중</string>
     <string name="progress_log_weight">체중 기록</string>
+    <string name="progress_log_measurement_format">%1$s 기록</string>
     <string name="progress_stat_current">현재</string>
     <string name="progress_stat_goal">목표</string>
     <string name="progress_log_first_weight">추세를 보려면 첫 체중을 기록하세요</string>

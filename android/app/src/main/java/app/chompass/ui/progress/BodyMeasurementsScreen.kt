@@ -33,7 +33,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -55,9 +54,7 @@ import app.chompass.models.Gender
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.components.ChompassSurface
-import app.chompass.ui.components.UnitToggle
 import app.chompass.ui.navigation.BottomNavScrollPadding
-import app.chompass.ui.settings.NutritionPickerSheet
 import app.chompass.ui.theme.AppColors
 import java.time.format.DateTimeFormatter
 import app.chompass.ui.theme.AppRadii
@@ -175,7 +172,6 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
     val gender = profile?.gender ?: Gender.MALE
     val heightCm = profile?.heightCm ?: 0.0
     val latest = entries.maxByOrNull { it.date }
-    val unit = if (heightMetric) "cm" else "in"
 
     var editing by remember { mutableStateOf<BodyMeasurement.Site?>(null) }
     var showHistory by remember { mutableStateOf(false) }
@@ -299,53 +295,19 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
     }
 
     editing?.let { site ->
-        val current = latest?.value(site)
-        var editorValue by remember(site) {
-            mutableStateOf(
-                current?.let { if (heightMetric) Math.round(it).toInt() else Math.round(UnitFormat.cmToInches(it)).toInt() }
-                    ?: if (heightMetric) 80 else 32
-            )
-        }
-        ChompassDialog(onDismissRequest = { editing = null }) {
-            UnitToggle(
-                stringResource(R.string.unit_cm),
-                stringResource(R.string.unit_in),
-                heightMetric,
-                { metric ->
-                    if (metric != heightMetric) {
-                        editorValue = if (metric) {
-                            UnitFormat.inchesToCmRounded(editorValue).coerceIn(10, 250)
-                        } else {
-                            UnitFormat.cmToInchesRounded(editorValue).coerceIn(4, 100)
-                        }
-                        scope.launch { container.prefs.setHeightUnit(if (metric) "cm" else "ftin") }
-                    }
-                },
-                Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(10.dp))
-            key(heightMetric) {
-                NutritionPickerSheet(
-                    label = stringResource(site.labelRes),
-                    showTitle = true,
-                    unit = unit,
-                    currentValue = editorValue,
-                    range = if (heightMetric) 10..250 else 4..100,
-                    step = 1,
-                    onSave = { v ->
-                        val cm = if (heightMetric) v.toDouble() else UnitFormat.inchesToCm(v.toDouble())
-                        scope.launch { container.bodyMeasurementRepository.setValue(site, cm) }
-                        editing = null
-                    },
-                    onResetToAuto = if (current != null) {
-                        { scope.launch { container.bodyMeasurementRepository.setValue(site, null) }; editing = null }
-                    } else null,
-                    resetLabel = stringResource(R.string.action_clear),
-                    onValueChange = { editorValue = it },
-                    onDismiss = { editing = null }
-                )
-            }
-        }
+        BodyMeasurementEntryDialog(
+            site = site,
+            currentCm = latest?.value(site),
+            useMetric = heightMetric,
+            onUnitChange = { metric ->
+                scope.launch { container.prefs.setHeightUnit(if (metric) "cm" else "ftin") }
+            },
+            onSave = { cm ->
+                scope.launch { container.bodyMeasurementRepository.setValue(site, cm) }
+                editing = null
+            },
+            onDismiss = { editing = null },
+        )
     }
     if (showUseAsBodyFat && (navyPercent != null || rfmPercent != null)) {
         val chosen = if (useNavyEstimate && navyPercent != null) navyPercent else rfmPercent ?: navyPercent
