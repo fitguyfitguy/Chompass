@@ -1,15 +1,20 @@
 package app.chompass.ui.settings
 
 import androidx.navigation.NavHostController
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,9 +36,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.AppContainer
@@ -42,19 +53,13 @@ import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeCalorieHeroLayout
 import app.chompass.models.HomeMacroCardLayout
 import app.chompass.models.HomeFoodLogLayout
-import app.chompass.models.HomeDisplayPreferences
-import app.chompass.models.FoodLogMacroChip
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.MacroCard
-import app.chompass.ui.home.CalorieHero
 import app.chompass.ui.home.FoodLogMacroChipPickerDialog
-import app.chompass.ui.home.FoodRow
 import app.chompass.ui.home.HomeLookPreview
-import app.chompass.ui.home.HomeLookSample
 import app.chompass.ui.home.HomeTopNutrientPickerDialog
-import app.chompass.ui.home.sampleYogurt
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
@@ -268,26 +273,114 @@ internal fun FoodLogLayoutPickerDialog(
 ) {
     ChompassDialog(onDismissRequest = onDismiss) {
         Text(stringResource(R.string.home_display_food_log_layout), fontSize = 22.sp, fontWeight = FontWeight.Bold)
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        // Two options split the full width side by side, so each preview
+        // stretches across half the dialog instead of a narrow leading slot.
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             (listOf<HomeFoodLogLayout?>(null) + HomeFoodLogLayout.entries).forEach { layout ->
-                SettingOptionRow(
+                FoodLogLayoutOption(
+                    modifier = Modifier.weight(1f),
                     label = foodLogLayoutLabel(layout),
                     selected = layout == selected,
-                    thumbnail = {
-                        Box(Modifier.width(132.dp)) {
-                            FoodRow(
-                                entry = sampleYogurt(),
-                                macroChips = listOf(
-                                    FoodLogMacroChip.PROTEIN,
-                                    FoodLogMacroChip.CARBS,
-                                    FoodLogMacroChip.FAT,
-                                ),
-                                compact = layout != HomeFoodLogLayout.CLASSIC,
-                            )
-                        }
-                    },
                     onClick = { onSelect(layout) },
-                )
+                ) {
+                    FoodLogLayoutWire(layout)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FoodLogLayoutOption(
+    modifier: Modifier = Modifier,
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    preview: @Composable () -> Unit,
+) {
+    Column(
+        modifier
+            .clip(RoundedCornerShape(AppRadii.Field))
+            .background(if (selected) AppColors.Calorie.copy(alpha = 0.10f) else Color.Transparent)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 10.dp, vertical = 12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        // Fixed slot: the two wires differ in height, so labels would
+        // otherwise sit at different heights across the split.
+        Box(
+            Modifier.height(58.dp),
+            contentAlignment = Alignment.Center,
+        ) { preview() }
+        Spacer(Modifier.height(8.dp))
+        Text(
+            label,
+            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+            color = if (selected) AppColors.Calorie else MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
+/** Wireframe of one food-log row: bars stand in for name, kcal, and chips. */
+@Composable
+private fun FoodLogLayoutWire(layout: HomeFoodLogLayout?) {
+    if (layout == HomeFoodLogLayout.CLASSIC) ClassicFoodRowWire() else CompactFoodRowWire()
+}
+
+/** Classic: big thumb, kcal + serving line, macro chips on their own line. */
+@Composable
+private fun ClassicFoodRowWire() {
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            WireBar(Modifier.size(44.dp), corner = 8.dp)
+            Column(
+                Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(5.dp),
+            ) {
+                WireBar(Modifier.fillMaxWidth(0.75f).height(9.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    WireBar(Modifier.width(30.dp).height(6.dp), color = WireAccent())
+                    WireBar(Modifier.width(22.dp).height(5.dp))
+                }
+            }
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            repeat(3) { WireBar(Modifier.width(20.dp).height(8.dp), corner = 4.dp, color = WireAccent(alpha = 0.30f)) }
+        }
+    }
+}
+
+/** Compact: smaller thumb, chips share the calorie line at the trailing edge. */
+@Composable
+private fun CompactFoodRowWire() {
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        WireBar(Modifier.size(34.dp), corner = 8.dp)
+        Column(
+            Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(5.dp),
+        ) {
+            WireBar(Modifier.fillMaxWidth(0.7f).height(9.dp))
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                WireBar(Modifier.width(30.dp).height(6.dp), color = WireAccent())
+                Spacer(Modifier.weight(1f))
+                WireBar(Modifier.width(16.dp).height(7.dp), corner = 4.dp, color = WireAccent(alpha = 0.30f))
+                WireBar(Modifier.width(16.dp).height(7.dp), corner = 4.dp, color = WireAccent(alpha = 0.30f))
             }
         }
     }
@@ -360,17 +453,9 @@ internal fun CalorieLayoutPickerDialog(
                     label = calorieHeroLayoutLabel(layout),
                     selected = layout == selected,
                     thumbnail = {
-                        Box(Modifier.width(132.dp)) {
-                            CalorieHero(
-                                current = HomeLookSample.EATEN,
-                                baseGoal = HomeLookSample.BASE_GOAL,
-                                planned = 0,
-                                activeCalories = 0,
-                                displayMode = HomeCalorieDisplayMode.STATIC,
-                                freezeProgress = true,
-                                layout = layout,
-                                preview = true,
-                            )
+                        // Uniform 76 dp slot so every row has the same height.
+                        Box(Modifier.width(132.dp).height(76.dp), contentAlignment = Alignment.Center) {
+                            CalorieLayoutWire(layout)
                         }
                     },
                     onClick = { onSelect(layout) },
@@ -381,8 +466,8 @@ internal fun CalorieLayoutPickerDialog(
 }
 
 /**
- * One shared option-row shape for the layout pickers: real-component thumbnail
- * on the left, label on the right; tapping applies and closes the dialog.
+ * One shared option-row shape for the layout pick: schematic thumbnail on the
+ * left, label on the right; tapping applies and closes the dialog.
  */
 @Composable
 private fun SettingOptionRow(
@@ -408,6 +493,144 @@ private fun SettingOptionRow(
             color = if (selected) AppColors.Calorie else MaterialTheme.colorScheme.onSurface,
         )
     }
+}
+
+/** Schematic calorie-hero previews: arcs and bars, no readable numbers. */
+@Composable
+private fun CalorieLayoutWire(layout: HomeCalorieHeroLayout?) {
+    when (layout) {
+        HomeCalorieHeroLayout.SIDE_GAUGE -> SideGaugeWire()
+        HomeCalorieHeroLayout.COMPACT_ARC -> CompactArcWire()
+        HomeCalorieHeroLayout.COMPACT_HORIZONTAL -> ProgressBarWire()
+        HomeCalorieHeroLayout.HIDDEN -> HiddenWire()
+        null -> DefaultHeroWire()
+    }
+}
+
+/** Default: bowl arc over the number and of-goal lines. */
+@Composable
+private fun DefaultHeroWire() {
+    Column(
+        Modifier.width(132.dp).height(76.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        WireArc(Modifier.width(84.dp).height(42.dp), halfCircle = true)
+        WireBar(Modifier.width(52.dp).height(9.dp), color = WireAccent())
+        WireBar(Modifier.width(34.dp).height(5.dp))
+    }
+}
+
+/** Arc gauge + numbers: ring on the left, number bars beside it. */
+@Composable
+private fun SideGaugeWire() {
+    Row(
+        Modifier.width(132.dp).height(52.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        WireArc(Modifier.size(44.dp), sweep = 260f)
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            WireBar(Modifier.width(44.dp).height(9.dp), color = WireAccent())
+            WireBar(Modifier.width(30.dp).height(6.dp))
+        }
+    }
+}
+
+/** Compact arc: small ring, one number line. */
+@Composable
+private fun CompactArcWire() {
+    Row(
+        Modifier.width(132.dp).height(40.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        WireArc(Modifier.size(32.dp), stroke = 4.dp, sweep = 270f)
+        Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
+            WireBar(Modifier.width(48.dp).height(8.dp), color = WireAccent())
+            WireBar(Modifier.width(28.dp).height(5.dp))
+        }
+    }
+}
+
+/** Progress bar: numbers above a full-width track, caption below. */
+@Composable
+private fun ProgressBarWire() {
+    Column(
+        Modifier.width(132.dp).height(52.dp),
+        verticalArrangement = Arrangement.spacedBy(7.dp),
+    ) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            WireBar(Modifier.width(40.dp).height(8.dp), color = WireAccent())
+            WireBar(Modifier.width(24.dp).height(6.dp))
+        }
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(10.dp)
+                .clip(RoundedCornerShape(5.dp))
+                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+        ) {
+            Box(
+                Modifier
+                    .fillMaxWidth(0.62f)
+                    .fillMaxHeight()
+                    .background(WireAccent())
+            )
+        }
+        WireBar(Modifier.width(26.dp).height(5.dp))
+    }
+}
+
+/** Hidden: a dashed empty slot. */
+@Composable
+private fun HiddenWire() {
+    val line = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.25f)
+    Canvas(Modifier.width(132.dp).height(40.dp)) {
+        drawRoundRect(
+            color = line,
+            style = Stroke(
+                1.5.dp.toPx(),
+                pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 6f)),
+            ),
+            cornerRadius = CornerRadius(10.dp.toPx()),
+        )
+    }
+}
+
+/** Arc track + fill sweep; half circle for the default bowl, ring otherwise. */
+@Composable
+private fun WireArc(modifier: Modifier, stroke: Dp = 5.dp, sweep: Float = 300f, halfCircle: Boolean = false) {
+    val track = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+    val fill = WireAccent()
+    Canvas(modifier) {
+        val width = stroke.toPx()
+        val cap = StrokeCap.Round
+        if (halfCircle) {
+            drawArc(track, 180f, 180f, false, style = Stroke(width, cap = cap))
+            drawArc(fill, 180f, 130f, false, style = Stroke(width, cap = cap))
+        } else {
+            drawArc(track, -90f, 360f, false, style = Stroke(width, cap = cap))
+            drawArc(fill, -90f, sweep, false, style = Stroke(width, cap = cap))
+        }
+    }
+}
+
+@Composable
+private fun WireAccent(alpha: Float = 0.55f): Color = AppColors.Calorie.copy(alpha = alpha)
+
+/** A bar standing in for a piece of text. */
+@Composable
+private fun WireBar(
+    modifier: Modifier,
+    color: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.18f),
+    corner: Dp = 2.dp,
+) {
+    Box(
+        modifier
+            .clip(RoundedCornerShape(corner))
+            .background(color)
+    )
 }
 
 @Composable
