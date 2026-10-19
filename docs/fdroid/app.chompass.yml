@@ -399,5 +399,5 @@ Builds:
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[0-9.]+$
-CurrentVersion: 5.8.0
-CurrentVersionCode: 97
+CurrentVersion: 5.9.0
+CurrentVersionCode: 98

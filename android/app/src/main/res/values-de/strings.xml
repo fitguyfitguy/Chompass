@@ -2633,6 +2633,12 @@ für dich ein</string>
 
     <string name="home_display_title">Startbildschirm-Anzeige</string>
 
+    <string name="home_look_sample_caption">Beispieltag</string>
+    <string name="home_look_sample_food_yogurt">Griechischer Joghurt</string>
+    <string name="home_look_sample_food_bowl">Hähnchen-Reis-Bowl</string>
+    <string name="onboarding_home_look_title">Gestalte deine Startseite</string>
+    <string name="onboarding_home_look_subtitle">Ein Beispieltag, damit du Anzeige, Nährstoffkarten und Ernährungstagebuch siehst, bevor du etwas einträgst.</string>
+
     <string name="home_display_nutrient_cards">Nährstoffkarten</string>
 
     <string name="home_display_nutrient_card_layout">Nährstoffkartenlayout</string>
@@ -3647,6 +3653,7 @@ für dich ein</string>
     <string name="plan_week_load_failed">Diese Woche konnte nicht geladen werden.</string>
     <string name="coach_image_only_message">Dieses Bild analysieren.</string>
     <string name="a11y_chart_inspection">%1$s am %2$s: %3$s</string>
+    <string name="a11y_week_strip_day">%1$s, %2$s</string>
     <string name="cd_ingredient_decrease">Zutatenmenge verringern</string>
     <string name="cd_ingredient_increase">Zutatenmenge erhöhen</string>
     <string name="onboarding_key_checking">Schlüssel wird geprüft …</string>

@@ -211,5 +211,3 @@ private fun sampleFoods(): List<FoodEntry> {
         )
     }
 }
-
-
