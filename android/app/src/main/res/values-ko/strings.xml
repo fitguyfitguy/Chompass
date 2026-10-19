@@ -1062,8 +1062,8 @@
     <string name="home_calorie_of_goal">%1$s 중 %2$s</string>
     <string name="home_calories_active_burn">활동 소비 %1$d</string>
     <string name="home_calories_goal_plus_active">목표 %1$s + 활동 %2$s</string>
-    <string name="home_calories_label">칼로리</string>
     <string name="home_calories_left">남음 %1$s</string>
+    <string name="home_calories_eaten_a11y">섭취 %1$s</string>
     <string name="home_display_calorie_mode">칼로리 게이지</string>
     <string name="home_display_card_count">표시 카드</string>
     <string name="home_display_food_log_chips">음식 기록 매크로</string>

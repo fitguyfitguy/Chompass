@@ -1064,8 +1064,8 @@
     <string name="home_calorie_of_goal">%1$s 中的 %2$s</string>
     <string name="home_calories_active_burn">主动消耗 %1$d</string>
     <string name="home_calories_goal_plus_active">目标 %1$s + 主动 %2$s</string>
-    <string name="home_calories_label">热量</string>
     <string name="home_calories_left">剩余 %1$s</string>
+    <string name="home_calories_eaten_a11y">摄入 %1$s</string>
     <string name="home_display_calorie_mode">热量表盘</string>
     <string name="home_display_card_count">显示的卡片</string>
     <string name="home_display_food_log_chips">食物记录宏量营养素</string>

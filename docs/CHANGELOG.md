@@ -17,6 +17,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **A tighter body card on Progress** (Android): the weight and body fat toggles are now a scale and a percent symbol, measurement sites use short labels, and the add actions are shortened to Weight and Body fat with a plus icon, right-aligned so they no longer crowd the section title. Raw weigh-ins and body-fat readings now take a faded shade of their series color, matching the calorie overlay's trend dots.
 - **Log body measurements from Progress** (Android): each measurement card below the body chart gets a small + in its title. It opens the same value wheel as Settings → Body measurements, so a neck, waist, or hip reading can be logged without leaving the Progress tab; saving writes today's snapshot.
+- **A compact calorie hero on Home** (Android): the CALORIES title is gone. The eaten number sits inside the arc with your goal and today's active burn directly under it, the day-type and untracked chips tuck under the Today label at the arc's top left, and the calories left stay in the top-right corner. The card is about 95 dp shorter, so the water, nicotine, and caffeine cards now fit on the first screen.
 
 ### Fixed
 

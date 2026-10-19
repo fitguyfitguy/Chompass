@@ -1062,8 +1062,8 @@
     <string name="home_calorie_of_goal">%1$s 中 %2$s</string>
     <string name="home_calories_active_burn">活動消費 %1$d</string>
     <string name="home_calories_goal_plus_active">目標 %1$s + 活動 %2$s</string>
-    <string name="home_calories_label">カロリー</string>
     <string name="home_calories_left">残り %1$s</string>
+    <string name="home_calories_eaten_a11y">摂取 %1$s</string>
     <string name="home_display_calorie_mode">カロリーゲージ</string>
     <string name="home_display_card_count">表示するカード</string>
     <string name="home_display_food_log_chips">食事記録のマクロ</string>
