@@ -1070,6 +1070,12 @@
     <string name="home_calories_left">متبقٍ %1$s</string>
     <string name="home_calories_eaten_a11y">مأكول %1$s</string>
     <string name="home_display_calorie_mode">مقياس السعرات</string>
+    <string name="home_display_group_calorie">مقياس السعرات</string>
+    <string name="home_display_calorie_mode_pointer">وضع مقياس السعرات</string>
+    <string name="home_display_group_activity">النشاط</string>
+    <string name="home_display_active_calories_add_active_note">في وضع الإضافة النشطة، يُحتسب الحرق ضمن المقياس تلقائيًا.</string>
+    <string name="home_display_group_nutrients">بطاقات العناصر الغذائية</string>
+    <string name="home_display_group_food_log">سجل الطعام</string>
     <string name="home_display_calorie_layout">تخطيط مقياس السعرات</string>
     <string name="home_calorie_layout_default">افتراضي</string>
     <string name="home_calorie_layout_gauge">مقياس قوسي + أرقام</string>
@@ -1081,15 +1087,14 @@
     <string name="home_nutrient_card_layout_default">أشرطة مدمجة</string>
     <string name="home_nutrient_card_layout_slim_line">خطوط نحيفة</string>
     <string name="home_nutrient_card_layout_classic">بطاقات كلاسيكية</string>
-    <string name="home_display_card_count">البطاقات المعروضة</string>
     <string name="home_display_food_log_chips">مغذيات سجل الطعام</string>
-    <string name="home_display_needs_health">يتطلب Health Connect مع إذن الخطوات</string>
     <string name="home_display_nutrient_cards">بطاقات العناصر الغذائية</string>
     <string name="home_display_show_active_calories">إظهار السعرات النشطة</string>
     <string name="home_display_show_active_calories_desc">إظهار الحرق النشط لليوم في مقياس السعرات.</string>
     <string name="home_display_show_steps">إظهار عدّاد الخطوات في الرئيسية</string>
     <string name="home_display_show_steps_desc">بطاقة اختيارية أسفل المقياس. يتطلب Health Connect.</string>
     <string name="home_display_step_goal">هدف الخطوات اليومي</string>
+    <string name="home_display_step_goal_hint">التغيير بمقدار 500. النطاق 1,000–50,000.</string>
     <string name="home_display_title">عرض الرئيسية</string>
     <string name="home_first_photo_saved">تم حفظ الصورة الأولى</string>
     <string name="home_food_log">سجل الطعام</string>
@@ -1101,6 +1106,7 @@
     <string name="home_nutrient_cards">بطاقات عناصر الرئيسية</string>
     <string name="home_nutrients">عناصر الرئيسية</string>
     <string name="home_nutrients_pick_count">اختر حتى %1$d عناصر غذائية للشاشة الرئيسية.</string>
+    <string name="home_nutrients_pick_max">حتى %1$d من العناصر الغذائية.</string>
     <string name="home_nutrients_pick_four">اختر أربعة عناصر غذائية بالضبط لصف الملخص في الرئيسية.</string>
     <string name="home_selected_count">%1$d محدد</string>
     <string name="home_share_separately">مشاركة منفصلة</string>

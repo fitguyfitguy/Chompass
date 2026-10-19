@@ -1102,6 +1102,12 @@
     <string name="home_calories_left">%1$s restantes</string>
     <string name="home_calories_eaten_a11y">Ingeridas %1$s</string>
     <string name="home_display_calorie_mode">Medidor de calorías</string>
+    <string name="home_display_group_calorie">Medidor de calorías</string>
+    <string name="home_display_calorie_mode_pointer">Modo del medidor de calorías</string>
+    <string name="home_display_group_activity">Actividad</string>
+    <string name="home_display_active_calories_add_active_note">En el modo de añadir gasto activo, el gasto forma parte del medidor automáticamente.</string>
+    <string name="home_display_group_nutrients">Tarjetas de nutrientes</string>
+    <string name="home_display_group_food_log">Registro de comida</string>
     <string name="home_display_calorie_layout">Diseño de calorías</string>
     <string name="home_calorie_layout_default">Predeterminado</string>
     <string name="home_calorie_layout_gauge">Medidor de arco + números</string>
@@ -1113,15 +1119,14 @@
     <string name="home_nutrient_card_layout_default">Barras compactas</string>
     <string name="home_nutrient_card_layout_slim_line">Líneas finas</string>
     <string name="home_nutrient_card_layout_classic">Tarjetas clásicas</string>
-    <string name="home_display_card_count">Tarjetas mostradas</string>
     <string name="home_display_food_log_chips">Macros del registro de comida</string>
-    <string name="home_display_needs_health">Requiere Health Connect con permiso de pasos</string>
     <string name="home_display_nutrient_cards">Tarjetas de nutrientes</string>
     <string name="home_display_show_active_calories">Mostrar calorías activas</string>
     <string name="home_display_show_active_calories_desc">Muestra el gasto activo de hoy en el medidor de calorías.</string>
     <string name="home_display_show_steps">Mostrar contador de pasos en Inicio</string>
     <string name="home_display_show_steps_desc">Tarjeta opcional debajo del medidor. Requiere Health Connect.</string>
     <string name="home_display_step_goal">Objetivo diario de pasos</string>
+    <string name="home_display_step_goal_hint">Ajusta de 500 en 500. 1.000–50.000.</string>
     <string name="home_display_title">Pantalla de inicio</string>
     <string name="home_first_photo_saved">Primera foto guardada</string>
     <string name="home_food_log">Registro de comida</string>
@@ -1134,6 +1139,7 @@
     <string name="home_nutrient_cards">Tarjetas de nutrientes en Inicio</string>
     <string name="home_nutrients">Nutrientes en Inicio</string>
     <string name="home_nutrients_pick_count">Elige hasta %1$d nutrientes para la pantalla de inicio.</string>
+    <string name="home_nutrients_pick_max">Hasta %1$d nutrientes.</string>
     <string name="home_nutrients_pick_four">Elige exactamente cuatro nutrientes para la fila de resumen de Inicio.</string>
     <string name="home_selected_count">%1$d seleccionados</string>
     <string name="home_share_separately">Compartir por separado</string>

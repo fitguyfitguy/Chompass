@@ -1033,6 +1033,12 @@
     <string name="home_calories_left">%1$s rimaste</string>
     <string name="home_calories_eaten_a11y">Ingerite %1$s</string>
     <string name="home_display_calorie_mode">Anello calorie</string>
+    <string name="home_display_group_calorie">Anello calorie</string>
+    <string name="home_display_calorie_mode_pointer">Modalità anello calorie</string>
+    <string name="home_display_group_activity">Attività</string>
+    <string name="home_display_active_calories_add_active_note">In modalità aggiunta consumo attivo, il consumo fa automaticamente parte dell\'anello.</string>
+    <string name="home_display_group_nutrients">Card dei nutrienti</string>
+    <string name="home_display_group_food_log">Registro alimentare</string>
     <string name="home_display_calorie_layout">Layout calorie</string>
     <string name="home_calorie_layout_default">Predefinito</string>
     <string name="home_calorie_layout_gauge">Misuratore ad arco + numeri</string>
@@ -1044,15 +1050,14 @@
     <string name="home_nutrient_card_layout_default">Barre compatte</string>
     <string name="home_nutrient_card_layout_slim_line">Linee sottili</string>
     <string name="home_nutrient_card_layout_classic">Schede classiche</string>
-    <string name="home_display_card_count">Card mostrate</string>
     <string name="home_display_food_log_chips">Macro del registro alimentare</string>
-    <string name="home_display_needs_health">Richiede Health Connect con accesso ai passi</string>
     <string name="home_display_nutrient_cards">Card dei nutrienti</string>
     <string name="home_display_show_active_calories">Mostra calorie attive</string>
     <string name="home_display_show_active_calories_desc">Mostra il dispendio attivo di oggi nell\'anello calorie.</string>
     <string name="home_display_show_steps">Mostra contapassi in home</string>
     <string name="home_display_show_steps_desc">Card facoltativa sotto l\'anello. Richiede Health Connect.</string>
     <string name="home_display_step_goal">Obiettivo passi giornaliero</string>
+    <string name="home_display_step_goal_hint">Regola di 500. 1.000–50.000.</string>
     <string name="home_display_title">Aspetto Home</string>
     <string name="home_first_photo_saved">Prima foto salvata</string>
     <string name="home_food_log">Registro alimentare</string>
@@ -1064,6 +1069,7 @@
     <string name="home_nutrient_cards">Card nutrienti Home</string>
     <string name="home_nutrients">Nutrienti Home</string>
     <string name="home_nutrients_pick_count">Scegli fino a %1$d nutrienti per la schermata Home.</string>
+    <string name="home_nutrients_pick_max">Massimo %1$d nutrienti.</string>
     <string name="home_nutrients_pick_four">Scegli esattamente quattro nutrienti per la riga di riepilogo Home.</string>
     <string name="home_selected_count">%1$d selezionati</string>
     <string name="home_share_separately">Condividi separatamente</string>

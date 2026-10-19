@@ -1006,6 +1006,12 @@
     <string name="home_calories_left">Залишилось %1$s</string>
     <string name="home_calories_eaten_a11y">З\'їдено %1$s</string>
     <string name="home_display_calorie_mode">Шкала калорій</string>
+    <string name="home_display_group_calorie">Шкала калорій</string>
+    <string name="home_display_calorie_mode_pointer">Режим шкали калорій</string>
+    <string name="home_display_group_activity">Активність</string>
+    <string name="home_display_active_calories_add_active_note">У режимі додавання активних витрат витрати автоматично входять до шкали.</string>
+    <string name="home_display_group_nutrients">Картки поживних речовин</string>
+    <string name="home_display_group_food_log">Щоденник харчування</string>
     <string name="home_display_calorie_layout">Макет калорій</string>
     <string name="home_calorie_layout_default">Типовий</string>
     <string name="home_calorie_layout_gauge">Дуговий індикатор + числа</string>
@@ -1017,15 +1023,14 @@
     <string name="home_nutrient_card_layout_default">Компактні смуги</string>
     <string name="home_nutrient_card_layout_slim_line">Тонкі лінії</string>
     <string name="home_nutrient_card_layout_classic">Класичні картки</string>
-    <string name="home_display_card_count">Показані картки</string>
     <string name="home_display_food_log_chips">Макроси в журналі їжі</string>
-    <string name="home_display_needs_health">Потребує Health Connect із доступом до кроків</string>
     <string name="home_display_nutrient_cards">Картки поживних речовин</string>
     <string name="home_display_show_active_calories">Показувати активні калорії</string>
     <string name="home_display_show_active_calories_desc">Показувати сьогоднішні активні витрати на шкалі калорій.</string>
     <string name="home_display_show_steps">Показувати лічильник кроків на головній</string>
     <string name="home_display_show_steps_desc">Необов\'язкова картка під шкалою. Потребує Health Connect.</string>
     <string name="home_display_step_goal">Денна ціль кроків</string>
+    <string name="home_display_step_goal_hint">Крок зміни: 500. Діапазон: 1 000–50 000.</string>
     <string name="home_display_title">Оформлення головної</string>
     <string name="home_first_photo_saved">Перше фото збережено</string>
     <string name="home_food_log">Журнал їжі</string>
@@ -1038,6 +1043,7 @@
     <string name="home_nutrient_cards">Картки поживних речовин на головній</string>
     <string name="home_nutrients">Поживні речовини на головній</string>
     <string name="home_nutrients_pick_count">Вибери до %1$d поживних речовин для головного екрана.</string>
+    <string name="home_nutrients_pick_max">Не більше %1$d поживних речовин.</string>
     <string name="home_nutrients_pick_four">Вибери рівно чотири поживні речовини для ряду підсумків на головній.</string>
     <string name="home_protein_value">Білок: %1$dg</string>
     <string name="home_selected_count">Вибрано: %1$d</string>

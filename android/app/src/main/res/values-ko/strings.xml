@@ -1065,6 +1065,12 @@
     <string name="home_calories_left">남음 %1$s</string>
     <string name="home_calories_eaten_a11y">섭취 %1$s</string>
     <string name="home_display_calorie_mode">칼로리 게이지</string>
+    <string name="home_display_group_calorie">칼로리 게이지</string>
+    <string name="home_display_calorie_mode_pointer">칼로리 게이지 모드</string>
+    <string name="home_display_group_activity">활동</string>
+    <string name="home_display_active_calories_add_active_note">활동 추가 모드에서는 소모량이 자동으로 게이지에 포함돼요.</string>
+    <string name="home_display_group_nutrients">영양소 카드</string>
+    <string name="home_display_group_food_log">음식 기록</string>
     <string name="home_display_calorie_layout">칼로리 레이아웃</string>
     <string name="home_calorie_layout_default">기본</string>
     <string name="home_calorie_layout_gauge">아치 게이지 + 숫자</string>
@@ -1076,15 +1082,14 @@
     <string name="home_nutrient_card_layout_default">컴팩트 막대</string>
     <string name="home_nutrient_card_layout_slim_line">슬림 라인</string>
     <string name="home_nutrient_card_layout_classic">클래식 카드</string>
-    <string name="home_display_card_count">표시 카드</string>
     <string name="home_display_food_log_chips">음식 기록 매크로</string>
-    <string name="home_display_needs_health">걸음 권한이 있는 Health Connect 필요</string>
     <string name="home_display_nutrient_cards">영양소 카드</string>
     <string name="home_display_show_active_calories">활동 칼로리 표시</string>
     <string name="home_display_show_active_calories_desc">칼로리 게이지에 오늘의 활동 소비를 표시해요.</string>
     <string name="home_display_show_steps">홈에 걸음 수 표시</string>
     <string name="home_display_show_steps_desc">게이지 아래 선택 카드. Health Connect 필요.</string>
     <string name="home_display_step_goal">일일 걸음 목표</string>
+    <string name="home_display_step_goal_hint">500 단위 조정. 1,000–50,000.</string>
     <string name="home_display_title">홈 표시</string>
     <string name="home_first_photo_saved">첫 번째 사진 저장됨</string>
     <string name="home_food_log">음식 기록</string>
@@ -1096,6 +1101,7 @@
     <string name="home_nutrient_cards">홈 영양소 카드</string>
     <string name="home_nutrients">홈 영양소</string>
     <string name="home_nutrients_pick_count">홈 화면에 최대 %1$d개 영양소를 선택하세요.</string>
+    <string name="home_nutrients_pick_max">최대 %1$d개 영양소.</string>
     <string name="home_nutrients_pick_four">홈 요약 행에 영양소를 정확히 4개 선택하세요.</string>
     <string name="home_selected_count">%1$d개 선택됨</string>
     <string name="home_share_separately">개별 공유</string>

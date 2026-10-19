@@ -2168,7 +2168,7 @@
     <string name="settings_section_home_display">Home Display</string>
     <string name="settings_home_display">Customize Home</string>
     <string name="settings_home_display_summary">Nutrient cards, activity, calorie gauge, food-log chips</string>
-    <string name="home_display_title">Home Display</string>
+    <string name="home_display_title">Home display</string>
     <string name="home_look_sample_caption">Sample day</string>
     <string name="home_look_sample_food_yogurt">Greek yogurt</string>
     <string name="home_look_sample_food_bowl">Chicken rice bowl</string>
@@ -2179,11 +2179,17 @@
     <string name="home_nutrient_card_layout_default">Compact bars</string>
     <string name="home_nutrient_card_layout_slim_line">Slim lines</string>
     <string name="home_nutrient_card_layout_classic">Classic cards</string>
-    <string name="home_display_card_count">Cards shown</string>
     <string name="home_display_show_steps">Show step counter on home</string>
     <string name="home_display_show_steps_desc">Optional card below the gauge. Needs Health Connect.</string>
     <string name="home_display_step_goal">Daily step goal</string>
+    <string name="home_display_step_goal_hint">Adjusts by 500. 1,000–50,000.</string>
     <string name="home_display_calorie_mode">Calorie gauge</string>
+    <string name="home_display_group_calorie">Calorie gauge</string>
+    <string name="home_display_calorie_mode_pointer">Calorie gauge mode</string>
+    <string name="home_display_group_activity">Activity</string>
+    <string name="home_display_active_calories_add_active_note">In Add Active mode the burn is part of the gauge automatically.</string>
+    <string name="home_display_group_nutrients">Nutrient cards</string>
+    <string name="home_display_group_food_log">Food log</string>
     <string name="home_display_calorie_layout">Calorie layout</string>
     <string name="home_calorie_layout_default">Default</string>
     <string name="home_calorie_layout_gauge">Arc gauge + numbers</string>
@@ -2194,7 +2200,6 @@
     <string name="home_display_food_log_layout">Food log layout</string>
     <string name="home_food_log_layout_default">Compact</string>
     <string name="home_food_log_layout_classic">Classic</string>
-    <string name="home_display_needs_health">Requires Health Connect with steps permission</string>
     <string name="home_calorie_of_goal">of %1$s %2$s</string>
     <!-- Macro day types (#60): hero chip + quick-switch sheet. -->
     <string name="home_day_type_chip_a11y">Today’s day type: %1$s. Tap to switch.</string>
@@ -2296,6 +2301,7 @@
     <string name="home_calorie_full_credit">Credit the full workout</string>
     <string name="home_calorie_full_credit_desc">Adds today’s measured burn on top of your full calorie goal. Off, the gauge holds back a typical day’s burn so a high reading is not eaten back twice.</string>
     <string name="home_nutrients_pick_count">Pick up to %1$d nutrients for the home screen.</string>
+    <string name="home_nutrients_pick_max">Up to %1$d nutrients.</string>
     <string name="home_steps_label">Steps</string>
     <string name="home_steps_goal_format">Goal %1$s</string>
     <string name="home_active_calories_label">Active %1$s</string>

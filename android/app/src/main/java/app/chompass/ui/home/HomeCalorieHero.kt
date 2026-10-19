@@ -136,6 +136,7 @@ private data class CalorieHeroInput(
     val recalcDetailsAvailable: Boolean,
     val onShowRecalcDetails: (() -> Unit)?,
     val goalDerivation: GoalDerivation?,
+    val preview: Boolean,
 )
 
 @Composable
@@ -176,6 +177,8 @@ internal fun CalorieHero(
     /** Standing goal derivation for the ⓘ dialog's formula-baseline block. */
     goalDerivation: GoalDerivation? = null,
     layout: HomeCalorieHeroLayout? = null,
+    /** Sample render inside pickers/previews: frozen progress, no budget sheet. */
+    preview: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     val input = CalorieHeroInput(
@@ -189,7 +192,7 @@ internal fun CalorieHero(
         liveActiveBurn = liveActiveBurn,
         burnShade = burnShade,
         restingBurn = restingBurn,
-        freezeProgress = freezeProgress,
+        freezeProgress = freezeProgress || preview,
         dayTypeLabel = dayTypeLabel,
         dayTypeColor = dayTypeColor,
         onDayTypeClick = onDayTypeClick,
@@ -198,6 +201,7 @@ internal fun CalorieHero(
         recalcDetailsAvailable = recalcDetailsAvailable,
         onShowRecalcDetails = onShowRecalcDetails,
         goalDerivation = goalDerivation,
+        preview = preview,
     )
     when (layout) {
         HomeCalorieHeroLayout.COMPACT_HORIZONTAL -> CompactHorizontalCalorieHero(input, modifier)
@@ -673,7 +677,7 @@ private fun DefaultCalorieHero(input: CalorieHeroInput, modifier: Modifier = Mod
                             ),
                             color = muted,
                             tint = tertiary,
-                            onOpen = { showBudgetSheet = true },
+                            onOpen = { if (!preview) showBudgetSheet = true },
                             description = budgetDescription,
                             maxTextWidth = 180.dp,
                         )
@@ -836,7 +840,7 @@ private fun SideGaugeCalorieHero(input: CalorieHeroInput, modifier: Modifier = M
                         ),
                         color = muted,
                         tint = tertiary,
-                        onOpen = { showBudgetSheet = true },
+                        onOpen = { if (!preview) showBudgetSheet = true },
                         description = budgetDescription,
                         maxTextWidth = 180.dp,
                     )
@@ -1024,7 +1028,7 @@ private fun CompactArcCalorieHero(input: CalorieHeroInput, modifier: Modifier = 
                             ),
                             color = muted,
                             tint = tertiary,
-                            onOpen = { showBudgetSheet = true },
+                            onOpen = { if (!preview) showBudgetSheet = true },
                             description = budgetDescription,
                             maxTextWidth = 130.dp,
                         )
@@ -1190,7 +1194,7 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                         ),
                         color = muted,
                         tint = tertiary,
-                        onOpen = { showBudgetSheet = true },
+                        onOpen = { if (!preview) showBudgetSheet = true },
                         description = budgetDescription,
                         maxTextWidth = 140.dp,
                     )

@@ -1058,6 +1058,12 @@ bilirsən?</string>
     <string name="home_calories_left">%1$s qalıb</string>
     <string name="home_calories_eaten_a11y">Yeyilən %1$s</string>
     <string name="home_display_calorie_mode">Kalori göstəricisi</string>
+    <string name="home_display_group_calorie">Kalori göstəricisi</string>
+    <string name="home_display_calorie_mode_pointer">Kalori göstəricisi rejimi</string>
+    <string name="home_display_group_activity">Fəaliyyət</string>
+    <string name="home_display_active_calories_add_active_note">Aktiv əlavə rejimində yanma avtomatik olaraq göstəricinin bir hissəsidir.</string>
+    <string name="home_display_group_nutrients">Qida maddəsi kartları</string>
+    <string name="home_display_group_food_log">Yemək jurnalı</string>
     <string name="home_display_calorie_layout">Kalori düzümü</string>
     <string name="home_calorie_layout_default">Standart</string>
     <string name="home_calorie_layout_gauge">Qövs göstəricisi + rəqəmlər</string>
@@ -1069,15 +1075,14 @@ bilirsən?</string>
     <string name="home_nutrient_card_layout_default">Kompakt zolaqlar</string>
     <string name="home_nutrient_card_layout_slim_line">Nazik xətlər</string>
     <string name="home_nutrient_card_layout_classic">Klassik kartlar</string>
-    <string name="home_display_card_count">Göstərilən kartlar</string>
     <string name="home_display_food_log_chips">Yemək jurnalında makrolar</string>
-    <string name="home_display_needs_health">Addımlara girişi olan Health Connect tələb olunur</string>
     <string name="home_display_nutrient_cards">Qida maddəsi kartları</string>
     <string name="home_display_show_active_calories">Aktiv kaloriləri göstər</string>
     <string name="home_display_show_active_calories_desc">Bugünkü aktiv yanmanı kalori göstəricisində göstər.</string>
     <string name="home_display_show_steps">Ana səhifədə addımölçəni göstər</string>
     <string name="home_display_show_steps_desc">Göstəricinin altında istəyə bağlı kart. Health Connect tələb olunur.</string>
     <string name="home_display_step_goal">Gündəlik addım məqsədi</string>
+    <string name="home_display_step_goal_hint">Addım 500-dən dəyişir. 1,000–50,000.</string>
     <string name="home_display_title">Ana Səhifə Görünüşü</string>
     <string name="home_first_photo_saved">İlk şəkil saxlanıldı</string>
     <string name="home_food_log">Yemək jurnalı</string>
@@ -1089,6 +1094,7 @@ bilirsən?</string>
     <string name="home_nutrient_cards">Ana səhifə qida maddəsi kartları</string>
     <string name="home_nutrients">Ana səhifə qida maddələri</string>
     <string name="home_nutrients_pick_count">Ana səhifə üçün %1$d-ə qədər qida maddəsi seç.</string>
+    <string name="home_nutrients_pick_max">Ən çox %1$d qida maddəsi.</string>
     <string name="home_nutrients_pick_four">Ana səhifə xülasə sətri üçün tam dörd qida maddəsi seç.</string>
     <string name="home_protein_value">Protein: %1$dq</string>
     <string name="home_selected_count">%1$d seçilib</string>
