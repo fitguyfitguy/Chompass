@@ -100,7 +100,7 @@ internal fun HomeLookPreview(
                 )
             }
             if (display.showSteps) {
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(4.dp))
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -114,7 +114,7 @@ internal fun HomeLookPreview(
                     )
                 }
             }
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(if (display.showSteps) 4.dp else 20.dp))
             Row(
                 Modifier
                     .fillMaxWidth()

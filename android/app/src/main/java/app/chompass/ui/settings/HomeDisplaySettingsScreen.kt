@@ -108,16 +108,6 @@ fun HomeDisplaySettingsScreen(
                             value = nutrientCardLayoutLabel(display.macroCardLayout),
                             onClick = { showNutrientCardLayoutPicker = true },
                         )
-                        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
-                        CardCountRow(
-                            count = display.nutrientCardCount,
-                            onDecrement = {
-                                vm.setHomeNutrientCardCount(display.nutrientCardCount - 1)
-                            },
-                            onIncrement = {
-                                vm.setHomeNutrientCardCount(display.nutrientCardCount + 1)
-                            }
-                        )
                     }
                 }
             }
@@ -208,7 +198,6 @@ fun HomeDisplaySettingsScreen(
     if (showNutrientPicker) {
         HomeTopNutrientPickerDialog(
             selected = display.homeTopNutrients,
-            cardCount = display.nutrientCardCount,
             onSave = vm::setHomeTopNutrients,
             onDismiss = { showNutrientPicker = false }
         )
@@ -385,24 +374,7 @@ private fun CalorieLayoutPickerDialog(
     }
 }
 
-@Composable
-private fun CardCountRow(count: Int, onDecrement: () -> Unit, onIncrement: () -> Unit) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(stringResource(R.string.home_display_card_count), fontSize = 17.sp, modifier = Modifier.weight(1f))
-        IconButton(onClick = onDecrement, enabled = count > HomeDisplayPreferences.MIN_NUTRIENT_CARD_COUNT) {
-            Icon(Icons.Filled.Remove, contentDescription = stringResource(R.string.cd_decrease))
-        }
-        Text(count.toString(), fontWeight = FontWeight.SemiBold, fontSize = 17.sp)
-        IconButton(onClick = onIncrement, enabled = count < HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT) {
-            Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.cd_increase))
-        }
-    }
-}
+
 
 @Composable
 private fun StepGoalRow(goal: Int, onDecrement: () -> Unit, onIncrement: () -> Unit) {

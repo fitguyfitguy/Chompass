@@ -47,7 +47,6 @@ internal fun HomeLookStep(
     onShowActiveCalories: (Boolean) -> Unit,
     onShowSteps: (Boolean) -> Unit,
     onStepGoal: (Int) -> Unit,
-    onNutrientCardCount: (Int) -> Unit,
     onTopNutrients: (List<HomeTopNutrient>) -> Unit,
     onFoodLogChips: (List<FoodLogMacroChip>) -> Unit,
 ) {
@@ -130,14 +129,7 @@ internal fun HomeLookStep(
                 )
             }
         }
-        CountRow(
-            label = stringResource(R.string.home_display_card_count),
-            value = display.nutrientCardCount.toString(),
-            decrementEnabled = display.nutrientCardCount > HomeDisplayPreferences.MIN_NUTRIENT_CARD_COUNT,
-            incrementEnabled = display.nutrientCardCount < HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT,
-            onDecrement = { onNutrientCardCount(display.nutrientCardCount - 1) },
-            onIncrement = { onNutrientCardCount(display.nutrientCardCount + 1) },
-        )
+
         ChompassSurface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -165,7 +157,6 @@ internal fun HomeLookStep(
     if (showNutrientPicker) {
         HomeTopNutrientPickerDialog(
             selected = display.homeTopNutrients,
-            cardCount = display.nutrientCardCount,
             onSave = onTopNutrients,
             onDismiss = { showNutrientPicker = false },
         )

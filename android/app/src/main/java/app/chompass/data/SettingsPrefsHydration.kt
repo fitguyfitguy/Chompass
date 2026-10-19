@@ -153,8 +153,7 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
     val provider = activeProfile?.provider ?: AIProvider.GEMINI
     val speech = SpeechProvider.entries.firstOrNull { it.name == this[Keys.SELECTED_SPEECH_PROVIDER] }
         ?: SpeechProvider.NATIVE
-    val cardCount = this[Keys.HOME_NUTRIENT_CARD_COUNT] ?: HomeDisplayPreferences.DEFAULT_NUTRIENT_CARD_COUNT
-    val nutrientsRaw = this[Keys.HOME_TOP_NUTRIENTS] ?: HomeTopNutrient.DefaultStorageValue
+    val nutrients = HomeTopNutrient.fromStorage(this[Keys.HOME_TOP_NUTRIENTS])
     return SettingsPrefsHydration(
         selectedAI = provider,
         selectedModelRaw = activeProfile?.model,
@@ -282,8 +281,8 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
             }
         },
         homeDisplay = HomeDisplayPreferences(
-            nutrientCardCount = cardCount,
-            homeTopNutrients = HomeTopNutrient.fromStorage(nutrientsRaw, cardCount),
+            nutrientCardCount = nutrients.size,
+            homeTopNutrients = nutrients,
             showSteps = this[Keys.HOME_SHOW_STEPS] ?: false,
             showActiveCalories = this[Keys.HOME_SHOW_ACTIVE_CALORIES] ?: false,
             stepGoal = this[Keys.HOME_STEP_GOAL] ?: HomeDisplayPreferences.DEFAULT_STEP_GOAL,
