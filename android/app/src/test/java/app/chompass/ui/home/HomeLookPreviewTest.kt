@@ -8,6 +8,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.models.HomeCalorieHeroLayout
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
 import org.junit.Rule
@@ -93,5 +94,12 @@ class HomeLookPreviewTest {
     fun staticModeCanShowTheActiveBurnCaption() {
         setPreview(HomeDisplayPreferences(showActiveCalories = true))
         assertDisplayed("380 active")
+    }
+
+    @Test
+    fun hiddenHeroLayoutOmitsTheGauge() {
+        setPreview(HomeDisplayPreferences(calorieHeroLayout = HomeCalorieHeroLayout.HIDDEN))
+        assertDisplayed("Sample day")
+        assertAbsent("of 2,000 kcal")
     }
 }
