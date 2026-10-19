@@ -713,7 +713,6 @@ internal fun OverlayChartCanvas(
     val zone = remember { ZoneId.systemDefault() }
     val untrackedSpans = rememberUntrackedSpans(model.xFromMs, model.tRange, untrackedDays)
     val bandColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
-    val rawDotColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
     val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val secondaryColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
     val reveal = remember(model, immediate) { Animatable(if (immediate) 1f else 0f) }
@@ -877,7 +876,7 @@ internal fun OverlayChartCanvas(
                     if (s.showsDots && tailAlpha > 0f) {
                         s.points.forEach { p ->
                             drawCircle(
-                                rawDotColor.copy(alpha = 0.75f * tailAlpha),
+                                s.color.copy(alpha = 0.55f * tailAlpha),
                                 radius = 3.dp.toPx(),
                                 center = offsetOf(s, p),
                             )

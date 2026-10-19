@@ -1142,6 +1142,14 @@
     <string name="measure_upper_arm">Braț</string>
     <string name="measure_waist">Talie</string>
     <string name="measure_wrist">Încheietură</string>
+    <string name="measure_neck_short">Gât</string>
+    <string name="measure_waist_short">Tal</string>
+    <string name="measure_hips_short">Șol</string>
+    <string name="measure_chest_short">Pie</string>
+    <string name="measure_upper_arm_short">Bra</string>
+    <string name="measure_thigh_short">Coa</string>
+    <string name="measure_calf_short">Gam</string>
+    <string name="measure_wrist_short">Înc</string>
     <string name="measurement_history">Istoricul măsurătorilor</string>
     <string name="month_august">August</string>
     <string name="notif_channel_body_fat">Memento grăsime corporală</string>

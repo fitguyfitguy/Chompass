@@ -1190,6 +1190,14 @@
     <string name="measure_upper_arm">Bras</string>
     <string name="measure_waist">Taille</string>
     <string name="measure_wrist">Poignet</string>
+    <string name="measure_neck_short">Cou</string>
+    <string name="measure_waist_short">Tai</string>
+    <string name="measure_hips_short">Han</string>
+    <string name="measure_chest_short">Poi</string>
+    <string name="measure_upper_arm_short">Bra</string>
+    <string name="measure_thigh_short">Cui</string>
+    <string name="measure_calf_short">Mol</string>
+    <string name="measure_wrist_short">Poig</string>
     <string name="measurement_history">Historique des mesures</string>
     <string name="nav_coach">Coach</string>
     <string name="notif_channel_body_fat">Rappel de masse grasse</string>

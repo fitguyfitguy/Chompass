@@ -1087,6 +1087,14 @@
     <string name="measure_upper_arm">Плече</string>
     <string name="measure_waist">Талія</string>
     <string name="measure_wrist">Зап\'ястя</string>
+    <string name="measure_neck_short">Шия</string>
+    <string name="measure_waist_short">Тал</string>
+    <string name="measure_hips_short">Стег</string>
+    <string name="measure_chest_short">Гру</string>
+    <string name="measure_upper_arm_short">Пле</string>
+    <string name="measure_thigh_short">Стегн</string>
+    <string name="measure_calf_short">Лит</string>
+    <string name="measure_wrist_short">Зап</string>
     <string name="measurement_history">Історія вимірювань</string>
     <string name="month_april">Квітень</string>
     <string name="month_august">Серпень</string>

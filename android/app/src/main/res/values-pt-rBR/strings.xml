@@ -1138,6 +1138,14 @@
     <string name="measure_upper_arm">Braço</string>
     <string name="measure_waist">Cintura</string>
     <string name="measure_wrist">Pulso</string>
+    <string name="measure_neck_short">Pes</string>
+    <string name="measure_waist_short">Cin</string>
+    <string name="measure_hips_short">Qua</string>
+    <string name="measure_chest_short">Pei</string>
+    <string name="measure_upper_arm_short">Bra</string>
+    <string name="measure_thigh_short">Cox</string>
+    <string name="measure_calf_short">Pan</string>
+    <string name="measure_wrist_short">Pul</string>
     <string name="measurement_history">Histórico de medidas</string>
     <string name="nav_coach">Coach</string>
     <string name="notif_channel_body_fat">Lembrete de gordura corporal</string>

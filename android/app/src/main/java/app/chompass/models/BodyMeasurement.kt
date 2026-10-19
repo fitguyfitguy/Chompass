@@ -141,11 +141,15 @@ data class BodyMeasurement(
     }
 
     /** The eight circumference sites, in display order. Used to render the per-site editor rows. */
-    enum class Site(val label: String, val labelRes: Int) {
-        NECK("Neck", R.string.measure_neck), WAIST("Waist", R.string.measure_waist),
-        HIPS("Hips", R.string.measure_hips), CHEST("Chest", R.string.measure_chest),
-        UPPER_ARM("Upper Arm", R.string.measure_upper_arm), THIGH("Thigh", R.string.measure_thigh),
-        CALF("Calf", R.string.measure_calf), WRIST("Wrist", R.string.measure_wrist);
+    enum class Site(val label: String, val labelRes: Int, val shortLabelRes: Int) {
+        NECK("Neck", R.string.measure_neck, R.string.measure_neck_short),
+        WAIST("Waist", R.string.measure_waist, R.string.measure_waist_short),
+        HIPS("Hips", R.string.measure_hips, R.string.measure_hips_short),
+        CHEST("Chest", R.string.measure_chest, R.string.measure_chest_short),
+        UPPER_ARM("Upper Arm", R.string.measure_upper_arm, R.string.measure_upper_arm_short),
+        THIGH("Thigh", R.string.measure_thigh, R.string.measure_thigh_short),
+        CALF("Calf", R.string.measure_calf, R.string.measure_calf_short),
+        WRIST("Wrist", R.string.measure_wrist, R.string.measure_wrist_short);
 
         /** Stable storage id for prefs (`neck`, `waist`, …); unknown ids are ignored on read. */
         val storageId: String get() = name.lowercase()

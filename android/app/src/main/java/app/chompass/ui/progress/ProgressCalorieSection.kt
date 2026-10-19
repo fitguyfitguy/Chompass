@@ -18,13 +18,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MonitorWeight
+import androidx.compose.material.icons.filled.Percent
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -189,6 +195,7 @@ internal fun CalorieSection(
                         if (overlayWeights.isNotEmpty()) {
                             OverlayPickChip(
                                 label = stringResource(R.string.progress_metric_weight),
+                                icon = Icons.Filled.MonitorWeight,
                                 selected = effectiveKey == OVERLAY_KEY_WEIGHT,
                                 onClick = { onOverlayKeyChange(OVERLAY_KEY_WEIGHT) },
                             )
@@ -196,6 +203,7 @@ internal fun CalorieSection(
                         if (overlayBodyFats.isNotEmpty()) {
                             OverlayPickChip(
                                 label = stringResource(R.string.progress_metric_body_fat),
+                                icon = Icons.Filled.Percent,
                                 selected = effectiveKey == OVERLAY_KEY_BODY_FAT,
                                 onClick = { onOverlayKeyChange(OVERLAY_KEY_BODY_FAT) },
                             )
@@ -249,12 +257,19 @@ private fun overlayLegendLabel(key: String): Int = when (key) {
 private fun OverlayPickChip(
     label: String,
     selected: Boolean,
+    icon: ImageVector? = null,
     onClick: () -> Unit,
 ) {
     FilterChip(
         selected = selected,
         onClick = onClick,
-        label = { Text(label, fontSize = 12.sp, maxLines = 1) },
-        modifier = Modifier.debugChipState(label, selected),
+        label = {
+            if (icon != null) {
+                Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp))
+            } else {
+                Text(label, fontSize = 12.sp, maxLines = 1)
+            }
+        },
+        modifier = Modifier.chipAccessibility(label, selected),
     )
 }

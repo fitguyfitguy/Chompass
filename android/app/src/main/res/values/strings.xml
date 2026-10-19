@@ -2554,6 +2554,14 @@
     <string name="measure_thigh">Thigh</string>
     <string name="measure_calf">Calf</string>
     <string name="measure_wrist">Wrist</string>
+    <string name="measure_neck_short">Nk</string>
+    <string name="measure_waist_short">Wa</string>
+    <string name="measure_hips_short">Hi</string>
+    <string name="measure_chest_short">Ch</string>
+    <string name="measure_upper_arm_short">UA</string>
+    <string name="measure_thigh_short">Th</string>
+    <string name="measure_calf_short">Ca</string>
+    <string name="measure_wrist_short">Wr</string>
     <string name="derived_waist_to_hip">Waist-to-hip</string>
     <string name="derived_waist_to_height">Waist-to-height</string>
     <string name="derived_body_fat">Body fat</string>

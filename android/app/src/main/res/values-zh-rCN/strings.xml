@@ -1148,6 +1148,14 @@
     <string name="measure_upper_arm">上臂</string>
     <string name="measure_waist">腰围</string>
     <string name="measure_wrist">腕围</string>
+    <string name="measure_neck_short">颈</string>
+    <string name="measure_waist_short">腰</string>
+    <string name="measure_hips_short">臀</string>
+    <string name="measure_chest_short">胸</string>
+    <string name="measure_upper_arm_short">臂</string>
+    <string name="measure_thigh_short">大腿</string>
+    <string name="measure_calf_short">小腿</string>
+    <string name="measure_wrist_short">腕</string>
     <string name="measurement_history">测量历史</string>
     <string name="notif_channel_body_fat">体脂记录提醒</string>
     <string name="notif_channel_body_fat_desc">每日提醒记录体脂读数。</string>

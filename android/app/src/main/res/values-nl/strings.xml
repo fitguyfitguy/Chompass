@@ -1120,6 +1120,14 @@
     <string name="measure_upper_arm">Bovenarm</string>
     <string name="measure_waist">Taille</string>
     <string name="measure_wrist">Pols</string>
+    <string name="measure_neck_short">Nek</string>
+    <string name="measure_waist_short">Tai</string>
+    <string name="measure_hips_short">Heup</string>
+    <string name="measure_chest_short">Bor</string>
+    <string name="measure_upper_arm_short">Bov</string>
+    <string name="measure_thigh_short">Dij</string>
+    <string name="measure_calf_short">Kui</string>
+    <string name="measure_wrist_short">Pol</string>
     <string name="measurement_history">Meetgeschiedenis</string>
     <string name="nav_coach">Coach</string>
     <string name="nav_home">Home</string>

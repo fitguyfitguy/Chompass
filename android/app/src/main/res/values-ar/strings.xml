@@ -1151,6 +1151,14 @@
     <string name="measure_upper_arm">الذراع العلوي</string>
     <string name="measure_waist">الخصر</string>
     <string name="measure_wrist">المعصم</string>
+    <string name="measure_neck_short">رقبة</string>
+    <string name="measure_waist_short">خصر</string>
+    <string name="measure_hips_short">ورك</string>
+    <string name="measure_chest_short">صدر</string>
+    <string name="measure_upper_arm_short">ذراع</string>
+    <string name="measure_thigh_short">فخذ</string>
+    <string name="measure_calf_short">ساق</string>
+    <string name="measure_wrist_short">معصم</string>
     <string name="measurement_history">سجل القياسات</string>
     <string name="notif_channel_body_fat">تذكير سجل دهون الجسم</string>
     <string name="notif_channel_body_fat_desc">تذكير يومي لتسجيل قراءة دهون الجسم.</string>
