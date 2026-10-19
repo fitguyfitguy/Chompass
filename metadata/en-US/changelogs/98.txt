@@ -1,0 +1,7 @@
+• Customize Home opens with a sample day of the real Home (Android).
+• Pick the calorie gauge: ring, arc, compact arc, progress bar, or hidden (Android).
+• Pick the nutrient card style: compact bars, slim lines, or classic (Android).
+• Pick the food-log row style: compact or classic (Android).
+• Layout pickers sketch each option and apply on tap (Android).
+• Food-log macros wrap instead of running off the card (Android).
+• Customize Home groups its rows in the order they appear on Home (Android).

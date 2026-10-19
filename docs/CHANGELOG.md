@@ -4,14 +4,7 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [Unreleased]
-
-### Added
-
-- **See Home before you log** (Android): Settings → Customize Home opens with a sample day of the real calorie gauge, nutrient cards, and food log. The same preview is a setup step after Health Connect, so the gauge, cards, steps, and food-log chips can be set before the first meal.
-- **More ways to arrange Home** (Android): the calorie display keeps its familiar ring by default and gains new layouts to choose from. An arc gauge with the numbers beside it, a compact arc, a plain progress bar, or hidden. Nutrient cards can be compact bars (the new default), slim lines, or the classic cards, and the food log starts in its compact form. Calories can still be shown as a nutrient card. The nutrients you pick are the cards on Home; there is no separate cards-shown stepper. The optional step counter sits closer to the gauge and the nutrient cards. Extra food-log macros stay beside the calories in the compact row at their normal size; the serving line gives up space, and the classic row wraps them. Customize Home now groups its rows under Calorie gauge, Activity, Nutrient cards, and Food log in the same order as the preview, and in Add Active mode it says why the active-burn toggle is absent. The layout pickers sketch each variant as a small schematic — a true semicircle bowl with number bars inside it, a small bowl beside the numbers, and a progress bar — and apply on tap, with no dead Done button; the two food-log options split the dialog side by side so each preview gets half the width. The food-log macro row names the macros instead of letters, the step goal notes its 500-step steps and range, and the sample day carries the Today label, a meal header with the meal's macro totals, and a serving line, so wraps read like the real Home. Setup gained the same three layout rows, and the nutrient picker flashes its four-card cap while its rows lead with the nutrient name.
-
-## [5.8.0] - 2026-10-19
+## [5.9.0] - 2026-10-19
 
 ### Added
 
@@ -19,12 +12,19 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **A unified body chart on Progress** (Android): weight, body fat, and body measurements share one overlay chart. Chips pick which series to draw, the last one you tapped leads the stat badges, and tapping the chart inspects any logged day.
 - **The calorie card can overlay your trend** (Android): the daily calorie bars can draw your weight or body-fat trend behind them, with a legend and a tap tag that shows the real number next to the bar's calories.
 - **An adherence card on Progress** (Android): a summary of how closely your logged days landed on their calorie goals, overall, per day type, and per phase, with the share of days inside a ±100 kcal band.
+- **Customize Home opens on a sample day** (Android): the screen starts with a preview built from the real calorie gauge, nutrient cards, and food log, and the same preview is a setup step after Health Connect. The sample carries the Today label, a meal header with that meal's macro totals, and a serving line, so its rows wrap the way the real Home does.
+- **Pick the calorie gauge layout** (Android): Home keeps its ring by default and gains an arc with the numbers beside it, a compact arc, a plain progress bar, and a hidden option. The choice redraws Home and the preview right away.
+- **Pick the nutrient card style** (Android): cards can be compact bars (the new default), slim lines, or the classic cards. Calories can also be shown as a nutrient card.
+- **Pick the food-log row style** (Android): the compact row keeps the extra macros on the calorie line at their normal size while the serving line gives up space, and the classic row wraps the macros onto a second line.
+- **Layout pickers show every option** (Android): each option draws a small schematic of the layout and applies as soon as it is tapped, with no separate confirm button.
 
 ### Changed
 
 - **A tighter body card on Progress** (Android): the weight and body fat toggles are now a scale and a percent symbol, measurement sites use short labels, and the add actions are shortened to Weight and Body fat with a plus icon, right-aligned so they no longer crowd the section title. Raw weigh-ins and body-fat readings now take a faded shade of their series color, matching the calorie overlay's trend dots.
 - **Log body measurements from Progress** (Android): each measurement card below the body chart gets a small + in its title. It opens the same value wheel as Settings → Body measurements, so a neck, waist, or hip reading can be logged without leaving the Progress tab; saving writes today's snapshot.
 - **A compact calorie hero on Home** (Android): the CALORIES title is gone. The eaten number sits inside the arc with your goal and today's active burn directly under it, the day-type and untracked chips tuck under the Today label at the arc's top left, and the calories left stay in the top-right corner. The card is about 95 dp shorter, so the water, nicotine, and caffeine cards now fit on the first screen.
+- **Customize Home follows the order of Home** (Android): rows are grouped under Calorie gauge, Activity, Nutrient cards, and Food log. In Add Active mode the screen explains why the active-burn toggle is absent, macro rows show full names instead of letters, the steps toggle carries its description, and the step goal shows its range. Setup gained the same three layout rows.
+- **The steps line moved under the gauge** (Android): with steps on, the counter sits between the calorie arc and the nutrient cards.
 
 ### Fixed
 
@@ -36,6 +36,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **A calmer body card header** (Android): the Body title no longer collapses the whole card when tapped. The collapse arrow is gone; the add actions stay.
 - **The calorie chart starts where your log starts** (Android): on the All range the chart now spans from your first logged meal to today instead of padding years of empty space.
 - **Daily calorie bars at every range** (Android): 6M, 1Y, and All keep one bar per day instead of rolling weeks up into weekly sums, so each day keeps its own color against its own goal.
+- **Food-log macros stay inside the row** (Android): four or more selected macros no longer run off the card, and a macro you turn off stays off.
 
 ## [5.7.1] - 2026-10-17
 
