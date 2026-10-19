@@ -176,7 +176,7 @@ internal fun HomeLookPreview(
 }
 
 @Composable
-internal fun sampleFoods(): List<FoodEntry> {
+private fun sampleFoods(): List<FoodEntry> {
     val yogurt = stringResource(R.string.home_look_sample_food_yogurt)
     val bowl = stringResource(R.string.home_look_sample_food_bowl)
     return remember(yogurt, bowl) {
@@ -212,6 +212,4 @@ internal fun sampleFoods(): List<FoodEntry> {
     }
 }
 
-/** First sample food (yogurt) — reused by the food-log layout picker thumbnail. */
-@Composable
-internal fun sampleYogurt(): FoodEntry = sampleFoods().first()
+
