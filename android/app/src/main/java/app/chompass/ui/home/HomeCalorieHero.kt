@@ -7,18 +7,20 @@ import androidx.compose.foundation.clickable
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Info
@@ -48,6 +50,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -65,6 +68,7 @@ import app.chompass.models.LocaleFormat
 import app.chompass.models.NutritionConstants
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
+import app.chompass.ui.components.energyText
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalLaunchFillEpoch
 import app.chompass.ui.navigation.LocalEnergyUnit
@@ -75,36 +79,12 @@ import app.chompass.ui.theme.success
 // ── Calorie hero ─────────────────────────────────────────────────────
 
 /**
- * Verbatim port of the calorie hero block in HomeView.body
- * (ios/calorietracker/ContentView.swift, lines ~322–362):
+ * Home calorie hero: a 260×130dp half-circle gauge.
  *
- *   VStack(spacing: 20) {
- *     VStack(spacing: 4) {
- *       Text("\(selectedCalories)")
- *         .font(.system(size: 72, weight: .bold, design: .rounded))
- *         .foregroundStyle(LinearGradient(colors: AppColors.calorieGradient,
- *                                         startPoint: .topLeading,
- *                                         endPoint: .bottomTrailing))
- *         .contentTransition(.numericText())
- *         .animation(.snappy, value: selectedCalories)
- *       Text("of \(calorieGoal) kcal")
- *         .font(.system(.callout, design: .rounded, weight: .medium))
- *         .foregroundStyle(.tertiary)
- *     }
- *     GeometryReader { geo in
- *       ZStack(alignment: .leading) {
- *         Capsule().fill(AppColors.calorie.opacity(0.10)).frame(height: 10)
- *         Capsule().fill(LinearGradient(.leading, .trailing))
- *                  .frame(width: max(10, geo.size.width * progress), height: 10)
- *                  .shadow(color: AppColors.calorie.opacity(0.35), radius: 8, y: 3)
- *                  .animation(.spring(response: 0.8, dampingFraction: 0.75), value: selectedCalories)
- *       }
- *     }.frame(height: 10).padding(.horizontal, 24)
- *     Text("\(caloriesRemaining) left")
- *       .font(.system(.footnote, design: .rounded, weight: .medium))
- *       .foregroundStyle(.secondary)
- *   }
- *   .padding(.vertical, 20)
+ * The eaten number sits in the bowl with the goal caption and the active-burn
+ * caption directly under it. The chips (day type, untracked) sit under the
+ * section's "Today" label, in the empty wedge at the arc's top left, and the
+ * calories-left caption in the matching wedge at the top right.
  */
 @Composable
 internal fun CalorieHero(
@@ -143,6 +123,7 @@ internal fun CalorieHero(
     onShowRecalcDetails: (() -> Unit)? = null,
     /** Standing goal derivation for the ⓘ dialog's formula-baseline block. */
     goalDerivation: GoalDerivation? = null,
+    modifier: Modifier = Modifier,
 ) {
     val ratio = HomeCalorieDisplay.progressRatio(displayMode, current, baseGoal, activeCalories)
     val effectiveGoal = HomeCalorieDisplay.effectiveGoal(displayMode, baseGoal, activeCalories)
@@ -185,6 +166,20 @@ internal fun CalorieHero(
         else -> effectiveGoal
     }
     val unitLabel = energyUnitLabel()
+    // Corner captions. The goal line carries the budget truth (base + live
+    // burn) for TalkBack; its row is the budget-sheet button in ADD_ACTIVE.
+    val explainsBudget = displayMode == HomeCalorieDisplayMode.ADD_ACTIVE
+    val goalDescription = when {
+        !explainsBudget -> null
+        integratesBurn && activeCalorieSource == ActiveCalorieSource.ESTIMATED ->
+            stringResource(R.string.home_calorie_budget_a11y, EnergyFormat.quantity(effectiveGoal, unit), EnergyFormat.quantity(baseGoal, unit), EnergyFormat.quantity(activeCalories, unit), unitLabel) +
+                ". " + stringResource(R.string.home_calorie_active_estimated_a11y)
+        else ->
+            stringResource(R.string.home_calorie_budget_a11y, EnergyFormat.quantity(effectiveGoal, unit), EnergyFormat.quantity(baseGoal, unit), EnergyFormat.quantity(activeCalories, unit), unitLabel)
+    }
+    val infoLabel = stringResource(R.string.home_calorie_budget_info)
+    val eatenA11y = stringResource(R.string.home_calories_eaten_a11y, energyText(current))
+    val showsChips = (dayTypeLabel != null && onDayTypeClick != null) || onUntrackedClick != null
     val epoch = LocalLaunchFillEpoch.current
     var lastEpoch by rememberSaveable { mutableIntStateOf(0) }
     val animatedRatio = remember { Animatable(if (lastEpoch == epoch) fillRatio else 0f) }
@@ -216,247 +211,302 @@ internal fun CalorieHero(
     val tertiary = MaterialTheme.colorScheme.tertiary
     val successColor = MaterialTheme.colorScheme.success
 
-    Box(
-        modifier = Modifier
+    Column(
+        modifier = modifier
             .fillMaxWidth()
-            .padding(top = 8.dp, bottom = 4.dp),
-        contentAlignment = Alignment.TopCenter
+            .padding(top = 8.dp, bottom = 12.dp),
     ) {
-        Canvas(
-            modifier = Modifier
-                .width(260.dp)
-                .aspectRatio(2f)
-                .semantics {
-                    // The budget sheet carries the exact numbers; the arc still
-                    // reports its fill so TalkBack users get progress (UI-audit 2.7).
-                    progressBarRangeInfo = ProgressBarRangeInfo(animatedRatio.value, 0f..1f, 0)
-                }
+        // The half-circle leaves an empty wedge at each top corner: the goal
+        // and remaining captions sit in those wedges instead of stacking under
+        // the number. 64dp is the wedge width at the caption line's bottom; the
+        // arc's side margin (hero width minus the 260dp arc) is added on top.
+        BoxWithConstraints(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.TopCenter,
         ) {
-            val stroke = 16.dp.toPx()
-            val inset = stroke / 2f
-            val mainArcSize = Size(size.width - stroke, size.width - stroke)
-            val mainTopLeft = Offset(inset, inset)
-            val cx = size.width / 2f
-            val cy = size.width / 2f
-            val rMid = (size.width - stroke) / 2f
-            val rIn = rMid - stroke / 2f + 2.dp.toPx()
-            val rOut = rMid + stroke / 2f - 2.dp.toPx()
-            drawArc(
-                color = trackColor,
-                startAngle = 180f,
-                sweepAngle = 180f,
-                useCenter = false,
-                topLeft = mainTopLeft,
-                size = mainArcSize,
-                style = Stroke(width = stroke, cap = StrokeCap.Round)
-            )
-            // Eaten fill first so live/typical shades (and the ADD_ACTIVE
-            // bonus tail) paint on top and stay readable when intake covers
-            // the active zone. Notch still last.
-            var notchAngle: Float? = null
-            if (plannedFillRatio > fillRatio) {
+            val sideMargin = ((maxWidth - 260.dp) / 2).coerceIn(0.dp, 200.dp)
+            val cornerWidth = sideMargin + 48.dp
+
+            Canvas(
+                modifier = Modifier
+                    .width(260.dp)
+                    .aspectRatio(2f)
+                    .semantics {
+                        // The budget sheet carries the exact numbers; the arc still
+                        // reports its fill so TalkBack users get progress (UI-audit 2.7).
+                        progressBarRangeInfo = ProgressBarRangeInfo(animatedRatio.value, 0f..1f, 0)
+                    }
+            ) {
+                val stroke = 16.dp.toPx()
+                val inset = stroke / 2f
+                val mainArcSize = Size(size.width - stroke, size.width - stroke)
+                val mainTopLeft = Offset(inset, inset)
+                val cx = size.width / 2f
+                val cy = size.width / 2f
+                val rMid = (size.width - stroke) / 2f
+                val rIn = rMid - stroke / 2f + 2.dp.toPx()
+                val rOut = rMid + stroke / 2f - 2.dp.toPx()
                 drawArc(
-                    color = progressColor.copy(alpha = 0.35f),
+                    color = trackColor,
                     startAngle = 180f,
-                    sweepAngle = 180f * plannedFillRatio.coerceIn(0f, 1f),
+                    sweepAngle = 180f,
                     useCenter = false,
                     topLeft = mainTopLeft,
                     size = mainArcSize,
-                    style = Stroke(width = stroke, cap = StrokeCap.Round),
+                    style = Stroke(width = stroke, cap = StrokeCap.Round)
                 )
-            }
-            drawArc(
-                color = progressColor,
-                startAngle = 180f,
-                sweepAngle = 180f * (if (freezeProgress) fillRatio else animatedRatio.value),
-                useCenter = false,
-                topLeft = mainTopLeft,
-                size = mainArcSize,
-                style = Stroke(width = stroke, cap = StrokeCap.Round)
-            )
-            if (shadesActive) {
-                // Single energy scale, one meaning per shade:
-                //  - estimated-active zone = fixed dim segment [base → base+typical].
-                //  - live-active shade = opaque, grows from the base boundary through
-                //    the typical zone; the over-typical stretch turns success color.
-                //  The arc end is the expected-day target and grows with live burn
-                //  once it exceeds typical, so the live tip lands at the ring end.
-                val typical = shade.typical
-                val live = shade.live
-                val baseAngle = 180f * HomeCalorieDisplay.burnShadeBaseFraction(baseGoal, typical, live)
-                val typicalSweep = 180f * HomeCalorieDisplay.burnShadeTypicalFraction(baseGoal, typical, live)
-                if (typicalSweep > 0f) {
+                // Eaten fill first so live/typical shades (and the ADD_ACTIVE
+                // bonus tail) paint on top and stay readable when intake covers
+                // the active zone. Notch still last.
+                var notchAngle: Float? = null
+                if (plannedFillRatio > fillRatio) {
                     drawArc(
-                        color = bonusColor,
-                        startAngle = 180f + baseAngle,
-                        sweepAngle = typicalSweep.coerceAtMost(180f - baseAngle),
+                        color = progressColor.copy(alpha = 0.35f),
+                        startAngle = 180f,
+                        sweepAngle = 180f * plannedFillRatio.coerceIn(0f, 1f),
                         useCenter = false,
                         topLeft = mainTopLeft,
                         size = mainArcSize,
-                        style = Stroke(width = stroke, cap = StrokeCap.Round)
+                        style = Stroke(width = stroke, cap = StrokeCap.Round),
                     )
                 }
-                val liveSweep = 180f * HomeCalorieDisplay.burnShadeLiveFraction(baseGoal, live, typical)
-                val liveMaxSweep = (180f - baseAngle).coerceAtLeast(0f)
-                val withinTypicalSweep = liveSweep.coerceAtMost(typicalSweep)
-                if (withinTypicalSweep > 0f) {
-                    drawArc(
-                        color = liveBurnColor,
-                        startAngle = 180f + baseAngle,
-                        sweepAngle = withinTypicalSweep.coerceAtMost(liveMaxSweep),
-                        useCenter = false,
-                        topLeft = mainTopLeft,
-                        size = mainArcSize,
-                        style = Stroke(width = stroke, cap = StrokeCap.Round)
-                    )
-                }
-                val overTypicalSweep = (liveSweep - typicalSweep).coerceAtLeast(0f)
-                if (overTypicalSweep > 0f) {
-                    drawArc(
-                        color = successColor,
-                        startAngle = 180f + baseAngle + typicalSweep,
-                        sweepAngle = overTypicalSweep.coerceAtMost((liveMaxSweep - typicalSweep).coerceAtLeast(0f)),
-                        useCenter = false,
-                        topLeft = mainTopLeft,
-                        size = mainArcSize,
-                        style = Stroke(width = stroke, cap = StrokeCap.Round)
-                    )
-                }
-                notchAngle = 180f + baseAngle
-            } else if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && activeCalories > 0 && effectiveGoal > 0) {
-                // Activity-earned zone: [baseGoal → effectiveGoal], a fixed-tint
-                // segment on the same budget axis. Drawn after the eaten fill so
-                // the tail stays visible when intake covers it. The tick at the
-                // base-goal boundary marks where the static budget ends.
-                val baseSweep = 180f * (baseGoal.toFloat() / effectiveGoal.toFloat()).coerceIn(0f, 1f)
-                val tailSweep = (180f - baseSweep).coerceAtLeast(0f)
-                if (tailSweep > 0f) {
-                    drawArc(
-                        color = bonusColor,
-                        startAngle = 180f + baseSweep,
-                        sweepAngle = tailSweep,
-                        useCenter = false,
-                        topLeft = mainTopLeft,
-                        size = mainArcSize,
-                        style = Stroke(width = stroke, cap = StrokeCap.Round)
-                    )
-                    notchAngle = 180f + baseSweep
-                }
-            }
-            // Base-boundary notch, drawn on top of the eaten fill: where your
-            // sedentary budget ends and the activity-earned zone begins. Riding
-            // above the fill keeps the boundary readable even when eaten crosses
-            // it — the fill visibly extends past the notch into the activity zone.
-            notchAngle?.let { angle ->
-                val notchRad = Math.toRadians(angle.toDouble())
-                drawLine(
-                    color = muted,
-                    start = Offset(
-                        cx + (rIn * Math.cos(notchRad)).toFloat(),
-                        cy + (rIn * Math.sin(notchRad)).toFloat(),
-                    ),
-                    end = Offset(
-                        cx + (rOut * Math.cos(notchRad)).toFloat(),
-                        cy + (rOut * Math.sin(notchRad)).toFloat(),
-                    ),
-                    strokeWidth = 2.dp.toPx(),
+                drawArc(
+                    color = progressColor,
+                    startAngle = 180f,
+                    sweepAngle = 180f * (if (freezeProgress) fillRatio else animatedRatio.value),
+                    useCenter = false,
+                    topLeft = mainTopLeft,
+                    size = mainArcSize,
+                    style = Stroke(width = stroke, cap = StrokeCap.Round)
                 )
+                if (shadesActive) {
+                    // Single energy scale, one meaning per shade:
+                    //  - estimated-active zone = fixed dim segment [base → base+typical].
+                    //  - live-active shade = opaque, grows from the base boundary through
+                    //    the typical zone; the over-typical stretch turns success color.
+                    //  The arc end is the expected-day target and grows with live burn
+                    //  once it exceeds typical, so the live tip lands at the ring end.
+                    val typical = shade.typical
+                    val live = shade.live
+                    val baseAngle = 180f * HomeCalorieDisplay.burnShadeBaseFraction(baseGoal, typical, live)
+                    val typicalSweep = 180f * HomeCalorieDisplay.burnShadeTypicalFraction(baseGoal, typical, live)
+                    if (typicalSweep > 0f) {
+                        drawArc(
+                            color = bonusColor,
+                            startAngle = 180f + baseAngle,
+                            sweepAngle = typicalSweep.coerceAtMost(180f - baseAngle),
+                            useCenter = false,
+                            topLeft = mainTopLeft,
+                            size = mainArcSize,
+                            style = Stroke(width = stroke, cap = StrokeCap.Round)
+                        )
+                    }
+                    val liveSweep = 180f * HomeCalorieDisplay.burnShadeLiveFraction(baseGoal, live, typical)
+                    val liveMaxSweep = (180f - baseAngle).coerceAtLeast(0f)
+                    val withinTypicalSweep = liveSweep.coerceAtMost(typicalSweep)
+                    if (withinTypicalSweep > 0f) {
+                        drawArc(
+                            color = liveBurnColor,
+                            startAngle = 180f + baseAngle,
+                            sweepAngle = withinTypicalSweep.coerceAtMost(liveMaxSweep),
+                            useCenter = false,
+                            topLeft = mainTopLeft,
+                            size = mainArcSize,
+                            style = Stroke(width = stroke, cap = StrokeCap.Round)
+                        )
+                    }
+                    val overTypicalSweep = (liveSweep - typicalSweep).coerceAtLeast(0f)
+                    if (overTypicalSweep > 0f) {
+                        drawArc(
+                            color = successColor,
+                            startAngle = 180f + baseAngle + typicalSweep,
+                            sweepAngle = overTypicalSweep.coerceAtMost((liveMaxSweep - typicalSweep).coerceAtLeast(0f)),
+                            useCenter = false,
+                            topLeft = mainTopLeft,
+                            size = mainArcSize,
+                            style = Stroke(width = stroke, cap = StrokeCap.Round)
+                        )
+                    }
+                    notchAngle = 180f + baseAngle
+                } else if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && activeCalories > 0 && effectiveGoal > 0) {
+                    // Activity-earned zone: [baseGoal → effectiveGoal], a fixed-tint
+                    // segment on the same budget axis. Drawn after the eaten fill so
+                    // the tail stays visible when intake covers it. The tick at the
+                    // base-goal boundary marks where the static budget ends.
+                    val baseSweep = 180f * (baseGoal.toFloat() / effectiveGoal.toFloat()).coerceIn(0f, 1f)
+                    val tailSweep = (180f - baseSweep).coerceAtLeast(0f)
+                    if (tailSweep > 0f) {
+                        drawArc(
+                            color = bonusColor,
+                            startAngle = 180f + baseSweep,
+                            sweepAngle = tailSweep,
+                            useCenter = false,
+                            topLeft = mainTopLeft,
+                            size = mainArcSize,
+                            style = Stroke(width = stroke, cap = StrokeCap.Round)
+                        )
+                        notchAngle = 180f + baseSweep
+                    }
+                }
+                // Base-boundary notch, drawn on top of the eaten fill: where your
+                // sedentary budget ends and the activity-earned zone begins. Riding
+                // above the fill keeps the boundary readable even when eaten crosses
+                // it — the fill visibly extends past the notch into the activity zone.
+                notchAngle?.let { angle ->
+                    val notchRad = Math.toRadians(angle.toDouble())
+                    drawLine(
+                        color = muted,
+                        start = Offset(
+                            cx + (rIn * Math.cos(notchRad)).toFloat(),
+                            cy + (rIn * Math.sin(notchRad)).toFloat(),
+                        ),
+                        end = Offset(
+                            cx + (rOut * Math.cos(notchRad)).toFloat(),
+                            cy + (rOut * Math.sin(notchRad)).toFloat(),
+                        ),
+                        strokeWidth = 2.dp.toPx(),
+                    )
+                }
             }
-        }
 
-        Column(
-            modifier = Modifier.padding(top = 44.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(2.dp)
-        ) {
-            Text(
-                stringResource(R.string.home_calories_label),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold,
-                letterSpacing = 0.5.sp,
-                color = muted
-            )
-            Text(
-                LocaleFormat.integer(EnergyFormat.quantity(current, unit)),
-                style = MaterialTheme.typography.displayMedium,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold,
-                maxLines = 1,
-            )
-            // Decluttered goal line: "of <expected day>". The ⓘ affordance opens a sheet that
-            // explains the breakdown (expected day, burned today, source) instead of jamming
-            // the active figures into this one-line caption. The a11y keeps the budget truth
-            // (base + live burn); the burn caption carries the live-vs-typical read.
-            val explainsBudget = displayMode == HomeCalorieDisplayMode.ADD_ACTIVE
-            val goalDescription = when {
-                !explainsBudget -> null
-                integratesBurn && activeCalorieSource == ActiveCalorieSource.ESTIMATED ->
-                    stringResource(R.string.home_calorie_budget_a11y, EnergyFormat.quantity(effectiveGoal, unit), EnergyFormat.quantity(baseGoal, unit), EnergyFormat.quantity(activeCalories, unit), unitLabel) +
-                        ". " + stringResource(R.string.home_calorie_active_estimated_a11y)
-                else ->
-                    stringResource(R.string.home_calorie_budget_a11y, EnergyFormat.quantity(effectiveGoal, unit), EnergyFormat.quantity(baseGoal, unit), EnergyFormat.quantity(activeCalories, unit), unitLabel)
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    stringResource(R.string.home_calorie_of_goal, LocaleFormat.integer(EnergyFormat.quantity(goalLabel, unit)), unitLabel),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = muted,
-                    modifier = goalDescription?.let { desc ->
-                        Modifier.semantics { contentDescription = desc }
-                    } ?: Modifier,
-                )
-                if (explainsBudget) {
-                    Spacer(Modifier.width(4.dp))
-                    Icon(
-                        Icons.Filled.Info,
-                        contentDescription = stringResource(R.string.home_calorie_budget_info),
-                        tint = tertiary,
-                        modifier = Modifier
-                            .minimumInteractiveComponentSize()
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                                onClick = { showBudgetSheet = true },
-                            ),
-                    )
+            // Chips sit under the section's "Today" label, in the empty wedge at
+            // the arc's top left. Stacked (not side by side) because the wedge
+            // narrows downward; each chip is capped to the wedge width.
+            if (showsChips) {
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(start = 16.dp)
+                        .widthIn(max = (cornerWidth - 16.dp).coerceAtLeast(48.dp)),
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                ) {
+                    // Day-type chip (#60); hidden when the plan is off / past-day view.
+                    if (dayTypeLabel != null && onDayTypeClick != null) {
+                        DayTypeChip(label = dayTypeLabel, color = dayTypeColor, onClick = onDayTypeClick)
+                    }
+                    if (onUntrackedClick != null) {
+                        UntrackedChip(untracked = untracked, onClick = onUntrackedClick)
+                    }
                 }
             }
+
+            Column(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 30.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = LocaleFormat.integer(EnergyFormat.quantity(current, unit)),
+                    modifier = Modifier
+                        .widthIn(max = 140.dp)
+                        .semantics { contentDescription = eatenA11y },
+                    style = MaterialTheme.typography.displayMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    autoSize = TextAutoSize.StepBased(
+                        minFontSize = 30.sp,
+                        maxFontSize = 45.sp,
+                        stepSize = 1.sp,
+                    ),
+                )
+                // Goal caption directly under the eaten number. In ADD_ACTIVE the
+                // whole row is the budget-sheet button (the ⓘ is its icon);
+                // STATIC shows a plain line.
+                Row(
+                    modifier = Modifier
+                        .height(24.dp)
+                        .then(
+                            if (explainsBudget) {
+                                Modifier
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = null,
+                                        onClickLabel = infoLabel,
+                                        role = Role.Button,
+                                        onClick = { showBudgetSheet = true },
+                                    )
+                                    .semantics(mergeDescendants = true) {
+                                        goalDescription?.let { contentDescription = it }
+                                    }
+                            } else {
+                                Modifier
+                            }
+                        ),
+                    verticalAlignment = Alignment.Top,
+                ) {
+                    Text(
+                        text = stringResource(
+                            R.string.home_calorie_of_goal,
+                            LocaleFormat.integer(EnergyFormat.quantity(goalLabel, unit)),
+                            unitLabel,
+                        ),
+                        modifier = Modifier.widthIn(max = 200.dp),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = muted,
+                        maxLines = 1,
+                        autoSize = TextAutoSize.StepBased(
+                            minFontSize = 8.sp,
+                            maxFontSize = 12.sp,
+                            stepSize = 0.5.sp,
+                        ),
+                    )
+                    if (explainsBudget) {
+                        Spacer(Modifier.width(4.dp))
+                        Icon(
+                            Icons.Filled.Info,
+                            contentDescription = null,
+                            tint = tertiary,
+                            modifier = Modifier
+                                .padding(top = 2.dp)
+                                .size(16.dp),
+                        )
+                    }
+                }
+                // Active burn, third line of the bowl: it explains the arc's
+                // activity zone, so it reads directly under the goal.
+                if (shadesActive) {
+                    BurnShadeCaption(burn = shade!!)
+                } else if (showActiveCalories && liveActiveBurn > 0) {
+                    BurnCaption(active = liveActiveBurn)
+                }
+            }
+
+            // Remaining caption, top-right wedge.
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(5.dp)
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(end = 16.dp)
+                    .height(48.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.Top,
             ) {
                 Icon(
                     Icons.Filled.LocalFireDepartment,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(13.dp)
+                    modifier = Modifier
+                        .padding(top = 1.dp)
+                        .size(13.dp),
                 )
                 Text(
-                    stringResource(R.string.home_calories_left, LocaleFormat.integer(EnergyFormat.quantity(remaining, unit))),
-                    modifier = Modifier.weight(1f, fill = false),
-                    fontSize = 13.sp,
+                    text = stringResource(
+                        R.string.home_calories_left,
+                        LocaleFormat.integer(EnergyFormat.quantity(remaining, unit)),
+                    ),
+                    modifier = Modifier.widthIn(max = (cornerWidth - 17.dp).coerceAtLeast(48.dp)),
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.primary
+                    autoSize = TextAutoSize.StepBased(
+                        minFontSize = 8.sp,
+                        maxFontSize = 12.sp,
+                        stepSize = 0.5.sp,
+                    ),
                 )
-                // Day-type chip rides the remaining caption's line (#60) — one
-                // row instead of its own, keeping the hero compact. Hidden when
-                // the plan is off / past-day view (dayTypeLabel == null).
-                if (dayTypeLabel != null && onDayTypeClick != null) {
-                    Spacer(Modifier.width(5.dp))
-                    DayTypeChip(label = dayTypeLabel, color = dayTypeColor, onClick = onDayTypeClick)
-                }
-                if (onUntrackedClick != null) {
-                    Spacer(Modifier.width(5.dp))
-                    UntrackedChip(untracked = untracked, onClick = onUntrackedClick)
-                }
-            }
-            if (shadesActive) {
-                BurnShadeCaption(burn = shade!!)
-            } else if (showActiveCalories && liveActiveBurn > 0) {
-                BurnCaption(active = liveActiveBurn)
             }
         }
     }
@@ -505,6 +555,12 @@ private fun UntrackedChip(untracked: Boolean, onClick: () -> Unit) {
                 else MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
+            // The chip lives in the hero's top-left wedge, which narrows at 1.3×.
+            autoSize = TextAutoSize.StepBased(
+                minFontSize = 8.sp,
+                maxFontSize = 11.sp,
+                stepSize = 0.5.sp,
+            ),
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp),
         )
     }
@@ -543,6 +599,12 @@ private fun DayTypeChip(label: String, color: Color? = null, onClick: () -> Unit
                 color = content,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                // The chip lives in the hero's top-left wedge, which narrows at 1.3×.
+                autoSize = TextAutoSize.StepBased(
+                    minFontSize = 8.sp,
+                    maxFontSize = 11.sp,
+                    stepSize = 0.5.sp,
+                ),
                 modifier = Modifier.weight(1f, fill = false),
             )
             Icon(

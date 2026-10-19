@@ -2296,6 +2296,8 @@ internal fun HomeScreenPreviewContent(
                             planned = ui.plannedCaloriesToday,
                             activeCalories = ui.displayActiveCalories,
                             displayMode = ui.effectiveCalorieMode,
+                            untracked = ui.viewedDayUntracked,
+                            onUntrackedClick = {},
                             activeCalorieSource = ui.resolvedActiveBurn?.source,
                             showActiveCalories = ui.homeDisplay.showActiveCalories,
                             liveActiveBurn = ui.liveActiveBurn,

@@ -2175,7 +2175,6 @@
     <string name="home_display_calorie_mode">Calorie gauge</string>
     <string name="home_display_food_log_chips">Food log macros</string>
     <string name="home_display_needs_health">Requires Health Connect with steps permission</string>
-    <string name="home_calories_label">CALORIES</string>
     <string name="home_calorie_of_goal">of %1$s %2$s</string>
     <!-- Macro day types (#60): hero chip + quick-switch sheet. -->
     <string name="home_day_type_chip_a11y">Today’s day type: %1$s. Tap to switch.</string>
@@ -2296,6 +2295,7 @@
     <string name="home_display_show_active_calories">Show active calories</string>
     <string name="home_display_show_active_calories_desc">Show today’s active burn in the calorie gauge.</string>
     <string name="home_calories_left">%1$s left</string>
+    <string name="home_calories_eaten_a11y">Eaten %1$s</string>
     <string name="home_calorie_budget_sheet_title">Today’s calorie budget</string>
     <string name="home_calorie_budget_source_measured">Active calories from Health Connect</string>
     <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d %4$s (14-day average is %3$d %4$s).</string>

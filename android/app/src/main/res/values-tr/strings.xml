@@ -1473,7 +1473,6 @@
     <string name="home_display_calorie_mode">Kalori göstergesi</string>
     <string name="home_display_food_log_chips">Yiyecek kaydı makroları</string>
     <string name="home_display_needs_health">Adım izniyle Health Connect gerektirir</string>
-    <string name="home_calories_label">KALORİ</string>
     <string name="home_calorie_of_goal">%1$s üzerinden %2$s</string>
     <string name="home_calorie_active_estimated_a11y">Aktif kaloriler aktivite seviyene göre tahmin edilir</string>
     <string name="home_calorie_mode_static">Statik hedef</string>
@@ -1499,6 +1498,7 @@
     <string name="home_display_show_active_calories">Aktif kalorileri göster</string>
     <string name="home_display_show_active_calories_desc">Kalori göstergesinde bugünün aktif yakımını göster.</string>
     <string name="home_calories_left">%1$s kaldı</string>
+    <string name="home_calories_eaten_a11y">Yenilen %1$s</string>
     <string name="home_calorie_budget_sheet_title">Bugünün kalori bütçesi</string>
     <string name="home_calorie_budget_source_measured">Health Connect\'ten aktif kaloriler</string>
     <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d %4$s (14-day average is %3$d %4$s).</string>

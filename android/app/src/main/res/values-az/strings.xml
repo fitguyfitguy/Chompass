@@ -1055,8 +1055,8 @@ bilirsən?</string>
     <string name="home_calorie_of_goal">%1$s-dən %2$s</string>
     <string name="home_calories_active_burn">%1$d aktiv yandırılıb</string>
     <string name="home_calories_goal_plus_active">Məqsəd %1$s + %2$s aktiv</string>
-    <string name="home_calories_label">KALORİLƏR</string>
     <string name="home_calories_left">%1$s qalıb</string>
+    <string name="home_calories_eaten_a11y">Yeyilən %1$s</string>
     <string name="home_display_calorie_mode">Kalori göstəricisi</string>
     <string name="home_display_card_count">Göstərilən kartlar</string>
     <string name="home_display_food_log_chips">Yemək jurnalında makrolar</string>

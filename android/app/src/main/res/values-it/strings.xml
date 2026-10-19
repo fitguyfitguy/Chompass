@@ -1030,8 +1030,8 @@
     <string name="home_calorie_of_goal">di %1$s %2$s</string>
     <string name="home_calories_active_burn">%1$d attive bruciate</string>
     <string name="home_calories_goal_plus_active">Obiettivo %1$s + %2$s attive</string>
-    <string name="home_calories_label">CALORIE</string>
     <string name="home_calories_left">%1$s rimaste</string>
+    <string name="home_calories_eaten_a11y">Ingerite %1$s</string>
     <string name="home_display_calorie_mode">Anello calorie</string>
     <string name="home_display_card_count">Card mostrate</string>
     <string name="home_display_food_log_chips">Macro del registro alimentare</string>

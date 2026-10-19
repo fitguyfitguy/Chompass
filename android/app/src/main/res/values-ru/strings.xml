@@ -1166,8 +1166,8 @@
     <string name="home_calorie_of_goal">из %1$s %2$s</string>
     <string name="home_calories_active_burn">Сожжено активных %1$d</string>
     <string name="home_calories_goal_plus_active">Цель %1$s + %2$s активных</string>
-    <string name="home_calories_label">КАЛОРИИ</string>
     <string name="home_calories_left">Осталось %1$s</string>
+    <string name="home_calories_eaten_a11y">Съедено %1$s</string>
     <string name="home_display_calorie_mode">Шкала калорий</string>
     <string name="home_display_card_count">Отображаемые карточки</string>
     <string name="home_display_food_log_chips">Макрос в журнале еды</string>

@@ -1058,8 +1058,8 @@
     <string name="home_calorie_of_goal">din %1$s %2$s</string>
     <string name="home_calories_active_burn">%1$d active arse</string>
     <string name="home_calories_goal_plus_active">Obiectiv %1$s + %2$s active</string>
-    <string name="home_calories_label">CALORII</string>
     <string name="home_calories_left">%1$s rămase</string>
+    <string name="home_calories_eaten_a11y">Ingerate %1$s</string>
     <string name="home_display_calorie_mode">Contor de calorii</string>
     <string name="home_display_card_count">Carduri afișate</string>
     <string name="home_display_food_log_chips">Macrouri în jurnalul alimentar</string>

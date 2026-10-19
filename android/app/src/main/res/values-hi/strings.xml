@@ -1063,8 +1063,8 @@
     <string name="home_calorie_of_goal">%1$s में से %2$s</string>
     <string name="home_calories_active_burn">%1$d सक्रिय खर्च</string>
     <string name="home_calories_goal_plus_active">लक्ष्य %1$s + %2$s सक्रिय</string>
-    <string name="home_calories_label">कैलोरी</string>
     <string name="home_calories_left">%1$s शेष</string>
+    <string name="home_calories_eaten_a11y">खाया %1$s</string>
     <string name="home_display_calorie_mode">कैलोरी गेज</string>
     <string name="home_display_card_count">दिखाए गए कार्ड</string>
     <string name="home_display_food_log_chips">खाद्य लॉग मैक्रोज़</string>

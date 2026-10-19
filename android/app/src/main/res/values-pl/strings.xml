@@ -1475,7 +1475,6 @@
     <string name="home_display_calorie_mode">Wskaźnik kalorii</string>
     <string name="home_display_food_log_chips">Makroskładniki w dzienniku</string>
     <string name="home_display_needs_health">Wymaga Health Connect z uprawnieniem do kroków</string>
-    <string name="home_calories_label">KALORIE</string>
     <string name="home_calorie_of_goal">z %1$s %2$s</string>
     <string name="home_calorie_active_estimated_a11y">Aktywne kalorie oszacowane na podstawie poziomu aktywności</string>
     <string name="home_calorie_mode_static">Statyczny cel</string>
@@ -1501,6 +1500,7 @@
     <string name="home_display_show_active_calories">Pokazuj aktywne kalorie</string>
     <string name="home_display_show_active_calories_desc">Pokazuj dzisiejsze aktywne spalanie we wskaźniku kalorii.</string>
     <string name="home_calories_left">%1$s zostało</string>
+    <string name="home_calories_eaten_a11y">Zjedzone %1$s</string>
     <string name="home_calorie_budget_sheet_title">Dzisiejszy budżet kalorii</string>
     <string name="home_calorie_budget_source_measured">Aktywne kalorie z Health Connect</string>
     <string name="home_calorie_budget_day_type_typical">Typical active burn for %1$s days is %2$d %4$s (14-day average is %3$d %4$s).</string>

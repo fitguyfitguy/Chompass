@@ -1034,8 +1034,8 @@
     <string name="home_calorie_of_goal">van %1$s %2$s</string>
     <string name="home_calories_active_burn">%1$d actief verbrand</string>
     <string name="home_calories_goal_plus_active">Doel %1$s + %2$s actief</string>
-    <string name="home_calories_label">CALORIEËN</string>
     <string name="home_calories_left">%1$s over</string>
+    <string name="home_calories_eaten_a11y">Gegeten %1$s</string>
     <string name="home_display_calorie_mode">Caloriemeter</string>
     <string name="home_display_card_count">Getoonde kaarten</string>
     <string name="home_display_food_log_chips">Macro\'s in voedingslogboek</string>
