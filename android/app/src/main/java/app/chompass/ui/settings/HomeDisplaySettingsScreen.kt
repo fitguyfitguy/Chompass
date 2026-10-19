@@ -515,7 +515,7 @@ private fun DefaultHeroWire() {
     Box(Modifier.width(108.dp).height(54.dp)) {
         BowlWire(Modifier.matchParentSize(), stroke = 6.dp)
         Column(
-            Modifier.align(Alignment.TopCenter).padding(top = 16.dp),
+            Modifier.align(Alignment.TopCenter).padding(top = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(5.dp),
         ) {
@@ -547,7 +547,7 @@ private fun CompactArcWire() {
     Box(Modifier.width(84.dp).height(42.dp)) {
         BowlWire(Modifier.matchParentSize(), stroke = 5.dp)
         Column(
-            Modifier.align(Alignment.TopCenter).padding(top = 10.dp),
+            Modifier.align(Alignment.TopCenter).padding(top = 18.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
