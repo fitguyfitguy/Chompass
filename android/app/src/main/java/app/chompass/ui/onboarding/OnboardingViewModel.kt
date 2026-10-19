@@ -9,7 +9,11 @@ import app.chompass.models.ActivityLevel
 import app.chompass.models.AIProvider
 import app.chompass.models.AiProfile
 import app.chompass.models.DietMode
+import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.Gender
+import app.chompass.models.HomeCalorieDisplayMode
+import app.chompass.models.HomeDisplayPreferences
+import app.chompass.models.HomeTopNutrient
 import app.chompass.models.InstantSerializer
 import app.chompass.models.KetoCarbMode
 import app.chompass.models.LocalDateSerializer
@@ -36,7 +40,7 @@ import java.util.UUID
 enum class OnboardingStep {
     WELCOME, GENDER, BIRTHDAY, HEIGHT_WEIGHT, BODY_FAT,
     ACTIVITY, GOAL, DIET_MODE, GOAL_WEIGHT, GOAL_SPEED,
-    NOTIFICATIONS, HEALTH_CONNECT, PROVIDER,
+    NOTIFICATIONS, HEALTH_CONNECT, HOME_LOOK, PROVIDER,
     BUILDING_PLAN, PLAN_READY, DISCLAIMERS
 }
 
@@ -128,6 +132,7 @@ data class OnboardingState(
     val weightMetric: Boolean = false,
     val notificationsEnabled: Boolean = false,
     val healthConnectEnabled: Boolean = false,
+    val homeDisplay: HomeDisplayPreferences = HomeDisplayPreferences(),
     val aiProvider: AIProvider = AIProvider.GEMINI,
     val aiModel: String = AIProvider.GEMINI.defaultModel,
     val apiKey: String = "",
@@ -190,6 +195,7 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
             val heightMetric = container.prefs.heightUnit.first() == "cm"
             val weightMetric = container.prefs.weightUnit.first() == "kg"
             val draft = container.prefs.onboardingDraft.first()
+            val homeDisplay = container.prefs.homeDisplayPreferences.first()
             _ui.value = if (draft != null) {
                 // The API key itself isn't in the draft; reload it from the KeyStore so the
                 // user doesn't have to re-paste it after resuming. Keys live on the active
@@ -198,9 +204,14 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
                 val restoredKey = profileId?.let { container.keyStore.profileApiKey(it) } ?: ""
                 _ui.value.applyDraft(draft).copy(
                     heightMetric = heightMetric, weightMetric = weightMetric, apiKey = restoredKey,
+                    homeDisplay = homeDisplay,
                 )
             } else {
-                _ui.value.copy(heightMetric = heightMetric, weightMetric = weightMetric)
+                _ui.value.copy(
+                    heightMetric = heightMetric,
+                    weightMetric = weightMetric,
+                    homeDisplay = homeDisplay,
+                )
             }
         }
         // Persist the in-progress draft so onboarding can resume where the user left off if the
@@ -249,6 +260,64 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
     }
     fun setHealthConnectEnabled(v: Boolean) {
         _ui.value = _ui.value.copy(healthConnectEnabled = v)
+    }
+    fun setHomeCalorieDisplayMode(mode: HomeCalorieDisplayMode) {
+        _ui.value = _ui.value.copy(homeDisplay = _ui.value.homeDisplay.copy(calorieDisplayMode = mode))
+        viewModelScope.launch { container.prefs.setHomeCalorieDisplayMode(mode.storageKey) }
+    }
+    fun setHomeShowActiveCalories(enabled: Boolean) {
+        _ui.value = _ui.value.copy(homeDisplay = _ui.value.homeDisplay.copy(showActiveCalories = enabled))
+        viewModelScope.launch { container.prefs.setHomeShowActiveCalories(enabled) }
+    }
+    fun setHomeShowSteps(enabled: Boolean) {
+        _ui.value = _ui.value.copy(homeDisplay = _ui.value.homeDisplay.copy(showSteps = enabled))
+        viewModelScope.launch { container.prefs.setHomeShowSteps(enabled) }
+    }
+    fun setHomeStepGoal(goal: Int) {
+        val safe = goal.coerceIn(HomeDisplayPreferences.MIN_STEP_GOAL, HomeDisplayPreferences.MAX_STEP_GOAL)
+        _ui.value = _ui.value.copy(homeDisplay = _ui.value.homeDisplay.copy(stepGoal = safe))
+        viewModelScope.launch { container.prefs.setHomeStepGoal(goal) }
+    }
+    fun setHomeNutrientCardCount(count: Int) {
+        val safe = count.coerceIn(
+            HomeDisplayPreferences.MIN_NUTRIENT_CARD_COUNT,
+            HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT,
+        )
+        val current = _ui.value.homeDisplay.homeTopNutrients.joinToString(",") { it.storageKey }
+        val normalized = HomeTopNutrient.fromStorage(current, count)
+        _ui.value = _ui.value.copy(
+            homeDisplay = _ui.value.homeDisplay.copy(
+                nutrientCardCount = safe,
+                homeTopNutrients = normalized,
+            )
+        )
+        viewModelScope.launch {
+            container.prefs.setHomeNutrientCardCount(count)
+            container.prefs.setHomeTopNutrients(
+                HomeTopNutrient.toStorage(HomeTopNutrient.fromStorage(current, count), count)
+            )
+        }
+    }
+    fun setHomeTopNutrients(selection: List<HomeTopNutrient>) {
+        val cardCount = _ui.value.homeDisplay.nutrientCardCount
+        _ui.value = _ui.value.copy(
+            homeDisplay = _ui.value.homeDisplay.copy(
+                homeTopNutrients = HomeTopNutrient.normalized(selection, cardCount),
+            )
+        )
+        viewModelScope.launch {
+            container.prefs.setHomeTopNutrients(HomeTopNutrient.toStorage(selection, cardCount))
+        }
+    }
+    fun setFoodLogMacroChips(chips: List<FoodLogMacroChip>) {
+        _ui.value = _ui.value.copy(
+            homeDisplay = _ui.value.homeDisplay.copy(
+                foodLogMacroChips = FoodLogMacroChip.normalized(chips),
+            )
+        )
+        viewModelScope.launch {
+            container.prefs.setFoodLogMacroChips(FoodLogMacroChip.toStorage(chips))
+        }
     }
     /**
      * Active profile id for onboarding writes, creating a default profile named after

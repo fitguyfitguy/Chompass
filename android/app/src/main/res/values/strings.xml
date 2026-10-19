@@ -2167,6 +2167,11 @@
     <string name="settings_home_display">Customize Home</string>
     <string name="settings_home_display_summary">Nutrient cards, activity, calorie gauge, food-log chips</string>
     <string name="home_display_title">Home Display</string>
+    <string name="home_look_sample_caption">Sample day</string>
+    <string name="home_look_sample_food_yogurt">Greek yogurt</string>
+    <string name="home_look_sample_food_bowl">Chicken rice bowl</string>
+    <string name="onboarding_home_look_title">Make Home yours</string>
+    <string name="onboarding_home_look_subtitle">A sample day, so you can see the gauge, nutrient cards, and food log before you log anything.</string>
     <string name="home_display_nutrient_cards">Nutrient cards</string>
     <string name="home_display_card_count">Cards shown</string>
     <string name="home_display_show_steps">Show step counter on home</string>

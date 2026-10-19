@@ -37,6 +37,7 @@ import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.home.FoodLogMacroChipPickerDialog
+import app.chompass.ui.home.HomeLookPreview
 import app.chompass.ui.home.HomeTopNutrientPickerDialog
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
@@ -72,6 +73,14 @@ fun HomeDisplaySettingsScreen(
             ),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+
+            item {
+                HomeLookPreview(
+                    display = display,
+                    modifier = Modifier.fillMaxWidth(),
+                    sampleFoodCount = 2,
+                )
+            }
 
             item {
                 ChompassSurface(modifier = Modifier.fillMaxWidth(), cornerRadius = AppRadii.SectionCard, padding = 0.dp) {
