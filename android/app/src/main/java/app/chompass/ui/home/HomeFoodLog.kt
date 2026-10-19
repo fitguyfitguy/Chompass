@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -112,7 +113,9 @@ internal fun MealSectionHeader(
 ) {
     // iOS layout: small dim icon + sentence-case label, regular weight ~17sp.
     val nutritionCd = stringResource(R.string.nutrition_details_title)
-    Row(
+    val calories = totalCalories
+    val summaryOnOwnLine = calories != null && macroChips.size >= 4
+    Column(
         Modifier
             .fillMaxWidth()
             .then(
@@ -122,54 +125,84 @@ internal fun MealSectionHeader(
                     Modifier
                 },
             )
-            .padding(start = 22.dp, end = 24.dp, top = 12.dp, bottom = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            sheetMealIcon(meal),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
-            modifier = Modifier.size(16.dp)
-        )
-        Spacer(Modifier.width(8.dp))
-        Text(
-            mealLabel(meal),
-            modifier = Modifier.weight(1f),
-            fontSize = 17.sp,
-            fontWeight = FontWeight.Medium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Strong)
-        )
-        // Combined nutrients for this meal (issue #103: chicken + pasta + sauce = one total)
-        if (totalCalories != null) {
-            val chipGlyphs = macroChips.associateWith { stringResource(it.glyphRes()) }
-            val summary = buildAnnotatedString {
-                append(energyText(totalCalories))
-                if (macroChips.isNotEmpty()) {
-                    append(" · ")
-                    macroChips.forEachIndexed { index, chip ->
-                        if (index > 0) append(' ')
-                        val value = chip.valueFromMeal(
-                            totalProtein,
-                            totalCarbs,
-                            totalFat,
-                            totalFiber,
-                            totalSugar,
-                        ).roundToInt()
-                        val color = chip.macroKind()?.color() ?: AppColors.Calorie
-                        withStyle(SpanStyle(color = color)) { append("${value}${chipGlyphs[chip]}") }
-                    }
-                }
-            }
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(start = 22.dp, end = 24.dp, top = 12.dp, bottom = if (summaryOnOwnLine) 0.dp else 6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                sheetMealIcon(meal),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
+                modifier = Modifier.size(16.dp)
+            )
+            Spacer(Modifier.width(8.dp))
             Text(
-                summary,
-                fontSize = 12.sp,
+                mealLabel(meal),
+                modifier = Modifier.weight(1f),
+                fontSize = 17.sp,
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Strong)
+            )
+            // Combined nutrients for this meal (issue #103: chicken + pasta + sauce = one total)
+            if (calories != null && !summaryOnOwnLine) {
+                Text(
+                    mealMacroSummary(calories, macroChips, totalProtein, totalCarbs, totalFat, totalFiber, totalSugar),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Subtle),
+                )
+            }
+        }
+        if (calories != null && macroChips.size >= 4) {
+            Text(
+                mealMacroSummary(calories, macroChips, totalProtein, totalCarbs, totalFat, totalFiber, totalSugar),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 46.dp, end = 24.dp, bottom = 6.dp),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Subtle),
             )
+        }
+    }
+}
+
+@Composable
+private fun mealMacroSummary(
+    totalCalories: Int,
+    macroChips: List<FoodLogMacroChip>,
+    totalProtein: Double,
+    totalCarbs: Double,
+    totalFat: Double,
+    totalFiber: Double,
+    totalSugar: Double,
+): androidx.compose.ui.text.AnnotatedString {
+    val chipGlyphs = macroChips.associateWith { stringResource(it.glyphRes()) }
+    return buildAnnotatedString {
+        append(energyText(totalCalories))
+        if (macroChips.isNotEmpty()) {
+            append(" · ")
+            macroChips.forEachIndexed { index, chip ->
+                if (index > 0) append(' ')
+                val value = chip.valueFromMeal(
+                    totalProtein,
+                    totalCarbs,
+                    totalFat,
+                    totalFiber,
+                    totalSugar,
+                ).roundToInt()
+                val color = chip.macroKind()?.color() ?: AppColors.Calorie
+                withStyle(SpanStyle(color = color)) { append("${value}${chipGlyphs[chip]}") }
+            }
         }
     }
 }
@@ -703,13 +736,14 @@ internal fun FoodRow(
                     Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled))
                     Text(
                         servingText,
+                        modifier = Modifier.weight(1f, fill = false),
                         fontSize = 12.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                     )
                 }
-                if (compact) {
+                if (compact && macroChips.size <= 3) {
                     Spacer(Modifier.weight(1f))
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         macroChips.forEach { chip ->
@@ -719,14 +753,27 @@ internal fun FoodRow(
                 }
             }
 
-            if (!compact) {
-                // Macro pills (P / C / F) — tinted dark capsules with gray text.
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    macroChips.forEach { chip ->
-                        FoodLogMacroChipView(chip, chip.valueFrom(entry))
-                    }
-                }
+            if (macroChips.isNotEmpty() && !(compact && macroChips.size <= 3)) {
+                FoodLogMacroChipLine(macroChips, entry, spacedBy = if (compact) 4.dp else 6.dp)
             }
+        }
+    }
+}
+
+/** Chips wrap inside the row instead of running off the card at four or five macros. */
+@Composable
+private fun FoodLogMacroChipLine(
+    chips: List<FoodLogMacroChip>,
+    entry: FoodEntry,
+    spacedBy: androidx.compose.ui.unit.Dp,
+) {
+    FlowRow(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(spacedBy),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        chips.forEach { chip ->
+            FoodLogMacroChipView(chip, chip.valueFrom(entry))
         }
     }
 }

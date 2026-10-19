@@ -9,7 +9,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Added
 
 - **See Home before you log** (Android): Settings → Customize Home opens with a sample day of the real calorie gauge, nutrient cards, and food log. The same preview is a setup step after Health Connect, so the gauge, cards, steps, and food-log chips can be set before the first meal.
-- **More ways to arrange Home** (Android): the calorie display keeps its familiar ring by default and gains new layouts to choose from. An arc gauge with the numbers beside it, a compact arc, a plain progress bar, or hidden. Nutrient cards can be compact bars (the new default), slim lines, or the classic cards, and the food log starts in its compact form. Calories can still be shown as a nutrient card. The nutrients you pick are the cards on Home; there is no separate cards-shown stepper. The optional step counter sits closer to the gauge and the nutrient cards.
+- **More ways to arrange Home** (Android): the calorie display keeps its familiar ring by default and gains new layouts to choose from. An arc gauge with the numbers beside it, a compact arc, a plain progress bar, or hidden. Nutrient cards can be compact bars (the new default), slim lines, or the classic cards, and the food log starts in its compact form. Calories can still be shown as a nutrient card. The nutrients you pick are the cards on Home; there is no separate cards-shown stepper. The optional step counter sits closer to the gauge and the nutrient cards. Four or five food-log macros wrap onto another line instead of running off the row.
 
 ## [5.8.0] - 2026-10-19
 
