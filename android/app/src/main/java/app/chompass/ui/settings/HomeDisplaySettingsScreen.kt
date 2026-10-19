@@ -37,6 +37,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
@@ -507,29 +509,31 @@ private fun CalorieLayoutWire(layout: HomeCalorieHeroLayout?) {
     }
 }
 
-/** Default: bowl arc over the number and of-goal lines. */
+/** Default: the 260 dp semicircle with the number and goal lines inside it. */
 @Composable
 private fun DefaultHeroWire() {
-    Column(
-        Modifier.width(132.dp).height(76.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        WireArc(Modifier.width(84.dp).height(42.dp), halfCircle = true)
-        WireBar(Modifier.width(52.dp).height(9.dp), color = WireAccent())
-        WireBar(Modifier.width(34.dp).height(5.dp))
+    Box(Modifier.width(108.dp).height(54.dp)) {
+        BowlWire(Modifier.matchParentSize(), stroke = 6.dp)
+        Column(
+            Modifier.align(Alignment.TopCenter).padding(top = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(5.dp),
+        ) {
+            WireBar(Modifier.width(46.dp).height(9.dp), color = WireAccent(0.65f))
+            WireBar(Modifier.width(30.dp).height(5.dp))
+        }
     }
 }
 
-/** Arc gauge + numbers: ring on the left, number bars beside it. */
+/** Arc gauge + numbers: the 120 dp bowl on the left, numbers beside it. */
 @Composable
 private fun SideGaugeWire() {
     Row(
-        Modifier.width(132.dp).height(52.dp),
+        Modifier.width(132.dp).height(44.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        WireArc(Modifier.size(44.dp), sweep = 260f)
+        BowlWire(Modifier.width(56.dp).height(28.dp), stroke = 4.dp)
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             WireBar(Modifier.width(44.dp).height(9.dp), color = WireAccent())
             WireBar(Modifier.width(30.dp).height(6.dp))
@@ -537,18 +541,18 @@ private fun SideGaugeWire() {
     }
 }
 
-/** Compact arc: small ring, one number line. */
+/** Compact arc: the 200 dp bowl with its number line inside it. */
 @Composable
 private fun CompactArcWire() {
-    Row(
-        Modifier.width(132.dp).height(40.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        WireArc(Modifier.size(32.dp), stroke = 4.dp, sweep = 270f)
-        Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
-            WireBar(Modifier.width(48.dp).height(8.dp), color = WireAccent())
-            WireBar(Modifier.width(28.dp).height(5.dp))
+    Box(Modifier.width(84.dp).height(42.dp)) {
+        BowlWire(Modifier.matchParentSize(), stroke = 5.dp)
+        Column(
+            Modifier.align(Alignment.TopCenter).padding(top = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            WireBar(Modifier.width(38.dp).height(8.dp), color = WireAccent(0.65f))
+            WireBar(Modifier.width(24.dp).height(4.dp))
         }
     }
 }
@@ -598,21 +602,21 @@ private fun HiddenWire() {
     }
 }
 
-/** Arc track + fill sweep; half circle for the default bowl, ring otherwise. */
+/**
+ * Semicircle bowl, matching CalorieArcCanvas: the arc ellipse is twice the
+ * canvas height, so a canvas of w×w/2 yields a true circle's top half rather
+ * than a squashed ellipse.
+ */
 @Composable
-private fun WireArc(modifier: Modifier, stroke: Dp = 5.dp, sweep: Float = 300f, halfCircle: Boolean = false) {
+private fun BowlWire(modifier: Modifier, stroke: Dp) {
     val track = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
     val fill = WireAccent()
     Canvas(modifier) {
-        val width = stroke.toPx()
-        val cap = StrokeCap.Round
-        if (halfCircle) {
-            drawArc(track, 180f, 180f, false, style = Stroke(width, cap = cap))
-            drawArc(fill, 180f, 130f, false, style = Stroke(width, cap = cap))
-        } else {
-            drawArc(track, -90f, 360f, false, style = Stroke(width, cap = cap))
-            drawArc(fill, -90f, sweep, false, style = Stroke(width, cap = cap))
-        }
+        val s = stroke.toPx()
+        val arcSize = Size(size.width - s, size.width - s)
+        val topLeft = Offset(s / 2f, s / 2f)
+        drawArc(track, 180f, 180f, false, topLeft = topLeft, size = arcSize, style = Stroke(s, cap = StrokeCap.Round))
+        drawArc(fill, 180f, 180f * 0.62f, false, topLeft = topLeft, size = arcSize, style = Stroke(s, cap = StrokeCap.Round))
     }
 }
 
