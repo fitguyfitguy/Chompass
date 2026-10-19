@@ -65,9 +65,15 @@ test("normalizeHomeTopNutrients_selectionLengthIsTheCount", () => {
   );
 });
 
-test("normalizeFoodLogChips_defaultsAndFiber", () => {
+test("normalizeFoodLogChips_keepsTheSelection", () => {
   assert.deepEqual(normalizeFoodLogChips(null), DEFAULT_FOOD_CHIPS);
-  assert.deepEqual(normalizeFoodLogChips(["fiberG"]), ["fiberG", "proteinG", "carbsG", "fatG"]);
+  assert.deepEqual(normalizeFoodLogChips(["fiberG"]), ["fiberG"]);
+  assert.deepEqual(normalizeFoodLogChips(["proteinG", "carbsG", "fatG", "fiberG"]), [
+    "proteinG",
+    "carbsG",
+    "fatG",
+    "fiberG",
+  ]);
 });
 
 test("sumNutrient_and_goal", () => {

@@ -117,10 +117,11 @@ enum class FoodLogMacroChip(val storageKey: String) {
         fun toStorage(selection: List<FoodLogMacroChip>): String =
             normalized(selection).joinToString(",") { it.storageKey }
 
-        fun normalized(selection: List<FoodLogMacroChip>): List<FoodLogMacroChip> =
-            (selection.distinct().ifEmpty { DefaultSelection } + DefaultSelection)
-                .distinct()
-                .take(5)
+        /** Distinct picks, at least one. Empty falls back to protein, carbs, and fat. */
+        fun normalized(selection: List<FoodLogMacroChip>): List<FoodLogMacroChip> {
+            val picked = selection.distinct().take(5)
+            return picked.ifEmpty { DefaultSelection }
+        }
     }
 }
 
