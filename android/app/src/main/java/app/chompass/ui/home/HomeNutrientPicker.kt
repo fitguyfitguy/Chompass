@@ -32,7 +32,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
@@ -217,40 +216,23 @@ private fun NutrientPickerRow(
 }
 
 @Composable
-fun FoodLogMacroChipView(
-    chip: FoodLogMacroChip,
-    value: Double,
-    modifier: Modifier = Modifier,
-    shrinkToFit: Boolean = false,
-) {
+fun FoodLogMacroChipView(chip: FoodLogMacroChip, value: Double) {
     val kind = chip.macroKind()
     if (kind != null) {
-        MacroChip(kind, value, modifier, shrinkToFit)
+        MacroChip(kind, value)
     } else {
         val color = AppColors.Calorie
         Box(
-            modifier
+            Modifier
                 .clip(androidx.compose.foundation.shape.CircleShape)
                 .background(color.copy(alpha = 0.12f))
-                .padding(horizontal = if (shrinkToFit) 4.dp else 8.dp, vertical = 3.dp)
+                .padding(horizontal = 8.dp, vertical = 3.dp)
         ) {
             Text(
                 "${stringResource(chip.glyphRes())} ${macroGramsText(value)}",
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = color,
-                maxLines = 1,
-                softWrap = false,
-                overflow = TextOverflow.Ellipsis,
-                autoSize = if (shrinkToFit) {
-                    androidx.compose.foundation.text.TextAutoSize.StepBased(
-                        minFontSize = 8.sp,
-                        maxFontSize = 11.sp,
-                        stepSize = 0.5.sp,
-                    )
-                } else {
-                    null
-                },
             )
         }
     }

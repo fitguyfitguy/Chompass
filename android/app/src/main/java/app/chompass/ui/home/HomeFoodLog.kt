@@ -706,62 +706,62 @@ internal fun FoodRow(
             // Pink kcal · gray serving size. The serving echoes the logged
             // unit ("2 oz", "1 bowl") when the entry still has a resolvable
             // non-gram selection; otherwise today's grams line (Codeberg #65).
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                Text(
-                    energyText(entry.calories),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary
+            // Compact chips stay on this line at their own size. The serving
+            // ellipsizes; extra chips wrap beside the calories instead of
+            // stretching the pills or shrinking the text.
+            val echo = ServingUnitOption.homeDisplaySelection(
+                entry.selectedServingUnit,
+                entry.selectedServingQuantity,
+                entry.servingSizeGrams?.takeIf { it > 0 },
+                entry.servingUnitOptions,
+            )
+            val servingText = echo?.let { (qty, option) ->
+                "${ServingUnitOption.formatQuantity(qty)} " + option.displayUnit(
+                    qty,
+                    stringResource(R.string.unit_serving),
+                    stringResource(R.string.unit_serving_plural),
+                    stringResource(R.string.unit_package),
+                    stringResource(R.string.unit_package_plural),
+                    culinaryUnitLabels(),
                 )
-                val echo = ServingUnitOption.homeDisplaySelection(
-                    entry.selectedServingUnit,
-                    entry.selectedServingQuantity,
-                    entry.servingSizeGrams?.takeIf { it > 0 },
-                    entry.servingUnitOptions,
-                )
-                val servingText = echo?.let { (qty, option) ->
-                    "${ServingUnitOption.formatQuantity(qty)} " + option.displayUnit(
-                        qty,
-                        stringResource(R.string.unit_serving),
-                        stringResource(R.string.unit_serving_plural),
-                        stringResource(R.string.unit_package),
-                        stringResource(R.string.unit_package_plural),
-                        culinaryUnitLabels(),
-                    )
-                } ?: entry.servingSizeGrams?.takeIf { it > 0 }?.let { gramsText(it) }
-                if (servingText != null) {
-                    Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled))
+            } ?: entry.servingSizeGrams?.takeIf { it > 0 }?.let { gramsText(it) }
+            BoxWithConstraints(Modifier.fillMaxWidth()) {
+                val chipMax = (maxWidth - if (servingText != null) 96.dp else 72.dp).coerceAtLeast(120.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
                     Text(
-                        servingText,
-                        modifier = Modifier
-                            .weight(1f, fill = false)
-                            .widthIn(max = if (compact && macroChips.size >= 4) 56.dp else 120.dp),
-                        fontSize = 12.sp,
+                        energyText(entry.calories),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                        softWrap = false,
                     )
-                } else if (!compact || macroChips.isEmpty()) {
-                    Spacer(Modifier.weight(1f))
-                }
-                if (compact && macroChips.isNotEmpty()) {
-                    val shrink = macroChips.size >= 4
-                    Row(
-                        Modifier.weight(1f),
-                        horizontalArrangement = Arrangement.spacedBy(if (shrink) 2.dp else 4.dp, Alignment.End),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        macroChips.forEach { chip ->
-                            FoodLogMacroChipView(
-                                chip,
-                                chip.valueFrom(entry),
-                                modifier = if (shrink) Modifier.weight(1f) else Modifier,
-                                shrinkToFit = shrink,
-                            )
+                    if (servingText != null) {
+                        Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled))
+                        Text(
+                            servingText,
+                            modifier = Modifier.weight(1f, fill = false),
+                            fontSize = 12.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        )
+                    } else {
+                        Spacer(Modifier.weight(1f))
+                    }
+                    if (compact && macroChips.isNotEmpty()) {
+                        FlowRow(
+                            Modifier.widthIn(max = chipMax),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                        ) {
+                            macroChips.forEach { chip ->
+                                FoodLogMacroChipView(chip, chip.valueFrom(entry))
+                            }
                         }
                     }
                 }
