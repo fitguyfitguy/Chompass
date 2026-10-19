@@ -1097,6 +1097,12 @@
     <string name="home_calories_left">%1$s restantes</string>
     <string name="home_calories_eaten_a11y">Ingérées %1$s</string>
     <string name="home_display_calorie_mode">Jauge de calories</string>
+    <string name="home_display_group_calorie">Jauge de calories</string>
+    <string name="home_display_calorie_mode_pointer">Mode de la jauge de calories</string>
+    <string name="home_display_group_activity">Activité</string>
+    <string name="home_display_active_calories_add_active_note">En mode ajout de la dépense active, la dépense fait automatiquement partie de la jauge.</string>
+    <string name="home_display_group_nutrients">Cartes de nutriments</string>
+    <string name="home_display_group_food_log">Journal alimentaire</string>
     <string name="home_display_calorie_layout">Disposition des calories</string>
     <string name="home_calorie_layout_default">Par défaut</string>
     <string name="home_calorie_layout_gauge">Jauge en arc + chiffres</string>
@@ -1107,15 +1113,14 @@
     <string name="home_nutrient_card_layout_default">Barres compactes</string>
     <string name="home_nutrient_card_layout_slim_line">Lignes fines</string>
     <string name="home_nutrient_card_layout_classic">Cartes classiques</string>
-    <string name="home_display_card_count">Cartes affichées</string>
     <string name="home_display_food_log_chips">Macros du journal</string>
-    <string name="home_display_needs_health">Nécessite Health Connect avec l\'autorisation des pas</string>
     <string name="home_display_nutrient_cards">Cartes de nutriments</string>
     <string name="home_display_show_active_calories">Afficher les calories actives</string>
     <string name="home_display_show_active_calories_desc">Affiche la dépense active du jour dans la jauge de calories.</string>
     <string name="home_display_show_steps">Afficher le compteur de pas sur l\'accueil</string>
     <string name="home_display_show_steps_desc">Carte facultative sous la jauge. Nécessite Health Connect.</string>
     <string name="home_display_step_goal">Objectif de pas quotidien</string>
+    <string name="home_display_step_goal_hint">Ajuste par 500. 1 000–50 000.</string>
     <string name="home_display_title">Affichage de l\'accueil</string>
     <string name="home_first_photo_saved">Première photo enregistrée</string>
     <string name="home_food_log">Journal alimentaire</string>
@@ -1127,6 +1132,7 @@
     <string name="home_nutrient_cards">Cartes de nutriments de l\'accueil</string>
     <string name="home_nutrients">Nutriments de l\'accueil</string>
     <string name="home_nutrients_pick_count">Choisissez jusqu\'à %1$d nutriments pour l\'écran d\'accueil.</string>
+    <string name="home_nutrients_pick_max">Jusqu\'à %1$d nutriments.</string>
     <string name="home_nutrients_pick_four">Choisissez exactement quatre nutriments pour la ligne de résumé de l\'accueil.</string>
     <string name="home_selected_count">%1$d sélectionnés</string>
     <string name="home_share_separately">Partager séparément</string>

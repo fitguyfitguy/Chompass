@@ -1037,6 +1037,12 @@
     <string name="home_calories_left">%1$s over</string>
     <string name="home_calories_eaten_a11y">Gegeten %1$s</string>
     <string name="home_display_calorie_mode">Caloriemeter</string>
+    <string name="home_display_group_calorie">Caloriemeter</string>
+    <string name="home_display_calorie_mode_pointer">Modus van de caloriemeter</string>
+    <string name="home_display_group_activity">Activiteit</string>
+    <string name="home_display_active_calories_add_active_note">In de modus actieve verbranding toevoegen maakt de verbranding automatisch deel uit van de caloriemeter.</string>
+    <string name="home_display_group_nutrients">Voedingsstofkaarten</string>
+    <string name="home_display_group_food_log">Voedingslogboek</string>
     <string name="home_display_calorie_layout">Calorie-indeling</string>
     <string name="home_calorie_layout_default">Standaard</string>
     <string name="home_calorie_layout_gauge">Boogmeter + cijfers</string>
@@ -1047,15 +1053,14 @@
     <string name="home_nutrient_card_layout_default">Compacte balken</string>
     <string name="home_nutrient_card_layout_slim_line">Smalle lijnen</string>
     <string name="home_nutrient_card_layout_classic">Klassieke kaarten</string>
-    <string name="home_display_card_count">Getoonde kaarten</string>
     <string name="home_display_food_log_chips">Macro\'s in voedingslogboek</string>
-    <string name="home_display_needs_health">Vereist Health Connect met stappentoegang</string>
     <string name="home_display_nutrient_cards">Voedingsstofkaarten</string>
     <string name="home_display_show_active_calories">Actieve calorieën tonen</string>
     <string name="home_display_show_active_calories_desc">Toon het actieve verbruik van vandaag in de caloriemeter.</string>
     <string name="home_display_show_steps">Stappenteller op home tonen</string>
     <string name="home_display_show_steps_desc">Optionele kaart onder de meter. Vereist Health Connect.</string>
     <string name="home_display_step_goal">Dagelijks stappendoel</string>
+    <string name="home_display_step_goal_hint">Stappen van 500. 1.000–50.000.</string>
     <string name="home_display_title">Home-weergave</string>
     <string name="home_first_photo_saved">Eerste foto opgeslagen</string>
     <string name="home_food_log">Voedingslogboek</string>
@@ -1068,6 +1073,7 @@
     <string name="home_nutrient_cards">Home-voedingsstofkaarten</string>
     <string name="home_nutrients">Home-voedingsstoffen</string>
     <string name="home_nutrients_pick_count">Kies maximaal %1$d voedingsstoffen voor het startscherm.</string>
+    <string name="home_nutrients_pick_max">Maximaal %1$d voedingsstoffen.</string>
     <string name="home_nutrients_pick_four">Kies precies vier voedingsstoffen voor de samenvattingsrij op home.</string>
     <string name="home_selected_count">%1$d geselecteerd</string>
     <string name="home_share_separately">Apart delen</string>

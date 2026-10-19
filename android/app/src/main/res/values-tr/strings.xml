@@ -1468,11 +1468,17 @@
     <string name="settings_home_display_summary">Besin kartları, aktivite, kalori göstergesi, yiyecek kaydı çipleri</string>
     <string name="home_display_title">Ana Ekran Görünümü</string>
     <string name="home_display_nutrient_cards">Besin kartları</string>
-    <string name="home_display_card_count">Gösterilen kartlar</string>
     <string name="home_display_show_steps">Ana ekranda adım sayacını göster</string>
     <string name="home_display_show_steps_desc">Göstergenin altında isteğe bağlı kart. Health Connect gerektirir.</string>
     <string name="home_display_step_goal">Günlük adım hedefi</string>
+    <string name="home_display_step_goal_hint">500\'er ayarlanır. 1.000–50.000.</string>
     <string name="home_display_calorie_mode">Kalori göstergesi</string>
+    <string name="home_display_group_calorie">Kalori göstergesi</string>
+    <string name="home_display_calorie_mode_pointer">Kalori göstergesi modu</string>
+    <string name="home_display_group_activity">Etkinlik</string>
+    <string name="home_display_active_calories_add_active_note">Aktif ekleme modunda yakım otomatik olarak göstergenin parçasıdır.</string>
+    <string name="home_display_group_nutrients">Besin kartları</string>
+    <string name="home_display_group_food_log">Yemek kaydı</string>
     <string name="home_display_calorie_layout">Kalori düzeni</string>
     <string name="home_calorie_layout_default">Varsayılan</string>
     <string name="home_calorie_layout_gauge">Yay göstergesi + sayılar</string>
@@ -1485,7 +1491,6 @@
     <string name="home_nutrient_card_layout_slim_line">İnce çizgiler</string>
     <string name="home_nutrient_card_layout_classic">Klasik kartlar</string>
     <string name="home_display_food_log_chips">Yiyecek kaydı makroları</string>
-    <string name="home_display_needs_health">Adım izniyle Health Connect gerektirir</string>
     <string name="home_calorie_of_goal">%1$s üzerinden %2$s</string>
     <string name="home_calorie_active_estimated_a11y">Aktif kaloriler aktivite seviyene göre tahmin edilir</string>
     <string name="home_calorie_mode_static">Statik hedef</string>
@@ -1496,6 +1501,7 @@
     <string name="home_calorie_full_credit">Tam antrenmanı say</string>
     <string name="home_calorie_full_credit_desc">Bugün ölçülen harcamayı tam kalori hedefinin üstüne ekler. Kapalıyken gösterge tipik bir günün harcamasını geri tutar, böylece yüksek değer iki kez yenmez.</string>
     <string name="home_nutrients_pick_count">Ana ekran için en fazla %1$d besin seç.</string>
+    <string name="home_nutrients_pick_max">En fazla %1$d besin ögesi.</string>
     <string name="home_steps_label">Adımlar</string>
     <string name="home_steps_goal_format">Hedef %1$s</string>
     <string name="home_active_calories_label">Aktif %1$s</string>

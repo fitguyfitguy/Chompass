@@ -1067,6 +1067,12 @@
     <string name="home_calories_left">剩余 %1$s</string>
     <string name="home_calories_eaten_a11y">摄入 %1$s</string>
     <string name="home_display_calorie_mode">热量表盘</string>
+    <string name="home_display_group_calorie">热量表盘</string>
+    <string name="home_display_calorie_mode_pointer">热量表盘模式</string>
+    <string name="home_display_group_activity">活动</string>
+    <string name="home_display_active_calories_add_active_note">在“添加活动消耗”模式下，消耗会自动计入表盘。</string>
+    <string name="home_display_group_nutrients">营养素卡片</string>
+    <string name="home_display_group_food_log">食物记录</string>
     <string name="home_display_calorie_layout">热量布局</string>
     <string name="home_calorie_layout_default">默认</string>
     <string name="home_calorie_layout_gauge">弧形仪表 + 数字</string>
@@ -1078,15 +1084,14 @@
     <string name="home_nutrient_card_layout_default">紧凑条形</string>
     <string name="home_nutrient_card_layout_slim_line">纤细线条</string>
     <string name="home_nutrient_card_layout_classic">经典卡片</string>
-    <string name="home_display_card_count">显示的卡片</string>
     <string name="home_display_food_log_chips">食物记录宏量营养素</string>
-    <string name="home_display_needs_health">需要具备步数权限的 Health Connect</string>
     <string name="home_display_nutrient_cards">营养素卡片</string>
     <string name="home_display_show_active_calories">显示主动热量</string>
     <string name="home_display_show_active_calories_desc">在热量表盘中显示今日主动消耗。</string>
     <string name="home_display_show_steps">主页显示步数计数</string>
     <string name="home_display_show_steps_desc">表盘下方的可选卡片。需要 Health Connect。</string>
     <string name="home_display_step_goal">每日步数目标</string>
+    <string name="home_display_step_goal_hint">以 500 为步长调整。范围 1,000–50,000。</string>
     <string name="home_display_title">主页显示</string>
     <string name="home_first_photo_saved">第一张照片已保存</string>
     <string name="home_food_log">食物记录</string>
@@ -1098,6 +1103,7 @@
     <string name="home_nutrient_cards">主页营养素卡片</string>
     <string name="home_nutrients">主页营养素</string>
     <string name="home_nutrients_pick_count">为主页选择最多 %1$d 种营养素。</string>
+    <string name="home_nutrients_pick_max">最多 %1$d 种营养素。</string>
     <string name="home_nutrients_pick_four">为主页摘要行选择恰好四种营养素。</string>
     <string name="home_selected_count">已选择 %1$d</string>
     <string name="home_share_separately">分开分享</string>

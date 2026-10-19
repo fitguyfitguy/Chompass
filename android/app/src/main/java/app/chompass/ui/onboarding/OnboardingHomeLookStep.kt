@@ -34,10 +34,19 @@ import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
+import app.chompass.models.HomeCalorieHeroLayout
+import app.chompass.models.HomeFoodLogLayout
+import app.chompass.models.HomeMacroCardLayout
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.home.FoodLogMacroChipPickerDialog
 import app.chompass.ui.home.HomeLookPreview
 import app.chompass.ui.home.HomeTopNutrientPickerDialog
+import app.chompass.ui.settings.CalorieLayoutPickerDialog
+import app.chompass.ui.settings.FoodLogLayoutPickerDialog
+import app.chompass.ui.settings.NutrientCardLayoutPickerDialog
+import app.chompass.ui.settings.calorieHeroLayoutLabel
+import app.chompass.ui.settings.foodLogLayoutLabel
+import app.chompass.ui.settings.nutrientCardLayoutLabel
 import app.chompass.ui.theme.AppTextOpacity
 
 @Composable
@@ -49,9 +58,15 @@ internal fun HomeLookStep(
     onStepGoal: (Int) -> Unit,
     onTopNutrients: (List<HomeTopNutrient>) -> Unit,
     onFoodLogChips: (List<FoodLogMacroChip>) -> Unit,
+    onCalorieLayout: (HomeCalorieHeroLayout?) -> Unit,
+    onNutrientCardLayout: (HomeMacroCardLayout?) -> Unit,
+    onFoodLogLayout: (HomeFoodLogLayout?) -> Unit,
 ) {
     var showNutrientPicker by remember { mutableStateOf(false) }
     var showChipPicker by remember { mutableStateOf(false) }
+    var showCalorieLayoutPicker by remember { mutableStateOf(false) }
+    var showNutrientCardLayoutPicker by remember { mutableStateOf(false) }
+    var showFoodLogLayoutPicker by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val nutrientValue = display.homeTopNutrients.joinToString(", ") {
         context.getString(it.displayNameRes)
@@ -85,6 +100,23 @@ internal fun HomeLookStep(
                 onClick = { onCalorieMode(mode) },
             )
         }
+        // Layout rows: the step's subtitle promises the full look is set up
+        // here, so the three layout pickers must not be Settings-only.
+        LayoutPickerCard(
+            label = stringResource(R.string.home_display_calorie_layout),
+            value = calorieHeroLayoutLabel(display.calorieHeroLayout),
+            onClick = { showCalorieLayoutPicker = true },
+        )
+        LayoutPickerCard(
+            label = stringResource(R.string.home_display_nutrient_card_layout),
+            value = nutrientCardLayoutLabel(display.macroCardLayout),
+            onClick = { showNutrientCardLayoutPicker = true },
+        )
+        LayoutPickerCard(
+            label = stringResource(R.string.home_display_food_log_layout),
+            value = foodLogLayoutLabel(display.foodLogLayout),
+            onClick = { showFoodLogLayoutPicker = true },
+        )
         if (display.calorieDisplayMode == HomeCalorieDisplayMode.STATIC) {
             ToggleCard(
                 label = stringResource(R.string.home_display_show_active_calories),
@@ -168,6 +200,36 @@ internal fun HomeLookStep(
             onDismiss = { showChipPicker = false },
         )
     }
+    if (showCalorieLayoutPicker) {
+        CalorieLayoutPickerDialog(
+            selected = display.calorieHeroLayout,
+            onSelect = {
+                onCalorieLayout(it)
+                showCalorieLayoutPicker = false
+            },
+            onDismiss = { showCalorieLayoutPicker = false },
+        )
+    }
+    if (showNutrientCardLayoutPicker) {
+        NutrientCardLayoutPickerDialog(
+            selected = display.macroCardLayout,
+            onSelect = {
+                onNutrientCardLayout(it)
+                showNutrientCardLayoutPicker = false
+            },
+            onDismiss = { showNutrientCardLayoutPicker = false },
+        )
+    }
+    if (showFoodLogLayoutPicker) {
+        FoodLogLayoutPickerDialog(
+            selected = display.foodLogLayout,
+            onSelect = {
+                onFoodLogLayout(it)
+                showFoodLogLayoutPicker = false
+            },
+            onDismiss = { showFoodLogLayoutPicker = false },
+        )
+    }
 }
 
 @Composable
@@ -190,6 +252,32 @@ private fun CountRow(
         Text(value, fontWeight = FontWeight.SemiBold, fontSize = 17.sp)
         IconButton(onClick = onIncrement, enabled = incrementEnabled) {
             Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.cd_increase))
+        }
+    }
+}
+
+@Composable
+private fun LayoutPickerCard(label: String, value: String, onClick: () -> Unit) {
+    ChompassSurface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        cornerRadius = 20.dp,
+        padding = 16.dp,
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                label,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                value,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
     }
 }

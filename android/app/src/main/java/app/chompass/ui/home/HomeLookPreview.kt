@@ -23,6 +23,7 @@ import app.chompass.models.HomeCalorieHeroLayout
 import app.chompass.models.HomeFoodLogLayout
 import app.chompass.models.HomeDisplayPreferences
 import app.chompass.models.HomeTopNutrient
+import app.chompass.models.MealType
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.MacroCard
 import app.chompass.ui.components.StepsCard
@@ -78,6 +79,12 @@ internal fun HomeLookPreview(
                 modifier = Modifier.padding(start = 16.dp, top = 12.dp, end = 16.dp),
             )
             if (display.calorieHeroLayout != HomeCalorieHeroLayout.HIDDEN) {
+                Text(
+                    stringResource(R.string.home_today),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    modifier = Modifier.padding(start = 16.dp, top = 10.dp),
+                )
                 CalorieHero(
                     current = HomeLookSample.EATEN,
                     baseGoal = HomeLookSample.BASE_GOAL,
@@ -97,6 +104,7 @@ internal fun HomeLookPreview(
                     onUntrackedClick = null,
                     freezeProgress = true,
                     layout = display.calorieHeroLayout,
+                    preview = true,
                 )
             }
             if (display.showSteps) {
@@ -114,7 +122,7 @@ internal fun HomeLookPreview(
                     )
                 }
             }
-            Spacer(Modifier.height(if (display.showSteps) 4.dp else 20.dp))
+            Spacer(Modifier.height(if (display.showSteps) 4.dp else 12.dp))
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -138,6 +146,16 @@ internal fun HomeLookPreview(
                 }
             }
             Spacer(Modifier.height(12.dp))
+            MealSectionHeader(
+                meal = MealType.LUNCH.id,
+                totalCalories = foods.sumOf { it.calories },
+                totalProtein = foods.sumOf { it.protein },
+                totalCarbs = foods.sumOf { it.carbs },
+                totalFat = foods.sumOf { it.fat },
+                totalFiber = foods.sumOf { it.fiber ?: 0.0 },
+                totalSugar = foods.sumOf { it.sugar ?: 0.0 },
+                macroChips = display.foodLogMacroChips,
+            )
             Column(
                 Modifier
                     .fillMaxWidth()
@@ -158,7 +176,7 @@ internal fun HomeLookPreview(
 }
 
 @Composable
-private fun sampleFoods(): List<FoodEntry> {
+internal fun sampleFoods(): List<FoodEntry> {
     val yogurt = stringResource(R.string.home_look_sample_food_yogurt)
     val bowl = stringResource(R.string.home_look_sample_food_bowl)
     return remember(yogurt, bowl) {
@@ -188,7 +206,12 @@ private fun sampleFoods(): List<FoodEntry> {
                 source = FoodSource.MANUAL,
                 imageFilename = null,
                 timestamp = Instant.parse("2026-06-15T12:40:00Z"),
+                servingSizeGrams = 350.0,
             ),
         )
     }
 }
+
+/** First sample food (yogurt) — reused by the food-log layout picker thumbnail. */
+@Composable
+internal fun sampleYogurt(): FoodEntry = sampleFoods().first()

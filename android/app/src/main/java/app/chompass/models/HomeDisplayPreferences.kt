@@ -76,6 +76,15 @@ enum class FoodLogMacroChip(val storageKey: String) {
         SUGAR -> null
     }
 
+    /** Full nutrient name for settings summaries (the picker rows lead with it). */
+    fun kindLabelRes(): Int = when (this) {
+        PROTEIN -> HomeTopNutrient.PROTEIN.displayNameRes
+        CARBS -> HomeTopNutrient.CARBS.displayNameRes
+        FAT -> HomeTopNutrient.FAT.displayNameRes
+        FIBER -> HomeTopNutrient.FIBER.displayNameRes
+        SUGAR -> HomeTopNutrient.SUGAR.displayNameRes
+    }
+
     fun valueFrom(entry: FoodEntry): Double = when (this) {
         PROTEIN -> entry.protein
         CARBS -> entry.carbs
