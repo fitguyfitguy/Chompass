@@ -1142,6 +1142,14 @@ bilirsən?</string>
     <string name="measure_upper_arm">Baz</string>
     <string name="measure_waist">Bel</string>
     <string name="measure_wrist">Bilək</string>
+    <string name="measure_neck_short">Boy</string>
+    <string name="measure_waist_short">Bel</string>
+    <string name="measure_hips_short">Omb</string>
+    <string name="measure_chest_short">Sin</string>
+    <string name="measure_upper_arm_short">Baz</string>
+    <string name="measure_thigh_short">Bud</string>
+    <string name="measure_calf_short">Bal</string>
+    <string name="measure_wrist_short">Bil</string>
     <string name="measurement_history">Ölçü tarixçəsi</string>
     <string name="notif_channel_body_fat">Bədən yağı xatırlatması</string>
     <string name="notif_channel_body_fat_desc">Bədən yağını qeyd etmək üçün gündəlik xatırlatma.</string>

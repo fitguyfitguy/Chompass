@@ -1748,6 +1748,14 @@
     <string name="measure_thigh">Udo</string>
     <string name="measure_calf">Łydka</string>
     <string name="measure_wrist">Nadgarstek</string>
+    <string name="measure_neck_short">Szy</string>
+    <string name="measure_waist_short">Tal</string>
+    <string name="measure_hips_short">Bio</string>
+    <string name="measure_chest_short">Klat</string>
+    <string name="measure_upper_arm_short">Ram</string>
+    <string name="measure_thigh_short">Udo</string>
+    <string name="measure_calf_short">Łyd</string>
+    <string name="measure_wrist_short">Nad</string>
     <string name="derived_waist_to_hip">Stosunek talii do bioder</string>
     <string name="derived_waist_to_height">Stosunek talii do wzrostu</string>
     <string name="derived_body_fat">Tkanka tłuszczowa</string>

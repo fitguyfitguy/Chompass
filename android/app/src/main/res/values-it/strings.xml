@@ -1108,6 +1108,14 @@
     <string name="measure_upper_arm">Braccio</string>
     <string name="measure_waist">Vita</string>
     <string name="measure_wrist">Polso</string>
+    <string name="measure_neck_short">Col</string>
+    <string name="measure_waist_short">Vit</string>
+    <string name="measure_hips_short">Fia</string>
+    <string name="measure_chest_short">Pet</string>
+    <string name="measure_upper_arm_short">Bra</string>
+    <string name="measure_thigh_short">Cos</string>
+    <string name="measure_calf_short">Polp</string>
+    <string name="measure_wrist_short">Pols</string>
     <string name="measurement_history">Cronologia misure</string>
     <string name="nav_coach">Coach</string>
     <string name="notif_channel_body_fat">Promemoria grasso corporeo</string>

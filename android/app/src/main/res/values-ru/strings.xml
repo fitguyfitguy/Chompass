@@ -1025,6 +1025,14 @@
     <string name="measure_thigh">Бедро</string>
     <string name="measure_calf">Голень</string>
     <string name="measure_wrist">Запястье</string>
+    <string name="measure_neck_short">Шея</string>
+    <string name="measure_waist_short">Тал</string>
+    <string name="measure_hips_short">Бёд</string>
+    <string name="measure_chest_short">Гру</string>
+    <string name="measure_upper_arm_short">Пле</string>
+    <string name="measure_thigh_short">Бед</string>
+    <string name="measure_calf_short">Гол</string>
+    <string name="measure_wrist_short">Зап</string>
     <string name="derived_waist_to_hip">Талия/бёдра</string>
     <string name="derived_waist_to_height">Талия/рост</string>
     <string name="derived_body_fat">Процент жира</string>

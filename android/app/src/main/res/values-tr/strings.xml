@@ -1740,6 +1740,14 @@
     <string name="measure_thigh">Uyluk</string>
     <string name="measure_calf">Baldır</string>
     <string name="measure_wrist">Bilek</string>
+    <string name="measure_neck_short">Boy</string>
+    <string name="measure_waist_short">Bel</string>
+    <string name="measure_hips_short">Kal</string>
+    <string name="measure_chest_short">Göğ</string>
+    <string name="measure_upper_arm_short">Üst</string>
+    <string name="measure_thigh_short">Uyl</string>
+    <string name="measure_calf_short">Bal</string>
+    <string name="measure_wrist_short">Bil</string>
     <string name="derived_waist_to_hip">Bel-kalça oranı</string>
     <string name="derived_waist_to_height">Bel-boy oranı</string>
     <string name="derived_body_fat">Vücut yağı</string>

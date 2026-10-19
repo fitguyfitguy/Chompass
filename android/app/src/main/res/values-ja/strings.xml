@@ -1146,6 +1146,14 @@
     <string name="measure_upper_arm">上腕</string>
     <string name="measure_waist">ウエスト</string>
     <string name="measure_wrist">手首</string>
+    <string name="measure_neck_short">首</string>
+    <string name="measure_waist_short">腰</string>
+    <string name="measure_hips_short">ヒップ</string>
+    <string name="measure_chest_short">胸</string>
+    <string name="measure_upper_arm_short">上腕</string>
+    <string name="measure_thigh_short">もも</string>
+    <string name="measure_calf_short">ふくら</string>
+    <string name="measure_wrist_short">手首</string>
     <string name="measurement_history">測定履歴</string>
     <string name="notif_channel_body_fat">体脂肪記録リマインダー</string>
     <string name="notif_channel_body_fat_desc">体脂肪の測定値を記録する1日1回のリマインダー。</string>

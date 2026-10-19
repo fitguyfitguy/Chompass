@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.MonitorWeight
+import androidx.compose.material.icons.filled.Percent
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -101,6 +104,7 @@ internal fun BodySection(
     val weightLabel = stringResource(R.string.progress_metric_weight)
     val bodyFatLabel = stringResource(R.string.progress_metric_body_fat)
     val siteLabels = sites.associate { it.storageId to stringResource(it.labelRes) }
+    val siteShortLabels = sites.associate { it.storageId to stringResource(it.shortLabelRes) }
     val selectedSites = remember(sites, selectedKeys) { sites.filter { it.storageId in selectedKeys } }
 
     val model = remember(
@@ -159,12 +163,18 @@ internal fun BodySection(
                     stringResource(R.string.progress_body_section),
                     fontSize = 17.sp,
                     fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    modifier = Modifier.weight(1f),
                 )
-                Spacer(Modifier.weight(1f))
-                LogPill(stringResource(R.string.progress_log_weight), onLogWeight)
-                if (bodyFatAvailable) {
-                    Spacer(Modifier.width(8.dp))
-                    LogPill(stringResource(R.string.progress_log_body_fat), onLogBodyFat)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.padding(start = 12.dp),
+                ) {
+                    LogPill(weightLabel, onLogWeight)
+                    if (bodyFatAvailable) {
+                        LogPill(bodyFatLabel, onLogBodyFat)
+                    }
                 }
             }
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -172,7 +182,8 @@ internal fun BodySection(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     SeriesChip(
-                        label = weightLabel,
+                        icon = Icons.Filled.MonitorWeight,
+                        accessibilityLabel = weightLabel,
                         selected = OVERLAY_KEY_WEIGHT in selectedKeys,
                         enabled = true,
                         onClick = {
@@ -184,7 +195,8 @@ internal fun BodySection(
                     )
                     if (bodyFatAvailable) {
                         SeriesChip(
-                            label = bodyFatLabel,
+                            icon = Icons.Filled.Percent,
+                            accessibilityLabel = bodyFatLabel,
                             selected = OVERLAY_KEY_BODY_FAT in selectedKeys,
                             enabled = true,
                             onClick = {
@@ -198,7 +210,8 @@ internal fun BodySection(
                     for (site in sites) {
                         val key = site.storageId
                         SeriesChip(
-                            label = siteLabels.getValue(key),
+                            label = siteShortLabels.getValue(key),
+                            accessibilityLabel = siteLabels.getValue(key),
                             selected = key in selectedKeys,
                             enabled = true,
                             onClick = {
@@ -290,13 +303,21 @@ private fun LogPill(label: String, onClick: () -> Unit) {
     ) {
         Icon(Icons.Filled.AddCircle, null, tint = AppColors.Calorie, modifier = Modifier.size(16.dp))
         Spacer(Modifier.width(4.dp))
-        Text(label, fontSize = 15.sp, fontWeight = FontWeight.Medium, color = AppColors.Calorie)
+        Text(
+            label,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            color = AppColors.Calorie,
+            maxLines = 1,
+        )
     }
 }
 
 @Composable
 private fun SeriesChip(
-    label: String,
+    label: String? = null,
+    icon: ImageVector? = null,
+    accessibilityLabel: String,
     selected: Boolean,
     enabled: Boolean,
     onClick: () -> Unit,
@@ -306,13 +327,17 @@ private fun SeriesChip(
         onClick = onClick,
         enabled = enabled,
         label = {
-            Text(
-                label,
-                fontSize = 12.sp,
-                maxLines = 1,
-            )
+            if (icon != null) {
+                Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp))
+            } else {
+                Text(
+                    label.orEmpty(),
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                )
+            }
         },
-        modifier = Modifier.debugChipState(label, selected),
+        modifier = Modifier.chipAccessibility(accessibilityLabel, selected),
     )
 }
 

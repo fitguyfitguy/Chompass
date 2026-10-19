@@ -3183,6 +3183,22 @@ für dich ein</string>
 
     <string name="measure_calf">Wade</string>
 
+    <string name="measure_neck_short">Ha</string>
+
+    <string name="measure_waist_short">Ta</string>
+
+    <string name="measure_hips_short">Hü</string>
+
+    <string name="measure_chest_short">Br</string>
+
+    <string name="measure_upper_arm_short">OA</string>
+
+    <string name="measure_thigh_short">OS</string>
+
+    <string name="measure_calf_short">Wa</string>
+
+    <string name="measure_wrist_short">HG</string>
+
     <string name="measure_wrist">Handgelenk</string>
 
     <string name="derived_waist_to_hip">Verhältnis von Taille zu Hüfte</string>

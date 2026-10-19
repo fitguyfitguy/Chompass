@@ -1147,6 +1147,14 @@
     <string name="measure_upper_arm">ऊपरी बांह</string>
     <string name="measure_waist">कमर</string>
     <string name="measure_wrist">कलाई</string>
+    <string name="measure_neck_short">गर्द</string>
+    <string name="measure_waist_short">कमर</string>
+    <string name="measure_hips_short">कूल</string>
+    <string name="measure_chest_short">छाती</string>
+    <string name="measure_upper_arm_short">बांह</string>
+    <string name="measure_thigh_short">जांघ</string>
+    <string name="measure_calf_short">पिंड</string>
+    <string name="measure_wrist_short">कलाई</string>
     <string name="measurement_history">माप इतिहास</string>
     <string name="notif_channel_body_fat">शारीरिक वसा लॉग रिमाइंडर</string>
     <string name="notif_channel_body_fat_desc">शारीरिक वसा पढ़ने का दैनिक रिमाइंडर।</string>

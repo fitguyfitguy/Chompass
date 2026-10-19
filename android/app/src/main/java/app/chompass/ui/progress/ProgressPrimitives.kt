@@ -41,6 +41,15 @@ internal fun Modifier.debugChipState(label: String, selected: Boolean): Modifier
     if (BuildConfig.DEBUG) semantics { contentDescription = "$label, selected=$selected" }
     else this
 
+/**
+ * Chip semantics for labels that are symbols or abbreviations: the announced
+ * name stays the full series name, while debug builds append the selected
+ * state for uiautomator (Compose FilterChip always dumps selected="false").
+ */
+internal fun Modifier.chipAccessibility(label: String, selected: Boolean): Modifier =
+    if (BuildConfig.DEBUG) semantics { contentDescription = "$label, selected=$selected" }
+    else semantics { contentDescription = label }
+
 @Composable
 internal fun TimeRangePicker(selected: TimeRange, onSelect: (TimeRange) -> Unit) {
     Row(

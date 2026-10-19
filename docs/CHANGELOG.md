@@ -4,7 +4,7 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [5.8.0] - 2026-10-18
+## [5.8.0] - 2026-10-19
 
 ### Added
 
@@ -13,6 +13,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **The calorie card can overlay your trend** (Android): the daily calorie bars can draw your weight or body-fat trend behind them, with a legend and a tap tag that shows the real number next to the bar's calories.
 - **An adherence card on Progress** (Android): a summary of how closely your logged days landed on their calorie goals, overall, per day type, and per phase, with the share of days inside a ±100 kcal band.
 
+### Changed
+
+- **A tighter body card on Progress** (Android): the weight and body fat toggles are now a scale and a percent symbol, measurement sites use short labels, and the add actions are shortened to Weight and Body fat with a plus icon, right-aligned so they no longer crowd the section title. Raw weigh-ins and body-fat readings now take a faded shade of their series color, matching the calorie overlay's trend dots.
+
 ### Fixed
 
 - **Goal phases stay inside safe bounds** (Android): a phase target below the calorie floor is lifted to it on save, and the phase wheel can no longer spin below that floor or past the ceiling. The wheel now also shows correct bounds when the energy unit is kJ, and saving the first phase no longer wipes a keto-paused day-type plan: its Training and Rest days come back when the plan resumes.
@@ -20,7 +24,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Phase edits clean up after themselves** (Android): shortening or deleting a phase now clears the per-day overrides on all days it no longer covers, including days far in the past. Phases that start far in the future apply automatically once their window comes within reach, without a re-save.
 - **Progress charts read true** (Android): the trend line on the calorie card sits on the bars' centers at every zoom level, tapping a week bar shows that week's average instead of an empty tag, single weigh-in days render centered, and the body badges no longer show "+0.0 kg" when the selected range has no weigh-ins.
 - **The weight chip on the body chart toggles again** (Android): turning weight off now leaves a chip you can tap back on, instead of a permanently selected button that ignored the saved selection. With every chip off, the card shows a short hint instead of an empty chart.
-- **A calmer body card header** (Android): the Body title no longer collapses the whole card when tapped. The collapse arrow is gone; the Log weight and Log body fat actions stay.
+- **A calmer body card header** (Android): the Body title no longer collapses the whole card when tapped. The collapse arrow is gone; the add actions stay.
 - **The calorie chart starts where your log starts** (Android): on the All range the chart now spans from your first logged meal to today instead of padding years of empty space.
 - **Daily calorie bars at every range** (Android): 6M, 1Y, and All keep one bar per day instead of rolling weeks up into weekly sums, so each day keeps its own color against its own goal.
 
