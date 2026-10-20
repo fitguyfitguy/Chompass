@@ -19,27 +19,30 @@ internal fun sanitizeBodyFatFraction(value: Double): Double? =
     value.takeIf { it.isFinite() }
         ?.coerceIn(NutritionConstants.BODY_FAT_MIN_FRACTION, NutritionConstants.BODY_FAT_MAX_FRACTION)
 
-/** A jump larger than this over the previous reading is treated as a one-off
- *  spike (scale misread, water shift) until a second reading confirms it. */
-private const val BODY_FAT_SPIKE_JUMP = 0.05
+/** A jump beyond the profile's body-fat accuracy (in fraction terms) is treated
+ *  as a one-off spike (scale misread, water shift) until a second reading
+ *  confirms it. */
+private fun BodyFatEntry.spikeJumpFraction(accuracyPoints: Double): Double = accuracyPoints / 100.0
 
 /** The previous reading only counts as spike baseline when it is this recent. */
 private const val BODY_FAT_SPIKE_WINDOW_MS = 14L * 24 * 60 * 60 * 1000
 
 /**
  * The reading that represents the user's current body fat: the newest valid
- * entry, unless it jumps more than 5 points over the immediately preceding
- * reading within 14 days — then the previous entry stands (a guarded spike is
- * ignored for the profile but stays in history; a second confirming reading
- * within 5 points makes the new level representative).
+ * entry, unless it jumps beyond the profile's measurement accuracy
+ * ([accuracyPoints], percentage points) over the immediately preceding reading
+ * within 14 days — then the previous entry stands (a guarded spike is ignored
+ * for the profile but stays in history; a second confirming reading makes the
+ * new level representative).
  */
-internal fun representativeBodyFat(entries: List<BodyFatEntry>): BodyFatEntry? {
+internal fun representativeBodyFat(entries: List<BodyFatEntry>, accuracyPoints: Double): BodyFatEntry? {
     val valid = entries.filter { sanitizeBodyFatFraction(it.bodyFatFraction) != null }.sortedBy { it.date }
     val newest = valid.lastOrNull() ?: return null
     val previous = valid.dropLast(1).lastOrNull()
     val recent = previous != null &&
         abs(newest.date.toEpochMilli() - previous.date.toEpochMilli()) <= BODY_FAT_SPIKE_WINDOW_MS
-    return if (recent && abs(newest.bodyFatFraction - previous.bodyFatFraction) > BODY_FAT_SPIKE_JUMP) {
+    val jump = newest.spikeJumpFraction(accuracyPoints)
+    return if (recent && abs(newest.bodyFatFraction - previous.bodyFatFraction) > jump) {
         previous
     } else {
         newest
@@ -208,7 +211,9 @@ class BodyFatRepository(
         val preferValid = prefer?.takeIf { candidate ->
             stored.none { it.date > candidate.date && sanitizeBodyFatFraction(it.bodyFatFraction) != null }
         }
-        val chosen = preferValid ?: representativeBodyFat(stored) ?: return
+        val chosen = preferValid
+            ?: representativeBodyFat(stored, profile.effectiveBodyFatAccuracyPoints)
+            ?: return
         if (abs((profile.bodyFatPercentage ?: -1.0) - chosen.bodyFatFraction) > 0.0001 ||
             profile.bodyFatUpdatedAt != chosen.date
         ) {

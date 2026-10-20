@@ -11,6 +11,7 @@ import app.chompass.models.AIProvider
 import app.chompass.models.AiProfile
 import app.chompass.models.AutoBalanceMacro
 import app.chompass.models.BodyFatEntry
+import app.chompass.models.BodyFatMethod
 import app.chompass.models.CalorieSafety
 import app.chompass.models.DietMode
 import app.chompass.models.FoodLogMacroChip
@@ -2474,12 +2475,14 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     /** Settings → Body Fat save. A value writes a dated history entry through
      *  BodyFatRepository (forceProfile: the explicit user value drives the profile
      *  row and bodyFatUpdatedAt); null clears the whole body-fat track — profile
-     *  value, its date stamp, and the goal — so a stale goal doesn't linger on
-     *  someone who opted out of the body-fat track entirely. */
-    fun setBodyFat(fraction: Double?) {
+     *  value, its date stamp, and the goal. Method + accuracy ride the same save
+     *  so the new trust width applies to this reading immediately. */
+    fun setBodyFatMeasurement(fraction: Double?, method: BodyFatMethod?, accuracyPoints: Double?) {
         if (fraction == null) {
             updateProfile {
                 it.copy(
+                    bodyFatMethod = method,
+                    bodyFatAccuracyPoints = accuracyPoints,
                     bodyFatPercentage = null,
                     bodyFatUpdatedAt = null,
                     goalBodyFatPercentage = null,
@@ -2488,6 +2491,10 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             return
         }
         viewModelScope.launch {
+            val current = container.profileRepository.current() ?: return@launch
+            val withTrust = current.copy(bodyFatMethod = method, bodyFatAccuracyPoints = accuracyPoints)
+            container.profileRepository.save(withTrust)
+            applyProfile(withTrust)
             container.bodyFatRepository.addEntry(
                 BodyFatEntry(bodyFatFraction = fraction, date = Instant.now()),
                 forceProfile = true,

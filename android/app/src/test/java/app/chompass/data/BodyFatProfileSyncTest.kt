@@ -1,12 +1,14 @@
 package app.chompass.data
 
 import app.chompass.models.BodyFatEntry
+import app.chompass.models.BodyFatMethod
 import app.chompass.models.GoalSource
 import app.chompass.models.UserProfile
 import java.time.Instant
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -122,5 +124,54 @@ class BodyFatProfileSyncTest {
         val after = profiles.current()!!
         assertTrue(after.effectiveCalories >= floor)
         assertEquals(0.05, after.bodyFatPercentage!!, 1e-9)
+    }
+
+    @Test
+    fun accurateMethod_tightensTheGuard() = runBlocking {
+        // DEXA ±1.5 pp: a 2-point jump is suspect until confirmed…
+        profiles.save(UserProfile(weightKg = 80.0, bodyFatPercentage = null, bodyFatMethod = BodyFatMethod.DEXA))
+        repo.addEntry(entry(0.20, 3))
+        repo.addEntry(entry(0.22, 1))
+        assertEquals(0.20, profiles.current()!!.bodyFatPercentage!!, 1e-9)
+        // …and a confirming reading accepts it.
+        repo.addEntry(entry(0.22, 0))
+        assertEquals(0.22, profiles.current()!!.bodyFatPercentage!!, 1e-9)
+    }
+
+    @Test
+    fun looseMethod_keepsJumpsWithinAccuracy() = runBlocking {
+        // 4-electrode ±5 pp: a 4-point jump is within stated accuracy → accepted.
+        profiles.save(UserProfile(weightKg = 80.0, bodyFatPercentage = null, bodyFatMethod = BodyFatMethod.BIA_FOUR))
+        repo.addEntry(entry(0.20, 3))
+        repo.addEntry(entry(0.24, 1))
+        assertEquals(0.24, profiles.current()!!.bodyFatPercentage!!, 1e-9)
+    }
+
+    @Test
+    fun customAccuracyOverride_wins() {
+        val p = UserProfile(bodyFatMethod = BodyFatMethod.BIA_EIGHT, bodyFatAccuracyPoints = 4.0)
+        assertEquals(4.0, p.effectiveBodyFatAccuracyPoints, 1e-9)
+        assertEquals(3.2, UserProfile(bodyFatMethod = BodyFatMethod.BIA_EIGHT).effectiveBodyFatAccuracyPoints, 1e-9)
+        // Legacy default: today's ±5 pp guard.
+        assertEquals(5.0, UserProfile().effectiveBodyFatAccuracyPoints, 1e-9)
+    }
+
+    @Test
+    fun methodDrivesFreshness() {
+        val at = Instant.parse("2026-08-10T12:00:00Z")
+        val dexa = UserProfile(
+            bodyFatPercentage = 0.20,
+            bodyFatUpdatedAt = at.minusSeconds(200L * 86_400),
+            bodyFatMethod = BodyFatMethod.DEXA,
+        )
+        val legacy = UserProfile(
+            bodyFatPercentage = 0.20,
+            bodyFatUpdatedAt = at.minusSeconds(200L * 86_400),
+        )
+        // A DEXA scan stays fresh ~a year; an undated-method reading is stale at 90 d.
+        assertFalse(dexa.isBodyFatStale(at))
+        assertTrue(legacy.isBodyFatStale(at))
+        assertEquals(365L, dexa.bodyFatRecencyDays)
+        assertEquals(90L, legacy.bodyFatRecencyDays)
     }
 }

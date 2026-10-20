@@ -54,6 +54,7 @@ import app.chompass.data.MAX_FASTING_EAT_HOURS
 import app.chompass.data.MAX_FASTING_GOAL_HOURS
 import app.chompass.data.MAX_FASTING_REMINDER_LEAD_MINUTES
 import app.chompass.models.FastingGoalPreset
+import app.chompass.models.BodyFatMethod
 import app.chompass.models.CalorieSafety
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.models.LocaleFormat
@@ -429,15 +430,57 @@ internal fun WeightSheet(titleText: String, current: Double, useMetric: Boolean,
 }
 
 @Composable
-internal fun BodyFatSheet(current: Double?, onSave: (Double?) -> Unit, onDismiss: () -> Unit) {
+internal fun BodyFatSheet(
+    current: Double?,
+    method: BodyFatMethod?,
+    accuracyOverride: Double?,
+    onSave: (fraction: Double?, method: BodyFatMethod?, accuracyPoints: Double?) -> Unit,
+    onDismiss: () -> Unit,
+) {
     var pct by remember(current) { mutableStateOf((current ?: 0.20) * 100) }
+    var selectedMethod by remember(method) { mutableStateOf(method) }
+    // Null = follow the method's known accuracy; a value = user override.
+    var accuracyOverride by remember(accuracyOverride, selectedMethod) {
+        mutableStateOf(accuracyOverride)
+    }
+    val shownAccuracy = accuracyOverride ?: selectedMethod?.accuracyPoints ?: 5.0
     Text(stringResource(R.string.sheet_body_fat_percent), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(12.dp))
     DecimalWheelPicker(pct, { pct = it }, 3.0, 65.0, 0.1, stringResource(R.string.unit_percent))
     Spacer(Modifier.height(12.dp))
-    CancelSaveRow(onDismiss) { onSave(pct / 100.0) }
+    Text(stringResource(R.string.sheet_body_fat_method), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+    Spacer(Modifier.height(6.dp))
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        BodyFatMethod.entries.forEach { candidate ->
+            FilterChip(
+                selected = selectedMethod == candidate,
+                onClick = {
+                    selectedMethod = if (selectedMethod == candidate) null else candidate
+                    // Picking a method resets an override so its known accuracy applies.
+                    accuracyOverride = null
+                },
+                label = { Text(stringResource(candidate.labelRes), maxLines = 1) },
+            )
+        }
+    }
+    if (selectedMethod != null) {
+        Spacer(Modifier.height(4.dp))
+        Text(
+            stringResource(R.string.sheet_body_fat_accuracy, LocaleFormat.decimal(shownAccuracy, 1)),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        )
+        DecimalWheelPicker(shownAccuracy, { accuracyOverride = it }, 0.5, 10.0, 0.1, stringResource(R.string.unit_pp))
+    }
+    Spacer(Modifier.height(12.dp))
+    CancelSaveRow(onDismiss) {
+        onSave(pct / 100.0, selectedMethod, accuracyOverride)
+    }
     Spacer(Modifier.height(4.dp))
-    TextButton(onClick = { onSave(null) }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.action_clear)) }
+    TextButton(onClick = { onSave(null, selectedMethod, accuracyOverride) }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.action_clear)) }
     Spacer(Modifier.height(8.dp))
 }
 

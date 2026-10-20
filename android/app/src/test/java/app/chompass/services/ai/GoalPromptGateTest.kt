@@ -158,6 +158,26 @@ class GoalPromptGateTest {
     }
 
     @Test
+    fun bodyFatMethod_surfacesTrustNoteInPrompt() = runBlocking {
+        var prompt = ""
+        val service = capturingService { prompt = it }
+        val withMethod = profile().copy(
+            bodyFatPercentage = 0.22,
+            bodyFatUpdatedAt = Instant.now(),
+            bodyFatMethod = app.chompass.models.BodyFatMethod.BIA_EIGHT,
+        )
+        val f = forecast(weighIns = 2, spanDays = 4, foodDays = 2)
+        service.calculateGoals(withMethod, f, heightMetric = true, weightMetric = true)
+
+        assertTrue(prompt.contains("8-electrode BIA scale, trusted to ±3.2 pp"))
+        // No method → no note.
+        var plainPrompt = ""
+        val plainService = capturingService { plainPrompt = it }
+        plainService.calculateGoals(profile(), f, heightMetric = true, weightMetric = true)
+        assertFalse(plainPrompt.contains("trusted to ±"))
+    }
+
+    @Test
     fun mediumData_surfacesImpliedWithConfidenceQualifier() = runBlocking {
         var prompt = ""
         val service = capturingService { prompt = it }

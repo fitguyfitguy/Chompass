@@ -460,10 +460,13 @@ internal fun SettingsSheets(
                 }
                 SettingsSheet.BODY_FAT -> BodyFatSheet(
                     current = ui.profile?.bodyFatPercentage,
-                    // History + profile row via the repository (setBodyFat): a value
-                    // stamps bodyFatUpdatedAt = now; null clears value, stamp, and goal.
-                    onSave = { bf ->
-                        vm.setBodyFat(bf)
+                    method = ui.profile?.bodyFatMethod,
+                    accuracyOverride = ui.profile?.bodyFatAccuracyPoints,
+                    // History + profile row via the repository (setBodyFatMeasurement):
+                    // a value stamps bodyFatUpdatedAt = now; null clears value, stamp,
+                    // and goal. Method + accuracy ride the same save.
+                    onSave = { bf, method, accuracy ->
+                        vm.setBodyFatMeasurement(bf, method, accuracy)
                         onDismiss()
                     },
                     onDismiss = onDismiss

@@ -651,6 +651,11 @@ class FoodAnalysisService(
         val height = if (heightMetric) String.format(Locale.US, "%.0f cm", profile.heightCm)
             else String.format(Locale.US, "%.1f in", UnitFormat.cmToInches(profile.heightCm))
         val bodyFat = profile.bodyFatPercentage?.let { String.format(java.util.Locale.US, "%.1f%%", it * 100) } ?: "not set"
+        val bodyFatTrustNote = profile.bodyFatMethod?.let {
+            val acc = profile.effectiveBodyFatAccuracyPoints
+            val accStr = if (acc % 1.0 == 0.0) acc.toInt().toString() else acc.toString()
+            " (${it.promptLabel}, trusted to ±$accStr pp)"
+        } ?: ""
         val goalWeight = profile.goalWeightKg?.let { kg ->
             if (weightMetric) String.format(Locale.US, "%.1f kg", kg) else String.format(Locale.US, "%.1f lb", UnitFormat.kgToLbs(kg))
         } ?: "not set"
@@ -671,7 +676,7 @@ class FoodAnalysisService(
             Use the app's formulas as the basis. When OBSERVED DATA is present and reliable, prefer the empirical maintenance estimate it implies over the formula TDEE.
             FORMULAS
             - BMR (Mifflin-St Jeor): base = 10*weightKg + 6.25*heightCm - 5*age - 161; if male add 166; female/other use base.
-            - BMR (Katch-McArdle, used when body fat is known and enabled): 370 + 21.6 * (1 - bodyFatFraction) * weightKg. The Katch-McArdle path applies (only when body fat was logged within 90 days); older readings fall back to Mifflin-St Jeor.
+            - BMR (Katch-McArdle, used when body fat is known and enabled): 370 + 21.6 * (1 - bodyFatFraction) * weightKg. The Katch-McArdle path applies (only when body fat was logged within its freshness window — 90 days, or 365 for a DEXA scan); older readings fall back to Mifflin-St Jeor.
             - TDEE = BMR * activity multiplier. Multipliers: ${GoalFormulaReference.activityMultipliersLine()}.
             - Calorie target = TDEE + adjustment. adjustment = 0 for maintain; ${GoalFormulaReference.calorieAdjustmentLine()}.
             - Protein: aim NEAR the formula protein value shown below. That value is the activity multiplier (${GoalFormulaReference.proteinPerKgLine()} g/kg; +0.2 if losing) applied to the user's full bodyweight, then ${GoalFormulaReference.proteinLbmCapLine()} when a valid body-fat reading exists. You may choose a value within about ±15% of it based on the weight goal and the observed history (lean toward the higher end during a calorie deficit to preserve muscle). Do NOT scale protein down just to fit a lower calorie target, except at the safety floor where protein may yield so 4*protein + 4*carbs + 9*fat stays near calories.
@@ -686,7 +691,7 @@ class FoodAnalysisService(
             - Age: ${profile.age}
             - Height: $height
             - Weight: $weight
-            - Body fat: $bodyFat
+            - Body fat: $bodyFat$bodyFatTrustNote
             - Activity level: ${profile.activityLevel.name.lowercase()}
             - Weight goal: ${profile.goal.name.lowercase()}
             - Weekly change preference: $weekly

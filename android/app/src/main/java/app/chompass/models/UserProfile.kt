@@ -31,6 +31,12 @@ data class UserProfile(
     val bodyFatUpdatedAt: Instant? = null,
     /** Display-only goal — explicitly NOT used in BMR/TDEE/macro math. */
     val goalBodyFatPercentage: Double? = null,
+    /** How body-fat readings are measured — drives the spike-guard width and how
+     *  long a reading stays fresh ([BodyFatMethod.recencyDays]). Null = legacy
+     *  behavior (±5 pp guard, 90-day freshness). */
+    val bodyFatMethod: BodyFatMethod? = null,
+    /** User override of the method's known accuracy, in percentage points. */
+    val bodyFatAccuracyPoints: Double? = null,
     /** Nullable so older serialized profiles decode as null = treat as true. When false,
      *  BMR falls back to Mifflin-St Jeor even if bodyFatPercentage is set. */
     val useBodyFatInBMR: Boolean? = null,
@@ -97,13 +103,23 @@ data class UserProfile(
             it.isFinite() && it in NutritionConstants.BODY_FAT_MIN_FRACTION..NutritionConstants.BODY_FAT_MAX_FRACTION
         }
 
+    /** Trust width for body-fat readings, in percentage points: the user's custom
+     *  override, else the method's known accuracy, else the historical ±5 pp guard. */
+    val effectiveBodyFatAccuracyPoints: Double
+        get() = bodyFatAccuracyPoints ?: bodyFatMethod?.accuracyPoints ?: 5.0
+
+    /** How long a body-fat reading stays fresh for Katch-McArdle: a clinical DEXA
+     *  scan outlives a daily smart-scale estimate; null method = legacy 90 days. */
+    val bodyFatRecencyDays: Long
+        get() = bodyFatMethod?.recencyDays ?: NutritionConstants.BODY_FAT_RECENCY_DAYS
+
     /** Age of the body-fat reading in whole days, or null when undated (legacy). */
     fun bodyFatAgeDays(at: Instant = Instant.now()): Long? =
         bodyFatUpdatedAt?.let { java.time.Duration.between(it, at).toDays() }
 
-    /** Dated body-fat reading older than [NutritionConstants.BODY_FAT_RECENCY_DAYS]. */
+    /** Dated body-fat reading older than [bodyFatRecencyDays]. */
     fun isBodyFatStale(at: Instant = Instant.now()): Boolean =
-        (bodyFatAgeDays(at) ?: -1L) > NutritionConstants.BODY_FAT_RECENCY_DAYS
+        (bodyFatAgeDays(at) ?: -1L) > bodyFatRecencyDays
 
     val bmr: Double get() = if (usesBodyFatForBMR) {
         // Katch-McArdle
@@ -268,6 +284,7 @@ data class UserProfile(
         gender, birthday.epochSecond, heightCm, weightKg, activityLevel, goal, dietMode,
         ketoCarbMode, ketoCarbManualTarget,
         weeklyChangeKg, goalWeightKg, bodyFatPercentage, bodyFatUpdatedAt?.epochSecond, useBodyFatInBMR,
+        bodyFatMethod, bodyFatAccuracyPoints,
         macroPlan?.signature() ?: "-"
     ).joinToString("|")
 
