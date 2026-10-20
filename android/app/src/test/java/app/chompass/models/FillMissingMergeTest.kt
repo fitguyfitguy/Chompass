@@ -2,6 +2,7 @@ package app.chompass.models
 
 import app.chompass.services.ai.FoodAnalysis
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
@@ -79,12 +80,52 @@ class FillMissingMergeTest {
     }
 
     @Test
-    fun zeroAnalysisValue_doesNotFill() {
+    fun zeroAnalysisValue_stampsAnswered_withoutWriting() {
         val merged = mealieEntry().fillMissingFrom(analysis())
 
+        // Nothing numerically written — zeros and nulls stay as they were.
         assertEquals(0, merged.calories)
         assertEquals(0.0, merged.protein, 1e-9)
         assertNull(merged.fiber)
+        // But every asked field is now answered: the gaps close (the entry
+        // stops re-appearing in scans) without fabricating values. Stored
+        // non-zero fat was never a gap, so it is not stamped.
+        assertTrue(merged.gapReport().missingMacros.isEmpty())
+        assertTrue(GapMacroField.CALORIES.jsonKey in merged.gapAnsweredFields)
+        assertTrue(GapMacroField.PROTEIN.jsonKey in merged.gapAnsweredFields)
+        assertTrue(GapMacroField.CARBS.jsonKey in merged.gapAnsweredFields)
+        assertFalse(GapMacroField.FAT.jsonKey in merged.gapAnsweredFields)
+    }
+
+    @Test
+    fun explicitZeroAnswers_closeGaps_vodkaSodaShape() {
+        // #135: an entry that genuinely has no fat and no micros. The model
+        // answers 0/null correctly; the merge must keep the values but close
+        // every gap, so fill-missing completes after one run.
+        val entry = FoodEntry(
+            name = "Vodka soda",
+            calories = 120,
+            protein = 0.0,
+            carbs = 0.0,
+            fat = 0.0,
+            source = FoodSource.MANUAL,
+        )
+        val merged = entry.fillMissingFrom(analysis(calories = 120))
+
+        assertEquals(0.0, merged.protein, 1e-9)
+        assertEquals(0.0, merged.carbs, 1e-9)
+        assertEquals(0.0, merged.fat, 1e-9)
+        val report = merged.gapReport()
+        assertTrue(report.missingMacros.isEmpty())
+        assertTrue(report.missingMicros.isEmpty())
+        assertFalse(report.hasMacroGaps)
+        // Calories were never asked (stored non-zero); the rest are answered.
+        assertTrue(GapMacroField.PROTEIN.jsonKey in merged.gapAnsweredFields)
+        assertTrue(GapMacroField.CARBS.jsonKey in merged.gapAnsweredFields)
+        assertTrue(GapMacroField.FAT.jsonKey in merged.gapAnsweredFields)
+        assertFalse(GapMacroField.CALORIES.jsonKey in merged.gapAnsweredFields)
+        // Re-running the fill is now a no-op: nothing left to ask.
+        assertSame(merged, merged.fillMissingFrom(analysis(calories = 120)))
     }
 
     @Test
@@ -179,7 +220,7 @@ class FillMissingMergeTest {
         val analysis = analysis(constituents = listOf(FoodConstituent("Price", 200, 5.0, 40.0, 1.0, servingSizeGrams = 150.0)))
 
         // "rice" sits inside "price" but not at a word boundary — no fill.
-        assertSame(entry, entry.fillMissingFrom(analysis))
+        assertEquals(entry.constituents, entry.fillMissingFrom(analysis).constituents)
     }
 
     @Test
@@ -188,17 +229,25 @@ class FillMissingMergeTest {
         val analysis = analysis(constituents = listOf(FoodConstituent("Ry", 250, 8.0, 48.0, 2.0, servingSizeGrams = 60.0)))
 
         // Shorter side under 3 characters: boundary hit, still no fill.
-        assertSame(entry, entry.fillMissingFrom(analysis))
+        assertEquals(entry.constituents, entry.fillMissingFrom(analysis).constituents)
     }
 
     @Test
-    fun nothingFillable_returnsSameInstance() {
+    fun noNumericFill_stampsAnswers_secondRunIsIdentity() {
         val entry = mealieEntry(
             fiber = 4.0,
             constituents = listOf(FoodConstituent("Chicken", 260, 32.0, 0.0, 6.0, servingSizeGrams = 150.0)),
         )
+        val first = entry.fillMissingFrom(analysis(calories = 0, protein = 0.0, carbs = 0.0, fat = 0.0))
 
-        assertSame(entry, entry.fillMissingFrom(analysis(calories = 0, protein = 0.0, carbs = 0.0, fat = 0.0)))
+        // The zero answers wrote nothing but stamped every asked field.
+        assertEquals(0, first.calories)
+        assertEquals(12.5, first.fat, 1e-9)
+        assertEquals(4.0, first.fiber!!, 1e-9)
+        assertTrue(first.gapReport().missingMacros.isEmpty())
+        assertNotEquals(entry, first)
+        // A re-run has nothing left to ask: the entry comes back unchanged.
+        assertSame(first, first.fillMissingFrom(analysis(calories = 0, protein = 0.0, carbs = 0.0, fat = 0.0)))
     }
 
     @Test

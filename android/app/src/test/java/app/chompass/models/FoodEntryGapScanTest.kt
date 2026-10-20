@@ -106,6 +106,23 @@ class FoodEntryGapScanTest {
     }
 
     @Test
+    fun answeredFields_stopCountingAsGaps() {
+        // #135: fields the fill-missing AI explicitly answered (zero macro,
+        // null micro) leave the scan; the rest keep reporting.
+        val report = entry(calories = 2, fiber = 2.0).copy(
+            gapAnsweredFields = setOf("protein", "fat", "sodium", "vitamin_a"),
+        ).gapReport()
+
+        // Calories are non-zero (never missing); protein/fat answered; carbs
+        // unanswered → the only macro gap left, so the scan still lists it.
+        assertEquals(setOf(GapMacroField.CARBS), report.missingMacros)
+        assertFalse(report.missingMicros.contains(MicronutrientField.SODIUM))
+        assertFalse(report.missingMicros.contains(MicronutrientField.VITAMIN_A))
+        assertTrue(report.missingMicros.contains(MicronutrientField.CAFFEINE))
+        assertTrue(report.hasMacroGaps)
+    }
+
+    @Test
     fun microGap_exactlyTheNullFields() {
         val report = entry(calories = 100, protein = 3.0, carbs = 20.0, fat = 1.0, fiber = 2.0).gapReport()
 

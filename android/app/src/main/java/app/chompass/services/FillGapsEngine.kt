@@ -184,9 +184,10 @@ class FillGapsEngine(
 
     /**
      * Fill one row: RUNNING → [FoodAnalysisService.fillEntry] → only-missing
-     * merge. `merged == entry` means nothing was fillable (Already complete).
-     * PENDING and FAILED rows (re)enter RUNNING — the sheet offers retry on
-     * FAILED.
+     * merge. A zero/null answer still stamps the field (gapReport stops
+     * counting it), so `merged == entry` only when nothing was asked and
+     * nothing was written (Already complete). PENDING and FAILED rows
+     * (re)enter RUNNING — the sheet offers retry on FAILED.
      */
     suspend fun runOne(item: FillQueueItem) {
         val target = item.target

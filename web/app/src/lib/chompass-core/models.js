@@ -142,6 +142,7 @@
  * @property {Grounding|null} [grounding]
  * @property {string|null} [recipeLogId]  shared id across rows from one Recipe log
  * @property {string|null} [microsCompositionSignature]  local-only stale-micros fingerprint; never on wire
+ * @property {string[]} [gapAnsweredFields]  local-only fill-missing answers (entry-gaps.js tokens); never on wire
  */
 
 /**

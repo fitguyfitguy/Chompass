@@ -12,11 +12,11 @@ import kotlin.math.roundToInt
  * Legit zeros (black coffee) count as gaps by design: the scan never
  * auto-fills, the user drives it from the edit sheet.
  */
-enum class GapMacroField(val labelRes: Int) {
-    CALORIES(R.string.unit_kcal),
-    PROTEIN(R.string.nutrition_label_protein),
-    CARBS(R.string.nutrition_label_carbs),
-    FAT(R.string.nutrition_label_fat),
+enum class GapMacroField(val labelRes: Int, val jsonKey: String) {
+    CALORIES(R.string.unit_kcal, "calories"),
+    PROTEIN(R.string.nutrition_label_protein, "protein"),
+    CARBS(R.string.nutrition_label_carbs, "carbs"),
+    FAT(R.string.nutrition_label_fat, "fat"),
 }
 
 /** Result of the fill-missing scan over one entry. Pure data, no UI. */
@@ -81,14 +81,17 @@ private fun namesMatchByContainment(a: String, b: String): Boolean {
 
 /** Scan an entry for values the Fill-missing action may ask the AI for. */
 fun FoodEntry.gapReport(): EntryGapReport {
+    val answered = gapAnsweredFields
     val missingMacros = buildSet {
-        if (calories == 0) add(GapMacroField.CALORIES)
-        if (protein == 0.0) add(GapMacroField.PROTEIN)
-        if (carbs == 0.0) add(GapMacroField.CARBS)
-        if (fat == 0.0) add(GapMacroField.FAT)
+        if (calories == 0 && GapMacroField.CALORIES.jsonKey !in answered) add(GapMacroField.CALORIES)
+        if (protein == 0.0 && GapMacroField.PROTEIN.jsonKey !in answered) add(GapMacroField.PROTEIN)
+        if (carbs == 0.0 && GapMacroField.CARBS.jsonKey !in answered) add(GapMacroField.CARBS)
+        if (fat == 0.0 && GapMacroField.FAT.jsonKey !in answered) add(GapMacroField.FAT)
     }
     val micros = MicronutrientValues.from(this)
-    val missingMicros = MicronutrientField.entries.filterTo(mutableSetOf()) { micros[it] == null }
+    val missingMicros = MicronutrientField.entries.filterTo(mutableSetOf()) {
+        micros[it] == null && it.jsonKey !in answered
+    }
     val zeroMacroConstituents = constituents.filter { it.isFillableRow() }
     return EntryGapReport(missingMacros, missingMicros, zeroMacroConstituents)
 }
@@ -108,6 +111,13 @@ fun FoodEntry.gapReport(): EntryGapReport {
  * [MicronutrientValues.scaled]). The micros composition signature is
  * re-stamped after a successful fill; when nothing was fillable the entry
  * is returned unchanged.
+ *
+ * An explicit answer also closes the field's gap when it carries no value:
+ * a zero macro or a null micro from the analysis is stamped into
+ * [FoodEntry.gapAnsweredFields] so [gapReport] stops counting it (a legit
+ * zero entry completes after one fill instead of rescanning forever).
+ * Constituent rows answered as all-zero stay scannable — there is no
+ * per-row answered marker.
  */
 fun FoodEntry.fillMissingFrom(analysis: FoodAnalysis): FoodEntry {
     val entryGrams = servingSizeGrams
@@ -120,41 +130,62 @@ fun FoodEntry.fillMissingFrom(analysis: FoodAnalysis): FoodEntry {
     fun scaleG(v: Double): Double = kotlin.math.round(v * gramsFactor * 10) / 10.0
 
     var changed = false
+    var answered = gapAnsweredFields
 
     var calories = this.calories
     var protein = this.protein
     var carbs = this.carbs
     var fat = this.fat
-    if (calories == 0 && analysis.calories != 0) {
-        calories = (analysis.calories * gramsFactor).roundToInt()
+    if (calories == 0 && GapMacroField.CALORIES.jsonKey !in answered) {
+        if (analysis.calories != 0) {
+            calories = (analysis.calories * gramsFactor).roundToInt()
+            changed = true
+        }
+        answered = answered + GapMacroField.CALORIES.jsonKey
         changed = true
     }
-    if (protein == 0.0 && analysis.protein != 0.0) {
-        protein = scaleG(analysis.protein)
+    if (protein == 0.0 && GapMacroField.PROTEIN.jsonKey !in answered) {
+        if (analysis.protein != 0.0) {
+            protein = scaleG(analysis.protein)
+            changed = true
+        }
+        answered = answered + GapMacroField.PROTEIN.jsonKey
         changed = true
     }
-    if (carbs == 0.0 && analysis.carbs != 0.0) {
-        carbs = scaleG(analysis.carbs)
+    if (carbs == 0.0 && GapMacroField.CARBS.jsonKey !in answered) {
+        if (analysis.carbs != 0.0) {
+            carbs = scaleG(analysis.carbs)
+            changed = true
+        }
+        answered = answered + GapMacroField.CARBS.jsonKey
         changed = true
     }
-    if (fat == 0.0 && analysis.fat != 0.0) {
-        fat = scaleG(analysis.fat)
+    if (fat == 0.0 && GapMacroField.FAT.jsonKey !in answered) {
+        if (analysis.fat != 0.0) {
+            fat = scaleG(analysis.fat)
+            changed = true
+        }
+        // An explicit 0 is still an answer: stamp it so the gap closes.
+        answered = answered + GapMacroField.FAT.jsonKey
         changed = true
     }
 
     // Field-wise micro merge: write only into null fields, never applyTo the
-    // raw analysis (that blind-overwrites stored values with nulls).
+    // raw analysis (that blind-overwrites stored values with nulls). A null
+    // answer is still an answer: stamp the field so the gap closes.
     val storedMicros = MicronutrientValues.from(this)
     val scaledAnalysisMicros =
         if (gramsFactor == 1.0) analysis.toMicronutrients() else analysis.toMicronutrients().scaled(gramsFactor)
     var mergedMicros = storedMicros
     for (field in MicronutrientField.entries) {
-        if (storedMicros[field] == null) {
+        if (storedMicros[field] == null && field.jsonKey !in answered) {
             val incoming = scaledAnalysisMicros[field]
             if (incoming != null) {
                 mergedMicros = mergedMicros.with(field, incoming)
                 changed = true
             }
+            answered = answered + field.jsonKey
+            changed = true
         }
     }
 
@@ -217,6 +248,7 @@ fun FoodEntry.fillMissingFrom(analysis: FoodAnalysis): FoodEntry {
         carbs = carbs,
         fat = fat,
         constituents = filledConstituents,
+        gapAnsweredFields = answered,
     )
     return mergedMicros.applyTo(base).copy(
         microsCompositionSignature = microsCompositionSignature(filledConstituents),

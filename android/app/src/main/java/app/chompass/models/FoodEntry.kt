@@ -74,6 +74,17 @@ data class FoodEntry(
      */
     val microsCompositionSignature: String? = null,
     /**
+     * Entry-level fields the fill-missing AI explicitly answered, even when
+     * the answer was zero (macros: "fat") or null (micros: "sodium") —
+     * [FoodEntryGaps.gapReport] stops counting them, so a legit-zero entry
+     * (vodka soda) completes after one fill instead of re-appearing in every
+     * scan. Tokens are [GapMacroField.jsonKey] / [MicronutrientField.jsonKey].
+     * Local DataStore only; never serialized into diary export / sync /
+     * meal-share (microsCompositionSignature precedent). Defaults keep older
+     * bucket JSON decodable.
+     */
+    val gapAnsweredFields: Set<String> = emptySet(),
+    /**
      * True while the entry is a plan (meal planning mode). Local DataStore
      * only; never serialized into diary export / sync / meal-share
      * (productMetadata/microsCompositionSignature precedent). Defaults keep
