@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Fixed
+
+- **All 17 languages now cover the newer screens** (Android): Arabic, Azerbaijani, German, Spanish, French, Hindi, Italian, Japanese, Korean, Dutch, Polish, Brazilian Portuguese, Romanian, Russian, Turkish, Ukrainian, and Simplified Chinese caught up on everything added since the last translation pass: week planning, Mealie import, the body-fat method picker, fill-missing, the reworked home screen, and the rest. Percent signs no longer show up doubled (±10%% becomes ±10%).
+
 ### Added
 
 - **Pick your body-fat measurement method** (Android and PWA): Settings → Body Fat (Android) and the personal profile form (PWA) gain a method picker for DEXA, 8-electrode BIA, 4-electrode BIA, and tape, plus an editable accuracy override. The method decides how fresh a reading stays (a DEXA scan feeds Katch-McArdle for a year instead of 90 days), how far a single reading can jump before the app waits for a confirming one, and what the AI coach is told about your numbers. Until you pick a method, everything works as before.
