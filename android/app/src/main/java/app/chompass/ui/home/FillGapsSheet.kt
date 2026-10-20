@@ -391,7 +391,16 @@ private fun GapCaption(item: FillQueueItem) {
                 GapMutedText(stringResource(R.string.fill_gaps_no_values))
             } else {
                 val labelStrings = item.filledLabels.map { stringResource(it) }
-                GapMutedText(stringResource(R.string.fill_gaps_adds_line, labelStrings.joinToString(", ")))
+                // Result feedback, not a caption: the edit sheet's diff rows
+                // set the emphasized 13sp convention.
+                Text(
+                    stringResource(R.string.fill_gaps_adds_line, labelStrings.joinToString(", ")),
+                    fontSize = 13.sp,
+                    lineHeight = 18.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Emphasized),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
             }
         }
         FillStatus.FAILED -> item.errorText?.let { error ->

@@ -20,6 +20,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Fixed
 
 - **Fill-missing completes on entries with true zeros** (Android and PWA): a drink that genuinely has no fat and no micronutrients kept answering "no new values returned", and Fill missing could be re-run forever with no effect. An explicit zero or none answer from the AI now counts as an answer, so the row fills once and then leaves the fill-missing list for good.
+- **Fill-missing feedback lines up with the rest of the app** (Android): the undo snackbar after applying fills now stays a few seconds like every other confirmation instead of lingering for about ten, and the per-row result line in the gaps sheet reads as feedback rather than a muted caption.
 - **Body-fat readings stay in range** (Android and PWA): the body-fat wheel spans 3 to 65%, saves clamp readings into that window, non-finite entries are refused, and imports drop out-of-range rows. A single jump larger than your method's accuracy no longer moves your profile until a second reading confirms it. Readings you set yourself still apply right away, and a past-dated entry cannot pull the profile backward. Tape-derived entries carry the date of the measurement they came from.
 
 ## [5.9.0] - 2026-10-19

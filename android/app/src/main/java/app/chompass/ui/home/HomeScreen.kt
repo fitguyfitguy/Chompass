@@ -1892,7 +1892,7 @@ fun HomeScreen(
         val result = snackbarHostState.showSnackbar(
             message = ctx.resources.getQuantityString(R.plurals.fill_gaps_snackbar, snapshot.count, snapshot.count),
             actionLabel = undoLabel,
-            duration = SnackbarDuration.Long,
+            duration = SnackbarDuration.Short,
         )
         if (result == SnackbarResult.ActionPerformed) {
             haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
