@@ -16,7 +16,6 @@ import org.junit.Test
  * `trendsDisagree` stays a display/diagnostic flag.
  */
 class GoalRecalcReportTest {
-
     /** MSJ male 25y/178cm/76kg ≈ 1753 BMR → floor 1753. */
     private fun profile() = UserProfile(heightCm = 178.0, weightKg = 76.0)
 

@@ -12,7 +12,6 @@ import org.junit.Test
  * BMR/TDEE; MANUAL/UNKNOWN goals and locked calories are never touched.
  */
 class GoalSourceTest {
-
     private fun profile(source: GoalSource) = UserProfile.Default.copy(
         weightKg = 95.0,
         customCalories = 1900,
