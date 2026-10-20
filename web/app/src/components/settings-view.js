@@ -20,6 +20,7 @@ import {
   CALORIE_PARSER_CEILING_KCAL,
   effectiveProteinG,
   proteinTargetBasisKg,
+  fatFloorGrams,
 } from "../lib/chompass-core/formulas.js";
 import { rebalanceGoalMacros } from "../lib/chompass-core/macro-balance.js";
 import { clampNoteText } from "../lib/chompass-core/clamp-note.js";
@@ -599,10 +600,8 @@ export class SettingsView extends HTMLElement {
       const anyCustom =
         customCalories != null || customProtein != null || customCarbs != null || customFat != null;
       const ketoMode = fd.get("ketoMode") === "true";
-      const fatFloorG = ketoMode
-        ? Math.max(Math.trunc(0.6 * p.weightKg), 45)
-        : Math.trunc(0.6 * p.weightKg);
       const baseCalories = customCalories ?? targets.calories;
+      const fatFloorG = fatFloorGrams(p, baseCalories);
       const usesRateMode = proteinTargetMode !== "gramsPerDay";
       const proteinIn =
         customProtein ??

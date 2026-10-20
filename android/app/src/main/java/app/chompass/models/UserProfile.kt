@@ -83,11 +83,19 @@ data class UserProfile(
         return Period.between(birthDate, LocalDate.now()).years.coerceAtLeast(0)
     }
 
-    /** True when BMR uses Katch-McArdle. Default on whenever body fat % is set and the reading
-     *  is fresh; [useBodyFatInBMR] false falls back to Mifflin-St Jeor without clearing BF%,
-     *  and a stale reading (older than [NutritionConstants.BODY_FAT_RECENCY_DAYS]) does too. */
+    /** True when BMR uses Katch-McArdle. Default on whenever a VALID body-fat fraction
+     *  (3–65%) is set and the reading is fresh; [useBodyFatInBMR] false falls back to
+     *  Mifflin-St Jeor without clearing BF%, and a stale reading
+     *  (older than [NutritionConstants.BODY_FAT_RECENCY_DAYS]) does too. A out-of-range
+     *  fraction (e.g. a 28.0 percent-vs-fraction typo) is ignored entirely. */
     val usesBodyFatForBMR: Boolean
-        get() = bodyFatPercentage != null && useBodyFatInBMR != false && !isBodyFatStale()
+        get() = validBodyFatFraction != null && useBodyFatInBMR != false && !isBodyFatStale()
+
+    /** The body-fat reading only when finite and inside the valid 3–65% window. */
+    private val validBodyFatFraction: Double?
+        get() = bodyFatPercentage?.takeIf {
+            it.isFinite() && it in NutritionConstants.BODY_FAT_MIN_FRACTION..NutritionConstants.BODY_FAT_MAX_FRACTION
+        }
 
     /** Age of the body-fat reading in whole days, or null when undated (legacy). */
     fun bodyFatAgeDays(at: Instant = Instant.now()): Long? =
@@ -99,7 +107,7 @@ data class UserProfile(
 
     val bmr: Double get() = if (usesBodyFatForBMR) {
         // Katch-McArdle
-        370.0 + 21.6 * (1.0 - bodyFatPercentage!!) * weightKg
+        370.0 + 21.6 * (1.0 - validBodyFatFraction!!) * weightKg
     } else {
         // Mifflin-St Jeor
         val base = 10.0 * weightKg + 6.25 * heightCm - 5.0 * age - 161.0
@@ -127,13 +135,21 @@ data class UserProfile(
 
     private val standardProteinGoal: Int get() {
         // +0.2 g/kg during cutting phase to preserve lean mass (Helms et al 2014).
-        val cuttingBoost = if (goal == WeightGoal.LOSE) 0.2 else 0.0
-        val multiplier = activityLevel.proteinRequirementPerKg(bodyFatPercentage, cuttingBoost)
-        return (multiplier * proteinBasisWeightKg).toInt()
+        val cut = if (goal == WeightGoal.LOSE) 0.2 else 0.0
+        val total = (activityLevel.proteinPerKg + cut) * weightKg
+        // A valid body-fat reading caps protein at lean mass: 2.2 g/kg LBM
+        // (2.4 while losing) — high-BF profiles should not chase total-weight rates.
+        val lbm = validBodyFatFraction?.let { weightKg * (1.0 - it) }
+        val capped = if (lbm != null) {
+            minOf(total, (if (goal == WeightGoal.LOSE) 2.4 else 2.2) * lbm)
+        } else {
+            total
+        }
+        return capped.toInt()
     }
 
     private val proteinBasisWeightKg: Double get() =
-        bodyFatPercentage?.let { weightKg * (1.0 - it).coerceIn(0.05, 1.0) } ?: weightKg
+        validBodyFatFraction?.let { weightKg * (1.0 - it) } ?: weightKg
 
     /** Body-mass basis for [proteinGramsPerKg] when the user pins protein as g/kg. */
     val proteinTargetBasisKg: Double get() = when (proteinTargetMode) {
@@ -142,7 +158,10 @@ data class UserProfile(
         ProteinTargetMode.G_PER_KG_LBM -> proteinBasisWeightKg
     }.coerceAtLeast(0.1)
 
-    private val standardFatGoal: Int get() = (0.6 * weightKg).toInt()
+    private val standardFatGoal: Int get() = maxOf(
+        (0.6 * weightKg).toInt(),
+        (0.20 * dailyCalories / 9.0).roundToInt(),
+    )
 
     private val ketoAdaptiveCarbTarget: Int
         get() = KetoCarbRecommendationService.recommendNetCarbs(this)
@@ -368,8 +387,7 @@ data class UserProfile(
             ProteinTargetMode.G_PER_KG_TOTAL,
             ProteinTargetMode.G_PER_KG_LBM -> {
                 val basis = when (mode) {
-                    ProteinTargetMode.G_PER_KG_LBM ->
-                        bodyFatPercentage?.let { weightKg * (1.0 - it).coerceIn(0.05, 1.0) } ?: weightKg
+                    ProteinTargetMode.G_PER_KG_LBM -> proteinBasisWeightKg
                     else -> weightKg
                 }.coerceAtLeast(0.1)
                 copy(
@@ -401,17 +419,21 @@ data class UserProfile(
             fat = base.effectiveFat,
             mode = if (dietMode == DietMode.KETO) MacroBalance.Mode.KETO else MacroBalance.Mode.STANDARD,
             locked = base.lockedMacros,
-            fatFloorG = macroBalanceFatFloor(),
+            fatFloorG = macroBalanceFatFloor(target),
         )
         return base
             .withMacroGrams(unlockedMacroUpdates(base, balanced))
             .copy(customCalories = target)
     }
 
-    /** Fat floor for [MacroBalance]: 0.6 g/kg bodyweight, at least 45 g in keto.
-     *  (Commit 4 extends the standard floor with a 20%-of-calories leg.) */
-    private fun macroBalanceFatFloor(): Int =
-        if (dietMode == DietMode.KETO) maxOf((0.6 * weightKg).toInt(), 45) else (0.6 * weightKg).toInt()
+    /** Fat floor for [MacroBalance]: max(0.6 g/kg bodyweight, 20% of calories), and in
+     *  keto max(0.6 g/kg, 45 g) — the 20% leg would push keto carbs up, not fat. */
+    private fun macroBalanceFatFloor(targetCalories: Int): Int =
+        if (dietMode == DietMode.KETO) {
+            maxOf((0.6 * weightKg).toInt(), 45)
+        } else {
+            maxOf((0.6 * weightKg).toInt(), (0.20 * targetCalories / 9.0).roundToInt())
+        }
 
     private fun unlockedMacroUpdates(base: UserProfile, balanced: MacroBalance.Grams): Map<AutoBalanceMacro, Int> =
         buildMap {
@@ -550,7 +572,7 @@ data class UserProfile(
             fat = if (isMacroLocked(AutoBalanceMacro.FAT)) effectiveFat else fat,
             mode = if (dietMode == DietMode.KETO) MacroBalance.Mode.KETO else MacroBalance.Mode.STANDARD,
             locked = lockedMacros,
-            fatFloorG = macroBalanceFatFloor(),
+            fatFloorG = macroBalanceFatFloor(keptCalories),
         )
         return copy(customCalories = keptCalories, goalSource = GoalSource.AI)
             .withMacroGrams(unlockedMacroUpdates(this, balanced))

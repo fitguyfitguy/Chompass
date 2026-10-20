@@ -176,41 +176,61 @@ export function dailyCalories(profile) {
 }
 
 /**
- * Lean-mass fraction used as the protein calculation basis when body fat %
- * is known, clamped to [0.05, 1.0] (UserProfile.kt proteinBasisWeightKg).
+ * Lean-mass fraction used as the protein calculation basis when a VALID body
+ * fat % (3–65%, NutritionConstants.BODY_FAT_MIN/MAX_FRACTION) is known; null
+ * otherwise (UserProfile.kt validBodyFatFraction). A percent-vs-fraction typo
+ * like 28.0 must not become a 99% lean fraction.
  * @param {UserProfile} profile
  */
 function leanMassFraction(profile) {
   if (profile.bodyFatPercentage == null) return null;
-  return Math.min(1, Math.max(0.05, 1 - profile.bodyFatPercentage));
+  const bf = Number(profile.bodyFatPercentage);
+  if (!Number.isFinite(bf) || bf < 0.03 || bf > 0.65) return null;
+  return 1 - bf;
 }
 
 /**
- * MACRO-P: protein target (g/day), ported verbatim from
- * UserProfile.kt/ActivityLevel.kt including the lean-mass-fraction algebra
- * (dividing the per-kg rate by leanFraction, then multiplying by
- * weight×leanFraction) so Int-truncation lines up with Android bit-for-bit.
+ * MACRO-P: protein target (g/day), mirroring UserProfile.kt standardProteinGoal:
+ * the activity rate (+0.2 cutting) on full bodyweight, capped at 2.2 g/kg lean
+ * mass (2.4 while losing) when a valid body-fat reading exists.
  * @param {UserProfile} profile
  */
 export function proteinGoal(profile) {
   const cuttingBoost = profile.goal === "lose" ? 0.2 : 0;
   const perKg = PROTEIN_G_PER_KG[profile.activityLevel] + cuttingBoost;
+  const total = perKg * profile.weightKg;
   const leanFrac = leanMassFraction(profile);
-  const basisWeight = leanFrac != null ? profile.weightKg * leanFrac : profile.weightKg;
-  const multiplier = leanFrac != null ? perKg / leanFrac : perKg;
-  const standard = Math.trunc(multiplier * basisWeight);
+  const standard = leanFrac != null
+    ? Math.trunc(Math.min(total, (profile.goal === "lose" ? 2.4 : 2.2) * profile.weightKg * leanFrac))
+    : Math.trunc(total);
 
   if (!profile.ketoMode) return standard;
+  const basisWeight = leanFrac != null ? profile.weightKg * leanFrac : profile.weightKg;
   const ketoFloor = Math.max(Math.trunc(1.6 * basisWeight), 60);
   return Math.max(standard, ketoFloor);
 }
 
 /**
- * MACRO-F standard fat target (g/day): 0.6 g/kg, truncated.
+ * MACRO-F standard fat target (g/day): at least max(0.6 g/kg bodyweight,
+ * 20% of calories) (UserProfile.kt standardFatGoal).
  * @param {UserProfile} profile
+ * @param {number} [calories] daily calorie target; defaults to the formula target
  */
-export function fatGoalStandard(profile) {
-  return Math.trunc(0.6 * profile.weightKg);
+export function fatGoalStandard(profile, calories = dailyCalories(profile)) {
+  return Math.max(Math.trunc(0.6 * profile.weightKg), Math.round((0.2 * calories) / 9));
+}
+
+/**
+ * Macro-balance fat floor (UserProfile.macroBalanceFatFloor): max(0.6 g/kg,
+ * 20% of calories), or max(0.6 g/kg, 45 g) in keto — the 20% leg would push
+ * keto carbs up, not fat. Passed into rebalanceGoalMacros as `fatFloorG`.
+ * @param {UserProfile} profile
+ * @param {number} calories the calorie target being balanced
+ */
+export function fatFloorGrams(profile, calories) {
+  return profile.ketoMode
+    ? Math.max(Math.trunc(0.6 * profile.weightKg), 45)
+    : Math.max(Math.trunc(0.6 * profile.weightKg), Math.round((0.2 * calories) / 9));
 }
 
 /**
@@ -236,7 +256,7 @@ export function carbGoalStandard(calories, proteinG, fatG) {
  * @param {number} carbsG     pre-computed ketoNetCarbGoal(profile)
  */
 export function fatGoalKeto(profile, calories, proteinG, carbsG) {
-  const minFat = Math.max(fatGoalStandard(profile), 45);
+  const minFat = Math.max(fatGoalStandard(profile, calories), 45);
   const caloriesAfterCarbs = Math.max(0, calories - carbsG * 4);
   const maxProteinForFloorRaw = Math.trunc((caloriesAfterCarbs - minFat * 9) / 4);
   const maxProteinForFloor = Math.max(0, maxProteinForFloorRaw);
@@ -267,7 +287,13 @@ export function ketoNetCarbGoal(profile) {
   const magnitude = profile.weeklyChangeKg ?? DEFAULT_WEEKLY_CHANGE_KG;
   if (profile.goal === "lose" && magnitude >= 0.75) value -= 5;
 
-  if ((profile.bodyFatPercentage ?? 0) >= 0.3) value -= 3;
+  // Only a valid (3–65%) reading counts — a 28.0 typo must not trigger it.
+  const validBodyFat =
+    profile.bodyFatPercentage != null &&
+    Number.isFinite(profile.bodyFatPercentage) &&
+    profile.bodyFatPercentage >= 0.03 &&
+    profile.bodyFatPercentage <= 0.65;
+  if ((validBodyFat ? profile.bodyFatPercentage : 0) >= 0.3) value -= 3;
 
   return Math.trunc(Math.min(50, Math.max(20, value)));
 }
@@ -319,7 +345,7 @@ export function dailyTargets(profile) {
     return { calories, proteinG, fatG, carbsG };
   }
 
-  const fatG = profile.customFat != null ? Math.trunc(profile.customFat) : fatGoalStandard(profile);
+  const fatG = profile.customFat != null ? Math.trunc(profile.customFat) : fatGoalStandard(profile, calories);
   const carbsG =
     profile.customCarbs != null
       ? Math.trunc(profile.customCarbs)

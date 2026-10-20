@@ -1,6 +1,7 @@
 package app.chompass.services
 
 import app.chompass.models.ActivityLevel
+import app.chompass.models.NutritionConstants
 import app.chompass.models.UserProfile
 import app.chompass.models.WeightGoal
 
@@ -33,7 +34,11 @@ object KetoCarbRecommendationService {
         }
 
         // Higher body-fat profiles can tolerate stricter starts a bit better.
-        if ((profile.bodyFatPercentage ?: 0.0) >= 0.30) {
+        // Only a valid (3–65%) reading counts — a 28.0 typo must not trigger it.
+        val validBodyFat = profile.bodyFatPercentage?.takeIf {
+            it.isFinite() && it in NutritionConstants.BODY_FAT_MIN_FRACTION..NutritionConstants.BODY_FAT_MAX_FRACTION
+        }
+        if ((validBodyFat ?: 0.0) >= 0.30) {
             target -= 3
         }
 

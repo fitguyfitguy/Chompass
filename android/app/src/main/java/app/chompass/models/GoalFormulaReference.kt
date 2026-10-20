@@ -29,6 +29,14 @@ object GoalFormulaReference {
             "If the weekly pace would break that floor, shrink the deficit instead of lowering the floor. " +
             "800 kcal is a medically supervised VLCD, not an app target."
 
+    /** When a valid body-fat reading exists, protein is capped at lean mass (UserProfile). */
+    fun proteinLbmCapLine(): String =
+        "cap protein at 2.2 g/kg lean mass (2.4 g/kg while losing)"
+
+    /** Standard fat floor: 0.6 g/kg bodyweight, at least 20% of calories (UserProfile). */
+    fun fatTargetLine(): String =
+        "at least max(0.6 g/kg bodyweight, 20% of calories)"
+
     /**
      * "1.55" / "1.375" / "1" — the canonical multiplier formatting (no
      * trailing zeros). Shared with UI surfaces that mirror the prompt's

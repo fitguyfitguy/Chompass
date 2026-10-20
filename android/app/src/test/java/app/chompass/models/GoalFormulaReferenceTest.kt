@@ -70,6 +70,14 @@ class GoalFormulaReferenceTest {
       fixture.getString("calorieSafetyLine"),
       GoalFormulaReference.calorieSafetyLine(),
     )
+    assertEquals(
+      fixture.getString("proteinLbmCapLine"),
+      GoalFormulaReference.proteinLbmCapLine(),
+    )
+    assertEquals(
+      fixture.getString("fatTargetLine"),
+      GoalFormulaReference.fatTargetLine(),
+    )
   }
 
   private fun format(value: Double): String =

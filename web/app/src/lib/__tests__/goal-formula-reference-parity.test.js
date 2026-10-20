@@ -7,6 +7,8 @@ import {
   calorieAdjustmentLine,
   moderateActivityMultiplierRationale,
   calorieSafetyLine,
+  proteinLbmCapLine,
+  fatTargetLine,
 } from "../chompass-core/goal-formula-reference.js";
 import { loadParityFixture } from "../parity-fixtures.js";
 
@@ -31,5 +33,13 @@ describe("goal formula prompt fragments (parity fixture)", () => {
 
   it("calorieSafetyLine matches fixture", () => {
     assert.equal(calorieSafetyLine(), fixture.calorieSafetyLine);
+  });
+
+  it("proteinLbmCapLine matches fixture", () => {
+    assert.equal(proteinLbmCapLine(), fixture.proteinLbmCapLine);
+  });
+
+  it("fatTargetLine matches fixture", () => {
+    assert.equal(fatTargetLine(), fixture.fatTargetLine);
   });
 });

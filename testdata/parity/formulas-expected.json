@@ -25,7 +25,7 @@
         "estimatedDailyActiveCalories": 828,
         "sedentaryCalorieBudget": 1779,
         "proteinGoal": 128,
-        "fatGoal": 48
+        "fatGoal": 58
       }
     },
     {
@@ -100,9 +100,33 @@
         "weeklyChangeKg": 0.25,
         "ketoMode": false
       },
+     "expect": {
+      "calorieAdjustment": 275,
+      "proteinGoal": 165,
+      "fatGoal": 82
+    }
+  },
+    {
+      "id": "golden_highBf_lbmProteinCap",
+      "profile": {
+        "sex": "male",
+        "age": 40,
+        "heightCm": 180,
+        "weightKg": 120,
+        "bodyFatPercentage": 0.4,
+        "activityLevel": "moderate",
+        "goal": "lose",
+        "weeklyChangeKg": 0.5,
+        "ketoMode": false
+      },
       "expect": {
-        "calorieAdjustment": 275,
-        "proteinGoal": 165
+        "bmr": 1925.2,
+        "bmrTol": 0.5,
+        "tdee": 2820.42,
+        "tdeeTol": 0.5,
+        "dailyCalories": 2270,
+        "proteinGoal": 172,
+        "fatGoal": 72
       }
     },
     {

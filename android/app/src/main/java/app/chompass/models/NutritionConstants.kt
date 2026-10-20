@@ -18,6 +18,12 @@ object NutritionConstants {
      */
     const val BODY_FAT_RECENCY_DAYS = 90L
 
+    /** Valid body-fat fraction range. Outside it, readings are ignored for BMR/macros
+     *  (a percent-vs-fraction typo like 28.0 must not halve someone's BMR); the
+     *  repository clamps stored entries into this window instead. */
+    const val BODY_FAT_MIN_FRACTION = 0.03
+    const val BODY_FAT_MAX_FRACTION = 0.65
+
     /** Daily calorie adjustment (signed) for a weekly body-mass change rate in kg/week. */
     fun dailyCalorieAdjustmentForWeeklyRateKg(weeklyChangeKg: Double): Int =
         (weeklyChangeKg * KCAL_PER_KG_BODY_MASS / 7.0).toInt()
