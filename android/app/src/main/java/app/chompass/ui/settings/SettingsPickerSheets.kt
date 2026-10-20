@@ -433,7 +433,7 @@ internal fun BodyFatSheet(current: Double?, onSave: (Double?) -> Unit, onDismiss
     var pct by remember(current) { mutableStateOf((current ?: 0.20) * 100) }
     Text(stringResource(R.string.sheet_body_fat_percent), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(12.dp))
-    DecimalWheelPicker(pct, { pct = it }, 5.0, 60.0, 0.1, stringResource(R.string.unit_percent))
+    DecimalWheelPicker(pct, { pct = it }, 3.0, 65.0, 0.1, stringResource(R.string.unit_percent))
     Spacer(Modifier.height(12.dp))
     CancelSaveRow(onDismiss) { onSave(pct / 100.0) }
     Spacer(Modifier.height(4.dp))
@@ -458,7 +458,7 @@ internal fun GoalBodyFatSheet(currentGoal: Double?, currentBodyFat: Double?, onS
         )
     }
     Spacer(Modifier.height(12.dp))
-    DecimalWheelPicker(pct, { pct = it }, 3.0, 60.0, 0.1, stringResource(R.string.unit_percent))
+    DecimalWheelPicker(pct, { pct = it }, 3.0, 65.0, 0.1, stringResource(R.string.unit_percent))
     Spacer(Modifier.height(12.dp))
     CancelSaveRow(onDismiss) { onSave(pct / 100.0) }
     Spacer(Modifier.height(4.dp))

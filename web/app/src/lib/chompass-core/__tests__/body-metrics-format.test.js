@@ -56,3 +56,19 @@ test("rejects unsupported format_version", async () => {
   const doc = { export: { app: "nofud", kind: "body_metrics", format_version: "0.1" }, weights: [], body_fat: [], measurements: [] };
   await assert.rejects(() => importBodyMetrics(doc));
 });
+
+test("drops body-fat readings outside 3-65 percent on import", async () => {
+  const doc = {
+    export: { app: "nofud", kind: "body_metrics", format_version: BODY_METRICS_FORMAT_VERSION },
+    weights: [],
+    body_fat: [
+      { date: "2026-01-01T00:00:00Z", body_fat_percent: 2.0 },
+      { date: "2026-01-02T00:00:00Z", body_fat_percent: 70.0 },
+      { date: "2026-01-03T00:00:00Z", body_fat_percent: 22.0 },
+    ],
+    measurements: [],
+  };
+  const { bodyFat } = await importBodyMetrics(doc);
+  assert.equal(bodyFat.length, 1);
+  assert.equal(bodyFat[0].bodyFatPercent, 22.0);
+});

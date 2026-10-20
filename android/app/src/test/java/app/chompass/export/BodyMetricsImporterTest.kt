@@ -112,6 +112,20 @@ class BodyMetricsImporterTest {
     }
 
     @Test
+    fun `out of range body fat is dropped`() {
+        val csv = """
+            metric,timestamp,value,unit
+            body_fat,2026-01-02T08:30:00Z,2.0,percent
+            body_fat,2026-01-03T08:30:00Z,70.0,percent
+            body_fat,2026-01-04T08:30:00Z,22.0,percent
+        """.trimIndent()
+        val r = success(csv)
+        // 2% and 70% are outside the 3–65% window; only 22% survives.
+        assertEquals(1, r.bodyFats.size)
+        assertEquals(0.22, r.bodyFats.single().bodyFatFraction, 0.001)
+    }
+
+    @Test
     fun `ids are deterministic across repeated parses`() {
         val csv = """
             metric,timestamp,value,unit

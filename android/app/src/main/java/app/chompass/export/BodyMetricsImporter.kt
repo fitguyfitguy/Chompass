@@ -48,8 +48,8 @@ sealed class BodyMetricsImportResult {
 object BodyMetricsImporter {
     private const val MIN_WEIGHT_KG = 20.0
     private const val MAX_WEIGHT_KG = 500.0
-    private const val MIN_BODY_FAT_PERCENT = 1.0
-    private const val MAX_BODY_FAT_PERCENT = 70.0
+    private const val MIN_BODY_FAT_PERCENT = 3.0
+    private const val MAX_BODY_FAT_PERCENT = 65.0
     private const val LB_TO_KG = 0.45359237
 
     private val parser = Json { ignoreUnknownKeys = true; isLenient = true }

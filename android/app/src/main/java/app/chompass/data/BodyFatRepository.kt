@@ -1,6 +1,7 @@
 package app.chompass.data
 
 import app.chompass.models.BodyFatEntry
+import app.chompass.models.NutritionConstants
 import app.chompass.services.health.ExternalBodyFat
 import app.chompass.services.health.HealthConnectManager
 import kotlinx.coroutines.flow.Flow
@@ -11,6 +12,39 @@ import java.time.YearMonth
 import java.time.ZoneId
 import java.util.UUID
 import kotlin.math.abs
+
+/** Clamp a body-fat fraction into the valid 3–65% window; null when non-finite.
+ *  The repository is the boundary validation — [BodyFatEntry] stays a dumb record. */
+internal fun sanitizeBodyFatFraction(value: Double): Double? =
+    value.takeIf { it.isFinite() }
+        ?.coerceIn(NutritionConstants.BODY_FAT_MIN_FRACTION, NutritionConstants.BODY_FAT_MAX_FRACTION)
+
+/** A jump larger than this over the previous reading is treated as a one-off
+ *  spike (scale misread, water shift) until a second reading confirms it. */
+private const val BODY_FAT_SPIKE_JUMP = 0.05
+
+/** The previous reading only counts as spike baseline when it is this recent. */
+private const val BODY_FAT_SPIKE_WINDOW_MS = 14L * 24 * 60 * 60 * 1000
+
+/**
+ * The reading that represents the user's current body fat: the newest valid
+ * entry, unless it jumps more than 5 points over the immediately preceding
+ * reading within 14 days — then the previous entry stands (a guarded spike is
+ * ignored for the profile but stays in history; a second confirming reading
+ * within 5 points makes the new level representative).
+ */
+internal fun representativeBodyFat(entries: List<BodyFatEntry>): BodyFatEntry? {
+    val valid = entries.filter { sanitizeBodyFatFraction(it.bodyFatFraction) != null }.sortedBy { it.date }
+    val newest = valid.lastOrNull() ?: return null
+    val previous = valid.dropLast(1).lastOrNull()
+    val recent = previous != null &&
+        abs(newest.date.toEpochMilli() - previous.date.toEpochMilli()) <= BODY_FAT_SPIKE_WINDOW_MS
+    return if (recent && abs(newest.bodyFatFraction - previous.bodyFatFraction) > BODY_FAT_SPIKE_JUMP) {
+        previous
+    } else {
+        newest
+    }
+}
 
 /**
  * Local-only store for body-fat history. Mirrors WeightRepository — Codable
@@ -39,15 +73,24 @@ class BodyFatRepository(
      *  the profile's bodyFatUpdatedAt stamp so the recency gate sees one truth. */
     suspend fun seedInitialBodyFatIfEmpty(fraction: Double, at: Instant = Instant.now()) {
         if (prefs.bodyFatEntries.first().isNotEmpty()) return
-        addEntry(BodyFatEntry(date = at, bodyFatFraction = fraction))
+        addEntry(BodyFatEntry(date = at, bodyFatFraction = fraction), forceProfile = true)
     }
 
-    suspend fun addEntry(entry: BodyFatEntry) {
-        prefs.applyBodyFatBucketChanges(upsertsByMonth = mapOf(entry.month() to listOf(entry)))
-        sync?.touch(entry.id, "bodyfat")
-        syncProfileBodyFatToLatest()
+    /**
+     * Store one reading. The fraction is sanitized (clamped into 3–65%;
+     * non-finite readings are refused). [forceProfile] marks an explicit user
+     * entry (Settings sheet, Progress manual entry, tape confirmation, seed):
+     * it drives the profile update directly instead of running the spike
+     * guard; automatic imports use the guard.
+     */
+    suspend fun addEntry(entry: BodyFatEntry, forceProfile: Boolean = false) {
+        val fraction = sanitizeBodyFatFraction(entry.bodyFatFraction) ?: return
+        val safe = entry.copy(bodyFatFraction = fraction)
+        prefs.applyBodyFatBucketChanges(upsertsByMonth = mapOf(safe.month() to listOf(safe)))
+        sync?.touch(safe.id, "bodyfat")
+        syncProfileBodyFatToLatest(prefer = if (forceProfile) safe else null)
         if (shouldSyncHealth()) {
-            health?.writeBodyFat(entry)
+            health?.writeBodyFat(safe)
         }
     }
 
@@ -89,6 +132,7 @@ class BodyFatRepository(
     suspend fun importExternalBodyFats(external: List<ExternalBodyFat>) {
         val manager = health ?: return
         val incoming = external
+            .asSequence()
             .map {
                 BodyFatEntry(
                     id = manager.ownRecordId(it.clientRecordId)
@@ -97,6 +141,9 @@ class BodyFatRepository(
                     bodyFatFraction = it.bodyFatFraction
                 )
             }
+            // Out-of-range readings (3–65%) never enter history or the profile.
+            .filter { sanitizeBodyFatFraction(it.bodyFatFraction) != null }
+            .toList()
         if (incoming.isEmpty()) return
         // Same #63 contract as WeightRepository.importExternalWeights: upsert
         // into current month files, never replaceAll from a stale snapshot.
@@ -111,9 +158,11 @@ class BodyFatRepository(
      * see WeightRepository.importFromFile. Returns entries added or updated.
      */
     suspend fun importFromFile(entries: List<BodyFatEntry>): Int {
-        if (entries.isEmpty()) return 0
+        // Out-of-range readings (3–65%) are dropped instead of stored.
+        val valid = entries.filter { sanitizeBodyFatFraction(it.bodyFatFraction) != null }
+        if (valid.isEmpty()) return 0
         val existing = prefs.bodyFatEntries.first()
-        val (merged, changed) = mergeBodyFatsById(existing, entries)
+        val (merged, changed) = mergeBodyFatsById(existing, valid)
         // Same duplicate-collapse persistence as WeightRepository (upstream
         // fud-ai 736f25fc).
         if (changed == 0 && merged.size == existing.size) return 0
@@ -145,23 +194,28 @@ class BodyFatRepository(
 
     private fun BodyFatEntry.month(): YearMonth = YearMonth.from(date.atZone(ZoneId.systemDefault()))
 
-    /** Keep UserProfile.bodyFatPercentage aligned with the latest reading so
-     *  Katch-McArdle BMR + Settings → Body Fat row never drift apart. If the
-     *  store is empty after a delete, leave the profile value alone — silently
-     *  dropping someone's BMR formula because they cleared one row would
-     *  surprise them; they can clear it explicitly via Settings. */
-    private suspend fun syncProfileBodyFatToLatest() {
+    /** Keep UserProfile.bodyFatPercentage aligned with the representative reading so
+     *  Katch-McArdle BMR + Settings → Body Fat row never drift apart. [prefer] (an
+     *  explicit user entry) wins only while no valid stored entry is newer — a
+     *  past-dated entry cannot pull the profile backward. Falls back to
+     *  [representativeBodyFat] (spike-guarded). If the store is empty, leave the
+     *  profile value alone — silently dropping someone's BMR formula because they
+     *  cleared one row would surprise them; they can clear it explicitly via
+     *  Settings. Auto-sourced goals re-clamp when the new reading moves BMR. */
+    private suspend fun syncProfileBodyFatToLatest(prefer: BodyFatEntry? = null) {
         val profile = profileRepository.current() ?: return
-        val newest = prefs.bodyFatEntries.first().maxByOrNull { it.date } ?: return
-        if (abs((profile.bodyFatPercentage ?: -1.0) - newest.bodyFatFraction) > 0.0001 ||
-            profile.bodyFatUpdatedAt != newest.date
+        val stored = prefs.bodyFatEntries.first()
+        val preferValid = prefer?.takeIf { candidate ->
+            stored.none { it.date > candidate.date && sanitizeBodyFatFraction(it.bodyFatFraction) != null }
+        }
+        val chosen = preferValid ?: representativeBodyFat(stored) ?: return
+        if (abs((profile.bodyFatPercentage ?: -1.0) - chosen.bodyFatFraction) > 0.0001 ||
+            profile.bodyFatUpdatedAt != chosen.date
         ) {
-            // The new reading moves Katch-McArdle BMR: an auto-sourced target that
-            // now sits outside CAL-SAFE is pulled back in (manual/locked untouched).
             profileRepository.save(
                 profile.copy(
-                    bodyFatPercentage = newest.bodyFatFraction,
-                    bodyFatUpdatedAt = newest.date,
+                    bodyFatPercentage = chosen.bodyFatFraction,
+                    bodyFatUpdatedAt = chosen.date,
                 ).reclampedAutoGoal()
             )
         }

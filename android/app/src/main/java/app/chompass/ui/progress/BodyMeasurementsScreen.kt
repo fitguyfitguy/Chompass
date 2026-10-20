@@ -160,6 +160,13 @@ private fun BodyMeasurementsHistorySheet(
  * Nutrients screen: a tappable row per body part that opens a wheel picker to set its value, plus
  * the AI-derived metrics and history. Talks to BodyMeasurementRepository directly.
  */
+/**
+ * Tape-derived body-fat reading dated to the measurement it was computed from
+ * (not "now"), so the history row and the profile stamp line up with the tape.
+ */
+internal fun tapeBodyFatEntry(percent: Double, measurement: BodyMeasurement): BodyFatEntry =
+    BodyFatEntry(bodyFatFraction = percent / 100.0, date = measurement.date)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
@@ -339,9 +346,14 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = {
                     val pct = if (useNavyEstimate && navyPercent != null) navyPercent else rfmPercent ?: navyPercent
-                    if (pct != null) {
+                    if (pct != null && latest != null) {
                         scope.launch {
-                            container.bodyFatRepository.addEntry(BodyFatEntry(bodyFatFraction = pct / 100.0))
+                            // Explicit user confirmation: dated to the measurement,
+                            // drives the profile row past the import spike guard.
+                            container.bodyFatRepository.addEntry(
+                                tapeBodyFatEntry(pct, latest),
+                                forceProfile = true,
+                            )
                         }
                     }
                     showUseAsBodyFat = false
