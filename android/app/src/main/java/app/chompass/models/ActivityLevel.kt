@@ -54,4 +54,3 @@ enum class ActivityLevel {
         EXTRA_ACTIVE -> 2.2
     }
 }
-

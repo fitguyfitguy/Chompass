@@ -9,7 +9,6 @@ import org.junit.Test
  * invariants the plan calls out (sum identity, floors, locked-macro safety).
  */
 class MacroBalanceTest {
-
     @Test
     fun standardCut_carbsAbsorb_proteinAndFatKept() {
         val g = MacroBalance.rebalance(
