@@ -169,7 +169,7 @@
 
     <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/Tag</string>
 
-    <string name="protein_target_lbm_missing_hint">Körperfettanteil %% nicht festgelegt. Es wird das Gesamtgewicht verwendet, bis der Körperfettanteil %% erfasst ist.</string>
+    <string name="protein_target_lbm_missing_hint">Körperfettanteil % nicht festgelegt. Es wird das Gesamtgewicht verwendet, bis der Körperfettanteil % erfasst ist.</string>
 
     <string name="macro_carbs">Kohlenhydrate</string>
 
@@ -2271,6 +2271,7 @@ für dich ein</string>
     <string name="sheet_body_fat_percent">Körperfettanteil in %</string>
     <string name="sheet_body_fat_method">Messmethode</string>
     <string name="sheet_body_fat_accuracy">Vertraut bis ± %1$s pp</string>
+    <string name="body_fat_method_dexa">DEXA</string>
     <string name="body_fat_method_bia8">BIA 8-Elektroden</string>
     <string name="body_fat_method_bia4">BIA 4-Elektroden</string>
     <string name="body_fat_method_tape">Maßband</string>
@@ -3324,7 +3325,7 @@ für dich ein</string>
 
     <string name="settings_calc_split_name">Zielwerte für Protein, Kohlenhydrate und Fett</string>
 
-    <string name="settings_calc_split_used">Die KI passt die Mengen an Protein, Kohlenhydraten und Fett an dein Kalorienziel an und orientiert sich dabei an diesen Richtwerten. Die Proteinmenge richtet sich nach deinem Aktivitätsniveau (und basiert auf der fettfreien Körpermasse, wenn ein Körperfettanteil %% festgelegt ist); die Fettmenge wird anhand des Körpergewichts festgelegt; Kohlenhydrate füllen den Rest aus. Du kannst jeden Wert sperren oder in den Einstellungen selbst bearbeiten.</string>
+    <string name="settings_calc_split_used">Die KI passt die Mengen an Protein, Kohlenhydraten und Fett an dein Kalorienziel an und orientiert sich dabei an diesen Richtwerten. Die Proteinmenge richtet sich nach deinem Aktivitätsniveau (und basiert auf der fettfreien Körpermasse, wenn ein Körperfettanteil % festgelegt ist); die Fettmenge wird anhand des Körpergewichts festgelegt; Kohlenhydrate füllen den Rest aus. Du kannst jeden Wert sperren oder in den Einstellungen selbst bearbeiten.</string>
 
     <string name="settings_calc_split_formula">Protein: ~0,8–2,2 g pro kg je nach Aktivitätsniveau (bei Gewichtsabnahme leicht erhöht)\nFett: ~0,6 g pro kg Körpergewicht\nKohlenhydrate: verbleibende Kalorien ÷ 4 kcal/g</string>
 

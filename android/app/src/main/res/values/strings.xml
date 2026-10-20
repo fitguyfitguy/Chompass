@@ -103,7 +103,7 @@
     <string name="protein_target_mode_g_per_kg_total">g/kg body weight</string>
     <string name="protein_target_mode_g_per_kg_lbm">g/kg lean mass</string>
     <string name="protein_target_g_per_kg_format">%1$.1f g/kg · %2$d g/day</string>
-    <string name="protein_target_lbm_missing_hint">No body-fat %% set. Using total weight until BF%% is logged.</string>
+    <string name="protein_target_lbm_missing_hint">No body-fat % set. Using total weight until BF% is logged.</string>
     <string name="macro_carbs">Carbs</string>
     <string name="macro_fat">Fat</string>
     <string name="macro_calories">Calories</string>
@@ -2656,7 +2656,7 @@
     <string name="settings_calc_target_used">Maintenance starts from your TDEE. With Energy Burn on, it starts from your measured Health Connect burn (a 14-day Active + Basal average) instead. The AI refines maintenance against your logged intake and weight trend, then applies your goal: a weekly weight-change rate becomes a daily calorie deficit (Lose) or surplus (Gain).</string>
     <string name="settings_calc_target_formula">1 lb of body fat ≈ 3,500 kcal · 1 kg ≈ 7,700 kcal\nYour weekly rate ÷ 7 is subtracted from (Lose) or added to (Gain) maintenance to set the daily calorie target.</string>
     <string name="settings_calc_split_name">Protein, carbs, fat targets</string>
-    <string name="settings_calc_split_used">The AI fits protein, carbs, and fat to your calorie target, using these references as a guide. Protein scales with your activity level on total bodyweight (keto protein floor uses lean mass when a body fat %% is set); fat is set from bodyweight; carbs fill the rest. You can lock any value or edit it yourself in Settings.</string>
+    <string name="settings_calc_split_used">The AI fits protein, carbs, and fat to your calorie target, using these references as a guide. Protein scales with your activity level on total bodyweight (keto protein floor uses lean mass when a body fat % is set); fat is set from bodyweight; carbs fill the rest. You can lock any value or edit it yourself in Settings.</string>
     <string name="settings_calc_split_formula">Protein: ~0.8-2.2 g per kg by activity level (raised slightly when losing)\nFat: ~0.6 g per kg bodyweight\nCarbs: remaining calories ÷ 4 kcal/g</string>
     <string name="settings_calc_micro_name">Per-meal estimates</string>
     <string name="settings_calc_micro_used">Calorie, macro, fiber, sugar, saturated fat, cholesterol, sodium, potassium and other micronutrient values returned per meal are AI-generated estimates from the food image, voice transcript, or text description, using the AI provider you selected.</string>
@@ -2685,7 +2685,7 @@
     <string name="settings_calc_rfm_used">Shown from waist and height when those are logged. Does not write body fat unless you confirm Use as my body fat. Gender other uses the male coefficient, like Navy.</string>
     <string name="settings_calc_rfm_formula" formatted="false">%BF = 64 − 20 × (height ÷ waist) + 12 × sex\nsex = 0 male, 1 female. Rejected outside 2–65%.</string>
     <string name="settings_not_medical_title">Not medical advice</string>
-    <string name="settings_not_medical_body">Chompass is an estimation tool, not a clinical instrument. Formula estimates can be off (often around ±10%% for BMR). Consult a registered dietitian, physician, or sports medicine professional before significant diet changes, especially if you have a medical condition, are pregnant or breastfeeding, are under 18, or are managing an eating disorder.</string>
+    <string name="settings_not_medical_body">Chompass is an estimation tool, not a clinical instrument. Formula estimates can be off (often around ±10% for BMR). Consult a registered dietitian, physician, or sports medicine professional before significant diet changes, especially if you have a medical condition, are pregnant or breastfeeding, are under 18, or are managing an eating disorder.</string>
     <string name="settings_safety_medical">Safety &amp; Medical</string>
     <string name="settings_safety_summary">Read this before making major diet changes</string>
     <string name="settings_safety_open">View</string>
