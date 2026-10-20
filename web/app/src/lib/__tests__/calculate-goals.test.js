@@ -140,6 +140,8 @@ test("buildCalculateGoalsPrompt_disagreeingTrends_surfaceImpliedMaintenanceWithN
   assert.match(prompt, /Implied actual maintenance/);
   assert.match(prompt, /the population formula and the scale trend disagree/);
   assert.doesNotMatch(prompt, /do NOT use the implied maintenance/);
+  assert.match(prompt, /cap protein at 2\.2 g\/kg lean mass \(2\.4 g\/kg while losing\)/);
+  assert.match(prompt, /Fat: at least max\(0\.6 g\/kg bodyweight, 20% of calories\)\./);
 });
 
 test("buildCalculateGoalsPrompt_usesLoggedDayAverageForEmpiricalTdee", () => {

@@ -43,3 +43,13 @@ export function calorieSafetyLine() {
     `800 kcal is a medically supervised VLCD, not an app target.`
   );
 }
+
+/** When a valid body-fat reading exists, protein is capped at lean mass (formulas.js). */
+export function proteinLbmCapLine() {
+  return "cap protein at 2.2 g/kg lean mass (2.4 g/kg while losing)";
+}
+
+/** Standard fat floor: 0.6 g/kg bodyweight, at least 20% of calories (formulas.js). */
+export function fatTargetLine() {
+  return "at least max(0.6 g/kg bodyweight, 20% of calories)";
+}

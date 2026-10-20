@@ -21,6 +21,7 @@ import {
   safetyFloorKcal,
   effectiveProteinG,
   proteinTargetBasisKg,
+  fatFloorGrams,
 } from "../chompass-core/formulas.js";
 import { rebalanceGoalMacros } from "../chompass-core/macro-balance.js";
 import {
@@ -28,6 +29,8 @@ import {
   proteinPerKgLine,
   calorieAdjustmentLine,
   calorieSafetyLine,
+  proteinLbmCapLine,
+  fatTargetLine,
 } from "../chompass-core/goal-formula-reference.js";
 import { averageForward, resolveDay } from "../chompass-core/macro-plan.js";
 import { typicalForProfile } from "../chompass-core/day-type-active.js";
@@ -117,9 +120,7 @@ export function applyingAiGoals(profile, result) {
     : clamped;
   const locked = new Set(profile.lockedMacros || []);
   const keto = profile.ketoMode === true;
-  const fatFloorG = keto
-    ? Math.max(Math.trunc(0.6 * profile.weightKg), 45)
-    : Math.trunc(0.6 * profile.weightKg);
+  const fatFloorG = fatFloorGrams(profile, keptCalories);
   const targets = dailyTargets(profile);
   const balanced = rebalanceGoalMacros(
     keptCalories,
@@ -421,8 +422,8 @@ FORMULAS
 - BMR (Katch-McArdle, used when body fat is known and enabled): 370 + 21.6 * (1 - bodyFatFraction) * weightKg.
 - TDEE = BMR * activity multiplier. Multipliers: ${activityLine}.
 - Calorie target = TDEE + adjustment. adjustment = 0 for maintain; ${calorieAdjLine}.
-- Protein: aim NEAR the formula protein value shown below. That value is the activity multiplier (${proteinLine} g/kg; +0.2 if losing) applied to the user's full bodyweight. You may choose a value within about ±15% of it based on the weight goal and the observed history (lean toward the higher end during a calorie deficit to preserve muscle). Do NOT scale protein down just to fit a lower calorie target, except at the safety floor where protein may yield so 4*protein + 4*carbs + 9*fat stays near calories.
-- Fat: 0.6 g/kg of full bodyweight.
+- Protein: aim NEAR the formula protein value shown below. That value is the activity multiplier (${proteinLine} g/kg; +0.2 if losing) applied to the user's full bodyweight, then ${proteinLbmCapLine()} when a valid body-fat reading exists. You may choose a value within about ±15% of it based on the weight goal and the observed history (lean toward the higher end during a calorie deficit to preserve muscle). Do NOT scale protein down just to fit a lower calorie target, except at the safety floor where protein may yield so 4*protein + 4*carbs + 9*fat stays near calories.
+- Fat: ${fatTargetLine()}.
 - Carbs: the calories remaining after protein (4 kcal/g) and fat (9 kcal/g), divided by 4. Keep 4*protein + 4*carbs + 9*fat approximately equal to calories.
 BMR method in effect for this user: ${bmrMethod}.
 ${calorieSafetyLine()}

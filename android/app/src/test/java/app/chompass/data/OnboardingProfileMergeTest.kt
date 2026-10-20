@@ -33,7 +33,7 @@ class OnboardingProfileMergeTest {
         activityLevel = ActivityLevel.LIGHT,
         goal = WeightGoal.LOSE,
         dietMode = DietMode.KETO,
-        bodyFatPercentage = 28.0,
+        bodyFatPercentage = 0.28,
         goalBodyFatPercentage = 24.0,
         useBodyFatInBMR = false,
         weeklyChangeKg = -0.5,
@@ -66,7 +66,7 @@ class OnboardingProfileMergeTest {
         activityLevel = ActivityLevel.MODERATE,
         goal = WeightGoal.GAIN,
         dietMode = DietMode.STANDARD,
-        bodyFatPercentage = 15.0,
+        bodyFatPercentage = 0.15,
         goalBodyFatPercentage = 12.0,
         weeklyChangeKg = 0.25,
         goalWeightKg = 95.0,
@@ -81,7 +81,7 @@ class OnboardingProfileMergeTest {
         assertEquals(ActivityLevel.MODERATE, merged.activityLevel)
         assertEquals(WeightGoal.GAIN, merged.goal)
         assertEquals(DietMode.STANDARD, merged.dietMode)
-        assertEquals(15.0, merged.bodyFatPercentage!!, 1e-9)
+        assertEquals(0.15, merged.bodyFatPercentage!!, 1e-9)
         assertEquals(12.0, merged.goalBodyFatPercentage!!, 1e-9)
         assertEquals(0.25, merged.weeklyChangeKg!!, 1e-9)
         assertEquals(95.0, merged.goalWeightKg!!, 1e-9)

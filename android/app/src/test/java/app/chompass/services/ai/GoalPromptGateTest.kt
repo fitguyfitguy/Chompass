@@ -153,6 +153,8 @@ class GoalPromptGateTest {
         assertTrue("rich data must surface implied maintenance", prompt.contains("Implied actual maintenance"))
         assertFalse("rich data is not thin", prompt.contains("too thin"))
         assertFalse("rich data must not claim medium confidence", prompt.contains("MEDIUM CONFIDENCE"))
+        assertTrue(prompt.contains("cap protein at 2.2 g/kg lean mass (2.4 g/kg while losing)"))
+        assertTrue(prompt.contains("- Fat: at least max(0.6 g/kg bodyweight, 20% of calories)."))
     }
 
     @Test

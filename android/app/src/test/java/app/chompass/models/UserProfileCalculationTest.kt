@@ -3,6 +3,8 @@ package app.chompass.models
 import app.chompass.services.KetoCarbRecommendationService
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Instant
@@ -120,10 +122,13 @@ class UserProfileCalculationTest {
   }
 
   @Test
-  fun proteinGoal_withBodyFatEqualsTotalWeightRate() {
+  fun proteinGoal_withBodyFatCapsAtLeanMass() {
     val withBf = profile(weightKg = 80.0, bodyFatPercentage = 0.30, activityLevel = ActivityLevel.MODERATE)
     val noBf = profile(weightKg = 80.0, bodyFatPercentage = null, activityLevel = ActivityLevel.MODERATE)
-    assertEquals(noBf.proteinGoal, withBf.proteinGoal)
+    // Total-weight rate = 1.6*80 = 128; with a valid 30% reading the 2.2 g/kg
+    // LBM cap wins: 2.2*56 = 123.2 → 123.
+    assertEquals(123, withBf.proteinGoal)
+    assertEquals(128, noBf.proteinGoal)
   }
 
   @Test
@@ -333,6 +338,64 @@ class UserProfileCalculationTest {
     val next = p.applyingAiGoals(calories = 2100, protein = 100, carbs = 200, fat = 70)
     assertEquals(180, next.effectiveProtein)
     assertEquals(2100, next.effectiveCalories)
+  }
+
+  @Test
+  fun highBodyFat_capsProteinAtLeanMass() {
+    val p = profile(
+      ageYears = 40,
+      heightCm = 180.0,
+      weightKg = 120.0,
+      bodyFatPercentage = 0.40,
+      goal = WeightGoal.LOSE,
+      weeklyChangeKg = 0.5,
+    )
+    // Katch: 370 + 21.6*0.6*120 = 1925.2; TDEE ×1.465 = 2820.42; lose 0.5 → 2270.
+    assertEquals(1925.2, p.bmr, 0.5)
+    // Total-weight rate (1.6+0.2)*120 = 216 caps at 2.4 g/kg LBM = 172.8 → 172.
+    assertEquals(172, p.proteinGoal)
+    // Fat floor: max(0.6*120 = 72, 20% of 2270 ≈ 50) = 72.
+    assertEquals(72, p.fatGoal)
+  }
+
+  @Test
+  fun standardFatGoal_meets20PercentOfCalories() {
+    val p = profile(
+      weightKg = 60.0,
+      heightCm = 170.0,
+      activityLevel = ActivityLevel.SEDENTARY,
+      goal = WeightGoal.MAINTAIN,
+    )
+    // 0.6 g/kg = 36 g; 20% of ~1821 kcal ≈ 40 g — the calorie leg wins.
+    assertTrue(p.fatGoal > 36)
+    assertEquals(maxOf(36, kotlin.math.round(0.2 * p.dailyCalories / 9.0).toInt()), p.fatGoal)
+  }
+
+  @Test
+  fun invalidBodyFatFraction_fallsBackToMifflin() {
+    val typo = profile(bodyFatPercentage = 28.0) // percent-vs-fraction typo
+    assertFalse(typo.usesBodyFatForBMR)
+    assertEquals(profile().bmr, typo.bmr, 1e-9)
+    // No valid reading → no LBM cap on protein either.
+    assertEquals(profile().proteinGoal, typo.proteinGoal)
+    assertFalse(profile(bodyFatPercentage = 0.01).usesBodyFatForBMR)
+    assertFalse(profile(bodyFatPercentage = 0.70).usesBodyFatForBMR)
+  }
+
+  @Test
+  fun applyingAiGoals_keepsProteinRateMode() {
+    val p = profile().copy(
+      customCalories = 2500,
+      proteinTargetMode = ProteinTargetMode.G_PER_KG_TOTAL,
+      proteinGramsPerKg = 1.8,
+    )
+    val next = p.applyingAiGoals(calories = 2100, protein = 140, carbs = 180, fat = 70)
+    assertEquals(ProteinTargetMode.G_PER_KG_TOTAL, next.proteinTargetMode)
+    assertNull(next.customProtein)
+    assertNotNull(next.proteinGramsPerKg)
+    // The AI grams re-enter as the per-kg rate, so effective protein matches.
+    assertEquals(140, next.effectiveProtein)
+    assertEquals(1.75, next.proteinGramsPerKg!!, 1e-9)
   }
 
   @Test

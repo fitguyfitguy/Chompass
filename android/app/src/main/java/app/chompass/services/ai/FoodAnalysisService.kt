@@ -674,8 +674,8 @@ class FoodAnalysisService(
             - BMR (Katch-McArdle, used when body fat is known and enabled): 370 + 21.6 * (1 - bodyFatFraction) * weightKg. The Katch-McArdle path applies (only when body fat was logged within 90 days); older readings fall back to Mifflin-St Jeor.
             - TDEE = BMR * activity multiplier. Multipliers: ${GoalFormulaReference.activityMultipliersLine()}.
             - Calorie target = TDEE + adjustment. adjustment = 0 for maintain; ${GoalFormulaReference.calorieAdjustmentLine()}.
-            - Protein: aim NEAR the formula protein value shown below. That value is the activity multiplier (${GoalFormulaReference.proteinPerKgLine()} g/kg; +0.2 if losing) applied to the user's full bodyweight. You may choose a value within about ±15% of it based on the weight goal and the observed history (lean toward the higher end during a calorie deficit to preserve muscle). Do NOT scale protein down just to fit a lower calorie target, except at the safety floor where protein may yield so 4*protein + 4*carbs + 9*fat stays near calories.
-            - Fat: 0.6 g/kg of full bodyweight.
+            - Protein: aim NEAR the formula protein value shown below. That value is the activity multiplier (${GoalFormulaReference.proteinPerKgLine()} g/kg; +0.2 if losing) applied to the user's full bodyweight, then ${GoalFormulaReference.proteinLbmCapLine()} when a valid body-fat reading exists. You may choose a value within about ±15% of it based on the weight goal and the observed history (lean toward the higher end during a calorie deficit to preserve muscle). Do NOT scale protein down just to fit a lower calorie target, except at the safety floor where protein may yield so 4*protein + 4*carbs + 9*fat stays near calories.
+            - Fat: ${GoalFormulaReference.fatTargetLine()}.
             - Carbs: the calories remaining after protein (4 kcal/g) and fat (9 kcal/g), divided by 4. Keep 4*protein + 4*carbs + 9*fat approximately equal to calories.
             BMR method in effect for this user: $bmrMethod.
             ${GoalFormulaReference.calorieSafetyLine()}
