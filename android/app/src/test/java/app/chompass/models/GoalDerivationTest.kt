@@ -50,8 +50,9 @@ class GoalDerivationTest {
         assertEquals(p.dailyCalories, d.formulaTargetKcal)
         assertFalse(d.formulaClamped)
         assertEquals(1780, d.floorKcal)
-        // Ceiling = max(floor, 6000, 1.5×TDEE) = max(1780, 6000, 3912) = 6000
-        assertEquals(6000, d.ceilingKcal)
+        // Ceiling = min(6000, max(floor, 1.5×TDEE)) = min(6000, 3912) = 3912 — the
+        // 1.5×TDEE proportional cap; only a TDEE above 4000 still reaches 6000.
+        assertEquals(3912, d.ceilingKcal)
         assertEquals(null, d.bfAgeDays)
     }
 
@@ -69,7 +70,8 @@ class GoalDerivationTest {
 
     @Test
     fun extremeGain_clampsDownToCeiling() {
-        // very_active TDEE 3070, +3300 pace → raw 6370 > ceiling 6000.
+        // very_active TDEE 1780 × 1.725 = 3070.5, +3300 pace → raw 6370. Proportional
+        // ceiling min(6000, 1.5×3070.5 = 4605.75 → 4606) clamps before the parser cap.
         val p = profile(
             activityLevel = ActivityLevel.VERY_ACTIVE,
             goal = WeightGoal.GAIN,
@@ -78,6 +80,7 @@ class GoalDerivationTest {
         val d = p.toGoalDerivation()
         assertTrue(d.formulaClamped)
         assertEquals(6370, d.rawTargetKcal)
+        assertEquals(4606, d.ceilingKcal)
         assertEquals(d.ceilingKcal, d.formulaTargetKcal)
         assertTrue(d.rawTargetKcal > d.formulaTargetKcal)
     }

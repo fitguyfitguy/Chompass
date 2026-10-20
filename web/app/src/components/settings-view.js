@@ -643,6 +643,9 @@ export class SettingsView extends HTMLElement {
           : null,
         caloriesLocked: locks.caloriesLocked,
         lockedMacros: locks.lockedMacros,
+        // Provenance: a hand-entered target is manual; a plain form resubmit
+        // keeps whatever wrote the current targets (formula/ai).
+        goalSource: anyCustom ? "manual" : (p.goalSource ?? "unknown"),
       });
       // Gauge mode + full credit are app prefs, not profile fields, so the
       // profile save is separate. Guarded so a form without the fields never

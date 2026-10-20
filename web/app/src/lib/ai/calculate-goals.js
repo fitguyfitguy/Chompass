@@ -87,6 +87,7 @@ export function applyingFormulaGoals(profile) {
   const locked = new Set(profile.lockedMacros || []);
   return {
     ...profile,
+    goalSource: "formula",
     customCalories: profile.caloriesLocked ? profile.customCalories : null,
     customProtein: locked.has("protein") ? profile.customProtein : null,
     customCarbs: locked.has("carbs") ? profile.customCarbs : null,
@@ -133,6 +134,7 @@ export function applyingAiGoals(profile, result) {
   const usesRate = mode === "gPerKgTotal" || mode === "gPerKgLbm";
   return {
     ...profile,
+    goalSource: "ai",
     customCalories: keptCalories,
     customProtein: locked.has("protein")
       ? profile.customProtein

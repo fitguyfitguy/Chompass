@@ -146,7 +146,10 @@ export function safetyFloorKcal(profile) {
 
 /** @param {UserProfile} profile @param {number} floor */
 export function safetyCeilingKcal(profile, floor) {
-  return Math.max(floor, CALORIE_PARSER_CEILING_KCAL, Math.round(tdee(profile) * AUTO_TDEE_CEILING_MULT));
+  // CAL-SAFE ceiling: the 1.5×TDEE proportional cap bounded by the 6000 parser
+  // ceiling (only a TDEE above 4000 reaches 6000); the outer floor max keeps
+  // coerceIn(floor, ceiling) valid when BMR exceeds 6000. Mirrors CalorieSafety.
+  return Math.max(floor, Math.min(CALORIE_PARSER_CEILING_KCAL, Math.max(floor, Math.round(tdee(profile) * AUTO_TDEE_CEILING_MULT))));
 }
 
 /**

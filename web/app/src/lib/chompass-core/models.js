@@ -300,6 +300,7 @@ export function dailyNoteIdFor(date) {
  * @property {string|null} [birthday]            ISO date YYYY-MM-DD; when set, age is derived at save time
  * @property {number|null} [goalBodyFatPercentage] fraction 0-1 optional goal
  * @property {import("./macro-plan.js").MacroPlan|null} [macroPlan] day-type plan (Codeberg #60); null = feature off
+ * @property {"unknown"|"formula"|"ai"|"adaptive"|"manual"} [goalSource] target provenance; auto sources may be re-clamped on weight/body-fat sync (mirrors Android GoalSource)
  */
 
 export {};

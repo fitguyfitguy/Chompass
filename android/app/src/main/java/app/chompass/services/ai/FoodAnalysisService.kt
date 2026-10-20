@@ -824,17 +824,24 @@ class FoodAnalysisService(
             }
             appendLine("- Formula TDEE for comparison: ${forecast.tdee} kcal/day")
             if (forecast.trendsDisagree) {
-                appendLine("- WARNING: logged intake and the real weight trend DISAGREE. The user is likely under-logging. Trust the weight trend over raw logged calories and do NOT use the implied maintenance.")
+                appendLine(
+                    "- NOTE: the population formula and the scale trend disagree (logged intake would imply a much slower change). " +
+                        "The scale trend is individual data, so prefer the trend-implied maintenance — unless it is below the BMR safety floor. " +
+                        "Check the logged intake for missing days before raising the target."
+                )
             }
             if (signals.trustEmpirical) {
                 if (signals.mediumConfidence) {
-                    appendLine("- MEDIUM CONFIDENCE: this trend is still short. If the implied maintenance deviates from the formula TDEE by more than 15%, prefer the formula TDEE.")
+                    appendLine(
+                        "- MEDIUM CONFIDENCE: the trend is still short, so treat the implied maintenance as a rough estimate. " +
+                            "Do not raise the target above it without a measured anchor; fall back to the formula or measured anchor only " +
+                            "when the implied maintenance is below the floor or the logs are thin."
+                    )
                 }
                 append("HIT-AND-TRIAL: this observed data is dense enough to use. Estimate true maintenance from intake and the real weight trend, then apply the goal's weekly-change adjustment to THAT maintenance instead of the formula TDEE: SUBTRACT the lose pace from it, ADD the gain pace to it — output maintenance + adjustment, never maintenance alone. If implied actual maintenance is below BMR, discard it and use the formula or measured TDEE exactly — do not blend, average, or anchor between the two. ${GoalFormulaReference.calorieSafetyLine()}")
             } else {
                 val reasons = buildList {
                     if (signals.impliedBelowFloor) add("the implied maintenance is below the BMR safety floor")
-                    if (forecast.trendsDisagree) add("the logged intake and weight trend disagree — likely under-logging")
                     if (!signals.empiricalUsable) add("${forecast.weightEntriesUsed} weigh-ins over ${forecast.weightSpanDays} days, ${forecast.daysOfFoodData} logged food days is too thin to trust")
                 }
                 val anchor = if (measuredTdee != null) "the measured maintenance above" else "the formula TDEE"
@@ -906,7 +913,11 @@ class FoodAnalysisService(
                 }
                 appendLine("- Formula TDEE for comparison: ${forecast.tdee} kcal/day")
                 if (forecast.trendsDisagree) {
-                    appendLine("- WARNING: logged intake and the real weight trend DISAGREE. The user is likely under-logging. Trust the weight trend over raw logged calories and do NOT use the implied maintenance.")
+                    appendLine(
+                        "- NOTE: the population formula and the scale trend disagree (logged intake would imply a much slower change). " +
+                            "The scale trend is individual data, so prefer the trend-implied maintenance — unless it is below the BMR safety floor. " +
+                            "Check the logged intake for missing days before raising the target."
+                    )
                 }
                 // Always shown for SMART, even when thin or below the floor — the model
                 // judges it, but it must know it is an estimate and when the app flags it.

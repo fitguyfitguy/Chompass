@@ -35,6 +35,19 @@ class CalorieSafetyTest {
     }
 
     @Test
+    fun ceiling_proportionalCapBelow6000() {
+        // 1.5 × 1500 TDEE = 2250 — the ceiling is now proportional, not flat 6000.
+        assertEquals(2250, CalorieSafety.ceilingKcal(1500.0, 1200))
+        assertEquals(2250, CalorieSafety.clampAuto(7000, bmr = 1200.0, tdee = 1500.0))
+    }
+
+    @Test
+    fun ceiling_flat6000ForVeryHighTdee() {
+        // 1.5 × 5000 = 7500 exceeds the parser ceiling: 6000 still caps it.
+        assertEquals(6000, CalorieSafety.ceilingKcal(5000.0, 1200))
+    }
+
+    @Test
     fun smallFemaleSedentaryLose_profileDailyCaloriesIsFloor() {
         val p = UserProfile(
             gender = Gender.FEMALE,

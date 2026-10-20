@@ -7,6 +7,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.Period
 import java.time.ZoneId
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @Serializable
@@ -59,7 +60,12 @@ data class UserProfile(
      *  macroPlan day-type profiles + dayAssignments — no new journal semantics.
      *  Default-empty so old payloads decode; rides the same sync/backup profile
      *  envelope as [macroPlan]. */
-    val goalPhases: List<GoalPhase> = emptyList()
+    val goalPhases: List<GoalPhase> = emptyList(),
+    /** Provenance of the stored targets. AUTO sources (FORMULA/AI/ADAPTIVE) may be
+     *  re-clamped by [reclampedAutoGoal] when weight/body-fat syncs move BMR/TDEE;
+     *  MANUAL/UNKNOWN goals are never auto-adjusted. Default UNKNOWN so older
+     *  serialized profiles decode unchanged. */
+    val goalSource: GoalSource = GoalSource.UNKNOWN,
 ) {
     val displayName: String get() = name?.takeIf { it.isNotEmpty() } ?: "User"
 
@@ -546,8 +552,33 @@ data class UserProfile(
             locked = lockedMacros,
             fatFloorG = macroBalanceFatFloor(),
         )
-        return copy(customCalories = keptCalories)
+        return copy(customCalories = keptCalories, goalSource = GoalSource.AI)
             .withMacroGrams(unlockedMacroUpdates(this, balanced))
+    }
+
+    /**
+     * Re-clamp an auto-sourced goal into the CAL-SAFE envelope. Called before saving a
+     * profile whose BMR/TDEE just moved (weight/body-fat sync): a stored FORMULA/AI/
+     * ADAPTIVE target that now sits below the new BMR floor (or above the ceiling) is
+     * pulled back in and rebalanced; MANUAL/UNKNOWN targets are never touched, and a
+     * locked calorie total is left as the user pinned it. Enabled day-type profiles are
+     * re-clamped via [MacroDayProfile.shiftedBy] regardless of the base goal's source,
+     * so a lifted floor lifts every training/rest day too. A no-op when the target is
+     * already inside the envelope and its macros add up (±30 kcal).
+     */
+    fun reclampedAutoGoal(): UserProfile {
+        if (caloriesLocked) return this
+        val plan = macroPlan?.takeIf { it.enabled }
+        val planClamped = if (plan == null) this else {
+            val profiles = plan.profiles.map { it.shiftedBy(0, bmr, tdee) }
+            if (profiles == plan.profiles) this else copy(macroPlan = plan.copy(profiles = profiles))
+        }
+        if (goalSource !in AUTO_GOAL_SOURCES) return planClamped
+        val floor = CalorieSafety.floorKcal(bmr)
+        val target = effectiveCalories.coerceIn(floor, CalorieSafety.ceilingKcal(tdee, floor))
+        val macroKcal = effectiveProtein * 4 + effectiveCarbs * 4 + effectiveFat * 9
+        if (target == effectiveCalories && abs(macroKcal - target) <= 30) return planClamped
+        return planClamped.applyCaloriesEdit(target)
     }
 
     /**
@@ -595,10 +626,14 @@ data class UserProfile(
         proteinTargetMode = ProteinTargetMode.Default,
         autoBalanceMacro = null,
         caloriesLocked = false,
-        lockedMacros = emptySet()
+        lockedMacros = emptySet(),
+        goalSource = GoalSource.FORMULA,
     )
 
     companion object {
+        /** Goal sources an automatic re-clamp may adjust ([reclampedAutoGoal]). */
+        private val AUTO_GOAL_SOURCES = setOf(GoalSource.FORMULA, GoalSource.AI, GoalSource.ADAPTIVE)
+
         private fun defaultBirthday(): Instant =
             LocalDate.now().minusYears(25).atStartOfDay(ZoneId.systemDefault()).toInstant()
 

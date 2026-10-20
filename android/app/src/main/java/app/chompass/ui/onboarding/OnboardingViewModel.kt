@@ -11,6 +11,7 @@ import app.chompass.models.AiProfile
 import app.chompass.models.DietMode
 import app.chompass.models.FoodLogMacroChip
 import app.chompass.models.Gender
+import app.chompass.models.GoalSource
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.models.HomeCalorieHeroLayout
 import app.chompass.models.HomeDisplayPreferences
@@ -167,7 +168,9 @@ data class OnboardingState(
             aiProvider.requiresApiKey &&
             apiKey.trim().isEmpty()
 
-    fun buildProfile(): UserProfile = UserProfile(
+    /** [goalSource] per OnboardingViewModel's edit/AI provenance: a hand-tuned plan is
+     *  MANUAL, AI-seeded custom targets are AI, pure defaults are FORMULA. */
+    fun buildProfile(goalSource: GoalSource): UserProfile = UserProfile(
         gender = gender,
         birthday = birthday.atStartOfDay(ZoneId.systemDefault()).toInstant(),
         heightCm = heightCm.toDouble(),
@@ -185,7 +188,8 @@ data class OnboardingState(
         customCalories = customCalories,
         customProtein = customProtein,
         customCarbs = customCarbs,
-        customFat = customFat
+        customFat = customFat,
+        goalSource = goalSource,
     )
 }
 
@@ -457,6 +461,20 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
      *  so its first weekly run can't overwrite their numbers. */
     private var planEdited = false
 
+    /** Goal provenance for the profile this session builds: a hand-tuned plan is
+     *  MANUAL, AI-seeded custom targets are AI, pure defaults are FORMULA. */
+    private fun goalSourceFor(state: OnboardingState): GoalSource = when {
+        planEdited -> GoalSource.MANUAL
+        state.customCalories != null || state.customProtein != null ||
+            state.customCarbs != null || state.customFat != null -> GoalSource.AI
+        else -> GoalSource.FORMULA
+    }
+
+    /** Display-only profile for previews/drafts (never persisted); same provenance
+     *  the persisted profile from [complete] will carry. */
+    fun previewProfile(state: OnboardingState = _ui.value): UserProfile =
+        state.buildProfile(goalSourceFor(state))
+
     /** Building Plan step: compute calorie + macro targets with AI (forecast is null for a new
      *  user). On success seeds the custom targets the Plan Ready screen shows; on failure leaves
      *  them null so the formula values are used. Calls [onDone] either way. */
@@ -474,13 +492,13 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
                 ) {
                     null
                 } else {
-                    container.foodAnalysis.calculateGoals(state.buildProfile(), forecast = null, heightMetric = state.heightMetric, weightMetric = state.weightMetric)
+                    container.foodAnalysis.calculateGoals(state.buildProfile(goalSourceFor(state)), forecast = null, heightMetric = state.heightMetric, weightMetric = state.weightMetric)
                 }
             }.getOrNull()
             if (result != null) {
                 // Same write path as Settings: clamp + MacroBalance so the seeded
                 // custom targets actually add up.
-                val applied = state.buildProfile()
+                val applied = state.buildProfile(goalSourceFor(state))
                     .applyingAiGoals(result.calories, result.protein, result.carbs, result.fat)
                 _ui.value = _ui.value.copy(
                     customCalories = applied.customCalories,
@@ -573,7 +591,7 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             _ui.value = _ui.value.copy(submitting = true)
             val state = _ui.value
-            val profile = state.buildProfile()
+            val profile = state.buildProfile(goalSourceFor(state))
             container.profileRepository.saveFromOnboarding(profile)
             container.weightRepository.seedInitialWeightIfEmpty(profile.weightKg)
             // Only seed body fat when the user actually entered one in onboarding
