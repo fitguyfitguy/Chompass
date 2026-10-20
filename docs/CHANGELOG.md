@@ -4,6 +4,23 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Added
+
+- **Pick your body-fat measurement method** (Android and PWA): Settings → Body Fat (Android) and the personal profile form (PWA) gain a method picker for DEXA, 8-electrode BIA, 4-electrode BIA, and tape, plus an editable accuracy override. The method decides how fresh a reading stays (a DEXA scan feeds Katch-McArdle for a year instead of 90 days), how far a single reading can jump before the app waits for a confirming one, and what the AI coach is told about your numbers. Until you pick a method, everything works as before.
+
+### Changed
+
+- **Saved macros always add up to the calorie target** (Android and PWA): every save that writes a calorie target now stores matching macros, whether it comes from a Settings edit, an AI plan, goal phases, or day types. Standard plans raise fat to its floor and let carbs absorb the change; keto lets fat fill and yields protein first. Locked macros stay put.
+- **Auto goals re-clamp when your body changes** (Android and PWA): when a new weight or body-fat reading moves your BMR and pushes an automatic calorie target outside the safe range, the app pulls it back in and rebalances, day-type plans included. Manual targets and locked calories are untouched. The safe-range ceiling now scales with your TDEE instead of a flat 6,000 kcal.
+- **The scale trend can outweigh the formula** (Android): weight-trend recalculations no longer withhold the trend-implied maintenance calories when the trend and the population formula disagree. The number shows with a note to check logged intake for missing days first. Only a below-floor result or thin logs still withhold it.
+- **Protein and fat goals respect valid body fat** (Android and PWA): with a body-fat reading between 3 and 65%, the standard protein goal caps at 2.2 g per kg of lean mass (2.4 while losing) and the fat goal stays at least 20% of calories. Readings outside that window (a 28.0 percent-vs-fraction typo) fall back to the Mifflin-St Jeor formula everywhere.
+
+### Fixed
+
+- **Body-fat readings stay in range** (Android and PWA): the body-fat wheel spans 3 to 65%, saves clamp readings into that window, non-finite entries are refused, and imports drop out-of-range rows. A single jump larger than your method's accuracy no longer moves your profile until a second reading confirms it. Readings you set yourself still apply right away, and a past-dated entry cannot pull the profile backward. Tape-derived entries carry the date of the measurement they came from.
+
 ## [5.9.0] - 2026-10-19
 
 ### Added
