@@ -2269,6 +2269,12 @@ für dich ein</string>
     <string name="sheet_height">Körpergröße</string>
 
     <string name="sheet_body_fat_percent">Körperfettanteil in %</string>
+    <string name="sheet_body_fat_method">Messmethode</string>
+    <string name="sheet_body_fat_accuracy">Vertraut bis ± %1$s pp</string>
+    <string name="body_fat_method_bia8">BIA 8-Elektroden</string>
+    <string name="body_fat_method_bia4">BIA 4-Elektroden</string>
+    <string name="body_fat_method_tape">Maßband</string>
+    <string name="unit_pp">pp</string>
 
     <string name="sheet_goal_body_fat">Körperfettziel</string>
 

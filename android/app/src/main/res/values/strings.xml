@@ -1965,6 +1965,13 @@
     <string name="sheet_week_starts">Week Starts On</string>
     <string name="sheet_height">Height</string>
     <string name="sheet_body_fat_percent">Body fat %</string>
+    <string name="sheet_body_fat_method">Measurement Method</string>
+    <string name="sheet_body_fat_accuracy">Trusted to ± %1$s pp</string>
+    <string name="body_fat_method_dexa">DEXA</string>
+    <string name="body_fat_method_bia8">BIA 8-electrode</string>
+    <string name="body_fat_method_bia4">BIA 4-electrode</string>
+    <string name="body_fat_method_tape">Tape</string>
+    <string name="unit_pp">pp</string>
     <string name="sheet_goal_body_fat">Body Fat Goal</string>
     <string name="sheet_goal_body_fat_currently">Currently %1$s%%</string>
     <string name="action_remove_goal">Remove Goal</string>

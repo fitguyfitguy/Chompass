@@ -569,6 +569,12 @@
     <string name="sheet_week_starts">La semana empieza el</string>
     <string name="sheet_height">Altura</string>
     <string name="sheet_body_fat_percent">Grasa corporal %</string>
+    <string name="sheet_body_fat_method">Método de medición</string>
+    <string name="sheet_body_fat_accuracy">Fiable hasta ± %1$s pp</string>
+    <string name="body_fat_method_bia8">BIA de 8 electrodos</string>
+    <string name="body_fat_method_bia4">BIA de 4 electrodos</string>
+    <string name="body_fat_method_tape">Cinta métrica</string>
+    <string name="unit_pp">pp</string>
     <string name="sheet_weekly_change">Cambio semanal</string>
     <string name="sheet_weekly_change_format">%1$.1f %2$s/semana %3$s</string>
     <string name="sheet_weekly_change_loss">pérdida</string>
