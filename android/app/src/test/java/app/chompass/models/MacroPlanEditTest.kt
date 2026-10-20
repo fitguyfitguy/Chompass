@@ -81,6 +81,18 @@ class MacroPlanEditTest {
     }
 
     @Test
+    fun `upsert rebalances macros after the clamp`() {
+        val profile = MacroDayProfile("new", "Aggressive cut", 900, 150, 60, 40)
+        val result = MacroPlanEdit.upsertProfile(plan(), profile, bmr = 1700.0, tdee = 2500.0, today = today)
+        val stored = result.profiles.first { it.id == "new" }
+        // STANDARD keep-protein/fat: macros add up to the clamped total exactly.
+        assertEquals(1700, 4 * stored.proteinG + 4 * stored.carbsG + 9 * stored.fatG)
+        assertEquals(150, stored.proteinG)
+        assertEquals(40, stored.fatG)
+        assertEquals((1700 - 4 * 150 - 9 * 40) / 4, stored.carbsG)
+    }
+
+    @Test
     fun `upsert clamps calories to the ceiling`() {
         val profile = MacroDayProfile("new", "Bulk", 9000, 200, 800, 200)
         val result = MacroPlanEdit.upsertProfile(plan(), profile, bmr = 1700.0, tdee = 2500.0, today = today)

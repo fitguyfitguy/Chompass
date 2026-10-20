@@ -1,7 +1,6 @@
 package app.chompass.models
 
 import java.time.LocalDate
-import kotlin.math.roundToInt
 import kotlinx.serialization.Serializable
 
 /**
@@ -49,20 +48,23 @@ data class MacroDayProfile(
     }
 
     /**
-     * applyCaloriesEdit-style re-split at a new calorie total: macros keep
-     * their current kcal share, the last macro (fat) absorbs the rounding
-     * remainder — the same distribution shape [UserProfile.applyCaloriesEdit]
-     * uses for the base target set.
+     * Re-split at a new calorie total via [MacroBalance] (STANDARD keep-protein/fat
+     * semantics, no floor): carbs absorb the remainder, protein only yields when the
+     * total cannot cover it. Mirrors the base target write path
+     * ([UserProfile.applyCaloriesEdit]) and the PWA `rebalanceProfileTo`.
      */
     fun rebalancedTo(targetCalories: Int): MacroDayProfile {
-        val weights = listOf(proteinG * 4.0, carbsG * 4.0, fatG * 9.0)
-        val total = weights.sum()
-        if (total <= 0.0) return copy(calories = targetCalories.coerceAtLeast(0))
         val target = targetCalories.coerceAtLeast(0)
-        val protein = (target * weights[0] / total / 4.0).roundToInt()
-        val carbs = (target * weights[1] / total / 4.0).roundToInt()
-        val fat = ((target - protein * 4 - carbs * 4).coerceAtLeast(0)) / 9
-        return copy(calories = target, proteinG = protein, carbsG = carbs, fatG = fat)
+        val balanced = MacroBalance.rebalance(
+            calories = target,
+            protein = proteinG,
+            carbs = carbsG,
+            fat = fatG,
+            mode = MacroBalance.Mode.STANDARD,
+            locked = emptySet(),
+            fatFloorG = 0,
+        )
+        return copy(calories = target, proteinG = balanced.protein, carbsG = balanced.carbs, fatG = balanced.fat)
     }
 }
 

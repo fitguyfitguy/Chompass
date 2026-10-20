@@ -212,11 +212,12 @@ class UserProfileCalculationTest {
       customFat = 60,
       caloriesLocked = true,
     )
-    // 140*4 + 180*4 + 70*9 = 1910, within 30 kcal of 1900.
+    // AI macros take the budget: P140/F70 kept, carbs absorb to 1900 exactly.
     val next = p.applyingAiGoals(calories = 1500, protein = 140, carbs = 180, fat = 70)
     assertEquals(1900, next.effectiveCalories)
     assertEquals(140, next.effectiveProtein)
-    assertEquals(180, next.effectiveCarbs)
+    assertEquals(70, next.effectiveFat)
+    assertEquals(177, next.effectiveCarbs)
   }
 
   @Test
@@ -239,7 +240,69 @@ class UserProfileCalculationTest {
     val next = p.applyingAiGoals(calories = 2100, protein = 140, carbs = 180, fat = 70)
     assertEquals(2100, next.effectiveCalories)
     assertEquals(140, next.effectiveProtein)
+    // Fat floor 48 kept the AI fat at 70; carbs absorb to 2100 (sum 2098).
+    assertEquals(70, next.effectiveFat)
+    assertEquals(227, next.effectiveCarbs)
     assertFalse(next.caloriesLocked)
+  }
+
+  @Test
+  fun applyCaloriesEdit_standardCut_keepsProteinAndFat() {
+    val p = profile().copy(
+      customCalories = 2100,
+      customProtein = 150,
+      customCarbs = 215,
+      customFat = 60,
+    )
+    val next = p.applyCaloriesEdit(1500)
+    assertEquals(1500, next.effectiveCalories)
+    assertEquals(150, next.effectiveProtein)
+    assertEquals(60, next.effectiveFat)
+    assertEquals(90, next.effectiveCarbs)
+    assertEquals(1500, 4 * next.effectiveProtein + 4 * next.effectiveCarbs + 9 * next.effectiveFat)
+  }
+
+  @Test
+  fun applyCaloriesEdit_raisesFatToFloor() {
+    val p = profile().copy(
+      customCalories = 2000,
+      customProtein = 150,
+      customCarbs = 215,
+      customFat = 30,
+    )
+    val next = p.applyCaloriesEdit(2000)
+    assertEquals(48, next.effectiveFat)
+    assertEquals(242, next.effectiveCarbs)
+    assertEquals(150, next.effectiveProtein)
+  }
+
+  @Test
+  fun applyCaloriesEdit_ketoFatFills() {
+    val p = profile(dietMode = DietMode.KETO).copy(
+      customCalories = 1500,
+      customProtein = 150,
+      customCarbs = 30,
+      customFat = 70,
+    )
+    val next = p.applyCaloriesEdit(1500)
+    assertEquals(150, next.effectiveProtein)
+    assertEquals(30, next.effectiveCarbs)
+    assertEquals(86, next.effectiveFat)
+  }
+
+  @Test
+  fun applyCaloriesEdit_lockedProteinStays() {
+    val p = profile().copy(
+      customCalories = 2000,
+      customProtein = 180,
+      customCarbs = 150,
+      customFat = 60,
+      lockedMacros = setOf(AutoBalanceMacro.PROTEIN),
+    )
+    val next = p.applyCaloriesEdit(1500)
+    assertEquals(180, next.effectiveProtein)
+    assertEquals(1500, next.effectiveCalories)
+    assertEquals(1500, 4 * next.effectiveProtein + 4 * next.effectiveCarbs + 9 * next.effectiveFat)
   }
 
   @Test

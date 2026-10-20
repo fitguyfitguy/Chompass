@@ -11,6 +11,7 @@
  */
 
 import { clampAutoCalories, dailyCalories } from "./formulas.js";
+import { rebalanceGoalMacros } from "./macro-balance.js";
 import {
   isoToEpochDay,
   epochDayToIso,
@@ -35,21 +36,15 @@ export function profileById(plan, id) {
 }
 
 /**
- * Shift a profile's kcal share to a new calorie total (applyCaloriesEdit-style
- * split; fat absorbs the rounding remainder). Mirror of
- * MacroDayProfile.rebalancedTo.
+ * Re-split a profile at a new calorie total via rebalanceGoalMacros (STANDARD
+ * keep-protein/fat semantics, no floor). Mirror of MacroDayProfile.rebalancedTo.
  * @param {MacroDayProfile} profile
  * @param {number} targetCalories
  */
 export function rebalanceProfileTo(profile, targetCalories) {
-  const weights = [profile.proteinG * 4, profile.carbsG * 4, profile.fatG * 9];
-  const total = weights[0] + weights[1] + weights[2];
   const target = Math.max(0, Math.trunc(targetCalories));
-  if (total <= 0) return { ...profile, calories: target };
-  const protein = Math.round((target * weights[0]) / total / 4);
-  const carbs = Math.round((target * weights[1]) / total / 4);
-  const fat = Math.trunc(Math.max(0, target - protein * 4 - carbs * 4) / 9);
-  return { ...profile, calories: target, proteinG: protein, carbsG: carbs, fatG: fat };
+  const balanced = rebalanceGoalMacros(target, profile.proteinG, profile.carbsG, profile.fatG, "standard", [], 0);
+  return { ...profile, calories: target, proteinG: balanced.protein, carbsG: balanced.carbs, fatG: balanced.fat };
 }
 
 /**
