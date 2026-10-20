@@ -144,6 +144,21 @@ test("buildCalculateGoalsPrompt_disagreeingTrends_surfaceImpliedMaintenanceWithN
   assert.match(prompt, /Fat: at least max\(0\.6 g\/kg bodyweight, 20% of calories\)\./);
 });
 
+test("buildCalculateGoalsPrompt_bodyFatMethod_surfacesTrustNote", () => {
+  const profile = {
+    sex: "male", age: 30, heightCm: 180, weightKg: 80,
+    activityLevel: "moderate", goal: "maintain", weeklyChangeKg: null,
+    ketoMode: false, customCalories: null,
+    bodyFatPercentage: 0.22,
+    bodyFatUpdatedAt: "2026-08-01T00:00:00Z",
+    bodyFatMethod: "bia8",
+  };
+  const prompt = buildCalculateGoalsPrompt(profile, null, true, true);
+  assert.match(prompt, /8-electrode BIA scale, trusted to ±3\.2 pp/);
+  const plain = buildCalculateGoalsPrompt({ ...profile, bodyFatMethod: null }, null, true, true);
+  assert.doesNotMatch(plain, /trusted to ±/);
+});
+
 test("buildCalculateGoalsPrompt_usesLoggedDayAverageForEmpiricalTdee", () => {
   const profile = {
     sex: /** @type {const} */ ("male"),
