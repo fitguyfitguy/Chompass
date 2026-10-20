@@ -139,21 +139,30 @@ class BodyFatProfileSyncTest {
     }
 
     @Test
-    fun looseMethod_keepsJumpsWithinAccuracy() = runBlocking {
-        // 4-electrode ±5 pp: a 4-point jump is within stated accuracy → accepted.
+    fun looseMethod_acceptsJumpsWithinRepeatability() = runBlocking {
+        // 4-electrode repeatability ±3 pp: a 2.5-point day-to-day swing is noise →
+        // accepted without confirmation…
         profiles.save(UserProfile(weightKg = 80.0, bodyFatPercentage = null, bodyFatMethod = BodyFatMethod.BIA_FOUR))
         repo.addEntry(entry(0.20, 3))
-        repo.addEntry(entry(0.24, 1))
-        assertEquals(0.24, profiles.current()!!.bodyFatPercentage!!, 1e-9)
+        repo.addEntry(entry(0.225, 1))
+        assertEquals(0.225, profiles.current()!!.bodyFatPercentage!!, 1e-9)
+        // …while a 4-point jump exceeds the noise band and waits for confirmation.
+        repo.addEntry(entry(0.265, 0))
+        assertEquals(0.225, profiles.current()!!.bodyFatPercentage!!, 1e-9)
     }
 
     @Test
     fun customAccuracyOverride_wins() {
         val p = UserProfile(bodyFatMethod = BodyFatMethod.BIA_EIGHT, bodyFatAccuracyPoints = 4.0)
+        // The override asserts both the validity band (prompt) and the noise
+        // band (spike guard).
         assertEquals(4.0, p.effectiveBodyFatAccuracyPoints, 1e-9)
+        assertEquals(4.0, p.effectiveBodyFatRepeatabilityPoints, 1e-9)
         assertEquals(3.2, UserProfile(bodyFatMethod = BodyFatMethod.BIA_EIGHT).effectiveBodyFatAccuracyPoints, 1e-9)
+        assertEquals(2.0, UserProfile(bodyFatMethod = BodyFatMethod.BIA_EIGHT).effectiveBodyFatRepeatabilityPoints, 1e-9)
         // Legacy default: today's ±5 pp guard.
         assertEquals(5.0, UserProfile().effectiveBodyFatAccuracyPoints, 1e-9)
+        assertEquals(5.0, UserProfile().effectiveBodyFatRepeatabilityPoints, 1e-9)
     }
 
     @Test

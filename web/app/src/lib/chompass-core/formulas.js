@@ -71,12 +71,14 @@ export function bmrKatchMcArdle(profile) {
   return 370 + 21.6 * lbmKg;
 }
 
-/** Known accuracy (pp) and freshness (days) per method — Android BodyFatMethod. */
+/** Known accuracy (pp) and freshness (days) per method — Android BodyFatMethod.
+ *  accuracyPoints = validity (stated to the AI prompt); repeatabilityPoints =
+ *  day-to-day noise (scales the Android-side spike guard). */
 export const BODY_FAT_METHODS = {
-  dexa: { accuracyPoints: 1.5, recencyDays: 365 },
-  bia8: { accuracyPoints: 3.2, recencyDays: 90 },
-  bia4: { accuracyPoints: 5, recencyDays: 90 },
-  tape: { accuracyPoints: 3.5, recencyDays: 90 },
+  dexa: { accuracyPoints: 1.5, repeatabilityPoints: 1.0, recencyDays: 365 },
+  bia8: { accuracyPoints: 3.2, repeatabilityPoints: 2.0, recencyDays: 90 },
+  bia4: { accuracyPoints: 5, repeatabilityPoints: 3.0, recencyDays: 90 },
+  tape: { accuracyPoints: 3.5, repeatabilityPoints: 2.5, recencyDays: 90 },
 };
 
 /**
@@ -88,6 +90,17 @@ export function effectiveBodyFatAccuracyPoints(profile) {
   if (profile.bodyFatAccuracyPoints != null) return profile.bodyFatAccuracyPoints;
   const method = profile.bodyFatMethod != null ? BODY_FAT_METHODS[profile.bodyFatMethod] : null;
   return method != null ? method.accuracyPoints : 5;
+}
+
+/**
+ * Day-to-day noise of the reading source (Android spike-guard width): the same
+ * override, else the method's repeatability, else the historical ±5 pp.
+ * @param {UserProfile} profile
+ */
+export function effectiveBodyFatRepeatabilityPoints(profile) {
+  if (profile.bodyFatAccuracyPoints != null) return profile.bodyFatAccuracyPoints;
+  const method = profile.bodyFatMethod != null ? BODY_FAT_METHODS[profile.bodyFatMethod] : null;
+  return method != null ? method.repeatabilityPoints : 5;
 }
 
 /** Freshness window in days: the method's, else the legacy 90. */

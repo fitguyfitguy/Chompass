@@ -6,25 +6,30 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * How the user's body-fat readings are measured. Drives two trust knobs:
- *  - [accuracyPoints]: how many percentage points a single reading can be off —
- *    scales the profile-sync spike guard (a jump beyond it waits for a
- *    confirming reading) and the AI prompt's reliability note;
+ * How the user's body-fat readings are measured. Drives three trust knobs:
+ *  - [accuracyPoints]: validity — how far a single reading can sit from the
+ *    truth; stated to the AI prompt so the model weighs the number correctly;
+ *  - [repeatabilityPoints]: day-to-day noise of the same device on the same
+ *    body — scales the profile-sync spike guard (a jump beyond it waits for a
+ *    confirming reading). Validity and repeatability differ: a cheap BIA
+ *    scale can be self-consistent yet biased, a DEXA scan is both tight;
  *  - [recencyDays]: how long a reading stays fresh for Katch-McArdle — a
  *    clinical DEXA scan outlives a daily smart-scale estimate.
  *
- * A one-off scan (DEXA) is not repeatable noise; daily BIA is. The user can
- * override the accuracy number ([UserProfile.bodyFatAccuracyPoints]).
+ * The user can override the accuracy number
+ * ([UserProfile.bodyFatAccuracyPoints]); the override then also widens the
+ * guard, since someone asserting a wider band asserts both.
  */
 @Serializable
 enum class BodyFatMethod(
     val accuracyPoints: Double,
+    val repeatabilityPoints: Double,
     val recencyDays: Long,
 ) {
-    @SerialName("dexa") DEXA(1.5, 365),
-    @SerialName("bia8") BIA_EIGHT(3.2, 90),
-    @SerialName("bia4") BIA_FOUR(5.0, 90),
-    @SerialName("tape") TAPE(3.5, 90);
+    @SerialName("dexa") DEXA(1.5, 1.0, 365),
+    @SerialName("bia8") BIA_EIGHT(3.2, 2.0, 90),
+    @SerialName("bia4") BIA_FOUR(5.0, 3.0, 90),
+    @SerialName("tape") TAPE(3.5, 2.5, 90);
 
     @get:StringRes
     val labelRes: Int
