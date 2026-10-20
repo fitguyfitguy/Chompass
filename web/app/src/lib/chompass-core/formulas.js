@@ -71,9 +71,35 @@ export function bmrKatchMcArdle(profile) {
   return 370 + 21.6 * lbmKg;
 }
 
+/** Known accuracy (pp) and freshness (days) per method — Android BodyFatMethod. */
+export const BODY_FAT_METHODS = {
+  dexa: { accuracyPoints: 1.5, recencyDays: 365 },
+  bia8: { accuracyPoints: 3.2, recencyDays: 90 },
+  bia4: { accuracyPoints: 5, recencyDays: 90 },
+  tape: { accuracyPoints: 3.5, recencyDays: 90 },
+};
+
 /**
- * True when the body-fat reading is dated and older than BODY_FAT_RECENCY_DAYS
- * (Android UserProfile.isBodyFatStale). Null/undefined = legacy reading = fresh.
+ * Trust width for body-fat readings, in percentage points: the user's custom
+ * override, else the method's known accuracy, else the historical ±5 pp guard.
+ * @param {UserProfile} profile
+ */
+export function effectiveBodyFatAccuracyPoints(profile) {
+  if (profile.bodyFatAccuracyPoints != null) return profile.bodyFatAccuracyPoints;
+  const method = profile.bodyFatMethod != null ? BODY_FAT_METHODS[profile.bodyFatMethod] : null;
+  return method != null ? method.accuracyPoints : 5;
+}
+
+/** Freshness window in days: the method's, else the legacy 90. */
+export function bodyFatRecencyDays(profile) {
+  const method = profile.bodyFatMethod != null ? BODY_FAT_METHODS[profile.bodyFatMethod] : null;
+  return method != null ? method.recencyDays : BODY_FAT_RECENCY_DAYS;
+}
+
+/**
+ * True when the body-fat reading is dated and older than its freshness window
+ * (method-driven; Android UserProfile.isBodyFatStale). Null/undefined = legacy
+ * reading = fresh.
  * @param {UserProfile} profile
  * @param {Date} [now]
  * @returns {boolean}
@@ -81,7 +107,7 @@ export function bmrKatchMcArdle(profile) {
 export function bodyFatStale(profile, now = new Date()) {
   if (profile.bodyFatUpdatedAt == null) return false;
   const ageDays = (now.getTime() - Date.parse(profile.bodyFatUpdatedAt)) / 86_400_000;
-  return ageDays > BODY_FAT_RECENCY_DAYS;
+  return ageDays > bodyFatRecencyDays(profile);
 }
 
 /**

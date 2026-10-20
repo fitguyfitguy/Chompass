@@ -1,7 +1,7 @@
 // @ts-check
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { bmr, tdee, dailyCalories, calorieAdjustment, proteinGoal, fatGoalStandard, dailyTargets, relativeFatMassPercent, safetyFloorKcal, safetyCeilingKcal, clampAutoCalories } from "../formulas.js";
+import { bmr, tdee, dailyCalories, calorieAdjustment, proteinGoal, fatGoalStandard, dailyTargets, relativeFatMassPercent, safetyFloorKcal, safetyCeilingKcal, clampAutoCalories, bodyFatStale, bodyFatRecencyDays, effectiveBodyFatAccuracyPoints } from "../formulas.js";
 import { averageDailyIntake } from "../forecast.js";
 import { loadParityFixture } from "../../parity-fixtures.js";
 
@@ -113,4 +113,27 @@ test("calorieCeiling_proportionalCapBoundedBy6000", () => {
   assert.equal(clampAutoCalories(7000, base), 3912);
   const heavy = { ...base, weightKg: 150, activityLevel: "very_active" };
   assert.equal(safetyCeilingKcal(heavy, safetyFloorKcal(heavy)), 6000);
+});
+
+// Body-fat method trust knobs (mirrors Android BodyFatMethod): a DEXA scan
+// stays fresh ~a year and narrows the spike guard; legacy = ±5 pp / 90 days.
+test("bodyFatMethod_drivesFreshnessAndAccuracy", () => {
+  const at = new Date("2026-08-10T12:00:00Z");
+  const dated = (method, accuracy) => ({
+    sex: "male", age: 30, heightCm: 180, weightKg: 80, activityLevel: "moderate", goal: "maintain",
+    bodyFatPercentage: 0.2,
+    bodyFatUpdatedAt: new Date(at.getTime() - 200 * 86_400_000).toISOString(),
+    bodyFatMethod: method,
+    bodyFatAccuracyPoints: accuracy,
+  });
+  const dexa = dated("dexa", undefined);
+  assert.equal(bodyFatStale(dexa, at), false);
+  assert.equal(bodyFatRecencyDays(dexa), 365);
+  const legacy = dated(undefined, undefined);
+  assert.equal(bodyFatStale(legacy, at), true);
+  assert.equal(bodyFatRecencyDays(legacy), 90);
+  assert.equal(bodyFatStale(dated("bia4", undefined), at), true);
+  assert.equal(effectiveBodyFatAccuracyPoints(dexa), 1.5);
+  assert.equal(effectiveBodyFatAccuracyPoints(dated("bia8", 4)), 4);
+  assert.equal(effectiveBodyFatAccuracyPoints(dated(undefined, undefined)), 5);
 });

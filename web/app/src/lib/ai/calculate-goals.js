@@ -22,6 +22,8 @@ import {
   effectiveProteinG,
   proteinTargetBasisKg,
   fatFloorGrams,
+  effectiveBodyFatAccuracyPoints,
+  BODY_FAT_METHODS,
 } from "../chompass-core/formulas.js";
 import { rebalanceGoalMacros } from "../chompass-core/macro-balance.js";
 import {
@@ -368,6 +370,17 @@ export function buildCalculateGoalsPrompt(profile, forecast, heightMetric, weigh
     : `${(profile.heightCm / 2.54).toFixed(1)} in`;
   const bodyFat =
     profile.bodyFatPercentage != null ? `${(profile.bodyFatPercentage * 100).toFixed(1)}%` : "not set";
+  const bodyFatTrustNote =
+    profile.bodyFatMethod != null && BODY_FAT_METHODS[profile.bodyFatMethod] != null
+      ? (profile.bodyFatMethod === "dexa"
+          ? " (DEXA scan"
+          : profile.bodyFatMethod === "bia8"
+            ? " (8-electrode BIA scale"
+            : profile.bodyFatMethod === "bia4"
+              ? " (4-electrode BIA scale"
+              : " (tape measurements") +
+        `, trusted to ±${effectiveBodyFatAccuracyPoints(profile)} pp)`
+      : "";
   const goalWeight =
     profile.goalWeightKg != null
       ? weightMetric
@@ -434,7 +447,7 @@ USER PROFILE
 - Age: ${profile.age}
 - Height: ${height}
 - Weight: ${weight}
-- Body fat: ${bodyFat}
+- Body fat: ${bodyFat}${bodyFatTrustNote}
 - Activity level: ${profile.activityLevel}
 - Weight goal: ${profile.goal}
 - Weekly change preference: ${weekly}

@@ -21,12 +21,14 @@ import {
   effectiveProteinG,
   proteinTargetBasisKg,
   fatFloorGrams,
+  BODY_FAT_METHODS,
 } from "../lib/chompass-core/formulas.js";
 import { rebalanceGoalMacros } from "../lib/chompass-core/macro-balance.js";
 import { clampNoteText } from "../lib/chompass-core/clamp-note.js";
 import { computeWeightForecast } from "../lib/chompass-core/forecast.js";
 import { exportDiary, importDiary, importDiaryUntracked } from "../lib/chompass-core/diary-format.js";
 import { exportBodyMetrics, importBodyMetrics } from "../lib/chompass-core/body-metrics-format.js";
+
 import {
   exportDiaryMarkdown,
   exportDiaryCsv,
@@ -94,6 +96,9 @@ import { refreshGoalJournal } from "../lib/goal-journal-store.js";
 import { escapeHtml, escapeAttr } from "../lib/ui/html.js";
 import { todayIso, shiftDate } from "../lib/date.js";
 import { chevronRight } from "../lib/icons.js";
+
+/** UI labels for the body-fat method picker (proper nouns; not localized). */
+const BF_METHOD_LABELS = { dexa: "DEXA", bia8: "BIA ×8", bia4: "BIA ×4", tape: "Tape" };
 
 const WEEKDAY_ORDER = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
 
@@ -401,13 +406,29 @@ export class SettingsView extends HTMLElement {
             <label for="weight">${weightLabel}</label>
             <input id="weight" name="weight" type="number" step="0.1" min="1" value="${weightVal}" />
           </div>
-          <div class="field">
-            <label for="bodyFatPercentage">${t("onboarding.body_fat.pct")}</label>
-            <input id="bodyFatPercentage" name="bodyFatPercentage" type="number" step="0.1" min="0" max="100"
-              value="${p.bodyFatPercentage != null ? p.bodyFatPercentage * 100 : ""}" />
-          </div>
+        <div class="field">
+          <label for="bodyFatPercentage">${t("onboarding.body_fat.pct")}</label>
+          <input id="bodyFatPercentage" name="bodyFatPercentage" type="number" step="0.1" min="0" max="100"
+            value="${p.bodyFatPercentage != null ? p.bodyFatPercentage * 100 : ""}" />
         </div>
-        <label class="field" style="display:flex;gap:0.5rem;align-items:center;">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="bodyFatMethod">${t("settings.personal.bf_method")}</label>
+          <select id="bodyFatMethod" name="bodyFatMethod">
+            <option value="" ${p.bodyFatMethod == null ? "selected" : ""}>${t("settings.personal.bf_method_none")}</option>
+            ${Object.entries(BODY_FAT_METHODS)
+              .map(([id, m]) => `<option value="${id}" ${p.bodyFatMethod === id ? "selected" : ""}>${BF_METHOD_LABELS[id]} (±${m.accuracyPoints} pp)</option>`)
+              .join("")}
+          </select>
+        </div>
+        <div class="field">
+          <label for="bodyFatAccuracyPoints">${t("settings.personal.bf_accuracy")}</label>
+          <input id="bodyFatAccuracyPoints" name="bodyFatAccuracyPoints" type="number" step="0.1" min="0.5" max="15"
+            value="${p.bodyFatAccuracyPoints ?? ""}" placeholder="${t("settings.personal.bf_accuracy_default")}" />
+        </div>
+      </div>
+      <label class="field" style="display:flex;gap:0.5rem;align-items:center;">
           <input type="checkbox" name="useBodyFatInBMR" ${p.useBodyFatInBMR !== false ? "checked" : ""} />
           ${t("settings.personal.use_bf_bmr")}
         </label>
@@ -428,6 +449,8 @@ export class SettingsView extends HTMLElement {
       const height = Number(fd.get("height"));
       const weight = Number(fd.get("weight"));
       const bfRaw = fd.get("bodyFatPercentage");
+      const methodRaw = String(fd.get("bodyFatMethod") || "");
+      const accRaw = fd.get("bodyFatAccuracyPoints");
       await profileStore.save({
         ...p,
         sex: /** @type {any} */ (fd.get("sex")),
@@ -436,6 +459,9 @@ export class SettingsView extends HTMLElement {
         weightKg: appPrefs.weightUnit === "lb" ? weight / 2.20462 : weight,
         bodyFatPercentage: bfRaw ? Number(bfRaw) / 100 : null,
         bodyFatUpdatedAt: bfRaw ? new Date().toISOString() : null,
+        bodyFatMethod: methodRaw in BODY_FAT_METHODS ? /** @type {any} */ (methodRaw) : null,
+        // Empty = follow the method's known accuracy.
+        bodyFatAccuracyPoints: accRaw ? Number(accRaw) : null,
         useBodyFatInBMR: fd.get("useBodyFatInBMR") === "on",
         activityLevel: /** @type {any} */ (fd.get("activityLevel")),
       });

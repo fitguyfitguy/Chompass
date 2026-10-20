@@ -301,6 +301,8 @@ export function dailyNoteIdFor(date) {
  * @property {number|null} [goalBodyFatPercentage] fraction 0-1 optional goal
  * @property {import("./macro-plan.js").MacroPlan|null} [macroPlan] day-type plan (Codeberg #60); null = feature off
  * @property {"unknown"|"formula"|"ai"|"adaptive"|"manual"} [goalSource] target provenance; auto sources may be re-clamped on weight/body-fat sync (mirrors Android GoalSource)
+ * @property {"dexa"|"bia8"|"bia4"|"tape"} [bodyFatMethod] how readings are measured; drives spike-guard width and reading freshness (mirrors Android BodyFatMethod)
+ * @property {number} [bodyFatAccuracyPoints] user override of the method's known accuracy, in percentage points
  */
 
 export {};
