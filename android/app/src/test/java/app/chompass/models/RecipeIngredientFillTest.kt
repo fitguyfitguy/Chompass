@@ -3,7 +3,6 @@ package app.chompass.models
 import app.chompass.services.ai.FoodAnalysis
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -75,13 +74,14 @@ class RecipeIngredientFillTest {
     }
 
     @Test
-    fun noFillChange_returnsSameInstance_ingredientUntouched() {
+    fun noNumericFill_stampsAnswers_ingredientUntouched() {
         val ingredient = gappedIngredient()
         val candidate = ingredient.toFillCandidate()
-        // Analysis has nothing the entry lacks → fill returns `this`…
-        assertSame(candidate, candidate.fillMissingFrom(analysis()))
-        // …and mapping an unchanged candidate back is a no-op.
-        assertEquals(ingredient, ingredient.filledFrom(candidate))
+        // Zero answers write nothing but stamp the asked fields (gaps close)…
+        val merged = candidate.fillMissingFrom(analysis())
+        assertTrue(merged.gapReport().missingMacros.isEmpty())
+        // …and mapping the stamped candidate back is still a no-op on values.
+        assertEquals(ingredient, ingredient.filledFrom(merged))
     }
 
     @Test

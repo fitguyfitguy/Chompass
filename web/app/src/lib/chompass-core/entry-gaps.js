@@ -88,12 +88,16 @@ function namesMatchByContainment(a, b) {
 export function gapReport(entry) {
   /** @type {string[]} */
   const missingMacros = [];
-  if ((entry.calories ?? 0) === 0) missingMacros.push("calories");
-  if ((entry.proteinG ?? 0) === 0) missingMacros.push("proteinG");
-  if ((entry.carbsG ?? 0) === 0) missingMacros.push("carbsG");
-  if ((entry.fatG ?? 0) === 0) missingMacros.push("fatG");
+  // Fields the fill-missing AI explicitly answered (zero macro, null micro)
+  // leave the scan — a legit-zero entry completes after one fill instead of
+  // re-appearing forever. Local-only tokens mirror the Android set.
+  const answered = entry.gapAnsweredFields ?? [];
+  if ((entry.calories ?? 0) === 0 && !answered.includes("calories")) missingMacros.push("calories");
+  if ((entry.proteinG ?? 0) === 0 && !answered.includes("proteinG")) missingMacros.push("proteinG");
+  if ((entry.carbsG ?? 0) === 0 && !answered.includes("carbsG")) missingMacros.push("carbsG");
+  if ((entry.fatG ?? 0) === 0 && !answered.includes("fatG")) missingMacros.push("fatG");
   const missingMicros = MICRO_FIELDS.map(([, modelKey]) => modelKey).filter(
-    (modelKey) => entry[modelKey] == null,
+    (modelKey) => entry[modelKey] == null && !answered.includes(modelKey),
   );
   const zeroMacroConstituents = (entry.constituents ?? []).filter(isFillableRow);
   return {
@@ -140,29 +144,52 @@ export function fillMissingFrom(entry, estimate) {
 
   let changed = false;
 
+  // Explicit answers stamp the field even when they carry no value: a zero
+  // macro or a null micro closes its gap (legit-zero entries complete after
+  // one fill). Local-only; mirrors FoodEntry.gapAnsweredFields (Android).
+  /** @type {Set<string>} */
+  const answered = new Set(entry.gapAnsweredFields ?? []);
+
   let calories = entry.calories ?? 0;
   let proteinG = entry.proteinG ?? 0;
   let carbsG = entry.carbsG ?? 0;
   let fatG = entry.fatG ?? 0;
-  if (calories === 0 && (estimate.calories ?? 0) !== 0) {
-    calories = Math.round((estimate.calories ?? 0) * gramsFactor);
+  if (calories === 0 && !answered.has("calories")) {
+    if ((estimate.calories ?? 0) !== 0) {
+      calories = Math.round((estimate.calories ?? 0) * gramsFactor);
+      changed = true;
+    }
+    answered.add("calories");
     changed = true;
   }
-  if (proteinG === 0 && (estimate.proteinG ?? 0) !== 0) {
-    proteinG = scaleG(estimate.proteinG ?? 0);
+  if (proteinG === 0 && !answered.has("proteinG")) {
+    if ((estimate.proteinG ?? 0) !== 0) {
+      proteinG = scaleG(estimate.proteinG ?? 0);
+      changed = true;
+    }
+    answered.add("proteinG");
     changed = true;
   }
-  if (carbsG === 0 && (estimate.carbsG ?? 0) !== 0) {
-    carbsG = scaleG(estimate.carbsG ?? 0);
+  if (carbsG === 0 && !answered.has("carbsG")) {
+    if ((estimate.carbsG ?? 0) !== 0) {
+      carbsG = scaleG(estimate.carbsG ?? 0);
+      changed = true;
+    }
+    answered.add("carbsG");
     changed = true;
   }
-  if (fatG === 0 && (estimate.fatG ?? 0) !== 0) {
-    fatG = scaleG(estimate.fatG ?? 0);
+  if (fatG === 0 && !answered.has("fatG")) {
+    if ((estimate.fatG ?? 0) !== 0) {
+      fatG = scaleG(estimate.fatG ?? 0);
+      changed = true;
+    }
+    answered.add("fatG");
     changed = true;
   }
 
   // Field-wise micro merge: write only into null fields — never overwrite a
-  // stored value with the estimate (or with a null).
+  // stored value with the estimate (or with a null). A null answer is still
+  // an answer: stamp the field so the gap closes.
   /** @type {Record<string, number|null>} */
   const mergedMicros = {};
   for (const [, modelKey] of MICRO_FIELDS) {
@@ -171,10 +198,16 @@ export function fillMissingFrom(entry, estimate) {
       mergedMicros[modelKey] = stored;
       continue;
     }
+    if (answered.has(modelKey)) continue;
     const incoming = estimate[modelKey];
-    if (incoming == null) continue;
+    if (incoming == null) {
+      answered.add(modelKey);
+      changed = true;
+      continue;
+    }
     mergedMicros[modelKey] =
       gramsFactor === 1 ? incoming : Math.max(0, scaleG(incoming));
+    answered.add(modelKey);
     changed = true;
   }
 
@@ -251,6 +284,7 @@ export function fillMissingFrom(entry, estimate) {
     fatG,
     constituents: filledConstituents,
     ...mergedMicros,
+    gapAnsweredFields: [...answered],
     microsCompositionSignature: microsCompositionSignature(filledConstituents),
   };
 }

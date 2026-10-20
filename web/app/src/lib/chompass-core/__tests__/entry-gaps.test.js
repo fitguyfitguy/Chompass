@@ -2,6 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { gapReport, fillMissingFrom } from "../entry-gaps.js";
+import { MICRO_FIELDS } from "../diary-format.js";
 
 /**
  * Fill-missing scan + merge semantics — PWA mirror of Android
@@ -156,7 +157,7 @@ test("merge fills zero macros + null micros, keeps stored values", () => {
   assert.equal(merged.sodiumMg, 320);
 });
 
-test("merge: zero estimate values do not fill", () => {
+test("merge: zero estimate answers stamp the fields without writing", () => {
   const before = entry({ calories: 0, proteinG: 0, fiberG: null });
   const merged = fillMissingFrom(before, {
     calories: 0,
@@ -164,9 +165,59 @@ test("merge: zero estimate values do not fill", () => {
     fiberG: null,
     quantityG: null,
   });
+  // Nothing numerically written — zeros and nulls stay as they were.
   assert.equal(merged.calories, 0);
   assert.equal(merged.proteinG, 0);
   assert.equal(merged.fiberG, null);
+  // But every asked field is now answered: the gaps close (the entry stops
+  // re-appearing in scans) without fabricating values.
+  assert.deepEqual(gapReport(merged).missingMacros, []);
+  assert.ok(!gapReport(merged).missingMicros.includes("fiberG"));
+  assert.ok(merged.gapAnsweredFields.includes("calories"));
+  assert.ok(merged.gapAnsweredFields.includes("fiberG"));
+});
+
+test("merge: explicit zero answers close gaps (vodka soda)", () => {
+  // #135: an entry that genuinely has no fat and no micros. The model
+  // answers 0/null; the merge keeps the values but closes every gap, so
+  // fill-missing completes after one run.
+  const microsNull = Object.fromEntries(MICRO_FIELDS.map(([, modelKey]) => [modelKey, null]));
+  const before = entry({ calories: 120, proteinG: 0, carbsG: 0, fatG: 0, ...microsNull });
+  const merged = fillMissingFrom(before, { calories: 120, quantityG: null });
+
+  assert.equal(merged.proteinG, 0);
+  assert.equal(merged.carbsG, 0);
+  assert.equal(merged.fatG, 0);
+  const gaps = gapReport(merged);
+  assert.deepEqual(gaps.missingMacros, []);
+  assert.deepEqual(gaps.missingMicros, []);
+  assert.equal(gaps.hasMacroGaps, false);
+  assert.ok(merged.gapAnsweredFields.includes("fatG"));
+  assert.ok(!merged.gapAnsweredFields.includes("calories")); // stored non-zero, never asked
+  // Re-running the fill is now a no-op: nothing left to ask.
+  assert.strictEqual(merged, fillMissingFrom(merged, { calories: 120, quantityG: null }));
+});
+
+test("scan: answered fields stop counting as gaps", () => {
+  // #135: fields the fill-missing AI explicitly answered (zero macro, null
+  // micro) leave the scan; the rest keep reporting.
+  const microsNull = Object.fromEntries(MICRO_FIELDS.map(([, modelKey]) => [modelKey, null]));
+  const gaps = gapReport(
+    entry({
+      calories: 2,
+      proteinG: 0,
+      carbsG: 0,
+      fatG: 0,
+      ...microsNull,
+      gapAnsweredFields: ["proteinG", "fatG", "sodiumMg"],
+    }),
+  );
+  // Calories are non-zero (never missing); proteinG/fatG answered; carbsG
+  // unanswered → the only macro gap left, so the scan still lists it.
+  assert.deepEqual(gaps.missingMacros, ["carbsG"]);
+  assert.ok(!gaps.missingMicros.includes("sodiumMg"));
+  assert.ok(gaps.missingMicros.includes("caffeineMg"));
+  assert.equal(gaps.hasMacroGaps, true);
 });
 
 test("merge: grams factor scales written values, 1dp micros", () => {
@@ -302,30 +353,28 @@ test("merge: containment fallback fills Mealie-style prefixed names", () => {
 });
 
 test("merge: containment needs a word boundary and a ≥3-char shorter side", () => {
-  // "rice" sits inside "price" but not at a word boundary — no fill.
+  // "rice" sits inside "price" but not at a word boundary — no fill. (The
+  // zero answers still stamp the entry-level macros, so compare rows, not
+  // object identity.)
   const boundaryBlocked = entry({ constituents: [constituent({ name: "Rice" })] });
-  assert.strictEqual(
-    boundaryBlocked,
-    fillMissingFrom(boundaryBlocked, {
-      calories: 0,
-      proteinG: 0,
-      carbsG: 0,
-      fatG: 0,
-      quantityG: null,
-      constituents: [{ name: "Price", calories: 200, proteinG: 5, carbsG: 40, fatG: 1 }],
-    }),
-  );
+  const boundaryMerged = fillMissingFrom(boundaryBlocked, {
+    calories: 0,
+    proteinG: 0,
+    carbsG: 0,
+    fatG: 0,
+    quantityG: null,
+    constituents: [{ name: "Price", calories: 200, proteinG: 5, carbsG: 40, fatG: 1 }],
+  });
+  assert.deepEqual(boundaryMerged.constituents, boundaryBlocked.constituents);
   // Shorter side under 3 characters: boundary hit, still no fill.
   const shortBlocked = entry({ constituents: [constituent({ name: "Rye bread" })] });
-  assert.strictEqual(
-    shortBlocked,
-    fillMissingFrom(shortBlocked, {
-      calories: 0,
-      proteinG: 0,
-      carbsG: 0,
-      fatG: 0,
-      quantityG: null,
-      constituents: [{ name: "Ry", calories: 250, proteinG: 8, carbsG: 48, fatG: 2 }],
-    }),
-  );
+  const shortMerged = fillMissingFrom(shortBlocked, {
+    calories: 0,
+    proteinG: 0,
+    carbsG: 0,
+    fatG: 0,
+    quantityG: null,
+    constituents: [{ name: "Ry", calories: 250, proteinG: 8, carbsG: 48, fatG: 2 }],
+  });
+  assert.deepEqual(shortMerged.constituents, shortBlocked.constituents);
 });
