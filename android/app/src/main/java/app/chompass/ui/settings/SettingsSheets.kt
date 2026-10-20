@@ -460,17 +460,10 @@ internal fun SettingsSheets(
                 }
                 SettingsSheet.BODY_FAT -> BodyFatSheet(
                     current = ui.profile?.bodyFatPercentage,
-                    // Clearing the current value also clears the goal so a stale
-                    // goal doesn't linger on someone who opted out of the
-                    // body-fat track entirely.
+                    // History + profile row via the repository (setBodyFat): a value
+                    // stamps bodyFatUpdatedAt = now; null clears value, stamp, and goal.
                     onSave = { bf ->
-                        vm.updateProfile {
-                            it.copy(
-                                bodyFatPercentage = bf,
-                                bodyFatUpdatedAt = if (bf == null) null else Instant.now(),
-                                goalBodyFatPercentage = if (bf == null) null else it.goalBodyFatPercentage
-                            )
-                        }
+                        vm.setBodyFat(bf)
                         onDismiss()
                     },
                     onDismiss = onDismiss

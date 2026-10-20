@@ -10,6 +10,7 @@ import app.chompass.debug.DebugTrace
 import app.chompass.models.AIProvider
 import app.chompass.models.AiProfile
 import app.chompass.models.AutoBalanceMacro
+import app.chompass.models.BodyFatEntry
 import app.chompass.models.CalorieSafety
 import app.chompass.models.DietMode
 import app.chompass.models.FoodLogMacroChip
@@ -2467,6 +2468,31 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             )
             container.profileRepository.save(next)
             applyProfile(next)
+        }
+    }
+
+    /** Settings → Body Fat save. A value writes a dated history entry through
+     *  BodyFatRepository (forceProfile: the explicit user value drives the profile
+     *  row and bodyFatUpdatedAt); null clears the whole body-fat track — profile
+     *  value, its date stamp, and the goal — so a stale goal doesn't linger on
+     *  someone who opted out of the body-fat track entirely. */
+    fun setBodyFat(fraction: Double?) {
+        if (fraction == null) {
+            updateProfile {
+                it.copy(
+                    bodyFatPercentage = null,
+                    bodyFatUpdatedAt = null,
+                    goalBodyFatPercentage = null,
+                )
+            }
+            return
+        }
+        viewModelScope.launch {
+            container.bodyFatRepository.addEntry(
+                BodyFatEntry(bodyFatFraction = fraction, date = Instant.now()),
+                forceProfile = true,
+            )
+            applyProfile(container.profileRepository.current() ?: return@launch)
         }
     }
 

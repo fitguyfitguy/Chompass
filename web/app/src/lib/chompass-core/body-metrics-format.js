@@ -142,6 +142,9 @@ export async function importBodyMetrics(doc) {
   }
   const bodyFat = [];
   for (const b of doc.body_fat ?? []) {
+    // Out-of-range readings (3–65%) are dropped instead of stored; mirrors the
+    // Android BodyMetricsImporter bounds.
+    if (b.body_fat_percent < 3 || b.body_fat_percent > 65) continue;
     bodyFat.push({ id: await withId(b, "bodyfat"), date: b.date, bodyFatPercent: b.body_fat_percent });
   }
   const measurements = [];

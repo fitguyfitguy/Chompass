@@ -280,7 +280,11 @@ class ProgressViewModel(private val container: AppContainer) : ViewModel() {
 
     fun addBodyFatAt(fraction: Double, at: Instant) {
         viewModelScope.launch {
-            container.bodyFatRepository.addEntry(BodyFatEntry(bodyFatFraction = fraction, date = at))
+            // Explicit user entry: bypasses the import spike guard for the profile.
+            container.bodyFatRepository.addEntry(
+                BodyFatEntry(bodyFatFraction = fraction, date = at),
+                forceProfile = true,
+            )
         }
     }
 
