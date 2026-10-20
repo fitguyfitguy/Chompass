@@ -108,6 +108,12 @@ data class UserProfile(
     val effectiveBodyFatAccuracyPoints: Double
         get() = bodyFatAccuracyPoints ?: bodyFatMethod?.accuracyPoints ?: 5.0
 
+    /** Day-to-day noise of the reading source: the same override (a wider stated
+     *  band is also a wider noise band), else the method's repeatability, else
+     *  the historical ±5 pp spike guard. */
+    val effectiveBodyFatRepeatabilityPoints: Double
+        get() = bodyFatAccuracyPoints ?: bodyFatMethod?.repeatabilityPoints ?: 5.0
+
     /** How long a body-fat reading stays fresh for Katch-McArdle: a clinical DEXA
      *  scan outlives a daily smart-scale estimate; null method = legacy 90 days. */
     val bodyFatRecencyDays: Long

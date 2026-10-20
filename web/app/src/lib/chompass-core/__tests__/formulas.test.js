@@ -1,7 +1,7 @@
 // @ts-check
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { bmr, tdee, dailyCalories, calorieAdjustment, proteinGoal, fatGoalStandard, dailyTargets, relativeFatMassPercent, safetyFloorKcal, safetyCeilingKcal, clampAutoCalories, bodyFatStale, bodyFatRecencyDays, effectiveBodyFatAccuracyPoints } from "../formulas.js";
+import { bmr, tdee, dailyCalories, calorieAdjustment, proteinGoal, fatGoalStandard, dailyTargets, relativeFatMassPercent, safetyFloorKcal, safetyCeilingKcal, clampAutoCalories, bodyFatStale, bodyFatRecencyDays, effectiveBodyFatAccuracyPoints, effectiveBodyFatRepeatabilityPoints } from "../formulas.js";
 import { averageDailyIntake } from "../forecast.js";
 import { loadParityFixture } from "../../parity-fixtures.js";
 
@@ -136,4 +136,8 @@ test("bodyFatMethod_drivesFreshnessAndAccuracy", () => {
   assert.equal(effectiveBodyFatAccuracyPoints(dexa), 1.5);
   assert.equal(effectiveBodyFatAccuracyPoints(dated("bia8", 4)), 4);
   assert.equal(effectiveBodyFatAccuracyPoints(dated(undefined, undefined)), 5);
+  // Repeatability = guard band: method noise, overridden by the same override.
+  assert.equal(effectiveBodyFatRepeatabilityPoints(dexa), 1.0);
+  assert.equal(effectiveBodyFatRepeatabilityPoints(dated("bia8", 4)), 4);
+  assert.equal(effectiveBodyFatRepeatabilityPoints(dated(undefined, undefined)), 5);
 });

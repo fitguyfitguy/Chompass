@@ -212,7 +212,7 @@ class BodyFatRepository(
             stored.none { it.date > candidate.date && sanitizeBodyFatFraction(it.bodyFatFraction) != null }
         }
         val chosen = preferValid
-            ?: representativeBodyFat(stored, profile.effectiveBodyFatAccuracyPoints)
+            ?: representativeBodyFat(stored, profile.effectiveBodyFatRepeatabilityPoints)
             ?: return
         if (abs((profile.bodyFatPercentage ?: -1.0) - chosen.bodyFatFraction) > 0.0001 ||
             profile.bodyFatUpdatedAt != chosen.date
