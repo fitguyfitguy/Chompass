@@ -75,7 +75,8 @@ object GoalPhaseEdit {
     fun applyPhase(profile: UserProfile, phase: GoalPhase, today: LocalDate): UserProfile {
         val start = GoalJournal.parseDateOrNull(phase.startDate) ?: return profile
         val end = GoalJournal.parseDateOrNull(phase.endDate) ?: return profile
-        val clamped = phase.copy(calories = CalorieSafety.clampAuto(phase.calories, profile.bmr, profile.tdee))
+        val clampedCalories = CalorieSafety.clampAuto(phase.calories, profile.bmr, profile.tdee)
+        val clamped = balancedMacros(phase, clampedCalories)
         val clipFrom = today.minusDays(MacroPlan.ASSIGNMENT_KEEP_DAYS)
         val clipTo = today.plusDays(MacroPlan.ASSIGNMENT_KEEP_DAYS)
         val effectiveStart = maxOf(start, clipFrom)
@@ -227,6 +228,25 @@ object GoalPhaseEdit {
         carbsG = phase.carbsG,
         fatG = phase.fatG,
     )
+
+    /** Clamp the phase's macros to [calories] via [MacroDayProfile.rebalancedTo], so the
+     *  stored [GoalPhase] and its [MacroDayProfile] always carry the same balanced grams. */
+    private fun balancedMacros(phase: GoalPhase, calories: Int): GoalPhase {
+        val balanced = MacroDayProfile(
+            id = "",
+            name = "",
+            calories = calories,
+            proteinG = phase.proteinG,
+            carbsG = phase.carbsG,
+            fatG = phase.fatG,
+        ).rebalancedTo(calories)
+        return phase.copy(
+            calories = calories,
+            proteinG = balanced.proteinG,
+            carbsG = balanced.carbsG,
+            fatG = balanced.fatG,
+        )
+    }
 
     private fun assignmentsFor(phase: GoalPhase, start: LocalDate, end: LocalDate): Map<String, String> {
         val id = phase.profileId ?: return emptyMap()

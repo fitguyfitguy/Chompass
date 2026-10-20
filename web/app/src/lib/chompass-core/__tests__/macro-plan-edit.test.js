@@ -113,11 +113,13 @@ test("isProfileReferenced finds schedule references", () => {
   assert.equal(isProfileReferenced(p, "ghost"), false);
 });
 
-test("rebalanceProfileTo keeps kcal shares; shiftProfileBy clamps", () => {
+test("rebalanceProfileTo keeps protein and fat, carbs absorb; shiftProfileBy clamps", () => {
   const rb = rebalanceProfileTo(TRAINING, 2600);
   assert.equal(rb.calories, 2600);
-  // 4*p + 4*c + 9*f ≈ target (fat absorbs the remainder)
-  assert.ok(Math.abs(4 * rb.proteinG + 4 * rb.carbsG + 9 * rb.fatG - 2600) <= 9);
+  assert.equal(rb.proteinG, TRAINING.proteinG);
+  assert.equal(rb.fatG, TRAINING.fatG);
+  // 4*p + 4*c + 9*f ≈ target (carbs absorb, ±1 rounding)
+  assert.ok(Math.abs(4 * rb.proteinG + 4 * rb.carbsG + 9 * rb.fatG - 2600) <= 4);
   const shifted = shiftProfileBy(REST, -100, PROFILE);
   assert.equal(shifted.calories, REST.calories - 100);
   const floored = shiftProfileBy(REST, -5000, PROFILE);

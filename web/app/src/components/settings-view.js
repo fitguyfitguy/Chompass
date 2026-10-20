@@ -12,7 +12,16 @@ import {
   untrackedDays,
   clearAllUserData,
 } from "../lib/db.js";
-import { dailyTargets, bmr, tdee, safetyFloorKcal, CALORIE_PARSER_CEILING_KCAL } from "../lib/chompass-core/formulas.js";
+import {
+  dailyTargets,
+  bmr,
+  tdee,
+  safetyFloorKcal,
+  CALORIE_PARSER_CEILING_KCAL,
+  effectiveProteinG,
+  proteinTargetBasisKg,
+} from "../lib/chompass-core/formulas.js";
+import { rebalanceGoalMacros } from "../lib/chompass-core/macro-balance.js";
 import { clampNoteText } from "../lib/chompass-core/clamp-note.js";
 import { computeWeightForecast } from "../lib/chompass-core/forecast.js";
 import { exportDiary, importDiary, importDiaryUntracked } from "../lib/chompass-core/diary-format.js";
@@ -583,24 +592,55 @@ export class SettingsView extends HTMLElement {
         customCarbs,
         customFat,
       });
+      // Macro-balance write-path invariant (mirrors Android applyCaloriesEdit):
+      // the stored macros must add up to the stored total. Rebalance against the
+      // post-save inputs, then persist the balanced grams. With no custom field
+      // entered the custom* stays null so live formula targets keep applying.
+      const anyCustom =
+        customCalories != null || customProtein != null || customCarbs != null || customFat != null;
+      const ketoMode = fd.get("ketoMode") === "true";
+      const fatFloorG = ketoMode
+        ? Math.max(Math.trunc(0.6 * p.weightKg), 45)
+        : Math.trunc(0.6 * p.weightKg);
+      const baseCalories = customCalories ?? targets.calories;
+      const usesRateMode = proteinTargetMode !== "gramsPerDay";
+      const proteinIn =
+        customProtein ??
+        (usesRateMode && proteinGramsPerKg != null
+          ? Math.trunc(proteinGramsPerKg * proteinTargetBasisKg(p))
+          : effectiveProteinG(p));
+      const balanced = rebalanceGoalMacros(
+        baseCalories,
+        proteinIn,
+        customCarbs ?? targets.carbsG,
+        customFat ?? targets.fatG,
+        ketoMode ? "keto" : "standard",
+        locks.lockedMacros,
+        fatFloorG,
+      );
       await profileStore.save({
         ...p,
         goal: /** @type {any} */ (fd.get("goal")),
         weeklyChangeKg: paceRaw ? Number(paceRaw) : null,
         goalWeightKg: goalW ? Number(goalW) : null,
-        ketoMode: fd.get("ketoMode") === "true",
+        ketoMode,
         // Keto transition (#60 Q4): a day-type plan pauses (data kept).
         macroPlan:
-          fd.get("ketoMode") === "true" && p.macroPlan
+          ketoMode && p.macroPlan
             ? pausedForKeto(p.macroPlan)
             : p.macroPlan,
-        customCalories,
-        customProtein,
-        customCarbs,
-        customFat,
+        customCalories: anyCustom ? baseCalories : null,
+        customProtein: anyCustom && !usesRateMode ? balanced.protein : null,
+        customCarbs: anyCustom ? balanced.carbs : null,
+        customFat: anyCustom ? balanced.fat : null,
         proteinTargetMode,
-        proteinGramsPerKg:
-          proteinTargetMode === "gramsPerDay" ? null : proteinGramsPerKg,
+        // Rate mode keeps its mode; the balanced grams re-enter as the per-kg
+        // rate so the stored effective protein matches the balance.
+        proteinGramsPerKg: usesRateMode
+          ? anyCustom
+            ? balanced.protein / proteinTargetBasisKg(p)
+            : proteinGramsPerKg
+          : null,
         caloriesLocked: locks.caloriesLocked,
         lockedMacros: locks.lockedMacros,
       });

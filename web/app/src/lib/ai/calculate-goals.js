@@ -19,7 +19,10 @@ import {
   proteinGoal,
   clampAutoCalories,
   safetyFloorKcal,
+  effectiveProteinG,
+  proteinTargetBasisKg,
 } from "../chompass-core/formulas.js";
+import { rebalanceGoalMacros } from "../chompass-core/macro-balance.js";
 import {
   activityMultipliersLine,
   proteinPerKgLine,
@@ -97,7 +100,11 @@ export function applyingFormulaGoals(profile) {
 
 /**
  * Apply an AI goal snapshot while keeping user locks. Mirrors Android
- * UserProfile.applyingAiGoals. Calories are CAL-SAFE clamped unless locked.
+ * UserProfile.applyingAiGoals. Calories are CAL-SAFE clamped unless locked;
+ * unlocked macros are then rebalanced to the kept total via
+ * rebalanceGoalMacros — even when calories was not clamped — so stored macros
+ * always add up. An unlocked protein in a g/kg rate mode keeps that mode (the
+ * balanced grams re-enter as the per-kg rate).
  * @param {UserProfile} profile
  * @param {GoalCalculation} result
  * @returns {UserProfile}
@@ -108,12 +115,34 @@ export function applyingAiGoals(profile, result) {
     ? (profile.customCalories != null ? Math.trunc(profile.customCalories) : clamped)
     : clamped;
   const locked = new Set(profile.lockedMacros || []);
+  const keto = profile.ketoMode === true;
+  const fatFloorG = keto
+    ? Math.max(Math.trunc(0.6 * profile.weightKg), 45)
+    : Math.trunc(0.6 * profile.weightKg);
+  const targets = dailyTargets(profile);
+  const balanced = rebalanceGoalMacros(
+    keptCalories,
+    locked.has("protein") ? effectiveProteinG(profile) : result.protein,
+    locked.has("carbs") ? targets.carbsG : result.carbs,
+    locked.has("fat") ? targets.fatG : result.fat,
+    keto ? "keto" : "standard",
+    locked,
+    fatFloorG,
+  );
+  const mode = profile.proteinTargetMode || "gramsPerDay";
+  const usesRate = mode === "gPerKgTotal" || mode === "gPerKgLbm";
   return {
     ...profile,
     customCalories: keptCalories,
-    customProtein: locked.has("protein") ? profile.customProtein : result.protein,
-    customCarbs: locked.has("carbs") ? profile.customCarbs : result.carbs,
-    customFat: locked.has("fat") ? profile.customFat : result.fat,
+    customProtein: locked.has("protein")
+      ? profile.customProtein
+      : usesRate ? null : balanced.protein,
+    customCarbs: locked.has("carbs") ? profile.customCarbs : balanced.carbs,
+    customFat: locked.has("fat") ? profile.customFat : balanced.fat,
+    proteinGramsPerKg: locked.has("protein")
+      ? profile.proteinGramsPerKg
+      : usesRate ? balanced.protein / proteinTargetBasisKg(profile) : null,
+    proteinTargetMode: locked.has("protein") ? profile.proteinTargetMode : mode,
   };
 }
 

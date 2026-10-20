@@ -198,6 +198,8 @@ class GoalPlanRecalcTest {
         assertEquals(2, plan.profiles.size)
         assertEquals(3000, plan.profiles.first { it.id == "t" }.calories)
         assertEquals(180, plan.profiles.first { it.id == "t" }.proteinG)
+        // Stored row rebalanced to its own total: P/F kept, carbs absorb.
+        assertEquals(390, plan.profiles.first { it.id == "t" }.carbsG)
         // Rest day floored per profile (MACRO-CYCLE-C) via the base clamp.
         assertEquals(
             CalorieSafety.clampAuto(900, profile.bmr, profile.tdee),

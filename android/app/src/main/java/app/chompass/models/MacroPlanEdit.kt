@@ -44,9 +44,10 @@ object MacroPlanEdit {
         today: LocalDate,
     ): MacroPlan {
         val current = plan ?: MacroPlan()
-        val clamped = profile.copy(
-            calories = CalorieSafety.clampAuto(profile.calories, bmr, tdee),
-        )
+        val target = CalorieSafety.clampAuto(profile.calories, bmr, tdee)
+        // Clamp, then rebalance the macros to the stored total (same shape as the
+        // base target write path).
+        val clamped = profile.rebalancedTo(target)
         val profiles = current.profiles.filterNot { it.id == clamped.id }
         val next = if (profiles.size >= MAX_PROFILES && profiles.none { it.id == clamped.id }) {
             current // cap reached: refuse new adds, keep updates

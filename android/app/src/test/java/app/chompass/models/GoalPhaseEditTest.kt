@@ -140,6 +140,23 @@ class GoalPhaseEditTest {
     }
 
     @Test
+    fun applyPhaseRebalancesMacrosToStoredCalories() {
+        val next = GoalPhaseEdit.applyPhase(profile(), phase(), today)
+        val stored = next.goalPhases.single()
+        val clamped = CalorieSafety.clampAuto(1800, profile().bmr, profile().tdee)
+        assertEquals(clamped, stored.calories)
+        val planProfile = next.macroPlan!!.profiles.first { it.id == stored.profileId }
+        // Stored phase and plan profile carry the same balanced grams.
+        assertEquals(stored.proteinG, planProfile.proteinG)
+        assertEquals(stored.carbsG, planProfile.carbsG)
+        assertEquals(stored.fatG, planProfile.fatG)
+        // STANDARD keep-protein/fat: macros add up to the stored total
+        // (carb truncation leaves ≤3 kcal of rounding slack).
+        val macroKcal = 4 * stored.proteinG + 4 * stored.carbsG + 9 * stored.fatG
+        assertTrue("macro kcal $macroKcal vs $clamped", macroKcal in (clamped - 3)..clamped)
+    }
+
+    @Test
     fun applyOnExistingPlanUpdatesInPlaceAndKeepsManualDays() {
         val extra = MacroDayProfile(id = "extra", name = "Extra", calories = 1900, proteinG = 1, carbsG = 1, fatG = 1)
         val manualDay = today.plusDays(35) // outside the phase range

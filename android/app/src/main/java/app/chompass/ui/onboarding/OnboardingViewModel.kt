@@ -478,11 +478,15 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
                 }
             }.getOrNull()
             if (result != null) {
+                // Same write path as Settings: clamp + MacroBalance so the seeded
+                // custom targets actually add up.
+                val applied = state.buildProfile()
+                    .applyingAiGoals(result.calories, result.protein, result.carbs, result.fat)
                 _ui.value = _ui.value.copy(
-                    customCalories = result.calories,
-                    customProtein = result.protein,
-                    customFat = result.fat,
-                    customCarbs = result.carbs,
+                    customCalories = applied.customCalories,
+                    customProtein = applied.customProtein,
+                    customFat = applied.customFat,
+                    customCarbs = applied.customCarbs,
                 )
             }
             onDone()

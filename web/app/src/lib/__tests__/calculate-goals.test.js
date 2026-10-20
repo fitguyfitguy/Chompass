@@ -69,7 +69,11 @@ test("applyingAiGoals_honorsLockedCaloriesAndWritesMacros", () => {
   };
   const next = applyingAiGoals(profile, { calories: 1500, protein: 120, carbs: 100, fat: 40, reason: null });
   assert.equal(next.customCalories, 1900);
+  // Unlocked macros take the budget rebalanced to 1900: P120/F40 with the fat
+  // floor at 48, carbs absorb (1900 - 4*120 - 9*48) / 4.
   assert.equal(next.customProtein, 120);
+  assert.equal(next.customFat, 48);
+  assert.equal(next.customCarbs, 247);
 });
 
 test("applyingAiGoals_clampsBelowFloor", () => {

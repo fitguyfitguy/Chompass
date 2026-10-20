@@ -1,0 +1,59 @@
+{
+  "comment": "Shared golden vectors for MacroBalance.rebalance (Android) and rebalanceGoalMacros (PWA chompass-core/macro-balance.js). 4/4/9 kcal per gram, integer truncating division. Update both sides together; MacroBalanceParityTest and chompass-core/__tests__/macro-balance.test.js assert this table.",
+  "scenarios": [
+    {
+      "id": "standard_cut_carbs_absorb",
+      "mode": "standard",
+      "calories": 1500,
+      "input": { "protein": 150, "carbs": 215, "fat": 60 },
+      "locked": [],
+      "fatFloorG": 48,
+      "expected": { "protein": 150, "carbs": 90, "fat": 60 }
+    },
+    {
+      "id": "standard_fat_floor_raise",
+      "mode": "standard",
+      "calories": 2000,
+      "input": { "protein": 150, "carbs": 215, "fat": 30 },
+      "locked": [],
+      "fatFloorG": 48,
+      "expected": { "protein": 150, "carbs": 242, "fat": 48 }
+    },
+    {
+      "id": "standard_infeasible_protein_yields_to_floor",
+      "mode": "standard",
+      "calories": 1000,
+      "input": { "protein": 150, "carbs": 0, "fat": 60 },
+      "locked": [],
+      "fatFloorG": 48,
+      "expected": { "protein": 142, "carbs": 0, "fat": 48 }
+    },
+    {
+      "id": "keto_fill_fat_absorbs",
+      "mode": "keto",
+      "calories": 1500,
+      "input": { "protein": 150, "carbs": 30, "fat": 70 },
+      "locked": [],
+      "fatFloorG": 57,
+      "expected": { "protein": 150, "carbs": 30, "fat": 86 }
+    },
+    {
+      "id": "keto_infeasible_protein_yields",
+      "mode": "keto",
+      "calories": 1000,
+      "input": { "protein": 150, "carbs": 30, "fat": 70 },
+      "locked": [],
+      "fatFloorG": 57,
+      "expected": { "protein": 91, "carbs": 30, "fat": 57 }
+    },
+    {
+      "id": "standard_locked_protein_floor_breaks",
+      "mode": "standard",
+      "calories": 1000,
+      "input": { "protein": 150, "carbs": 0, "fat": 60 },
+      "locked": ["protein"],
+      "fatFloorG": 48,
+      "expected": { "protein": 150, "carbs": 1, "fat": 44 }
+    }
+  ]
+}

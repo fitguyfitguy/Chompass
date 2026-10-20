@@ -382,19 +382,37 @@ data class UserProfile(
         customProtein = null,
     )
 
-    /** User edited the calorie target directly. Hold any locked macros fixed and rescale the
-     *  unlocked macros to fill the new total. (Max two macros lock, so one always absorbs.) */
+    /** User edited the calorie target directly. Locked macros stay fixed; unlocked
+     *  macros rebalance via [MacroBalance] (STANDARD keeps protein/fat and lets carbs
+     *  absorb, KETO lets fat fill), so stored macros always add up to the stored total. */
     fun applyCaloriesEdit(newCalories: Int): UserProfile {
         val base = materialized()
         val target = maxOf(0, newCalories)
-        val lockedKcal = AutoBalanceMacro.values()
-            .filter { base.isMacroLocked(it) }
-            .sumOf { base.effectiveGrams(it) * it.kcalPerGram }
-        val unlocked = AutoBalanceMacro.values().filter { !base.isMacroLocked(it) }
+        val balanced = MacroBalance.rebalance(
+            calories = target,
+            protein = base.effectiveProtein,
+            carbs = base.effectiveCarbs,
+            fat = base.effectiveFat,
+            mode = if (dietMode == DietMode.KETO) MacroBalance.Mode.KETO else MacroBalance.Mode.STANDARD,
+            locked = base.lockedMacros,
+            fatFloorG = macroBalanceFatFloor(),
+        )
         return base
-            .withMacroGrams(base.distribute(target - lockedKcal, unlocked))
+            .withMacroGrams(unlockedMacroUpdates(base, balanced))
             .copy(customCalories = target)
     }
+
+    /** Fat floor for [MacroBalance]: 0.6 g/kg bodyweight, at least 45 g in keto.
+     *  (Commit 4 extends the standard floor with a 20%-of-calories leg.) */
+    private fun macroBalanceFatFloor(): Int =
+        if (dietMode == DietMode.KETO) maxOf((0.6 * weightKg).toInt(), 45) else (0.6 * weightKg).toInt()
+
+    private fun unlockedMacroUpdates(base: UserProfile, balanced: MacroBalance.Grams): Map<AutoBalanceMacro, Int> =
+        buildMap {
+            if (!base.isMacroLocked(AutoBalanceMacro.PROTEIN)) put(AutoBalanceMacro.PROTEIN, balanced.protein)
+            if (!base.isMacroLocked(AutoBalanceMacro.CARBS)) put(AutoBalanceMacro.CARBS, balanced.carbs)
+            if (!base.isMacroLocked(AutoBalanceMacro.FAT)) put(AutoBalanceMacro.FAT, balanced.fat)
+        }
 
     /** User edited one macro. When calories is locked, hold the calorie total fixed and let the
      *  other unlocked macros absorb the change — returns null (no change) if neither other macro
@@ -510,43 +528,26 @@ data class UserProfile(
     }
 
     /**
-     * Apply an AI goal snapshot while keeping user locks. Unlocked fields take the new values;
-     * locked fields stay. When calories is locked, AI macros are kept if they already fill the
-     * budget (small rounding on the last unlocked macro); only a large miss scales them.
+     * Apply an AI goal snapshot while keeping user locks. Unlocked fields take the new
+     * values; locked fields stay. Unlocked macros are then rebalanced to the kept
+     * calorie total via [MacroBalance] — even when calories was not clamped — so the
+     * stored macros always add up to the stored total. An unlocked protein in a g/kg
+     * rate mode keeps that mode (the balanced grams re-enter as the per-kg rate).
      */
     fun applyingAiGoals(calories: Int, protein: Int, carbs: Int, fat: Int): UserProfile {
         val clamped = CalorieSafety.clampAuto(calories, this)
         val keptCalories = if (caloriesLocked) effectiveCalories else clamped
-        var next = copy(
-            customCalories = keptCalories,
-            customProtein = if (isMacroLocked(AutoBalanceMacro.PROTEIN)) effectiveProtein else protein,
-            customCarbs = if (isMacroLocked(AutoBalanceMacro.CARBS)) effectiveCarbs else carbs,
-            customFat = if (isMacroLocked(AutoBalanceMacro.FAT)) effectiveFat else fat,
+        val balanced = MacroBalance.rebalance(
+            calories = keptCalories,
+            protein = if (isMacroLocked(AutoBalanceMacro.PROTEIN)) effectiveProtein else protein,
+            carbs = if (isMacroLocked(AutoBalanceMacro.CARBS)) effectiveCarbs else carbs,
+            fat = if (isMacroLocked(AutoBalanceMacro.FAT)) effectiveFat else fat,
+            mode = if (dietMode == DietMode.KETO) MacroBalance.Mode.KETO else MacroBalance.Mode.STANDARD,
+            locked = lockedMacros,
+            fatFloorG = macroBalanceFatFloor(),
         )
-        if (!isMacroLocked(AutoBalanceMacro.PROTEIN)) {
-            next = next.copy(
-                proteinGramsPerKg = null,
-                proteinTargetMode = ProteinTargetMode.GRAMS_PER_DAY,
-            )
-        }
-        if (caloriesLocked || keptCalories != calories) {
-            next = next.fittingUnlockedMacrosTo(keptCalories)
-        }
-        return next
-    }
-
-    private fun fittingUnlockedMacrosTo(targetCalories: Int): UserProfile {
-        val unlocked = AutoBalanceMacro.values().filter { !isMacroLocked(it) }
-        if (unlocked.isEmpty()) return copy(customCalories = targetCalories)
-        val sum = AutoBalanceMacro.values().sumOf { effectiveGrams(it) * it.kcalPerGram }
-        val delta = targetCalories - sum
-        if (kotlin.math.abs(delta) <= 30) {
-            val last = unlocked.last()
-            val adjGrams = Math.round(delta.toDouble() / last.kcalPerGram).toInt()
-            return withMacroGrams(mapOf(last to maxOf(0, effectiveGrams(last) + adjGrams)))
-                .copy(customCalories = targetCalories)
-        }
-        return applyCaloriesEdit(targetCalories)
+        return copy(customCalories = keptCalories)
+            .withMacroGrams(unlockedMacroUpdates(this, balanced))
     }
 
     /**
@@ -567,12 +568,13 @@ data class UserProfile(
         val updated = plan.profiles.map { profile ->
             val ai = aiById[profile.id]
             if (ai != null) {
+                val target = CalorieSafety.clampAuto(ai.calories, bmr, tdee)
                 profile.copy(
-                    calories = CalorieSafety.clampAuto(ai.calories, bmr, tdee),
+                    calories = target,
                     proteinG = ai.proteinG.coerceIn(0, 500),
                     carbsG = ai.carbsG.coerceIn(0, 1200),
                     fatG = ai.fatG.coerceIn(0, 400),
-                )
+                ).rebalancedTo(target)
             } else {
                 profile.shiftedBy(deltaKcal, bmr, tdee)
             }
