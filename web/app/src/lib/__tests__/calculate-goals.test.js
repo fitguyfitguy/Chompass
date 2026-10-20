@@ -112,6 +112,36 @@ test("buildCalculateGoalsPrompt_includesFormulaAnchor", () => {
   assert.doesNotMatch(prompt, /800-6000/);
 });
 
+test("buildCalculateGoalsPrompt_disagreeingTrends_surfaceImpliedMaintenanceWithNote", () => {
+  const profile = {
+    sex: /** @type {const} */ ("male"),
+    age: 30,
+    heightCm: 180,
+    weightKg: 80,
+    activityLevel: /** @type {const} */ ("moderate"),
+    goal: /** @type {const} */ ("maintain"),
+    weeklyChangeKg: null,
+    ketoMode: false,
+    customCalories: null,
+  };
+  const forecast = {
+    hasEnoughData: true,
+    usesCalendarDayAverage: false,
+    avgDailyCalories: 2900,
+    loggedDayAvgCalories: 2900,
+    daysOfFoodData: 40,
+    calendarDaysInWindow: 91,
+    observedWeeklyChangeKg: -0.5,
+    weightEntriesUsed: 12,
+    tdee: 2500,
+    trendsDisagree: true,
+  };
+  const prompt = buildCalculateGoalsPrompt(profile, forecast, true, true);
+  assert.match(prompt, /Implied actual maintenance/);
+  assert.match(prompt, /the population formula and the scale trend disagree/);
+  assert.doesNotMatch(prompt, /do NOT use the implied maintenance/);
+});
+
 test("buildCalculateGoalsPrompt_usesLoggedDayAverageForEmpiricalTdee", () => {
   const profile = {
     sex: /** @type {const} */ ("male"),
