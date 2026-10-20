@@ -52,4 +52,5 @@ internal fun UserProfile.withOnboardingInputs(onboarded: UserProfile): UserProfi
     customProtein = onboarded.customProtein,
     customFat = onboarded.customFat,
     customCarbs = onboarded.customCarbs,
+    goalSource = onboarded.goalSource,
 )

@@ -564,7 +564,7 @@ internal fun BuildingPlanStep(vm: OnboardingViewModel, onComplete: () -> Unit) {
  */
 @Composable
 internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
-    val profile = state.buildProfile()
+    val profile = vm.previewProfile(state)
     var editing by remember { mutableStateOf<PlanField?>(null) }
     Column(Modifier.fillMaxSize()) {
         StepHeader(

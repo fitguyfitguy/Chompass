@@ -156,11 +156,13 @@ class BodyFatRepository(
         if (abs((profile.bodyFatPercentage ?: -1.0) - newest.bodyFatFraction) > 0.0001 ||
             profile.bodyFatUpdatedAt != newest.date
         ) {
+            // The new reading moves Katch-McArdle BMR: an auto-sourced target that
+            // now sits outside CAL-SAFE is pulled back in (manual/locked untouched).
             profileRepository.save(
                 profile.copy(
                     bodyFatPercentage = newest.bodyFatFraction,
                     bodyFatUpdatedAt = newest.date,
-                )
+                ).reclampedAutoGoal()
             )
         }
     }

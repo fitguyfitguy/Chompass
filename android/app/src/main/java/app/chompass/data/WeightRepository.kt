@@ -99,7 +99,9 @@ class WeightRepository(
         val profile = profileRepository.current() ?: return
         val newest = prefs.weightEntries.first().maxByOrNull { it.date } ?: return
         if (abs(profile.weightKg - newest.weightKg) > 0.01) {
-            profileRepository.save(profile.copy(weightKg = newest.weightKg))
+            // The new weight moves BMR/TDEE: an auto-sourced target that now sits
+            // outside CAL-SAFE is pulled back in (manual/locked goals untouched).
+            profileRepository.save(profile.copy(weightKg = newest.weightKg).reclampedAutoGoal())
         }
     }
 

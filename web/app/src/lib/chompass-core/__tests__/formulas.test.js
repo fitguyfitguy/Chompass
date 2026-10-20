@@ -1,7 +1,7 @@
 // @ts-check
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { bmr, tdee, dailyCalories, calorieAdjustment, proteinGoal, fatGoalStandard, dailyTargets, relativeFatMassPercent } from "../formulas.js";
+import { bmr, tdee, dailyCalories, calorieAdjustment, proteinGoal, fatGoalStandard, dailyTargets, relativeFatMassPercent, safetyFloorKcal, safetyCeilingKcal, clampAutoCalories } from "../formulas.js";
 import { averageDailyIntake } from "../forecast.js";
 import { loadParityFixture } from "../../parity-fixtures.js";
 
@@ -101,4 +101,16 @@ test("katchLegacyNullDate_usesKatch", () => {
     bodyFatPercentage: 0.20, activityLevel: "moderate", goal: "maintain",
   };
   assert.ok(Math.abs(bmr(legacy) - (370 + 21.6 * 80 * 0.8)) <= 1e-9);
+});
+
+// CAL-SAFE ceiling is the 1.5×TDEE proportional cap bounded by 6000 (mirrors
+// Android CalorieSafety.ceilingKcal): a normal profile caps at 1.5×TDEE; only
+// a TDEE above 4000 still reaches the flat parser ceiling.
+test("calorieCeiling_proportionalCapBoundedBy6000", () => {
+  const base = { sex: "male", age: 30, heightCm: 180, weightKg: 80, activityLevel: "moderate", goal: "maintain" };
+  // 1.5 × 2607.7 TDEE = 3912.
+  assert.equal(safetyCeilingKcal(base, safetyFloorKcal(base)), 3912);
+  assert.equal(clampAutoCalories(7000, base), 3912);
+  const heavy = { ...base, weightKg: 150, activityLevel: "very_active" };
+  assert.equal(safetyCeilingKcal(heavy, safetyFloorKcal(heavy)), 6000);
 });

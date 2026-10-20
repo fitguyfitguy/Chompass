@@ -4,6 +4,7 @@ import app.chompass.models.CalorieSafety
 import app.chompass.models.FoodEntry
 import app.chompass.models.GoalJournal
 import app.chompass.models.GoalJournalEntry
+import app.chompass.models.GoalSource
 import app.chompass.models.MacroPlanResolver
 import app.chompass.models.NutritionConstants
 import app.chompass.models.UserProfile
@@ -142,7 +143,7 @@ object AdaptiveGoalService {
         // every write (MACRO-CYCLE-C), so their average cannot either. The lift
         // branch stays a single-target repair.
         if (planAverageCalories == null && currentCalories < safetyFloor) {
-            val lifted = profile.applyCaloriesEdit(safetyFloor)
+            val lifted = profile.applyCaloriesEdit(safetyFloor).copy(goalSource = GoalSource.ADAPTIVE)
             return AdaptiveGoalResult(
                 profile = lifted,
                 changed = true,
@@ -218,11 +219,11 @@ object AdaptiveGoalService {
         }
 
         val signedAdjustment = adjustedCalories - currentCalories
-        val nextProfile = if (planAverageCalories != null) {
+        val nextProfile = (if (planAverageCalories != null) {
             applyToDayTypePlan(profile, signedAdjustment)
         } else {
             profile.applyCaloriesEdit(adjustedCalories)
-        }
+        }).copy(goalSource = GoalSource.ADAPTIVE)
         val sign = if (signedAdjustment > 0) "+" else ""
         val basis = if (hasWeightTrend) "your recent weight trend" else "your Health Connect energy burn"
         val trendNote = if (hasWeightTrend && observedWeeklyChangeKg != null) {

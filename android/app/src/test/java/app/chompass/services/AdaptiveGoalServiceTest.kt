@@ -6,6 +6,8 @@ import app.chompass.models.FoodSource
 import app.chompass.models.Gender
 import app.chompass.models.GoalJournalEntry
 import app.chompass.models.GoalJournalSource
+import app.chompass.models.CalorieSafety
+import app.chompass.models.GoalSource
 import app.chompass.models.MacroDayProfile
 import app.chompass.models.MacroPlan
 import app.chompass.models.MacroPlanMode
@@ -141,6 +143,7 @@ class AdaptiveGoalServiceTest {
             planAverageCalories = planAverage,
         )
         assertTrue(result.changed)
+        assertEquals(GoalSource.ADAPTIVE, result.profile.goalSource)
         val plan = result.profile.macroPlan!!
         val training = plan.profiles.first { it.id == "t" }
         val rest = plan.profiles.first { it.id == "r" }
@@ -211,6 +214,18 @@ class AdaptiveGoalServiceTest {
         val single = AdaptiveGoalService.apply(profile, weights, foods)
         assertTrue(single.changed)
         assertEquals(2350, single.updatedCalories)
+        assertEquals(GoalSource.ADAPTIVE, single.profile.goalSource)
         assertFalse(single.message.contains("weekly average"))
+    }
+
+    @Test
+    fun `floor lift marks the goal adaptive`() {
+        // 1500 < floor 1780: the single-target repair raises to the floor and
+        // stamps ADAPTIVE provenance so later weight syncs may re-clamp it.
+        val profile = profileWithPlan().copy(macroPlan = null, customCalories = 1500)
+        val result = AdaptiveGoalService.apply(profile, emptyList(), emptyList())
+        assertTrue(result.changed)
+        assertEquals(CalorieSafety.floorKcal(profile.bmr), result.updatedCalories)
+        assertEquals(GoalSource.ADAPTIVE, result.profile.goalSource)
     }
 }

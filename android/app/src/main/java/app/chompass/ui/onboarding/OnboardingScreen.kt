@@ -166,7 +166,7 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                     onToggle = vm::setUseMetric
                 )
                 OnboardingStep.GOAL_SPEED -> {
-                    val draft = ui.buildProfile()
+                    val draft = vm.previewProfile(ui)
                     GoalSpeedStep(
                         weeklyKg = ui.weeklyChangeKg,
                         goal = ui.goal,

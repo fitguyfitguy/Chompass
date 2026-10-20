@@ -68,8 +68,10 @@ fun empiricalSignals(forecast: WeightForecast?, profile: UserProfile): Empirical
     val impliedBelowFloor = impliedMaintenance != null && impliedMaintenance < safetyFloor
     // When false, the SAFE prompt forbids estimating maintenance from the observed data
     // and the deterministic enforcement snaps the model's calories back to the anchor.
-    val trustEmpirical = empiricalUsable && !impliedBelowFloor &&
-        !(forecast?.trendsDisagree ?: false)
+    // A formula/scale disagreement does NOT withhold: the scale trend is individual
+    // data and beats the population formula, so the implied maintenance is surfaced
+    // with a disagree note instead ([trendsDisagree] stays a display/diagnostic flag).
+    val trustEmpirical = empiricalUsable && !impliedBelowFloor
     return EmpiricalSignals(
         empiricalUsable, mediumConfidence, safetyFloor, loggedAvg,
         impliedMaintenance, impliedBelowFloor, trustEmpirical,
@@ -103,9 +105,10 @@ fun buildGoalCalculationReport(
         foodDays = forecast?.daysOfFoodData ?: 0,
         loggedDayAvgCalories = forecast?.loggedDayAvgCalories?.takeIf { it > 0 } ?: forecast?.avgDailyCalories,
         impliedMaintenance = signals.impliedMaintenance,
+        // DISAGREE is never produced anymore — persisted RecalcSheetData from older
+        // builds may still carry it, so the enum member and the sheet branch stay.
         impliedWithheld = when {
             signals.impliedBelowFloor -> ImpliedWithheldReason.BELOW_FLOOR
-            forecast?.trendsDisagree == true -> ImpliedWithheldReason.DISAGREE
             !signals.empiricalUsable -> ImpliedWithheldReason.THIN
             else -> null
         },

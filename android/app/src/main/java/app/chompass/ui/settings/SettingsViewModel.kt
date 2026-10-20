@@ -29,6 +29,7 @@ import app.chompass.models.MacroPlanResolver
 import app.chompass.models.GoalJournal
 import app.chompass.models.GoalPhase
 import app.chompass.models.GoalPhaseEdit
+import app.chompass.models.GoalSource
 import app.chompass.models.PhaseEditError
 import app.chompass.ui.progress.ProgressAdherence
 import app.chompass.ui.progress.buildCalorieSlots
@@ -2510,7 +2511,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     /** Applies a calorie-goal edit: locked macros stay, unlocked macros rescale to the new total.
      *  Saving a value the user chose locks it (the lock icon / Reset button then releases it). */
     fun editCaloriesGoal(newCalories: Int) {
-        updateProfile { it.applyCaloriesEdit(newCalories).copy(caloriesLocked = true) }
+        updateProfile { it.applyCaloriesEdit(newCalories).copy(caloriesLocked = true, goalSource = GoalSource.MANUAL) }
     }
 
     /** Applies a macro-goal edit through the rebalance engine, then locks the macro the user just
@@ -2526,8 +2527,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                 return@launch
             }
             val next = if (rebalanced.isMacroLocked(macro)) rebalanced else rebalanced.toggledMacroLock(macro)
-            container.profileRepository.save(next)
-            applyProfile(next)
+            val manual = next.copy(goalSource = GoalSource.MANUAL)
+            container.profileRepository.save(manual)
+            applyProfile(manual)
         }
     }
 
@@ -2540,7 +2542,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     /** "Reset to Auto-balance" from the calories picker: release the calories lock and snap the
      *  total to the sum of the macros. */
     fun resetCaloriesLock() {
-        updateProfile { it.resetCaloriesToBalance() }
+        updateProfile { it.resetCaloriesToBalance().copy(goalSource = GoalSource.MANUAL) }
     }
 
     /** Chip toggle on the calories row: pin the current number, or release it without snapping. */
