@@ -374,7 +374,13 @@ export function buildCalculateGoalsPrompt(profile, forecast, heightMetric, weigh
         : `${(profile.goalWeightKg * 2.20462).toFixed(1)} lb`
       : "not set";
   const weekly =
-    profile.weeklyChangeKg != null ? `${profile.weeklyChangeKg.toFixed(2)} kg/week` : "not set (maintain)";
+    profile.weeklyChangeKg != null
+      ? `${profile.weeklyChangeKg.toFixed(2)} kg/week`
+      : profile.goal === "lose"
+        ? "not set (default 0.5 kg/week loss)"
+        : profile.goal === "gain"
+          ? "not set (default 0.5 kg/week gain)"
+          : "not set (maintain)";
   const bmrMethod =
     profile.bodyFatPercentage != null
       ? "Katch-McArdle (body fat known and enabled)"
@@ -475,11 +481,13 @@ function buildObservedSection(forecast, weightMetric) {
   lines.push(`- Formula TDEE for comparison: ${forecast.tdee} kcal/day`);
   if (forecast.trendsDisagree) {
     lines.push(
-      "- WARNING: logged intake and the real weight trend DISAGREE. The user is likely under-logging. Trust the weight trend over raw logged calories."
+      "- NOTE: the population formula and the scale trend disagree (logged intake would imply a much slower change). " +
+        "The scale trend is individual data, so prefer the trend-implied maintenance — unless it is below the BMR safety floor. " +
+        "Check the logged intake for missing days before raising the target."
     );
   }
   lines.push(
-    `HIT-AND-TRIAL: when this observed data is reliable, estimate true maintenance from intake and the real weight trend, then apply the goal + weekly-change target to THAT maintenance instead of the formula TDEE. If implied actual maintenance is below BMR, discard it and use the formula or measured TDEE. If data is thin or trends disagree, lean on the formula/weight trend accordingly. ${calorieSafetyLine()}`
+    `HIT-AND-TRIAL: when this observed data is reliable, estimate true maintenance from intake and the real weight trend, then apply the goal + weekly-change target to THAT maintenance instead of the formula TDEE. If implied actual maintenance is below BMR, discard it and use the formula or measured TDEE. Only thin or below-floor data falls back to the formula/measured anchor. ${calorieSafetyLine()}`
   );
   return lines.join("\n");
 }

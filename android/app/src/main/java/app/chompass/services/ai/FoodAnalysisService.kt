@@ -30,6 +30,7 @@ import app.chompass.models.MacroPlanMode
 import app.chompass.models.MacroPlanResolver
 import app.chompass.models.NutritionConstants
 import app.chompass.models.ResolvedDayTargets
+import app.chompass.models.WeightGoal
 import app.chompass.models.ServingUnitHeuristics
 import app.chompass.models.ServingUnitInferenceMode
 import app.chompass.models.ServingUnitOption
@@ -462,7 +463,12 @@ class FoodAnalysisService(
             )
         }
 
-        val weekly = profile.weeklyChangeKg?.let { String.format(Locale.US, "%.2f kg/week", it) } ?: "not set (maintain)"
+        val weekly = profile.weeklyChangeKg?.let { String.format(Locale.US, "%.2f kg/week", it) }
+            ?: when (profile.goal) {
+                WeightGoal.LOSE -> "not set (default 0.5 kg/week loss)"
+                WeightGoal.GAIN -> "not set (default 0.5 kg/week gain)"
+                WeightGoal.MAINTAIN -> "not set (maintain)"
+            }
         val bmrMethod = if (profile.usesBodyFatForBMR) "Katch-McArdle (body fat known and enabled)" else "Mifflin-St Jeor"
         val signals = empiricalSignals(forecast, profile)
 

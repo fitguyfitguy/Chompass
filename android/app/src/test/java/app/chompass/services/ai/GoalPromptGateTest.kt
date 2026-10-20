@@ -11,6 +11,7 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 import kotlinx.coroutines.runBlocking
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -163,5 +164,21 @@ class GoalPromptGateTest {
 
         assertTrue("medium data must surface implied maintenance", prompt.contains("Implied actual maintenance"))
         assertTrue("medium data must carry the 15% qualifier", prompt.contains("MEDIUM CONFIDENCE"))
+    }
+
+    @Test
+    fun disagreeingTrends_surfaceImpliedMaintenanceWithNote() = runBlocking {
+        var prompt = ""
+        val service = capturingService { prompt = it }
+        // Usable 12/40/40 trend; logged 2900 while losing 0.5/wk implies ~3450
+        // maintenance — far from the formula TDEE, but the individual trend wins.
+        val f = forecast(weighIns = 12, spanDays = 40, foodDays = 40, loggedDayAvg = 2900, observedWeekly = -0.5)
+        val result = service.calculateGoals(profile(), f, heightMetric = true, weightMetric = true)
+
+        assertTrue("disagreement must still surface the implied maintenance", prompt.contains("Implied actual maintenance"))
+        assertTrue("the disagreement must carry the trend-beats-formula note", prompt.contains("the population formula and the scale trend disagree"))
+        assertFalse("the old withhold-on-disagree rule must be gone", prompt.contains("do NOT use the implied maintenance"))
+        // The model reply survives the deterministic enforcement (no snap-back).
+        assertEquals(1980, result.calories)
     }
 }
