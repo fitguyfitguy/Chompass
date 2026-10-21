@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
+import java.util.UUID
 
 @Serializable
 private data class HealthEnergyGoalTargetSnapshot(
@@ -58,6 +59,34 @@ internal val PreferencesStore.pendingNutritionHealthWritesImpl: Flow<Set<String>
 }
 internal suspend fun PreferencesStore.setPendingNutritionHealthWritesImpl(ids: Set<String>) =
     setStringPref(Keys.PENDING_NUTRITION_HEALTH_WRITES, ids.joinToString(","))
+
+/// Deletion tombstones for the Health Connect weight/body-fat re-import (upstream
+/// d03be0ea): every id the user deletes is recorded here, and a later import whose
+/// deterministic id maps onto one of them is dropped instead of resurrecting the
+/// record. Comma-joined UUIDs — UUIDs cannot contain a comma — in deletion
+/// (insertion) order, capped at 1000 per kind with oldest-first eviction
+/// ([appendTombstoneId]).
+internal val PreferencesStore.healthDeletedWeightIdsImpl: Flow<List<UUID>> get() = dataStore.data.map {
+    it[Keys.HEALTH_DELETED_WEIGHT_IDS]?.split(",")?.mapNotNull(::tombstoneIdOrNull) ?: emptyList()
+}
+internal suspend fun PreferencesStore.setHealthDeletedWeightIdsImpl(ids: List<UUID>) =
+    setStringPref(Keys.HEALTH_DELETED_WEIGHT_IDS, ids.joinToString(","))
+
+internal val PreferencesStore.healthDeletedBodyFatIdsImpl: Flow<List<UUID>> get() = dataStore.data.map {
+    it[Keys.HEALTH_DELETED_BODY_FAT_IDS]?.split(",")?.mapNotNull(::tombstoneIdOrNull) ?: emptyList()
+}
+internal suspend fun PreferencesStore.setHealthDeletedBodyFatIdsImpl(ids: List<UUID>) =
+    setStringPref(Keys.HEALTH_DELETED_BODY_FAT_IDS, ids.joinToString(","))
+
+private fun tombstoneIdOrNull(raw: String): UUID? =
+    raw.takeIf { it.isNotBlank() }?.let { runCatching { UUID.fromString(it) }.getOrNull() }
+
+/// Cap for [healthDeletedWeightIdsImpl] / [healthDeletedBodyFatIdsImpl]: at 1000 ids
+/// the oldest is evicted so the list guards the most recent deletions.
+internal fun appendTombstoneId(ids: List<UUID>, id: UUID): List<UUID> {
+    val trimmed = if (ids.size >= 1000) ids.drop(ids.size - 999) else ids
+    return trimmed + id
+}
 
 /// One-shot flag for the food-log restore from Health Connect. Cleared with the
 /// rest of the store on Delete All Data / fresh install, which is exactly when
