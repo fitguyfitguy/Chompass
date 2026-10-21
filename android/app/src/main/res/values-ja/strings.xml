@@ -2280,4 +2280,475 @@
     <string name="untracked_sheet_title">追跡なし</string>
     <string name="untracked_sheet_toggle">追跡なし</string>
     <string name="voice_transcribing">文字起こし中…</string>
+    <!-- Settings hub search vocabulary (SettingsIndex.kt); translated from
+         the English defaults in values/strings.xml. Not UI copy, so
+         check_android_strings.py does not count them. -->
+    <string-array name="settings_search_kw_units">
+        <item>メートル法</item>
+        <item>ヤード・ポンド法</item>
+        <item>cm</item>
+        <item>ft</item>
+        <item>kg</item>
+        <item>lbs</item>
+        <item>単位系</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy">
+        <item>エネルギー</item>
+        <item>kJ</item>
+        <item>kj</item>
+        <item>キロジュール</item>
+        <item>kcal</item>
+        <item>カロリー単位</item>
+    </string-array>
+    <string-array name="settings_search_kw_gender">
+        <item>性別</item>
+    </string-array>
+    <string-array name="settings_search_kw_birthday">
+        <item>誕生日</item>
+        <item>年齢</item>
+        <item>生年月日</item>
+        <item>生まれ</item>
+    </string-array>
+    <string-array name="settings_search_kw_height">
+        <item>身長</item>
+        <item>背</item>
+        <item>cm</item>
+        <item>ft</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight">
+        <item>体重</item>
+        <item>現在</item>
+        <item>kg</item>
+        <item>lbs</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_fat">
+        <item>体脂肪率</item>
+        <item>体脂肪</item>
+        <item>パーセント</item>
+    </string-array>
+    <string-array name="settings_search_kw_use_body_fat_bmr">
+        <item>BMR</item>
+        <item>Katch</item>
+        <item>McArdle</item>
+        <item>代謝</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_body_fat">
+        <item>体脂肪目標</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_measurements">
+        <item>ウエスト</item>
+        <item>メジャー</item>
+        <item>周囲長</item>
+        <item>ヒップ</item>
+        <item>胸囲</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight_goal">
+        <item>減量</item>
+        <item>増量</item>
+        <item>維持</item>
+        <item>目標</item>
+    </string-array>
+    <string-array name="settings_search_kw_diet_mode">
+        <item>ダイエット</item>
+        <item>ケト</item>
+        <item>ビーガン</item>
+        <item>ベジタリアン</item>
+        <item>肉食</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_carb_mode">
+        <item>ネット</item>
+        <item>合計</item>
+        <item>ケト</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_net_carbs">
+        <item>ケト</item>
+        <item>グラム</item>
+    </string-array>
+    <string-array name="settings_search_kw_activity_level">
+        <item>活動</item>
+        <item>座位</item>
+        <item>運動</item>
+    </string-array>
+    <string-array name="settings_search_kw_weekly_change">
+        <item>ペース</item>
+        <item>速度</item>
+        <item>週あたり</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_weight">
+        <item>目標</item>
+    </string-array>
+    <string-array name="settings_search_kw_adaptive_goals">
+        <item>毎週</item>
+        <item>自動</item>
+        <item>ナッジ</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy_goals">
+        <item>消費</item>
+        <item>Health Connect</item>
+        <item>実測</item>
+    </string-array>
+    <string-array name="settings_search_kw_calories">
+        <item>カロリー</item>
+        <item>kcal</item>
+        <item>カロリー目標</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_protein">
+        <item>マクロ</item>
+        <item>タンパク質</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_carbs">
+        <item>マクロ</item>
+        <item>炭水化物</item>
+        <item>炭水化物</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_fat">
+        <item>マクロ</item>
+        <item>脂質</item>
+        <item>脂肪</item>
+    </string-array>
+    <string-array name="settings_search_kw_other_nutrient_goals">
+        <item>食物繊維</item>
+        <item>ナトリウム</item>
+        <item>微量栄養素</item>
+        <item>ビタミン</item>
+    </string-array>
+    <string-array name="settings_search_kw_recalculate_goals">
+        <item>再計算</item>
+        <item>再計算</item>
+        <item>更新</item>
+        <item>目標を更新</item>
+    </string-array>
+    <string-array name="settings_search_kw_day_types">
+        <item>炭水化物サイクリング</item>
+        <item>炭水化物サイクル</item>
+        <item>デイタイプ</item>
+        <item>トレーニング日</item>
+        <item>休養日</item>
+        <item>スケジュール</item>
+        <item>曜日</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_phases">
+        <item>カット</item>
+        <item>バルク</item>
+        <item>維持</item>
+        <item>フェーズ</item>
+        <item>シェイプ</item>
+        <item>減量フェーズ</item>
+        <item>増量フェーズ</item>
+    </string-array>
+    <string-array name="settings_search_kw_calc_methods">
+        <item>計算式</item>
+        <item>BMR</item>
+        <item>TDEE</item>
+        <item>Mifflin</item>
+        <item>Katch</item>
+        <item>検証</item>
+    </string-array>
+    <string-array name="settings_search_kw_default_to_grams">
+        <item>グラム</item>
+        <item>単位</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_log_sort">
+        <item>順序</item>
+        <item>並び替え</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_times">
+        <item>食事</item>
+        <item>朝食</item>
+        <item>昼食</item>
+        <item>夕食</item>
+        <item>スケジュール</item>
+    </string-array>
+    <string-array name="settings_search_kw_photo_note_prompt">
+        <item>写真</item>
+        <item>求める</item>
+        <item>メモ</item>
+        <item>説明</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_constituents">
+        <item>材料</item>
+        <item>内訳</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_databases">
+        <item>データベース</item>
+        <item>検索</item>
+        <item>ソース</item>
+        <item>Open Food Facts</item>
+        <item>USDA</item>
+        <item>スイス</item>
+        <item>オフライン</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_mode">
+        <item>分量</item>
+        <item>単位</item>
+        <item>検出</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_heuristics">
+        <item>分量</item>
+        <item>ルール</item>
+        <item>検出</item>
+    </string-array>
+    <string-array name="settings_search_kw_home_display">
+        <item>ホーム</item>
+        <item>カード</item>
+        <item>栄養素</item>
+    </string-array>
+    <string-array name="settings_search_kw_calorie_gauge">
+        <item>ゲージ</item>
+        <item>アクティブ</item>
+        <item>消費</item>
+        <item>食べ戻し</item>
+        <item>Health Connect</item>
+        <item>ワークアウト</item>
+    </string-array>
+    <string-array name="settings_search_kw_appearance">
+        <item>ダーク</item>
+        <item>ライト</item>
+        <item>OLED</item>
+        <item>夜間</item>
+        <item>テーマモード</item>
+    </string-array>
+    <string-array name="settings_search_kw_theme_color">
+        <item>テーマ</item>
+        <item>アクセント</item>
+        <item>カラー</item>
+        <item>色</item>
+        <item>ティール</item>
+        <item>青</item>
+    </string-array>
+    <string-array name="settings_search_kw_language">
+        <item>言語</item>
+        <item>ロケール</item>
+        <item>翻訳</item>
+        <item>ドイツ語</item>
+        <item>スペイン語</item>
+    </string-array>
+    <string-array name="settings_search_kw_fixed_launcher_icon">
+        <item>ランチャー</item>
+        <item>アプリアイコン</item>
+        <item>ティール</item>
+    </string-array>
+    <string-array name="settings_search_kw_system_date_time_pickers">
+        <item>日付</item>
+        <item>時刻</item>
+        <item>ピッカー</item>
+        <item>時計</item>
+        <item>カレンダー</item>
+    </string-array>
+    <string-array name="settings_search_kw_customize_progress">
+        <item>進捗</item>
+        <item>期間</item>
+        <item>グラフ</item>
+        <item>グラフ</item>
+        <item>トレンド</item>
+        <item>デフォルト</item>
+        <item>食物繊維</item>
+        <item>糖質</item>
+        <item>ナトリウム</item>
+        <item>栄養素</item>
+    </string-array>
+    <string-array name="settings_search_kw_progress_nutrient_averages">
+        <item>食物繊維</item>
+        <item>糖質</item>
+        <item>ナトリウム</item>
+        <item>微量</item>
+        <item>栄養素</item>
+        <item>平均</item>
+    </string-array>
+    <string-array name="settings_search_kw_week_starts">
+        <item>カレンダー</item>
+        <item>月曜日</item>
+        <item>日曜日</item>
+        <item>週</item>
+    </string-array>
+    <string-array name="settings_search_kw_water">
+        <item>水分補給</item>
+        <item>目標</item>
+        <item>飲む</item>
+        <item>ml</item>
+        <item>プリセット</item>
+    </string-array>
+    <string-array name="settings_search_kw_nicotine">
+        <item>たばこ</item>
+        <item>電子たばこ</item>
+        <item>パウチ</item>
+        <item>喫煙</item>
+        <item>上限</item>
+    </string-array>
+    <string-array name="settings_search_kw_caffeine">
+        <item>コーヒー</item>
+        <item>お茶</item>
+        <item>エナジードリンク</item>
+        <item>上限</item>
+        <item>カフェイン</item>
+    </string-array>
+    <string-array name="settings_search_kw_notes">
+        <item>日誌</item>
+        <item>メモ</item>
+        <item>日記</item>
+        <item>デイリーノート</item>
+    </string-array>
+    <string-array name="settings_search_kw_fasting">
+        <item>ファスティング</item>
+        <item>間欠的</item>
+        <item>タイマー</item>
+        <item>目標</item>
+        <item>断食</item>
+    </string-array>
+    <string-array name="settings_search_kw_notifications">
+        <item>リマインダー</item>
+        <item>連続記録</item>
+        <item>サマリー</item>
+        <item>体重リマインダー</item>
+        <item>バッテリー</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_features_master">
+        <item>AI</item>
+        <item>オン</item>
+        <item>オフ</item>
+        <item>プライバシー</item>
+    </string-array>
+    <string-array name="settings_search_kw_show_coach_tab">
+        <item>コーチ</item>
+        <item>タブ</item>
+        <item>非表示</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_provider">
+        <item>Gemini</item>
+        <item>OpenAI</item>
+        <item>Anthropic</item>
+        <item>Claude</item>
+        <item>Ollama</item>
+        <item>GPT</item>
+        <item>ローカル</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_model">
+        <item>モデル</item>
+        <item>バージョン</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_vision_model">
+        <item>ビジョン</item>
+        <item>画像</item>
+        <item>マルチモーダル</item>
+    </string-array>
+    <string-array name="settings_search_kw_api_key">
+        <item>APIキー</item>
+        <item>シークレット</item>
+        <item>トークン</item>
+        <item>Gemini</item>
+        <item>OpenAI</item>
+    </string-array>
+    <string-array name="settings_search_kw_base_url">
+        <item>エンドポイント</item>
+        <item>URL</item>
+        <item>Ollama</item>
+        <item>ローカル</item>
+        <item>サーバー</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_allow_insecure_http">
+        <item>HTTP</item>
+        <item>平文</item>
+        <item>ローカル</item>
+    </string-array>
+    <string-array name="settings_search_kw_on_device_model">
+        <item>オンデバイス</item>
+        <item>Gemma</item>
+        <item>ダウンロード</item>
+        <item>ローカル</item>
+        <item>オフライン</item>
+    </string-array>
+    <string-array name="settings_search_kw_max_tokens">
+        <item>トークン</item>
+        <item>長さ</item>
+        <item>上限</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_read_timeout">
+        <item>タイムアウト</item>
+        <item>秒</item>
+        <item>ネットワーク</item>
+    </string-array>
+    <string-array name="settings_search_kw_gemini_google_search">
+        <item>グラウンディング</item>
+        <item>Google</item>
+        <item>ウェブ</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_custom_instructions">
+        <item>コンテキスト</item>
+        <item>プロンプト</item>
+        <item>コーチ</item>
+        <item>パーソナリティ</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_fallback">
+        <item>フォールバック</item>
+        <item>バックアップ</item>
+        <item>セカンダリ</item>
+        <item>再試行</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_speech">
+        <item>音声</item>
+        <item>声</item>
+        <item>ディクテーション</item>
+        <item>音声認識</item>
+        <item>マイク</item>
+        <item>STT</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_connect">
+        <item>同期</item>
+        <item>歩数</item>
+        <item>睡眠</item>
+        <item>権限</item>
+        <item>Google Fit</item>
+        <item>Samsung</item>
+    </string-array>
+    <string-array name="settings_search_kw_manage_health_access">
+        <item>権限</item>
+        <item>Health Connect</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_background_sync">
+        <item>バックグラウンド</item>
+        <item>自動</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_diary">
+        <item>エクスポート</item>
+        <item>JSON</item>
+        <item>バックアップ</item>
+        <item>ファイル</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_body_metrics">
+        <item>エクスポート</item>
+        <item>体重</item>
+        <item>体脂肪率</item>
+        <item>ファイル</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_diary">
+        <item>インポート</item>
+        <item>復元</item>
+        <item>JSON</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_body_metrics">
+        <item>インポート</item>
+        <item>復元</item>
+        <item>体重</item>
+        <item>CSV</item>
+    </string-array>
+    <string-array name="settings_search_kw_sync">
+        <item>WebDAV</item>
+        <item>バックアップ</item>
+        <item>クラウド</item>
+        <item>自動同期</item>
+        <item>サーバー</item>
+    </string-array>
+    <string-array name="settings_search_kw_clear_food_log">
+        <item>削除</item>
+        <item>消去</item>
+        <item>全消去</item>
+        <item>食事</item>
+    </string-array>
+    <string-array name="settings_search_kw_delete_all_data">
+        <item>削除</item>
+        <item>消去</item>
+        <item>全消去</item>
+        <item>リセット</item>
+        <item>初期化</item>
+    </string-array>
 </resources>

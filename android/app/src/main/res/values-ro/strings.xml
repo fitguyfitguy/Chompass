@@ -2290,4 +2290,475 @@ macro-urile reechilibrate la noul total caloric</string>
     <string name="untracked_sheet_title">Neurmărit</string>
     <string name="untracked_sheet_toggle">Neurmărit</string>
     <string name="voice_transcribing">Se transcrie…</string>
+    <!-- Settings hub search vocabulary (SettingsIndex.kt); translated from
+         the English defaults in values/strings.xml. Not UI copy, so
+         check_android_strings.py does not count them. -->
+    <string-array name="settings_search_kw_units">
+        <item>metric</item>
+        <item>imperial</item>
+        <item>cm</item>
+        <item>ft</item>
+        <item>kg</item>
+        <item>lbs</item>
+        <item>sistem de măsurare</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy">
+        <item>energie</item>
+        <item>kJ</item>
+        <item>kj</item>
+        <item>kilojul</item>
+        <item>kcal</item>
+        <item>unitate calorică</item>
+    </string-array>
+    <string-array name="settings_search_kw_gender">
+        <item>sex</item>
+    </string-array>
+    <string-array name="settings_search_kw_birthday">
+        <item>zi de naștere</item>
+        <item>vârstă</item>
+        <item>data nașterii</item>
+        <item>născut</item>
+    </string-array>
+    <string-array name="settings_search_kw_height">
+        <item>înălțime</item>
+        <item>înalt</item>
+        <item>cm</item>
+        <item>ft</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight">
+        <item>greutate</item>
+        <item>actual</item>
+        <item>kg</item>
+        <item>lbs</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_fat">
+        <item>grăsime corporală</item>
+        <item>bf</item>
+        <item>procent</item>
+    </string-array>
+    <string-array name="settings_search_kw_use_body_fat_bmr">
+        <item>bmr</item>
+        <item>katch</item>
+        <item>mcardle</item>
+        <item>metabolism</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_body_fat">
+        <item>țintă grăsime</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_measurements">
+        <item>talie</item>
+        <item>bandă</item>
+        <item>circumferință</item>
+        <item>șolduri</item>
+        <item>piept</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight_goal">
+        <item>slăbit</item>
+        <item>îngrășare</item>
+        <item>menținere</item>
+        <item>țintă</item>
+    </string-array>
+    <string-array name="settings_search_kw_diet_mode">
+        <item>dietă</item>
+        <item>keto</item>
+        <item>vegan</item>
+        <item>vegetarian</item>
+        <item>carnivor</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_carb_mode">
+        <item>net</item>
+        <item>total</item>
+        <item>keto</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_net_carbs">
+        <item>keto</item>
+        <item>grame</item>
+    </string-array>
+    <string-array name="settings_search_kw_activity_level">
+        <item>activitate</item>
+        <item>sedentar</item>
+        <item>antrenament</item>
+    </string-array>
+    <string-array name="settings_search_kw_weekly_change">
+        <item>ritm</item>
+        <item>viteză</item>
+        <item>pe săptămână</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_weight">
+        <item>țintă</item>
+    </string-array>
+    <string-array name="settings_search_kw_adaptive_goals">
+        <item>săptămânal</item>
+        <item>auto</item>
+        <item>automat</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy_goals">
+        <item>ardere</item>
+        <item>health connect</item>
+        <item>măsurat</item>
+    </string-array>
+    <string-array name="settings_search_kw_calories">
+        <item>calorii</item>
+        <item>kcal</item>
+        <item>obiectiv caloric</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_protein">
+        <item>macro</item>
+        <item>proteine</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_carbs">
+        <item>macro</item>
+        <item>carbo</item>
+        <item>carbohidrați</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_fat">
+        <item>macro</item>
+        <item>grăsime</item>
+        <item>lipide</item>
+    </string-array>
+    <string-array name="settings_search_kw_other_nutrient_goals">
+        <item>fibre</item>
+        <item>sodiu</item>
+        <item>micronutrienți</item>
+        <item>vitamine</item>
+    </string-array>
+    <string-array name="settings_search_kw_recalculate_goals">
+        <item>recalculează</item>
+        <item>recalc</item>
+        <item>actualizează</item>
+        <item>actualizare ținte</item>
+    </string-array>
+    <string-array name="settings_search_kw_day_types">
+        <item>ciclarea carbohidraților</item>
+        <item>ciclu de carbohidrați</item>
+        <item>tip de zi</item>
+        <item>zi de antrenament</item>
+        <item>zi de odihnă</item>
+        <item>program</item>
+        <item>zile lucrătoare</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_phases">
+        <item>definire</item>
+        <item>volum</item>
+        <item>menținere</item>
+        <item>etapă</item>
+        <item>uscat</item>
+        <item>etapă de slăbire</item>
+        <item>etapă de câștig muscular</item>
+    </string-array>
+    <string-array name="settings_search_kw_calc_methods">
+        <item>formulă</item>
+        <item>bmr</item>
+        <item>tdee</item>
+        <item>mifflin</item>
+        <item>katch</item>
+        <item>audit</item>
+    </string-array>
+    <string-array name="settings_search_kw_default_to_grams">
+        <item>grame</item>
+        <item>unități</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_log_sort">
+        <item>ordine</item>
+        <item>sortare</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_times">
+        <item>masă</item>
+        <item>mic dejun</item>
+        <item>prânz</item>
+        <item>cină</item>
+        <item>program</item>
+    </string-array>
+    <string-array name="settings_search_kw_photo_note_prompt">
+        <item>fotografie</item>
+        <item>cere</item>
+        <item>notă</item>
+        <item>descrie</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_constituents">
+        <item>ingrediente</item>
+        <item>componente</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_databases">
+        <item>bază de date</item>
+        <item>căutare</item>
+        <item>sursă</item>
+        <item>open food facts</item>
+        <item>usda</item>
+        <item>elvețian</item>
+        <item>offline</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_mode">
+        <item>porție</item>
+        <item>unitate</item>
+        <item>detectare</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_heuristics">
+        <item>porție</item>
+        <item>reguli</item>
+        <item>detectare</item>
+    </string-array>
+    <string-array name="settings_search_kw_home_display">
+        <item>acasă</item>
+        <item>carduri</item>
+        <item>nutrienți</item>
+    </string-array>
+    <string-array name="settings_search_kw_calorie_gauge">
+        <item>contor</item>
+        <item>activ</item>
+        <item>ardere</item>
+        <item>consum net</item>
+        <item>health connect</item>
+        <item>antrenament</item>
+    </string-array>
+    <string-array name="settings_search_kw_appearance">
+        <item>întunecat</item>
+        <item>luminos</item>
+        <item>oled</item>
+        <item>noapte</item>
+        <item>temă</item>
+    </string-array>
+    <string-array name="settings_search_kw_theme_color">
+        <item>temă</item>
+        <item>accent</item>
+        <item>culoare</item>
+        <item>culoare</item>
+        <item>turcoaz</item>
+        <item>albastru</item>
+    </string-array>
+    <string-array name="settings_search_kw_language">
+        <item>limbă</item>
+        <item>localizare</item>
+        <item>traducere</item>
+        <item>deutsch</item>
+        <item>spaniola</item>
+    </string-array>
+    <string-array name="settings_search_kw_fixed_launcher_icon">
+        <item>launcher</item>
+        <item>pictogramă aplicație</item>
+        <item>turcoaz</item>
+    </string-array>
+    <string-array name="settings_search_kw_system_date_time_pickers">
+        <item>dată</item>
+        <item>oră</item>
+        <item>selector</item>
+        <item>ceas</item>
+        <item>calendar</item>
+    </string-array>
+    <string-array name="settings_search_kw_customize_progress">
+        <item>progres</item>
+        <item>interval</item>
+        <item>grafice</item>
+        <item>diagrame</item>
+        <item>tendință</item>
+        <item>implicit</item>
+        <item>fibre</item>
+        <item>zahăr</item>
+        <item>sodiu</item>
+        <item>nutrient</item>
+    </string-array>
+    <string-array name="settings_search_kw_progress_nutrient_averages">
+        <item>fibre</item>
+        <item>zahăr</item>
+        <item>sodiu</item>
+        <item>micro</item>
+        <item>nutrient</item>
+        <item>medii</item>
+    </string-array>
+    <string-array name="settings_search_kw_week_starts">
+        <item>calendar</item>
+        <item>luni</item>
+        <item>duminică</item>
+        <item>săptămână</item>
+    </string-array>
+    <string-array name="settings_search_kw_water">
+        <item>hidratare</item>
+        <item>obiectiv</item>
+        <item>bea</item>
+        <item>ml</item>
+        <item>presetări</item>
+    </string-array>
+    <string-array name="settings_search_kw_nicotine">
+        <item>țigări</item>
+        <item>țigară electronică</item>
+        <item>pungi</item>
+        <item>fumat</item>
+        <item>limită</item>
+    </string-array>
+    <string-array name="settings_search_kw_caffeine">
+        <item>cafea</item>
+        <item>ceai</item>
+        <item>energizant</item>
+        <item>limită</item>
+        <item>cafeină</item>
+    </string-array>
+    <string-array name="settings_search_kw_notes">
+        <item>jurnal</item>
+        <item>notă</item>
+        <item>însemnări</item>
+        <item>notițe zilnice</item>
+    </string-array>
+    <string-array name="settings_search_kw_fasting">
+        <item>post</item>
+        <item>intermitent</item>
+        <item>cronometru</item>
+        <item>obiectiv</item>
+        <item>post</item>
+    </string-array>
+    <string-array name="settings_search_kw_notifications">
+        <item>mementouri</item>
+        <item>serii</item>
+        <item>rezumat</item>
+        <item>memento greutate</item>
+        <item>baterie</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_features_master">
+        <item>ia</item>
+        <item>activat</item>
+        <item>dezactivat</item>
+        <item>confidențialitate</item>
+    </string-array>
+    <string-array name="settings_search_kw_show_coach_tab">
+        <item>antrenor</item>
+        <item>filă</item>
+        <item>ascunde</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_provider">
+        <item>gemini</item>
+        <item>openai</item>
+        <item>anthropic</item>
+        <item>claude</item>
+        <item>ollama</item>
+        <item>gpt</item>
+        <item>local</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_model">
+        <item>model</item>
+        <item>versiune</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_vision_model">
+        <item>viziune</item>
+        <item>imagine</item>
+        <item>multimodal</item>
+    </string-array>
+    <string-array name="settings_search_kw_api_key">
+        <item>cheie api</item>
+        <item>secret</item>
+        <item>token</item>
+        <item>gemini</item>
+        <item>openai</item>
+    </string-array>
+    <string-array name="settings_search_kw_base_url">
+        <item>endpoint</item>
+        <item>url</item>
+        <item>ollama</item>
+        <item>local</item>
+        <item>server</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_allow_insecure_http">
+        <item>http</item>
+        <item>necriptat</item>
+        <item>local</item>
+    </string-array>
+    <string-array name="settings_search_kw_on_device_model">
+        <item>pe dispozitiv</item>
+        <item>gemma</item>
+        <item>descărcare</item>
+        <item>local</item>
+        <item>offline</item>
+    </string-array>
+    <string-array name="settings_search_kw_max_tokens">
+        <item>tokeni</item>
+        <item>lungime</item>
+        <item>limită</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_read_timeout">
+        <item>timeout</item>
+        <item>secunde</item>
+        <item>rețea</item>
+    </string-array>
+    <string-array name="settings_search_kw_gemini_google_search">
+        <item>fundamentare</item>
+        <item>google</item>
+        <item>web</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_custom_instructions">
+        <item>context</item>
+        <item>prompt</item>
+        <item>antrenor</item>
+        <item>personalitate</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_fallback">
+        <item>rezervă</item>
+        <item>backup</item>
+        <item>secundar</item>
+        <item>reîncercare</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_speech">
+        <item>vorbire</item>
+        <item>voce</item>
+        <item>dictare</item>
+        <item>voce în text</item>
+        <item>microfon</item>
+        <item>stt</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_connect">
+        <item>sincronizare</item>
+        <item>pași</item>
+        <item>somn</item>
+        <item>permisiuni</item>
+        <item>google fit</item>
+        <item>samsung</item>
+    </string-array>
+    <string-array name="settings_search_kw_manage_health_access">
+        <item>permisiuni</item>
+        <item>health connect</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_background_sync">
+        <item>fundal</item>
+        <item>automat</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_diary">
+        <item>export</item>
+        <item>json</item>
+        <item>backup</item>
+        <item>fișier</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_body_metrics">
+        <item>export</item>
+        <item>greutate</item>
+        <item>grăsime corporală</item>
+        <item>fișier</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_diary">
+        <item>import</item>
+        <item>restaurare</item>
+        <item>json</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_body_metrics">
+        <item>import</item>
+        <item>restaurare</item>
+        <item>greutate</item>
+        <item>csv</item>
+    </string-array>
+    <string-array name="settings_search_kw_sync">
+        <item>webdav</item>
+        <item>backup</item>
+        <item>cloud</item>
+        <item>sincronizare automată</item>
+        <item>server</item>
+    </string-array>
+    <string-array name="settings_search_kw_clear_food_log">
+        <item>șterge</item>
+        <item>golește</item>
+        <item>curăță</item>
+        <item>mâncare</item>
+    </string-array>
+    <string-array name="settings_search_kw_delete_all_data">
+        <item>șterge</item>
+        <item>golește</item>
+        <item>curăță</item>
+        <item>resetare</item>
+        <item>fabrică</item>
+    </string-array>
 </resources>

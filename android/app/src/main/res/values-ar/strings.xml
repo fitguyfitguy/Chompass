@@ -2295,4 +2295,476 @@
     <string name="untracked_sheet_title">غير متتبَّع</string>
     <string name="untracked_sheet_toggle">غير متتبَّع</string>
     <string name="voice_transcribing">جارٍ النسخ…</string>
+
+    <!-- Settings hub search vocabulary (SettingsIndex.kt); translated from
+         the English defaults in values/strings.xml. Not UI copy, so
+         check_android_strings.py does not count them. -->
+    <string-array name="settings_search_kw_units">
+        <item>متري</item>
+        <item>إمبراطوري</item>
+        <item>cm</item>
+        <item>ft</item>
+        <item>kg</item>
+        <item>lbs</item>
+        <item>نظام القياس</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy">
+        <item>طاقة</item>
+        <item>kJ</item>
+        <item>kj</item>
+        <item>كيلوجول</item>
+        <item>kcal</item>
+        <item>وحدة السعرات</item>
+    </string-array>
+    <string-array name="settings_search_kw_gender">
+        <item>الجنس</item>
+    </string-array>
+    <string-array name="settings_search_kw_birthday">
+        <item>تاريخ الميلاد</item>
+        <item>العمر</item>
+        <item>ميلاد</item>
+        <item>الميلاد</item>
+    </string-array>
+    <string-array name="settings_search_kw_height">
+        <item>الطول</item>
+        <item>طويل</item>
+        <item>cm</item>
+        <item>ft</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight">
+        <item>الوزن</item>
+        <item>الحالي</item>
+        <item>kg</item>
+        <item>lbs</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_fat">
+        <item>دهون الجسم</item>
+        <item>bf</item>
+        <item>النسبة</item>
+    </string-array>
+    <string-array name="settings_search_kw_use_body_fat_bmr">
+        <item>BMR</item>
+        <item>Katch</item>
+        <item>McArdle</item>
+        <item>الأيض</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_body_fat">
+        <item>هدف نسبة الدهون</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_measurements">
+        <item>الخصر</item>
+        <item>الشريط</item>
+        <item>المحيط</item>
+        <item>الورك</item>
+        <item>الصدر</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight_goal">
+        <item>إنقاص</item>
+        <item>زيادة</item>
+        <item>الحفاظ</item>
+        <item>الهدف</item>
+    </string-array>
+    <string-array name="settings_search_kw_diet_mode">
+        <item>النظام الغذائي</item>
+        <item>كيتو</item>
+        <item>نباتي صرف</item>
+        <item>نباتي</item>
+        <item>لاحم</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_carb_mode">
+        <item>صافٍ</item>
+        <item>الإجمالي</item>
+        <item>كيتو</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_net_carbs">
+        <item>كيتو</item>
+        <item>جرامات</item>
+    </string-array>
+    <string-array name="settings_search_kw_activity_level">
+        <item>النشاط</item>
+        <item>مستقر</item>
+        <item>تمارين</item>
+    </string-array>
+    <string-array name="settings_search_kw_weekly_change">
+        <item>المعدل</item>
+        <item>السرعة</item>
+        <item>أسبوعيًا</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_weight">
+        <item>الهدف</item>
+    </string-array>
+    <string-array name="settings_search_kw_adaptive_goals">
+        <item>أسبوعي</item>
+        <item>تلقائي</item>
+        <item>تنبيه</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy_goals">
+        <item>الحرق</item>
+        <item>Health Connect</item>
+        <item>مقاس</item>
+    </string-array>
+    <string-array name="settings_search_kw_calories">
+        <item>السعرات الحرارية</item>
+        <item>kcal</item>
+        <item>هدف السعرات</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_protein">
+        <item>ماكرو</item>
+        <item>البروتين</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_carbs">
+        <item>ماكرو</item>
+        <item>كربوهيدرات</item>
+        <item>الكربوهيدرات</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_fat">
+        <item>ماكرو</item>
+        <item>الدهون</item>
+        <item>دهون</item>
+    </string-array>
+    <string-array name="settings_search_kw_other_nutrient_goals">
+        <item>الألياف</item>
+        <item>الصوديوم</item>
+        <item>العناصر الدقيقة</item>
+        <item>الفيتامينات</item>
+    </string-array>
+    <string-array name="settings_search_kw_recalculate_goals">
+        <item>إعادة حساب</item>
+        <item>إعادة حساب</item>
+        <item>تحديث</item>
+        <item>تحديث الأهداف</item>
+    </string-array>
+    <string-array name="settings_search_kw_day_types">
+        <item>تدوير الكربوهيدرات</item>
+        <item>دورة الكربوهيدرات</item>
+        <item>نوع اليوم</item>
+        <item>يوم تمرين</item>
+        <item>يوم راحة</item>
+        <item>جدول</item>
+        <item>أيام الأسبوع</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_phases">
+        <item>تنشيف</item>
+        <item>تضخيم</item>
+        <item>الحفاظ</item>
+        <item>مرحلة</item>
+        <item>تنشيف قوي</item>
+        <item>مرحلة خسارة الوزن</item>
+        <item>مرحلة بناء العضلات</item>
+    </string-array>
+    <string-array name="settings_search_kw_calc_methods">
+        <item>الصيغة</item>
+        <item>BMR</item>
+        <item>TDEE</item>
+        <item>Mifflin</item>
+        <item>Katch</item>
+        <item>تدقيق</item>
+    </string-array>
+    <string-array name="settings_search_kw_default_to_grams">
+        <item>جرامات</item>
+        <item>وحدات</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_log_sort">
+        <item>الترتيب</item>
+        <item>الفرز</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_times">
+        <item>وجبة</item>
+        <item>الإفطار</item>
+        <item>الغداء</item>
+        <item>العشاء</item>
+        <item>جدول</item>
+    </string-array>
+    <string-array name="settings_search_kw_photo_note_prompt">
+        <item>صورة</item>
+        <item>سؤال</item>
+        <item>ملاحظة</item>
+        <item>وصف</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_constituents">
+        <item>المكونات</item>
+        <item>المكوّنات</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_databases">
+        <item>قاعدة بيانات</item>
+        <item>بحث</item>
+        <item>مصدر</item>
+        <item>Open Food Facts</item>
+        <item>USDA</item>
+        <item>سويسري</item>
+        <item>بدون اتصال</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_mode">
+        <item>الحصة</item>
+        <item>الوحدة</item>
+        <item>الاكتشاف</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_heuristics">
+        <item>الحصة</item>
+        <item>القواعد</item>
+        <item>الاكتشاف</item>
+    </string-array>
+    <string-array name="settings_search_kw_home_display">
+        <item>الرئيسية</item>
+        <item>بطاقات</item>
+        <item>المغذيات</item>
+    </string-array>
+    <string-array name="settings_search_kw_calorie_gauge">
+        <item>المقياس</item>
+        <item>النشاط</item>
+        <item>الحرق</item>
+        <item>احتساب الحرق</item>
+        <item>Health Connect</item>
+        <item>تمرين</item>
+    </string-array>
+    <string-array name="settings_search_kw_appearance">
+        <item>داكن</item>
+        <item>فاتح</item>
+        <item>OLED</item>
+        <item>ليلي</item>
+        <item>وضع السمة</item>
+    </string-array>
+    <string-array name="settings_search_kw_theme_color">
+        <item>السمة</item>
+        <item>اللون المميز</item>
+        <item>اللون</item>
+        <item>اللون</item>
+        <item>تركوازي</item>
+        <item>أزرق</item>
+    </string-array>
+    <string-array name="settings_search_kw_language">
+        <item>اللغة</item>
+        <item>اللغة المحلية</item>
+        <item>الترجمة</item>
+        <item>الألمانية</item>
+        <item>الإسبانية</item>
+    </string-array>
+    <string-array name="settings_search_kw_fixed_launcher_icon">
+        <item>المشغّل</item>
+        <item>أيقونة التطبيق</item>
+        <item>تركوازي</item>
+    </string-array>
+    <string-array name="settings_search_kw_system_date_time_pickers">
+        <item>التاريخ</item>
+        <item>الوقت</item>
+        <item>المنتقي</item>
+        <item>الساعة</item>
+        <item>التقويم</item>
+    </string-array>
+    <string-array name="settings_search_kw_customize_progress">
+        <item>التقدم</item>
+        <item>النطاق</item>
+        <item>الرسوم البيانية</item>
+        <item>المخططات</item>
+        <item>الاتجاه</item>
+        <item>الافتراضي</item>
+        <item>الألياف</item>
+        <item>السكر</item>
+        <item>الصوديوم</item>
+        <item>العنصر الغذائي</item>
+    </string-array>
+    <string-array name="settings_search_kw_progress_nutrient_averages">
+        <item>الألياف</item>
+        <item>السكر</item>
+        <item>الصوديوم</item>
+        <item>مغذيات دقيقة</item>
+        <item>العنصر الغذائي</item>
+        <item>المتوسطات</item>
+    </string-array>
+    <string-array name="settings_search_kw_week_starts">
+        <item>التقويم</item>
+        <item>الإثنين</item>
+        <item>الأحد</item>
+        <item>الأسبوع</item>
+    </string-array>
+    <string-array name="settings_search_kw_water">
+        <item>الترطيب</item>
+        <item>الهدف</item>
+        <item>الشرب</item>
+        <item>ml</item>
+        <item>الإعدادات المسبقة</item>
+    </string-array>
+    <string-array name="settings_search_kw_nicotine">
+        <item>السجائر</item>
+        <item>الفيب</item>
+        <item>أكياس النيكوتين</item>
+        <item>التدخين</item>
+        <item>الحد</item>
+    </string-array>
+    <string-array name="settings_search_kw_caffeine">
+        <item>القهوة</item>
+        <item>الشاي</item>
+        <item>مشروب الطاقة</item>
+        <item>الحد</item>
+        <item>الكافيين</item>
+    </string-array>
+    <string-array name="settings_search_kw_notes">
+        <item>المذكرات</item>
+        <item>ملاحظة</item>
+        <item>اليوميات</item>
+        <item>الملاحظات اليومية</item>
+    </string-array>
+    <string-array name="settings_search_kw_fasting">
+        <item>الصيام</item>
+        <item>المتقطع</item>
+        <item>المؤقت</item>
+        <item>الهدف</item>
+        <item>صوم</item>
+    </string-array>
+    <string-array name="settings_search_kw_notifications">
+        <item>التذكيرات</item>
+        <item>السلسلة</item>
+        <item>الملخص</item>
+        <item>تذكير الوزن</item>
+        <item>البطارية</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_features_master">
+        <item>AI</item>
+        <item>تشغيل</item>
+        <item>إيقاف</item>
+        <item>الخصوصية</item>
+    </string-array>
+    <string-array name="settings_search_kw_show_coach_tab">
+        <item>المدرب</item>
+        <item>علامة تبويب</item>
+        <item>إخفاء</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_provider">
+        <item>Gemini</item>
+        <item>OpenAI</item>
+        <item>Anthropic</item>
+        <item>Claude</item>
+        <item>Ollama</item>
+        <item>GPT</item>
+        <item>محلي</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_model">
+        <item>النموذج</item>
+        <item>الإصدار</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_vision_model">
+        <item>الرؤية</item>
+        <item>صورة</item>
+        <item>متعدد الوسائط</item>
+    </string-array>
+    <string-array name="settings_search_kw_api_key">
+        <item>مفتاح API</item>
+        <item>السر</item>
+        <item>الرمز</item>
+        <item>Gemini</item>
+        <item>OpenAI</item>
+    </string-array>
+    <string-array name="settings_search_kw_base_url">
+        <item>نقطة النهاية</item>
+        <item>URL</item>
+        <item>Ollama</item>
+        <item>محلي</item>
+        <item>الخادم</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_allow_insecure_http">
+        <item>HTTP</item>
+        <item>نص واضح</item>
+        <item>محلي</item>
+    </string-array>
+    <string-array name="settings_search_kw_on_device_model">
+        <item>على الجهاز</item>
+        <item>Gemma</item>
+        <item>تنزيل</item>
+        <item>محلي</item>
+        <item>بدون اتصال</item>
+    </string-array>
+    <string-array name="settings_search_kw_max_tokens">
+        <item>الرموز</item>
+        <item>الطول</item>
+        <item>الحد</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_read_timeout">
+        <item>المهلة</item>
+        <item>الثواني</item>
+        <item>الشبكة</item>
+    </string-array>
+    <string-array name="settings_search_kw_gemini_google_search">
+        <item>الربط</item>
+        <item>Google</item>
+        <item>الويب</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_custom_instructions">
+        <item>السياق</item>
+        <item>المطالبة</item>
+        <item>المدرب</item>
+        <item>الشخصية</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_fallback">
+        <item>الاحتياطي</item>
+        <item>النسخ الاحتياطي</item>
+        <item>الثانوي</item>
+        <item>إعادة المحاولة</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_speech">
+        <item>الكلام</item>
+        <item>الصوت</item>
+        <item>الإملاء</item>
+        <item>تحويل الكلام إلى نص</item>
+        <item>الميكروفون</item>
+        <item>STT</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_connect">
+        <item>المزامنة</item>
+        <item>الخطوات</item>
+        <item>النوم</item>
+        <item>الأذونات</item>
+        <item>Google Fit</item>
+        <item>سامسونج</item>
+    </string-array>
+    <string-array name="settings_search_kw_manage_health_access">
+        <item>الأذونات</item>
+        <item>Health Connect</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_background_sync">
+        <item>الخلفية</item>
+        <item>تلقائي</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_diary">
+        <item>تصدير</item>
+        <item>JSON</item>
+        <item>نسخة احتياطية</item>
+        <item>ملف</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_body_metrics">
+        <item>تصدير</item>
+        <item>الوزن</item>
+        <item>دهون الجسم</item>
+        <item>ملف</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_diary">
+        <item>استيراد</item>
+        <item>استعادة</item>
+        <item>JSON</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_body_metrics">
+        <item>استيراد</item>
+        <item>استعادة</item>
+        <item>الوزن</item>
+        <item>CSV</item>
+    </string-array>
+    <string-array name="settings_search_kw_sync">
+        <item>WebDAV</item>
+        <item>نسخة احتياطية</item>
+        <item>السحابة</item>
+        <item>مزامنة تلقائية</item>
+        <item>الخادم</item>
+    </string-array>
+    <string-array name="settings_search_kw_clear_food_log">
+        <item>حذف</item>
+        <item>محو</item>
+        <item>مسح</item>
+        <item>الطعام</item>
+    </string-array>
+    <string-array name="settings_search_kw_delete_all_data">
+        <item>حذف</item>
+        <item>محو</item>
+        <item>مسح</item>
+        <item>إعادة تعيين</item>
+        <item>ضبط المصنع</item>
+    </string-array>
 </resources>

@@ -2282,4 +2282,476 @@ makrolar yeni kalori cəminə uyğun yenidən tarazlaşdırılır</string>
     <string name="untracked_sheet_title">İzlənməmir</string>
     <string name="untracked_sheet_toggle">İzlənməmir</string>
     <string name="voice_transcribing">Transkripsiya edilir…</string>
+
+    <!-- Settings hub search vocabulary (SettingsIndex.kt); translated from
+         the English defaults in values/strings.xml. Not UI copy, so
+         check_android_strings.py does not count them. -->
+    <string-array name="settings_search_kw_units">
+        <item>metrik</item>
+        <item>imperial</item>
+        <item>cm</item>
+        <item>ft</item>
+        <item>kg</item>
+        <item>lbs</item>
+        <item>ölçü sistemi</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy">
+        <item>enerji</item>
+        <item>kJ</item>
+        <item>kj</item>
+        <item>kilojoul</item>
+        <item>kcal</item>
+        <item>kalori vahidi</item>
+    </string-array>
+    <string-array name="settings_search_kw_gender">
+        <item>cins</item>
+    </string-array>
+    <string-array name="settings_search_kw_birthday">
+        <item>doğum günü</item>
+        <item>yaş</item>
+        <item>doğum tarixi</item>
+        <item>doğum</item>
+    </string-array>
+    <string-array name="settings_search_kw_height">
+        <item>boy</item>
+        <item>hündür</item>
+        <item>cm</item>
+        <item>ft</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight">
+        <item>çəki</item>
+        <item>cari</item>
+        <item>kg</item>
+        <item>lbs</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_fat">
+        <item>bədən yağı</item>
+        <item>by</item>
+        <item>faiz</item>
+    </string-array>
+    <string-array name="settings_search_kw_use_body_fat_bmr">
+        <item>bmr</item>
+        <item>katch</item>
+        <item>mcardle</item>
+        <item>metabolizm</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_body_fat">
+        <item>bədən yağı hədəfi</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_measurements">
+        <item>bel</item>
+        <item>lent</item>
+        <item>çevrə</item>
+        <item>omba</item>
+        <item>sinə</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight_goal">
+        <item>arıqlama</item>
+        <item>kütlə yığma</item>
+        <item>saxlama</item>
+        <item>hədəf</item>
+    </string-array>
+    <string-array name="settings_search_kw_diet_mode">
+        <item>pəhriz</item>
+        <item>keto</item>
+        <item>vegan</item>
+        <item>vegetarian</item>
+        <item>karnivor</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_carb_mode">
+        <item>xalis</item>
+        <item>ümumi</item>
+        <item>keto</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_net_carbs">
+        <item>keto</item>
+        <item>qram</item>
+    </string-array>
+    <string-array name="settings_search_kw_activity_level">
+        <item>fəaliyyət</item>
+        <item>hərəkətsiz</item>
+        <item>məşq</item>
+    </string-array>
+    <string-array name="settings_search_kw_weekly_change">
+        <item>temp</item>
+        <item>sürət</item>
+        <item>həftədə</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_weight">
+        <item>hədəf</item>
+    </string-array>
+    <string-array name="settings_search_kw_adaptive_goals">
+        <item>həftəlik</item>
+        <item>avto</item>
+        <item>təklif</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy_goals">
+        <item>yandırma</item>
+        <item>health connect</item>
+        <item>ölçülmüş</item>
+    </string-array>
+    <string-array name="settings_search_kw_calories">
+        <item>kalori</item>
+        <item>kcal</item>
+        <item>kalori hədəfi</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_protein">
+        <item>makro</item>
+        <item>zülal</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_carbs">
+        <item>makro</item>
+        <item>karbohidratlar</item>
+        <item>karbohidrat</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_fat">
+        <item>makro</item>
+        <item>yağ</item>
+        <item>lipid</item>
+    </string-array>
+    <string-array name="settings_search_kw_other_nutrient_goals">
+        <item>lif</item>
+        <item>natrium</item>
+        <item>mikronutrientlər</item>
+        <item>vitaminlər</item>
+    </string-array>
+    <string-array name="settings_search_kw_recalculate_goals">
+        <item>yenidən hesabla</item>
+        <item>hesabla</item>
+        <item>yenilə</item>
+        <item>hədəfləri yenilə</item>
+    </string-array>
+    <string-array name="settings_search_kw_day_types">
+        <item>karbohidrat dövrü</item>
+        <item>karb dövrü</item>
+        <item>gün tipi</item>
+        <item>trenirovka günü</item>
+        <item>istirahət günü</item>
+        <item>cədvəl</item>
+        <item>həftə günləri</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_phases">
+        <item>arıqlama</item>
+        <item>kütlə</item>
+        <item>saxlama</item>
+        <item>faza</item>
+        <item>yağ yandırma</item>
+        <item>arıqlama fazası</item>
+        <item>əzələ yığma fazası</item>
+    </string-array>
+    <string-array name="settings_search_kw_calc_methods">
+        <item>düstur</item>
+        <item>bmr</item>
+        <item>tdee</item>
+        <item>mifflin</item>
+        <item>katch</item>
+        <item>audit</item>
+    </string-array>
+    <string-array name="settings_search_kw_default_to_grams">
+        <item>qram</item>
+        <item>vahidlər</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_log_sort">
+        <item>sıra</item>
+        <item>sıralama</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_times">
+        <item>yemək</item>
+        <item>səhər yeməyi</item>
+        <item>nahar</item>
+        <item>şam yeməyi</item>
+        <item>cədvəl</item>
+    </string-array>
+    <string-array name="settings_search_kw_photo_note_prompt">
+        <item>foto</item>
+        <item>soruş</item>
+        <item>qeyd</item>
+        <item>təsvir et</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_constituents">
+        <item>inqrediyentlər</item>
+        <item>komponentlər</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_databases">
+        <item>baza</item>
+        <item>axtar</item>
+        <item>mənbə</item>
+        <item>open food facts</item>
+        <item>usda</item>
+        <item>isveçrə</item>
+        <item>oflayn</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_mode">
+        <item>porsiya</item>
+        <item>vahid</item>
+        <item>aşkarlama</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_heuristics">
+        <item>porsiya</item>
+        <item>qaydalar</item>
+        <item>aşkarlama</item>
+    </string-array>
+    <string-array name="settings_search_kw_home_display">
+        <item>ana səhifə</item>
+        <item>kartlar</item>
+        <item>qida maddələri</item>
+    </string-array>
+    <string-array name="settings_search_kw_calorie_gauge">
+        <item>göstərici</item>
+        <item>aktiv</item>
+        <item>yandırma</item>
+        <item>aktiv əlavə</item>
+        <item>health connect</item>
+        <item>məşq</item>
+    </string-array>
+    <string-array name="settings_search_kw_appearance">
+        <item>qaranlıq</item>
+        <item>işıqlı</item>
+        <item>oled</item>
+        <item>gecə</item>
+        <item>tema rejimi</item>
+    </string-array>
+    <string-array name="settings_search_kw_theme_color">
+        <item>tema</item>
+        <item>vurğu</item>
+        <item>rəng</item>
+        <item>rəng çaları</item>
+        <item>firuzəyi</item>
+        <item>mavi</item>
+    </string-array>
+    <string-array name="settings_search_kw_language">
+        <item>dil</item>
+        <item>dil variantı</item>
+        <item>tərcümə</item>
+        <item>deutsch</item>
+        <item>espanol</item>
+    </string-array>
+    <string-array name="settings_search_kw_fixed_launcher_icon">
+        <item>launcher</item>
+        <item>tətbiq ikonu</item>
+        <item>firuzəyi</item>
+    </string-array>
+    <string-array name="settings_search_kw_system_date_time_pickers">
+        <item>tarix</item>
+        <item>saat</item>
+        <item>seçici</item>
+        <item>saat qurğusu</item>
+        <item>təqvim</item>
+    </string-array>
+    <string-array name="settings_search_kw_customize_progress">
+        <item>tərəqqi</item>
+        <item>aralıq</item>
+        <item>qrafiklər</item>
+        <item>diaqramlar</item>
+        <item>trend</item>
+        <item>standart</item>
+        <item>lif</item>
+        <item>şəkər</item>
+        <item>natrium</item>
+        <item>qida maddəsi</item>
+    </string-array>
+    <string-array name="settings_search_kw_progress_nutrient_averages">
+        <item>lif</item>
+        <item>şəkər</item>
+        <item>natrium</item>
+        <item>mikro</item>
+        <item>qida maddəsi</item>
+        <item>ortalamalar</item>
+    </string-array>
+    <string-array name="settings_search_kw_week_starts">
+        <item>təqvim</item>
+        <item>bazar ertəsi</item>
+        <item>bazar</item>
+        <item>həftə</item>
+    </string-array>
+    <string-array name="settings_search_kw_water">
+        <item>hidratasiya</item>
+        <item>məqsəd</item>
+        <item>içmək</item>
+        <item>ml</item>
+        <item>presetlər</item>
+    </string-array>
+    <string-array name="settings_search_kw_nicotine">
+        <item>siqaret</item>
+        <item>elektron siqaret</item>
+        <item>nikotin kisəsi</item>
+        <item>siqaret çəkmə</item>
+        <item>limit</item>
+    </string-array>
+    <string-array name="settings_search_kw_caffeine">
+        <item>qəhvə</item>
+        <item>çay</item>
+        <item>enerji içkisi</item>
+        <item>limit</item>
+        <item>kofein</item>
+    </string-array>
+    <string-array name="settings_search_kw_notes">
+        <item>jurnal</item>
+        <item>qeyd</item>
+        <item>gündəlik</item>
+        <item>gündəlik qeydlər</item>
+    </string-array>
+    <string-array name="settings_search_kw_fasting">
+        <item>oruc</item>
+        <item>fasiləli</item>
+        <item>taymer</item>
+        <item>məqsəd</item>
+        <item>oruc tutmaq</item>
+    </string-array>
+    <string-array name="settings_search_kw_notifications">
+        <item>xatırlatmalar</item>
+        <item>seriya</item>
+        <item>xülasə</item>
+        <item>çəki xatırlatması</item>
+        <item>batareya</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_features_master">
+        <item>ai</item>
+        <item>açıq</item>
+        <item>bağlı</item>
+        <item>məxfilik</item>
+    </string-array>
+    <string-array name="settings_search_kw_show_coach_tab">
+        <item>məşqçi</item>
+        <item>nişan</item>
+        <item>gizlət</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_provider">
+        <item>gemini</item>
+        <item>openai</item>
+        <item>anthropic</item>
+        <item>claude</item>
+        <item>ollama</item>
+        <item>gpt</item>
+        <item>lokal</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_model">
+        <item>model</item>
+        <item>versiya</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_vision_model">
+        <item>görmə</item>
+        <item>şəkil</item>
+        <item>multimodal</item>
+    </string-array>
+    <string-array name="settings_search_kw_api_key">
+        <item>api açarı</item>
+        <item>sirr</item>
+        <item>token</item>
+        <item>gemini</item>
+        <item>openai</item>
+    </string-array>
+    <string-array name="settings_search_kw_base_url">
+        <item>endpoint</item>
+        <item>url</item>
+        <item>ollama</item>
+        <item>lokal</item>
+        <item>server</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_allow_insecure_http">
+        <item>http</item>
+        <item>şifrəsiz</item>
+        <item>lokal</item>
+    </string-array>
+    <string-array name="settings_search_kw_on_device_model">
+        <item>cihazdaxili</item>
+        <item>gemma</item>
+        <item>endir</item>
+        <item>lokal</item>
+        <item>oflayn</item>
+    </string-array>
+    <string-array name="settings_search_kw_max_tokens">
+        <item>token</item>
+        <item>uzunluq</item>
+        <item>limit</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_read_timeout">
+        <item>vaxt limiti</item>
+        <item>saniyə</item>
+        <item>şəbəkə</item>
+    </string-array>
+    <string-array name="settings_search_kw_gemini_google_search">
+        <item>əsaslandırma</item>
+        <item>google</item>
+        <item>veb</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_custom_instructions">
+        <item>kontekst</item>
+        <item>sorğu</item>
+        <item>məşqçi</item>
+        <item>xarakter</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_fallback">
+        <item>ehtiyat</item>
+        <item>ehtiyat nüsxə</item>
+        <item>ikinci</item>
+        <item>yenidən cəhd</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_speech">
+        <item>nitq</item>
+        <item>səs</item>
+        <item>diktə</item>
+        <item>nitqdən mətnə</item>
+        <item>mikrofon</item>
+        <item>stt</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_connect">
+        <item>sinxronlaşdırma</item>
+        <item>addımlar</item>
+        <item>yuxu</item>
+        <item>icazələr</item>
+        <item>google fit</item>
+        <item>samsung</item>
+    </string-array>
+    <string-array name="settings_search_kw_manage_health_access">
+        <item>icazələr</item>
+        <item>health connect</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_background_sync">
+        <item>fon</item>
+        <item>avtomatik</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_diary">
+        <item>ixrac</item>
+        <item>json</item>
+        <item>ehtiyat nüsxə</item>
+        <item>fayl</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_body_metrics">
+        <item>ixrac</item>
+        <item>çəki</item>
+        <item>bədən yağı</item>
+        <item>fayl</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_diary">
+        <item>idxal</item>
+        <item>bərpa</item>
+        <item>json</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_body_metrics">
+        <item>idxal</item>
+        <item>bərpa</item>
+        <item>çəki</item>
+        <item>csv</item>
+    </string-array>
+    <string-array name="settings_search_kw_sync">
+        <item>webdav</item>
+        <item>ehtiyat nüsxə</item>
+        <item>bulud</item>
+        <item>avtomatik sinxronlaşdırma</item>
+        <item>server</item>
+    </string-array>
+    <string-array name="settings_search_kw_clear_food_log">
+        <item>sil</item>
+        <item>təmizlə</item>
+        <item>sıfırla</item>
+        <item>yemək</item>
+    </string-array>
+    <string-array name="settings_search_kw_delete_all_data">
+        <item>sil</item>
+        <item>təmizlə</item>
+        <item>sıfırla</item>
+        <item>sıfırlama</item>
+        <item>zavod ayarları</item>
+    </string-array>
 </resources>
