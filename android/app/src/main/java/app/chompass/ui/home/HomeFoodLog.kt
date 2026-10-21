@@ -745,7 +745,7 @@ internal fun FoodRow(
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                     )
                 }
-                if (compact && macroChips.isNotEmpty()) {
+                if (compact && macroChips.size in 1..3) {
                     FlowRow(
                         Modifier.weight(1f),
                         horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End),
@@ -758,6 +758,10 @@ internal fun FoodRow(
                 } else {
                     Spacer(Modifier.weight(1f))
                 }
+            }
+
+            if (compact && macroChips.size >= 4) {
+                FoodLogMacroChipLine(macroChips, entry, spacedBy = 4.dp)
             }
 
             if (!compact && macroChips.isNotEmpty()) {
@@ -780,7 +784,7 @@ private fun FoodLogMacroChipLine(
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         chips.forEach { chip ->
-            FoodLogMacroChipView(chip, chip.valueFrom(entry))
+            FoodLogMacroChipView(chip, chip.valueFrom(entry), dense = chips.size > 3)
         }
     }
 }
