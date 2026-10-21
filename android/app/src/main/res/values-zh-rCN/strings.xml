@@ -2280,4 +2280,475 @@
     <string name="untracked_sheet_title">未跟踪</string>
     <string name="untracked_sheet_toggle">未跟踪</string>
     <string name="voice_transcribing">正在转写…</string>
+    <!-- Settings hub search vocabulary (SettingsIndex.kt); translated from
+         the English defaults in values/strings.xml. Not UI copy, so
+         check_android_strings.py does not count them. -->
+    <string-array name="settings_search_kw_units">
+        <item>公制</item>
+        <item>英制</item>
+        <item>cm</item>
+        <item>ft</item>
+        <item>kg</item>
+        <item>lbs</item>
+        <item>单位制</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy">
+        <item>能量</item>
+        <item>kJ</item>
+        <item>kj</item>
+        <item>千焦</item>
+        <item>kcal</item>
+        <item>卡路里单位</item>
+    </string-array>
+    <string-array name="settings_search_kw_gender">
+        <item>性别</item>
+    </string-array>
+    <string-array name="settings_search_kw_birthday">
+        <item>生日</item>
+        <item>年龄</item>
+        <item>出生日期</item>
+        <item>出生</item>
+    </string-array>
+    <string-array name="settings_search_kw_height">
+        <item>身高</item>
+        <item>高</item>
+        <item>cm</item>
+        <item>ft</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight">
+        <item>体重</item>
+        <item>当前</item>
+        <item>kg</item>
+        <item>lbs</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_fat">
+        <item>体脂率</item>
+        <item>体脂</item>
+        <item>百分比</item>
+    </string-array>
+    <string-array name="settings_search_kw_use_body_fat_bmr">
+        <item>BMR</item>
+        <item>Katch</item>
+        <item>McArdle</item>
+        <item>代谢</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_body_fat">
+        <item>目标体脂</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_measurements">
+        <item>腰围</item>
+        <item>皮尺</item>
+        <item>围度</item>
+        <item>臀围</item>
+        <item>胸围</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight_goal">
+        <item>减重</item>
+        <item>增重</item>
+        <item>维持</item>
+        <item>目标</item>
+    </string-array>
+    <string-array name="settings_search_kw_diet_mode">
+        <item>饮食</item>
+        <item>生酮</item>
+        <item>纯素</item>
+        <item>素食</item>
+        <item>肉食</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_carb_mode">
+        <item>净</item>
+        <item>总</item>
+        <item>生酮</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_net_carbs">
+        <item>生酮</item>
+        <item>克</item>
+    </string-array>
+    <string-array name="settings_search_kw_activity_level">
+        <item>活动</item>
+        <item>久坐</item>
+        <item>运动</item>
+    </string-array>
+    <string-array name="settings_search_kw_weekly_change">
+        <item>速度</item>
+        <item>快慢</item>
+        <item>每周</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_weight">
+        <item>目标</item>
+    </string-array>
+    <string-array name="settings_search_kw_adaptive_goals">
+        <item>每周</item>
+        <item>自动</item>
+        <item>提醒</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy_goals">
+        <item>消耗</item>
+        <item>Health Connect</item>
+        <item>实测</item>
+    </string-array>
+    <string-array name="settings_search_kw_calories">
+        <item>卡路里</item>
+        <item>kcal</item>
+        <item>卡路里目标</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_protein">
+        <item>宏量营养素</item>
+        <item>蛋白质</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_carbs">
+        <item>宏量营养素</item>
+        <item>碳水</item>
+        <item>碳水化合物</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_fat">
+        <item>宏量营养素</item>
+        <item>脂肪</item>
+        <item>脂质</item>
+    </string-array>
+    <string-array name="settings_search_kw_other_nutrient_goals">
+        <item>纤维</item>
+        <item>钠</item>
+        <item>微量营养素</item>
+        <item>维生素</item>
+    </string-array>
+    <string-array name="settings_search_kw_recalculate_goals">
+        <item>重新计算</item>
+        <item>重算</item>
+        <item>刷新</item>
+        <item>更新目标</item>
+    </string-array>
+    <string-array name="settings_search_kw_day_types">
+        <item>碳水循环</item>
+        <item>碳水循环</item>
+        <item>日类型</item>
+        <item>训练日</item>
+        <item>休息日</item>
+        <item>日程</item>
+        <item>星期</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_phases">
+        <item>减脂</item>
+        <item>增肌</item>
+        <item>维持</item>
+        <item>阶段</item>
+        <item>刷脂</item>
+        <item>减脂期</item>
+        <item>增肌期</item>
+    </string-array>
+    <string-array name="settings_search_kw_calc_methods">
+        <item>公式</item>
+        <item>BMR</item>
+        <item>TDEE</item>
+        <item>Mifflin</item>
+        <item>Katch</item>
+        <item>审核</item>
+    </string-array>
+    <string-array name="settings_search_kw_default_to_grams">
+        <item>克</item>
+        <item>单位</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_log_sort">
+        <item>顺序</item>
+        <item>排序</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_times">
+        <item>餐食</item>
+        <item>早餐</item>
+        <item>午餐</item>
+        <item>晚餐</item>
+        <item>时间表</item>
+    </string-array>
+    <string-array name="settings_search_kw_photo_note_prompt">
+        <item>照片</item>
+        <item>询问</item>
+        <item>备注</item>
+        <item>描述</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_constituents">
+        <item>配料</item>
+        <item>成分</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_databases">
+        <item>数据库</item>
+        <item>搜索</item>
+        <item>来源</item>
+        <item>Open Food Facts</item>
+        <item>USDA</item>
+        <item>瑞士</item>
+        <item>离线</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_mode">
+        <item>份量</item>
+        <item>单位</item>
+        <item>检测</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_heuristics">
+        <item>份量</item>
+        <item>规则</item>
+        <item>检测</item>
+    </string-array>
+    <string-array name="settings_search_kw_home_display">
+        <item>主页</item>
+        <item>卡片</item>
+        <item>营养素</item>
+    </string-array>
+    <string-array name="settings_search_kw_calorie_gauge">
+        <item>表盘</item>
+        <item>活动</item>
+        <item>消耗</item>
+        <item>吃回</item>
+        <item>Health Connect</item>
+        <item>锻炼</item>
+    </string-array>
+    <string-array name="settings_search_kw_appearance">
+        <item>深色</item>
+        <item>浅色</item>
+        <item>OLED</item>
+        <item>夜间</item>
+        <item>主题模式</item>
+    </string-array>
+    <string-array name="settings_search_kw_theme_color">
+        <item>主题</item>
+        <item>强调色</item>
+        <item>颜色</item>
+        <item>颜色</item>
+        <item>青色</item>
+        <item>蓝色</item>
+    </string-array>
+    <string-array name="settings_search_kw_language">
+        <item>语言</item>
+        <item>区域</item>
+        <item>翻译</item>
+        <item>Deutsch</item>
+        <item>Español</item>
+    </string-array>
+    <string-array name="settings_search_kw_fixed_launcher_icon">
+        <item>启动器</item>
+        <item>应用图标</item>
+        <item>青色</item>
+    </string-array>
+    <string-array name="settings_search_kw_system_date_time_pickers">
+        <item>日期</item>
+        <item>时间</item>
+        <item>选择器</item>
+        <item>时钟</item>
+        <item>日历</item>
+    </string-array>
+    <string-array name="settings_search_kw_customize_progress">
+        <item>进度</item>
+        <item>范围</item>
+        <item>图表</item>
+        <item>曲线</item>
+        <item>趋势</item>
+        <item>默认</item>
+        <item>纤维</item>
+        <item>糖</item>
+        <item>钠</item>
+        <item>营养素</item>
+    </string-array>
+    <string-array name="settings_search_kw_progress_nutrient_averages">
+        <item>纤维</item>
+        <item>糖</item>
+        <item>钠</item>
+        <item>微量</item>
+        <item>营养素</item>
+        <item>平均值</item>
+    </string-array>
+    <string-array name="settings_search_kw_week_starts">
+        <item>日历</item>
+        <item>星期一</item>
+        <item>星期日</item>
+        <item>周</item>
+    </string-array>
+    <string-array name="settings_search_kw_water">
+        <item>补水</item>
+        <item>目标</item>
+        <item>喝水</item>
+        <item>ml</item>
+        <item>预设</item>
+    </string-array>
+    <string-array name="settings_search_kw_nicotine">
+        <item>香烟</item>
+        <item>电子烟</item>
+        <item>尼古丁袋</item>
+        <item>吸烟</item>
+        <item>上限</item>
+    </string-array>
+    <string-array name="settings_search_kw_caffeine">
+        <item>咖啡</item>
+        <item>茶</item>
+        <item>能量饮料</item>
+        <item>上限</item>
+        <item>咖啡因</item>
+    </string-array>
+    <string-array name="settings_search_kw_notes">
+        <item>日志</item>
+        <item>笔记</item>
+        <item>日记</item>
+        <item>每日笔记</item>
+    </string-array>
+    <string-array name="settings_search_kw_fasting">
+        <item>禁食</item>
+        <item>间歇</item>
+        <item>计时器</item>
+        <item>目标</item>
+        <item>断食</item>
+    </string-array>
+    <string-array name="settings_search_kw_notifications">
+        <item>提醒</item>
+        <item>连续记录</item>
+        <item>摘要</item>
+        <item>体重提醒</item>
+        <item>电池</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_features_master">
+        <item>AI</item>
+        <item>开启</item>
+        <item>关闭</item>
+        <item>隐私</item>
+    </string-array>
+    <string-array name="settings_search_kw_show_coach_tab">
+        <item>教练</item>
+        <item>标签页</item>
+        <item>隐藏</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_provider">
+        <item>Gemini</item>
+        <item>OpenAI</item>
+        <item>Anthropic</item>
+        <item>Claude</item>
+        <item>Ollama</item>
+        <item>GPT</item>
+        <item>本地</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_model">
+        <item>模型</item>
+        <item>版本</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_vision_model">
+        <item>视觉</item>
+        <item>图片</item>
+        <item>多模态</item>
+    </string-array>
+    <string-array name="settings_search_kw_api_key">
+        <item>API 密钥</item>
+        <item>密钥</item>
+        <item>令牌</item>
+        <item>Gemini</item>
+        <item>OpenAI</item>
+    </string-array>
+    <string-array name="settings_search_kw_base_url">
+        <item>端点</item>
+        <item>URL</item>
+        <item>Ollama</item>
+        <item>本地</item>
+        <item>服务器</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_allow_insecure_http">
+        <item>HTTP</item>
+        <item>明文</item>
+        <item>本地</item>
+    </string-array>
+    <string-array name="settings_search_kw_on_device_model">
+        <item>端侧</item>
+        <item>Gemma</item>
+        <item>下载</item>
+        <item>本地</item>
+        <item>离线</item>
+    </string-array>
+    <string-array name="settings_search_kw_max_tokens">
+        <item>令牌</item>
+        <item>长度</item>
+        <item>上限</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_read_timeout">
+        <item>超时</item>
+        <item>秒</item>
+        <item>网络</item>
+    </string-array>
+    <string-array name="settings_search_kw_gemini_google_search">
+        <item>Grounding</item>
+        <item>Google</item>
+        <item>网页</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_custom_instructions">
+        <item>上下文</item>
+        <item>提示词</item>
+        <item>教练</item>
+        <item>个性</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_fallback">
+        <item>备用</item>
+        <item>备份</item>
+        <item>备选</item>
+        <item>重试</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_speech">
+        <item>语音</item>
+        <item>语音</item>
+        <item>听写</item>
+        <item>语音转文字</item>
+        <item>麦克风</item>
+        <item>STT</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_connect">
+        <item>同步</item>
+        <item>步数</item>
+        <item>睡眠</item>
+        <item>权限</item>
+        <item>Google Fit</item>
+        <item>Samsung</item>
+    </string-array>
+    <string-array name="settings_search_kw_manage_health_access">
+        <item>权限</item>
+        <item>Health Connect</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_background_sync">
+        <item>后台</item>
+        <item>自动</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_diary">
+        <item>导出</item>
+        <item>JSON</item>
+        <item>备份</item>
+        <item>文件</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_body_metrics">
+        <item>导出</item>
+        <item>体重</item>
+        <item>体脂</item>
+        <item>文件</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_diary">
+        <item>导入</item>
+        <item>恢复</item>
+        <item>JSON</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_body_metrics">
+        <item>导入</item>
+        <item>恢复</item>
+        <item>体重</item>
+        <item>CSV</item>
+    </string-array>
+    <string-array name="settings_search_kw_sync">
+        <item>WebDAV</item>
+        <item>备份</item>
+        <item>云</item>
+        <item>自动同步</item>
+        <item>服务器</item>
+    </string-array>
+    <string-array name="settings_search_kw_clear_food_log">
+        <item>删除</item>
+        <item>清除</item>
+        <item>清空</item>
+        <item>食物</item>
+    </string-array>
+    <string-array name="settings_search_kw_delete_all_data">
+        <item>删除</item>
+        <item>清除</item>
+        <item>清空</item>
+        <item>重置</item>
+        <item>出厂</item>
+    </string-array>
 </resources>

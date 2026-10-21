@@ -2369,4 +2369,476 @@
     <string name="untracked_sheet_title">Не отслеживается</string>
     <string name="untracked_sheet_toggle">Не отслеживается</string>
     <string name="voice_transcribing">Расшифровка…</string>
+
+    <!-- Settings hub search vocabulary (SettingsIndex.kt); translated from
+         the English defaults in values/strings.xml. Not UI copy, so
+         check_android_strings.py does not count them. -->
+    <string-array name="settings_search_kw_units">
+        <item>метрические</item>
+        <item>имперские</item>
+        <item>cm</item>
+        <item>ft</item>
+        <item>kg</item>
+        <item>lbs</item>
+        <item>система измерений</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy">
+        <item>энергия</item>
+        <item>kJ</item>
+        <item>kj</item>
+        <item>килоджоуль</item>
+        <item>kcal</item>
+        <item>единица калорий</item>
+    </string-array>
+    <string-array name="settings_search_kw_gender">
+        <item>пол</item>
+    </string-array>
+    <string-array name="settings_search_kw_birthday">
+        <item>дата рождения</item>
+        <item>возраст</item>
+        <item>др</item>
+        <item>рождение</item>
+    </string-array>
+    <string-array name="settings_search_kw_height">
+        <item>рост</item>
+        <item>высокий</item>
+        <item>cm</item>
+        <item>ft</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight">
+        <item>вес</item>
+        <item>текущий</item>
+        <item>kg</item>
+        <item>lbs</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_fat">
+        <item>жир в организме</item>
+        <item>жир</item>
+        <item>процент</item>
+    </string-array>
+    <string-array name="settings_search_kw_use_body_fat_bmr">
+        <item>bmr</item>
+        <item>katch</item>
+        <item>mcardle</item>
+        <item>метаболизм</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_body_fat">
+        <item>цель по жиру</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_measurements">
+        <item>талия</item>
+        <item>лента</item>
+        <item>обхват</item>
+        <item>бёдра</item>
+        <item>грудь</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight_goal">
+        <item>сбросить</item>
+        <item>набрать</item>
+        <item>поддержание</item>
+        <item>цель</item>
+    </string-array>
+    <string-array name="settings_search_kw_diet_mode">
+        <item>диета</item>
+        <item>кето</item>
+        <item>веганский</item>
+        <item>вегетарианский</item>
+        <item>плотоядная</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_carb_mode">
+        <item>нетто</item>
+        <item>общие</item>
+        <item>кето</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_net_carbs">
+        <item>кето</item>
+        <item>граммы</item>
+    </string-array>
+    <string-array name="settings_search_kw_activity_level">
+        <item>активность</item>
+        <item>сидячий</item>
+        <item>тренировки</item>
+    </string-array>
+    <string-array name="settings_search_kw_weekly_change">
+        <item>темп</item>
+        <item>скорость</item>
+        <item>в неделю</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_weight">
+        <item>цель</item>
+    </string-array>
+    <string-array name="settings_search_kw_adaptive_goals">
+        <item>недельный</item>
+        <item>авто</item>
+        <item>корректировка</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy_goals">
+        <item>сжигание</item>
+        <item>health connect</item>
+        <item>измеренный</item>
+    </string-array>
+    <string-array name="settings_search_kw_calories">
+        <item>калории</item>
+        <item>kcal</item>
+        <item>цель по калориям</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_protein">
+        <item>макрос</item>
+        <item>белок</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_carbs">
+        <item>макрос</item>
+        <item>углеводы</item>
+        <item>углеводы</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_fat">
+        <item>макрос</item>
+        <item>жиры</item>
+        <item>липиды</item>
+    </string-array>
+    <string-array name="settings_search_kw_other_nutrient_goals">
+        <item>клетчатка</item>
+        <item>натрий</item>
+        <item>микронутриенты</item>
+        <item>витамины</item>
+    </string-array>
+    <string-array name="settings_search_kw_recalculate_goals">
+        <item>пересчитать</item>
+        <item>пересчёт</item>
+        <item>обновить</item>
+        <item>обновить цели</item>
+    </string-array>
+    <string-array name="settings_search_kw_day_types">
+        <item>углеводное чередование</item>
+        <item>цикл углеводов</item>
+        <item>тип дня</item>
+        <item>тренировочный день</item>
+        <item>день отдыха</item>
+        <item>расписание</item>
+        <item>дни недели</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_phases">
+        <item>сушка</item>
+        <item>набор</item>
+        <item>поддержание</item>
+        <item>фаза</item>
+        <item>жиросжигание</item>
+        <item>фаза снижения веса</item>
+        <item>фаза набора массы</item>
+    </string-array>
+    <string-array name="settings_search_kw_calc_methods">
+        <item>формула</item>
+        <item>bmr</item>
+        <item>tdee</item>
+        <item>mifflin</item>
+        <item>katch</item>
+        <item>аудит</item>
+    </string-array>
+    <string-array name="settings_search_kw_default_to_grams">
+        <item>граммы</item>
+        <item>единицы</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_log_sort">
+        <item>порядок</item>
+        <item>сортировка</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_times">
+        <item>приём пищи</item>
+        <item>завтрак</item>
+        <item>обед</item>
+        <item>ужин</item>
+        <item>расписание</item>
+    </string-array>
+    <string-array name="settings_search_kw_photo_note_prompt">
+        <item>фото</item>
+        <item>спрашивать</item>
+        <item>заметка</item>
+        <item>описание</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_constituents">
+        <item>ингредиенты</item>
+        <item>состав</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_databases">
+        <item>база</item>
+        <item>поиск</item>
+        <item>источник</item>
+        <item>open food facts</item>
+        <item>usda</item>
+        <item>швейцарская</item>
+        <item>офлайн</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_mode">
+        <item>порция</item>
+        <item>единица</item>
+        <item>определение</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_heuristics">
+        <item>порция</item>
+        <item>правила</item>
+        <item>определение</item>
+    </string-array>
+    <string-array name="settings_search_kw_home_display">
+        <item>главная</item>
+        <item>карточки</item>
+        <item>нутриенты</item>
+    </string-array>
+    <string-array name="settings_search_kw_calorie_gauge">
+        <item>шкала</item>
+        <item>активные</item>
+        <item>сжигание</item>
+        <item>засчитать расход</item>
+        <item>health connect</item>
+        <item>тренировка</item>
+    </string-array>
+    <string-array name="settings_search_kw_appearance">
+        <item>тёмная</item>
+        <item>светлая</item>
+        <item>oled</item>
+        <item>ночная</item>
+        <item>режим темы</item>
+    </string-array>
+    <string-array name="settings_search_kw_theme_color">
+        <item>тема</item>
+        <item>акцент</item>
+        <item>цвет</item>
+        <item>цвет</item>
+        <item>бирюзовый</item>
+        <item>синий</item>
+    </string-array>
+    <string-array name="settings_search_kw_language">
+        <item>язык</item>
+        <item>локаль</item>
+        <item>перевод</item>
+        <item>deutsch</item>
+        <item>espanol</item>
+    </string-array>
+    <string-array name="settings_search_kw_fixed_launcher_icon">
+        <item>лаунчер</item>
+        <item>значок приложения</item>
+        <item>бирюзовый</item>
+    </string-array>
+    <string-array name="settings_search_kw_system_date_time_pickers">
+        <item>дата</item>
+        <item>время</item>
+        <item>выбор</item>
+        <item>часы</item>
+        <item>календарь</item>
+    </string-array>
+    <string-array name="settings_search_kw_customize_progress">
+        <item>прогресс</item>
+        <item>диапазон</item>
+        <item>графики</item>
+        <item>графики</item>
+        <item>тренд</item>
+        <item>по умолчанию</item>
+        <item>клетчатка</item>
+        <item>сахар</item>
+        <item>натрий</item>
+        <item>нутриент</item>
+    </string-array>
+    <string-array name="settings_search_kw_progress_nutrient_averages">
+        <item>клетчатка</item>
+        <item>сахар</item>
+        <item>натрий</item>
+        <item>микро</item>
+        <item>нутриент</item>
+        <item>средние</item>
+    </string-array>
+    <string-array name="settings_search_kw_week_starts">
+        <item>календарь</item>
+        <item>понедельник</item>
+        <item>воскресенье</item>
+        <item>неделя</item>
+    </string-array>
+    <string-array name="settings_search_kw_water">
+        <item>гидратация</item>
+        <item>цель</item>
+        <item>питьё</item>
+        <item>ml</item>
+        <item>пресеты</item>
+    </string-array>
+    <string-array name="settings_search_kw_nicotine">
+        <item>сигареты</item>
+        <item>вейп</item>
+        <item>пауч</item>
+        <item>курение</item>
+        <item>лимит</item>
+    </string-array>
+    <string-array name="settings_search_kw_caffeine">
+        <item>кофе</item>
+        <item>чай</item>
+        <item>энергетик</item>
+        <item>лимит</item>
+        <item>кофеин</item>
+    </string-array>
+    <string-array name="settings_search_kw_notes">
+        <item>журнал</item>
+        <item>заметка</item>
+        <item>дневник</item>
+        <item>ежедневные заметки</item>
+    </string-array>
+    <string-array name="settings_search_kw_fasting">
+        <item>пост</item>
+        <item>интервальное</item>
+        <item>таймер</item>
+        <item>цель</item>
+        <item>голодание</item>
+    </string-array>
+    <string-array name="settings_search_kw_notifications">
+        <item>напоминания</item>
+        <item>серия</item>
+        <item>сводка</item>
+        <item>напоминание о взвешивании</item>
+        <item>батарея</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_features_master">
+        <item>ai</item>
+        <item>вкл</item>
+        <item>выкл</item>
+        <item>приватность</item>
+    </string-array>
+    <string-array name="settings_search_kw_show_coach_tab">
+        <item>тренер</item>
+        <item>вкладка</item>
+        <item>скрыть</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_provider">
+        <item>gemini</item>
+        <item>openai</item>
+        <item>anthropic</item>
+        <item>claude</item>
+        <item>ollama</item>
+        <item>gpt</item>
+        <item>локальный</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_model">
+        <item>модель</item>
+        <item>версия</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_vision_model">
+        <item>зрение</item>
+        <item>изображение</item>
+        <item>мультимодальная</item>
+    </string-array>
+    <string-array name="settings_search_kw_api_key">
+        <item>api-ключ</item>
+        <item>секрет</item>
+        <item>токен</item>
+        <item>gemini</item>
+        <item>openai</item>
+    </string-array>
+    <string-array name="settings_search_kw_base_url">
+        <item>endpoint</item>
+        <item>url</item>
+        <item>ollama</item>
+        <item>локальный</item>
+        <item>сервер</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_allow_insecure_http">
+        <item>http</item>
+        <item>незащищённый</item>
+        <item>локальный</item>
+    </string-array>
+    <string-array name="settings_search_kw_on_device_model">
+        <item>на устройстве</item>
+        <item>gemma</item>
+        <item>загрузка</item>
+        <item>локальный</item>
+        <item>офлайн</item>
+    </string-array>
+    <string-array name="settings_search_kw_max_tokens">
+        <item>токены</item>
+        <item>длина</item>
+        <item>лимит</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_read_timeout">
+        <item>таймаут</item>
+        <item>секунды</item>
+        <item>сеть</item>
+    </string-array>
+    <string-array name="settings_search_kw_gemini_google_search">
+        <item>grounding</item>
+        <item>google</item>
+        <item>веб</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_custom_instructions">
+        <item>контекст</item>
+        <item>промпт</item>
+        <item>тренер</item>
+        <item>характер</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_fallback">
+        <item>резерв</item>
+        <item>резервный</item>
+        <item>вторичный</item>
+        <item>повтор</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_speech">
+        <item>речь</item>
+        <item>голос</item>
+        <item>диктовка</item>
+        <item>речь в текст</item>
+        <item>микрофон</item>
+        <item>stt</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_connect">
+        <item>синхронизация</item>
+        <item>шаги</item>
+        <item>сон</item>
+        <item>разрешения</item>
+        <item>google fit</item>
+        <item>samsung</item>
+    </string-array>
+    <string-array name="settings_search_kw_manage_health_access">
+        <item>разрешения</item>
+        <item>health connect</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_background_sync">
+        <item>фоновая</item>
+        <item>автоматическая</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_diary">
+        <item>экспорт</item>
+        <item>json</item>
+        <item>резервная копия</item>
+        <item>файл</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_body_metrics">
+        <item>экспорт</item>
+        <item>вес</item>
+        <item>жир в организме</item>
+        <item>файл</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_diary">
+        <item>импорт</item>
+        <item>восстановление</item>
+        <item>json</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_body_metrics">
+        <item>импорт</item>
+        <item>восстановление</item>
+        <item>вес</item>
+        <item>csv</item>
+    </string-array>
+    <string-array name="settings_search_kw_sync">
+        <item>webdav</item>
+        <item>резервная копия</item>
+        <item>облако</item>
+        <item>автосинхронизация</item>
+        <item>сервер</item>
+    </string-array>
+    <string-array name="settings_search_kw_clear_food_log">
+        <item>удалить</item>
+        <item>стереть</item>
+        <item>очистить</item>
+        <item>еда</item>
+    </string-array>
+    <string-array name="settings_search_kw_delete_all_data">
+        <item>удалить</item>
+        <item>стереть</item>
+        <item>очистить</item>
+        <item>сброс</item>
+        <item>заводские</item>
+    </string-array>
 </resources>

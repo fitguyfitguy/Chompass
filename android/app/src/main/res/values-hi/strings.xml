@@ -2281,4 +2281,476 @@
     <string name="untracked_sheet_title">ट्रैक नहीं किया गया</string>
     <string name="untracked_sheet_toggle">ट्रैक नहीं किया गया</string>
     <string name="voice_transcribing">ट्रांसक्राइब हो रहा है…</string>
+
+    <!-- Settings hub search vocabulary (SettingsIndex.kt); translated from
+         the English defaults in values/strings.xml. Not UI copy, so
+         check_android_strings.py does not count them. -->
+    <string-array name="settings_search_kw_units">
+        <item>मीट्रिक</item>
+        <item>इंपीरियल</item>
+        <item>cm</item>
+        <item>ft</item>
+        <item>kg</item>
+        <item>lbs</item>
+        <item>माप प्रणाली</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy">
+        <item>ऊर्जा</item>
+        <item>kJ</item>
+        <item>kj</item>
+        <item>किलोजूल</item>
+        <item>kcal</item>
+        <item>कैलोरी इकाई</item>
+    </string-array>
+    <string-array name="settings_search_kw_gender">
+        <item>लिंग</item>
+    </string-array>
+    <string-array name="settings_search_kw_birthday">
+        <item>जन्मदिन</item>
+        <item>आयु</item>
+        <item>जन्म तिथि</item>
+        <item>जन्म</item>
+    </string-array>
+    <string-array name="settings_search_kw_height">
+        <item>ऊंचाई</item>
+        <item>लंबा</item>
+        <item>cm</item>
+        <item>ft</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight">
+        <item>वज़न</item>
+        <item>वर्तमान</item>
+        <item>kg</item>
+        <item>lbs</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_fat">
+        <item>बॉडी फैट</item>
+        <item>bf</item>
+        <item>प्रतिशत</item>
+    </string-array>
+    <string-array name="settings_search_kw_use_body_fat_bmr">
+        <item>bmr</item>
+        <item>katch</item>
+        <item>mcardle</item>
+        <item>चयापचय</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_body_fat">
+        <item>bf लक्ष्य</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_measurements">
+        <item>कमर</item>
+        <item>टेप</item>
+        <item>परिधि</item>
+        <item>कूल्हे</item>
+        <item>छाती</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight_goal">
+        <item>घटाना</item>
+        <item>बढ़ाना</item>
+        <item>मेंटेन</item>
+        <item>लक्ष्य</item>
+    </string-array>
+    <string-array name="settings_search_kw_diet_mode">
+        <item>आहार</item>
+        <item>कीटो</item>
+        <item>वीगन</item>
+        <item>शाकाहारी</item>
+        <item>मांसाहारी</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_carb_mode">
+        <item>नेट</item>
+        <item>कुल</item>
+        <item>कीटो</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_net_carbs">
+        <item>कीटो</item>
+        <item>ग्राम</item>
+    </string-array>
+    <string-array name="settings_search_kw_activity_level">
+        <item>गतिविधि</item>
+        <item>गतिहीन</item>
+        <item>व्यायाम</item>
+    </string-array>
+    <string-array name="settings_search_kw_weekly_change">
+        <item>दर</item>
+        <item>गति</item>
+        <item>प्रति सप्ताह</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_weight">
+        <item>लक्ष्य</item>
+    </string-array>
+    <string-array name="settings_search_kw_adaptive_goals">
+        <item>साप्ताहिक</item>
+        <item>ऑटो</item>
+        <item>सुझाव</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy_goals">
+        <item>बर्न</item>
+        <item>Health Connect</item>
+        <item>मापी गई</item>
+    </string-array>
+    <string-array name="settings_search_kw_calories">
+        <item>कैलोरी</item>
+        <item>kcal</item>
+        <item>कैलोरी लक्ष्य</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_protein">
+        <item>मैक्रो</item>
+        <item>प्रोटीन</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_carbs">
+        <item>मैक्रो</item>
+        <item>कार्ब्स</item>
+        <item>कार्बोहाइड्रेट</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_fat">
+        <item>मैक्रो</item>
+        <item>वसा</item>
+        <item>लिपिड</item>
+    </string-array>
+    <string-array name="settings_search_kw_other_nutrient_goals">
+        <item>फाइबर</item>
+        <item>सोडियम</item>
+        <item>सूक्ष्म पोषक</item>
+        <item>विटामिन</item>
+    </string-array>
+    <string-array name="settings_search_kw_recalculate_goals">
+        <item>पुनः गणना</item>
+        <item>पुनर्गणना</item>
+        <item>ताज़ा करें</item>
+        <item>लक्ष्य अपडेट</item>
+    </string-array>
+    <string-array name="settings_search_kw_day_types">
+        <item>कार्ब साइकलिंग</item>
+        <item>कार्ब साइकल</item>
+        <item>दिन-प्रकार</item>
+        <item>ट्रेनिंग दिन</item>
+        <item>आराम का दिन</item>
+        <item>शेड्यूल</item>
+        <item>सप्ताह के दिन</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_phases">
+        <item>कट</item>
+        <item>बल्क</item>
+        <item>मेंटेन</item>
+        <item>चरण</item>
+        <item>श्रेडिंग</item>
+        <item>वज़न घटाने का चरण</item>
+        <item>मांसपेशी बढ़ाने का चरण</item>
+    </string-array>
+    <string-array name="settings_search_kw_calc_methods">
+        <item>फ़ॉर्मूला</item>
+        <item>bmr</item>
+        <item>tdee</item>
+        <item>mifflin</item>
+        <item>katch</item>
+        <item>जांच</item>
+    </string-array>
+    <string-array name="settings_search_kw_default_to_grams">
+        <item>ग्राम</item>
+        <item>इकाइयाँ</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_log_sort">
+        <item>क्रम</item>
+        <item>क्रमबद्ध</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_times">
+        <item>भोजन</item>
+        <item>नाश्ता</item>
+        <item>दोपहर का भोजन</item>
+        <item>रात का भोजन</item>
+        <item>शेड्यूल</item>
+    </string-array>
+    <string-array name="settings_search_kw_photo_note_prompt">
+        <item>फ़ोटो</item>
+        <item>पूछें</item>
+        <item>नोट</item>
+        <item>वर्णन</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_constituents">
+        <item>सामग्री</item>
+        <item>घटक</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_databases">
+        <item>डेटाबेस</item>
+        <item>खोज</item>
+        <item>स्रोत</item>
+        <item>Open Food Facts</item>
+        <item>USDA</item>
+        <item>Swiss</item>
+        <item>ऑफ़लाइन</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_mode">
+        <item>सर्विंग</item>
+        <item>इकाई</item>
+        <item>पहचान</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_heuristics">
+        <item>सर्विंग</item>
+        <item>नियम</item>
+        <item>पहचान</item>
+    </string-array>
+    <string-array name="settings_search_kw_home_display">
+        <item>होम</item>
+        <item>कार्ड</item>
+        <item>पोषक तत्व</item>
+    </string-array>
+    <string-array name="settings_search_kw_calorie_gauge">
+        <item>गेज</item>
+        <item>सक्रिय</item>
+        <item>बर्न</item>
+        <item>वापस खाएं</item>
+        <item>Health Connect</item>
+        <item>वर्कआउट</item>
+    </string-array>
+    <string-array name="settings_search_kw_appearance">
+        <item>डार्क</item>
+        <item>लाइट</item>
+        <item>OLED</item>
+        <item>रात</item>
+        <item>थीम मोड</item>
+    </string-array>
+    <string-array name="settings_search_kw_theme_color">
+        <item>थीम</item>
+        <item>एक्सेंट</item>
+        <item>रंग</item>
+        <item>रंग</item>
+        <item>टील</item>
+        <item>नीला</item>
+    </string-array>
+    <string-array name="settings_search_kw_language">
+        <item>भाषा</item>
+        <item>लोकेल</item>
+        <item>अनुवाद</item>
+        <item>deutsch</item>
+        <item>espanol</item>
+    </string-array>
+    <string-array name="settings_search_kw_fixed_launcher_icon">
+        <item>लॉन्चर</item>
+        <item>ऐप आइकन</item>
+        <item>टील</item>
+    </string-array>
+    <string-array name="settings_search_kw_system_date_time_pickers">
+        <item>तारीख</item>
+        <item>समय</item>
+        <item>पिकर</item>
+        <item>घड़ी</item>
+        <item>कैलेंडर</item>
+    </string-array>
+    <string-array name="settings_search_kw_customize_progress">
+        <item>प्रगति</item>
+        <item>रेंज</item>
+        <item>चार्ट</item>
+        <item>प्लॉट</item>
+        <item>रुझान</item>
+        <item>डिफ़ॉल्ट</item>
+        <item>फाइबर</item>
+        <item>चीनी</item>
+        <item>सोडियम</item>
+        <item>पोषक तत्व</item>
+    </string-array>
+    <string-array name="settings_search_kw_progress_nutrient_averages">
+        <item>फाइबर</item>
+        <item>चीनी</item>
+        <item>सोडियम</item>
+        <item>सूक्ष्म</item>
+        <item>पोषक तत्व</item>
+        <item>औसत</item>
+    </string-array>
+    <string-array name="settings_search_kw_week_starts">
+        <item>कैलेंडर</item>
+        <item>सोमवार</item>
+        <item>रविवार</item>
+        <item>सप्ताह</item>
+    </string-array>
+    <string-array name="settings_search_kw_water">
+        <item>हाइड्रेशन</item>
+        <item>लक्ष्य</item>
+        <item>पीना</item>
+        <item>ml</item>
+        <item>प्रीसेट</item>
+    </string-array>
+    <string-array name="settings_search_kw_nicotine">
+        <item>सिगरेट</item>
+        <item>वेप</item>
+        <item>पाउच</item>
+        <item>स्मोकिंग</item>
+        <item>सीमा</item>
+    </string-array>
+    <string-array name="settings_search_kw_caffeine">
+        <item>कॉफ़ी</item>
+        <item>चाय</item>
+        <item>एनर्जी ड्रिंक</item>
+        <item>सीमा</item>
+        <item>कैफीन</item>
+    </string-array>
+    <string-array name="settings_search_kw_notes">
+        <item>जर्नल</item>
+        <item>नोट</item>
+        <item>डायरी</item>
+        <item>दैनिक नोट्स</item>
+    </string-array>
+    <string-array name="settings_search_kw_fasting">
+        <item>उपवास</item>
+        <item>इंटरमिटेंट</item>
+        <item>टाइमर</item>
+        <item>लक्ष्य</item>
+        <item>उपवास</item>
+    </string-array>
+    <string-array name="settings_search_kw_notifications">
+        <item>रिमाइंडर</item>
+        <item>स्ट्रीक</item>
+        <item>सारांश</item>
+        <item>वज़न रिमाइंडर</item>
+        <item>बैटरी</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_features_master">
+        <item>AI</item>
+        <item>चालू</item>
+        <item>बंद</item>
+        <item>गोपनीयता</item>
+    </string-array>
+    <string-array name="settings_search_kw_show_coach_tab">
+        <item>कोच</item>
+        <item>टैब</item>
+        <item>छिपाएं</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_provider">
+        <item>Gemini</item>
+        <item>OpenAI</item>
+        <item>Anthropic</item>
+        <item>Claude</item>
+        <item>Ollama</item>
+        <item>GPT</item>
+        <item>लोकल</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_model">
+        <item>मॉडल</item>
+        <item>संस्करण</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_vision_model">
+        <item>विज़न</item>
+        <item>छवि</item>
+        <item>मल्टीमोडल</item>
+    </string-array>
+    <string-array name="settings_search_kw_api_key">
+        <item>API कुंजी</item>
+        <item>सीक्रेट</item>
+        <item>टोकन</item>
+        <item>Gemini</item>
+        <item>OpenAI</item>
+    </string-array>
+    <string-array name="settings_search_kw_base_url">
+        <item>एंडपॉइंट</item>
+        <item>URL</item>
+        <item>Ollama</item>
+        <item>लोकल</item>
+        <item>सर्वर</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_allow_insecure_http">
+        <item>HTTP</item>
+        <item>सादा टेक्स्ट</item>
+        <item>लोकल</item>
+    </string-array>
+    <string-array name="settings_search_kw_on_device_model">
+        <item>ऑन-डिवाइस</item>
+        <item>Gemma</item>
+        <item>डाउनलोड</item>
+        <item>लोकल</item>
+        <item>ऑफ़लाइन</item>
+    </string-array>
+    <string-array name="settings_search_kw_max_tokens">
+        <item>टोकन</item>
+        <item>लंबाई</item>
+        <item>सीमा</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_read_timeout">
+        <item>टाइमआउट</item>
+        <item>सेकंड</item>
+        <item>नेटवर्क</item>
+    </string-array>
+    <string-array name="settings_search_kw_gemini_google_search">
+        <item>ग्राउंडिंग</item>
+        <item>Google</item>
+        <item>वेब</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_custom_instructions">
+        <item>संदर्भ</item>
+        <item>प्रॉम्प्ट</item>
+        <item>कोच</item>
+        <item>व्यक्तित्व</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_fallback">
+        <item>फ़ॉलबैक</item>
+        <item>बैकअप</item>
+        <item>द्वितीयक</item>
+        <item>पुनः प्रयास</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_speech">
+        <item>भाषण</item>
+        <item>आवाज़</item>
+        <item>डिक्टेशन</item>
+        <item>भाषण से टेक्स्ट</item>
+        <item>माइक्रोफ़ोन</item>
+        <item>stt</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_connect">
+        <item>सिंक</item>
+        <item>कदम</item>
+        <item>नींद</item>
+        <item>अनुमतियां</item>
+        <item>Google Fit</item>
+        <item>Samsung</item>
+    </string-array>
+    <string-array name="settings_search_kw_manage_health_access">
+        <item>अनुमतियां</item>
+        <item>Health Connect</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_background_sync">
+        <item>बैकग्राउंड</item>
+        <item>स्वचालित</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_diary">
+        <item>निर्यात</item>
+        <item>JSON</item>
+        <item>बैकअप</item>
+        <item>फ़ाइल</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_body_metrics">
+        <item>निर्यात</item>
+        <item>वज़न</item>
+        <item>बॉडी फैट</item>
+        <item>फ़ाइल</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_diary">
+        <item>आयात</item>
+        <item>पुनर्स्थापित</item>
+        <item>JSON</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_body_metrics">
+        <item>आयात</item>
+        <item>पुनर्स्थापित</item>
+        <item>वज़न</item>
+        <item>CSV</item>
+    </string-array>
+    <string-array name="settings_search_kw_sync">
+        <item>WebDAV</item>
+        <item>बैकअप</item>
+        <item>क्लाउड</item>
+        <item>ऑटो सिंक</item>
+        <item>सर्वर</item>
+    </string-array>
+    <string-array name="settings_search_kw_clear_food_log">
+        <item>हटाएं</item>
+        <item>मिटाएँ</item>
+        <item>साफ़ करें</item>
+        <item>भोजन</item>
+    </string-array>
+    <string-array name="settings_search_kw_delete_all_data">
+        <item>हटाएं</item>
+        <item>मिटाएँ</item>
+        <item>साफ़ करें</item>
+        <item>रीसेट</item>
+        <item>फ़ैक्टरी</item>
+    </string-array>
 </resources>

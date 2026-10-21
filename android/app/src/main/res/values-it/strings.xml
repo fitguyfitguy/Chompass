@@ -2282,4 +2282,475 @@ macro riequilibrate al nuovo totale calorico</string>
     <string name="untracked_sheet_title">Non tracciato</string>
     <string name="untracked_sheet_toggle">Non tracciato</string>
     <string name="voice_transcribing">Trascrizione…</string>
+    <!-- Settings hub search vocabulary (SettingsIndex.kt); translated from
+         the English defaults in values/strings.xml. Not UI copy, so
+         check_android_strings.py does not count them. -->
+    <string-array name="settings_search_kw_units">
+        <item>metrico</item>
+        <item>imperiale</item>
+        <item>cm</item>
+        <item>ft</item>
+        <item>kg</item>
+        <item>lbs</item>
+        <item>sistema di misura</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy">
+        <item>energia</item>
+        <item>kJ</item>
+        <item>kj</item>
+        <item>chilojoule</item>
+        <item>kcal</item>
+        <item>unità calorie</item>
+    </string-array>
+    <string-array name="settings_search_kw_gender">
+        <item>sesso</item>
+    </string-array>
+    <string-array name="settings_search_kw_birthday">
+        <item>compleanno</item>
+        <item>età</item>
+        <item>nascita</item>
+        <item>data di nascita</item>
+    </string-array>
+    <string-array name="settings_search_kw_height">
+        <item>altezza</item>
+        <item>alto</item>
+        <item>cm</item>
+        <item>ft</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight">
+        <item>peso</item>
+        <item>attuale</item>
+        <item>kg</item>
+        <item>lbs</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_fat">
+        <item>grasso corporeo</item>
+        <item>bf</item>
+        <item>percentuale</item>
+    </string-array>
+    <string-array name="settings_search_kw_use_body_fat_bmr">
+        <item>bmr</item>
+        <item>katch</item>
+        <item>mcardle</item>
+        <item>metabolismo</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_body_fat">
+        <item>obiettivo grasso corporeo</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_measurements">
+        <item>vita</item>
+        <item>metro</item>
+        <item>circonferenza</item>
+        <item>fianchi</item>
+        <item>petto</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight_goal">
+        <item>perdere</item>
+        <item>aumentare</item>
+        <item>mantenere</item>
+        <item>obiettivo</item>
+    </string-array>
+    <string-array name="settings_search_kw_diet_mode">
+        <item>dieta</item>
+        <item>keto</item>
+        <item>vegano</item>
+        <item>vegetariano</item>
+        <item>carnivoro</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_carb_mode">
+        <item>netti</item>
+        <item>totali</item>
+        <item>keto</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_net_carbs">
+        <item>keto</item>
+        <item>grammi</item>
+    </string-array>
+    <string-array name="settings_search_kw_activity_level">
+        <item>attività</item>
+        <item>sedentario</item>
+        <item>esercizio</item>
+    </string-array>
+    <string-array name="settings_search_kw_weekly_change">
+        <item>ritmo</item>
+        <item>velocità</item>
+        <item>a settimana</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_weight">
+        <item>obiettivo</item>
+    </string-array>
+    <string-array name="settings_search_kw_adaptive_goals">
+        <item>settimanale</item>
+        <item>automatico</item>
+        <item>suggerimento</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy_goals">
+        <item>bruciate</item>
+        <item>health connect</item>
+        <item>misurato</item>
+    </string-array>
+    <string-array name="settings_search_kw_calories">
+        <item>calorie</item>
+        <item>kcal</item>
+        <item>obiettivo calorie</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_protein">
+        <item>macro</item>
+        <item>proteine</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_carbs">
+        <item>macro</item>
+        <item>carbo</item>
+        <item>carboidrati</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_fat">
+        <item>macro</item>
+        <item>grassi</item>
+        <item>lipidi</item>
+    </string-array>
+    <string-array name="settings_search_kw_other_nutrient_goals">
+        <item>fibra</item>
+        <item>sodio</item>
+        <item>micronutrienti</item>
+        <item>vitamine</item>
+    </string-array>
+    <string-array name="settings_search_kw_recalculate_goals">
+        <item>ricalcola</item>
+        <item>ricalcolo</item>
+        <item>aggiorna</item>
+        <item>aggiorna obiettivi</item>
+    </string-array>
+    <string-array name="settings_search_kw_day_types">
+        <item>ciclo dei carboidrati</item>
+        <item>ciclo carboidrati</item>
+        <item>tipo di giornata</item>
+        <item>giorno di allenamento</item>
+        <item>giorno di riposo</item>
+        <item>programmazione</item>
+        <item>giorni della settimana</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_phases">
+        <item>definizione</item>
+        <item>massa</item>
+        <item>mantenimento</item>
+        <item>fase</item>
+        <item>shredding</item>
+        <item>fase di perdita di peso</item>
+        <item>fase di aumento di massa</item>
+    </string-array>
+    <string-array name="settings_search_kw_calc_methods">
+        <item>formula</item>
+        <item>bmr</item>
+        <item>tdee</item>
+        <item>mifflin</item>
+        <item>katch</item>
+        <item>verifica</item>
+    </string-array>
+    <string-array name="settings_search_kw_default_to_grams">
+        <item>grammi</item>
+        <item>unità</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_log_sort">
+        <item>ordine</item>
+        <item>ordinamento</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_times">
+        <item>pasto</item>
+        <item>colazione</item>
+        <item>pranzo</item>
+        <item>cena</item>
+        <item>programmazione</item>
+    </string-array>
+    <string-array name="settings_search_kw_photo_note_prompt">
+        <item>foto</item>
+        <item>chiedi</item>
+        <item>nota</item>
+        <item>descrivi</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_constituents">
+        <item>ingredienti</item>
+        <item>componenti</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_databases">
+        <item>database</item>
+        <item>ricerca</item>
+        <item>fonte</item>
+        <item>open food facts</item>
+        <item>usda</item>
+        <item>svizzero</item>
+        <item>offline</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_mode">
+        <item>porzione</item>
+        <item>unità</item>
+        <item>rilevamento</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_heuristics">
+        <item>porzione</item>
+        <item>regole</item>
+        <item>rilevamento</item>
+    </string-array>
+    <string-array name="settings_search_kw_home_display">
+        <item>home</item>
+        <item>schede</item>
+        <item>nutrienti</item>
+    </string-array>
+    <string-array name="settings_search_kw_calorie_gauge">
+        <item>misuratore</item>
+        <item>attive</item>
+        <item>bruciate</item>
+        <item>reintegro</item>
+        <item>health connect</item>
+        <item>allenamento</item>
+    </string-array>
+    <string-array name="settings_search_kw_appearance">
+        <item>scuro</item>
+        <item>chiaro</item>
+        <item>oled</item>
+        <item>notte</item>
+        <item>modalità tema</item>
+    </string-array>
+    <string-array name="settings_search_kw_theme_color">
+        <item>tema</item>
+        <item>accento</item>
+        <item>colore</item>
+        <item>tinta</item>
+        <item>verde acqua</item>
+        <item>blu</item>
+    </string-array>
+    <string-array name="settings_search_kw_language">
+        <item>lingua</item>
+        <item>locale</item>
+        <item>traduzione</item>
+        <item>tedesco</item>
+        <item>spagnolo</item>
+    </string-array>
+    <string-array name="settings_search_kw_fixed_launcher_icon">
+        <item>launcher</item>
+        <item>icona app</item>
+        <item>verde acqua</item>
+    </string-array>
+    <string-array name="settings_search_kw_system_date_time_pickers">
+        <item>data</item>
+        <item>ora</item>
+        <item>selettore</item>
+        <item>orologio</item>
+        <item>calendario</item>
+    </string-array>
+    <string-array name="settings_search_kw_customize_progress">
+        <item>progressi</item>
+        <item>intervallo</item>
+        <item>grafici</item>
+        <item>diagrammi</item>
+        <item>tendenza</item>
+        <item>predefinito</item>
+        <item>fibra</item>
+        <item>zuccheri</item>
+        <item>sodio</item>
+        <item>nutriente</item>
+    </string-array>
+    <string-array name="settings_search_kw_progress_nutrient_averages">
+        <item>fibra</item>
+        <item>zuccheri</item>
+        <item>sodio</item>
+        <item>micro</item>
+        <item>nutriente</item>
+        <item>medie</item>
+    </string-array>
+    <string-array name="settings_search_kw_week_starts">
+        <item>calendario</item>
+        <item>lunedì</item>
+        <item>domenica</item>
+        <item>settimana</item>
+    </string-array>
+    <string-array name="settings_search_kw_water">
+        <item>idratazione</item>
+        <item>obiettivo</item>
+        <item>bevi</item>
+        <item>ml</item>
+        <item>preset</item>
+    </string-array>
+    <string-array name="settings_search_kw_nicotine">
+        <item>sigarette</item>
+        <item>svapo</item>
+        <item>sacca</item>
+        <item>fumo</item>
+        <item>limite</item>
+    </string-array>
+    <string-array name="settings_search_kw_caffeine">
+        <item>caffè</item>
+        <item>tè</item>
+        <item>bevanda energetica</item>
+        <item>limite</item>
+        <item>caffeina</item>
+    </string-array>
+    <string-array name="settings_search_kw_notes">
+        <item>diario</item>
+        <item>nota</item>
+        <item>registro</item>
+        <item>note giornaliere</item>
+    </string-array>
+    <string-array name="settings_search_kw_fasting">
+        <item>digiuno</item>
+        <item>intermittente</item>
+        <item>timer</item>
+        <item>obiettivo</item>
+        <item>digiunare</item>
+    </string-array>
+    <string-array name="settings_search_kw_notifications">
+        <item>promemoria</item>
+        <item>serie</item>
+        <item>riepilogo</item>
+        <item>promemoria peso</item>
+        <item>batteria</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_features_master">
+        <item>ai</item>
+        <item>attiva</item>
+        <item>disattiva</item>
+        <item>privacy</item>
+    </string-array>
+    <string-array name="settings_search_kw_show_coach_tab">
+        <item>coach</item>
+        <item>scheda</item>
+        <item>nascondi</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_provider">
+        <item>gemini</item>
+        <item>openai</item>
+        <item>anthropic</item>
+        <item>claude</item>
+        <item>ollama</item>
+        <item>gpt</item>
+        <item>locale</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_model">
+        <item>modello</item>
+        <item>versione</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_vision_model">
+        <item>visione</item>
+        <item>immagine</item>
+        <item>multimodale</item>
+    </string-array>
+    <string-array name="settings_search_kw_api_key">
+        <item>chiave api</item>
+        <item>segreto</item>
+        <item>token</item>
+        <item>gemini</item>
+        <item>openai</item>
+    </string-array>
+    <string-array name="settings_search_kw_base_url">
+        <item>endpoint</item>
+        <item>url</item>
+        <item>ollama</item>
+        <item>locale</item>
+        <item>server</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_allow_insecure_http">
+        <item>http</item>
+        <item>testo in chiaro</item>
+        <item>locale</item>
+    </string-array>
+    <string-array name="settings_search_kw_on_device_model">
+        <item>sul dispositivo</item>
+        <item>gemma</item>
+        <item>download</item>
+        <item>locale</item>
+        <item>offline</item>
+    </string-array>
+    <string-array name="settings_search_kw_max_tokens">
+        <item>token</item>
+        <item>lunghezza</item>
+        <item>limite</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_read_timeout">
+        <item>timeout</item>
+        <item>secondi</item>
+        <item>rete</item>
+    </string-array>
+    <string-array name="settings_search_kw_gemini_google_search">
+        <item>grounding</item>
+        <item>google</item>
+        <item>web</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_custom_instructions">
+        <item>contesto</item>
+        <item>prompt</item>
+        <item>coach</item>
+        <item>personalità</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_fallback">
+        <item>fallback</item>
+        <item>backup</item>
+        <item>secondario</item>
+        <item>riprova</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_speech">
+        <item>voce</item>
+        <item>vocale</item>
+        <item>dettatura</item>
+        <item>da voce a testo</item>
+        <item>microfono</item>
+        <item>stt</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_connect">
+        <item>sincronizza</item>
+        <item>passi</item>
+        <item>sonno</item>
+        <item>autorizzazioni</item>
+        <item>google fit</item>
+        <item>samsung</item>
+    </string-array>
+    <string-array name="settings_search_kw_manage_health_access">
+        <item>autorizzazioni</item>
+        <item>health connect</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_background_sync">
+        <item>background</item>
+        <item>automatico</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_diary">
+        <item>esporta</item>
+        <item>json</item>
+        <item>backup</item>
+        <item>file</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_body_metrics">
+        <item>esporta</item>
+        <item>peso</item>
+        <item>grasso corporeo</item>
+        <item>file</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_diary">
+        <item>importa</item>
+        <item>ripristina</item>
+        <item>json</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_body_metrics">
+        <item>importa</item>
+        <item>ripristina</item>
+        <item>peso</item>
+        <item>csv</item>
+    </string-array>
+    <string-array name="settings_search_kw_sync">
+        <item>webdav</item>
+        <item>backup</item>
+        <item>cloud</item>
+        <item>sincronizzazione automatica</item>
+        <item>server</item>
+    </string-array>
+    <string-array name="settings_search_kw_clear_food_log">
+        <item>elimina</item>
+        <item>cancella</item>
+        <item>azzera</item>
+        <item>cibo</item>
+    </string-array>
+    <string-array name="settings_search_kw_delete_all_data">
+        <item>elimina</item>
+        <item>cancella</item>
+        <item>azzera</item>
+        <item>reimposta</item>
+        <item>ripristino di fabbrica</item>
+    </string-array>
 </resources>

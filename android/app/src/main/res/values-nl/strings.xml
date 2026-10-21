@@ -2281,4 +2281,476 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
     <string name="untracked_sheet_title">Niet bijgehouden</string>
     <string name="untracked_sheet_toggle">Niet bijgehouden</string>
     <string name="voice_transcribing">Transcriberen…</string>
+
+    <!-- Settings hub search vocabulary (SettingsIndex.kt); translated from
+         the English defaults in values/strings.xml. Not UI copy, so
+         check_android_strings.py does not count them. -->
+    <string-array name="settings_search_kw_units">
+        <item>metrisch</item>
+        <item>imperiaal</item>
+        <item>cm</item>
+        <item>ft</item>
+        <item>kg</item>
+        <item>lbs</item>
+        <item>maatsysteem</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy">
+        <item>energie</item>
+        <item>kJ</item>
+        <item>kj</item>
+        <item>kilojoule</item>
+        <item>kcal</item>
+        <item>calorie-eenheid</item>
+    </string-array>
+    <string-array name="settings_search_kw_gender">
+        <item>geslacht</item>
+    </string-array>
+    <string-array name="settings_search_kw_birthday">
+        <item>verjaardag</item>
+        <item>leeftijd</item>
+        <item>geboortedatum</item>
+        <item>geboren</item>
+    </string-array>
+    <string-array name="settings_search_kw_height">
+        <item>lengte</item>
+        <item>lang</item>
+        <item>cm</item>
+        <item>ft</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight">
+        <item>gewicht</item>
+        <item>huidig</item>
+        <item>kg</item>
+        <item>lbs</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_fat">
+        <item>lichaamsvet</item>
+        <item>vetpercentage</item>
+        <item>procent</item>
+    </string-array>
+    <string-array name="settings_search_kw_use_body_fat_bmr">
+        <item>bmr</item>
+        <item>katch</item>
+        <item>mcardle</item>
+        <item>metabolisme</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_body_fat">
+        <item>doelvetpercentage</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_measurements">
+        <item>taille</item>
+        <item>meetlint</item>
+        <item>omtrek</item>
+        <item>heupen</item>
+        <item>borst</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight_goal">
+        <item>afvallen</item>
+        <item>aankomen</item>
+        <item>behouden</item>
+        <item>doel</item>
+    </string-array>
+    <string-array name="settings_search_kw_diet_mode">
+        <item>dieet</item>
+        <item>keto</item>
+        <item>veganistisch</item>
+        <item>vegetarisch</item>
+        <item>carnivoor</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_carb_mode">
+        <item>netto</item>
+        <item>totaal</item>
+        <item>keto</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_net_carbs">
+        <item>keto</item>
+        <item>gram</item>
+    </string-array>
+    <string-array name="settings_search_kw_activity_level">
+        <item>activiteit</item>
+        <item>sedentair</item>
+        <item>beweging</item>
+    </string-array>
+    <string-array name="settings_search_kw_weekly_change">
+        <item>tempo</item>
+        <item>snelheid</item>
+        <item>per week</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_weight">
+        <item>doelgewicht</item>
+    </string-array>
+    <string-array name="settings_search_kw_adaptive_goals">
+        <item>wekelijks</item>
+        <item>automatisch</item>
+        <item>aanpassing</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy_goals">
+        <item>verbranden</item>
+        <item>health connect</item>
+        <item>gemeten</item>
+    </string-array>
+    <string-array name="settings_search_kw_calories">
+        <item>calorieën</item>
+        <item>kcal</item>
+        <item>caloriedoel</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_protein">
+        <item>macro</item>
+        <item>eiwit</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_carbs">
+        <item>macro</item>
+        <item>koolhydraten</item>
+        <item>carbs</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_fat">
+        <item>macro</item>
+        <item>vet</item>
+        <item>lipide</item>
+    </string-array>
+    <string-array name="settings_search_kw_other_nutrient_goals">
+        <item>vezels</item>
+        <item>natrium</item>
+        <item>micronutriënten</item>
+        <item>vitaminen</item>
+    </string-array>
+    <string-array name="settings_search_kw_recalculate_goals">
+        <item>herberekenen</item>
+        <item>herberekening</item>
+        <item>vernieuwen</item>
+        <item>doelen bijwerken</item>
+    </string-array>
+    <string-array name="settings_search_kw_day_types">
+        <item>koolhydraatcycli</item>
+        <item>koolhydraatcyclus</item>
+        <item>dagtype</item>
+        <item>trainingsdag</item>
+        <item>rustdag</item>
+        <item>schema</item>
+        <item>weekdagen</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_phases">
+        <item>cut</item>
+        <item>bulk</item>
+        <item>onderhouden</item>
+        <item>fase</item>
+        <item>shred</item>
+        <item>afvalfase</item>
+        <item>spieropbouwfase</item>
+    </string-array>
+    <string-array name="settings_search_kw_calc_methods">
+        <item>formule</item>
+        <item>bmr</item>
+        <item>tdee</item>
+        <item>mifflin</item>
+        <item>katch</item>
+        <item>controle</item>
+    </string-array>
+    <string-array name="settings_search_kw_default_to_grams">
+        <item>gram</item>
+        <item>eenheden</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_log_sort">
+        <item>volgorde</item>
+        <item>sortering</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_times">
+        <item>maaltijd</item>
+        <item>ontbijt</item>
+        <item>lunch</item>
+        <item>diner</item>
+        <item>schema</item>
+    </string-array>
+    <string-array name="settings_search_kw_photo_note_prompt">
+        <item>foto</item>
+        <item>vragen</item>
+        <item>notitie</item>
+        <item>beschrijven</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_constituents">
+        <item>ingrediënten</item>
+        <item>componenten</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_databases">
+        <item>database</item>
+        <item>zoeken</item>
+        <item>bron</item>
+        <item>open food facts</item>
+        <item>usda</item>
+        <item>zwitsers</item>
+        <item>offline</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_mode">
+        <item>portie</item>
+        <item>eenheid</item>
+        <item>detectie</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_heuristics">
+        <item>portie</item>
+        <item>regels</item>
+        <item>detectie</item>
+    </string-array>
+    <string-array name="settings_search_kw_home_display">
+        <item>startscherm</item>
+        <item>kaarten</item>
+        <item>voedingsstoffen</item>
+    </string-array>
+    <string-array name="settings_search_kw_calorie_gauge">
+        <item>meter</item>
+        <item>actief</item>
+        <item>verbranden</item>
+        <item>eet terug</item>
+        <item>health connect</item>
+        <item>workout</item>
+    </string-array>
+    <string-array name="settings_search_kw_appearance">
+        <item>donker</item>
+        <item>licht</item>
+        <item>oled</item>
+        <item>nacht</item>
+        <item>thema</item>
+    </string-array>
+    <string-array name="settings_search_kw_theme_color">
+        <item>thema</item>
+        <item>accent</item>
+        <item>kleur</item>
+        <item>kleuren</item>
+        <item>teal</item>
+        <item>blauw</item>
+    </string-array>
+    <string-array name="settings_search_kw_language">
+        <item>taal</item>
+        <item>landinstelling</item>
+        <item>vertaling</item>
+        <item>deutsch</item>
+        <item>espanol</item>
+    </string-array>
+    <string-array name="settings_search_kw_fixed_launcher_icon">
+        <item>launcher</item>
+        <item>app-pictogram</item>
+        <item>teal</item>
+    </string-array>
+    <string-array name="settings_search_kw_system_date_time_pickers">
+        <item>datum</item>
+        <item>tijd</item>
+        <item>kiezer</item>
+        <item>klok</item>
+        <item>kalender</item>
+    </string-array>
+    <string-array name="settings_search_kw_customize_progress">
+        <item>voortgang</item>
+        <item>bereik</item>
+        <item>grafieken</item>
+        <item>grafiek</item>
+        <item>trend</item>
+        <item>standaard</item>
+        <item>vezels</item>
+        <item>suiker</item>
+        <item>natrium</item>
+        <item>nutriënt</item>
+    </string-array>
+    <string-array name="settings_search_kw_progress_nutrient_averages">
+        <item>vezels</item>
+        <item>suiker</item>
+        <item>natrium</item>
+        <item>micro</item>
+        <item>nutriënt</item>
+        <item>gemiddelden</item>
+    </string-array>
+    <string-array name="settings_search_kw_week_starts">
+        <item>kalender</item>
+        <item>maandag</item>
+        <item>zondag</item>
+        <item>week</item>
+    </string-array>
+    <string-array name="settings_search_kw_water">
+        <item>hydratatie</item>
+        <item>doel</item>
+        <item>drinken</item>
+        <item>ml</item>
+        <item>presets</item>
+    </string-array>
+    <string-array name="settings_search_kw_nicotine">
+        <item>sigaretten</item>
+        <item>damp</item>
+        <item>nicotinezakjes</item>
+        <item>roken</item>
+        <item>limiet</item>
+    </string-array>
+    <string-array name="settings_search_kw_caffeine">
+        <item>koffie</item>
+        <item>thee</item>
+        <item>energiedrank</item>
+        <item>limiet</item>
+        <item>cafeïne</item>
+    </string-array>
+    <string-array name="settings_search_kw_notes">
+        <item>dagboek</item>
+        <item>notitie</item>
+        <item>logboek</item>
+        <item>dagelijkse notities</item>
+    </string-array>
+    <string-array name="settings_search_kw_fasting">
+        <item>vasten</item>
+        <item>intermitterend</item>
+        <item>timer</item>
+        <item>doel</item>
+        <item>vastenperiode</item>
+    </string-array>
+    <string-array name="settings_search_kw_notifications">
+        <item>herinneringen</item>
+        <item>streak</item>
+        <item>samenvatting</item>
+        <item>gewichtsherinnering</item>
+        <item>batterij</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_features_master">
+        <item>ai</item>
+        <item>aan</item>
+        <item>uit</item>
+        <item>privacy</item>
+    </string-array>
+    <string-array name="settings_search_kw_show_coach_tab">
+        <item>coach</item>
+        <item>tabblad</item>
+        <item>verbergen</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_provider">
+        <item>gemini</item>
+        <item>openai</item>
+        <item>anthropic</item>
+        <item>claude</item>
+        <item>ollama</item>
+        <item>gpt</item>
+        <item>lokaal</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_model">
+        <item>model</item>
+        <item>versie</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_vision_model">
+        <item>visie</item>
+        <item>afbeelding</item>
+        <item>multimodaal</item>
+    </string-array>
+    <string-array name="settings_search_kw_api_key">
+        <item>api-sleutel</item>
+        <item>geheim</item>
+        <item>token</item>
+        <item>gemini</item>
+        <item>openai</item>
+    </string-array>
+    <string-array name="settings_search_kw_base_url">
+        <item>endpoint</item>
+        <item>url</item>
+        <item>ollama</item>
+        <item>lokaal</item>
+        <item>server</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_allow_insecure_http">
+        <item>http</item>
+        <item>onversleuteld</item>
+        <item>lokaal</item>
+    </string-array>
+    <string-array name="settings_search_kw_on_device_model">
+        <item>on-device</item>
+        <item>gemma</item>
+        <item>download</item>
+        <item>lokaal</item>
+        <item>offline</item>
+    </string-array>
+    <string-array name="settings_search_kw_max_tokens">
+        <item>tokens</item>
+        <item>lengte</item>
+        <item>limiet</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_read_timeout">
+        <item>timeout</item>
+        <item>seconden</item>
+        <item>netwerk</item>
+    </string-array>
+    <string-array name="settings_search_kw_gemini_google_search">
+        <item>verankering</item>
+        <item>google</item>
+        <item>web</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_custom_instructions">
+        <item>context</item>
+        <item>prompt</item>
+        <item>coach</item>
+        <item>persoonlijkheid</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_fallback">
+        <item>reserve</item>
+        <item>back-up</item>
+        <item>secundair</item>
+        <item>opnieuw</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_speech">
+        <item>spraak</item>
+        <item>stem</item>
+        <item>dicteren</item>
+        <item>spraak naar tekst</item>
+        <item>microfoon</item>
+        <item>stt</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_connect">
+        <item>synchroniseren</item>
+        <item>stappen</item>
+        <item>slaap</item>
+        <item>machtigingen</item>
+        <item>google fit</item>
+        <item>samsung</item>
+    </string-array>
+    <string-array name="settings_search_kw_manage_health_access">
+        <item>machtigingen</item>
+        <item>health connect</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_background_sync">
+        <item>achtergrond</item>
+        <item>automatisch</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_diary">
+        <item>exporteren</item>
+        <item>json</item>
+        <item>back-up</item>
+        <item>bestand</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_body_metrics">
+        <item>exporteren</item>
+        <item>gewicht</item>
+        <item>lichaamsvet</item>
+        <item>bestand</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_diary">
+        <item>importeren</item>
+        <item>herstellen</item>
+        <item>json</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_body_metrics">
+        <item>importeren</item>
+        <item>herstellen</item>
+        <item>gewicht</item>
+        <item>csv</item>
+    </string-array>
+    <string-array name="settings_search_kw_sync">
+        <item>webdav</item>
+        <item>back-up</item>
+        <item>cloud</item>
+        <item>automatisch synchroniseren</item>
+        <item>server</item>
+    </string-array>
+    <string-array name="settings_search_kw_clear_food_log">
+        <item>verwijderen</item>
+        <item>wissen</item>
+        <item>leegmaken</item>
+        <item>voeding</item>
+    </string-array>
+    <string-array name="settings_search_kw_delete_all_data">
+        <item>verwijderen</item>
+        <item>wissen</item>
+        <item>leegmaken</item>
+        <item>resetten</item>
+        <item>fabrieksinstellingen</item>
+    </string-array>
 </resources>

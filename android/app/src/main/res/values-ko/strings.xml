@@ -2280,4 +2280,476 @@
     <string name="untracked_sheet_title">추적 안 됨</string>
     <string name="untracked_sheet_toggle">추적 안 됨</string>
     <string name="voice_transcribing">음성 변환 중…</string>
+
+    <!-- Settings hub search vocabulary (SettingsIndex.kt); translated from
+         the English defaults in values/strings.xml. Not UI copy, so
+         check_android_strings.py does not count them. -->
+    <string-array name="settings_search_kw_units">
+        <item>미터법</item>
+        <item>야드파운드법</item>
+        <item>cm</item>
+        <item>ft</item>
+        <item>kg</item>
+        <item>lbs</item>
+        <item>측정 시스템</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy">
+        <item>에너지</item>
+        <item>kJ</item>
+        <item>kj</item>
+        <item>킬로줄</item>
+        <item>kcal</item>
+        <item>칼로리 단위</item>
+    </string-array>
+    <string-array name="settings_search_kw_gender">
+        <item>성별</item>
+    </string-array>
+    <string-array name="settings_search_kw_birthday">
+        <item>생일</item>
+        <item>나이</item>
+        <item>출생일</item>
+        <item>태어난</item>
+    </string-array>
+    <string-array name="settings_search_kw_height">
+        <item>키</item>
+        <item>신장</item>
+        <item>cm</item>
+        <item>ft</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight">
+        <item>체중</item>
+        <item>현재</item>
+        <item>kg</item>
+        <item>lbs</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_fat">
+        <item>체지방</item>
+        <item>bf</item>
+        <item>퍼센트</item>
+    </string-array>
+    <string-array name="settings_search_kw_use_body_fat_bmr">
+        <item>bmr</item>
+        <item>캐치</item>
+        <item>맥아들</item>
+        <item>대사</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_body_fat">
+        <item>체지방 목표</item>
+    </string-array>
+    <string-array name="settings_search_kw_body_measurements">
+        <item>허리</item>
+        <item>줄자</item>
+        <item>둘레</item>
+        <item>엉덩이</item>
+        <item>가슴</item>
+    </string-array>
+    <string-array name="settings_search_kw_weight_goal">
+        <item>감량</item>
+        <item>증량</item>
+        <item>유지</item>
+        <item>목표</item>
+    </string-array>
+    <string-array name="settings_search_kw_diet_mode">
+        <item>식이</item>
+        <item>키토</item>
+        <item>비건</item>
+        <item>채식</item>
+        <item>육식</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_carb_mode">
+        <item>순</item>
+        <item>총</item>
+        <item>키토</item>
+    </string-array>
+    <string-array name="settings_search_kw_keto_net_carbs">
+        <item>키토</item>
+        <item>그램</item>
+    </string-array>
+    <string-array name="settings_search_kw_activity_level">
+        <item>활동</item>
+        <item>좌식</item>
+        <item>운동</item>
+    </string-array>
+    <string-array name="settings_search_kw_weekly_change">
+        <item>속도</item>
+        <item>페이스</item>
+        <item>주당</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_weight">
+        <item>목표</item>
+    </string-array>
+    <string-array name="settings_search_kw_adaptive_goals">
+        <item>주간</item>
+        <item>자동</item>
+        <item>조정</item>
+    </string-array>
+    <string-array name="settings_search_kw_energy_goals">
+        <item>소모</item>
+        <item>health connect</item>
+        <item>측정</item>
+    </string-array>
+    <string-array name="settings_search_kw_calories">
+        <item>칼로리</item>
+        <item>kcal</item>
+        <item>칼로리 목표</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_protein">
+        <item>매크로</item>
+        <item>단백질</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_carbs">
+        <item>매크로</item>
+        <item>탄수</item>
+        <item>탄수화물</item>
+    </string-array>
+    <string-array name="settings_search_kw_macro_fat">
+        <item>매크로</item>
+        <item>지방</item>
+        <item>지질</item>
+    </string-array>
+    <string-array name="settings_search_kw_other_nutrient_goals">
+        <item>식이섬유</item>
+        <item>나트륨</item>
+        <item>미량 영양소</item>
+        <item>비타민</item>
+    </string-array>
+    <string-array name="settings_search_kw_recalculate_goals">
+        <item>재계산</item>
+        <item>다시 계산</item>
+        <item>새로고침</item>
+        <item>목표 업데이트</item>
+    </string-array>
+    <string-array name="settings_search_kw_day_types">
+        <item>탄수화물 순환</item>
+        <item>탄수화물 사이클</item>
+        <item>데이 타입</item>
+        <item>훈련일</item>
+        <item>휴식일</item>
+        <item>일정</item>
+        <item>요일</item>
+    </string-array>
+    <string-array name="settings_search_kw_goal_phases">
+        <item>감량</item>
+        <item>증량</item>
+        <item>유지</item>
+        <item>페이즈</item>
+        <item>린</item>
+        <item>감량 페이즈</item>
+        <item>근육 증가 페이즈</item>
+    </string-array>
+    <string-array name="settings_search_kw_calc_methods">
+        <item>공식</item>
+        <item>bmr</item>
+        <item>tdee</item>
+        <item>미플린</item>
+        <item>캐치</item>
+        <item>감사</item>
+    </string-array>
+    <string-array name="settings_search_kw_default_to_grams">
+        <item>그램</item>
+        <item>단위</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_log_sort">
+        <item>순서</item>
+        <item>정렬</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_times">
+        <item>식사</item>
+        <item>아침 식사</item>
+        <item>점심 식사</item>
+        <item>저녁 식사</item>
+        <item>일정</item>
+    </string-array>
+    <string-array name="settings_search_kw_photo_note_prompt">
+        <item>사진</item>
+        <item>요청</item>
+        <item>메모</item>
+        <item>설명</item>
+    </string-array>
+    <string-array name="settings_search_kw_meal_constituents">
+        <item>재료</item>
+        <item>구성 요소</item>
+    </string-array>
+    <string-array name="settings_search_kw_food_databases">
+        <item>데이터베이스</item>
+        <item>검색</item>
+        <item>출처</item>
+        <item>open food facts</item>
+        <item>usda</item>
+        <item>스위스</item>
+        <item>오프라인</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_mode">
+        <item>1인분</item>
+        <item>단위</item>
+        <item>감지</item>
+    </string-array>
+    <string-array name="settings_search_kw_serving_unit_heuristics">
+        <item>1인분</item>
+        <item>규칙</item>
+        <item>감지</item>
+    </string-array>
+    <string-array name="settings_search_kw_home_display">
+        <item>홈</item>
+        <item>카드</item>
+        <item>영양소</item>
+    </string-array>
+    <string-array name="settings_search_kw_calorie_gauge">
+        <item>게이지</item>
+        <item>활동</item>
+        <item>소모</item>
+        <item>되먹기</item>
+        <item>health connect</item>
+        <item>운동</item>
+    </string-array>
+    <string-array name="settings_search_kw_appearance">
+        <item>다크</item>
+        <item>라이트</item>
+        <item>oled</item>
+        <item>야간</item>
+        <item>테마 모드</item>
+    </string-array>
+    <string-array name="settings_search_kw_theme_color">
+        <item>테마</item>
+        <item>강조 색</item>
+        <item>색상</item>
+        <item>색깔</item>
+        <item>청록</item>
+        <item>파랑</item>
+    </string-array>
+    <string-array name="settings_search_kw_language">
+        <item>언어</item>
+        <item>로케일</item>
+        <item>번역</item>
+        <item>독일어</item>
+        <item>스페인어</item>
+    </string-array>
+    <string-array name="settings_search_kw_fixed_launcher_icon">
+        <item>런처</item>
+        <item>앱 아이콘</item>
+        <item>청록</item>
+    </string-array>
+    <string-array name="settings_search_kw_system_date_time_pickers">
+        <item>날짜</item>
+        <item>시간</item>
+        <item>선택기</item>
+        <item>시계</item>
+        <item>캘린더</item>
+    </string-array>
+    <string-array name="settings_search_kw_customize_progress">
+        <item>진행 상황</item>
+        <item>범위</item>
+        <item>차트</item>
+        <item>그래프</item>
+        <item>추세</item>
+        <item>기본</item>
+        <item>식이섬유</item>
+        <item>당류</item>
+        <item>나트륨</item>
+        <item>영양소</item>
+    </string-array>
+    <string-array name="settings_search_kw_progress_nutrient_averages">
+        <item>식이섬유</item>
+        <item>당류</item>
+        <item>나트륨</item>
+        <item>미량</item>
+        <item>영양소</item>
+        <item>평균</item>
+    </string-array>
+    <string-array name="settings_search_kw_week_starts">
+        <item>캘린더</item>
+        <item>월요일</item>
+        <item>일요일</item>
+        <item>주</item>
+    </string-array>
+    <string-array name="settings_search_kw_water">
+        <item>수분</item>
+        <item>목표</item>
+        <item>마시기</item>
+        <item>ml</item>
+        <item>프리셋</item>
+    </string-array>
+    <string-array name="settings_search_kw_nicotine">
+        <item>담배</item>
+        <item>베이프</item>
+        <item>파우치</item>
+        <item>흡연</item>
+        <item>제한</item>
+    </string-array>
+    <string-array name="settings_search_kw_caffeine">
+        <item>커피</item>
+        <item>차</item>
+        <item>에너지 드링크</item>
+        <item>제한</item>
+        <item>카페인</item>
+    </string-array>
+    <string-array name="settings_search_kw_notes">
+        <item>일기</item>
+        <item>노트</item>
+        <item>다이어리</item>
+        <item>일일 노트</item>
+    </string-array>
+    <string-array name="settings_search_kw_fasting">
+        <item>단식</item>
+        <item>간헐적</item>
+        <item>타이머</item>
+        <item>목표</item>
+        <item>금식</item>
+    </string-array>
+    <string-array name="settings_search_kw_notifications">
+        <item>리마인더</item>
+        <item>연속 기록</item>
+        <item>요약</item>
+        <item>체중 리마인더</item>
+        <item>배터리</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_features_master">
+        <item>ai</item>
+        <item>켜기</item>
+        <item>끄기</item>
+        <item>개인정보</item>
+    </string-array>
+    <string-array name="settings_search_kw_show_coach_tab">
+        <item>코치</item>
+        <item>탭</item>
+        <item>숨기기</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_provider">
+        <item>gemini</item>
+        <item>openai</item>
+        <item>anthropic</item>
+        <item>claude</item>
+        <item>ollama</item>
+        <item>gpt</item>
+        <item>로컬</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_model">
+        <item>모델</item>
+        <item>버전</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_vision_model">
+        <item>비전</item>
+        <item>이미지</item>
+        <item>멀티모달</item>
+    </string-array>
+    <string-array name="settings_search_kw_api_key">
+        <item>api 키</item>
+        <item>시크릿</item>
+        <item>토큰</item>
+        <item>gemini</item>
+        <item>openai</item>
+    </string-array>
+    <string-array name="settings_search_kw_base_url">
+        <item>엔드포인트</item>
+        <item>url</item>
+        <item>ollama</item>
+        <item>로컬</item>
+        <item>서버</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_allow_insecure_http">
+        <item>http</item>
+        <item>평문</item>
+        <item>로컬</item>
+    </string-array>
+    <string-array name="settings_search_kw_on_device_model">
+        <item>온디바이스</item>
+        <item>gemma</item>
+        <item>다운로드</item>
+        <item>로컬</item>
+        <item>오프라인</item>
+    </string-array>
+    <string-array name="settings_search_kw_max_tokens">
+        <item>토큰</item>
+        <item>길이</item>
+        <item>상한</item>
+    </string-array>
+    <string-array name="settings_search_kw_ai_read_timeout">
+        <item>시간 초과</item>
+        <item>초</item>
+        <item>네트워크</item>
+    </string-array>
+    <string-array name="settings_search_kw_gemini_google_search">
+        <item>그라운딩</item>
+        <item>google</item>
+        <item>웹</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_custom_instructions">
+        <item>컨텍스트</item>
+        <item>프롬프트</item>
+        <item>코치</item>
+        <item>성격</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_fallback">
+        <item>폴백</item>
+        <item>백업</item>
+        <item>보조</item>
+        <item>재시도</item>
+    </string-array>
+    <string-array name="settings_search_kw_section_speech">
+        <item>음성</item>
+        <item>목소리</item>
+        <item>받아쓰기</item>
+        <item>음성 텍스트 변환</item>
+        <item>마이크</item>
+        <item>stt</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_connect">
+        <item>동기화</item>
+        <item>걸음 수</item>
+        <item>수면</item>
+        <item>권한</item>
+        <item>google fit</item>
+        <item>samsung</item>
+    </string-array>
+    <string-array name="settings_search_kw_manage_health_access">
+        <item>권한</item>
+        <item>health connect</item>
+    </string-array>
+    <string-array name="settings_search_kw_health_background_sync">
+        <item>백그라운드</item>
+        <item>자동</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_diary">
+        <item>내보내기</item>
+        <item>json</item>
+        <item>백업</item>
+        <item>파일</item>
+    </string-array>
+    <string-array name="settings_search_kw_export_body_metrics">
+        <item>내보내기</item>
+        <item>체중</item>
+        <item>체지방</item>
+        <item>파일</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_diary">
+        <item>가져오기</item>
+        <item>복원</item>
+        <item>json</item>
+    </string-array>
+    <string-array name="settings_search_kw_import_body_metrics">
+        <item>가져오기</item>
+        <item>복원</item>
+        <item>체중</item>
+        <item>csv</item>
+    </string-array>
+    <string-array name="settings_search_kw_sync">
+        <item>webdav</item>
+        <item>백업</item>
+        <item>클라우드</item>
+        <item>자동 동기화</item>
+        <item>서버</item>
+    </string-array>
+    <string-array name="settings_search_kw_clear_food_log">
+        <item>삭제</item>
+        <item>지우기</item>
+        <item>비우기</item>
+        <item>음식</item>
+    </string-array>
+    <string-array name="settings_search_kw_delete_all_data">
+        <item>삭제</item>
+        <item>지우기</item>
+        <item>비우기</item>
+        <item>초기화</item>
+        <item>공장 초기화</item>
+    </string-array>
 </resources>
