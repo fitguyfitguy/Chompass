@@ -2014,8 +2014,19 @@ class FoodAnalysisService(
             if (p is FoodAnalysisProgress.Partial) partialsEmitted = true
             streamProgress(p)
         }
+        // The watchdog covers the whole attempt chain (primary + fallback),
+        // so derive it from the LARGEST effective read timeout across both
+        // providers (AiHttp.effectiveReadTimeoutSeconds: cloud endpoints run
+        // the fixed cold-start budget, local ones the settings seconds) —
+        // the wall clock must never fire before a legit read gives up.
+        val chainReadTimeoutSeconds = maxOf(
+            AiHttp.effectiveReadTimeoutSeconds(primary, readTimeoutSeconds),
+            currentFallbackConfig(primary, primaryModel, cfg)
+                ?.let { AiHttp.effectiveReadTimeoutSeconds(it.provider, readTimeoutSeconds) }
+                ?: 0,
+        )
         val timeoutMs = watchdogSecondsOverride?.times(1000L)
-            ?: analysisWatchdogMillis(readTimeoutSeconds)
+            ?: analysisWatchdogMillis(chainReadTimeoutSeconds)
         return try {
             withTimeout(timeoutMs) {
                 try {
