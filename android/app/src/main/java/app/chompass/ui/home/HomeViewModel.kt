@@ -3745,7 +3745,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
-    /** Save a user-typed entry with no AI involvement (manual macro input from issue #15). */
+    /**
+     * Save a user-typed entry with no AI involvement (manual macro input from
+     * issue #15). [logTime] is the clock picked in the dialog (defaults to the
+     * session's effective log time) — the target date stays the selected Home
+     * day, only the time-of-day moves.
+     */
     fun saveManualEntry(
         name: String,
         calories: Int,
@@ -3758,6 +3763,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         servingUnitOptions: List<ServingUnitOption> = emptyList(),
         selectedServingUnit: String? = null,
         selectedServingQuantity: Double? = null,
+        logTime: LocalTime,
     ) {
         if (_ui.value.saving) return
         viewModelScope.launch {
@@ -3774,7 +3780,12 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                         protein = protein,
                         carbs = carbs,
                         fat = fat,
-                        timestamp = timestampForFoodLog(),
+                        timestamp = timestampForLogging(
+                            _selectedDate.value,
+                            Instant.now(),
+                            ZoneId.systemDefault(),
+                            logTime,
+                        ),
                         source = FoodSource.MANUAL,
                         mealType = mealType,
                         servingSizeGrams = servingSizeGrams,

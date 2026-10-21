@@ -44,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
@@ -53,6 +54,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
+import app.chompass.models.CurrentMealCatalog
 import app.chompass.models.EnergyFormat
 import app.chompass.models.LocaleFormat
 import app.chompass.models.MacroValueFormatter
@@ -77,6 +79,10 @@ import app.chompass.ui.components.ExpandableDecimalMacroPicker
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.theme.AppRadii
+import app.chompass.ui.util.clockTimePattern
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 // ── Dialogs (unchanged styling polish) ──────────────────────────────
 
@@ -538,6 +544,8 @@ internal fun AnalysisResultDialog(
 internal fun ManualEntryDialog(
     isSaving: Boolean = false,
     initialMealType: String = MealType.currentMealId,
+    initialTime: LocalTime = LocalTime.now(),
+    useSystemDateTimePickers: Boolean = false,
     mealTimesEnabled: Boolean = true,
     onDismiss: () -> Unit,
     onSave: (
@@ -552,6 +560,7 @@ internal fun ManualEntryDialog(
         servingUnitOptions: List<ServingUnitOption>,
         selectedServingUnit: String?,
         selectedServingQuantity: Double?,
+        logTime: LocalTime,
     ) -> Unit
 ) {
     // Upstream #190: drafts are rememberSaveable so rotation keeps typed input
@@ -571,6 +580,16 @@ internal fun ManualEntryDialog(
         )
     }
     var mealMenuExpanded by remember { mutableStateOf(false) }
+    // Time-of-day for the entry: defaults to the caller's effective log time;
+    // confirming the picker re-slots the meal when the user has not picked one
+    // manually (same rule as FoodResultSheet).
+    var logTime by rememberSaveable { mutableStateOf(initialTime) }
+    var mealTypeTouched by rememberSaveable { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+    val pickerContext = LocalContext.current
+    val timeFormatter = remember(pickerContext) {
+        DateTimeFormatter.ofPattern(clockTimePattern(pickerContext), Locale.getDefault())
+    }
 
     // Serving: unit options suggested from the entered name (same heuristics as
     // the AI paths) + a quantity field. Macros stay “what I ate” — the serving
@@ -668,12 +687,25 @@ internal fun ManualEntryDialog(
                                     selected = m == mealType,
                                     onClick = {
                                         mealType = m
+                                        mealTypeTouched = true
                                         mealMenuExpanded = false
                                     }
                                 )
                             }
                         }
                     }
+                }
+
+                // Time — clock-time chooser for this entry. The target date
+                // stays the selected Home day; only the clock moves.
+                SheetPillRow(onClick = { showTimePicker = true }) {
+                    Text(stringResource(R.string.label_time), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                    Text(
+                        logTime.format(timeFormatter),
+                        fontSize = 17.sp,
+                        color = AppColors.Calorie,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
 
                 // Expandable macro pickers — tap to open wheel
@@ -822,6 +854,7 @@ internal fun ManualEntryDialog(
                                 if (servingEngaged) servingUnitOptions else emptyList(),
                                 if (servingEngaged) selectedServingOption.unit else null,
                                 if (servingEngaged) parsedServingQuantity else null,
+                                logTime,
                             )
                         }
                     },
@@ -831,6 +864,21 @@ internal fun ManualEntryDialog(
                 TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
                     Text(stringResource(R.string.action_cancel), color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
                 }
+    }
+
+    if (showTimePicker) {
+        FoodLogTimePicker(
+            initialTime = logTime,
+            useSystem = useSystemDateTimePickers,
+            onConfirm = { time ->
+                logTime = time
+                showTimePicker = false
+                if (mealTimesEnabled && !mealTypeTouched) {
+                    mealType = CurrentMealCatalog.value.mealIdAt(time)
+                }
+            },
+            onDismiss = { showTimePicker = false },
+        )
     }
 }
 
