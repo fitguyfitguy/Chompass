@@ -455,7 +455,8 @@ function fillEntryUserText(entry, constituentsAllowed) {
   if (missing.includes("macros for each logged ingredient row")) {
     lines.push(
       "Estimate calories, protein, carbs, and fat for each logged ingredient row, " +
-        "reusing each logged ingredient name exactly so the rows can be matched back.",
+        "reusing each logged ingredient name exactly (same language as the logged rows) " +
+        "so the rows can be matched back.",
     );
   }
   lines.push("");
