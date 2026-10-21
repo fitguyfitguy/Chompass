@@ -327,6 +327,7 @@ export const uk = Object.freeze({
   // Entry / meal constituents
   "diary.fill_applied": "Заповнено записів: {n}",
   "diary.fill_banner": "{n} страві бракує даних про поживність",
+  "diary.fill_banner_few": "{n} страви бракує даних про поживність",
   "diary.fill_banner_plural": "{n} страв бракує даних про поживність",
   "diary.fill_missing": "Заповнити нестачу",
   "entry.ai.mode_fill": "Заповнити нестачу",

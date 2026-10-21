@@ -1,6 +1,7 @@
 package app.chompass
 
 import android.app.WallpaperManager
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -362,6 +363,12 @@ open class MainActivity : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             WallpaperManager.getInstance(this).removeOnColorsChangedListener(listener)
         }
+    }
+
+    override fun attachBaseContext(base: Context) {
+        // API < 33: re-attach with the cached legacy in-app language (identity
+        // on API 33+ and when following the system).
+        super.attachBaseContext(LocaleHelper.wrapIfLegacy(base))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

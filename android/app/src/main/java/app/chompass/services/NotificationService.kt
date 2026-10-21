@@ -11,6 +11,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import app.chompass.services.update.AndroidUpdateChecker
+import app.chompass.utils.LocaleHelper
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -49,62 +50,67 @@ import java.time.ZoneId
  * link to the battery-optimization exception screen.
  */
 class NotificationService(private val context: Context) {
+    // API < 33: resolve notification strings through the cached in-app
+    // language (identity wrap on API 33+ and when following the system).
+    private val localizedContext: Context
+        get() = LocaleHelper.wrapIfLegacy(context)
+
     fun createChannels() {
         val mgr = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val streak = NotificationChannel(
             CHANNEL_STREAK,
-            context.getString(R.string.notif_channel_streak),
+            localizedContext.getString(R.string.notif_channel_streak),
             NotificationManager.IMPORTANCE_DEFAULT
-        ).apply { description = context.getString(R.string.notif_channel_streak_desc) }
+        ).apply { description = localizedContext.getString(R.string.notif_channel_streak_desc) }
 
         val daily = NotificationChannel(
             CHANNEL_DAILY,
-            context.getString(R.string.notif_channel_daily),
+            localizedContext.getString(R.string.notif_channel_daily),
             NotificationManager.IMPORTANCE_LOW
-        ).apply { description = context.getString(R.string.notif_channel_daily_desc) }
+        ).apply { description = localizedContext.getString(R.string.notif_channel_daily_desc) }
 
         val goal = NotificationChannel(
             CHANNEL_WEIGHT_GOAL,
-            context.getString(R.string.notif_channel_weight_goal),
+            localizedContext.getString(R.string.notif_channel_weight_goal),
             NotificationManager.IMPORTANCE_HIGH
-        ).apply { description = context.getString(R.string.notif_channel_weight_goal_desc) }
+        ).apply { description = localizedContext.getString(R.string.notif_channel_weight_goal_desc) }
 
         val weight = NotificationChannel(
             CHANNEL_WEIGHT_LOG,
-            context.getString(R.string.notif_channel_weight_log),
+            localizedContext.getString(R.string.notif_channel_weight_log),
             NotificationManager.IMPORTANCE_DEFAULT
-        ).apply { description = context.getString(R.string.notif_channel_weight_log_desc) }
+        ).apply { description = localizedContext.getString(R.string.notif_channel_weight_log_desc) }
 
         val bodyFat = NotificationChannel(
             CHANNEL_BODY_FAT_LOG,
-            context.getString(R.string.notif_channel_body_fat),
+            localizedContext.getString(R.string.notif_channel_body_fat),
             NotificationManager.IMPORTANCE_DEFAULT
-        ).apply { description = context.getString(R.string.notif_channel_body_fat_desc) }
+        ).apply { description = localizedContext.getString(R.string.notif_channel_body_fat_desc) }
 
         val appUpdate = NotificationChannel(
             CHANNEL_APP_UPDATE,
-            context.getString(R.string.notif_channel_updates),
+            localizedContext.getString(R.string.notif_channel_updates),
             NotificationManager.IMPORTANCE_DEFAULT
-        ).apply { description = context.getString(R.string.notif_channel_updates_desc) }
+        ).apply { description = localizedContext.getString(R.string.notif_channel_updates_desc) }
 
         val water = NotificationChannel(
             CHANNEL_WATER,
-            context.getString(R.string.notif_channel_water),
+            localizedContext.getString(R.string.notif_channel_water),
             NotificationManager.IMPORTANCE_DEFAULT
-        ).apply { description = context.getString(R.string.notif_channel_water_desc) }
+        ).apply { description = localizedContext.getString(R.string.notif_channel_water_desc) }
 
         val fasting = NotificationChannel(
             CHANNEL_FASTING,
-            context.getString(R.string.notif_channel_fasting),
+            localizedContext.getString(R.string.notif_channel_fasting),
             NotificationManager.IMPORTANCE_DEFAULT
-        ).apply { description = context.getString(R.string.notif_channel_fasting_desc) }
+        ).apply { description = localizedContext.getString(R.string.notif_channel_fasting_desc) }
 
         val modelDownload = NotificationChannel(
             CHANNEL_MODEL_DOWNLOAD,
-            context.getString(R.string.notif_channel_model_download),
+            localizedContext.getString(R.string.notif_channel_model_download),
             NotificationManager.IMPORTANCE_LOW
         ).apply {
-            description = context.getString(R.string.notif_channel_model_download_desc)
+            description = localizedContext.getString(R.string.notif_channel_model_download_desc)
             setSound(null, null)
         }
 
@@ -127,8 +133,8 @@ class NotificationService(private val context: Context) {
         )
         val notif = NotificationCompat.Builder(context, CHANNEL_WEIGHT_GOAL)
             .setSmallIcon(R.drawable.ic_launcher_monochrome)
-            .setContentTitle(context.getString(R.string.notif_goal_weight_title))
-            .setContentText(context.getString(R.string.notif_goal_weight_text))
+            .setContentTitle(localizedContext.getString(R.string.notif_goal_weight_title))
+            .setContentText(localizedContext.getString(R.string.notif_goal_weight_text))
             .setContentIntent(content)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -153,8 +159,8 @@ class NotificationService(private val context: Context) {
         )
         val notif = NotificationCompat.Builder(context, CHANNEL_APP_UPDATE)
             .setSmallIcon(R.drawable.ic_launcher_monochrome)
-            .setContentTitle(context.getString(R.string.notif_update_title))
-            .setContentText(context.getString(R.string.notif_update_text))
+            .setContentTitle(localizedContext.getString(R.string.notif_update_title))
+            .setContentText(localizedContext.getString(R.string.notif_update_text))
             .setContentIntent(pi)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -166,21 +172,21 @@ class NotificationService(private val context: Context) {
 
     fun scheduleStreakReminder(hour: Int, minute: Int) = schedule(
         REQUEST_STREAK, hour, minute, CHANNEL_STREAK,
-        title = context.getString(R.string.notif_streak_title),
-        text = context.getString(R.string.notif_streak_text)
+        title = localizedContext.getString(R.string.notif_streak_title),
+        text = localizedContext.getString(R.string.notif_streak_text)
     )
 
     fun scheduleDailySummary(hour: Int, minute: Int) = schedule(
         REQUEST_DAILY, hour, minute, CHANNEL_DAILY,
-        title = context.getString(R.string.notif_summary_title),
-        text = context.getString(R.string.notif_summary_text)
+        title = localizedContext.getString(R.string.notif_summary_title),
+        text = localizedContext.getString(R.string.notif_summary_text)
     )
 
     /** Debug extra / device-pass: post today's Daily summary immediately, no alarm. */
     suspend fun postDailySummaryNow() {
         val container = (context.applicationContext as? ChompassApp)?.container ?: return
-        val fallbackTitle = context.getString(R.string.notif_summary_title)
-        val fallbackText = context.getString(R.string.notif_summary_text)
+        val fallbackTitle = localizedContext.getString(R.string.notif_summary_title)
+        val fallbackText = localizedContext.getString(R.string.notif_summary_text)
         val copy = buildDailySummaryNotification(context, container, fallbackTitle, fallbackText)
             ?: DailySummaryNotification(fallbackTitle, fallbackText, fallbackText)
         postChannelNotification(
@@ -218,14 +224,14 @@ class NotificationService(private val context: Context) {
 
     fun scheduleWeightReminder(hour: Int = 8, minute: Int = 0) = schedule(
         REQUEST_WEIGHT, hour, minute, CHANNEL_WEIGHT_LOG,
-        title = context.getString(R.string.notif_weight_log_title),
-        text = context.getString(R.string.notif_weight_log_text)
+        title = localizedContext.getString(R.string.notif_weight_log_title),
+        text = localizedContext.getString(R.string.notif_weight_log_text)
     )
 
     fun scheduleBodyFatReminder(hour: Int = 8, minute: Int = 0) = schedule(
         REQUEST_BODY_FAT, hour, minute, CHANNEL_BODY_FAT_LOG,
-        title = context.getString(R.string.notif_body_fat_log_title),
-        text = context.getString(R.string.notif_body_fat_log_text)
+        title = localizedContext.getString(R.string.notif_body_fat_log_title),
+        text = localizedContext.getString(R.string.notif_body_fat_log_text)
     )
 
     /**
@@ -238,8 +244,8 @@ class NotificationService(private val context: Context) {
         val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, ReminderReceiver::class.java).apply {
             putExtra(EXTRA_CHANNEL, CHANNEL_WATER)
-            putExtra(EXTRA_TITLE, context.getString(R.string.notif_water_title))
-            putExtra(EXTRA_TEXT, context.getString(R.string.notif_water_text))
+            putExtra(EXTRA_TITLE, localizedContext.getString(R.string.notif_water_title))
+            putExtra(EXTRA_TEXT, localizedContext.getString(R.string.notif_water_text))
             putExtra(EXTRA_REQUEST, REQUEST_WATER)
         }
         val pi = PendingIntent.getBroadcast(
@@ -264,14 +270,14 @@ class NotificationService(private val context: Context) {
      */
     fun scheduleFastingGoalAt(fireAtMillis: Long, leadMinutes: Int) {
         val text = if (leadMinutes > 0) {
-            context.getString(R.string.notif_fasting_end_soon_text, leadMinutes)
+            localizedContext.getString(R.string.notif_fasting_end_soon_text, leadMinutes)
         } else {
-            context.getString(R.string.notif_fasting_goal_text)
+            localizedContext.getString(R.string.notif_fasting_goal_text)
         }
         val title = if (leadMinutes > 0) {
-            context.getString(R.string.notif_fasting_end_soon_title)
+            localizedContext.getString(R.string.notif_fasting_end_soon_title)
         } else {
-            context.getString(R.string.notif_fasting_goal_title)
+            localizedContext.getString(R.string.notif_fasting_goal_title)
         }
         val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, ReminderReceiver::class.java).apply {
@@ -297,14 +303,14 @@ class NotificationService(private val context: Context) {
      */
     fun scheduleFastingStartReminderAt(fireAtMillis: Long, leadMinutes: Int, auto: Boolean = false) {
         val text = when {
-            auto -> context.getString(R.string.notif_fasting_start_soon_auto, leadMinutes)
-            leadMinutes > 0 -> context.getString(R.string.notif_fasting_start_soon_text, leadMinutes)
-            else -> context.getString(R.string.notif_fasting_start_text)
+            auto -> localizedContext.getString(R.string.notif_fasting_start_soon_auto, leadMinutes)
+            leadMinutes > 0 -> localizedContext.getString(R.string.notif_fasting_start_soon_text, leadMinutes)
+            else -> localizedContext.getString(R.string.notif_fasting_start_text)
         }
         val title = if (leadMinutes > 0) {
-            context.getString(if (auto) R.string.notif_fasting_start_soon_auto_title else R.string.notif_fasting_start_soon_title)
+            localizedContext.getString(if (auto) R.string.notif_fasting_start_soon_auto_title else R.string.notif_fasting_start_soon_title)
         } else {
-            context.getString(R.string.notif_fasting_start_title)
+            localizedContext.getString(R.string.notif_fasting_start_title)
         }
         val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, ReminderReceiver::class.java).apply {
@@ -535,6 +541,9 @@ internal fun nextMidnightMillis(
 /** Fired by the alarm. Posts the notification and re-schedules the same alarm +24h. */
 class ReminderReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        // API < 33: localize fire-time strings (daily summary, water qty lines)
+        // through the cached in-app language.
+        val ctx = LocaleHelper.wrapIfLegacy(context)
         // Reboot drops all alarms. Re-arm the adaptive water chain. Other daily
         // reminders keep their existing reboot gap (out of scope; the receiver is
         // the natural home for a follow-up that re-arms them too).
@@ -654,7 +663,7 @@ class ReminderReceiver : BroadcastReceiver() {
                 }
 
                 val dailyCopy = if (channel == NotificationService.CHANNEL_DAILY && container != null) {
-                    buildDailySummaryNotification(context, container, title, text)
+                    buildDailySummaryNotification(ctx, container, title, text)
                 } else {
                     null
                 }
@@ -776,18 +785,18 @@ class ReminderReceiver : BroadcastReceiver() {
                         // remainder), in the app's own unit (ml or fl oz).
                         val useMetric = container?.prefs?.weightUnit?.first() == "kg"
                         val qty = if (useMetric) {
-                            context.getString(R.string.water_amount_ml, waterPlan.drinkMl)
+                            ctx.getString(R.string.water_amount_ml, waterPlan.drinkMl)
                         } else {
-                            context.getString(
+                            ctx.getString(
                                 R.string.water_amount_fl_oz,
                                 WaterAmountFormat.flOzFromMl(waterPlan.drinkMl),
                             )
                         }
                         val interval = waterPlan.intervalMinutes
                         if (interval != null) {
-                            context.getString(R.string.notif_water_text_next_qty, qty, interval)
+                            ctx.getString(R.string.notif_water_text_next_qty, qty, interval)
                         } else {
-                            context.getString(R.string.notif_water_text_qty, qty)
+                            ctx.getString(R.string.notif_water_text_qty, qty)
                         }
                     } else {
                         dailyCopy?.text ?: text

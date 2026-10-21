@@ -20,6 +20,7 @@ import app.chompass.models.WaterGoalCalculator
 import app.chompass.models.WidgetNutrient
 import app.chompass.models.WidgetSnapshot
 import app.chompass.services.health.HomeActivityReader
+import app.chompass.utils.LocaleHelper
 import app.chompass.ui.theme.AppThemeColor
 import app.chompass.ui.theme.appearanceIsDark
 import app.chompass.ui.theme.widgetAccentColors
@@ -208,6 +209,8 @@ class WidgetSnapshotWriter(
         caffeineEntries: List<CaffeineEntry> = emptyList(),
         energyUnit: String = "kcal",
     ) {
+        // API < 33: nutrient labels/units follow the in-app language.
+        val ctx = LocaleHelper.wrapIfLegacy(context)
         val todaysEntries = entries.filter {
             it.timestamp.atZone(ZoneId.systemDefault()).toLocalDate() == LocalDate.now()
         }
@@ -318,8 +321,8 @@ class WidgetSnapshotWriter(
                 homeNutrients = selection.map { nutrient ->
                     WidgetNutrient(
                         id = nutrient.storageKey,
-                        label = context.getString(nutrient.displayNameRes),
-                        unit = context.getString(nutrient.unitRes),
+                        label = ctx.getString(nutrient.displayNameRes),
+                        unit = ctx.getString(nutrient.unitRes),
                         value = when (nutrient) {
                             HomeTopNutrient.CALORIES -> totals.calories.toDouble()
                             HomeTopNutrient.CAFFEINE -> {

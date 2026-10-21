@@ -1265,6 +1265,8 @@
     <string name="recipe_builder_no_ingredients">Інгредієнтів ще немає</string>
     <plurals name="recipe_builder_fill_missing">
         <item quantity="one">В %1$d інгредієнта немає значень харчової цінності</item>
+        <item quantity="few">В %1$d інгредієнта немає значень харчової цінності</item>
+        <item quantity="many">У %1$d інгредієнтів немає значень харчової цінності</item>
         <item quantity="other">У %1$d інгредієнтів немає значень харчової цінності</item>
     </plurals>
     <string name="recipe_builder_filling">Заповнення %1$d з %2$d…</string>
@@ -2075,6 +2077,7 @@ LBM = вага × (1 − %жиру)</string>
     <plurals name="home_fill_gaps_banner">
         <item quantity="one">1 прийом їжі без даних поживності</item>
         <item quantity="few">%1$d прийоми їжі без даних поживності</item>
+        <item quantity="many">%1$d прийомів їжі без даних поживності</item>
         <item quantity="other">%1$d прийомів їжі без даних поживності</item>
     </plurals>
     <string name="cd_dismiss_fill_gaps_banner">Сховати банер</string>
@@ -2086,21 +2089,25 @@ LBM = вага × (1 − %жиру)</string>
     <plurals name="fill_gaps_confirm_remote">
         <item quantity="one">Виконати 1 ШІ-запит?</item>
         <item quantity="few">Виконати %1$d ШІ-запити?</item>
+        <item quantity="many">Виконати %1$d ШІ-запитів?</item>
         <item quantity="other">Виконати %1$d ШІ-запитів?</item>
     </plurals>
     <plurals name="fill_gaps_confirm_ondevice">
         <item quantity="one">Заповнити 1 прийом їжі на пристрої?</item>
         <item quantity="few">Заповнити %1$d прийоми їжі на пристрої?</item>
+        <item quantity="many">Заповнити %1$d прийомів їжі на пристрої?</item>
         <item quantity="other">Заповнити %1$d прийомів їжі на пристрої?</item>
     </plurals>
     <plurals name="fill_gaps_cascade">
         <item quantity="one">Оновити також 1 сьогоднішній запис</item>
         <item quantity="few">Оновити також %1$d сьогоднішні записи</item>
+        <item quantity="many">Оновити також %1$d сьогоднішніх записів</item>
         <item quantity="other">Оновити також %1$d сьогоднішніх записів</item>
     </plurals>
     <plurals name="fill_gaps_snackbar">
         <item quantity="one">Заповнено 1 запис</item>
         <item quantity="few">Заповнено %1$d записи</item>
+        <item quantity="many">Заповнено %1$d записів</item>
         <item quantity="other">Заповнено %1$d записів</item>
     </plurals>
     <string name="fill_gaps_empty">Наразі нічого не бракує</string>

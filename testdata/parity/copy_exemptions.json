@@ -1,237 +1,1082 @@
 {
-  "version": 1,
-  "notes": "Verbatim-EN-copy exemptions for check_android_strings.py. A translated pack entry whose value is identical to English is normally a gap (it hides the missing-translation report and blocks translators). These exact VALUES are legitimate exceptions because the German word IS the English word (loanwords, proper nouns, brand/provider names, unit labels, UI-neutral placeholders). 'shared' exempts the value in every locale; a locale key (e.g. 'de') exempts it only for that pack. Keep this list minimal: entries must be real words the target language uses, not laziness. See docs/local/UI_COPY_STYLE.md §8 and docs/LOCALIZATION.md.",
-  "shared": [
-    "Anthropic Claude",
-    "AssemblyAI",
-    "Chompass",
-    "DEXA",
-    "Deepgram",
-    "DeepInfra",
-    "Fireworks AI",
-    "Gemini Audio",
-    "Google Gemini",
-    "Groq",
-    "Groq (Whisper)",
-    "Health Connect",
-    "Hindi",
-    "Hugging Face",
-    "Imperial",
-    "Eco-Score",
-    "Mistral",
-    "Nutri-Score",
-    "OLED",
-    "Open Food Facts",
-    "Open-Meteo (online)",
-    "OpenAI",
-    "OpenAI Whisper",
-    "OpenRouter",
-    "Together AI",
-    "USDA",
-    "xAI Grok",
-    "····",
-    "AIza...",
-    "fw_...",
-    "gsk_...",
-    "hf_...",
-    "sk-...",
-    "sk-ant-...",
-    "sk-or-...",
-    "xai-...",
-    "fl oz",
-    "ft / in",
-    "kcal",
-    "A–Z"
-  ],
-  "de": [
-    "April",
-    "August",
-    "Barcode",
-    "Coach",
-    "Format",
-    "Indigo",
-    "Info",
-    "Keto (Beta)",
-    "Labels",
-    "Magnesium",
-    "Minute",
-    "Name",
-    "Neutral",
-    "November",
-    "Omega",
-    "Omega-3",
-    "Open Source & Assets",
-    "Orange",
-    "September",
-    "Snack",
-    "Standard",
-    "System",
-    "Vitamin A",
-    "Vitamin B12",
-    "Vitamin C",
-    "Vitamin D",
-    "Vitamin E",
-    "Vitamin K",
-    "Wellness",
-    "auto",
-    "Tracker",
-    "Protein",
-    "Protein (g)"
-  ],
-  "es": [
-    "Coach",
-    "Color",
-    "Macros",
-    "Manual",
-    "Omega",
-    "Omega-3",
-    "Total",
-    "Zinc",
-    "auto",
-    "tokens"
-  ],
-  "fr": [
-    "Active",
-    "CALORIES",
-    "Calcium",
-    "Calories",
-    "Cigarette",
-    "Chompass Calories",
-    "Coach",
-    "Compact",
-    "Cycle",
-    "Date",
-    "Flash auto",
-    "Format",
-    "Indigo",
-    "Macros",
-    "Minute",
-    "Labels",
-    "Nicotine",
-    "Note",
-    "Notifications",
-    "Nutrition",
-    "Orange",
-    "Patch",
-    "Photo",
-    "Potassium",
-    "Sodium",
-    "Source",
-    "Standard",
-    "Suggestions",
-    "Total",
-    "Zinc",
-    "auto",
-    "tokens"
-  ],
-  "pl": [
-    "Cholesterol",
-    "Format",
-    "Keto (Beta)",
-    "Model",
-    "Omega",
-    "Omega-3",
-    "Stop",
-    "US Navy",
-    "auto"
-  ],
-  "tr": [
-    "Keto (Beta)",
-    "Model",
-    "Omega",
-    "Omega-3",
-    "Protein"
-  ],
-  "it": [
-    "Auto",
-    "Coach",
-    "Flash auto",
-    "Home",
-    "Info",
-    "Keto (Beta)",
-    "Omega",
-    "Omega-3",
-    "Password",
-    "Standard",
-    "auto"
-  ],
-  "nl": [
-    "Auto",
-    "Barcode",
-    "Calcium",
-    "Camera",
-    "Cholesterol",
-    "Chompass Water",
-    "Coach",
-    "Compact",
-    "Home",
-    "Indigo",
-    "Info",
-    "Lunch",
-    "Labels",
-    "Magnesium",
-    "Model",
-    "Nicotine",
-    "Omega",
-    "Omega-3",
-    "Provider",
-    "Stop",
-    "Teal",
-    "Trackers",
-    "US Navy",
-    "Water",
-    "auto",
-    "per week",
-    "tokens",
-    "Snack"
-  ],
-  "pt-BR": [
-    "Auto",
-    "Coach",
-    "Info",
-    "Macros",
-    "Manual",
-    "Total",
-    "auto",
-    "tokens"
-  ],
-  "ro": [
-    "August",
-    "Auto",
-    "Compact",
-    "Format",
-    "Indigo",
-    "Info",
-    "Manual",
-    "Model",
-    "Omega",
-    "Omega-3",
-    "Standard",
-    "Total",
-    "Zinc",
-    "auto"
-  ],
-  "az": [
-    "Chompass Protein",
-    "Format",
-    "Model",
-    "Omega",
-    "Omega-3",
-    "Protein",
-    "Vitamin A",
-    "Vitamin B12",
-    "Vitamin C",
-    "Vitamin D",
-    "Vitamin E",
-    "Vitamin K",
-    "API token",
-    "Mealie URL",
-    "Server URL"
-  ],
-  "hi": [
-    "Mealie URL"
-  ],
-  "ko": [
-    "Mealie URL"
+  "version": 2,
+  "notes": "Verbatim-EN-copy exemptions for check_android_strings.py. A translated pack entry whose value is identical to English is normally a gap (it hides the missing-translation report and blocks translators). These exact VALUES are legitimate exceptions because the German word IS the English word (loanwords, proper nouns, brand/provider names, unit labels, UI-neutral placeholders). 'shared' exempts the value in every locale; a locale key (e.g. 'de') exempts it only for that pack. Keep this list minimal: entries must be real words the target language uses, not laziness. See docs/local/UI_COPY_STYLE.md §8 and docs/LOCALIZATION.md.\n\nv2 migration (2026-10-21): value-scoped lists became key-scoped entries — each entry lists the locale packs where the value is EN-identical today ('*' = all 17). Dead entries (never EN-identical in any pack, including neutral values the gate allows unconditionally, e.g. the key-placeholder tokens and 'Omega') were dropped.",
+  "entries": [
+    {
+      "key": "about_asset_credits",
+      "locales": [
+        "de"
+      ]
+    },
+    {
+      "key": "action_info",
+      "locales": [
+        "de",
+        "it",
+        "nl",
+        "pt-BR",
+        "ro"
+      ]
+    },
+    {
+      "key": "activity_active",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "add_food_hero_note",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "add_food_hero_photo",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "add_food_trackers_section",
+      "locales": [
+        "nl"
+      ]
+    },
+    {
+      "key": "ai_provider_anthropic",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "ai_provider_deepinfra",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "ai_provider_fireworks",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "ai_provider_gemini",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "ai_provider_groq",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "ai_provider_huggingface",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "ai_provider_mistral",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "ai_provider_openai",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "ai_provider_openrouter",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "ai_provider_together",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "ai_provider_xai",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "ai_reasoning_effort_auto",
+      "locales": [
+        "it",
+        "nl",
+        "pt-BR",
+        "ro"
+      ]
+    },
+    {
+      "key": "app_name",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "autobalance_protein",
+      "locales": [
+        "az",
+        "de",
+        "tr"
+      ]
+    },
+    {
+      "key": "body_fat_method_dexa",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "camera_flash_auto",
+      "locales": [
+        "fr",
+        "it"
+      ]
+    },
+    {
+      "key": "coach_title",
+      "locales": [
+        "de",
+        "es",
+        "fr",
+        "it",
+        "nl",
+        "pt-BR"
+      ]
+    },
+    {
+      "key": "confirm_tape_source_navy",
+      "locales": [
+        "nl",
+        "pl"
+      ]
+    },
+    {
+      "key": "diet_mode_keto_beta",
+      "locales": [
+        "de",
+        "it",
+        "pl",
+        "tr"
+      ]
+    },
+    {
+      "key": "diet_mode_standard",
+      "locales": [
+        "de",
+        "fr",
+        "it",
+        "ro"
+      ]
+    },
+    {
+      "key": "edit_note_section",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "entry_analysis_placeholder_name",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "export_body_metrics_format",
+      "locales": [
+        "az",
+        "de",
+        "fr",
+        "pl",
+        "ro"
+      ]
+    },
+    {
+      "key": "export_format",
+      "locales": [
+        "az",
+        "de",
+        "fr",
+        "pl",
+        "ro"
+      ]
+    },
+    {
+      "key": "food_search_source_off",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "food_search_source_usda",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "goal_tier_auto",
+      "locales": [
+        "it",
+        "nl",
+        "pt-BR",
+        "ro"
+      ]
+    },
+    {
+      "key": "grounding_source_off",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "grounding_source_usda",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "home_food_log_layout_default",
+      "locales": [
+        "fr",
+        "nl",
+        "ro"
+      ]
+    },
+    {
+      "key": "home_menu_barcode",
+      "locales": [
+        "de",
+        "nl"
+      ]
+    },
+    {
+      "key": "home_menu_camera",
+      "locales": [
+        "nl"
+      ]
+    },
+    {
+      "key": "label_date",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "label_total",
+      "locales": [
+        "es",
+        "fr",
+        "pt-BR",
+        "ro"
+      ]
+    },
+    {
+      "key": "macro_calories",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "macro_glyph_calories",
+      "locales": [
+        "az",
+        "de",
+        "es",
+        "fr",
+        "hi",
+        "it",
+        "ja",
+        "ko",
+        "nl",
+        "pl",
+        "pt-BR",
+        "ro",
+        "tr",
+        "uk"
+      ]
+    },
+    {
+      "key": "macro_protein",
+      "locales": [
+        "az",
+        "de",
+        "tr"
+      ]
+    },
+    {
+      "key": "manual_name",
+      "locales": [
+        "de"
+      ]
+    },
+    {
+      "key": "manual_protein",
+      "locales": [
+        "de"
+      ]
+    },
+    {
+      "key": "meal_lunch",
+      "locales": [
+        "nl"
+      ]
+    },
+    {
+      "key": "meal_snack",
+      "locales": [
+        "de",
+        "nl"
+      ]
+    },
+    {
+      "key": "mealie_host_label",
+      "locales": [
+        "az",
+        "hi",
+        "ko"
+      ]
+    },
+    {
+      "key": "mealie_token_label",
+      "locales": [
+        "az"
+      ]
+    },
+    {
+      "key": "month_april",
+      "locales": [
+        "de"
+      ]
+    },
+    {
+      "key": "month_august",
+      "locales": [
+        "de",
+        "ro"
+      ]
+    },
+    {
+      "key": "month_november",
+      "locales": [
+        "de"
+      ]
+    },
+    {
+      "key": "month_september",
+      "locales": [
+        "de"
+      ]
+    },
+    {
+      "key": "nav_coach",
+      "locales": [
+        "es",
+        "fr",
+        "it",
+        "nl",
+        "pt-BR"
+      ]
+    },
+    {
+      "key": "nav_home",
+      "locales": [
+        "it",
+        "nl"
+      ]
+    },
+    {
+      "key": "nicotine",
+      "locales": [
+        "fr",
+        "nl"
+      ]
+    },
+    {
+      "key": "nicotine_kind_cigarette",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "nicotine_kind_patch",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "nutrient_short_omega",
+      "locales": [
+        "az",
+        "de",
+        "es",
+        "it",
+        "nl",
+        "pl",
+        "ro",
+        "tr"
+      ]
+    },
+    {
+      "key": "nutrition_label_calcium",
+      "locales": [
+        "fr",
+        "nl"
+      ]
+    },
+    {
+      "key": "nutrition_label_calories",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "nutrition_label_cholesterol",
+      "locales": [
+        "nl",
+        "pl"
+      ]
+    },
+    {
+      "key": "nutrition_label_magnesium",
+      "locales": [
+        "de",
+        "nl"
+      ]
+    },
+    {
+      "key": "nutrition_label_omega3",
+      "locales": [
+        "de",
+        "es",
+        "it",
+        "nl",
+        "pl",
+        "ro",
+        "tr"
+      ]
+    },
+    {
+      "key": "nutrition_label_potassium",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "nutrition_label_protein",
+      "locales": [
+        "az",
+        "de",
+        "tr"
+      ]
+    },
+    {
+      "key": "nutrition_label_sodium",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "nutrition_label_vitamin_a",
+      "locales": [
+        "az",
+        "de"
+      ]
+    },
+    {
+      "key": "nutrition_label_vitamin_b12",
+      "locales": [
+        "az",
+        "de"
+      ]
+    },
+    {
+      "key": "nutrition_label_vitamin_c",
+      "locales": [
+        "az",
+        "de"
+      ]
+    },
+    {
+      "key": "nutrition_label_vitamin_d",
+      "locales": [
+        "az",
+        "de"
+      ]
+    },
+    {
+      "key": "nutrition_label_vitamin_e",
+      "locales": [
+        "az",
+        "de"
+      ]
+    },
+    {
+      "key": "nutrition_label_vitamin_k",
+      "locales": [
+        "az",
+        "de"
+      ]
+    },
+    {
+      "key": "nutrition_label_zinc",
+      "locales": [
+        "es",
+        "fr",
+        "ro"
+      ]
+    },
+    {
+      "key": "nutrition_section_macros",
+      "locales": [
+        "es",
+        "fr",
+        "pt-BR"
+      ]
+    },
+    {
+      "key": "onboarding_building_calories",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "onboarding_building_protein",
+      "locales": [
+        "az",
+        "de",
+        "tr"
+      ]
+    },
+    {
+      "key": "onboarding_imperial",
+      "locales": [
+        "de",
+        "es",
+        "pl"
+      ]
+    },
+    {
+      "key": "onboarding_pace_per_week",
+      "locales": [
+        "nl"
+      ]
+    },
+    {
+      "key": "onboarding_plan_field_protein",
+      "locales": [
+        "az",
+        "de",
+        "tr"
+      ]
+    },
+    {
+      "key": "placeholder_minute",
+      "locales": [
+        "de",
+        "fr"
+      ]
+    },
+    {
+      "key": "product_barcode",
+      "locales": [
+        "de"
+      ]
+    },
+    {
+      "key": "product_eco_score",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "product_labels",
+      "locales": [
+        "de",
+        "fr",
+        "nl"
+      ]
+    },
+    {
+      "key": "product_nutri_score",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "progress_calories_section",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "progress_wellness_section",
+      "locales": [
+        "de"
+      ]
+    },
+    {
+      "key": "section_source",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "settings_ai_model",
+      "locales": [
+        "az",
+        "nl",
+        "pl",
+        "ro",
+        "tr"
+      ]
+    },
+    {
+      "key": "settings_ai_provider",
+      "locales": [
+        "nl"
+      ]
+    },
+    {
+      "key": "settings_appearance_oled",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "settings_appearance_system",
+      "locales": [
+        "de"
+      ]
+    },
+    {
+      "key": "settings_calories",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "settings_day_type_color",
+      "locales": [
+        "es"
+      ]
+    },
+    {
+      "key": "settings_day_type_color_auto",
+      "locales": [
+        "nl"
+      ]
+    },
+    {
+      "key": "settings_day_types_mode_cycle",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "settings_day_types_mode_manual",
+      "locales": [
+        "es",
+        "pt-BR",
+        "ro"
+      ]
+    },
+    {
+      "key": "settings_day_types_name",
+      "locales": [
+        "de"
+      ]
+    },
+    {
+      "key": "settings_goal_auto",
+      "locales": [
+        "it",
+        "nl",
+        "pt-BR",
+        "ro"
+      ]
+    },
+    {
+      "key": "settings_group_coach",
+      "locales": [
+        "de",
+        "es",
+        "fr",
+        "it",
+        "nl",
+        "pt-BR"
+      ]
+    },
+    {
+      "key": "settings_health_connect",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "settings_macro_auto_a11y",
+      "locales": [
+        "it",
+        "nl",
+        "pt-BR",
+        "ro"
+      ]
+    },
+    {
+      "key": "settings_max_tokens_unit",
+      "locales": [
+        "es",
+        "fr",
+        "nl",
+        "pt-BR"
+      ]
+    },
+    {
+      "key": "settings_nicotine_title",
+      "locales": [
+        "fr",
+        "nl"
+      ]
+    },
+    {
+      "key": "settings_notifications",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "settings_server_url",
+      "locales": [
+        "az"
+      ]
+    },
+    {
+      "key": "settings_suggestions",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "settings_tracker_preset_name",
+      "locales": [
+        "de"
+      ]
+    },
+    {
+      "key": "settings_water_auto_badge",
+      "locales": [
+        "de",
+        "es",
+        "fr",
+        "it",
+        "nl",
+        "pl",
+        "pt-BR",
+        "ro"
+      ]
+    },
+    {
+      "key": "settings_water_title",
+      "locales": [
+        "nl"
+      ]
+    },
+    {
+      "key": "settings_weather_source_manual",
+      "locales": [
+        "es",
+        "pt-BR",
+        "ro"
+      ]
+    },
+    {
+      "key": "settings_weather_source_meteo",
+      "locales": [
+        "de",
+        "es",
+        "it",
+        "nl",
+        "pl",
+        "pt-BR",
+        "ro",
+        "tr"
+      ]
+    },
+    {
+      "key": "settings_webdav_password",
+      "locales": [
+        "it"
+      ]
+    },
+    {
+      "key": "sheet_macro_auto",
+      "locales": [
+        "fr",
+        "it",
+        "nl",
+        "pl",
+        "pt-BR",
+        "ro"
+      ]
+    },
+    {
+      "key": "sheet_macros",
+      "locales": [
+        "es",
+        "fr",
+        "pt-BR"
+      ]
+    },
+    {
+      "key": "sheet_micro_cholesterol",
+      "locales": [
+        "nl",
+        "pl"
+      ]
+    },
+    {
+      "key": "sheet_micro_potassium",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "sheet_micro_sodium",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "sheet_model",
+      "locales": [
+        "az",
+        "nl",
+        "pl",
+        "ro",
+        "tr"
+      ]
+    },
+    {
+      "key": "sheet_name",
+      "locales": [
+        "de"
+      ]
+    },
+    {
+      "key": "sheet_nutrition",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "shortcut_barcode_short",
+      "locales": [
+        "de",
+        "nl"
+      ]
+    },
+    {
+      "key": "shortcut_camera_short",
+      "locales": [
+        "nl"
+      ]
+    },
+    {
+      "key": "speech_language_hindi",
+      "locales": [
+        "de",
+        "es",
+        "fr",
+        "it",
+        "nl",
+        "pl",
+        "pt-BR",
+        "ro"
+      ]
+    },
+    {
+      "key": "speech_provider_assemblyai",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "speech_provider_deepgram",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "speech_provider_gemini",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "speech_provider_groq",
+      "locales": [
+        "ar",
+        "az",
+        "de",
+        "es",
+        "fr",
+        "hi",
+        "it",
+        "ja",
+        "ko",
+        "nl",
+        "pl",
+        "pt-BR",
+        "ro",
+        "ru",
+        "tr",
+        "uk"
+      ]
+    },
+    {
+      "key": "speech_provider_openai",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "theme_color_indigo",
+      "locales": [
+        "de",
+        "fr",
+        "nl",
+        "ro"
+      ]
+    },
+    {
+      "key": "theme_color_neutral",
+      "locales": [
+        "de"
+      ]
+    },
+    {
+      "key": "theme_color_orange",
+      "locales": [
+        "de",
+        "fr"
+      ]
+    },
+    {
+      "key": "theme_color_system",
+      "locales": [
+        "de"
+      ]
+    },
+    {
+      "key": "theme_color_teal",
+      "locales": [
+        "nl"
+      ]
+    },
+    {
+      "key": "unit_fl_oz",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "unit_ft_in",
+      "locales": [
+        "*"
+      ]
+    },
+    {
+      "key": "unit_kcal",
+      "locales": [
+        "ar",
+        "az",
+        "de",
+        "es",
+        "fr",
+        "hi",
+        "it",
+        "ja",
+        "ko",
+        "nl",
+        "pl",
+        "pt-BR",
+        "ro",
+        "tr",
+        "uk",
+        "zh-CN"
+      ]
+    },
+    {
+      "key": "voice_stop",
+      "locales": [
+        "nl",
+        "pl"
+      ]
+    },
+    {
+      "key": "water",
+      "locales": [
+        "nl"
+      ]
+    },
+    {
+      "key": "widget_calorie_label",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "widget_calories",
+      "locales": [
+        "fr"
+      ]
+    },
+    {
+      "key": "widget_kcal",
+      "locales": [
+        "de",
+        "es",
+        "fr",
+        "hi",
+        "it",
+        "ja",
+        "ko",
+        "nl",
+        "pl",
+        "pt-BR",
+        "ro",
+        "tr"
+      ]
+    },
+    {
+      "key": "widget_protein",
+      "locales": [
+        "az",
+        "de",
+        "tr"
+      ]
+    },
+    {
+      "key": "widget_protein_label",
+      "locales": [
+        "az"
+      ]
+    },
+    {
+      "key": "widget_water_label",
+      "locales": [
+        "nl"
+      ]
+    }
   ]
 }

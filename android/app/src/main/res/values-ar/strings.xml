@@ -964,7 +964,11 @@
     <string name="edit_ai_mode_recalculate">إعادة حساب</string>
     <string name="edit_ai_missing_line">ناقص: %1$s</string>
     <plurals name="edit_ai_missing_values">
+        <item quantity="zero">لا قيم ناقصة</item>
         <item quantity="one">قيمة واحدة ناقصة</item>
+        <item quantity="two">قيمتان ناقصتان</item>
+        <item quantity="few">%1$d قيم ناقصة</item>
+        <item quantity="many">%1$d قيمة ناقصة</item>
         <item quantity="other">%1$d قيم ناقصة</item>
     </plurals>
     <string name="edit_ai_missing_action">تعبئة</string>
@@ -1321,7 +1325,11 @@
     <string name="recipe_builder_name_placeholder">اسم الوصفة</string>
     <string name="recipe_builder_no_ingredients">لا مكونات بعد</string>
     <plurals name="recipe_builder_fill_missing">
+        <item quantity="zero">لا مكوّنات ينقصها قيم التغذية</item>
         <item quantity="one">مكوّن واحد ينقصه قيم التغذية</item>
+        <item quantity="two">مكوّنان ينقصهما قيم التغذية</item>
+        <item quantity="few">%1$d مكوّنات ينقصها قيم التغذية</item>
+        <item quantity="many">%1$d مكوّنًا ينقصها قيم التغذية</item>
         <item quantity="other">%1$d من المكوّنات ينقصها قيم التغذية</item>
     </plurals>
     <string name="recipe_builder_filling">جارٍ التعبئة %1$d من %2$d…</string>
@@ -1863,6 +1871,7 @@
     <string name="value_unit_format">%1$d %2$s</string>
     <string name="widget_value_unit_format">%1$d%2$s / %3$d%4$s</string>
     <plurals name="copy_foods_to">
+        <item quantity="zero">لا أطعمة للنسخ إلى %2$s</item>
         <item quantity="one">نسخ طعام واحد إلى %2$s</item>
         <item quantity="two">نسخ طعامين إلى %2$s</item>
         <item quantity="few">نسخ %1$d أطعمة إلى %2$s</item>
@@ -1870,6 +1879,7 @@
         <item quantity="other">نسخ %1$d طعام إلى %2$s</item>
     </plurals>
     <plurals name="import_add_meals_title">
+        <item quantity="zero">لا وجبات مشتركة للإضافة</item>
         <item quantity="one">إضافة وجبة مشتركة</item>
         <item quantity="two">إضافة وجبتين مشتركتين</item>
         <item quantity="few">إضافة %1$d وجبات مشتركة</item>
@@ -2152,7 +2162,11 @@
     <string name="home_today">اليوم</string>
 
     <plurals name="home_fill_gaps_banner">
+        <item quantity="zero">لا وجبات تنقصها بيانات التغذية</item>
         <item quantity="one">وجبة واحدة تنقصها بيانات التغذية</item>
+        <item quantity="two">وجبتان تنقصهما بيانات التغذية</item>
+        <item quantity="few">%1$d وجبات تنقصها بيانات التغذية</item>
+        <item quantity="many">%1$d وجبةً تنقصها بيانات التغذية</item>
         <item quantity="other">%1$d وجبات تنقصها بيانات التغذية</item>
     </plurals>
     <string name="cd_dismiss_fill_gaps_banner">إخفاء الشريط</string>
@@ -2162,19 +2176,35 @@
     <string name="fill_gaps_run_all">ملء الكل</string>
     <string name="fill_gaps_apply">تطبيق</string>
     <plurals name="fill_gaps_confirm_remote">
+        <item quantity="zero">تشغيل صفر من طلبات الذكاء الاصطناعي؟</item>
         <item quantity="one">تشغيل طلب ذكاء اصطناعي واحد؟</item>
+        <item quantity="two">تشغيل طلبَي ذكاء اصطناعي؟</item>
+        <item quantity="few">تشغيل %1$d من طلبات الذكاء الاصطناعي؟</item>
+        <item quantity="many">تشغيل %1$d من طلب الذكاء الاصطناعي؟</item>
         <item quantity="other">تشغيل %1$d من طلبات الذكاء الاصطناعي؟</item>
     </plurals>
     <plurals name="fill_gaps_confirm_ondevice">
+        <item quantity="zero">ملء صفر من الوجبات على الجهاز؟</item>
         <item quantity="one">ملء وجبة واحدة على الجهاز؟</item>
+        <item quantity="two">ملء وجبتين على الجهاز؟</item>
+        <item quantity="few">ملء %1$d من الوجبات على الجهاز؟</item>
+        <item quantity="many">ملء %1$d من الوجبة على الجهاز؟</item>
         <item quantity="other">ملء %1$d من الوجبات على الجهاز؟</item>
     </plurals>
     <plurals name="fill_gaps_cascade">
+        <item quantity="zero">لا تحديثات لإدخالات اليوم</item>
         <item quantity="one">تحديث إدخال آخر من اليوم أيضًا</item>
+        <item quantity="two">تحديث إدخالَي اليوم أيضًا</item>
+        <item quantity="few">تحديث %1$d من إدخالات اليوم أيضًا</item>
+        <item quantity="many">تحديث %1$d من إدخال اليوم أيضًا</item>
         <item quantity="other">تحديث %1$d من إدخالات اليوم أيضًا</item>
     </plurals>
     <plurals name="fill_gaps_snackbar">
+        <item quantity="zero">لم تُملأ إدخالات</item>
         <item quantity="one">تم ملء إدخال واحد</item>
+        <item quantity="two">تم ملء إدخالَين</item>
+        <item quantity="few">تم ملء %1$d من الإدخالات</item>
+        <item quantity="many">تم ملء %1$d من الإدخال</item>
         <item quantity="other">تم ملء %1$d من الإدخالات</item>
     </plurals>
     <string name="fill_gaps_empty">لا يوجد شيء ناقص حاليًا</string>

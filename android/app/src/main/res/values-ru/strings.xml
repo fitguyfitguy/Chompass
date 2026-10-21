@@ -1665,6 +1665,8 @@
     <string name="recipe_builder_no_ingredients">Ингредиентов пока нет</string>
     <plurals name="recipe_builder_fill_missing">
         <item quantity="one">У %1$d ингредиента нет значений пищевой ценности</item>
+        <item quantity="few">У %1$d ингредиента нет значений пищевой ценности</item>
+        <item quantity="many">У %1$d ингредиентов нет значений пищевой ценности</item>
         <item quantity="other">У %1$d ингредиентов нет значений пищевой ценности</item>
     </plurals>
     <string name="recipe_builder_filling">Заполнение %1$d из %2$d…</string>
@@ -2223,6 +2225,7 @@
     <plurals name="home_fill_gaps_banner">
         <item quantity="one">Для 1 приёма пищи не хватает данных о питании</item>
         <item quantity="few">Для %1$d приёмов пищи не хватает данных о питании</item>
+        <item quantity="many">Для %1$d приёмов пищи не хватает данных о питании</item>
         <item quantity="other">Для %1$d приёмов пищи не хватает данных о питании</item>
     </plurals>
     <string name="cd_dismiss_fill_gaps_banner">Скрыть баннер</string>
@@ -2234,21 +2237,25 @@
     <plurals name="fill_gaps_confirm_remote">
         <item quantity="one">Выполнить 1 ИИ-запрос?</item>
         <item quantity="few">Выполнить %1$d ИИ-запроса?</item>
+        <item quantity="many">Выполнить %1$d ИИ-запросов?</item>
         <item quantity="other">Выполнить %1$d ИИ-запросов?</item>
     </plurals>
     <plurals name="fill_gaps_confirm_ondevice">
         <item quantity="one">Заполнить 1 приём пищи на устройстве?</item>
         <item quantity="few">Заполнить %1$d приёма пищи на устройстве?</item>
+        <item quantity="many">Заполнить %1$d приёмов пищи на устройстве?</item>
         <item quantity="other">Заполнить %1$d приёмов пищи на устройстве?</item>
     </plurals>
     <plurals name="fill_gaps_cascade">
         <item quantity="one">Обновить также 1 сегодняшнюю запись</item>
         <item quantity="few">Обновить также %1$d сегодняшние записи</item>
+        <item quantity="many">Обновить также %1$d сегодняшних записей</item>
         <item quantity="other">Обновить также %1$d сегодняшних записей</item>
     </plurals>
     <plurals name="fill_gaps_snackbar">
         <item quantity="one">Заполнена 1 запись</item>
         <item quantity="few">Заполнено %1$d записи</item>
+        <item quantity="many">Заполнено %1$d записей</item>
         <item quantity="other">Заполнено %1$d записей</item>
     </plurals>
     <string name="fill_gaps_empty">Сейчас ничего не отсутствует</string>

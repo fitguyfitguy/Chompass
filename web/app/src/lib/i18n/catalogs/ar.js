@@ -278,6 +278,8 @@ export const ar = Object.freeze({
   "toast.copied": "تم النسخ",
   "diary.fill_applied": "تم ملء {n} من المدخلات",
   "diary.fill_banner": "{n} وجبة تنقصها بيانات غذائية",
+  "diary.fill_banner_two": "{n} وجبتان تنقصهما بيانات غذائية",
+  "diary.fill_banner_many": "{n} وجبةً تنقصها بيانات غذائية",
   "diary.fill_banner_plural": "{n} وجبات تنقصها بيانات غذائية",
   "diary.fill_missing": "ملء الناقص",
   "entry.ai.mode_fill": "ملء الناقص",

@@ -2636,6 +2636,7 @@ macros rééquilibrées au nouveau total calorique</string>
         <item>ollama</item>
         <item>gpt</item>
         <item>local</item>
+        <item>fournisseur ia</item>
     </string-array>
     <string-array name="settings_search_kw_ai_model">
         <item>modèle</item>
@@ -2645,6 +2646,7 @@ macros rééquilibrées au nouveau total calorique</string>
         <item>vision</item>
         <item>image</item>
         <item>multimodal</item>
+        <item>visuelle</item>
     </string-array>
     <string-array name="settings_search_kw_api_key">
         <item>clé api</item>

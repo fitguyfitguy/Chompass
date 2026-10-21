@@ -1314,6 +1314,7 @@
     <string name="recipe_builder_no_ingredients">Încă fără ingrediente</string>
     <plurals name="recipe_builder_fill_missing">
         <item quantity="one">Un ingredient nu are valori nutriționale</item>
+        <item quantity="few">%1$d ingrediente nu au valori nutriționale</item>
         <item quantity="other">%1$d ingrediente nu au valori nutriționale</item>
     </plurals>
     <string name="recipe_builder_filling">Se completează %1$d din %2$d…</string>
@@ -1863,10 +1864,12 @@
     <string name="widget_value_unit_format">%1$d%2$s / %3$d%4$s</string>
     <plurals name="copy_foods_to">
         <item quantity="one">Copiază %1$d aliment în %2$s</item>
+        <item quantity="few">Copiază %1$d alimente în %2$s</item>
         <item quantity="other">Copiază %1$d alimente în %2$s</item>
     </plurals>
     <plurals name="import_add_meals_title">
         <item quantity="one">Adaugă masă partajată</item>
+        <item quantity="few">Adaugă %1$d mese partajate</item>
         <item quantity="other">Adaugă %1$d mese partajate</item>
     </plurals>
     <string name="onboarding_metric">Metrice</string>
@@ -2312,6 +2315,7 @@ macro-urile reechilibrate la noul total caloric</string>
     </string-array>
     <string-array name="settings_search_kw_gender">
         <item>sex</item>
+        <item>gen</item>
     </string-array>
     <string-array name="settings_search_kw_birthday">
         <item>zi de naștere</item>
@@ -2341,6 +2345,7 @@ macro-urile reechilibrate la noul total caloric</string>
         <item>katch</item>
         <item>mcardle</item>
         <item>metabolism</item>
+        <item>metabolism bazal</item>
     </string-array>
     <string-array name="settings_search_kw_goal_body_fat">
         <item>țintă grăsime</item>
@@ -2369,6 +2374,7 @@ macro-urile reechilibrate la noul total caloric</string>
         <item>net</item>
         <item>total</item>
         <item>keto</item>
+        <item>carbohidrați neti</item>
     </string-array>
     <string-array name="settings_search_kw_keto_net_carbs">
         <item>keto</item>
@@ -2631,6 +2637,7 @@ macro-urile reechilibrate la noul total caloric</string>
         <item>ollama</item>
         <item>gpt</item>
         <item>local</item>
+        <item>furnizor</item>
     </string-array>
     <string-array name="settings_search_kw_ai_model">
         <item>model</item>
@@ -2654,6 +2661,7 @@ macro-urile reechilibrate la noul total caloric</string>
         <item>ollama</item>
         <item>local</item>
         <item>server</item>
+        <item>adresă server</item>
     </string-array>
     <string-array name="settings_search_kw_ai_allow_insecure_http">
         <item>http</item>

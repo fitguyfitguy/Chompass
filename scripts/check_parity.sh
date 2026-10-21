@@ -41,7 +41,7 @@ echo "==> Validate shared locales contract (Android dirs + PWA ids)"
 uv run python "$ROOT/scripts/check_locales_contract.py"
 
 echo "==> Validate Android string placeholders vs English"
-uv run python "$ROOT/scripts/check_android_strings.py"
+uv run python "$ROOT/scripts/check_android_strings.py" --strict-compact
 
 echo "==> Guard against hardcoded user-facing strings in Kotlin UI code"
 uv run python "$ROOT/scripts/check_hardcoded_strings.py"
