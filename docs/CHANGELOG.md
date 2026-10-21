@@ -4,12 +4,7 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [Unreleased]
-
-### Fixed
-
-- **All 17 languages now cover the newer screens** (Android): Arabic, Azerbaijani, German, Spanish, French, Hindi, Italian, Japanese, Korean, Dutch, Polish, Brazilian Portuguese, Romanian, Russian, Turkish, Ukrainian, and Simplified Chinese caught up on everything added since the last translation pass: week planning, Mealie import, the body-fat method picker, fill-missing, the reworked home screen, and the rest. Percent signs no longer show up doubled (±10%% becomes ±10%). The tape-method source label now reads in the app language in Arabic, Hindi, Italian, Russian, and Turkish, and the Mealie import screen labels itself in Japanese; names that are the same word everywhere (DEXA, Compact) stay as they are.
-- **Settings search works in your language** (Android): the keyword list behind every settings row is now translated in all 17 languages, so typing "Gewicht", "вес" or "体重" opens the row instead of matching only its translated title. Units and product names (kcal, BMI, WebDAV, Health Connect) stay as they are in every language, so those searches behave the same everywhere.
+## [5.10.0] - 2026-10-21
 
 ### Added
 
@@ -21,9 +16,16 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Auto goals re-clamp when your body changes** (Android and PWA): when a new weight or body-fat reading moves your BMR and pushes an automatic calorie target outside the safe range, the app pulls it back in and rebalances, day-type plans included. Manual targets and locked calories are untouched. The safe-range ceiling now scales with your TDEE instead of a flat 6,000 kcal.
 - **The scale trend can outweigh the formula** (Android): weight-trend recalculations no longer withhold the trend-implied maintenance calories when the trend and the population formula disagree. The number shows with a note to check logged intake for missing days first. Only a below-floor result or thin logs still withhold it.
 - **Protein and fat goals respect valid body fat** (Android and PWA): with a body-fat reading between 3 and 65%, the standard protein goal caps at 2.2 g per kg of lean mass (2.4 while losing) and the fat goal stays at least 20% of calories. Readings outside that window (a 28.0 percent-vs-fraction typo) fall back to the Mifflin-St Jeor formula everywhere.
+- **Compact food-log rows handle four macros better** (Android): the macro chips are denser, and with four or more selected they take their own line so the serving line keeps its space.
+- **Snackbars follow the theme and swipe away** (Android): the undo and confirmation snackbars on Home and Goals use theme colors and can be dismissed with a swipe.
 
 ### Fixed
 
+- **All 17 languages now cover the newer screens** (Android): Arabic, Azerbaijani, German, Spanish, French, Hindi, Italian, Japanese, Korean, Dutch, Polish, Brazilian Portuguese, Romanian, Russian, Turkish, Ukrainian, and Simplified Chinese caught up on everything added since the last translation pass: week planning, Mealie import, the body-fat method picker, fill-missing, the reworked home screen, and the rest. Percent signs no longer show up doubled (±10%% becomes ±10%). The tape-method source label now reads in the app language in Arabic, Hindi, Italian, Russian, and Turkish, and the Mealie import screen labels itself in Japanese; names that are the same word everywhere (DEXA, Compact) stay as they are.
+- **Settings search works in your language** (Android): the keyword list behind every settings row is now translated in all 17 languages, so typing "Gewicht", "вес" or "体重" opens the row instead of matching only its translated title. Units and product names (kcal, BMI, WebDAV, Health Connect) stay as they are in every language, so those searches behave the same everywhere.
+- **Your app language applies on older Android too** (Android): on Android 8 through 12, notification strings, the daily summary, and the home-screen widget now follow the app language instead of the phone language, and the plural forms for Arabic, Russian, Ukrainian, Polish, and Romanian are complete on Android and web.
+- **A malformed app-language list no longer crashes the app** (Android): a cached language list with repeated or empty entries could crash Android's locale parser; the app now parses the list itself and falls back to the system language when nothing usable remains.
+- **The progress-bar gauge shades active burn like the arc** (Android): the progress-bar calorie layout now uses the same shading as the ring and arc layouts, so the active-burn part reads the same in every layout.
 - **Fill-missing completes on entries with true zeros** (Android and PWA): a drink that genuinely has no fat and no micronutrients kept answering "no new values returned", and Fill missing could be re-run forever with no effect. An explicit zero or none answer from the AI now counts as an answer, so the row fills once and then leaves the fill-missing list for good.
 - **Fill-missing feedback lines up with the rest of the app** (Android): the undo snackbar after applying fills now stays a few seconds like every other confirmation instead of lingering for about ten, and the per-row result line in the gaps sheet reads as feedback rather than a muted caption.
 - **Body-fat readings stay in range** (Android and PWA): the body-fat wheel spans 3 to 65%, saves clamp readings into that window, non-finite entries are refused, and imports drop out-of-range rows. A single jump larger than your method's accuracy no longer moves your profile until a second reading confirms it. Readings you set yourself still apply right away, and a past-dated entry cannot pull the profile backward. Tape-derived entries carry the date of the measurement they came from.

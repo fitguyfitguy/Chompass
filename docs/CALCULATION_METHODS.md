@@ -70,7 +70,7 @@ Other: same as women (no +5 sex term)
 
 ### BMR-KM: Katch-McArdle
 
-**When:** `bodyFatPercentage` is set (fraction 0–1), `useBodyFatInBMR` is not false (default on), and the reading is fresh. "Fresh" means `bodyFatUpdatedAt` is null (legacy reading — existing users' numbers never change silently on update) or at most `BODY_FAT_RECENCY_DAYS` = 90 days old. A dated reading older than 90 days silently falls back to Mifflin-St Jeor; the profile is re-stamped whenever a new reading is saved (Settings sheet, onboarding, body-fat entry sync).
+**When:** `bodyFatPercentage` is set (fraction 0–1), `useBodyFatInBMR` is not false (default on), and the reading is fresh. "Fresh" means `bodyFatUpdatedAt` is null (legacy reading — existing users' numbers never change silently on update) or at most `UserProfile.bodyFatRecencyDays` old — method-aware since the body-fat method picker: DEXA 365 days, 8-electrode BIA, 4-electrode BIA, and tape 90 days, and a profile with no method (legacy) 90 days. A dated reading older than that silently falls back to Mifflin-St Jeor; the profile is re-stamped whenever a new reading is saved (Settings sheet, onboarding, body-fat entry sync).
 
 ```
 LBM(kg) = weight(kg) × (1 − bodyFat%)
@@ -78,6 +78,22 @@ BMR = 370 + 21.6 × LBM(kg)
 ```
 
 **Call sites:** Same as BMR-MSJ. `goalBodyFatPercentage` is display-only and **not** used here.
+
+### BODY-FAT-TRUST: body-fat method trust knobs
+
+Settings → Body Fat picks how readings are measured (`BodyFatMethod`); the method drives three knobs. PWA mirror: `web/app/src/lib/chompass-core/formulas.js`.
+
+| Method          | Accuracy (± pp) | Repeatability (± pp) | Recency (days) |
+| --------------- | --------------- | -------------------- | -------------- |
+| DEXA            | 1.5             | 1.0                  | 365            |
+| 8-electrode BIA | 3.2             | 2.0                  | 90             |
+| 4-electrode BIA | 5.0             | 3.0                  | 90             |
+| Tape            | 3.5             | 2.5                  | 90             |
+
+- **Trust width** (`UserProfile.effectiveBodyFatAccuracyPoints`): the user's accuracy override, else the method's accuracy, else the historical ±5 pp. The override widens the day-to-day guard too (`effectiveBodyFatRepeatabilityPoints`: override, else repeatability, else ±5 pp) — someone asserting a wider band asserts both.
+- **Spike guard** (profile sync): a single jump wider than the repeatability figure waits for a confirming reading before the profile moves (`BodyFatRepository.representativeBodyFat`).
+- **AI prompt:** the accuracy figure (override or method) is stated to the model, e.g. "(DEXA scan, trusted to ±1.5 pp)" (`FoodAnalysisService`), so it weighs the number correctly.
+- **Recalc invalidation:** `bodyFatMethod` and `bodyFatAccuracyPoints` join `UserProfile.goalInputSignature`, so changing the method marks stored goals stale.
 
 ### TDEE: Activity multiplier
 
@@ -159,11 +175,13 @@ Applied to **formula** `dailyCalories` (and later Recalculate / Adaptive auto wr
 
 ```
 floor    = max(round(BMR), 1,200)
-ceiling  = max(floor, 6,000, round(TDEE × 1.5))
+ceiling  = max(floor, min(6,000, round(TDEE × 1.5)))
 dailyCalories = clamp(rawDailyCalories, floor, ceiling)
 ```
 
-Stops Lose + Fast from persisting TDEE − 1,100 when that is below BMR (or below 1,200 when BMR is lower). Pace label is unchanged; the effective deficit shrinks to the floor.
+The ceiling scales with TDEE instead of sitting at a flat 6,000 kcal: 1.5×TDEE, bounded by the 6,000 parser ceiling, so only a TDEE above 4,000 kcal reaches 6,000 (`CalorieSafety.ceilingKcal`). Stops Lose + Fast from persisting TDEE − 1,100 when that is below BMR (or below 1,200 when BMR is lower). Pace label is unchanged; the effective deficit shrinks to the floor.
+
+**Re-clamp on body changes:** when a weight or body-fat sync moves BMR/TDEE, auto-sourced goals (FORMULA / AI / ADAPTIVE) are pulled back into the envelope and rebalanced (`UserProfile.reclampedAutoGoal()`, called from the weight and body-fat sync paths). MANUAL / UNKNOWN targets and locked calorie totals are untouched; enabled day-type profiles re-clamp via `MacroDayProfile.shiftedBy`, so a lifted floor lifts every training/rest day too. No-op while the target sits inside the envelope and its macros add up (±30 kcal).
 
 ### MACRO-P: Protein
 
@@ -173,6 +191,8 @@ base g/kg by activity: 0.8, 1.2, 1.6, 1.8, 2.0, 2.2
 Standard protein is g/kg of **total** weight (the lean-mass fraction algebra cancels). Keto floor `1.6 g/kg` uses lean mass when BF% is set.
 ```
 
+**Lean-mass cap:** with a valid body-fat reading (3–65%), the standard goal is capped at 2.2 g/kg of lean mass (2.4 while losing), so high-BF profiles do not chase total-weight rates (`UserProfile.standardProteinGoal`).
+
 **User pin modes** (`ProteinTargetMode`): grams/day (`customProtein`), or g/kg of total weight / lean mass (`proteinGramsPerKg`). Rate modes recompute g/day when weight or BF% changes.
 
 **Keto floor:** `max(standard, 1.6 × proteinBasisWeight, 60 g)`.
@@ -181,7 +201,7 @@ Standard protein is g/kg of **total** weight (the lean-mass fraction algebra can
 
 ### MACRO-F: Fat
 
-**Standard:** `0.6 × weight(kg)` g/day.
+**Standard:** `max(0.6 × weight(kg), 20% of calories / 9)` g/day — the fat share of the target never drops below 20% (`UserProfile.standardFatGoal`).
 
 **Keto:** Fill remaining calories after carbs and protein; floor `max(standard, 45 g)`.
 
@@ -260,7 +280,7 @@ If currentCalories < safetyFloor, raise to the floor immediately (even without t
 | | SAFE (on-device models) | SMART (cloud models) |
 |---|---|---|
 | Observed data in prompt | Aggregates only (avg intake, Theil-Sen slope, count/span) | Raw weigh-in series (date + kg, capped ~20) + last-14-days intake table + aggregates |
-| App's implied-maintenance line | Withheld when thin / below BMR / disagreeing | Always shown, labeled "the app's rough estimate — verify against the raw series" |
+| App's implied-maintenance line | Withheld when thin or below the floor; when the trends disagree it shows with a check-logged-intake note | Always shown, labeled "the app's rough estimate — verify against the raw series" |
 | Reliability judgment | App-side confidence gates (below) | Model-side, with explicit noise guidance in the prompt |
 | Enforcement after parse | Deterministic snap to formula/measured anchor when data not trustworthy; pace-miss snap | None beyond the CAL-SAFE clamp + parser ranges |
 | Result report | tier/provider/model recorded; fallback (incl. which provider failed) recorded when one fired | same |
@@ -275,13 +295,13 @@ A cloud-primary → on-device-fallback call still hands the on-device leg the SA
 usable      = weigh-ins >= 4 AND span >= 14 days AND logged food days >= 4
 medium      = usable AND (weigh-ins < 6 OR span < 28 days OR food days < 10)
 belowFloor  = implied maintenance < max(round(BMR), 1,200)
-trustEmpir  = usable AND NOT belowFloor AND NOT trendsDisagree
+trustEmpir  = usable AND NOT belowFloor
 ```
 
 - **Thin data** (not usable): the implied-maintenance number is withheld from the prompt and the model is told to anchor on the formula TDEE (or measured maintenance when Energy Burn is on).
 - **Medium confidence:** implied maintenance is shown with a rule that a >15% deviation from formula TDEE goes back to the formula.
 - **Below the CAL-SAFE floor:** the implied number is withheld entirely (it was dragging goals down to ~BMR).
-- **Disagreeing trends** (`|predicted − observed| > 0.3` kg/week): implied maintenance is not used.
+- **Disagreeing trends** (`|predicted − observed| > 0.3` kg/week): implied maintenance is shown with a note to check logged intake for missing days first; the scale trend is individual data and leads unless it sits below the floor. `trendsDisagree` stays a display/diagnostic flag (`GoalRecalcReport.trustEmpirical`).
 
 **Deterministic enforcement** (SAFE tier only — the AI prompt is advisory on small on-device models; SMART gets no snap):
 
@@ -350,6 +370,15 @@ activeBurnTypical = typical(viewed day's type) ?: 14-day blended measured ?: PAL
 ```
 
 Derived only (not stored on `MacroDayProfile`, not synced). Adaptive's weekly delta stays uniform. Goldens: `testdata/parity/day-type-active-expected.json`.
+
+### GOAL-SUM: stored macros always match the calorie target
+
+Every write path that persists a calorie target rebalances the stored macros to that total through `MacroBalance.rebalance` (PWA mirror: `web/app/src/lib/chompass-core/macro-balance.js`, fat floor in `formulas.js`): the Settings calorie edit (`UserProfile.applyCaloriesEdit`), AI goal snapshots (`applyingAiGoals`), goal phases, and day-type / phase rescales.
+
+- **Standard:** unlocked fat is raised to its floor, `max(0.6 g/kg, 20% of the target)` (`UserProfile.macroBalanceFatFloor`); protein and fat keep their grams and carbs absorb the remainder. When the target is too small, fat yields first but never below the floor; protein only shrinks when the floor would otherwise break.
+- **Keto:** unlocked fat fills the target, floored at `max(0.6 g/kg, 45 g)` (the 20% leg would push keto carbs up, not fat); when the floor leaves the target over, protein yields, then carbs.
+- **Locked macros stay put** (at most two can lock, so one stays free to balance). When the locked set cannot fit the target, the locked grams are stored unchanged and the UI shows the overshoot.
+- Auto-sourced goals that drift out of the CAL-SAFE envelope after a weight / body-fat change come back through the same rebalance (`UserProfile.reclampedAutoGoal`, see CAL-SAFE).
 
 ### WATER-DYN-A: Dynamic gross water goal
 
@@ -447,7 +476,7 @@ Rejected if result not finite or ∉ [2, 65]% (same guard as Navy). Gender OTHER
 | Adaptive ±150 kcal, 25 min step  | **Keep**                        | Prevents oscillation; conservative weekly nudge                           |
 | Safety floor max(BMR, 1200)      | **Keep / extend to all auto writes** | Formula `dailyCalories`, Recalculate, and Adaptive; never auto-set a VLCD (800). Manual pin still allowed with confirm. |
 | Linear regression on scale data  | **Replaced with Theil–Sen**     | Robust median-slope; resists outlier weigh-ins                            |
-| AI goal recalculation            | **Keep, segregated**            | Non-deterministic; empirical (hit-and-trial) maintenance gated by log density (AI-RECALC below); thin/under-floor/disagreeing data falls back deterministically to formula or measured maintenance |
+| AI goal recalculation            | **Keep, segregated**            | Non-deterministic; empirical (hit-and-trial) maintenance gated by log density (AI-RECALC below); thin/under-floor data falls back deterministically to formula or measured maintenance; a formula/scale disagreement is surfaced with a note instead of withholding (AI-RECALC below) |
 | US Navy BF%                      | **Keep**                        | Standard field estimate; tape measurement error propagates                |
 | RFM BF%                          | **Keep (display)**              | Waist + height when neck is missing; optional confirm to log as BF%       |
 | Water base 35 ml/kg              | **Keep**                        | Midpoint of 30–40 ml/kg clinical range; between EFSA (2.0/2.5 L) and IOM (2.7/3.7 L) totals |
