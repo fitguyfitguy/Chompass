@@ -11,11 +11,11 @@ import { gapReport } from "./chompass-core/entry-gaps.js";
 
 /**
  * Product gate for AI fill-missing (Home banner, review sheet, entry-form
- * pill, diary ⋮ item, Settings AI entry point). On for the 5.10.0-beta.1
- * test cut, mirroring Android FillGapsFeature.ENABLED; stable stays gated.
- * Do not delete the implementation.
+ * pill, diary ⋮ item, Settings AI entry point). Disabled again for the
+ * 5.10.0 stable cut (2026-10-21); v5.10.0-beta.1 carries it on, mirroring
+ * Android FillGapsFeature.ENABLED. Do not delete the implementation.
  */
-export const FILL_GAPS_ENABLED = true;
+export const FILL_GAPS_ENABLED = false;
 
 const DISMISSED_KEY = "chompass-fill-gaps-banner-dismissed";
 const LAST_SHOWN_KEY = "chompass-fill-gaps-banner-last-shown";
