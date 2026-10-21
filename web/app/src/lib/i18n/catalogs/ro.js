@@ -291,6 +291,8 @@ export const ro = Object.freeze({
   "entry.ai.missing_line": "Lipsesc: {labels}",
   "gaps.apply": "Aplică",
   "gaps.apply_all": "Aplică tot",
+  "gaps.focus_all": "Toate lipsurile",
+  "gaps.focus_aria": "Alege câmpurile de completat",
   "gaps.no_values": "Nicio valoare nouă returnată",
   "gaps.show_diff": "Afișează modificările",
   "gaps.never_remind": "Nu-mi mai aminti",

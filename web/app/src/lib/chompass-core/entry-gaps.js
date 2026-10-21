@@ -13,6 +13,44 @@ import { MICRO_FIELDS } from "./diary-format.js";
 import { microsCompositionSignature } from "./micros-composition.js";
 
 /**
+ * Per-nutrient fill focus (Android GapGroup twin): which gap groups a fill
+ * run asks the AI for. The gaps view's per-row selector narrows a run to
+ * one group; the default (every group) keeps the full ask. Constituent rows
+ * carry all four macros, so the ingredient-row ask only fires when every
+ * macro group is focused.
+ * @typedef {"CALORIES"|"PROTEIN"|"CARBS"|"FAT"|"MICROS"} GapGroup
+ */
+export const GAP_GROUPS = /** @type {GapGroup[]} */ (["CALORIES", "PROTEIN", "CARBS", "FAT", "MICROS"]);
+
+/** The four entry-level macro groups (MICROS excluded) — the ingredient-row ask needs all of them. */
+export const MACRO_GAP_GROUPS = /** @type {GapGroup[]} */ (["CALORIES", "PROTEIN", "CARBS", "FAT"]);
+
+/** PWA gapReport macro keys → their focus group (Android GapMacroField↔GapGroup name mapping). */
+export const MACRO_KEY_GROUP = /** @type {Record<string, GapGroup>} */ ({
+  calories: "CALORIES",
+  proteinG: "PROTEIN",
+  carbsG: "CARBS",
+  fatG: "FAT",
+});
+
+/**
+ * Groups a gap report still misses: one per missing macro, MICROS iff any
+ * micro is missing (Android EntryGapReport.missingGroups twin).
+ * @param {EntryGapReport} report
+ * @returns {GapGroup[]}
+ */
+export function missingGroups(report) {
+  /** @type {GapGroup[]} */
+  const groups = [];
+  for (const macro of report.missingMacros) {
+    const group = MACRO_KEY_GROUP[macro];
+    if (group && !groups.includes(group)) groups.push(group);
+  }
+  if (report.missingMicros.length > 0) groups.push("MICROS");
+  return groups;
+}
+
+/**
  * @typedef {Object} EntryGapReport
  * @property {string[]} missingMacros   zero-valued entry macros, in "calories" | "proteinG" | "carbsG" | "fatG" order
  * @property {string[]} missingMicros   null/undefined micro model keys, in MICRO_FIELDS order
@@ -135,9 +173,13 @@ export function gapReport(entry) {
  *
  * @param {import("./models.js").FoodEntry} entry
  * @param {Record<string, any>} estimate analysis-shaped estimate (analyzeFoodEntry / fillFoodEntry return)
+ * @param {Object} [options]
+ * @param {boolean} [options.constituentsAsked=true] guards the one-attempt
+ *   ingredient-row stamp: a focused run that never asked for the rows must
+ *   not mark them "attempted". Defaults to true, the full-ask behavior.
  * @returns {import("./models.js").FoodEntry}
  */
-export function fillMissingFrom(entry, estimate) {
+export function fillMissingFrom(entry, estimate, { constituentsAsked = true } = {}) {
   const entryGrams = entry.quantityG ?? null;
   const estimateGrams = estimate.quantityG ?? null;
   const gramsFactor =
@@ -280,15 +322,19 @@ export function fillMissingFrom(entry, estimate) {
   // (or constituents were off), so keeping them scannable would re-offer the
   // same row forever. Name-keyed (matching convention); a later manual
   // rename re-opens the scan. Mirrors gapAnsweredConstituentNames (Android).
+  // Fires only when the run actually asked for the rows: a focused fill must
+  // not stamp unasked rows as attempted.
   /** @type {Set<string>} */
   const answeredConstituents = new Set(entry.gapAnsweredConstituentNames ?? []);
-  storedConstituents.forEach((row, storedIndex) => {
-    const name = row.name.trim().toLowerCase();
-    if (!filledByStoredIndex.has(storedIndex) && isFillableRow(row) && !answeredConstituents.has(name)) {
-      answeredConstituents.add(name);
-      changed = true;
-    }
-  });
+  if (constituentsAsked) {
+    storedConstituents.forEach((row, storedIndex) => {
+      const name = row.name.trim().toLowerCase();
+      if (!filledByStoredIndex.has(storedIndex) && isFillableRow(row) && !answeredConstituents.has(name)) {
+        answeredConstituents.add(name);
+        changed = true;
+      }
+    });
+  }
   const filledConstituents = storedConstituents.map(
     (row, storedIndex) => filledByStoredIndex.get(storedIndex) ?? row,
   );

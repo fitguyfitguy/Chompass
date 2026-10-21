@@ -2147,6 +2147,8 @@ macro riequilibrate al nuovo totale calorico</string>
     <string name="fill_gaps_adds_line">Aggiunge: %1$s</string>
     <string name="fill_gaps_no_values">Nessun nuovo valore restituito</string>
     <string name="fill_gaps_run_all">Compila tutto</string>
+    <string name="fill_gaps_focus_all">Tutti i mancanti</string>
+    <string name="fill_gaps_focus_pick">Scegli i campi da completare</string>
     <string name="fill_gaps_apply">Applica</string>
     <plurals name="fill_gaps_confirm_remote">
         <item quantity="one">Eseguire 1 richiesta AI?</item>

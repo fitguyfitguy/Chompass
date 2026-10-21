@@ -12,7 +12,7 @@ import {
   reconcileConstituents,
 } from "../chompass-core/constituents.js";
 import { microsCompositionSignature } from "../chompass-core/micros-composition.js";
-import { gapReport } from "../chompass-core/entry-gaps.js";
+import { gapReport, GAP_GROUPS, MACRO_GAP_GROUPS, MACRO_KEY_GROUP } from "../chompass-core/entry-gaps.js";
 import { isSmallCloudModel } from "../chompass-core/weak-model.js";
 import { FoodPartialJsonAssembler } from "./partial-json.js";
 import { t } from "../i18n/index.js";
@@ -290,6 +290,8 @@ async function runAnalyze(providerId, config, text, productContext, imageList, a
  * @param {(phase: string) => void} [args.onPhase]
  * @param {(partial: import('./partial-json.js').PartialFoodEstimate) => void} [args.onPartial]
  * @param {import('../db.js').AppPrefs} [args.prefsOverride] test hook
+ * @param {import('../chompass-core/entry-gaps.js').GapGroup[]} [args.focus] per-nutrient
+ *   fill focus (WP6): narrows the ask to these gap groups; omitted = every group.
  */
 export async function fillFoodEntry({
   providerId,
@@ -299,6 +301,7 @@ export async function fillFoodEntry({
   onPhase,
   onPartial,
   prefsOverride,
+  focus,
 }) {
   const appPrefs = prefsOverride ?? (await prefs.load());
   // Same master switch as analyzeFoodEntry: off = no data to any provider.
@@ -306,7 +309,7 @@ export async function fillFoodEntry({
   assertCleartextAllowed(config.baseUrl, appPrefs.allowInsecureHttp === true);
   return estimateWithFallback(
     providerId, config, entry, appPrefs, signal, onPhase, onPartial,
-    fillEntryUserText(entry, mealConstituentsEnabled(appPrefs)),
+    fillEntryUserText(entry, mealConstituentsEnabled(appPrefs), focus),
   );
 }
 
@@ -366,11 +369,24 @@ async function estimateWithFallback(providerId, config, entry, appPrefs, signal,
  * @param {boolean} constituentsAllowed whether the reply schema carries
  *   ingredient rows (meal constituents enabled) — an all-zero-row ask would
  *   be unanswerable otherwise
+ * @param {import('../chompass-core/entry-gaps.js').GapGroup[]} [focus]
+ *   per-nutrient fill focus (WP6): macro keys only for focused groups, micro
+ *   keys only when MICROS is focused, and the ingredient-row ask only when
+ *   every macro group is focused (constituent rows carry all four macros).
+ *   Omitted = every group, the full ask.
  */
-function fillEntryMissingKeys(entry, constituentsAllowed) {
+function fillEntryMissingKeys(entry, constituentsAllowed, focus) {
   const gaps = gapReport(entry);
-  const keys = [...gaps.missingMacros, ...gaps.missingMicros];
-  if (constituentsAllowed && gaps.zeroMacroConstituents.length > 0) {
+  const groups = focus ?? GAP_GROUPS;
+  const keys = [
+    ...gaps.missingMacros.filter((key) => groups.includes(MACRO_KEY_GROUP[key])),
+    ...(groups.includes("MICROS") ? gaps.missingMicros : []),
+  ];
+  if (
+    constituentsAllowed &&
+    MACRO_GAP_GROUPS.every((group) => groups.includes(group)) &&
+    gaps.zeroMacroConstituents.length > 0
+  ) {
     keys.push("macros for each logged ingredient row");
   }
   return keys;
@@ -443,9 +459,11 @@ function scrubDelimiters(raw) {
  * @param {import('../chompass-core/models.js').FoodEntry} entry
  * @param {boolean} constituentsAllowed whether the reply schema carries
  *   ingredient rows
+ * @param {import('../chompass-core/entry-gaps.js').GapGroup[]} [focus]
+ *   per-nutrient fill focus (WP6); omitted = every group
  */
-function fillEntryUserText(entry, constituentsAllowed) {
-  const missing = fillEntryMissingKeys(entry, constituentsAllowed);
+function fillEntryUserText(entry, constituentsAllowed, focus) {
+  const missing = fillEntryMissingKeys(entry, constituentsAllowed, focus);
   /** @type {string[]} */
   const lines = [
     "Fill in the missing nutrition values for an already-logged food entry.",

@@ -290,6 +290,8 @@ export const nl = Object.freeze({
   "entry.ai.missing_line": "Ontbreekt: {labels}",
   "gaps.apply": "Toepassen",
   "gaps.apply_all": "Alles toepassen",
+  "gaps.focus_all": "Alles wat ontbreekt",
+  "gaps.focus_aria": "Te aanvullen velden kiezen",
   "gaps.no_values": "Geen nieuwe waarden geretourneerd",
   "gaps.show_diff": "Wijzigingen tonen",
   "gaps.never_remind": "Niet meer herinneren",

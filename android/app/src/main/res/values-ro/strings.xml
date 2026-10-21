@@ -2153,6 +2153,8 @@ macro-urile reechilibrate la noul total caloric</string>
     <string name="fill_gaps_adds_line">Adaugă: %1$s</string>
     <string name="fill_gaps_no_values">Nicio valoare nouă returnată</string>
     <string name="fill_gaps_run_all">Completează tot</string>
+    <string name="fill_gaps_focus_all">Toate lipsurile</string>
+    <string name="fill_gaps_focus_pick">Alege câmpurile de completat</string>
     <string name="fill_gaps_apply">Aplică</string>
     <plurals name="fill_gaps_confirm_remote">
         <item quantity="one">Rulez 1 cerere AI?</item>

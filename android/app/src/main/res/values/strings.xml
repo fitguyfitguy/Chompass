@@ -2768,6 +2768,8 @@
     <string name="fill_gaps_adds_line">Adds: %1$s</string>
     <string name="fill_gaps_no_values">No new values returned</string>
     <string name="fill_gaps_run_all">Fill all</string>
+    <string name="fill_gaps_focus_all">All missing</string>
+    <string name="fill_gaps_focus_pick">Choose fields to fill</string>
     <string name="fill_gaps_apply">Apply</string>
     <plurals name="fill_gaps_confirm_remote">
         <item quantity="one">Run 1 AI request?</item>

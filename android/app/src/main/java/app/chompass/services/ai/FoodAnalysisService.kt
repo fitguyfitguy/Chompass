@@ -17,6 +17,7 @@ import app.chompass.models.CalorieSafety
 import app.chompass.models.DietMode
 import app.chompass.models.FoodEntry
 import app.chompass.models.GapMacroField
+import app.chompass.models.GapGroup
 import app.chompass.models.MicronutrientField
 import app.chompass.models.MicronutrientValues
 import app.chompass.models.gapReport
@@ -198,18 +199,28 @@ internal fun entryNutrientUnitsFor(kind: EntryConstituentPromptKind): String =
  * jsonKeys are listed only when the reply schema actually carries them —
  * MACROS (small cloud models) and LEAN (on-device) would leave those asks
  * unanswerable, and the model fills them with hallucinated zeros/nulls.
+ *
+ * [focus] (per-nutrient fill focus, WP6) narrows the ask: macro keys only
+ * for focused groups, micro keys only when MICROS is focused, and the
+ * ingredient-row ask only when every macro group is focused (constituent
+ * rows carry all four macros). The default — every group — keeps the full
+ * ask.
  */
-internal fun fillEntryMissingKeys(entry: FoodEntry, kind: EntryConstituentPromptKind): String {
+internal fun fillEntryMissingKeys(
+    entry: FoodEntry,
+    kind: EntryConstituentPromptKind,
+    focus: Set<GapGroup> = GapGroup.entries.toSet(),
+): String {
     val gaps = entry.gapReport()
     val schemaCarriesMicros = kind == EntryConstituentPromptKind.NONE || kind == EntryConstituentPromptKind.MICROS
     val schemaCarriesConstituents = kind == EntryConstituentPromptKind.MACROS || kind == EntryConstituentPromptKind.MICROS
     return buildList {
-        if (GapMacroField.CALORIES in gaps.missingMacros) add("calories")
-        if (GapMacroField.PROTEIN in gaps.missingMacros) add("protein")
-        if (GapMacroField.CARBS in gaps.missingMacros) add("carbs")
-        if (GapMacroField.FAT in gaps.missingMacros) add("fat")
-        if (schemaCarriesMicros) gaps.missingMicros.forEach { add(it.jsonKey) }
-        if (schemaCarriesConstituents && gaps.zeroMacroConstituents.isNotEmpty()) {
+        if (GapGroup.CALORIES in focus && GapMacroField.CALORIES in gaps.missingMacros) add("calories")
+        if (GapGroup.PROTEIN in focus && GapMacroField.PROTEIN in gaps.missingMacros) add("protein")
+        if (GapGroup.CARBS in focus && GapMacroField.CARBS in gaps.missingMacros) add("carbs")
+        if (GapGroup.FAT in focus && GapMacroField.FAT in gaps.missingMacros) add("fat")
+        if (schemaCarriesMicros && GapGroup.MICROS in focus) gaps.missingMicros.forEach { add(it.jsonKey) }
+        if (schemaCarriesConstituents && focus.containsAll(GapGroup.MACRO_GROUPS) && gaps.zeroMacroConstituents.isNotEmpty()) {
             add("macros for each logged ingredient row")
         }
     }.joinToString(", ")
@@ -219,9 +230,16 @@ internal fun fillEntryMissingKeys(entry: FoodEntry, kind: EntryConstituentPrompt
  * True when the fill reply schema carries constituents and the entry still
  * has unanswered all-zero ingredient rows — the prompt then asks for the
  * rows' macros and pins exact name reuse so the merge's name matching hits.
+ * The ask needs all four macro groups focused: constituent rows carry all
+ * four macros.
  */
-internal fun fillAsksConstituentMacros(entry: FoodEntry, kind: EntryConstituentPromptKind): Boolean =
+internal fun fillAsksConstituentMacros(
+    entry: FoodEntry,
+    kind: EntryConstituentPromptKind,
+    focus: Set<GapGroup> = GapGroup.entries.toSet(),
+): Boolean =
     (kind == EntryConstituentPromptKind.MACROS || kind == EntryConstituentPromptKind.MICROS) &&
+        focus.containsAll(GapGroup.MACRO_GROUPS) &&
         entry.gapReport().zeroMacroConstituents.isNotEmpty()
 
 /**
@@ -1243,16 +1261,18 @@ class FoodAnalysisService(
      * length-split retry here on purpose: [mergeSplitAnalyses] sums the
      * batches, which fabricates wrong totals on a fill. The parsed analysis
      * is returned as-is; no [finalizeAnalysis] either (its serving-unit
-     * fallback can fire an extra AI call a fill never needs).
+     * fallback can fire an extra AI call a fill never needs). [focus]
+     * (per-nutrient fill focus) narrows the ask to the given gap groups.
      */
     suspend fun fillEntry(
         entry: FoodEntry,
         onProgress: (FoodAnalysisProgress) -> Unit = {},
+        focus: Set<GapGroup> = GapGroup.entries.toSet(),
     ): FoodAnalysis = analyzeEntryReply(
         op = "fillEntry",
         imageBytesList = emptyList(),
         onProgress = onProgress,
-        rebuildPrompt = { _, _, kind -> fillEntryPrompt(entry, kind) },
+        rebuildPrompt = { _, _, kind -> fillEntryPrompt(entry, kind, focus) },
         postParse = { analysis, json ->
             adaptFillServingGrams(analysis, replyHasServingGrams(json), entry.servingSizeGrams)
         },
@@ -1317,7 +1337,11 @@ class FoodAnalysisService(
     }
 
     /** The fillEntry prompt: entry-schema block plus the logged entry inside the data tags. */
-    private fun fillEntryPrompt(entry: FoodEntry, kind: EntryConstituentPromptKind): String {
+    private fun fillEntryPrompt(
+        entry: FoodEntry,
+        kind: EntryConstituentPromptKind,
+        focus: Set<GapGroup> = GapGroup.entries.toSet(),
+    ): String {
         val schema = entryJsonSchemaFor(kind)
         val constituentsRule = entryConstituentsRuleFor(kind)
         return buildString {
@@ -1330,9 +1354,9 @@ class FoodAnalysisService(
             appendLine(ENTRY_EMOJI_NULL_RULE)
             appendLine()
             appendLine("Estimate only the missing fields listed below. Repeat every known value unchanged.")
-            val missing = fillEntryMissingKeys(entry, kind)
+            val missing = fillEntryMissingKeys(entry, kind, focus)
             if (missing.isNotEmpty()) appendLine("Missing fields to estimate: $missing")
-            if (fillAsksConstituentMacros(entry, kind)) {
+            if (fillAsksConstituentMacros(entry, kind, focus)) {
                 appendLine(
                     "Estimate calories, protein, carbs, and fat for each logged ingredient row, " +
                         "reusing each logged ingredient name exactly (same language as the logged rows) " +
@@ -1990,8 +2014,19 @@ class FoodAnalysisService(
             if (p is FoodAnalysisProgress.Partial) partialsEmitted = true
             streamProgress(p)
         }
+        // The watchdog covers the whole attempt chain (primary + fallback),
+        // so derive it from the LARGEST effective read timeout across both
+        // providers (AiHttp.effectiveReadTimeoutSeconds: cloud endpoints run
+        // the fixed cold-start budget, local ones the settings seconds) —
+        // the wall clock must never fire before a legit read gives up.
+        val chainReadTimeoutSeconds = maxOf(
+            AiHttp.effectiveReadTimeoutSeconds(primary, readTimeoutSeconds),
+            currentFallbackConfig(primary, primaryModel, cfg)
+                ?.let { AiHttp.effectiveReadTimeoutSeconds(it.provider, readTimeoutSeconds) }
+                ?: 0,
+        )
         val timeoutMs = watchdogSecondsOverride?.times(1000L)
-            ?: analysisWatchdogMillis(readTimeoutSeconds)
+            ?: analysisWatchdogMillis(chainReadTimeoutSeconds)
         return try {
             withTimeout(timeoutMs) {
                 try {

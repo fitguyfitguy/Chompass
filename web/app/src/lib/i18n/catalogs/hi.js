@@ -290,6 +290,8 @@ export const hi = Object.freeze({
   "entry.ai.missing_line": "अनुपलब्ध: {labels}",
   "gaps.apply": "लागू करें",
   "gaps.apply_all": "सभी लागू करें",
+  "gaps.focus_all": "सारे लापता मान",
+  "gaps.focus_aria": "भरने के लिए फ़ील्ड चुनें",
   "gaps.no_values": "कोई नया मान नहीं लौटाया गया",
   "gaps.show_diff": "बदलाव दिखाएँ",
   "gaps.never_remind": "मुझे दोबारा याद न दिलाएँ",
