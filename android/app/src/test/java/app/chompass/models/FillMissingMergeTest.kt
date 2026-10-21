@@ -355,4 +355,38 @@ class FillMissingMergeTest {
         assertEquals(scale(9.0), merged.fiber!!, 1e-9)
         assertEquals(300.0, merged.servingSizeGrams!!, 1e-9)
     }
+
+    @Test
+    fun constituentsUnasked_rowsNotStamped_stayScannable() {
+        // WP6 per-nutrient focus: a macro-only run never asked for the
+        // ingredient rows, so an unfilled row must NOT be stamped
+        // "attempted" — it stays scannable for a later full ask.
+        val entry = mealieEntry(
+            constituents = listOf(
+                FoodConstituent("chicken and rice", 0, 0.0, 0.0, 0.0, servingSizeGrams = 400.0),
+            ),
+        )
+        val merged = entry.fillMissingFrom(
+            analysis(calories = 540, protein = 42.0, carbs = 60.0),
+            constituentsAsked = false,
+        )
+
+        assertTrue(merged.gapAnsweredConstituentNames.isEmpty())
+        assertEquals(listOf("chicken and rice"), merged.gapReport().zeroMacroConstituents.map { it.name })
+        // Macros were asked and stay stamped as before.
+        assertTrue(GapMacroField.CALORIES.jsonKey in merged.gapAnsweredFields)
+    }
+
+    @Test
+    fun constituentsAskedDefault_stampsUnfilledRows() {
+        // The default (full ask) keeps the shipped fill-once semantics.
+        val entry = mealieEntry(
+            constituents = listOf(
+                FoodConstituent("chicken and rice", 0, 0.0, 0.0, 0.0, servingSizeGrams = 400.0),
+            ),
+        )
+        val merged = entry.fillMissingFrom(analysis(calories = 540))
+
+        assertEquals(setOf("chicken and rice"), merged.gapAnsweredConstituentNames)
+    }
 }

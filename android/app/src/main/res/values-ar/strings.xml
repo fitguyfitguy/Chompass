@@ -2174,6 +2174,8 @@
     <string name="fill_gaps_adds_line">يضيف: %1$s</string>
     <string name="fill_gaps_no_values">لم يتم إرجاع قيم جديدة</string>
     <string name="fill_gaps_run_all">ملء الكل</string>
+    <string name="fill_gaps_focus_all">كل الناقص</string>
+    <string name="fill_gaps_focus_pick">اختر الحقول المراد ملؤها</string>
     <string name="fill_gaps_apply">تطبيق</string>
     <plurals name="fill_gaps_confirm_remote">
         <item quantity="zero">تشغيل صفر من طلبات الذكاء الاصطناعي؟</item>

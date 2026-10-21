@@ -2145,6 +2145,8 @@
     <string name="fill_gaps_adds_line">追加: %1$s</string>
     <string name="fill_gaps_no_values">新しい値は返されませんでした</string>
     <string name="fill_gaps_run_all">すべて補完</string>
+    <string name="fill_gaps_focus_all">未入力をすべて</string>
+    <string name="fill_gaps_focus_pick">埋める項目を選択</string>
     <string name="fill_gaps_apply">適用</string>
     <plurals name="fill_gaps_confirm_remote">
         <item quantity="one">AIリクエストを1件実行しますか？</item>

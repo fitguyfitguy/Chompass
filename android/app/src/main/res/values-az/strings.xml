@@ -2147,6 +2147,8 @@ makrolar yeni kalori cəminə uyğun yenidən tarazlaşdırılır</string>
     <string name="fill_gaps_adds_line">Əlavə edir: %1$s</string>
     <string name="fill_gaps_no_values">Yeni dəyər qaytarılmadı</string>
     <string name="fill_gaps_run_all">Hamısını doldur</string>
+    <string name="fill_gaps_focus_all">Bütün əskiklər</string>
+    <string name="fill_gaps_focus_pick">Doldurulacaq sahələri seç</string>
     <string name="fill_gaps_apply">Tətbiq et</string>
     <plurals name="fill_gaps_confirm_remote">
         <item quantity="one">1 Süni İntellekt sorğusu icra edilsin?</item>
