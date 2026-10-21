@@ -168,6 +168,51 @@ class ProgressAdherenceTest {
     }
 
     @Test
+    fun journalNameMapRescuesPlanMissedProfileId() {
+        // Profile deleted from the plan: only the journal's write-time name
+        // snapshot can label the row (the reported UUID-id bug).
+        val missedId = "94f0267e-1a2b-3c4d-5e6f-0a1b2c3d4e5f"
+        val slots = slots(0 to 2100, 1 to 1900)
+        val goals = mapOf(
+            start to 2000,
+            start.plusDays(1) to 2000,
+        )
+        val dayTypeByDay = mapOf(
+            start.toString() to missedId,
+            start.plusDays(1).toString() to missedId,
+        )
+        val summary = ProgressAdherence.computeAdherence(
+            slots = slots,
+            goals = goals,
+            dayTypeByDay = dayTypeByDay,
+            dayTypeNameByDay = mapOf(
+                start.toString() to "Cut (old)",
+                start.plusDays(1).toString() to "Cut (old)",
+            ),
+            untrackedDays = emptySet(),
+            phases = emptyList(),
+            range = start..start.plusDays(1),
+            today = today,
+        )
+        val row = summary.byDayType.single()
+        assertEquals(missedId, row.profileId)
+        assertEquals("Cut (old)", row.profileName)
+
+        // No snapshot journaled → the name stays null and the UI falls back
+        // to the raw id.
+        val unnamed = ProgressAdherence.computeAdherence(
+            slots = slots,
+            goals = goals,
+            dayTypeByDay = dayTypeByDay,
+            untrackedDays = emptySet(),
+            phases = emptyList(),
+            range = start..start.plusDays(1),
+            today = today,
+        )
+        assertNull(unnamed.byDayType.single().profileName)
+    }
+
+    @Test
     fun phaseOverlapMathAndEmptyPhasesCarryThrough() {
         val slots = slots(0 to 1600, 1 to 1700, 2 to 2100, 3 to 1500)
         val goals = (0..3L).associate { start.plusDays(it) to 2000 }
