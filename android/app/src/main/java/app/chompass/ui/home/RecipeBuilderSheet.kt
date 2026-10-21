@@ -344,9 +344,12 @@ fun RecipeBuilderSheet(
     }
 
     if (showManualEntry) {
+        val useSystemDateTimePickers by container.prefs.useSystemDateTimePickers.collectAsState(initial = false)
         ManualEntryDialog(
             onDismiss = { showManualEntry = false },
-            onSave = { ingredientName, kcal, p, c, f, _, _, _, _, _, _ ->
+            useSystemDateTimePickers = useSystemDateTimePickers,
+            // Recipe ingredients ignore meal/time — the log stamps its own.
+            onSave = { ingredientName, kcal, p, c, f, _, _, _, _, _, _, _ ->
                 ingredients = ingredients + RecipeIngredient(
                     name = ingredientName,
                     baseCalories = kcal,
