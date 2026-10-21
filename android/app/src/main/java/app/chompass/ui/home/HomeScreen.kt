@@ -1574,18 +1574,21 @@ fun HomeScreen(
                 CurrentMealCatalog.value,
                 ui.logTimeOverride ?: LocalTime.now(),
             ),
+            initialTime = ui.logTimeOverride ?: LocalTime.now(),
+            useSystemDateTimePickers = useSystemDateTimePickers,
             mealTimesEnabled = ui.mealTimesEnabled,
             onDismiss = {
                 showManual = false
                 returnToAddFoodGrid()
             },
-            onSave = { name, kcal, p, c, f, micros, meal, servingGrams, unitOptions, selUnit, selQty ->
+            onSave = { name, kcal, p, c, f, micros, meal, servingGrams, unitOptions, selUnit, selQty, logTime ->
                 if (!ui.saving) {
                     showManual = false
                     addFoodFlowActive = false
                     vm.saveManualEntry(
                         name, kcal, p, c, f, micros, meal,
                         servingGrams, unitOptions, selUnit, selQty,
+                        logTime,
                     )
                 }
             }

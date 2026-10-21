@@ -145,7 +145,10 @@ internal fun SheetReviewToolbar(
         if (secondaryText != null && secondaryClick != null) {
             Spacer(Modifier.width(itemGap))
             TextButton(
-                onClick = secondaryClick,
+                onClick = {
+                    MagnitudeDrafts.commitAll()
+                    secondaryClick()
+                },
                 modifier = Modifier.weight(1f, fill = false),
                 contentPadding = buttonPadding,
             ) {
@@ -155,7 +158,10 @@ internal fun SheetReviewToolbar(
         if (primaryText != null && primaryClick != null) {
             Spacer(Modifier.width(itemGap))
             Button(
-                onClick = primaryClick,
+                onClick = {
+                    MagnitudeDrafts.commitAll()
+                    primaryClick()
+                },
                 enabled = primaryEnabled,
                 contentPadding = buttonPadding,
             ) {
