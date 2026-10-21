@@ -2,6 +2,7 @@ package app.chompass.services.ai
 
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
+import app.chompass.models.GapGroup
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -81,6 +82,52 @@ class FillEntryPromptTest {
             )
             assertFalse(fillAsksConstituentMacros(entry, kind))
         }
+    }
+
+    @Test
+    fun missingKeys_focusNarrowsToFocusedGroups() {
+        // gappedEntry: calories/protein/carbs missing, fat answered (12.5),
+        // every micro field null.
+        assertEquals(
+            "protein",
+            fillEntryMissingKeys(gappedEntry(), EntryConstituentPromptKind.NONE, focus = setOf(GapGroup.PROTEIN)),
+        )
+        // Micro keys flow only while MICROS is focused.
+        val microsOnly = fillEntryMissingKeys(gappedEntry(), EntryConstituentPromptKind.NONE, focus = setOf(GapGroup.MICROS))
+        assertTrue("micro ask missing: $microsOnly", microsOnly.contains("fiber"))
+        assertFalse("macro ask leaked into MICROS focus: $microsOnly", microsOnly.contains("calories"))
+        // Unfocused missing macros drop out of the stable-order list.
+        val caloriesAndCarbs =
+            fillEntryMissingKeys(gappedEntry(), EntryConstituentPromptKind.NONE, focus = setOf(GapGroup.CALORIES, GapGroup.CARBS))
+        assertEquals("calories, carbs", caloriesAndCarbs)
+    }
+
+    @Test
+    fun constituentAsk_onlyWhenAllMacroGroupsFocused() {
+        // The cocktail shape: macros answered, the all-zero rows are the only
+        // macro-level gap. A focus missing even one macro group must not ask
+        // for the rows (each row carries all four macros).
+        val entry = FoodEntry(
+            name = "Whiskey Sour",
+            calories = 160,
+            protein = 0.1,
+            carbs = 14.5,
+            fat = 0.0,
+            source = FoodSource.MANUAL,
+            gapAnsweredFields = setOf("fat"),
+            constituents = listOf(
+                app.chompass.models.FoodConstituent("Whiskey", 0, 0.0, 0.0, 0.0, servingSizeGrams = 40.0),
+            ),
+        )
+
+        assertFalse(
+            fillAsksConstituentMacros(entry, EntryConstituentPromptKind.MACROS, focus = setOf(GapGroup.PROTEIN)),
+        )
+        val narrowed = fillEntryMissingKeys(entry, EntryConstituentPromptKind.MACROS, focus = setOf(GapGroup.PROTEIN))
+        assertFalse("row ask leaked into narrow focus: $narrowed", narrowed.contains("macros for each logged ingredient row"))
+        assertTrue(
+            fillAsksConstituentMacros(entry, EntryConstituentPromptKind.MACROS, focus = GapGroup.MACRO_GROUPS),
+        )
     }
 
     @Test

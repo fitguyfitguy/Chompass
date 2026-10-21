@@ -53,6 +53,7 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.models.AIProvider
 import app.chompass.models.FoodEntry
+import app.chompass.models.GapGroup
 import app.chompass.models.GapMacroField
 import app.chompass.models.LocaleFormat
 import app.chompass.models.MacroValueFormatter
@@ -177,7 +178,7 @@ fun FillGapsSheet(
                                 item = item,
                                 engine = engine,
                                 cascadeChecks = cascadeChecks,
-                                onRun = { scope.launch { engine.runOne(item) } },
+                                onRun = { focus -> scope.launch { engine.runOne(item.copy(focus = focus)) } },
                                 expanded = expanded,
                                 onToggleExpand = { expanded = !expanded },
                             )
@@ -262,7 +263,7 @@ private fun GapRow(
     item: FillQueueItem,
     engine: app.chompass.services.FillGapsEngine,
     cascadeChecks: MutableMap<UUID, Boolean>,
-    onRun: () -> Unit,
+    onRun: (Set<GapGroup>) -> Unit,
     expanded: Boolean,
     onToggleExpand: () -> Unit,
 ) {
@@ -273,6 +274,9 @@ private fun GapRow(
     } else {
         emptyList()
     }
+    // Per-nutrient fill focus (WP6): defaults to the full ask; the dropdown
+    // next to the run button narrows the run to one missing group.
+    var rowFocus by remember(item.target.entry.id) { mutableStateOf(GapGroup.entries.toSet()) }
     GapRowSurface(onClick = if (diffRows.isEmpty()) null else onToggleExpand) {
         Column(
             Modifier
@@ -298,12 +302,52 @@ private fun GapRow(
             }
         }
         when (item.status) {
-            FillStatus.PENDING, FillStatus.FAILED -> IconButton(onClick = onRun, modifier = Modifier.size(40.dp)) {
-                Icon(
-                    Icons.Filled.PlayArrow,
-                    contentDescription = stringResource(R.string.analysis_queue_run_now),
-                    tint = AppColors.Calorie,
-                )
+            FillStatus.PENDING, FillStatus.FAILED -> {
+                var focusMenu by remember(item.target.entry.id) { mutableStateOf(false) }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = { onRun(rowFocus) }, modifier = Modifier.size(40.dp)) {
+                        Icon(
+                            Icons.Filled.PlayArrow,
+                            contentDescription = stringResource(R.string.analysis_queue_run_now),
+                            tint = AppColors.Calorie,
+                        )
+                    }
+                    Box {
+                        IconButton(onClick = { focusMenu = true }, modifier = Modifier.size(28.dp)) {
+                            Icon(
+                                Icons.Filled.KeyboardArrowDown,
+                                contentDescription = stringResource(R.string.fill_gaps_focus_pick),
+                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                modifier = Modifier.size(18.dp),
+                            )
+                        }
+                        SheetGlassDropdownMenu(
+                            expanded = focusMenu,
+                            onDismissRequest = { focusMenu = false },
+                            menuWidth = 200.dp,
+                        ) {
+                            val allGroups = GapGroup.entries.toSet()
+                            SheetGlassDropdownMenuItem(
+                                label = stringResource(R.string.fill_gaps_focus_all),
+                                selected = rowFocus == allGroups,
+                                onClick = {
+                                    rowFocus = allGroups
+                                    focusMenu = false
+                                },
+                            )
+                            for (group in item.target.entry.gapReport().missingGroups()) {
+                                SheetGlassDropdownMenuItem(
+                                    label = focusLabel(group),
+                                    selected = rowFocus == setOf(group),
+                                    onClick = {
+                                        rowFocus = setOf(group)
+                                        focusMenu = false
+                                    },
+                                )
+                            }
+                        }
+                    }
+                }
             }
             FillStatus.RUNNING -> CircularProgressIndicator(
                 modifier = Modifier.size(22.dp),
@@ -373,6 +417,18 @@ private fun buildFillDiff(before: FoodEntry, after: FoodEntry): List<ReprocessDi
     }
     return rows
 }
+
+/** Existing-vocabulary labels for the per-nutrient focus dropdown (WP6). */
+@Composable
+private fun focusLabel(group: GapGroup): String = stringResource(
+    when (group) {
+        GapGroup.CALORIES -> R.string.nutrition_label_calories
+        GapGroup.PROTEIN -> R.string.nutrition_label_protein
+        GapGroup.CARBS -> R.string.nutrition_label_carbs
+        GapGroup.FAT -> R.string.nutrition_label_fat
+        GapGroup.MICROS -> R.string.nutrition_section_detailed
+    },
+)
 
 @Composable
 private fun GapCaption(item: FillQueueItem) {

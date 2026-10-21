@@ -186,4 +186,23 @@ class FoodEntryGapScanTest {
 
         assertEquals(listOf("rice"), report.zeroMacroConstituents.map { it.name })
     }
+
+    @Test
+    fun missingGroups_mapsMacrosAndMicros() {
+        // calories/protein missing, carbs/fat answered; micros still null.
+        val report = entry().copy(
+            gapAnsweredFields = setOf(
+                GapMacroField.CARBS.jsonKey,
+                GapMacroField.FAT.jsonKey,
+            ),
+        ).gapReport()
+
+        assertEquals(setOf(GapGroup.CALORIES, GapGroup.PROTEIN, GapGroup.MICROS), report.missingGroups())
+
+        // Every macro answered and every micro field stamped: no groups left.
+        val complete = entry(calories = 300, protein = 25.0, carbs = 2.0, fat = 20.0).copy(
+            gapAnsweredFields = MicronutrientField.entries.map { it.jsonKey }.toSet(),
+        )
+        assertTrue(complete.gapReport().missingGroups().isEmpty())
+    }
 }

@@ -2166,6 +2166,8 @@ makrolar yeni kalori toplamına göre yeniden dengelenir</string>
     <string name="fill_gaps_adds_line">Ekler: %1$s</string>
     <string name="fill_gaps_no_values">Yeni değer döndürülmedi</string>
     <string name="fill_gaps_run_all">Tümünü doldur</string>
+    <string name="fill_gaps_focus_all">Tüm eksikler</string>
+    <string name="fill_gaps_focus_pick">Doldurulacak alanları seç</string>
     <string name="fill_gaps_apply">Uygula</string>
     <plurals name="fill_gaps_confirm_remote">
         <item quantity="one">1 yapay zekâ isteği çalıştırılsın mı?</item>

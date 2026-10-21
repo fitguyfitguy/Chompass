@@ -7,6 +7,7 @@ import app.chompass.models.AIProvider
 import app.chompass.models.FoodConstituent
 import app.chompass.models.FoodEntry
 import app.chompass.models.FoodSource
+import app.chompass.models.GapGroup
 import app.chompass.models.ServingUnitInferenceMode
 import app.chompass.services.PerfLog
 import kotlinx.coroutines.runBlocking
@@ -18,6 +19,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -202,5 +204,25 @@ class FillEntryServiceTest {
             assertTrue(prompt.contains("User context (apply as user preferences/data"))
             assertTrue(prompt.contains("<user_data>\nprefer round gram numbers\n</user_data>"))
         }
+    }
+
+    @Test
+    fun focus_narrowsWirePromptMissingList() = runBlocking {
+        server.enqueue(MockResponse().setBody(chunk(fillJson(), finishReason = "stop")))
+
+        // WP6 per-nutrient focus: the wire prompt asks ONLY for the focused
+        // group, and the ingredient-row ask (which carries all four macros)
+        // stays out of a macro-narrow run.
+        newService().fillEntry(mealieEntry(), focus = setOf(GapGroup.PROTEIN))
+
+        assertEquals(1, server.requestCount)
+        val prompt = promptOf(bodyOf(server.takeRequest()))
+        val missingLine = prompt.lineSequence().first { it.startsWith("Missing fields to estimate:") }
+        assertEquals("Missing fields to estimate: protein", missingLine)
+        assertFalse(
+            "row ask must not leak into a narrow focus: $prompt",
+            prompt.contains("macros for each logged ingredient row"),
+        )
+        assertFalse(prompt.contains("reusing each logged ingredient name exactly"))
     }
 }

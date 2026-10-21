@@ -3682,6 +3682,8 @@ für dich ein</string>
     <string name="fill_gaps_adds_line">Ergänzt: %1$s</string>
     <string name="fill_gaps_no_values">Keine neuen Werte zurückgegeben</string>
     <string name="fill_gaps_run_all">Alle füllen</string>
+    <string name="fill_gaps_focus_all">Alles Fehlende</string>
+    <string name="fill_gaps_focus_pick">Zu ergänzende Felder wählen</string>
     <string name="fill_gaps_apply">Übernehmen</string>
     <plurals name="fill_gaps_confirm_remote">
         <item quantity="one">1 KI-Anfrage ausführen?</item>

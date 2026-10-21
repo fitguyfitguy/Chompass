@@ -2233,6 +2233,8 @@
     <string name="fill_gaps_adds_line">Добавляет: %1$s</string>
     <string name="fill_gaps_no_values">Новых значений не получено</string>
     <string name="fill_gaps_run_all">Заполнить всё</string>
+    <string name="fill_gaps_focus_all">Всё недостающее</string>
+    <string name="fill_gaps_focus_pick">Выбрать поля для заполнения</string>
     <string name="fill_gaps_apply">Применить</string>
     <plurals name="fill_gaps_confirm_remote">
         <item quantity="one">Выполнить 1 ИИ-запрос?</item>

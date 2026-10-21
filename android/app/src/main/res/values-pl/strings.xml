@@ -2180,6 +2180,8 @@ makro rebalansowane do nowej sumy kalorii</string>
     <string name="fill_gaps_adds_line">Dodaje: %1$s</string>
     <string name="fill_gaps_no_values">Nie zwrócono nowych wartości</string>
     <string name="fill_gaps_run_all">Uzupełnij wszystko</string>
+    <string name="fill_gaps_focus_all">Wszystkie braki</string>
+    <string name="fill_gaps_focus_pick">Wybierz pola do uzupełnienia</string>
     <string name="fill_gaps_apply">Zastosuj</string>
     <plurals name="fill_gaps_confirm_remote">
         <item quantity="one">Wykonać 1 żądanie AI?</item>

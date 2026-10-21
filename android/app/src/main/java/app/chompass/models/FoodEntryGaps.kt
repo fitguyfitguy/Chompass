@@ -19,6 +19,25 @@ enum class GapMacroField(val labelRes: Int, val jsonKey: String) {
     FAT(R.string.nutrition_label_fat, "fat"),
 }
 
+/**
+ * Per-nutrient fill focus: which gap groups a fill run asks the AI for. The
+ * gaps sheet's per-row selector narrows a run to one group; the default
+ * (every group) keeps the full ask. Constituent rows carry all four macros,
+ * so the ingredient-row ask only fires when every macro group is focused.
+ */
+enum class GapGroup {
+    CALORIES,
+    PROTEIN,
+    CARBS,
+    FAT,
+    MICROS;
+
+    companion object {
+        /** The four entry-level macro groups ([MICROS] excluded). */
+        val MACRO_GROUPS: Set<GapGroup> = entries.toSet() - MICROS
+    }
+}
+
 /** Result of the fill-missing scan over one entry. Pure data, no UI. */
 data class EntryGapReport(
     val missingMacros: Set<GapMacroField>,
@@ -38,6 +57,15 @@ data class EntryGapReport(
      */
     val hasMacroGaps: Boolean
         get() = missingMacros.isNotEmpty() || zeroMacroConstituents.isNotEmpty()
+
+    /** Groups this entry still misses: one per missing macro, MICROS iff any micro is missing. */
+    fun missingGroups(): Set<GapGroup> = buildSet {
+        if (GapMacroField.CALORIES in missingMacros) add(GapGroup.CALORIES)
+        if (GapMacroField.PROTEIN in missingMacros) add(GapGroup.PROTEIN)
+        if (GapMacroField.CARBS in missingMacros) add(GapGroup.CARBS)
+        if (GapMacroField.FAT in missingMacros) add(GapGroup.FAT)
+        if (missingMicros.isNotEmpty()) add(GapGroup.MICROS)
+    }
 }
 
 /**
@@ -123,8 +151,13 @@ fun FoodEntry.gapReport(): EntryGapReport {
  * [FoodEntry.gapAnsweredConstituentNames] for the same reason: one fill
  * attempt per row, then the row leaves the scan even when the analysis
  * matched nothing usable (or the reply schema carried no constituents).
+ *
+ * [constituentsAsked] guards that stamp: a focused run that never asked for
+ * ingredient rows must not mark them "attempted" — pass the same predicate
+ * the prompt used (all four macro groups focused). Defaults to true, the
+ * full-ask behavior.
  */
-fun FoodEntry.fillMissingFrom(analysis: FoodAnalysis): FoodEntry {
+fun FoodEntry.fillMissingFrom(analysis: FoodAnalysis, constituentsAsked: Boolean = true): FoodEntry {
     val entryGrams = servingSizeGrams
     val analysisGrams = analysis.servingSizeGrams
     val gramsFactor = if (entryGrams != null && analysisGrams != null && analysisGrams > 0.0) {
@@ -246,12 +279,16 @@ fun FoodEntry.fillMissingFrom(analysis: FoodAnalysis): FoodEntry {
     // for them (or the reply schema carried no constituents), so keeping
     // them scannable would re-offer the same row forever. Name-keyed
     // (favoriteKey convention); a later manual rename re-opens the scan.
+    // Fires only when the run actually asked for the rows: a focused fill
+    // must not stamp unasked rows as attempted.
     var answeredConstituents = gapAnsweredConstituentNames
-    constituents.forEachIndexed { storedIndex, row ->
-        val name = row.name.trim().lowercase()
-        if (!filledByStoredIndex.containsKey(storedIndex) && row.isFillableRow() && name !in answeredConstituents) {
-            answeredConstituents = answeredConstituents + name
-            changed = true
+    if (constituentsAsked) {
+        constituents.forEachIndexed { storedIndex, row ->
+            val name = row.name.trim().lowercase()
+            if (!filledByStoredIndex.containsKey(storedIndex) && row.isFillableRow() && name !in answeredConstituents) {
+                answeredConstituents = answeredConstituents + name
+                changed = true
+            }
         }
     }
     val filledConstituents = constituents.mapIndexed { storedIndex, row ->
