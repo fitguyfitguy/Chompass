@@ -2227,7 +2227,7 @@ macro riequilibrate al nuovo totale calorico</string>
     <string name="cd_plan_week">Apri pianificatore settimanale</string>
     <string name="cd_plan_week_next">Settimana successiva</string>
     <string name="cd_plan_week_prev">Settimana precedente</string>
-    <string name="confirm_tape_source_navy">US Navy</string>
+    <string name="confirm_tape_source_navy">Marina USA</string>
     <string name="confirm_tape_source_rfm">RFM</string>
     <string name="diary_planned">Pianificato</string>
     <string name="entry_log_now">Registra ora</string>

@@ -2243,7 +2243,7 @@
     <string name="macro_glyph_fiber">食</string>
     <string name="macro_glyph_protein">タ</string>
     <string name="macro_glyph_sugar">糖</string>
-    <string name="mealie_host_label">Mealie URL</string>
+    <string name="mealie_host_label">MealieのURL</string>
     <string name="mealie_import_n_format">%1$d 件をインポート</string>
     <string name="mealie_import_title">Mealie からインポート</string>
     <string name="mealie_imported_format">レシピを %1$d 件インポートしました</string>
