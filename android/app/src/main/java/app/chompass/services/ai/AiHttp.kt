@@ -5,15 +5,37 @@ import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
 internal object AiHttp {
+    /**
+     * Fixed read timeout for builtin cloud endpoints (WP6 cold-start fix):
+     * DeepInfra showed no first byte within 150 s on a cold start (warm:
+     * 27.9 s) — beyond the default client's 60 s, so a cold-start request
+     * died while the model spun up. The user-configured timeout stays
+     * local-only: it exists for slow local GPUs, not cloud queues.
+     */
+    const val CLOUD_READ_TIMEOUT_SECONDS = 240
+
+    /**
+     * Read timeout for one provider: user-configurable endpoints
+     * ([AIProvider.usesConfigurableRequestTimeout]) honor the settings
+     * seconds; builtin cloud endpoints use the fixed cold-start budget
+     * regardless of the settings value. Any wall-clock watchdog covering a
+     * call MUST be derived from this value, never from the raw settings
+     * seconds, or it would fire before the read timeout it shadows.
+     */
+    fun effectiveReadTimeoutSeconds(provider: AIProvider, settingsSeconds: Int): Int =
+        if (provider.usesConfigurableRequestTimeout) settingsSeconds else CLOUD_READ_TIMEOUT_SECONDS
+
     fun clientWithReadTimeout(base: OkHttpClient, seconds: Int): OkHttpClient =
         base.newBuilder()
             .readTimeout(seconds.toLong(), TimeUnit.SECONDS)
             .build()
 
     /**
-     * Local/custom endpoints use the user-configured timeout; cloud providers keep the default client.
-     * Custom and Ollama endpoints (both user-entered URLs) additionally trust user-installed CA certs
-     * ([usesUserCaTrust]).
+     * User-configurable endpoints (custom OpenAI-compatible + Ollama) apply
+     * the settings timeout ([localTimeoutSeconds]); builtin cloud endpoints
+     * apply the fixed cold-start budget ([CLOUD_READ_TIMEOUT_SECONDS]).
+     * Custom and Ollama endpoints (both user-entered URLs) additionally
+     * trust user-installed CA certs ([usesUserCaTrust]).
      */
     fun clientForProvider(
         base: OkHttpClient,
@@ -24,7 +46,7 @@ internal object AiHttp {
         var client = if (provider.usesConfigurableRequestTimeout) {
             clientWithReadTimeout(base, localTimeoutSeconds)
         } else {
-            base
+            clientWithReadTimeout(base, effectiveReadTimeoutSeconds(provider, localTimeoutSeconds))
         }
         if (usesUserCaTrust(provider)) client = trustBuilder(client)
         return client
