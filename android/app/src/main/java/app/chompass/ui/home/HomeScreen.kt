@@ -37,7 +37,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
@@ -111,6 +110,7 @@ import app.chompass.services.ShortcutEntryAction
 import app.chompass.services.grounding.GroundedEntryFeature
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
+import app.chompass.ui.components.ChompassSnackbarHost
 import app.chompass.ui.settings.RecalcResultSheet
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.InAppCameraCaptureDialog
@@ -520,7 +520,7 @@ fun HomeScreen(
         snackbarHost = {
             // Custom docked bottom nav overlays the Scaffold; lift the host so
             // snackbars (delete-undo, paste confirmation) are not hidden behind it.
-            SnackbarHost(
+            ChompassSnackbarHost(
                 hostState = snackbarHostState,
                 modifier = Modifier.padding(bottom = BottomOverlayPadding),
             )

@@ -32,6 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,9 +47,8 @@ import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.nutrientAccentColor
 import androidx.compose.foundation.shape.CircleShape
-import app.chompass.ui.components.MacroChip
+import app.chompass.models.MacroValueFormatter
 import app.chompass.ui.components.isDarkTheme
-import app.chompass.ui.components.macroGramsText
 import app.chompass.ui.theme.AppRadii
 
 @Composable
@@ -229,24 +230,35 @@ private fun NutrientPickerRow(
 }
 
 @Composable
-fun FoodLogMacroChipView(chip: FoodLogMacroChip, value: Double) {
-    val kind = chip.macroKind()
-    if (kind != null) {
-        MacroChip(kind, value)
-    } else {
-        val color = AppColors.Calorie
-        Box(
-            Modifier
-                .clip(androidx.compose.foundation.shape.CircleShape)
-                .background(color.copy(alpha = 0.12f))
-                .padding(horizontal = 8.dp, vertical = 3.dp)
-        ) {
-            Text(
-                "${stringResource(chip.glyphRes())} ${macroGramsText(value)}",
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = color,
+fun FoodLogMacroChipView(chip: FoodLogMacroChip, value: Double, dense: Boolean = false) {
+    val color = chip.macroKind()?.color() ?: AppColors.Calorie
+    val glyph = stringResource(chip.glyphRes())
+    val valueText = MacroValueFormatter.string(value)
+    val unit = stringResource(R.string.unit_g)
+    Box(
+        Modifier
+            .clip(CircleShape)
+            .background(color.copy(alpha = 0.12f))
+            .padding(
+                horizontal = if (dense) 6.dp else 8.dp,
+                vertical = if (dense) 2.dp else 3.dp,
             )
-        }
+    ) {
+        Text(
+            buildAnnotatedString {
+                append("$glyph $valueText")
+                if (dense) {
+                    addStyle(
+                        SpanStyle(color = color.copy(alpha = AppTextOpacity.Muted)),
+                        "$glyph $valueText".length,
+                        "$glyph $valueText$unit".length,
+                    )
+                }
+                append(unit)
+            },
+            fontSize = if (dense) 10.sp else 11.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = color,
+        )
     }
 }
