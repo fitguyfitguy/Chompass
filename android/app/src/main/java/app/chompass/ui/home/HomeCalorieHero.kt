@@ -1118,6 +1118,7 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
         val activeColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f)
         val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
         val tertiary = MaterialTheme.colorScheme.tertiary
+        val successColor = MaterialTheme.colorScheme.success
         val unitLabel = energyUnitLabel()
         val eatenA11y = stringResource(R.string.home_calories_eaten_a11y, energyText(current))
         val budgetDescription = calorieBudgetDescription(input)
@@ -1151,7 +1152,50 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                     size = Size(size.width * d.fillRatio, size.height),
                     cornerRadius = CornerRadius(radius, radius),
                 )
-                if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && d.target > baseGoal) {
+                if (d.shadesActive && burnShade != null) {
+                    val shade = burnShade!!
+                    val baseX = size.width * HomeCalorieDisplay.burnShadeBaseFraction(baseGoal, shade.typical, shade.live)
+                    val typicalW = (size.width * HomeCalorieDisplay.burnShadeTypicalFraction(baseGoal, shade.typical, shade.live))
+                        .coerceAtMost(size.width - baseX)
+                    val liveW = size.width * HomeCalorieDisplay.burnShadeLiveFraction(baseGoal, shade.live, shade.typical)
+                    // Estimated-active zone: fixed dim segment [base → base+typical].
+                    if (typicalW > 0f) {
+                        drawRoundRect(
+                            activeColor,
+                            topLeft = Offset(baseX, 0f),
+                            size = Size(typicalW, size.height),
+                            cornerRadius = CornerRadius(radius, radius),
+                        )
+                    }
+                    // Live-active shade: opaque, grows from the base boundary through the
+                    // typical zone.
+                    val withinTypicalW = liveW.coerceAtMost(typicalW)
+                    if (withinTypicalW > 0f) {
+                        drawRoundRect(
+                            tertiary,
+                            topLeft = Offset(baseX, 0f),
+                            size = Size(withinTypicalW, size.height),
+                            cornerRadius = CornerRadius(radius, radius),
+                        )
+                    }
+                    // Over-typical stretch turns success color; the bar end is the
+                    // expected-day target, so the live tip lands at the bar end.
+                    val overW = (liveW - typicalW).coerceAtLeast(0f)
+                        .coerceAtMost((size.width - baseX - typicalW).coerceAtLeast(0f))
+                    if (overW > 0f) {
+                        drawRoundRect(
+                            successColor,
+                            topLeft = Offset(baseX + typicalW, 0f),
+                            size = Size(overW, size.height),
+                            cornerRadius = CornerRadius(radius, radius),
+                        )
+                    }
+                    if (baseX > 0f) {
+                        drawLine(muted, Offset(baseX, 0f), Offset(baseX, size.height), strokeWidth = 2.dp.toPx())
+                    }
+                } else if (displayMode == HomeCalorieDisplayMode.ADD_ACTIVE && d.target > baseGoal) {
+                    // Existing flat activity-earned zone, plus the same base notch
+                    // the arc draws in this state.
                     val baseX = size.width * (baseGoal.toFloat() / d.target).coerceIn(0f, 1f)
                     drawRoundRect(
                         activeColor,
@@ -1159,6 +1203,9 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
                         size = Size(size.width - baseX, size.height),
                         cornerRadius = CornerRadius(radius, radius),
                     )
+                    if (baseX > 0f) {
+                        drawLine(muted, Offset(baseX, 0f), Offset(baseX, size.height), strokeWidth = 2.dp.toPx())
+                    }
                 }
             }
             // FlowRow: one line at 1x, wraps instead of squeezing to zero width
