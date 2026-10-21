@@ -1,6 +1,5 @@
 • Pick a body-fat measurement method: DEXA, 8- or 4-electrode BIA, or tape, with an accuracy override (Android and PWA).
 • Saved macros always add up to the calorie target; auto goals re-clamp when your body changes (Android and PWA).
-• Fill missing completes on entries with true zeros, and its feedback matches the rest of the app.
 • All 17 languages cover the newer screens, and settings search works in your language.
 • Your app language now applies to notifications and the widget on Android 8-12.
 • Denser food-log macro chips; themed, swipe-dismissable snackbars.
