@@ -280,6 +280,12 @@ fun ChompassDialogActions(
     destructive: Boolean = false,
     primaryEnabled: Boolean = true,
 ) {
+    // Typed wheel/numpad drafts must flush before the host's onPrimary reads
+    // state — same sink as SheetStickyPrimaryBar / SheetReviewToolbar.
+    val commitPrimary = {
+        MagnitudeDrafts.commitAll()
+        onPrimary()
+    }
     Row(
         modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.End,
@@ -293,7 +299,7 @@ fun ChompassDialogActions(
         }
         if (destructive) {
             TextButton(
-                onClick = onPrimary,
+                onClick = commitPrimary,
                 enabled = primaryEnabled,
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = MaterialTheme.colorScheme.error,
@@ -302,7 +308,7 @@ fun ChompassDialogActions(
                 Text(primaryText, maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
         } else {
-            TextButton(onClick = onPrimary, enabled = primaryEnabled) {
+            TextButton(onClick = commitPrimary, enabled = primaryEnabled) {
                 Text(primaryText, maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
         }
