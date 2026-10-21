@@ -5,6 +5,7 @@
     "Anthropic Claude",
     "AssemblyAI",
     "Chompass",
+    "DEXA",
     "Deepgram",
     "DeepInfra",
     "Fireworks AI",
@@ -79,6 +80,7 @@
   ],
   "es": [
     "Coach",
+    "Color",
     "Macros",
     "Manual",
     "Omega",
@@ -96,6 +98,7 @@
     "Cigarette",
     "Chompass Calories",
     "Coach",
+    "Compact",
     "Cycle",
     "Date",
     "Flash auto",
@@ -129,6 +132,7 @@
     "Omega",
     "Omega-3",
     "Stop",
+    "US Navy",
     "auto"
   ],
   "tr": [
@@ -159,6 +163,7 @@
     "Cholesterol",
     "Chompass Water",
     "Coach",
+    "Compact",
     "Home",
     "Indigo",
     "Info",
@@ -172,6 +177,8 @@
     "Provider",
     "Stop",
     "Teal",
+    "Trackers",
+    "US Navy",
     "Water",
     "auto",
     "per week",
@@ -191,6 +198,7 @@
   "ro": [
     "August",
     "Auto",
+    "Compact",
     "Format",
     "Indigo",
     "Info",
@@ -216,6 +224,14 @@
     "Vitamin D",
     "Vitamin E",
     "Vitamin K",
+    "API token",
+    "Mealie URL",
     "Server URL"
+  ],
+  "hi": [
+    "Mealie URL"
+  ],
+  "ko": [
+    "Mealie URL"
   ]
 }
