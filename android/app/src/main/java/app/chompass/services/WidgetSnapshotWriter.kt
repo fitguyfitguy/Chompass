@@ -71,6 +71,11 @@ class WidgetSnapshotWriter(
         val water: WaterInputs,
         val caffeineEntries: List<CaffeineEntry> = emptyList(),
         val energyUnit: String = "kcal",
+        // Energy-burn inputs publish() reads for the ADD_ACTIVE split. Carried
+        // on the value so a burn-only write produces a distinct input and
+        // survives distinctUntilChanged — otherwise it could never republish.
+        val measuredActive: Int = 0,
+        val activeByDay: Map<String, Int> = emptyMap(),
     )
 
     internal data class WaterDynamicInputs(
@@ -157,8 +162,21 @@ class WidgetSnapshotWriter(
             )
         },
         prefs.energyUnit,
-    ) { core, water, energyUnit ->
-        SnapshotInputs(core.first, core.second, core.third, water = water, energyUnit = energyUnit)
+        // Burn writes (adaptive goals, HC refresh, reseed) must republish the
+        // snapshot without a diary write; carrying the values keeps the
+        // chain distinct-until-changed on real content.
+        prefs.healthEnergyMeasuredActive,
+        prefs.healthEnergyActiveByDay,
+    ) { core, water, energyUnit, measuredActive, activeByDay ->
+        SnapshotInputs(
+            core.first,
+            core.second,
+            core.third,
+            water = water,
+            energyUnit = energyUnit,
+            measuredActive = measuredActive,
+            activeByDay = activeByDay,
+        )
     }
         .combine(caffeineRepository.entries) { inputs, caffeine ->
             inputs.copy(caffeineEntries = caffeine)
@@ -168,7 +186,7 @@ class WidgetSnapshotWriter(
             // Always publish from a fresh today read, never the trigger flow's
             // captured-at-collect list (see note above).
             val entries = foodRepository.entriesForDate(LocalDate.now()).first()
-            publish(entries, inputs.profile, inputs.appearance, inputs.water, inputs.caffeineEntries, inputs.energyUnit)
+            publish(entries, inputs.profile, inputs.appearance, inputs.water, inputs.caffeineEntries, inputs.energyUnit, inputs.measuredActive, inputs.activeByDay)
         }
 
     /**
@@ -198,7 +216,7 @@ class WidgetSnapshotWriter(
             ),
             entries = waterRepository.entries.first(),
         )
-        publish(entries, profile, appearance, water, caffeineRepository.entries.first(), prefs.energyUnit.first())
+        publish(entries, profile, appearance, water, caffeineRepository.entries.first(), prefs.energyUnit.first(), prefs.healthEnergyMeasuredActive.first(), prefs.healthEnergyActiveByDay.first())
     }
 
     private suspend fun publish(
@@ -208,6 +226,8 @@ class WidgetSnapshotWriter(
         water: WaterInputs,
         caffeineEntries: List<CaffeineEntry> = emptyList(),
         energyUnit: String = "kcal",
+        measuredActive: Int,
+        activeByDay: Map<String, Int>,
     ) {
         // API < 33: nutrient labels/units follow the in-app language.
         val ctx = LocaleHelper.wrapIfLegacy(context)
@@ -230,11 +250,10 @@ class WidgetSnapshotWriter(
             val effectiveCalories = resolvedToday.targets.calories
             // Energy Burn measured active average overrides the PAL estimate for the ADD_ACTIVE
             // split, so the widget mirrors the home gauge (goal − measured active → base).
-            val measuredActive = prefs.healthEnergyMeasuredActive.first()
             val dayTypeTypical = run {
                 val journal = prefs.goalJournal.first()
                 val merged = app.chompass.models.DayTypeActiveStats.mergeDayTotals(
-                    prefs.healthEnergyActiveByDay.first(),
+                    activeByDay,
                     app.chompass.models.DayTypeActiveStats.sumManualByDay(prefs.manualActiveEntries.first()),
                 )
                 val stats = app.chompass.models.DayTypeActiveStats.compute(journal, merged, LocalDate.now())
