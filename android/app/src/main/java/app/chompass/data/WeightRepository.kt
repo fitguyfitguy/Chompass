@@ -72,6 +72,10 @@ class WeightRepository(
 
     suspend fun deleteEntry(id: UUID) {
         val existing = prefs.weightEntries.first().firstOrNull { it.id == id } ?: return
+        // Tombstone BEFORE the bucket removal (upstream d03be0ea): the id lands in
+        // healthDeletedWeightIds so a later Health Connect import mapping onto the
+        // same deterministic id is filtered out instead of resurrecting the record.
+        prefs.setHealthDeletedWeightIds(appendTombstoneId(prefs.healthDeletedWeightIds.first(), id))
         prefs.applyWeightBucketChanges(removalIdsByMonth = mapOf(existing.month() to setOf(id)))
         sync?.tombstone(id, "weight")
         syncProfileWeightToLatest()
@@ -117,6 +121,7 @@ class WeightRepository(
      */
     suspend fun importExternalWeights(external: List<ExternalWeight>) {
         val manager = health ?: return
+        val tombstoned = prefs.healthDeletedWeightIds.first()
         val incoming = external
             .map {
                 WeightEntry(
@@ -126,6 +131,10 @@ class WeightRepository(
                     weightKg = it.weightKg
                 )
             }
+            // Deleted stays deleted (upstream d03be0ea). Applies regardless of the
+            // fudai_ tag: when the user deleted our own record but the HC delete
+            // failed, the surviving record must still not resurrect here.
+            .filter { it.id !in tombstoned }
         if (incoming.isEmpty()) return
         // Upsert into current month files. Do not replaceAll from a snapshot taken
         // around a slow Health Connect read: that wipe is #63 (a weigh-in logged
