@@ -10,7 +10,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +32,7 @@ import app.chompass.R
 import app.chompass.models.HomeCalorieDisplayMode
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
+import app.chompass.ui.components.ChompassSnackbarHost
 import app.chompass.ui.navigation.ChompassRoutes
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
@@ -63,7 +63,7 @@ fun GoalsSettingsScreen(
     SettingsSubScreen(
         title = stringResource(R.string.settings_section_goals),
         onBack = onBack,
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        snackbarHost = { ChompassSnackbarHost(hostState = snackbarHostState) },
     ) {
         Text(
             stringResource(R.string.settings_goals_intro),
