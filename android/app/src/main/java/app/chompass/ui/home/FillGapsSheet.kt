@@ -383,7 +383,11 @@ private fun GapCaption(item: FillQueueItem) {
             val missingLabels = (
                 gap.missingMacros.map { stringResource(it.labelRes) } +
                     gap.missingMicros.map { stringResource(it.labelRes) }
-                ).joinToString(", ")
+                ).ifEmpty {
+                    // Constituents-only rows (cocktails, Mealie imports) would
+                    // render a blank "Missing:" — name the gapped rows instead.
+                    gap.zeroMacroConstituents.map { it.name.trim() }.joinToString(", ")
+                }
             GapMutedText(stringResource(R.string.edit_ai_missing_line, missingLabels))
         }
         FillStatus.FILLED -> {

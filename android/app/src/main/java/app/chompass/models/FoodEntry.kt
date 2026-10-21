@@ -85,6 +85,18 @@ data class FoodEntry(
      */
     val gapAnsweredFields: Set<String> = emptySet(),
     /**
+     * Normalized names (trim + lowercase, the favoriteKey/matching convention)
+     * of constituent rows the fill-missing AI answered without a usable
+     * value: the pass matched no analysis row for them, or the reply schema
+     * carried no constituents at all. [FoodEntryGaps.gapReport] stops
+     * counting their all-zero rows, so a constituents-only entry (cocktails,
+     * Mealie imports the model could not match) completes after one fill
+     * instead of re-appearing in every scan. Local DataStore only; never
+     * serialized into diary export / sync / meal-share (gapAnsweredFields
+     * precedent). Defaults keep older bucket JSON decodable.
+     */
+    val gapAnsweredConstituentNames: Set<String> = emptySet(),
+    /**
      * True while the entry is a plan (meal planning mode). Local DataStore
      * only; never serialized into diary export / sync / meal-share
      * (productMetadata/microsCompositionSignature precedent). Defaults keep

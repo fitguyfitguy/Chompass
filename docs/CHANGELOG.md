@@ -2,7 +2,13 @@
 
 All notable changes to Chompass are documented here.
 
-Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no emdashes, no internals). The version section is pasted verbatim onto the Codeberg release.
+Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no internals). The version section is pasted verbatim onto the Codeberg release.
+
+## [Unreleased]
+
+### Fixed
+
+- **Fill-missing stops chasing meals it cannot complete** (Android and PWA): meals whose ingredient rows stay empty, like cocktails and some imported recipes, no longer reappear in the missing-values reminder after a fill attempt came up empty. When the AI provider supports ingredient rows, the fill now asks for their values directly; otherwise the meal leaves the reminder list after the first try. The fill list also names the empty ingredient rows instead of showing a blank "Missing" line.
 
 ## [5.10.0] - 2026-10-21
 

@@ -195,3 +195,68 @@ test("fillFoodEntry_capsConstituentRowsInPayload", async () => {
     PROVIDERS.anthropic.send = original;
   }
 });
+
+test("fillFoodEntry_asksForIngredientRowMacros_onlyWhenConstituentsAllowed", async () => {
+  const original = PROVIDERS.anthropic.send;
+  /** @type {{systemPrompt: string, messages: {role: string, text: string}[]} | null} */
+  let sent = null;
+  PROVIDERS.anthropic.send = async (_config, args) => {
+    sent = /** @type {any} */ (args);
+    return {
+      text: JSON.stringify({
+        name: "Whiskey Sour",
+        calories: 160,
+        proteinG: 0.1,
+        carbsG: 14.5,
+        fatG: 0,
+        quantityG: 150,
+      }),
+      toolCalls: [],
+    };
+  };
+  // Macros/micros all answered; the all-zero ingredient row is the only gap
+  // (the cocktail shape). The ask must name the rows so the fill is not a
+  // no-op, but only when the reply schema carries constituents.
+  const entry = gappedEntry({
+    name: "Whiskey Sour",
+    calories: 160,
+    proteinG: 0.1,
+    carbsG: 14.5,
+    fatG: 0,
+    fiberG: 0.1,
+    gapAnsweredFields: ["fatG"],
+    constituents: [{ name: "Whiskey", calories: 0, proteinG: 0, carbsG: 0, fatG: 0, servingSizeGrams: 40 }],
+  });
+  try {
+    await fillFoodEntry({
+      providerId: "anthropic",
+      config: { apiKey: "test-key" },
+      entry,
+      prefsOverride: /** @type {any} */ ({ aiFeaturesEnabled: true, aiFallbackEnabled: false }),
+    });
+    let userText = /** @type {any} */ (sent).messages[0].text;
+    assert.ok(
+      userText.includes("Missing fields to estimate: macros for each logged ingredient row"),
+      `constituent ask absent: ${userText}`,
+    );
+    assert.ok(userText.includes("reusing each logged ingredient name exactly"));
+
+    await fillFoodEntry({
+      providerId: "anthropic",
+      config: { apiKey: "test-key" },
+      entry,
+      prefsOverride: /** @type {any} */ ({
+        aiFeaturesEnabled: true,
+        aiFallbackEnabled: false,
+        mealConstituentsEnabled: false,
+      }),
+    });
+    userText = /** @type {any} */ (sent).messages[0].text;
+    assert.ok(
+      !userText.includes("macros for each logged ingredient row"),
+      `constituent ask must stay off with constituents disabled: ${userText}`,
+    );
+  } finally {
+    PROVIDERS.anthropic.send = original;
+  }
+});
