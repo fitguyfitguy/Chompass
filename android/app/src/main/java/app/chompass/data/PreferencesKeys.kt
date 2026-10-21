@@ -143,6 +143,12 @@ internal object Keys {
         val HEALTH_FOOD_RESTORE_DONE = booleanPreferencesKey("healthFoodRestoreDone")
         val HEALTH_HYDRATION_RESTORE_DONE = booleanPreferencesKey("healthHydrationRestoreDone")
         val PENDING_NUTRITION_HEALTH_WRITES = stringPreferencesKey("pendingNutritionHealthWrites")
+        /** Ids of user-deleted weight/body-fat entries. Health Connect re-imports drop
+         *  records mapping onto these, so a deleted reading cannot resurrect on the
+         *  next backfill (upstream d03be0ea). Comma-joined UUIDs (a UUID never
+         *  contains a comma), insertion order, capped at 1000 per kind. */
+        val HEALTH_DELETED_WEIGHT_IDS = stringPreferencesKey("healthDeletedWeightIds")
+        val HEALTH_DELETED_BODY_FAT_IDS = stringPreferencesKey("healthDeletedBodyFatIds")
         val HEALTH_ENERGY_GOALS_ENABLED = booleanPreferencesKey("healthEnergyGoalsEnabled")
         /** Measured Health Connect active kcal/day average used to split the Energy Burn goal
          *  into a sedentary base for the ADD_ACTIVE home gauge. 0 = not available. */

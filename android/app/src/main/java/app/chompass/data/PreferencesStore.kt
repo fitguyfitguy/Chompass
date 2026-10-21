@@ -358,6 +358,10 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setHealthChangesTokenTypes(types: Set<String>) = setHealthChangesTokenTypesImpl(types)
     override val pendingNutritionHealthWrites: Flow<Set<String>> get() = pendingNutritionHealthWritesImpl
     override suspend fun setPendingNutritionHealthWrites(ids: Set<String>) = setPendingNutritionHealthWritesImpl(ids)
+    val healthDeletedWeightIds: Flow<List<UUID>> get() = healthDeletedWeightIdsImpl
+    suspend fun setHealthDeletedWeightIds(ids: List<UUID>) = setHealthDeletedWeightIdsImpl(ids)
+    val healthDeletedBodyFatIds: Flow<List<UUID>> get() = healthDeletedBodyFatIdsImpl
+    suspend fun setHealthDeletedBodyFatIds(ids: List<UUID>) = setHealthDeletedBodyFatIdsImpl(ids)
     val healthFoodRestoreDone: Flow<Boolean> get() = healthFoodRestoreDoneImpl
     suspend fun setHealthFoodRestoreDone(v: Boolean) = setHealthFoodRestoreDoneImpl(v)
     val healthHydrationRestoreDone: Flow<Boolean> get() = healthHydrationRestoreDoneImpl
