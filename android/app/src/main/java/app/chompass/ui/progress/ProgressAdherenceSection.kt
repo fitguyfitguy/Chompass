@@ -99,7 +99,11 @@ internal fun ProgressAdherenceSection(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 )
                 adherence.byDayType.forEach { row ->
-                    val name = plan?.profileById(row.profileId)?.name ?: row.profileId
+                    // Current plan wins for label/color consistency; the
+                    // journal's write-time name rescues a plan-missed id.
+                    val name = plan?.profileById(row.profileId)?.name
+                        ?: row.profileName
+                        ?: row.profileId
                     DayTypeAdherenceRow(
                         color = dayTypeColor(plan?.profileById(row.profileId)?.colorKey, row.profileId),
                         name = name,

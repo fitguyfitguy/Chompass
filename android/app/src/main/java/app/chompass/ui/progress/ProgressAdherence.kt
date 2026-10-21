@@ -10,12 +10,16 @@ data class DayAdherence(
     val goalKcal: Int?,
     /** Day-type profile id in effect that day (null = base targets). */
     val profileId: String?,
+    /** Day-type name snapshot from the journal that day (null = unknown). */
+    val profileName: String? = null,
     val untracked: Boolean,
 )
 
 /** Per-day-type rollup; the UI resolves [profileId] → name + color via the plan. */
 data class DayTypeAdherence(
     val profileId: String,
+    /** Journal name snapshot, shown when the plan no longer knows [profileId]. */
+    val profileName: String? = null,
     val days: Int,
     val avgIntake: Int?,
     val avgGoal: Int?,
@@ -64,6 +68,7 @@ object ProgressAdherence {
         slots: List<CalorieSlot>,
         goals: Map<LocalDate, Int>,
         dayTypeByDay: Map<String, String>,
+        dayTypeNameByDay: Map<String, String> = emptyMap(),
         untrackedDays: Set<String>,
         phases: List<GoalPhase>,
         range: ClosedRange<LocalDate>,
@@ -74,7 +79,16 @@ object ProgressAdherence {
             .filter { !it.untracked && it.day.toString() !in untrackedDays }
             .filter { it.day.isBefore(today) }
             .filter { it.kcal != null }
-            .map { DayAdherence(it.day, it.kcal, goals[it.day], dayTypeByDay[it.day.toString()], it.untracked) }
+            .map {
+                DayAdherence(
+                    it.day,
+                    it.kcal,
+                    goals[it.day],
+                    dayTypeByDay[it.day.toString()],
+                    dayTypeNameByDay[it.day.toString()],
+                    it.untracked,
+                )
+            }
             .filter { it.intakeKcal != null }
             .sortedBy { it.date }
             .toList()
@@ -106,6 +120,7 @@ object ProgressAdherence {
             .map { (profileId, group) ->
                 DayTypeAdherence(
                     profileId = profileId,
+                    profileName = group.firstNotNullOfOrNull { it.profileName },
                     days = group.size,
                     avgIntake = group.map { it.intakeKcal!! }.average().toInt(),
                     avgGoal = group.map { it.goalKcal!! }.average().toInt(),

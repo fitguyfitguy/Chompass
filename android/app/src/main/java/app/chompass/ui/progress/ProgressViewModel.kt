@@ -443,15 +443,18 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
                 .targets.calories
         }
     // Marker-lane inputs: one resolver pass per day in range (pure math).
-    val dayTypeByDay = buildMap {
-        var day = chartStartDay
-        while (!day.isAfter(rangeEndDay)) {
-            val id = MacroPlanResolver
-                .targetsForJournaled(base.goalJournal, base.profile, day, anchorDate)
-                .profileId
-            if (id != null) put(day.toString(), id)
-            day = day.plusDays(1)
+    val dayTypeByDay = mutableMapOf<String, String>()
+    val dayTypeNameByDay = mutableMapOf<String, String>()
+    var dayTypeDay = chartStartDay
+    while (!dayTypeDay.isAfter(rangeEndDay)) {
+        val resolved = MacroPlanResolver
+            .targetsForJournaled(base.goalJournal, base.profile, dayTypeDay, anchorDate)
+        resolved.profileId?.let { id ->
+            val key = dayTypeDay.toString()
+            dayTypeByDay[key] = id
+            resolved.profileName?.let { name -> dayTypeNameByDay[key] = name }
         }
+        dayTypeDay = dayTypeDay.plusDays(1)
     }
     return ProgressUiState(
         profile = base.profile,
@@ -492,6 +495,7 @@ private fun ProgressSnapshot.toUiState(anchorDate: LocalDate = LocalDate.now()):
                 slots = calorieSlots,
                 goals = dailyCalorieGoals,
                 dayTypeByDay = dayTypeByDay,
+                dayTypeNameByDay = dayTypeNameByDay,
                 untrackedDays = untrackedDays,
                 phases = base.profile?.goalPhases.orEmpty(),
                 range = chartStartDay..rangeEndDay,
