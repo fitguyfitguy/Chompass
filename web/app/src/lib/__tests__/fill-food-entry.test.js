@@ -240,6 +240,7 @@ test("fillFoodEntry_asksForIngredientRowMacros_onlyWhenConstituentsAllowed", asy
       `constituent ask absent: ${userText}`,
     );
     assert.ok(userText.includes("reusing each logged ingredient name exactly"));
+    assert.ok(userText.includes("same language as the logged rows"));
 
     await fillFoodEntry({
       providerId: "anthropic",

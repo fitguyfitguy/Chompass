@@ -146,6 +146,11 @@ class FillEntryServiceTest {
         )
         assertTrue(prompt.contains("Chicken bowl"))
         assertTrue(prompt.contains("chicken and rice"))
+        // The row ask pins exact-name reuse in the logged rows' language — the
+        // device pass showed same-language names match ("Mehl") while a
+        // cross-language reply row stays unmatched and gets stamped silent.
+        assertTrue(prompt.contains("reusing each logged ingredient name exactly"))
+        assertTrue(prompt.contains("same language as the logged rows"))
     }
 
     @Test
