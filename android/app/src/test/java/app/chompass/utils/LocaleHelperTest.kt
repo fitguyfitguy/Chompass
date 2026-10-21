@@ -1,11 +1,9 @@
 package app.chompass.utils
 
 import android.app.Application
-import android.os.LocaleList
-import java.util.Locale
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertSame
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -13,27 +11,15 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 
 /**
- * Codeberg #43: on API 26-32, applying a blank (system) language must not
- * replace Configuration.locales with an empty list. That made locales[0]
- * null and crashed Home on the week strip.
+ * Codeberg #43: on API 26-32 a blank (system) language must never replace
+ * Configuration.locales with an empty list — locales[0] was null and crashed
+ * Home. The legacy path now routes through the [LocaleHelper.legacyTag] cache
+ * and [LocaleHelper.wrapIfLegacy], which falls back to identity instead of
+ * ever setting an empty locale list.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [29], application = Application::class)
 class LocaleHelperTest {
-    @Test
-    fun blankTag_isNeverEmpty() {
-        val list = localeListForLanguageTag("")
-        assertTrue(list.size() > 0)
-        assertNotNull(list[0])
-    }
-
-    @Test
-    fun whitespaceTag_isNeverEmpty() {
-        val list = localeListForLanguageTag("  ")
-        assertTrue(list.size() > 0)
-        assertNotNull(list[0])
-    }
-
     @Test
     fun germanTag_selectsGerman() {
         val list = localeListForLanguageTag("de")
@@ -41,22 +27,50 @@ class LocaleHelperTest {
     }
 
     @Test
-    fun applyBlank_onApi29_doesNotWipeLocales() {
-        val ctx = RuntimeEnvironment.getApplication()
-        ctx.resources.configuration.setLocales(LocaleList())
-        LocaleHelper.apply(ctx, "")
-        val locales = ctx.resources.configuration.locales
-        assertTrue("blank apply must not leave an empty locale list", locales.size() > 0)
-        assertNotNull(locales[0])
+    fun applyBlank_onApi29_clearsCache() {
+        val app = RuntimeEnvironment.getApplication()
+        LocaleHelper.apply(app, "")
+        assertNull("blank apply must reset to follow-system (no wrap)", LocaleHelper.legacyTag)
+        // And wrapping with a cleared cache is the identity: the context is
+        // never handed an empty locale list.
+        assertSame(app, LocaleHelper.wrapIfLegacy(app))
     }
 
     @Test
-    fun systemLocaleList_hasAFirstLocale() {
-        val list = systemLocaleList()
-        assertTrue(list.size() > 0)
-        assertNotNull(list[0])
-        // Fallback path still produces a usable Locale for DateTimeFormatter.
-        java.time.format.DateTimeFormatter.ofPattern("EEEEE", list[0] ?: Locale.US)
-            .format(java.time.DayOfWeek.MONDAY)
+    fun wrapIfLegacy_blankOrWhitespaceCache_isIdentity() {
+        val app = RuntimeEnvironment.getApplication()
+        LocaleHelper.legacyTag = null
+        assertSame(app, LocaleHelper.wrapIfLegacy(app))
+        LocaleHelper.legacyTag = "  "
+        try {
+            assertSame(app, LocaleHelper.wrapIfLegacy(app))
+        } finally {
+            LocaleHelper.legacyTag = null
+        }
+    }
+
+    @Test
+    fun wrapIfLegacy_germanTag_wrapsConfiguration() {
+        val app = RuntimeEnvironment.getApplication()
+        LocaleHelper.legacyTag = "de"
+        try {
+            val wrapped = LocaleHelper.wrapIfLegacy(app)
+            assertEquals("de", wrapped.resources.configuration.locales[0].language)
+        } finally {
+            LocaleHelper.legacyTag = null
+        }
+    }
+
+    @Test
+    fun wrapIfLegacy_unparseableTag_isIdentity() {
+        val app = RuntimeEnvironment.getApplication()
+        LocaleHelper.legacyTag = "!!!,,,"
+        try {
+            // An empty parsed list must fall back to identity, never
+            // setLocales(empty) (#43).
+            assertSame(app, LocaleHelper.wrapIfLegacy(app))
+        } finally {
+            LocaleHelper.legacyTag = null
+        }
     }
 }

@@ -157,8 +157,9 @@ Native reads of the broadened packs shipped 2026-08. Remaining:
 Second phase: all locale files were swept for verbatim EN copies: they were
 translated (ru) or removed so they fall back to EN honestly (all other packs),
 and `check_android_strings.py` now enforces zero copies (with a curated
-per-locale exemption list for loanwords/proper nouns in
-`testdata/parity/copy_exemptions.json`). ru additionally
+key-scoped exemption list for loanwords/proper nouns in
+`testdata/parity/copy_exemptions.json`: each entry names the resource key and
+the locales where its value is EN-identical, `*` for all). ru additionally
 received translations for the settings/water/safety/import keys that were
 previously English-only. German joined ru at full coverage 2026-08-16 (a
 community full-pack translation, normalized to the app's informal du voice

@@ -62,16 +62,37 @@ export function t(key, vars, localeId = activeLocaleId) {
   return text;
 }
 
+/** Memoized Intl.PluralRules per resolved locale id. @type {Map<string, Intl.PluralRules>} */
+const pluralRulesCache = new Map();
+
 /**
- * Simple plural helper: uses `key` for one, `key_plural` otherwise when present.
+ * Plural helper: selects the CLDR category for `count` in the active locale
+ * (memoized Intl.PluralRules) and resolves `key_<category>` (e.g.
+ * `diary.fill_banner_few`). `key_one` falls back to the base singular `key`;
+ * every other category falls back to the legacy generic `key_plural`, then
+ * `key` — each step active locale → English.
  * @param {string} key
  * @param {number} count
  * @param {Record<string, string | number>} [vars]
  */
 export function tp(key, count, vars) {
-  const pluralKey = `${key}_plural`;
-  const usePlural = count !== 1 && (CATALOGS[activeLocaleId]?.[pluralKey] || CATALOGS[FALLBACK_LOCALE]?.[pluralKey]);
-  return t(usePlural ? pluralKey : key, { count, ...(vars || {}) });
+  const localeId = resolveLocaleId(activeLocaleId);
+  let rules = pluralRulesCache.get(localeId);
+  if (!rules) {
+    rules = new Intl.PluralRules(getLocale(localeId)?.bcp47 || FALLBACK_LOCALE);
+    pluralRulesCache.set(localeId, rules);
+  }
+  const category = rules.select(count);
+  const candidates = category === "one"
+    ? [`${key}_one`, key]
+    : [`${key}_${category}`, `${key}_plural`, key];
+  const interp = { count, n: count, ...(vars || {}) };
+  for (const candidate of candidates) {
+    if (CATALOGS[localeId]?.[candidate] != null || CATALOGS[FALLBACK_LOCALE]?.[candidate] != null) {
+      return t(candidate, interp);
+    }
+  }
+  return t(key, interp);
 }
 
 /** @returns {string} BCP-47 tag for Intl */

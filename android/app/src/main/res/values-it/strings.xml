@@ -2673,6 +2673,7 @@ macro riequilibrate al nuovo totale calorico</string>
         <item>grounding</item>
         <item>google</item>
         <item>web</item>
+        <item>ricerca</item>
     </string-array>
     <string-array name="settings_search_kw_section_custom_instructions">
         <item>contesto</item>

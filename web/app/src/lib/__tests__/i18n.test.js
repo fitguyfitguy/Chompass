@@ -10,6 +10,7 @@ import {
   resolveLocaleId,
   setActiveLocale,
   t,
+  tp,
   formatNumber,
   catalogDiff,
   englishKeys,
@@ -112,6 +113,23 @@ describe("i18n catalogs", () => {
     // english has no template with vars in core set; exercise API
     const out = t("nav.home", { x: 1 });
     assert.equal(out, "Home");
+  });
+
+  it("tp() selects CLDR plural categories (ru few vs many)", async () => {
+    await loadCatalog("ru");
+    setActiveLocale("ru");
+    try {
+      // CLDR ru: 2 → few, 5 → many (11-14), 21 → one.
+      const few = tp("diary.fill_banner", 2);
+      const many = tp("diary.fill_banner", 5);
+      const one = tp("diary.fill_banner", 21);
+      assert.match(few, /приёма пищи/);
+      assert.match(many, /приёмов/);
+      assert.match(one, /приёма пищи/);
+      assert.doesNotMatch(one, /приёмов пищи/);
+    } finally {
+      setActiveLocale("en");
+    }
   });
 
   it("formatNumber uses active locale", () => {

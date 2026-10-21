@@ -281,6 +281,7 @@ export const ru = Object.freeze({
   "toast.copied": "Скопировано",
   "diary.fill_applied": "Заполнено записей: {n}",
   "diary.fill_banner": "У {n} приёма пищи не хватает данных о питательности",
+  "diary.fill_banner_few": "У {n} приёма пищи не хватает данных о питательности",
   "diary.fill_banner_plural": "У {n} приёмов пищи не хватает данных о питательности",
   "diary.fill_missing": "Заполнить недостающее",
   "entry.ai.mode_fill": "Заполнить недостающее",

@@ -2636,6 +2636,7 @@ macros reequilibradas al nuevo total calórico</string>
         <item>ollama</item>
         <item>gpt</item>
         <item>local</item>
+        <item>proveedor ia</item>
     </string-array>
     <string-array name="settings_search_kw_ai_model">
         <item>modelo</item>

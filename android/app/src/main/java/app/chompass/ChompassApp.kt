@@ -1,6 +1,7 @@
 package app.chompass
 
 import android.app.Application
+import android.os.Build
 import android.util.Log
 import app.chompass.data.AnalysisQueueStore
 import app.chompass.data.BodyFatRepository
@@ -51,6 +52,7 @@ import app.chompass.services.health.HealthConnectReadSync
 import app.chompass.services.health.HealthSyncWorker
 import app.chompass.services.health.HomeActivityReader
 import app.chompass.sync.SyncRepository
+import app.chompass.utils.LocaleHelper
 import app.chompass.services.ondevice.ModelCatalog
 import app.chompass.services.ondevice.ModelDownloadManager
 import app.chompass.services.ondevice.OnDeviceLlmGateway
@@ -67,6 +69,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 /**
  * Application-scoped singleton wiring. Manual DI (no Hilt) — repositories and
@@ -95,6 +98,14 @@ class ChompassApp : Application() {
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(this)
+        // API < 33: notification/widget/receiver contexts localize through the
+        // cached legacy tag. One small DataStore read at cold start; the first
+        // activity attaches after this, so the cache is warm (PerfLog watches
+        // for cold-start regressions).
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            LocaleHelper.legacyTag = runBlocking { container.prefs.appLanguage.first() }
+                .takeIf { it.isNotBlank() }
+        }
         seedDebugGeminiKeyIfNeeded()
         container.notifications.createChannels()
         LauncherShortcuts.publish(this)

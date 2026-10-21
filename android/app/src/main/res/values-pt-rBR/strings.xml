@@ -2624,6 +2624,7 @@ macros reequilibradas ao novo total calórico</string>
         <item>ollama</item>
         <item>gpt</item>
         <item>local</item>
+        <item>provedor ia</item>
     </string-array>
     <string-array name="settings_search_kw_ai_model">
         <item>modelo</item>
@@ -2674,6 +2675,7 @@ macros reequilibradas ao novo total calórico</string>
         <item>grounding</item>
         <item>google</item>
         <item>web</item>
+        <item>pesquisa</item>
     </string-array>
     <string-array name="settings_search_kw_section_custom_instructions">
         <item>contexto</item>

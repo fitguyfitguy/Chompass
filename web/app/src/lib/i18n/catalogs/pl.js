@@ -327,6 +327,7 @@ export const pl = Object.freeze({
   // Entry / meal constituents
   "diary.fill_applied": "Uzupełniono {n} wpisów",
   "diary.fill_banner": "{n} posiłek ma brakujące dane odżywcze",
+  "diary.fill_banner_few": "{n} posiłki mają brakujące dane odżywcze",
   "diary.fill_banner_plural": "{n} posiłków ma brakujące dane odżywcze",
   "diary.fill_missing": "Uzupełnij braki",
   "entry.ai.mode_fill": "Uzupełnij braki",
