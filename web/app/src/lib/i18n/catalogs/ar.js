@@ -289,6 +289,8 @@ export const ar = Object.freeze({
   "entry.ai.missing_line": "الناقص: {labels}",
   "gaps.apply": "تطبيق",
   "gaps.apply_all": "تطبيق الكل",
+  "gaps.focus_all": "كل الناقص",
+  "gaps.focus_aria": "اختر الحقول المراد ملؤها",
   "gaps.no_values": "لم يتم إرجاع قيم جديدة",
   "gaps.show_diff": "إظهار التغييرات",
   "gaps.never_remind": "لا تذكّرني مرة أخرى",

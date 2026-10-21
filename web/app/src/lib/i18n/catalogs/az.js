@@ -290,6 +290,8 @@ export const az = Object.freeze({
   "entry.ai.missing_line": "Əskiklər: {labels}",
   "gaps.apply": "Tətbiq et",
   "gaps.apply_all": "Hamısını tətbiq et",
+  "gaps.focus_all": "Bütün əskiklər",
+  "gaps.focus_aria": "Doldurulacaq sahələri seç",
   "gaps.no_values": "Yeni dəyər qaytarılmadı",
   "gaps.show_diff": "Dəyişiklikləri göstər",
   "gaps.never_remind": "Bir daha xatırlatma",

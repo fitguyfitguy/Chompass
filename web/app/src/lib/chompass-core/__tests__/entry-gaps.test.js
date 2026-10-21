@@ -1,7 +1,7 @@
 // @ts-check
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { gapReport, fillMissingFrom } from "../entry-gaps.js";
+import { gapReport, fillMissingFrom, missingGroups } from "../entry-gaps.js";
 import { MICRO_FIELDS } from "../diary-format.js";
 
 /**
@@ -439,4 +439,38 @@ test("merge: matched constituent row fills, unmatched row stamped", () => {
   assert.equal(merged.constituents[0].calories, 380);
   assert.equal(merged.constituents[1].calories, 0);
   assert.deepEqual(merged.gapAnsweredConstituentNames, ["soda water"]);
+});
+
+test("missingGroups: macro keys map to groups, MICROS iff any micro missing", () => {
+  const report = gapReport(
+    entry({
+      calories: 0,
+      proteinG: 0,
+      carbsG: 12,
+      fatG: 3,
+      fiberG: null,
+      gapAnsweredFields: ["carbsG"],
+    }),
+  );
+  assert.deepEqual(missingGroups(report), ["CALORIES", "PROTEIN", "MICROS"]);
+
+  const noGaps = gapReport(entry({ calories: 100, proteinG: 1, carbsG: 2, fatG: 3 }));
+  assert.deepEqual(missingGroups(noGaps), []);
+});
+
+test("merge: constituentsAsked=false leaves unasked rows unstamped and scannable", () => {
+  // WP6 per-nutrient focus: a macro-only run never asked for the ingredient
+  // rows, so the one-attempt stamp must not fire — the row stays scannable
+  // for a later full ask (Android FillMissingMergeTest twin).
+  const before = entry({ constituents: [constituent({ name: "Rolled oats" })] });
+  const merged = fillMissingFrom(before, { calories: 540, proteinG: 42, carbsG: 60 }, { constituentsAsked: false });
+
+  assert.deepEqual(merged.gapAnsweredConstituentNames, []);
+  assert.deepEqual(gapReport(merged).zeroMacroConstituents.map((row) => row.name), ["Rolled oats"]);
+  // Asked fields still stamp as before.
+  assert.ok(merged.gapAnsweredFields.includes("calories"));
+
+  // The default (no options) keeps the full-ask stamp semantics.
+  const mergedFull = fillMissingFrom(before, { calories: 540 });
+  assert.deepEqual(mergedFull.gapAnsweredConstituentNames, ["rolled oats"]);
 });

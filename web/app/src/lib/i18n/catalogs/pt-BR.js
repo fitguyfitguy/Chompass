@@ -291,6 +291,8 @@ export const pt_BR = Object.freeze({
   "entry.ai.missing_line": "Faltando: {labels}",
   "gaps.apply": "Aplicar",
   "gaps.apply_all": "Aplicar tudo",
+  "gaps.focus_all": "Tudo o que falta",
+  "gaps.focus_aria": "Escolher campos para preencher",
   "gaps.no_values": "Nenhum valor novo retornado",
   "gaps.show_diff": "Mostrar alterações",
   "gaps.never_remind": "Não me lembrar de novo",
