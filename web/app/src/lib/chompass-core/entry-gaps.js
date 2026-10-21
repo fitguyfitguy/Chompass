@@ -92,6 +92,9 @@ export function gapReport(entry) {
   // leave the scan — a legit-zero entry completes after one fill instead of
   // re-appearing forever. Local-only tokens mirror the Android set.
   const answered = entry.gapAnsweredFields ?? [];
+  // Same fill-once rule for ingredient rows: names stamped by a previous
+  // fill (normalized, matching convention) leave the scan.
+  const answeredConstituents = new Set(entry.gapAnsweredConstituentNames ?? []);
   if ((entry.calories ?? 0) === 0 && !answered.includes("calories")) missingMacros.push("calories");
   if ((entry.proteinG ?? 0) === 0 && !answered.includes("proteinG")) missingMacros.push("proteinG");
   if ((entry.carbsG ?? 0) === 0 && !answered.includes("carbsG")) missingMacros.push("carbsG");
@@ -99,7 +102,9 @@ export function gapReport(entry) {
   const missingMicros = MICRO_FIELDS.map(([, modelKey]) => modelKey).filter(
     (modelKey) => entry[modelKey] == null && !answered.includes(modelKey),
   );
-  const zeroMacroConstituents = (entry.constituents ?? []).filter(isFillableRow);
+  const zeroMacroConstituents = (entry.constituents ?? []).filter(
+    (row) => isFillableRow(row) && !answeredConstituents.has(row.name.trim().toLowerCase()),
+  );
   return {
     missingMacros,
     missingMicros,
@@ -270,6 +275,20 @@ export function fillMissingFrom(entry, estimate) {
       break;
     }
   });
+  // One fill attempt per row: stored fillable rows the passes left unfilled
+  // are stamped as answered — the estimate matched nothing usable for them
+  // (or constituents were off), so keeping them scannable would re-offer the
+  // same row forever. Name-keyed (matching convention); a later manual
+  // rename re-opens the scan. Mirrors gapAnsweredConstituentNames (Android).
+  /** @type {Set<string>} */
+  const answeredConstituents = new Set(entry.gapAnsweredConstituentNames ?? []);
+  storedConstituents.forEach((row, storedIndex) => {
+    const name = row.name.trim().toLowerCase();
+    if (!filledByStoredIndex.has(storedIndex) && isFillableRow(row) && !answeredConstituents.has(name)) {
+      answeredConstituents.add(name);
+      changed = true;
+    }
+  });
   const filledConstituents = storedConstituents.map(
     (row, storedIndex) => filledByStoredIndex.get(storedIndex) ?? row,
   );
@@ -285,6 +304,7 @@ export function fillMissingFrom(entry, estimate) {
     constituents: filledConstituents,
     ...mergedMicros,
     gapAnsweredFields: [...answered],
+    gapAnsweredConstituentNames: [...answeredConstituents],
     microsCompositionSignature: microsCompositionSignature(filledConstituents),
   };
 }

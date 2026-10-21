@@ -82,6 +82,7 @@ private fun namesMatchByContainment(a: String, b: String): Boolean {
 /** Scan an entry for values the Fill-missing action may ask the AI for. */
 fun FoodEntry.gapReport(): EntryGapReport {
     val answered = gapAnsweredFields
+    val answeredConstituents = gapAnsweredConstituentNames
     val missingMacros = buildSet {
         if (calories == 0 && GapMacroField.CALORIES.jsonKey !in answered) add(GapMacroField.CALORIES)
         if (protein == 0.0 && GapMacroField.PROTEIN.jsonKey !in answered) add(GapMacroField.PROTEIN)
@@ -92,7 +93,9 @@ fun FoodEntry.gapReport(): EntryGapReport {
     val missingMicros = MicronutrientField.entries.filterTo(mutableSetOf()) {
         micros[it] == null && it.jsonKey !in answered
     }
-    val zeroMacroConstituents = constituents.filter { it.isFillableRow() }
+    val zeroMacroConstituents = constituents.filter {
+        it.isFillableRow() && it.name.trim().lowercase() !in answeredConstituents
+    }
     return EntryGapReport(missingMacros, missingMicros, zeroMacroConstituents)
 }
 
@@ -116,8 +119,10 @@ fun FoodEntry.gapReport(): EntryGapReport {
  * a zero macro or a null micro from the analysis is stamped into
  * [FoodEntry.gapAnsweredFields] so [gapReport] stops counting it (a legit
  * zero entry completes after one fill instead of rescanning forever).
- * Constituent rows answered as all-zero stay scannable — there is no
- * per-row answered marker.
+ * Stored fillable rows the constituent passes left unfilled are stamped into
+ * [FoodEntry.gapAnsweredConstituentNames] for the same reason: one fill
+ * attempt per row, then the row leaves the scan even when the analysis
+ * matched nothing usable (or the reply schema carried no constituents).
  */
 fun FoodEntry.fillMissingFrom(analysis: FoodAnalysis): FoodEntry {
     val entryGrams = servingSizeGrams
@@ -236,6 +241,19 @@ fun FoodEntry.fillMissingFrom(analysis: FoodAnalysis): FoodEntry {
             break
         }
     }
+    // One fill attempt per row: stored fillable rows the passes left
+    // unfilled are stamped as answered — the analysis matched nothing usable
+    // for them (or the reply schema carried no constituents), so keeping
+    // them scannable would re-offer the same row forever. Name-keyed
+    // (favoriteKey convention); a later manual rename re-opens the scan.
+    var answeredConstituents = gapAnsweredConstituentNames
+    constituents.forEachIndexed { storedIndex, row ->
+        val name = row.name.trim().lowercase()
+        if (!filledByStoredIndex.containsKey(storedIndex) && row.isFillableRow() && name !in answeredConstituents) {
+            answeredConstituents = answeredConstituents + name
+            changed = true
+        }
+    }
     val filledConstituents = constituents.mapIndexed { storedIndex, row ->
         filledByStoredIndex[storedIndex] ?: row
     }
@@ -249,6 +267,7 @@ fun FoodEntry.fillMissingFrom(analysis: FoodAnalysis): FoodEntry {
         fat = fat,
         constituents = filledConstituents,
         gapAnsweredFields = answered,
+        gapAnsweredConstituentNames = answeredConstituents,
     )
     return mergedMicros.applyTo(base).copy(
         microsCompositionSignature = microsCompositionSignature(filledConstituents),

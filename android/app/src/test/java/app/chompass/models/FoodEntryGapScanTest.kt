@@ -133,6 +133,27 @@ class FoodEntryGapScanTest {
     }
 
     @Test
+    fun answeredConstituentNames_stopCountingAsGaps() {
+        val bothAnswered = entry(
+            calories = 100,
+            protein = 1.0,
+            carbs = 2.0,
+            fat = 3.0,
+            constituents = listOf(constituent("Wodka"), constituent("Soda")),
+        ).copy(gapAnsweredConstituentNames = setOf("wodka", "soda")).gapReport()
+
+        assertTrue(bothAnswered.zeroMacroConstituents.isEmpty())
+        assertFalse(bothAnswered.hasMacroGaps)
+
+        val partiallyAnswered = entry(
+            constituents = listOf(constituent("Wodka"), constituent("Soda")),
+        ).copy(gapAnsweredConstituentNames = setOf("wodka")).gapReport()
+
+        assertEquals(listOf("Soda"), partiallyAnswered.zeroMacroConstituents.map { it.name })
+        assertTrue(partiallyAnswered.hasMacroGaps)
+    }
+
+    @Test
     fun partialZeroConstituent_notCounted() {
         // Keto-style row: carbs legitimately zero, rest known → not fillable.
         val report = entry(

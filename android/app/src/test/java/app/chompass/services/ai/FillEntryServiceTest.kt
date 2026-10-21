@@ -137,9 +137,13 @@ class FillEntryServiceTest {
         val prompt = promptOf(bodyOf(server.takeRequest()))
         // flash-lite routes the fill to the MACROS constituents kind: the
         // estimate line stops at the macros — micros are unanswerable in
-        // that schema (fiber still appears in the JSON schema itself).
+        // that schema (fiber still appears in the JSON schema itself) — and
+        // the all-zero ingredient row adds the row-macros ask.
         val missingLine = prompt.lineSequence().first { it.startsWith("Missing fields to estimate:") }
-        assertEquals("Missing fields to estimate: calories, protein, carbs, fat", missingLine)
+        assertEquals(
+            "Missing fields to estimate: calories, protein, carbs, fat, macros for each logged ingredient row",
+            missingLine,
+        )
         assertTrue(prompt.contains("Chicken bowl"))
         assertTrue(prompt.contains("chicken and rice"))
     }

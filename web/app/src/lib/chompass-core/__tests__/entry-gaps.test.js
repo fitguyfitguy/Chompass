@@ -378,3 +378,65 @@ test("merge: containment needs a word boundary and a ≥3-char shorter side", ()
   });
   assert.deepEqual(shortMerged.constituents, shortBlocked.constituents);
 });
+
+test("scan: answered constituent names stop counting as gaps", () => {
+  const both = gapReport(
+    entry({
+      calories: 100,
+      proteinG: 1,
+      carbsG: 2,
+      fatG: 3,
+      constituents: [constituent({ name: "Wodka" }), constituent({ name: "Soda" })],
+      gapAnsweredConstituentNames: ["wodka", "soda"],
+    }),
+  );
+  assert.equal(both.zeroMacroConstituents.length, 0);
+  assert.equal(both.hasMacroGaps, false);
+
+  const partial = gapReport(
+    entry({
+      constituents: [constituent({ name: "Wodka" }), constituent({ name: "Soda" })],
+      gapAnsweredConstituentNames: ["wodka"],
+    }),
+  );
+  assert.deepEqual(partial.zeroMacroConstituents.map((row) => row.name), ["Soda"]);
+  assert.ok(partial.hasMacroGaps);
+});
+
+test("merge: constituents-only gap stamps unmatched rows (whiskey sour)", () => {
+  // The re-offer fix: macros/micros answered, all-zero ingredient rows
+  // matched nothing (the cocktail shape). One fill must close the scan.
+  const before = entry({
+    calories: 160,
+    proteinG: 0.1,
+    carbsG: 14.5,
+    fatG: 12.5,
+    constituents: [
+      constituent({ name: "Whiskey", servingSizeGrams: 40 }),
+      constituent({ name: "Zitronensaft", servingSizeGrams: 25 }),
+    ],
+  });
+  assert.ok(gapReport(before).hasMacroGaps);
+
+  const merged = fillMissingFrom(before, {});
+
+  assert.deepEqual(merged.constituents, before.constituents);
+  assert.deepEqual(merged.gapAnsweredConstituentNames, ["whiskey", "zitronensaft"]);
+  assert.equal(gapReport(merged).zeroMacroConstituents.length, 0);
+  assert.equal(gapReport(merged).hasMacroGaps, false);
+  // Re-running the fill is now a no-op: nothing left to ask.
+  assert.strictEqual(merged, fillMissingFrom(merged, {}));
+});
+
+test("merge: matched constituent row fills, unmatched row stamped", () => {
+  const before = entry({
+    constituents: [constituent({ name: "Rolled oats" }), constituent({ name: "Soda water" })],
+  });
+  const merged = fillMissingFrom(before, {
+    constituents: [constituent({ name: "Rolled oats", calories: 380, proteinG: 13, carbsG: 58, fatG: 7 })],
+  });
+
+  assert.equal(merged.constituents[0].calories, 380);
+  assert.equal(merged.constituents[1].calories, 0);
+  assert.deepEqual(merged.gapAnsweredConstituentNames, ["soda water"]);
+});

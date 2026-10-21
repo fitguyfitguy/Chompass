@@ -281,6 +281,57 @@ class FillMissingMergeTest {
     }
 
     @Test
+    fun constituentsOnlyGap_unmatchedRowsStamped_reRunIsIdentity() {
+        // The re-offer fix: macros/micros answered, all-zero ingredient rows
+        // matched nothing (the cocktail shape — "Keine neuen Werte
+        // zurückgegeben"). One fill must close the scan, not re-offer forever.
+        val entry = FoodEntry(
+            name = "Whiskey Sour",
+            calories = 160,
+            protein = 0.1,
+            carbs = 14.5,
+            fat = 12.5,
+            sugar = 12.0,
+            source = FoodSource.MANUAL,
+            constituents = listOf(
+                FoodConstituent("Whiskey", 0, 0.0, 0.0, 0.0, servingSizeGrams = 40.0),
+                FoodConstituent("Zitronensaft", 0, 0.0, 0.0, 0.0, servingSizeGrams = 25.0),
+            ),
+        )
+        assertTrue(entry.gapReport().hasMacroGaps)
+
+        val merged = entry.fillMissingFrom(analysis()) // reply carries no constituents
+
+        assertEquals(entry.constituents, merged.constituents)
+        assertEquals(setOf("whiskey", "zitronensaft"), merged.gapAnsweredConstituentNames)
+        assertTrue(merged.gapReport().zeroMacroConstituents.isEmpty())
+        assertFalse(merged.gapReport().hasMacroGaps)
+        // A re-run has nothing left to ask: the entry comes back unchanged.
+        assertSame(merged, merged.fillMissingFrom(analysis()))
+    }
+
+    @Test
+    fun constituentRows_matchedRowFills_unmatchedRowStamped() {
+        val entry = mealieEntry(
+            constituents = listOf(
+                FoodConstituent("chicken and rice", 0, 0.0, 0.0, 0.0, servingSizeGrams = 400.0),
+                FoodConstituent("soda water", 0, 0.0, 0.0, 0.0, servingSizeGrams = 200.0),
+            ),
+        )
+        val merged = entry.fillMissingFrom(
+            analysis(
+                constituents = listOf(
+                    FoodConstituent("chicken and rice", 540, 42.0, 55.0, 0.0, servingSizeGrams = 400.0),
+                ),
+            ),
+        )
+
+        assertEquals(540, merged.constituents[0].calories)
+        assertEquals(0, merged.constituents[1].calories)
+        assertEquals(setOf("soda water"), merged.gapAnsweredConstituentNames)
+    }
+
+    @Test
     fun cascadeCopy_keepsOwnValuesAndServing_fillsOnlyMissing() {
         // Cascade shape: a favorite template's fill analysis applied to a
         // same-name today copy that carries its own serving and some filled
