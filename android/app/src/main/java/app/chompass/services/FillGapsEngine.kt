@@ -5,6 +5,7 @@ import app.chompass.R
 import app.chompass.data.FoodRepository
 import app.chompass.data.PreferencesStore
 import app.chompass.models.FoodEntry
+import app.chompass.models.GapGroup
 import app.chompass.models.GapMacroField
 import app.chompass.models.MicronutrientField
 import app.chompass.models.fillMissingFrom
@@ -65,6 +66,13 @@ data class FillQueueItem(
     /** Res ids of fields that were missing before the fill and are present after. */
     val filledLabels: List<Int> = emptyList(),
     val errorText: String? = null,
+    /**
+     * Per-nutrient fill focus (WP6): the gap groups this row's run asks the
+     * AI for. The sheet's per-row selector narrows it; the default runs the
+     * full ask. Recorded on the row at run time so the apply-time cascade
+     * merge knows whether the analysis ever asked for ingredient rows.
+     */
+    val focus: Set<GapGroup> = GapGroup.entries.toSet(),
 )
 
 /**
@@ -187,24 +195,27 @@ class FillGapsEngine(
      * merge. A zero/null answer still stamps the field (gapReport stops
      * counting it), so `merged == entry` only when nothing was asked and
      * nothing was written (Already complete). PENDING and FAILED rows
-     * (re)enter RUNNING — the sheet offers retry on FAILED.
+     * (re)enter RUNNING — the sheet offers retry on FAILED. The row's
+     * [FillQueueItem.focus] narrows the ask; constituent rows are stamped
+     * "attempted" only when the focus actually asked for them.
      */
     suspend fun runOne(item: FillQueueItem) {
         val target = item.target
+        val constituentsAsked = item.focus.containsAll(GapGroup.MACRO_GROUPS)
         _queue.update { list ->
             list?.map {
                 if (it.target.entry.id == target.entry.id &&
                     (it.status == FillStatus.PENDING || it.status == FillStatus.FAILED)
                 ) {
-                    it.copy(status = FillStatus.RUNNING, errorText = null)
+                    it.copy(status = FillStatus.RUNNING, errorText = null, focus = item.focus)
                 } else {
                     it
                 }
             }
         }
         try {
-            val analysis = foodAnalysis.fillEntry(target.entry)
-            val merged = target.entry.fillMissingFrom(analysis)
+            val analysis = foodAnalysis.fillEntry(target.entry, focus = item.focus)
+            val merged = target.entry.fillMissingFrom(analysis, constituentsAsked = constituentsAsked)
             val before = target.entry.gapReport()
             val after = merged.gapReport()
             val filledLabels = (before.missingMacros - after.missingMacros).map(GapMacroField::labelRes) +
@@ -281,7 +292,11 @@ class FillGapsEngine(
                 for (copy in cascadeCandidates(item.target.entry)) {
                     // Copies keep their own values; only missing fields take the
                     // template's analysis — same only-missing semantics, no AI call.
-                    cascadeCopies += copy to copy.fillMissingFrom(item.analysis)
+                    // Same constituent-stamp guard as the template's own run.
+                    cascadeCopies += copy to copy.fillMissingFrom(
+                        item.analysis,
+                        constituentsAsked = item.focus.containsAll(GapGroup.MACRO_GROUPS),
+                    )
                 }
             }
         }

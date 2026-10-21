@@ -2145,6 +2145,8 @@
     <string name="fill_gaps_adds_line">补全：%1$s</string>
     <string name="fill_gaps_no_values">未返回新数值</string>
     <string name="fill_gaps_run_all">全部补全</string>
+    <string name="fill_gaps_focus_all">全部缺失</string>
+    <string name="fill_gaps_focus_pick">选择要补全的字段</string>
     <string name="fill_gaps_apply">应用</string>
     <plurals name="fill_gaps_confirm_remote">
         <item quantity="one">运行 1 个 AI 请求？</item>

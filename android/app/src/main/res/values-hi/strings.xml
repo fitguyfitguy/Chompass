@@ -2146,6 +2146,8 @@
     <string name="fill_gaps_adds_line">जोड़ता है: %1$s</string>
     <string name="fill_gaps_no_values">कोई नया मान नहीं लौटाया गया</string>
     <string name="fill_gaps_run_all">सभी भरें</string>
+    <string name="fill_gaps_focus_all">सारे लापता मान</string>
+    <string name="fill_gaps_focus_pick">भरने के लिए फ़ील्ड चुनें</string>
     <string name="fill_gaps_apply">लागू करें</string>
     <plurals name="fill_gaps_confirm_remote">
         <item quantity="one">1 AI अनुरोध चलाएँ?</item>

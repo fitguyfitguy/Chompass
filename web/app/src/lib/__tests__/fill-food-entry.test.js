@@ -261,3 +261,45 @@ test("fillFoodEntry_asksForIngredientRowMacros_onlyWhenConstituentsAllowed", asy
     PROVIDERS.anthropic.send = original;
   }
 });
+
+test("fillFoodEntry_focus_narrowsMissingList_dropsRowAsk", async () => {
+  const original = PROVIDERS.anthropic.send;
+  /** @type {{systemPrompt: string, messages: {role: string, text: string}[]} | null} */
+  let sent = null;
+  PROVIDERS.anthropic.send = async (_config, args) => {
+    sent = /** @type {any} */ (args);
+    return {
+      text: JSON.stringify({
+        name: "Overnight oats",
+        calories: 0,
+        proteinG: 42,
+        carbsG: 0,
+        fatG: 12.5,
+        quantityG: 300,
+      }),
+      toolCalls: [],
+    };
+  };
+  try {
+    // WP6 per-nutrient focus: the wire prompt asks ONLY for the focused
+    // group, and the ingredient-row ask (which carries all four macros)
+    // stays out of a macro-narrow run.
+    await fillFoodEntry({
+      providerId: "anthropic",
+      config: { apiKey: "test-key" },
+      entry: gappedEntry(),
+      focus: ["PROTEIN"],
+      prefsOverride: /** @type {any} */ ({ aiFeaturesEnabled: true, aiFallbackEnabled: false }),
+    });
+    const userText = /** @type {any} */ (sent).messages[0].text;
+    assert.ok(
+      userText.includes("Missing fields to estimate: proteinG"),
+      `focused missing line absent: ${userText}`,
+    );
+    assert.ok(!userText.includes("calories, proteinG"), `unfocused macros leaked: ${userText}`);
+    assert.ok(!userText.includes("fiberG"), `micro ask leaked into macro focus: ${userText}`);
+    assert.ok(!userText.includes("macros for each logged ingredient row"));
+  } finally {
+    PROVIDERS.anthropic.send = original;
+  }
+});

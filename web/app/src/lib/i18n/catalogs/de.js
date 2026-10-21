@@ -680,6 +680,8 @@ export const de = Object.freeze({
   // gaps.* (AI fill-missing: Home banner + gaps view)
   "gaps.apply": "Übernehmen",
   "gaps.apply_all": "Alle übernehmen",
+  "gaps.focus_all": "Alles Fehlende",
+  "gaps.focus_aria": "Zu ergänzende Felder wählen",
   "gaps.no_values": "Keine neuen Werte zurückgegeben",
   "gaps.show_diff": "Änderungen anzeigen",
   "gaps.never_remind": "Nicht mehr erinnern",

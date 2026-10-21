@@ -2174,6 +2174,8 @@ macros rééquilibrées au nouveau total calorique</string>
     <string name="fill_gaps_adds_line">Ajoute : %1$s</string>
     <string name="fill_gaps_no_values">Aucune nouvelle valeur renvoyée</string>
     <string name="fill_gaps_run_all">Tout remplir</string>
+    <string name="fill_gaps_focus_all">Tous les manquants</string>
+    <string name="fill_gaps_focus_pick">Choisir les champs à compléter</string>
     <string name="fill_gaps_apply">Appliquer</string>
     <plurals name="fill_gaps_confirm_remote">
         <item quantity="one">Lancer 1 requête IA ?</item>

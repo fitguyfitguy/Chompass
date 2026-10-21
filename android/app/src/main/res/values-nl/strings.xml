@@ -2145,6 +2145,8 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
     <string name="fill_gaps_adds_line">Voegt toe: %1$s</string>
     <string name="fill_gaps_no_values">Geen nieuwe waarden geretourneerd</string>
     <string name="fill_gaps_run_all">Alles aanvullen</string>
+    <string name="fill_gaps_focus_all">Alles wat ontbreekt</string>
+    <string name="fill_gaps_focus_pick">Te aanvullen velden kiezen</string>
     <string name="fill_gaps_apply">Toepassen</string>
     <plurals name="fill_gaps_confirm_remote">
         <item quantity="one">1 AI-verzoek uitvoeren?</item>

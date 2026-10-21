@@ -290,6 +290,8 @@ export const ko = Object.freeze({
   "entry.ai.missing_line": "누락: {labels}",
   "gaps.apply": "적용",
   "gaps.apply_all": "모두 적용",
+  "gaps.focus_all": "빈 값 모두",
+  "gaps.focus_aria": "채울 항목 선택",
   "gaps.no_values": "새 값이 반환되지 않음",
   "gaps.show_diff": "변경 사항 보기",
   "gaps.never_remind": "다시 알리지 않기",

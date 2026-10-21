@@ -11,7 +11,7 @@
 import { foodEntries, prefs } from "../lib/db.js";
 import { listFavorites, updateFavorite } from "../lib/saved-meals.js";
 import { scanGaps, bannerVisible, markBannerShown, dismissBanner, disableBannerForever, FILL_GAPS_ENABLED } from "../lib/fill-gaps.js";
-import { fillMissingFrom } from "../lib/chompass-core/entry-gaps.js";
+import { fillMissingFrom, gapReport, missingGroups, MACRO_GAP_GROUPS } from "../lib/chompass-core/entry-gaps.js";
 import { buildCorrectDiff } from "../lib/ai/correct-diff.js";
 import { isAbortError } from "../lib/ai/analysis-phase.js";
 import { todayIso } from "../lib/date.js";
@@ -22,6 +22,7 @@ import { openSheet } from "../lib/ui/sheet.js";
 
 /**
  * @typedef {"pending"|"running"|"filled"|"failed"|"applied"} FillStatus
+ * @typedef {"ALL" | import('../lib/chompass-core/entry-gaps.js').GapGroup} FillFocus
  * @typedef {{
  *   favorite: boolean,
  *   key: string,
@@ -29,8 +30,18 @@ import { openSheet } from "../lib/ui/sheet.js";
  *   merged: import('../lib/chompass-core/models.js').FoodEntry | null,
  *   status: FillStatus,
  *   error: string,
+ *   focus: FillFocus,
  * }} FillRow
  */
+
+/** Existing i18n vocabulary for the per-row focus selector (Android focusLabel twin). */
+const GAP_FOCUS_LABEL_KEYS = /** @type {Record<import('../lib/chompass-core/entry-gaps.js').GapGroup, string>} */ ({
+  CALORIES: "diary.calories",
+  PROTEIN: "onboarding.plan.protein",
+  CARBS: "onboarding.plan.carbs",
+  FAT: "onboarding.plan.fat",
+  MICROS: "diary.detailed_nutrition",
+});
 
 /** diary-view sits behind the sheet; re-render it so Home totals follow. */
 function refreshHostView() {
@@ -68,6 +79,7 @@ export class FillGapsView extends HTMLElement {
       merged: null,
       status: /** @type {FillStatus} */ ("pending"),
       error: "",
+      focus: /** @type {FillFocus} */ ("ALL"),
     }));
     this.render();
   }
@@ -89,6 +101,14 @@ export class FillGapsView extends HTMLElement {
     for (const el of this.querySelectorAll("[data-gaps-run]")) {
       el.addEventListener("click", () => {
         void this.runRow(Number(el.getAttribute("data-gaps-run")));
+      });
+    }
+    // Per-nutrient fill focus (WP6): the row's selector chooses the gap
+    // group its run asks the AI for; "ALL" keeps the full ask.
+    for (const el of this.querySelectorAll("[data-gaps-focus]")) {
+      el.addEventListener("change", () => {
+        const row = this.rows[Number(el.getAttribute("data-gaps-focus"))];
+        if (row) row.focus = /** @type {FillFocus} */ (/** @type {any} */ (el).value);
       });
     }
     this.querySelector("[data-gaps-never-remind]")?.addEventListener("click", async () => {
@@ -136,6 +156,10 @@ export class FillGapsView extends HTMLElement {
       row.status === "pending" || row.status === "failed"
         ? `<button type="button" class="btn btn--ghost btn--sm" data-gaps-run="${index}">${escapeHtml(runLabel)}</button>`
         : "";
+    const focusSel =
+      row.status === "pending" || row.status === "failed"
+        ? `<select data-gaps-focus="${index}" aria-label="${escapeAttr(t("gaps.focus_aria"))}">${this.focusOptionsHtml(row)}</select>`
+        : "";
     const applyBtn =
       row.status === "filled"
         ? `<button type="button" class="btn btn--primary btn--sm" data-gaps-apply="${index}">${escapeHtml(t("gaps.apply"))}</button>`
@@ -150,11 +174,30 @@ export class FillGapsView extends HTMLElement {
           ${errorHtml}
         </div>
         <div class="fill-gaps-row__actions">
+          ${focusSel}
           ${runBtn}
           ${applyBtn}
         </div>
       </div>
     `;
+  }
+
+  /**
+   * Focus selector options for one row: "All missing" (default) plus the
+   * groups the row's live gap report still misses — or the chosen group
+   * once one is selected (so the selection always has its option).
+   * @param {FillRow} row
+   */
+  focusOptionsHtml(row) {
+    /** @type {import('../lib/chompass-core/entry-gaps.js').GapGroup[]} */
+    const groups = row.focus !== "ALL" ? [row.focus] : missingGroups(gapReport(row.original));
+    return [
+      `<option value="ALL"${row.focus === "ALL" ? " selected" : ""}>${escapeHtml(t("gaps.focus_all"))}</option>`,
+      ...groups.map(
+        (group) =>
+          `<option value="${group}"${row.focus === group ? " selected" : ""}>${escapeHtml(t(GAP_FOCUS_LABEL_KEYS[group]))}</option>`,
+      ),
+    ].join("");
   }
 
   /**
@@ -189,9 +232,14 @@ export class FillGapsView extends HTMLElement {
         config: resolved.config,
         entry: row.original,
         signal: ac.signal,
+        focus: row.focus === "ALL" ? undefined : [row.focus],
       });
       if (ac.signal.aborted) return;
-      const merged = fillMissingFrom(row.original, estimate);
+      // Same constituent-stamp guard as Android FillGapsEngine.runOne: a
+      // focused run that never asked for ingredient rows must not stamp them.
+      const merged = fillMissingFrom(row.original, estimate, {
+        constituentsAsked: row.focus === "ALL" || MACRO_GAP_GROUPS.every((g) => g === row.focus),
+      });
       row.merged = merged;
       row.status = "filled";
     } catch (err) {
