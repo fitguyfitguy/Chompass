@@ -19,7 +19,7 @@ Bring your own AI key. On Android you can also run Gemma 4 on-device. No ads, no
 
 </div>
 
-Log food with a photo, voice, barcode, or typed note. Barcode scans look up [Open Food Facts](https://world.openfoodfacts.org/) (4.6M+ products, cached offline). Photo analysis can also read codes from the image. The [PWA](https://chompass.app/app/) and the Android app share the same diary and body-metrics JSON. There is no cloud sync between clients.
+Log food with a photo, voice, barcode, or typed note. Barcode scans look up [Open Food Facts](https://world.openfoodfacts.org/) (4.6M+ products, cached offline). The [PWA](https://chompass.app/app/) and the Android app share the same diary and body-metrics JSON. There is no cloud sync between clients.
 
 ## Install
 
