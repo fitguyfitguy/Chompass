@@ -8,7 +8,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Fixed
 
-- **All 17 languages now cover the newer screens** (Android): Arabic, Azerbaijani, German, Spanish, French, Hindi, Italian, Japanese, Korean, Dutch, Polish, Brazilian Portuguese, Romanian, Russian, Turkish, Ukrainian, and Simplified Chinese caught up on everything added since the last translation pass: week planning, Mealie import, the body-fat method picker, fill-missing, the reworked home screen, and the rest. Percent signs no longer show up doubled (±10%% becomes ±10%).
+- **All 17 languages now cover the newer screens** (Android): Arabic, Azerbaijani, German, Spanish, French, Hindi, Italian, Japanese, Korean, Dutch, Polish, Brazilian Portuguese, Romanian, Russian, Turkish, Ukrainian, and Simplified Chinese caught up on everything added since the last translation pass: week planning, Mealie import, the body-fat method picker, fill-missing, the reworked home screen, and the rest. Percent signs no longer show up doubled (±10%% becomes ±10%). The tape-method source label now reads in the app language in Arabic, Hindi, Italian, Russian, and Turkish, and the Mealie import screen labels itself in Japanese; names that are the same word everywhere (DEXA, Compact) stay as they are.
 - **Settings search works in your language** (Android): the keyword list behind every settings row is now translated in all 17 languages, so typing "Gewicht", "вес" or "体重" opens the row instead of matching only its translated title. Units and product names (kcal, BMI, WebDAV, Health Connect) stay as they are in every language, so those searches behave the same everywhere.
 
 ### Added
