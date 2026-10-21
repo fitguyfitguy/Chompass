@@ -15,7 +15,7 @@ import { gapReport } from "./chompass-core/entry-gaps.js";
  * 5.10.0 stable cut (2026-10-21); v5.10.0-beta.1 carries it on, mirroring
  * Android FillGapsFeature.ENABLED. Do not delete the implementation.
  */
-export const FILL_GAPS_ENABLED = false;
+export const FILL_GAPS_ENABLED = true;
 
 const DISMISSED_KEY = "chompass-fill-gaps-banner-dismissed";
 const LAST_SHOWN_KEY = "chompass-fill-gaps-banner-last-shown";

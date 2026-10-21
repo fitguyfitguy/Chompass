@@ -10,5 +10,5 @@ package app.chompass.services
  * Flip this together with web FILL_GAPS_ENABLED. Do not delete the implementation.
  */
 object FillGapsFeature {
-    const val ENABLED: Boolean = false
+    const val ENABLED: Boolean = true
 }
