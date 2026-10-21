@@ -99,6 +99,10 @@ class BodyFatRepository(
 
     suspend fun deleteEntry(id: UUID) {
         val existing = prefs.bodyFatEntries.first().firstOrNull { it.id == id } ?: return
+        // Tombstone BEFORE the bucket removal (upstream d03be0ea): the id lands in
+        // healthDeletedBodyFatIds so a later Health Connect import mapping onto the
+        // same deterministic id is filtered out instead of resurrecting the record.
+        prefs.setHealthDeletedBodyFatIds(appendTombstoneId(prefs.healthDeletedBodyFatIds.first(), id))
         prefs.applyBodyFatBucketChanges(removalIdsByMonth = mapOf(existing.month() to setOf(id)))
         sync?.tombstone(id, "bodyfat")
         syncProfileBodyFatToLatest()
@@ -134,6 +138,7 @@ class BodyFatRepository(
      */
     suspend fun importExternalBodyFats(external: List<ExternalBodyFat>) {
         val manager = health ?: return
+        val tombstoned = prefs.healthDeletedBodyFatIds.first()
         val incoming = external
             .asSequence()
             .map {
@@ -144,6 +149,9 @@ class BodyFatRepository(
                     bodyFatFraction = it.bodyFatFraction
                 )
             }
+            // Deleted stays deleted (upstream d03be0ea), fudai_ tag or not — a
+            // surviving own-record HC delete must not resurrect the reading.
+            .filter { it.id !in tombstoned }
             // Out-of-range readings (3–65%) never enter history or the profile.
             .filter { sanitizeBodyFatFraction(it.bodyFatFraction) != null }
             .toList()
