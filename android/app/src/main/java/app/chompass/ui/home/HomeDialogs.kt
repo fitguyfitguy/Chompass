@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ImageSearch
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.UnfoldMore
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -624,33 +625,35 @@ internal fun ManualEntryDialog(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
-                // Meal Type — DropdownMenu styled to match the FoodResultSheet /
-                // EditFoodEntrySheet meal pickers (icon + label, pink, anchored
-                // to the right cluster).
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(AppRadii.Tile))
-                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                        .clickable { mealMenuExpanded = true }
-                        .padding(horizontal = 14.dp, vertical = 14.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(stringResource(R.string.sheet_meal_type), fontSize = 16.sp, modifier = Modifier.weight(1f))
+                // Meal Type — the canonical SheetSectionHeader + SheetPillRow
+                // arrangement used by the result/edit sheets (icon + label,
+                // calorie pink, anchored to the right cluster).
+                SheetSectionHeader(stringResource(R.string.sheet_meal))
+                SheetPillRow(onClick = { mealMenuExpanded = true }) {
+                    Text(stringResource(R.string.sheet_meal_type), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                    // Wrap only the right cluster in a Box so the DropdownMenu
+                    // anchors on the right side of the row (under the value),
+                    // not at the row's left edge.
                     Box {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 sheetMealIcon(mealType),
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(18.dp)
+                                tint = AppColors.Calorie,
+                                modifier = Modifier.size(20.dp)
                             )
                             Spacer(Modifier.width(6.dp))
                             Text(
                                 mealLabel(mealType),
-                                fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.primary,
+                                fontSize = 17.sp,
+                                color = AppColors.Calorie,
                                 fontWeight = FontWeight.Medium
+                            )
+                            Spacer(Modifier.width(6.dp))
+                            Icon(
+                                Icons.Filled.UnfoldMore,
+                                contentDescription = null,
+                                tint = AppColors.Calorie
                             )
                         }
                         SheetGlassDropdownMenu(
