@@ -293,6 +293,8 @@ export const fr = Object.freeze({
   "entry.ai.missing_line": "Manquant : {labels}",
   "gaps.apply": "Appliquer",
   "gaps.apply_all": "Tout appliquer",
+  "gaps.focus_all": "Tous les manquants",
+  "gaps.focus_aria": "Choisir les champs à compléter",
   "gaps.no_values": "Aucune nouvelle valeur renvoyée",
   "gaps.show_diff": "Voir les changements",
   "gaps.never_remind": "Ne plus me le rappeler",

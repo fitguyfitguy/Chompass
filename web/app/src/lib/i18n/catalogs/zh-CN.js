@@ -290,6 +290,8 @@ export const zh_CN = Object.freeze({
   "entry.ai.missing_line": "缺失：{labels}",
   "gaps.apply": "应用",
   "gaps.apply_all": "全部应用",
+  "gaps.focus_all": "全部缺失",
+  "gaps.focus_aria": "选择要补全的字段",
   "gaps.no_values": "未返回新数值",
   "gaps.show_diff": "显示变更",
   "gaps.never_remind": "不再提醒",

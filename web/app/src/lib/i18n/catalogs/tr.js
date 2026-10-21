@@ -336,6 +336,8 @@ export const tr = Object.freeze({
   "entry.ai.missing_line": "Eksik: {labels}",
   "gaps.apply": "Uygula",
   "gaps.apply_all": "Tümünü uygula",
+  "gaps.focus_all": "Tüm eksikler",
+  "gaps.focus_aria": "Doldurulacak alanları seç",
   "gaps.no_values": "Yeni değer döndürülmedi",
   "gaps.show_diff": "Değişiklikleri göster",
   "gaps.never_remind": "Bir daha hatırlatma",

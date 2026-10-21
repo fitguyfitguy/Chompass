@@ -715,6 +715,8 @@ export const en = Object.freeze({
   // gaps.* (AI fill-missing: Home banner + gaps view)
   "gaps.apply": "Apply",
   "gaps.apply_all": "Apply all",
+  "gaps.focus_all": "All missing",
+  "gaps.focus_aria": "Choose fields to fill",
   "gaps.no_values": "No new values returned",
   "gaps.show_diff": "Show changes",
   "gaps.never_remind": "Don't remind me again",
