@@ -4,11 +4,23 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no internals). The version section is pasted verbatim onto the Codeberg release.
 
-## [Unreleased]
+## [5.11.0-beta.1] - 2026-10-21
+
+### Added
+
+- **Fill missing values one group at a time** (Android and PWA): each row in the fill-missing list gains a picker to ask the AI only for calories, protein, carbs, fat, or the detailed micros. The default still asks for everything the meal is missing, and a focused ask no longer counts as an attempt for the groups it skipped.
+
+### Changed
+
+- **Manual entry gets a time of day** (Android): the manual-entry sheet gains a time row under the meal section. The entry lands at the chosen time on the selected day, and the meal type follows the time when you have not picked a meal yourself.
+- **Activity burn changes reach the widget** (Android): updates to your measured activity average or day-type burn, from adaptive goals, Health Connect, or reseeding, now refresh the home-screen widget without waiting for a food log.
+- **Cloud AI survives cold starts** (Android): the built-in cloud providers now wait up to 4 minutes for the first response instead of 60 seconds, so a cold model start no longer fails an analysis. Ollama and custom endpoints keep the timeout from Settings.
 
 ### Fixed
 
 - **Fill-missing stops chasing meals it cannot complete** (Android and PWA): meals whose ingredient rows stay empty, like cocktails and some imported recipes, no longer reappear in the missing-values reminder after a fill attempt came up empty. When the AI provider supports ingredient rows, the fill now asks for their values directly; otherwise the meal leaves the reminder list after the first try. The fill list also names the empty ingredient rows instead of showing a blank "Missing" line.
+- **Deleted weigh-ins stay deleted** (Android): Health Connect no longer resurrects weight or body-fat readings you deleted when it re-imports them on a later sync. Your most recent deletions are remembered.
+- **Progress keeps day-type names** (Android): adherence rows keep the day-type name recorded in the journal when that profile was renamed or deleted, instead of showing a raw id.
 
 ## [5.10.0] - 2026-10-21
 
