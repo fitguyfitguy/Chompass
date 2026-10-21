@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
 import android.os.LocaleList
-import androidx.core.os.LocaleListCompat
 import java.util.Locale
 
 /**
@@ -66,25 +65,31 @@ object LocaleHelper {
     @SuppressLint("NewApi")
     private fun applyModern(context: Context, languageTag: String) {
         val localeManager = context.getSystemService(LocaleManager::class.java)
-        val localeListCompat = if (languageTag.isBlank()) {
-            LocaleListCompat.getEmptyLocaleList()
+        val localeList = if (languageTag.isBlank()) {
+            LocaleList.getEmptyLocaleList()
         } else {
-            LocaleListCompat.forLanguageTags(languageTag)
+            LocaleList(*localesForLanguageTag(languageTag).toTypedArray())
         }
-        // Convert LocaleListCompat to framework LocaleList
-        localeManager.setApplicationLocales(localeListCompat.toFrameworkLocaleList())
+        localeManager.setApplicationLocales(localeList)
     }
+}
 
-    /**
-     * Convert LocaleListCompat to framework LocaleList.
-     */
-    private fun LocaleListCompat.toFrameworkLocaleList(): LocaleList {
-        val locales = mutableListOf<Locale>()
-        for (i in 0 until size()) {
-            get(i)?.let { locales.add(it) }
-        }
-        return LocaleList(*locales.toTypedArray())
+/**
+ * Locales from a lenient BCP-47 parse, dropping blank-language
+ * placeholders and repeats. `LocaleListCompat.forLanguageTags` builds the
+ * framework [LocaleList] itself, so a hostile tag ("!!!,,," → identical
+ * empty locales, "de-DE,de-DE" → repeats) throws
+ * "list[1] is a repetition" before callers can sanitize; parsing each
+ * comma-part with [Locale.forLanguageTag] keeps construction in our hands.
+ */
+internal fun localesForLanguageTag(languageTag: String): List<Locale> {
+    val locales = mutableListOf<Locale>()
+    for (part in languageTag.split(',')) {
+        val locale = Locale.forLanguageTag(part)
+        if (locale.language.isBlank()) continue
+        if (locales.none { it == locale }) locales.add(locale)
     }
+    return locales
 }
 
 /**
@@ -93,10 +98,5 @@ object LocaleHelper {
  * "do not touch locales" rather than a crash.
  */
 internal fun localeListForLanguageTag(languageTag: String): LocaleList {
-    val locales = mutableListOf<Locale>()
-    val compat = LocaleListCompat.forLanguageTags(languageTag)
-    for (i in 0 until compat.size()) {
-        compat.get(i)?.let { locales.add(it) }
-    }
-    return LocaleList(*locales.toTypedArray())
+    return LocaleList(*localesForLanguageTag(languageTag).toTypedArray())
 }

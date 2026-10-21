@@ -4,6 +4,7 @@ import android.app.Application
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -24,6 +25,23 @@ class LocaleHelperTest {
     fun germanTag_selectsGerman() {
         val list = localeListForLanguageTag("de")
         assertEquals("de", list[0].language)
+    }
+
+    @Test
+    fun repeatedTags_deduplicate() {
+        // LocaleList rejects duplicates ("list[1] is a repetition"); the same
+        // locale twice must collapse to one entry, not crash construction.
+        val list = localeListForLanguageTag("de-DE,de-DE")
+        assertEquals(1, list.size())
+        assertEquals("de", list[0].language)
+    }
+
+    @Test
+    fun garbageTags_parseToEmpty() {
+        // Lenient parsing maps ill-formed tags to identical empty locales;
+        // they must be dropped so the result is empty (identity wrap) rather
+        // than a list the framework rejects.
+        assertTrue(localeListForLanguageTag("!!!,,,").isEmpty)
     }
 
     @Test
