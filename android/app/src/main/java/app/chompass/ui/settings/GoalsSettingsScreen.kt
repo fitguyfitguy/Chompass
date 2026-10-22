@@ -154,7 +154,7 @@ fun GoalsSettingsScreen(
 
     if (showRebalanceBlockedAlert) {
         ChompassDialog(onDismissRequest = { showRebalanceBlockedAlert = false }) {
-            Text(stringResource(R.string.settings_rebalance_blocked_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.settings_rebalance_blocked_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_rebalance_blocked_message),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
@@ -168,7 +168,7 @@ fun GoalsSettingsScreen(
 
     if (showAdaptiveGoalsInfo) {
         ChompassDialog(onDismissRequest = { showAdaptiveGoalsInfo = false }) {
-            Text(stringResource(R.string.settings_adaptive_goals), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.settings_adaptive_goals), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_adaptive_goals_info),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
@@ -184,7 +184,7 @@ fun GoalsSettingsScreen(
     val adaptiveAlertMessage = ui.adaptiveGoalAlertMessage
     if (adaptiveAlertTitle != null && adaptiveAlertMessage != null) {
         ChompassDialog(onDismissRequest = { vm.dismissAdaptiveGoalAlert() }) {
-            Text(adaptiveAlertTitle, fontSize = 21.sp, fontWeight = FontWeight.Bold)
+            Text(adaptiveAlertTitle, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 adaptiveAlertMessage,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
@@ -214,7 +214,7 @@ fun GoalsSettingsScreen(
 
     invalidGoalWeightMessage?.let { msg ->
         ChompassDialog(onDismissRequest = { invalidGoalWeightMessage = null }) {
-            Text(stringResource(R.string.settings_invalid_goal_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.settings_invalid_goal_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_ok),

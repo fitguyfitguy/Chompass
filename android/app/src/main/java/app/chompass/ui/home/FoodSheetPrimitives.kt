@@ -343,7 +343,7 @@ internal fun SheetToolbarPill(
         Text(
             label,
             color = if (bold) MaterialTheme.colorScheme.onPrimary else AppColors.Calorie,
-            fontSize = if (compact) 15.sp else 16.sp,
+            fontSize = if (compact) 14.sp else 16.sp,
             fontWeight = if (bold) FontWeight.SemiBold else FontWeight.Medium,
             maxLines = maxLines,
             softWrap = maxLines > 1,

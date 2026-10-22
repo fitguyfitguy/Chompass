@@ -352,7 +352,7 @@ private fun NicotineHistoryRow(
                 entry.count.toString()
             },
             fontWeight = FontWeight.SemiBold,
-            fontSize = 15.sp,
+            fontSize = 14.sp,
             color = MaterialTheme.colorScheme.warning,
         )
         IconButton(onClick = onDelete) {

@@ -72,7 +72,7 @@ internal fun FoodProductMetadataCard(metadata: FoodProductMetadata) {
             Column(Modifier.padding(horizontal = 18.dp, vertical = 12.dp)) {
                 Text(
                     stringResource(R.string.product_ingredient_label),
-                    fontSize = 15.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -109,13 +109,13 @@ private fun MetadataRow(label: String, value: String, labelColor: androidx.compo
     ) {
         Text(
             label,
-            fontSize = 15.sp,
+            fontSize = 14.sp,
             color = labelColor,
             modifier = Modifier.weight(1f),
         )
         Text(
             value,
-            fontSize = 15.sp,
+            fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1.6f),
         )

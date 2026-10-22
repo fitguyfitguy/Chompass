@@ -344,7 +344,7 @@ fun CoachRecordingIndicator(controller: CoachVoiceController, modifier: Modifier
             )
             Text(
                 stringResource(R.string.voice_transcribing),
-                fontSize = 15.sp,
+                fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
             )
             return@Row
@@ -359,7 +359,7 @@ fun CoachRecordingIndicator(controller: CoachVoiceController, modifier: Modifier
         )
         Text(
             formatElapsed(controller.elapsedMs),
-            fontSize = 15.sp,
+            fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurface
         )
@@ -373,7 +373,7 @@ fun CoachRecordingIndicator(controller: CoachVoiceController, modifier: Modifier
                 live.isNotBlank() -> live
                 else -> stringResource(R.string.voice_listening)
             },
-            fontSize = 15.sp,
+            fontSize = 14.sp,
             color = if (armed) MaterialTheme.colorScheme.error
                     else MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
             maxLines = 1,

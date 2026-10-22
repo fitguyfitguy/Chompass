@@ -146,7 +146,7 @@ internal fun StatBadge(label: String, value: String, modifier: Modifier = Modifi
         Text(
             value,
             modifier = Modifier.fillMaxWidth(),
-            fontSize = 15.sp,
+            fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

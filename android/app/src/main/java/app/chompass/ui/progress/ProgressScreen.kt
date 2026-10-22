@@ -367,7 +367,7 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
     }
     if (ui.goalReached) {
         ChompassDialog(onDismissRequest = { vm.dismissGoalReached() }) {
-            Text(stringResource(R.string.progress_goal_reached_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.progress_goal_reached_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.progress_goal_reached_message),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)

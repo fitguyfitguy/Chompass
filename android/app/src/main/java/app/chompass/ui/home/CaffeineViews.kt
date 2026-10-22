@@ -355,7 +355,7 @@ private fun CaffeineHistoryRow(
         Text(
             stringResource(R.string.caffeine_mg_value, formatMg(entry.mg)),
             fontWeight = FontWeight.SemiBold,
-            fontSize = 15.sp,
+            fontSize = 14.sp,
             color = MaterialTheme.colorScheme.caffeine,
         )
         IconButton(onClick = onDelete) {

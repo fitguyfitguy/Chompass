@@ -35,7 +35,7 @@ internal fun PlanForDayDialog(
     val maxDate = maxDiaryNavDate(today)
     var pickedDate by remember { mutableStateOf(today.plusDays(1)) }
     ChompassDialog(onDismissRequest = onDismiss) {
-        Text(stringResource(R.string.plan_pick_day_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.plan_pick_day_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
         DateWheelPicker(
             selected = pickedDate.coerceIn(today, maxDate),
             onSelect = { pickedDate = it },

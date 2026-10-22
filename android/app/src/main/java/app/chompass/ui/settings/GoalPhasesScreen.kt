@@ -478,7 +478,7 @@ internal fun GoalPhaseEditSheet(
         ChompassDialog(onDismissRequest = { confirmDelete = false }) {
             Text(
                 stringResource(R.string.settings_goal_phases_delete_title, editing.name),
-                fontSize = 21.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
             )
             Text(

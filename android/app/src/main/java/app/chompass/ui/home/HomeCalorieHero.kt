@@ -1704,7 +1704,7 @@ internal fun ViewMoreButton() {
     ) {
         Text(
             stringResource(R.string.home_view_more),
-            fontSize = 15.sp,
+            fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
             color = AppColors.Calorie.copy(alpha = 0.6f)
         )

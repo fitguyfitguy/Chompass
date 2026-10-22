@@ -375,14 +375,14 @@ private fun ProgressiveNutritionRow(
     ) {
         Text(
             text = label,
-            fontSize = 15.sp,
+            fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
             color = accentColor,
             modifier = Modifier.weight(1f),
         )
         Text(
             text = displayValue ?: "···",
-            fontSize = 15.sp,
+            fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
             color = if (filled) accentColor else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
         )

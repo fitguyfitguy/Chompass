@@ -168,12 +168,12 @@ private fun ManualActiveHistoryRow(
                 .weight(1f)
                 .padding(start = 10.dp),
             fontWeight = FontWeight.Medium,
-            fontSize = 15.sp,
+            fontSize = 14.sp,
         )
         Text(
             "${EnergyFormat.quantity(entry.calories, LocalEnergyUnit.current)} ${energyUnitLabel()}",
             fontWeight = FontWeight.SemiBold,
-            fontSize = 15.sp,
+            fontSize = 14.sp,
             color = MaterialTheme.colorScheme.tertiary,
         )
         IconButton(onClick = onDelete) {

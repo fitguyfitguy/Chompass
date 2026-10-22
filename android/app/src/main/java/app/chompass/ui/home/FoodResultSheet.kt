@@ -620,7 +620,7 @@ fun FoodResultSheet(
                                     phase,
                                     fillingFields = partial?.hasAnyField == true,
                                 ),
-                                fontSize = 15.sp,
+                                fontSize = 14.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = AppColors.Calorie,
                                 textAlign = TextAlign.Center,
@@ -629,7 +629,7 @@ fun FoodResultSheet(
                             if (inferringUnits) {
                                 Text(
                                     stringResource(R.string.entry_analysis_inferring_units),
-                                    fontSize = 15.sp,
+                                    fontSize = 14.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     color = AppColors.Calorie,
                                     textAlign = TextAlign.Center,
@@ -1657,7 +1657,7 @@ private fun WhatIfImpactRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(Modifier.weight(1f)) {
-            Text(label, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = accentColor)
+            Text(label, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = accentColor)
             Text(
                 added,
                 fontSize = 13.sp,

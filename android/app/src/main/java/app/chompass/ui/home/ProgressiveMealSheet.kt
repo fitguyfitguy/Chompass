@@ -410,7 +410,7 @@ private fun ProgressiveIngredientRow(
         }
 
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(analysis.name, fontSize = 15.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(analysis.name, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
             // Same echo rule as saved rows (Codeberg #65): pending items keep
             // their analyzed unit when resolvable, else grams.
             val echo = ServingUnitOption.homeDisplaySelection(

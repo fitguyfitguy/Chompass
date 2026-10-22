@@ -190,8 +190,8 @@ private fun DateRow(label: String, value: String, onClick: () -> Unit) {
             .clickable(onClick = onClick)
             .padding(vertical = 10.dp),
     ) {
-        Text(label, fontSize = 15.sp, modifier = Modifier.padding(end = 8.dp))
+        Text(label, fontSize = 14.sp, modifier = Modifier.padding(end = 8.dp))
         Spacer(Modifier.weight(1f))
-        Text(value, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = AppColors.Calorie)
+        Text(value, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppColors.Calorie)
     }
 }

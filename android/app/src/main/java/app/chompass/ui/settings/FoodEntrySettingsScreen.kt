@@ -188,7 +188,7 @@ fun FoodEntrySettingsScreen(
 
     if (showDefaultGramsInfo) {
         ChompassDialog(onDismissRequest = { showDefaultGramsInfo = false }) {
-            Text(stringResource(R.string.settings_default_to_grams), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.settings_default_to_grams), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_default_to_grams_info),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
@@ -201,7 +201,7 @@ fun FoodEntrySettingsScreen(
     }
     if (showMealPlanningInfo) {
         ChompassDialog(onDismissRequest = { showMealPlanningInfo = false }) {
-            Text(stringResource(R.string.settings_meal_planning), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.settings_meal_planning), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_meal_planning_info),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)

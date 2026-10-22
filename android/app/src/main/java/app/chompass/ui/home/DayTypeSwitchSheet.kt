@@ -167,7 +167,7 @@ fun DayTypeSwitchSheet(
                 ) {
                     Text(
                         stringResource(R.string.day_type_edit_settings),
-                        fontSize = 15.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.weight(1f),

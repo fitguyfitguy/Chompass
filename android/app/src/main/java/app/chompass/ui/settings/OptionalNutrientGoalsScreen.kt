@@ -178,7 +178,7 @@ fun OptionalNutrientGoalsScreen(
         ChompassDialog(onDismissRequest = { vm.dismissOptionalNutrientEstimateAlert() }) {
             Text(
                 stringResource(R.string.settings_optional_nutrient_estimate_failed_title),
-                fontSize = 21.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
             Text(
