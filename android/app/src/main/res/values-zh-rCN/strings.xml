@@ -1090,7 +1090,7 @@
     <string name="home_display_show_active_calories_desc">在热量表盘中显示今日主动消耗。</string>
     <string name="home_display_show_steps">主页显示步数计数</string>
     <string name="home_display_slim_full_names">完整营养素名称</string>
-    <string name="home_display_slim_full_names_desc">纤细线条卡片显示完整名称而非短标签。选择四张卡片时较长名称可能会被截断。</string>
+    <string name="home_display_slim_full_names_desc">营养素卡片显示完整名称而非短标签。选择四张卡片时较长名称可能会被截断。</string>
     <string name="home_display_show_steps_desc">表盘下方的可选卡片。需要 Health Connect。</string>
     <string name="home_display_step_goal">每日步数目标</string>
     <string name="home_display_step_goal_hint">以 500 为步长调整。范围 1,000–50,000。</string>

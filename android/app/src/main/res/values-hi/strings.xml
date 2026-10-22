@@ -1089,7 +1089,7 @@
     <string name="home_display_show_active_calories_desc">कैलोरी गेज में आज का सक्रिय खर्च दिखाएं।</string>
     <string name="home_display_show_steps">होम पर स्टेप काउंटर दिखाएं</string>
     <string name="home_display_slim_full_names">पूर्ण पोषक नाम</string>
-    <string name="home_display_slim_full_names_desc">स्लिम-लाइन कार्ड छोटे लेबल के बजाय पूरा नाम दिखाते हैं। चार कार्ड चुनने पर लंबे नाम कट सकते हैं।</string>
+    <string name="home_display_slim_full_names_desc">पोषक कार्ड छोटे लेबल के बजाय पूरा नाम दिखाते हैं। चार कार्ड चुनने पर लंबे नाम कट सकते हैं।</string>
     <string name="home_display_show_steps_desc">गेज के नीचे वैकल्पिक कार्ड। Health Connect आवश्यक है।</string>
     <string name="home_display_step_goal">दैनिक कदम लक्ष्य</string>
     <string name="home_display_step_goal_hint">500 का बदलाव। 1,000–50,000।</string>

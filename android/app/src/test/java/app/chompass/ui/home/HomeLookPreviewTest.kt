@@ -75,7 +75,20 @@ class HomeLookPreviewTest {
                 homeTopNutrients = listOf(HomeTopNutrient.PROTEIN),
                 nutrientCardCount = 1,
                 macroCardLayout = HomeMacroCardLayout.SLIM_LINE,
-                slimCardFullNames = true,
+                fullNutrientNames = true,
+            ),
+        )
+        assertDisplayed("Protein")
+        assertAbsent("P")
+    }
+
+    @Test
+    fun bandFullNamesShowCompleteLabels() {
+        setPreview(
+            HomeDisplayPreferences(
+                homeTopNutrients = listOf(HomeTopNutrient.PROTEIN),
+                nutrientCardCount = 1,
+                fullNutrientNames = true,
             ),
         )
         assertDisplayed("Protein")

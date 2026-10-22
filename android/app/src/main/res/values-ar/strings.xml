@@ -1097,7 +1097,7 @@
     <string name="home_display_show_active_calories_desc">إظهار الحرق النشط لليوم في مقياس السعرات.</string>
     <string name="home_display_show_steps">إظهار عدّاد الخطوات في الرئيسية</string>
     <string name="home_display_slim_full_names">أسماء العناصر الغذائية الكاملة</string>
-    <string name="home_display_slim_full_names_desc">تُظهر بطاقات الخطوط الرفيعة الاسم الكامل بدلاً من الاسم المختصر. قد تُقتطع الأسماء الطولية عند تحديد أربع بطاقات.</string>
+    <string name="home_display_slim_full_names_desc">تُظهر بطاقات العناصر الغذائية الاسم الكامل بدلاً من الاسم المختصر. قد تُقتطع الأسماء الطويلة عند تحديد أربع بطاقات.</string>
     <string name="home_display_show_steps_desc">بطاقة اختيارية أسفل المقياس. يتطلب Health Connect.</string>
     <string name="home_display_step_goal">هدف الخطوات اليومي</string>
     <string name="home_display_step_goal_hint">التغيير بمقدار 500. النطاق 1,000–50,000.</string>

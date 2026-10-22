@@ -744,7 +744,7 @@ fun HomeScreen(
                             MacroCard(
                                 label = stringResource(nutrient.displayNameRes),
                                 shortLabel = stringResource(
-                                    ui.homeDisplay.cardLabelRes(nutrient, ui.homeDisplay.macroCardLayout)
+                                    ui.homeDisplay.cardLabelRes(nutrient)
                                 ),
                                 current = current,
                                 goal = goal,
@@ -2347,7 +2347,7 @@ internal fun HomeScreenPreviewContent(
                                 MacroCard(
                                     label = stringResource(nutrient.displayNameRes),
                                     shortLabel = stringResource(
-                                        ui.homeDisplay.cardLabelRes(nutrient, ui.homeDisplay.macroCardLayout)
+                                        ui.homeDisplay.cardLabelRes(nutrient)
                                     ),
                                     current = when (nutrient) {
                                         HomeTopNutrient.CALORIES -> ui.loggedCaloriesToday.toDouble()

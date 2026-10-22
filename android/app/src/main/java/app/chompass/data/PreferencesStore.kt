@@ -453,8 +453,8 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setHomeNutrientCardCount(v: Int) = setHomeNutrientCardCountImpl(v)
     val homeShowSteps: Flow<Boolean> get() = homeShowStepsImpl
     suspend fun setHomeShowSteps(v: Boolean) = setHomeShowStepsImpl(v)
-    val homeSlimFullNames: Flow<Boolean> get() = homeSlimFullNamesImpl
-    suspend fun setHomeSlimFullNames(v: Boolean) = setHomeSlimFullNamesImpl(v)
+    val homeSlimFullNames: Flow<Boolean> get() = fullNutrientNamesImpl
+    suspend fun setHomeFullNutrientNames(v: Boolean) = setHomeFullNutrientNamesImpl(v)
     val homeShowActiveCalories: Flow<Boolean> get() = homeShowActiveCaloriesImpl
     suspend fun setHomeShowActiveCalories(v: Boolean) = setHomeShowActiveCaloriesImpl(v)
     val homeStepGoal: Flow<Int> get() = homeStepGoalImpl

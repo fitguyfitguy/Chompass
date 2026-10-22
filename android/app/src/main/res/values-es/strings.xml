@@ -1131,7 +1131,7 @@
     <string name="home_display_show_active_calories_desc">Muestra el gasto activo de hoy en el medidor de calorías.</string>
     <string name="home_display_show_steps">Mostrar contador de pasos en Inicio</string>
     <string name="home_display_slim_full_names">Nombres completos de nutrientes</string>
-    <string name="home_display_slim_full_names_desc">Las tarjetas de líneas finas muestran el nombre completo en lugar de la etiqueta corta. Los nombres largos pueden truncarse con cuatro tarjetas.</string>
+    <string name="home_display_slim_full_names_desc">Las tarjetas de nutrientes muestran el nombre completo en lugar de la etiqueta corta. Los nombres largos pueden truncarse con cuatro tarjetas.</string>
     <string name="home_display_show_steps_desc">Tarjeta opcional debajo del medidor. Requiere Health Connect.</string>
     <string name="home_display_step_goal">Objetivo diario de pasos</string>
     <string name="home_display_step_goal_hint">Ajusta de 500 en 500. 1.000–50.000.</string>
