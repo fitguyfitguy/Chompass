@@ -1200,6 +1200,8 @@
     <string name="home_display_food_log_chips">Макрос в журнале еды</string>
     <string name="home_display_nutrient_cards">Карточки питательных веществ</string>
     <string name="home_display_show_steps">Показывать счётчик шагов на главной</string>
+    <string name="home_display_slim_full_names">Полные названия нутриентов</string>
+    <string name="home_display_slim_full_names_desc">Карточки тонких линий показывают полное название вместо короткой метки. Длинные названия могут обрезаться при четырёх карточках.</string>
     <string name="home_display_show_steps_desc">Необязательная карточка под шкалой. Требуется Health Connect или тестовые данные.</string>
     <string name="home_display_step_goal">Дневная цель шагов</string>
     <string name="home_display_step_goal_hint">Шаг изменения: 500. Диапазон: 1 000–50 000.</string>

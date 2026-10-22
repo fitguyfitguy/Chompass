@@ -255,6 +255,9 @@ internal suspend fun PreferencesStore.setHomeNutrientCardCountImpl(v: Int) {
 internal val PreferencesStore.homeShowStepsImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.HOME_SHOW_STEPS] ?: false }
 internal suspend fun PreferencesStore.setHomeShowStepsImpl(v: Boolean) { dataStore.edit { it[Keys.HOME_SHOW_STEPS] = v } }
 
+internal val PreferencesStore.homeSlimFullNamesImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.HOME_SLIM_FULL_NAMES] ?: false }
+internal suspend fun PreferencesStore.setHomeSlimFullNamesImpl(v: Boolean) { dataStore.edit { it[Keys.HOME_SLIM_FULL_NAMES] = v } }
+
 internal val PreferencesStore.homeShowActiveCaloriesImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.HOME_SHOW_ACTIVE_CALORIES] ?: false }
 internal suspend fun PreferencesStore.setHomeShowActiveCaloriesImpl(v: Boolean) { dataStore.edit { it[Keys.HOME_SHOW_ACTIVE_CALORIES] = v } }
 
@@ -337,6 +340,7 @@ internal val PreferencesStore.homeDisplayPreferencesImpl: Flow<HomeDisplayPrefer
             fullCreditActiveBurn = prefs[Keys.HOME_CALORIE_FULL_CREDIT] ?: false,
             calorieHeroLayout = HomeCalorieHeroLayout.fromStorage(prefs[Keys.HOME_CALORIE_HERO_LAYOUT]),
             macroCardLayout = HomeMacroCardLayout.fromStorage(prefs[Keys.HOME_MACRO_CARD_LAYOUT]),
+            slimCardFullNames = prefs[Keys.HOME_SLIM_FULL_NAMES] ?: false,
             foodLogLayout = HomeFoodLogLayout.fromStorage(prefs[Keys.HOME_FOOD_LOG_LAYOUT]),
             foodLogMacroChips = FoodLogMacroChip.fromStorage(prefs[Keys.FOOD_LOG_MACRO_CHIPS]),
         )

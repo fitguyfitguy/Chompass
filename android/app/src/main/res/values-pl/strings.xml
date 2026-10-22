@@ -1471,6 +1471,8 @@
     <string name="home_display_title">Ekran główny</string>
     <string name="home_display_nutrient_cards">Karty składników</string>
     <string name="home_display_show_steps">Pokazuj licznik kroków na ekranie głównym</string>
+    <string name="home_display_slim_full_names">Pełne nazwy składników</string>
+    <string name="home_display_slim_full_names_desc">Karty smukłych linii pokazują pełną nazwę zamiast skrótu. Długie nazwy mogą być ucięte przy czterech kartach.</string>
     <string name="home_display_show_steps_desc">Opcjonalna karta pod wskaźnikiem. Wymaga Health Connect.</string>
     <string name="home_display_step_goal">Dzienny cel kroków</string>
     <string name="home_display_step_goal_hint">Zmiana o 500. Zakres 1 000–50 000.</string>

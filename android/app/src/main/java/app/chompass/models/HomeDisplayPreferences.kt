@@ -145,9 +145,19 @@ data class HomeDisplayPreferences(
     val fullCreditActiveBurn: Boolean = false,
     val calorieHeroLayout: HomeCalorieHeroLayout? = null,
     val macroCardLayout: HomeMacroCardLayout? = null,
+    /** Slim-line cards show the full localized nutrient name instead of the short label. */
+    val slimCardFullNames: Boolean = false,
     val foodLogLayout: HomeFoodLogLayout? = null,
     val foodLogMacroChips: List<FoodLogMacroChip> = FoodLogMacroChip.DefaultSelection,
 ) {
+    /** Band cards never fit full names; classic already shows them. */
+    fun cardLabelRes(nutrient: HomeTopNutrient, layout: HomeMacroCardLayout?): Int =
+        if (slimCardFullNames && layout == HomeMacroCardLayout.SLIM_LINE) {
+            nutrient.displayNameRes
+        } else {
+            nutrient.cardShortLabelRes()
+        }
+
     companion object {
         const val MIN_NUTRIENT_CARD_COUNT = 1
         const val MAX_NUTRIENT_CARD_COUNT = 4

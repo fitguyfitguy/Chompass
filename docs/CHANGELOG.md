@@ -9,6 +9,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Changed
 
 - **Nutrient cards stay readable at any width** (Android): the home nutrient band and slim cards show short labels (P, C, F, Fi, Na, K, …) instead of full words, with the unit beside the label, and the status line becomes a signed delta — "−84" under goal, "+12" over, "✓" when met — instead of "84 left", so nothing is cut off on small cards or large text.
+- **Slim cards can spell names out** (Android): Settings → Customize Home gains "Full nutrient names", which shows the complete nutrient name on slim-line cards instead of the short label. With four cards selected, long names still yield first.
 
 ## [5.11.0] - 2026-10-21
 

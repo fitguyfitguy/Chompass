@@ -133,7 +133,7 @@ internal fun HomeLookPreview(
                     val (current, goal) = HomeLookSample.macro(nutrient)
                     MacroCard(
                         label = stringResource(nutrient.displayNameRes),
-                        shortLabel = stringResource(nutrient.cardShortLabelRes()),
+                        shortLabel = stringResource(display.cardLabelRes(nutrient, display.macroCardLayout)),
                         current = current,
                         goal = goal,
                         unit = stringResource(nutrient.unitRes),
