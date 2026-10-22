@@ -1088,7 +1088,7 @@
     <string name="home_display_show_active_calories_desc">カロリーゲージに今日の活動消費を表示します。</string>
     <string name="home_display_show_steps">ホームに歩数計を表示</string>
     <string name="home_display_slim_full_names">栄養素の完全な名前</string>
-    <string name="home_display_slim_full_names_desc">スリムラインカードは短いラベルの代わりに完全な名前を表示します。4枚選択時は長い名前が切り詰められることがあります。</string>
+    <string name="home_display_slim_full_names_desc">栄養素カードは短いラベルの代わりに完全な名前を表示します。4枚選択時は長い名前が切り詰められることがあります。</string>
     <string name="home_display_show_steps_desc">ゲージ下の任意カード。Health Connect が必要です。</string>
     <string name="home_display_step_goal">1日の歩数目標</string>
     <string name="home_display_step_goal_hint">500ずつ調整。1,000～50,000。</string>

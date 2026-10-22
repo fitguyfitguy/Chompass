@@ -809,8 +809,8 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         container.prefs.setHomeShowSteps(enabled)
     }
 
-    fun setHomeSlimFullNames(enabled: Boolean) = launchPref {
-        container.prefs.setHomeSlimFullNames(enabled)
+    fun setHomeFullNutrientNames(enabled: Boolean) = launchPref {
+        container.prefs.setHomeFullNutrientNames(enabled)
     }
 
     fun setHomeShowActiveCalories(enabled: Boolean) = launchPref {

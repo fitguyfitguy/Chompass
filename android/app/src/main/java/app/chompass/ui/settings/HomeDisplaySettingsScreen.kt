@@ -182,8 +182,8 @@ fun HomeDisplaySettingsScreen(
                     HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
                     ToggleRow(
                         label = stringResource(R.string.home_display_slim_full_names),
-                        checked = display.slimCardFullNames,
-                        onChange = vm::setHomeSlimFullNames,
+                        checked = display.fullNutrientNames,
+                        onChange = vm::setHomeFullNutrientNames,
                     )
                     SettingNote(stringResource(R.string.home_display_slim_full_names_desc))
                 }

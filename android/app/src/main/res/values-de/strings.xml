@@ -2655,7 +2655,7 @@ für dich ein</string>
     <string name="home_display_show_steps">Schrittzähler auf dem Startbildschirm anzeigen</string>
 
     <string name="home_display_slim_full_names">Vollständige Nährstoffnamen</string>
-    <string name="home_display_slim_full_names_desc">Schlanke-Linien-Karten zeigen den vollständigen Namen statt des Kurzlabels. Lange Namen können bei vier Karten abgeschnitten werden.</string>
+    <string name="home_display_slim_full_names_desc">Nährstoffkarten zeigen den vollständigen Namen statt des Kurzlabels. Lange Namen können bei vier Karten abgeschnitten werden.</string>
     <string name="home_display_show_steps_desc">Optionale Karte unterhalb der Anzeige. Erfordert Health Connect oder vorinstallierte Testdaten.</string>
 
     <string name="home_display_step_goal">Tägliches Schrittziel</string>

@@ -4,6 +4,12 @@ All notable changes to Chompass are documented here.
 
 Style: entries follow the release-text style guide (maintainer-local, not published; user-visible first, no internals). The version section is pasted verbatim onto the Codeberg release.
 
+## [Unreleased]
+
+### Added
+
+- **Full nutrient names on any card layout** (Android): Settings → Home display → "Full nutrient names" now applies to the compact bars band and slim cards alike (classic cards always showed them). Long names yield first on narrow cards, then the unit.
+
 ## [5.11.0] - 2026-10-22
 
 ### Added

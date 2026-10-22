@@ -1083,7 +1083,7 @@
     <string name="home_display_show_active_calories_desc">Arată arderea activă de azi în contorul de calorii.</string>
     <string name="home_display_show_steps">Arată contorul de pași pe ecranul principal</string>
     <string name="home_display_slim_full_names">Nume complete de nutrienți</string>
-    <string name="home_display_slim_full_names_desc">Cardurile cu linii subțiri afișează numele complet în locul etichetei scurte. Numele lungi pot fi trunchiate la patru carduri.</string>
+    <string name="home_display_slim_full_names_desc">Cardurile de nutrienți afișează numele complet în locul etichetei scurte. Numele lungi pot fi trunchiate la patru carduri.</string>
     <string name="home_display_show_steps_desc">Card opțional sub contor. Necesită Health Connect.</string>
     <string name="home_display_step_goal">Obiectiv zilnic de pași</string>
     <string name="home_display_step_goal_hint">Ajustează cu 500. 1.000–50.000.</string>

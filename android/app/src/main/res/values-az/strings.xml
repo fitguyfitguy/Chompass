@@ -1081,7 +1081,7 @@ bilirsən?</string>
     <string name="home_display_show_active_calories_desc">Bugünkü aktiv yanmanı kalori göstəricisində göstər.</string>
     <string name="home_display_show_steps">Ana səhifədə addımölçəni göstər</string>
     <string name="home_display_slim_full_names">Tam qida adları</string>
-    <string name="home_display_slim_full_names_desc">İncə xətt kartları qısa etiket əvəzinə tam adı göstərir. Dört kart seçildikdə uzun adlar kəsilə bilər.</string>
+    <string name="home_display_slim_full_names_desc">Qida kartları qısa etiket əvəzinə tam adı göstərir. Dört kart seçildikdə uzun adlar kəsilə bilər.</string>
     <string name="home_display_show_steps_desc">Göstəricinin altında istəyə bağlı kart. Health Connect tələb olunur.</string>
     <string name="home_display_step_goal">Gündəlik addım məqsədi</string>
     <string name="home_display_step_goal_hint">Addım 500-dən dəyişir. 1,000–50,000.</string>

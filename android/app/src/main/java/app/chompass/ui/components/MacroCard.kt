@@ -310,6 +310,10 @@ private fun CompactBarsMacroCard(input: MacroCardInput) {
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
+                    // Full-name mode can overflow the band row at 4 cards;
+                    // the name yields first (capped share), then the unit.
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false),
                 )
                 Text(
                     displayUnit,

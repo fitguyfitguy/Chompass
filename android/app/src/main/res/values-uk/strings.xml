@@ -1029,7 +1029,7 @@
     <string name="home_display_show_active_calories_desc">Показувати сьогоднішні активні витрати на шкалі калорій.</string>
     <string name="home_display_show_steps">Показувати лічильник кроків на головній</string>
     <string name="home_display_slim_full_names">Повні назви нутрієнтів</string>
-    <string name="home_display_slim_full_names_desc">Картки тонких ліній показують повну назву замість короткої мітки. Довгі назви можуть обрізатися при чотирьох картках.</string>
+    <string name="home_display_slim_full_names_desc">Картки нутрієнтів показують повну назву замість короткої мітки. Довгі назви можуть обрізатися при чотирьох картках.</string>
     <string name="home_display_show_steps_desc">Необов\'язкова картка під шкалою. Потребує Health Connect.</string>
     <string name="home_display_step_goal">Денна ціль кроків</string>
     <string name="home_display_step_goal_hint">Крок зміни: 500. Діапазон: 1 000–50 000.</string>
