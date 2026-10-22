@@ -109,9 +109,7 @@
     <string name="macro_calories">Calories</string>
     <string name="macro_goal_of">of %1$d%2$s</string>
     <string name="macro_status_left">%1$s%2$s left</string>
-    <string name="macro_status_left_compact">%1$s left</string>
     <string name="macro_status_over">%1$s%2$s over</string>
-    <string name="macro_status_over_compact">%1$s over</string>
     <string name="macro_status_goal_reached">Goal reached</string>
     <string name="macro_status_floor_met">Minimum met</string>
     <string name="macro_status_no_goal">No goal</string>
@@ -2725,6 +2723,17 @@
     <string name="export_range_custom">Custom</string>
     <string name="vm_health_connect_needed_msg">Allow Chompass to read your Active and Total Calories in Health Connect, then turn Energy Burn on again.</string>
     <string name="vm_not_enough_energy_msg">Chompass needs at least 3 recent days of Health Connect energy data before it can use your measured burn.</string>
+    <string name="nutrient_short_calories">Cal</string>
+    <string name="nutrient_short_added_sugar">Add. Sugar</string>
+    <string name="nutrient_short_cholesterol">Chol.</string>
+    <string name="nutrient_short_sodium">Sodium</string>
+    <string name="nutrient_short_potassium">Potas.</string>
+    <string name="nutrient_short_trans_fat">Tr. Fat</string>
+    <string name="nutrient_short_calcium">Calcium</string>
+    <string name="nutrient_short_iron">Iron</string>
+    <string name="nutrient_short_magnesium">Mag.</string>
+    <string name="nutrient_short_zinc">Zinc</string>
+    <string name="nutrient_short_folate">Folate</string>
     <string name="nutrient_short_sat_fat">Sat Fat</string>
     <string name="nutrient_short_vit_a">Vit A</string>
     <string name="nutrient_short_vit_c">Vit C</string>

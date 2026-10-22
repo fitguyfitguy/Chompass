@@ -47,8 +47,8 @@ class HomeLookPreviewTest {
     fun defaultSampleShowsFixedGoalAndDefaultCards() {
         setPreview()
         assertDisplayed("Sample day")
-        assertDisplayed("Protein")
-        assertDisplayed("Fiber")
+        assertDisplayed("P")
+        assertDisplayed("Fi")
         assertDisplayed("of 2,000 kcal")
         assertAbsent("Steps")
         assertAbsent("380 active")

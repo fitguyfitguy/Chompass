@@ -414,6 +414,7 @@ internal fun NutrientCardLayoutPickerDialog(
                         Box(Modifier.width(108.dp)) {
                             MacroCard(
                                 label = stringResource(R.string.macro_glyph_protein),
+                                shortLabel = stringResource(R.string.macro_glyph_protein),
                                 current = 92.0,
                                 goal = 140,
                                 unit = "g",

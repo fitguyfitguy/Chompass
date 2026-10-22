@@ -105,9 +105,7 @@
     <string name="macro_calories">Kalorie</string>
     <string name="macro_goal_of">z %1$d%2$s</string>
     <string name="macro_status_left">%1$s%2$s zostało</string>
-    <string name="macro_status_left_compact">%1$s zostało</string>
     <string name="macro_status_over">%1$s%2$s za dużo</string>
-    <string name="macro_status_over_compact">%1$s za dużo</string>
     <string name="macro_status_floor_met">Osiągnięto minimum</string>
     <string name="macro_status_goal_reached">Cel osiągnięty</string>
     <string name="macro_status_no_goal">Brak celu</string>
@@ -1883,6 +1881,17 @@
     <string name="export_range_custom">Własny</string>
     <string name="vm_health_connect_needed_msg">Zezwól Chompass na odczyt Aktywnych i Całkowitych kalorii w Health Connect, a następnie włącz ponownie Energy Burn.</string>
     <string name="vm_not_enough_energy_msg">Chompass potrzebuje co najmniej 3 ostatnich dni danych energetycznych z Health Connect, zanim będzie mógł użyć Twojego zmierzonego spalania.</string>
+    <string name="nutrient_short_calories">Kal</string>
+    <string name="nutrient_short_added_sugar">Cukry dod.</string>
+    <string name="nutrient_short_cholesterol">Chol.</string>
+    <string name="nutrient_short_sodium">Sód</string>
+    <string name="nutrient_short_potassium">Potas</string>
+    <string name="nutrient_short_trans_fat">Tł. trans</string>
+    <string name="nutrient_short_calcium">Wapń</string>
+    <string name="nutrient_short_iron">Żelazo</string>
+    <string name="nutrient_short_magnesium">Magnez</string>
+    <string name="nutrient_short_zinc">Cynk</string>
+    <string name="nutrient_short_folate">Folian</string>
     <string name="nutrient_short_sat_fat">Tł. nasyc.</string>
     <string name="nutrient_short_vit_a">Wit. A</string>
     <string name="nutrient_short_vit_c">Wit. C</string>

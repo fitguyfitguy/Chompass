@@ -180,10 +180,8 @@
     <string name="macro_goal_of">von %1$d%2$s</string>
 
     <string name="macro_status_left">%1$s%2$s übrig</string>
-    <string name="macro_status_left_compact">%1$s übrig</string>
 
     <string name="macro_status_over">%1$s%2$s drüber</string>
-    <string name="macro_status_over_compact">%1$s drüber</string>
     <string name="macro_status_floor_met">Minimum erreicht</string>
 
     <string name="macro_status_goal_reached">Ziel erreicht</string>
@@ -3460,6 +3458,17 @@ für dich ein</string>
 
     <string name="vm_not_enough_energy_msg">Chompass benötigt mindestens die Energiedaten der letzten 3 Tage aus Health Connect, bevor es deinen gemessenen Energieverbrauch verwenden kann.</string>
 
+    <string name="nutrient_short_calories">Kal</string>
+    <string name="nutrient_short_added_sugar">Z. Zucker</string>
+    <string name="nutrient_short_cholesterol">Chol.</string>
+    <string name="nutrient_short_sodium">Na</string>
+    <string name="nutrient_short_potassium">K</string>
+    <string name="nutrient_short_trans_fat">Transfett</string>
+    <string name="nutrient_short_calcium">Ca</string>
+    <string name="nutrient_short_iron">Fe</string>
+    <string name="nutrient_short_magnesium">Mg</string>
+    <string name="nutrient_short_zinc">Zn</string>
+    <string name="nutrient_short_folate">Folat</string>
     <string name="nutrient_short_sat_fat">Gesättigte Fettsäuren</string>
 
     <string name="nutrient_short_vit_a">Vitamin A</string>
