@@ -27,6 +27,13 @@ WMAPE = weighted mean absolute percentage error across calories, protein, carbs,
 fat. Lower is better. These use food-analysis prompts equivalent to what ships in
 the app, run against the same manifests for every model tested.
 
+Every error metric here (WMAPE, MAE, MAPE, the ±20% rate) is computed over parsed
+samples only: samples where the model failed to return a parseable answer are
+excluded from the denominator. Each result also reports the total sample count `n`
+and the `parse_ok_rate`, so the answered fraction stays visible. A model that fails
+to answer more often is scored against an easier denominator, so read
+`parse_ok_rate` alongside WMAPE rather than WMAPE alone.
+
 The typed-text row is FNDDS-style **identity + portion** (e.g. `Chicken breast, roasted, 150 g`).
 It is not the same input as a meal title or ingredient list attached to a plate photo.
 Those “image + short note” trials are **mixed**: on JFB with free Gemma, title /
