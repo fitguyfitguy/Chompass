@@ -1877,11 +1877,11 @@
     <string name="nutrient_short_added_sugar">İl. Şeker</string>
     <string name="nutrient_short_cholesterol">Kolest.</string>
     <string name="nutrient_short_sodium">Sodyum</string>
-    <string name="nutrient_short_potassium">Potas.</string>
+    <string name="nutrient_short_potassium">K</string>
     <string name="nutrient_short_trans_fat">Trans Yağ</string>
     <string name="nutrient_short_calcium">Kalsiyum</string>
     <string name="nutrient_short_iron">Demir</string>
-    <string name="nutrient_short_magnesium">Mag.</string>
+    <string name="nutrient_short_magnesium">Mg</string>
     <string name="nutrient_short_zinc">Çinko</string>
     <string name="nutrient_short_folate">Folat</string>
     <string name="nutrient_short_sat_fat">Doy. Yağ</string>

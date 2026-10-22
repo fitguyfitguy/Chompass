@@ -1258,12 +1258,12 @@
     <string name="nutrient_short_added_sugar">Azúc. añ.</string>
     <string name="nutrient_short_cholesterol">Colest.</string>
     <string name="nutrient_short_sodium">Sodio</string>
-    <string name="nutrient_short_potassium">Potas.</string>
+    <string name="nutrient_short_potassium">K</string>
     <string name="nutrient_short_trans_fat">Gr. trans</string>
     <string name="nutrient_short_calcium">Calcio</string>
     <string name="nutrient_short_iron">Hierro</string>
-    <string name="nutrient_short_magnesium">Mag.</string>
-    <string name="nutrient_short_zinc">Zinc</string>
+    <string name="nutrient_short_magnesium">Mg</string>
+    <string name="nutrient_short_zinc">Zn</string>
     <string name="nutrient_short_folate">Folato</string>
     <string name="nutrient_short_sat_fat">Grasa sat.</string>
     <string name="nutrient_short_vit_a">Vit. A</string>
