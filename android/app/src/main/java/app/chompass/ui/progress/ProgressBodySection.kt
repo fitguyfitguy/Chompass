@@ -234,7 +234,7 @@ internal fun BodySection(
                                     else -> R.string.progress_no_entries_in_range
                                 }
                             ),
-                            fontSize = 15.sp,
+                            fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                         )
                     }

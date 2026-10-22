@@ -54,7 +54,7 @@ internal fun AddWeightDialog(
     var hourText by remember { mutableStateOf(LocalTime.now().hour.toString().padStart(2, '0')) }
     var minuteText by remember { mutableStateOf(LocalTime.now().minute.toString().padStart(2, '0')) }
     ChompassDialog(onDismissRequest = onDismiss, scrollable = true) {
-        Text(stringResource(R.string.progress_log_weight_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.progress_log_weight_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(10.dp))
         UnitToggle(stringResource(R.string.unit_kg), stringResource(R.string.unit_lbs), metric, { metric = it; onUnitChange(it) }, Modifier.fillMaxWidth())
         if (metric) {
@@ -160,7 +160,7 @@ internal fun AddBodyFatDialog(
     var hourText by remember { mutableStateOf(LocalTime.now().hour.toString().padStart(2, '0')) }
     var minuteText by remember { mutableStateOf(LocalTime.now().minute.toString().padStart(2, '0')) }
     ChompassDialog(onDismissRequest = onDismiss, scrollable = true) {
-        Text(stringResource(R.string.progress_log_body_fat_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.progress_log_body_fat_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
         DecimalWheelPicker(
             value = pct.coerceIn(3.0, 60.0),
             onValueChange = { pct = it },

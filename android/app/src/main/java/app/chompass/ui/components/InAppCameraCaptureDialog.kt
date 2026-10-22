@@ -219,7 +219,7 @@ fun InAppCameraCaptureDialog(
                 Text(
                     text = it,
                     color = Color.White,
-                    fontSize = 15.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
                         .align(Alignment.TopCenter)

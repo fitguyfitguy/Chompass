@@ -187,7 +187,7 @@ fun CustomizeProgressScreen(
         ChompassDialog(onDismissRequest = { showNutrientAveragesWarning = false }) {
             Text(
                 stringResource(R.string.settings_progress_nutrient_averages_warning_title),
-                fontSize = 21.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
             )
             Text(

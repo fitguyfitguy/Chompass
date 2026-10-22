@@ -390,7 +390,7 @@ internal fun DayTypeProfileEditorSheet(
         ) {
             Text(
                 stringResource(R.string.settings_day_types_delete_used_title, editing.name),
-                fontSize = 21.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
             )
             Text(

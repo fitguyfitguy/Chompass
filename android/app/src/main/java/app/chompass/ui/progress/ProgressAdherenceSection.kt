@@ -66,7 +66,7 @@ internal fun ProgressAdherenceSection(
                     avgGoalText,
                     deltaText,
                 ),
-                fontSize = 15.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
             )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

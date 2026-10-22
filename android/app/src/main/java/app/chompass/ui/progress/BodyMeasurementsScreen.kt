@@ -130,7 +130,7 @@ private fun BodyMeasurementsHistorySheet(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                Text(measurementHistoryFmt.format(entry.date), fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                                Text(measurementHistoryFmt.format(entry.date), fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                                 Text(
                                     measurementHistorySummary(LocalContext.current, entry, gender, heightCm, useMetric),
                                     fontSize = 13.sp,
@@ -228,7 +228,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(stringResource(site.labelRes), modifier = Modifier.weight(1f), fontSize = 16.sp, fontWeight = FontWeight.Medium)
-                                Text(displayValue(site), fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
+                                Text(displayValue(site), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
                                 Spacer(Modifier.width(6.dp))
                                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled), modifier = Modifier.size(18.dp))
                             }
@@ -248,8 +248,8 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                                 Text(stringResource(R.string.label_derived), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
                                 derived.forEach { (label, value) ->
                                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                                        Text(label, modifier = Modifier.weight(1f), fontSize = 15.sp)
-                                        Text(value, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = AppColors.Calorie)
+                                        Text(label, modifier = Modifier.weight(1f), fontSize = 14.sp)
+                                        Text(value, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppColors.Calorie)
                                     }
                                 }
                                 if (navyPercent != null || rfmPercent != null) {
@@ -290,7 +290,7 @@ fun BodyMeasurementsScreen(container: AppContainer, onBack: () -> Unit) {
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(stringResource(R.string.measurement_history), modifier = Modifier.weight(1f), fontSize = 16.sp, fontWeight = FontWeight.Medium)
-                                Text("${entries.size}", fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
+                                Text("${entries.size}", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
                                 Spacer(Modifier.width(6.dp))
                                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled), modifier = Modifier.size(18.dp))
                             }

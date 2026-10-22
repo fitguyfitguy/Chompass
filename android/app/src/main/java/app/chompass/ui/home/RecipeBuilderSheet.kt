@@ -396,7 +396,7 @@ private fun IngredientRow(
         }
 
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(ingredient.name, fontSize = 15.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(ingredient.name, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
             val amountUnit = listOfNotNull(ingredient.amountText, ingredient.unitText)
                 .joinToString(" ")
                 .takeIf { it.isNotEmpty() }
@@ -482,7 +482,7 @@ private fun FavoritesIngredientPickerSheet(
                             .padding(horizontal = 12.dp, vertical = 10.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(entry.name, fontSize = 15.sp, modifier = Modifier.weight(1f))
+                        Text(entry.name, fontSize = 14.sp, modifier = Modifier.weight(1f))
                         Text(energyText(entry.calories), fontSize = 14.sp, color = AppColors.Calorie)
                     }
                 }

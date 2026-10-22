@@ -180,7 +180,7 @@ fun HealthDataSettingsScreen(
                 healthAvailabilityActionIntent = null
             }
         ) {
-            Text(stringResource(R.string.settings_permission_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.settings_permission_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
             if (actionLabel != null && actionIntent != null) {
                 ChompassDialogActions(

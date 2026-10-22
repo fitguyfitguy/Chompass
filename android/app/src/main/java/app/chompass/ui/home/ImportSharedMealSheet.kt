@@ -80,7 +80,7 @@ fun ImportSharedMealSheet(
                         }
                         Text(
                             energyText(meal.calories),
-                            fontSize = 15.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = AppColors.Calorie,
                         )

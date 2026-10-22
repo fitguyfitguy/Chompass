@@ -151,7 +151,7 @@ internal fun CalorieSection(
                 if (calorieAverage != null) {
                     Text(
                         stringResource(R.string.progress_avg_format, EnergyFormat.quantity(calorieAverage, LocalEnergyUnit.current), energyUnitLabel()),
-                        fontSize = 15.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         maxLines = 1,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
@@ -179,7 +179,7 @@ internal fun CalorieSection(
                     Box(Modifier.fillMaxWidth().padding(vertical = 24.dp), contentAlignment = Alignment.Center) {
                         Text(
                             stringResource(R.string.progress_no_food),
-                            fontSize = 15.sp,
+                            fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                         )
                     }

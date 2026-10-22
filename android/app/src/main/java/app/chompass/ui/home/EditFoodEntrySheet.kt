@@ -739,7 +739,7 @@ fun EditFoodEntrySheet(
                             )
                             Text(
                                 stringResource(R.string.edit_food_apply_time, mealLabel(entry.mealType)),
-                                fontSize = 15.sp,
+                                fontSize = 14.sp,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Strong),
                                 modifier = Modifier.padding(end = 8.dp),
                             )
@@ -1284,7 +1284,7 @@ fun EditFoodEntrySheet(
 
             var pickedDate by remember(loggedDate) { mutableStateOf(loggedDate) }
             ChompassDialog(onDismissRequest = { showDatePicker = false }) {
-                Text(stringResource(R.string.label_date), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.label_date), fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 DateWheelPicker(
                     selected = pickedDate,
                     onSelect = { pickedDate = it },
@@ -1409,7 +1409,7 @@ private fun EditFoodTimeDialog(
     var picked by remember(initialTime) { mutableStateOf(initialTime) }
     var typedDigits by remember { mutableStateOf<String?>(null) }
     ChompassDialog(onDismissRequest = onDismiss) {
-        Text(stringResource(R.string.label_time), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.label_time), fontSize = 20.sp, fontWeight = FontWeight.Bold)
         ClockTimeWheelPicker(
             time = picked,
             onChange = { picked = it },
@@ -1546,7 +1546,7 @@ internal fun EditFoodIconDialog(
     onDismiss: () -> Unit,
 ) {
     ChompassDialog(onDismissRequest = onDismiss) {
-        Text(stringResource(R.string.edit_icon_picker_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.edit_icon_picker_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(2.dp))
         Column(
             Modifier

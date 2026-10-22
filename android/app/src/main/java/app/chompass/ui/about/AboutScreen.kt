@@ -232,7 +232,7 @@ private fun UpdateRow(
             trailing = {
                 Text(
                     state.current,
-                    fontSize = 15.sp,
+                    fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                 )
             },

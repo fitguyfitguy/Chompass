@@ -108,7 +108,7 @@ internal fun EmptyState(modifier: Modifier = Modifier) {
         Spacer(Modifier.height(8.dp))
         Text(
             stringResource(R.string.coach_empty_subtitle),
-            fontSize = 15.sp,
+            fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
             textAlign = TextAlign.Center,
             lineHeight = 21.sp

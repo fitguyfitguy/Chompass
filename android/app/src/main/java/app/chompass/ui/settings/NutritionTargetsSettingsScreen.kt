@@ -114,7 +114,7 @@ fun NutritionTargetsSettingsScreen(
 
     if (showThirdMacroLockAlert) {
         ChompassDialog(onDismissRequest = { showThirdMacroLockAlert = false }) {
-            Text(stringResource(R.string.settings_max_pinned_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.settings_max_pinned_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_max_pinned_message),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
@@ -128,7 +128,7 @@ fun NutritionTargetsSettingsScreen(
 
     if (showHealthEnergyGoalsInfo) {
         ChompassDialog(onDismissRequest = { showHealthEnergyGoalsInfo = false }) {
-            Text(stringResource(R.string.settings_energy_goals), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.settings_energy_goals), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.settings_energy_goals_info),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
@@ -144,7 +144,7 @@ fun NutritionTargetsSettingsScreen(
     val energyAlertMessage = ui.healthEnergyGoalAlertMessage
     if (energyAlertTitle != null && energyAlertMessage != null) {
         ChompassDialog(onDismissRequest = { vm.dismissHealthEnergyGoalAlert() }) {
-            Text(energyAlertTitle, fontSize = 21.sp, fontWeight = FontWeight.Bold)
+            Text(energyAlertTitle, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 energyAlertMessage,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
@@ -166,7 +166,7 @@ fun NutritionTargetsSettingsScreen(
                 healthAvailabilityActionIntent = null
             }
         ) {
-            Text(stringResource(R.string.settings_permission_title), fontSize = 21.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.settings_permission_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(msg, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
             if (actionLabel != null && actionIntent != null) {
                 ChompassDialogActions(
