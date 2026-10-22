@@ -1,0 +1,8 @@
+• Fill missing values one group at a time: ask the AI for just calories, protein, carbs, fat, or the detailed micros (Android and PWA).
+• Fill-missing stops chasing meals it cannot complete, and the list names empty ingredient rows (Android and PWA).
+• Text sizes now match other apps: standard 16sp body, 14sp secondary lines, 20sp dialog titles.
+• Nutrient cards stay readable at any width with short labels and a signed plus/minus status; slim cards can spell out full nutrient names.
+• Manual entry gets a time of day, and the meal type follows the time you pick.
+• Activity burn changes reach the home-screen widget right away.
+• Cloud AI waits up to 4 minutes for cold model starts.
+• Deleted weigh-ins stay deleted across Health Connect syncs; progress rows keep renamed day-type names.
