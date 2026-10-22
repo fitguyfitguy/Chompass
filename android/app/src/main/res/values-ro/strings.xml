@@ -1197,12 +1197,12 @@
     <string name="nutrient_short_added_sugar">Zahăr ad.</string>
     <string name="nutrient_short_cholesterol">Colest.</string>
     <string name="nutrient_short_sodium">Sodiu</string>
-    <string name="nutrient_short_potassium">Potas.</string>
+    <string name="nutrient_short_potassium">K</string>
     <string name="nutrient_short_trans_fat">Gr. trans</string>
     <string name="nutrient_short_calcium">Calciu</string>
     <string name="nutrient_short_iron">Fier</string>
-    <string name="nutrient_short_magnesium">Mag.</string>
-    <string name="nutrient_short_zinc">Zinc</string>
+    <string name="nutrient_short_magnesium">Mg</string>
+    <string name="nutrient_short_zinc">Zn</string>
     <string name="nutrient_short_folate">Folat</string>
     <string name="nutrient_short_sat_fat">Gr. saturate</string>
     <string name="nutrient_short_vit_a">Vit. A</string>

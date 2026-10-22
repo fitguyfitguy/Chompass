@@ -1885,7 +1885,6 @@
     <string name="vm_not_enough_energy_msg">Chompass potrzebuje co najmniej 3 ostatnich dni danych energetycznych z Health Connect, zanim będzie mógł użyć Twojego zmierzonego spalania.</string>
     <string name="nutrient_short_calories">Kal</string>
     <string name="nutrient_short_added_sugar">Cukry dod.</string>
-    <string name="nutrient_short_cholesterol">Chol.</string>
     <string name="nutrient_short_sodium">Sód</string>
     <string name="nutrient_short_potassium">Potas</string>
     <string name="nutrient_short_trans_fat">Tł. trans</string>
