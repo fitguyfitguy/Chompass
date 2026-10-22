@@ -55,7 +55,7 @@ internal fun AllWeightHistorySheet(
     ) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 10.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.progress_weight_history), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.progress_weight_history), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.weight(1f))
                 TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done), color = AppColors.Calorie) }
             }
@@ -77,7 +77,7 @@ internal fun AllWeightHistorySheet(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(Modifier.weight(1f)) {
-                                Text(formatWeight(entry.weightKg, useMetric), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                                Text(formatWeight(entry.weightKg, useMetric), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                                 Spacer(Modifier.height(2.dp))
                                 Text(fmt.format(entry.date), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
                             }
@@ -116,7 +116,7 @@ internal fun AllBodyFatHistorySheet(
     ) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 10.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.progress_body_fat_history), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.progress_body_fat_history), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.weight(1f))
                 TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done), color = AppColors.Calorie) }
             }
@@ -138,7 +138,7 @@ internal fun AllBodyFatHistorySheet(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(Modifier.weight(1f)) {
-                                Text("${LocaleFormat.decimal(entry.bodyFatPercent, 1)}${stringResource(R.string.unit_percent)}", fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                                Text("${LocaleFormat.decimal(entry.bodyFatPercent, 1)}${stringResource(R.string.unit_percent)}", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                                 Spacer(Modifier.height(2.dp))
                                 Text(fmt.format(entry.date), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
                             }

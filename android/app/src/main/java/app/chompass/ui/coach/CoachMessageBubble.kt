@@ -308,7 +308,7 @@ private fun Bubble(content: String, isUser: Boolean, attachmentImageBase64: Stri
             if (isUser) {
                 Text(
                     content,
-                    fontSize = 17.sp,
+                    fontSize = 16.sp,
                     color = textColor,
                     lineHeight = 22.sp,
                     style = TextStyle(fontWeight = FontWeight.Normal),
@@ -455,14 +455,14 @@ internal fun MarkdownText(content: String, color: Color) {
                     lineHeight = 24.sp
                 )
                 is MdBlock.Bullet -> Row {
-                    Text("•", color = color, fontSize = 17.sp, lineHeight = 22.sp)
+                    Text("•", color = color, fontSize = 16.sp, lineHeight = 22.sp)
                     Spacer(Modifier.width(8.dp))
-                    Text(inlineMarkdown(block.text, linkColor, codeBg), color = color, fontSize = 17.sp, lineHeight = 22.sp, modifier = Modifier.weight(1f))
+                    Text(inlineMarkdown(block.text, linkColor, codeBg), color = color, fontSize = 16.sp, lineHeight = 22.sp, modifier = Modifier.weight(1f))
                 }
                 is MdBlock.Numbered -> Row {
-                    Text("${block.number}.", color = color, fontSize = 17.sp, fontWeight = FontWeight.Medium, lineHeight = 22.sp)
+                    Text("${block.number}.", color = color, fontSize = 16.sp, fontWeight = FontWeight.Medium, lineHeight = 22.sp)
                     Spacer(Modifier.width(8.dp))
-                    Text(inlineMarkdown(block.text, linkColor, codeBg), color = color, fontSize = 17.sp, lineHeight = 22.sp, modifier = Modifier.weight(1f))
+                    Text(inlineMarkdown(block.text, linkColor, codeBg), color = color, fontSize = 16.sp, lineHeight = 22.sp, modifier = Modifier.weight(1f))
                 }
                 is MdBlock.Code -> Box(
                     Modifier.fillMaxWidth().clip(RoundedCornerShape(AppRadii.Chip)).background(codeBg).padding(10.dp)
@@ -471,7 +471,7 @@ internal fun MarkdownText(content: String, color: Color) {
                 }
                 is MdBlock.Paragraph -> Text(
                     inlineMarkdown(block.text, linkColor, codeBg),
-                    color = color, fontSize = 17.sp, lineHeight = 22.sp
+                    color = color, fontSize = 16.sp, lineHeight = 22.sp
                 )
             }
         }

@@ -56,7 +56,7 @@ internal fun ProgressAdherenceSection(
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(
                 stringResource(R.string.progress_adherence_title),
-                fontSize = 17.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
             )
             Text(

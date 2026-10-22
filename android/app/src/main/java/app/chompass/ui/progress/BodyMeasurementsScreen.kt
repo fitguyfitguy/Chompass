@@ -117,7 +117,7 @@ private fun BodyMeasurementsHistorySheet(
     ) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 10.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.measurement_history), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.measurement_history), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.weight(1f))
                 TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_done), color = AppColors.Calorie) }
             }

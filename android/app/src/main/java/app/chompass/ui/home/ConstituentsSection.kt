@@ -313,10 +313,10 @@ internal fun ConstituentSummaryRow(
             if (!row.emoji.isNullOrBlank()) {
                 Text(row.emoji!!, fontSize = 20.sp, modifier = Modifier.padding(end = 8.dp))
             }
-            Text(row.name, fontSize = 17.sp, modifier = Modifier.weight(1f))
+            Text(row.name, fontSize = 16.sp, modifier = Modifier.weight(1f))
             Text(
                 text = energyText(row.calories),
-                fontSize = 17.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = AppColors.Calorie,
             )

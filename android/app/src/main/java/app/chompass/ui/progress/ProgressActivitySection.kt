@@ -41,7 +41,7 @@ internal fun ActivitySection(days: List<DailyActivity>) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.progressCollapseHeader(expanded) { expanded = !expanded },
         ) {
-            Text(stringResource(R.string.progress_activity_section), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.progress_activity_section), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.weight(1f))
             Text(
                 stringResource(R.string.progress_activity_from_health),
@@ -109,7 +109,7 @@ internal fun WellnessSection(days: List<DailyWellness>) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.progressCollapseHeader(expanded) { expanded = !expanded },
         ) {
-            Text(stringResource(R.string.progress_wellness_section), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.progress_wellness_section), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.weight(1f))
             Text(
                 stringResource(R.string.progress_activity_from_health),

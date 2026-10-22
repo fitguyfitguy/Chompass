@@ -49,7 +49,7 @@ internal fun MacroAveragesSection(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.progressCollapseHeader(expanded) { expanded = !expanded },
         ) {
-            Text(stringResource(R.string.progress_macro_averages), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.progress_macro_averages), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.weight(1f))
             CollapseChevron(expanded)
         }
@@ -77,7 +77,7 @@ internal fun NutrientAveragesSection(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.progressCollapseHeader(expanded) { expanded = !expanded },
         ) {
-            Text(stringResource(R.string.progress_nutrient_averages), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.progress_nutrient_averages), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.weight(1f))
             CollapseChevron(expanded)
         }

@@ -249,7 +249,7 @@ private fun DayTile(
         ) {
             Text(
                 date.dayOfMonth.toString(),
-                fontSize = 17.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = when {
                     isSelected -> MaterialTheme.colorScheme.onPrimary

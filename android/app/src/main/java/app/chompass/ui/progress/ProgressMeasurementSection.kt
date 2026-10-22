@@ -75,7 +75,7 @@ internal fun MeasurementPlotCard(
             ) {
                 Text(
                     stringResource(site.labelRes),
-                    fontSize = 17.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                 )
                 Spacer(Modifier.weight(1f))

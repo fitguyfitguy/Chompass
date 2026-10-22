@@ -176,7 +176,7 @@ internal fun InputBar(
                     if (value.isEmpty()) {
                         Text(
                             stringResource(R.string.coach_input_placeholder),
-                            fontSize = 17.sp,
+                            fontSize = 16.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint)
                         )
                     }
@@ -185,7 +185,7 @@ internal fun InputBar(
                         onValueChange = onValueChange,
                         textStyle = LocalTextStyle.current.copy(
                             color = MaterialTheme.colorScheme.onSurface,
-                            fontSize = 17.sp,
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.Normal
                         ),
                         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
@@ -312,7 +312,7 @@ internal fun CoachInputBarPreviewStub(value: String, sending: Boolean) {
         Text(
             text = value.ifEmpty { stringResource(R.string.coach_input_placeholder) },
             modifier = Modifier.weight(1f),
-            fontSize = 17.sp,
+            fontSize = 16.sp,
             color = if (value.isEmpty()) {
                 MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint)
             } else {

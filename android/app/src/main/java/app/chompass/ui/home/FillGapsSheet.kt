@@ -214,7 +214,7 @@ fun FillGapsSheet(
         ChompassDialog(onDismissRequest = { confirmRunAll = false }) {
             Text(
                 pluralStringResource(confirmRes, pending.size, pending.size),
-                fontSize = 17.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
             )
             ChompassDialogActions(

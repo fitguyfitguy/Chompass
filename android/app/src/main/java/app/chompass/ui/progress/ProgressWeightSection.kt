@@ -98,7 +98,7 @@ internal fun WeightHistoryLink(count: Int, onClick: () -> Unit) {
             )
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(stringResource(R.string.progress_weight_history), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.progress_weight_history), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                 Text(
                     stringResource(R.string.progress_history_count_format, count),
                     fontSize = 13.sp,
@@ -132,7 +132,7 @@ internal fun BodyFatHistoryLink(count: Int, onClick: () -> Unit) {
             )
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(stringResource(R.string.progress_body_fat_history), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.progress_body_fat_history), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                 Text(
                     stringResource(R.string.progress_history_count_format, count),
                     fontSize = 13.sp,

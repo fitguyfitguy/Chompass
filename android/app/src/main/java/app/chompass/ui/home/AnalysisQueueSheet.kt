@@ -235,7 +235,7 @@ fun AnalysisQueueSheet(
         ChompassDialog(onDismissRequest = { confirmDelete = null }) {
             Text(
                 stringResource(R.string.analysis_queue_delete_confirm),
-                fontSize = 17.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
             )
             ChompassDialogActions(
@@ -255,7 +255,7 @@ fun AnalysisQueueSheet(
         ChompassDialog(onDismissRequest = { confirmClearHistory = false }) {
             Text(
                 stringResource(R.string.analysis_queue_clear_history_confirm),
-                fontSize = 17.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
             )
             ChompassDialogActions(

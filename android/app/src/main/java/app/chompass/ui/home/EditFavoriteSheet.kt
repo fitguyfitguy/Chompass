@@ -538,7 +538,7 @@ fun EditFavoriteSheet(
                         item { SheetSectionHeader(stringResource(R.string.sheet_food_details)) }
                         item {
                             SheetPillRow {
-                                Text(stringResource(R.string.sheet_name), fontSize = 17.sp, modifier = Modifier.padding(end = 8.dp))
+                                Text(stringResource(R.string.sheet_name), fontSize = 16.sp, modifier = Modifier.padding(end = 8.dp))
                                 Spacer(Modifier.weight(1f))
                                 androidx.compose.foundation.text.BasicTextField(
                                     value = name,
@@ -546,7 +546,7 @@ fun EditFavoriteSheet(
                                     singleLine = true,
                                     textStyle = androidx.compose.ui.text.TextStyle(
                                         color = MaterialTheme.colorScheme.onSurface,
-                                        fontSize = 17.sp,
+                                        fontSize = 16.sp,
                                         textAlign = androidx.compose.ui.text.style.TextAlign.End
                                     ),
                                     cursorBrush = androidx.compose.ui.graphics.SolidColor(AppColors.Calorie),
@@ -567,7 +567,7 @@ fun EditFavoriteSheet(
                         item { SheetSectionHeader(stringResource(R.string.sheet_meal)) }
                         item {
                             SheetPillRow(onClick = { mealMenuExpanded = true }) {
-                                Text(stringResource(R.string.sheet_meal_type), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                                Text(stringResource(R.string.sheet_meal_type), fontSize = 16.sp, modifier = Modifier.weight(1f))
                                 Box {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically
@@ -581,7 +581,7 @@ fun EditFavoriteSheet(
                                         Spacer(Modifier.width(6.dp))
                                         Text(
                                             mealLabel(mealType),
-                                            fontSize = 17.sp,
+                                            fontSize = 16.sp,
                                             color = AppColors.Calorie,
                                             fontWeight = FontWeight.Medium
                                         )
@@ -771,7 +771,7 @@ fun EditFavoriteSheet(
                         if (MicronutrientField.MoreNutrition.any { editableMicros[it] != null }) {
                             item {
                                 SheetPillRow(onClick = { moreNutritionExpanded = !moreNutritionExpanded }) {
-                                    Text(stringResource(R.string.sheet_more_nutrition), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                                    Text(stringResource(R.string.sheet_more_nutrition), fontSize = 16.sp, modifier = Modifier.weight(1f))
                                     Icon(
                                         if (moreNutritionExpanded) Icons.Filled.KeyboardArrowDown
                                         else Icons.AutoMirrored.Filled.KeyboardArrowRight,

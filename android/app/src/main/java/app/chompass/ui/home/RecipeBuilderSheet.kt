@@ -188,7 +188,7 @@ fun RecipeBuilderSheet(
             item {
                 Box(Modifier.padding(horizontal = 20.dp)) {
                     SheetPillRow(onClick = { mealMenuExpanded = true }) {
-                        Text(stringResource(R.string.sheet_meal_type), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                        Text(stringResource(R.string.sheet_meal_type), fontSize = 16.sp, modifier = Modifier.weight(1f))
                         Box {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
@@ -200,7 +200,7 @@ fun RecipeBuilderSheet(
                                 Spacer(Modifier.width(6.dp))
                                 Text(
                                     mealLabel(mealType),
-                                    fontSize = 17.sp,
+                                    fontSize = 16.sp,
                                     color = AppColors.Calorie,
                                     fontWeight = FontWeight.Medium
                                 )
@@ -457,7 +457,7 @@ private fun FavoritesIngredientPickerSheet(
     ) {
         Text(
             stringResource(R.string.saved_meals_tab_favorites),
-            fontSize = 17.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 12.dp, start = 20.dp, end = 20.dp)
         )

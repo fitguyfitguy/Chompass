@@ -184,7 +184,7 @@ private fun PhaseRow(
     ) {
         Column(Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(phase.name, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                Text(phase.name, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.width(8.dp))
                 IntentChip(phase.intent)
             }

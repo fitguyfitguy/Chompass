@@ -914,7 +914,7 @@ fun ExpandableMacroPicker(
             // Current value + unit
             Text(
                 "$value $unit",
-                fontSize = 17.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = accentColor
             )
@@ -1000,7 +1000,7 @@ fun ExpandableDecimalMacroPicker(
             Spacer(Modifier.weight(1f))
             Text(
                 "${MacroValueFormatter.string(value)} $unit",
-                fontSize = 17.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = accentColor
             )
