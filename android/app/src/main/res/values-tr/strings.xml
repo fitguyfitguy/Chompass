@@ -105,9 +105,7 @@
     <string name="macro_calories">Kalori</string>
     <string name="macro_goal_of">%1$d%2$s üzerinden</string>
     <string name="macro_status_left">%1$s%2$s kaldı</string>
-    <string name="macro_status_left_compact">%1$s kaldı</string>
     <string name="macro_status_over">%1$s%2$s fazla</string>
-    <string name="macro_status_over_compact">%1$s fazla</string>
     <string name="macro_status_floor_met">Minimum değere ulaşıldı</string>
     <string name="macro_status_goal_reached">Hedefe ulaşıldı</string>
     <string name="macro_status_no_goal">Hedef yok</string>
@@ -1873,6 +1871,17 @@
     <string name="export_range_custom">Özel</string>
     <string name="vm_health_connect_needed_msg">Chompass\'ın Health Connect\'te Aktif ve Toplam Kalorilerini okumasına izin ver, ardından Enerji Yakımını tekrar aç.</string>
     <string name="vm_not_enough_energy_msg">Chompass, ölçülen yakımını kullanabilmesi için Health Connect\'ten en az 3 günlük yakın tarihli enerji verisi gerektirir.</string>
+    <string name="nutrient_short_calories">Kal</string>
+    <string name="nutrient_short_added_sugar">İl. Şeker</string>
+    <string name="nutrient_short_cholesterol">Kolest.</string>
+    <string name="nutrient_short_sodium">Sodyum</string>
+    <string name="nutrient_short_potassium">Potas.</string>
+    <string name="nutrient_short_trans_fat">Trans Yağ</string>
+    <string name="nutrient_short_calcium">Kalsiyum</string>
+    <string name="nutrient_short_iron">Demir</string>
+    <string name="nutrient_short_magnesium">Mag.</string>
+    <string name="nutrient_short_zinc">Çinko</string>
+    <string name="nutrient_short_folate">Folat</string>
     <string name="nutrient_short_sat_fat">Doy. Yağ</string>
     <string name="nutrient_short_vit_a">A Vit.</string>
     <string name="nutrient_short_vit_c">C Vit.</string>

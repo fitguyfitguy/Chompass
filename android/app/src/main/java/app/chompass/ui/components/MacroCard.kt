@@ -29,8 +29,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
@@ -46,6 +47,7 @@ import app.chompass.ui.navigation.LocalLaunchFillEpoch
  */
 private data class MacroCardInput(
     val label: String,
+    val shortLabel: String,
     val current: Double,
     val goal: Int,
     val unit: String,
@@ -60,6 +62,7 @@ private data class MacroCardInput(
 @Composable
 fun MacroCard(
     label: String,
+    shortLabel: String,
     current: Double,
     goal: Int,
     unit: String,
@@ -75,6 +78,7 @@ fun MacroCard(
 ) {
     val input = MacroCardInput(
         label = label,
+        shortLabel = shortLabel,
         current = current,
         goal = goal,
         unit = unit,
@@ -221,16 +225,23 @@ private fun rememberMacroAnimation(progress: Float, freezeProgress: Boolean): Fl
     return if (freezeProgress) progress else animatable.value
 }
 
-/** Compact status text without the unit placeholder ("8 left" / "3 over"). */
+/** Signed-delta status: "−84" under goal, "+12" over, "✓" met. Null hides the status (no goal). */
+private data class MacroStatusGlyph(val text: String, val met: Boolean, val over: Boolean, val a11y: String)
+
 @Composable
-private fun macroStatusText(input: MacroCardInput, format: (Double) -> String): String = with(input) {
+private fun macroStatusGlyph(input: MacroCardInput, format: (Double) -> String): MacroStatusGlyph? = with(input) {
     val goalValue = goal.toDouble()
+    val displayUnit = if (isEnergy) energyUnitLabel() else unit
     when {
-        goal <= 0 -> stringResource(R.string.macro_status_no_goal)
-        fatFloor && current >= goalValue -> stringResource(R.string.macro_status_floor_met)
-        current == goalValue -> stringResource(R.string.macro_status_goal_reached)
-        current < goalValue -> stringResource(R.string.macro_status_left_compact, format(goalValue - current))
-        else -> stringResource(R.string.macro_status_over_compact, format(current - goalValue))
+        goal <= 0 -> null
+        fatFloor && current >= goalValue -> MacroStatusGlyph("✓", met = true, over = false,
+            a11y = stringResource(R.string.macro_status_floor_met))
+        current == goalValue -> MacroStatusGlyph("✓", met = true, over = false,
+            a11y = stringResource(R.string.macro_status_goal_reached))
+        current < goalValue -> MacroStatusGlyph("−" + format(goalValue - current), met = false, over = false,
+            a11y = stringResource(R.string.macro_status_left, format(goalValue - current), displayUnit))
+        else -> MacroStatusGlyph("+" + format(current - goal), met = false, over = true,
+            a11y = stringResource(R.string.macro_status_over, format(current - goal), displayUnit))
     }
 }
 
@@ -285,20 +296,29 @@ private fun CompactBarsMacroCard(input: MacroCardInput) {
         val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
         val combined = if (goal > 0) ((current + planned).toFloat() / goal).coerceIn(0f, 1f) else 0f
         val animated = rememberMacroAnimation(progress, freezeProgress)
-        val status = macroStatusText(input) { formatted(it) }
+        val status = macroStatusGlyph(input) { formatted(it) }
 
         Column(
             modifier = modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(3.dp),
         ) {
-            Text(
-                label,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    shortLabel,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                )
+                Text(
+                    displayUnit,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    modifier = Modifier.alignByBaseline(),
+                )
+            }
             MacroSlimBar(
                 animated = animated,
                 combined = combined,
@@ -310,26 +330,32 @@ private fun CompactBarsMacroCard(input: MacroCardInput) {
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    "${formatted(current)}$displayUnit",
+                    formatted(current),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = accentColor,
                     maxLines = 1,
-                    modifier = Modifier.alignByBaseline(),
-                )
-                Text(
-                    status,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = if (goal > 0 && current > goal.toDouble() && !fatFloor) accentColor
-                        else MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    autoSize = TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = 11.sp, stepSize = 0.5.sp),
+                    autoSize = TextAutoSize.StepBased(minFontSize = 9.sp, maxFontSize = 12.sp, stepSize = 0.5.sp),
                     modifier = Modifier
                         .weight(1f, fill = false)
                         .alignByBaseline(),
                 )
+                if (status != null) {
+                    Text(
+                        status.text,
+                        fontSize = 11.sp,
+                        maxLines = 1,
+                        autoSize = TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = 11.sp, stepSize = 0.5.sp),
+                        color = when {
+                            status.over -> accentColor
+                            status.met -> accentColor
+                            else -> MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        modifier = Modifier
+                            .alignByBaseline()
+                            .semantics { contentDescription = status.a11y },
+                    )
+                }
             }
         }
     }
@@ -349,7 +375,7 @@ private fun SlimLineMacroCard(input: MacroCardInput) {
         val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
         val combined = if (goal > 0) ((current + planned).toFloat() / goal).coerceIn(0f, 1f) else 0f
         val animated = rememberMacroAnimation(progress, freezeProgress)
-        val status = macroStatusText(input) { formatted(it) }
+        val status = macroStatusGlyph(input) { formatted(it) }
 
         Column(
             modifier = modifier.fillMaxWidth(),
@@ -366,30 +392,41 @@ private fun SlimLineMacroCard(input: MacroCardInput) {
                     horizontalArrangement = Arrangement.spacedBy(3.dp),
                 ) {
                     Text(
-                        label,
+                        shortLabel,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
                     )
                     Text(
-                        "${formatted(current)}$displayUnit",
+                        displayUnit,
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                    )
+                    Text(
+                        formatted(current),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = accentColor,
                         maxLines = 1,
                     )
                 }
-                Text(
-                    status,
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = if (goal > 0 && current > goal.toDouble() && !fatFloor) accentColor
-                        else MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                if (status != null) {
+                    Text(
+                        status.text,
+                        fontSize = 10.sp,
+                        maxLines = 1,
+                        autoSize = TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = 10.sp, stepSize = 0.5.sp),
+                        color = when {
+                            status.over -> accentColor
+                            status.met -> accentColor
+                            else -> MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        modifier = Modifier.semantics { contentDescription = status.a11y },
+                    )
+                }
             }
             MacroSlimBar(
                 animated = animated,

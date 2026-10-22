@@ -38,6 +38,35 @@ enum class HomeTopNutrient(
     OMEGA3("omega3", "Omega-3", "g", R.string.nutrient_short_omega, R.string.unit_g),
     CAFFEINE("caffeine", "Caffeine", "mg", R.string.nutrition_label_caffeine, R.string.unit_mg);
 
+    /** Band-card label: the localized macro glyph for core nutrients, else the localized short name. */
+    fun cardShortLabelRes(): Int = when (this) {
+        CALORIES -> R.string.nutrient_short_calories
+        PROTEIN -> R.string.macro_glyph_protein
+        CARBS -> R.string.macro_glyph_carbs
+        FAT -> R.string.macro_glyph_fat
+        FIBER -> R.string.macro_glyph_fiber
+        SUGAR -> R.string.macro_glyph_sugar
+        ADDED_SUGAR -> R.string.nutrient_short_added_sugar
+        SATURATED_FAT -> R.string.nutrient_short_sat_fat
+        CHOLESTEROL -> R.string.nutrient_short_cholesterol
+        SODIUM -> R.string.nutrient_short_sodium
+        POTASSIUM -> R.string.nutrient_short_potassium
+        TRANS_FAT -> R.string.nutrient_short_trans_fat
+        CALCIUM -> R.string.nutrient_short_calcium
+        IRON -> R.string.nutrient_short_iron
+        MAGNESIUM -> R.string.nutrient_short_magnesium
+        ZINC -> R.string.nutrient_short_zinc
+        VITAMIN_A -> R.string.nutrient_short_vit_a
+        VITAMIN_C -> R.string.nutrient_short_vit_c
+        VITAMIN_D -> R.string.nutrient_short_vit_d
+        VITAMIN_B12 -> R.string.nutrient_short_b12
+        VITAMIN_E -> R.string.nutrient_short_vit_e
+        VITAMIN_K -> R.string.nutrient_short_vit_k
+        FOLATE -> R.string.nutrient_short_folate
+        OMEGA3 -> R.string.nutrient_short_omega
+        CAFFEINE -> R.string.nutrient_short_caffeine
+    }
+
     fun current(entries: List<FoodEntry>): Double = when (this) {
         CALORIES -> entries.sumOf { it.calories }.toDouble()
         PROTEIN -> entries.sumOf { it.protein }
