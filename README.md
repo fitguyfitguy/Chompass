@@ -178,6 +178,7 @@ Typed entry with a stated portion: **5.7% WMAPE, 90% within ±20%** of true calo
 - [Settings guide](https://chompass.app/settings/): every setting on Android and the PWA
 - [`docs/ACCURACY.md`](docs/ACCURACY.md): what the AI numbers mean
 - [`docs/PRIVACY.md`](docs/PRIVACY.md): no ads, no analytics, local-first
+- [`docs/AI_POLICY.md`](docs/AI_POLICY.md): how AI is used, in development and in the app
 - [`docs/CALCULATION_METHODS.md`](docs/CALCULATION_METHODS.md): BMR, TDEE, goals, water
 - [`docs/README.md`](docs/README.md): full docs index
 
