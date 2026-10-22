@@ -1467,6 +1467,8 @@
     <string name="home_display_title">Ana Ekran Görünümü</string>
     <string name="home_display_nutrient_cards">Besin kartları</string>
     <string name="home_display_show_steps">Ana ekranda adım sayacını göster</string>
+    <string name="home_display_slim_full_names">Tam besin adları</string>
+    <string name="home_display_slim_full_names_desc">İnce çizgi kartları kısa etiket yerine tam adı gösterir. Dört kart seçiliyken uzun adlar kesilebilir.</string>
     <string name="home_display_show_steps_desc">Göstergenin altında isteğe bağlı kart. Health Connect gerektirir.</string>
     <string name="home_display_step_goal">Günlük adım hedefi</string>
     <string name="home_display_step_goal_hint">500\'er ayarlanır. 1.000–50.000.</string>

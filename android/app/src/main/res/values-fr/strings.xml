@@ -1124,6 +1124,8 @@
     <string name="home_display_show_active_calories">Afficher les calories actives</string>
     <string name="home_display_show_active_calories_desc">Affiche la dépense active du jour dans la jauge de calories.</string>
     <string name="home_display_show_steps">Afficher le compteur de pas sur l\'accueil</string>
+    <string name="home_display_slim_full_names">Noms complets des nutriments</string>
+    <string name="home_display_slim_full_names_desc">Les cartes lignes fines affichent le nom complet au lieu du libellé court. Les noms longs peuvent être tronqués avec quatre cartes.</string>
     <string name="home_display_show_steps_desc">Carte facultative sous la jauge. Nécessite Health Connect.</string>
     <string name="home_display_step_goal">Objectif de pas quotidien</string>
     <string name="home_display_step_goal_hint">Ajuste par 500. 1 000–50 000.</string>

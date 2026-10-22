@@ -1058,6 +1058,8 @@
     <string name="home_display_show_active_calories">Actieve calorieën tonen</string>
     <string name="home_display_show_active_calories_desc">Toon het actieve verbruik van vandaag in de caloriemeter.</string>
     <string name="home_display_show_steps">Stappenteller op home tonen</string>
+    <string name="home_display_slim_full_names">Volledige nutriëntnamen</string>
+    <string name="home_display_slim_full_names_desc">Slanke-lijnenkaarten tonen de volledige naam in plaats van het korte label. Lange namen kunnen afgekapt worden bij vier kaarten.</string>
     <string name="home_display_show_steps_desc">Optionele kaart onder de meter. Vereist Health Connect.</string>
     <string name="home_display_step_goal">Dagelijks stappendoel</string>
     <string name="home_display_step_goal_hint">Stappen van 500. 1.000–50.000.</string>

@@ -290,6 +290,7 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
             fullCreditActiveBurn = this[Keys.HOME_CALORIE_FULL_CREDIT] ?: false,
             calorieHeroLayout = HomeCalorieHeroLayout.fromStorage(this[Keys.HOME_CALORIE_HERO_LAYOUT]),
             macroCardLayout = HomeMacroCardLayout.fromStorage(this[Keys.HOME_MACRO_CARD_LAYOUT]),
+            slimCardFullNames = this[Keys.HOME_SLIM_FULL_NAMES] ?: false,
             foodLogLayout = HomeFoodLogLayout.fromStorage(this[Keys.HOME_FOOD_LOG_LAYOUT]),
             foodLogMacroChips = FoodLogMacroChip.fromStorage(this[Keys.FOOD_LOG_MACRO_CHIPS]),
         ),

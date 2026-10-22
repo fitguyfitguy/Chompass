@@ -16,6 +16,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import app.chompass.models.HomeMacroCardLayout
 import app.chompass.ui.components.MacroCard
 import org.junit.Rule
 import org.junit.Test
@@ -66,6 +67,7 @@ class MacroCardBandOverflowGateTest {
         isEnergy: Boolean = false,
         fatFloor: Boolean = false,
         fontScale: Float? = null,
+        layout: HomeMacroCardLayout? = null,
     ) {
         composeRule.setContent {
             MaterialTheme {
@@ -79,6 +81,7 @@ class MacroCardBandOverflowGateTest {
                         modifier = Modifier.width(69.dp),
                         isEnergy = isEnergy,
                         fatFloor = fatFloor,
+                        layout = layout,
                     )
                 }
                 if (fontScale != null) {
@@ -164,5 +167,40 @@ class MacroCardBandOverflowGateTest {
         composeRule.onNodeWithText("✓").assertDoesNotExist()
         composeRule.onNodeWithText("−95").assertDoesNotExist()
         composeRule.onNodeWithText("+95").assertDoesNotExist()
+    }
+
+    @Test
+    fun slimLine_glyphRow_staysSingleLineAt69dp() {
+        // Slim packs label + unit + value + status on ONE line: only the glyph
+        // vocabulary keeps that inside ~69dp at 4 cards.
+        setBandCard(
+            label = "Calories",
+            shortLabel = "Cal",
+            current = 4820.0,
+            goal = 2000,
+            unit = "kcal",
+            isEnergy = true,
+            layout = HomeMacroCardLayout.SLIM_LINE,
+        )
+        composeRule.onNodeWithText("+2820").assertVisibleSingleLine("slim delta")
+        composeRule.onNodeWithText("4820").assertVisibleSingleLine("slim value")
+    }
+
+    @Test
+    fun slimLine_fullNameMode_nameYieldsButSurvives() {
+        // Full-name toggle at the 4-card width: the capped label ellipsizes to
+        // a sliver but never collapses to 0x0, and value + status stay
+        // single-line. (Shorter numbers leave the name more room.)
+        setBandCard(
+            label = "Carbs",
+            shortLabel = "Kohlenhydrate",
+            current = 204.0,
+            goal = 248,
+            unit = "g",
+            layout = HomeMacroCardLayout.SLIM_LINE,
+        )
+        composeRule.onNodeWithText("Kohlenhydrate").assertVisibleSingleLine("slim full name")
+        composeRule.onNodeWithText("204").assertVisibleSingleLine("slim full-name value")
+        composeRule.onNodeWithText("−44").assertVisibleSingleLine("slim full-name delta")
     }
 }

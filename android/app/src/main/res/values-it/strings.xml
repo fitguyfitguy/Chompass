@@ -1055,6 +1055,8 @@
     <string name="home_display_show_active_calories">Mostra calorie attive</string>
     <string name="home_display_show_active_calories_desc">Mostra il dispendio attivo di oggi nell\'anello calorie.</string>
     <string name="home_display_show_steps">Mostra contapassi in home</string>
+    <string name="home_display_slim_full_names">Nomi completi dei nutrienti</string>
+    <string name="home_display_slim_full_names_desc">Le card a linee sottili mostrano il nome completo invece dell\'etichetta breve. I nomi lunghi possono troncarsi con quattro card.</string>
     <string name="home_display_show_steps_desc">Card facoltativa sotto l\'anello. Richiede Health Connect.</string>
     <string name="home_display_step_goal">Obiettivo passi giornaliero</string>
     <string name="home_display_step_goal_hint">Regola di 500. 1.000–50.000.</string>

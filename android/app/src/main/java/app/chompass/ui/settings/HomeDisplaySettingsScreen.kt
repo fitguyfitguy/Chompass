@@ -179,6 +179,13 @@ fun HomeDisplaySettingsScreen(
                         value = nutrientCardLayoutLabel(display.macroCardLayout),
                         onClick = { showNutrientCardLayoutPicker = true },
                     )
+                    HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+                    ToggleRow(
+                        label = stringResource(R.string.home_display_slim_full_names),
+                        checked = display.slimCardFullNames,
+                        onChange = vm::setHomeSlimFullNames,
+                    )
+                    SettingNote(stringResource(R.string.home_display_slim_full_names_desc))
                 }
             }
 

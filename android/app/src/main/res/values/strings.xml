@@ -2185,6 +2185,8 @@
     <string name="home_nutrient_card_layout_slim_line">Slim lines</string>
     <string name="home_nutrient_card_layout_classic">Classic cards</string>
     <string name="home_display_show_steps">Show step counter on home</string>
+    <string name="home_display_slim_full_names">Full nutrient names</string>
+    <string name="home_display_slim_full_names_desc">Slim-line cards show the complete name instead of the short label. Long names can truncate when four cards are selected.</string>
     <string name="home_display_show_steps_desc">Optional card below the gauge. Needs Health Connect.</string>
     <string name="home_display_step_goal">Daily step goal</string>
     <string name="home_display_step_goal_hint">Adjusts by 500. 1,000–50,000.</string>

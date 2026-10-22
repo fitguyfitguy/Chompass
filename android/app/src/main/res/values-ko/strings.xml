@@ -1087,6 +1087,8 @@
     <string name="home_display_show_active_calories">활동 칼로리 표시</string>
     <string name="home_display_show_active_calories_desc">칼로리 게이지에 오늘의 활동 소비를 표시해요.</string>
     <string name="home_display_show_steps">홈에 걸음 수 표시</string>
+    <string name="home_display_slim_full_names">전체 영양소 이름</string>
+    <string name="home_display_slim_full_names_desc">슬림 라인 카드는 짧은 라벨 대신 전체 이름을 표시합니다. 카드 4개 선택 시 긴 이름은 잘릴 수 있습니다.</string>
     <string name="home_display_show_steps_desc">게이지 아래 선택 카드. Health Connect 필요.</string>
     <string name="home_display_step_goal">일일 걸음 목표</string>
     <string name="home_display_step_goal_hint">500 단위 조정. 1,000–50,000.</string>

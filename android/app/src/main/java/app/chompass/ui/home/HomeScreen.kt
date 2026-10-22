@@ -743,7 +743,9 @@ fun HomeScreen(
                             val (current, planned, goal) = macroCardValues.getValue(nutrient)
                             MacroCard(
                                 label = stringResource(nutrient.displayNameRes),
-                                shortLabel = stringResource(nutrient.cardShortLabelRes()),
+                                shortLabel = stringResource(
+                                    ui.homeDisplay.cardLabelRes(nutrient, ui.homeDisplay.macroCardLayout)
+                                ),
                                 current = current,
                                 goal = goal,
                                 fatFloor = nutrient == HomeTopNutrient.FAT,
@@ -2344,7 +2346,9 @@ internal fun HomeScreenPreviewContent(
                             ui.homeTopNutrients.forEach { nutrient ->
                                 MacroCard(
                                     label = stringResource(nutrient.displayNameRes),
-                                    shortLabel = stringResource(nutrient.cardShortLabelRes()),
+                                    shortLabel = stringResource(
+                                        ui.homeDisplay.cardLabelRes(nutrient, ui.homeDisplay.macroCardLayout)
+                                    ),
                                     current = when (nutrient) {
                                         HomeTopNutrient.CALORIES -> ui.loggedCaloriesToday.toDouble()
                                         HomeTopNutrient.CAFFEINE -> ui.caffeineTodayMg
