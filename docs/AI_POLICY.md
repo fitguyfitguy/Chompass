@@ -25,3 +25,13 @@ This policy is about development. The AI features in the product are opt-in:
 bring your own cloud API key, or run models on-device. All AI features can be
 turned off while barcode, search, and manual logging keep working. See the
 [AI section](../README.md#ai) and [`docs/PRIVACY.md`](PRIVACY.md).
+
+## Local files
+
+The shared `.gitignore` only lists what must never be committed on any
+machine: signing keys, API-key files, personal health-data exports, build
+outputs, dataset caches. Everything else that only exists on the
+maintainer's machine — agent configuration, lab notebooks, executed plans,
+personal workflow scripts — is untracked through `.git/info/exclude`,
+which stays in this clone. Docs and the website only link files that are
+tracked.

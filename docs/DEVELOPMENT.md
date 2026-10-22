@@ -109,7 +109,7 @@ devenv tasks run device:maestro           # build + install + seed_full + all fl
 
 - Flows live in `android/maestro/flows/*.yaml` (JUnit XML + failure screenshots land in `android/build/maestro/<ts>/`). Each flow maps to a device-pass item (`progress-range-chips`, `add-food-off-chip`, `untracked-day-mark`).
 - Selectors are the German UI strings from `values-de/strings.xml` (maintainer device is de-DE). Debug builds expose Compose `testTag`s as resource-ids (`MainActivity` sets `testTagsAsResourceId` under `BuildConfig.DEBUG`), so id-based selectors are available for locale-proof flows.
-- Caveats: Maestro sees only devices on the WSL adb server (not USB phones on the Windows adb); emulator-free — the runner fails fast with the `adb_wifi.sh` hint when no device is present. Perf benchmarks keep running on the physical device per [`docs/PERFORMANCE.md`](PERFORMANCE.md); the emulator story (Windows-side AVD) is tracked separately.
+- Caveats: Maestro sees only devices on the WSL adb server (not USB phones on the Windows adb); emulator-free — the runner fails fast with the `adb_wifi.sh` hint when no device is present. Perf benchmarks keep running on the physical device per `docs/PERFORMANCE.md` (maintainer-local); the emulator story (Windows-side AVD) is tracked separately.
 
 ## Project website (Codeberg Pages)
 
