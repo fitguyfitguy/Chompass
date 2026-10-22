@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Reject staging/committing local-only agent tooling. Those paths are kept out
+# of the repository by policy (docs/AI_POLICY.md) and stay ignored via
+# .git/info/exclude; this hook is the backstop when exclude is missing
+# (fresh clone) or a path is staged with -f.
+# Installed via scripts/install_git_hooks.sh (or devenv enterShell).
+set -euo pipefail
+
+staged="$(git diff --cached --name-only)"
+if [[ -z "$staged" ]]; then
+  exit 0
+fi
+
+blocked="$(printf '%s\n' "$staged" | grep -E '^(AGENTS\.md|CLAUDE\.md|\.cursorrules|opencode\.json|\.claude/|\.cursor/|\.opencode/)' || true)"
+if [[ -n "$blocked" ]]; then
+  {
+    echo "pre-commit: refusing to commit local-only agent tooling:"
+    printf '  %s\n' $blocked
+  } >&2
+  cat >&2 <<'EOF'
+
+These paths are maintainer-local agent configuration and are kept out of
+the repository by policy (docs/AI_POLICY.md). Unstage them:
+
+  git restore --staged <path>
+EOF
+  exit 1
+fi

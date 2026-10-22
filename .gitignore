@@ -24,12 +24,7 @@ ios/Local.xcconfig
 
 
 # Local IDE tooling
-.claude/
-.cursor/
-.cursorrules
-.opencode/
 .omp/
-opencode.json
 ios/build-sim/
 .vercel
 
@@ -43,8 +38,6 @@ ios/**/xcuserdata/
 
 # Local maintainer notes (not published)
 docs/local/
-AGENTS.md
-CLAUDE.md
 
 # Local Codeberg workflow tooling (issue/PR templates ARE published from .forgejo/)
 .forgejo/*
@@ -52,7 +45,7 @@ CLAUDE.md
 !.forgejo/pull_request_template.md
 scripts/setup_codeberg_labels.sh
 
-# Local agent/triage workflow scripts (stay unversioned; docs/local + .cursor reference them)
+# Local agent/triage workflow scripts (stay unversioned; docs/local and local editor config reference them)
 scripts/apply_codeberg_labels.sh
 scripts/fetch_codeberg_delta.sh
 scripts/fetch_upstream_delta.sh
