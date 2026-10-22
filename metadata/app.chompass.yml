@@ -15,9 +15,244 @@ RepoType: git
 Repo: https://codeberg.org/fitguy/chompass.git
 
 Builds:
+  - versionName: 5.10.0
+    versionCode: 99
+    commit: e1d3db8f66711e52997be9631ec01dbd85857167
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+  - versionName: 5.9.0
+    versionCode: 98
+    commit: 45c0637df7ffdaf9dec506ac7cee838b4aab551e
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+  - versionName: 5.8.0
+    versionCode: 97
+    commit: db33a8e1d852276f13e9eae1c5a932287729105a
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+  - versionName: 5.8.0
+    versionCode: 96
+    commit: 2d82b3fcda200332fb926ba7108254539cb99efc
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+  - versionName: 5.8.0
+    versionCode: 95
+    commit: 80b301933be461e0e5e67f8d33ad47c55eeb9acb
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+  - versionName: 5.7.1
+    versionCode: 94
+    commit: ba2d641df30a3101fdaf12a98de1b96cf563058b
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
   - versionName: 5.7.0
     versionCode: 93
-    commit: ae3a2f3b0dd360d393e6cb692fcefbaefdfa7412
+    commit: ac02fe76ddae395eab56cb85e6869aa90d54736e
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+  - versionName: 5.5.1
+    versionCode: 88
+    commit: 775ab563a104880c615b30112ada1242ceb7c3ce
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+  - versionName: 5.5.0
+    versionCode: 87
+    commit: 32c30e6afc0111b7e8c8a18e8fd33b80f005dd04
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+  - versionName: 5.4.1
+    versionCode: 86
+    commit: a8cb2f228dc2e8e5986ddf179aecef3fe367bab0
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+  - versionName: 5.4.0
+    versionCode: 85
+    commit: 93fdf302c34864f859b32260fd9cd03d4613d606
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+  - versionName: 5.3.0
+    versionCode: 84
+    commit: 4e50b4ccb09fecee8902cb3d288c3b3ad7de5fd8
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+
+  - versionName: 5.2.1
+    versionCode: 83
+    commit: 3f8ec431e769e166e61be9c68f8d37708466fb69
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+
+  - versionName: 5.2.0
+    versionCode: 82
+    commit: 652e0345f1c2944f01c6f613f612009fbea36c95
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+
+  - versionName: 5.1.1
+    versionCode: 81
+    commit: d16d011392b4d4662ea1cd570c06307fd10d0582
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+
+  - versionName: 5.1.0
+    versionCode: 80
+    commit: 42a4903f6ab5af748b951129206300a6376cea56
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+
+  - versionName: 5.0.0
+    versionCode: 79
+    commit: 8d2d1dc6a4bfcb1f3f44c9a8ec0426211c196249
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+
+  - versionName: 4.10.0
+    versionCode: 78
+    commit: b52c137a4a1ecf4830f607862400c8ed281d8043
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+
+  - versionName: 4.9.0
+    versionCode: 77
+    commit: 6358afd2d48e2017e14d115274fcfef49f32ccf3
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+
+  - versionName: 4.8.0
+    versionCode: 76
+    commit: 66939461dcce9dcf0009b4993ace4e46d1936b20
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+
+  - versionName: 4.7.0
+    versionCode: 75
+    commit: 60b1665db094dd3122b338e71e69b00bdfec8b2b
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+
+  - versionName: 4.6.1
+    versionCode: 74
+    commit: b49e6a856458c41e46d7dbd72107fbe63c502c56
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+
+  - versionName: 4.6.0
+    versionCode: 73
+    commit: fa2d80c2a3227e17d42eb3d09dc0cd4d33bd2076
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+  - versionName: 4.4.0
+    versionCode: 70
+    commit: e907abe3a7636e98ba0d0d39f42df72f47911bde
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+  - versionName: 4.3.0
+    versionCode: 69
+    commit: 5ca9c5e4dcfee20f720763b97174437c9daac762
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+  - versionName: 4.1.0
+    versionCode: 68
+    commit: c8a9196f2b9547d157b468ff98ae24bcdb5d93ee
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+  - versionName: 4.0.0
+    versionCode: 67
+    commit: 1d73506caea176539d4d8d4d108d64cb3e101350
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+  - versionName: 3.24.0
+    versionCode: 66
+    commit: 224e3cb893f1d87c027686144e89ce39a67a0b2b
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+  - versionName: 3.23.0
+    versionCode: 65
+    commit: ee58fb978feada21bcdd5f2c4b0ca7b47f91a337
     subdir: android/app
     gradle:
       - yes
@@ -25,9 +260,9 @@ Builds:
       - web
     gradleprops:
       - releaseAbi=arm64-v8a
-  - versionName: 3.24.0
-    versionCode: 66
-    commit: 224e3cb893f1d87c027686144e89ce39a67a0b2b
+  - versionName: 3.22.0
+    versionCode: 64
+    commit: e11df15b9a9138578e7112f170da8265c5d20481
     subdir: android/app
     gradle:
       - yes
@@ -87,7 +322,17 @@ Builds:
       - releaseAbi=arm64-v8a
   - versionName: 3.18.0
     versionCode: 58
-    commit: a745d547617c7ed0bd3df3eac8cb2740f0d05406
+    commit: 5341e482f288b1c4fc69784d3c93175862afdcbb
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+    gradleprops:
+      - releaseAbi=arm64-v8a
+  - versionName: 3.17.2
+    versionCode: 57
+    commit: cc9a20b7b4dfa8e1710e1fb1fbcef8c602ee2720
     subdir: android/app
     gradle:
       - yes
@@ -105,9 +350,61 @@ Builds:
       - web
     gradleprops:
       - releaseAbi=arm64-v8a
-  - versionName: 3.1.1
-    versionCode: 30
-    commit: a01eba5a972daed794f510ade9209835f3b0974b
+  - versionName: 3.16.1
+    versionCode: 54
+    commit: dd10e333e6fa624e2e52f8ec1194a724b28acfb9
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+    gradleprops:
+      - releaseAbi=arm64-v8a
+  - versionName: 3.16.0
+    versionCode: 53
+    commit: 4c388e9fec753836cc41586f5ab1ed350d36a8fe
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+    gradleprops:
+      - releaseAbi=arm64-v8a
+  - versionName: 3.15.0
+    versionCode: 52
+    commit: 87820c090b457880e2e5b0682d0a239fd122ef0f
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+    gradleprops:
+      - releaseAbi=arm64-v8a
+  - versionName: 3.14.0
+    versionCode: 51
+    commit: 5900f2c7485406364a9b5c64eaa9426097cd3c3d
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+    gradleprops:
+      - releaseAbi=arm64-v8a
+
+  - versionName: 3.13.0
+    versionCode: 50
+    commit: e701496ed429d1904f4fced28f6799853051875c
+    subdir: android/app
+    gradle:
+      - yes
+    scandelete:
+      - web
+    gradleprops:
+      - releaseAbi=arm64-v8a
+
+  - versionName: 3.12.0
+    versionCode: 49
+    commit: 5a6898067238f7cb29a7e77dda1947f57a5bc40a
     subdir: android/app
     gradle:
       - yes
@@ -118,5 +415,5 @@ Builds:
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[0-9.]+$
-CurrentVersion: 3.24.0
-CurrentVersionCode: 66
+CurrentVersion: 5.10.0
+CurrentVersionCode: 99
