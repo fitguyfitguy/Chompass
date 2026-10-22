@@ -67,7 +67,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 101
-        versionName = "5.11.0-beta.2"
+        versionName = "5.11.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         if (releaseAbi != null) {

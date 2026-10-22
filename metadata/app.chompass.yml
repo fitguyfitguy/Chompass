@@ -415,5 +415,5 @@ Builds:
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v[0-9.]+$
-CurrentVersion: 5.10.0
-CurrentVersionCode: 99
+CurrentVersion: 5.11.0
+CurrentVersionCode: 101
