@@ -143,7 +143,7 @@ internal fun MealSectionHeader(
             Text(
                 mealLabel(meal),
                 modifier = Modifier.weight(1f),
-                fontSize = 17.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

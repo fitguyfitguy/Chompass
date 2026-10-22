@@ -277,7 +277,7 @@ private fun MealCatalogRow(
                         editingName = false
                     }),
                     textStyle = TextStyle(
-                        fontSize = 17.sp,
+                        fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.onSurface,
                     ),
                     cursorBrush = SolidColor(AppColors.Calorie),
@@ -290,7 +290,7 @@ private fun MealCatalogRow(
             } else {
                 Text(
                     if (def.enabled) shownLabel else stringResource(R.string.settings_meals_hidden, shownLabel),
-                    fontSize = 17.sp,
+                    fontSize = 16.sp,
                     modifier = Modifier
                         .fillMaxWidth()
                         .minimumInteractiveComponentSize()

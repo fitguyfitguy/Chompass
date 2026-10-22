@@ -176,7 +176,7 @@ private fun TrackerPresetRow(
         ) {
             Text(
                 presetLabel(preset, domain),
-                fontSize = 17.sp,
+                fontSize = 16.sp,
             )
             val summary = presetValueSummary(preset, domain)
             if (summary.isNotEmpty()) {

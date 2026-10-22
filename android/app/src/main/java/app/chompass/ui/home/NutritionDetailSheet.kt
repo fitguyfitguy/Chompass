@@ -309,7 +309,7 @@ private fun HomeCardsRow(
     ) {
         Icon(Icons.Filled.Spa, null, tint = AppColors.Calorie, modifier = Modifier.size(20.dp))
         Column(Modifier.weight(1f)) {
-            Text(stringResource(R.string.home_nutrient_cards), fontSize = 17.sp)
+            Text(stringResource(R.string.home_nutrient_cards), fontSize = 16.sp)
             Text(
                 selected.map { stringResource(it.displayNameRes) }.joinToString(", "),
                 fontSize = 13.sp,
@@ -385,9 +385,9 @@ private fun DetailRow(
         } else {
             Spacer(Modifier.width(20.dp))
         }
-        Text(label, fontSize = 17.sp, modifier = Modifier.weight(1f))
+        Text(label, fontSize = 16.sp, modifier = Modifier.weight(1f))
         Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-            Text(value, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = accentColor)
+            Text(value, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = accentColor)
             Text(unit, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
         }
         goal?.let {

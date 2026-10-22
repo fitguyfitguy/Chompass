@@ -135,7 +135,7 @@ internal fun SheetReviewToolbar(
         }
         Text(
             title,
-            fontSize = if (compact) 16.sp else 17.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -298,7 +298,7 @@ internal fun SheetStickyPrimaryBar(
                 Text(
                     primaryLabel,
                     color = MaterialTheme.colorScheme.onPrimary,
-                    fontSize = 17.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                 )
             }
@@ -563,7 +563,7 @@ internal fun ServingQuantityCard(
         ) {
             Text(
                 stringResource(R.string.sheet_quantity),
-                fontSize = 17.sp,
+                fontSize = 16.sp,
                 modifier = Modifier.weight(1f).padding(end = 8.dp),
             )
             if (isLoadingUnits && unitOptions.isEmpty()) {
@@ -576,7 +576,7 @@ internal fun ServingQuantityCard(
             } else {
                 Text(
                     summaryValue,
-                    fontSize = 17.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = AppColors.Calorie,
                     maxLines = 1,
@@ -772,10 +772,10 @@ internal fun ServingQuantityCard(
                         Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(stringResource(R.string.label_total), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                        Text(stringResource(R.string.label_total), fontSize = 16.sp, modifier = Modifier.weight(1f))
                         Text(
                             "~${MacroValueFormatter.string(servingSizeGrams)} $gramUnit",
-                            fontSize = 17.sp,
+                            fontSize = 16.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
                         )
                     }

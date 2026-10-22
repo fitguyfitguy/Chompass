@@ -653,9 +653,9 @@ private fun StepGoalRow(goal: Int, onDecrement: () -> Unit, onIncrement: () -> U
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(stringResource(R.string.home_display_step_goal), fontSize = 17.sp, modifier = Modifier.weight(1f))
+        Text(stringResource(R.string.home_display_step_goal), fontSize = 16.sp, modifier = Modifier.weight(1f))
         IconButton(onClick = onDecrement) { Icon(Icons.Filled.Remove, contentDescription = stringResource(R.string.cd_decrease)) }
-        Text(goal.toString(), fontWeight = FontWeight.SemiBold, fontSize = 17.sp)
+        Text(goal.toString(), fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
         IconButton(onClick = onIncrement) { Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.cd_increase)) }
     }
 }

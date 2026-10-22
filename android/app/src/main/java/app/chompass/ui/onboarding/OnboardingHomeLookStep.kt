@@ -245,11 +245,11 @@ private fun CountRow(
         Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(label, fontSize = 17.sp, modifier = Modifier.weight(1f))
+        Text(label, fontSize = 16.sp, modifier = Modifier.weight(1f))
         IconButton(onClick = onDecrement, enabled = decrementEnabled) {
             Icon(Icons.Filled.Remove, contentDescription = stringResource(R.string.cd_decrease))
         }
-        Text(value, fontWeight = FontWeight.SemiBold, fontSize = 17.sp)
+        Text(value, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
         IconButton(onClick = onIncrement, enabled = incrementEnabled) {
             Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.cd_increase))
         }

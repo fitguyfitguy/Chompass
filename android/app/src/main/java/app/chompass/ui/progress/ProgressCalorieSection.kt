@@ -146,7 +146,7 @@ internal fun CalorieSection(
             modifier = Modifier.progressCollapseHeader(expanded) { expanded = !expanded },
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.progress_calories_section), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.progress_calories_section), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.weight(1f))
                 if (calorieAverage != null) {
                     Text(

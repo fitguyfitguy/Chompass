@@ -133,20 +133,20 @@ internal fun CopyFromDaySheet(
                 Column(Modifier.padding(horizontal = 20.dp)) {
                     SheetSectionHeader(stringResource(R.string.section_source))
                     SheetPillRow(onClick = { showDatePicker = true }) {
-                        Text(stringResource(R.string.copy_from), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                        Text(stringResource(R.string.copy_from), fontSize = 16.sp, modifier = Modifier.weight(1f))
                         Text(
                             sourceDate.format(dateFmt),
-                            fontSize = 17.sp,
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
                     Spacer(Modifier.height(8.dp))
                     SheetPillRow(onClick = { showTargetPicker = true }) {
-                        Text(stringResource(R.string.copy_to), fontSize = 17.sp, modifier = Modifier.weight(1f))
+                        Text(stringResource(R.string.copy_to), fontSize = 16.sp, modifier = Modifier.weight(1f))
                         Text(
                             targetText,
-                            fontSize = 17.sp,
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.primary
                         )

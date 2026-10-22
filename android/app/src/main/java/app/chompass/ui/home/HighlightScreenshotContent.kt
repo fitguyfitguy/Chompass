@@ -134,7 +134,7 @@ internal fun HomeRecipesScreenshotContent(
             ) {
                 Text(
                     stringResource(R.string.saved_meals_tab_recipes),
-                    fontSize = 17.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
                         .fillMaxWidth()

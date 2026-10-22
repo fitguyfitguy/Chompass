@@ -230,7 +230,7 @@ private fun ProgressiveMealContentList(
                 SheetPillRow(onClick = { if (!isSaving) mealMenuExpanded = true }) {
                     Text(
                         stringResource(R.string.sheet_meal_type),
-                        fontSize = 17.sp,
+                        fontSize = 16.sp,
                         modifier = Modifier.weight(1f),
                     )
                     Box {
@@ -244,7 +244,7 @@ private fun ProgressiveMealContentList(
                             Spacer(Modifier.width(6.dp))
                             Text(
                                 mealLabel(draft.mealType),
-                                fontSize = 17.sp,
+                                fontSize = 16.sp,
                                 color = AppColors.Calorie,
                                 fontWeight = FontWeight.Medium,
                             )
