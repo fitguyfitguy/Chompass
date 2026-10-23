@@ -7,11 +7,11 @@ draft: true
 
 ## 1 Einleitung
 
-Chompass stellt keine eigene KI bereit: Nutzer bringen einen eigenen Cloud-KI-Schlüssel mit (oder betreiben Gemma 4 lokal auf dem Android-Gerät). Die Genauigkeit der Lebensmittelanalyse hängt daher überwiegend vom gewählten Modell ab, nicht von einer Chompass-spezifischen Eigenschaft. Wir messen die Genauigkeit gegen gelabelte Datensätze und veröffentlichen die Zahlen, anstatt eine einzelne Genauigkeitsangabe zu behaupten.
+Chompass stellt keine eigene KI bereit: Nutzer bringen einen eigenen Cloud-KI-Schlüssel mit (oder betreiben Gemma 4 lokal auf dem Android-Gerät). Die Genauigkeit der Lebensmittelanalyse hängt daher überwiegend vom gewählten Modell ab, nicht von einer Chompass. Wir messen die Genauigkeit gegen gelabelte Datensätze und veröffentlichen die Zahlen, anstatt einzelne Genauigkeitsangaben zu machen.
 
 ## 2 Methodik
 
-Alle nachfolgenden Werte stammen aus einem Offline-Testrahmen (Research Harness) gegen gelabelte Datensätze mit bekannten Ground-Truth-Kalorien- und Makronährstoffwerten. Die vollständige Methodik, alle Testläufe und die Rohdatentabellen sind im [Benchmark-Status-Dokument](https://codeberg.org/fitguy/chompass/src/branch/main/docs/FOOD_ACCURACY_BENCHMARK_STATUS.md) auf Codeberg hinterlegt. Eine kürzere Zusammenfassung findet sich in [ACCURACY.md](https://codeberg.org/fitguy/chompass/src/branch/main/docs/ACCURACY.md).
+Alle folgenden Zahlen stammen aus einem Offline-Benchmark gegen gelabelte Datensätze mit bekannten Ground-Truth-Kalorien- und Makronährstoffwerten. Die vollständige Methodik, alle Testläufe und die Rohdatentabellen sind im [Benchmark-Status-Dokument](https://codeberg.org/fitguy/chompass/src/branch/main/docs/FOOD_ACCURACY_BENCHMARK_STATUS.md) auf Codeberg hinterlegt. Eine kürzere Zusammenfassung findet sich in [ACCURACY.md](https://codeberg.org/fitguy/chompass/src/branch/main/docs/ACCURACY.md).
 
 WMAPE = gewichteter mittlerer absoluter prozentualer Fehler über Kalorien, Protein, Kohlenhydrate und Fett. **Niedriger ist besser.** ±20 % = Anteil der Einträge, deren Kalorien innerhalb ±20 % der Ground Truth liegen (**höher ist besser**). Die Werte stammen aus Food-Analyse-Prompts, die dem in der App ausgelieferten Prompt entsprechen (bzw. simulierten Portionsantworten, wo gekennzeichnet).
 
@@ -49,9 +49,9 @@ WMAPE = gewichteter mittlerer absoluter prozentualer Fehler über Kalorien, Prot
 
 Enthält die Texteingabe bereits eine Mengenangabe („150 g“, „1 cup“), ist die getippte Eingabe nahezu gelöst. Kanonische Lebensmittel mit bekannter Gramm- oder Mengenangabe liefern meist exakte oder nahezu exakte Ergebnisse. Ein Barcode-Scan oder eine gespeicherte Mahlzeit mit fester Rezeptur verhält sich entsprechend.
 
-Die Fotoschätzung ist ein anderes Problem. Ein Modell muss Portionsgröße, Tellerzusammensetzung und verborgene Zutaten (Öl, Dressing, Soße) aus einem zweidimensionalen Bild ohne Maßstabsreferenz ableiten. Das ist schwierig und in der Bildverarbeitungs-KI generell ungelöst, nicht spezifisch für Chompass oder einen einzelnen Anbieter.
+Die Fotoschätzung ist ein anderes Problem. Ein Modell muss Portionsgröße, Tellerzusammensetzung und verborgene Zutaten (Öl, Dressing, Soße) aus einem zweidimensionalen Bild ohne Maßstabsreferenz ableiten. Das ist schwierig und in der Bildverarbeitungs-KI generell ungelöst, nicht spezifisch für Chompass oder andere einzelne Anbieter.
 
-In unseren Tests zeigte sich:
+In unseren Tests zeigt sich:
 
 - Selbst das beste getestete Bezahl-Vision-Modell verfehlt bei rund jeder zweiten Mahlzeit die Kalorienangabe um mehr als 20 %.
 - Die Schwierigkeit hängt nicht von der Mahlzeitgröße ab. Schwierige und einfache Foto-Kohorten weisen nahezu dieselben mittleren Ground-Truth-Kalorienwerte auf. Scheitern liegt an Portionsmaßstab und Dichte, die von der Kamera unterschätzt werden.
