@@ -26,3 +26,15 @@ the repository by policy (docs/AI_POLICY.md). Unstage them:
 EOF
   exit 1
 fi
+
+# Non-blocking release reminder: published PNGs are real-device captures.
+ui_staged="$(printf '%s\n' "$staged" | grep -E '^android/app/src/main/(java/app/chompass/(ui|MainActivity\.kt)|res/)' || true)"
+shots_staged="$(printf '%s\n' "$staged" | grep -E '^docs/screenshots/' || true)"
+if [[ -n "$ui_staged" && -z "$shots_staged" ]]; then
+  cat >&2 <<'EOF'
+pre-commit: UI changed, docs/screenshots/ not staged (not blocking).
+Published screenshots come from the real app on a device; refresh before the
+release:  ./scripts/capture_device_screenshots.sh
+EOF
+fi
+exit 0

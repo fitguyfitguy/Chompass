@@ -1,44 +1,40 @@
 #!/usr/bin/env bash
-# Render JVM Compose screenshot previews and export friendly PNGs for Codeberg releases.
+# Release screenshot pipeline.
+#
+# Two lanes, different jobs:
+#   1. DEVICE (published): scripts/capture_device_screenshots.sh drives the real
+#      debug app on a phone and writes release-screenshots/ + docs/screenshots/
+#      at native panel resolution. These are the images the README, chompass.app
+#      and optional Codeberg attachments use.
+#   2. JVM PREVIEWS (regression): `updateDebugScreenshotTest` re-renders the
+#      @PreviewTest reference PNGs. Deterministic, no device — the pixel gate.
 #
 # Usage:
-#   ./scripts/export_release_screenshots.sh
-#   ./scripts/export_release_screenshots.sh --validate   # compare only; do not update references
+#   ./scripts/export_release_screenshots.sh               # device capture + JVM refs
+#   ./scripts/export_release_screenshots.sh --previews-only  # JVM refs only (no device)
+#   ./scripts/export_release_screenshots.sh --validate    # no writes: JVM validate + freshness
+#   ./scripts/export_release_screenshots.sh --check       # freshness gate only
+#   ./scripts/export_release_screenshots.sh --skip-previews  # device capture only
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-ANDROID="$ROOT/android"
-REF_DIR="$ANDROID/app/src/screenshotTestDebug/reference/app/chompass/ReleaseScreenshotPreviewsKt"
-OUT_DIR="$ROOT/release-screenshots"
-README_DIR="$ROOT/docs/screenshots"
 VALIDATE_ONLY=0
+CHECK_ONLY=0
+SKIP_DEVICE=0
+SKIP_PREVIEWS=0
 
-usage() {
-  cat <<'EOF'
-Usage: export_release_screenshots.sh [options]
-
-Options:
-  --validate   Run validateDebugScreenshotTest instead of updating references
-  -h, --help   Show this help
-EOF
-}
+usage() { sed -n '2,20p' "$0"; exit "${1:-0}"; }
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --validate)
-      VALIDATE_ONLY=1
-      shift
-      ;;
-    -h|--help)
-      usage
-      exit 0
-      ;;
-    *)
-      echo "Unknown option: $1" >&2
-      usage >&2
-      exit 1
-      ;;
+    --validate) VALIDATE_ONLY=1 ;;
+    --check) CHECK_ONLY=1 ;;
+    --previews-only) SKIP_DEVICE=1 ;;
+    --skip-previews) SKIP_PREVIEWS=1 ;;
+    -h|--help) usage 0 ;;
+    *) echo "Unknown option: $1" >&2; usage 2 ;;
   esac
+  shift
 done
 
 run_in_devenv() {
@@ -52,99 +48,44 @@ run_in_devenv() {
   fi
 }
 
-if [[ "$VALIDATE_ONLY" -eq 1 ]]; then
-  echo "==> Validating screenshot previews"
+if [[ "${CHECK_ONLY}" -eq 1 ]]; then
+  exec "${ROOT}/scripts/check_ui_screenshot_staleness.sh"
+fi
+
+if [[ "${VALIDATE_ONLY}" -eq 1 ]]; then
+  echo "==> Validating JVM preview references"
   run_in_devenv 'cd android && ./gradlew :app:validateDebugScreenshotTest'
+  "${ROOT}/scripts/check_ui_screenshot_staleness.sh"
+  exit 0
+fi
+
+# Published images: real app on a real device.
+if [[ "${SKIP_DEVICE}" -eq 0 ]]; then
+  "${ROOT}/scripts/check_ui_screenshot_staleness.sh" || true
+  echo ""
+  echo "==> Capturing device screenshots"
+  "${ROOT}/scripts/capture_device_screenshots.sh"
 else
-  echo "==> Updating screenshot preview references"
+  echo "==> Skipping device capture; published PNGs are untouched"
+fi
+
+# Regression references.
+if [[ "${SKIP_PREVIEWS}" -eq 0 ]]; then
+  echo ""
+  echo "==> Updating JVM screenshot preview references"
   run_in_devenv 'cd android && ./gradlew :app:updateDebugScreenshotTest'
 fi
 
-if [[ ! -d "$REF_DIR" ]]; then
-  echo "Reference directory not found: $REF_DIR" >&2
-  exit 1
-fi
+# After a capture docs/screenshots/ is dirty until committed — that counts as fresh.
+# --previews-only leaves published PNGs untouched, so a stale UI still fails here.
+"${ROOT}/scripts/check_ui_screenshot_staleness.sh"
 
-# Dark-mode previews plus marketing UX highlights — embedded in README / site gallery
-declare -a README_EXPORTS=(
-  "HomeDarkScreenshot_05-home-dark|home.png"
-  "HomeLightScreenshot_01-home-light|home-light.png"
-  "ProgressDarkScreenshot_06-progress-dark|progress.png"
-  "ProgressPlotsDarkScreenshot_progress-plots-dark|progress-plots.png"
-  "AddFoodDarkScreenshot_10-add-food-dark|add-food.png"
-  "CoachDarkScreenshot_08-coach-dark|coach.png"
-  "SettingsDarkScreenshot_09-settings-dark|settings.png"
-  "MealComponentsDarkScreenshot_11-meal-components-dark|meal-components.png"
-  "RecipesDarkScreenshot_12-recipes-dark|recipes.png"
-  "AiAnalysisDarkScreenshot_13-ai-analysis-dark|ai-analysis.png"
-)
+cat <<'EOF'
 
-# prefix|release-screenshots filename
-declare -a RELEASE_EXPORTS=(
-  "HomeLightScreenshot_01-home-light|01-home-light.png"
-  "ProgressLightScreenshot_02-progress-light|02-progress-light.png"
-  "CoachLightScreenshot_03-coach-light|03-coach-light.png"
-  "SettingsLightScreenshot_04-settings-light|04-settings-light.png"
-  "HomeDarkScreenshot_05-home-dark|05-home-dark.png"
-  "ProgressDarkScreenshot_06-progress-dark|06-progress-dark.png"
-  "AddFoodLightScreenshot_07-add-food-light|07-add-food-light.png"
-  "CoachDarkScreenshot_08-coach-dark|08-coach-dark.png"
-  "SettingsDarkScreenshot_09-settings-dark|09-settings-dark.png"
-  "AddFoodDarkScreenshot_10-add-food-dark|10-add-food-dark.png"
-  "MealComponentsDarkScreenshot_11-meal-components-dark|11-meal-components-dark.png"
-  "RecipesDarkScreenshot_12-recipes-dark|12-recipes-dark.png"
-  "AiAnalysisDarkScreenshot_13-ai-analysis-dark|13-ai-analysis-dark.png"
-  "ProgressPlotsLightScreenshot_progress-plots-light|14-progress-plots-light.png"
-  "ProgressPlotsDarkScreenshot_progress-plots-dark|15-progress-plots-dark.png"
-)
+Done.
+  docs/screenshots/      committed README + site gallery (device captures)
+  release-screenshots/   optional Codeberg attachments (gitignored)
+  android/app/src/screenshotTestDebug/reference/   JVM pixel-regression refs
 
-find_newest_ref() {
-  local prefix="$1"
-  find "$REF_DIR" -maxdepth 1 -name "${prefix}_*_0.png" -printf '%T@ %p\n' 2>/dev/null \
-    | sort -rn | head -1 | cut -d' ' -f2- || true
-}
-
-mkdir -p "$OUT_DIR" "$README_DIR"
-rm -f "$OUT_DIR"/*.png "$README_DIR"/*.png
-
-echo "==> Exporting release screenshots to release-screenshots/ and docs/screenshots/"
-MISSING=0
-for entry in "${RELEASE_EXPORTS[@]}"; do
-  IFS='|' read -r prefix release_name <<<"$entry"
-  src="$(find_newest_ref "$prefix")"
-  if [[ -z "$src" ]]; then
-    echo "Missing reference for $prefix" >&2
-    MISSING=1
-    continue
-  fi
-  cp "$src" "$OUT_DIR/$release_name"
-  echo "  $release_name"
-done
-
-for entry in "${README_EXPORTS[@]}"; do
-  IFS='|' read -r prefix readme_name <<<"$entry"
-  src="$(find_newest_ref "$prefix")"
-  if [[ -z "$src" ]]; then
-    echo "Missing reference for $prefix" >&2
-    MISSING=1
-    continue
-  fi
-  cp "$src" "$README_DIR/$readme_name"
-  echo "  docs/screenshots/$readme_name"
-done
-
-if [[ "$MISSING" -ne 0 ]]; then
-  exit 1
-fi
-
-cat <<EOF
-
-Screenshot export complete.
-
-Artifacts:
-  $OUT_DIR/          (gitignored; attach on Codeberg with --with-screenshots)
-  $README_DIR/       (committed; dark-theme README gallery)
-
-Attach on publish:
-  ./scripts/publish_release.sh <version> --with-screenshots
+Commit docs/screenshots/ (and the preview refs) with the release.
 EOF

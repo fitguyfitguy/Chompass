@@ -33,7 +33,7 @@ status is missing or stale, fix it (release checklist).
 | [`DISTRIBUTION.md`](DISTRIBUTION.md) | Single F-Droid/Codeberg build; `play` flavor disabled |
 | [`FDROID_SUBMISSION.md`](FDROID_SUBMISSION.md) | F-Droid listing (`app.chompass`): keep [`fdroid/app.chompass.yml`](fdroid/app.chompass.yml) in sync |
 | [`fdroid/`](fdroid/) | F-Droid build metadata (`app.chompass.yml`), mirror of the live listing |
-| [`screenshots/`](screenshots/) | Published feature screenshots (README, dark only) |
+| [`screenshots/`](screenshots/) | Published feature screenshots (real-device captures; README, dark only) |
 
 ## Design & current state (read the Status line first)
 
