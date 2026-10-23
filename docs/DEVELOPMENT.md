@@ -126,8 +126,9 @@ devenv tasks run release:screenshots       # + refresh JVM preview references
 It builds/installs `app.chompass.debug`, seeds `seed_full`, pins the teal palette
 + dark/light (`screenshot_appearance`), forces the app locale to en-US for the
 shot, drives tabs via `chompass://go/<dest>` and sheets via uiautomator text
-selectors, then restores locale/animation scales. A full run also refreshes the
-F-Droid listing images (`metadata/en-US/images/phoneScreenshots/`). See
+selectors, crops the device status bar from every exported PNG, then restores
+locale/animation scales. A full run also refreshes the F-Droid listing images
+(`metadata/en-US/images/phoneScreenshots/`). See
 [`RELEASE.md`](RELEASE.md) § Release screenshots.
 
 ## Project website (Codeberg Pages)
