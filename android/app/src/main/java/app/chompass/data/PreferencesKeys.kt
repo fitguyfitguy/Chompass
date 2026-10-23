@@ -312,6 +312,8 @@ internal object Keys {
         val DEBUG_DEMO_ANALYSIS_FAIL = booleanPreferencesKey("debugDemoAnalysisFail")
         /** Debug-only: first demo entry leg truncates, retry answers macros (#97 demo_ai_truncate extra). */
         val DEBUG_DEMO_ANALYSIS_TRUNCATE = booleanPreferencesKey("debugDemoAnalysisTruncate")
+        /** Debug-only: hold the demo analysis overlay this many ms (demo_ai_hold_ms; screenshot capture). */
+        val DEBUG_DEMO_ANALYSIS_HOLD_MS = intPreferencesKey("debugDemoAnalysisHoldMs")
         val BARCODE_CACHE = stringPreferencesKey("barcodeLookupCache")
         val ON_DEVICE_MODEL_DOWNLOADED_VERSION = stringPreferencesKey("onDeviceModelDownloadedVersion")
         val ON_DEVICE_DOWNLOAD_OVER_WIFI_ONLY = booleanPreferencesKey("onDeviceDownloadOverWifiOnly")

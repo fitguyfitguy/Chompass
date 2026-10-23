@@ -33,7 +33,12 @@ internal object DemoFoodAnalysis {
     private const val MACROS_JSON =
         """{"name":"$DEMO_FOOD_NAME","calories":640,"protein":42.0,"carbs":58.0,"fat":24.0,"serving_size_grams":420.0,"emoji":"🥙","unit_options":[{"unit":"bowl","quantity":1.0,"grams_per_unit":420.0}],"constituents":[{"name":"grilled chicken","calories":260,"protein":36.0,"carbs":0.0,"fat":12.0,"serving_size_grams":150.0,"emoji":"🍗","unit_options":[]},{"name":"rice with avocado","calories":380,"protein":6.0,"carbs":58.0,"fat":12.0,"serving_size_grams":270.0,"emoji":"🍚","unit_options":[]}]}"""
 
-    suspend fun run(onProgress: (FoodAnalysisProgress) -> Unit): String {
+    /**
+     * @param holdMs extra pause after the last partial phase, before the final
+     *   JSON is returned. `demo_ai_hold_ms` sets it for release screenshot
+     *   captures, which need the full-screen overlay to stay put.
+     */
+    suspend fun run(onProgress: (FoodAnalysisProgress) -> Unit, holdMs: Long = 0): String {
         onProgress(FoodAnalysisProgress.Phase(EntryAnalysisPhase.CallingAi))
         delay(700)
         onProgress(
@@ -87,6 +92,7 @@ internal object DemoFoodAnalysis {
             )
         )
         delay(400)
+        if (holdMs > 0) delay(holdMs)
         return FIXTURE_JSON
     }
 
