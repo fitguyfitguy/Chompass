@@ -15,6 +15,9 @@ private val PROFILE_VARIANTS = setOf("gain", "maintain", "pinned", "female")
 /** 24h `H:MM` / `HH:MM` — the only accepted `set_weight_reminder` shape. */
 private val REMINDER_TIME = Regex("""^([01]?\d|2[0-3]):([0-5]\d)$""")
 
+/** Valid values for the `screenshot_appearance` debug extra (release screenshot capture). */
+private val SCREENSHOT_APPEARANCES = setOf("light", "dark", "oled")
+
 /**
  * Debug-only intent extras (seeders, benchmarks, on-device LLM smoke test).
  * Parsed once and stripped so `Activity.recreate()` does not re-fire them.
@@ -79,6 +82,8 @@ internal data class DebugIntentActions(
     val restoreRealData: Boolean = false,
     /** Debug-only: replay a scripted food-analysis response (usage-video capture). */
     val demoAi: Boolean = false,
+    /** Debug-only: extra hold after the last demo phase so the overlay can be captured. */
+    val demoAiHoldMs: Int = 0,
     /** Debug-only: replay scripted progress, then fail (failure-path capture; needs demo_ai too). */
     val demoAiFail: Boolean = false,
     /** Debug-only: first entry leg truncates mid-JSON, the downshift retry answers macros-only (#97). */
@@ -138,6 +143,17 @@ internal data class DebugIntentActions(
     val keepAiProfiles: Boolean = false,
     /** Debug-only: `HH:MM` weight reminder time to persist without the wheel. */
     val weightReminderTime: String = "",
+    /**
+     * Debug-only: persist `light` | `dark` | `oled` appearance + the brand teal
+     * palette so release screenshot captures are deterministic (no wallpaper
+     * dynamic color, no Settings taps; `scripts/capture_device_screenshots.sh`).
+     */
+    val screenshotAppearance: String = "",
+    /**
+     * Debug-only: after seeding, hide the power-user tracker cards / daily note
+     * so the published Home frame shows the core UI (hero, macros, meals).
+     */
+    val screenshotLean: Boolean = false,
     /** Debug-only: delete today's weight readings (`clear_today_weight`). */
     val clearTodayWeight: Boolean = false,
 ) {
@@ -221,6 +237,11 @@ internal fun consumeDebugIntentExtras(
         seedOverGoal = intent.getBooleanExtra("seed_over_goal", false),
         restoreRealData = intent.getBooleanExtra("restore_real_data", false),
         demoAi = BuildConfig.DEBUG && intent.getBooleanExtra("demo_ai", false),
+        demoAiHoldMs = if (BuildConfig.DEBUG) {
+            intent.getIntExtra("demo_ai_hold_ms", 0).coerceIn(0, 60_000)
+        } else {
+            0
+        },
         demoAiFail = BuildConfig.DEBUG && intent.getBooleanExtra("demo_ai_fail", false),
         demoAiTruncate = BuildConfig.DEBUG && intent.getBooleanExtra("demo_ai_truncate", false),
         demoAiOff = BuildConfig.DEBUG && intent.hasExtra("demo_ai") && !intent.getBooleanExtra("demo_ai", false),
@@ -274,6 +295,13 @@ internal fun consumeDebugIntentExtras(
             ""
         },
         clearTodayWeight = BuildConfig.DEBUG && intent.getBooleanExtra("clear_today_weight", false),
+        screenshotAppearance = if (BuildConfig.DEBUG) {
+            (intent.getStringExtra("screenshot_appearance") ?: "")
+                .takeIf { it in SCREENSHOT_APPEARANCES } ?: ""
+        } else {
+            ""
+        },
+        screenshotLean = BuildConfig.DEBUG && intent.getBooleanExtra("screenshot_lean", false),
     )
     if (actions.resetOnboarding) intent.removeExtra("reset_onboarding")
     if (actions.seedTestData) intent.removeExtra("seed_test_data")
@@ -307,7 +335,10 @@ internal fun consumeDebugIntentExtras(
     if (actions.setShowRestingShade != null) intent.removeExtra("set_show_resting_shade")
     if (actions.seedOverGoal) intent.removeExtra("seed_over_goal")
     if (actions.restoreRealData) intent.removeExtra("restore_real_data")
-    if (actions.demoAi) intent.removeExtra("demo_ai")
+    if (actions.demoAi) {
+        intent.removeExtra("demo_ai")
+        intent.removeExtra("demo_ai_hold_ms")
+    }
     if (actions.demoAiFail) intent.removeExtra("demo_ai_fail")
     if (actions.demoAiTruncate) intent.removeExtra("demo_ai_truncate")
     if (actions.demoAiOff) intent.removeExtra("demo_ai")
@@ -364,5 +395,7 @@ internal fun consumeDebugIntentExtras(
     if (actions.debugSnackbarPersistent) intent.removeExtra("debug_snackbar_persistent")
     if (actions.keepAiProfiles) intent.removeExtra("keep_ai")
     if (actions.clearTodayWeight) intent.removeExtra("clear_today_weight")
+    if (intent.hasExtra("screenshot_appearance")) intent.removeExtra("screenshot_appearance")
+    if (actions.screenshotLean) intent.removeExtra("screenshot_lean")
     return actions
 }

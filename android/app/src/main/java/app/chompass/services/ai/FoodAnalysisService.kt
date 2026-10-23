@@ -1944,7 +1944,10 @@ class FoodAnalysisService(
                 }
                 return DemoFoodAnalysis.runTruncate(onProgress, macrosLeg = kindOverride == EntryConstituentPromptKind.MACROS)
             }
-            val demoJson = DemoFoodAnalysis.run(onProgress)
+            val demoJson = DemoFoodAnalysis.run(
+                onProgress,
+                holdMs = prefs!!.debugDemoAnalysisHoldMs.first().toLong(),
+            )
             if (BuildConfig.DEBUG && prefs.debugDemoAnalysisFail.first()) {
                 throw IOException("demo failure (demo_ai_fail)")
             }

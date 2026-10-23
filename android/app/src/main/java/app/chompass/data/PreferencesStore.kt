@@ -635,6 +635,8 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setDebugDemoAnalysisFail(enabled: Boolean) = setDebugDemoAnalysisFailImpl(enabled)
     val debugDemoAnalysisTruncate: Flow<Boolean> get() = debugDemoAnalysisTruncateImpl
     suspend fun setDebugDemoAnalysisTruncate(enabled: Boolean) = setDebugDemoAnalysisTruncateImpl(enabled)
+    val debugDemoAnalysisHoldMs: Flow<Int> get() = debugDemoAnalysisHoldMsImpl
+    suspend fun setDebugDemoAnalysisHoldMs(ms: Int) = setDebugDemoAnalysisHoldMsImpl(ms)
     val syncRevisions: Flow<Map<String, SyncRevision>> get() = syncRevisionsImpl
     suspend fun setSyncRevisions(revisions: Map<String, SyncRevision>) = setSyncRevisionsImpl(revisions)
     val webDavUrl: Flow<String> get() = webDavUrlImpl

@@ -10,6 +10,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **Full nutrient names on any card layout** (Android): Settings → Home display → "Full nutrient names" now applies to the compact bars band and slim cards alike (classic cards always showed them). Long names yield first on narrow cards, then the unit.
 
+### Fixed
+
+- **Status-bar icons follow the app theme** (Android): with the light theme the clock, battery, and navigation icons now draw dark instead of white-on-white, and switching themes updates them without restarting the app.
+
 ## [5.11.0] - 2026-10-22
 
 ### Added

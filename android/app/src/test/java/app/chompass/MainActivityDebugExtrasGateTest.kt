@@ -63,6 +63,7 @@ class MainActivityDebugExtrasGateTest {
             putExtra("keep_ai", true)
             putExtra("set_weight_reminder", "16:05")
             putExtra("clear_today_weight", true)
+            putExtra("screenshot_appearance", "dark")
         }
         val actions = consumeDebugIntentExtras(intent, debugEnabled = false)
         // Every flag/extra comes back at its default: no seed, no restore, no reset.
@@ -119,6 +120,47 @@ class MainActivityDebugExtrasGateTest {
         assertFalse(actions.runOnDeviceLlmTest)
         assertFalse(actions.runMealieImportTest)
         assertEquals(3, actions.entryBenchmarkCount)
+    }
+
+    @Test
+    fun debugBuild_parsesAndStripsScreenshotAppearance() {
+        val intent = Intent().apply { putExtra("screenshot_appearance", "dark") }
+        val actions = consumeDebugIntentExtras(intent, debugEnabled = true)
+        assertEquals("dark", actions.screenshotAppearance)
+        // Stripped so Activity.recreate() cannot re-pin a stale appearance.
+        assertFalse(intent.hasExtra("screenshot_appearance"))
+    }
+
+    @Test
+    fun debugBuild_rejectsUnknownScreenshotAppearance() {
+        for (value in listOf("purple", "", "DARK")) {
+            val intent = Intent().apply { putExtra("screenshot_appearance", value) }
+            assertEquals("", consumeDebugIntentExtras(intent, debugEnabled = true).screenshotAppearance)
+            // Stripped either way: the extra is never re-delivered.
+            assertFalse(intent.hasExtra("screenshot_appearance"))
+        }
+    }
+
+    @Test
+    fun debugBuild_parsesAndStripsScreenshotLean() {
+        val intent = Intent().apply { putExtra("screenshot_lean", true) }
+        val actions = consumeDebugIntentExtras(intent, debugEnabled = true)
+        assertTrue(actions.screenshotLean)
+        assertFalse(intent.hasExtra("screenshot_lean"))
+        // Absent extra stays off (idempotent on the capture relaunch).
+        assertFalse(consumeDebugIntentExtras(Intent(), debugEnabled = true).screenshotLean)
+    }
+
+    @Test
+    fun debugBuild_parsesAndClampsDemoHold() {
+        val intent = Intent().apply {
+            putExtra("demo_ai", true)
+            putExtra("demo_ai_hold_ms", 90_000)
+        }
+        val actions = consumeDebugIntentExtras(intent, debugEnabled = true)
+        assertTrue(actions.demoAi)
+        assertEquals(60_000, actions.demoAiHoldMs)
+        assertFalse(intent.hasExtra("demo_ai_hold_ms"))
     }
 
     @Test
