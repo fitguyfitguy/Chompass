@@ -149,49 +149,61 @@ Codeberg applies a combined quota for **releases, packages, LFS, and attachments
 **Screenshots:** `--with-screenshots` adds ~10 PNGs. Prefer committing `docs/screenshots/` for the README and skip attaching screenshots to Codeberg.
 
 **Need more quota?** Libre projects can request an increase (no payment): [Codeberg-e.V./requests](https://codeberg.org/Codeberg-e.V./requests). Check current usage under user/org settings on Codeberg.
-## Release screenshots (optional)
+## Release screenshots (real device)
 
-JVM-based Compose screenshot previews render on the maintainer machine inside devenv. No phone or adb required.
+Published images are captured from the **real app on a physical device** — native
+panel resolution, real Compose frames, real seeded data, real system bars. The
+JVM `@PreviewTest` renderings stay as the deterministic pixel-regression harness.
+
+```bash
+devenv tasks run release:screenshots        # device capture + JVM preview refs
+devenv tasks run device:screenshots         # device capture only
+```
+
+`./scripts/export_release_screenshots.sh` runs two lanes:
+
+1. `./scripts/capture_device_screenshots.sh` — builds/installs `app.chompass.debug`,
+   seeds `seed_full`, pins the brand teal + dark/light via the
+   `screenshot_appearance` extra, forces the app locale to en-US for the capture,
+   drives Home/Progress/Coach/Settings/deep links and sheets, and writes
+   `release-screenshots/*.png` (`01-home-light.png` … `15-progress-plots-dark.png`),
+   the dark README copies in [`screenshots/`](screenshots/), and the F-Droid
+   listing images in [`../metadata/en-US/images/phoneScreenshots/`](../metadata/en-US/images/phoneScreenshots/)
+   (`1.png` … `9.png`, same dark set in listing order).
+2. `./gradlew :app:updateDebugScreenshotTest` — refreshes
+   `android/app/src/screenshotTestDebug/reference/`.
+
+Cadence and gate:
+
+- `release:package` captures automatically after unit tests and parity. The
+  device must be visible to adb (WSL adb or Windows `adb.exe`, auto-detected).
+  Pass `--skip-screenshots` to package the committed PNGs instead.
+- `devenv tasks run release:screenshots:check` fails when UI code changed after
+  the last `docs/screenshots/` commit, so a UI change cannot ship with stale
+  images. A capture leaves `docs/screenshots/` dirty — commit it with the release.
+- Commit `docs/screenshots/` with the version bump. Preview references under
+  `android/app/src/screenshotTestDebug/reference/` are committed too.
+
+Options:
+
+```bash
+./scripts/capture_device_screenshots.sh --no-build --no-seed      # fast re-run
+./scripts/capture_device_screenshots.sh --only home,progress     # subset
+./scripts/capture_device_screenshots.sh --appearance dark        # one theme
+./scripts/capture_device_screenshots.sh --out /tmp/shots         # review copy
+./scripts/export_release_screenshots.sh --validate               # no writes
+./scripts/export_release_screenshots.sh --check                  # freshness only
+```
+
+The capture restores the app locale and animation scales when it exits. Device
+selection is automatic for one device; pass `--serial` when several are attached.
+Attach PNGs to Codeberg only if release quota has room (see
+[Codeberg storage quota](#codeberg-storage-quota)):
 
 ```bash
 devenv tasks run release:screenshots
-```
-
-This runs `./scripts/export_release_screenshots.sh`, which:
-
-1. Renders `@PreviewTest` composables via `./gradlew :app:updateDebugScreenshotTest`
-2. Copies friendly PNGs to `release-screenshots/` (`01-home-light.png` … `10-add-food-dark.png`) and dark-theme copies to `docs/screenshots/` for [README.md](../README.md)
-
-`release:package` runs this export automatically after unit tests (commit `docs/screenshots/` with your release).
-
-Validate without updating reference images:
-
-```bash
-./scripts/export_release_screenshots.sh --validate
-```
-
-Attach screenshots when publishing (only if release quota has room; see [Codeberg storage quota](#codeberg-storage-quota)):
-
-```bash
-devenv tasks run release:screenshots
-devenv tasks run release:package
 ./scripts/publish_release.sh 1.8.0 --with-screenshots
 ```
-
-Reference images for regression live under `android/app/src/screenshotTestDebug/reference/`.
-
-### Screenshot fallbacks (if JVM previews are insufficient)
-
-**Tier 2: headless Android emulator (no phone):** enable `emulator.enable` and a system image in `devenv.nix`, then capture from a running emulator with `adb exec-out screencap`. A dedicated `scripts/capture_release_screenshots_emulator.sh` can be added when needed.
-
-**Tier 3: physical device via Windows adb:** reuse existing seed intents from `MainActivity.kt` (`seed_test_data`, `seed_body_metrics`) and tab navigation:
-
-```powershell
-adb shell am start -n app.chompass.debug/app.chompass.MainActivity --ez seed_test_data true
-adb exec-out screencap -p > 01-home.png
-```
-
-Automated taps go through the Maestro flows (`devenv tasks run device:maestro`; text/id selectors, never screen coordinates) or the emulator; screen sizes vary. See [`DEVELOPMENT.md`](DEVELOPMENT.md) § Device testing.
 
 ## F-Droid follow-up
 

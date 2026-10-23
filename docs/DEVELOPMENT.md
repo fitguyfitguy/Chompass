@@ -111,6 +111,25 @@ devenv tasks run device:maestro           # build + install + seed_full + all fl
 - Selectors are the German UI strings from `values-de/strings.xml` (maintainer device is de-DE). Debug builds expose Compose `testTag`s as resource-ids (`MainActivity` sets `testTagsAsResourceId` under `BuildConfig.DEBUG`), so id-based selectors are available for locale-proof flows.
 - Caveats: Maestro sees only devices on the WSL adb server (not USB phones on the Windows adb); emulator-free — the runner fails fast with the `adb_wifi.sh` hint when no device is present. Perf benchmarks keep running on the physical device per `docs/PERFORMANCE.md` (maintainer-local); the emulator story (Windows-side AVD) is tracked separately.
 
+### Release screenshots from the device
+
+Published PNGs (README, chompass.app gallery, Codeberg attachments) are real
+frames from the debug app on a phone — not JVM previews. The capture works with
+WSL adb **or** the Windows `adb.exe` (auto-detected), so a USB phone is fine:
+
+```bash
+devenv tasks run device:screenshots        # capture release-screenshots/ + docs/screenshots/
+devenv tasks run release:screenshots       # + refresh JVM preview references
+./scripts/capture_device_screenshots.sh --no-build --no-seed --only home,progress
+```
+
+It builds/installs `app.chompass.debug`, seeds `seed_full`, pins the teal palette
++ dark/light (`screenshot_appearance`), forces the app locale to en-US for the
+shot, drives tabs via `chompass://go/<dest>` and sheets via uiautomator text
+selectors, then restores locale/animation scales. A full run also refreshes the
+F-Droid listing images (`metadata/en-US/images/phoneScreenshots/`). See
+[`RELEASE.md`](RELEASE.md) § Release screenshots.
+
 ## Project website (Codeberg Pages)
 
 Hugo site sources live in [`website/`](../website/). Screenshots are mounted from [`screenshots/`](screenshots/) at build time. Live URL: [chompass.app](https://chompass.app/).
