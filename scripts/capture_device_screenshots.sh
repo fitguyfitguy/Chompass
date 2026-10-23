@@ -133,6 +133,17 @@ HEIGHT="${SIZE#*x}"
 DENSITY="$(device shell wm density | tr -d '\r' | sed -n 's/^Physical density: //p')"
 echo "==> display: ${WIDTH}x${HEIGHT} @ ${DENSITY:-?} dpi"
 
+# Status bar height in px: the published frames are cropped below it, so the
+# clock, battery, VPN, and notification icons never reach an exported PNG.
+STATUS_BAR_H="$(device shell dumpsys window 2>/dev/null | tr -d '\r' \
+  | sed -n 's/.*type=statusBars frame=\[0,0\]\[[0-9]*,\([0-9]*\)\].*/\1/p' | head -1)"
+if ! printf '%s' "${STATUS_BAR_H}" | grep -qE '^[0-9]+$' \
+  || [ "${STATUS_BAR_H}" -lt 40 ] \
+  || [ "${STATUS_BAR_H}" -ge $(( HEIGHT / 4 )) ]; then
+  STATUS_BAR_H=$(( 24 * ${DENSITY:-420} / 160 ))
+fi
+echo "==> status bar: ${STATUS_BAR_H}px (cropped from published images)"
+
 if [ "${WIDTH}" -lt 1000 ]; then
   echo "Panel width ${WIDTH}px is too low for release images (want >= 1000px)." >&2
   exit 1
@@ -154,8 +165,14 @@ restore_device() {
     stop_keep_awake
   fi
   # Empty previous value = follow system; `--locales ""` clears the override.
+  # Anything that is not a locale tag (a stale "[locales]" artifact) is cleared
+  # instead of being written back.
   if [ "${LOCALE_SAVED}" -eq 1 ]; then
-    device shell cmd locale set-app-locales "${PACKAGE}" --locales "${PREV_LOCALE}" >/dev/null 2>&1
+    if printf '%s' "${PREV_LOCALE}" | grep -qE '^([A-Za-z][A-Za-z0-9-]*)(,[A-Za-z][A-Za-z0-9-]*)*$'; then
+      device shell cmd locale set-app-locales "${PACKAGE}" --locales "${PREV_LOCALE}" >/dev/null 2>&1
+    else
+      device shell cmd locale set-app-locales "${PACKAGE}" --locales "" >/dev/null 2>&1
+    fi
   fi
   [ -n "${PREV_ANIMATOR}" ] &&
     device shell settings put global animator_duration_scale "${PREV_ANIMATOR}" >/dev/null 2>&1
@@ -320,6 +337,32 @@ wake_device() {
   device shell wm dismiss-keyguard >/dev/null 2>&1 || true
 }
 
+# Crop the status bar from the exported PNGs (in place). The raw staging
+# directory keeps the full frames for debugging.
+sanitize_pngs() {
+  [ "$#" -gt 0 ] || return 0
+  CROP_TOP="${STATUS_BAR_H}" EXPECTED_H="$(( HEIGHT - STATUS_BAR_H ))" \
+    uv run --with pillow python - "$@" <<'PY'
+import os
+import sys
+from pathlib import Path
+from PIL import Image
+
+top = int(os.environ["CROP_TOP"])
+expected = int(os.environ["EXPECTED_H"])
+for root in sys.argv[1:]:
+    for path in sorted(Path(root).glob("*.png")):
+        im = Image.open(path)
+        if im.height <= top:
+            raise SystemExit(f"{path}: {im.width}x{im.height} is shorter than the crop")
+        out = im.crop((0, top, im.width, im.height))
+        if out.height != expected:
+            raise SystemExit(f"{path}: cropped to {out.height}px, expected {expected}px")
+        out.save(path)
+        print(f"    status bar cropped: {path}")
+PY
+}
+
 # Screen timeout / doze can still surface the (non-secure) lock screen between
 # slow steps; recover continuously instead of failing a capture on it.
 start_keep_awake() {
@@ -423,6 +466,10 @@ open_add_food() {
     device shell input keyevent 4 >/dev/null 2>&1 || true
     sleep 0.5
   fi
+  # The saved-meals tab selection persists across launches; pin Recents so the
+  # hub shot never ships the Recipes tab.
+  tap_text "Recents" || true
+  sleep 0.4
   wait_text "Recents" 10
 }
 
@@ -583,6 +630,7 @@ if [ -n "${OUT_OVERRIDE}" ]; then
   mkdir -p "${OUT_OVERRIDE}"
   echo "==> Copying to ${OUT_OVERRIDE} (repo artifacts untouched)"
   cp "${STAGE}"/*.png "${OUT_OVERRIDE}/"
+  sanitize_pngs "${OUT_OVERRIDE}"
   echo ""
   echo "Captured ${CHECK_DIMS} screenshots -> ${OUT_OVERRIDE}"
   exit 0
@@ -628,9 +676,15 @@ if [ "${FULL_SET}" -eq 1 ]; then
   done
 fi
 
+echo "==> Cropping the ${STATUS_BAR_H}px status bar from published images"
+sanitize_pngs "${RELEASE_DIR}" "${README_DIR}"
+if [ "${FULL_SET}" -eq 1 ]; then
+  sanitize_pngs "${STORE_DIR}"
+fi
+
 cat <<EOF
 
-Device screenshots complete (${CHECK_DIMS} captures, ${WIDTH}x${HEIGHT}).
+Device screenshots complete (${CHECK_DIMS} captures, published at ${WIDTH}x$(( HEIGHT - STATUS_BAR_H )); status bar cropped).
 
 Artifacts:
   ${RELEASE_DIR}/                 (gitignored; attach with --with-screenshots)
