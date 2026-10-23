@@ -152,7 +152,9 @@ Codeberg applies a combined quota for **releases, packages, LFS, and attachments
 ## Release screenshots (real device)
 
 Published images are captured from the **real app on a physical device** — native
-panel resolution, real Compose frames, real seeded data, real system bars. The
+panel resolution, real Compose frames, real seeded data, and the real navigation
+bar. The system status bar (clock, battery, VPN, notification icons) is cropped
+from every exported PNG, so device state never reaches a published image. The
 JVM `@PreviewTest` renderings stay as the deterministic pixel-regression harness.
 
 ```bash
