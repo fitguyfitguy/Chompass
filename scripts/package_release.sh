@@ -7,6 +7,7 @@
 #   ./scripts/package_release.sh --version 1.8.0
 #   ./scripts/package_release.sh --check-only
 #   ./scripts/package_release.sh --skip-build   # package existing Gradle outputs
+#   ./scripts/package_release.sh --skip-screenshots  # keep the committed PNGs
 #   ./scripts/package_release.sh --check-metadata
 set -euo pipefail
 
@@ -14,6 +15,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ANDROID="$ROOT/android"
 CHECK_ONLY=0
 SKIP_BUILD=0
+SKIP_SCREENSHOTS=0
 CHECK_METADATA=0
 VERSION=""
 
@@ -25,6 +27,7 @@ Options:
   --version <ver>   Override version read from android/app/build.gradle.kts
   --check-only      Run tests and asset checks only; do not build or package
   --skip-build      Skip Gradle builds; copy existing APK outputs only
+  --skip-screenshots  Do not capture device screenshots; keep committed PNGs
   --check-metadata  Run scripts/check_release_metadata.sh after packaging
   -h, --help        Show this help
 EOF
@@ -42,6 +45,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --skip-build)
       SKIP_BUILD=1
+      shift
+      ;;
+    --skip-screenshots)
+      SKIP_SCREENSHOTS=1
       shift
       ;;
     --check-metadata)
@@ -92,8 +99,14 @@ echo "==> Cross-app parity (PWA tests, typecheck, contract schemas)"
 "$ROOT/scripts/check_parity.sh"
 
 if [[ "$CHECK_ONLY" -eq 0 ]]; then
-  echo "==> Updating README and release screenshots"
-  "$ROOT/scripts/export_release_screenshots.sh"
+  if [[ "$SKIP_SCREENSHOTS" -eq 1 ]]; then
+    echo "==> Skipping screenshot capture (--skip-screenshots)"
+    "$ROOT/scripts/check_ui_screenshot_staleness.sh" || \
+      echo "WARNING: committed screenshots are stale; publishing them as-is." >&2
+  else
+    echo "==> Capturing device screenshots + JVM preview references"
+    "$ROOT/scripts/export_release_screenshots.sh"
+  fi
 fi
 
 if [[ "$CHECK_ONLY" -eq 1 ]]; then
