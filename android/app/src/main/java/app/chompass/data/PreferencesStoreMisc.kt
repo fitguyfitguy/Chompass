@@ -79,6 +79,14 @@ internal suspend fun PreferencesStore.setDebugDemoAnalysisTruncateImpl(enabled: 
     dataStore.edit { it[Keys.DEBUG_DEMO_ANALYSIS_TRUNCATE] = enabled }
 }
 
+// -- Debug demo-analysis hold (demo_ai_hold_ms extra; screenshot capture) -----
+internal val PreferencesStore.debugDemoAnalysisHoldMsImpl: Flow<Int>
+    get() = dataStore.data.map { it[Keys.DEBUG_DEMO_ANALYSIS_HOLD_MS] ?: 0 }
+
+internal suspend fun PreferencesStore.setDebugDemoAnalysisHoldMsImpl(ms: Int) {
+    dataStore.edit { it[Keys.DEBUG_DEMO_ANALYSIS_HOLD_MS] = ms.coerceIn(0, 60_000) }
+}
+
 // -- Settings Suggestions (hub nudge card) ---------------------------------
 internal val PreferencesStore.firstLaunchAtImpl: Flow<Long>
     get() = dataStore.data.map { it[Keys.FIRST_LAUNCH_AT] ?: 0L }

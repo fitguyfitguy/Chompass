@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -32,7 +33,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.core.view.WindowCompat
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.lifecycle.Lifecycle
@@ -476,6 +479,16 @@ open class MainActivity : ComponentActivity() {
             // a device pass can tell a stale appearance value from a ROM that
             // delivers uiMode without recreating the activity.
             Log.d("ChompassTheme", "appearance=$appearance systemDark=$systemDark darkTheme=$darkTheme oledTheme=$oledTheme themeColor=$themeColorKey")
+            // Edge-to-edge draws behind the system bars, so their icon color must
+            // follow the resolved app theme (not the launch-time system theme):
+            // dark icons on the light palette, light icons on dark/oled.
+            val view = LocalView.current
+            SideEffect {
+                WindowCompat.getInsetsController(this@MainActivity.window, view).apply {
+                    isAppearanceLightStatusBars = !darkTheme
+                    isAppearanceLightNavigationBars = !darkTheme
+                }
+            }
             val paletteEpoch = systemPaletteEpoch
             key(themeColorKey, paletteEpoch) {
                 ChompassTheme(
@@ -595,6 +608,14 @@ open class MainActivity : ComponentActivity() {
                 null
             }
             container.debugPersistentSnackbars = actions.debugSnackbarPersistent
+            // Release screenshot capture: pin appearance + brand palette before
+            // the first frame so published PNGs never pick up wallpaper dynamic
+            // color or the device's system theme.
+            if (actions.screenshotAppearance.isNotEmpty()) {
+                container.prefs.setAppearanceMode(actions.screenshotAppearance)
+                container.prefs.setAppThemeColor(AppThemeColor.TEAL.key)
+                DebugTrace.event("op=screenshot phase=appearance value=${actions.screenshotAppearance}")
+            }
             if (actions.debugBarcode.isNotBlank()) {
                 val normalized = BarcodeCodeNormalizer.normalize(actions.debugBarcode)
                 if (normalized != null) {
@@ -669,7 +690,28 @@ open class MainActivity : ComponentActivity() {
             actions.setShowRestingShade?.let { container.testDataSeeder.setShowRestingShade(it) }
             if (actions.seedOverGoal) container.testDataSeeder.seedOverGoal()
             if (actions.restoreRealData) container.testDataSeeder.restore()
-            if (actions.demoAi) container.prefs.setDebugDemoAnalysis(true)
+            // Release screenshot capture: keep the published Home on the core
+            // surfaces (after the seed, which enables these trackers).
+            if (actions.screenshotLean) {
+                container.prefs.setWaterTrackingEnabled(false)
+                container.prefs.setNicotineTrackingEnabled(false)
+                container.prefs.setCaffeineTrackingEnabled(false)
+                container.prefs.setDailyNotesEnabled(false)
+                // The seeded custom slot is fixture-named ("Seed Brunch"); the
+                // published medical-review frame would show it as the meal type.
+                val catalog = container.prefs.mealCatalog.first()
+                val relabeled = catalog.copy(
+                    meals = catalog.meals.map {
+                        if (it.label == "Seed Brunch") it.copy(label = "Brunch") else it
+                    },
+                )
+                if (relabeled != catalog) container.prefs.setMealCatalog(relabeled)
+                DebugTrace.event("op=screenshot phase=lean")
+            }
+            if (actions.demoAi) {
+                container.prefs.setDebugDemoAnalysis(true)
+                container.prefs.setDebugDemoAnalysisHoldMs(actions.demoAiHoldMs)
+            }
             if (actions.demoAiFail) {
                 // demo_ai_fail implies the scripted response: the failure must
                 // replay the demo progress stream, then throw. Without demo_ai
