@@ -15,6 +15,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 - **Status-bar icons follow the app theme** (Android): with the light theme the clock, battery, and navigation icons now draw dark instead of white-on-white, and switching themes updates them without restarting the app.
 - **Onboarding no longer crashes on strict devices** (Android): opening "Manage Health Connect access" from the onboarding Health Connect step on devices that refuse to open Health Connect settings shows a message instead of crashing the app.
 - **Coach chat survives slow replies** (Android): chats against slow or self-hosted models no longer fail with a generic "Chat failed" when the answer arrives in small pieces, and a failed send now records why in the device log for support.
+- **Saves show up everywhere immediately** (Android): a value saved in one screen now appears right away on other screens opened just after the save — for example the water total after logging a sip — instead of showing the old number until something else saves.
 
 ## [5.11.0] - 2026-10-22
 

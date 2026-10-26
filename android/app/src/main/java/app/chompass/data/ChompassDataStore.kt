@@ -43,17 +43,21 @@ internal object ChompassDataStoreHolder {
 
     private fun create(app: Context): DataStore<Preferences> {
         val file = app.preferencesDataStoreFile(DATASTORE_NAME)
-        return PreferenceDataStoreFactory.create(
-            corruptionHandler = ReplaceFileCorruptionHandler { exception ->
-                val backup = preserveCorruptFile(file)
-                if (backup == null) {
-                    Log.e(TAG, "Preferences file is corrupt and could not be copied aside; keeping it in place", exception)
-                    throw exception
-                }
-                Log.e(TAG, "Preferences file is corrupt; preserved copy at ${backup.absolutePath}", exception)
-                emptyPreferences()
-            },
-            produceFile = { file }
+        // See ConsistentDataStore: screens that start reading during a save must still
+        // receive that save (AndroidX b/431787506).
+        return ConsistentDataStore(
+            PreferenceDataStoreFactory.create(
+                corruptionHandler = ReplaceFileCorruptionHandler { exception ->
+                    val backup = preserveCorruptFile(file)
+                    if (backup == null) {
+                        Log.e(TAG, "Preferences file is corrupt and could not be copied aside; keeping it in place", exception)
+                        throw exception
+                    }
+                    Log.e(TAG, "Preferences file is corrupt; preserved copy at ${backup.absolutePath}", exception)
+                    emptyPreferences()
+                },
+                produceFile = { file }
+            )
         )
     }
 
