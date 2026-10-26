@@ -77,7 +77,6 @@
     <string name="autobalance_fat">Gordura</string>
 
     <!-- AI Provider names -->
-    <string name="ai_provider_custom">Personalizado (compatível com OpenAI)</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="api_key_placeholder">Cole sua chave de API</string>
@@ -504,9 +503,7 @@
     <string name="settings_tap_to_edit">Toque para editar</string>
     <string name="settings_custom_url_placeholder">https://seu-endpoint.com/v1</string>
     <string name="settings_custom_url_title">URL base personalizada</string>
-    <string name="settings_custom_directory_title">Endpoints conhecidos</string>
     <string name="settings_custom_directory_docs">Documentação</string>
-    <string name="settings_custom_directory_footer">Os endpoints vêm de uma lista revisada incluída em cada versão. Sua chave é enviada apenas para o URL exibido; as listas de modelos são atualizadas do provedor quando você abre o seletor de modelos.</string>
     <string name="ai_model_accepts_images">Aceita imagens (declarado)</string>
     <string name="settings_ai_allow_insecure_http">Permitir HTTP inseguro</string>
     <string name="settings_ai_allow_insecure_http_footer">Permite que endpoints personalizados e o Ollama usem URLs http://, por exemplo na sua rede local. Provedores na nuvem usam https. Deixe desligado, a menos que seu servidor não tenha TLS.</string>
@@ -692,11 +689,6 @@
     <string name="ai_provider_subtitle_mistral">Modelos Mistral</string>
     <string name="ai_provider_subtitle_ollama">Seu computador, sem nuvem</string>
     <string name="ai_provider_subtitle_ollama_cloud">Modelos hospedados da Ollama</string>
-    <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp etc.</string>
-    <string name="ai_provider_group_recommended">Recomendado</string>
-    <string name="ai_provider_group_cloud">Provedores de nuvem</string>
-    <string name="ai_provider_group_local">Local e auto-hospedado</string>
-    <string name="ai_provider_group_device">No dispositivo</string>
     <string name="settings_section_ai_profile">Perfil</string>
     <string name="settings_section_ai_connection">Conexão</string>
     <string name="settings_section_ai_advanced">Avançado</string>

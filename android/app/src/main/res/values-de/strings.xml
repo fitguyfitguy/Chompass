@@ -281,7 +281,6 @@
     <string name="ai_provider_ollama">Ollama (lokal)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
 
-    <string name="ai_provider_custom">Benutzerdefiniert (OpenAI-kompatibel)</string>
 
     <string name="ai_provider_on_device">Auf dem Gerät (privat)</string>
 
@@ -312,15 +311,10 @@
     <string name="ai_provider_subtitle_ollama">Dein Rechner, keine Cloud</string>
     <string name="ai_provider_subtitle_ollama_cloud">Ollamas gehostete Modelle</string>
 
-    <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp u. a.</string>
 
-    <string name="ai_provider_group_recommended">Empfohlen</string>
 
-    <string name="ai_provider_group_cloud">Cloud-Anbieter</string>
 
-    <string name="ai_provider_group_local">Lokal &amp; selbst gehostet</string>
 
-    <string name="ai_provider_group_device">Auf dem Gerät</string>
 
     <string name="settings_section_ai_profile">Profil</string>
 
@@ -1979,9 +1973,7 @@ für dich ein</string>
     <string name="settings_custom_url_placeholder">https://your-endpoint.com/v1</string>
 
     <string name="settings_custom_url_title">Benutzerdefinierte Basis-URL</string>
-    <string name="settings_custom_directory_title">Bekannte Endpunkte</string>
     <string name="settings_custom_directory_docs">Dokumentation</string>
-    <string name="settings_custom_directory_footer">Endpunkte stammen aus einer geprüften Liste, die mit jedem Release gebündelt wird. Ihr Schlüssel wird nur an die angezeigte URL gesendet; die Modelllisten werden beim Öffnen der Modellauswahl vom Anbieter aktualisiert.</string>
     <string name="ai_model_accepts_images">Unterstützt Bilder (angegeben)</string>
     <string name="settings_ai_allow_insecure_http">Unsicheres HTTP erlauben</string>
     <string name="settings_ai_allow_insecure_http_footer">Eigene und Ollama-Endpunkte dürfen dann http://-URLs nutzen, zum Beispiel im Heimnetz. Cloud-Anbieter nutzen https. Lass aus, außer dein Server hat kein TLS.</string>

@@ -79,7 +79,6 @@
     <!-- AI Provider names -->
     <string name="ai_provider_ollama">Ollama (Locale)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
-    <string name="ai_provider_custom">Personalizzato (compatibile OpenAI)</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="api_key_placeholder">Incolla la tua chiave API</string>
@@ -504,9 +503,7 @@
     <string name="settings_tap_to_edit">Tocca per modificare</string>
     <string name="settings_custom_url_placeholder">https://tuo-endpoint.com/v1</string>
     <string name="settings_custom_url_title">URL base personalizzato</string>
-    <string name="settings_custom_directory_title">Endpoint noti</string>
     <string name="settings_custom_directory_docs">Documentazione</string>
-    <string name="settings_custom_directory_footer">Gli endpoint provengono da un elenco verificato incluso in ogni versione. La tua chiave viene inviata solo all\'URL mostrato; gli elenchi dei modelli si aggiornano dal provider quando apri il selettore dei modelli.</string>
     <string name="ai_model_accepts_images">Accetta immagini (dichiarato)</string>
     <string name="settings_ai_allow_insecure_http">Consenti HTTP non sicuro</string>
     <string name="settings_ai_allow_insecure_http_footer">Consente agli endpoint personalizzati e Ollama di usare URL http://, ad esempio nella rete di casa. I provider cloud usano https. Tienilo spento se il tuo server ha il TLS.</string>
@@ -693,11 +690,6 @@
     <string name="ai_provider_subtitle_mistral">Modelli Mistral</string>
     <string name="ai_provider_subtitle_ollama">Il tuo computer, nessun cloud</string>
     <string name="ai_provider_subtitle_ollama_cloud">Modelli ospitati di Ollama</string>
-    <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp ecc.</string>
-    <string name="ai_provider_group_recommended">Consigliato</string>
-    <string name="ai_provider_group_cloud">Provider cloud</string>
-    <string name="ai_provider_group_local">Locale e self-hosted</string>
-    <string name="ai_provider_group_device">Sul dispositivo</string>
     <string name="settings_section_ai_profile">Profilo</string>
     <string name="settings_section_ai_connection">Connessione</string>
     <string name="settings_section_ai_advanced">Avanzate</string>

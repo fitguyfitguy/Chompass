@@ -1,12 +1,14 @@
 package app.chompass.ui.settings
 
 import androidx.annotation.StringRes
+import android.content.Context
 import app.chompass.data.GoalRecalcTierOverride
 import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.data.WeatherRepository
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.ChompassBottomSheet
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -50,11 +52,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.AIProvider
+import app.chompass.services.ai.ProviderDirectory.Companion.matchedName
 import app.chompass.models.AiProfile
 import app.chompass.models.CalorieSafety
 import app.chompass.models.EnergyFormat
@@ -90,11 +95,46 @@ import app.chompass.ui.theme.macroAccentColor
 import java.time.Instant
 
 @StringRes
-private fun providerGroupLabelRes(group: AIProvider.ProviderGroup): Int = when (group) {
-    AIProvider.ProviderGroup.RECOMMENDED -> R.string.ai_provider_group_recommended
-    AIProvider.ProviderGroup.CLOUD -> R.string.ai_provider_group_cloud
-    AIProvider.ProviderGroup.LOCAL -> R.string.ai_provider_group_local
-    AIProvider.ProviderGroup.DEVICE -> R.string.ai_provider_group_device
+private fun providerSectionLabelRes(section: ProviderPickerSection): Int = when (section) {
+    ProviderPickerSection.SHORTCUTS -> R.string.ai_provider_section_shortcuts
+    ProviderPickerSection.PHONE -> R.string.ai_provider_section_phone
+    ProviderPickerSection.SERVER -> R.string.ai_provider_section_server
+    ProviderPickerSection.CLOUD -> R.string.ai_provider_section_cloud
+}
+
+private fun providerPickerSubtitle(context: Context, provider: AIProvider): String = when (provider) {
+    AIProvider.GEMINI -> context.getString(R.string.ai_provider_row_gemini)
+    AIProvider.ANTHROPIC -> context.getString(R.string.ai_provider_row_anthropic)
+    AIProvider.OLLAMA -> context.getString(R.string.ai_provider_row_ollama)
+    AIProvider.ON_DEVICE -> context.getString(R.string.ai_provider_on_device_subtitle)
+    else -> {
+        val host = runCatching { java.net.URI(provider.baseUrl).host }.getOrNull()?.takeIf { it.isNotBlank() }
+            ?: provider.baseUrl
+        context.getString(R.string.ai_provider_row_host_key, host)
+    }
+}
+
+@Composable
+private fun ProviderPickerChipLabel(chip: ProviderPickerChip) {
+    val scheme = MaterialTheme.colorScheme
+    val (labelRes, tone, border) = when (chip) {
+        ProviderPickerChip.ON_PHONE -> Triple(R.string.ai_provider_chip_on_phone, scheme.primary, scheme.primary)
+        ProviderPickerChip.NATIVE -> Triple(R.string.ai_provider_chip_native, scheme.primary, scheme.primary)
+        ProviderPickerChip.YOUR_SERVER -> Triple(R.string.ai_provider_chip_your_server, scheme.tertiary, scheme.tertiary)
+        ProviderPickerChip.CLOUD -> Triple(
+            R.string.ai_provider_chip_cloud,
+            scheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            scheme.outline,
+        )
+    }
+    Text(
+        stringResource(labelRes),
+        fontSize = 11.sp,
+        color = tone,
+        modifier = Modifier
+            .border(1.dp, border, RoundedCornerShape(10.dp))
+            .padding(horizontal = 8.dp, vertical = 2.dp),
+    )
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -131,7 +171,9 @@ internal fun SettingsSheets(
         if (sheet == SettingsSheet.AI_MODEL && ui.activeProvider == AIProvider.CUSTOM_OPENAI) {
             vm.fetchCustomModels()
         }
-        if (sheet == SettingsSheet.AI_MODEL && ui.activeProvider.supportsRuntimeLineup) {
+        if ((sheet == SettingsSheet.AI_MODEL || sheet == SettingsSheet.VISION_MODEL) &&
+            ui.activeProvider.supportsRuntimeLineup
+        ) {
             vm.fetchRuntimeModels()
         }
     }
@@ -164,17 +206,65 @@ internal fun SettingsSheets(
                 .padding(horizontal = 20.dp, vertical = 8.dp)
         ) {
             when (sheet) {
-                SettingsSheet.AI_PROVIDER -> ListSheet(
-                    title = stringResource(R.string.sheet_ai_provider),
-                    items = AIProvider.values()
-                        .filter { it != AIProvider.ON_DEVICE || ui.onDeviceAvailable }
-                        .sortedBy { it.group.ordinal },
-                    label = { stringResource(it.displayNameRes) },
-                    subtitle = { stringResource(it.subtitleRes) },
-                    sectionHeader = { stringResource(providerGroupLabelRes(it.group)) },
-                    selected = { it == ui.activeProvider },
-                    onSelect = { vm.setProfileProvider(it); onDismiss() }
-                )
+                SettingsSheet.AI_PROVIDER -> {
+                    var providerQuery by remember { mutableStateOf("") }
+                    val context = LocalContext.current
+                    val directory = vm.container.providerDirectory
+                    val rows = buildProviderPickerRows(
+                        query = providerQuery,
+                        onDeviceAvailable = ui.onDeviceAvailable,
+                        directory = directory?.entries.orEmpty(),
+                        builtinLabel = { context.getString(it.displayNameRes) },
+                        builtinSubtitle = { providerPickerSubtitle(context, it) },
+                        otherUrlLabel = context.getString(R.string.ai_provider_custom),
+                        otherUrlSubtitle = context.getString(R.string.ai_provider_subtitle_custom),
+                        hostKeySubtitle = { host -> context.getString(R.string.ai_provider_row_host_key, host) },
+                    )
+                    ListSheet(
+                        title = stringResource(R.string.sheet_ai_provider),
+                        items = rows,
+                        searchable = true,
+                        searchPlaceholder = stringResource(R.string.ai_provider_search_hint),
+                        query = providerQuery,
+                        onQueryChange = { providerQuery = it },
+                        label = { it.label },
+                        subtitle = { it.subtitle },
+                        sectionHeader = { stringResource(providerSectionLabelRes(it.section)) },
+                        trailing = { ProviderPickerChipLabel(it.chip) },
+                        selected = { row ->
+                            when (row) {
+                                is ProviderPickerRow.Builtin ->
+                                    row.provider == ui.activeProvider && row.provider != AIProvider.CUSTOM_OPENAI
+                                is ProviderPickerRow.Directory ->
+                                    ui.directoryEntry?.baseUrl?.trimEnd('/') == row.entry.baseUrl.trimEnd('/')
+                                is ProviderPickerRow.OtherUrl ->
+                                    ui.activeProvider == AIProvider.CUSTOM_OPENAI && ui.directoryEntry == null
+                            }
+                        },
+                        onSelect = { row ->
+                            when (row) {
+                                is ProviderPickerRow.Builtin -> {
+                                    vm.setProfileProvider(row.provider)
+                                    onDismiss()
+                                }
+                                is ProviderPickerRow.Directory -> {
+                                    vm.selectOpenAiEndpoint(row.entry.baseUrl)
+                                    onDismiss()
+                                }
+                                is ProviderPickerRow.OtherUrl ->
+                                    onOpenSheet?.invoke(SettingsSheet.CUSTOM_BASE_URL) ?: onDismiss()
+                            }
+                        },
+                    )
+                    if (!directory?.entries.isNullOrEmpty()) {
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            stringResource(R.string.ai_provider_directory_footer),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        )
+                    }
+                }
                 SettingsSheet.AI_MODEL -> ListSheet(
                     title = stringResource(R.string.sheet_model),
                     items = when {
@@ -190,6 +280,11 @@ internal fun SettingsSheets(
                             )
                         ui.activeProvider == AIProvider.ON_DEVICE && ui.onDeviceModels.isNotEmpty() ->
                             ui.onDeviceModels
+                        // Ollama Cloud's catalog is public and changes often. The
+                        // sheet is that /v1/models response only — never the bundled
+                        // starter ids, which are only the offline default model.
+                        ui.activeProvider == AIProvider.OLLAMA_CLOUD ->
+                            app.chompass.services.ai.OpenAiModelsClient.catalogLineup(ui.runtimeModels)
                         ui.activeProvider.supportsRuntimeLineup ->
                             app.chompass.services.ai.OpenAiModelsClient.mergeOverCurated(
                                 ui.activeProvider.models,
@@ -221,6 +316,8 @@ internal fun SettingsSheets(
                             stringResource(R.string.settings_ollama_models_loading)
                         ui.activeProvider == AIProvider.OLLAMA && ui.ollamaModelsError ->
                             stringResource(R.string.settings_ollama_models_error)
+                        ui.activeProvider == AIProvider.OLLAMA_CLOUD && ui.runtimeModelsLoading ->
+                            stringResource(R.string.settings_ollama_models_loading)
                         ui.activeProvider == AIProvider.CUSTOM_OPENAI && ui.customModelsLoading ->
                             stringResource(R.string.settings_custom_models_loading)
                         ui.activeProvider == AIProvider.CUSTOM_OPENAI && ui.customModelsError ->
@@ -254,7 +351,14 @@ internal fun SettingsSheets(
                     title = stringResource(R.string.settings_ai_vision_model),
                     // #143: a matched custom endpoint shows its declared vision lineup;
                     // unmatched custom keeps the old "unset only" list.
-                    items = listOf("") + (ui.directoryEntry?.visionModels ?: ui.activeProvider.models),
+                    items = listOf("") + (
+                        ui.directoryEntry?.visionModels
+                            ?: if (ui.activeProvider == AIProvider.OLLAMA_CLOUD) {
+                                app.chompass.services.ai.OpenAiModelsClient.catalogLineup(ui.runtimeModels)
+                            } else {
+                                ui.activeProvider.models
+                            }
+                    ),
                     label = { if (it.isEmpty()) stringResource(R.string.settings_ai_vision_model_unset) else it },
                     subtitle = { model ->
                         when {
@@ -276,25 +380,42 @@ internal fun SettingsSheets(
                     } else null,
                     onDismiss = onDismiss
                 )
-                SettingsSheet.API_KEY -> ApiKeySheet(
-                    title = stringResource(R.string.sheet_api_key_format, stringResource(ui.activeProvider.displayNameRes)),
-                    placeholder = stringResource(ui.activeProvider.apiKeyPlaceholderRes),
-                    initial = vm.currentProfileApiKey().orEmpty(),
-                    signupUrl = ui.activeProvider.signupUrl,
-                    onTest = { vm.testProfileApiKey(it) },
-                    testing = ui.apiKeyTesting,
-                    testOk = ui.apiKeyTestOk,
-                    testMessage = ui.apiKeyTestMessage,
-                    onSave = { vm.setProfileApiKey(it); onDismiss() },
-                    onDismiss = onDismiss
-                )
+                SettingsSheet.API_KEY -> {
+                    val providerName = vm.container.providerDirectory.matchedName(
+                        ui.activeProvider,
+                        ui.activeProfile?.baseUrl,
+                    ) ?: stringResource(ui.activeProvider.displayNameRes)
+                    ApiKeySheet(
+                        title = stringResource(R.string.sheet_api_key_format, providerName),
+                        placeholder = stringResource(ui.activeProvider.apiKeyPlaceholderRes),
+                        initial = vm.currentProfileApiKey().orEmpty(),
+                        signupUrl = ui.directoryEntry?.docsUrl ?: ui.activeProvider.signupUrl,
+                        onTest = { vm.testProfileApiKey(it) },
+                        testing = ui.apiKeyTesting,
+                        testOk = ui.apiKeyTestOk,
+                        testMessage = ui.apiKeyTestMessage,
+                        onSave = { vm.setProfileApiKey(it); onDismiss() },
+                        onDismiss = onDismiss
+                    )
+                }
                 SettingsSheet.CUSTOM_BASE_URL -> CustomBaseUrlSheet(
-                    title = stringResource(R.string.settings_custom_url_title),
+                    title = if (ui.activeProvider == AIProvider.OLLAMA) {
+                        stringResource(R.string.settings_server_url)
+                    } else {
+                        stringResource(R.string.settings_custom_url_title)
+                    },
                     initial = ui.activeProfile?.baseUrl.orEmpty(),
                     placeholder = stringResource(R.string.settings_custom_url_placeholder),
-                    directory = vm.container.providerDirectory?.entries ?: emptyList(),
-                    matched = ui.directoryEntry,
-                    onSave = { vm.setProfileBaseUrl(it); onDismiss() },
+                    onSave = { raw ->
+                        val blank = raw.isBlank()
+                        when {
+                            ui.activeProvider == AIProvider.OLLAMA -> vm.setProfileBaseUrl(raw)
+                            blank && ui.activeProvider == AIProvider.CUSTOM_OPENAI -> vm.setProfileBaseUrl(null)
+                            blank -> Unit
+                            else -> vm.selectOpenAiEndpoint(raw)
+                        }
+                        onDismiss()
+                    },
                     onDismiss = onDismiss
                 )
                 SettingsSheet.ON_DEVICE_MODEL -> OnDeviceModelSheet(
@@ -381,7 +502,9 @@ internal fun SettingsSheets(
                         label = { it.name },
                         subtitle = { profile ->
                             val model = profile.model ?: profile.provider.defaultModel
-                            "${stringResource(profile.provider.displayNameRes)} · $model"
+                            val name = vm.container.providerDirectory.matchedName(profile.provider, profile.baseUrl)
+                                ?: stringResource(profile.provider.displayNameRes)
+                            "$name · $model"
                         },
                         selected = { it.id == ui.activeProfile?.id },
                         onSelect = { vm.selectProfile(it.id.toString()); onDismiss() },
@@ -424,7 +547,12 @@ internal fun SettingsSheets(
                     title = stringResource(R.string.settings_profile_fallback),
                     items = listOf<AiProfile?>(null) + ui.profiles.filter { it.id != ui.activeProfile?.id },
                     label = { it?.name ?: stringResource(R.string.settings_profile_fallback_none) },
-                    subtitle = { profile -> profile?.let { stringResource(it.provider.displayNameRes) } },
+                    subtitle = { profile ->
+                        profile?.let {
+                            vm.container.providerDirectory.matchedName(it.provider, it.baseUrl)
+                                ?: stringResource(it.provider.displayNameRes)
+                        }
+                    },
                     selected = { profile ->
                         if (profile == null) ui.fallbackProfileId == null
                         else profile.id.toString() == ui.fallbackProfileId

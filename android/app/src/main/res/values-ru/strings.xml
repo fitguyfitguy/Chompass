@@ -144,7 +144,6 @@
 
     <string name="ai_provider_ollama">Ollama (локально)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
-    <string name="ai_provider_custom">Пользовательский (OpenAI-совместимый)</string>
 
     
 
@@ -615,9 +614,7 @@
     <string name="settings_tap_to_edit">Коснись, чтобы изменить</string>
 
     <string name="settings_custom_url_title">Свой базовый URL</string>
-    <string name="settings_custom_directory_title">Известные адреса</string>
     <string name="settings_custom_directory_docs">Документация</string>
-    <string name="settings_custom_directory_footer">Адреса берутся из проверенного списка, поставляемого с каждым релизом. Ваш ключ отправляется только на указанный URL; списки моделей обновляются от провайдера при открытии выбора модели.</string>
     <string name="ai_model_accepts_images">Поддерживает изображения (заявлено)</string>
     <string name="settings_ai_allow_insecure_http">Разрешить незащищённый HTTP</string>
     <string name="settings_ai_allow_insecure_http_footer">Свои и Ollama-адреса смогут использовать http://, например в домашней сети. Облачные провайдеры используют https. Держи выключенным, если на сервере есть TLS.</string>
@@ -1371,11 +1368,6 @@
     <string name="ai_provider_subtitle_mistral">Модели Mistral</string>
     <string name="ai_provider_subtitle_ollama">Твой компьютер, без облака</string>
     <string name="ai_provider_subtitle_ollama_cloud">Облачные модели Ollama</string>
-    <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp и др.</string>
-    <string name="ai_provider_group_recommended">Рекомендуемый</string>
-    <string name="ai_provider_group_cloud">Облачные провайдеры</string>
-    <string name="ai_provider_group_local">Локальные и self-hosted</string>
-    <string name="ai_provider_group_device">На устройстве</string>
     <string name="settings_section_ai_profile">Профиль</string>
     <string name="settings_section_ai_connection">Подключение</string>
     <string name="settings_section_ai_advanced">Дополнительно</string>

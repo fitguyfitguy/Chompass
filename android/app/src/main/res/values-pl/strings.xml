@@ -168,7 +168,6 @@
     <string name="ai_provider_mistral">Mistral</string>
     <string name="ai_provider_ollama">Ollama (Lokalnie)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
-    <string name="ai_provider_custom">Niestandardowy (zgodny z OpenAI)</string>
     <string name="ai_provider_on_device">Na urządzeniu (prywatnie)</string>
     <string name="ai_provider_on_device_subtitle">Prywatnie i offline. Mniej dokładne niż chmurowe AI; pobieranie ~2 do 4 GB</string>
     <string name="ai_provider_subtitle_gemini">Darmowy klucz API · działa od razu</string>
@@ -184,11 +183,6 @@
     <string name="ai_provider_subtitle_mistral">Modele Mistral</string>
     <string name="ai_provider_subtitle_ollama">Twój komputer, bez chmury</string>
     <string name="ai_provider_subtitle_ollama_cloud">Modele w chmurze Ollama</string>
-    <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp itd.</string>
-    <string name="ai_provider_group_recommended">Polecany</string>
-    <string name="ai_provider_group_cloud">Dostawcy chmurowi</string>
-    <string name="ai_provider_group_local">Lokalnie i self-hosted</string>
-    <string name="ai_provider_group_device">Na urządzeniu</string>
     <string name="settings_section_ai_profile">Profil</string>
     <string name="settings_section_ai_connection">Połączenie</string>
     <string name="settings_section_ai_advanced">Zaawansowane</string>
@@ -1095,9 +1089,7 @@
     <string name="settings_tap_to_edit">Stuknij, aby edytować</string>
     <string name="settings_custom_url_placeholder">https://twoj-endpoint.com/v1</string>
     <string name="settings_custom_url_title">Niestandardowy bazowy URL</string>
-    <string name="settings_custom_directory_title">Znane serwery</string>
     <string name="settings_custom_directory_docs">Dokumentacja</string>
-    <string name="settings_custom_directory_footer">Serwery pochodzą ze sprawdzonej listy dołączanej do każdego wydania. Twój klucz jest wysyłany tylko na wyświetlany adres URL; listy modeli odświeżają się od dostawcy po otwarciu wyboru modeli.</string>
     <string name="ai_model_accepts_images">Obsługuje obrazy (zadeklarowane)</string>
     <string name="settings_ai_allow_insecure_http">Zezwól na nieszyfrowane HTTP</string>
     <string name="settings_ai_allow_insecure_http_footer">Pozwala własnym serwerom i Ollama używać adresów http://, na przykład w sieci domowej. Dostawcy chmurowi używają https. Zostaw wyłączone, chyba że twój serwer nie ma TLS.</string>

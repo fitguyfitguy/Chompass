@@ -18,12 +18,25 @@ internal object AiHttp {
      * Read timeout for one provider: user-configurable endpoints
      * ([AIProvider.usesConfigurableRequestTimeout]) honor the settings
      * seconds; builtin cloud endpoints use the fixed cold-start budget
-     * regardless of the settings value. Any wall-clock watchdog covering a
-     * call MUST be derived from this value, never from the raw settings
-     * seconds, or it would fire before the read timeout it shadows.
+     * regardless of the settings value. A bundled directory host is a fixed
+     * https cloud endpoint: [bundledDirectory] is honored only for
+     * [AIProvider.CUSTOM_OPENAI] and then uses the cloud budget. Any
+     * wall-clock watchdog covering a call MUST be derived from this value,
+     * never from the raw settings seconds, or it would fire before the read
+     * timeout it shadows.
      */
-    fun effectiveReadTimeoutSeconds(provider: AIProvider, settingsSeconds: Int): Int =
-        if (provider.usesConfigurableRequestTimeout) settingsSeconds else CLOUD_READ_TIMEOUT_SECONDS
+    fun effectiveReadTimeoutSeconds(
+        provider: AIProvider,
+        settingsSeconds: Int,
+        bundledDirectory: Boolean = false,
+    ): Int {
+        val bundledCloud = bundledDirectory && provider == AIProvider.CUSTOM_OPENAI
+        return if (provider.usesConfigurableRequestTimeout && !bundledCloud) {
+            settingsSeconds
+        } else {
+            CLOUD_READ_TIMEOUT_SECONDS
+        }
+    }
 
     fun clientWithReadTimeout(base: OkHttpClient, seconds: Int): OkHttpClient =
         base.newBuilder()
@@ -31,30 +44,37 @@ internal object AiHttp {
             .build()
 
     /**
-     * User-configurable endpoints (custom OpenAI-compatible + Ollama) apply
-     * the settings timeout ([localTimeoutSeconds]); builtin cloud endpoints
-     * apply the fixed cold-start budget ([CLOUD_READ_TIMEOUT_SECONDS]).
-     * Custom and Ollama endpoints (both user-entered URLs) additionally
-     * trust user-installed CA certs ([usesUserCaTrust]).
+     * User-configurable endpoints (unmatched custom OpenAI-compatible + Ollama)
+     * apply the settings timeout ([localTimeoutSeconds]); builtin cloud
+     * endpoints, and a bundled directory host, apply the fixed cold-start
+     * budget ([CLOUD_READ_TIMEOUT_SECONDS]). Ollama and an unmatched custom
+     * URL additionally trust user-installed CA certs ([usesUserCaTrust]).
+     * [bundledDirectory] is ignored unless [provider] is [AIProvider.CUSTOM_OPENAI].
      */
     fun clientForProvider(
         base: OkHttpClient,
         provider: AIProvider,
         localTimeoutSeconds: Int,
         trustBuilder: (OkHttpClient) -> OkHttpClient = LocalEndpointTrust::withUserCaTrust,
+        bundledDirectory: Boolean = false,
     ): OkHttpClient {
-        var client = if (provider.usesConfigurableRequestTimeout) {
-            clientWithReadTimeout(base, localTimeoutSeconds)
-        } else {
-            clientWithReadTimeout(base, effectiveReadTimeoutSeconds(provider, localTimeoutSeconds))
-        }
-        if (usesUserCaTrust(provider)) client = trustBuilder(client)
+        var client = clientWithReadTimeout(
+            base,
+            effectiveReadTimeoutSeconds(provider, localTimeoutSeconds, bundledDirectory),
+        )
+        if (usesUserCaTrust(provider, bundledDirectory)) client = trustBuilder(client)
         return client
     }
 
-    /** User-entered endpoints (custom OpenAI-compatible + Ollama) trust certs installed on the phone. */
-    fun usesUserCaTrust(provider: AIProvider): Boolean =
-        provider == AIProvider.CUSTOM_OPENAI || provider == AIProvider.OLLAMA
+    /**
+     * Ollama and an unmatched custom URL trust certs installed on the phone.
+     * A bundled directory host does not: it is a fixed https cloud endpoint.
+     * [bundledDirectory] is ignored unless [provider] is [AIProvider.CUSTOM_OPENAI].
+     */
+    fun usesUserCaTrust(provider: AIProvider, bundledDirectory: Boolean = false): Boolean {
+        if (bundledDirectory && provider == AIProvider.CUSTOM_OPENAI) return false
+        return provider == AIProvider.CUSTOM_OPENAI || provider == AIProvider.OLLAMA
+    }
 
     /**
      * Gate for the release cleartext opt-in (issue #8 follow-up, design doc D2
