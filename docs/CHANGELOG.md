@@ -6,6 +6,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+## [5.12.0] - 2026-10-26
+
 ### Added
 
 - **Ollama Cloud as a built-in provider** (Android): Settings → AI provider gains an Ollama Cloud row under Cloud, so an ollama.com subscription works without self-hosting or hand-typing URLs. The model list is the live ollama.com catalog, not a built-in shortlist. Paste your ollama.com API key to use it. Reasoning effort works on models that support it. The local Ollama entry stays as it was.
