@@ -13,6 +13,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Fixed
 
 - **Status-bar icons follow the app theme** (Android): with the light theme the clock, battery, and navigation icons now draw dark instead of white-on-white, and switching themes updates them without restarting the app.
+- **Onboarding no longer crashes on strict devices** (Android): opening "Manage Health Connect access" from the onboarding Health Connect step on devices that refuse to open Health Connect settings shows a message instead of crashing the app.
 
 ## [5.11.0] - 2026-10-22
 
