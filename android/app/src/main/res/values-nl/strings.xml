@@ -73,6 +73,7 @@
 
     <!-- AI Provider names -->
     <string name="ai_provider_ollama">Ollama (lokaal)</string>
+    <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
     <string name="ai_provider_custom">Aangepast (OpenAI-compatibel)</string>
 
     <!-- AI Provider API key placeholders -->
@@ -666,6 +667,7 @@
     <string name="ai_provider_subtitle_deepinfra">Gehoste open modellen</string>
     <string name="ai_provider_subtitle_mistral">Mistral-modellen</string>
     <string name="ai_provider_subtitle_ollama">Je eigen computer, geen cloud</string>
+    <string name="ai_provider_subtitle_ollama_cloud">Ollama\'s gehoste modellen</string>
     <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp enz.</string>
     <string name="ai_provider_group_recommended">Aanbevolen</string>
     <string name="ai_provider_group_cloud">Cloudproviders</string>
@@ -812,6 +814,12 @@
     <string name="ai_error_invalid_response">AI-antwoord niet begrepen. Probeer het opnieuw.</string>
     <string name="ai_error_invalid_url">Ongeldige API-URL. Controleer je providerinstellingen.</string>
     <string name="ai_error_key_rejected">Je API-sleutel is afgewezen. Open Instellingen → AI-provider en plak opnieuw een geldige sleutel.</string>
+    <string name="ai_error_timeout">De AI-provider deed te lang over het antwoord. Probeer het opnieuw; bij een zelf gehost endpoint verhoog je de time-out in Instellingen → AI-provider.</string>
+    <string name="ai_error_disabled">AI-functies staan uit in Instellingen → AI-provider.</string>
+    <string name="ai_error_insecure_http_blocked">Onveilige HTTP is geblokkeerd. Zet “Onveilige HTTP toestaan” aan in Instellingen → AI-provider of gebruik een https://-URL.</string>
+    <string name="ai_error_truncated_twice">Het antwoord bereikte twee keer de uitvoerlimiet van het model — denken telt mee. Zet de Redeneerinspanning op Laag of Uit in Instellingen → AI-provider, of stel een kortere vraag.</string>
+    <string name="ai_error_truncated_twice_description">Het model raakte de uitvoerruimte kwijt voordat het klaar was; denktokens tellen mee. Zet de Redeneerinspanning op Laag of Uit in Instellingen → AI-provider en probeer het opnieuw.</string>
+    <string name="ai_error_truncated">Het antwoord bereikte de uitvoerlimiet van het model voordat het klaar was — denken telt mee. Zet de Redeneerinspanning op Laag of Uit in Instellingen → AI-provider, of stel een kortere vraag.</string>
     <string name="ai_error_location_unsupported">Gemini is niet beschikbaar vanaf deze netwerklocatie (land/IP). Gebruik je een VPN, zet die dan uit of kies een residentiële exit. Datacenter-/niet-residentiële VPN-IP\'s worden vaak geblokkeerd. Of schakel facturering in op het Google AI Studio-project, probeer een ander netwerk of wissel van provider in Instellingen → AI-provider.</string>
     <string name="ai_error_model_unavailable">Je provider kon dit model niet vinden. Het kan betaald zijn op de gratis laag, beperkt in jouw regio, of de endpoint kan onjuist zijn. Schakel naar het standaard Flash-model in Instellingen → AI-provider of schakel facturering in op je AI Studio-project.</string>
     <string name="ai_error_network_format">Netwerkfout: %1$s</string>
@@ -1168,6 +1176,7 @@
     <string name="nutrient_short_calories">Cal</string>
     <string name="nutrient_short_added_sugar">Toev. suik.</string>
     <string name="nutrient_short_sodium">Na</string>
+    <string name="nutrient_short_cholesterol">Chol.</string>
     <string name="nutrient_short_potassium">K</string>
     <string name="nutrient_short_trans_fat">Transvet</string>
     <string name="nutrient_short_calcium">Ca</string>

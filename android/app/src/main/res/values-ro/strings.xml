@@ -690,6 +690,7 @@
     <string name="ai_provider_subtitle_deepinfra">Modele open găzduite</string>
     <string name="ai_provider_subtitle_mistral">Modele Mistral</string>
     <string name="ai_provider_subtitle_ollama">Calculatorul tău, fără cloud</string>
+    <string name="ai_provider_subtitle_ollama_cloud">Modelele în cloud ale Ollama</string>
     <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp etc.</string>
     <string name="ai_provider_group_recommended">Recomandat</string>
     <string name="ai_provider_group_cloud">Furnizori cloud</string>
@@ -835,6 +836,12 @@
     <string name="ai_error_invalid_response">Nu am putut înțelege răspunsul IA. Încearcă din nou.</string>
     <string name="ai_error_invalid_url">URL API nevalid. Verifică setările furnizorului.</string>
     <string name="ai_error_key_rejected">Cheia ta API a fost respinsă. Deschide Setări → Furnizor IA și lipește din nou o cheie validă.</string>
+    <string name="ai_error_timeout">Furnizorul IA a răspuns prea încet. Încearcă din nou; dacă folosești un endpoint găzduit de tine, mărește timpul de așteptare în Setări → Furnizor IA.</string>
+    <string name="ai_error_disabled">Funcțiile IA sunt dezactivate în Setări → Furnizor IA.</string>
+    <string name="ai_error_insecure_http_blocked">HTTP nesigur este blocat. Activează „Permite HTTP nesigur” în Setări → Furnizor IA sau folosește un URL https://.</string>
+    <string name="ai_error_truncated_twice">Răspunsul a atins de două ori limita de ieșire a modelului — raționamentul contează. Setează Efortul de raționare pe Scăzut sau Oprit în Setări → Furnizor IA, sau pune o întrebare mai scurtă.</string>
+    <string name="ai_error_truncated_twice_description">Modelului i s-a terminat spațiul de ieșire înainte să termine; tokenii de raționament contează la limită. Setează Efortul de raționare pe Scăzut sau Oprit în Setări → Furnizor IA, apoi încearcă din nou.</string>
+    <string name="ai_error_truncated">Răspunsul a atins limita de ieșire a modelului înainte să se termine — raționamentul contează. Setează Efortul de raționare pe Scăzut sau Oprit în Setări → Furnizor IA, sau pune o întrebare mai scurtă.</string>
     <string name="ai_error_location_unsupported">Gemini nu este disponibil din această locație de rețea (țară/IP). Dacă folosești VPN, dezactivează-l sau comută la o ieșire rezidențială. IP-urile de datacenter/nerezidențiale VPN sunt adesea blocate. Sau activează facturarea în proiectul Google AI Studio, încearcă altă rețea sau schimbă furnizorul în Setări → Furnizor IA.</string>
     <string name="ai_error_model_unavailable">Furnizorul tău nu a găsit acest model. Poate fi plătit pe planul gratuit, restricționat în regiunea ta sau endpoint-ul poate fi greșit. Comută la modelul Flash implicit în Setări → Furnizor IA sau activează facturarea în proiectul tău AI Studio.</string>
     <string name="ai_error_network_format">Eroare de rețea: %1$s</string>
@@ -849,6 +856,7 @@
     <string name="ai_model_tier_paid">Doar model plătit (planul gratuit nu mai include Pro)</string>
     <string name="ai_model_tier_varies">Disponibilitatea pe planul gratuit variază după cont și regiune</string>
     <string name="ai_provider_ollama">Ollama (local)</string>
+    <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
     <string name="ai_provider_on_device">Pe dispozitiv (privat)</string>
     <string name="ai_reasoning_effort_auto">Auto</string>
     <string name="ai_reasoning_effort_high">Ridicat</string>

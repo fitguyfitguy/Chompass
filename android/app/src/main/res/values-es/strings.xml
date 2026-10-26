@@ -78,6 +78,7 @@
 
     <!-- AI Provider names -->
     <string name="ai_provider_ollama">Ollama (local)</string>
+    <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
     <string name="ai_provider_custom">Personalizado (compatible con OpenAI)</string>
 
     <!-- AI Provider API key placeholders -->
@@ -733,6 +734,7 @@
     <string name="ai_provider_subtitle_deepinfra">Modelos abiertos alojados</string>
     <string name="ai_provider_subtitle_mistral">Modelos Mistral</string>
     <string name="ai_provider_subtitle_ollama">Tu ordenador, sin nube</string>
+    <string name="ai_provider_subtitle_ollama_cloud">Modelos alojados de Ollama</string>
     <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp, etc.</string>
     <string name="ai_provider_group_recommended">Recomendado</string>
     <string name="ai_provider_group_cloud">Proveedores en la nube</string>
@@ -884,6 +886,12 @@
     <string name="ai_error_invalid_response">No se pudo entender la respuesta de la IA. Inténtalo de nuevo.</string>
     <string name="ai_error_invalid_url">URL de API no válida. Revisa la configuración de tu proveedor.</string>
     <string name="ai_error_key_rejected">Tu clave API fue rechazada. Abre Ajustes → Proveedor de IA y pega una clave válida.</string>
+    <string name="ai_error_timeout">El proveedor de IA tardó demasiado en responder. Inténtalo de nuevo; si usas un punto de acceso propio, sube el tiempo de espera en Ajustes → Proveedor de IA.</string>
+    <string name="ai_error_disabled">Las funciones de IA están desactivadas en Ajustes → Proveedor de IA.</string>
+    <string name="ai_error_insecure_http_blocked">El HTTP inseguro está bloqueado. Activa «Permitir HTTP inseguro» en Ajustes → Proveedor de IA o usa una URL https://.</string>
+    <string name="ai_error_truncated_twice">La respuesta alcanzó dos veces el límite de salida del modelo — el razonamiento cuenta. Fija el Esfuerzo de razonamiento en Bajo o Desactivado en Ajustes → Proveedor de IA, o prueba con una pregunta más corta.</string>
+    <string name="ai_error_truncated_twice_description">El modelo se quedó sin espacio de salida antes de terminar; los tokens de razonamiento cuentan. Fija el Esfuerzo de razonamiento en Bajo o Desactivado en Ajustes → Proveedor de IA y vuelve a intentarlo.</string>
+    <string name="ai_error_truncated">La respuesta alcanzó el límite de salida del modelo antes de terminar — el razonamiento cuenta. Fija el Esfuerzo de razonamiento en Bajo o Desactivado en Ajustes → Proveedor de IA, o prueba con una pregunta más corta.</string>
     <string name="ai_error_location_unsupported">Gemini no está disponible desde esta ubicación de red (país/IP). Si usas una VPN, desactívala o cambia a una salida residencial. Las IP de centros de datos o VPN no residenciales suelen estar bloqueadas. También puedes activar la facturación en tu proyecto de Google AI Studio, probar otra red o cambiar de proveedor en Ajustes → Proveedor de IA.</string>
     <string name="ai_error_model_unavailable">Tu proveedor no encontró este modelo. Puede ser solo de pago en el plan gratuito, estar restringido en tu región o el endpoint puede ser incorrecto. Cambia al modelo Flash predeterminado en Ajustes → Proveedor de IA, o activa la facturación en tu proyecto de AI Studio.</string>
     <string name="ai_error_network_format">Error de red: %1$s</string>

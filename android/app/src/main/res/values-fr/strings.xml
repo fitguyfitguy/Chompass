@@ -725,6 +725,7 @@
     <string name="ai_provider_subtitle_deepinfra">Modèles open source hébergés</string>
     <string name="ai_provider_subtitle_mistral">Modèles Mistral</string>
     <string name="ai_provider_subtitle_ollama">Votre ordinateur, pas de cloud</string>
+    <string name="ai_provider_subtitle_ollama_cloud">Modèles hébergés d\'Ollama</string>
     <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp etc.</string>
     <string name="ai_provider_group_recommended">Recommandé</string>
     <string name="ai_provider_group_cloud">Fournisseurs cloud</string>
@@ -880,6 +881,12 @@
     <string name="ai_error_invalid_response">Impossible de comprendre la réponse de l\'IA. Réessayez.</string>
     <string name="ai_error_invalid_url">URL d\'API invalide. Vérifiez les réglages de votre fournisseur.</string>
     <string name="ai_error_key_rejected">Votre clé API a été rejetée. Ouvrez Réglages → Fournisseur d\'IA et collez une clé valide.</string>
+    <string name="ai_error_timeout">Le fournisseur d\'IA a mis trop de temps à répondre. Réessayez ; avec un point de terminaison auto-hébergé, augmentez le délai dans Réglages → Fournisseur d\'IA.</string>
+    <string name="ai_error_disabled">Les fonctions d\'IA sont désactivées dans Réglages → Fournisseur d\'IA.</string>
+    <string name="ai_error_insecure_http_blocked">Le HTTP non sécurisé est bloqué. Activez « Autoriser le HTTP non sécurisé » dans Réglages → Fournisseur d\'IA ou utilisez une URL https://.</string>
+    <string name="ai_error_truncated_twice">La réponse a atteint deux fois la limite de sortie du modèle — la réflexion compte. Réglez l\'Effort de raisonnement sur Faible ou Désactivé dans Réglages → Fournisseur d\'IA, ou posez une question plus courte.</string>
+    <string name="ai_error_truncated_twice_description">Le modèle a manqué de place en sortie avant de finir ; les jetons de réflexion comptent. Réglez l\'Effort de raisonnement sur Faible ou Désactivé dans Réglages → Fournisseur d\'IA, puis réessayez.</string>
+    <string name="ai_error_truncated">La réponse a atteint la limite de sortie du modèle avant de se terminer — la réflexion compte. Réglez l\'Effort de raisonnement sur Faible ou Désactivé dans Réglages → Fournisseur d\'IA, ou posez une question plus courte.</string>
     <string name="ai_error_location_unsupported">Gemini n\'est pas disponible depuis cet emplacement réseau (pays/IP). Si vous utilisez un VPN, désactivez-le ou passez à une sortie résidentielle. Les IP de datacenters ou de VPN non résidentiels sont souvent bloquées. Vous pouvez aussi activer la facturation sur votre projet Google AI Studio, essayer un autre réseau ou changer de fournisseur dans Réglages → Fournisseur d\'IA.</string>
     <string name="ai_error_model_unavailable">Votre fournisseur n\'a pas trouvé ce modèle. Il peut être payant uniquement dans l\'offre gratuite, restreint dans votre région, ou l\'endpoint peut être incorrect. Passez au modèle Flash par défaut dans Réglages → Fournisseur d\'IA, ou activez la facturation sur votre projet AI Studio.</string>
     <string name="ai_error_network_format">Erreur réseau : %1$s</string>
@@ -901,6 +908,7 @@
     <string name="ai_provider_huggingface">Hugging Face</string>
     <string name="ai_provider_mistral">Mistral</string>
     <string name="ai_provider_ollama">Ollama (local)</string>
+    <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
     <string name="ai_provider_on_device">Sur l\'appareil (privé)</string>
     <string name="ai_provider_openai">OpenAI</string>
     <string name="ai_provider_openrouter">OpenRouter</string>
@@ -1244,6 +1252,7 @@
     <string name="nutrient_short_calories">Cal</string>
     <string name="nutrient_short_added_sugar">Sucres aj.</string>
     <string name="nutrient_short_sodium">Na</string>
+    <string name="nutrient_short_cholesterol">Chol.</string>
     <string name="nutrient_short_potassium">K</string>
     <string name="nutrient_short_trans_fat">Lip. trans</string>
     <string name="nutrient_short_calcium">Ca</string>

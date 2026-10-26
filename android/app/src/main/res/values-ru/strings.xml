@@ -143,6 +143,7 @@
 
 
     <string name="ai_provider_ollama">Ollama (локально)</string>
+    <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
     <string name="ai_provider_custom">Пользовательский (OpenAI-совместимый)</string>
 
     
@@ -1365,6 +1366,7 @@
     <string name="ai_provider_subtitle_deepinfra">Хостинговые открытые модели</string>
     <string name="ai_provider_subtitle_mistral">Модели Mistral</string>
     <string name="ai_provider_subtitle_ollama">Твой компьютер, без облака</string>
+    <string name="ai_provider_subtitle_ollama_cloud">Облачные модели Ollama</string>
     <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp и др.</string>
     <string name="ai_provider_group_recommended">Рекомендуемый</string>
     <string name="ai_provider_group_cloud">Облачные провайдеры</string>
@@ -1464,6 +1466,12 @@
     <string name="ai_error_invalid_response">Не удалось понять ответ ИИ. Попробуй ещё раз.</string>
     <string name="ai_error_invalid_url">Неверный URL API. Проверь настройки провайдера.</string>
     <string name="ai_error_key_rejected">API-ключ отклонён. Открой Настройки → ИИ-провайдер и вставь действующий ключ заново.</string>
+    <string name="ai_error_timeout">ИИ-провайдер отвечал слишком долго. Попробуй ещё раз; для собственного сервера увеличь тайм-аут в Настройки → ИИ-провайдер.</string>
+    <string name="ai_error_disabled">Функции ИИ отключены в Настройки → ИИ-провайдер.</string>
+    <string name="ai_error_insecure_http_blocked">Незащищённый HTTP заблокирован. Включи «Разрешить незащищённый HTTP» в Настройки → ИИ-провайдер или используй адрес https://.</string>
+    <string name="ai_error_truncated_twice">Ответ дважды упёрся в лимит вывода модели — размышления тоже считаются. Поставь Уровень рассуждений на Низкий или Выкл. в Настройки → ИИ-провайдер или задай вопрос короче.</string>
+    <string name="ai_error_truncated_twice_description">У модели кончилось место для вывода до завершения; токены размышлений входят в лимит. Поставь Уровень рассуждений на Низкий или Выкл. в Настройки → ИИ-провайдер и попробуй снова.</string>
+    <string name="ai_error_truncated">Ответ упёрся в лимит вывода модели, не успев завершиться, — размышления тоже считаются. Поставь Уровень рассуждений на Низкий или Выкл. в Настройки → ИИ-провайдер или задай вопрос короче.</string>
     <string name="ai_error_location_unsupported">Gemini недоступен из этого региона (страна/IP). Если используешь VPN, отключи его или выбери выход из жилого диапазона. IP дата-центров часто блокируются. Либо включи биллинг в проекте Google AI Studio, попробуй другую сеть или смени провайдера в Настройки → ИИ-провайдер.</string>
     <string name="ai_error_model_unavailable">Провайдер не нашёл эту модель. Она может быть платной на бесплатном тарифе, недоступна в твоём регионе или указан неверный endpoint. Переключись на стандартную модель Flash в Настройки → ИИ-провайдер или включи биллинг в проекте AI Studio.</string>
     <string name="ai_error_network_format">Ошибка сети: %1$s</string>
