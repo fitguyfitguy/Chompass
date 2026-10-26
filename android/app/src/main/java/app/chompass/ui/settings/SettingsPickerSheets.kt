@@ -83,7 +83,6 @@ import java.time.ZoneId
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import app.chompass.models.UnitFormat
-import app.chompass.services.ai.ProviderDirectoryEntry
 
 internal fun optionalNutrientSummary(goals: OptionalNutrientGoals): String =
     "Fiber ${goals.fiber}g, Sodium ${goals.sodium}mg"
@@ -126,25 +125,37 @@ internal fun <T> ListSheet(
     subtitle: (@Composable (T) -> String?)? = null,
     /** Group label for an item; rendered above the first item of each distinct group. */
     sectionHeader: (@Composable (T) -> String?)? = null,
-    /** Renders a search field above the list; queries match [filterText] (default toString). */
+    /** Renders a search field above the list. When [onQueryChange] is null, queries match [filterText] (default toString). */
     searchable: Boolean = false,
     filterText: ((T) -> String)? = null,
     footer: String? = null,
     customField: ((String) -> Unit)? = null,
     /** Composable leading slot (e.g. a color swatch) rendered before the label; overrides [icon]. */
     leading: (@Composable (T) -> Unit)? = null,
+    /** Drawn after the label column and before the check icon. */
+    trailing: (@Composable (T) -> Unit)? = null,
+    /** Null keeps the model-search hint. */
+    searchPlaceholder: String? = null,
+    /** Controlled query. Used only when [onQueryChange] is non-null, in which case this sheet does not filter. */
+    query: String? = null,
+    onQueryChange: ((String) -> Unit)? = null,
     /** When non-null, the custom-field footer gains a Cancel beside its Save. */
     onDismiss: (() -> Unit)? = null
 ) {
     val isDark = isDarkTheme()
     Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
     Spacer(Modifier.height(12.dp))
-    var query by remember { mutableStateOf("") }
+    var internalQuery by remember { mutableStateOf("") }
+    val controlled = onQueryChange != null
+    val queryText = if (controlled) query.orEmpty() else internalQuery
+    val setQuery: (String) -> Unit = { next ->
+        if (onQueryChange != null) onQueryChange(next) else internalQuery = next
+    }
     if (searchable) {
         ChompassTextField(
-            value = query,
-            onValueChange = { query = it },
-            placeholder = stringResource(R.string.sheet_model_search_hint),
+            value = queryText,
+            onValueChange = setQuery,
+            placeholder = searchPlaceholder ?: stringResource(R.string.sheet_model_search_hint),
             modifier = Modifier.fillMaxWidth(),
             leadingIcon = {
                 Icon(
@@ -154,9 +165,9 @@ internal fun <T> ListSheet(
                     modifier = Modifier.size(18.dp),
                 )
             },
-            trailingIcon = if (query.isNotEmpty()) {
+            trailingIcon = if (queryText.isNotEmpty()) {
                 {
-                    IconButton(onClick = { query = "" }) {
+                    IconButton(onClick = { setQuery("") }) {
                         Icon(
                             Icons.Filled.Close,
                             contentDescription = stringResource(R.string.action_clear),
@@ -169,8 +180,8 @@ internal fun <T> ListSheet(
         )
         Spacer(Modifier.height(12.dp))
     }
-    val needle = query.trim()
-    val visible = if (!searchable || needle.isEmpty()) items else items.filter {
+    val needle = queryText.trim()
+    val visible = if (!searchable || controlled || needle.isEmpty()) items else items.filter {
         (filterText?.invoke(it) ?: it.toString()).contains(needle, ignoreCase = true)
     }
     LazyColumn(Modifier.fillMaxWidth().heightIn(max = 420.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -236,7 +247,12 @@ internal fun <T> ListSheet(
                         )
                     }
                 }
+                if (trailing != null) {
+                    Spacer(Modifier.width(8.dp))
+                    trailing(item)
+                }
                 if (isSel) {
+                    if (trailing != null) Spacer(Modifier.width(8.dp))
                     Icon(
                         Icons.Filled.Check,
                         contentDescription = stringResource(R.string.sheet_selected_a11y),
@@ -398,131 +414,19 @@ internal fun TextFieldSheet(
 }
 
 /**
- * Custom base URL sheet with the bundled provider directory (Codeberg #143).
- * An empty [directory] (asset missing/corrupt) renders exactly the old
- * TextFieldSheet layout. Picking a row only fills the field — the single Save
- * path persists, so no surprise writes.
+ * Typed base URL. Directory hosts are rows in the provider sheet; this sheet
+ * is only the text field.
  */
 @Composable
 internal fun CustomBaseUrlSheet(
     title: String,
     initial: String,
     placeholder: String,
-    directory: List<ProviderDirectoryEntry>,
-    /** Saved URL's entry; keeps the docs link up while the saved URL is shown. */
-    matched: ProviderDirectoryEntry?,
     onSave: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
     var value by remember(initial) { mutableStateOf(initial) }
-    var query by remember { mutableStateOf("") }
-    val context = LocalContext.current
     Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-    if (directory.isNotEmpty()) {
-        Spacer(Modifier.height(12.dp))
-        Text(
-            stringResource(R.string.settings_custom_directory_title),
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.SemiBold
-        )
-        Spacer(Modifier.height(8.dp))
-        ChompassTextField(
-            value = query,
-            onValueChange = { query = it },
-            placeholder = stringResource(R.string.sheet_model_search_hint),
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            leadingIcon = {
-                Icon(
-                    Icons.Filled.Search,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                    modifier = Modifier.size(18.dp),
-                )
-            },
-            trailingIcon = if (query.isNotEmpty()) {
-                {
-                    IconButton(onClick = { query = "" }) {
-                        Icon(
-                            Icons.Filled.Close,
-                            contentDescription = stringResource(R.string.action_clear),
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                            modifier = Modifier.size(20.dp),
-                        )
-                    }
-                }
-            } else null,
-        )
-        Spacer(Modifier.height(8.dp))
-        val needle = query.trim()
-        val visible = if (needle.isEmpty()) directory else directory.filter {
-            it.name.contains(needle, ignoreCase = true) || it.baseUrl.contains(needle, ignoreCase = true)
-        }
-        LazyColumn(
-            Modifier.fillMaxWidth().heightIn(max = 220.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            if (visible.isEmpty()) {
-                item {
-                    Text(
-                        stringResource(R.string.sheet_no_match),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp),
-                    )
-                }
-            }
-            itemsIndexed(visible) { _, entry ->
-                val isSel = value.trimEnd('/') == entry.baseUrl.trimEnd('/')
-                val shape = MaterialTheme.shapes.medium
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .clip(shape)
-                        .background(
-                            if (isSel) MaterialTheme.colorScheme.primaryContainer
-                            else MaterialTheme.colorScheme.surfaceContainerHigh,
-                        )
-                        .clickable { value = entry.baseUrl }
-                        .padding(horizontal = 14.dp, vertical = 14.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Column(Modifier.weight(1f)) {
-                        Text(entry.name, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
-                        Spacer(Modifier.height(2.dp))
-                        Text(
-                            entry.baseUrl,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
-                        )
-                    }
-                    if (isSel) {
-                        Icon(
-                            Icons.Filled.Check,
-                            contentDescription = stringResource(R.string.sheet_selected_a11y),
-                            tint = AppColors.Calorie,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-            }
-        }
-        // Docs link follows the field: the tapped entry, or the saved entry
-        // ([matched]) while the stored URL is still in the field.
-        val docsEntry = directory.firstOrNull { it.baseUrl.trimEnd('/') == value.trimEnd('/') } ?: matched
-        if (docsEntry != null) {
-            Spacer(Modifier.height(8.dp))
-            TextButton(onClick = {
-                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(docsEntry.docsUrl)))
-            }) { Text(stringResource(R.string.settings_custom_directory_docs)) }
-        }
-        Spacer(Modifier.height(8.dp))
-        Text(
-            stringResource(R.string.settings_custom_directory_footer),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
-        )
-    }
     Spacer(Modifier.height(12.dp))
     ChompassTextField(
         value = value,

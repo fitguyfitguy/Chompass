@@ -168,7 +168,6 @@
     <string name="ai_provider_mistral">Mistral</string>
     <string name="ai_provider_ollama">Ollama (Yerel)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
-    <string name="ai_provider_custom">Özel (OpenAI uyumlu)</string>
     <string name="ai_provider_on_device">Cihazda (Gizli)</string>
     <string name="ai_provider_on_device_subtitle">Gizli ve çevrimdışı. Bulut AI\'dan daha az doğru; ~2 ila 4 GB indirme</string>
     <string name="ai_provider_subtitle_gemini">Ücretsiz API anahtarı · hemen çalışır</string>
@@ -184,11 +183,6 @@
     <string name="ai_provider_subtitle_mistral">Mistral modelleri</string>
     <string name="ai_provider_subtitle_ollama">Bilgisayarın, bulut yok</string>
     <string name="ai_provider_subtitle_ollama_cloud">Ollama bulut modelleri</string>
-    <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp vb.</string>
-    <string name="ai_provider_group_recommended">Önerilen</string>
-    <string name="ai_provider_group_cloud">Bulut sağlayıcıları</string>
-    <string name="ai_provider_group_local">Yerel ve kendi sunucun</string>
-    <string name="ai_provider_group_device">Cihazda</string>
     <string name="settings_section_ai_profile">Profil</string>
     <string name="settings_section_ai_connection">Bağlantı</string>
     <string name="settings_section_ai_advanced">Gelişmiş</string>
@@ -1091,9 +1085,7 @@
     <string name="settings_tap_to_edit">Düzenlemek için dokun</string>
     <string name="settings_custom_url_placeholder">https://uç-noktan.com/v1</string>
     <string name="settings_custom_url_title">Özel temel URL</string>
-    <string name="settings_custom_directory_title">Bilinen uç noktalar</string>
     <string name="settings_custom_directory_docs">Belgeler</string>
-    <string name="settings_custom_directory_footer">Uç noktalar her sürümle birlikte gelen incelenmiş bir listeden alınır. Anahtarınız yalnızca gösterilen URL\'ye gönderilir; model seçiciyi açtığınızda model listeleri sağlayıcıdan yenilenir.</string>
     <string name="ai_model_accepts_images">Görüntüleri kabul eder (bildirilmiş)</string>
     <string name="settings_ai_allow_insecure_http">Güvensiz HTTP\'ye izin ver</string>
     <string name="settings_ai_allow_insecure_http_footer">Özel ve Ollama uç noktalarının http:// adreslerini kullanmasına izin verir, örneğin ev ağında. Bulut sağlayıcıları https kullanır. Sunucunda TLS varsa kapalı tut.</string>

@@ -77,7 +77,6 @@
     <string name="autobalance_fat">Grăsimi</string>
 
     <!-- AI Provider names -->
-    <string name="ai_provider_custom">Personalizat (compatibil OpenAI)</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="api_key_placeholder">Lipește cheia API</string>
@@ -507,9 +506,7 @@
     <string name="settings_tap_to_edit">Atinge pentru a edita</string>
     <string name="settings_custom_url_placeholder">https://endpointul-tau.com/v1</string>
     <string name="settings_custom_url_title">URL de bază personalizat</string>
-    <string name="settings_custom_directory_title">Endpoint-uri cunoscute</string>
     <string name="settings_custom_directory_docs">Documentație</string>
-    <string name="settings_custom_directory_footer">Endpoint-urile provin dintr-o listă verificată inclusă în fiecare versiune. Cheia ta este trimisă doar către URL-ul afișat; listele de modele se actualizează de la furnizor când deschizi selectorul de modele.</string>
     <string name="ai_model_accepts_images">Acceptă imagini (declarat)</string>
     <string name="settings_ai_allow_insecure_http">Permite HTTP nesigur</string>
     <string name="settings_ai_allow_insecure_http_footer">Permite endpointurilor personalizate și Ollama să folosească URL-uri http://, de exemplu în rețeaua de acasă. Furnizorii cloud folosesc https. Ține-l oprit dacă serverul tău are TLS.</string>
@@ -695,11 +692,6 @@
     <string name="ai_provider_subtitle_mistral">Modele Mistral</string>
     <string name="ai_provider_subtitle_ollama">Calculatorul tău, fără cloud</string>
     <string name="ai_provider_subtitle_ollama_cloud">Modelele în cloud ale Ollama</string>
-    <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp etc.</string>
-    <string name="ai_provider_group_recommended">Recomandat</string>
-    <string name="ai_provider_group_cloud">Furnizori cloud</string>
-    <string name="ai_provider_group_local">Local și self-hosted</string>
-    <string name="ai_provider_group_device">Pe dispozitiv</string>
     <string name="settings_section_ai_profile">Profil</string>
     <string name="settings_section_ai_connection">Conexiune</string>
     <string name="settings_section_ai_advanced">Avansat</string>

@@ -172,7 +172,7 @@
     <string name="ai_provider_mistral">Mistral</string>
     <string name="ai_provider_ollama">Ollama (Local)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
-    <string name="ai_provider_custom">Custom (OpenAI-compatible)</string>
+    <string name="ai_provider_custom">Other URL</string>
     <string name="ai_provider_on_device">On-Device (Private)</string>
     <string name="ai_provider_on_device_subtitle">Private and offline. Less accurate than cloud AI; ~2 to 4 GB download</string>
     <string name="ai_provider_subtitle_gemini">Free API key · works out of the box</string>
@@ -188,13 +188,21 @@
     <string name="ai_provider_subtitle_mistral">Mistral models</string>
     <string name="ai_provider_subtitle_ollama">Your computer, no cloud</string>
     <string name="ai_provider_subtitle_ollama_cloud">Ollama\'s hosted models</string>
-    <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp…</string>
-
-    <!-- AI provider picker groups (settings sheet + onboarding order) -->
-    <string name="ai_provider_group_recommended">Recommended</string>
-    <string name="ai_provider_group_cloud">Cloud providers</string>
-    <string name="ai_provider_group_local">Local &amp; self-hosted</string>
-    <string name="ai_provider_group_device">On-device</string>
+    <string name="ai_provider_subtitle_custom">Type a base URL</string>
+    <string name="ai_provider_search_hint">Search name or host</string>
+    <string name="ai_provider_section_shortcuts">Shortcuts</string>
+    <string name="ai_provider_section_phone">On this phone</string>
+    <string name="ai_provider_section_server">Your server</string>
+    <string name="ai_provider_section_cloud">Cloud</string>
+    <string name="ai_provider_chip_on_phone">On phone</string>
+    <string name="ai_provider_chip_your_server">Your server</string>
+    <string name="ai_provider_chip_native">Native</string>
+    <string name="ai_provider_chip_cloud">Cloud</string>
+    <string name="ai_provider_row_gemini">Key · Google Search toggle</string>
+    <string name="ai_provider_row_anthropic">Key · separate API</string>
+    <string name="ai_provider_row_ollama">This network · no key</string>
+    <string name="ai_provider_row_host_key">%1$s · key</string>
+    <string name="ai_provider_directory_footer">Listed hosts ship with this release. The key is sent only to the host you pick.</string>
 
     <string name="settings_section_ai_profile">Profile</string>
     <string name="settings_section_ai_connection">Connection</string>
@@ -1786,9 +1794,7 @@
     <string name="settings_ai_allow_insecure_http">Allow insecure HTTP</string>
     <string name="settings_ai_allow_insecure_http_footer">Lets custom and Ollama endpoints use plain http:// URLs, for example on your home network. Cloud providers use https. Keep off unless your server has no TLS.</string>
     <string name="settings_custom_url_title">Custom base URL</string>
-    <string name="settings_custom_directory_title">Known endpoints</string>
     <string name="settings_custom_directory_docs">Documentation</string>
-    <string name="settings_custom_directory_footer">Endpoints come from a reviewed list bundled with each release. Your key is only sent to the URL shown; lineups refresh from the provider when you open the model picker.</string>
     <string name="ai_model_accepts_images">Accepts images (declared)</string>
     <string name="settings_clear_key">Clear key</string>
     <string name="settings_on_device_model">Model file</string>

@@ -80,7 +80,6 @@
     <!-- AI Provider names -->
     <string name="ai_provider_ollama">Ollama（本地）</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
-    <string name="ai_provider_custom">自定义（兼容 OpenAI）</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="api_key_placeholder">粘贴你的 API 密钥</string>
@@ -515,9 +514,7 @@
     <string name="settings_server_url">服务器 URL</string>
     <string name="settings_tap_to_edit">点按以编辑</string>
     <string name="settings_custom_url_title">自定义基础 URL</string>
-    <string name="settings_custom_directory_title">已知端点</string>
     <string name="settings_custom_directory_docs">文档</string>
-    <string name="settings_custom_directory_footer">端点来自随每个版本附带的已审核列表。你的密钥只会发送到所显示的 URL；打开模型选择器时，模型列表会从提供商刷新。</string>
     <string name="ai_model_accepts_images">支持图片（已声明）</string>
     <string name="settings_ai_allow_insecure_http">允许不安全的 HTTP</string>
     <string name="settings_ai_allow_insecure_http_footer">允许自定义和 Ollama 端点使用 http:// 地址，例如在家庭网络上。云提供商使用 https。服务器有 TLS 时请保持关闭。</string>
@@ -705,11 +702,6 @@
     <string name="ai_provider_subtitle_mistral">Mistral 模型</string>
     <string name="ai_provider_subtitle_ollama">你的电脑，无需云端</string>
     <string name="ai_provider_subtitle_ollama_cloud">Ollama 云端模型</string>
-    <string name="ai_provider_subtitle_custom">LM Studio、vLLM、llama.cpp 等</string>
-    <string name="ai_provider_group_recommended">推荐</string>
-    <string name="ai_provider_group_cloud">云端提供商</string>
-    <string name="ai_provider_group_local">本地与自托管</string>
-    <string name="ai_provider_group_device">设备端</string>
     <string name="settings_section_ai_profile">配置文件</string>
     <string name="settings_section_ai_connection">连接</string>
     <string name="settings_section_ai_advanced">高级</string>

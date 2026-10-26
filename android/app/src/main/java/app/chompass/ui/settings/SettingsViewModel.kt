@@ -226,8 +226,10 @@ data class SettingsUiState(
      *  null = hand-typed URL, non-custom provider, or asset missing. Re-derived
      *  from the stored baseUrl on every state refresh — no DataStore field. */
     val directoryEntry: ProviderDirectoryEntry? = null,
-    /** #107/#132: runtime lineup from the active provider's /models; null = no key, no fetch yet, or fetch failed (curated list shows). */
+    /** #107/#132: runtime lineup from the active provider's /models; null = not fetched or failed. */
     val runtimeModels: List<String>? = null,
+    /** Ollama Cloud sheet is empty until this clears; other providers keep their curated list. */
+    val runtimeModelsLoading: Boolean = false,
     val appearanceMode: String = "system",
     /** "" = system default, or locale tag like "de", "zh-CN". */
     val appLanguage: String = "",
@@ -1128,6 +1130,7 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             ollamaModels = null,
             ollamaModelsError = false,
             runtimeModels = null,
+            runtimeModelsLoading = false,
         )
     }
 
@@ -1194,6 +1197,30 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             val model = if (onDeviceModels.isNotEmpty()) onDeviceModels.first() else p.defaultModel
             container.prefs.switchActiveProfileProvider(container.keyStore, p, model)
             refreshAiState(onDeviceModels = onDeviceModels)
+        }
+    }
+
+    /**
+     * Selects an OpenAI-compatible URL (directory row or typed Other URL).
+     * Does not call [setProfileProvider]: that switch no-ops on the same enum
+     * and would wipe a directory URL when coming from another custom host.
+     * Does not rename the profile.
+     */
+    fun selectOpenAiEndpoint(rawUrl: String) {
+        viewModelScope.launch {
+            val active = _ui.value.activeProfile ?: return@launch
+            val write = planOpenAiEndpointWrite(active, rawUrl, container.providerDirectory)
+            if (!write.changed) return@launch
+            container.prefs.editActiveProfile {
+                it.copy(
+                    provider = write.provider,
+                    baseUrl = write.baseUrl,
+                    model = write.model,
+                    visionModel = if (write.clearVision) null else it.visionModel,
+                )
+            }
+            if (write.clearKey) container.keyStore.setProfileApiKey(active.id, null)
+            refreshAiState()
         }
     }
 
@@ -1401,17 +1428,27 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         }
     }
 
-    /** #107/#132: refresh the active provider's lineup from its /models endpoint; silent fallback to the curated list. */
+    /**
+     * Refresh the active provider's lineup from its /models endpoint.
+     * Keyed providers skip the call until a key is saved and keep their curated
+     * list. Ollama Cloud's catalog is public, so it fetches with or without a
+     * key and the sheet shows that response only.
+     */
     fun fetchRuntimeModels() {
         val active = _ui.value.activeProfile ?: return
         val provider = active.provider
         if (!provider.supportsRuntimeLineup) return
         val key = container.keyStore.profileApiKey(active.id)
-        if (key.isNullOrBlank()) {
-            _ui.value = _ui.value.copy(runtimeModels = null)
+        val publicCatalog = provider == AIProvider.OLLAMA_CLOUD
+        if (key.isNullOrBlank() && !publicCatalog) {
+            _ui.value = _ui.value.copy(runtimeModels = null, runtimeModelsLoading = false)
             return
         }
+        val profileId = active.id
         viewModelScope.launch {
+            if (publicCatalog) {
+                _ui.value = _ui.value.copy(runtimeModelsLoading = true)
+            }
             val result = withContext(Dispatchers.IO) {
                 runCatching {
                     if (provider == AIProvider.OPENAI) {
@@ -1433,8 +1470,12 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     }
                 }
             }
+            val stillActive = _ui.value.activeProfile?.id == profileId &&
+                _ui.value.activeProvider == provider
+            if (!stillActive) return@launch
             _ui.value = _ui.value.copy(
-                runtimeModels = result.fold(onSuccess = { it }, onFailure = { null }),
+                runtimeModels = result.getOrNull(),
+                runtimeModelsLoading = false,
             )
         }
     }

@@ -8,22 +8,21 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Added
 
-- **Ollama Cloud as a built-in provider** (Android): Settings → AI provider gains an "Ollama Cloud" card in the cloud group, so an ollama.com subscription works without self-hosting or hand-typing URLs. Paste your ollama.com API key and the model list comes straight from ollama.com; the starter list is the vision-capable cloud models (gemma4, Mistral Large, Kimi, MiniMax), and reasoning effort works on models that support it. The local Ollama entry stays as it was.
+- **Ollama Cloud as a built-in provider** (Android): Settings → AI provider gains an Ollama Cloud row under Cloud, so an ollama.com subscription works without self-hosting or hand-typing URLs. The model list is the live ollama.com catalog, not a built-in shortlist. Paste your ollama.com API key to use it. Reasoning effort works on models that support it. The local Ollama entry stays as it was.
 
 ### Changed
 
-- **Full nutrient names on any card layout** (Android): Settings → Home display → "Full nutrient names" now applies to the compact bars band and slim cards alike (classic cards always showed them). Long names yield first on narrow cards, then the unit.
-
-### Changed
-
-- **AI settings show only what works** (Android): the "Max response length" knob is gone — the app picks a sensible cap per provider now, and thinking models automatically get a larger allowance so an answer no longer gets cut off mid-thought. The read-timeout setting now appears only for self-hosted endpoints (Ollama and custom URLs), since the built-in cloud providers time themselves and ignore it. Timeout and truncation messages no longer point at settings that can't help.
+- **AI hosts are picked by name** (Android): Settings → AI provider lists shortcuts, what is on this phone, your server, and cloud hosts. Bundled OpenAI-compatible hosts are their own rows instead of hiding inside Custom. Picking one shows that host's name, and the key is sent only to the host you pick. A hand-typed address is Other URL. Closes Codeberg [#143](https://codeberg.org/fitguy/Chompass/issues/143).
+- **AI settings show only what works** (Android): the "Max response length" knob is gone. The app picks a sensible cap per provider, and thinking models get a larger allowance so an answer is not cut off mid-thought. The read-timeout setting appears only for Ollama and a hand-typed address. Listed hosts and the built-in cloud providers time themselves and ignore it. Timeout and truncation messages no longer point at settings that cannot help.
+- **Full nutrient names on any card layout** (Android): Settings → Customize Home → Full nutrient names now applies to the compact bars and the slim cards. Classic cards already showed the full name. On a narrow card a long name yields first, then the unit.
+- **Compact food-log rows keep three macros on one line** (Android): a long serving name fades at the end of the calorie line instead of pushing a macro chip onto a second row.
 
 ### Fixed
 
 - **Status-bar icons follow the app theme** (Android): with the light theme the clock, battery, and navigation icons now draw dark instead of white-on-white, and switching themes updates them without restarting the app.
 - **Onboarding no longer crashes on strict devices** (Android): opening "Manage Health Connect access" from the onboarding Health Connect step on devices that refuse to open Health Connect settings shows a message instead of crashing the app.
 - **Coach chat survives slow replies** (Android): chats against slow or self-hosted models no longer fail with a generic "Chat failed" when the answer arrives in small pieces, and a failed send now records why in the device log for support.
-- **Saves show up everywhere immediately** (Android): a value saved in one screen now appears right away on other screens opened just after the save — for example the water total after logging a sip — instead of showing the old number until something else saves.
+- **Saves show up everywhere immediately** (Android): a value saved in one screen now appears right away on other screens opened just after the save, for example the water total after logging a sip, instead of showing the old number until something else saves.
 
 ## [5.11.0] - 2026-10-22
 
