@@ -8,6 +8,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Added
 
+- **Ollama Cloud as a built-in provider** (Android): Settings → AI provider gains an "Ollama Cloud" card in the cloud group, so an ollama.com subscription works without self-hosting or hand-typing URLs. Paste your ollama.com API key and the model list comes straight from ollama.com; the starter list is the vision-capable cloud models (gemma4, Mistral Large, Kimi, MiniMax), and reasoning effort works on models that support it. The local Ollama entry stays as it was.
+
+### Changed
+
 - **Full nutrient names on any card layout** (Android): Settings → Home display → "Full nutrient names" now applies to the compact bars band and slim cards alike (classic cards always showed them). Long names yield first on narrow cards, then the unit.
 
 ### Changed

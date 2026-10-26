@@ -687,6 +687,7 @@
     <string name="ai_provider_subtitle_deepinfra">Modelos abertos hospedados</string>
     <string name="ai_provider_subtitle_mistral">Modelos Mistral</string>
     <string name="ai_provider_subtitle_ollama">Seu computador, sem nuvem</string>
+    <string name="ai_provider_subtitle_ollama_cloud">Modelos hospedados da Ollama</string>
     <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp etc.</string>
     <string name="ai_provider_group_recommended">Recomendado</string>
     <string name="ai_provider_group_cloud">Provedores de nuvem</string>
@@ -832,6 +833,12 @@
     <string name="ai_error_invalid_response">Não foi possível entender a resposta da IA. Tente novamente.</string>
     <string name="ai_error_invalid_url">URL de API inválida. Verifique as configurações do provedor.</string>
     <string name="ai_error_key_rejected">Sua chave de API foi rejeitada. Abra Configurações → Provedor de IA e cole novamente uma chave válida.</string>
+    <string name="ai_error_timeout">O provedor de IA demorou demais para responder. Tente de novo; se você usa um endpoint próprio, aumente o tempo limite em Configurações → Provedor de IA.</string>
+    <string name="ai_error_disabled">Os recursos de IA estão desativados em Configurações → Provedor de IA.</string>
+    <string name="ai_error_insecure_http_blocked">HTTP inseguro está bloqueado. Ative “Permitir HTTP inseguro” em Configurações → Provedor de IA ou use um URL https://.</string>
+    <string name="ai_error_truncated_twice">A resposta atingiu duas vezes o limite de saída do modelo — o raciocínio conta. Defina o Esforço de raciocínio como Baixo ou Desativado em Configurações → Provedor de IA, ou tente uma pergunta mais curta.</string>
+    <string name="ai_error_truncated_twice_description">O modelo ficou sem espaço de saída antes de terminar; tokens de raciocínio contam no limite. Defina o Esforço de raciocínio como Baixo ou Desativado em Configurações → Provedor de IA e tente de novo.</string>
+    <string name="ai_error_truncated">A resposta atingiu o limite de saída do modelo antes de terminar — o raciocínio conta. Defina o Esforço de raciocínio como Baixo ou Desativado em Configurações → Provedor de IA, ou tente uma pergunta mais curta.</string>
     <string name="ai_error_location_unsupported">O Gemini não está disponível nesta localização de rede (país/IP). Se usar VPN, desligue-a ou mude para uma saída residencial. IPs de datacenter/não residenciais de VPN costumam ser bloqueados. Ou ative o faturamento no projeto do Google AI Studio, tente outra rede ou troque de provedor em Configurações → Provedor de IA.</string>
     <string name="ai_error_model_unavailable">Seu provedor não encontrou este modelo. Ele pode ser pago no plano gratuito, restrito na sua região ou o endpoint pode estar errado. Troque para o modelo Flash padrão em Configurações → Provedor de IA ou ative o faturamento no seu projeto do AI Studio.</string>
     <string name="ai_error_network_format">Erro de rede: %1$s</string>
@@ -1870,6 +1877,7 @@
         <item quantity="other">Adicionar %1$d refeições compartilhadas</item>
     </plurals>
     <string name="ai_provider_ollama">Ollama (local)</string>
+    <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
     <string name="nutrition_section_macros">Macros</string>
     <string name="sheet_macros">Macros</string>
     <string name="fasting">Jejum</string>

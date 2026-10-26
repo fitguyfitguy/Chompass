@@ -167,6 +167,7 @@
     <string name="ai_provider_deepinfra">DeepInfra</string>
     <string name="ai_provider_mistral">Mistral</string>
     <string name="ai_provider_ollama">Ollama (Yerel)</string>
+    <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
     <string name="ai_provider_custom">Özel (OpenAI uyumlu)</string>
     <string name="ai_provider_on_device">Cihazda (Gizli)</string>
     <string name="ai_provider_on_device_subtitle">Gizli ve çevrimdışı. Bulut AI\'dan daha az doğru; ~2 ila 4 GB indirme</string>
@@ -182,6 +183,7 @@
     <string name="ai_provider_subtitle_deepinfra">Barındırılan açık modeller</string>
     <string name="ai_provider_subtitle_mistral">Mistral modelleri</string>
     <string name="ai_provider_subtitle_ollama">Bilgisayarın, bulut yok</string>
+    <string name="ai_provider_subtitle_ollama_cloud">Ollama bulut modelleri</string>
     <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp vb.</string>
     <string name="ai_provider_group_recommended">Önerilen</string>
     <string name="ai_provider_group_cloud">Bulut sağlayıcıları</string>
@@ -1379,6 +1381,12 @@
     <string name="ai_error_on_device_low_memory">Şu anda cihazdaki yapay zekâ için yeterli boş bellek yok. Daha küçük E2B modelini dene, diğer uygulamaları kapat veya Ayarlar → AI Sağlayıcısı bölümünden sağlayıcı değiştir.</string>
     <string name="ai_error_on_device_engine_init">Cihazda model motoru başlatılamadı. Yeniden deneyin, Ayarlar → AI Sağlayıcısı → Model bölümünden modeli kaldırın veya bulut sağlayıcısına geçin.</string>
     <string name="ai_error_key_rejected">API anahtarın reddedildi. Ayarlar → AI Sağlayıcısı bölümünü aç ve geçerli bir anahtarı yeniden yapıştır.</string>
+    <string name="ai_error_timeout">Yapay zekâ sağlayıcısı yanıt vermek için çok uzun bekledi. Tekrar dene; kendi sunucunu barındırıyorsan Ayarlar → AI Sağlayıcısı bölümünden zaman aşımını yükselt.</string>
+    <string name="ai_error_disabled">Yapay zekâ özellikleri Ayarlar → AI Sağlayıcısı bölümünde kapalı.</string>
+    <string name="ai_error_insecure_http_blocked">Güvenli olmayan HTTP engellendi. Ayarlar → AI Sağlayıcısı bölümünde “Güvenli olmayan HTTP’ye izin ver” seçimini aç ya da https:// bağlantısı kullan.</string>
+    <string name="ai_error_truncated_twice">Yanıt modelin çıktı sınırına iki kez takıldı — düşünme de sayılıyor. Ayarlar → AI Sağlayıcısı bölümünden Akıl yürütme çabasını Düşük ya da Kapalı yap ya da daha kısa bir soru dene.</string>
+    <string name="ai_error_truncated_twice_description">Model, bitirmeden önce çıktı alanını tüketti; düşünme jetonları da sınıra dahil. Ayarlar → AI Sağlayıcısı bölümünden Akıl yürütme çabasını Düşük ya da Kapalı yapıp tekrar dene.</string>
+    <string name="ai_error_truncated">Yanıt bitmeden modelin çıktı sınırına takıldı — düşünme de sınıra dahil. Ayarlar → AI Sağlayıcısı bölümünden Akıl yürütme çabasını Düşük ya da Kapalı yap ya da daha kısa bir soru dene.</string>
     <string name="ai_error_location_unsupported">Gemini bu ağ konumundan (ülke/IP) kullanılamıyor. VPN kullanıyorsan kapat veya konut çıkışına geç. Veri merkezi/konut dışı VPN IP\'leri genellikle engellenir. Veya Google AI Studio projesinde faturalandırmayı etkinleştir, başka bir ağ dene ya da Ayarlar → AI Sağlayıcısı bölümünden sağlayıcıyı değiştir.</string>
     <string name="ai_error_provider_overloaded">AI sağlayıcısı şu anda aşırı yüklü. Birkaç kez denedik. Bir dakika içinde tekrar dene veya Ayarlar → AI Sağlayıcısı bölümünden farklı bir sağlayıcıya/model geç.</string>
     <string name="ai_error_rate_limit">API anahtarında hız sınırına ulaşıldı. Bir dakika bekle veya Ayarlar → AI Sağlayıcısı bölümünden başka bir sağlayıcıya geç. Ücretsiz katmanda Flash-Lite modeli en yüksek kotaya sahiptir.</string>

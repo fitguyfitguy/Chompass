@@ -67,6 +67,7 @@
     <string name="autobalance_carbs">Вуглеводи</string>
     <string name="autobalance_fat">Жири</string>
     <string name="ai_provider_ollama">Ollama (локально)</string>
+    <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
     <string name="ai_provider_custom">Власний (сумісний з OpenAI)</string>
     <string name="ai_provider_on_device_subtitle">Приватно та офлайн. Менш точний за хмарний ШІ; завантаження ~2–4 ГБ</string>
     <string name="ai_provider_subtitle_gemini">Безкоштовний ключ API · працює одразу</string>
@@ -81,6 +82,7 @@
     <string name="ai_provider_subtitle_deepinfra">Хостовані відкриті моделі</string>
     <string name="ai_provider_subtitle_mistral">Моделі Mistral</string>
     <string name="ai_provider_subtitle_ollama">Твій комп\'ютер, без хмари</string>
+    <string name="ai_provider_subtitle_ollama_cloud">Хмарні моделі Ollama</string>
     <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp тощо</string>
     <string name="ai_provider_group_recommended">Рекомендований</string>
     <string name="ai_provider_group_cloud">Хмарні провайдери</string>
@@ -723,6 +725,12 @@
     <string name="ai_error_on_device_low_memory">Зараз недостатньо вільної пам\'яті для пристроєвого ШІ. Спробуй меншу модель E2B, закрий інші застосунки або зміни провайдера в Налаштуваннях → ШІ-провайдер.</string>
     <string name="ai_error_on_device_engine_init">Не вдалося запустити механізм моделі на цьому пристрої. Спробуй ще раз, вивантаж модель у Налаштуваннях → ШІ-провайдер → Модель або перемкнися на хмарного провайдера.</string>
     <string name="ai_error_key_rejected">Твій API-ключ відхилено. Відкрий Налаштування → ШІ-провайдер і встав дійсний ключ.</string>
+    <string name="ai_error_timeout">ШІ-провайдер відповідав задовго. Спробуй ще раз; для власного сервера збільш тайм-аут у Налаштування → ШІ-провайдер.</string>
+    <string name="ai_error_disabled">Функції ШІ вимкнено в Налаштування → ШІ-провайдер.</string>
+    <string name="ai_error_insecure_http_blocked">Незахищений HTTP заблоковано. Увімкни «Дозволити незахищений HTTP» у Налаштування → ШІ-провайдер або використай адресу https://.</string>
+    <string name="ai_error_truncated_twice">Відповідь двічі вперлася в ліміт виводу моделі — міркування також враховуються. Встанови Рівень міркувань на Низький або Вимк. у Налаштування → ШІ-провайдер або постав коротше запитання.</string>
+    <string name="ai_error_truncated_twice_description">У моделі закінчилося місце для виводу до завершення; токени міркувань входять у ліміт. Встанови Рівень міркувань на Низький або Вимк. у Налаштування → ШІ-провайдер і спробуй ще раз.</string>
+    <string name="ai_error_truncated">Відповідь вперлася в ліміт виводу моделі, не встигнувши завершитися, — міркування також враховуються. Встанови Рівень міркувань на Низький або Вимк. у Налаштування → ШІ-провайдер або постав коротше запитання.</string>
     <string name="ai_error_location_unsupported">Gemini недоступний з цієї мережі (країна/IP). Якщо ти користуєшся VPN, вимкни його або обери домашній вихід. IP дата-центрів часто заблоковані. Або увімкни оплату в проєкті Google AI Studio, спробуй іншу мережу чи зміни провайдера в Налаштуваннях → ШІ-провайдер.</string>
     <string name="ai_error_provider_overloaded">ШІ-провайдер зараз перевантажений. Ми повторили кілька разів. Спробуй за хвилину або зміни провайдера/модель у Налаштуваннях → ШІ-провайдер.</string>
     <string name="ai_error_rate_limit">Досягнуто ліміту запитів для твого API-ключа. Зачекай хвилину або зміни провайдера в Налаштуваннях → ШІ-провайдер. На безкоштовному тарифі модель Flash-Lite має найбільшу квоту.</string>
