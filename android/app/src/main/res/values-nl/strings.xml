@@ -74,6 +74,22 @@
     <!-- AI Provider names -->
     <string name="ai_provider_ollama">Ollama (lokaal)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
+    <string name="ai_provider_custom">Andere URL</string>
+    <string name="ai_provider_subtitle_custom">Typ een basis-URL</string>
+    <string name="ai_provider_search_hint">Zoek naam of host</string>
+    <string name="ai_provider_section_shortcuts">Snelkoppelingen</string>
+    <string name="ai_provider_section_phone">Op deze telefoon</string>
+    <string name="ai_provider_section_server">Jouw server</string>
+    <string name="ai_provider_section_cloud">Cloud</string>
+    <string name="ai_provider_chip_on_phone">Op telefoon</string>
+    <string name="ai_provider_chip_your_server">Jouw server</string>
+    <string name="ai_provider_chip_native">Natief</string>
+    <string name="ai_provider_chip_cloud">Cloud</string>
+    <string name="ai_provider_row_gemini">Sleutel · Google Search-schakelaar</string>
+    <string name="ai_provider_row_anthropic">Sleutel · aparte API</string>
+    <string name="ai_provider_row_ollama">Dit netwerk · geen sleutel</string>
+    <string name="ai_provider_row_host_key">%1$s · sleutel</string>
+    <string name="ai_provider_directory_footer">De vermelde hosts komen met deze versie mee. De sleutel gaat alleen naar de host die je kiest.</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="api_key_placeholder">Plak je API-sleutel</string>

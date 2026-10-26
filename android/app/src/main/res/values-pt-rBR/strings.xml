@@ -1874,6 +1874,22 @@
     </plurals>
     <string name="ai_provider_ollama">Ollama (local)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
+    <string name="ai_provider_custom">Outra URL</string>
+    <string name="ai_provider_subtitle_custom">Digite uma URL base</string>
+    <string name="ai_provider_search_hint">Buscar nome ou host</string>
+    <string name="ai_provider_section_shortcuts">Atalhos</string>
+    <string name="ai_provider_section_phone">Neste telefone</string>
+    <string name="ai_provider_section_server">Seu servidor</string>
+    <string name="ai_provider_section_cloud">Nuvem</string>
+    <string name="ai_provider_chip_on_phone">No telefone</string>
+    <string name="ai_provider_chip_your_server">Seu servidor</string>
+    <string name="ai_provider_chip_native">Nativo</string>
+    <string name="ai_provider_chip_cloud">Nuvem</string>
+    <string name="ai_provider_row_gemini">Chave · alternância do Google Search</string>
+    <string name="ai_provider_row_anthropic">Chave · API separada</string>
+    <string name="ai_provider_row_ollama">Esta rede · sem chave</string>
+    <string name="ai_provider_row_host_key">%1$s · chave</string>
+    <string name="ai_provider_directory_footer">Os hosts listados vêm com esta versão. A chave vai só para o host que você escolhe.</string>
     <string name="nutrition_section_macros">Macros</string>
     <string name="sheet_macros">Macros</string>
     <string name="fasting">Jejum</string>

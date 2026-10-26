@@ -144,6 +144,22 @@
 
     <string name="ai_provider_ollama">Ollama (локально)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
+    <string name="ai_provider_custom">Другой URL</string>
+    <string name="ai_provider_subtitle_custom">Введите базовый URL</string>
+    <string name="ai_provider_search_hint">Имя или хост</string>
+    <string name="ai_provider_section_shortcuts">Ярлыки</string>
+    <string name="ai_provider_section_phone">На этом телефоне</string>
+    <string name="ai_provider_section_server">Твой сервер</string>
+    <string name="ai_provider_section_cloud">Облако</string>
+    <string name="ai_provider_chip_on_phone">На телефоне</string>
+    <string name="ai_provider_chip_your_server">Твой сервер</string>
+    <string name="ai_provider_chip_native">Нативный</string>
+    <string name="ai_provider_chip_cloud">Облако</string>
+    <string name="ai_provider_row_gemini">Ключ · переключатель Google Search</string>
+    <string name="ai_provider_row_anthropic">Ключ · отдельный API</string>
+    <string name="ai_provider_row_ollama">Эта сеть · без ключа</string>
+    <string name="ai_provider_row_host_key">%1$s · ключ</string>
+    <string name="ai_provider_directory_footer">Хосты из списка идут с этой версией. Ключ уходит только на выбранный хост.</string>
 
     
 
