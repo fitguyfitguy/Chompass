@@ -80,6 +80,22 @@
     <!-- AI Provider names -->
     <string name="ai_provider_ollama">Ollama (로컬)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
+    <string name="ai_provider_custom">다른 URL</string>
+    <string name="ai_provider_subtitle_custom">기본 URL 입력</string>
+    <string name="ai_provider_search_hint">이름 또는 호스트 검색</string>
+    <string name="ai_provider_section_shortcuts">바로가기</string>
+    <string name="ai_provider_section_phone">이 휴대전화</string>
+    <string name="ai_provider_section_server">내 서버</string>
+    <string name="ai_provider_section_cloud">클라우드</string>
+    <string name="ai_provider_chip_on_phone">휴대전화</string>
+    <string name="ai_provider_chip_your_server">내 서버</string>
+    <string name="ai_provider_chip_native">네이티브</string>
+    <string name="ai_provider_chip_cloud">클라우드</string>
+    <string name="ai_provider_row_gemini">키 · Google 검색 전환</string>
+    <string name="ai_provider_row_anthropic">키 · 별도 API</string>
+    <string name="ai_provider_row_ollama">이 네트워크 · 키 없음</string>
+    <string name="ai_provider_row_host_key">%1$s · 키</string>
+    <string name="ai_provider_directory_footer">목록의 호스트는 이 버전에 포함됩니다. 키는 고른 호스트로만 전송됩니다.</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="api_key_placeholder">API 키 붙여넣기</string>

@@ -78,6 +78,22 @@
     <!-- AI Provider names -->
     <string name="ai_provider_ollama">Ollama (Lokal)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
+    <string name="ai_provider_custom">Digər URL</string>
+    <string name="ai_provider_subtitle_custom">Əsas URL yazın</string>
+    <string name="ai_provider_search_hint">Ad və ya host axtarın</string>
+    <string name="ai_provider_section_shortcuts">Qısayollar</string>
+    <string name="ai_provider_section_phone">Bu telefonda</string>
+    <string name="ai_provider_section_server">Sizin server</string>
+    <string name="ai_provider_section_cloud">Bulud</string>
+    <string name="ai_provider_chip_on_phone">Telefonda</string>
+    <string name="ai_provider_chip_your_server">Sizin server</string>
+    <string name="ai_provider_chip_native">Doğma</string>
+    <string name="ai_provider_chip_cloud">Bulud</string>
+    <string name="ai_provider_row_gemini">Açar · Google Search açarı</string>
+    <string name="ai_provider_row_anthropic">Açar · ayrı API</string>
+    <string name="ai_provider_row_ollama">Bu şəbəkə · açarsız</string>
+    <string name="ai_provider_row_host_key">%1$s · açar</string>
+    <string name="ai_provider_directory_footer">Siyahıdakı hostlar bu buraxılışla gəlir. Açar yalnız seçdiyiniz hosta göndərilir.</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="api_key_placeholder">API açarını yapışdırın</string>

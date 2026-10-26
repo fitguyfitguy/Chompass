@@ -80,6 +80,22 @@
     <!-- AI Provider names -->
     <string name="ai_provider_ollama">Ollama (लोकल)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
+    <string name="ai_provider_custom">दूसरा URL</string>
+    <string name="ai_provider_subtitle_custom">आधार URL लिखें</string>
+    <string name="ai_provider_search_hint">नाम या होस्ट खोजें</string>
+    <string name="ai_provider_section_shortcuts">शॉर्टकट</string>
+    <string name="ai_provider_section_phone">इस फ़ोन पर</string>
+    <string name="ai_provider_section_server">आपका सर्वर</string>
+    <string name="ai_provider_section_cloud">क्लाउड</string>
+    <string name="ai_provider_chip_on_phone">फ़ोन पर</string>
+    <string name="ai_provider_chip_your_server">आपका सर्वर</string>
+    <string name="ai_provider_chip_native">नेटिव</string>
+    <string name="ai_provider_chip_cloud">क्लाउड</string>
+    <string name="ai_provider_row_gemini">कुंजी · Google Search टॉगल</string>
+    <string name="ai_provider_row_anthropic">कुंजी · अलग API</string>
+    <string name="ai_provider_row_ollama">यह नेटवर्क · बिना कुंजी</string>
+    <string name="ai_provider_row_host_key">%1$s · कुंजी</string>
+    <string name="ai_provider_directory_footer">सूची के होस्ट इस रिलीज़ के साथ आते हैं. कुंजी सिर्फ़ चुने हुए होस्ट को जाती है.</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="api_key_placeholder">API की पेस्ट करें</string>

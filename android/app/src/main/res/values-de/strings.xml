@@ -280,6 +280,22 @@
 
     <string name="ai_provider_ollama">Ollama (lokal)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
+    <string name="ai_provider_custom">Andere URL</string>
+    <string name="ai_provider_subtitle_custom">Basis-URL eingeben</string>
+    <string name="ai_provider_search_hint">Name oder Host suchen</string>
+    <string name="ai_provider_section_shortcuts">Kurzbefehle</string>
+    <string name="ai_provider_section_phone">Auf diesem Telefon</string>
+    <string name="ai_provider_section_server">Dein Server</string>
+    <string name="ai_provider_section_cloud">Cloud</string>
+    <string name="ai_provider_chip_on_phone">Auf dem Telefon</string>
+    <string name="ai_provider_chip_your_server">Dein Server</string>
+    <string name="ai_provider_chip_native">Nativ</string>
+    <string name="ai_provider_chip_cloud">Cloud</string>
+    <string name="ai_provider_row_gemini">Schlüssel · Google-Suche</string>
+    <string name="ai_provider_row_anthropic">Schlüssel · eigene API</string>
+    <string name="ai_provider_row_ollama">Dieses Netz · kein Schlüssel</string>
+    <string name="ai_provider_row_host_key">%1$s · Schlüssel</string>
+    <string name="ai_provider_directory_footer">Gelistete Hosts kommen mit dieser Version. Der Schlüssel geht nur an den Host, den du wählst.</string>
 
 
     <string name="ai_provider_on_device">Auf dem Gerät (privat)</string>
