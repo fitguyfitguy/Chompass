@@ -10,6 +10,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 - **Full nutrient names on any card layout** (Android): Settings → Home display → "Full nutrient names" now applies to the compact bars band and slim cards alike (classic cards always showed them). Long names yield first on narrow cards, then the unit.
 
+### Changed
+
+- **AI settings show only what works** (Android): the "Max response length" knob is gone — the app picks a sensible cap per provider now, and thinking models automatically get a larger allowance so an answer no longer gets cut off mid-thought. The read-timeout setting now appears only for self-hosted endpoints (Ollama and custom URLs), since the built-in cloud providers time themselves and ignore it. Timeout and truncation messages no longer point at settings that can't help.
+
 ### Fixed
 
 - **Status-bar icons follow the app theme** (Android): with the light theme the clock, battery, and navigation icons now draw dark instead of white-on-white, and switching themes updates them without restarting the app.

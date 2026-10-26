@@ -236,7 +236,6 @@ internal object Keys {
         /** Fallback-slot URL; separate from [customBaseUrl] so same-provider primary + fallback keep distinct endpoints. */
         fun fallbackCustomBaseUrl(provider: AIProvider): Preferences.Key<String> =
             stringPreferencesKey("customBaseURL_fallback_${provider.name}")
-        val MAX_RESPONSE_TOKENS = intPreferencesKey("maxResponseTokens")
         val AI_READ_TIMEOUT_SECONDS = intPreferencesKey("aiReadTimeoutSeconds")
         /** Goal-recalc prompt tier override (#123); missing = AUTO. */
         val GOAL_RECALC_TIER = stringPreferencesKey("goalRecalcTier")

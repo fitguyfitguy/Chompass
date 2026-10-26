@@ -710,7 +710,6 @@
     <string name="settings_ai_key_remove_title">API 키를 삭제할까요?</string>
     <string name="settings_ai_key_remove_body">빈 키를 저장하면 이 프로필에 저장된 키가 삭제됩니다.</string>
     <string name="settings_ai_get_key">API 키 받기</string>
-    <string name="settings_ai_value_default">%1$,d (기본값)</string>
     <string name="settings_ai_timeout_default">%1$,ds (기본값)</string>
     <string name="camera_scale_tip_message">팁: 포크, 손, 또는 동전을 음식 옆에 함께 찍으세요. 1인분 크기 추정에 도움이 돼요.</string>
     <string name="cd_relog_meal">%1$s 다시 기록</string>
@@ -836,13 +835,11 @@
     <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="ai_error_coach_on_device">코치는 아직 온디바이스 제공자에서 지원되지 않아요. 설정 → AI 제공자에서 클라우드 제공자로 전환하세요.</string>
     <string name="ai_error_coach_round_limit">코치가 답변할 수 없어요. 질문을 바꿔서 다시 시도해 보세요.</string>
-    <string name="ai_error_disabled">AI 기능이 설정 → AI 및 음성에서 꺼져 있어요.</string>
     <string name="ai_error_grounded_on_device">Grounded 모드는 온디바이스 모델에서 사용할 수 없어요.</string>
     <string name="ai_error_grounded_requires_provider">Grounded 모드에는 활성 AI 제공자가 필요해요.</string>
     <string name="ai_error_image_conversion_failed">이미지를 처리하지 못했어요.</string>
     <string name="ai_error_invalid_response">AI 응답을 이해하지 못했어요. 다시 시도해 주세요.</string>
     <string name="ai_error_invalid_url">API URL이 잘못되었어요. 제공자 설정을 확인하세요.</string>
-    <string name="ai_error_insecure_http_blocked">안전하지 않은 HTTP가 차단되었어요. 설정 → AI 및 음성에서 ‘안전하지 않은 HTTP 허용’을 켜거나 https:// URL을 사용하세요.</string>
     <string name="ai_error_key_rejected">API 키가 거부되었어요. 설정 → AI 제공자를 열어 유효한 키를 다시 붙여넣으세요.</string>
     <string name="ai_error_location_unsupported">Gemini는 현재 네트워크 위치(국가/IP)에서 사용할 수 없어요. VPN을 사용 중이면 끄거나 주거용 출구로 전환하세요. 데이터센터/비주거용 VPN IP는 자주 차단돼요. Google AI Studio 프로젝트에서 결제를 활성화하거나, 다른 네트워크를 시도하거나, 설정 → AI 제공자에서 제공자를 변경하세요.</string>
     <string name="ai_error_model_unavailable">제공자가 이 모델을 찾지 못했어요. 무료 티어에서 유료 전용이거나, 지역 제한이 있거나, 엔드포인트가 잘못되었을 수 있어요. 설정 → AI 제공자에서 기본 Flash 모델로 전환하거나 AI Studio 프로젝트에서 결제를 활성화하세요.</string>
@@ -855,10 +852,6 @@
     <string name="ai_error_provider_error">AI 제공자가 오류를 반환했어요.</string>
     <string name="ai_error_provider_overloaded">AI 제공자가 현재 과부하 상태예요. 몇 번 재시도했어요. 1분 후 다시 시도하거나 설정 → AI 제공자에서 제공자/모델을 변경하세요.</string>
     <string name="ai_error_rate_limit">API 키의 요청 한도에 도달했어요. 1분 기다리거나 설정 → AI 제공자에서 다른 제공자로 전환하세요. 무료 티어에서는 Flash-Lite 모델의 할당량이 가장 높아요.</string>
-    <string name="ai_error_timeout">AI 제공자의 응답이 너무 늦었어요. 다시 시도하거나 설정 → AI 및 음성에서 시간 제한을 늘리세요.</string>
-    <string name="ai_error_truncated">AI 응답이 응답 길이 한도에서 잘렸어요. 설정 → AI 및 음성에서 최대 응답 길이를 늘리거나 더 짧은 질문을 시도하세요.</string>
-    <string name="ai_error_truncated_twice">AI 응답이 응답 길이 한도에서 두 번 잘렸어요. 설정 → AI 및 음성에서 최대 응답 길이를 늘리거나 더 짧은 질문을 시도하세요.</string>
-    <string name="ai_error_truncated_twice_description">모델이 답을 마치기 전에 응답 길이 한도에 걸렸어요. 사고도 이 한도에 포함돼요. 설정 → AI 및 음성에서 최대 응답 길이를 늘리거나 모델의 사고를 제한한 뒤 다시 시도하세요.</string>
     <string name="ai_model_tier_paid">유료 전용 모델(무료 티어에 Pro가 더 이상 포함되지 않음)</string>
     <string name="ai_model_tier_varies">무료 티어 가용성은 계정 및 지역에 따라 달라요</string>
     <string name="ai_provider_on_device">온디바이스(비공개)</string>
@@ -1478,8 +1471,6 @@
     <string name="settings_macro_pinned_label_format">%1$s(고정)</string>
     <string name="settings_macro_unlocked">고정 해제됨</string>
     <string name="settings_manage_health_access">Health Connect 접근 관리</string>
-    <string name="settings_max_tokens">최대 응답 길이</string>
-    <string name="settings_max_tokens_unit">토큰</string>
     <string name="settings_meal_constituents">식사 재료 내역</string>
     <string name="settings_meal_constituents_footer">켜면 AI가 복합 식사를 그램과 단위가 있는 편집 가능한 재료로 분할할 수 있어요. 재료별 미량 영양소는 더 강력한 클라우드 모델에만 요청하며, 작은 모델도 매크로가 포함된 재료 목록은 반환해요.</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
@@ -2670,11 +2661,6 @@
         <item>다운로드</item>
         <item>로컬</item>
         <item>오프라인</item>
-    </string-array>
-    <string-array name="settings_search_kw_max_tokens">
-        <item>토큰</item>
-        <item>길이</item>
-        <item>상한</item>
     </string-array>
     <string-array name="settings_search_kw_ai_read_timeout">
         <item>시간 초과</item>

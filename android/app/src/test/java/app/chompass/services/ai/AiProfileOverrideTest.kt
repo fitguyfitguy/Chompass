@@ -103,7 +103,6 @@ class AiProfileOverrideTest {
             prefs.setFallbackAiProfileId(null)
             prefs.setFallbackEnabled(false)
             prefs.setMealConstituentsEnabled(true)
-            prefs.setMaxResponseTokens(1024)
         }
     }
 

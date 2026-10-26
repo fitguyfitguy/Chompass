@@ -6,7 +6,7 @@ import app.chompass.data.AiCallConfig
 import app.chompass.data.OpenRouterReasoningEffort
 import app.chompass.data.GoalRecalcTierOverride
 import app.chompass.data.PreferencesStore
-import app.chompass.data.effectiveMaxResponseTokens
+import app.chompass.data.responseCapFor
 import app.chompass.data.effectiveReadTimeoutSeconds
 import app.chompass.data.defaultAiProfileSnapshot
 import app.chompass.models.AIProvider
@@ -132,8 +132,9 @@ private const val ENTRY_CONSTITUENTS_MICROS_RULE =
         "zinc, vitamins A/C/D/E/K/B12, folate, omega-3). Each constituent micronutrient " +
         "MUST sum to the matching meal total within ±20%."
 
-/** Response-token cap: the user cap verbatim on every provider; unset means the
- *  built-in default 4096 (PreferencesStore.DEFAULT_MAX_RESPONSE_TOKENS). */
+/** Response-token cap via [responseCapFor]: 16384 for requests that may think
+ *  (reasoning effort on for OpenAI-compatible providers, any Gemini — thinking
+ *  counts inside the cap), flat 4096 otherwise. Not user-settable. */
 
 /** Entry ops whose prompt embeds the constituents schema. */
 internal val ENTRY_CONSTITUENT_OPS = setOf("analyzeText", "analyzeAuto", "analyzeFood", "analyzeFoodMulti", "fillEntry", "reestimateEntry")
@@ -1769,7 +1770,11 @@ class FoodAnalysisService(
         val primaryKey = keyLookup?.invoke(ap)
             ?: AiHttp.sanitizeApiKey(keyStore!!.profileApiKey(ap.id))
         if (primary.requiresApiKey && primaryKey.isNullOrEmpty()) throw AiError.NoApiKey
-        val maxTokens = effectiveMaxResponseTokens(ap, prefs.maxResponseTokens.first())
+        val maxTokens = responseCapFor(
+            primary,
+            ap.reasoningEffort?.let(OpenRouterReasoningEffort::fromStorage)
+                ?: prefs.openRouterReasoningEffort.first(),
+        )
         val readTimeoutSeconds = effectiveReadTimeoutSeconds(ap, prefs.aiReadTimeoutSeconds.first())
         val httpClient = AiHttp.clientForProvider(okHttp, primary, readTimeoutSeconds)
         val context = prefs.userContext.first()

@@ -121,7 +121,6 @@ class EntryAutoSplitTest {
             prefs.setCustomBaseUrl(AIProvider.OPENROUTER, server.url("/v1").toString())
             prefs.setFallbackEnabled(false)
             prefs.setMealConstituentsEnabled(true)
-            prefs.setMaxResponseTokens(1024)
         }
     }
 
