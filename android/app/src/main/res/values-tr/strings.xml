@@ -1091,6 +1091,10 @@
     <string name="settings_tap_to_edit">Düzenlemek için dokun</string>
     <string name="settings_custom_url_placeholder">https://uç-noktan.com/v1</string>
     <string name="settings_custom_url_title">Özel temel URL</string>
+    <string name="settings_custom_directory_title">Bilinen uç noktalar</string>
+    <string name="settings_custom_directory_docs">Belgeler</string>
+    <string name="settings_custom_directory_footer">Uç noktalar her sürümle birlikte gelen incelenmiş bir listeden alınır. Anahtarınız yalnızca gösterilen URL\'ye gönderilir; model seçiciyi açtığınızda model listeleri sağlayıcıdan yenilenir.</string>
+    <string name="ai_model_accepts_images">Görüntüleri kabul eder (bildirilmiş)</string>
     <string name="settings_ai_allow_insecure_http">Güvensiz HTTP\'ye izin ver</string>
     <string name="settings_ai_allow_insecure_http_footer">Özel ve Ollama uç noktalarının http:// adreslerini kullanmasına izin verir, örneğin ev ağında. Bulut sağlayıcıları https kullanır. Sunucunda TLS varsa kapalı tut.</string>
     <string name="settings_clear_key">Anahtarı temizle</string>

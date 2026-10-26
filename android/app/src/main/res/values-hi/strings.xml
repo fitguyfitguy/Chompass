@@ -514,6 +514,10 @@
     <string name="settings_server_url">सर्वर URL</string>
     <string name="settings_tap_to_edit">संपादित करने के लिए टैप करें</string>
     <string name="settings_custom_url_title">कस्टम बेस URL</string>
+    <string name="settings_custom_directory_title">ज्ञात एंडपॉइंट</string>
+    <string name="settings_custom_directory_docs">दस्तावेज़</string>
+    <string name="settings_custom_directory_footer">एंडपॉइंट प्रत्येक रिलीज़ के साथ शामिल समीक्षित सूची से आते हैं। आपकी कुंजी केवल दिखाए गए URL पर भेजी जाती है; मॉडल पिकर खोलने पर मॉडल सूचियाँ प्रदाता से रिफ़्रेश हो जाती हैं।</string>
+    <string name="ai_model_accepts_images">इमेज स्वीकार करता है (घोषित)</string>
     <string name="settings_ai_allow_insecure_http">असुरक्षित HTTP की अनुमति दें</string>
     <string name="settings_ai_allow_insecure_http_footer">कस्टम और Ollama एंडपॉइंट को सादे http:// URL इस्तेमाल करने देता है, जैसे आपके घर के नेटवर्क पर। क्लाउड प्रदाता https इस्तेमाल करते हैं। सर्वर में TLS होने पर बंद रखें।</string>
     <string name="settings_clear_key">कुंजी साफ़ करें</string>

@@ -513,6 +513,10 @@
     <string name="settings_server_url">サーバーURL</string>
     <string name="settings_tap_to_edit">タップして編集</string>
     <string name="settings_custom_url_title">カスタム ベースURL</string>
+    <string name="settings_custom_directory_title">既知のエンドポイント</string>
+    <string name="settings_custom_directory_docs">ドキュメント</string>
+    <string name="settings_custom_directory_footer">エンドポイントは各リリースに同梱されたレビュー済みリストから提供されます。キーは表示された URL にのみ送信され、モデル選択を開くとモデル一覧は提供元から更新されます。</string>
+    <string name="ai_model_accepts_images">画像対応（宣言済み）</string>
     <string name="settings_ai_allow_insecure_http">安全でない HTTP を許可</string>
     <string name="settings_ai_allow_insecure_http_footer">カスタムおよび Ollama のエンドポイントで http:// URL を使えます。自宅ネットワークなど。クラウド提供元は https を使います。サーバーに TLS があるときはオフのままにしてください。</string>
     <string name="settings_clear_key">キーを消去</string>
