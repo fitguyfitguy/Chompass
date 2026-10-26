@@ -709,7 +709,6 @@
     <string name="settings_ai_key_remove_title">APIキーを削除しますか？</string>
     <string name="settings_ai_key_remove_body">空のキーを保存すると、このプロファイルの保存済みキーが削除されます。</string>
     <string name="settings_ai_get_key">APIキーを取得</string>
-    <string name="settings_ai_value_default">%1$,d（デフォルト）</string>
     <string name="settings_ai_timeout_default">%1$,ds（デフォルト）</string>
     <string name="camera_scale_tip_message">ヒント: フォーク、手、またはコインを食べ物の横に入れてください。分量の推定に役立ちます。</string>
     <string name="cd_relog_meal">%1$sを再ログ</string>
@@ -836,13 +835,11 @@
     <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="ai_error_coach_on_device">コーチはまだオンデバイスプロバイダーに対応していません。設定 → AI プロバイダーでクラウドプロバイダーに切り替えてください。</string>
     <string name="ai_error_coach_round_limit">コーチは回答できませんでした。質問の言い方を変えてみてください。</string>
-    <string name="ai_error_disabled">AI 機能は設定 → AI と音声でオフになっています。</string>
     <string name="ai_error_grounded_on_device">Grounded モードはオンデバイスモデルでは利用できません。</string>
     <string name="ai_error_grounded_requires_provider">Grounded モードには有効な AI プロバイダーが必要です。</string>
     <string name="ai_error_image_conversion_failed">画像を処理できませんでした。</string>
     <string name="ai_error_invalid_response">AI の応答を理解できませんでした。もう一度お試しください。</string>
     <string name="ai_error_invalid_url">API URL が無効です。プロバイダー設定を確認してください。</string>
-    <string name="ai_error_insecure_http_blocked">安全でない HTTP はブロックされています。設定 → AI と音声で「安全でない HTTP を許可」をオンにするか、https:// URL を使ってください。</string>
     <string name="ai_error_key_rejected">API キーが拒否されました。設定 → AI プロバイダーを開き、有効なキーを貼り直してください。</string>
     <string name="ai_error_location_unsupported">Gemini はこのネットワーク環境（国/IP）では利用できません。VPN を使用している場合はオフにするか、住宅用出口に切り替えてください。データセンター/非住宅用 VPN IP はよくブロックされます。Google AI Studio プロジェクトで課金を有効にするか、別のネットワークを試すか、設定 → AI プロバイダーでプロバイダーを変更してください。</string>
     <string name="ai_error_model_unavailable">プロバイダーがこのモデルを見つけられませんでした。無料プランでは有料のみ、地域で制限されている、またはエンドポイントが間違っている可能性があります。設定 → AI プロバイダーでデフォルトの Flash モデルに切り替えるか、AI Studio プロジェクトで課金を有効にしてください。</string>
@@ -855,10 +852,6 @@
     <string name="ai_error_provider_error">AI プロバイダーがエラーを返しました。</string>
     <string name="ai_error_provider_overloaded">AI プロバイダーが現在過負荷です。数回再試行しました。1分後に再度お試しいただくか、設定 → AI プロバイダーでプロバイダー/モデルを変更してください。</string>
     <string name="ai_error_rate_limit">API キーのリクエスト上限に達しました。1分待つか、設定 → AI プロバイダーで別のプロバイダーに切り替えてください。無料プランでは Flash-Lite モデルの割り当てが最も多いです。</string>
-    <string name="ai_error_timeout">AI プロバイダーの応答が遅すぎました。再試行するか、設定 → AI と音声でタイムアウトを延ばしてください。</string>
-    <string name="ai_error_truncated">AI の応答が応答長の上限で途切れました。設定 → AI と音声で最大応答長を増やすか、もっと短い質問を試してください。</string>
-    <string name="ai_error_truncated_twice">AI の応答が応答長の上限で2回途切れました。設定 → AI と音声で最大応答長を増やすか、もっと短い質問を試してください。</string>
-    <string name="ai_error_truncated_twice_description">モデルは回答を終える前に応答長の上限に達しました。思考もこの上限に含まれます。設定 → AI と音声で最大応答長を増やすか、モデルの思考を制限して、もう一度試してください。</string>
     <string name="ai_model_tier_paid">有料のみのモデル（無料プランには Pro は含まれなくなりました）</string>
     <string name="ai_model_tier_varies">無料プランでの利用可否はアカウントと地域によって異なります</string>
     <string name="ai_provider_on_device">オンデバイス（プライベート）</string>
@@ -1478,8 +1471,6 @@
     <string name="settings_macro_pinned_label_format">%1$s（固定）</string>
     <string name="settings_macro_unlocked">固定解除</string>
     <string name="settings_manage_health_access">Health Connect アクセスを管理</string>
-    <string name="settings_max_tokens">最大応答長</string>
-    <string name="settings_max_tokens_unit">トークン</string>
     <string name="settings_meal_constituents">食事の材料内訳</string>
     <string name="settings_meal_constituents_footer">有効にすると、AI は複合的な食事を、グラムと単位付きの編集可能な材料に分割できます。食材ごとの微量栄養素はより強力なクラウドモデルにのみ要求され、小さなモデルでもマクロ付きの食材リストは返されます。</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
@@ -2669,11 +2660,6 @@
         <item>ダウンロード</item>
         <item>ローカル</item>
         <item>オフライン</item>
-    </string-array>
-    <string-array name="settings_search_kw_max_tokens">
-        <item>トークン</item>
-        <item>長さ</item>
-        <item>上限</item>
     </string-array>
     <string-array name="settings_search_kw_ai_read_timeout">
         <item>タイムアウト</item>

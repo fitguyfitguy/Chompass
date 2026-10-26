@@ -266,7 +266,6 @@ class AiProfileStoreTest {
     fun profiles_roundTripPerProfileAdvancedOverrides() = runBlocking {
         val prefs = prefs()
         val tuned = profile("OpenRouter", provider = AIProvider.OPENROUTER).copy(
-            maxResponseTokens = 8192,
             readTimeoutSeconds = 90,
             reasoningEffort = OpenRouterReasoningEffort.HIGH.storageKey,
             geminiGoogleSearch = true,
@@ -278,20 +277,32 @@ class AiProfileStoreTest {
         }
         val decoded = prefs.aiProfiles.first()
         assertEquals(listOf(tuned, untouched), decoded)
-        assertEquals(8192, decoded[0].maxResponseTokens)
         assertEquals(90, decoded[0].readTimeoutSeconds)
         assertEquals("high", decoded[0].reasoningEffort)
         assertEquals(true, decoded[0].geminiGoogleSearch)
-        assertNull(decoded[1].maxResponseTokens)
         assertNull(decoded[1].readTimeoutSeconds)
         assertNull(decoded[1].reasoningEffort)
         assertNull(decoded[1].geminiGoogleSearch)
     }
 
     @Test
+    fun profiles_legacyJsonWithTokenField_ignoresItAndDecodes() = runBlocking {
+        val prefs = prefs()
+        // 5.x profiles could carry a stored maxResponseTokens; the field is gone
+        // from the model, so the stale key must be ignored on decode, not crash.
+        val legacy = """
+            [{"id":"11111111-1111-1111-1111-111111111111","name":"Legacy","provider":"OpenRouter","model":"x","createdAt":1700000000000,"maxResponseTokens":8192}]
+        """.trimIndent()
+        prefs.dataStore.edit { it[Keys.AI_PROFILES_JSON] = legacy }
+        val decoded = prefs.aiProfiles.first()
+        assertEquals(1, decoded.size)
+        assertEquals(AIProvider.OPENROUTER, decoded[0].provider)
+    }
+
+    @Test
     fun profiles_legacyJsonWithoutAdvancedFields_decodesWithNulls() = runBlocking {
         val prefs = prefs()
-        // Pre-5.x shape: no maxResponseTokens/readTimeoutSeconds/reasoningEffort/
+        // Pre-5.x shape: no readTimeoutSeconds/reasoningEffort/
         // geminiGoogleSearch keys at all — must decode with nulls, not crash.
         val legacy = """
             [{"id":"11111111-1111-1111-1111-111111111111","name":"Legacy","provider":"OpenRouter","model":"x","createdAt":1700000000000}]
@@ -300,7 +311,6 @@ class AiProfileStoreTest {
         val decoded = prefs.aiProfiles.first()
         assertEquals(1, decoded.size)
         assertEquals(AIProvider.OPENROUTER, decoded[0].provider)
-        assertNull(decoded[0].maxResponseTokens)
         assertNull(decoded[0].readTimeoutSeconds)
         assertNull(decoded[0].reasoningEffort)
         assertNull(decoded[0].geminiGoogleSearch)

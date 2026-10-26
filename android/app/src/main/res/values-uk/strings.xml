@@ -94,7 +94,6 @@
     <string name="settings_ai_key_remove_title">Видалити ключ API?</string>
     <string name="settings_ai_key_remove_body">Збереження порожнього ключа видаляє збережений ключ цього профілю.</string>
     <string name="settings_ai_get_key">Отримати ключ API</string>
-    <string name="settings_ai_value_default">%1$,d (за замовчуванням)</string>
     <string name="settings_ai_timeout_default">%1$,ds (за замовчуванням)</string>
     <string name="api_key_placeholder">Вставте API-ключ</string>
     <string name="ai_key_placeholder_ollama">Ключ не потрібен</string>
@@ -719,7 +718,6 @@
     <string name="ai_error_network_format">Помилка мережі: %1$s</string>
     <string name="ai_error_invalid_response">Не вдалося зрозуміти відповідь ШІ. Спробуй ще раз.</string>
     <string name="ai_error_invalid_url">Недійсний API URL. Перевір налаштування провайдера.</string>
-    <string name="ai_error_insecure_http_blocked">Незахищений HTTP заблоковано. Увімкни «Дозволити незахищений HTTP» у Налаштування → ШІ та мова або використай URL https://.</string>
     <string name="ai_error_on_device_model_not_downloaded">Пристроєву модель ще не завантажено. Відкрий Налаштування → ШІ-провайдер → Модель, щоб завантажити.</string>
     <string name="ai_error_on_device_unsupported_device">Цей пристрій не відповідає вимогам пристроєвого ШІ. Обери хмарного провайдера в Налаштуваннях → ШІ-провайдер.</string>
     <string name="ai_error_on_device_low_memory">Зараз недостатньо вільної пам\'яті для пристроєвого ШІ. Спробуй меншу модель E2B, закрий інші застосунки або зміни провайдера в Налаштуваннях → ШІ-провайдер.</string>
@@ -730,9 +728,6 @@
     <string name="ai_error_rate_limit">Досягнуто ліміту запитів для твого API-ключа. Зачекай хвилину або зміни провайдера в Налаштуваннях → ШІ-провайдер. На безкоштовному тарифі модель Flash-Lite має найбільшу квоту.</string>
     <string name="ai_error_coach_on_device">Коуч поки недоступний з пристроєвим провайдером. Перемкнися на хмарного провайдера в Налаштуваннях → ШІ-провайдер.</string>
     <string name="ai_error_coach_round_limit">Коуч перевищив ліміт циклів викликів інструментів. Спробуй переформулювати запитання.</string>
-    <string name="ai_error_truncated_twice">Відповідь ШІ двічі обрізалася на ліміті довжини відповіді. Збільш максимальну довжину відповіді в Налаштуваннях → ШІ та мова або спробуй коротше запитання.</string>
-    <string name="ai_error_truncated_twice_description">Модель досягла ліміту довжини відповіді, не закінчивши її, і роздуми також входять у цей ліміт. Збільш максимальну довжину відповіді в Налаштуваннях → ШІ та мова або обмеж роздуми моделі, потім спробуй ще раз.</string>
-    <string name="ai_error_truncated">Відповідь ШІ обрізалася на ліміті довжини відповіді. Збільш максимальну довжину відповіді в Налаштуваннях → ШІ та мова або спробуй коротше запитання.</string>
     <string name="ai_error_provider_error">ШІ-провайдер повернув помилку.</string>
     <string name="ai_error_grounded_requires_provider">Режим «Перевірене внесення» потребує активного ШІ-провайдера.</string>
     <string name="ai_error_grounded_on_device">Режим «Перевірене внесення» недоступний для пристроєвих моделей.</string>
@@ -834,9 +829,7 @@
     <string name="saved_to_favorites">Збережено в обраному</string>
     <string name="action_what_if">Що як?</string>
     <string name="add_food_relog_kcal">%1$d %2$s</string>
-    <string name="ai_error_disabled">ШІ-функції вимкнено в Налаштуваннях → ШІ та мова.</string>
     <string name="ai_error_model_unavailable">Провайдер не знайшов цю модель. Вона може бути платною на безкоштовному тарифі, недоступною у твоєму регіоні або ж endpoint неправильний. Перемкнися на стандартну модель Flash у Налаштуваннях → ШІ-провайдер або ввімкни білінг у проєкті AI Studio.</string>
-    <string name="ai_error_timeout">ШІ-провайдер відповідав надто довго. Спробуй ще раз або збільш таймаут у Налаштуваннях → ШІ та мова.</string>
     <string name="ai_model_tier_paid">Тільки платна модель (безкоштовний тариф більше не включає Pro)</string>
     <string name="ai_model_tier_varies">Доступність на безкоштовному тарифі залежить від облікового запису та регіону</string>
     <string name="ai_provider_on_device">На пристрої (приватно)</string>
@@ -1434,8 +1427,6 @@ LBM = вага × (1 − %жиру)</string>
     <string name="settings_macro_pinned_label_format">%1$s (закріплено)</string>
     <string name="settings_macro_unlocked">Розблоковано</string>
     <string name="settings_manage_health_access">Керування доступом Health Connect</string>
-    <string name="settings_max_tokens">Максимальна довжина відповіді</string>
-    <string name="settings_max_tokens_unit">токенів</string>
     <string name="settings_meal_constituents">Розбивка страви на інгредієнти</string>
     <string name="settings_meal_constituents_footer">Коли ввімкнено, ШІ може розділяти складні страви на редаговані інгредієнти з грамами й одиницями. Мікронутрієнти для кожного інгредієнта запитують лише у сильніших хмарних моделях; менші моделі все одно повертають список інгредієнтів із макросами.</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
@@ -2617,11 +2608,6 @@ LBM = вага × (1 − %жиру)</string>
         <item>завантажити</item>
         <item>локальна</item>
         <item>офлайн</item>
-    </string-array>
-    <string-array name="settings_search_kw_max_tokens">
-        <item>токени</item>
-        <item>довжина</item>
-        <item>ліміт</item>
     </string-array>
     <string-array name="settings_search_kw_ai_read_timeout">
         <item>час очікування</item>

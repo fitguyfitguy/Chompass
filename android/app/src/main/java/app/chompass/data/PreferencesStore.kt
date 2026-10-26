@@ -502,8 +502,6 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setCustomBaseUrl(provider: AIProvider, url: String?) = setCustomBaseUrlCompatImpl(provider, url)
     fun fallbackCustomBaseUrl(provider: AIProvider): Flow<String?> = fallbackProfileBaseUrlImpl(provider)
     suspend fun setFallbackCustomBaseUrl(provider: AIProvider, url: String?) = setFallbackCustomBaseUrlCompatImpl(provider, url)
-    val maxResponseTokens: Flow<Int> get() = maxResponseTokensImpl
-    suspend fun setMaxResponseTokens(v: Int) = setMaxResponseTokensImpl(v)
     val aiReadTimeoutSeconds: Flow<Int> get() = aiReadTimeoutSecondsImpl
     suspend fun setAiReadTimeoutSeconds(v: Int) = setAiReadTimeoutSecondsImpl(v)
     val servingUnitInferenceMode: Flow<ServingUnitInferenceMode> get() = servingUnitInferenceModeImpl

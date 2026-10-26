@@ -262,8 +262,6 @@ internal val SETTINGS_INDEX: List<SettingsIndexEntry> = listOf(
         R.array.settings_search_kw_ai_allow_insecure_http, ChompassRoutes.SETTINGS_AI, Icons.Outlined.Link),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_on_device_model,
         R.array.settings_search_kw_on_device_model, ChompassRoutes.SETTINGS_AI, Icons.Outlined.SmartToy),
-    SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_max_tokens,
-        R.array.settings_search_kw_max_tokens, ChompassRoutes.SETTINGS_AI, Icons.Outlined.Numbers),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_ai_read_timeout,
         R.array.settings_search_kw_ai_read_timeout, ChompassRoutes.SETTINGS_AI, Icons.Outlined.Speed),
     SettingsIndexEntry(R.string.settings_group_ai, R.string.settings_gemini_google_search,

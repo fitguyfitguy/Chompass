@@ -169,11 +169,14 @@ internal fun SettingsAiSection(
     SectionCard(title = stringResource(R.string.settings_section_ai_advanced)) {
                 // Advanced knobs are stored per profile; subtitles show the
                 // effective value with "(default)" while the profile has no override.
+                // Max response length is not a setting: every provider gets the
+                // built-in 4096 cap (a low cap truncates JSON replies and reads
+                // like a model bug), and the read timeout only applies to
+                // self-hosted endpoints — cloud budgets are fixed cold-start
+                // windows (AiHttp.effectiveReadTimeoutSeconds).
                 val showVisionModel = ui.activeProvider != AIProvider.ON_DEVICE
                 val showReasoningEffort = OpenAICompatibleClient.usesReasoningEffort(ui.activeProvider)
-                val showMaxTokens = ui.activeProvider.apiFormat != AIProvider.ApiFormat.GEMINI &&
-                    ui.activeProvider != AIProvider.ON_DEVICE
-                val showReadTimeout = ui.activeProvider != AIProvider.ON_DEVICE
+                val showReadTimeout = ui.activeProvider.usesConfigurableRequestTimeout
                 val showGoalTier = ui.activeProvider.usesConfigurableRequestTimeout
                 val showGeminiSearch = ui.activeProvider == AIProvider.GEMINI
                 val showFillMissing = FillGapsFeature.ENABLED && ui.aiFeaturesEnabled
@@ -194,22 +197,8 @@ internal fun SettingsAiSection(
                         icon = Icons.Outlined.Tune,
                     ) { onOpenSheet(SettingsSheet.AI_REASONING_EFFORT) }
                 }
-                // Only OpenAI-compatible + Anthropic send a token cap; Gemini is left
-                // uncapped and on-device dispatch doesn't take one at all.
-                if (showMaxTokens) {
-                    if (showVisionModel || showReasoningEffort) HorizontalDivider()
-                    SettingRow(
-                        stringResource(R.string.settings_max_tokens),
-                        if (ui.activeProfile?.maxResponseTokens == null) {
-                            stringResource(R.string.settings_ai_value_default, ui.maxResponseTokens)
-                        } else {
-                            LocaleFormat.integer(ui.maxResponseTokens)
-                        },
-                        icon = Icons.Outlined.Numbers
-                    ) { onOpenSheet(SettingsSheet.MAX_TOKENS) }
-                }
                 if (showReadTimeout) {
-                    if (showVisionModel || showReasoningEffort || showMaxTokens) HorizontalDivider()
+                    if (showVisionModel || showReasoningEffort) HorizontalDivider()
                     SettingRow(
                         stringResource(R.string.settings_ai_read_timeout),
                         if (ui.activeProfile?.readTimeoutSeconds == null) {
@@ -224,7 +213,7 @@ internal fun SettingsAiSection(
                 // OpenAI-compatible) host models the AUTO tier rules can't
                 // classify by name, so the manual override row shows there.
                 if (showGoalTier) {
-                    if (showVisionModel || showReasoningEffort || showMaxTokens || showReadTimeout) HorizontalDivider()
+                    if (showVisionModel || showReasoningEffort || showReadTimeout) HorizontalDivider()
                     SettingRow(
                         stringResource(R.string.settings_goal_tier),
                         stringResource(ui.goalRecalcTier.displayNameRes),
@@ -232,7 +221,7 @@ internal fun SettingsAiSection(
                     ) { onOpenSheet(SettingsSheet.GOAL_RECALC_TIER) }
                 }
                 if (showGeminiSearch) {
-                    if (showVisionModel || showReasoningEffort || showMaxTokens || showReadTimeout || showGoalTier) HorizontalDivider()
+                    if (showVisionModel || showReasoningEffort || showReadTimeout || showGoalTier) HorizontalDivider()
                     ToggleRow(
                         stringResource(R.string.settings_gemini_google_search),
                         ui.geminiGoogleSearchEnabled,
@@ -247,7 +236,7 @@ internal fun SettingsAiSection(
                 if (showFillMissing) {
                     val gapScan by vm.container.fillGapsEngine.scan.collectAsState(initial = null)
                     val gapCount = gapScan?.count ?: 0
-                    if (showVisionModel || showReasoningEffort || showMaxTokens || showReadTimeout || showGoalTier || showGeminiSearch) HorizontalDivider()
+                    if (showVisionModel || showReasoningEffort || showReadTimeout || showGoalTier || showGeminiSearch) HorizontalDivider()
                     ToggleRow(
                         stringResource(R.string.settings_fill_missing_reminders),
                         ui.fillMissingRemindersEnabled,
