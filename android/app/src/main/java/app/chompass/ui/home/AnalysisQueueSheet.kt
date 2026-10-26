@@ -68,6 +68,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.AppContainer
 import app.chompass.R
+import app.chompass.services.ai.ProviderDirectory
+import app.chompass.services.ai.ProviderDirectory.Companion.matchedName
 import app.chompass.models.AiProfile
 import app.chompass.models.QueuedAnalysis
 import app.chompass.models.QueueStatus
@@ -116,6 +118,7 @@ fun AnalysisQueueSheet(
     onDelete: (UUID) -> Unit,
     onClearHistory: () -> Unit,
     onDismiss: () -> Unit,
+    providerDirectory: ProviderDirectory? = null,
 ) {
     var tab by remember { mutableStateOf(QueueTab.QUEUE) }
     var editing by remember { mutableStateOf<QueuedAnalysis?>(null) }
@@ -303,7 +306,8 @@ fun AnalysisQueueSheet(
                                 overflow = TextOverflow.Ellipsis,
                             )
                             Text(
-                                stringResource(profile.provider.displayNameRes),
+                                providerDirectory.matchedName(profile.provider, profile.baseUrl)
+                                    ?: stringResource(profile.provider.displayNameRes),
                                 fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                                 maxLines = 1,

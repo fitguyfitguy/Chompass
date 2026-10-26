@@ -114,6 +114,13 @@ object OpenAiModelsClient {
         return curated + if (sortRuntime) appended.sortedWith(String.CASE_INSENSITIVE_ORDER) else appended
     }
 
+    /**
+     * Ollama Cloud picker. The fetched catalog only, in the order the host
+     * returned it. A missing or failed fetch is empty — never a bundled starter list.
+     */
+    fun catalogLineup(runtime: List<String>?): List<String> =
+        runtime.orEmpty().distinct()
+
     suspend fun listModels(
         baseUrl: String,
         apiKey: String?,

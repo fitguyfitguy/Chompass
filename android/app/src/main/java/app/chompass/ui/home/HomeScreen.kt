@@ -1879,6 +1879,7 @@ fun HomeScreen(
                 vm.dismissQueue()
                 returnToAddFoodGrid()
             },
+            providerDirectory = container.providerDirectory,
         )
     }
     if (showFillGapsSheet) {

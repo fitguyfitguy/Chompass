@@ -24,6 +24,7 @@ import app.chompass.services.InputSanitizer
 import app.chompass.services.WeightAnalysisService
 import app.chompass.services.WeightForecast
 import app.chompass.data.FastingRepository
+import app.chompass.services.ai.ProviderDirectory.Companion.findEntry
 import kotlinx.coroutines.flow.first
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -62,6 +63,7 @@ class ChatService(
      *  when set and fasting is enabled, the coach prompt carries a fasting
      *  snapshot so "should I eat now?" answers differ at hour 2 vs hour 15. */
     private val fastingRepository: FastingRepository? = null,
+    private val providerDirectory: () -> ProviderDirectory? = { null },
 ) {
     init {
         require(keyStore != null || keyLookup != null) {
@@ -137,7 +139,12 @@ class ChatService(
         val maxTokens = cfg.maxResponseTokens
         val geminiGoogleSearch = cfg.geminiGoogleSearch
         val readTimeoutSeconds = cfg.aiReadTimeoutSeconds
-        val httpClient = AiHttp.clientForProvider(okHttp, provider, readTimeoutSeconds)
+        val httpClient = AiHttp.clientForProvider(
+            okHttp,
+            provider,
+            readTimeoutSeconds,
+            bundledDirectory = providerDirectory().findEntry(baseUrl) != null,
+        )
 
         val reply = when (provider.apiFormat) {
             AIProvider.ApiFormat.GEMINI -> runGeminiToolLoop(httpClient, baseUrl, model, apiKey!!, systemPrompt, history, newUserMessage, tools, imageBytes, geminiGoogleSearch, maxTokens)

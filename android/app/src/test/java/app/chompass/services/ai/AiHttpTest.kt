@@ -69,8 +69,8 @@ class AiHttpTest {
     fun clientForProviderKeepsSettingsTimeoutForLocalProvider() {
         val base = OkHttpClient.Builder().readTimeout(60, java.util.concurrent.TimeUnit.SECONDS).build()
         // Trivial trust builder: the default one needs Android's CA store, absent on the JVM.
-        assertEquals(90_000, AiHttp.clientForProvider(base, AIProvider.OLLAMA, 90) { it }.readTimeoutMillis)
-        assertEquals(90_000, AiHttp.clientForProvider(base, AIProvider.CUSTOM_OPENAI, 90) { it }.readTimeoutMillis)
+        assertEquals(90_000, AiHttp.clientForProvider(base, AIProvider.OLLAMA, 90, trustBuilder = { it }).readTimeoutMillis)
+        assertEquals(90_000, AiHttp.clientForProvider(base, AIProvider.CUSTOM_OPENAI, 90, trustBuilder = { it }).readTimeoutMillis)
     }
 
     @Test
@@ -85,6 +85,35 @@ class AiHttpTest {
         val ollama = AiHttp.clientForProvider(base, AIProvider.OLLAMA, 60, fake)
         assertTrue(ollama !== base) // read-timeout variant
         assertEquals(1, trustCalls) // Ollama is a user-entered endpoint → user-CA trust
+    }
+
+    @Test
+    fun clientForProviderBundledDirectorySkipsUserCaAndUsesCloudTimeout() {
+        val base = OkHttpClient()
+        var trustCalls = 0
+        val fake: (OkHttpClient) -> OkHttpClient = { client ->
+            trustCalls++
+            client
+        }
+        val bundled = AiHttp.clientForProvider(
+            base,
+            AIProvider.CUSTOM_OPENAI,
+            90,
+            fake,
+            bundledDirectory = true,
+        )
+        assertEquals(0, trustCalls)
+        assertEquals(AiHttp.CLOUD_READ_TIMEOUT_SECONDS * 1000, bundled.readTimeoutMillis)
+
+        val local = AiHttp.clientForProvider(
+            base,
+            AIProvider.CUSTOM_OPENAI,
+            90,
+            fake,
+            bundledDirectory = false,
+        )
+        assertEquals(1, trustCalls)
+        assertEquals(90_000, local.readTimeoutMillis)
     }
 
     // -- release cleartext gate (issue #8 follow-up) ---------------------

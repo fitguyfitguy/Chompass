@@ -74,7 +74,6 @@
     <!-- AI Provider names -->
     <string name="ai_provider_ollama">Ollama (lokaal)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
-    <string name="ai_provider_custom">Aangepast (OpenAI-compatibel)</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="api_key_placeholder">Plak je API-sleutel</string>
@@ -485,9 +484,7 @@
     <string name="settings_tap_to_edit">Tik om te bewerken</string>
     <string name="settings_custom_url_placeholder">https://jouw-endpoint.com/v1</string>
     <string name="settings_custom_url_title">Aangepaste basis-URL</string>
-    <string name="settings_custom_directory_title">Bekende eindpunten</string>
     <string name="settings_custom_directory_docs">Documentatie</string>
-    <string name="settings_custom_directory_footer">Eindpunten komen uit een gecontroleerde lijst die bij elke release wordt meegeleverd. Je sleutel wordt alleen naar de getoonde URL verzonden; de modellijsten worden vernieuwd vanaf de provider wanneer je de modelkiezer opent.</string>
     <string name="ai_model_accepts_images">Accepteert afbeeldingen (opgegeven)</string>
     <string name="settings_ai_allow_insecure_http">Onveilige HTTP toestaan</string>
     <string name="settings_ai_allow_insecure_http_footer">Laat eigen en Ollama-eindpunten http://-URL\'s gebruiken, bijvoorbeeld op je thuisnetwerk. Cloudproviders gebruiken https. Laat uit, tenzij je server geen TLS heeft.</string>
@@ -672,11 +669,6 @@
     <string name="ai_provider_subtitle_mistral">Mistral-modellen</string>
     <string name="ai_provider_subtitle_ollama">Je eigen computer, geen cloud</string>
     <string name="ai_provider_subtitle_ollama_cloud">Ollama\'s gehoste modellen</string>
-    <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp enz.</string>
-    <string name="ai_provider_group_recommended">Aanbevolen</string>
-    <string name="ai_provider_group_cloud">Cloudproviders</string>
-    <string name="ai_provider_group_local">Lokaal &amp; zelf gehost</string>
-    <string name="ai_provider_group_device">Op het apparaat</string>
     <string name="settings_section_ai_profile">Profiel</string>
     <string name="settings_section_ai_connection">Verbinding</string>
     <string name="settings_section_ai_advanced">Geavanceerd</string>

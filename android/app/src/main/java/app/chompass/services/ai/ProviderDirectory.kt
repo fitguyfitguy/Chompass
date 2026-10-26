@@ -1,5 +1,6 @@
 package app.chompass.services.ai
 
+import app.chompass.models.AIProvider
 import android.content.Context
 import android.util.Log
 import kotlinx.serialization.Serializable
@@ -65,5 +66,9 @@ data class ProviderDirectory(
             if (needle.isEmpty()) return null
             return this?.entries?.firstOrNull { it.baseUrl.trimEnd('/') == needle }
         }
+
+        /** Directory display name for a custom profile, or null when the URL is not bundled. */
+        fun ProviderDirectory?.matchedName(provider: AIProvider, baseUrl: String?): String? =
+            if (provider == AIProvider.CUSTOM_OPENAI) findEntry(baseUrl)?.name else null
     }
 }

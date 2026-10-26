@@ -79,7 +79,6 @@
     <!-- AI Provider names -->
     <string name="ai_provider_ollama">Ollama (ローカル)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
-    <string name="ai_provider_custom">カスタム (OpenAI互換)</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="api_key_placeholder">APIキーを貼り付け</string>
@@ -513,9 +512,7 @@
     <string name="settings_server_url">サーバーURL</string>
     <string name="settings_tap_to_edit">タップして編集</string>
     <string name="settings_custom_url_title">カスタム ベースURL</string>
-    <string name="settings_custom_directory_title">既知のエンドポイント</string>
     <string name="settings_custom_directory_docs">ドキュメント</string>
-    <string name="settings_custom_directory_footer">エンドポイントは各リリースに同梱されたレビュー済みリストから提供されます。キーは表示された URL にのみ送信され、モデル選択を開くとモデル一覧は提供元から更新されます。</string>
     <string name="ai_model_accepts_images">画像対応（宣言済み）</string>
     <string name="settings_ai_allow_insecure_http">安全でない HTTP を許可</string>
     <string name="settings_ai_allow_insecure_http_footer">カスタムおよび Ollama のエンドポイントで http:// URL を使えます。自宅ネットワークなど。クラウド提供元は https を使います。サーバーに TLS があるときはオフのままにしてください。</string>
@@ -702,11 +699,6 @@
     <string name="ai_provider_subtitle_mistral">Mistralモデル</string>
     <string name="ai_provider_subtitle_ollama">自分のPCで、クラウド不要</string>
     <string name="ai_provider_subtitle_ollama_cloud">Ollama のクラウドモデル</string>
-    <string name="ai_provider_subtitle_custom">LM Studio、vLLM、llama.cpp など</string>
-    <string name="ai_provider_group_recommended">おすすめ</string>
-    <string name="ai_provider_group_cloud">クラウドプロバイダ</string>
-    <string name="ai_provider_group_local">ローカル・セルフホスト</string>
-    <string name="ai_provider_group_device">端末上</string>
     <string name="settings_section_ai_profile">プロファイル</string>
     <string name="settings_section_ai_connection">接続</string>
     <string name="settings_section_ai_advanced">詳細設定</string>

@@ -143,10 +143,8 @@ enum class AIProvider {
             "llava",
             "moondream"
         )
-        // ollama.com cloud tags verified 2026-10-26. Curated = badge-confirmed
-        // vision models; text-only families (gpt-oss, glm, deepseek) stay out —
-        // the analyze pipeline sends images. Runtime /v1/models lineup appends
-        // the rest.
+        // Offline default only (vision-capable tag). The model sheet does not
+        // show this list: ollama.com/v1/models is public and is the picker.
         OLLAMA_CLOUD -> listOf(
             "gemma4:31b",
             "mistral-large-4",

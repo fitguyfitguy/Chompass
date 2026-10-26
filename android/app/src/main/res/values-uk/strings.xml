@@ -68,7 +68,6 @@
     <string name="autobalance_fat">Жири</string>
     <string name="ai_provider_ollama">Ollama (локально)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
-    <string name="ai_provider_custom">Власний (сумісний з OpenAI)</string>
     <string name="ai_provider_on_device_subtitle">Приватно та офлайн. Менш точний за хмарний ШІ; завантаження ~2–4 ГБ</string>
     <string name="ai_provider_subtitle_gemini">Безкоштовний ключ API · працює одразу</string>
     <string name="ai_provider_subtitle_openai">Моделі GPT</string>
@@ -83,11 +82,6 @@
     <string name="ai_provider_subtitle_mistral">Моделі Mistral</string>
     <string name="ai_provider_subtitle_ollama">Твій комп\'ютер, без хмари</string>
     <string name="ai_provider_subtitle_ollama_cloud">Хмарні моделі Ollama</string>
-    <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp тощо</string>
-    <string name="ai_provider_group_recommended">Рекомендований</string>
-    <string name="ai_provider_group_cloud">Хмарні провайдери</string>
-    <string name="ai_provider_group_local">Локально та self-hosted</string>
-    <string name="ai_provider_group_device">На пристрої</string>
     <string name="settings_section_ai_profile">Профіль</string>
     <string name="settings_section_ai_connection">З\'єднання</string>
     <string name="settings_section_ai_advanced">Додатково</string>
@@ -557,9 +551,7 @@
     <string name="settings_tap_to_edit">Натисни, щоб змінити</string>
     <string name="settings_custom_url_placeholder">https://your-endpoint.com/v1</string>
     <string name="settings_custom_url_title">Власний базовий URL</string>
-    <string name="settings_custom_directory_title">Відомі адреси</string>
     <string name="settings_custom_directory_docs">Документація</string>
-    <string name="settings_custom_directory_footer">Адреси беруться з перевіреного списку, що постачається з кожним релізом. Ваш ключ надсилається лише на вказаний URL; списки моделей оновлюються від провайдера під час відкриття вибору моделі.</string>
     <string name="ai_model_accepts_images">Підтримує зображення (заявлено)</string>
     <string name="settings_ai_allow_insecure_http">Дозволити незахищений HTTP</string>
     <string name="settings_ai_allow_insecure_http_footer">Власні та Ollama-адреси зможуть використовувати http://, наприклад у домашній мережі. Хмарні провайдери використовують https. Тримай вимкненим, якщо на сервері є TLS.</string>

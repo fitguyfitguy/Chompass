@@ -174,4 +174,15 @@ class OpenAiModelsClientTest {
         val filtered = OpenAiModelsClient.filterGptLineup(OpenAiModelsClient.parseModelsWithMeta("not json"))
         assertEquals(curated, OpenAiModelsClient.mergeOverCurated(curated, filtered))
     }
+
+    @Test
+    fun catalogLineup_isFetchOnly_neverAStarterList() {
+        assertEquals(emptyList<String>(), OpenAiModelsClient.catalogLineup(null))
+        assertEquals(emptyList<String>(), OpenAiModelsClient.catalogLineup(emptyList()))
+        val fetched = listOf("kimi-k3", "glm-5.3", "gemma4:31b", "kimi-k3")
+        assertEquals(
+            listOf("kimi-k3", "glm-5.3", "gemma4:31b"),
+            OpenAiModelsClient.catalogLineup(fetched),
+        )
+    }
 }

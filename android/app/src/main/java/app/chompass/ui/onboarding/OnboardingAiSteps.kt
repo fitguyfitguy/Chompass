@@ -99,7 +99,7 @@ internal fun ProviderStep(
     val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
     val providerChoices = remember(onDeviceAvailable) {
         AIProvider.values()
-            .filter { it != AIProvider.ON_DEVICE || onDeviceAvailable }
+            .filter { it != AIProvider.CUSTOM_OPENAI && (it != AIProvider.ON_DEVICE || onDeviceAvailable) }
             .sortedBy { it.group.ordinal }
     }
     Column(

@@ -298,6 +298,7 @@ class AppContainer(app: ChompassApp) {
         onDeviceModelDownloaded = { modelId ->
             onDeviceModelDownloadManager.isDownloaded(ModelCatalog.forModelId(modelId))
         },
+        providerDirectory = { providerDirectory },
     )
     /** AI fill-missing scan / banner / mass-fill session (Batch 2). */
     val fillGapsEngine = FillGapsEngine(foodRepository, prefs, foodAnalysis, appContext)
@@ -333,13 +334,19 @@ class AppContainer(app: ChompassApp) {
             usdaIndex = usdaFoodIndex,
         )
     }
-    val chatService = ChatService(prefs, keyStore, foodAnalysis, fastingRepository = fastingRepository)
+    val chatService = ChatService(
+        prefs,
+        keyStore,
+        foodAnalysis,
+        fastingRepository = fastingRepository,
+        providerDirectory = { providerDirectory },
+    )
     val speechService = SpeechService(prefs, keyStore)
 
     /**
      * Bundled OpenAI-compatible endpoint directory (Codeberg #143); null when
-     * the asset is missing or corrupt — the Custom sheets then behave exactly
-     * as before (hand-typed URL only).
+     * the asset is missing or corrupt. The picker then has no directory rows,
+     * and every custom host stays on the user-entered timeout and user-CA path.
      */
     val providerDirectory: ProviderDirectory? by lazy(LazyThreadSafetyMode.NONE) {
         ProviderDirectory.load(appContext)

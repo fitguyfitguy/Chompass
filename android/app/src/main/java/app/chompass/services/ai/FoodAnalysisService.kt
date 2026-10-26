@@ -8,6 +8,7 @@ import app.chompass.data.GoalRecalcTierOverride
 import app.chompass.data.PreferencesStore
 import app.chompass.data.responseCapFor
 import app.chompass.data.effectiveReadTimeoutSeconds
+import app.chompass.services.ai.ProviderDirectory.Companion.findEntry
 import app.chompass.data.defaultAiProfileSnapshot
 import app.chompass.models.AIProvider
 import app.chompass.models.AiProfile
@@ -329,6 +330,7 @@ class FoodAnalysisService(
     internal val watchdogSecondsOverride: Int? = null,
     /** Test seam: supplies profile API keys without a real encrypted KeyStore. */
     internal val keyLookup: ((AiProfile) -> String?)? = null,
+    private val providerDirectory: () -> ProviderDirectory? = { null },
 ) {
     init {
         require((prefs != null && (keyStore != null || keyLookup != null)) || callAiDelegate != null) {
@@ -1776,7 +1778,12 @@ class FoodAnalysisService(
                 ?: prefs.openRouterReasoningEffort.first(),
         )
         val readTimeoutSeconds = effectiveReadTimeoutSeconds(ap, prefs.aiReadTimeoutSeconds.first())
-        val httpClient = AiHttp.clientForProvider(okHttp, primary, readTimeoutSeconds)
+        val httpClient = AiHttp.clientForProvider(
+            okHttp,
+            primary,
+            readTimeoutSeconds,
+            bundledDirectory = providerDirectory().findEntry(primaryBaseUrl) != null,
+        )
         val context = prefs.userContext.first()
         val languageLine = nonEnglishResponseLanguage()?.let {
             "Write human-readable meal/component names in $it when natural. Keep tool JSON keys and source_id values unchanged.\n\n"
@@ -1806,7 +1813,12 @@ class FoodAnalysisService(
             )
         } catch (primaryError: Throwable) {
             val fallback = currentFallbackConfig(primary, primaryModel, prefs!!.aiCallConfig()) ?: throw primaryError
-            val fallbackClient = AiHttp.clientForProvider(okHttp, fallback.provider, readTimeoutSeconds)
+            val fallbackClient = AiHttp.clientForProvider(
+                okHttp,
+                fallback.provider,
+                readTimeoutSeconds,
+                bundledDirectory = providerDirectory().findEntry(fallback.baseUrl) != null,
+            )
             val fallbackModel = resolveModelForRequest(
                 provider = fallback.provider,
                 selectedModel = fallback.model,
@@ -2028,9 +2040,19 @@ class FoodAnalysisService(
         // the fixed cold-start budget, local ones the settings seconds) —
         // the wall clock must never fire before a legit read gives up.
         val chainReadTimeoutSeconds = maxOf(
-            AiHttp.effectiveReadTimeoutSeconds(primary, readTimeoutSeconds),
+            AiHttp.effectiveReadTimeoutSeconds(
+                primary,
+                readTimeoutSeconds,
+                bundledDirectory = providerDirectory().findEntry(primaryBaseUrl) != null,
+            ),
             currentFallbackConfig(primary, primaryModel, cfg)
-                ?.let { AiHttp.effectiveReadTimeoutSeconds(it.provider, readTimeoutSeconds) }
+                ?.let {
+                    AiHttp.effectiveReadTimeoutSeconds(
+                        it.provider,
+                        readTimeoutSeconds,
+                        bundledDirectory = providerDirectory().findEntry(it.baseUrl) != null,
+                    )
+                }
                 ?: 0,
         )
         val timeoutMs = watchdogSecondsOverride?.times(1000L)
@@ -2297,7 +2319,12 @@ class FoodAnalysisService(
         AiHttp.assertCleartextAllowed(baseUrl, prefs?.allowInsecureHttp?.first() ?: false)
         val sanitizedKey = AiHttp.sanitizeApiKey(apiKey)
         if (provider.requiresApiKey && sanitizedKey.isNullOrEmpty()) throw AiError.NoApiKey
-        val httpClient = AiHttp.clientForProvider(okHttp, provider, readTimeoutSeconds)
+        val httpClient = AiHttp.clientForProvider(
+            okHttp,
+            provider,
+            readTimeoutSeconds,
+            bundledDirectory = providerDirectory().findEntry(baseUrl) != null,
+        )
         val enableGoogleSearch = provider.apiFormat == AIProvider.ApiFormat.GEMINI && geminiGoogleSearch
         if (!preferStreaming) {
             return when (provider.apiFormat) {

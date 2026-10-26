@@ -80,7 +80,6 @@
     <!-- AI Provider names -->
     <string name="ai_provider_ollama">Ollama (محلي)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
-    <string name="ai_provider_custom">مخصص (متوافق مع OpenAI)</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="api_key_placeholder">الصق مفتاح API</string>
@@ -518,9 +517,7 @@
     <string name="settings_server_url">عنوان URL للخادم</string>
     <string name="settings_tap_to_edit">اضغط للتعديل</string>
     <string name="settings_custom_url_title">عنوان URL أساسي مخصص</string>
-    <string name="settings_custom_directory_title">نقاط النهاية المعروفة</string>
     <string name="settings_custom_directory_docs">الوثائق</string>
-    <string name="settings_custom_directory_footer">تأتي نقاط النهاية من قائمة مُراجَعة مضمّنة مع كل إصدار. يُرسَل مفتاحك فقط إلى عنوان URL المعروض؛ وتُحدَّث قوائم النماذج من المزوّد عند فتح منتقي النماذج.</string>
     <string name="ai_model_accepts_images">يقبل الصور (مُصرَّح به)</string>
     <string name="settings_ai_allow_insecure_http">السماح بـ HTTP غير الآمن</string>
     <string name="settings_ai_allow_insecure_http_footer">يتيح لنقاط النهاية المخصصة وOllama استخدام عناوين http://، مثلاً على شبكتك المنزلية. مزوّدو السحابة يستخدمون https. أبقه مطفأ إلا إذا لم يكن لخادمك TLS.</string>
@@ -708,11 +705,6 @@
     <string name="ai_provider_subtitle_mistral">نماذج Mistral</string>
     <string name="ai_provider_subtitle_ollama">حاسوبك، بلا سحابة</string>
     <string name="ai_provider_subtitle_ollama_cloud">نماذج Ollama المستضافة</string>
-    <string name="ai_provider_subtitle_custom">LM Studio وvLLM وllama.cpp…</string>
-    <string name="ai_provider_group_recommended">موصى به</string>
-    <string name="ai_provider_group_cloud">مزودو السحابة</string>
-    <string name="ai_provider_group_local">محلي ومستضاف ذاتيًا</string>
-    <string name="ai_provider_group_device">على الجهاز</string>
     <string name="settings_section_ai_profile">الملف الشخصي</string>
     <string name="settings_section_ai_connection">الاتصال</string>
     <string name="settings_section_ai_advanced">متقدم</string>
