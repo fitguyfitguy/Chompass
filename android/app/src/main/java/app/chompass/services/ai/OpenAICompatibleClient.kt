@@ -66,7 +66,8 @@ object OpenAICompatibleClient {
 
     /** Providers whose chat endpoint takes the flat `reasoning_effort` field (#97). */
     internal fun usesFlatReasoningEffort(provider: AIProvider): Boolean =
-        provider == AIProvider.CUSTOM_OPENAI || provider == AIProvider.OLLAMA
+        provider == AIProvider.CUSTOM_OPENAI || provider == AIProvider.OLLAMA ||
+            provider == AIProvider.OLLAMA_CLOUD
 
     /**
      * Flat `reasoning_effort` value for Custom OpenAI-compatible and Ollama hosts.

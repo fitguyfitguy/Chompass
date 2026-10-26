@@ -279,6 +279,7 @@
     <string name="ai_provider_mistral">Mistral</string>
 
     <string name="ai_provider_ollama">Ollama (lokal)</string>
+    <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
 
     <string name="ai_provider_custom">Benutzerdefiniert (OpenAI-kompatibel)</string>
 
@@ -309,6 +310,7 @@
     <string name="ai_provider_subtitle_mistral">Mistral-Modelle</string>
 
     <string name="ai_provider_subtitle_ollama">Dein Rechner, keine Cloud</string>
+    <string name="ai_provider_subtitle_ollama_cloud">Ollamas gehostete Modelle</string>
 
     <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp u. a.</string>
 
@@ -2472,6 +2474,12 @@ für dich ein</string>
     <string name="ai_error_on_device_engine_init">Die Modul-Engine konnte auf diesem Gerät nicht gestartet werden. Versuche es erneut, entlade das Modell unter Einstellungen → KI-Anbieter → Modell oder wechsle zu einem Cloud-Anbieter.</string>
 
     <string name="ai_error_key_rejected">Dein API-Schlüssel wurde abgelehnt. Öffne „Einstellungen“ → „KI-Anbieter“ und füge einen gültigen Schlüssel erneut ein.</string>
+    <string name="ai_error_timeout">Der KI-Anbieter hat zu lange zum Antworten gebraucht. Versuche es erneut; bei einem selbst gehosteten Endpunkt erhöhst du die Zeitspanne unter „Einstellungen“ → „KI-Anbieter“.</string>
+    <string name="ai_error_disabled">KI-Funktionen sind unter „Einstellungen“ → „KI-Anbieter“ ausgeschaltet.</string>
+    <string name="ai_error_insecure_http_blocked">Unsicheres HTTP ist blockiert. Aktiviere „Unsicheres HTTP erlauben“ unter „Einstellungen“ → „KI-Anbieter“ oder verwende eine https://-Adresse.</string>
+    <string name="ai_error_truncated_twice">Die Antwort hat zweimal das Ausgabelimit des Modells erreicht — Denken zählt mit. Stelle den Denkaufwand auf Niedrig oder Aus unter „Einstellungen“ → „KI-Anbieter“ ein oder formuliere die Frage kürzer.</string>
+    <string name="ai_error_truncated_twice_description">Dem Modell ging der Ausgabeplatz aus, bevor es fertig war; Denk-Token zählen mit. Stelle den Denkaufwand auf Niedrig oder Aus unter „Einstellungen“ → „KI-Anbieter“ ein und versuche es erneut.</string>
+    <string name="ai_error_truncated">Die Antwort hat das Ausgabelimit des Modells erreicht, bevor sie fertig war — Denken zählt mit. Stelle den Denkaufwand auf Niedrig oder Aus unter „Einstellungen“ → „KI-Anbieter“ ein oder formuliere die Frage kürzer.</string>
 
     <string name="ai_error_location_unsupported">Gemini ist von diesem Netzwerkstandort (Land/IP) aus nicht verfügbar. Wenn du ein VPN verwendest, deaktiviere es oder wechsle zu einem privaten Ausgangspunkt. IP-Adressen von Rechenzentren oder nicht-privaten VPNs werden häufig blockiert. Oder aktiviere die Abrechnung für das Google AI Studio-Projekt, probiere ein anderes Netzwerk aus oder wechsle unter „Einstellungen“ → „KI-Anbieter“ den Anbieter.</string>
 
@@ -3454,6 +3462,7 @@ für dich ein</string>
     <string name="nutrient_short_calories">Kal</string>
     <string name="nutrient_short_added_sugar">Z. Zucker</string>
     <string name="nutrient_short_sodium">Na</string>
+    <string name="nutrient_short_cholesterol">Chol.</string>
     <string name="nutrient_short_potassium">K</string>
     <string name="nutrient_short_trans_fat">Transfett</string>
     <string name="nutrient_short_calcium">Ca</string>

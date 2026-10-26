@@ -85,6 +85,12 @@
       ]
     },
     {
+      "key": "ai_provider_ollama_cloud",
+      "locales": [
+        "*"
+      ]
+    },
+    {
       "key": "ai_provider_openai",
       "locales": [
         "*"
@@ -425,6 +431,15 @@
         "pl",
         "ro",
         "tr"
+      ]
+    },
+    {
+      "key": "nutrient_short_cholesterol",
+      "locales": [
+        "de",
+        "fr",
+        "nl",
+        "pl"
       ]
     },
     {

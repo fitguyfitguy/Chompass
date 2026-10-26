@@ -20,6 +20,7 @@ enum class AIProvider {
     @SerialName("DeepInfra") DEEP_INFRA,
     @SerialName("Mistral") MISTRAL,
     @SerialName("Ollama (Local)") OLLAMA,
+    @SerialName("Ollama Cloud") OLLAMA_CLOUD,
     @SerialName("Custom (OpenAI-compatible)") CUSTOM_OPENAI,
     @SerialName("On-Device (Private)") ON_DEVICE;
 
@@ -37,6 +38,7 @@ enum class AIProvider {
         DEEP_INFRA -> R.string.ai_provider_deepinfra
         MISTRAL -> R.string.ai_provider_mistral
         OLLAMA -> R.string.ai_provider_ollama
+        OLLAMA_CLOUD -> R.string.ai_provider_ollama_cloud
         CUSTOM_OPENAI -> R.string.ai_provider_custom
         ON_DEVICE -> R.string.ai_provider_on_device
     }
@@ -54,6 +56,7 @@ enum class AIProvider {
         DEEP_INFRA -> "https://api.deepinfra.com/v1/openai"
         MISTRAL -> "https://api.mistral.ai/v1"
         OLLAMA -> "http://localhost:11434/v1"
+        OLLAMA_CLOUD -> "https://ollama.com/v1"
         CUSTOM_OPENAI -> ""
         // No network call — handled specially in FoodAnalysisService.dispatch().
         ON_DEVICE -> ""
@@ -140,6 +143,16 @@ enum class AIProvider {
             "llava",
             "moondream"
         )
+        // ollama.com cloud tags verified 2026-10-26. Curated = badge-confirmed
+        // vision models; text-only families (gpt-oss, glm, deepseek) stay out —
+        // the analyze pipeline sends images. Runtime /v1/models lineup appends
+        // the rest.
+        OLLAMA_CLOUD -> listOf(
+            "gemma4:31b",
+            "mistral-large-4",
+            "kimi-k2.6",
+            "minimax-m3"
+        )
         CUSTOM_OPENAI -> emptyList()
         // Downloadable on-device models — see services/ondevice/ModelCatalog.kt.
         // The static list stays complete for supportedModelOrDefault resolution;
@@ -217,7 +230,8 @@ enum class AIProvider {
     val requiresCustomModelName: Boolean get() = this == CUSTOM_OPENAI
     val usesConfigurableRequestTimeout: Boolean get() = this == OLLAMA || this == CUSTOM_OPENAI
     val supportsCustomModelName: Boolean
-        get() = this == OPENROUTER || this == HUGGING_FACE || this == CUSTOM_OPENAI || this == OLLAMA
+        get() = this == OPENROUTER || this == HUGGING_FACE || this == CUSTOM_OPENAI ||
+            this == OLLAMA || this == OLLAMA_CLOUD
 
     /**
      * Serves a usable GET /models listing on the built-in [baseUrl] (#107/#132):
@@ -226,13 +240,15 @@ enum class AIProvider {
      */
     val supportsRuntimeLineup: Boolean
         get() = this == OPENAI || this == XAI || this == TOGETHER_AI || this == GROQ ||
-            this == HUGGING_FACE || this == FIREWORKS || this == DEEP_INFRA || this == MISTRAL
+            this == HUGGING_FACE || this == FIREWORKS || this == DEEP_INFRA ||
+            this == MISTRAL || this == OLLAMA_CLOUD
 
     val apiFormat: ApiFormat get() = when (this) {
         GEMINI -> ApiFormat.GEMINI
         ANTHROPIC -> ApiFormat.ANTHROPIC
         OPENAI, XAI, OPENROUTER, TOGETHER_AI, GROQ, HUGGING_FACE,
-        FIREWORKS, DEEP_INFRA, MISTRAL, OLLAMA, CUSTOM_OPENAI -> ApiFormat.OPENAI_COMPATIBLE
+        FIREWORKS, DEEP_INFRA, MISTRAL, OLLAMA, OLLAMA_CLOUD,
+        CUSTOM_OPENAI -> ApiFormat.OPENAI_COMPATIBLE
         ON_DEVICE -> ApiFormat.ON_DEVICE
     }
 
@@ -248,7 +264,7 @@ enum class AIProvider {
     val group: ProviderGroup get() = when (this) {
         GEMINI -> ProviderGroup.RECOMMENDED
         OPENAI, ANTHROPIC, XAI, OPENROUTER, TOGETHER_AI, GROQ, HUGGING_FACE,
-        FIREWORKS, DEEP_INFRA, MISTRAL -> ProviderGroup.CLOUD
+        FIREWORKS, DEEP_INFRA, MISTRAL, OLLAMA_CLOUD -> ProviderGroup.CLOUD
         OLLAMA, CUSTOM_OPENAI -> ProviderGroup.LOCAL
         ON_DEVICE -> ProviderGroup.DEVICE
     }
@@ -268,6 +284,7 @@ enum class AIProvider {
         DEEP_INFRA -> R.string.ai_provider_subtitle_deepinfra
         MISTRAL -> R.string.ai_provider_subtitle_mistral
         OLLAMA -> R.string.ai_provider_subtitle_ollama
+        OLLAMA_CLOUD -> R.string.ai_provider_subtitle_ollama_cloud
         CUSTOM_OPENAI -> R.string.ai_provider_subtitle_custom
         ON_DEVICE -> R.string.ai_provider_on_device_subtitle
     }
@@ -285,6 +302,7 @@ enum class AIProvider {
         FIREWORKS -> "https://fireworks.ai/api-keys"
         DEEP_INFRA -> "https://deepinfra.com/dash/keys"
         MISTRAL -> "https://console.mistral.ai/api-keys"
+        OLLAMA_CLOUD -> "https://ollama.com/keys"
         OLLAMA, CUSTOM_OPENAI, ON_DEVICE -> null
     }
 

@@ -79,6 +79,7 @@
 
     <!-- AI Provider names -->
     <string name="ai_provider_ollama">Ollama (로컬)</string>
+    <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
     <string name="ai_provider_custom">사용자 지정 (OpenAI 호환)</string>
 
     <!-- AI Provider API key placeholders -->
@@ -697,6 +698,7 @@
     <string name="ai_provider_subtitle_deepinfra">호스팅된 오픈 모델</string>
     <string name="ai_provider_subtitle_mistral">Mistral 모델</string>
     <string name="ai_provider_subtitle_ollama">내 컴퓨터, 클라우드 없음</string>
+    <string name="ai_provider_subtitle_ollama_cloud">Ollama 호스팅 모델</string>
     <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp 등</string>
     <string name="ai_provider_group_recommended">추천</string>
     <string name="ai_provider_group_cloud">클라우드 제공자</string>
@@ -841,6 +843,12 @@
     <string name="ai_error_invalid_response">AI 응답을 이해하지 못했어요. 다시 시도해 주세요.</string>
     <string name="ai_error_invalid_url">API URL이 잘못되었어요. 제공자 설정을 확인하세요.</string>
     <string name="ai_error_key_rejected">API 키가 거부되었어요. 설정 → AI 제공자를 열어 유효한 키를 다시 붙여넣으세요.</string>
+    <string name="ai_error_timeout">AI 제공자의 응답이 너무 늦었어요. 다시 시도해 보세요. 직접 호스팅한 엔드포인트를 쓰신다면 설정 → AI 제공자에서 제한 시간을 늘려 주세요.</string>
+    <string name="ai_error_disabled">AI 기능이 설정 → AI 제공자에서 꺼져 있어요.</string>
+    <string name="ai_error_insecure_http_blocked">보안되지 않은 HTTP는 차단돼요. 설정 → AI 제공자에서 “보안되지 않은 HTTP 허용”을 켜거나 https:// 주소를 사용하세요.</string>
+    <string name="ai_error_truncated_twice">답변이 두 번이나 모델 출력 한도에 도달했어요 — 사고도 한도에 포함돼요. 설정 → AI 제공자에서 추론 수준을 낮음 또는 끔으로 설정하거나, 더 짧은 질문을 시도해 보세요.</string>
+    <string name="ai_error_truncated_twice_description">모델이 끝내기 전에 출력 공간을 다 썼어요. 사고 토큰도 한도에 포함돼요. 설정 → AI 제공자에서 추론 수준을 낮음 또는 끔으로 설정한 뒤 다시 시도해 보세요.</string>
+    <string name="ai_error_truncated">답변이 끝나기 전에 모델 출력 한도에 도달했어요 — 사고도 한도에 포함돼요. 설정 → AI 제공자에서 추론 수준을 낮음 또는 끔으로 설정하거나, 더 짧은 질문을 시도해 보세요.</string>
     <string name="ai_error_location_unsupported">Gemini는 현재 네트워크 위치(국가/IP)에서 사용할 수 없어요. VPN을 사용 중이면 끄거나 주거용 출구로 전환하세요. 데이터센터/비주거용 VPN IP는 자주 차단돼요. Google AI Studio 프로젝트에서 결제를 활성화하거나, 다른 네트워크를 시도하거나, 설정 → AI 제공자에서 제공자를 변경하세요.</string>
     <string name="ai_error_model_unavailable">제공자가 이 모델을 찾지 못했어요. 무료 티어에서 유료 전용이거나, 지역 제한이 있거나, 엔드포인트가 잘못되었을 수 있어요. 설정 → AI 제공자에서 기본 Flash 모델로 전환하거나 AI Studio 프로젝트에서 결제를 활성화하세요.</string>
     <string name="ai_error_network_format">네트워크 오류: %1$s</string>

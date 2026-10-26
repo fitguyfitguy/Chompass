@@ -167,6 +167,7 @@
     <string name="ai_provider_deepinfra">DeepInfra</string>
     <string name="ai_provider_mistral">Mistral</string>
     <string name="ai_provider_ollama">Ollama (Lokalnie)</string>
+    <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
     <string name="ai_provider_custom">Niestandardowy (zgodny z OpenAI)</string>
     <string name="ai_provider_on_device">Na urządzeniu (prywatnie)</string>
     <string name="ai_provider_on_device_subtitle">Prywatnie i offline. Mniej dokładne niż chmurowe AI; pobieranie ~2 do 4 GB</string>
@@ -182,6 +183,7 @@
     <string name="ai_provider_subtitle_deepinfra">Hostowane modele open source</string>
     <string name="ai_provider_subtitle_mistral">Modele Mistral</string>
     <string name="ai_provider_subtitle_ollama">Twój komputer, bez chmury</string>
+    <string name="ai_provider_subtitle_ollama_cloud">Modele w chmurze Ollama</string>
     <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp itd.</string>
     <string name="ai_provider_group_recommended">Polecany</string>
     <string name="ai_provider_group_cloud">Dostawcy chmurowi</string>
@@ -1383,6 +1385,12 @@
     <string name="ai_error_on_device_low_memory">Za mało wolnej pamięci na AI na urządzeniu w tej chwili. Spróbuj mniejszego modelu E2B, zamknij inne aplikacje lub zmień dostawcę w Ustawienia → Dostawca AI.</string>
     <string name="ai_error_on_device_engine_init">Nie udało się uruchomić silnika modelu na tym urządzeniu. Spróbuj ponownie, zwolnij model w Ustawienia → Dostawca AI → Model albo przełącz się na dostawcę chmurowego.</string>
     <string name="ai_error_key_rejected">Twój klucz API został odrzucony. Otwórz Ustawienia → Dostawca AI i wklej ponownie prawidłowy klucz.</string>
+    <string name="ai_error_timeout">Dostawca AI odpowiadał zbyt długo. Spróbuj ponownie; jeśli używasz własnego serwera, zwiększ limit czasu w Ustawienia → Dostawca AI.</string>
+    <string name="ai_error_disabled">Funkcje AI są wyłączone w Ustawienia → Dostawca AI.</string>
+    <string name="ai_error_insecure_http_blocked">Niezabezpieczony HTTP jest zablokowany. Włącz „Zezwalaj na niezabezpieczony HTTP” w Ustawienia → Dostawca AI albo użyj adresu https://.</string>
+    <string name="ai_error_truncated_twice">Odpowiedź dwukrotnie trafiła na limit wyjścia modelu — myślenie też się liczy. Ustaw Poziom myślenia na Niski lub Wyłączone w Ustawienia → Dostawca AI albo zadaj krótsze pytanie.</string>
+    <string name="ai_error_truncated_twice_description">Modelowi skończyło się miejsce na wyjście przed dokończeniem; tokeny myślenia wliczają się do limitu. Ustaw Poziom myślenia na Niski lub Wyłączone w Ustawienia → Dostawca AI i spróbuj ponownie.</string>
+    <string name="ai_error_truncated">Odpowiedź trafiła na limit wyjścia modelu, zanim się skończyła — myślenie też się liczy. Ustaw Poziom myślenia na Niski lub Wyłączone w Ustawienia → Dostawca AI albo zadaj krótsze pytanie.</string>
     <string name="ai_error_location_unsupported">Gemini nie jest dostępny z tej lokalizacji sieciowej (kraj/IP). Jeśli używasz VPN, wyłącz go lub przełącz się na wyjście domowe. IP VPN z centrów danych (nie-domowe) są często blokowane. Możesz też włączyć płatności w projekcie Google AI Studio, spróbować innej sieci lub zmienić dostawcę w Ustawienia → Dostawca AI.</string>
     <string name="ai_error_provider_overloaded">Dostawca AI jest teraz przeciążony. Próbowaliśmy kilka razy. Spróbuj ponownie za minutę albo zmień dostawcę/model w Ustawienia → Dostawca AI.</string>
     <string name="ai_error_rate_limit">Osiągnięto limit zapytań dla Twojego klucza API. Poczekaj minutę albo zmień dostawcę w Ustawienia → Dostawca AI. W darmowym poziomie model Flash-Lite ma najwyższy limit.</string>
@@ -1877,6 +1885,7 @@
     <string name="nutrient_short_calories">Kal</string>
     <string name="nutrient_short_added_sugar">Cukry dod.</string>
     <string name="nutrient_short_sodium">Sód</string>
+    <string name="nutrient_short_cholesterol">Chol.</string>
     <string name="nutrient_short_potassium">Potas</string>
     <string name="nutrient_short_trans_fat">Tł. trans</string>
     <string name="nutrient_short_calcium">Wapń</string>

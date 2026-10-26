@@ -79,6 +79,7 @@
 
     <!-- AI Provider names -->
     <string name="ai_provider_ollama">Ollama（本地）</string>
+    <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
     <string name="ai_provider_custom">自定义（兼容 OpenAI）</string>
 
     <!-- AI Provider API key placeholders -->
@@ -699,6 +700,7 @@
     <string name="ai_provider_subtitle_deepinfra">托管的开源模型</string>
     <string name="ai_provider_subtitle_mistral">Mistral 模型</string>
     <string name="ai_provider_subtitle_ollama">你的电脑，无需云端</string>
+    <string name="ai_provider_subtitle_ollama_cloud">Ollama 云端模型</string>
     <string name="ai_provider_subtitle_custom">LM Studio、vLLM、llama.cpp 等</string>
     <string name="ai_provider_group_recommended">推荐</string>
     <string name="ai_provider_group_cloud">云端提供商</string>
@@ -843,6 +845,12 @@
     <string name="ai_error_invalid_response">无法理解 AI 的回复，请重试。</string>
     <string name="ai_error_invalid_url">API 网址无效，请检查提供商设置。</string>
     <string name="ai_error_key_rejected">API 密钥被拒绝。请打开设置 → AI 提供商，重新粘贴有效密钥。</string>
+    <string name="ai_error_timeout">AI 提供商响应超时。请重试；如果你使用自托管端点，请在设置 → AI 提供商中调大超时时间。</string>
+    <string name="ai_error_disabled">AI 功能已在设置 → AI 提供商中关闭。</string>
+    <string name="ai_error_insecure_http_blocked">不安全的 HTTP 已被拦截。请在设置 → AI 提供商中开启“允许不安全的 HTTP”，或改用 https:// 地址。</string>
+    <string name="ai_error_truncated_twice">回复两次触及模型输出上限 —— 思考内容也计入。请在设置 → AI 提供商中将推理力度设为“低”或“关闭”，或换个更短的问题。</string>
+    <string name="ai_error_truncated_twice_description">模型在完成前就耗尽了输出空间；思考 token 也计入上限。请在设置 → AI 提供商中将推理力度设为“低”或“关闭”，然后再试一次。</string>
+    <string name="ai_error_truncated">回复在完成前触及模型输出上限 —— 思考内容也计入。请在设置 → AI 提供商中将推理力度设为“低”或“关闭”，或换个更短的问题。</string>
     <string name="ai_error_location_unsupported">Gemini 在当前网络位置（国家/IP）不可用。如使用 VPN，请关闭或切换到住宅出口。数据中心/非住宅 VPN 的 IP 常被屏蔽。也可以在 Google AI Studio 项目中启用结算、换网络，或在设置 → AI 提供商中更换提供商。</string>
     <string name="ai_error_model_unavailable">提供商找不到此模型。它可能在免费层仅限付费、在你所在地区受限，或端点有误。请在设置 → AI 提供商切换到默认 Flash 模型，或在 AI Studio 项目中启用结算。</string>
     <string name="ai_error_network_format">网络错误：%1$s</string>

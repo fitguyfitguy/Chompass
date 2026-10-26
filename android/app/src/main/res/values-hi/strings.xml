@@ -79,6 +79,7 @@
 
     <!-- AI Provider names -->
     <string name="ai_provider_ollama">Ollama (लोकल)</string>
+    <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
     <string name="ai_provider_custom">कस्टम (OpenAI-संगत)</string>
 
     <!-- AI Provider API key placeholders -->
@@ -698,6 +699,7 @@
     <string name="ai_provider_subtitle_deepinfra">होस्टेड ओपन मॉडल</string>
     <string name="ai_provider_subtitle_mistral">Mistral मॉडल</string>
     <string name="ai_provider_subtitle_ollama">आपका कंप्यूटर, कोई क्लाउड नहीं</string>
+    <string name="ai_provider_subtitle_ollama_cloud">Ollama के होस्टेड मॉडल</string>
     <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp आदि</string>
     <string name="ai_provider_group_recommended">अनुशंसित</string>
     <string name="ai_provider_group_cloud">क्लाउड प्रदाता</string>
@@ -842,6 +844,12 @@
     <string name="ai_error_invalid_response">AI प्रतिक्रिया समझ में नहीं आई। कृपया फिर से प्रयास करें।</string>
     <string name="ai_error_invalid_url">अमान्य API URL। अपनी प्रदाता सेटिंग्स जांचें।</string>
     <string name="ai_error_key_rejected">आपकी API कुंजी अस्वीकार कर दी गई। सेटिंग्स → AI प्रदाता खोलें और एक मान्य कुंजी दोबारा पेस्ट करें।</string>
+    <string name="ai_error_timeout">AI प्रदाता को जवाब देने में बहुत समय लगा। फिर से कोशिश करें; अगर आप सेल्फ-होस्टेड एंडपॉइंट इस्तेमाल करते हैं, तो सेटिंग्स → AI प्रदाता में टाइमआउट बढ़ाएँ।</string>
+    <string name="ai_error_disabled">AI सुविधाएँ सेटिंग्स → AI प्रदाता में बंद हैं।</string>
+    <string name="ai_error_insecure_http_blocked">असुरक्षित HTTP ब्लॉक है। सेटिंग्स → AI प्रदाता में “असुरक्षित HTTP की अनुमति दें” चालू करें या https:// URL इस्तेमाल करें।</string>
+    <string name="ai_error_truncated_twice">जवाब दो बार मॉडल की आउटपुट सीमा तक पहुँच गया — सोच भी इसमें गिनी जाती है। सेटिंग्स → AI प्रदाता में तर्क प्रयास को निम्न या बंद पर सेट करें, या छोटा सवाल आज़माएँ।</string>
+    <string name="ai_error_truncated_twice_description">मॉडल के पास पूरा करने से पहले ही आउटपुट जगह खत्म हो गई; सोचने के टोकन सीमा में गिने जाते हैं। सेटिंग्स → AI प्रदाता में तर्क प्रयास को निम्न या बंद पर सेट करें, फिर दोबारा कोशिश करें।</string>
+    <string name="ai_error_truncated">जवाब पूरा होने से पहले मॉडल की आउटपुट सीमा तक पहुँच गया — सोच भी सीमा में गिनी जाती है। सेटिंग्स → AI प्रदाता में तर्क प्रयास को निम्न या बंद पर सेट करें, या छोटा सवाल आज़माएँ।</string>
     <string name="ai_error_location_unsupported">Gemini इस नेटवर्क स्थान (देश/IP) से उपलब्ध नहीं है। VPN उपयोग कर रहे हैं तो उसे बंद करें या रेज़िडेंशियल आउटपुट पर स्विच करें। डेटासेंटर/गैर-रेज़िडेंशियल VPN IP अक्सर ब्लॉक होते हैं। या Google AI Studio प्रोजेक्ट पर बिलिंग सक्षम करें, कोई और नेटवर्क आज़माएं, या सेटिंग्स → AI प्रदाता में प्रदाता बदलें।</string>
     <string name="ai_error_model_unavailable">आपका प्रदाता यह मॉडल नहीं ढूंढ सका। यह मुफ्त टियर पर केवल-भुगतान वाला, आपके क्षेत्र में प्रतिबंधित, या endpoint गलत हो सकता है। सेटिंग्स → AI प्रदाता में डिफ़ॉल्ट Flash मॉडल पर स्विच करें, या अपने AI Studio प्रोजेक्ट पर बिलिंग सक्षम करें।</string>
     <string name="ai_error_network_format">नेटवर्क त्रुटि: %1$s</string>

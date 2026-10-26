@@ -171,6 +171,7 @@
     <string name="ai_provider_deepinfra">DeepInfra</string>
     <string name="ai_provider_mistral">Mistral</string>
     <string name="ai_provider_ollama">Ollama (Local)</string>
+    <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
     <string name="ai_provider_custom">Custom (OpenAI-compatible)</string>
     <string name="ai_provider_on_device">On-Device (Private)</string>
     <string name="ai_provider_on_device_subtitle">Private and offline. Less accurate than cloud AI; ~2 to 4 GB download</string>
@@ -186,6 +187,7 @@
     <string name="ai_provider_subtitle_deepinfra">Hosted open models</string>
     <string name="ai_provider_subtitle_mistral">Mistral models</string>
     <string name="ai_provider_subtitle_ollama">Your computer, no cloud</string>
+    <string name="ai_provider_subtitle_ollama_cloud">Ollama\'s hosted models</string>
     <string name="ai_provider_subtitle_custom">LM Studio, vLLM, llama.cpp…</string>
 
     <!-- AI provider picker groups (settings sheet + onboarding order) -->
