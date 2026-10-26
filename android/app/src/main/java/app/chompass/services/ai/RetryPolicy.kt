@@ -1,8 +1,11 @@
 package app.chompass.services.ai
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import okhttp3.Call
+import okhttp3.Headers
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
@@ -30,7 +33,7 @@ internal data class AiHttpText(
 object RetryPolicy {
     private val delays = longArrayOf(1_000, 2_000, 4_000)
     /** Largest error-body prefix buffered for message parsing (64 KB). */
-    private const val MAX_ERROR_BODY_BYTES = 64L * 1024
+    internal const val MAX_ERROR_BODY_BYTES = 64L * 1024
 
     internal fun isRetryableHttpStatus(code: Int): Boolean =
         code == 503 || code == 529
@@ -45,25 +48,54 @@ object RetryPolicy {
     }
 
     suspend fun execute(callFactory: () -> Call): String =
-        executeText(callFactory).body
+        executeText(callFactory = callFactory).body
 
-    /** Like [execute], but keeps the response Content-Type for parse-failure logs. */
-    internal suspend fun executeText(callFactory: () -> Call): AiHttpText {
-        open(callFactory).use { response ->
-            // A server closing mid-body (llama.cpp context drop, Ollama crash)
-            // throws here, not in await(). Map it like every other IO failure
-            // (#123): the raw escape rendered as the generic "Chat failed" string
-            // and left no diagnostic.
-            val body = try {
-                response.body?.string().orEmpty()
+    /**
+     * Like [execute], but keeps the response Content-Type for parse-failure logs.
+     * Main-safe: the body is read on OkHttp's callback thread in [Call.awaitBody], so
+     * callers on the main dispatcher (the coach) never touch the socket (upstream #540).
+     * The retry ladder mirrors [open]; kept separate because success returns a fully
+     * read body while open() hands over a live streaming [Response].
+     */
+    internal suspend fun executeText(retryDelaysMs: LongArray = delays, callFactory: () -> Call): AiHttpText {
+        var lastMessage = "Request failed"
+        for (attempt in 0..retryDelaysMs.size) {
+            val buffered = try {
+                callFactory().awaitBody()
             } catch (io: IOException) {
+                // A server closing mid-body (llama.cpp context drop, Ollama crash) throws
+                // inside awaitBody. Map it like every other IO failure (#123): the raw
+                // escape rendered as the generic "Chat failed" string and left no diagnostic.
+                if (isDnsMiss(io) && attempt < retryDelaysMs.size) {
+                    delay(retryDelaysMs[attempt])
+                    continue
+                }
                 throw AiError.Network(io)
             }
-            return AiHttpText(
-                body = body,
-                contentType = response.header("Content-Type"),
+
+            if (buffered.isSuccessful) {
+                return AiHttpText(
+                    body = buffered.body,
+                    contentType = buffered.header("Content-Type"),
+                )
+            }
+
+            val code = buffered.code
+            val raw = parseErrorMessage(buffered.body)?.takeIf { it.isNotEmpty() } ?: "HTTP $code"
+            lastMessage = friendlyMessage(code, raw)
+
+            if (isRetryableHttpStatus(code) && attempt < retryDelaysMs.size) {
+                delay(retryDelaysMs[attempt])
+                continue
+            }
+            throw AiError.Api(
+                lastMessage,
+                messageRes = friendlyMessageRes(code, raw),
+                httpStatus = code,
+                providerMessage = raw.takeIf { it != "HTTP $code" },
             )
         }
+        throw AiError.Api(lastMessage)
     }
 
     /**
@@ -89,15 +121,19 @@ object RetryPolicy {
 
             // Cap the buffered error body: an oversized (or hostile) body must
             // not be read in full just to parse one message string out of it.
+            // Read on IO: like awaitBody's reads, a throttled error body must not
+            // block the caller's (main) dispatcher on the socket.
             val bodyStr = response.use { resp ->
-                // A truncated error body must not mask the HTTP status: fall back to
-                // the empty string so the message becomes "HTTP <code>".
-                runCatching {
-                    resp.body?.source()?.let { source ->
-                        source.request(MAX_ERROR_BODY_BYTES + 1)
-                        source.readUtf8(minOf(source.buffer.size, MAX_ERROR_BODY_BYTES))
-                    }.orEmpty()
-                }.getOrDefault("")
+                withContext(Dispatchers.IO) {
+                    // A truncated error body must not mask the HTTP status: fall back to
+                    // the empty string so the message becomes "HTTP <code>".
+                    runCatching {
+                        resp.body?.source()?.let { source ->
+                            source.request(MAX_ERROR_BODY_BYTES + 1)
+                            source.readUtf8(minOf(source.buffer.size, MAX_ERROR_BODY_BYTES))
+                        }.orEmpty()
+                    }.getOrDefault("")
+                }
             }
             val code = response.code
             val raw = parseErrorMessage(bodyStr)?.takeIf { it.isNotEmpty() } ?: "HTTP $code"
@@ -137,5 +173,58 @@ internal suspend fun Call.await(): Response = suspendCancellableCoroutine { cont
     })
     // Abort the socket when the caller cancels (watchdog timeout, sheet dismiss)
     // so a stalled stream does not keep an IO thread or connection alive.
+    cont.invokeOnCancellation { cancel() }
+}
+
+/**
+ * A response whose body [awaitBody] has already read to the end and closed.
+ */
+internal class BufferedResponse(val code: Int, val headers: Headers, val body: String) {
+    val isSuccessful: Boolean get() = code in 200..299
+
+    fun header(name: String): String? = headers[name]
+}
+
+/**
+ * Like [await], but reads the whole body on OkHttp's callback thread before resuming, so a
+ * caller on the main dispatcher never touches the socket (Android throws
+ * NetworkOnMainThreadException when a body read has to wait on the network; upstream #540).
+ * Error bodies stay capped at [RetryPolicy.MAX_ERROR_BODY_BYTES], like in [RetryPolicy.open].
+ * The coroutine stays suspended until the body is read, so cancelling it during a slow body
+ * still cancels the call.
+ */
+internal suspend fun Call.awaitBody(): BufferedResponse = suspendCancellableCoroutine { cont ->
+    enqueue(object : okhttp3.Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            if (cont.isActive) cont.resumeWithException(e)
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            if (!cont.isActive) {
+                response.close()
+                return
+            }
+            // Anything thrown out of this callback would crash OkHttp's thread instead of
+            // reaching the caller, so failures are handed to the continuation.
+            val result = runCatching {
+                response.use { resp ->
+                    val body = if (resp.isSuccessful) {
+                        resp.body?.string().orEmpty()
+                    } else {
+                        // A truncated error body must not mask the HTTP status: fall back to
+                        // the empty string so the message becomes "HTTP <code>".
+                        runCatching {
+                            resp.body?.source()?.let { source ->
+                                source.request(RetryPolicy.MAX_ERROR_BODY_BYTES + 1)
+                                source.readUtf8(minOf(source.buffer.size, RetryPolicy.MAX_ERROR_BODY_BYTES))
+                            }.orEmpty()
+                        }.getOrDefault("")
+                    }
+                    BufferedResponse(resp.code, resp.headers, body)
+                }
+            }
+            if (cont.isActive) cont.resumeWith(result)
+        }
+    })
     cont.invokeOnCancellation { cancel() }
 }

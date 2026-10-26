@@ -14,7 +14,8 @@ sealed class AiError(
     message: String,
     @StringRes val messageRes: Int = 0,
     val formatArgs: Array<out Any> = emptyArray(),
-) : Exception(message) {
+    cause: Throwable? = null,
+) : Exception(message, cause) {
     object NoApiKey : AiError("No API key configured. Add your key in Settings → AI Provider.", messageRes = R.string.ai_error_no_api_key)
     /** Codeberg #20 phase 2: the master AI-features switch is off; no data may leave. */
     object Disabled : AiError("AI features are turned off in Settings → AI & Speech.", messageRes = R.string.ai_error_disabled)
@@ -26,6 +27,7 @@ sealed class AiError(
         // the localized generic network message.
         messageRes = if (connectionFailureHint(cause) != null) 0 else R.string.ai_error_network_format,
         formatArgs = arrayOf(cause.localizedMessage.orEmpty()),
+        cause = cause,
     )
     object InvalidResponse : AiError("Could not understand the AI response. Please try again.", messageRes = R.string.ai_error_invalid_response)
     /** Reply arrived but was cut short at the provider (finishReason MAX_TOKENS and kin). */
@@ -58,6 +60,7 @@ sealed class AiError(
     class OnDeviceEngineInit(cause: Throwable) : AiError(
         "The on-device model engine failed to start on this device. Try again, unload the model in Settings → AI Provider → Model, or switch to a cloud provider.",
         messageRes = R.string.ai_error_on_device_engine_init,
+        cause = cause,
     )
 }
 

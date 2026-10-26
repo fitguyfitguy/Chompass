@@ -43,7 +43,7 @@ class RetryPolicyBodyReadTest {
                     .setSocketPolicy(SocketPolicy.DISCONNECT_DURING_RESPONSE_BODY)
             )
             val error = runCatching {
-                RetryPolicy.executeText(postCall(server, OkHttpClient()))
+                RetryPolicy.executeText(callFactory = postCall(server, OkHttpClient()))
             }.exceptionOrNull()
             assertTrue("expected AiError.Network, got $error", error is AiError.Network)
             assertTrue(
@@ -137,7 +137,7 @@ class RetryPolicyBodyReadTest {
                     .setBodyDelay(2, TimeUnit.SECONDS)
             )
             val error = runCatching {
-                RetryPolicy.executeText(postCall(server, client))
+                RetryPolicy.executeText(callFactory = postCall(server, client))
             }.exceptionOrNull()
             assertTrue("expected AiError.Network, got $error", error is AiError.Network)
             assertTrue(
