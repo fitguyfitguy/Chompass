@@ -80,6 +80,22 @@
     <!-- AI Provider names -->
     <string name="ai_provider_ollama">Ollama（本地）</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
+    <string name="ai_provider_custom">其他网址</string>
+    <string name="ai_provider_subtitle_custom">输入基础网址</string>
+    <string name="ai_provider_search_hint">搜索名称或主机</string>
+    <string name="ai_provider_section_shortcuts">快捷方式</string>
+    <string name="ai_provider_section_phone">在这台手机上</string>
+    <string name="ai_provider_section_server">你的服务器</string>
+    <string name="ai_provider_section_cloud">云</string>
+    <string name="ai_provider_chip_on_phone">手机上</string>
+    <string name="ai_provider_chip_your_server">你的服务器</string>
+    <string name="ai_provider_chip_native">原生</string>
+    <string name="ai_provider_chip_cloud">云</string>
+    <string name="ai_provider_row_gemini">密钥 · Google 搜索开关</string>
+    <string name="ai_provider_row_anthropic">密钥 · 独立 API</string>
+    <string name="ai_provider_row_ollama">此网络 · 无需密钥</string>
+    <string name="ai_provider_row_host_key">%1$s · 密钥</string>
+    <string name="ai_provider_directory_footer">列出的主机随此版本提供。密钥只发给你选的主机。</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="api_key_placeholder">粘贴你的 API 密钥</string>

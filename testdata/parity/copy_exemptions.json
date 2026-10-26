@@ -91,6 +91,14 @@
       ]
     },
     {
+      "key": "ai_provider_section_cloud",
+      "locales": ["de", "fr", "it", "nl", "ro"]
+    },
+    {
+      "key": "ai_provider_chip_cloud",
+      "locales": ["de", "fr", "it", "nl", "ro"]
+    },
+    {
       "key": "ai_provider_openai",
       "locales": [
         "*"

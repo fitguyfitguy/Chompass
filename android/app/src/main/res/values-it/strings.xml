@@ -79,6 +79,22 @@
     <!-- AI Provider names -->
     <string name="ai_provider_ollama">Ollama (Locale)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
+    <string name="ai_provider_custom">Altro URL</string>
+    <string name="ai_provider_subtitle_custom">Scrivi un URL di base</string>
+    <string name="ai_provider_search_hint">Cerca nome o host</string>
+    <string name="ai_provider_section_shortcuts">Scorciatoie</string>
+    <string name="ai_provider_section_phone">Su questo telefono</string>
+    <string name="ai_provider_section_server">Il tuo server</string>
+    <string name="ai_provider_section_cloud">Cloud</string>
+    <string name="ai_provider_chip_on_phone">Sul telefono</string>
+    <string name="ai_provider_chip_your_server">Il tuo server</string>
+    <string name="ai_provider_chip_native">Nativo</string>
+    <string name="ai_provider_chip_cloud">Cloud</string>
+    <string name="ai_provider_row_gemini">Chiave · interruttore Google Search</string>
+    <string name="ai_provider_row_anthropic">Chiave · API separata</string>
+    <string name="ai_provider_row_ollama">Questa rete · senza chiave</string>
+    <string name="ai_provider_row_host_key">%1$s · chiave</string>
+    <string name="ai_provider_directory_footer">Gli host in elenco arrivano con questa versione. La chiave va solo all\'host che scegli.</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="api_key_placeholder">Incolla la tua chiave API</string>

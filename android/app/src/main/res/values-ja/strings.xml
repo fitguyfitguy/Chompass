@@ -79,6 +79,22 @@
     <!-- AI Provider names -->
     <string name="ai_provider_ollama">Ollama (ローカル)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
+    <string name="ai_provider_custom">別のURL</string>
+    <string name="ai_provider_subtitle_custom">ベースURLを入力</string>
+    <string name="ai_provider_search_hint">名前かホストを検索</string>
+    <string name="ai_provider_section_shortcuts">ショートカット</string>
+    <string name="ai_provider_section_phone">この端末</string>
+    <string name="ai_provider_section_server">自分のサーバー</string>
+    <string name="ai_provider_section_cloud">クラウド</string>
+    <string name="ai_provider_chip_on_phone">端末内</string>
+    <string name="ai_provider_chip_your_server">自分のサーバー</string>
+    <string name="ai_provider_chip_native">専用API</string>
+    <string name="ai_provider_chip_cloud">クラウド</string>
+    <string name="ai_provider_row_gemini">キー · Google検索の切替</string>
+    <string name="ai_provider_row_anthropic">キー · 別API</string>
+    <string name="ai_provider_row_ollama">このネットワーク · キー不要</string>
+    <string name="ai_provider_row_host_key">%1$s · キー</string>
+    <string name="ai_provider_directory_footer">掲載ホストはこの版に含まれます。キーは選んだホストにだけ送られます。</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="api_key_placeholder">APIキーを貼り付け</string>

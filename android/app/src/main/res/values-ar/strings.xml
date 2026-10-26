@@ -80,6 +80,22 @@
     <!-- AI Provider names -->
     <string name="ai_provider_ollama">Ollama (محلي)</string>
     <string name="ai_provider_ollama_cloud">Ollama Cloud</string>
+    <string name="ai_provider_custom">عنوان آخر</string>
+    <string name="ai_provider_subtitle_custom">اكتب عنوان الأساس</string>
+    <string name="ai_provider_search_hint">ابحث عن الاسم أو المضيف</string>
+    <string name="ai_provider_section_shortcuts">اختصارات</string>
+    <string name="ai_provider_section_phone">على هذا الهاتف</string>
+    <string name="ai_provider_section_server">خادمك</string>
+    <string name="ai_provider_section_cloud">سحابة</string>
+    <string name="ai_provider_chip_on_phone">على الهاتف</string>
+    <string name="ai_provider_chip_your_server">خادمك</string>
+    <string name="ai_provider_chip_native">أصلي</string>
+    <string name="ai_provider_chip_cloud">سحابة</string>
+    <string name="ai_provider_row_gemini">مفتاح · تبديل بحث Google</string>
+    <string name="ai_provider_row_anthropic">مفتاح · واجهة منفصلة</string>
+    <string name="ai_provider_row_ollama">هذه الشبكة · بلا مفتاح</string>
+    <string name="ai_provider_row_host_key">%1$s · مفتاح</string>
+    <string name="ai_provider_directory_footer">المضيفون المدرجون يأتون مع هذا الإصدار. يُرسل المفتاح فقط إلى المضيف الذي تختاره.</string>
 
     <!-- AI Provider API key placeholders -->
     <string name="api_key_placeholder">الصق مفتاح API</string>
