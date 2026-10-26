@@ -504,6 +504,10 @@
     <string name="settings_tap_to_edit">Tocca per modificare</string>
     <string name="settings_custom_url_placeholder">https://tuo-endpoint.com/v1</string>
     <string name="settings_custom_url_title">URL base personalizzato</string>
+    <string name="settings_custom_directory_title">Endpoint noti</string>
+    <string name="settings_custom_directory_docs">Documentazione</string>
+    <string name="settings_custom_directory_footer">Gli endpoint provengono da un elenco verificato incluso in ogni versione. La tua chiave viene inviata solo all\'URL mostrato; gli elenchi dei modelli si aggiornano dal provider quando apri il selettore dei modelli.</string>
+    <string name="ai_model_accepts_images">Accetta immagini (dichiarato)</string>
     <string name="settings_ai_allow_insecure_http">Consenti HTTP non sicuro</string>
     <string name="settings_ai_allow_insecure_http_footer">Consente agli endpoint personalizzati e Ollama di usare URL http://, ad esempio nella rete di casa. I provider cloud usano https. Tienilo spento se il tuo server ha il TLS.</string>
     <string name="settings_clear_key">Cancella chiave</string>

@@ -180,8 +180,14 @@ internal fun SettingsSheets(
                     items = when {
                         ui.activeProvider == AIProvider.OLLAMA && !ui.ollamaModels.isNullOrEmpty() ->
                             ui.ollamaModels!!.map { it.id }
-                        ui.activeProvider == AIProvider.CUSTOM_OPENAI && !ui.customModels.isNullOrEmpty() ->
-                            ui.customModels!!
+                        // #143: the bundled directory lineup is the curated head
+                        // (declared image flag); fetched /models ids append (#103).
+                        ui.activeProvider == AIProvider.CUSTOM_OPENAI ->
+                            app.chompass.services.ai.OpenAiModelsClient.mergeOverCurated(
+                                ui.directoryEntry?.visionModels ?: emptyList(),
+                                ui.customModels,
+                                sortRuntime = true,
+                            )
                         ui.activeProvider == AIProvider.ON_DEVICE && ui.onDeviceModels.isNotEmpty() ->
                             ui.onDeviceModels
                         ui.activeProvider.supportsRuntimeLineup ->
@@ -196,12 +202,16 @@ internal fun SettingsSheets(
                     filterText = { it },
                     label = { it },
                     subtitle = { model ->
-                        if (ui.activeProvider == AIProvider.OLLAMA) {
-                            ui.ollamaModels?.find { it.id == model }?.subtitle
-                        } else when (ui.activeProvider.modelTiers[model]) {
-                            "paid" -> stringResource(R.string.ai_model_tier_paid)
-                            "varies" -> stringResource(R.string.ai_model_tier_varies)
-                            else -> null
+                        when {
+                            ui.activeProvider == AIProvider.OLLAMA ->
+                                ui.ollamaModels?.find { it.id == model }?.subtitle
+                            model in ui.directoryEntry?.visionModels.orEmpty() ->
+                                stringResource(R.string.ai_model_accepts_images)
+                            else -> when (ui.activeProvider.modelTiers[model]) {
+                                "paid" -> stringResource(R.string.ai_model_tier_paid)
+                                "varies" -> stringResource(R.string.ai_model_tier_varies)
+                                else -> null
+                            }
                         }
                     },
                     selected = { it == ui.activeModel },
@@ -242,14 +252,20 @@ internal fun SettingsSheets(
                 )
                 SettingsSheet.VISION_MODEL -> ListSheet(
                     title = stringResource(R.string.settings_ai_vision_model),
-                    items = listOf("") + ui.activeProvider.models,
+                    // #143: a matched custom endpoint shows its declared vision lineup;
+                    // unmatched custom keeps the old "unset only" list.
+                    items = listOf("") + (ui.directoryEntry?.visionModels ?: ui.activeProvider.models),
                     label = { if (it.isEmpty()) stringResource(R.string.settings_ai_vision_model_unset) else it },
                     subtitle = { model ->
-                        if (model.isEmpty()) null
-                        else when (ui.activeProvider.modelTiers[model]) {
-                            "paid" -> stringResource(R.string.ai_model_tier_paid)
-                            "varies" -> stringResource(R.string.ai_model_tier_varies)
-                            else -> null
+                        when {
+                            model.isEmpty() -> null
+                            model in ui.directoryEntry?.visionModels.orEmpty() ->
+                                stringResource(R.string.ai_model_accepts_images)
+                            else -> when (ui.activeProvider.modelTiers[model]) {
+                                "paid" -> stringResource(R.string.ai_model_tier_paid)
+                                "varies" -> stringResource(R.string.ai_model_tier_varies)
+                                else -> null
+                            }
                         }
                     },
                     selected = { it == ui.activeProfile?.visionModel.orEmpty() },
@@ -272,10 +288,12 @@ internal fun SettingsSheets(
                     onSave = { vm.setProfileApiKey(it); onDismiss() },
                     onDismiss = onDismiss
                 )
-                SettingsSheet.CUSTOM_BASE_URL -> TextFieldSheet(
+                SettingsSheet.CUSTOM_BASE_URL -> CustomBaseUrlSheet(
                     title = stringResource(R.string.settings_custom_url_title),
                     initial = ui.activeProfile?.baseUrl.orEmpty(),
                     placeholder = stringResource(R.string.settings_custom_url_placeholder),
+                    directory = vm.container.providerDirectory?.entries ?: emptyList(),
+                    matched = ui.directoryEntry,
                     onSave = { vm.setProfileBaseUrl(it); onDismiss() },
                     onDismiss = onDismiss
                 )

@@ -557,6 +557,10 @@
     <string name="settings_tap_to_edit">Натисни, щоб змінити</string>
     <string name="settings_custom_url_placeholder">https://your-endpoint.com/v1</string>
     <string name="settings_custom_url_title">Власний базовий URL</string>
+    <string name="settings_custom_directory_title">Відомі адреси</string>
+    <string name="settings_custom_directory_docs">Документація</string>
+    <string name="settings_custom_directory_footer">Адреси беруться з перевіреного списку, що постачається з кожним релізом. Ваш ключ надсилається лише на вказаний URL; списки моделей оновлюються від провайдера під час відкриття вибору моделі.</string>
+    <string name="ai_model_accepts_images">Підтримує зображення (заявлено)</string>
     <string name="settings_ai_allow_insecure_http">Дозволити незахищений HTTP</string>
     <string name="settings_ai_allow_insecure_http_footer">Власні та Ollama-адреси зможуть використовувати http://, наприклад у домашній мережі. Хмарні провайдери використовують https. Тримай вимкненим, якщо на сервері є TLS.</string>
     <string name="settings_clear_key">Очистити ключ</string>

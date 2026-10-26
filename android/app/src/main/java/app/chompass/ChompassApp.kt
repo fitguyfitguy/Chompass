@@ -42,6 +42,7 @@ import app.chompass.services.WaterReminderPlanner
 import app.chompass.services.WidgetSnapshotWriter
 import app.chompass.services.ai.ChatService
 import app.chompass.services.ai.FoodAnalysisService
+import app.chompass.services.ai.ProviderDirectory
 import app.chompass.services.grounding.FoodDatabaseSearch
 import app.chompass.services.grounding.GroundedFoodEntryService
 import app.chompass.services.grounding.GroundedEntryFeature
@@ -334,6 +335,15 @@ class AppContainer(app: ChompassApp) {
     }
     val chatService = ChatService(prefs, keyStore, foodAnalysis, fastingRepository = fastingRepository)
     val speechService = SpeechService(prefs, keyStore)
+
+    /**
+     * Bundled OpenAI-compatible endpoint directory (Codeberg #143); null when
+     * the asset is missing or corrupt — the Custom sheets then behave exactly
+     * as before (hand-typed URL only).
+     */
+    val providerDirectory: ProviderDirectory? by lazy(LazyThreadSafetyMode.NONE) {
+        ProviderDirectory.load(appContext)
+    }
 
     val widgetSnapshotWriter = WidgetSnapshotWriter(app, prefs, foodRepository, profileRepository, homeActivityReader, waterRepository, weatherRepository, caffeineRepository)
     val testDataSeeder = TestDataSeeder(this)

@@ -1979,6 +1979,10 @@ für dich ein</string>
     <string name="settings_custom_url_placeholder">https://your-endpoint.com/v1</string>
 
     <string name="settings_custom_url_title">Benutzerdefinierte Basis-URL</string>
+    <string name="settings_custom_directory_title">Bekannte Endpunkte</string>
+    <string name="settings_custom_directory_docs">Dokumentation</string>
+    <string name="settings_custom_directory_footer">Endpunkte stammen aus einer geprüften Liste, die mit jedem Release gebündelt wird. Ihr Schlüssel wird nur an die angezeigte URL gesendet; die Modelllisten werden beim Öffnen der Modellauswahl vom Anbieter aktualisiert.</string>
+    <string name="ai_model_accepts_images">Unterstützt Bilder (angegeben)</string>
     <string name="settings_ai_allow_insecure_http">Unsicheres HTTP erlauben</string>
     <string name="settings_ai_allow_insecure_http_footer">Eigene und Ollama-Endpunkte dürfen dann http://-URLs nutzen, zum Beispiel im Heimnetz. Cloud-Anbieter nutzen https. Lass aus, außer dein Server hat kein TLS.</string>
 

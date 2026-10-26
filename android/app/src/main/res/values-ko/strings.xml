@@ -514,6 +514,10 @@
     <string name="settings_server_url">서버 URL</string>
     <string name="settings_tap_to_edit">탭하여 편집</string>
     <string name="settings_custom_url_title">사용자 지정 기본 URL</string>
+    <string name="settings_custom_directory_title">알려진 엔드포인트</string>
+    <string name="settings_custom_directory_docs">문서</string>
+    <string name="settings_custom_directory_footer">엔드포인트는 각 릴리스에 포함된 검토된 목록에서 제공돼요. 키는 표시된 URL로만 전송되고, 모델 선택기를 열면 모델 목록이 제공자에게서 새로 고쳐져요.</string>
+    <string name="ai_model_accepts_images">이미지 지원 (선언됨)</string>
     <string name="settings_ai_allow_insecure_http">안전하지 않은 HTTP 허용</string>
     <string name="settings_ai_allow_insecure_http_footer">사용자 지정 및 Ollama 엔드포인트에서 http:// URL을 쓸 수 있어요. 집 네트워크처럼요. 클라우드 제공자는 https를 사용해요. 서버에 TLS가 있을 때는 꺼 두세요.</string>
     <string name="settings_clear_key">키 지우기</string>

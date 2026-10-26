@@ -510,6 +510,10 @@
     <string name="settings_tap_to_edit">Toca para editar</string>
     <string name="settings_custom_url_placeholder">https://tu-endpoint.com/v1</string>
     <string name="settings_custom_url_title">URL base personalizada</string>
+    <string name="settings_custom_directory_title">Endpoints conocidos</string>
+    <string name="settings_custom_directory_docs">Documentación</string>
+    <string name="settings_custom_directory_footer">Los endpoints provienen de una lista revisada incluida en cada versión. Tu clave solo se envía a la URL mostrada; las listas de modelos se actualizan desde el proveedor al abrir el selector de modelos.</string>
+    <string name="ai_model_accepts_images">Acepta imágenes (declarado)</string>
     <string name="settings_ai_allow_insecure_http">Permitir HTTP inseguro</string>
     <string name="settings_ai_allow_insecure_http_footer">Permite que los endpoints personalizados y de Ollama usen URLs http://, por ejemplo en tu red local. Los proveedores en la nube usan https. Déjalo apagado salvo que tu servidor no tenga TLS.</string>
     <string name="settings_clear_key">Borrar clave</string>

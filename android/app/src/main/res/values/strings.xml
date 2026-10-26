@@ -1786,6 +1786,10 @@
     <string name="settings_ai_allow_insecure_http">Allow insecure HTTP</string>
     <string name="settings_ai_allow_insecure_http_footer">Lets custom and Ollama endpoints use plain http:// URLs, for example on your home network. Cloud providers use https. Keep off unless your server has no TLS.</string>
     <string name="settings_custom_url_title">Custom base URL</string>
+    <string name="settings_custom_directory_title">Known endpoints</string>
+    <string name="settings_custom_directory_docs">Documentation</string>
+    <string name="settings_custom_directory_footer">Endpoints come from a reviewed list bundled with each release. Your key is only sent to the URL shown; lineups refresh from the provider when you open the model picker.</string>
+    <string name="ai_model_accepts_images">Accepts images (declared)</string>
     <string name="settings_clear_key">Clear key</string>
     <string name="settings_on_device_model">Model file</string>
     <string name="settings_on_device_model_ready">Downloaded</string>

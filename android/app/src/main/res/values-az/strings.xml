@@ -506,6 +506,10 @@ bilirsən?</string>
     <string name="settings_base_url">Əsas URL</string>
     <string name="settings_tap_to_edit">Redaktə etmək üçün toxun</string>
     <string name="settings_custom_url_title">Fərdi əsas URL</string>
+    <string name="settings_custom_directory_title">Tanınmış ünvanlar</string>
+    <string name="settings_custom_directory_docs">Sənədlər</string>
+    <string name="settings_custom_directory_footer">Ünvanlar hər buraxılışla birlikdə verilən yoxlanılmış siyahıdan götürülür. Açarınız yalnız göstərilən URL-yə göndərilir; model seçicini açanda model siyahıları provayderdən yenilənir.</string>
+    <string name="ai_model_accepts_images">Şəkilləri qəbul edir (bəyan olunub)</string>
     <string name="settings_ai_allow_insecure_http">Qorunmayan HTTP-yə icazə ver</string>
     <string name="settings_ai_allow_insecure_http_footer">Fərdi və Ollama ünvanlarının http:// URL-lərindən istifadəsinə icazə verir, məsələn ev şəbəkəndə. Bulud provayderləri https istifadə edir. Serverində TLS varsa, bağlı saxla.</string>
     <string name="settings_clear_key">Açarı təmizlə</string>
