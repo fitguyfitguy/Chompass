@@ -202,7 +202,6 @@
     <string name="settings_ai_key_remove_title">Remove API key?</string>
     <string name="settings_ai_key_remove_body">Saving an empty key clears the stored key for this profile.</string>
     <string name="settings_ai_get_key">Get API key</string>
-    <string name="settings_ai_value_default">%1$,d (default)</string>
     <string name="settings_ai_timeout_default">%1$,ds (default)</string>
 
     <!-- AI Provider API key placeholders -->
@@ -1493,11 +1492,6 @@
         <item>local</item>
         <item>offline</item>
     </string-array>
-    <string-array name="settings_search_kw_max_tokens">
-        <item>tokens</item>
-        <item>length</item>
-        <item>cap</item>
-    </string-array>
     <string-array name="settings_search_kw_ai_read_timeout">
         <item>timeout</item>
         <item>seconds</item>
@@ -2079,10 +2073,10 @@
     <string name="ai_error_image_conversion_failed">Failed to process the image.</string>
     <string name="ai_error_network_format">Network error: %1$s</string>
     <string name="ai_error_invalid_response">Could not understand the AI response. Please try again.</string>
-    <string name="ai_error_timeout">The AI provider took too long to answer. Try again, or raise the timeout in Settings → AI &amp; Speech.</string>
-    <string name="ai_error_disabled">AI features are turned off in Settings → AI &amp; Speech.</string>
+    <string name="ai_error_timeout">The AI provider took too long to answer. Try again; if you use a self-hosted endpoint, raise the timeout in Settings → AI Provider.</string>
+    <string name="ai_error_disabled">AI features are turned off in Settings → AI Provider.</string>
     <string name="ai_error_invalid_url">Invalid API URL. Check your provider settings.</string>
-    <string name="ai_error_insecure_http_blocked">Insecure HTTP is blocked. Turn on “Allow insecure HTTP” in Settings → AI &amp; Speech, or use an https:// URL.</string>
+    <string name="ai_error_insecure_http_blocked">Insecure HTTP is blocked. Turn on “Allow insecure HTTP” in Settings → AI Provider, or use an https:// URL.</string>
     <string name="ai_error_on_device_model_not_downloaded">On-device model not downloaded yet. Open Settings → AI Provider → Model to download it.</string>
     <string name="ai_error_on_device_unsupported_device">This device doesn\'t meet the requirements for on-device AI. Choose a cloud provider in Settings → AI Provider.</string>
     <string name="ai_error_on_device_low_memory">Not enough free memory for on-device AI right now. Try the smaller E2B model, close other apps, or switch providers in Settings → AI Provider.</string>
@@ -2094,9 +2088,9 @@
     <string name="ai_error_model_unavailable">Your provider couldn\'t find this model. It may be paid-only on the free tier, restricted in your region, or the endpoint may be wrong. Switch to the default Flash model in Settings → AI Provider, or enable billing on your AI Studio project.</string>
     <string name="ai_error_coach_on_device">Coach isn\'t available with the on-device provider yet. Switch to a cloud provider in Settings → AI Provider.</string>
     <string name="ai_error_coach_round_limit">Coach could not answer. Try rephrasing your question.</string>
-    <string name="ai_error_truncated_twice">The AI response was cut off at the response length limit twice. Raise the max response length in Settings → AI &amp; Speech, or try a shorter question.</string>
-    <string name="ai_error_truncated_twice_description">The model hit the response length limit before finishing, and thinking counts toward it. Raise the max response length in Settings → AI &amp; Speech, or limit the model\'s thinking, then try again.</string>
-    <string name="ai_error_truncated">The AI response was cut off at the response length limit. Raise the max response length in Settings → AI &amp; Speech, or try a shorter question.</string>
+    <string name="ai_error_truncated_twice">The reply hit the model\'s output limit twice — thinking counts toward it. Set Reasoning effort to Low or Off in Settings → AI Provider, or try a shorter question.</string>
+    <string name="ai_error_truncated_twice_description">The model ran out of output room before finishing; thinking tokens count toward the limit. Set Reasoning effort to Low or Off in Settings → AI Provider, then try again.</string>
+    <string name="ai_error_truncated">The reply hit the model\'s output limit before it finished — thinking counts toward the limit. Set Reasoning effort to Low or Off in Settings → AI Provider, or try a shorter question.</string>
     <string name="ai_error_provider_error">The AI provider returned an error.</string>
     <string name="ai_error_grounded_requires_provider">Grounded tool loop requires a live AI provider.</string>
     <string name="ai_error_grounded_on_device">Grounded tool loop is not available for on-device models.</string>
@@ -2468,8 +2462,6 @@
     <string name="export_failed">Export failed.</string>
     <string name="settings_tap_to_update">Tap to update</string>
     <string name="settings_calc_methods">Calculation Methods</string>
-    <string name="settings_max_tokens">Max response length</string>
-    <string name="settings_max_tokens_unit">tokens</string>
     <string name="settings_ai_read_timeout">AI read timeout</string>
     <string name="settings_ai_read_timeout_unit">s</string>
     <string name="settings_ai_read_timeout_value">%1$d s</string>

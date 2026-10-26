@@ -711,7 +711,6 @@
     <string name="settings_ai_key_remove_title">API कुंजी हटाएं?</string>
     <string name="settings_ai_key_remove_body">खाली कुंजी सहेजने से इस प्रोफ़ाइल की संग्रहीत कुंजी मिट जाती है।</string>
     <string name="settings_ai_get_key">API कुंजी पाएं</string>
-    <string name="settings_ai_value_default">%1$,d (डिफ़ॉल्ट)</string>
     <string name="settings_ai_timeout_default">%1$,ds (डिफ़ॉल्ट)</string>
     <string name="camera_scale_tip_message">सुझाव: भोजन के बगल में कांटा, हाथ या सिक्का रखें। यह हिस्से का अनुमान लगाने में मदद करता है।</string>
     <string name="cd_relog_meal">%1$s फिर से लॉग करें</string>
@@ -837,13 +836,11 @@
     <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="ai_error_coach_on_device">कोच अभी ऑन-डिवाइस प्रदाता के साथ उपलब्ध नहीं है। सेटिंग्स → AI प्रदाता में क्लाउड प्रदाता पर स्विच करें।</string>
     <string name="ai_error_coach_round_limit">कोच जवाब नहीं दे सका। अपना प्रश्न दोबारा लिखकर देखें।</string>
-    <string name="ai_error_disabled">AI सुविधाएं सेटिंग्स → AI और भाषण में बंद हैं।</string>
     <string name="ai_error_grounded_on_device">Grounded मोड ऑन-डिवाइस मॉडल के लिए उपलब्ध नहीं है।</string>
     <string name="ai_error_grounded_requires_provider">Grounded मोड के लिए एक सक्रिय AI प्रदाता आवश्यक है।</string>
     <string name="ai_error_image_conversion_failed">छवि संसाधित नहीं हो सकी।</string>
     <string name="ai_error_invalid_response">AI प्रतिक्रिया समझ में नहीं आई। कृपया फिर से प्रयास करें।</string>
     <string name="ai_error_invalid_url">अमान्य API URL। अपनी प्रदाता सेटिंग्स जांचें।</string>
-    <string name="ai_error_insecure_http_blocked">असुरक्षित HTTP अवरुद्ध है। सेटिंग्स → AI और भाषण में “असुरक्षित HTTP की अनुमति दें” चालू करें, या https:// URL इस्तेमाल करें।</string>
     <string name="ai_error_key_rejected">आपकी API कुंजी अस्वीकार कर दी गई। सेटिंग्स → AI प्रदाता खोलें और एक मान्य कुंजी दोबारा पेस्ट करें।</string>
     <string name="ai_error_location_unsupported">Gemini इस नेटवर्क स्थान (देश/IP) से उपलब्ध नहीं है। VPN उपयोग कर रहे हैं तो उसे बंद करें या रेज़िडेंशियल आउटपुट पर स्विच करें। डेटासेंटर/गैर-रेज़िडेंशियल VPN IP अक्सर ब्लॉक होते हैं। या Google AI Studio प्रोजेक्ट पर बिलिंग सक्षम करें, कोई और नेटवर्क आज़माएं, या सेटिंग्स → AI प्रदाता में प्रदाता बदलें।</string>
     <string name="ai_error_model_unavailable">आपका प्रदाता यह मॉडल नहीं ढूंढ सका। यह मुफ्त टियर पर केवल-भुगतान वाला, आपके क्षेत्र में प्रतिबंधित, या endpoint गलत हो सकता है। सेटिंग्स → AI प्रदाता में डिफ़ॉल्ट Flash मॉडल पर स्विच करें, या अपने AI Studio प्रोजेक्ट पर बिलिंग सक्षम करें।</string>
@@ -856,10 +853,6 @@
     <string name="ai_error_provider_error">AI प्रदाता ने एक त्रुटि लौटाई।</string>
     <string name="ai_error_provider_overloaded">AI प्रदाता अभी अतिभारित है। हमने कुछ बार प्रयास किया। एक मिनट में फिर प्रयास करें, या सेटिंग्स → AI प्रदाता में प्रदाता/मॉडल बदलें।</string>
     <string name="ai_error_rate_limit">आपकी API कुंजी की अनुरोध सीमा पूरी हो गई। एक मिनट प्रतीक्षा करें या सेटिंग्स → AI प्रदाता में दूसरा प्रदाता चुनें। मुफ्त टियर पर Flash-Lite मॉडल की कोटा सबसे अधिक है।</string>
-    <string name="ai_error_timeout">AI प्रदाता ने जवाब देने में बहुत समय लिया। फिर प्रयास करें, या सेटिंग्स → AI और भाषण में टाइमआउट बढ़ाएं।</string>
-    <string name="ai_error_truncated">AI की प्रतिक्रिया लंबाई की सीमा पर कट गई। सेटिंग्स → AI और भाषण में अधिकतम प्रतिक्रिया लंबाई बढ़ाएं, या छोटा प्रश्न आज़माएं।</string>
-    <string name="ai_error_truncated_twice">AI की प्रतिक्रिया लंबाई की सीमा पर दो बार कट गई। सेटिंग्स → AI और भाषण में अधिकतम प्रतिक्रिया लंबाई बढ़ाएं, या छोटा प्रश्न आज़माएं।</string>
-    <string name="ai_error_truncated_twice_description">मॉडल जवाब पूरा करने से पहले ही प्रतिक्रिया लंबाई की सीमा तक पहुंच गया, और सोच भी इसी सीमा में गिनी जाती है। सेटिंग्स → AI और भाषण में अधिकतम प्रतिक्रिया लंबाई बढ़ाएं, या मॉडल की सोच सीमित करें, फिर दोबारा कोशिश करें।</string>
     <string name="ai_model_tier_paid">केवल-भुगतान मॉडल (मुफ्त टियर में अब Pro शामिल नहीं है)</string>
     <string name="ai_model_tier_varies">मुफ्त टियर पर उपलब्धता खाते और क्षेत्र के अनुसार भिन्न होती है</string>
     <string name="ai_provider_on_device">ऑन-डिवाइस (निजी)</string>
@@ -1479,8 +1472,6 @@
     <string name="settings_macro_pinned_label_format">%1$s (पिन किया)</string>
     <string name="settings_macro_unlocked">अनलॉक किया</string>
     <string name="settings_manage_health_access">Health Connect पहुंच प्रबंधित करें</string>
-    <string name="settings_max_tokens">अधिकतम प्रतिक्रिया लंबाई</string>
-    <string name="settings_max_tokens_unit">टोकन</string>
     <string name="settings_meal_constituents">भोजन सामग्री विवरण</string>
     <string name="settings_meal_constituents_footer">सक्षम होने पर, AI जटिल भोजन को ग्राम और इकाइयों के साथ संपादन योग्य सामग्रियों में विभाजित कर सकता है। प्रति-सामग्री सूक्ष्मपोषक केवल मजबूत क्लाउड मॉडल से मांगे जाते हैं; छोटे मॉडल मैक्रोज़ के साथ सामग्री सूची लौटाते हैं।</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
@@ -2671,11 +2662,6 @@
         <item>डाउनलोड</item>
         <item>लोकल</item>
         <item>ऑफ़लाइन</item>
-    </string-array>
-    <string-array name="settings_search_kw_max_tokens">
-        <item>टोकन</item>
-        <item>लंबाई</item>
-        <item>सीमा</item>
     </string-array>
     <string-array name="settings_search_kw_ai_read_timeout">
         <item>टाइमआउट</item>

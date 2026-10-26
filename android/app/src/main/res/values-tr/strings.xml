@@ -195,7 +195,6 @@
     <string name="settings_ai_key_remove_title">API anahtarı kaldırılsın mı?</string>
     <string name="settings_ai_key_remove_body">Boş anahtar kaydetmek, bu profilin kayıtlı anahtarını siler.</string>
     <string name="settings_ai_get_key">API anahtarı al</string>
-    <string name="settings_ai_value_default">%1$,d (varsayılan)</string>
     <string name="settings_ai_timeout_default">%1$,ds (varsayılan)</string>
 
     <!-- AI Provider API key placeholders -->
@@ -1374,10 +1373,7 @@
     <string name="ai_error_image_conversion_failed">Görüntü işlenemedi.</string>
     <string name="ai_error_network_format">Ağ hatası: %1$s</string>
     <string name="ai_error_invalid_response">AI yanıtı anlaşılamadı. Lütfen tekrar dene.</string>
-    <string name="ai_error_timeout">AI sağlayıcısı yanıtlamak için çok uzun sürdü. Tekrar dene veya Ayarlar → AI ve Ses bölümünden zaman aşımını artır.</string>
-    <string name="ai_error_disabled">AI özellikleri Ayarlar → AI ve Ses bölümünde kapatılmış.</string>
     <string name="ai_error_invalid_url">Geçersiz API URL\'si. Sağlayıcı ayarlarını kontrol et.</string>
-    <string name="ai_error_insecure_http_blocked">Güvensiz HTTP engellendi. Ayarlar → AI ve Ses bölümünde «Güvensiz HTTP\'ye izin ver»i aç veya https:// adresi kullan.</string>
     <string name="ai_error_on_device_model_not_downloaded">Cihazdaki model henüz indirilmedi. İndirmek için Ayarlar → AI Sağlayıcısı → Model bölümünü aç.</string>
     <string name="ai_error_on_device_unsupported_device">Bu cihaz, cihazdaki AI gereksinimlerini karşılamıyor. Ayarlar → AI Sağlayıcısı bölümünden bir bulut sağlayıcısı seç.</string>
     <string name="ai_error_on_device_low_memory">Şu anda cihazdaki yapay zekâ için yeterli boş bellek yok. Daha küçük E2B modelini dene, diğer uygulamaları kapat veya Ayarlar → AI Sağlayıcısı bölümünden sağlayıcı değiştir.</string>
@@ -1389,9 +1385,6 @@
     <string name="ai_error_model_unavailable">Sağlayıcın bu modeli bulamadı. Ücretsiz katmanda yalnızca ücretli olabilir, bölgende kısıtlı olabilir veya uç nokta yanlış olabilir. Ayarlar → AI Sağlayıcısı bölümünden varsayılan Flash modeline geç veya AI Studio projende faturalandırmayı etkinleştir.</string>
     <string name="ai_error_coach_on_device">Koç, cihazdaki sağlayıcıyla henüz kullanılamıyor. Ayarlar → AI Sağlayıcısı bölümünden bir bulut sağlayıcısına geç.</string>
     <string name="ai_error_coach_round_limit">Koç yanıtlayamadı. Sorunu farklı şekilde ifade etmeyi dene.</string>
-    <string name="ai_error_truncated_twice">AI yanıtı yanıt uzunluğu sınırında iki kez kesildi. Ayarlar → AI ve Ses bölümünden maksimum yanıt uzunluğunu artır ya da daha kısa bir soru dene.</string>
-    <string name="ai_error_truncated_twice_description">Model cevabı bitirmeden yanıt uzunluğu sınırına ulaştı ve düşünme de bu sınıra dahil. Ayarlar → AI ve Ses bölümünden maksimum yanıt uzunluğunu artır ya da modelin düşünmesini sınırla, sonra tekrar dene.</string>
-    <string name="ai_error_truncated">AI yanıtı yanıt uzunluğu sınırında kesildi. Ayarlar → AI ve Ses bölümünden maksimum yanıt uzunluğunu artır ya da daha kısa bir soru dene.</string>
     <string name="ai_error_provider_error">AI sağlayıcısı bir hata döndürdü.</string>
     <string name="ai_error_grounded_requires_provider">Doğrulanmış araç döngüsü canlı bir AI sağlayıcısı gerektirir.</string>
     <string name="ai_error_grounded_on_device">Doğrulanmış araç döngüsü cihazdaki modeller için kullanılamaz.</string>
@@ -1647,8 +1640,6 @@
     <string name="export_failed">Dışa aktarma başarısız.</string>
     <string name="settings_tap_to_update">Güncellemek için dokun</string>
     <string name="settings_calc_methods">Hesaplama Yöntemleri</string>
-    <string name="settings_max_tokens">Maksimum yanıt uzunluğu</string>
-    <string name="settings_max_tokens_unit">token</string>
     <string name="settings_ai_read_timeout">AI okuma zaman aşımı</string>
     <string name="settings_ai_read_timeout_unit">s</string>
     <string name="settings_ai_read_timeout_value">%1$d s</string>
@@ -2690,11 +2681,6 @@ makrolar yeni kalori toplamına göre yeniden dengelenir</string>
         <item>indirme</item>
         <item>yerel</item>
         <item>çevrimdışı</item>
-    </string-array>
-    <string-array name="settings_search_kw_max_tokens">
-        <item>token</item>
-        <item>uzunluk</item>
-        <item>sınır</item>
     </string-array>
     <string-array name="settings_search_kw_ai_read_timeout">
         <item>zaman aşımı</item>

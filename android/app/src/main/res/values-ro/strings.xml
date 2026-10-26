@@ -703,7 +703,6 @@
     <string name="settings_ai_key_remove_title">Elimini cheia API?</string>
     <string name="settings_ai_key_remove_body">Salvarea unei chei goale șterge cheia stocată pentru acest profil.</string>
     <string name="settings_ai_get_key">Obține cheie API</string>
-    <string name="settings_ai_value_default">%1$,d (implicit)</string>
     <string name="settings_ai_timeout_default">%1$,ds (implicit)</string>
     <string name="camera_scale_tip_message">Sfat: include o furculiță, mâna sau o monedă lângă mâncare. Ajută la estimarea porției.</string>
     <string name="cd_relog_meal">Înregistrează din nou %1$s</string>
@@ -830,13 +829,11 @@
     <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="ai_error_coach_on_device">Antrenorul nu este încă disponibil cu furnizorul local. Comută la un furnizor cloud în Setări → Furnizor IA.</string>
     <string name="ai_error_coach_round_limit">Antrenorul nu a putut răspunde. Încearcă să reformulezi întrebarea.</string>
-    <string name="ai_error_disabled">Funcțiile IA sunt dezactivate în Setări → IA și voce.</string>
     <string name="ai_error_grounded_on_device">Modul Grounded nu este disponibil pentru modelele locale.</string>
     <string name="ai_error_grounded_requires_provider">Modul Grounded necesită un furnizor IA activ.</string>
     <string name="ai_error_image_conversion_failed">Procesarea imaginii a eșuat.</string>
     <string name="ai_error_invalid_response">Nu am putut înțelege răspunsul IA. Încearcă din nou.</string>
     <string name="ai_error_invalid_url">URL API nevalid. Verifică setările furnizorului.</string>
-    <string name="ai_error_insecure_http_blocked">HTTP nesigur este blocat. Activează «Permite HTTP nesigur» în Setări → IA și voce sau folosește un URL https://.</string>
     <string name="ai_error_key_rejected">Cheia ta API a fost respinsă. Deschide Setări → Furnizor IA și lipește din nou o cheie validă.</string>
     <string name="ai_error_location_unsupported">Gemini nu este disponibil din această locație de rețea (țară/IP). Dacă folosești VPN, dezactivează-l sau comută la o ieșire rezidențială. IP-urile de datacenter/nerezidențiale VPN sunt adesea blocate. Sau activează facturarea în proiectul Google AI Studio, încearcă altă rețea sau schimbă furnizorul în Setări → Furnizor IA.</string>
     <string name="ai_error_model_unavailable">Furnizorul tău nu a găsit acest model. Poate fi plătit pe planul gratuit, restricționat în regiunea ta sau endpoint-ul poate fi greșit. Comută la modelul Flash implicit în Setări → Furnizor IA sau activează facturarea în proiectul tău AI Studio.</string>
@@ -849,10 +846,6 @@
     <string name="ai_error_provider_error">Furnizorul IA a returnat o eroare.</string>
     <string name="ai_error_provider_overloaded">Furnizorul IA este suprasolicitat acum. Am încercat de câteva ori. Încearcă din nou într-un minut sau schimbă furnizorul/modelul în Setări → Furnizor IA.</string>
     <string name="ai_error_rate_limit">Limită de cereri atinsă pentru cheia ta API. Așteaptă un minut sau schimbă furnizorul în Setări → Furnizor IA. Pe planul gratuit, modelul Flash-Lite are cea mai mare cotă.</string>
-    <string name="ai_error_timeout">Furnizorul IA a durat prea mult să răspundă. Încearcă din nou sau mărește timeout-ul în Setări → IA și voce.</string>
-    <string name="ai_error_truncated">Răspunsul IA a fost tăiat la limita de lungime a răspunsului. Mărește lungimea maximă a răspunsului în Setări → IA și voce, sau încearcă o întrebare mai scurtă.</string>
-    <string name="ai_error_truncated_twice">Răspunsul IA a fost tăiat de două ori la limita de lungime a răspunsului. Mărește lungimea maximă a răspunsului în Setări → IA și voce, sau încearcă o întrebare mai scurtă.</string>
-    <string name="ai_error_truncated_twice_description">Modelul a atins limita de lungime a răspunsului înainte să termine, iar raționamentul se numără la această limită. Mărește lungimea maximă a răspunsului în Setări → IA și voce, sau limitează raționamentul modelului, apoi încearcă din nou.</string>
     <string name="ai_model_tier_paid">Doar model plătit (planul gratuit nu mai include Pro)</string>
     <string name="ai_model_tier_varies">Disponibilitatea pe planul gratuit variază după cont și regiune</string>
     <string name="ai_provider_ollama">Ollama (local)</string>
@@ -1480,8 +1473,6 @@
     <string name="settings_macro_pinned_label_format">%1$s (fixat)</string>
     <string name="settings_macro_unlocked">Deblocat</string>
     <string name="settings_manage_health_access">Gestionează accesul Health Connect</string>
-    <string name="settings_max_tokens">Lungimea maximă a răspunsului</string>
-    <string name="settings_max_tokens_unit">tokeni</string>
     <string name="settings_meal_constituents">Împărțirea mesei în ingrediente</string>
     <string name="settings_meal_constituents_footer">Când este activ, IA poate împărți mesele compuse în ingrediente editabile cu grame și unități. Micronutrienții per ingredient sunt ceruți doar modelelor cloud mai puternice; modelele mai mici returnează oricum lista ingredientelor cu macronutrienți.</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
@@ -2687,11 +2678,6 @@ macro-urile reechilibrate la noul total caloric</string>
         <item>descărcare</item>
         <item>local</item>
         <item>offline</item>
-    </string-array>
-    <string-array name="settings_search_kw_max_tokens">
-        <item>tokeni</item>
-        <item>lungime</item>
-        <item>limită</item>
     </string-array>
     <string-array name="settings_search_kw_ai_read_timeout">
         <item>timeout</item>

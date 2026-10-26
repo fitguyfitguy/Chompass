@@ -679,7 +679,6 @@
     <string name="settings_ai_key_remove_title">API-sleutel verwijderen?</string>
     <string name="settings_ai_key_remove_body">Een lege sleutel opslaan wist de opgeslagen sleutel van dit profiel.</string>
     <string name="settings_ai_get_key">API-sleutel ophalen</string>
-    <string name="settings_ai_value_default">%1$,d (standaard)</string>
     <string name="settings_ai_timeout_default">%1$,ds (standaard)</string>
     <string name="camera_scale_tip_message">Tip: leg een vork, hand of munt naast je eten. Dat helpt de portiegrootte te schatten.</string>
     <string name="cd_relog_meal">%1$s opnieuw loggen</string>
@@ -807,13 +806,11 @@
     <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="ai_error_coach_on_device">Coach is nog niet beschikbaar met de on-device provider. Schakel over naar een cloudprovider in Instellingen → AI-provider.</string>
     <string name="ai_error_coach_round_limit">Coach kon niet antwoorden. Probeer je vraag anders te formuleren.</string>
-    <string name="ai_error_disabled">AI-functies zijn uitgeschakeld in Instellingen → AI en spraak.</string>
     <string name="ai_error_grounded_on_device">De Grounded-modus is niet beschikbaar voor on-device modellen.</string>
     <string name="ai_error_grounded_requires_provider">De Grounded-modus vereist een actieve AI-provider.</string>
     <string name="ai_error_image_conversion_failed">Afbeelding verwerken mislukt.</string>
     <string name="ai_error_invalid_response">AI-antwoord niet begrepen. Probeer het opnieuw.</string>
     <string name="ai_error_invalid_url">Ongeldige API-URL. Controleer je providerinstellingen.</string>
-    <string name="ai_error_insecure_http_blocked">Onveilige HTTP is geblokkeerd. Zet «Onveilige HTTP toestaan» aan in Instellingen → AI en spraak, of gebruik een https://-URL.</string>
     <string name="ai_error_key_rejected">Je API-sleutel is afgewezen. Open Instellingen → AI-provider en plak opnieuw een geldige sleutel.</string>
     <string name="ai_error_location_unsupported">Gemini is niet beschikbaar vanaf deze netwerklocatie (land/IP). Gebruik je een VPN, zet die dan uit of kies een residentiële exit. Datacenter-/niet-residentiële VPN-IP\'s worden vaak geblokkeerd. Of schakel facturering in op het Google AI Studio-project, probeer een ander netwerk of wissel van provider in Instellingen → AI-provider.</string>
     <string name="ai_error_model_unavailable">Je provider kon dit model niet vinden. Het kan betaald zijn op de gratis laag, beperkt in jouw regio, of de endpoint kan onjuist zijn. Schakel naar het standaard Flash-model in Instellingen → AI-provider of schakel facturering in op je AI Studio-project.</string>
@@ -826,10 +823,6 @@
     <string name="ai_error_provider_error">De AI-provider gaf een fout terug.</string>
     <string name="ai_error_provider_overloaded">De AI-provider is nu overbelast. We hebben een paar keer opnieuw geprobeerd. Probeer het over een minuut nog eens of wissel van provider/model in Instellingen → AI-provider.</string>
     <string name="ai_error_rate_limit">Limiet bereikt voor je API-sleutel. Wacht een minuut of wissel van provider in Instellingen → AI-provider. Op de gratis laag heeft het Flash-Lite-model de hoogste quota.</string>
-    <string name="ai_error_timeout">De AI-provider deed te lang over het antwoord. Probeer het opnieuw of verhoog de timeout in Instellingen → AI en spraak.</string>
-    <string name="ai_error_truncated">Het AI-antwoord is afgekapt bij de limiet voor de antwoordlengte. Verhoog de maximale antwoordlengte in Instellingen → AI en spraak, of stel een kortere vraag.</string>
-    <string name="ai_error_truncated_twice">Het AI-antwoord is twee keer afgekapt bij de limiet voor de antwoordlengte. Verhoog de maximale antwoordlengte in Instellingen → AI en spraak, of stel een kortere vraag.</string>
-    <string name="ai_error_truncated_twice_description">Het model bereikte de limiet voor de antwoordlengte voordat het af was; denken telt daarin mee. Verhoog de maximale antwoordlengte in Instellingen → AI en spraak, of beperk het denken van het model, en probeer het daarna opnieuw.</string>
     <string name="ai_model_tier_paid">Alleen betaald model (gratis laag bevat Pro niet meer)</string>
     <string name="ai_model_tier_varies">Beschikbaarheid op de gratis laag verschilt per account en regio</string>
     <string name="ai_provider_on_device">Op apparaat (privé)</string>
@@ -1458,8 +1451,6 @@
     <string name="settings_macro_pinned_label_format">%1$s (vastgezet)</string>
     <string name="settings_macro_unlocked">Ontgrendeld</string>
     <string name="settings_manage_health_access">Health Connect-toegang beheren</string>
-    <string name="settings_max_tokens">Maximale antwoordlengte</string>
-    <string name="settings_max_tokens_unit">tokens</string>
     <string name="settings_meal_constituents">Maaltijd opdelen in ingrediënten</string>
     <string name="settings_meal_constituents_footer">Wanneer ingeschakeld kan AI samengestelde maaltijden splitsen in bewerkbare ingrediënten met grammen en eenheden. Micronutriënten per ingrediënt worden alleen aan sterkere cloudmodellen gevraagd; kleinere modellen geven alsnog de ingrediëntenlijst met macro\'s terug.</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
@@ -2670,11 +2661,6 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
         <item>download</item>
         <item>lokaal</item>
         <item>offline</item>
-    </string-array>
-    <string-array name="settings_search_kw_max_tokens">
-        <item>tokens</item>
-        <item>lengte</item>
-        <item>limiet</item>
     </string-array>
     <string-array name="settings_search_kw_ai_read_timeout">
         <item>timeout</item>

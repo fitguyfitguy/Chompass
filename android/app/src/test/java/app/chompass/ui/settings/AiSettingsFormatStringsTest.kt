@@ -11,8 +11,8 @@ import org.robolectric.annotation.Config
 
 /**
  * Device-pass regression (2026-10-12): SettingsAiSection passed an
- * already-grouped String into settings_ai_value_default's %1$,d pattern and
- * crashed with IllegalFormatConversionException at first composition. Pin the
+ * already-grouped String into a %1$,d pattern and crashed with
+ * IllegalFormatConversionException at first composition. Pin the
  * argument TYPE of every new formatted AI-settings string: resource pattern
  * on the left, real call-site argument on the right.
  */
@@ -23,7 +23,6 @@ class AiSettingsFormatStringsTest {
 
     @Test
     fun defaultValueStrings_formatWithIntArgs() {
-        assertEquals("4,096 (default)", context.getString(R.string.settings_ai_value_default, 4096))
         assertEquals("180s (default)", context.getString(R.string.settings_ai_timeout_default, 180))
     }
 

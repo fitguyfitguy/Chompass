@@ -2,27 +2,38 @@ package app.chompass.data
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import app.chompass.models.AIProvider
 import app.chompass.services.ai.AiHttp
 
 class AiPreferencesTest {
     @Test
-    fun clampMaxResponseTokens_withinRange() {
-        assertEquals(1024, clampMaxResponseTokens(1024))
-    }
-
-    @Test
-    fun clampMaxResponseTokens_belowMinimum() {
-        assertEquals(MIN_MAX_RESPONSE_TOKENS, clampMaxResponseTokens(1))
-    }
-
-    @Test
-    fun clampMaxResponseTokens_aboveMaximum() {
-        assertEquals(MAX_MAX_RESPONSE_TOKENS, clampMaxResponseTokens(999_999))
-    }
-
-    @Test
-    fun clampMaxResponseTokens_capsAt16384() {
-        assertEquals(16384, clampMaxResponseTokens(20000))
+    fun responseCapFor_reasoningAware() {
+        // Reasoning-capable surfaces get headroom (thinking burns the cap);
+        // Anthropic and on-device never receive reasoning fields here.
+        assertEquals(
+            MAX_REASONING_RESPONSE_TOKENS,
+            responseCapFor(AIProvider.OPENROUTER, OpenRouterReasoningEffort.AUTO),
+        )
+        assertEquals(
+            MAX_REASONING_RESPONSE_TOKENS,
+            responseCapFor(AIProvider.CUSTOM_OPENAI, OpenRouterReasoningEffort.LOW),
+        )
+        assertEquals(
+            MAX_REASONING_RESPONSE_TOKENS,
+            responseCapFor(AIProvider.GEMINI, OpenRouterReasoningEffort.AUTO),
+        )
+        assertEquals(
+            DEFAULT_MAX_RESPONSE_TOKENS,
+            responseCapFor(AIProvider.CUSTOM_OPENAI, OpenRouterReasoningEffort.DISABLED),
+        )
+        assertEquals(
+            DEFAULT_MAX_RESPONSE_TOKENS,
+            responseCapFor(AIProvider.ANTHROPIC, OpenRouterReasoningEffort.AUTO),
+        )
+        assertEquals(
+            DEFAULT_MAX_RESPONSE_TOKENS,
+            responseCapFor(AIProvider.ON_DEVICE, OpenRouterReasoningEffort.AUTO),
+        )
     }
 
     @Test

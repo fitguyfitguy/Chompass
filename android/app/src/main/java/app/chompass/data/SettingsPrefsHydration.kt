@@ -106,7 +106,6 @@ internal data class SettingsPrefsHydration(
     val progressNutrientAveragesSelection: Set<String>,
 
     val userContext: String,
-    val maxResponseTokens: Int,
     val aiReadTimeoutSeconds: Int,
     val servingUnitInferenceMode: ServingUnitInferenceMode,
     val heuristicServingUnitSettings: HeuristicServingUnitSettings,
@@ -245,7 +244,6 @@ internal fun Preferences.toSettingsHydration(json: Json): SettingsPrefsHydration
                 ?: HomeTopNutrient.DefaultAveragesStorage,
 
         userContext = this[Keys.USER_CONTEXT].orEmpty(),
-        maxResponseTokens = clampMaxResponseTokens(this[Keys.MAX_RESPONSE_TOKENS] ?: DEFAULT_MAX_RESPONSE_TOKENS),
         aiReadTimeoutSeconds = clampAiReadTimeoutSeconds(
             this[Keys.AI_READ_TIMEOUT_SECONDS] ?: DEFAULT_AI_READ_TIMEOUT_SECONDS
         ),

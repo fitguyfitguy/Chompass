@@ -293,22 +293,6 @@ internal fun SettingsSheets(
                     container = vm.container,
                     onDismiss = onDismiss,
                 )
-                SettingsSheet.MAX_TOKENS -> {
-                    var value by remember(ui.maxResponseTokens) { mutableIntStateOf(ui.maxResponseTokens) }
-                    Text(stringResource(R.string.settings_max_tokens), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                    Spacer(Modifier.height(12.dp))
-                    NumericWheelPicker(
-                        value = value,
-                        onValueChange = { value = it },
-                        min = 50,
-                        max = 16000,
-                        step = 50,
-                        unit = stringResource(R.string.settings_max_tokens_unit),
-                    )
-                    Spacer(Modifier.height(16.dp))
-                    CancelSaveRow(onDismiss) { vm.setMaxResponseTokens(value); onDismiss() }
-                    Spacer(Modifier.height(8.dp))
-                }
                 SettingsSheet.AI_READ_TIMEOUT -> {
                     var value by remember(ui.aiReadTimeoutSeconds) { mutableIntStateOf(ui.aiReadTimeoutSeconds) }
                     Text(stringResource(R.string.settings_ai_read_timeout), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)

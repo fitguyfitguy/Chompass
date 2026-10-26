@@ -715,7 +715,6 @@
     <string name="settings_ai_key_remove_title">إزالة مفتاح API؟</string>
     <string name="settings_ai_key_remove_body">حفظ مفتاح فارغ يحذف المفتاح المخزّن لهذا الملف الشخصي.</string>
     <string name="settings_ai_get_key">الحصول على مفتاح API</string>
-    <string name="settings_ai_value_default">%1$,d (افتراضي)</string>
     <string name="settings_ai_timeout_default">%1$,ds (افتراضي)</string>
     <string name="camera_scale_tip_message">نصيحة: ضع شوكة أو يدًا أو عملة بجانب طعامك. يساعد في تقدير حجم الحصة.</string>
     <string name="cd_relog_meal">تسجيل %1$s مرة أخرى</string>
@@ -841,13 +840,11 @@
     <string name="add_food_relog_kcal">%1$d سعرة %2$s</string>
     <string name="ai_error_coach_on_device">المدرب غير متاح بعد مع المزوّد المحلي. انتقل إلى مزوّد سحابي في الإعدادات ← مزوّد الذكاء الاصطناعي.</string>
     <string name="ai_error_coach_round_limit">تعذّر على المدرب الرد. حاول إعادة صياغة السؤال.</string>
-    <string name="ai_error_disabled">ميزات الذكاء الاصطناعي معطّلة في الإعدادات ← الذكاء الاصطناعي والصوت.</string>
     <string name="ai_error_grounded_on_device">حلقة أدوات Grounded غير متاحة للنماذج المحلية.</string>
     <string name="ai_error_grounded_requires_provider">حلقة أدوات Grounded تتطلب مزوّد ذكاء اصطناعي نشطًا.</string>
     <string name="ai_error_image_conversion_failed">تعذّرت معالجة الصورة.</string>
     <string name="ai_error_invalid_response">تعذّر فهم رد الذكاء الاصطناعي. حاول مرة أخرى.</string>
     <string name="ai_error_invalid_url">رابط API غير صالح. تحقق من إعدادات المزوّد.</string>
-    <string name="ai_error_insecure_http_blocked">HTTP غير الآمن محظور. فعّل «السماح بـ HTTP غير الآمن» في الإعدادات ← الذكاء الاصطناعي والصوت، أو استخدم عنوان https://.</string>
     <string name="ai_error_key_rejected">تم رفض مفتاح API الخاص بك. افتح الإعدادات ← مزوّد الذكاء الاصطناعي وأعد لصق مفتاح صالح.</string>
     <string name="ai_error_location_unsupported">Gemini غير متاح من هذا الموقع الشبكي (البلد/عنوان IP). إذا كنت تستخدم VPN، فأوقفه أو انتقل إلى مخرج سكني. غالبًا ما تُحظر عناوين IP الخاصة بمراكز البيانات/VPN غير السكنية. أو فعّل الفوترة في مشروع Google AI Studio، وجرّب شبكة أخرى، أو غيّر المزوّد في الإعدادات ← مزوّد الذكاء الاصطناعي.</string>
     <string name="ai_error_model_unavailable">لم يعثر مزوّدك على هذا النموذج. قد يكون مدفوعًا حصريًا في الخطة المجانية، أو مقيدًا في منطقتك، أو قد تكون نقطة النهاية خاطئة. انتقل إلى نموذج Flash الافتراضي في الإعدادات ← مزوّد الذكاء الاصطناعي، أو فعّل الفوترة في مشروع AI Studio.</string>
@@ -860,10 +857,6 @@
     <string name="ai_error_provider_error">أرجع مزوّد الذكاء الاصطناعي خطأ.</string>
     <string name="ai_error_provider_overloaded">مزوّد الذكاء الاصطناعي محمّل فوق طاقته الآن. حاولنا عدة مرات. أعد المحاولة بعد دقيقة، أو غيّر المزوّد/النموذج في الإعدادات ← مزوّد الذكاء الاصطناعي.</string>
     <string name="ai_error_rate_limit">بلغت حد الطلبات لمفتاح API الخاص بك. انتظر دقيقة، أو انتقل إلى مزوّد آخر في الإعدادات ← مزوّد الذكاء الاصطناعي. في الخطة المجانية، يملك نموذج Flash-Lite أعلى حصة.</string>
-    <string name="ai_error_timeout">استغرق مزوّد الذكاء الاصطناعي وقتًا طويلًا في الرد. حاول مرة أخرى، أو ارفع المهلة في الإعدادات ← الذكاء الاصطناعي والصوت.</string>
-    <string name="ai_error_truncated">تم اقتطاع رد الذكاء الاصطناعي عند حد طول الرد. ارفع أقصى طول للرد من الإعدادات ← الذكاء الاصطناعي والصوت، أو جرّب سؤالًا أقصر.</string>
-    <string name="ai_error_truncated_twice">تم اقتطاع رد الذكاء الاصطناعي مرتين عند حد طول الرد. ارفع أقصى طول للرد من الإعدادات ← الذكاء الاصطناعي والصوت، أو جرّب سؤالًا أقصر.</string>
-    <string name="ai_error_truncated_twice_description">وصل النموذج إلى حد طول الرد قبل أن يُكمل، والتفكير يُحتسب ضمن هذا الحد. ارفع أقصى طول للرد من الإعدادات ← الذكاء الاصطناعي والصوت، أو قيّد تفكير النموذج، ثم أعد المحاولة.</string>
     <string name="ai_model_tier_paid">نموذج مدفوع فقط (لم تعد الخطة المجانية تشمل Pro)</string>
     <string name="ai_model_tier_varies">تختلف التوفّر في الخطة المجانية حسب الحساب والمنطقة</string>
     <string name="ai_provider_on_device">على الجهاز (خاص)</string>
@@ -1491,8 +1484,6 @@
     <string name="settings_macro_pinned_label_format">%1$s (مثبت)</string>
     <string name="settings_macro_unlocked">غير مقفل</string>
     <string name="settings_manage_health_access">إدارة الوصول إلى Health Connect</string>
-    <string name="settings_max_tokens">أقصى طول للرد</string>
-    <string name="settings_max_tokens_unit">رمز</string>
     <string name="settings_meal_constituents">تفصيل مكونات الوجبة</string>
     <string name="settings_meal_constituents_footer">عند التفعيل، قد يقسم الذكاء الاصطناعي الوجبات المركبة إلى مكونات قابلة للتحرير بالجرام والوحدات. تُطلب المغذيات الدقيقة لكل مكوّن من النماذج السحابية الأقوى فقط؛ وتُعيد النماذج الأصغر قائمة المكونات مع المغذيات الكبرى.</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
@@ -2715,11 +2706,6 @@
         <item>تنزيل</item>
         <item>محلي</item>
         <item>بدون اتصال</item>
-    </string-array>
-    <string-array name="settings_search_kw_max_tokens">
-        <item>الرموز</item>
-        <item>الطول</item>
-        <item>الحد</item>
     </string-array>
     <string-array name="settings_search_kw_ai_read_timeout">
         <item>المهلة</item>

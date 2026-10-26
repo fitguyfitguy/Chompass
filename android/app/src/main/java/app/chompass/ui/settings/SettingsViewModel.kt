@@ -79,7 +79,6 @@ import app.chompass.services.ai.AnthropicClient
 import app.chompass.services.ai.FoodAnalysisService
 import app.chompass.services.ai.GeminiClient
 import app.chompass.services.ai.OpenAiModelsClient
-import app.chompass.data.effectiveMaxResponseTokens
 import app.chompass.data.effectiveReadTimeoutSeconds
 import app.chompass.services.health.HealthConnectManager
 import app.chompass.services.health.HealthSyncWorker
@@ -110,7 +109,6 @@ data class SettingsUiState(
     val activeProfile: AiProfile? = null,
     /** Profile used when the active one fails; null = no fallback. */
     val fallbackProfileId: String? = null,
-    val maxResponseTokens: Int = app.chompass.data.DEFAULT_MAX_RESPONSE_TOKENS,
     val aiReadTimeoutSeconds: Int = app.chompass.data.DEFAULT_AI_READ_TIMEOUT_SECONDS,
     val servingUnitInferenceMode: ServingUnitInferenceMode = ServingUnitInferenceMode.Default,
     val heuristicServingUnitSettings: HeuristicServingUnitSettings = HeuristicServingUnitSettings.Default,
@@ -532,7 +530,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
                     profiles = profiles,
                     activeProfile = active,
                     fallbackProfileId = fallbackProfileId,
-                    maxResponseTokens = snap.maxResponseTokens,
                     aiReadTimeoutSeconds = snap.aiReadTimeoutSeconds,
                     servingUnitInferenceMode = snap.servingUnitInferenceMode,
                     heuristicServingUnitSettings = snap.heuristicServingUnitSettings,
@@ -897,14 +894,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
     )
 
     /** Advanced knobs write the ACTIVE PROFILE's override field; global prefs stay as fallback. */
-    fun setMaxResponseTokens(v: Int) {
-        val clamped = app.chompass.data.clampMaxResponseTokens(v)
-        viewModelScope.launch {
-            container.prefs.editActiveProfile { it.copy(maxResponseTokens = clamped) }
-            refreshAiState()
-        }
-    }
-
     fun setAiReadTimeoutSeconds(v: Int) {
         val clamped = app.chompass.data.clampAiReadTimeoutSeconds(v)
         viewModelScope.launch {
@@ -1113,7 +1102,6 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             apiKeyMasked = runCatching {
                 maskKey(active?.let { container.keyStore.profileApiKey(it.id) })
             }.getOrDefault(""),
-            maxResponseTokens = effectiveMaxResponseTokens(active, container.prefs.maxResponseTokens.first()),
             aiReadTimeoutSeconds = effectiveReadTimeoutSeconds(active, container.prefs.aiReadTimeoutSeconds.first()),
             geminiGoogleSearchEnabled = active?.geminiGoogleSearch
                 ?: container.prefs.geminiGoogleSearchEnabled.first(),

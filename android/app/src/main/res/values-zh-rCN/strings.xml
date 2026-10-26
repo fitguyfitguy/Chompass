@@ -712,7 +712,6 @@
     <string name="settings_ai_key_remove_title">移除 API 密钥？</string>
     <string name="settings_ai_key_remove_body">保存空密钥将清除该配置文件已存储的密钥。</string>
     <string name="settings_ai_get_key">获取 API 密钥</string>
-    <string name="settings_ai_value_default">%1$,d（默认）</string>
     <string name="settings_ai_timeout_default">%1$,ds（默认）</string>
     <string name="camera_scale_tip_message">提示：在食物旁放入叉子、手或硬币。有助于估算份量。</string>
     <string name="cd_relog_meal">再次记录 %1$s</string>
@@ -838,13 +837,11 @@
     <string name="add_food_relog_kcal">%1$d 千卡 %2$s</string>
     <string name="ai_error_coach_on_device">教练暂不支持端侧提供商，请在设置 → AI 提供商中切换到云端提供商。</string>
     <string name="ai_error_coach_round_limit">教练无法回答，请尝试换个说法。</string>
-    <string name="ai_error_disabled">AI 功能已在设置 → AI 与语音中关闭。</string>
     <string name="ai_error_grounded_on_device">端侧模型不支持 Grounded 模式。</string>
     <string name="ai_error_grounded_requires_provider">Grounded 模式需要可用的 AI 提供商。</string>
     <string name="ai_error_image_conversion_failed">图片处理失败。</string>
     <string name="ai_error_invalid_response">无法理解 AI 的回复，请重试。</string>
     <string name="ai_error_invalid_url">API 网址无效，请检查提供商设置。</string>
-    <string name="ai_error_insecure_http_blocked">不安全的 HTTP 已被阻止。请在设置 → AI 与语音中打开“允许不安全的 HTTP”，或使用 https:// 地址。</string>
     <string name="ai_error_key_rejected">API 密钥被拒绝。请打开设置 → AI 提供商，重新粘贴有效密钥。</string>
     <string name="ai_error_location_unsupported">Gemini 在当前网络位置（国家/IP）不可用。如使用 VPN，请关闭或切换到住宅出口。数据中心/非住宅 VPN 的 IP 常被屏蔽。也可以在 Google AI Studio 项目中启用结算、换网络，或在设置 → AI 提供商中更换提供商。</string>
     <string name="ai_error_model_unavailable">提供商找不到此模型。它可能在免费层仅限付费、在你所在地区受限，或端点有误。请在设置 → AI 提供商切换到默认 Flash 模型，或在 AI Studio 项目中启用结算。</string>
@@ -857,10 +854,6 @@
     <string name="ai_error_provider_error">AI 提供商返回错误。</string>
     <string name="ai_error_provider_overloaded">AI 提供商当前过载。我们已重试数次。请一分钟后重试，或在设置 → AI 提供商中更换提供商/模型。</string>
     <string name="ai_error_rate_limit">API 密钥已达请求上限。请等待一分钟，或在设置 → AI 提供商中更换提供商。免费层中 Flash-Lite 模型的配额最高。</string>
-    <string name="ai_error_timeout">AI 提供商响应超时。请重试，或在设置 → AI 与语音中调高超时时间。</string>
-    <string name="ai_error_truncated">AI 回复在回复长度上限处被截断。请在设置 → AI 与语音中调高最大回复长度，或尝试更短的问题。</string>
-    <string name="ai_error_truncated_twice">AI 回复两次在回复长度上限处被截断。请在设置 → AI 与语音中调高最大回复长度，或尝试更短的问题。</string>
-    <string name="ai_error_truncated_twice_description">模型在回答完成前达到了回复长度上限，思考也计入该上限。请在设置 → AI 与语音中调高最大回复长度，或限制模型的思考，然后重试。</string>
     <string name="ai_model_tier_paid">仅限付费模型（免费层不再包含 Pro）</string>
     <string name="ai_model_tier_varies">免费层可用性因账户和地区而异</string>
     <string name="ai_provider_on_device">设备端（私密）</string>
@@ -1480,8 +1473,6 @@
     <string name="settings_macro_pinned_label_format">%1$s（已固定）</string>
     <string name="settings_macro_unlocked">已解锁</string>
     <string name="settings_manage_health_access">管理 Health Connect 访问</string>
-    <string name="settings_max_tokens">最大回复长度</string>
-    <string name="settings_max_tokens_unit">令牌</string>
     <string name="settings_meal_constituents">餐食配料明细</string>
     <string name="settings_meal_constituents_footer">开启后，AI 可将复合餐食拆分为带克数和单位的可编辑配料。食材级微量营养素仅向更强的云端模型请求；较小的模型仍会返回含宏量营养的食材列表。</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
@@ -2669,11 +2660,6 @@
         <item>下载</item>
         <item>本地</item>
         <item>离线</item>
-    </string-array>
-    <string-array name="settings_search_kw_max_tokens">
-        <item>令牌</item>
-        <item>长度</item>
-        <item>上限</item>
     </string-array>
     <string-array name="settings_search_kw_ai_read_timeout">
         <item>超时</item>

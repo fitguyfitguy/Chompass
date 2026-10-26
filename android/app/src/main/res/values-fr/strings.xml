@@ -738,7 +738,6 @@
     <string name="settings_ai_key_remove_title">Supprimer la clé API ?</string>
     <string name="settings_ai_key_remove_body">Enregistrer une clé vide efface la clé stockée de ce profil.</string>
     <string name="settings_ai_get_key">Obtenir une clé API</string>
-    <string name="settings_ai_value_default">%1$,d (par défaut)</string>
     <string name="settings_ai_timeout_default">%1$,ds (par défaut)</string>
     <string name="camera_scale_tip_message">Astuce : incluez une fourchette, une main ou une pièce à côté de votre repas. Cela aide à estimer la portion.</string>
     <string name="cd_relog_meal">Enregistrer %1$s à nouveau</string>
@@ -880,7 +879,6 @@
     <string name="ai_error_image_conversion_failed">Impossible de traiter l\'image.</string>
     <string name="ai_error_invalid_response">Impossible de comprendre la réponse de l\'IA. Réessayez.</string>
     <string name="ai_error_invalid_url">URL d\'API invalide. Vérifiez les réglages de votre fournisseur.</string>
-    <string name="ai_error_insecure_http_blocked">HTTP non sécurisé bloqué. Activez « Autoriser HTTP non sécurisé » dans Réglages → IA et voix, ou utilisez une URL https://.</string>
     <string name="ai_error_key_rejected">Votre clé API a été rejetée. Ouvrez Réglages → Fournisseur d\'IA et collez une clé valide.</string>
     <string name="ai_error_location_unsupported">Gemini n\'est pas disponible depuis cet emplacement réseau (pays/IP). Si vous utilisez un VPN, désactivez-le ou passez à une sortie résidentielle. Les IP de datacenters ou de VPN non résidentiels sont souvent bloquées. Vous pouvez aussi activer la facturation sur votre projet Google AI Studio, essayer un autre réseau ou changer de fournisseur dans Réglages → Fournisseur d\'IA.</string>
     <string name="ai_error_model_unavailable">Votre fournisseur n\'a pas trouvé ce modèle. Il peut être payant uniquement dans l\'offre gratuite, restreint dans votre région, ou l\'endpoint peut être incorrect. Passez au modèle Flash par défaut dans Réglages → Fournisseur d\'IA, ou activez la facturation sur votre projet AI Studio.</string>
@@ -893,11 +891,6 @@
     <string name="ai_error_provider_error">Le fournisseur d\'IA a renvoyé une erreur.</string>
     <string name="ai_error_provider_overloaded">Le fournisseur d\'IA est surchargé pour le moment. Nous avons réessayé plusieurs fois. Réessayez dans une minute ou changez de fournisseur ou de modèle dans Réglages → Fournisseur d\'IA.</string>
     <string name="ai_error_rate_limit">Limite de débit atteinte sur votre clé API. Attendez une minute ou changez de fournisseur dans Réglages → Fournisseur d\'IA. Dans l\'offre gratuite, le modèle Flash-Lite a le quota le plus élevé.</string>
-    <string name="ai_error_timeout">Le fournisseur d\'IA a mis trop de temps à répondre. Réessayez ou augmentez le délai dans Réglages → IA et voix.</string>
-    <string name="ai_error_disabled">Les fonctions IA sont désactivées dans Réglages → IA et voix.</string>
-    <string name="ai_error_truncated">La réponse de l\'IA a été coupée à la limite de longueur de réponse. Augmentez la longueur maximale de réponse dans Réglages → IA et voix, ou posez une question plus courte.</string>
-    <string name="ai_error_truncated_twice">La réponse de l\'IA a été coupée deux fois à la limite de longueur de réponse. Augmentez la longueur maximale de réponse dans Réglages → IA et voix, ou posez une question plus courte.</string>
-    <string name="ai_error_truncated_twice_description">Le modèle a atteint la limite de longueur de réponse avant de finir, et le raisonnement compte dans cette limite. Augmentez la longueur maximale de réponse dans Réglages → IA et voix, ou limitez le raisonnement du modèle, puis réessayez.</string>
     <string name="ai_model_tier_paid">Modèle payant uniquement (l\'offre gratuite n\'inclut plus Pro)</string>
     <string name="ai_model_tier_varies">La disponibilité dans l\'offre gratuite varie selon le compte et la région</string>
     <string name="ai_provider_anthropic">Anthropic Claude</string>
@@ -1539,8 +1532,6 @@
     <string name="settings_macro_pinned_label_format">%1$s (épinglé)</string>
     <string name="settings_macro_unlocked">Déverrouillé</string>
     <string name="settings_manage_health_access">Gérer l\'accès à Health Connect</string>
-    <string name="settings_max_tokens">Longueur maximale de réponse</string>
-    <string name="settings_max_tokens_unit">tokens</string>
 
     <string name="settings_meal_constituents">Détail des ingrédients du repas</string>
     <string name="settings_meal_constituents_footer">Quand c\'est activé, l\'IA peut diviser les repas composites en ingrédients modifiables avec grammes et unités. Les micronutriments par ingrédient ne sont demandés qu\'aux modèles cloud puissants ; les modèles plus petits renvoient la liste des ingrédients avec les macros.</string>
@@ -2685,11 +2676,6 @@ macros rééquilibrées au nouveau total calorique</string>
         <item>téléchargement</item>
         <item>local</item>
         <item>hors ligne</item>
-    </string-array>
-    <string-array name="settings_search_kw_max_tokens">
-        <item>tokens</item>
-        <item>longueur</item>
-        <item>plafond</item>
     </string-array>
     <string-array name="settings_search_kw_ai_read_timeout">
         <item>délai</item>

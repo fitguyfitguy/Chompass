@@ -31,9 +31,9 @@ sealed class AiError(
     )
     object InvalidResponse : AiError("Could not understand the AI response. Please try again.", messageRes = R.string.ai_error_invalid_response)
     /** Reply arrived but was cut short at the provider (finishReason MAX_TOKENS and kin). */
-    object ResponseTruncated : AiError("The AI response was truncated. Try a shorter question or a different model.", messageRes = R.string.ai_error_truncated)
+    object ResponseTruncated : AiError("The reply hit the model's output limit before it finished — thinking counts toward the limit. Set Reasoning effort to Low or Off in Settings → AI Provider, or try a shorter question.", messageRes = R.string.ai_error_truncated)
     object Timeout : AiError(
-        "The AI provider took too long to answer. Try again, or raise the timeout in Settings → AI & Speech.",
+        "The AI provider took too long to answer. Try again; if you use a self-hosted endpoint, raise the timeout in Settings → AI Provider.",
         messageRes = R.string.ai_error_timeout,
     )
     /**

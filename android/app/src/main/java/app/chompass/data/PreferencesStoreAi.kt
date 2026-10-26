@@ -440,15 +440,6 @@ internal fun PreferencesStore.visionModelImpl(provider: AIProvider): Flow<String
     profiles.getOrNull(pickProfileSlot(profiles, fallbackId, provider))?.visionModel
 }
 
-    /** AI output-token cap sent with every request. Default 4096; set a lower
-     *  cap for local models with small context windows. */
-internal val PreferencesStore.maxResponseTokensImpl: Flow<Int> get() = dataStore.data.map {
-        clampMaxResponseTokens(it[Keys.MAX_RESPONSE_TOKENS] ?: DEFAULT_MAX_RESPONSE_TOKENS)
-    }
-internal suspend fun PreferencesStore.setMaxResponseTokensImpl(v: Int) {
-        dataStore.edit { it[Keys.MAX_RESPONSE_TOKENS] = clampMaxResponseTokens(v) }
-    }
-
 /** Read timeout for cloud AI HTTP calls (vision / chat). Default 60s; raise for slow local GPUs. */
 internal val PreferencesStore.aiReadTimeoutSecondsImpl: Flow<Int> get() = dataStore.data.map {
         clampAiReadTimeoutSeconds(it[Keys.AI_READ_TIMEOUT_SECONDS] ?: DEFAULT_AI_READ_TIMEOUT_SECONDS)
@@ -519,23 +510,33 @@ internal suspend fun PreferencesStore.setGoalRecalcTierImpl(v: GoalRecalcTierOve
     dataStore.edit { it[Keys.GOAL_RECALC_TIER] = v.storageKey }
 }
 
-internal const val MIN_MAX_RESPONSE_TOKENS = 256
-internal const val MAX_MAX_RESPONSE_TOKENS = 16384
 internal const val DEFAULT_MAX_RESPONSE_TOKENS = 4096
+internal const val MAX_REASONING_RESPONSE_TOKENS = 16384
 internal const val DEFAULT_AI_READ_TIMEOUT_SECONDS = 180
 internal const val MIN_AI_READ_TIMEOUT_SECONDS = 30
 internal const val MAX_AI_READ_TIMEOUT_SECONDS = 900
 
-internal fun clampMaxResponseTokens(v: Int): Int =
-    v.coerceIn(MIN_MAX_RESPONSE_TOKENS, MAX_MAX_RESPONSE_TOKENS)
-
 internal fun clampAiReadTimeoutSeconds(v: Int): Int =
     v.coerceIn(MIN_AI_READ_TIMEOUT_SECONDS, MAX_AI_READ_TIMEOUT_SECONDS)
 
-/** Effective advanced-setting value: per-profile override (clamped) over the global (clamped). */
-internal fun effectiveMaxResponseTokens(profile: AiProfile?, global: Int): Int =
-    profile?.maxResponseTokens?.let(::clampMaxResponseTokens) ?: clampMaxResponseTokens(global)
+/**
+ * Output-token cap sent with every request (not user-settable). Thinking
+ * tokens count INSIDE the cap (`max_completion_tokens` on reasoning-class
+ * OpenAI-compatible models, `maxOutputTokens` + thinkingConfig on Gemini), so
+ * a flat 4096 dies mid-thought with empty content. Requests that may think
+ * get headroom; Anthropic and on-device never receive reasoning fields here,
+ * so they stay on the flat cap. 16384 sits under every supported model's
+ * output maximum.
+ */
+internal fun responseCapFor(provider: AIProvider, reasoningEffort: OpenRouterReasoningEffort): Int =
+    when {
+        provider.apiFormat == AIProvider.ApiFormat.OPENAI_COMPATIBLE &&
+            reasoningEffort != OpenRouterReasoningEffort.DISABLED -> MAX_REASONING_RESPONSE_TOKENS
+        provider.apiFormat == AIProvider.ApiFormat.GEMINI -> MAX_REASONING_RESPONSE_TOKENS
+        else -> DEFAULT_MAX_RESPONSE_TOKENS
+    }
 
+/** Effective read timeout: per-profile override (clamped) over the global (clamped). */
 internal fun effectiveReadTimeoutSeconds(profile: AiProfile?, global: Int): Int =
     profile?.readTimeoutSeconds?.let(::clampAiReadTimeoutSeconds) ?: clampAiReadTimeoutSeconds(global)
 
@@ -712,17 +713,18 @@ internal suspend fun PreferencesStore.aiCallConfigImpl(profileOverride: AiProfil
     val fallbackProfile = profiles.firstOrNull {
         it.id.toString() == prefs[Keys.FALLBACK_AI_PROFILE_ID] && it.id != profile.id
     }
+    val reasoningEffort = profile.reasoningEffort?.let(OpenRouterReasoningEffort::fromStorage)
+        ?: OpenRouterReasoningEffort.fromStorage(prefs[Keys.OPENROUTER_REASONING_EFFORT])
     return AiCallConfig(
         profile = profile,
         fallbackProfile = fallbackProfile,
         aiFeaturesEnabled = prefs[Keys.AI_FEATURES_ENABLED] ?: true,
         userContext = prefs[Keys.USER_CONTEXT].orEmpty(),
         allowInsecureHttp = prefs[Keys.ALLOW_INSECURE_HTTP] ?: false,
-        maxResponseTokens = effectiveMaxResponseTokens(profile, prefs[Keys.MAX_RESPONSE_TOKENS] ?: DEFAULT_MAX_RESPONSE_TOKENS),
+        maxResponseTokens = responseCapFor(profile.provider, reasoningEffort),
         aiReadTimeoutSeconds = effectiveReadTimeoutSeconds(profile, prefs[Keys.AI_READ_TIMEOUT_SECONDS] ?: DEFAULT_AI_READ_TIMEOUT_SECONDS),
         geminiGoogleSearch = profile.geminiGoogleSearch ?: (prefs[Keys.GEMINI_GOOGLE_SEARCH_ENABLED] ?: false),
-        reasoningEffort = profile.reasoningEffort?.let(OpenRouterReasoningEffort::fromStorage)
-            ?: OpenRouterReasoningEffort.fromStorage(prefs[Keys.OPENROUTER_REASONING_EFFORT]),
+        reasoningEffort = reasoningEffort,
         goalRecalcTier = GoalRecalcTierOverride.fromStorage(prefs[Keys.GOAL_RECALC_TIER]),
         fallbackEnabled = prefs[Keys.FALLBACK_ENABLED] ?: true,
     )

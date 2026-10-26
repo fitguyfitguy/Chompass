@@ -701,7 +701,6 @@ bilirsən?</string>
     <string name="settings_ai_key_remove_title">API açarı silinsin?</string>
     <string name="settings_ai_key_remove_body">Boş açar saxlanmaq bu profilin saxlanmış açarını silir.</string>
     <string name="settings_ai_get_key">API açarı alın</string>
-    <string name="settings_ai_value_default">%1$,d (standart)</string>
     <string name="settings_ai_timeout_default">%1$,ds (standart)</string>
     <string name="camera_scale_tip_message">Məsləhət: yeməyin yanına çəngəl, əl və ya sikkə qoy. Porsiya ölçüsünü təxmin etməyə kömək edir.</string>
     <string name="cd_relog_meal">%1$s yenidən qeyd et</string>
@@ -828,13 +827,11 @@ bilirsən?</string>
     <string name="add_food_relog_kcal">%1$d %2$s</string>
     <string name="ai_error_coach_on_device">Məşqçi hələlik cihazdaxili provayderlə mövcud deyil. Parametrlər → AI Provayderi bölməsində bulud provayderinə keç.</string>
     <string name="ai_error_coach_round_limit">Məşqçi cavab verə bilmədi. Sualını yenidən ifadə etməyə çalış.</string>
-    <string name="ai_error_disabled">AI funksiyaları Parametrlər → AI və Nitq bölməsində söndürülüb.</string>
     <string name="ai_error_grounded_on_device">Əsaslı qeyd rejimi cihazdaxili modellər üçün mövcud deyil.</string>
     <string name="ai_error_grounded_requires_provider">Əsaslı qeyd rejimi aktiv AI provayderi tələb edir.</string>
     <string name="ai_error_image_conversion_failed">Şəklin işlənməsi alınmadı.</string>
     <string name="ai_error_invalid_response">AI cavabı başa düşülmədi. Yenidən cəhd et.</string>
     <string name="ai_error_invalid_url">Yanlış API URL. Provayder parametrlərini yoxla.</string>
-    <string name="ai_error_insecure_http_blocked">Qorunmayan HTTP bloklanıb. Parametrlər → AI və Nitq bölməsində «Qorunmayan HTTP-yə icazə ver»i aç, və ya https:// URL istifadə et.</string>
     <string name="ai_error_key_rejected">API açarın rədd edildi. Parametrlər → AI Provayderi açıb etibarlı açarı yenidən yapışdır.</string>
     <string name="ai_error_location_unsupported">Gemini bu şəbəkə yerindən (ölkə/IP) mövcud deyil. VPN işlədirsənsə, onu söndür və ya yaşayış çıxışına keç. Məlumat mərkəzi/qeyri-yaşayış VPN IP-ləri tez-tez bloklanır. Yaxud Google AI Studio layihəsində ödənişi aktivləşdir, başqa şəbəkə sına və ya Parametrlər → AI Provayderi bölməsində provayderi dəyiş.</string>
     <string name="ai_error_model_unavailable">Provayderin bu modeli tapa bilmədi. O, pulsuz planda yalnız ödənişli, regionunda məhdud və ya endpoint səhv ola bilər. Parametrlər → AI Provayderi bölməsində standart Flash modelinə keç və ya AI Studio layihəndə ödənişi aktivləşdir.</string>
@@ -847,10 +844,6 @@ bilirsən?</string>
     <string name="ai_error_provider_error">AI provayderi xəta qaytardı.</string>
     <string name="ai_error_provider_overloaded">AI provayderi hazırda həddindən artıq yüklənib. Bir neçə dəfə cəhd etdik. Bir dəqiqədən sonra yenidən cəhd et və ya Parametrlər → AI Provayderi bölməsində provayderi/modeli dəyiş.</string>
     <string name="ai_error_rate_limit">API açarın üçün sorğu limiti dolub. Bir dəqiqə gözlə və ya Parametrlər → AI Provayderi bölməsində başqa provayderə keç. Pulsuz planda ən yüksək kvota Flash-Lite modelindədir.</string>
-    <string name="ai_error_timeout">AI provayderi cavab vermək üçün çox gecikdi. Yenidən cəhd et və ya Parametrlər → AI və Nitq bölməsində vaxt limitini artır.</string>
-    <string name="ai_error_truncated">AI cavabı cavab uzunluğu həddində qısaldıldı. Parametrlər → AI və Nitq bölməsində maksimum cavab uzunluğunu artır ya da daha qısa sual ver.</string>
-    <string name="ai_error_truncated_twice">AI cavabı cavab uzunluğu həddində iki dəfə qısaldıldı. Parametrlər → AI və Nitq bölməsində maksimum cavab uzunluğunu artır ya da daha qısa sual ver.</string>
-    <string name="ai_error_truncated_twice_description">Model cavabı bitirməzdən əvvəl cavab uzunluğu həddinə çatdı, düşüncə də bu həddə sayılır. Parametrlər → AI və Nitq bölməsində maksimum cavab uzunluğunu artır ya da modelin düşüncəsini məhdudlaşdır, sonra yenidən cəhd et.</string>
     <string name="ai_model_tier_paid">Yalnız ödənişli model (pulsuz plan artıq Pro daxil etmir)</string>
     <string name="ai_model_tier_varies">Pulsuz planda mövcudluq hesab və regiona görə dəyişir</string>
     <string name="ai_provider_on_device">Cihazda (özəl)</string>
@@ -1478,8 +1471,6 @@ bilirsən?</string>
     <string name="settings_macro_pinned_label_format">%1$s (sabit)</string>
     <string name="settings_macro_unlocked">Kilidsiz</string>
     <string name="settings_manage_health_access">Health Connect girişini idarə et</string>
-    <string name="settings_max_tokens">Maksimum cavab uzunluğu</string>
-    <string name="settings_max_tokens_unit">token</string>
     <string name="settings_meal_constituents">Yeməyin inqrediyentlərə bölünməsi</string>
     <string name="settings_meal_constituents_footer">Aktiv olduqda AI mürəkkəb yeməkləri qram və vahidlərlə redaktə edilə bilən inqrediyentlərə bölə bilər. İnqrediyent başına mikronutrisientlər yalnız daha güclü bulud modellərindən istənilir; kiçik modellər makrolarla inqrediyent siyahısını qaytarır.</string>
     <string name="settings_meal_time_edit_format">%1$s</string>
@@ -2672,11 +2663,6 @@ makrolar yeni kalori cəminə uyğun yenidən tarazlaşdırılır</string>
         <item>endir</item>
         <item>lokal</item>
         <item>oflayn</item>
-    </string-array>
-    <string-array name="settings_search_kw_max_tokens">
-        <item>token</item>
-        <item>uzunluq</item>
-        <item>limit</item>
     </string-array>
     <string-array name="settings_search_kw_ai_read_timeout">
         <item>vaxt limiti</item>
