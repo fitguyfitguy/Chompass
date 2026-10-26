@@ -518,6 +518,10 @@
     <string name="settings_server_url">عنوان URL للخادم</string>
     <string name="settings_tap_to_edit">اضغط للتعديل</string>
     <string name="settings_custom_url_title">عنوان URL أساسي مخصص</string>
+    <string name="settings_custom_directory_title">نقاط النهاية المعروفة</string>
+    <string name="settings_custom_directory_docs">الوثائق</string>
+    <string name="settings_custom_directory_footer">تأتي نقاط النهاية من قائمة مُراجَعة مضمّنة مع كل إصدار. يُرسَل مفتاحك فقط إلى عنوان URL المعروض؛ وتُحدَّث قوائم النماذج من المزوّد عند فتح منتقي النماذج.</string>
+    <string name="ai_model_accepts_images">يقبل الصور (مُصرَّح به)</string>
     <string name="settings_ai_allow_insecure_http">السماح بـ HTTP غير الآمن</string>
     <string name="settings_ai_allow_insecure_http_footer">يتيح لنقاط النهاية المخصصة وOllama استخدام عناوين http://، مثلاً على شبكتك المنزلية. مزوّدو السحابة يستخدمون https. أبقه مطفأ إلا إذا لم يكن لخادمك TLS.</string>
     <string name="settings_clear_key">مسح المفتاح</string>

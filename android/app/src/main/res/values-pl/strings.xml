@@ -1095,6 +1095,10 @@
     <string name="settings_tap_to_edit">Stuknij, aby edytować</string>
     <string name="settings_custom_url_placeholder">https://twoj-endpoint.com/v1</string>
     <string name="settings_custom_url_title">Niestandardowy bazowy URL</string>
+    <string name="settings_custom_directory_title">Znane serwery</string>
+    <string name="settings_custom_directory_docs">Dokumentacja</string>
+    <string name="settings_custom_directory_footer">Serwery pochodzą ze sprawdzonej listy dołączanej do każdego wydania. Twój klucz jest wysyłany tylko na wyświetlany adres URL; listy modeli odświeżają się od dostawcy po otwarciu wyboru modeli.</string>
+    <string name="ai_model_accepts_images">Obsługuje obrazy (zadeklarowane)</string>
     <string name="settings_ai_allow_insecure_http">Zezwól na nieszyfrowane HTTP</string>
     <string name="settings_ai_allow_insecure_http_footer">Pozwala własnym serwerom i Ollama używać adresów http://, na przykład w sieci domowej. Dostawcy chmurowi używają https. Zostaw wyłączone, chyba że twój serwer nie ma TLS.</string>
     <string name="settings_clear_key">Wyczyść klucz</string>

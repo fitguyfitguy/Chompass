@@ -507,6 +507,10 @@
     <string name="settings_tap_to_edit">Atinge pentru a edita</string>
     <string name="settings_custom_url_placeholder">https://endpointul-tau.com/v1</string>
     <string name="settings_custom_url_title">URL de bază personalizat</string>
+    <string name="settings_custom_directory_title">Endpoint-uri cunoscute</string>
+    <string name="settings_custom_directory_docs">Documentație</string>
+    <string name="settings_custom_directory_footer">Endpoint-urile provin dintr-o listă verificată inclusă în fiecare versiune. Cheia ta este trimisă doar către URL-ul afișat; listele de modele se actualizează de la furnizor când deschizi selectorul de modele.</string>
+    <string name="ai_model_accepts_images">Acceptă imagini (declarat)</string>
     <string name="settings_ai_allow_insecure_http">Permite HTTP nesigur</string>
     <string name="settings_ai_allow_insecure_http_footer">Permite endpointurilor personalizate și Ollama să folosească URL-uri http://, de exemplu în rețeaua de acasă. Furnizorii cloud folosesc https. Ține-l oprit dacă serverul tău are TLS.</string>
     <string name="settings_clear_key">Șterge cheia</string>

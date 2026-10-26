@@ -79,6 +79,8 @@ import app.chompass.services.ai.AnthropicClient
 import app.chompass.services.ai.FoodAnalysisService
 import app.chompass.services.ai.GeminiClient
 import app.chompass.services.ai.OpenAiModelsClient
+import app.chompass.services.ai.ProviderDirectory.Companion.findEntry
+import app.chompass.services.ai.ProviderDirectoryEntry
 import app.chompass.data.effectiveReadTimeoutSeconds
 import app.chompass.services.health.HealthConnectManager
 import app.chompass.services.health.HealthSyncWorker
@@ -220,6 +222,10 @@ data class SettingsUiState(
     val customModels: List<String>? = null,
     val customModelsLoading: Boolean = false,
     val customModelsError: Boolean = false,
+    /** Codeberg #143: bundled directory entry matching the active custom endpoint;
+     *  null = hand-typed URL, non-custom provider, or asset missing. Re-derived
+     *  from the stored baseUrl on every state refresh — no DataStore field. */
+    val directoryEntry: ProviderDirectoryEntry? = null,
     /** #107/#132: runtime lineup from the active provider's /models; null = no key, no fetch yet, or fetch failed (curated list shows). */
     val runtimeModels: List<String>? = null,
     val appearanceMode: String = "system",
@@ -1111,6 +1117,9 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             apiKeyTestOk = null,
             apiKeyTestMessage = null,
             onDeviceModels = models,
+            directoryEntry = if (active?.provider == AIProvider.CUSTOM_OPENAI) {
+                container.providerDirectory.findEntry(active.baseUrl)
+            } else null,
             // Fetched lists belong to the endpoint they came from: drop them on every
             // profile/endpoint change so a second custom or Ollama profile never shows
             // the previous host's ids while its own fetch is pending.
