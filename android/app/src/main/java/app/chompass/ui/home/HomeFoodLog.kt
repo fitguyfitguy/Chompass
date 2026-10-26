@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -43,18 +42,25 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -704,7 +710,9 @@ internal fun FoodRow(
             }
 
             // Pink kcal · gray serving size. Compact macros sit on this same
-            // line, content-sized, pinned to the row's trailing edge.
+            // line, content-sized, pinned to the row's trailing edge. Chips
+            // measure first (unweighted); the serving echo gets whatever width
+            // is left and fades out at the tail, so 3 chips never wrap.
             val echo = ServingUnitOption.homeDisplaySelection(
                 entry.selectedServingUnit,
                 entry.selectedServingQuantity,
@@ -721,6 +729,7 @@ internal fun FoodRow(
                     culinaryUnitLabels(),
                 )
             } ?: entry.servingSizeGrams?.takeIf { it > 0 }?.let { gramsText(it) }
+            var servingLayout by remember { mutableStateOf<TextLayoutResult?>(null) }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -738,25 +747,42 @@ internal fun FoodRow(
                     Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled))
                     Text(
                         servingText,
-                        modifier = Modifier.widthIn(max = 96.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                            .drawWithContent {
+                                drawContent()
+                                val fadePx = 18.dp.toPx()
+                                if (servingLayout?.hasVisualOverflow == true && size.width > fadePx) {
+                                    drawRect(
+                                        brush = Brush.horizontalGradient(
+                                            colors = listOf(Color.Black, Color.Transparent),
+                                            startX = size.width - fadePx,
+                                            endX = size.width,
+                                        ),
+                                        blendMode = BlendMode.DstIn,
+                                    )
+                                }
+                            },
                         fontSize = 12.sp,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+                        softWrap = false,
+                        overflow = TextOverflow.Clip,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        onTextLayout = { servingLayout = it },
                     )
+                } else {
+                    Spacer(Modifier.weight(1f))
                 }
                 if (compact && macroChips.size in 1..3) {
                     FlowRow(
-                        Modifier.weight(1f),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
                         macroChips.forEach { chip ->
                             FoodLogMacroChipView(chip, chip.valueFrom(entry))
                         }
                     }
-                } else {
-                    Spacer(Modifier.weight(1f))
                 }
             }
 
