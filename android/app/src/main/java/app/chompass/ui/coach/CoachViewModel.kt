@@ -1,5 +1,6 @@
 package app.chompass.ui.coach
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -17,6 +18,7 @@ import app.chompass.models.WeightGoal
 import app.chompass.BuildConfig
 import app.chompass.services.ai.AiError
 import app.chompass.services.ai.userMessage
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -138,8 +140,12 @@ class CoachViewModel(private val container: AppContainer) : ViewModel() {
                     pendingWater = result.proposedWater,
                 )
             } catch (e: AiError) {
+                logFailure(e)
                 _ui.value = _ui.value.copy(sending = false, error = e.userMessage(container.appContext))
             } catch (e: Throwable) {
+                // Leaving the screen cancels the send; that is not a chat failure.
+                ensureActive()
+                logFailure(e)
                 _ui.value = _ui.value.copy(
                     sending = false,
                     error = if (BuildConfig.DEBUG) e.javaClass.simpleName else null,
@@ -235,9 +241,28 @@ class CoachViewModel(private val container: AppContainer) : ViewModel() {
 
     fun dismissError() { _ui.value = _ui.value.copy(error = null, errorRes = null) }
 
+    private fun logFailure(error: Throwable) {
+        // Log is a stub in JVM unit tests; logging must never change the send's outcome.
+        runCatching { Log.w(TAG, "Coach chat failed: ${coachFailureSummary(error)}") }
+    }
+
+    private companion object {
+        const val TAG = "ChompassCoach"
+    }
+
     class Factory(private val container: AppContainer) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
             CoachViewModel(container) as T
     }
+}
+
+/**
+ * Why a send failed, for Logcat: exception types (with causes) and the top code locations.
+ * Messages are left out because provider/HTTP errors can carry URLs, response text or keys.
+ */
+internal fun coachFailureSummary(error: Throwable): String {
+    val causes = generateSequence(error) { it.cause }.take(5).joinToString(" <- ") { it.javaClass.name }
+    val frames = error.stackTrace.take(3).joinToString(" | ") { "${it.className}.${it.methodName}:${it.lineNumber}" }
+    return if (frames.isEmpty()) causes else "$causes at $frames"
 }
