@@ -1030,6 +1030,12 @@
     <string name="export_format">形式</string>
     <string name="export_from">開始</string>
     <string name="export_no_meals">選択した期間に記録された食事がありません。</string>
+    <string name="export_include_photos">写真を含める</string>
+    <string name="sync_photos">写真を同期</string>
+    <string name="sync_photos_caption">有効にすると、食事の写真が WebDAV サーバーにアップロードされます</string>
+    <string name="sync_photos_wifi_only">Wi-Fi のみで写真を同期</string>
+    <string name="sync_photos_syncing">写真を同期しています…</string>
+    <string name="sync_photos_failed">写真の同期に失敗しました</string>
     <string name="export_range">期間</string>
     <string name="export_range_all">すべて</string>
     <string name="export_range_custom">カスタム</string>

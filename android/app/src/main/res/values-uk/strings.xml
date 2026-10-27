@@ -997,6 +997,12 @@
     <string name="export_format">Формат</string>
     <string name="export_from">З</string>
     <string name="export_no_meals">У вибраному періоді немає записаних страв.</string>
+    <string name="export_include_photos">Включити фотографії</string>
+    <string name="sync_photos">Синхронізувати фото</string>
+    <string name="sync_photos_caption">Якщо увімкнено, фото страв завантажуються на ваш сервер WebDAV</string>
+    <string name="sync_photos_wifi_only">Фото лише через Wi-Fi</string>
+    <string name="sync_photos_syncing">Синхронізація фото…</string>
+    <string name="sync_photos_failed">Не вдалося синхронізувати фото</string>
     <string name="export_range">Період</string>
     <string name="export_range_all">За весь час</string>
     <string name="export_range_custom">Власний</string>

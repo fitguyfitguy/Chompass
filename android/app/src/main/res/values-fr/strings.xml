@@ -1088,6 +1088,12 @@
     <string name="export_format">Format</string>
     <string name="export_from">De</string>
     <string name="export_no_meals">Aucun repas enregistré dans la période sélectionnée.</string>
+    <string name="export_include_photos">Inclure les photos</string>
+    <string name="sync_photos">Synchroniser les photos</string>
+    <string name="sync_photos_caption">Une fois activé, les photos de repas sont envoyées vers votre serveur WebDAV</string>
+    <string name="sync_photos_wifi_only">Photos en Wi-Fi uniquement</string>
+    <string name="sync_photos_syncing">Synchronisation des photos…</string>
+    <string name="sync_photos_failed">Échec de la synchronisation des photos</string>
     <string name="export_range">Période</string>
     <string name="export_range_all">Tout</string>
     <string name="export_range_custom">Personnalisée</string>

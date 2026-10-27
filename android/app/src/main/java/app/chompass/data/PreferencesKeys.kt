@@ -329,6 +329,14 @@ internal object Keys {
         val WEBDAV_ENABLED = booleanPreferencesKey("webDavEnabled")
         /** Local calendar day (yyyy-MM-dd) of the last auto-sync attempt. */
         val WEBDAV_AUTO_SYNC_DAY = stringPreferencesKey("webDavAutoSyncDay")
+        /** #122: opt-in meal-photo sync over WebDAV (bytes as siblings of the sync doc). */
+        val WEBDAV_PHOTOS_ENABLED = booleanPreferencesKey("webDavPhotosEnabled")
+        /** #122: photo upload/download only on unmetered networks. */
+        val WEBDAV_PHOTOS_WIFI_ONLY = booleanPreferencesKey("webDavPhotosWifiOnly")
+        /** #122: content-addressed refs known to be on the server (cache; unbounded but tiny). */
+        val WEBDAV_SYNCED_PHOTOS = stringSetPreferencesKey("webDavSyncedPhotos")
+        /** #122: normalized WebDAV URL the uploaded-ref cache belongs to. */
+        val WEBDAV_SYNCED_PHOTOS_URL = stringPreferencesKey("webDavSyncedPhotosUrl")
         val LAST_SYNC_AT = stringPreferencesKey("lastSyncAt")
         val LAST_SYNC_ETAG = stringPreferencesKey("lastSyncEtag")
         /** Serialized [app.chompass.services.ai.RecalcSheetData] of the latest goal change (AI Recalculate or Adaptive). */

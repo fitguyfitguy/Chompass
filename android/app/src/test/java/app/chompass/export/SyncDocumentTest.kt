@@ -57,6 +57,79 @@ class SyncDocumentTest {
         assertEquals(1, parsed.weights.count { it.entry != null })
         assertEquals(1, parsed.water.count { it.entry != null })
         assertTrue(parsed.profile != null)
+        // Sync 1.4 (#122): refs parse into the model; ref-less rows stay empty.
+        assertEquals(listOf("photos/0123456789abcdef.jpg"), salad.photoFilenames)
+        assertTrue(coffee.photoFilenames.isEmpty())
+    }
+
+    @Test
+    fun buildJsonStamps14OnlyWithPhotoRefsAndRoundTrips() {
+        val zone = ZoneOffset.UTC
+        val plain = FoodEntry(
+            name = "Oats",
+            calories = 300,
+            protein = 10.0,
+            carbs = 50.0,
+            fat = 5.0,
+            timestamp = Instant.parse("2026-07-24T08:00:00Z"),
+            source = FoodSource.MANUAL,
+            mealType = MealType.BREAKFAST.id,
+        )
+        val withPhotos = plain.copy(photoFilenames = listOf("photos/0123456789abcdef.jpg"))
+
+        val photolessJson = SyncDocument.buildJson(
+            foodEntries = listOf(plain), favorites = emptyList(),
+            weights = emptyList(), bodyFats = emptyList(), measurements = emptyList(),
+            water = emptyList(), recipes = emptyList(), zone = zone,
+        )
+        val photolessRoot = Json.parseToJsonElement(photolessJson).jsonObject
+        assertEquals("1.3", photolessRoot["export"]!!.jsonObject["format_version"]!!.jsonPrimitive.content)
+        assertEquals(null, photolessRoot["food_entries"]!!.jsonArray.single().jsonObject["photos"])
+
+        val photoJson = SyncDocument.buildJson(
+            foodEntries = listOf(withPhotos), favorites = emptyList(),
+            weights = emptyList(), bodyFats = emptyList(), measurements = emptyList(),
+            water = emptyList(), recipes = emptyList(), zone = zone,
+        )
+        val photoRoot = Json.parseToJsonElement(photoJson).jsonObject
+        assertEquals("1.4", photoRoot["export"]!!.jsonObject["format_version"]!!.jsonPrimitive.content)
+        val photos = photoRoot["food_entries"]!!.jsonArray.single().jsonObject["photos"]!!.jsonArray
+        assertEquals(listOf("photos/0123456789abcdef.jpg"), photos.map { it.jsonPrimitive.content })
+
+        // Round-trip through parse.
+        val parsed = SyncDocument.parse(photoJson, zone) as SyncDocument.ParseResult.Success
+        assertEquals(
+            listOf("photos/0123456789abcdef.jpg"),
+            parsed.parsed.foodEntries.single().entry?.photoFilenames,
+        )
+        // Refs that fail the shape guard are dropped, not crash the parse.
+        val hostile = photoJson.replace("photos/0123456789abcdef.jpg", "  ../../evil  ")
+        val hostileParsed = SyncDocument.parse(hostile, zone) as SyncDocument.ParseResult.Success
+        assertTrue(hostileParsed.parsed.foodEntries.single().entry?.photoFilenames.isNullOrEmpty())
+    }
+
+    @Test
+    fun mergeRawDocumentsStamps14OnlyWhenMergedRowsCarryPhotos() {
+        val base = """{"app":"Chompass","kind":"sync","format_version":"%s"}"""
+        fun foodRow(id: String, photosJson: String = ""): String =
+            """{"id":"$id","updated_at":"2026-07-24T08:00:00Z","deleted_at":null,"name":"Oats","date":"2026-07-24","time":"08:00","meal_type":"breakfast","calories":300,"protein_g":10,"carbs_g":50,"fat_g":5$photosJson}"""
+        val photoRow = foodRow("f1", ""","photos":["photos/0123456789abcdef.jpg"]""")
+        val plainRow = foodRow("f2")
+        fun doc(version: String, row: String): String = """
+            {"export":${base.format(version)},
+             "food_entries":[$row],
+             "favorites":[],"weights":[],"body_fat":[],"measurements":[],"water":[],"recipes":[],"profile":null,"prefs":null}
+        """.trimIndent()
+
+        fun mergedVersion(local: String, remote: String): String {
+            val l = (SyncDocument.parse(local, ZoneOffset.UTC) as SyncDocument.ParseResult.Success).parsed.raw
+            val r = (SyncDocument.parse(remote, ZoneOffset.UTC) as SyncDocument.ParseResult.Success).parsed.raw
+            return SyncDocument.mergeRawDocuments(l, r)["export"]!!.jsonObject["format_version"]!!.jsonPrimitive.content
+        }
+
+        assertEquals("1.4", mergedVersion(doc("1.4", photoRow), doc("1.0", plainRow)))
+        assertEquals("1.4", mergedVersion(doc("1.0", plainRow), doc("1.4", photoRow)))
+        assertEquals("1.3", mergedVersion(doc("1.0", plainRow), doc("1.0", plainRow.replace("\"f2\"", "\"f3\""))))
     }
 
     @Test

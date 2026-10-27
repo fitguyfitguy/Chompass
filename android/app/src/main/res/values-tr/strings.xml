@@ -1675,6 +1675,12 @@
     <string name="export_from">Başlangıç</string>
     <string name="export_to">Bitiş</string>
     <string name="export_no_meals">Seçilen aralıkta kaydedilmiş öğün yok.</string>
+    <string name="export_include_photos">Fotoğrafları dahil et</string>
+    <string name="sync_photos">Fotoğrafları senkronize et</string>
+    <string name="sync_photos_caption">Etkinleştirildiğinde, yemek fotoğrafları WebDAV sunucunuza yüklenir</string>
+    <string name="sync_photos_wifi_only">Fotoğraflar yalnızca Wi-Fi ile</string>
+    <string name="sync_photos_syncing">Fotoğraflar senkronize ediliyor…</string>
+    <string name="sync_photos_failed">Fotoğraf senkronizasyonu başarısız oldu</string>
     <string name="export_failed">Dışa aktarma başarısız.</string>
     <string name="settings_tap_to_update">Güncellemek için dokun</string>
     <string name="settings_calc_methods">Hesaplama Yöntemleri</string>

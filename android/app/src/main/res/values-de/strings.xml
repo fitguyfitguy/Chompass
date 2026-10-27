@@ -3052,6 +3052,12 @@ für dich ein</string>
     <string name="export_to">Bis</string>
 
     <string name="export_no_meals">Im ausgewählten Zeitraum sind keine Mahlzeiten erfasst.</string>
+    <string name="export_include_photos">Fotos einschließen</string>
+    <string name="sync_photos">Fotos synchronisieren</string>
+    <string name="sync_photos_caption">Wenn aktiviert, werden Essensfotos auf deinen WebDAV-Server hochgeladen</string>
+    <string name="sync_photos_wifi_only">Fotos nur über WLAN</string>
+    <string name="sync_photos_syncing">Fotos werden synchronisiert…</string>
+    <string name="sync_photos_failed">Foto-Synchronisierung fehlgeschlagen</string>
 
     <string name="export_failed">Export fehlgeschlagen.</string>
 

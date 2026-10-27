@@ -38,6 +38,8 @@ internal fun SettingsSyncSection(
     webDavUsername: String,
     webDavPassword: String,
     webDavAutoSync: Boolean,
+    webDavPhotosEnabled: Boolean,
+    webDavPhotosWifiOnly: Boolean,
     lastSyncAt: String?,
     syncStatus: String?,
     onWebDavUrlChange: (String) -> Unit,
@@ -45,6 +47,8 @@ internal fun SettingsSyncSection(
     onWebDavPasswordChange: (String) -> Unit,
     onSaveWebDav: () -> Unit,
     onWebDavAutoSyncChange: (Boolean) -> Unit,
+    onWebDavPhotosEnabledChange: (Boolean) -> Unit,
+    onWebDavPhotosWifiOnlyChange: (Boolean) -> Unit,
     onExportSync: () -> Unit,
     onImportSync: () -> Unit,
     onSyncNow: () -> Unit,
@@ -114,6 +118,26 @@ internal fun SettingsSyncSection(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
         )
+        HorizontalDivider()
+        ToggleRow(
+            label = stringResource(R.string.sync_photos),
+            checked = webDavPhotosEnabled,
+            onChange = onWebDavPhotosEnabledChange,
+        )
+        Text(
+            stringResource(R.string.sync_photos_caption),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
+        )
+        if (webDavPhotosEnabled) {
+            HorizontalDivider()
+            ToggleRow(
+                label = stringResource(R.string.sync_photos_wifi_only),
+                checked = webDavPhotosWifiOnly,
+                onChange = onWebDavPhotosWifiOnlyChange,
+            )
+        }
         HorizontalDivider()
         Row(
             Modifier

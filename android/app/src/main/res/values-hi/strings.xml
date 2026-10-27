@@ -1031,6 +1031,12 @@
     <string name="export_format">प्रारूप</string>
     <string name="export_from">से</string>
     <string name="export_no_meals">चयनित सीमा में कोई भोजन लॉग नहीं हुआ।</string>
+    <string name="export_include_photos">फ़ोटो शामिल करें</string>
+    <string name="sync_photos">फ़ोटो सिंक करें</string>
+    <string name="sync_photos_caption">चालू होने पर, भोजन की फ़ोटो आपके WebDAV सर्वर पर अपलोड होती हैं</string>
+    <string name="sync_photos_wifi_only">फ़ोटो केवल Wi-Fi पर</string>
+    <string name="sync_photos_syncing">फ़ोटो सिंक हो रही हैं…</string>
+    <string name="sync_photos_failed">फ़ोटो सिंक विफल हुआ</string>
     <string name="export_range">सीमा</string>
     <string name="export_range_all">पूरा समय</string>
     <string name="export_range_custom">कस्टम</string>

@@ -24,6 +24,7 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.export.BodyMetricsImportResult
 import app.chompass.export.BodyMetricsImporter
+import app.chompass.export.DiaryArchiveReader
 import app.chompass.export.DiaryImportResult
 import app.chompass.export.DiaryImporter
 import app.chompass.ui.components.ChompassDialog
@@ -65,8 +66,20 @@ fun DataSettingsScreen(
         if (uri == null) return@rememberLauncherForActivityResult
         scope.launch {
             runCatching {
-                val text = activityContext.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
-                if (text.isNullOrBlank()) {
+                val bytes = activityContext.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+                if (bytes == null || bytes.isEmpty()) {
+                    importDiaryMessage = activityContext.getString(R.string.import_diary_empty)
+                    return@runCatching
+                }
+                // Photo ZIP exports (1.7) are sniffed by magic; everything else is plain JSON text.
+                val archive = if (bytes.size >= 4 && bytes.copyOfRange(0, 4)
+                        .contentEquals(byteArrayOf(0x50, 0x4B, 0x03, 0x04))
+                ) {
+                    DiaryArchiveReader.read(bytes)
+                        ?: throw IllegalStateException("Not a Chompass diary ZIP")
+                } else null
+                val text = archive?.first ?: bytes.toString(Charsets.UTF_8)
+                if (text.isBlank()) {
                     importDiaryMessage = activityContext.getString(R.string.import_diary_empty)
                     return@runCatching
                 }
@@ -78,8 +91,21 @@ fun DataSettingsScreen(
                             container.prefs.setMealCatalog(merged)
                             CurrentMealCatalog.value = merged
                         }
-                        val imported = if (result.entries.isEmpty()) 0
-                            else container.foodRepository.importEntries(result.entries)
+                        // Restore archived photo bytes before persisting; refs missing
+                        // from the ZIP import without a photo.
+                        val entriesToImport = if (archive != null && result.photosByEntryId.isNotEmpty()) {
+                            val photoBytes = archive.second
+                            result.entries.map { entry ->
+                                val bytesForRef = result.photosByEntryId[entry.id.toString()]
+                                    ?.firstNotNullOfOrNull { ref -> photoBytes[ref] }
+                                if (bytesForRef == null) entry
+                                else container.imageStore.storeBytes(bytesForRef, entry.id)
+                                    ?.let { fn -> entry.copy(imageFilename = fn) }
+                                    ?: entry
+                            }
+                        } else result.entries
+                        val imported = if (entriesToImport.isEmpty()) 0
+                            else container.foodRepository.importEntries(entriesToImport)
                         if (result.untrackedDates.isNotEmpty()) {
                             val existing = container.prefs.untrackedDays.first().toMutableSet()
                             val kcal = container.prefs.untrackedKcalByDay.first().toMutableMap()
@@ -178,7 +204,7 @@ fun DataSettingsScreen(
             onOpenFoodLibrary = { nav.navigate(ChompassRoutes.SETTINGS_FOOD_LIBRARY) },
             onShowExportDiary = { showExportSheet = true },
             onShowExportBodyMetrics = { showBodyMetricsExportSheet = true },
-            onImportDiary = { importDiaryLauncher.launch(arrayOf("application/json", "text/plain")) },
+            onImportDiary = { importDiaryLauncher.launch(arrayOf("application/json", "text/plain", "application/zip")) },
             onImportBodyMetrics = {
                 importBodyMetricsLauncher.launch(
                     arrayOf(

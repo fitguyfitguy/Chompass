@@ -6,7 +6,9 @@ import android.graphics.BitmapFactory
 import android.util.LruCache
 import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.security.MessageDigest
 import java.util.UUID
 import kotlin.math.max
 
@@ -166,6 +168,27 @@ class FoodImageStore(context: Context) {
     companion object {
         /** Filename convention: every entry's image lives under `<entryId>.jpg`. */
         fun filenameFor(entryId: UUID): String = "$entryId.jpg"
+
+        /**
+         * Content-addressed reference for [file]'s bytes:
+         * `photos/<first 8 SHA-256 bytes as 16 lowercase hex>.jpg`, relative to
+         * an export ZIP root or the sync document's directory. Two files with
+         * identical bytes share one ref, so a re-logged photo dedupes to a
+         * single ZIP entry / server file. Null on any IO failure.
+         */
+        fun contentRef(file: File): String? = runCatching {
+            val digest = MessageDigest.getInstance("SHA-256")
+            FileInputStream(file).use { input ->
+                val buffer = ByteArray(8192)
+                while (true) {
+                    val read = input.read(buffer)
+                    if (read <= 0) break
+                    digest.update(buffer, 0, read)
+                }
+            }
+            val hex = digest.digest().take(8).joinToString("") { "%02x".format(it) }
+            "photos/$hex.jpg"
+        }.getOrNull()
 
         private const val DIR_NAME = "fudai-food-images"
         private const val THUMBNAIL_DIR_NAME = "fudai-food-thumbnails"

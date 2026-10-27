@@ -1039,6 +1039,12 @@
     <string name="export_format">الصيغة</string>
     <string name="export_from">من</string>
     <string name="export_no_meals">لا توجد وجبات مسجلة في النطاق المحدد.</string>
+    <string name="export_include_photos">تضمين الصور</string>
+    <string name="sync_photos">مزامنة الصور</string>
+    <string name="sync_photos_caption">عند التفعيل، يتم رفع صور الوجبات إلى خادم WebDAV الخاص بك</string>
+    <string name="sync_photos_wifi_only">الصور عبر Wi-Fi فقط</string>
+    <string name="sync_photos_syncing">جارٍ مزامنة الصور…</string>
+    <string name="sync_photos_failed">فشلت مزامنة الصور</string>
     <string name="export_range">النطاق</string>
     <string name="export_range_all">كل الوقت</string>
     <string name="export_range_custom">مخصص</string>

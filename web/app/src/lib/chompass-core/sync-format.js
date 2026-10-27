@@ -3,7 +3,8 @@
  * Serializer/validator for the sync-1.3 JSON document (1.2 adds the day-
  * granular `daily_notes` array, Codeberg #58a, and the optional per-day
  * `goal_journal` array, Codeberg #60; 1.3 adds per-constituent micros,
- * Codeberg #86). Compatible with
+ * Codeberg #86; 1.4 adds optional content-addressed food photo refs,
+ * Codeberg #122 — stamped only when refs are present). Compatible with
  * android/.../export/SyncDocument.kt. Imports also accept 1.0/1.1/1.2.
  */
 import { goalJournalIdFor } from "./macro-plan.js";
@@ -11,7 +12,10 @@ import { microOrNull } from "./constituents.js";
 
 export const SYNC_FORMAT_VERSION = "1.3";
 export const SYNC_KIND = "sync";
-export const SYNC_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2", "1.3"]);
+export const SYNC_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2", "1.3", "1.4"]);
+
+/** Sync 1.4 stamp: emitted iff any exported food/favorite row carries photo refs (Codeberg #122). */
+export const SYNC_PHOTOS_VERSION = "1.4";
 
 /** @param {import('./models.js').Grounding|null|undefined} g */
 function groundingToWire(g) {
@@ -236,10 +240,23 @@ export function foodEntryToSyncWire(item, updatedAt, deletedAt = null) {
     selected_serving_quantity: item.selectedServingQuantity != null ? round1(item.selectedServingQuantity) : null,
     constituents: constituentsToWire(item.constituents ?? []),
   };
+  // Sync 1.4 photo refs: omitted when empty (photo-less rows stay byte-compatible with 1.3).
+  if (Array.isArray(item.photos) && item.photos.length) wire.photos = item.photos;
   for (const [wireKey, modelKey] of MICRO_FIELDS) {
     wire[wireKey] = round1(item[modelKey] ?? null);
   }
   return wire;
+}
+
+/**
+ * Sync 1.4 photo refs: content-addressed `photos/<16hex>.jpg` strings.
+ * @param {any} arr
+ */
+function photosFromWire(arr) {
+  if (!Array.isArray(arr)) return [];
+  return arr
+    .map((r) => String(r ?? "").trim())
+    .filter((r) => r.startsWith("photos/") && r.length > "photos/".length);
 }
 
 /**
@@ -268,6 +285,7 @@ export function foodEntryFromSyncWire(wire) {
     selectedServingUnit: wire.selected_serving_unit ?? null,
     selectedServingQuantity: wire.selected_serving_quantity != null ? Number(wire.selected_serving_quantity) : null,
     constituents: constituentsFromWire(wire.constituents),
+    photos: photosFromWire(wire.photos),
   };
   for (const [wireKey, modelKey] of MICRO_FIELDS) {
     entry[modelKey] = wire[wireKey] ?? null;
@@ -328,7 +346,13 @@ export function exportSyncDocument(input) {
     export: {
       app: "Chompass",
       kind: SYNC_KIND,
-      format_version: SYNC_FORMAT_VERSION,
+      // 1.4 only when photo refs are actually in the doc — older clients accept
+      // at most 1.3, so a 1.4 stamp without photos would lock them out.
+      format_version:
+        (input.foodEntries ?? []).some((/** @type {any} */ e) => e.photos?.length) ||
+        (input.favorites ?? []).some((/** @type {any} */ e) => e.photos?.length)
+          ? SYNC_PHOTOS_VERSION
+          : SYNC_FORMAT_VERSION,
       generated_at: generatedAt,
     },
     food_entries: foodEntries,

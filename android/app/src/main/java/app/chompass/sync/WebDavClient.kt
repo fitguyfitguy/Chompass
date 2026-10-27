@@ -74,6 +74,71 @@ class WebDavClient(
             }
         }
     }
+
+    /**
+     * Binary GET for photo downloads (#122). String [get] corrupts binary
+     * through charset decoding — never reuse it for images. Null on 404
+     * (the ref stays advertised and is retried on the next sync).
+     */
+    suspend fun getBinary(url: String, username: String, password: String): ByteArray? =
+        withContext(Dispatchers.IO) {
+            val request = Request.Builder()
+                .url(url)
+                .header("Authorization", webDavBasicAuth(username, password))
+                .get()
+                .build()
+            http.newCall(request).execute().use { response ->
+                when (response.code) {
+                    404 -> null
+                    in 200..299 -> response.body?.bytes()
+                    else -> error("WebDAV GET failed: HTTP ${response.code}")
+                }
+            }
+        }
+
+    /**
+     * Unconditional binary PUT for content-addressed photo files (#122):
+     * identical bytes map to the same ref, so no ETag precondition applies.
+     * 409 (missing parent collection) maps to [PutResult.conflict] so the
+     * caller can MKCOL and retry once.
+     */
+    suspend fun putBytes(
+        url: String,
+        username: String,
+        password: String,
+        bytes: ByteArray,
+        contentType: String = "image/jpeg",
+    ): PutResult = withContext(Dispatchers.IO) {
+        val request = Request.Builder()
+            .url(url)
+            .header("Authorization", webDavBasicAuth(username, password))
+            .header("Content-Type", contentType)
+            .put(bytes.toRequestBody(contentType.toMediaType()))
+            .build()
+        http.newCall(request).execute().use { response ->
+            when (response.code) {
+                409 -> PutResult(etag = null, conflict = true)
+                in 200..299 -> PutResult(etag = response.header("ETag"), conflict = false)
+                else -> error("WebDAV PUT failed: HTTP ${response.code}")
+            }
+        }
+    }
+
+    /** MKCOL for the photos collection: 201 created, 405 already exists, 409 tolerated (caller retries the PUT). */
+    suspend fun mkcol(url: String, username: String, password: String): Unit =
+        withContext(Dispatchers.IO) {
+            val request = Request.Builder()
+                .url(url)
+                .header("Authorization", webDavBasicAuth(username, password))
+                .method("MKCOL", null)
+                .build()
+            http.newCall(request).execute().use { response ->
+                when (response.code) {
+                    201, 405, 409 -> Unit
+                    else -> error("WebDAV MKCOL failed: HTTP ${response.code}")
+                }
+            }
+        }
 }
 
 /** How to condition a WebDAV PUT for create vs update. */

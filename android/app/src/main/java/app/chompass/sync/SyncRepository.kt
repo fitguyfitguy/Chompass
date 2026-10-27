@@ -1,6 +1,8 @@
 package app.chompass.sync
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import app.chompass.R
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
@@ -29,6 +31,8 @@ class SyncRepository(
     private val keyStore: KeyStore,
     private val webDav: WebDavClient = WebDavClient(),
     private val appContext: Context,
+    /** Local photo bytes + hashing for the opt-in WebDAV photo phase (#122). */
+    private val imageStore: app.chompass.services.FoodImageStore? = null,
 ) {
     private val json = Json { ignoreUnknownKeys = true; isLenient = true }
 
@@ -37,11 +41,23 @@ class SyncRepository(
         data class Failed(val message: String) : SyncResult()
     }
 
-    suspend fun exportDocumentJson(zone: ZoneId = ZoneId.systemDefault()): String {
+    suspend fun exportDocumentJson(
+        zone: ZoneId = ZoneId.systemDefault(),
+        emitPhotos: Boolean = true,
+    ): String {
+        // Photo refs only ever leave the device when the user opted in (#122);
+        // when gated off they drop out of the doc and the version falls back to 1.3.
+        val withPhotos = emitPhotos && prefs.webDavPhotosEnabled.first()
+        val food = prefs.foodEntries.first().let { list ->
+            if (withPhotos) list else list.map { it.copy(photoFilenames = emptyList()) }
+        }
+        val favorites = prefs.favoriteFoodEntries.first().let { list ->
+            if (withPhotos) list else list.map { it.copy(photoFilenames = emptyList()) }
+        }
         val revisions = prefs.syncRevisions.first()
         return SyncDocument.buildJson(
-            foodEntries = prefs.foodEntries.first(),
-            favorites = prefs.favoriteFoodEntries.first(),
+            foodEntries = food,
+            favorites = favorites,
             weights = prefs.weightEntries.first(),
             bodyFats = prefs.bodyFatEntries.first(),
             measurements = prefs.bodyMeasurements.first(),
@@ -104,7 +120,10 @@ class SyncRepository(
         return syncNow(zone)
     }
 
-    suspend fun syncNow(zone: ZoneId = ZoneId.systemDefault()): SyncResult {
+    suspend fun syncNow(
+        zone: ZoneId = ZoneId.systemDefault(),
+        onStatus: ((String) -> Unit)? = null,
+    ): SyncResult {
         val url = normalizeWebDavUrl(prefs.webDavUrl.first())
         val user = prefs.webDavUsername.first().trim()
         val password = keyStore.webDavPassword().orEmpty()
@@ -114,16 +133,20 @@ class SyncRepository(
         return try {
             backfillRevisionsIfNeeded()
             val remote = webDav.get(url, user, password)
+            val remoteParsed = if (remote.notFound || remote.body.isNullOrBlank()) {
+                null
+            } else {
+                SyncDocument.parse(remote.body, zone) as? SyncDocument.ParseResult.Success
+                    ?: return SyncResult.Failed(appContext.getString(R.string.sync_error_remote_invalid))
+            }
             val localJson = exportDocumentJson(zone)
             val localParsed = SyncDocument.parse(localJson, zone) as? SyncDocument.ParseResult.Success
-            val mergedJson = if (remote.notFound || remote.body.isNullOrBlank()) {
+            val mergedJson = if (remoteParsed == null) {
                 localJson
             } else {
                 if (localParsed == null) {
                     return SyncResult.Failed(appContext.getString(R.string.sync_error_build_local_doc))
                 }
-                val remoteParsed = SyncDocument.parse(remote.body, zone) as? SyncDocument.ParseResult.Success
-                    ?: return SyncResult.Failed(appContext.getString(R.string.sync_error_remote_invalid))
                 json.encodeToString(
                     JsonObject.serializer(),
                     SyncDocument.mergeRawDocuments(localParsed.parsed.raw, remoteParsed.parsed.raw),
@@ -132,11 +155,36 @@ class SyncRepository(
             val apply = applyMergedDocument(mergedJson, zone, local = localParsed?.parsed)
             if (apply is SyncResult.Failed) return apply
 
+            // --- Photo phase (#122), before the doc PUT: downloads fill local
+            // files for advertised refs, uploads PUT local bytes under
+            // content-addressed refs and only then stamp refs + revisions, so
+            // the doc never advertises a file the server does not have.
+            val photosActive = photosActive(url)
+            if (photosActive) {
+                onStatus?.invoke(appContext.getString(R.string.sync_photos_syncing))
+                if (syncPhotoFiles(url, user, password)) {
+                    return SyncResult.Failed(appContext.getString(R.string.sync_photos_failed))
+                }
+            }
+
+            // localRaw AFTER the photo phase so fresh refs + touched revisions ride the PUT.
+            val localJsonForPut = exportDocumentJson(zone, emitPhotos = photosActive)
+            val localParsedForPut = SyncDocument.parse(localJsonForPut, zone) as? SyncDocument.ParseResult.Success
+                ?: return SyncResult.Failed(appContext.getString(R.string.sync_error_local_rebuild_failed))
+            val mergedForPut = if (remoteParsed == null) {
+                localJsonForPut
+            } else {
+                json.encodeToString(
+                    JsonObject.serializer(),
+                    SyncDocument.mergeRawDocuments(localParsedForPut.parsed.raw, remoteParsed.parsed.raw),
+                )
+            }
+
             var etag = remote.etag
-            var put = webDav.put(url, user, password, mergedJson, webDavPutMode(remote.etag, remote.notFound))
+            var put = webDav.put(url, user, password, mergedForPut, webDavPutMode(remote.etag, remote.notFound))
             if (put.conflict) {
                 val again = webDav.get(url, user, password)
-                val localParsed = SyncDocument.parse(exportDocumentJson(zone), zone) as? SyncDocument.ParseResult.Success
+                val localParsed = SyncDocument.parse(exportDocumentJson(zone, emitPhotos = photosActive), zone) as? SyncDocument.ParseResult.Success
                     ?: return SyncResult.Failed(appContext.getString(R.string.sync_error_local_rebuild_failed))
                 val remoteParsed = SyncDocument.parse(again.body.orEmpty(), zone) as? SyncDocument.ParseResult.Success
                     ?: return SyncResult.Failed(appContext.getString(R.string.sync_error_remote_invalid_conflict))
@@ -163,6 +211,140 @@ class SyncRepository(
         } catch (t: Throwable) {
             SyncResult.Failed(t.localizedMessage ?: appContext.getString(R.string.error_webdav_sync_failed))
         }
+    }
+
+    /** The photo phase runs only when opted in, on an allowed network, with a parseable URL (#122). */
+    private suspend fun photosActive(url: String): Boolean {
+        if (imageStore == null) return false
+        if (!prefs.webDavPhotosEnabled.first()) return false
+        if (prefs.webDavPhotosWifiOnly.first() && photosBlockedByNetwork()) return false
+        return url.contains('/')
+    }
+
+    /** True when the active network is missing, unvalidated, or metered — photo transfer not allowed. */
+    private fun photosBlockedByNetwork(): Boolean {
+        val cm = appContext.getSystemService(ConnectivityManager::class.java) ?: return true
+        val network = cm.activeNetwork ?: return true
+        val caps = cm.getNetworkCapabilities(network) ?: return true
+        if (!caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)) return true
+        return !caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
+    }
+
+    /**
+     * Opt-in photo transfer (#122). Downloads: advertised refs without a local
+     * file fetch their bytes (404 keeps the ref — other devices still advertise
+     * it; retried next sync; no revision touch, `imageFilename` is
+     * wire-invisible). Uploads: each local photo is PUT under its
+     * content-addressed ref; `photoFilenames` + a revision touch are written
+     * only after a successful PUT, so the doc never advertises a missing file.
+     * Returns true on a hard upload failure (caller aborts before the doc PUT).
+     */
+    private suspend fun syncPhotoFiles(url: String, user: String, password: String): Boolean {
+        val store = imageStore ?: return false
+        val photoBase = url.substringBeforeLast('/') + "/photos/"
+
+        // The uploaded-ref cache belongs to one WebDAV URL; a switch resets it.
+        var cached = prefs.webDavSyncedPhotos.first()
+        if (prefs.webDavSyncedPhotosUrl.first() != url) {
+            cached = emptySet()
+            prefs.setWebDavSyncedPhotos(emptySet(), url)
+        }
+
+        // Downloads: refs advertised for entries without local bytes.
+        val foodNow = prefs.foodEntries.first()
+        val downloadedFood = mutableListOf<FoodEntry>()
+        for (entry in foodNow) {
+            val ref = entry.photoFilenames.firstOrNull() ?: continue
+            if (entry.imageFilename != null) continue
+            val bytes = try {
+                webDav.getBinary(photoBase + ref.removePrefix("photos/"), user, password)
+            } catch (t: Throwable) {
+                continue // transient GET failure: ref stays, retried next sync
+            } ?: continue // 404: keep the ref, never drop it
+            val stored = store.storeBytes(bytes, entry.id) ?: continue
+            downloadedFood += entry.copy(imageFilename = stored)
+            cached += ref // the bytes came from the server — no re-upload needed
+        }
+        if (downloadedFood.isNotEmpty()) {
+            val byId = downloadedFood.associateBy { it.id }
+            prefs.replaceAllFoodEntries(foodNow.map { byId[it.id] ?: it })
+        }
+
+        // Same for favorites (own rows, own photos).
+        val favoritesNow = prefs.favoriteFoodEntries.first()
+        val downloadedFavorites = mutableListOf<FoodEntry>()
+        for (entry in favoritesNow) {
+            val ref = entry.photoFilenames.firstOrNull() ?: continue
+            if (entry.imageFilename != null) continue
+            val bytes = try {
+                webDav.getBinary(photoBase + ref.removePrefix("photos/"), user, password)
+            } catch (t: Throwable) {
+                continue
+            } ?: continue
+            val stored = store.storeBytes(bytes, entry.id) ?: continue
+            downloadedFavorites += entry.copy(imageFilename = stored)
+            cached += ref
+        }
+        if (downloadedFavorites.isNotEmpty()) {
+            val byId = downloadedFavorites.associateBy { it.id }
+            prefs.setFavoritesAtomic(favoritesNow.map { byId[it.id] ?: it })
+        }
+
+        // Uploads: local bytes not known to be on the server yet.
+        val refTouchUpdates = mutableListOf<Pair<UUID, String>>()
+        val refsUpdatedFood = mutableListOf<FoodEntry>()
+        val refsUpdatedFavorites = mutableListOf<FoodEntry>()
+
+        suspend fun uploadFor(entries: List<FoodEntry>, kind: String, collect: (FoodEntry) -> Unit): Boolean {
+            for (entry in entries) {
+                val filename = entry.imageFilename ?: continue
+                val file = store.file(filename)
+                if (!file.canRead() || file.length() == 0L) continue
+                val ref = app.chompass.services.FoodImageStore.contentRef(file) ?: continue
+                if (ref !in cached) {
+                    val first = try {
+                        webDav.putBytes(photoBase + ref.removePrefix("photos/"), user, password, file.readBytes())
+                    } catch (t: Throwable) {
+                        return true
+                    }
+                    val put = if (first.conflict) {
+                        try {
+                            webDav.mkcol(photoBase, user, password)
+                        } catch (t: Throwable) {
+                            return true
+                        }
+                        try {
+                            webDav.putBytes(photoBase + ref.removePrefix("photos/"), user, password, file.readBytes())
+                        } catch (t: Throwable) {
+                            return true
+                        }
+                    } else first
+                    if (put.conflict) return true
+                    cached += ref
+                    prefs.setWebDavSyncedPhotos(cached, url)
+                }
+                // Stamp the ref only after a successful PUT; a changed photo
+                // (re-pick overwrites the file) moves to the fresh ref.
+                if (entry.photoFilenames.firstOrNull() != ref) {
+                    collect(entry.copy(photoFilenames = listOf(ref)))
+                    refTouchUpdates += entry.id to kind
+                }
+            }
+            return false
+        }
+
+        if (uploadFor(prefs.foodEntries.first(), "food") { refsUpdatedFood += it }) return true
+        if (refsUpdatedFood.isNotEmpty()) {
+            val byId = refsUpdatedFood.associateBy { it.id }
+            prefs.replaceAllFoodEntries(prefs.foodEntries.first().map { byId[it.id] ?: it })
+        }
+        if (uploadFor(prefs.favoriteFoodEntries.first(), "favorite") { refsUpdatedFavorites += it }) return true
+        if (refsUpdatedFavorites.isNotEmpty()) {
+            val byId = refsUpdatedFavorites.associateBy { it.id }
+            prefs.setFavoritesAtomic(prefs.favoriteFoodEntries.first().map { byId[it.id] ?: it })
+        }
+        if (refTouchUpdates.isNotEmpty()) touchMany(refTouchUpdates)
+        return false
     }
 
     suspend fun touch(id: UUID, kind: String) {
@@ -272,11 +454,11 @@ class SyncRepository(
             revisionMap[id] = SyncRevision(updatedAt, deletedAt, kind)
         }
 
-        // Photos are excluded from the wire format on purpose (see SyncDocument),
-        // so the re-parsed rows carry no imageFilename. Emoji only ride the wire
-        // since this fix, so rows merged from older exports lack them too.
-        // Re-attach the local visual fields before replacing, otherwise a
-        // sync/import drops every food photo and emoji (#34).
+        // `imageFilename` never rides the wire (local bytes only); emoji only
+        // ride the wire since the #34 fix, and photo refs only since sync-1.4
+        // (#122) — rows merged from older docs lack both. Re-attach the local
+        // visual fields before replacing, otherwise a sync/import drops every
+        // food photo and emoji (#34).
         val localFood = prefs.foodEntries.first().associateBy { it.id }
         val localFavorites = prefs.favoriteFoodEntries.first().associateBy { it.id }
 
@@ -418,17 +600,20 @@ private fun <T> removalsByMonth(
 }
 
 /**
- * The sync wire never carries photos, and only carries entry emoji since the
- * #34 fix, so a merged row is usually parsed without them. Keep the local
- * visual fields (the wire never overwrites one either; the emoji picker only
- * sets, never removes) so applying a merged document cannot drop food photos
- * or emoji (#34).
+ * The sync wire never carries `imageFilename` (local bytes only), and only
+ * carries emoji since the #34 fix and photo refs since sync-1.4 (#122), so a
+ * merged row is usually parsed without them. Keep the local visual fields (the
+ * wire never overwrites one either; the emoji picker only sets, never removes)
+ * so applying a merged document cannot drop food photos or emoji (#34). A wire
+ * row carrying fresh photo refs wins over local ones (photo re-pick moved the
+ * ref); a row without refs keeps the local refs (photo phase gated off).
  */
 internal fun reattachLocalFields(entry: FoodEntry, local: Map<UUID, FoodEntry>): FoodEntry {
     val localEntry = local[entry.id] ?: return entry
     return entry.copy(
         imageFilename = entry.imageFilename ?: localEntry.imageFilename,
         emoji = entry.emoji ?: localEntry.emoji,
+        photoFilenames = entry.photoFilenames.ifEmpty { localEntry.photoFilenames },
     )
 }
 

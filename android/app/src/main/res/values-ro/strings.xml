@@ -1026,6 +1026,12 @@
     <string name="export_format">Format</string>
     <string name="export_from">De la</string>
     <string name="export_no_meals">Nicio masă înregistrată în intervalul selectat.</string>
+    <string name="export_include_photos">Include fotografiile</string>
+    <string name="sync_photos">Sincronizează fotografiile</string>
+    <string name="sync_photos_caption">Când este activat, fotografiile meselor se încarcă pe serverul tău WebDAV</string>
+    <string name="sync_photos_wifi_only">Fotografii doar prin Wi-Fi</string>
+    <string name="sync_photos_syncing">Se sincronizează fotografiile…</string>
+    <string name="sync_photos_failed">Sincronizarea fotografiilor a eșuat</string>
     <string name="export_range">Interval</string>
     <string name="export_range_all">Tot timpul</string>
     <string name="export_range_custom">Personalizat</string>

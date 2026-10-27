@@ -1005,6 +1005,12 @@
     <string name="export_format">Formato</string>
     <string name="export_from">De</string>
     <string name="export_no_meals">Nenhuma refeição registrada no intervalo selecionado.</string>
+    <string name="export_include_photos">Incluir fotos</string>
+    <string name="sync_photos">Sincronizar fotos</string>
+    <string name="sync_photos_caption">Quando ativado, as fotos das refeições são enviadas para seu servidor WebDAV</string>
+    <string name="sync_photos_wifi_only">Fotos só no Wi-Fi</string>
+    <string name="sync_photos_syncing">Sincronizando fotos…</string>
+    <string name="sync_photos_failed">Falha ao sincronizar fotos</string>
     <string name="export_range">Intervalo</string>
     <string name="export_range_all">Todo o período</string>
     <string name="export_range_custom">Personalizado</string>

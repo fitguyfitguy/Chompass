@@ -1002,6 +1002,12 @@
     <string name="export_format">Formaat</string>
     <string name="export_from">Van</string>
     <string name="export_no_meals">Geen maaltijden gelogd in het geselecteerde bereik.</string>
+    <string name="export_include_photos">Foto\'s opnemen</string>
+    <string name="sync_photos">Foto\'s synchroniseren</string>
+    <string name="sync_photos_caption">Indien ingeschakeld, worden maaltijdfoto\'s geüpload naar je WebDAV-server</string>
+    <string name="sync_photos_wifi_only">Foto\'s alleen via Wi-Fi</string>
+    <string name="sync_photos_syncing">Foto\'s synchroniseren…</string>
+    <string name="sync_photos_failed">Synchroniseren van foto\'s mislukt</string>
     <string name="export_range">Bereik</string>
     <string name="export_range_all">Altijd</string>
     <string name="export_range_custom">Aangepast</string>

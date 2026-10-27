@@ -62,6 +62,16 @@ data class FoodEntry(
      */
     val constituents: List<FoodConstituent> = emptyList(),
     /**
+     * Content-addressed photo refs (`photos/<16hex>.jpg` = first 8 SHA-256
+     * bytes of the JPEG, hex-encoded), relative to the sync document's
+     * directory / export ZIP root. The local bytes stay under [imageFilename];
+     * saved entries carry at most one photo (list-shaped for a future
+     * multi-photo model). Sync 1.4 / diary 1.7 wire field (Codeberg #122):
+     * refs are the only thing on the wire — upload/download of bytes is
+     * opt-in and handled by the sync photo phase / diary ZIP export.
+     */
+    val photoFilenames: List<String> = emptyList(),
+    /**
      * Optional barcode-product enrichment (Open Food Facts photo/metadata card).
      * Display-only: never serialized into diary export / sync / meal-share.
      */

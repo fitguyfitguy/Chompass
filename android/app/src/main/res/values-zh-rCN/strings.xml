@@ -1032,6 +1032,12 @@
     <string name="export_format">格式</string>
     <string name="export_from">从</string>
     <string name="export_no_meals">所选范围内没有记录餐食。</string>
+    <string name="export_include_photos">包含照片</string>
+    <string name="sync_photos">同步照片</string>
+    <string name="sync_photos_caption">开启后，餐食照片将上传到您的 WebDAV 服务器</string>
+    <string name="sync_photos_wifi_only">仅通过 Wi-Fi 同步照片</string>
+    <string name="sync_photos_syncing">正在同步照片…</string>
+    <string name="sync_photos_failed">照片同步失败</string>
     <string name="export_range">范围</string>
     <string name="export_range_all">全部时间</string>
     <string name="export_range_custom">自定义</string>

@@ -650,6 +650,13 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setWebDavEnabled(enabled: Boolean) = setWebDavEnabledImpl(enabled)
     val webDavAutoSyncDay: Flow<String?> get() = webDavAutoSyncDayImpl
     suspend fun setWebDavAutoSyncDay(day: String?) = setWebDavAutoSyncDayImpl(day)
+    val webDavPhotosEnabled: Flow<Boolean> get() = webDavPhotosEnabledImpl
+    suspend fun setWebDavPhotosEnabled(enabled: Boolean) = setWebDavPhotosEnabledImpl(enabled)
+    val webDavPhotosWifiOnly: Flow<Boolean> get() = webDavPhotosWifiOnlyImpl
+    suspend fun setWebDavPhotosWifiOnly(wifiOnly: Boolean) = setWebDavPhotosWifiOnlyImpl(wifiOnly)
+    val webDavSyncedPhotos: Flow<Set<String>> get() = webDavSyncedPhotosImpl
+    val webDavSyncedPhotosUrl: Flow<String?> get() = webDavSyncedPhotosUrlImpl
+    suspend fun setWebDavSyncedPhotos(refs: Set<String>, ownerUrl: String) = setWebDavSyncedPhotosImpl(refs, ownerUrl)
     val lastSyncAt: Flow<String?> get() = lastSyncAtImpl
     suspend fun setLastSyncAt(iso: String?) = setLastSyncAtImpl(iso)
     val lastSyncEtag: Flow<String?> get() = lastSyncEtagImpl

@@ -75,6 +75,9 @@ class ParityFixtureImportTest {
         val coffee = foods.first { it.name == "Black coffee" }
         assertTrue(coffee.constituents.isEmpty())
         assertEquals("cup", coffee.selectedServingUnit)
+        // Sync 1.4 (#122): photo refs ride the food row; rows without refs stay empty.
+        assertEquals(listOf("photos/0123456789abcdef.jpg"), salad.photoFilenames)
+        assertTrue(coffee.photoFilenames.isEmpty())
     }
 
     @Test
