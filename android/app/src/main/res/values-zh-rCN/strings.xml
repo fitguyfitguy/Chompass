@@ -856,6 +856,11 @@
     <string name="library_row_summary">%1$d 条记录 · 最近 %2$s</string>
     <string name="library_delete_rows_title">删除记录？</string>
     <string name="library_delete_rows_message">删除“%2$s”的全部 %1$d 条记录？各天合计将重新计算。已保存的食物仍会保留，仅删除其日记历史。</string>
+    <string name="library_merge_section">可能的重复项</string>
+    <string name="library_merge_title">合并重复项</string>
+    <string name="library_merge_intro">这些似乎是同一种食物。选择要保留的名称，其余将合并到其中。</string>
+    <string name="library_merge_rows_message">%1$d 条记录将重命名为“%2$s”。不会删除任何内容；各天合计将重新计算。</string>
+    <string name="library_merge_action">合并</string>
     <string name="library_sort_last_logged">最近记录</string>
     <string name="library_sort_name">名称</string>
     <string name="library_sort_logs">记录数</string>

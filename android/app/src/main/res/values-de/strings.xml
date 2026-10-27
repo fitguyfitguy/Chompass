@@ -832,6 +832,11 @@ für dich ein</string>
     <string name="library_row_summary">%1$d Einträge · zuletzt %2$s</string>
     <string name="library_delete_rows_title">Geloggte Einträge löschen?</string>
     <string name="library_delete_rows_message">Alle %1$d Einträge von „%2$s“ löschen? Die Tage werden neu berechnet. Das gespeicherte Lebensmittel bleibt erhalten, nur seine Tagebuch-Einträge werden entfernt.</string>
+    <string name="library_merge_section">Mögliche Duplikate</string>
+    <string name="library_merge_title">Duplikate zusammenführen</string>
+    <string name="library_merge_intro">Das sieht nach demselben Lebensmittel aus. Wähle den Namen, der bleiben soll – die anderen werden darin zusammengeführt.</string>
+    <string name="library_merge_rows_message">%1$d Einträge werden in „%2$s“ umbenannt. Nichts wird gelöscht; die Tage werden neu berechnet.</string>
+    <string name="library_merge_action">Zusammenführen</string>
     <string name="library_sort_last_logged">Zuletzt geloggt</string>
     <string name="library_sort_name">Name</string>
     <string name="library_sort_logs">Einträge</string>

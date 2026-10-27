@@ -859,6 +859,11 @@
     <string name="library_row_summary">%1$d سجلات · آخرها %2$s</string>
     <string name="library_delete_rows_title">حذف السجلات؟</string>
     <string name="library_delete_rows_message">حذف جميع سجلات “%2$s” البالغ عددها %1$d؟ ستُعاد حساب الأيام. يبقى الطعام المحفوظ هنا، وسيُحذف سجله من اليوميات فقط.</string>
+    <string name="library_merge_section">تكرارات محتملة</string>
+    <string name="library_merge_title">دمج التكرارات</string>
+    <string name="library_merge_intro">يبدو أنها نفس الطعام. اختر الاسم الذي تريد إبقاءه — سيُدمج الباقي فيه.</string>
+    <string name="library_merge_rows_message">ستتم إعادة تسمية %1$d سجلات إلى “%2$s”. لن يُحذف أي شيء؛ ستُعاد حساب الأيام.</string>
+    <string name="library_merge_action">دمج</string>
     <string name="library_sort_last_logged">آخر تسجيل</string>
     <string name="library_sort_name">الاسم</string>
     <string name="library_sort_logs">السجلات</string>

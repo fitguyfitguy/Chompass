@@ -8,7 +8,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Added
 
-- **Saved foods manager** (Android): Settings → Health & Data → Saved foods is a searchable, sortable list of every food the app remembers. Open one to fix its saved template, favorite or unfavorite it, hide it from Add Food suggestions, or delete all of its logged rows in one step (the confirm shows the true all-time count before anything is touched). Hidden foods keep their diary history and come back with Unhide. Long-pressing a saved suggestion in Add Food now also offers Save to library (fix the stored values without logging a new row) and Hide from suggestions.
+- **Saved foods manager** (Android): Settings → Health & Data → Saved foods is a searchable, sortable list of every food the app remembers. Open one to fix its saved template, favorite or unfavorite it, hide it from Add Food suggestions, or delete all of its logged rows in one step (the confirm shows the true all-time count before anything is touched). Hidden foods keep their diary history and come back with Unhide. Long-pressing a saved suggestion in Add Food now also offers Save to library (fix the stored values without logging a new row) and Hide from suggestions. Foods that look like duplicates (the same name logged twice, or one product under two names) are flagged as Possible duplicates at the top of the list; merging keeps the name you pick and moves the other's logged rows under it, so its history and day totals land on one food instead of two.
 
 ## [5.12.0] - 2026-10-26
 
