@@ -196,6 +196,24 @@ fun FoodResultSheet(
         logTime: LocalTime,
     ) -> Unit)? = null,
     /**
+     * Fix the reviewed saved template in the library (Codeberg #142): same
+     * 8-arg shape as [onSaveFavorite], but writes through to the stored
+     * template instead of creating a diary row. Only passed when the review
+     * came from a saved food.
+     */
+    onSaveToLibrary: ((
+        name: String,
+        servingGrams: Double?,
+        scale: Double,
+        mealType: String,
+        selectedServingUnit: String?,
+        selectedServingQuantity: Double?,
+        editedAnalysis: FoodAnalysis,
+        logTime: LocalTime,
+    ) -> Unit)? = null,
+    /** Hide this saved food from Add Food suggestions (reversible in Settings). */
+    onHideFromSuggestions: (() -> Unit)? = null,
+    /**
      * Commit this review into the progressive meal draft.
      * [resumeCapture] true → reopen camera; false → show the meal sheet.
      */
@@ -566,6 +584,20 @@ fun FoodResultSheet(
         fun commitSaveFavorite() {
             if (isSaving || !analysisReady || analysis == null) return
             val save = onSaveFavorite ?: return
+            save(
+                name.trim().ifEmpty { analysis.name },
+                ServingUnitOption.persistedServingGrams(recordedServing, servingTouched, servingGrams),
+                saveScale(),
+                mealType,
+                if (servingUnitOptions.isEmpty()) null else selectedServingOption.unit,
+                if (servingUnitOptions.isEmpty()) null else saveQuantity(),
+                editedAnalysis(),
+                logTime,
+            )
+        }
+        fun commitSaveLibrary() {
+            if (isSaving || !analysisReady || analysis == null) return
+            val save = onSaveToLibrary ?: return
             save(
                 name.trim().ifEmpty { analysis.name },
                 ServingUnitOption.persistedServingGrams(recordedServing, servingTouched, servingGrams),
@@ -1122,6 +1154,20 @@ fun FoodResultSheet(
                     }
                 }
             }
+            // Codeberg #142: hide this saved food from suggestions. No confirm —
+            // reversible from the Settings library browser.
+            if (onHideFromSuggestions != null) {
+                item {
+                    SheetPillRow(onClick = { onHideFromSuggestions() }) {
+                        Text(stringResource(R.string.action_hide_from_suggestions), fontSize = 16.sp, modifier = Modifier.weight(1f))
+                        Icon(
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                        )
+                    }
+                }
+            }
             // Product information (OFF barcode enrichment): after the Log path
             // like the other informational sections above.
             effectiveAnalysis.productMetadata?.takeIf { it.hasDisplayDetails }?.let { metadata ->
@@ -1151,6 +1197,9 @@ fun FoodResultSheet(
                 textActionLabel = when {
                     onAddToProgressiveMeal != null && analysisReady && !isSaving ->
                         stringResource(R.string.progressive_meal_add_next)
+                    // Reviewed saved template → fix it in the library (Codeberg #142).
+                    onSaveToLibrary != null && analysisReady && !isSaving ->
+                        stringResource(R.string.action_save_to_library)
                     onSaveFavorite != null && source == FoodSource.BARCODE && analysisReady && !isSaving ->
                         stringResource(R.string.action_save_to_favorites)
                     else -> null
@@ -1158,6 +1207,9 @@ fun FoodResultSheet(
                 onTextAction = when {
                     onAddToProgressiveMeal != null && analysisReady -> {
                         { commitAddNext() }
+                    }
+                    onSaveToLibrary != null && analysisReady -> {
+                        { commitSaveLibrary() }
                     }
                     onSaveFavorite != null && source == FoodSource.BARCODE && analysisReady -> {
                         { commitSaveFavorite() }
