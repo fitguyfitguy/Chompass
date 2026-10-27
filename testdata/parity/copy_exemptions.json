@@ -329,6 +329,12 @@
       ]
     },
     {
+      "key": "library_sort_name",
+      "locales": [
+        "de"
+      ]
+    },
+    {
       "key": "manual_name",
       "locales": [
         "de"
