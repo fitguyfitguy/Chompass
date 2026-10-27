@@ -96,6 +96,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.delay
@@ -1392,6 +1393,15 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
                 }
             }
             .launchIn(viewModelScope)
+
+        // Library mutations from any screen (hide / unhide / fix template /
+        // delete logged rows, Codeberg #142) invalidate the Add Food saved
+        // index the same way a diary change does.
+        viewModelScope.launch {
+            container.foodRepository.libraryVersion.drop(1).collect {
+                quickRelogEpoch++
+            }
+        }
 
         container.prefs.goalJournal
             .onEach { entries ->

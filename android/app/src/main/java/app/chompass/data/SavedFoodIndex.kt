@@ -50,6 +50,7 @@ internal fun buildSavedFoodIndex(
     entries: List<FoodEntry>,
     favorites: List<FoodEntry>,
     frequentThreshold: Int = 3,
+    hiddenKeys: Set<String> = emptySet(),
 ): List<SavedFoodIndexEntry> {
     val favoriteKeys = favorites.mapNotNull { it.favoriteKey.takeIf(String::isNotEmpty) }.toSet()
     val counts = mutableMapOf<String, Int>()
@@ -57,6 +58,7 @@ internal fun buildSavedFoodIndex(
     for (entry in entries.sortedByDescending { it.timestamp }) {
         val key = entry.favoriteKey
         if (key.isEmpty()) continue
+        if (key in hiddenKeys) continue
         counts[key] = (counts[key] ?: 0) + 1
         // Sorted newest-first, so the first template seen for a key is the
         // newest serving snapshot — what a re-log should offer.
@@ -67,6 +69,7 @@ internal fun buildSavedFoodIndex(
     for (favorite in favorites) {
         val key = favorite.favoriteKey
         if (key.isEmpty()) continue
+        if (key in hiddenKeys) continue
         templates.putIfAbsent(key, favorite)
     }
     return templates.map { (key, template) ->
