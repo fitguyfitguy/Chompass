@@ -854,6 +854,11 @@
     <string name="library_row_summary">%1$d回の記録 · 最終 %2$s</string>
     <string name="library_delete_rows_title">記録を削除しますか？</string>
     <string name="library_delete_rows_message">「%2$s」の記録%1$d件をすべて削除しますか？ 日ごとの合計は再計算されます。保存した食品はここに残り、日誌の履歴のみ削除されます。</string>
+    <string name="library_merge_section">重複の可能性</string>
+    <string name="library_merge_title">重複を統合</string>
+    <string name="library_merge_intro">同じ食品の可能性があります。残す名前を選ぶと、ほかはその名前に統合されます。</string>
+    <string name="library_merge_rows_message">記録%1$d件の名前が「%2$s」に変わります。削除はされず、日ごとの合計は再計算されます。</string>
+    <string name="library_merge_action">統合</string>
     <string name="library_sort_last_logged">最終記録</string>
     <string name="library_sort_name">名前</string>
     <string name="library_sort_logs">記録数</string>

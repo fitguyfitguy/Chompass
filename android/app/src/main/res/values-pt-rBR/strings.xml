@@ -828,6 +828,11 @@
     <string name="library_row_summary">%1$d registros · último %2$s</string>
     <string name="library_delete_rows_title">Excluir os registros?</string>
     <string name="library_delete_rows_message">Excluir todas as %1$d linhas registradas de “%2$s”? Os dias são recalculados. O alimento salvo continua aqui; apenas o histórico dele no diário é removido.</string>
+    <string name="library_merge_section">Possíveis duplicatas</string>
+    <string name="library_merge_title">Mesclar duplicatas</string>
+    <string name="library_merge_intro">Parece ser o mesmo alimento. Escolha o nome que será mantido; os outros são mesclados nele.</string>
+    <string name="library_merge_rows_message">%1$d linhas registradas serão renomeadas para “%2$s”. Nada é excluído; os dias são recalculados.</string>
+    <string name="library_merge_action">Mesclar</string>
     <string name="library_sort_last_logged">Último registro</string>
     <string name="library_sort_name">Nome</string>
     <string name="library_sort_logs">Registros</string>

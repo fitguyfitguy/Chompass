@@ -846,6 +846,11 @@ bilirsən?</string>
     <string name="library_row_summary">%1$d qeyd · son %2$s</string>
     <string name="library_delete_rows_title">Qeydlər silinsin?</string>
     <string name="library_delete_rows_message">“%2$s” üçün qeyd olunan %1$d sətirin hamısı silinsin? Günlər yenidən hesablanır. Yadda saxlanmış qida burada qalır, yalnız gündəlik tarixçəsi silinir.</string>
+    <string name="library_merge_section">Ehtimal olunan dublikatlar</string>
+    <string name="library_merge_title">Dublikatları birləşdir</string>
+    <string name="library_merge_intro">Bunlar eyni qida kimi görünür. Saxlanılacaq adı seçin — qalanları ona birləşəcək.</string>
+    <string name="library_merge_rows_message">Qeyd olunan %1$d sətrin adı “%2$s” olaraq dəyişdiriləcək. Heç nə silinmir; günlər yenidən hesablanır.</string>
+    <string name="library_merge_action">Birləşdir</string>
     <string name="library_sort_last_logged">Son qeyd</string>
     <string name="library_sort_name">Ad</string>
     <string name="library_sort_logs">Qeydlər</string>

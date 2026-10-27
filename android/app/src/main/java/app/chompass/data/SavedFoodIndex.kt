@@ -1,6 +1,7 @@
 package app.chompass.data
 
 import app.chompass.models.FoodEntry
+import app.chompass.models.NutrientSourceKind
 import app.chompass.services.grounding.FoodSuggestion
 import app.chompass.services.grounding.QueryNormalizer
 import app.chompass.services.grounding.SuggestionKind
@@ -88,4 +89,78 @@ internal fun buildSavedFoodIndex(
             nameTokens = QueryNormalizer.normalizeTokens(template.name).toSet(),
         )
     }
+}
+
+/**
+ * Barcode identity behind this entry's template, when it has one: the OFF
+ * product card's barcode, or an Open Food Facts grounding id (both carry the
+ * same product namespace — see [matchesSavedBarcode]). USDA / Swiss grounding
+ * ids are database row ids, deliberately not read as barcodes.
+ */
+internal val SavedFoodIndexEntry.barcodeIdentity: String?
+    get() = template.productMetadata?.barcode
+        ?: template.grounding?.takeIf { it.sourceKind == NutrientSourceKind.OPEN_FOOD_FACTS }?.sourceId
+
+/**
+ * Merge/dedupe candidates for the library browser (Codeberg #142 WP4):
+ * entries that plausibly describe the same food under two identities,
+ * grouped by equal normalized name — which catches "Oatmeal" / "Oatmeal (2)"
+ * forks (the disambiguation suffix is quantity-like noise to the tokenizer)
+ * and spelling variants the normalizer folds — or identical barcode (same
+ * product logged under different names). Hidden entries participate: the
+ * browser loads the full index anyway, and a hidden duplicate is exactly
+ * what a merge cleans up.
+ *
+ * Pure and deterministic. Groups carry ≥2 members, ordered newest-template
+ * first (equal timestamps fall back to alphabetical key order) so the
+ * dialog's default "keep" is the freshest identity; groups are ordered by
+ * total log count (noisiest first), then first member's normalized name.
+ */
+internal fun mergeCandidateGroups(index: List<SavedFoodIndexEntry>): List<List<SavedFoodIndexEntry>> {
+    // Union-find over positions, joined by the two relations. Roots keep the
+    // smallest index so component discovery order is input-order stable.
+    val parent = IntArray(index.size) { it }
+    fun find(i: Int): Int {
+        var root = i
+        while (parent[root] != root) root = parent[root]
+        var current = i
+        while (parent[current] != root) {
+            val next = parent[current]
+            parent[current] = root
+            current = next
+        }
+        return root
+    }
+    fun union(a: Int, b: Int) {
+        val ra = find(a)
+        val rb = find(b)
+        if (ra != rb) parent[maxOf(ra, rb)] = minOf(ra, rb)
+    }
+    val byName = HashMap<String, Int>()
+    val byBarcode = HashMap<String, Int>()
+    index.forEachIndexed { i, entry ->
+        if (entry.normalizedName.isNotEmpty()) {
+            val sameName = byName[entry.normalizedName]
+            if (sameName == null) byName[entry.normalizedName] = i else union(sameName, i)
+        }
+        entry.barcodeIdentity?.let { barcode ->
+            val sameBarcode = byBarcode[barcode]
+            if (sameBarcode == null) byBarcode[barcode] = i else union(sameBarcode, i)
+        }
+    }
+    val components = LinkedHashMap<Int, MutableList<SavedFoodIndexEntry>>()
+    index.forEachIndexed { i, entry ->
+        components.getOrPut(find(i)) { mutableListOf() }.add(entry)
+    }
+    return components.values
+        .filter { it.size >= 2 }
+        .map { group ->
+            group.sortedWith(
+                compareByDescending<SavedFoodIndexEntry> { it.lastLogged }.thenBy { it.template.favoriteKey },
+            )
+        }
+        .sortedWith(
+            compareByDescending<List<SavedFoodIndexEntry>> { group -> group.sumOf { it.logCount } }
+                .thenBy { group -> group.first().normalizedName },
+        )
 }

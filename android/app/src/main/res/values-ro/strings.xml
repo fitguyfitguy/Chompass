@@ -831,6 +831,11 @@
     <string name="library_row_summary">%1$d înregistrări · ultima %2$s</string>
     <string name="library_delete_rows_title">Ștergi înregistrările?</string>
     <string name="library_delete_rows_message">Ștergi toate cele %1$d înregistrări ale lui „%2$s”? Zilele se recalculează. Alimentul salvat rămâne aici; se șterge doar istoricul din jurnal.</string>
+    <string name="library_merge_section">Duplicate posibile</string>
+    <string name="library_merge_title">Combină duplicatele</string>
+    <string name="library_merge_intro">Par a fi același aliment. Alege numele care rămâne; celelalte se combină în el.</string>
+    <string name="library_merge_rows_message">%1$d înregistrări vor fi redenumite în „%2$s”. Nu se șterge nimic; zilele se recalculează.</string>
+    <string name="library_merge_action">Combină</string>
     <string name="library_sort_last_logged">Ultima înregistrare</string>
     <string name="library_sort_name">Nume</string>
     <string name="library_sort_logs">Înregistrări</string>

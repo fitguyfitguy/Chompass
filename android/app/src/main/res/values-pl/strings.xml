@@ -495,6 +495,11 @@
     <string name="library_row_summary">%1$d wpisów · ostatni %2$s</string>
     <string name="library_delete_rows_title">Usunąć zapisane wpisy?</string>
     <string name="library_delete_rows_message">Usunąć wszystkie wpisy (%1$d) dla „%2$s”? Dni zostaną przeliczone. Zapisany produkt zostaje tutaj; usuwana jest tylko jego historia dziennika.</string>
+    <string name="library_merge_section">Możliwe duplikaty</string>
+    <string name="library_merge_title">Połącz duplikaty</string>
+    <string name="library_merge_intro">To wygląda na ten sam produkt. Wybierz nazwę, która ma zostać — pozostałe zostaną w nią połączone.</string>
+    <string name="library_merge_rows_message">%1$d wpisów zmieni nazwę na „%2$s”. Nic nie zostanie usunięte; dni zostaną przeliczone.</string>
+    <string name="library_merge_action">Połącz</string>
     <string name="library_sort_last_logged">Ostatnio zapisane</string>
     <string name="library_sort_name">Nazwa</string>
     <string name="library_sort_logs">Wpisy</string>

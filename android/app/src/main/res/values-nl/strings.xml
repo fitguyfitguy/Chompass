@@ -825,6 +825,11 @@
     <string name="library_row_summary">%1$d logboekregels · laatst %2$s</string>
     <string name="library_delete_rows_title">Logboekregels verwijderen?</string>
     <string name="library_delete_rows_message">Alle %1$d logboekregels van ‘%2$s’ verwijderen? Dagen worden opnieuw berekend. Het opgeslagen voedingsmiddel blijft hier staan; alleen de dagboekgeschiedenis ervan wordt verwijderd.</string>
+    <string name="library_merge_section">Mogelijke duplicaten</string>
+    <string name="library_merge_title">Duplicaten samenvoegen</string>
+    <string name="library_merge_intro">Deze lijken hetzelfde voedingsmiddel. Kies de naam die blijft; de anderen worden daarin samengevoegd.</string>
+    <string name="library_merge_rows_message">%1$d logboekregels worden hernoemd naar ‘%2$s’. Er wordt niets verwijderd; dagen worden opnieuw berekend.</string>
+    <string name="library_merge_action">Samenvoegen</string>
     <string name="library_sort_last_logged">Laatst gelogd</string>
     <string name="library_sort_name">Naam</string>
     <string name="library_sort_logs">Logboek</string>

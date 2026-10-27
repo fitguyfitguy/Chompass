@@ -873,6 +873,11 @@
     <string name="library_row_summary">%1$d entrées · dernière %2$s</string>
     <string name="library_delete_rows_title">Supprimer les entrées consignées ?</string>
     <string name="library_delete_rows_message">Supprimer les %1$d lignes consignées de « %2$s » ? Les jours sont recalculés. L’aliment enregistré reste ici ; seul son historique du journal est supprimé.</string>
+    <string name="library_merge_section">Doublons possibles</string>
+    <string name="library_merge_title">Fusionner les doublons</string>
+    <string name="library_merge_intro">Il semble s’agir du même aliment. Choisissez le nom à conserver ; les autres y sont fusionnés.</string>
+    <string name="library_merge_rows_message">%1$d lignes consignées seront renommées en « %2$s ». Rien n’est supprimé ; les jours sont recalculés.</string>
+    <string name="library_merge_action">Fusionner</string>
     <string name="library_sort_last_logged">Dernière consignation</string>
     <string name="library_sort_name">Nom</string>
     <string name="library_sort_logs">Entrées</string>

@@ -975,6 +975,62 @@ class FoodRepository(
         bumpLibraryVersion()
         return victims.size
     }
+
+    /**
+     * Merge identity [sourceKey] into [targetKey] (Codeberg #142 semantics 4).
+     * [FoodEntry.favoriteKey] is computed from the name, so the row-level
+     * identity update *is* the rename: every diary row carrying [sourceKey]
+     * is renamed to the target's exact name in one atomic write
+     * ([updateEntries] — batch sync touch, batched Health update, or stale
+     * HC-record cleanup when sync is off). Rows keep id and timestamp, so
+     * meal placement, history, and photos are untouched.
+     *
+     * Favorites: a source-only favorite is re-pointed onto the target
+     * (name changes, curated macros, id, order, and photo stay); when both
+     * identities are favorited the source favorite is removed outright
+     * (same removal branch as [hideFood]). The suggestion template needs no
+     * write either way — the newest-row-per-key collapse picks up the merged
+     * history, and [refreshFavoriteOnMerge] re-syncs a drifting favorite on
+     * the next re-log, same as before the merge.
+     *
+     * A [sourceKey] left in `hidden_food_keys` is cleared (its rows are gone;
+     * the target's hidden state is the user's call and stays untouched).
+     *
+     * @return the number of diary rows renamed, 0 when the target identity
+     *         no longer exists (already merged / deleted) or keys coincide.
+     */
+    suspend fun mergeFoodKey(sourceKey: String, targetKey: String): Int {
+        if (sourceKey == targetKey || sourceKey.isEmpty() || targetKey.isEmpty()) return 0
+        val diary = prefs.foodEntries.first()
+        val favorites = migratedFavorites()
+        // The rename must land rows exactly on the target identity, so the
+        // name is taken from a live target template (diary newest-first, then
+        // a never-logged favorite), never recomputed from the key string.
+        val targetName = (
+            diary.filter { it.favoriteKey == targetKey }.maxByOrNull { it.timestamp }
+                ?: favorites.firstOrNull { it.favoriteKey == targetKey }
+            )?.name ?: return 0
+        val rewritten = diary
+            .filter { it.favoriteKey == sourceKey }
+            .map { it.copy(name = targetName) }
+        updateEntries(rewritten)
+        val sourceFavorite = favorites.firstOrNull { it.favoriteKey == sourceKey }
+        if (sourceFavorite != null) {
+            val targetFavorite = favorites.firstOrNull { it.favoriteKey == targetKey }
+            if (targetFavorite != null) {
+                val current = favorites.toMutableList()
+                current.removeAll { it.favoriteKey == sourceKey }
+                prefs.setFavoritesAtomic(current)
+                sync?.tombstone(sourceFavorite.id, "favorite")
+                pruneOrphanedImages()
+            } else {
+                updateFavorite(sourceFavorite, sourceFavorite.copy(name = targetName))
+            }
+        }
+        prefs.setFoodHidden(sourceKey, false)
+        bumpLibraryVersion()
+        return rewritten.size
+    }
 }
 
 /**

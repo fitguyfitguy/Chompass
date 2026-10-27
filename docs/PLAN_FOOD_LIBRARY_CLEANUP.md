@@ -1,6 +1,8 @@
 # Plan: Food library cleanup (Codeberg #142)
 
-Status: drafted 2026-10-26, not started. Parked behind the AI settings UX pass.
+Status: WP1-3 shipped with device pass (2026-10-26/27). WP4 merge/dedupe
+implemented 2026-10-27 — rides the next release train per the release shape
+below.
 Reporter @burdick-ryan, candidate, M total. Android-only v1; parity call below.
 
 ## Problem

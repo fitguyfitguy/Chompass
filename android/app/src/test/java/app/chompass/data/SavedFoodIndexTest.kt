@@ -1,8 +1,11 @@
 package app.chompass.data
 
 import app.chompass.models.FoodEntry
+import app.chompass.models.FoodGroundingProvenance
+import app.chompass.models.FoodProductMetadata
 import app.chompass.models.FoodSource
 import app.chompass.models.MealType
+import app.chompass.models.NutrientSourceKind
 import app.chompass.services.grounding.SuggestionKind
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -140,5 +143,120 @@ class SavedFoodIndexTest {
         assertEquals(base.map { it.template.favoriteKey }, withEmptyHidden.map { it.template.favoriteKey })
         assertEquals(base.map { it.template.favoriteKey }, untouched.map { it.template.favoriteKey })
         assertEquals(3, base.size)
+    }
+
+    // -- Merge/dedupe candidates (Codeberg #142 WP4) ------------------------
+
+    private fun grounded(
+        name: String,
+        timestamp: Instant = Instant.parse("2024-06-01T12:00:00Z"),
+        grounding: FoodGroundingProvenance? = null,
+        productBarcode: String? = null,
+    ) = entry(name, timestamp).copy(
+        grounding = grounding,
+        productMetadata = productBarcode?.let { FoodProductMetadata(barcode = it) },
+    )
+
+    @Test
+    fun mergeCandidatesCatchDisambiguationForks() {
+        val index = buildSavedFoodIndex(
+            entries = listOf(
+                entry("Oatmeal", Instant.parse("2024-06-01T12:00:00Z")),
+                entry("Oatmeal (2)", Instant.parse("2024-06-02T12:00:00Z")),
+                entry("Banana", Instant.parse("2024-06-03T12:00:00Z")),
+            ),
+            favorites = emptyList(),
+        )
+        val groups = mergeCandidateGroups(index)
+        assertEquals(1, groups.size)
+        // Newest template first — the dialog's default "keep".
+        assertEquals(listOf("oatmeal (2)", "oatmeal"), groups.single().map { it.template.favoriteKey })
+    }
+
+    @Test
+    fun mergeCandidatesStayEmptyForDistinctFoods() {
+        val index = buildSavedFoodIndex(
+            entries = listOf(entry("Apple"), entry("Banana"), entry("Cherry Pie")),
+            favorites = emptyList(),
+        )
+        assertTrue(mergeCandidateGroups(index).isEmpty())
+    }
+
+    @Test
+    fun mergeCandidatesGroupSameProductUnderDifferentNames() {
+        val index = buildSavedFoodIndex(
+            entries = listOf(
+                grounded("Chobani Yogurt", productBarcode = "041220186396"),
+                grounded(
+                    "Chobani Yoghurt Cup",
+                    grounding = FoodGroundingProvenance(
+                        sourceKind = NutrientSourceKind.OPEN_FOOD_FACTS,
+                        sourceId = "041220186396",
+                    ),
+                ),
+            ),
+            favorites = emptyList(),
+        )
+        assertEquals(1, mergeCandidateGroups(index).size)
+    }
+
+    @Test
+    fun mergeCandidatesIgnoreNonBarcodeSourceIds() {
+        // An USDA FDC id that happens to equal a product barcode must not
+        // suggest a merge — only Open Food Facts grounding ids share the
+        // barcode namespace.
+        val index = buildSavedFoodIndex(
+            entries = listOf(
+                grounded(
+                    "USDA Oats",
+                    grounding = FoodGroundingProvenance(sourceKind = NutrientSourceKind.USDA, sourceId = "123456"),
+                ),
+                grounded("Store Oats", productBarcode = "123456"),
+            ),
+            favorites = emptyList(),
+        )
+        assertTrue(mergeCandidateGroups(index).isEmpty())
+    }
+
+    @Test
+    fun mergeCandidatesChainNameAndBarcodeIntoOneGroup() {
+        val index = buildSavedFoodIndex(
+            entries = listOf(
+                grounded("Greek Yogurt", Instant.parse("2024-06-01T12:00:00Z")),
+                grounded(
+                    "Greek Yoghurt",
+                    Instant.parse("2024-06-02T12:00:00Z"),
+                    grounding = FoodGroundingProvenance(
+                        sourceKind = NutrientSourceKind.OPEN_FOOD_FACTS,
+                        sourceId = "3017620422003",
+                    ),
+                ),
+                grounded("Yoghurt Greek", Instant.parse("2024-06-03T12:00:00Z"), productBarcode = "3017620422003"),
+            ),
+            favorites = emptyList(),
+        )
+        val groups = mergeCandidateGroups(index)
+        assertEquals(1, groups.size)
+        assertEquals(3, groups.single().size)
+    }
+
+    @Test
+    fun mergeCandidateGroupsOrderbyTotalLogs() {
+        val index = buildSavedFoodIndex(
+            entries = listOf(
+                entry("Oatmeal"), entry("Oatmeal"), entry("Oatmeal"),
+                entry("Oatmeal (2)"), entry("Oatmeal (2)"),
+                entry("Jam"),
+                entry("Jam (2)"),
+            ),
+            favorites = emptyList(),
+        )
+        val groups = mergeCandidateGroups(index)
+        // Noisier identity first: oatmeal's 5 logs beat jam's 2. All
+        // timestamps are equal here, so members fall back to key order.
+        assertEquals(
+            listOf(listOf("oatmeal", "oatmeal (2)"), listOf("jam", "jam (2)")),
+            groups.map { group -> group.map { it.template.favoriteKey } },
+        )
     }
 }

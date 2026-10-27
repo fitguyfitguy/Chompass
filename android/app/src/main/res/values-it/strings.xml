@@ -845,6 +845,11 @@
     <string name="library_row_summary">%1$d registrazioni · ultima %2$s</string>
     <string name="library_delete_rows_title">Eliminare le registrazioni?</string>
     <string name="library_delete_rows_message">Eliminare tutte le %1$d righe registrate di «%2$s»? I giorni vengono ricalcolati. L\'alimento salvato resta qui; viene rimosso solo il suo storico del diario.</string>
+    <string name="library_merge_section">Possibili duplicati</string>
+    <string name="library_merge_title">Unisci duplicati</string>
+    <string name="library_merge_intro">Sembra lo stesso alimento. Scegli il nome da mantenere; gli altri vengono uniti in esso.</string>
+    <string name="library_merge_rows_message">%1$d righe registrate verranno rinominate in «%2$s». Nulla viene eliminato; i giorni vengono ricalcolati.</string>
+    <string name="library_merge_action">Unisci</string>
     <string name="library_sort_last_logged">Ultima registrazione</string>
     <string name="library_sort_name">Nome</string>
     <string name="library_sort_logs">Registrazioni</string>
