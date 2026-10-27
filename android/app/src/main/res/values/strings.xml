@@ -659,6 +659,11 @@
     <string name="library_row_summary">%1$d logs · last %2$s</string>
     <string name="library_delete_rows_title">Delete logged rows?</string>
     <string name="library_delete_rows_message">Delete all %1$d logged rows of “%2$s”? Days recalculate. The saved food stays here; diary history for it is removed.</string>
+    <string name="library_merge_section">Possible duplicates</string>
+    <string name="library_merge_title">Merge duplicates</string>
+    <string name="library_merge_intro">These look like the same food. Pick the name to keep — the others merge into it.</string>
+    <string name="library_merge_rows_message">%1$d logged rows will be renamed to “%2$s”. Nothing is deleted; days recalculate.</string>
+    <string name="library_merge_action">Merge</string>
     <string name="library_sort_last_logged">Last logged</string>
     <string name="library_sort_name">Name</string>
     <string name="library_sort_logs">Logs</string>

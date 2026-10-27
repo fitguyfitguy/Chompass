@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.data.SavedFoodIndexEntry
+import app.chompass.data.mergeCandidateGroups
 import app.chompass.models.FoodEntry
 import app.chompass.models.LocaleFormat
 import app.chompass.ui.components.ChompassDialog
@@ -73,6 +75,10 @@ fun SavedFoodsScreen(container: AppContainer, onBack: () -> Unit) {
     var editingTemplate by remember { mutableStateOf<FoodEntry?>(null) }
     /** Delete confirm target: template plus its all-time logged-row count. */
     var pendingDelete by remember { mutableStateOf<Pair<FoodEntry, Int>?>(null) }
+    /** Merge confirm: candidate group plus each member's all-time logged-row count. */
+    var pendingMerge by remember { mutableStateOf<Pair<List<SavedFoodIndexEntry>, Map<String, Int>>?>(null) }
+    /** Member kept as the merge target inside the open dialog. */
+    var mergeKeepKey by remember { mutableStateOf<String?>(null) }
 
     var index by remember { mutableStateOf<List<SavedFoodIndexEntry>>(emptyList()) }
     var hiddenKeys by remember { mutableStateOf<Set<String>>(emptySet()) }
@@ -97,6 +103,10 @@ fun SavedFoodsScreen(container: AppContainer, onBack: () -> Unit) {
             }
         }
     val hidden = index.filter { it.template.favoriteKey in hiddenKeys && matches(it) }
+
+    // Merge/dedupe candidates (WP4): a global cleanup affordance, not a
+    // search result — suppressed while a query filters the list.
+    val candidateGroups = if (trimmedQuery.isEmpty()) mergeCandidateGroups(index) else emptyList()
 
     SettingsSubScreen(
         title = stringResource(R.string.settings_saved_foods),
@@ -128,6 +138,54 @@ fun SavedFoodsScreen(container: AppContainer, onBack: () -> Unit) {
                         )
                     },
                 )
+            }
+        }
+
+        if (candidateGroups.isNotEmpty()) {
+            SectionCard(title = stringResource(R.string.library_merge_section)) {
+                candidateGroups.forEachIndexed { i, group ->
+                    if (i > 0) HorizontalDivider()
+                    val newest = group.first()
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                scope.launch {
+                                    val counts = group.associate { member ->
+                                        member.template.favoriteKey to
+                                            repo.loggedRowCount(member.template.favoriteKey)
+                                    }
+                                    mergeKeepKey = newest.template.favoriteKey
+                                    pendingMerge = group to counts
+                                }
+                            }
+                            .padding(horizontal = 16.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                group.joinToString(" · ") { it.template.name },
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Medium,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            Text(
+                                if (newest.logCount == 0) {
+                                    stringResource(R.string.library_never_logged)
+                                } else {
+                                    stringResource(
+                                        R.string.library_row_summary,
+                                        newest.logCount,
+                                        LocaleFormat.mediumDateZoned().format(newest.lastLogged),
+                                    )
+                                },
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            )
+                        }
+                    }
+                }
             }
         }
 
@@ -276,6 +334,80 @@ fun SavedFoodsScreen(container: AppContainer, onBack: () -> Unit) {
                 dismissText = stringResource(R.string.action_cancel),
                 onDismiss = { pendingDelete = null },
                 destructive = true,
+            )
+        }
+    }
+
+    pendingMerge?.let { (group, counts) ->
+        // Default keep = the group's newest template (members are sorted
+        // newest-first); mergeKeepKey is only null before the first selection.
+        val keep = group.firstOrNull { it.template.favoriteKey == mergeKeepKey } ?: group.first()
+        val movedRows = counts.filterKeys { it != keep.template.favoriteKey }.values.sum()
+        ChompassDialog(onDismissRequest = { pendingMerge = null }) {
+            Text(
+                stringResource(R.string.library_merge_title),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                stringResource(R.string.library_merge_intro),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+            )
+            group.forEach { member ->
+                val key = member.template.favoriteKey
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable { mergeKeepKey = key }
+                        .padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    RadioButton(
+                        selected = key == keep.template.favoriteKey,
+                        onClick = { mergeKeepKey = key },
+                    )
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            member.template.name,
+                            style = MaterialTheme.typography.bodyLarge,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Text(
+                            if ((counts[key] ?: 0) == 0) {
+                                stringResource(R.string.library_never_logged)
+                            } else {
+                                stringResource(
+                                    R.string.library_row_summary,
+                                    counts[key] ?: 0,
+                                    LocaleFormat.mediumDateZoned().format(member.lastLogged),
+                                )
+                            },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        )
+                    }
+                }
+            }
+            Text(
+                stringResource(R.string.library_merge_rows_message, movedRows, keep.template.name),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+            )
+            ChompassDialogActions(
+                primaryText = stringResource(R.string.library_merge_action),
+                onPrimary = {
+                    val targetKey = keep.template.favoriteKey
+                    pendingMerge = null
+                    scope.launch {
+                        group.forEach { member ->
+                            val key = member.template.favoriteKey
+                            if (key != targetKey) repo.mergeFoodKey(key, targetKey)
+                        }
+                        refreshTick++
+                    }
+                },
+                dismissText = stringResource(R.string.action_cancel),
+                onDismiss = { pendingMerge = null },
             )
         }
     }

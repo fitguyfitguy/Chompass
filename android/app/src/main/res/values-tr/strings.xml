@@ -495,6 +495,11 @@
     <string name="library_row_summary">%1$d kayıt · son %2$s</string>
     <string name="library_delete_rows_title">Kayıtlar silinsin mi?</string>
     <string name="library_delete_rows_message">“%2$s” için kaydedilen %1$d satırın tümü silinsin mi? Günler yeniden hesaplanır. Kaydedilen yiyecek burada kalır; yalnızca günlük geçmişi kaldırılır.</string>
+    <string name="library_merge_section">Olası yinelenenler</string>
+    <string name="library_merge_title">Yinelenenleri birleştir</string>
+    <string name="library_merge_intro">Bunlar aynı yiyeceğe benziyor. Kalacak adı seçin — diğerleri onunla birleşir.</string>
+    <string name="library_merge_rows_message">Kaydedilen %1$d satır “%2$s” olarak yeniden adlandırılacak. Hiçbir şey silinmez; günler yeniden hesaplanır.</string>
+    <string name="library_merge_action">Birleştir</string>
     <string name="library_sort_last_logged">Son kayıt</string>
     <string name="library_sort_name">Ad</string>
     <string name="library_sort_logs">Kayıtlar</string>

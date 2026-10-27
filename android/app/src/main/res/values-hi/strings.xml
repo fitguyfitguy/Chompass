@@ -855,6 +855,11 @@
     <string name="library_row_summary">%1$d लॉग · अंतिम %2$s</string>
     <string name="library_delete_rows_title">लॉग पंक्तियाँ हटाएँ?</string>
     <string name="library_delete_rows_message">“%2$s” की सभी %1$d लॉग पंक्तियाँ हटाएँ? दिन फिर से गणना होंगे। सहेजा गया खाद्य पदार्थ यहाँ रहेगा; केवल उसका डायरी इतिहास हट जाएगा।</string>
+    <string name="library_merge_section">संभावित डुप्लिकेट</string>
+    <string name="library_merge_title">डुप्लिकेट मिलाएँ</string>
+    <string name="library_merge_intro">ये एक ही खाद्य पदार्थ लगते हैं। जो नाम रखना है उसे चुनें — बाकी उसी में मिल जाएँगे।</string>
+    <string name="library_merge_rows_message">%1$d लॉग पंक्तियों का नाम बदलकर “%2$s” हो जाएगा। कुछ भी नहीं हटता; दिन फिर से गणना होंगे।</string>
+    <string name="library_merge_action">मिलाएँ</string>
     <string name="library_sort_last_logged">अंतिम लॉग</string>
     <string name="library_sort_name">नाम</string>
     <string name="library_sort_logs">लॉग</string>

@@ -1479,6 +1479,11 @@
     <string name="library_row_summary">записей: %1$d · последняя %2$s</string>
     <string name="library_delete_rows_title">Удалить записи из дневника?</string>
     <string name="library_delete_rows_message">Удалить все записи (%1$d) для «%2$s»? Дни будут пересчитаны. Сохранённый продукт останется в списке; удалится только его история дневника.</string>
+    <string name="library_merge_section">Возможные дубликаты</string>
+    <string name="library_merge_title">Объединить дубликаты</string>
+    <string name="library_merge_intro">Похоже, это один и тот же продукт. Выберите имя, которое останется; остальные объединятся в него.</string>
+    <string name="library_merge_rows_message">%1$d записей будут переименованы в «%2$s». Ничего не удаляется; дни будут пересчитаны.</string>
+    <string name="library_merge_action">Объединить</string>
     <string name="library_sort_last_logged">По последней записи</string>
     <string name="library_sort_name">Название</string>
     <string name="library_sort_logs">Записи</string>
