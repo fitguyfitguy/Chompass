@@ -1,0 +1,31 @@
+# Device-pass flow (Codeberg #122): opt-in photo ZIP export, toggle ON.
+# Produces cache/capture/Fud-Food-Diary-*.zip next to the sync doc's JSON path;
+# verify the archive bytes via run-as after the flow:
+#   adb shell run-as app.chompass.debug ls cache/capture
+# Seed prerequisite: full seed with photo-backed entries (install_debug.sh;
+# TestDataSeeder.attachSeedPhotos). German per-app locale:
+#   adb shell cmd locale set-app-locales app.chompass.debug --locales de-DE
+# Run from a clean picker state:
+#   adb shell am force-stop com.google.android.documentsui app.chompass.debug
+appId: app.chompass.debug
+name: Diary photo export zip on
+---
+- launchApp
+- extendedWaitUntil:
+    visible: "Heute"
+    timeout: 90000
+- extendedWaitUntil:
+    visible: "Einstellungen"
+    timeout: 20000
+- tapOn: "Einstellungen"
+- tapOn: "Daten & Backup"
+- tapOn: "Ernährungstagebuch exportieren"
+- extendedWaitUntil:
+    visible: "Format"
+    timeout: 20000
+- tapOn: "Gesamter Zeitraum"
+- tapOn: "Fotos einschließen"
+- tapOn: "Exportieren"
+- waitForAnimationToEnd:
+    timeout: 20000
+- back

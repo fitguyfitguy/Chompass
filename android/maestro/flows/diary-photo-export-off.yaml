@@ -1,0 +1,26 @@
+# Device-pass flow (Codeberg #122): photo-less export regression guard.
+# Without the "Fotos einschließen" toggle the export must stay a plain JSON
+# file stamped format_version 1.6 — byte-identical behavior to pre-#122.
+# Verify after the flow via run-as + pull (JSON must contain "1.6", no photos).
+# Same prerequisites as diary-photo-export-on.yaml.
+appId: app.chompass.debug
+name: Diary photo export off stays 1.6
+---
+- launchApp
+- extendedWaitUntil:
+    visible: "Heute"
+    timeout: 90000
+- extendedWaitUntil:
+    visible: "Einstellungen"
+    timeout: 20000
+- tapOn: "Einstellungen"
+- tapOn: "Daten & Backup"
+- tapOn: "Ernährungstagebuch exportieren"
+- extendedWaitUntil:
+    visible: "Format"
+    timeout: 20000
+- tapOn: "Gesamter Zeitraum"
+- tapOn: "Exportieren"
+- waitForAnimationToEnd:
+    timeout: 20000
+- back

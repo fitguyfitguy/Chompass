@@ -1,0 +1,23 @@
+# Device-pass flow (Codeberg #122): re-sync WITHOUT touching the config fields
+# (typing into hydrated Compose fields is unreliable on this ROM — keep the
+# one-time config in webdav-photo-sync.yaml). Used to prove the uploaded-ref
+# cache prevents re-uploads and, after toggling photos off via adb taps, that
+# the doc reverts to 1.3.
+# Same locale prerequisite as diary-photo-export-on.yaml.
+appId: app.chompass.debug
+name: WebDAV photo resync
+---
+- launchApp
+- extendedWaitUntil:
+    visible: "Heute"
+    timeout: 90000
+- tapOn: "Einstellungen"
+- tapOn: "Daten & Backup"
+- tapOn: "Synchronisierung"
+- extendedWaitUntil:
+    visible: "Jetzt synchronisieren"
+    timeout: 20000
+- tapOn: "Jetzt synchronisieren"
+- extendedWaitUntil:
+    visible: ".*Mit WebDAV synchronisiert.*"
+    timeout: 120000
