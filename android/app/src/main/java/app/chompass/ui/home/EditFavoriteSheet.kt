@@ -117,6 +117,8 @@ fun EditFavoriteSheet(
     onFill: suspend (
         onProgress: (FoodAnalysisProgress) -> Unit,
     ) -> FoodAnalysis,
+    /** Sub-screen reuse (Codeberg #142): the Settings library shows its own title. */
+    titleOverride: String? = null,
     onSave: (FoodEntry) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -508,7 +510,7 @@ fun EditFavoriteSheet(
                 .fillMaxHeight(0.92f)
         ) {
             SheetReviewToolbar(
-                title = stringResource(R.string.favorite_edit_title),
+                title = titleOverride ?: stringResource(R.string.favorite_edit_title),
                 onCancel = onDismiss,
             )
 

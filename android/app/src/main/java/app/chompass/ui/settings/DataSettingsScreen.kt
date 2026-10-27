@@ -175,6 +175,7 @@ fun DataSettingsScreen(
         onBack = onBack,
     ) {
         SettingsDataTransferSection(
+            onOpenFoodLibrary = { nav.navigate(ChompassRoutes.SETTINGS_FOOD_LIBRARY) },
             onShowExportDiary = { showExportSheet = true },
             onShowExportBodyMetrics = { showBodyMetricsExportSheet = true },
             onImportDiary = { importDiaryLauncher.launch(arrayOf("application/json", "text/plain")) },

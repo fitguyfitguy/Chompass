@@ -6,6 +6,10 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+### Added
+
+- **Saved foods manager** (Android): Settings → Health & Data → Saved foods is a searchable, sortable list of every food the app remembers. Open one to fix its saved template, favorite or unfavorite it, hide it from Add Food suggestions, or delete all of its logged rows in one step (the confirm shows the true all-time count before anything is touched). Hidden foods keep their diary history and come back with Unhide. Long-pressing a saved suggestion in Add Food now also offers Save to library (fix the stored values without logging a new row) and Hide from suggestions.
+
 ## [5.12.0] - 2026-10-26
 
 ### Added
