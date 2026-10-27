@@ -32,6 +32,8 @@ internal object Keys {
         val FIRST_LAUNCH_AT = longPreferencesKey("firstLaunchAt")
         /** Dismissed settings-suggestion ids ("water_tracking", "adaptive_goals", ...). */
         val DISMISSED_SUGGESTIONS = stringSetPreferencesKey("dismissedSuggestionIds")
+        /** Hidden saved-food identity keys — dropped from Add Food suggestions, diary history kept (Codeberg #142). */
+        val HIDDEN_FOOD_KEYS = stringSetPreferencesKey("hiddenFoodKeys")
         /** Epoch day the AI fill-missing Home banner was last shown (at most once per day). */
         val FILL_MISSING_BANNER_LAST_SHOWN_DAY = longPreferencesKey("fillMissingBannerLastShownDay")
         /** Dismissed fill-missing scan signatures (sticky per scan shape). */
