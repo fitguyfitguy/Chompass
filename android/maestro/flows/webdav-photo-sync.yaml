@@ -1,0 +1,42 @@
+# Device-pass flow (Codeberg #122): WebDAV photo sync end-to-end on one device.
+# Prerequisites (outside the flow):
+#   WebDAV server reachable from WSL (uvx --with wsgidav --with cheroot wsgidav
+#   --host 0.0.0.0 --port 5232 --root /tmp/webdav --auth anonymous) plus
+#   adb reverse tcp:5232 tcp:5232  (device localhost:5232 -> WSL server).
+# Verify afterwards (outside the flow):
+#   /tmp/webdav/chompass.json stamped 1.4 with photos refs, photos/*.jpg files
+#   present; a second sync must not re-upload (mtimes unchanged); toggling
+#   "Fotos synchronisieren" off + sync must revert the doc to 1.3.
+# Same locale prerequisite as diary-photo-export-on.yaml.
+appId: app.chompass.debug
+name: WebDAV photo sync one device
+---
+- launchApp
+- extendedWaitUntil:
+    visible: "Heute"
+    timeout: 90000
+- tapOn: "Einstellungen"
+- tapOn: "Daten & Backup"
+- tapOn: "Synchronisierung"
+- extendedWaitUntil:
+    visible: "WebDAV-Datei-URL"
+    timeout: 20000
+- tapOn: "WebDAV-Datei-URL"
+- eraseText
+- inputText: "http://127.0.0.1:5232/chompass.json"
+- tapOn: "Benutzername"
+- eraseText
+- inputText: "chompass"
+- tapOn: "Passwort"
+- eraseText
+- inputText: "device-pass"
+- hideKeyboard
+- tapOn: "WebDAV-Einstellungen speichern"
+- extendedWaitUntil:
+    visible: ".*gespeichert.*"
+    timeout: 10000
+# The photos toggle and Sync Now are driven from outside this flow: ToggleRow's
+# row is not clickable (only the Switch), Maestro text input is only reliable
+# on empty fields, and hideKeyboard doubles as BACK (pops the screen). Use
+#   adb shell input tap 860 678     # "Fotos synchronisieren" switch
+# then webdav-photo-resync.yaml for the sync itself.

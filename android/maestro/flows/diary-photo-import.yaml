@@ -1,0 +1,39 @@
+# Device-pass flow (Codeberg #122): diary ZIP import restores photo bytes.
+# Push the previously pulled export ZIP to the device first, MediaStore-indexed
+# under a mime the picker's launch filter lists (application/zip rows are
+# filtered out of Recents on ColorOS — the app itself sniffs bytes, not mime).
+# Re-run the content insert after EVERY adb push:
+#   adb push Fud-Food-Diary-*.zip /sdcard/Download/diary-photo-export-test.zip
+#   adb shell content insert --uri content://media/external/file \
+#     --bind _data:s:/sdcard/Download/diary-photo-export-test.zip \
+#     --bind mime_type:s:text/plain
+#   adb shell am force-stop com.google.android.documentsui app.chompass.debug
+# Photo-restore proof (outside the flow): count files under
+# files/fudai-food-images via run-as before and after — each imported entry
+# with a ref present in the archive gains a fresh <entryId>.jpg.
+# Same prerequisites as diary-photo-export-on.yaml.
+appId: app.chompass.debug
+name: Diary photo zip import restores photos
+---
+- launchApp
+- extendedWaitUntil:
+    visible: "Heute"
+    timeout: 90000
+- extendedWaitUntil:
+    visible: "Einstellungen"
+    timeout: 20000
+- tapOn: "Einstellungen"
+- tapOn: "Daten & Backup"
+- tapOn: "JSON-Datei des Ernährungstagebuchs importieren"
+- extendedWaitUntil:                         # picker root: recents list (row is
+    visible: ".*diary-photo-export-test.*"   # the newest MediaStore row)
+    timeout: 20000
+# Element tap triggers some ROMs' "open file" path; a plain center tap on the
+# first recents row returns the document (same as diary-import.yaml; row y
+# measured on the 1080x2400 OnePlus — re-measure if other files sit above).
+- tapOn:
+    point: "46%, 39%"
+- extendedWaitUntil:
+    visible: ".*wurden importiert.*"
+    timeout: 30000
+- back
