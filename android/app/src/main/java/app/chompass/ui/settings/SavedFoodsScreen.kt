@@ -158,18 +158,26 @@ fun SavedFoodsScreen(container: AppContainer, onBack: () -> Unit) {
                         },
                         onToggleFavorite = {
                             menuForKey = null
-                            scope.launch { repo.toggleFavorite(entry.template) }
-                            refreshTick++
+                            scope.launch {
+                                repo.toggleFavorite(entry.template)
+                                // Tick inside the coroutine: the reload must
+                                // observe the committed edit, not race it.
+                                refreshTick++
+                            }
                         },
                         onHide = {
                             menuForKey = null
-                            scope.launch { repo.hideFood(key) }
-                            refreshTick++
+                            scope.launch {
+                                repo.hideFood(key)
+                                refreshTick++
+                            }
                         },
                         onDeleteRows = {
                             menuForKey = null
                             scope.launch {
-                                pendingDelete = entry.template to repo.loggedRowCount(key)
+                                val count = repo.loggedRowCount(key)
+                                pendingDelete = entry.template to count
+                                refreshTick++
                             }
                         },
                     )
@@ -195,18 +203,24 @@ fun SavedFoodsScreen(container: AppContainer, onBack: () -> Unit) {
                         },
                         onToggleFavorite = {
                             menuForKey = null
-                            scope.launch { repo.toggleFavorite(entry.template) }
-                            refreshTick++
+                            scope.launch {
+                                repo.toggleFavorite(entry.template)
+                                refreshTick++
+                            }
                         },
                         onHide = {
                             menuForKey = null
-                            scope.launch { repo.unhideFood(key) }
-                            refreshTick++
+                            scope.launch {
+                                repo.unhideFood(key)
+                                refreshTick++
+                            }
                         },
                         onDeleteRows = {
                             menuForKey = null
                             scope.launch {
-                                pendingDelete = entry.template to repo.loggedRowCount(key)
+                                val count = repo.loggedRowCount(key)
+                                pendingDelete = entry.template to count
+                                refreshTick++
                             }
                         },
                     )
@@ -226,8 +240,10 @@ fun SavedFoodsScreen(container: AppContainer, onBack: () -> Unit) {
             onFill = { _ -> error("AI actions are off in the library browser") },
             titleOverride = stringResource(R.string.sheet_edit_food),
             onSave = { updated ->
-                scope.launch { repo.updateSavedTemplate(template, updated) }
-                refreshTick++
+                scope.launch {
+                    repo.updateSavedTemplate(template, updated)
+                    refreshTick++
+                }
             },
             onDismiss = { editingTemplate = null },
         )
@@ -252,8 +268,10 @@ fun SavedFoodsScreen(container: AppContainer, onBack: () -> Unit) {
                 primaryText = stringResource(R.string.action_delete),
                 onPrimary = {
                     pendingDelete = null
-                    scope.launch { repo.deleteLoggedRows(template.favoriteKey) }
-                    refreshTick++
+                    scope.launch {
+                        repo.deleteLoggedRows(template.favoriteKey)
+                        refreshTick++
+                    }
                 },
                 dismissText = stringResource(R.string.action_cancel),
                 onDismiss = { pendingDelete = null },
