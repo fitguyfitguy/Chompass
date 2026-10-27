@@ -2165,6 +2165,27 @@ fun HomeScreen(
             } else {
                 null
             },
+            // Codeberg #142: a reviewed saved template can fix the library
+            // copy in place instead of logging a row; hide drops it from
+            // suggestions (reversible in Settings → Saved foods).
+            onSaveToLibrary = ui.pendingReviewSource?.let { template ->
+                { name, grams, scale, mealType, selectedServingUnit, selectedServingQuantity, editedAnalysis, logTime ->
+                    vm.saveAnalysisToLibrary(
+                        template = template,
+                        name = name,
+                        servingGrams = grams,
+                        scale = scale,
+                        mealType = mealType,
+                        selectedServingUnit = selectedServingUnit,
+                        selectedServingQuantity = selectedServingQuantity,
+                        editedAnalysis = editedAnalysis,
+                        logTime = logTime,
+                    )
+                }
+            },
+            onHideFromSuggestions = ui.pendingReviewSource?.let { template ->
+                { vm.hideSavedFood(template.favoriteKey) }
+            },
             // Fresh barcode reviews give the text slot to Save to favorites;
             // with a progressive draft in progress "add next" keeps the slot.
             onAddToProgressiveMeal = if (
