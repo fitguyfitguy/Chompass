@@ -57,6 +57,7 @@ import app.chompass.ui.settings.NutritionTargetsSettingsScreen
 import app.chompass.ui.settings.NotificationsSettingsScreen
 import app.chompass.ui.settings.OptionalNutrientGoalsScreen
 import app.chompass.ui.settings.PersonalSettingsScreen
+import app.chompass.ui.settings.SavedFoodsScreen
 import app.chompass.ui.settings.SettingsScreen
 import app.chompass.ui.settings.SpeechSettingsScreen
 import app.chompass.ui.settings.SyncSettingsScreen
@@ -365,6 +366,12 @@ fun ChompassNavHost(
                     HealthDataSettingsScreen(
                         container = container,
                         nav = nav,
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+                composable(ChompassRoutes.SETTINGS_FOOD_LIBRARY) {
+                    SavedFoodsScreen(
+                        container = container,
                         onBack = { nav.popBackStack() },
                     )
                 }

@@ -18,6 +18,7 @@ object ChompassRoutes {
     const val SETTINGS_SPEECH = "settings/speech"
     const val SETTINGS_COACH = "settings/coach"
     const val SETTINGS_HEALTH = "settings/health"
+    const val SETTINGS_FOOD_LIBRARY = "settings/food-library"
     const val SETTINGS_ABOUT = "settings/about"
     const val SETTINGS_SUPPORT = "settings/support"
     const val SETTINGS_LEGAL = "settings/legal"
