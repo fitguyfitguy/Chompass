@@ -2489,6 +2489,12 @@
     <string name="export_from">From</string>
     <string name="export_to">To</string>
     <string name="export_no_meals">No logged meals in the selected range.</string>
+    <string name="export_include_photos">Include photos</string>
+    <string name="sync_photos">Sync photos</string>
+    <string name="sync_photos_caption">When enabled, meal photos upload to your WebDAV server</string>
+    <string name="sync_photos_wifi_only">Photos on Wi-Fi only</string>
+    <string name="sync_photos_syncing">Syncing photos…</string>
+    <string name="sync_photos_failed">Photo sync failed</string>
     <string name="export_failed">Export failed.</string>
     <string name="settings_tap_to_update">Tap to update</string>
     <string name="settings_calc_methods">Calculation Methods</string>

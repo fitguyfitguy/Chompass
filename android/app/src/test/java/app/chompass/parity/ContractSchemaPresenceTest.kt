@@ -16,6 +16,7 @@ class ContractSchemaPresenceTest {
     @Test
     fun contractSchemasExistAndMatchFixtureVersions() {
         val contracts = repoFile("contracts")
+        assertTrue(File(contracts, "diary-1.7.schema.json").isFile)
         assertTrue(File(contracts, "diary-1.6.schema.json").isFile)
         assertTrue(File(contracts, "diary-1.5.schema.json").isFile)
         assertTrue(File(contracts, "diary-1.4.schema.json").isFile)
@@ -26,13 +27,14 @@ class ContractSchemaPresenceTest {
         assertTrue(File(contracts, "meal-share-v3.schema.json").isFile)
         assertTrue(File(contracts, "meal-share-v2.schema.json").isFile)
         assertTrue(File(contracts, "meal-share-v1.schema.json").isFile)
+        assertTrue(File(contracts, "sync-1.4.schema.json").isFile)
         assertTrue(File(contracts, "sync-1.3.schema.json").isFile)
         assertTrue(File(contracts, "sync-1.2.schema.json").isFile)
         assertTrue(File(contracts, "sync-1.1.schema.json").isFile)
         assertTrue(File(contracts, "sync-1.0.schema.json").isFile)
 
         assertVersionMatch(
-            schemaFile = File(contracts, "diary-1.6.schema.json"),
+            schemaFile = File(contracts, "diary-1.7.schema.json"),
             fixture = ParityFixtures.readJson("diary-sample.json"),
             exportFormat = true,
         )
@@ -42,7 +44,7 @@ class ContractSchemaPresenceTest {
             exportFormat = true,
         )
         assertVersionMatch(
-            schemaFile = File(contracts, "sync-1.3.schema.json"),
+            schemaFile = File(contracts, "sync-1.4.schema.json"),
             fixture = ParityFixtures.readJson("sync-sample.json"),
             exportFormat = true,
         )

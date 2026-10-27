@@ -251,7 +251,7 @@ class AppContainer(app: ChompassApp) {
     val health = HealthConnectManager(app)
     val homeActivityReader = HomeActivityReader(health, prefs)
 
-    val syncRepository = SyncRepository(prefs, keyStore, appContext = appContext)
+    val syncRepository = SyncRepository(prefs, keyStore, appContext = appContext, imageStore = imageStore)
     val profileRepository = ProfileRepository(prefs)
     val goalJournalService = GoalJournalService(prefs, profileRepository)
     val foodRepository = FoodRepository(prefs, health, imageStore, syncRepository)

@@ -961,6 +961,12 @@
     <string name="export_from">С</string>
     <string name="export_to">По</string>
     <string name="export_no_meals">Нет записей за выбранный период.</string>
+    <string name="export_include_photos">Включить фотографии</string>
+    <string name="sync_photos">Синхронизировать фото</string>
+    <string name="sync_photos_caption">Когда включено, фото приёмов пищи загружаются на ваш сервер WebDAV</string>
+    <string name="sync_photos_wifi_only">Фото только по Wi-Fi</string>
+    <string name="sync_photos_syncing">Синхронизация фото…</string>
+    <string name="sync_photos_failed">Не удалось синхронизировать фото</string>
     <string name="export_failed">Не удалось экспортировать.</string>
     <string name="settings_tap_to_update">Нажми, чтобы изменить</string>
     <string name="settings_calc_methods">Методы расчёта</string>

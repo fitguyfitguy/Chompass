@@ -32,6 +32,8 @@ sealed class DiaryImportResult {
         val untrackedKcalByDay: Map<LocalDate, Int> = emptyMap(),
         val notesByDay: Map<LocalDate, String> = emptyMap(),
         val mealCatalog: List<MealDef> = emptyList(),
+        /** Content-addressed photo refs (ZIP-relative) keyed by entry id; bytes come from the archive. */
+        val photosByEntryId: Map<String, List<String>> = emptyMap(),
     ) : DiaryImportResult()
     object EmptyPayload : DiaryImportResult()
     data class UnsupportedFormat(val reason: String) : DiaryImportResult()
@@ -42,11 +44,12 @@ sealed class DiaryImportResult {
  * Parses the JSON structure emitted by [DiaryExporter] (and upstream Fud AI) into [FoodEntry] rows.
  * Accepts format 1.0 (macros), 1.1 (macros + micros), 1.2 (serving units + constituents),
  * 1.3 (day notes, #58a), 1.4 (custom meal types, #61), 1.5 (constituent
- * micros, #86), and 1.6 (untracked days, #106). Exports always use 1.6.
+ * micros, #86), 1.6 (untracked days, #106), and 1.7 (opt-in photo refs,
+ * #122). Exports stamp 1.7 only when photos are included, else 1.6.
  */
 object DiaryImporter {
-    /** Versions accepted on import. New exports always stamp format 1.6. */
-    private val SUPPORTED_IMPORT_VERSIONS = setOf("1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6")
+    /** Versions accepted on import. New exports stamp 1.7 only with photos, else 1.6. */
+    private val SUPPORTED_IMPORT_VERSIONS = setOf("1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7")
 
     private val parser = Json {
         ignoreUnknownKeys = true
@@ -87,6 +90,7 @@ object DiaryImporter {
         val untrackedDates = mutableSetOf<LocalDate>()
         val untrackedKcal = mutableMapOf<LocalDate, Int>()
         val notesByDay = mutableMapOf<LocalDate, String>()
+        val photosByEntryId = mutableMapOf<String, List<String>>()
         for (dayElement in days) {
             val day = dayElement.asObjectOrNull()
                 ?: return DiaryImportResult.Malformed("Invalid day object")
@@ -113,8 +117,12 @@ object DiaryImporter {
                     if (name.isEmpty()) return DiaryImportResult.Malformed("Food name cannot be blank")
                     val time = parseTime(item["time"]?.asString()) ?: LocalTime.NOON
                     val timestamp = date.atTime(time).atZone(zone).toInstant()
+                    val photoRefs = item["photos"]?.asArrayOrNull()
+                        ?.mapNotNull { it.asString()?.trim() }
+                        ?.filter { it.isNotEmpty() }
+                        .orEmpty()
 
-                    collected += FoodEntry(
+                    val entry = FoodEntry(
                         name = name,
                         calories = item["calories"]?.asInt() ?: 0,
                         protein = item["protein_g"]?.asDouble() ?: 0.0,
@@ -154,6 +162,8 @@ object DiaryImporter {
                         grounding = parseGrounding(item["grounding"]?.asObjectOrNull()),
                         constituents = parseConstituents(item["constituents"]?.asArrayOrNull()),
                     )
+                    collected += entry
+                    if (photoRefs.isNotEmpty()) photosByEntryId[entry.id.toString()] = photoRefs
                 }
             }
         }
@@ -166,6 +176,7 @@ object DiaryImporter {
             untrackedKcal,
             notesByDay,
             mealCatalog,
+            photosByEntryId,
         )
     }
 

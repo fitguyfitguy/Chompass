@@ -6,7 +6,8 @@ import kotlinx.serialization.Serializable
  * Display-only product enrichment from a barcode lookup (Open Food Facts).
  * Persists on-device inside [FoodEntry] / FoodAnalysis; deliberately excluded
  * from diary export / sync / meal-share wire formats (photos and this card
- * never leave the device).
+ * never leave the device — except meal photos, which can leave via the
+ * explicit opt-in diary ZIP export (diary-1.7) / WebDAV photo sync, #122).
  */
 @Serializable
 data class FoodProductMetadata(

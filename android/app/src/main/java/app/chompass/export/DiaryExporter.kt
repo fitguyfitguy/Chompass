@@ -12,10 +12,15 @@ import app.chompass.models.ServingUnitOption
 import app.chompass.models.UserProfile
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -84,6 +89,7 @@ object DiaryExporter {
         today: LocalDate = LocalDate.now(),
         untrackedDates: Set<LocalDate> = emptySet(),
         untrackedKcalByDay: Map<LocalDate, Int> = emptyMap(),
+        photoRefsByEntryId: Map<String, List<String>> = emptyMap(),
     ): Pair<String, String>? {
         val lo = if (start.isAfter(end)) end else start
         val hi = if (start.isAfter(end)) start else end
@@ -115,12 +121,75 @@ object DiaryExporter {
         }
 
         val content = when (format) {
-            DiaryFormat.JSON -> json(byDay, noteByDay, untrackedInRange, untrackedKcalByDay, lo, hi, targetsForDay)
+            DiaryFormat.JSON -> json(byDay, noteByDay, untrackedInRange, untrackedKcalByDay, lo, hi, targetsForDay, photoRefsByEntryId)
             DiaryFormat.MARKDOWN -> markdown(byDay, noteByDay, lo, hi, targetsForDay, mealDisplay)
             DiaryFormat.CSV -> csv(byDay)
         }
         val name = "Fud-Food-Diary-${dayFmt.format(lo)}_to_${dayFmt.format(hi)}.${format.ext}"
         return name to content
+    }
+
+    /**
+     * ZIP variant of [build] for opt-in photo exports: `diary.json` (version
+     * 1.7, items carry `photos` refs) plus one entry per unique photo ref
+     * (`photos/<16hex>.jpg`, content-addressed by SHA-256 of the JPEG bytes).
+     * Returns the zip filename, or null when nothing is logged in the range.
+     * Files that cannot be hashed/read are skipped; identical bytes dedupe to
+     * one entry. CSV/Markdown ignore photos entirely.
+     */
+    fun buildZip(
+        output: File,
+        entries: List<FoodEntry>,
+        start: LocalDate,
+        end: LocalDate,
+        format: DiaryFormat,
+        profile: UserProfile?,
+        mealDisplay: (String) -> String,
+        notes: List<DailyNote> = emptyList(),
+        goalJournal: List<GoalJournalEntry> = emptyList(),
+        today: LocalDate = LocalDate.now(),
+        untrackedDates: Set<LocalDate> = emptySet(),
+        untrackedKcalByDay: Map<LocalDate, Int> = emptyMap(),
+        photoFilesByEntryId: Map<String, List<File>> = emptyMap(),
+    ): String? {
+        // Pre-pass: hash every candidate photo, dropping unreadable files and
+        // duplicate refs so identical bytes produce a single ZIP entry.
+        val refsByEntryId = mutableMapOf<String, List<String>>()
+        val fileByRef = linkedMapOf<String, File>()
+        for (e in entries) {
+            val refs = mutableListOf<String>()
+            for (file in photoFilesByEntryId[e.id.toString()].orEmpty()) {
+                if (!file.canRead() || file.length() == 0L) continue
+                val ref = app.chompass.services.FoodImageStore.contentRef(file) ?: continue
+                fileByRef.putIfAbsent(ref, file)
+                refs += ref
+            }
+            if (refs.isNotEmpty()) refsByEntryId[e.id.toString()] = refs
+        }
+        val (jsonName, json) = build(
+            entries, start, end, format, profile, mealDisplay,
+            notes, goalJournal, today, untrackedDates, untrackedKcalByDay,
+            photoRefsByEntryId = refsByEntryId,
+        ) ?: return null
+        val zipName = jsonName.removeSuffix(".${format.ext}") + ".zip"
+        runCatching {
+            ZipOutputStream(FileOutputStream(output)).use { zip ->
+                zip.putNextEntry(ZipEntry("diary.json"))
+                zip.write(json.toByteArray(Charsets.UTF_8))
+                zip.closeEntry()
+                for ((ref, file) in fileByRef) {
+                    // A photo failing mid-stream leaves a truncated entry that
+                    // fails at share/unzip; the pre-pass already checked
+                    // readability so this is a rare disk-level failure.
+                    runCatching {
+                        zip.putNextEntry(ZipEntry(ref))
+                        FileInputStream(file).use { it.copyTo(zip) }
+                        zip.closeEntry()
+                    }
+                }
+            }
+        }.getOrNull() ?: return null
+        return zipName
     }
 
     // --- internal helpers ---
@@ -192,7 +261,7 @@ object DiaryExporter {
         selected_serving_quantity = c.selectedServingQuantity?.let { r1(it) },
     )
 
-    private fun itemDto(e: FoodEntry): ItemDto = ItemDto(
+    private fun itemDto(e: FoodEntry, photos: List<String>? = null): ItemDto = ItemDto(
         name = e.name,
         quantity_g = e.servingSizeGrams?.let { r1(it) },
         calories = e.calories,
@@ -212,6 +281,7 @@ object DiaryExporter {
         caffeine_mg = e.caffeine?.let { r1(it) },
         time = time(e), source = sourceLabel(e.source),
         note = e.customNote?.takeIf { it.isNotBlank() },
+        photos = photos,
         grounding = e.grounding?.let { g ->
             GroundingDto(
                 source_kind = when (g.sourceKind) {
@@ -313,6 +383,7 @@ object DiaryExporter {
         val folate_mcg: Double? = null, val omega3_g: Double? = null,
         val caffeine_mg: Double? = null,
         val time: String, val source: String, val note: String? = null,
+        val photos: List<String>? = null,
         val grounding: GroundingDto? = null,
         val serving_unit_options: List<ServingUnitDto>? = null,
         val selected_serving_unit: String? = null,
@@ -365,6 +436,7 @@ object DiaryExporter {
         untrackedDates: Set<LocalDate>,
         untrackedKcalByDay: Map<LocalDate, Int>,
         lo: LocalDate, hi: LocalDate, t: (LocalDate) -> Targets,
+        photoRefsByEntryId: Map<String, List<String>> = emptyMap(),
     ): String {
         // Union of days: food, notes, and untracked-only days (#106).
         val days = (byDay.keys + noteByDay.keys + untrackedDates).sorted().map { date ->
@@ -374,7 +446,7 @@ object DiaryExporter {
             val mealDtos = meals(dayEntries).map { (mt, items) ->
                 MealDto(
                     type = mt,
-                    items = items.map { itemDto(it) },
+                    items = items.map { itemDto(it, photoRefsByEntryId[it.id.toString()]?.takeIf { refs -> refs.isNotEmpty() }) },
                 )
             }
             DayDto(
@@ -393,10 +465,13 @@ object DiaryExporter {
                 untracked_kcal = untrackedKcalByDay[date],
             )
         }
+        // 1.7 iff the doc carries photo refs; toggle-off exports stay 1.6 so
+        // older readers (Fud AI imports) keep accepting them.
+        val anyPhotos = photoRefsByEntryId.values.any { it.isNotEmpty() }
         val doc = Doc(
             export = MetaDto(
                 app = "Chompass",
-                format_version = "1.6",
+                format_version = if (anyPhotos) "1.7" else "1.6",
                 date_range = RangeDto(dayFmt.format(lo), dayFmt.format(hi)),
                 meal_catalog = app.chompass.models.CurrentMealCatalog.value.meals.map {
                     MealCatalogDto(it.id, it.label)

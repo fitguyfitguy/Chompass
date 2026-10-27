@@ -1003,6 +1003,12 @@
     <string name="export_format">Formato</string>
     <string name="export_from">Da</string>
     <string name="export_no_meals">Nessun pasto registrato nel periodo selezionato.</string>
+    <string name="export_include_photos">Includi foto</string>
+    <string name="sync_photos">Sincronizza foto</string>
+    <string name="sync_photos_caption">Se attivo, le foto dei pasti vengono caricate sul tuo server WebDAV</string>
+    <string name="sync_photos_wifi_only">Foto solo su Wi-Fi</string>
+    <string name="sync_photos_syncing">Sincronizzazione foto…</string>
+    <string name="sync_photos_failed">Sincronizzazione foto non riuscita</string>
     <string name="export_range">Periodo</string>
     <string name="export_range_all">Sempre</string>
     <string name="export_range_custom">Personalizzato</string>

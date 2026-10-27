@@ -1,7 +1,7 @@
 {
   "export": {
     "app": "Chompass",
-    "format_version": "1.6",
+    "format_version": "1.7",
     "date_range": {
       "start": "2026-04-26",
       "end": "2026-04-29"
@@ -75,7 +75,8 @@
               ],
               "selected_serving_unit": "bowl",
               "selected_serving_quantity": 1.0,
-              "constituents": []
+              "constituents": [],
+              "photos": ["photos/0123456789abcdef.jpg"]
             }
           ]
         },

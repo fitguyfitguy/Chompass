@@ -1023,6 +1023,12 @@ bilirsən?</string>
     <string name="export_format">Format</string>
     <string name="export_from">Başlanğıc</string>
     <string name="export_no_meals">Seçilmiş aralıqda qeyd olunmuş yemək yoxdur.</string>
+    <string name="export_include_photos">Şəkilləri daxil et</string>
+    <string name="sync_photos">Şəkilləri sinxronlaşdır</string>
+    <string name="sync_photos_caption">Aktiv edildikdə, yemək şəkilləri WebDAV serverinə yüklənir</string>
+    <string name="sync_photos_wifi_only">Şəkillər yalnız Wi-Fi ilə</string>
+    <string name="sync_photos_syncing">Şəkillər sinxronlaşdırılır…</string>
+    <string name="sync_photos_failed">Şəkil sinxronizasiyası alınmadı</string>
     <string name="export_range">Aralıq</string>
     <string name="export_range_all">Hər zaman</string>
     <string name="export_range_custom">Fərdi</string>

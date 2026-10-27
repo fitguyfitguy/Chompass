@@ -28,6 +28,8 @@ import app.chompass.R
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
 import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -80,9 +82,32 @@ internal fun shareExportedFile(
     mimeType: String,
     chooserTitle: String,
 ) {
+    shareExportedFile(context, fileName, mimeType, chooserTitle) { out ->
+        out.write(content.toByteArray(Charsets.UTF_8))
+    }
+}
+
+/** Stream [writer]'s bytes into a cache file and launch the system share sheet. */
+internal fun shareExportedFile(
+    context: Context,
+    fileName: String,
+    mimeType: String,
+    chooserTitle: String,
+    writer: (OutputStream) -> Unit,
+) {
     val dir = File(context.cacheDir, "capture").apply { mkdirs() }
     val file = File(dir, fileName)
-    file.writeText(content)
+    FileOutputStream(file).use(writer)
+    shareExportedFile(context, file, mimeType, chooserTitle)
+}
+
+/** Share an already-written [file] under cacheDir via the system share sheet. */
+internal fun shareExportedFile(
+    context: Context,
+    file: File,
+    mimeType: String,
+    chooserTitle: String,
+) {
     val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
     val send = Intent(Intent.ACTION_SEND).apply {
         type = mimeType

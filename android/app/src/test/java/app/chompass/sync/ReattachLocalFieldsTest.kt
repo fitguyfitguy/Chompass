@@ -54,6 +54,29 @@ class ReattachLocalFieldsTest {
     }
 
     @Test
+    fun keepsLocalPhotoRefsWhenWireRowHasNone() {
+        val id = UUID.randomUUID()
+        // Photo phase gated off on the emitting device: no refs on the wire.
+        val wire = entry(id, imageFilename = null, emoji = null)
+        val local = entry(id, imageFilename = "$id.jpg", emoji = "🥣")
+            .copy(photoFilenames = listOf("photos/0123456789abcdef.jpg"))
+        val restored = reattachLocalFields(wire, mapOf(id to local))
+        assertEquals(listOf("photos/0123456789abcdef.jpg"), restored.photoFilenames)
+    }
+
+    @Test
+    fun wirePhotoRefsWinOverLocal() {
+        val id = UUID.randomUUID()
+        // A wire row carrying refs is fresher (photo re-pick moved the ref).
+        val wire = entry(id, imageFilename = null, emoji = null)
+            .copy(photoFilenames = listOf("photos/ffffffffffffffff.jpg"))
+        val local = entry(id, imageFilename = "$id.jpg", emoji = "🥣")
+            .copy(photoFilenames = listOf("photos/0123456789abcdef.jpg"))
+        val restored = reattachLocalFields(wire, mapOf(id to local))
+        assertEquals(listOf("photos/ffffffffffffffff.jpg"), restored.photoFilenames)
+    }
+
+    @Test
     fun leavesFieldsNullWhenNoLocalRowExists() {
         val id = UUID.randomUUID()
         val wire = entry(id, imageFilename = null, emoji = null)

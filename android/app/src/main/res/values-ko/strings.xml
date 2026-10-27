@@ -1030,6 +1030,12 @@
     <string name="export_format">형식</string>
     <string name="export_from">시작</string>
     <string name="export_no_meals">선택한 범위에 기록된 식사가 없어요.</string>
+    <string name="export_include_photos">사진 포함</string>
+    <string name="sync_photos">사진 동기화</string>
+    <string name="sync_photos_caption">사용하면 식사 사진이 WebDAV 서버에 업로드돼요</string>
+    <string name="sync_photos_wifi_only">Wi-Fi에서만 사진 동기화</string>
+    <string name="sync_photos_syncing">사진을 동기화하는 중…</string>
+    <string name="sync_photos_failed">사진 동기화 실패</string>
     <string name="export_range">범위</string>
     <string name="export_range_all">전체 기간</string>
     <string name="export_range_custom">사용자 지정</string>

@@ -1091,6 +1091,12 @@
     <string name="export_format">Formato</string>
     <string name="export_from">Desde</string>
     <string name="export_no_meals">No hay comidas registradas en el rango seleccionado.</string>
+    <string name="export_include_photos">Incluir fotos</string>
+    <string name="sync_photos">Sincronizar fotos</string>
+    <string name="sync_photos_caption">Cuando se activa, las fotos de comidas se suben a tu servidor WebDAV</string>
+    <string name="sync_photos_wifi_only">Fotos solo con Wi-Fi</string>
+    <string name="sync_photos_syncing">Sincronizando fotos…</string>
+    <string name="sync_photos_failed">Error al sincronizar fotos</string>
     <string name="export_range">Rango</string>
     <string name="export_range_all">Todo el tiempo</string>
     <string name="export_range_custom">Personalizado</string>

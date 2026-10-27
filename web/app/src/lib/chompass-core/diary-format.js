@@ -9,8 +9,8 @@ import { microOrNull } from "./constituents.js";
 
 export const DIARY_FORMAT_VERSION = "1.6";
 
-/** Versions accepted on import. New exports always stamp [DIARY_FORMAT_VERSION]. */
-export const DIARY_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6"]);
+/** Versions accepted on import. Exports stamp [DIARY_FORMAT_VERSION] (photo refs round-trip through imports but exports stay photo-free). */
+export const DIARY_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7"]);
 
 /** Micronutrient wire-key <-> model-field pairs, in ItemDto declaration order. */
 export const MICRO_FIELDS = [
@@ -240,6 +240,14 @@ function itemFromWire(wire, date, mealType, idGen) {
     selectedServingQuantity: wire.selected_serving_quantity != null ? Number(wire.selected_serving_quantity) : null,
     constituents: constituentsFromWire(wire.constituents),
   };
+  // Diary 1.7 photo refs ride through to the stored record so they survive a
+  // web import and keep flowing through sync; web exports stay photo-free.
+  if (Array.isArray(wire.photos)) {
+    const refs = wire.photos
+      .map((r) => String(r ?? "").trim())
+      .filter((r) => r.startsWith("photos/") && r.length > "photos/".length);
+    if (refs.length) entry.photos = refs;
+  }
   for (const [wireKey, modelKey] of MICRO_FIELDS) {
     entry[modelKey] = wire[wireKey] ?? null;
   }
@@ -345,7 +353,7 @@ export function importDiary(doc, idGen = () => crypto.randomUUID()) {
   const app = exp.app.trim().toLowerCase();
   if (app !== "chompass" && app !== "nofud" && app !== "fud ai") throw new UnsupportedFormatError(`unrecognized app "${exp.app}"`);
   if (!DIARY_IMPORT_VERSIONS.has(exp.format_version)) {
-    throw new UnsupportedFormatError(`unsupported format_version "${exp.format_version}" (need 1.0 through 1.6)`);
+    throw new UnsupportedFormatError(`unsupported format_version "${exp.format_version}" (need 1.0 through 1.7)`);
   }
 
   /** @type {import('./models.js').FoodEntry[]} */

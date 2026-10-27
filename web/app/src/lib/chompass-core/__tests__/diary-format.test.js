@@ -323,13 +323,55 @@ test("round-trips constituents and serving units", () => {
   assert.equal(item.constituents[1].caffeine_mg, null);
 });
 
-test("diary 1.6 accepted, newer rejected", () => {
+test("diary 1.7 accepted, newer rejected", () => {
   assert.equal(DIARY_FORMAT_VERSION, "1.6");
-  for (const v of ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6"]) {
+  for (const v of ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7"]) {
     assert.ok(DIARY_IMPORT_VERSIONS.has(v), v);
   }
-  const doc = { export: { app: "Chompass", format_version: "1.7" }, days: [] };
+  const doc = { export: { app: "Chompass", format_version: "1.8" }, days: [] };
   assert.throws(() => importDiary(doc), UnsupportedFormatError);
+});
+
+test("diary 1.7 photo refs round-trip into records, exports stay photo-free", () => {
+  const doc = {
+    export: { app: "Chompass", format_version: "1.7", date_range: { start: "2026-01-02", end: "2026-01-02" } },
+    days: [{
+      date: "2026-01-02",
+      totals: { calories: 500, protein_g: 40, carbs_g: 30, fat_g: 20 },
+      targets: { calories: 500, protein_g: 40, carbs_g: 30, fat_g: 20 },
+      remaining: { calories: 0, protein_g: 0, carbs_g: 0, fat_g: 0 },
+      meals: [{
+        type: "lunch",
+        items: [
+          {
+            name: "Photo Salad", calories: 300, protein_g: 10, carbs_g: 20, fat_g: 15,
+            time: "12:00", source: "ai_estimated", note: null,
+            photos: ["photos/0123456789abcdef.jpg", "  ", "not-a-ref"],
+          },
+          { name: "Plain Rice", calories: 200, protein_g: 4, carbs_g: 45, fat_g: 1, time: "12:05", source: "manually_edited" },
+        ],
+      }],
+    }],
+  };
+  const entries = importDiary(doc, idGen);
+  const salad = entries.find((e) => e.name === "Photo Salad");
+  assert.deepEqual(salad?.photos, ["photos/0123456789abcdef.jpg"]);
+  const rice = entries.find((e) => e.name === "Plain Rice");
+  assert.equal(rice?.photos, undefined);
+
+  // Web exports remain photo-free (version stays 1.6, no photos key).
+  const reExported = exportDiary({
+    entries,
+    dateRange: doc.export.date_range,
+  });
+  assert.equal(reExported.export.format_version, DIARY_FORMAT_VERSION);
+  for (const day of reExported.days) {
+    for (const meal of day.meals) {
+      for (const item of meal.items) {
+        assert.equal(item.photos, undefined);
+      }
+    }
+  }
 });
 
 test("accepts NoFUD app stamp with current format", () => {

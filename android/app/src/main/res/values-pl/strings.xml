@@ -1683,6 +1683,12 @@
     <string name="export_from">Od</string>
     <string name="export_to">Do</string>
     <string name="export_no_meals">Brak zalogowanych posiłków w wybranym zakresie.</string>
+    <string name="export_include_photos">Dołącz zdjęcia</string>
+    <string name="sync_photos">Synchronizuj zdjęcia</string>
+    <string name="sync_photos_caption">Po włączeniu zdjęcia posiłków są wysyłane na Twój serwer WebDAV</string>
+    <string name="sync_photos_wifi_only">Zdjęcia tylko przez Wi-Fi</string>
+    <string name="sync_photos_syncing">Synchronizowanie zdjęć…</string>
+    <string name="sync_photos_failed">Synchronizacja zdjęć nie powiodła się</string>
     <string name="export_failed">Eksport nie powiódł się.</string>
     <string name="settings_tap_to_update">Stuknij, aby zaktualizować</string>
     <string name="settings_calc_methods">Metody obliczeń</string>

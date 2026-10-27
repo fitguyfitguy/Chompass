@@ -37,6 +37,8 @@ fun SyncSettingsScreen(
     var webDavUsername by remember { mutableStateOf("") }
     var webDavPassword by remember { mutableStateOf("") }
     var webDavAutoSync by remember { mutableStateOf(false) }
+    var webDavPhotosEnabled by remember { mutableStateOf(false) }
+    var webDavPhotosWifiOnly by remember { mutableStateOf(true) }
     var lastSyncAt by remember { mutableStateOf<String?>(null) }
     var syncMessage by remember { mutableStateOf<String?>(null) }
     val activityContext = LocalContext.current
@@ -47,6 +49,8 @@ fun SyncSettingsScreen(
         webDavUsername = container.prefs.webDavUsername.first()
         webDavPassword = container.keyStore.webDavPassword().orEmpty()
         webDavAutoSync = container.prefs.webDavEnabled.first()
+        webDavPhotosEnabled = container.prefs.webDavPhotosEnabled.first()
+        webDavPhotosWifiOnly = container.prefs.webDavPhotosWifiOnly.first()
         lastSyncAt = container.prefs.lastSyncAt.first()
     }
 
@@ -83,6 +87,8 @@ fun SyncSettingsScreen(
             webDavUsername = webDavUsername,
             webDavPassword = webDavPassword,
             webDavAutoSync = webDavAutoSync,
+            webDavPhotosEnabled = webDavPhotosEnabled,
+            webDavPhotosWifiOnly = webDavPhotosWifiOnly,
             lastSyncAt = lastSyncAt,
             syncStatus = syncMessage,
             onWebDavUrlChange = { webDavUrl = it },
@@ -101,6 +107,14 @@ fun SyncSettingsScreen(
             onWebDavAutoSyncChange = { enabled ->
                 webDavAutoSync = enabled
                 scope.launch { container.prefs.setWebDavEnabled(enabled) }
+            },
+            onWebDavPhotosEnabledChange = { enabled ->
+                webDavPhotosEnabled = enabled
+                scope.launch { container.prefs.setWebDavPhotosEnabled(enabled) }
+            },
+            onWebDavPhotosWifiOnlyChange = { wifiOnly ->
+                webDavPhotosWifiOnly = wifiOnly
+                scope.launch { container.prefs.setWebDavPhotosWifiOnly(wifiOnly) }
             },
             onExportSync = {
                 scope.launch {
@@ -125,7 +139,7 @@ fun SyncSettingsScreen(
             onSyncNow = {
                 scope.launch {
                     syncMessage = "…"
-                    when (val result = container.syncRepository.syncNow()) {
+                    when (val result = container.syncRepository.syncNow(onStatus = { syncMessage = it })) {
                         is SyncRepository.SyncResult.Success -> {
                             syncMessage = result.message
                             lastSyncAt = container.prefs.lastSyncAt.first()

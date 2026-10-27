@@ -46,13 +46,20 @@ import java.util.UUID
  * #60 goal-journal phase, the optional `goal_journal` array (per-day frozen
  * targets; old docs parse with an empty array — daily_notes precedent).
  * 1.3 adds per-constituent micronutrients (#86).
- * Photos and API keys are intentionally excluded. Imports also accept 1.0-1.2.
+ * 1.4 adds optional content-addressed food photo refs (`photos`, #122); the
+ * 1.4 stamp is emitted iff any emitted food/favorite row carries refs, because
+ * clients that only accept ≤1.3 would otherwise be locked out. The bytes live
+ * as sibling `photos/` files on the WebDAV server (opt-in); API keys stay
+ * excluded. Imports also accept 1.0-1.3.
  */
 object SyncDocument {
     const val APP_NAME = "Chompass"
     const val KIND = "sync"
     const val FORMAT_VERSION = "1.3"
-    private val SUPPORTED_IMPORT_VERSIONS = setOf("1.0", "1.1", "1.2", "1.3")
+
+    /** Stamped instead of [FORMAT_VERSION] iff the doc carries photo refs (#122). */
+    const val FORMAT_VERSION_PHOTOS = "1.4"
+    private val SUPPORTED_IMPORT_VERSIONS = setOf("1.0", "1.1", "1.2", "1.3", "1.4")
 
     private val json = Json {
         ignoreUnknownKeys = true
@@ -215,13 +222,17 @@ object SyncDocument {
         generatedAt: Instant = Instant.now(),
         zone: ZoneId = ZoneId.systemDefault(),
     ): String {
+        // 1.4 iff the doc actually carries photo refs; photo-less docs stay
+        // 1.3 so clients that accept at most 1.3 keep working (#122).
+        val anyPhotos = foodEntries.any { it.photoFilenames.isNotEmpty() } ||
+            favorites.any { it.photoFilenames.isNotEmpty() }
         val root = buildJsonObject {
             put(
                 "export",
                 buildJsonObject {
                     put("app", APP_NAME)
                     put("kind", KIND)
-                    put("format_version", FORMAT_VERSION)
+                    put("format_version", if (anyPhotos) FORMAT_VERSION_PHOTOS else FORMAT_VERSION)
                     put("generated_at", generatedAt.toString())
                 },
             )
@@ -521,21 +532,29 @@ object SyncDocument {
             return winner ?: JsonNull
         }
 
+        val mergedFood = mergeList("food_entries")
+        val mergedFavorites = mergeList("favorites")
+        // Same rule as buildJson (#122): 1.4 iff the merged doc carries refs.
+        val anyPhotos = (mergedFood + mergedFavorites).any { row ->
+            (row as? JsonObject)?.get("photos")?.let { it is JsonArray && it.isNotEmpty() } == true
+        }
         return buildJsonObject {
             put(
                 "export",
                 buildJsonObject {
                     put("app", APP_NAME)
                     put("kind", KIND)
-                    put("format_version", FORMAT_VERSION)
+                    put("format_version", if (anyPhotos) FORMAT_VERSION_PHOTOS else FORMAT_VERSION)
                     val generated = remote["export"]?.asObjectOrNull()?.get("generated_at")?.asString()
                         ?: local["export"]?.asObjectOrNull()?.get("generated_at")?.asString()
                         ?: Instant.now().toString()
                     put("generated_at", generated)
                 },
             )
+            put("food_entries", mergedFood)
+            put("favorites", mergedFavorites)
             for (key in listOf(
-                "food_entries", "favorites", "body_fat", "measurements", "water", "daily_notes", "nicotine_entries", "caffeine_entries", "recipes", "goal_journal",
+                "body_fat", "measurements", "water", "daily_notes", "nicotine_entries", "caffeine_entries", "recipes", "goal_journal",
             )) {
                 put(key, mergeList(key))
             }
@@ -636,6 +655,11 @@ object SyncDocument {
             val g = e.grounding
             if (g == null) put("grounding", JsonNull)
             else put("grounding", groundingToWire(g))
+            // Sync 1.4 (#122): omitted when empty — photo-less rows stay
+            // byte-compatible with 1.3 emission.
+            if (e.photoFilenames.isNotEmpty()) {
+                put("photos", buildJsonArray { for (ref in e.photoFilenames) add(JsonPrimitive(ref)) })
+            }
         }
     }
 
@@ -746,6 +770,9 @@ object SyncDocument {
             },
             grounding = parseGrounding(o["grounding"]?.asObjectOrNull()),
             constituents = parseConstituents(o["constituents"]?.asArrayOrNull()),
+            photoFilenames = o["photos"]?.asArrayOrNull()?.mapNotNull { el ->
+                el.asString()?.trim()?.takeIf { it.startsWith("photos/") && it.length > "photos/".length }
+            }.orEmpty(),
         )
         return FoodWire(id, updatedAt, null, entry)
     }
