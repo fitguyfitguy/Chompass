@@ -822,6 +822,19 @@ für dich ein</string>
 
     <string name="action_undo">Rückgängig</string>
     <string name="action_save_to_favorites">Zu Favoriten speichern</string>
+    <string name="action_save_to_library">In Bibliothek speichern</string>
+    <string name="action_hide_from_suggestions">Aus Vorschlägen ausblenden</string>
+    <string name="action_unhide">Einblenden</string>
+    <string name="settings_saved_foods">Gespeicherte Lebensmittel</string>
+    <string name="library_hidden_section">Ausgeblendet</string>
+    <string name="library_empty">Noch keine gespeicherten Lebensmittel</string>
+    <string name="library_never_logged">Nie geloggt</string>
+    <string name="library_row_summary">%1$d Einträge · zuletzt %2$s</string>
+    <string name="library_delete_rows_title">Geloggte Einträge löschen?</string>
+    <string name="library_delete_rows_message">Alle %1$d Einträge von „%2$s“ löschen? Die Tage werden neu berechnet. Das gespeicherte Lebensmittel bleibt erhalten, nur seine Tagebuch-Einträge werden entfernt.</string>
+    <string name="library_sort_last_logged">Zuletzt geloggt</string>
+    <string name="library_sort_name">Name</string>
+    <string name="library_sort_logs">Einträge</string>
     <string name="saved_to_favorites">In Favoriten gespeichert</string>
 
     <string name="add_food_photo_source_title">Foto hinzufügen</string>

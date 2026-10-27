@@ -18,6 +18,7 @@ import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.MonitorWeight
+import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -154,6 +155,7 @@ internal fun SettingsHealthConnectSection(
 /** Export / import / sync rows plus the visually separated danger zone. */
 @Composable
 internal fun SettingsDataTransferSection(
+    onOpenFoodLibrary: () -> Unit,
     onShowExportDiary: () -> Unit,
     onShowExportBodyMetrics: () -> Unit,
     onImportDiary: () -> Unit,
@@ -164,6 +166,30 @@ internal fun SettingsDataTransferSection(
     onShowDeleteDialog: () -> Unit,
 ) {
     SectionCard(title = stringResource(R.string.settings_group_data)) {
+                // Codeberg #142: the saved-foods library browser lives on its
+                // own sub-screen, same cross-link pattern as WebDAV sync.
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable { onOpenFoodLibrary() }
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ChompassIconBubble(icon = Icons.Outlined.Restaurant, size = 22.dp, iconSize = 14.dp, tint = AppColors.Calorie)
+                    Spacer(Modifier.width(14.dp))
+                    Text(
+                        stringResource(R.string.settings_saved_foods),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Spacer(Modifier.weight(1f))
+                    Icon(
+                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
+                    )
+                }
+                HorizontalDivider()
                 Row(
                     Modifier
                         .fillMaxWidth()
