@@ -107,6 +107,17 @@ internal suspend fun PreferencesStore.setSuggestionDismissedImpl(id: String, dis
     }
 }
 
+// -- Hidden saved foods (Codeberg #142) --------------------------------------
+internal val PreferencesStore.hiddenFoodKeysImpl: Flow<Set<String>>
+    get() = dataStore.data.map { it[Keys.HIDDEN_FOOD_KEYS] ?: emptySet() }
+
+internal suspend fun PreferencesStore.setFoodHiddenImpl(favoriteKey: String, hidden: Boolean) {
+    dataStore.edit { prefs ->
+        val current = prefs[Keys.HIDDEN_FOOD_KEYS] ?: emptySet()
+        prefs[Keys.HIDDEN_FOOD_KEYS] = if (hidden) current + favoriteKey else current - favoriteKey
+    }
+}
+
 // -- AI fill-missing banner (at most once per day, sticky dismissal) --------
 internal val PreferencesStore.fillMissingBannerLastShownDayImpl: Flow<Long>
     get() = dataStore.data.map { it[Keys.FILL_MISSING_BANNER_LAST_SHOWN_DAY] ?: 0L }

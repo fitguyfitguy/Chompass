@@ -96,4 +96,49 @@ class SavedFoodIndexTest {
         val index = buildSavedFoodIndex(entries = listOf(entry("   ")), favorites = emptyList())
         assertTrue(index.isEmpty())
     }
+
+    @Test
+    fun hiddenKeysDropDiaryRowsAndTemplates() {
+        val index = buildSavedFoodIndex(
+            entries = listOf(
+                entry("Apple", Instant.parse("2024-06-01T08:00:00Z")),
+                entry("Apple", Instant.parse("2024-06-02T08:00:00Z")),
+                entry("Banana", Instant.parse("2024-06-02T10:00:00Z")),
+            ),
+            favorites = emptyList(),
+            hiddenKeys = setOf("apple"),
+        )
+        assertEquals(listOf("banana"), index.map { it.template.favoriteKey })
+    }
+
+    @Test
+    fun hiddenFavoriteYieldsNothing() {
+        val index = buildSavedFoodIndex(
+            entries = emptyList(),
+            favorites = listOf(entry("Cherry")),
+            hiddenKeys = setOf("cherry"),
+        )
+        assertTrue(index.isEmpty())
+    }
+
+    @Test
+    fun keyAbsentFromHiddenKeysBehavesAsBefore() {
+        val base = buildSavedFoodIndex(
+            entries = listOf(entry("Apple"), entry("Banana")),
+            favorites = listOf(entry("Cherry")),
+        )
+        val withEmptyHidden = buildSavedFoodIndex(
+            entries = listOf(entry("Apple"), entry("Banana")),
+            favorites = listOf(entry("Cherry")),
+            hiddenKeys = emptySet(),
+        )
+        val untouched = buildSavedFoodIndex(
+            entries = listOf(entry("Apple"), entry("Banana")),
+            favorites = listOf(entry("Cherry")),
+            hiddenKeys = setOf("durian"),
+        )
+        assertEquals(base.map { it.template.favoriteKey }, withEmptyHidden.map { it.template.favoriteKey })
+        assertEquals(base.map { it.template.favoriteKey }, untouched.map { it.template.favoriteKey })
+        assertEquals(3, base.size)
+    }
 }

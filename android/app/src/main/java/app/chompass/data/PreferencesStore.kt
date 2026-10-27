@@ -179,6 +179,9 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun readColdStartPrefs(): ColdStartPrefs = readColdStartPrefsImpl()
     val dismissedSuggestionIds: Flow<Set<String>> get() = dismissedSuggestionIdsImpl
     suspend fun setSuggestionDismissed(id: String, dismissed: Boolean = true) = setSuggestionDismissedImpl(id, dismissed)
+    /** Saved-food identity keys hidden from Add Food suggestions; diary history stays intact (Codeberg #142). */
+    val hiddenFoodKeys: Flow<Set<String>> get() = hiddenFoodKeysImpl
+    suspend fun setFoodHidden(favoriteKey: String, hidden: Boolean = true) = setFoodHiddenImpl(favoriteKey, hidden)
     /** AI fill-missing Home banner: last-shown epoch day + sticky scan-signature dismissals. */
     val fillMissingBannerLastShownDay: Flow<Long> get() = fillMissingBannerLastShownDayImpl
     suspend fun setFillMissingBannerShown(epochDay: Long) = setFillMissingBannerShownImpl(epochDay)
