@@ -279,7 +279,12 @@ object DiaryExporter {
         vitamin_e_mg = e.vitaminE?.let { r1(it) }, vitamin_k_mcg = e.vitaminK?.let { r1(it) },
         folate_mcg = e.folate?.let { r1(it) }, omega3_g = e.omega3?.let { r1(it) },
         caffeine_mg = e.caffeine?.let { r1(it) },
-        time = time(e), source = sourceLabel(e.source),
+        time = time(e),
+        // #122: additive UTC instant, authoritative for entry time; day date +
+        // time are its rendering in the exporting device's zone. Older readers
+        // that only know wall clock keep working unchanged.
+        timestamp = e.timestamp.toString(),
+        source = sourceLabel(e.source),
         note = e.customNote?.takeIf { it.isNotBlank() },
         photos = photos,
         grounding = e.grounding?.let { g ->
@@ -382,7 +387,7 @@ object DiaryExporter {
         val vitamin_e_mg: Double? = null, val vitamin_k_mcg: Double? = null,
         val folate_mcg: Double? = null, val omega3_g: Double? = null,
         val caffeine_mg: Double? = null,
-        val time: String, val source: String, val note: String? = null,
+        val time: String, val timestamp: String? = null, val source: String, val note: String? = null,
         val photos: List<String>? = null,
         val grounding: GroundingDto? = null,
         val serving_unit_options: List<ServingUnitDto>? = null,

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://chompass.app/contracts/diary-1.7.schema.json",
   "title": "Chompass diary export format 1.7",
-  "description": "Diary 1.6 plus optional per-item content-addressed photo refs (Codeberg #122). Imports still accept 1.0–1.6; photo-less exports stay 1.6.",
+  "description": "Diary 1.6 plus optional per-item content-addressed photo refs (Codeberg #122); items also carry an optional `timestamp` UTC instant, authoritative for entry time (Codeberg #122 follow-up). Imports still accept 1.0–1.6; photo-less exports stay 1.6.",
   "type": "object",
   "required": ["export", "days"],
   "additionalProperties": true,
@@ -164,6 +164,11 @@
         "omega3_g": { "type": ["number", "null"] },
         "caffeine_mg": { "type": ["number", "null"] },
         "time": { "type": ["string", "null"] },
+        "timestamp": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "ISO-8601 UTC instant of the entry (Codeberg #122); authoritative when present — day date + time are its rendering in the writing device's zone"
+        },
         "source": { "type": ["string", "null"] },
         "note": { "type": ["string", "null"] },
         "grounding": { "type": ["object", "null"] },

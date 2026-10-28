@@ -21,6 +21,7 @@ import app.chompass.models.MealDef
 import app.chompass.models.MealType
 import app.chompass.models.NutrientSourceKind
 import app.chompass.models.ServingUnitOption
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
@@ -115,8 +116,12 @@ object DiaryImporter {
                         ?: return DiaryImportResult.Malformed("Invalid meal item")
                     val name = item["name"]?.asString()?.trim().orEmpty()
                     if (name.isEmpty()) return DiaryImportResult.Malformed("Food name cannot be blank")
+                    // #122: the additive timestamp instant wins; day date + item
+                    // time are a legacy fallback interpreted in the reading
+                    // device's zone for 1.7-and-older writers.
+                    val wireInstant = parseInstant(item["timestamp"]?.asString())
                     val time = parseTime(item["time"]?.asString()) ?: LocalTime.NOON
-                    val timestamp = date.atTime(time).atZone(zone).toInstant()
+                    val timestamp = wireInstant ?: date.atTime(time).atZone(zone).toInstant()
                     val photoRefs = item["photos"]?.asArrayOrNull()
                         ?.mapNotNull { it.asString()?.trim() }
                         ?.filter { it.isNotEmpty() }
@@ -201,6 +206,14 @@ object DiaryImporter {
         val cleaned = raw?.trim().orEmpty()
         if (cleaned.isEmpty()) return null
         return runCatching { LocalTime.parse(cleaned) }.getOrNull()
+    }
+
+    /** #122: additive ISO-8601 instant on diary items; null when absent/unparsable. */
+    private fun parseInstant(raw: String?): Instant? {
+        val cleaned = raw?.trim().orEmpty()
+        if (cleaned.isEmpty()) return null
+        return runCatching { Instant.parse(cleaned) }.getOrNull()
+            ?: runCatching { Instant.parse(cleaned.replace(" ", "T")) }.getOrNull()
     }
 
     private fun parseMealType(raw: String?): String {

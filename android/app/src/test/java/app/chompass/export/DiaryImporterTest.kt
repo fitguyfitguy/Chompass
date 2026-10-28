@@ -299,6 +299,39 @@ class DiaryImporterTest {
     }
 
     @Test
+    fun roundTripKeepsInstantAcrossZones() {
+        // #122: diary items carry the entry instant; import must place the
+        // entry from the instant, not from wall clock re-read in the
+        // importing device's zone.
+        val original = FoodEntry(
+            name = "Oats",
+            calories = 300,
+            protein = 10.0,
+            carbs = 50.0,
+            fat = 5.0,
+            source = FoodSource.MANUAL,
+            mealType = MealType.BREAKFAST.id,
+            timestamp = Instant.parse("2026-08-15T22:30:00Z"),
+        )
+        val exported = DiaryExporter.build(
+            entries = listOf(original),
+            // 22:30Z is already the next day in positive offsets; the range
+            // spans that so day-bucketing keeps the entry in every zone.
+            start = LocalDate.of(2026, 8, 15),
+            end = LocalDate.of(2026, 8, 16),
+            format = DiaryFormat.JSON,
+            profile = null,
+            mealDisplay = { it },
+        ) ?: error("expected export")
+        assertTrue(exported.second.contains("\"timestamp\": \"2026-08-15T22:30:00Z\""))
+
+        val imported = DiaryImporter.parse(exported.second, ZoneId.of("Asia/Tokyo"))
+        assertTrue(imported is DiaryImportResult.Success)
+        val entry = (imported as DiaryImportResult.Success).entries.single()
+        assertEquals(Instant.parse("2026-08-15T22:30:00Z"), entry.timestamp)
+    }
+
+    @Test
     fun keepsDayNoteOnMealDay() {
         val result = DiaryImporter.parse(dayJson(note = "\"kept\"", meals = oneMeal()), zone)
         assertTrue(result is DiaryImportResult.Success)
