@@ -1,0 +1,2 @@
+• Diary exports and synced food rows carry a UTC timestamp beside the local date and time, so entries land on the right day across time zones and devices (Android and PWA).
+• Photos sent for AI analysis are re-encoded without metadata such as location (Android).
