@@ -33,7 +33,7 @@ Step-by-step install: [Download → How to install](https://chompass.app/downloa
 
 ### Android app
 
-Not on the Play Store. Install from **F-Droid**, Obtainium, or Codeberg Releases.
+Install from **F-Droid**, Obtainium, or Codeberg Releases.
 
 <div align="center">
 
@@ -45,9 +45,7 @@ Not on the Play Store. Install from **F-Droid**, Obtainium, or Codeberg Releases
 
 - **F-Droid**: [app.chompass](https://f-droid.org/packages/app.chompass/). Install and auto-update from the F-Droid client.
 - **Obtainium**: tap the badge above, then confirm. Or paste `https://codeberg.org/fitguy/chompass` into **Add App**.
-- **Beta channel**: tap the orange **Obtainium Beta** badge for the prerelease track (`v<version>-beta.N` tags, `Chompass-beta-*.apk`). It coexists with the stable entry: the beta entry never offers stable releases, and the stable entry never offers betas. Betas use the same package ID and versionCode as the stable they precede.
-
-Release package ID: `app.chompass`. Debug (from source): `app.chompass.debug`.
+- **Beta channel**: tap the orange **Obtainium Beta** badge for the prerelease track or enable prerelease in Obtainium.
 
 ## Screenshots
 
@@ -111,24 +109,24 @@ On both the [PWA](https://chompass.app/app/) and the Android app unless noted:
 ### AI
 
 - **AI**: your own cloud key (a free [Google AI Studio](https://aistudio.google.com/apikey) key is enough for casual use). Progress steps and a live field preview. Coach chat on both clients. You can turn all AI features off; barcode, search, and manual logging stay on.
-- **On-device AI** (Android): optional **On-Device (Private)** Gemma 4. See below.
+- **On-device AI** (Android): optional Gemma 4. See below.
 
 ### Progress and trackers
 
 - **Progress**: weight, body fat, measurements, forecast. Keto and other diet modes. Water tracking.
-- **Optional trackers**: water, nicotine, caffeine, fasting timer, and daily notes. Each is off until you turn it on. Fasting stays on the device and is never exported or synced.
-
+- **Optional trackers**: water, nicotine, caffeine, fasting timer, and daily notes.
+  
 ### Data, export and sync
 
 - **Export and sync**: diary export (JSON / Markdown / CSV), weight and body-metrics import/export, bulk JSON import, meal share links. Optional user-hosted **WebDAV** sync (your server; no Chompass backend).
 
 ### Languages and platforms
 
-- **Languages**: 18. The PWA covers core screens.
-
+- **Languages**: 18.
+  
 ### Android only
 
-- **Live calorie budget**: in Add Active mode the home ring grows the daily goal with the day's burn (Health Connect, a manual entry, or an estimate from your history). Widgets use the same budget.
+- **Live calorie budget**: in Add Active mode the home ring grows the daily goal with the day's burn (Health Connect, a manual entry, or an estimate from your history).
 - **Health Connect**: steps, exercise, sleep, heart rate, hydration. Two-way with Gadgetbridge, openScale, and other Health Connect apps.
 - **Widgets and notifications**
 - **Size**: ~17 MiB arm64 / ~29 MiB universal. No ads, analytics, or workout library.
@@ -164,7 +162,7 @@ Android. No vendor SDKs and no extra account. Apps that write to Health Connect 
 
 Optional **background sync** (Settings → Health & Data, off by default) reads Health Connect every few hours while the app is closed, on devices that support it.
 
-On Android 14 and later, Health Connect is a system module. Some de-Googled builds show it in Settings but apps cannot use it. Use file export/import or WebDAV in that case. Huawei Health Kit is not supported; pair the wearable with [Gadgetbridge](https://gadgetbridge.org/) instead.
+On Android 14 and later, Health Connect is a system module. Some de-Googled builds show it in Settings but apps cannot use it. Use file export/import or WebDAV in that case. Huawei Health Kit is not supported; pair the wearable with [Gadgetbridge](https://gadgetbridge.org/) instead or use a Health Sync. 
 
 ## How accurate is the AI?
 
