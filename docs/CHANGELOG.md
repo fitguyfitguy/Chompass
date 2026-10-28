@@ -6,13 +6,15 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
-## [5.12.0] - 2026-10-26
+## [5.12.0] - 2026-10-28
 
 ### Added
 
 - **Ollama Cloud as a built-in provider** (Android): Settings → AI provider gains an Ollama Cloud row under Cloud, so an ollama.com subscription works without self-hosting or hand-typing URLs. The model list is the live ollama.com catalog, not a built-in shortlist. Paste your ollama.com API key to use it. Reasoning effort works on models that support it. The local Ollama entry stays as it was.
 
 - **Saved foods manager** (Android): Settings → Health & Data → Saved foods is a searchable, sortable list of every food the app remembers. Open one to fix its saved template, favorite or unfavorite it, hide it from Add Food suggestions, or delete all of its logged rows in one step (the confirm shows the true all-time count before anything is touched). Hidden foods keep their diary history and come back with Unhide. Long-pressing a saved suggestion in Add Food now also offers Save to library (fix the stored values without logging a new row) and Hide from suggestions. Foods that look like duplicates (the same name logged twice, or one product under two names) are flagged as Possible duplicates at the top of the list; merging keeps the name you pick and moves the other's logged rows under it, so its history and day totals land on one food instead of two.
+
+- **Diary export and sync can carry meal photos** (Android and PWA): the export sheet gains an Include photos toggle. With it on, the export is a ZIP holding the diary file plus every meal photo in the range, and importing that ZIP restores the photos. Without it the export file is exactly as before. Meal photos can now sync over WebDAV too: turn on Sync photos in the sync settings and each device uploads its photos and downloads the ones it is missing, on Wi-Fi only by default. Photos are announced to the other device only after their upload succeeds, so a sync never points at a photo that is not there. The web app passes photo references through imports and sync but does not export photos. Closes Codeberg [#122](https://codeberg.org/fitguy/Chompass/issues/122).
 
 ### Changed
 

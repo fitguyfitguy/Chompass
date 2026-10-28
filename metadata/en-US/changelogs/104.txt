@@ -1,0 +1,11 @@
+• Ollama Cloud is a built-in AI provider: paste your ollama.com key and pick from the live model catalog (Android).
+• New saved foods manager under Settings → Health & Data: search, fix, favorite, hide, delete, and merge duplicate foods (Android).
+• Diary export can include meal photos as a ZIP, importing restores them, and photos can sync over WebDAV, Wi-Fi only by default (Android and PWA).
+• AI hosts are picked by name in Settings → AI provider; bundled hosts are their own rows instead of hiding inside Custom (Android).
+• AI settings show only the options that work for your provider; the max response length knob is gone (Android).
+• Full nutrient names now apply to compact bars and slim cards (Android).
+• Compact food-log rows keep three macros on one line (Android).
+• Status-bar icons follow the app theme instead of staying white on light themes (Android).
+• Onboarding no longer crashes when opening Health Connect settings on strict devices (Android).
+• Coach chat survives slow or self-hosted models, and failed sends record the reason in the device log (Android).
+• Saves show up everywhere immediately instead of showing stale values on other screens (Android).
