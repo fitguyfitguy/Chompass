@@ -2,7 +2,9 @@
 /**
  * Serializer/validator for the diary JSON export shape, byte-for-byte
  * compatible with android/app/src/main/java/app/chompass/export/
- * DiaryExporter.kt and DiaryImporter.kt.
+ * DiaryExporter.kt and DiaryImporter.kt. Items also carry an additive
+ * `timestamp` UTC instant, authoritative for entry time, with day date +
+ * time kept as the writer-zone rendering (Codeberg #122).
  */
 
 import { microOrNull } from "./constituents.js";
@@ -11,6 +13,40 @@ export const DIARY_FORMAT_VERSION = "1.6";
 
 /** Versions accepted on import. Exports stamp [DIARY_FORMAT_VERSION] (photo refs round-trip through imports but exports stay photo-free). */
 export const DIARY_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7"]);
+
+/** @param {number} n */
+function pad2(n) {
+  return String(n).padStart(2, "0");
+}
+
+/**
+ * #122: wall clock in the writer's zone → UTC instant string; null when
+ * undated. Mirrors the sync-format helpers (same semantics, kept local so
+ * the diary wire has no sync dependency).
+ * @param {string} date
+ * @param {string} time
+ */
+function instantFromWallClock(date, time) {
+  if (!date || !time) return null;
+  const parsed = new Date(`${date}T${time}:00`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+}
+
+/**
+ * #122: UTC instant → wall clock in the reading device's zone; null when the
+ * field is absent or unparsable (legacy items fall back to day date + time).
+ * @param {unknown} raw
+ * @returns {{ date: string, time: string }|null}
+ */
+function wallClockFromInstant(raw) {
+  if (typeof raw !== "string" || !raw.trim()) return null;
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return {
+    date: `${parsed.getFullYear()}-${pad2(parsed.getMonth() + 1)}-${pad2(parsed.getDate())}`,
+    time: `${pad2(parsed.getHours())}:${pad2(parsed.getMinutes())}`,
+  };
+}
 
 /** Micronutrient wire-key <-> model-field pairs, in ItemDto declaration order. */
 export const MICRO_FIELDS = [
@@ -204,6 +240,10 @@ function itemToWire(item) {
     wire[wireKey] = round1(item[modelKey] ?? null);
   }
   wire.time = item.time;
+  // #122: additive UTC instant, authoritative for entry time (omitted when
+  // undated); day date + time stay for readers that predate it.
+  const instant = instantFromWallClock(item.date, item.time);
+  if (instant) wire.timestamp = instant;
   wire.source = SOURCE_TO_WIRE[item.source] ?? "ai_estimated";
   wire.note = item.note ?? null;
   wire.grounding = groundingToWire(item.grounding ?? null);
@@ -221,6 +261,9 @@ function itemToWire(item) {
  * @returns {import('./models.js').FoodEntry}
  */
 function itemFromWire(wire, date, mealType, idGen) {
+  // #122: the timestamp instant wins; day date + item time are the legacy
+  // fallback (writer-zone wall clock, no offset), kept for 1.7-and-older docs.
+  const instant = wallClockFromInstant(wire.timestamp);
   const entry = {
     id: idGen(),
     name: wire.name,
@@ -230,8 +273,8 @@ function itemFromWire(wire, date, mealType, idGen) {
     carbsG: wire.carbs_g,
     fatG: wire.fat_g,
     mealType,
-    date,
-    time: wire.time,
+    date: instant?.date ?? date,
+    time: instant?.time ?? wire.time,
     source: WIRE_TO_SOURCE[wire.source] ?? "ai_estimated",
     note: wire.note ?? null,
     grounding: groundingFromWire(wire.grounding ?? null),

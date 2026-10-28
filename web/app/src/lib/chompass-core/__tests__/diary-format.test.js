@@ -145,6 +145,46 @@ test("importDiary ignores day notes and still imports food", () => {
   assert.equal(entries[0].name, "Oats");
 });
 
+test("diary items carry an additive timestamp instant, import prefers it (#122)", () => {
+  const doc = exportDiary({
+    entries: [
+      {
+        id: "e1", name: "Oats", date: "2026-07-24", time: "08:00", mealType: "breakfast",
+        calories: 300, proteinG: 10, carbsG: 50, fatG: 5, quantityG: 100, source: "manual",
+        fiberG: 4, note: null, servingUnitOptions: [], constituents: [], grounding: null,
+      },
+    ],
+    targets: {},
+    dateRange: { start: "2026-07-24", end: "2026-07-24" },
+  });
+  // Write side: wall clock in the local zone → UTC instant beside time.
+  assert.equal(doc.days[0].meals[0].items[0].timestamp, new Date("2026-07-24T08:00:00").toISOString());
+
+  // Import side: the instant wins over a stale wall clock and re-renders in
+  // the reading device's zone; the day bucket follows the instant.
+  const hostile = structuredClone(doc);
+  const item = hostile.days[0].meals[0].items[0];
+  item.time = "12:00";
+  item.timestamp = "2026-10-31T00:00:00Z";
+  const placed = importDiary(hostile, idGen)[0];
+  const instant = new Date("2026-10-31T00:00:00Z");
+  const p = (n) => String(n).padStart(2, "0");
+  assert.equal(placed.date, `${instant.getFullYear()}-${p(instant.getMonth() + 1)}-${p(instant.getDate())}`);
+  assert.equal(placed.time, `${p(instant.getHours())}:${p(instant.getMinutes())}`);
+
+  // Legacy items without the instant keep wall-clock placement.
+  const legacy = structuredClone(hostile);
+  delete legacy.days[0].meals[0].items[0].timestamp;
+  const fallback = importDiary(legacy, idGen)[0];
+  assert.equal(fallback.date, hostile.days[0].date);
+  assert.equal(fallback.time, "12:00");
+
+  // Round-trip: import → export preserves the instant (string precision may
+  // differ: toISOString emits milliseconds).
+  const reexported = exportDiary({ entries: [placed], targets: {}, dateRange: { start: placed.date, end: placed.date } });
+  assert.equal(Date.parse(reexported.days[0].meals[0].items[0].timestamp), Date.parse("2026-10-31T00:00:00Z"));
+});
+
 test("grounding field passes through import->export untouched when present", () => {
   const doc = {
     export: { app: "nofud", format_version: DIARY_FORMAT_VERSION, date_range: { start: "2026-01-01", end: "2026-01-01" } },

@@ -26,7 +26,8 @@ else
 fi
 
 echo "==> PWA unit tests (chompass-core + lib parity)"
-run_in_devenv 'cd web && node --test app/src/lib/chompass-core/__tests__/*.test.js app/src/lib/__tests__/*.test.js'
+# Parity fixtures are UTC-authored; zone-dependent placement must read them in UTC (#122).
+run_in_devenv 'cd web && TZ=UTC node --test app/src/lib/chompass-core/__tests__/*.test.js app/src/lib/__tests__/*.test.js'
 
 echo "==> PWA typecheck"
 run_in_devenv 'cd web && tsc --checkJs --noEmit -p tsconfig.json'
