@@ -4,7 +4,9 @@
  * granular `daily_notes` array, Codeberg #58a, and the optional per-day
  * `goal_journal` array, Codeberg #60; 1.3 adds per-constituent micros,
  * Codeberg #86; 1.4 adds optional content-addressed food photo refs,
- * Codeberg #122 — stamped only when refs are present). Compatible with
+ * Codeberg #122 — stamped only when refs are present; food rows also carry
+ * an additive `timestamp` UTC instant, authoritative for entry time, with
+ * date/time kept as the writer-zone rendering). Compatible with
  * android/.../export/SyncDocument.kt. Imports also accept 1.0/1.1/1.2.
  */
 import { goalJournalIdFor } from "./macro-plan.js";
@@ -16,6 +18,40 @@ export const SYNC_IMPORT_VERSIONS = new Set(["1.0", "1.1", "1.2", "1.3", "1.4"])
 
 /** Sync 1.4 stamp: emitted iff any exported food/favorite row carries photo refs (Codeberg #122). */
 export const SYNC_PHOTOS_VERSION = "1.4";
+
+/** @param {number} n */
+function pad2(n) {
+  return String(n).padStart(2, "0");
+}
+
+/**
+ * #122: wall clock in the writer's zone → UTC instant string; null when
+ * undated. `Date` parses offset-less date-time strings in the local zone,
+ * mirroring Android's `atZone(device zone)` write-side rendering.
+ * @param {string} date
+ * @param {string} time
+ */
+function instantFromWallClock(date, time) {
+  if (!date || !time) return null;
+  const parsed = new Date(`${date}T${time}:00`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+}
+
+/**
+ * #122: UTC instant → wall clock in the reading device's zone; null when the
+ * field is absent or unparsable (legacy rows fall back to wire date/time).
+ * @param {unknown} raw
+ * @returns {{ date: string, time: string }|null}
+ */
+function wallClockFromInstant(raw) {
+  if (typeof raw !== "string" || !raw.trim()) return null;
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return {
+    date: `${parsed.getFullYear()}-${pad2(parsed.getMonth() + 1)}-${pad2(parsed.getDate())}`,
+    time: `${pad2(parsed.getHours())}:${pad2(parsed.getMinutes())}`,
+  };
+}
 
 /** @param {import('./models.js').Grounding|null|undefined} g */
 function groundingToWire(g) {
@@ -240,6 +276,10 @@ export function foodEntryToSyncWire(item, updatedAt, deletedAt = null) {
     selected_serving_quantity: item.selectedServingQuantity != null ? round1(item.selectedServingQuantity) : null,
     constituents: constituentsToWire(item.constituents ?? []),
   };
+  // #122: additive UTC instant, authoritative for entry time; date/time stay
+  // for readers that predate it (omitted when undated).
+  const instant = instantFromWallClock(item.date, item.time);
+  if (instant) wire.timestamp = instant;
   // Sync 1.4 photo refs: omitted when empty (photo-less rows stay byte-compatible with 1.3).
   if (Array.isArray(item.photos) && item.photos.length) wire.photos = item.photos;
   for (const [wireKey, modelKey] of MICRO_FIELDS) {
@@ -264,6 +304,9 @@ function photosFromWire(arr) {
  * @returns {import('./models.js').FoodEntry}
  */
 export function foodEntryFromSyncWire(wire) {
+  // #122: the timestamp instant wins; wire date/time are the legacy fallback
+  // (writer-zone wall clock, no offset), kept for 1.4-and-older docs.
+  const instant = wallClockFromInstant(wire.timestamp);
   /** @type {import('./models.js').FoodEntry} */
   const entry = {
     id: String(wire.id),
@@ -275,8 +318,8 @@ export function foodEntryFromSyncWire(wire) {
     carbsG: Number(wire.carbs_g) || 0,
     fatG: Number(wire.fat_g) || 0,
     mealType: wire.meal_type || "snack",
-    date: String(wire.date ?? ""),
-    time: String(wire.time ?? "12:00"),
+    date: instant?.date ?? String(wire.date ?? ""),
+    time: instant?.time ?? String(wire.time ?? "12:00"),
     source: WIRE_TO_SOURCE[wire.source] ?? "ai_estimated",
     note: wire.note ?? null,
     recipeLogId: wire.recipe_log_id ?? null,

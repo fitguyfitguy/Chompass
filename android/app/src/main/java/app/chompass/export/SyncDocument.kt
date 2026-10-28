@@ -596,6 +596,10 @@ object SyncDocument {
             putNullable("emoji", e.emoji)
             put("date", localDate.toString())
             put("time", String.format("%02d:%02d", localTime.hour, localTime.minute))
+            // #122: additive UTC instant, authoritative for entry time; date/time
+            // are its rendering in the writing device's zone. Older readers that
+            // only know date/time keep working unchanged.
+            put("timestamp", e.timestamp.toString())
             put("meal_type", e.mealType)
             putNullableNumber("quantity_g", e.servingSizeGrams)
             put("calories", e.calories)
@@ -722,8 +726,12 @@ object SyncDocument {
         }
         val name = o["name"]?.asString()?.trim().orEmpty()
         if (name.isEmpty()) return FoodWire(id, updatedAt, null, null)
+        // #122: the additive timestamp instant wins; date/time are a legacy
+        // fallback interpreted in the reading device's zone, so rows written
+        // by 1.4-and-older writers keep their wall-clock placement.
+        val wireTimestamp = parseInstant(o["timestamp"]?.asString())
         val date = o["date"]?.asString()?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
-            ?: return FoodWire(id, updatedAt, null, null)
+        if (wireTimestamp == null && date == null) return FoodWire(id, updatedAt, null, null)
         val time = o["time"]?.asString()?.let { runCatching { LocalTime.parse(it) }.getOrNull() }
             ?: LocalTime.NOON
         val entry = FoodEntry(
@@ -734,7 +742,7 @@ object SyncDocument {
             protein = o["protein_g"]?.asDouble() ?: 0.0,
             carbs = o["carbs_g"]?.asDouble() ?: 0.0,
             fat = o["fat_g"]?.asDouble() ?: 0.0,
-            timestamp = date.atTime(time).atZone(zone).toInstant(),
+            timestamp = wireTimestamp ?: date!!.atTime(time).atZone(zone).toInstant(),
             source = parseSource(o["source"]?.asString()),
             mealType = parseMealType(o["meal_type"]?.asString()),
             sugar = o["sugar_g"]?.asDouble(),

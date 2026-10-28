@@ -149,6 +149,11 @@
             "emoji": { "type": ["string", "null"] },
             "date": { "type": "string" },
             "time": { "type": "string" },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time",
+              "description": "ISO-8601 UTC instant of the entry (Codeberg #122); authoritative when present — date/time are its rendering in the writing device's zone"
+            },
             "meal_type": { "type": "string" },
             "quantity_g": { "type": ["number", "null"] },
             "calories": { "type": "number" },
