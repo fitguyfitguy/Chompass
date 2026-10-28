@@ -6,7 +6,7 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
-## [5.13.1] - 2026-10-28
+## [5.12.1] - 2026-10-28
 
 ### Added
 
