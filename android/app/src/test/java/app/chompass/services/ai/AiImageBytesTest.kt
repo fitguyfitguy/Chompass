@@ -4,7 +4,6 @@ import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.ExifInterface
-import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertThrows
@@ -21,9 +20,10 @@ import java.io.FileOutputStream
 
 /**
  * Upload normalization: every AI client labels its payload image/jpeg, so
- * jpegForUpload must hand it real JPEG bytes — re-encoded from HEIC/PNG/WebP,
- * EXIF rotation baked in, downscaled to the 1600 px cap — and never pass raw
- * undecodable bytes through.
+ * jpegForUpload must hand it real JPEG bytes — every input (HEIC/PNG/WebP and
+ * JPEG of any size) is decoded, EXIF rotation baked in, downscaled to the
+ * 1600 px cap, and re-encoded so no source metadata reaches the provider —
+ * and never pass raw undecodable bytes through.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [33], application = Application::class)
@@ -54,12 +54,27 @@ class AiImageBytesTest {
     }
 
     @Test
-    fun realSmallJpeg_passesThroughUnchanged() {
-        val bytes = jpegBytes(320, 240)
+    fun realSmallJpeg_reencodedWithoutMetadata() {
+        // #122 follow-up: small JPEGs used to pass through untouched, so
+        // gallery/share originals carried EXIF (GPS included) to cloud AI.
+        // Every upload is re-encoded and leaves metadata behind.
+        val plain = jpegBytes(320, 240)
+        val exifPayload = "Exif\u0000\u0000II*\u0000GPS marker".toByteArray(Charsets.US_ASCII)
+        val app1 = byteArrayOf(
+            0xFF.toByte(), 0xE1.toByte(),
+            ((exifPayload.size + 2) shr 8).toByte(),
+            ((exifPayload.size + 2) and 0xFF).toByte(),
+        ) + exifPayload
+        val withExif = plain.sliceArray(0..1) + app1 + plain.sliceArray(2 until plain.size)
+        assertTrue(
+            "test input must carry the EXIF marker",
+            String(withExif, Charsets.US_ASCII).contains("Exif"),
+        )
 
-        val out = AiImageBytes.jpegForUpload(bytes)
+        val out = AiImageBytes.jpegForUpload(withExif)
 
-        assertArrayEquals(bytes, out)
+        assertFalse("output must not carry the EXIF marker", String(out, Charsets.US_ASCII).contains("Exif"))
+        assertEquals(320 to 240, decodeDimensions(out))
     }
 
     @Test

@@ -13,15 +13,19 @@ object AiImageBytes {
 
     /**
      * Normalizes [bytes] to a JPEG at most [maxDimension] on the longest side.
-     * Every client labels its payload image/jpeg, so real small JPEGs pass
-     * through untouched and every other decodable image (HEIC, PNG, WebP,
-     * oversized JPEG) is decoded bounds-first — the full bitmap is NEVER
-     * decoded when the source is oversized, so a hostile huge-dimension
-     * shared image cannot OOM the process (the analysis path receives raw
-     * staged bytes, not the re-encoded store copy) — rotated per its EXIF
-     * orientation (BitmapFactory drops it) and re-encoded as JPEG.
+     * Every client labels its payload image/jpeg. Every decodable image
+     * (HEIC, PNG, WebP, JPEG of any size) is decoded bounds-first — the full
+     * bitmap is NEVER decoded when the source is oversized, so a hostile
+     * huge-dimension shared image cannot OOM the process (the analysis path
+     * receives raw staged bytes, not the re-encoded store copy) — rotated per
+     * its EXIF orientation (BitmapFactory drops it) and re-encoded as JPEG.
      * Undecodable bytes throw [AiError.ImageConversionFailed] instead of
      * passing through mislabeled.
+     *
+     * #122 follow-up: the old small-JPEG pass-through let gallery/share
+     * originals keep their EXIF (GPS included) on the way to cloud AI.
+     * Everything is now decoded and re-encoded, so no metadata leaves the
+     * device — matching the store, export, and sync copies.
      */
     fun jpegForUpload(
         bytes: ByteArray,
@@ -34,10 +38,7 @@ object AiImageBytes {
         BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
         if (bounds.outWidth <= 0 || bounds.outHeight <= 0) throw AiError.ImageConversionFailed
 
-        val longest = maxOf(bounds.outWidth, bounds.outHeight)
-        if (isJpeg(bytes) && longest <= maxDimension) return bytes
-
-        val sample = sampleSizeFor(longest, maxDimension)
+        val sample = sampleSizeFor(maxOf(bounds.outWidth, bounds.outHeight), maxDimension)
         val options = BitmapFactory.Options().apply { inSampleSize = sample }
         val decoded = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
             ?: throw AiError.ImageConversionFailed
@@ -50,10 +51,6 @@ object AiImageBytes {
             out.toByteArray()
         }
     }
-
-    private fun isJpeg(bytes: ByteArray): Boolean =
-        bytes.size >= 3 &&
-            bytes[0] == 0xFF.toByte() && bytes[1] == 0xD8.toByte() && bytes[2] == 0xFF.toByte()
 
     /** Power-of-two sample so the decoded bitmap stays near [maxDimension]*2. */
     private fun sampleSizeFor(longest: Int, maxDimension: Int): Int {
