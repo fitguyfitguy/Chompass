@@ -228,6 +228,77 @@ class SyncDocumentTest {
     }
 
     @Test
+    fun buildWritesTimestampInstantBesideWallClock() {
+        // #122: food rows carry an additive UTC instant, authoritative for
+        // entry time; date/time stay as the writing device's zone rendering
+        // so older readers keep working unchanged.
+        val zone = ZoneId.of("Europe/Berlin")
+        val food = FoodEntry(
+            name = "Oats",
+            calories = 300,
+            protein = 10.0,
+            carbs = 50.0,
+            fat = 5.0,
+            timestamp = Instant.parse("2026-08-15T22:30:00Z"),
+            source = FoodSource.MANUAL,
+            mealType = MealType.BREAKFAST.id,
+        )
+        val json = SyncDocument.buildJson(
+            foodEntries = listOf(food),
+            favorites = emptyList(),
+            weights = emptyList(),
+            bodyFats = emptyList(),
+            measurements = emptyList(),
+            water = emptyList(),
+            recipes = emptyList(),
+            zone = zone,
+        )
+        val foodWire = Json.parseToJsonElement(json).jsonObject["food_entries"]!!.jsonArray.single().jsonObject
+        assertEquals("2026-08-15T22:30:00Z", foodWire["timestamp"]!!.jsonPrimitive.content)
+        assertEquals("2026-08-16", foodWire["date"]!!.jsonPrimitive.content)
+        assertEquals("00:30", foodWire["time"]!!.jsonPrimitive.content)
+    }
+
+    @Test
+    fun parsePrefersTimestampInstantOverWallClock() {
+        // #122: the instant wins even when date/time disagree, and entry
+        // placement never depends on the reading device's zone (the traveler
+        // case: rows synced abroad must not shift when read back home).
+        val hostile = """
+            {"export":{"app":"Chompass","kind":"sync","format_version":"1.4"},
+             "food_entries":[{"id":"22222222-2222-4222-8222-222222222222","updated_at":"2026-10-30T23:00:00Z",
+               "deleted_at":null,"name":"Hawaii lunch","date":"2026-10-30","time":"12:00",
+               "timestamp":"2026-10-31T00:00:00Z","meal_type":"lunch","calories":100,
+               "protein_g":1.0,"carbs_g":1.0,"fat_g":1.0,"source":"manual"}],
+             "favorites":[],"weights":[],"body_fat":[],"measurements":[],"water":[],"recipes":[]}
+        """.trimIndent()
+        val result = SyncDocument.parse(hostile, ZoneId.of("Asia/Tokyo"))
+        assertTrue("expected Success but was $result", result is SyncDocument.ParseResult.Success)
+        val entry = (result as SyncDocument.ParseResult.Success).parsed.foodEntries.single().entry
+        assertEquals(Instant.parse("2026-10-31T00:00:00Z"), entry!!.timestamp)
+    }
+
+    @Test
+    fun parseWithoutTimestampFallsBackToWallClockInReaderZone() {
+        // Rows written before the timestamp field keep their legacy
+        // semantics: date/time interpreted in the reading device's zone.
+        fun parseLegacy(zoneTag: String): Instant {
+            val doc = """
+                {"export":{"app":"Chompass","kind":"sync","format_version":"1.3"},
+                 "food_entries":[{"id":"33333333-3333-4333-8333-333333333333","updated_at":"2026-10-30T23:00:00Z",
+                   "deleted_at":null,"name":"Legacy lunch","date":"2026-10-30","time":"12:00","meal_type":"lunch",
+                   "calories":100,"protein_g":1.0,"carbs_g":1.0,"fat_g":1.0,"source":"manual"}],
+                 "favorites":[],"weights":[],"body_fat":[],"measurements":[],"water":[],"recipes":[]}
+            """.trimIndent()
+            val result = SyncDocument.parse(doc, ZoneId.of(zoneTag))
+            assertTrue("expected Success but was $result", result is SyncDocument.ParseResult.Success)
+            return (result as SyncDocument.ParseResult.Success).parsed.foodEntries.single().entry!!.timestamp
+        }
+        assertEquals(Instant.parse("2026-10-30T12:00:00Z"), parseLegacy("UTC"))
+        assertEquals(Instant.parse("2026-10-30T03:00:00Z"), parseLegacy("Asia/Tokyo"))
+    }
+
+    @Test
     fun buildRoundTripsEmoji() {
         // Entry emoji must survive the sync wire (#34 family): photos are
         // intentionally excluded, emoji is not.

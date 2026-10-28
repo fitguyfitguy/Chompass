@@ -5,6 +5,7 @@ import { loadParityFixture } from "../../parity-fixtures.js";
 import {
   exportSyncDocument,
   parseSyncDocument,
+  foodEntryFromSyncWire,
   SYNC_FORMAT_VERSION,
   SYNC_IMPORT_VERSIONS,
   liveFoodEntriesFromSync,
@@ -178,6 +179,43 @@ test("exportSyncDocument stamps 1.4 iff photo refs present, round-trips them", (
   // Favorites carry refs too and can trigger the 1.4 stamp.
   const favPhotos = exportSyncDocument({ favorites: [{ ...base, id: "f1", photos: ["photos/ffffffffffffffff.jpg"] }] });
   assert.equal(favPhotos.export.format_version, "1.4");
+});
+
+test("food rows carry an additive timestamp instant, parse prefers it (#122)", () => {
+  // Write side: wall clock in the reading zone → UTC instant beside date/time.
+  const doc = exportSyncDocument({
+    foodEntries: [
+      {
+        id: "t1", name: "Egg", calories: 70, proteinG: 6, carbsG: 0.5, fatG: 5,
+        mealType: "breakfast", date: "2026-07-24", time: "08:00", source: "manual",
+      },
+    ],
+  });
+  assert.equal(doc.food_entries[0].timestamp, new Date("2026-07-24T08:00:00").toISOString());
+  assert.equal(doc.food_entries[0].date, "2026-07-24");
+  assert.equal(doc.food_entries[0].time, "08:00");
+
+  // Parse side: the instant wins over a stale wall clock and is re-rendered in
+  // the reading device's zone (the traveler case: no zone-dependent shifting).
+  const hostile = foodEntryFromSyncWire({
+    ...doc.food_entries[0],
+    date: "2026-10-30",
+    time: "12:00",
+    timestamp: "2026-10-31T00:00:00Z",
+  });
+  const instant = new Date("2026-10-31T00:00:00Z");
+  const p = (n) => String(n).padStart(2, "0");
+  assert.equal(hostile.date, `${instant.getFullYear()}-${p(instant.getMonth() + 1)}-${p(instant.getDate())}`);
+  assert.equal(hostile.time, `${p(instant.getHours())}:${p(instant.getMinutes())}`);
+
+  // Legacy rows without the instant keep wall-clock placement.
+  const legacy = foodEntryFromSyncWire({ ...doc.food_entries[0], date: "2026-10-30", time: "12:00", timestamp: undefined });
+  assert.equal(legacy.date, "2026-10-30");
+  assert.equal(legacy.time, "12:00");
+
+  // Round-trip: parse → re-emit preserves the instant (wall clock re-interpreted in-zone).
+  const reexported = exportSyncDocument({ foodEntries: [hostile] });
+  assert.equal(reexported.food_entries[0].timestamp, new Date("2026-10-31T00:00:00Z").toISOString());
 });
 
 test("exportSyncDocument round-trips nicotine entries", () => {
