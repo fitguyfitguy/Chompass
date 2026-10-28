@@ -6,6 +6,16 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ## [Unreleased]
 
+## [5.13.1] - 2026-10-28
+
+### Added
+
+- **Export and sync times survive time zones** (Android and PWA): diary exports and synced food rows now carry a UTC timestamp next to the local date and time. Import and sync prefer the instant when reading, so rows land on the right day no matter which device or time zone wrote them. Older files without the field read exactly as before. Closes Codeberg [#122](https://codeberg.org/fitguy/Chompass/issues/122)
+
+### Fixed
+
+- **Photo metadata is stripped from analysis uploads** (Android): photos sent to the AI provider are re-encoded without EXIF metadata such as location, matching what sync and export copies already did. Small images no longer bypass the re-encode.
+
 ## [5.12.0] - 2026-10-28
 
 ### Added
