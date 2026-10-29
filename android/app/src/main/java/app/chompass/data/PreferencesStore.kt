@@ -4,6 +4,7 @@ import android.content.Context
 import app.chompass.models.AIProvider
 import app.chompass.models.AiProfile
 import app.chompass.models.BodyFatEntry
+import app.chompass.models.BodyCompositionEntry
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.ChatMessage
 import app.chompass.models.DailyFoodTotals
@@ -133,6 +134,15 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
             serializer = BodyMeasurement.serializer(),
             idOf = { it.id },
             order = compareBy(BodyMeasurement::date),
+        )
+    }
+    internal val compositionBucketStore by lazy {
+        JsonBucketStore(
+            root = File(appContext.filesDir, "chompass-buckets/composition"),
+            json = json,
+            serializer = BodyCompositionEntry.serializer(),
+            idOf = { it.id },
+            order = compareBy(BodyCompositionEntry::date),
         )
     }
     internal val foodBucketStore by lazy {
@@ -616,6 +626,13 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
         upsertsByMonth: Map<YearMonth, List<BodyMeasurement>> = emptyMap(),
         removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),
     ) = applyMeasurementBucketChangesImpl(upsertsByMonth, removalIdsByMonth)
+    val bodyCompositions: Flow<List<BodyCompositionEntry>> get() = bodyCompositionsImpl
+    suspend fun setBodyCompositions(entries: List<BodyCompositionEntry>) = setBodyCompositionsImpl(entries)
+    /** Month-scoped composition write (one bucket file). */
+    suspend fun applyCompositionBucketChanges(
+        upsertsByMonth: Map<YearMonth, List<BodyCompositionEntry>> = emptyMap(),
+        removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),
+    ) = applyCompositionBucketChangesImpl(upsertsByMonth, removalIdsByMonth)
     val chatHistory: Flow<List<ChatMessage>> get() = chatHistoryImpl
     suspend fun setChatHistory(history: List<ChatMessage>) = setChatHistoryImpl(history)
     val widgetSnapshot: Flow<WidgetSnapshot?> get() = widgetSnapshotImpl

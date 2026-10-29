@@ -1,6 +1,7 @@
 package app.chompass.data
 
 import app.chompass.models.BodyFatEntry
+import app.chompass.models.BodyCompositionEntry
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.WeightEntry
 import kotlinx.coroutines.flow.Flow
@@ -80,4 +81,29 @@ internal suspend fun PreferencesStore.applyMeasurementBucketChangesImpl(
     if (upsertsByMonth.isEmpty() && removalIdsByMonth.isEmpty()) return
     migrateBucketsToFilesIfNeeded()
     measurementBucketStore.applyChanges(upsertsByMonth, removalIdsByMonth)
+}
+
+// -- Body composition (scale) entries ----------------------------------
+// Born in month files — there is no pre-bucket legacy blob to migrate.
+internal val PreferencesStore.bodyCompositionsImpl: Flow<List<BodyCompositionEntry>>
+    get() = flow {
+        migrateBucketsToFilesIfNeeded()
+        emitAll(compositionBucketStore.allFlow())
+    }
+
+internal suspend fun PreferencesStore.setBodyCompositionsImpl(entries: List<BodyCompositionEntry>) {
+    migrateBucketsToFilesIfNeeded()
+    compositionBucketStore.replaceAll(
+        entries.groupBy { YearMonth.from(it.date.atZone(ZoneId.systemDefault())) }
+    )
+}
+
+/** Month-scoped composition write (one bucket file). */
+internal suspend fun PreferencesStore.applyCompositionBucketChangesImpl(
+    upsertsByMonth: Map<YearMonth, List<BodyCompositionEntry>> = emptyMap(),
+    removalIdsByMonth: Map<YearMonth, Set<UUID>> = emptyMap(),
+) {
+    if (upsertsByMonth.isEmpty() && removalIdsByMonth.isEmpty()) return
+    migrateBucketsToFilesIfNeeded()
+    compositionBucketStore.applyChanges(upsertsByMonth, removalIdsByMonth)
 }

@@ -37,6 +37,16 @@ data class UserProfile(
     val bodyFatMethod: BodyFatMethod? = null,
     /** User override of the method's known accuracy, in percentage points. */
     val bodyFatAccuracyPoints: Double? = null,
+    /**
+     * Measured lean (fat-free) mass in kg, stamped from the newest scale composition
+     * reading. Fresh + plausible (20–250 kg, ≤ 90 days) wins over the body-fat-derived
+     * lean mass for Katch-McArdle BMR and the lean-mass protein cap.
+     */
+    val measuredLeanMassKg: Double? = null,
+    /** When [measuredLeanMassKg] was measured. Null = undated, treated as fresh (same
+     *  convention as [bodyFatUpdatedAt], so a legacy value never silently changes BMR). */
+    @Serializable(with = InstantSerializer::class)
+    val leanMassUpdatedAt: Instant? = null,
     /** Nullable so older serialized profiles decode as null = treat as true. When false,
      *  BMR falls back to Mifflin-St Jeor even if bodyFatPercentage is set. */
     val useBodyFatInBMR: Boolean? = null,
@@ -127,13 +137,46 @@ data class UserProfile(
     fun isBodyFatStale(at: Instant = Instant.now()): Boolean =
         (bodyFatAgeDays(at) ?: -1L) > bodyFatRecencyDays
 
-    val bmr: Double get() = if (usesBodyFatForBMR) {
-        // Katch-McArdle
-        370.0 + 21.6 * (1.0 - validBodyFatFraction!!) * weightKg
-    } else {
-        // Mifflin-St Jeor
-        val base = 10.0 * weightKg + 6.25 * heightCm - 5.0 * age - 161.0
-        if (gender == Gender.MALE) base + 166.0 else base
+    /** The measured lean-mass reading only when finite and inside the plausible 20–250 kg window. */
+    private val plausibleLeanMassKg: Double?
+        get() = measuredLeanMassKg?.takeIf {
+            it.isFinite() && it in NutritionConstants.LEAN_MASS_MIN_KG..NutritionConstants.LEAN_MASS_MAX_KG
+        }
+
+    /** Age of the lean-mass reading in whole days, or null when undated (legacy). */
+    fun leanMassAgeDays(at: Instant = Instant.now()): Long? =
+        leanMassUpdatedAt?.let { java.time.Duration.between(it, at).toDays() }
+
+    /** Dated lean-mass reading older than [NutritionConstants.LEAN_MASS_RECENCY_DAYS]. */
+    fun isLeanMassStale(at: Instant = Instant.now()): Boolean =
+        (leanMassAgeDays(at) ?: -1L) > NutritionConstants.LEAN_MASS_RECENCY_DAYS
+
+    /** Fresh, plausible measured lean mass — the highest-priority BMR input. */
+    val validMeasuredLeanMassKg: Double?
+        get() = plausibleLeanMassKg?.takeIf { !isLeanMassStale() }
+
+    /** True when BMR runs Katch-McArdle on a MEASURED lean mass. Rides the same
+     *  [useBodyFatInBMR] toggle as the body-fat path; a stale reading falls through. */
+    val usesMeasuredLeanMassForBMR: Boolean
+        get() = validMeasuredLeanMassKg != null && useBodyFatInBMR != false
+
+    /** Lean mass for the protein cap and the g/kg-LBM basis: a fresh measured reading
+     *  wins over the body-fat-derived estimate. Null when neither source is available. */
+    val leanMassForMacrosKg: Double?
+        get() = validMeasuredLeanMassKg ?: validBodyFatFraction?.let { weightKg * (1.0 - it) }
+
+    /**
+     * Basal metabolic rate. Priority: Katch-McArdle on a fresh MEASURED lean mass, then
+     * Katch-McArdle on body-fat-derived lean mass, then Mifflin-St Jeor.
+     */
+    val bmr: Double get() = when {
+        usesMeasuredLeanMassForBMR -> 370.0 + 21.6 * validMeasuredLeanMassKg!!
+        usesBodyFatForBMR -> 370.0 + 21.6 * (1.0 - validBodyFatFraction!!) * weightKg
+        else -> {
+            // Mifflin-St Jeor
+            val base = 10.0 * weightKg + 6.25 * heightCm - 5.0 * age - 161.0
+            if (gender == Gender.MALE) base + 166.0 else base
+        }
     }
 
     val tdee: Double get() = bmr * activityLevel.multiplier
@@ -159,9 +202,10 @@ data class UserProfile(
         // +0.2 g/kg during cutting phase to preserve lean mass (Helms et al 2014).
         val cut = if (goal == WeightGoal.LOSE) 0.2 else 0.0
         val total = (activityLevel.proteinPerKg + cut) * weightKg
-        // A valid body-fat reading caps protein at lean mass: 2.2 g/kg LBM
-        // (2.4 while losing) — high-BF profiles should not chase total-weight rates.
-        val lbm = validBodyFatFraction?.let { weightKg * (1.0 - it) }
+        // A valid lean-mass basis (measured reading, else body fat) caps protein at
+        // 2.2 g/kg LBM (2.4 while losing) — high-BF profiles should not chase
+        // total-weight rates.
+        val lbm = leanMassForMacrosKg
         val capped = if (lbm != null) {
             minOf(total, (if (goal == WeightGoal.LOSE) 2.4 else 2.2) * lbm)
         } else {
@@ -170,8 +214,7 @@ data class UserProfile(
         return capped.toInt()
     }
 
-    private val proteinBasisWeightKg: Double get() =
-        validBodyFatFraction?.let { weightKg * (1.0 - it) } ?: weightKg
+    private val proteinBasisWeightKg: Double get() = leanMassForMacrosKg ?: weightKg
 
     /** Body-mass basis for [proteinGramsPerKg] when the user pins protein as g/kg. */
     val proteinTargetBasisKg: Double get() = when (proteinTargetMode) {
@@ -291,6 +334,7 @@ data class UserProfile(
         ketoCarbMode, ketoCarbManualTarget,
         weeklyChangeKg, goalWeightKg, bodyFatPercentage, bodyFatUpdatedAt?.epochSecond, useBodyFatInBMR,
         bodyFatMethod, bodyFatAccuracyPoints,
+        measuredLeanMassKg, leanMassUpdatedAt?.epochSecond,
         macroPlan?.signature() ?: "-"
     ).joinToString("|")
 

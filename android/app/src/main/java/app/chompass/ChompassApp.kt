@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.Log
 import app.chompass.data.AnalysisQueueStore
 import app.chompass.data.BodyFatRepository
+import app.chompass.data.BodyCompositionRepository
 import app.chompass.data.BodyMeasurementRepository
 import app.chompass.data.ChatRepository
 import app.chompass.data.FastingRepository
@@ -259,6 +260,7 @@ class AppContainer(app: ChompassApp) {
     val weightRepository = WeightRepository(prefs, profileRepository, health, syncRepository)
     val bodyFatRepository = BodyFatRepository(prefs, profileRepository, health, syncRepository)
     val bodyMeasurementRepository = BodyMeasurementRepository(prefs, syncRepository)
+    val bodyCompositionRepository = BodyCompositionRepository(prefs, profileRepository, health, syncRepository)
     val chatRepository = ChatRepository(prefs)
     val waterRepository = WaterRepository(prefs, health, syncRepository).apply {
         // Re-arm the adaptive reminder chain after every water entry so the next
@@ -361,6 +363,7 @@ class AppContainer(app: ChompassApp) {
         foodRepository = foodRepository,
         weightRepository = weightRepository,
         bodyFatRepository = bodyFatRepository,
+        bodyCompositionRepository = bodyCompositionRepository,
         waterRepository = waterRepository,
     )
     private val adaptiveGoals = AdaptiveGoalsService(
