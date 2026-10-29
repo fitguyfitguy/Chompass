@@ -276,9 +276,11 @@ internal fun AddBodyCompositionDialog(
         onDismissRequest = onDismiss,
         // Device pass 2026-10-29: with the keyboard open the Save row sat
         // under the IME. Scrolling the content is not enough — lift the whole
-        // dialog above the keyboard. Scoped to this dialog, not ChompassDialog
-        // itself, so other dialogs keep their behavior.
+        // dialog above the keyboard. imePadding only sees the inset when the
+        // dialog window stops decor-fitting, hence decorFitsSystemWindows =
+        // false; scoped to this dialog, not ChompassDialog's default.
         modifier = Modifier.imePadding(),
+        decorFitsSystemWindows = false,
         scrollable = true,
     ) {
         Text(
