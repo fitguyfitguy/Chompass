@@ -112,6 +112,13 @@ internal suspend fun PreferencesStore.setUseSystemDateTimePickersImpl(v: Boolean
     dataStore.edit { it[Keys.USE_SYSTEM_DATE_TIME_PICKERS] = v }
 }
 
+    /** Frosted glass behind floating panels (Morphe traits); default ON. */
+internal val PreferencesStore.glassBlurEnabledImpl: Flow<Boolean>
+    get() = dataStore.data.map { it[Keys.GLASS_BLUR_ENABLED] ?: true }
+internal suspend fun PreferencesStore.setGlassBlurEnabledImpl(v: Boolean) {
+    dataStore.edit { it[Keys.GLASS_BLUR_ENABLED] = v }
+}
+
     /** false = Sunday, true = Monday (default). Kept for backup/legacy; prefer [weekStartDayImpl]. */
 internal val PreferencesStore.weekStartsOnMondayImpl: Flow<Boolean> get() =
     weekStartDayImpl.map { it == app.chompass.models.WeekStartDay.MONDAY }

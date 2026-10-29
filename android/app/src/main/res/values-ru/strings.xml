@@ -1308,7 +1308,6 @@
     <string name="settings_calc_sec_home_gauge">Шкала калорий на главной</string>
     <string name="settings_dinner_starts">Начало ужина</string>
     <string name="settings_food_log_sort">Сортировка журнала еды</string>
-    <string name="settings_glass_blur">Стеклянное размытие</string>
     <string name="settings_health_background_sync">Фоновая синхронизация</string>
     <string name="settings_health_background_sync_desc">Проверяет Health Connect на новые данные каждые несколько часов, даже когда Chompass закрыт. По умолчанию выключено. Требуется разрешение на фоновое чтение, если его поддерживает твой модуль Health Connect.</string>
     <string name="settings_health_companions">Синхронизируется со всем, что говорит на языке Health Connect: Gadgetbridge (Huawei, Honor, Amazfit, Mi Band и другие носимые устройства), openScale (Bluetooth-весы), Samsung Health, Fitbit и другие. Вес и процент жира подтягиваются автоматически; записанные приёмы пищи и вода отправляются наружу, а приёмы пищи из других приложений поступают внутрь. Сон, пульс в покое и гидратация появляются на вкладке «Прогресс».</string>
@@ -1769,6 +1768,8 @@
     <string name="settings_fixed_launcher_icon_subtitle">Значок остаётся бирюзовым и не меняется под цвет темы и обоев.</string>
     <string name="settings_system_date_time_pickers">Системный выбор даты и времени</string>
     <string name="settings_system_date_time_pickers_subtitle">При правке приёма пищи использовать системные окна даты и времени.</string>
+    <string name="settings_glass_blur">Матированное стекло</string>
+    <string name="settings_glass_blur_subtitle">Размывает содержимое за плавающими панелями, например над списком результатов добавления еды.</string>
     <string name="add_food_log_time">Время записи</string>
     <string name="add_food_log_time_now">Сейчас</string>
     <string name="cd_clear_log_time">Использовать текущее время</string>

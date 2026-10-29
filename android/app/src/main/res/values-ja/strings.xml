@@ -1468,6 +1468,8 @@
     <string name="settings_fixed_launcher_icon_subtitle">ランチャーアイコンをティールに保ちます。テーマカラーと壁紙に追従しなくなります。</string>
     <string name="settings_system_date_time_pickers">システムの日付と時刻ピッカー</string>
     <string name="settings_system_date_time_pickers_subtitle">食事を編集するとき、端末の日付・時刻ダイアログを使う。</string>
+    <string name="settings_glass_blur">すりガラス効果</string>
+    <string name="settings_glass_blur_subtitle">食事を追加の結果ヘッダーなど、浮かぶパネルの背後のコンテンツをぼかします。</string>
     <string name="add_food_log_time">記録時刻</string>
     <string name="add_food_log_time_now">現在</string>
     <string name="cd_clear_log_time">現在時刻を使う</string>
@@ -1478,7 +1480,6 @@
     <string name="settings_food_section_photo">写真分析</string>
     <string name="settings_food_section_serving">分量サイズ</string>
     <string name="settings_gemini_google_search">Google 検索グラウンディング</string>
-    <string name="settings_glass_blur">ガラスブラー</string>
     <string name="settings_goal_auto">自動</string>
     <string name="settings_goals_how_adaptive">適応型目標は、カロリーとマクロの目標を週1回程度再計算します。</string>
     <string name="settings_goals_how_energy">エネルギー消費は、Health Connect の測定消費に目標を固定します。</string>

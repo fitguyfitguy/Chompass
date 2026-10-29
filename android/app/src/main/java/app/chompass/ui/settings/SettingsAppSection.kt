@@ -2,6 +2,7 @@ package app.chompass.ui.settings
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
+import androidx.compose.material.icons.outlined.BlurOn
 import androidx.compose.material.icons.outlined.Brightness6
 import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.Language
@@ -46,6 +47,13 @@ internal fun SettingsAppSection(
                     },
                     icon = Icons.Outlined.Brightness6
                 ) { onOpenSheet(SettingsSheet.APPEARANCE) }
+                HorizontalDivider()
+                BusyToggleRow(
+                    label = stringResource(R.string.settings_glass_blur),
+                    checked = ui.glassBlurEnabled,
+                    icon = Icons.Outlined.BlurOn,
+                    subtitle = stringResource(R.string.settings_glass_blur_subtitle),
+                ) { vm.setGlassBlurEnabled(it) }
                 HorizontalDivider()
                 SettingRow(
                     stringResource(R.string.settings_language_title),

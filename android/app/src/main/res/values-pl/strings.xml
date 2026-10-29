@@ -993,6 +993,8 @@
     <string name="settings_fixed_launcher_icon_subtitle">Utrzymuje ikonę launchera w kolorze morskim. Przestaje podążać za kolorem motywu i tapetą.</string>
     <string name="settings_system_date_time_pickers">Systemowe wybieranie daty i godziny</string>
     <string name="settings_system_date_time_pickers_subtitle">Przy edycji posiłku używaj systemowych okien daty i godziny.</string>
+    <string name="settings_glass_blur">Szkło matowe</string>
+    <string name="settings_glass_blur_subtitle">Rozmywa zawartość za pływającymi panelami, np. nad listą wyników dodawania posiłku.</string>
     <string name="add_food_log_time">Czas wpisu</string>
     <string name="add_food_log_time_now">Teraz</string>
     <string name="cd_clear_log_time">Użyj bieżącej godziny</string>
@@ -1072,7 +1074,6 @@
     <string name="settings_water_restore_default_plan">Przywróć domyślne (08:00 do 21:00, 300 ml)</string>
     <string name="settings_water_reminder_window_too_short">Okno picia musi mieć co najmniej 15 minut.</string>
     <string name="unit_celsius">°C</string>
-    <string name="settings_glass_blur">Rozmycie szkła</string>
     <string name="settings_food_log_sort">Sortowanie dziennika jedzenia</string>
     <string name="settings_week_starts">Tydzień zaczyna się od</string>
     <string name="settings_week_monday">Poniedziałku</string>

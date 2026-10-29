@@ -452,6 +452,7 @@ open class MainActivity : ComponentActivity() {
         setContent {
             val resolvedStartOnboarding = startOnboarding ?: return@setContent
             val appearance by container.prefs.appearanceMode.collectAsState(initial = initialAppearance)
+            val glassBlur by container.prefs.glassBlurEnabled.collectAsState(initial = true)
             val themeColorKey by container.prefs.appThemeColor.collectAsState(initial = initialThemeColorKey)
             val themeColor = AppThemeColor.fromKey(themeColorKey)
             val appLanguage by container.prefs.appLanguage.collectAsState(initial = appliedAppLanguage)
@@ -495,6 +496,7 @@ open class MainActivity : ComponentActivity() {
                     darkTheme = darkTheme,
                     oledTheme = oledTheme,
                     themeColor = themeColor,
+                    glassBlur = glassBlur,
                 ) {
                     Surface(
                         // Device passes (Maestro/uiautomator): expose Compose

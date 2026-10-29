@@ -1468,6 +1468,8 @@
     <string name="settings_fixed_launcher_icon_subtitle">런처 아이콘을 청록색으로 유지해요. 테마 색상과 배경화면을 따르지 않아요.</string>
     <string name="settings_system_date_time_pickers">시스템 날짜 및 시간 선택기</string>
     <string name="settings_system_date_time_pickers_subtitle">식사를 편집할 때 휴대폰의 날짜와 시간 대화상자를 사용합니다.</string>
+    <string name="settings_glass_blur">서리 낀 유리</string>
+    <string name="settings_glass_blur_subtitle">음식 추가 결과 헤더처럼 떠 있는 패널 뒤의 콘텐츠를 흐리게 표시합니다.</string>
     <string name="add_food_log_time">기록 시간</string>
     <string name="add_food_log_time_now">지금</string>
     <string name="cd_clear_log_time">현재 시간 사용</string>
@@ -1478,7 +1480,6 @@
     <string name="settings_food_section_photo">사진 분석</string>
     <string name="settings_food_section_serving">1인분 크기</string>
     <string name="settings_gemini_google_search">Google 검색 그라운딩</string>
-    <string name="settings_glass_blur">유리 블러</string>
     <string name="settings_goal_auto">자동</string>
     <string name="settings_goals_how_adaptive">적응형 목표는 칼로리와 매크로 목표를 주 1회 정도 다시 계산해요.</string>
     <string name="settings_goals_how_energy">에너지 소비는 Health Connect의 측정 소비에 목표를 고정해요.</string>

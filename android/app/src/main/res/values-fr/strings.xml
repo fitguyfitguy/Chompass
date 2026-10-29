@@ -1531,6 +1531,8 @@
     <string name="settings_fixed_launcher_icon_subtitle">Garde l\'icône du lanceur en sarcelle. Elle ne suit plus la couleur du thème ni le fond d\'écran.</string>
     <string name="settings_system_date_time_pickers">Sélecteurs date et heure du système</string>
     <string name="settings_system_date_time_pickers_subtitle">Utiliser les dialogues date et heure du téléphone pour modifier un repas.</string>
+    <string name="settings_glass_blur">Verre dépoli</string>
+    <string name="settings_glass_blur_subtitle">Flouter le contenu derrière les panneaux flottants, comme l’en-tête des résultats d’ajout d’aliment.</string>
     <string name="add_food_log_time">Heure du journal</string>
     <string name="add_food_log_time_now">Maintenant</string>
     <string name="cd_clear_log_time">Utiliser l\'heure actuelle</string>
@@ -1541,7 +1543,6 @@
     <string name="settings_food_section_photo">Analyse photo</string>
     <string name="settings_food_section_serving">Taille de portion</string>
     <string name="settings_gemini_google_search">Ancrage par recherche Google</string>
-    <string name="settings_glass_blur">Flou de verre</string>
     <string name="settings_goal_auto">Automatique</string>
     <string name="settings_goals_how_adaptive">Les Objectifs adaptatifs recalculent vos objectifs de calories et de macros environ une fois par semaine.</string>
     <string name="settings_goals_how_energy">« Énergie brûlée » ancre les objectifs sur votre dépense mesurée de Health Connect.</string>
