@@ -1,6 +1,7 @@
 package app.chompass.services
 
 import app.chompass.models.BodyFatEntry
+import app.chompass.models.BodyCompositionEntry
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.ChatMessage
 import app.chompass.models.DailyNote
@@ -171,6 +172,42 @@ internal object SampleDataGenerators {
         }
         return out
     }
+
+    /**
+     * Bioimpedance-scale rows derived from an existing weight + body-fat history, so the
+     * seeded numbers stay physiologically plausible (bone ≈ 4% of mass, water ≈ 57.5%,
+     * muscle ≈ 38%, lean = mass × (1 − body-fat)). One row every third weigh-in, i.e.
+     * "scale day is not every day". [bodyFats] supplies the nearest reading; a gap
+     * falls back to 18% so lean mass still exists.
+     */
+    fun compositionSeries(
+        weights: List<WeightEntry>,
+        bodyFats: List<BodyFatEntry>,
+        seed: Long,
+    ): List<BodyCompositionEntry> {
+        val rng = Random(seed)
+        val fats = bodyFats.sortedBy { it.date }
+        fun fractionAt(at: Instant): Double {
+            val nearest = fats.minByOrNull { kotlin.math.abs(it.date.toEpochMilli() - at.toEpochMilli()) }
+            return nearest?.bodyFatFraction ?: 0.18
+        }
+        return weights.sortedBy { it.date }
+            .filterIndexed { index, _ -> index % 3 == 0 }
+            .map { weight ->
+                val bf = fractionAt(weight.date)
+                val mass = weight.weightKg
+                BodyCompositionEntry(
+                    date = weight.date,
+                    boneMassKg = (0.040 * mass + rng.nextDouble(-0.05, 0.05)).roundToSingle(),
+                    totalBodyWaterKg = (0.575 * mass + rng.nextDouble(-0.4, 0.4)).roundToSingle(),
+                    muscleMassKg = (0.380 * mass + rng.nextDouble(-0.3, 0.3)).roundToSingle(),
+                    leanMassKg = (mass * (1.0 - bf)).roundToSingle(),
+                    visceralFatRating = 8.0,
+                )
+            }
+    }
+
+    private fun Double.roundToSingle(): Double = (this * 10).roundToInt() / 10.0
 
     /** Weekly body-measurement snapshots over [totalDays]: waist/hips/chest/neck
      *  with linear cm trends + day-to-day noise — 4 of the 8 sites, like a real

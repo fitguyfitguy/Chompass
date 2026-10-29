@@ -6,6 +6,7 @@ import app.chompass.data.WeatherRepository
 import app.chompass.models.ActivityLevel
 import app.chompass.models.AutoBalanceMacro
 import app.chompass.models.BodyFatEntry
+import app.chompass.models.BodyCompositionEntry
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.CaffeineEntry
 import app.chompass.models.CaffeineKind
@@ -406,11 +407,12 @@ class TestDataSeeder(private val container: AppContainer) {
                     customSlotRows +
                     plannedRows
             )
-            container.weightRepository.replaceAll(
-                SampleDataGenerators.weightSeries(totalDays = 730, startKg = 82.0, endKg = 73.5, seed = 0x2BEEF)
-            )
-            container.bodyFatRepository.replaceAll(
-                SampleDataGenerators.bodyFatSeries(totalDays = 730, startFraction = 0.240, endFraction = 0.175, seed = 0x2FA7)
+            val weights = SampleDataGenerators.weightSeries(totalDays = 730, startKg = 82.0, endKg = 73.5, seed = 0x2BEEF)
+            val bodyFats = SampleDataGenerators.bodyFatSeries(totalDays = 730, startFraction = 0.240, endFraction = 0.175, seed = 0x2FA7)
+            container.weightRepository.replaceAll(weights)
+            container.bodyFatRepository.replaceAll(bodyFats)
+            container.bodyCompositionRepository.replaceAll(
+                SampleDataGenerators.compositionSeries(weights, bodyFats, seed = 0xC0B5)
             )
             // All eight tape sites (measurementSeries only logs the four the
             // Progress plots used to ship with).
@@ -761,6 +763,13 @@ class TestDataSeeder(private val container: AppContainer) {
         container.bodyFatRepository.replaceAll(
             SampleDataGenerators.bodyFatSeries(totalDays = 30, startFraction = 0.180, endFraction = 0.165, seed = 0xFA7)
         )
+        container.bodyCompositionRepository.replaceAll(
+            SampleDataGenerators.compositionSeries(
+                weights = container.weightRepository.entries.first(),
+                bodyFats = container.bodyFatRepository.entries.first(),
+                seed = 0xC0B5,
+            )
+        )
         // Weekly tape readings so the Customize Progress plots have data to show.
         container.bodyMeasurementRepository.replaceAll(
             SampleDataGenerators.measurementSeries(totalDays = 90, seed = 0x7A1)
@@ -799,6 +808,13 @@ class TestDataSeeder(private val container: AppContainer) {
         container.bodyFatRepository.replaceAll(
             SampleDataGenerators.bodyFatSeries(totalDays = 730, startFraction = 0.240, endFraction = 0.165, seed = 0x2FA7)
         )
+        container.bodyCompositionRepository.replaceAll(
+            SampleDataGenerators.compositionSeries(
+                weights = container.weightRepository.entries.first(),
+                bodyFats = container.bodyFatRepository.entries.first(),
+                seed = 0xC0B5,
+            )
+        )
     }
 
     /** Snapshot the user's real data into the backup blob — first seed run only.
@@ -819,6 +835,10 @@ class TestDataSeeder(private val container: AppContainer) {
             bodyFatsJson = json.encodeToString(
                 ListSerializer(BodyFatEntry.serializer()),
                 container.bodyFatRepository.entries.first()
+            ),
+            compositionsJson = json.encodeToString(
+                ListSerializer(BodyCompositionEntry.serializer()),
+                container.bodyCompositionRepository.entries.first()
             ),
             profileJson = container.profileRepository.profile.first()?.let {
                 json.encodeToString(UserProfile.serializer(), it)
@@ -975,6 +995,12 @@ class TestDataSeeder(private val container: AppContainer) {
         container.bodyFatRepository.replaceAll(
             backup.bodyFatsJson?.let {
                 json.decodeFromString(ListSerializer(BodyFatEntry.serializer()), it)
+            } ?: emptyList()
+        )
+        // Same contract for scale composition rows.
+        container.bodyCompositionRepository.replaceAll(
+            backup.compositionsJson?.let {
+                json.decodeFromString(ListSerializer(BodyCompositionEntry.serializer()), it)
             } ?: emptyList()
         )
         backup.debugActivityJson?.let {
@@ -1558,6 +1584,8 @@ internal data class SeedBackup(
     val onboarded: Boolean,
     // Added after BodyFatRepository shipped — null in older backups.
     val bodyFatsJson: String? = null,
+    // Added with the scale-composition store — null in older backups.
+    val compositionsJson: String? = null,
     val debugActivityJson: String? = null,
     val waterJson: String? = null,
     val recipesJson: String? = null,

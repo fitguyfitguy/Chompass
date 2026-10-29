@@ -1,8 +1,10 @@
 package app.chompass.data
 
+import app.chompass.models.BodyCompositionEntry
 import app.chompass.models.BodyFatEntry
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.WeightEntry
+import org.junit.Assert.assertTrue
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.Instant
@@ -55,5 +57,75 @@ class BodyMetricsMergeTest {
         assertEquals(0, mergeMeasurementsById(existing, same).second)
         val changed = listOf(BodyMeasurement(id = id, date = t0, waistCm = 84.0))
         assertEquals(1, mergeMeasurementsById(existing, changed).second)
+    }
+
+    // --- Scale composition merge (BodyCompositionRepository.importFromFile) ---
+
+    @Test
+    fun `composition upsert by id replaces values and counts change`() {
+        val id = UUID.randomUUID()
+        val existing = listOf(BodyCompositionEntry(id = id, date = t0, leanMassKg = 64.0))
+        val incoming = listOf(BodyCompositionEntry(id = id, date = t0, leanMassKg = 64.5, boneMassKg = 3.2))
+        val (merged, changed) = mergeCompositionsById(existing, incoming)
+        assertEquals(1, merged.size)
+        assertEquals(1, changed)
+        assertEquals(64.5, merged.single().leanMassKg!!, 0.0001)
+        assertEquals(3.2, merged.single().boneMassKg!!, 0.0001)
+    }
+
+    @Test
+    fun `composition re-import of the same rows is a no-op`() {
+        val existing = listOf(
+            BodyCompositionEntry(id = UUID.randomUUID(), date = t0, leanMassKg = 64.5, visceralFatRating = 8.0)
+        )
+        val (merged, changed) = mergeCompositionsById(existing, existing)
+        assertEquals(1, merged.size)
+        assertEquals(0, changed)
+    }
+
+    @Test
+    fun `composition near-duplicate with a different id but identical date and values is skipped`() {
+        val manual = BodyCompositionEntry(id = UUID.randomUUID(), date = t0, leanMassKg = 64.5)
+        val imported = BodyCompositionEntry(id = UUID.randomUUID(), date = t0, leanMassKg = 64.5)
+        val (merged, changed) = mergeCompositionsById(listOf(manual), listOf(imported))
+        assertEquals(1, merged.size)
+        assertEquals(0, changed)
+    }
+
+    @Test
+    fun `composition same timestamp with a different value is kept`() {
+        val manual = BodyCompositionEntry(id = UUID.randomUUID(), date = t0, leanMassKg = 64.5)
+        val imported = BodyCompositionEntry(id = UUID.randomUUID(), date = t0, leanMassKg = 63.9)
+        val (merged, changed) = mergeCompositionsById(listOf(manual), listOf(imported))
+        // Different values = a genuine second reading, not a mirrored row.
+        assertEquals(2, merged.size)
+        assertEquals(1, changed)
+    }
+
+    @Test
+    fun `composition sanitizer drops non-finite, non-positive and out-of-range rating values`() {
+        val dirty = BodyCompositionEntry(
+            date = t0,
+            boneMassKg = Double.NaN,
+            totalBodyWaterKg = -5.0,
+            muscleMassKg = 0.0,
+            leanMassKg = 64.5,
+            visceralFatRating = 80.0,
+        ).sanitizedComposition()
+        assertEquals(null, dirty.boneMassKg)
+        assertEquals(null, dirty.totalBodyWaterKg)
+        assertEquals(null, dirty.muscleMassKg)
+        assertEquals(64.5, dirty.leanMassKg!!, 0.0001)
+        assertEquals(null, dirty.visceralFatRating)
+        assertTrue(dirty.hasAnyValue)
+    }
+
+    @Test
+    fun `lean mass sanitizer enforces the plausible 20 to 250 kg window`() {
+        assertEquals(61.0, sanitizeLeanMassKg(61.0)!!, 0.0)
+        assertEquals(null, sanitizeLeanMassKg(6.1))
+        assertEquals(null, sanitizeLeanMassKg(251.0))
+        assertEquals(null, sanitizeLeanMassKg(Double.NaN))
+        assertEquals(null, sanitizeLeanMassKg(null))
     }
 }

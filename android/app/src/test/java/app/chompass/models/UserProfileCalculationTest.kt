@@ -447,4 +447,85 @@ class UserProfileCalculationTest {
     assertEquals(p, next)
     assertFalse(next.isMacroLocked(AutoBalanceMacro.FAT))
   }
+
+    // --- Measured lean mass (scale composition) drives Katch-McArdle first ---
+
+    private fun birthDate(ageYears: Int): Instant =
+        LocalDate.now().minusYears(ageYears.toLong()).atStartOfDay(ZoneId.systemDefault()).toInstant()
+
+    private fun leanProfile(
+        measuredLeanMassKg: Double?,
+        leanMassUpdatedAt: Instant? = null,
+        bodyFatPercentage: Double? = 0.20,
+        weightKg: Double = 80.0,
+        goal: WeightGoal = WeightGoal.MAINTAIN,
+        activityLevel: ActivityLevel = ActivityLevel.MODERATE,
+        useBodyFatInBMR: Boolean? = null,
+    ): UserProfile = UserProfile(
+        gender = Gender.MALE,
+        birthday = birthDate(30),
+        heightCm = 180.0,
+        weightKg = weightKg,
+        activityLevel = activityLevel,
+        goal = goal,
+        bodyFatPercentage = bodyFatPercentage,
+        measuredLeanMassKg = measuredLeanMassKg,
+        leanMassUpdatedAt = leanMassUpdatedAt,
+        useBodyFatInBMR = useBodyFatInBMR,
+    )
+
+    @Test
+    fun `fresh measured lean mass outranks the body-fat path for BMR`() {
+        val profile = leanProfile(measuredLeanMassKg = 61.0)
+        assertTrue(profile.usesMeasuredLeanMassForBMR)
+        // Katch-McArdle on the MEASURED 61 kg, not on weight × (1 − BF%) = 64 kg.
+        assertEquals(370.0 + 21.6 * 61.0, profile.bmr, 0.0001)
+        assertEquals(61.0, profile.leanMassForMacrosKg!!, 0.0001)
+    }
+
+    @Test
+    fun `stale measured lean mass falls back to the body-fat path`() {
+        val stale = leanProfile(
+            measuredLeanMassKg = 61.0,
+            leanMassUpdatedAt = Instant.now().minus(java.time.Duration.ofDays(91)),
+        )
+        assertFalse(stale.usesMeasuredLeanMassForBMR)
+        assertNull(stale.validMeasuredLeanMassKg)
+        assertEquals(370.0 + 21.6 * 80.0 * 0.8, stale.bmr, 0.0001)
+    }
+
+    @Test
+    fun `implausible measured lean mass is ignored`() {
+        // 6.1 kg is a 61.0 typo: outside 20–250 kg, never used.
+        val typo = leanProfile(measuredLeanMassKg = 6.1, bodyFatPercentage = null)
+        assertNull(typo.validMeasuredLeanMassKg)
+        assertFalse(typo.usesMeasuredLeanMassForBMR)
+        // Female/other Mifflin term: base without the male +166.
+        assertEquals(10.0 * 80.0 + 6.25 * 180.0 - 5.0 * 30.0 + 5.0, typo.bmr, 0.0001)
+    }
+
+    @Test
+    fun `useBodyFatInBMR false disables the measured lean path too`() {
+        val optOut = leanProfile(measuredLeanMassKg = 61.0, useBodyFatInBMR = false)
+        assertFalse(optOut.usesMeasuredLeanMassForBMR)
+        assertEquals(10.0 * 80.0 + 6.25 * 180.0 - 5.0 * 30.0 + 5.0, optOut.bmr, 0.0001)
+    }
+
+    @Test
+    fun `measured lean mass caps protein at 2_4 g per kg while losing`() {
+        val highBf = leanProfile(measuredLeanMassKg = 61.0, weightKg = 120.0, bodyFatPercentage = 0.40, goal = WeightGoal.LOSE)
+        // Total-weight rate would be 1.8 × 120 = 216 g; the measured lean cap is 2.4 × 61.
+        assertEquals(146, highBf.proteinGoal)
+        // Body-fat-derived lean mass (72 kg) would have allowed 172 g — the measured
+        // reading is the tighter, more accurate basis.
+        val withoutMeasured = leanProfile(measuredLeanMassKg = null, weightKg = 120.0, bodyFatPercentage = 0.40, goal = WeightGoal.LOSE)
+        assertEquals(172, withoutMeasured.proteinGoal)
+    }
+
+    @Test
+    fun `goal signature changes when the measured lean mass moves`() {
+        val before = leanProfile(measuredLeanMassKg = 61.0)
+        val after = leanProfile(measuredLeanMassKg = 60.5, leanMassUpdatedAt = Instant.parse("2026-02-01T00:00:00Z"))
+        assertTrue(before.goalInputSignature != after.goalInputSignature)
+    }
 }
