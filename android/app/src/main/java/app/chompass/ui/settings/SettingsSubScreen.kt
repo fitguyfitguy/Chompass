@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.ui.components.ChompassIconBubble
+import app.chompass.ui.components.contentMaxWidth
 import app.chompass.ui.navigation.BottomNavScrollPadding
 
 /**
@@ -84,7 +85,7 @@ fun SettingsSubScreen(
     ) { padding ->
         Column(
             Modifier
-                .fillMaxSize()
+                .contentMaxWidth()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
