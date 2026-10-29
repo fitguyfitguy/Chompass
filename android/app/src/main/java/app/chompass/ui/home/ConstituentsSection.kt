@@ -42,9 +42,7 @@ import app.chompass.models.ServingUnitOption
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.services.ai.ConstituentReconcile
 import app.chompass.ui.components.energyText
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
-import app.chompass.ui.theme.AppRadii
 import java.util.Locale
 import kotlin.math.roundToInt
 
@@ -136,7 +134,7 @@ private fun ConstituentRowCard(
     }
 
     Surface(
-        shape = RoundedCornerShape(AppRadii.Tile),
+        shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.surfaceContainerHighest,
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -222,7 +220,7 @@ private fun ConstituentMacroLine(row: FoodConstituent, modifier: Modifier = Modi
     val fatGlyph = stringResource(R.string.macro_glyph_fat)
     Text(
         text = buildAnnotatedString {
-            withStyle(SpanStyle(color = AppColors.Calorie, fontWeight = FontWeight.Medium)) {
+            withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Medium)) {
                 append(energyText(row.calories))
             }
             withStyle(SpanStyle(color = separatorColor)) { append(" · ") }
@@ -318,7 +316,7 @@ internal fun ConstituentSummaryRow(
                 text = energyText(row.calories),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = AppColors.Calorie,
+                color = MaterialTheme.colorScheme.primary,
             )
         }
         ConstituentMacroLine(row, modifier = Modifier.padding(top = 4.dp))

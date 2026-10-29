@@ -43,10 +43,7 @@ import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.components.ChompassPrimaryButton
 import app.chompass.ui.components.ChompassSurface
-import app.chompass.ui.theme.AppColors
 import kotlinx.coroutines.Dispatchers
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -155,7 +152,7 @@ internal fun CopyFromDaySheet(
                     Text(
                         stringResource(R.string.copy_hint, targetText),
                         fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(horizontal = 18.dp)
                     )
                 }
@@ -172,7 +169,7 @@ internal fun CopyFromDaySheet(
                             Text(
                                 stringResource(R.string.copy_from_loading),
                                 fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -188,13 +185,13 @@ internal fun CopyFromDaySheet(
                             Icon(
                                 Icons.Filled.CalendarMonth,
                                 contentDescription = null,
-                                tint = AppColors.Calorie.copy(alpha = 0.45f),
+                                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.45f),
                                 modifier = Modifier.size(34.dp)
                             )
                             Text(
                                 stringResource(R.string.copy_no_foods_on_day),
                                 fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -220,7 +217,7 @@ internal fun CopyFromDaySheet(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp),
-                            cornerRadius = AppRadii.Container,
+                            cornerRadius = 16.dp,
                             padding = 0.dp
                         ) {
                             Row(

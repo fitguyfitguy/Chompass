@@ -79,11 +79,8 @@ import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.energyText
 import app.chompass.ui.components.gramsText
 import app.chompass.ui.components.culinaryUnitLabels
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.util.clockTimePattern
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppSpacing
-import app.chompass.ui.theme.AppTextOpacity
 import java.time.Instant
 import java.time.ZoneId
 import androidx.compose.ui.semantics.Role
@@ -142,7 +139,7 @@ internal fun MealSectionHeader(
             Icon(
                 sheetMealIcon(meal),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(16.dp)
             )
             Spacer(Modifier.width(8.dp))
@@ -153,7 +150,7 @@ internal fun MealSectionHeader(
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Strong)
+                color = MaterialTheme.colorScheme.onSurface
             )
             // Combined nutrients for this meal (issue #103: chicken + pasta + sauce = one total)
             if (calories != null && !summaryOnOwnLine) {
@@ -163,7 +160,7 @@ internal fun MealSectionHeader(
                     fontWeight = FontWeight.Medium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Subtle),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -177,7 +174,7 @@ internal fun MealSectionHeader(
                 fontWeight = FontWeight.Medium,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Subtle),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -207,7 +204,7 @@ private fun mealMacroSummary(
                     totalFiber,
                     totalSugar,
                 ).roundToInt()
-                val color = chip.macroKind()?.color() ?: AppColors.Calorie
+                val color = chip.macroKind()?.color() ?: MaterialTheme.colorScheme.primary
                 withStyle(SpanStyle(color = color)) { append("${value}${chipGlyphs[chip]}") }
             }
         }
@@ -224,7 +221,7 @@ internal fun SelectionActionBar(
 ) {
     ChompassSurface(
         modifier = modifier.fillMaxWidth(),
-        cornerRadius = AppRadii.SectionCard,
+        cornerRadius = 16.dp,
         padding = 0.dp
     ) {
         Row(
@@ -238,7 +235,7 @@ internal fun SelectionActionBar(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = stringResource(R.string.action_cancel),
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Emphasized),
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(18.dp),
                 )
             }
@@ -246,14 +243,14 @@ internal fun SelectionActionBar(
                 text = selectedCount.toString(),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Emphasized),
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = onCopy, enabled = selectedCount > 0) {
                 Icon(
                     imageVector = Icons.Outlined.ContentCopy,
                     contentDescription = stringResource(R.string.cd_copy_entries),
-                    tint = if (selectedCount > 0) AppColors.Calorie else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                    tint = if (selectedCount > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -261,7 +258,7 @@ internal fun SelectionActionBar(
                 Icon(
                     imageVector = Icons.Filled.Share,
                     contentDescription = stringResource(R.string.cd_share_meal),
-                    tint = if (selectedCount > 0) AppColors.Calorie else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                    tint = if (selectedCount > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -369,11 +366,11 @@ private fun latestMealRuns(entries: List<FoodEntry>): List<FoodLogMealGroup> {
 }
 
 internal fun sectionCardShape(isFirst: Boolean, isLast: Boolean): RoundedCornerShape {
-    // 22dp corners on the meal card matches the softer iOS look (was 14dp).
+    // Grouped-list rounding: the meal card sits at the nested M3 large slot (16dp).
     return when {
-        isFirst && isLast -> RoundedCornerShape(AppRadii.SectionCard)
-        isFirst -> RoundedCornerShape(topStart = AppRadii.SectionCard, topEnd = AppRadii.SectionCard)
-        isLast -> RoundedCornerShape(bottomStart = AppRadii.SectionCard, bottomEnd = AppRadii.SectionCard)
+        isFirst && isLast -> RoundedCornerShape(16.dp)
+        isFirst -> RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+        isLast -> RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
         else -> RoundedCornerShape(0.dp)
     }
 }
@@ -550,7 +547,7 @@ private fun BoxScope.SwipeBackground(
         )
     } else {
         Triple(
-            AppColors.Calorie,
+            MaterialTheme.colorScheme.primary,
             if (isFavorite) Icons.Filled.FavoriteBorder else Icons.Filled.Favorite,
             if (isFavorite) stringResource(R.string.home_swipe_unfavorite) else stringResource(R.string.home_swipe_favorite)
         )
@@ -586,7 +583,7 @@ private fun BoxScope.SwipeBackground(
 internal fun FoodRow(
     entry: FoodEntry,
     isFavorite: Boolean = false,
-    rowShape: RoundedCornerShape = RoundedCornerShape(AppRadii.SectionCard),
+    rowShape: RoundedCornerShape = RoundedCornerShape(16.dp),
     isSelected: Boolean = false,
     macroChips: List<FoodLogMacroChip> = FoodLogMacroChip.DefaultSelection,
     compact: Boolean = false,
@@ -609,15 +606,13 @@ internal fun FoodRow(
             .fillMaxWidth()
             .clip(rowShape)
             .background(
-                if (isSelected) AppColors.Calorie.copy(alpha = if (isDark) 0.25f else 0.12f)
-                else if (isDark) AppColors.TranslucentSurfaceDark
-                else AppColors.TranslucentSurfaceLight
+                if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = if (isDark) 0.25f else 0.12f)
+                else MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
             )
             .border(
                 if (isSelected) 1.dp else 0.5.dp,
-                if (isSelected) AppColors.Calorie.copy(alpha = 0.65f)
-                else if (isDark) AppColors.HairlineBorderDark
-                else AppColors.HairlineBorderLight,
+                if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.65f)
+                else MaterialTheme.colorScheme.outlineVariant,
                 rowShape
             )
             .padding(horizontal = 14.dp, vertical = if (compact) 8.dp else 12.dp),
@@ -627,7 +622,7 @@ internal fun FoodRow(
         Box(
             Modifier
                 .size(if (compact) 57.dp else 76.dp)
-                .clip(RoundedCornerShape(AppRadii.Field))
+                .clip(MaterialTheme.shapes.medium)
                 .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)),
             contentAlignment = Alignment.Center
         ) {
@@ -640,7 +635,7 @@ internal fun FoodRow(
                     } else {
                         androidx.compose.ui.layout.ContentScale.Crop
                     },
-                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(AppRadii.Field))
+                    modifier = Modifier.fillMaxSize().clip(MaterialTheme.shapes.medium)
                 )
                 entry.emoji != null -> Text(entry.emoji ?: "", fontSize = if (compact) 26.sp else 36.sp)
                 else -> Icon(
@@ -693,7 +688,7 @@ internal fun FoodRow(
                     Text(
                         timeFmt.format(entry.timestamp).lowercase(Locale.getDefault()),
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
+                        color = MaterialTheme.colorScheme.outline,
                     )
                     if (planningMode && entry.planned && onLogNow != null) {
                         Icon(
@@ -744,7 +739,7 @@ internal fun FoodRow(
                     softWrap = false,
                 )
                 if (servingText != null) {
-                    Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled))
+                    Text("·", color = MaterialTheme.colorScheme.outline)
                     Text(
                         servingText,
                         modifier = Modifier
@@ -768,7 +763,7 @@ internal fun FoodRow(
                         maxLines = 1,
                         softWrap = false,
                         overflow = TextOverflow.Clip,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         onTextLayout = { servingLayout = it },
                     )
                 } else {

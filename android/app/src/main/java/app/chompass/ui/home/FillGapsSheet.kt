@@ -67,9 +67,6 @@ import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.rememberChompassSheetState
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 import java.util.UUID
 import kotlinx.coroutines.launch
 
@@ -196,7 +193,7 @@ fun FillGapsSheet(
                         Text(
                             stringResource(R.string.fill_gaps_never_remind),
                             fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -245,13 +242,13 @@ private fun GapEmptyState(text: String) {
             Icon(
                 Icons.Filled.Check,
                 contentDescription = null,
-                tint = AppColors.Calorie.copy(alpha = 0.4f),
+                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
                 modifier = Modifier.size(32.dp)
             )
             Text(
                 text,
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
         }
@@ -309,7 +306,7 @@ private fun GapRow(
                         Icon(
                             Icons.Filled.PlayArrow,
                             contentDescription = stringResource(R.string.analysis_queue_run_now),
-                            tint = AppColors.Calorie,
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                     }
                     Box {
@@ -317,7 +314,7 @@ private fun GapRow(
                             Icon(
                                 Icons.Filled.KeyboardArrowDown,
                                 contentDescription = stringResource(R.string.fill_gaps_focus_pick),
-                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(18.dp),
                             )
                         }
@@ -363,7 +360,7 @@ private fun GapRow(
                 Icon(
                     Icons.Filled.KeyboardArrowDown,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier
                         .size(20.dp)
                         .rotate(if (expanded) 180f else 0f),
@@ -457,7 +454,7 @@ private fun GapCaption(item: FillQueueItem) {
                     stringResource(R.string.fill_gaps_adds_line, labelStrings.joinToString(", ")),
                     fontSize = 13.sp,
                     lineHeight = 18.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Emphasized),
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -481,7 +478,7 @@ private fun GapMutedText(text: String) {
     Text(
         text,
         fontSize = 12.sp,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
     )
@@ -512,7 +509,7 @@ private fun GapCascadeRow(
         Text(
             pluralStringResource(R.plurals.fill_gaps_cascade, cascadeCount, cascadeCount),
             fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
@@ -526,12 +523,12 @@ private fun GapRowSurface(
     Row(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(AppRadii.Card))
-            .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
+            .clip(MaterialTheme.shapes.large)
+            .background(MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f))
             .border(
                 0.5.dp,
-                if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight,
-                RoundedCornerShape(AppRadii.Card),
+                MaterialTheme.colorScheme.outlineVariant,
+                MaterialTheme.shapes.large,
             )
             .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(10.dp),

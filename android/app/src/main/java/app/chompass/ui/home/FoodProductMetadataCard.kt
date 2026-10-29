@@ -19,8 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.FoodProductMetadata
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Product information card for barcode entries (Open Food Facts enrichment):
@@ -30,7 +28,7 @@ import app.chompass.ui.theme.AppTextOpacity
  */
 @Composable
 internal fun FoodProductMetadataCard(metadata: FoodProductMetadata) {
-    val labelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+    val labelColor = MaterialTheme.colorScheme.onSurfaceVariant
     val uriHandler = LocalUriHandler.current
 
     SheetPillCard {
@@ -87,7 +85,7 @@ internal fun FoodProductMetadataCard(metadata: FoodProductMetadata) {
         Text(
             stringResource(R.string.off_attribution),
             style = MaterialTheme.typography.labelSmall,
-            color = AppColors.Calorie,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(6.dp))

@@ -83,10 +83,7 @@ import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.energyText
 import app.chompass.ui.components.rememberFoodThumbnail
 import app.chompass.ui.components.isDarkTheme
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -270,11 +267,11 @@ fun SavedMealsSheet(
                         }
                     }
                 } else null,
-                shape = RoundedCornerShape(AppRadii.Field),
+                shape = MaterialTheme.shapes.medium,
                 colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = searchSurface,
                     unfocusedContainerColor = searchSurface,
-                    focusedBorderColor = AppColors.Calorie.copy(alpha = 0.34f),
+                    focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.34f),
                     unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = if (isDark) 0.16f else 0.12f)
                 )
             )
@@ -361,7 +358,7 @@ fun SavedMealsSheet(
                                         Icon(
                                             Icons.Outlined.Edit,
                                             contentDescription = stringResource(R.string.cd_edit_favorite),
-                                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                             modifier = Modifier.size(18.dp),
                                         )
                                     }
@@ -393,14 +390,14 @@ fun SavedMealsSheet(
                             Icon(
                                 Icons.Outlined.Download,
                                 contentDescription = stringResource(R.string.cd_import_mealie),
-                                tint = AppColors.Calorie
+                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
                         androidx.compose.material3.IconButton(onClick = onCreateRecipe) {
                             Icon(
                                 Icons.Filled.AddCircle,
                                 contentDescription = stringResource(R.string.cd_new_recipe),
-                                tint = AppColors.Calorie
+                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -553,7 +550,7 @@ private fun FavoritesReorderableList(
                                 Icon(
                                     Icons.Outlined.Edit,
                                     contentDescription = stringResource(R.string.cd_edit_favorite),
-                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(18.dp),
                                 )
                             }
@@ -627,7 +624,7 @@ private fun MoveButtons(
         Box(
             Modifier
                 .size(width = 32.dp, height = 28.dp)
-                .clip(RoundedCornerShape(AppRadii.Chip))
+                .clip(MaterialTheme.shapes.small)
                 .background(
                     if (canMoveUp) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
                     else Color.Transparent
@@ -645,7 +642,7 @@ private fun MoveButtons(
         Box(
             Modifier
                 .size(width = 32.dp, height = 28.dp)
-                .clip(RoundedCornerShape(AppRadii.Chip))
+                .clip(MaterialTheme.shapes.small)
                 .background(
                     if (canMoveDown) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
                     else Color.Transparent
@@ -682,7 +679,7 @@ private fun BoxScope.FavoriteUnfavoriteBackground(offsetPx: Float) {
         Box(
             Modifier
                 .matchParentSize()
-                .background(AppColors.Calorie, RoundedCornerShape(AppRadii.Container))
+                .background(MaterialTheme.colorScheme.primary, MaterialTheme.shapes.large)
         )
         Box(
             Modifier
@@ -714,17 +711,17 @@ private fun SavedMealRow(
     trailing: (@Composable () -> Unit)? = null
 ) {
     val isDark = isDarkTheme()
-    val rowFill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
-    val rowBorder = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+    val rowFill = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
+    val rowBorder = MaterialTheme.colorScheme.outlineVariant
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(AppRadii.Container))
+            .clip(MaterialTheme.shapes.large)
             .background(rowFill)
             .border(
                 0.5.dp,
                 rowBorder,
-                RoundedCornerShape(AppRadii.Container)
+                MaterialTheme.shapes.large
             )
             .clickable(onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 10.dp),
@@ -747,7 +744,7 @@ private fun SavedMealRow(
                     Icon(
                         Icons.Filled.Favorite,
                         contentDescription = null,
-                        tint = AppColors.Calorie,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(11.dp)
                     )
                 }
@@ -760,16 +757,16 @@ private fun SavedMealRow(
                     energyText(entry.calories),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = AppColors.Calorie
+                    color = MaterialTheme.colorScheme.primary
                 )
                 if (subtitle != null) {
-                    Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled))
+                    Text("·", color = MaterialTheme.colorScheme.outline)
                     Text(
                         subtitle,
                         fontSize = 12.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -790,7 +787,7 @@ private fun SavedMealRow(
                 Icon(
                     Icons.Filled.AddCircle,
                     contentDescription = stringResource(R.string.cd_log),
-                    tint = AppColors.Calorie,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(22.dp),
                 )
             }
@@ -798,7 +795,7 @@ private fun SavedMealRow(
             Icon(
                 Icons.Filled.AddCircle,
                 contentDescription = stringResource(R.string.cd_log),
-                tint = AppColors.Calorie,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(22.dp)
             )
         }
@@ -819,14 +816,14 @@ private fun RecipeRow(
     onEdit: () -> Unit
 ) {
     val isDark = isDarkTheme()
-    val rowFill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
-    val rowBorder = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+    val rowFill = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
+    val rowBorder = MaterialTheme.colorScheme.outlineVariant
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(AppRadii.Container))
+            .clip(MaterialTheme.shapes.large)
             .background(rowFill)
-            .border(0.5.dp, rowBorder, RoundedCornerShape(AppRadii.Container))
+            .border(0.5.dp, rowBorder, MaterialTheme.shapes.large)
             .clickable(onClick = onEdit)
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -837,12 +834,12 @@ private fun RecipeRow(
         Column(verticalArrangement = Arrangement.spacedBy(3.dp), modifier = Modifier.weight(1f)) {
             Text(recipe.name, fontSize = 16.sp, fontWeight = FontWeight.Medium, maxLines = 2, overflow = TextOverflow.Ellipsis)
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text(energyText(recipe.totalCalories), fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppColors.Calorie)
-                Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled))
+                Text(energyText(recipe.totalCalories), fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
+                Text("·", color = MaterialTheme.colorScheme.outline)
                 Text(
                     stringResource(R.string.recipe_ingredient_count_format, recipe.ingredients.size),
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -856,7 +853,7 @@ private fun RecipeRow(
             Icon(
                 Icons.Filled.AddCircle,
                 contentDescription = stringResource(R.string.cd_log),
-                tint = AppColors.Calorie,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(22.dp)
             )
         }
@@ -870,7 +867,7 @@ private fun RecipeRow(
  */
 @Composable
 private fun Thumbnail(emoji: String?, imageFilename: String?, imageStore: FoodImageStore) {
-    val shape = RoundedCornerShape(AppRadii.Tile)
+    val shape = MaterialTheme.shapes.medium
     val bitmap = rememberFoodThumbnail(imageFilename, imageStore)
 
     Box(
@@ -878,7 +875,7 @@ private fun Thumbnail(emoji: String?, imageFilename: String?, imageStore: FoodIm
             .size(56.dp)
             .clip(shape)
             .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
-            .border(1.dp, AppColors.Calorie.copy(alpha = 0.15f), shape),
+            .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f), shape),
         contentAlignment = Alignment.Center
     ) {
         when {
@@ -892,7 +889,7 @@ private fun Thumbnail(emoji: String?, imageFilename: String?, imageStore: FoodIm
             else -> Icon(
                 Icons.Filled.Restaurant,
                 contentDescription = null,
-                tint = AppColors.Calorie,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(22.dp)
             )
         }
@@ -912,13 +909,13 @@ private fun EmptyState(icon: ImageVector, text: String) {
             Icon(
                 icon,
                 contentDescription = null,
-                tint = AppColors.Calorie.copy(alpha = 0.4f),
+                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
                 modifier = Modifier.size(32.dp)
             )
             Text(
                 text,
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
         }

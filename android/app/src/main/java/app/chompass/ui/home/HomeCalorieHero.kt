@@ -87,7 +87,6 @@ import app.chompass.ui.navigation.LocalEnergyUnit
 import app.chompass.ui.components.pressScale
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppMotion
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.success
 
 // ── Calorie hero ─────────────────────────────────────────────────────
@@ -587,7 +586,7 @@ private fun DefaultCalorieHero(input: CalorieHeroInput, modifier: Modifier = Mod
         val progressColor = MaterialTheme.colorScheme.primary
         val bonusColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f)
         val liveBurnColor = MaterialTheme.colorScheme.tertiary
-        val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+        val muted = MaterialTheme.colorScheme.onSurfaceVariant
         val tertiary = MaterialTheme.colorScheme.tertiary
         val successColor = MaterialTheme.colorScheme.success
 
@@ -796,7 +795,7 @@ private fun SideGaugeCalorieHero(input: CalorieHeroInput, modifier: Modifier = M
         val progressColor = MaterialTheme.colorScheme.primary
         val bonusColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f)
         val liveBurnColor = MaterialTheme.colorScheme.tertiary
-        val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+        val muted = MaterialTheme.colorScheme.onSurfaceVariant
         val tertiary = MaterialTheme.colorScheme.tertiary
         val successColor = MaterialTheme.colorScheme.success
 
@@ -959,7 +958,7 @@ private fun CompactArcCalorieHero(input: CalorieHeroInput, modifier: Modifier = 
         val progressColor = MaterialTheme.colorScheme.primary
         val bonusColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f)
         val liveBurnColor = MaterialTheme.colorScheme.tertiary
-        val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+        val muted = MaterialTheme.colorScheme.onSurfaceVariant
         val tertiary = MaterialTheme.colorScheme.tertiary
         val successColor = MaterialTheme.colorScheme.success
 
@@ -1139,7 +1138,7 @@ private fun CompactHorizontalCalorieHero(input: CalorieHeroInput, modifier: Modi
         val trackColor = MaterialTheme.colorScheme.surfaceVariant
         val progressColor = MaterialTheme.colorScheme.primary
         val activeColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f)
-        val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+        val muted = MaterialTheme.colorScheme.onSurfaceVariant
         val tertiary = MaterialTheme.colorScheme.tertiary
         val successColor = MaterialTheme.colorScheme.success
         val unitLabel = energyUnitLabel()
@@ -1532,7 +1531,7 @@ private fun BudgetExplanationDialog(
     onShowRecalcDetails: (() -> Unit)? = null,
     goalDerivation: GoalDerivation? = null,
 ) {
-    val muted = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
     val unit = LocalEnergyUnit.current
     val unitLabel = energyUnitLabel()
     ChompassDialog(onDismissRequest = onDismiss) {
@@ -1735,13 +1734,13 @@ internal fun ViewMoreButton() {
             stringResource(R.string.home_view_more),
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
-            color = AppColors.Calorie.copy(alpha = 0.6f)
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
         )
         Spacer(Modifier.width(5.dp))
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
-            tint = AppColors.Calorie.copy(alpha = 0.6f),
+            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
             modifier = Modifier.size(11.dp)
         )
     }

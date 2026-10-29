@@ -55,10 +55,8 @@ import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.ChompassPinnedFooterSheet
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.rememberChompassSheetState
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.caffeine
 import app.chompass.ui.util.clockTimePattern
-import app.chompass.ui.theme.AppRadii
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -87,7 +85,7 @@ fun CaffeineProgressRow(
     val rowModifier = if (onClick != null) {
         modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(AppRadii.Tile))
+            .clip(MaterialTheme.shapes.medium)
             .clickable(onClick = onClick)
             .padding(vertical = 4.dp)
     } else {
@@ -279,7 +277,7 @@ fun CaffeineHistorySheet(
             if (sorted.isNotEmpty()) {
                 Text(
                     stringResource(R.string.caffeine_history_total, dayLabel, formatMg(totalMg)),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.sp,
                 )
             }
@@ -288,7 +286,7 @@ fun CaffeineHistorySheet(
                 Text(
                     stringResource(R.string.caffeine_no_entries),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(vertical = 16.dp),
                 )
             } else {
@@ -342,7 +340,7 @@ private fun CaffeineHistoryRow(
     ) {
         Text(
             timeFmt.format(entry.date),
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 13.sp,
         )
         Spacer(Modifier.width(10.dp))
@@ -362,7 +360,7 @@ private fun CaffeineHistoryRow(
             Icon(
                 Icons.Filled.Delete,
                 contentDescription = stringResource(R.string.cd_delete_caffeine),
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

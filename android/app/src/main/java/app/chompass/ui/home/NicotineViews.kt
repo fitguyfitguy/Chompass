@@ -53,10 +53,8 @@ import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.ChompassPinnedFooterSheet
 import app.chompass.ui.components.NumericWheelPicker
 import app.chompass.ui.components.rememberChompassSheetState
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.warning
 import app.chompass.ui.util.clockTimePattern
-import app.chompass.ui.theme.AppRadii
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -80,7 +78,7 @@ fun NicotineProgressRow(
     val rowModifier = if (onClick != null) {
         modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(AppRadii.Tile))
+            .clip(MaterialTheme.shapes.medium)
             .clickable(onClick = onClick)
             .padding(vertical = 4.dp)
     } else {
@@ -272,7 +270,7 @@ fun NicotineHistorySheet(
             if (sorted.isNotEmpty()) {
                 Text(
                     stringResource(R.string.nicotine_history_total, dayLabel, total),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.sp,
                 )
             }
@@ -281,7 +279,7 @@ fun NicotineHistorySheet(
                 Text(
                     stringResource(R.string.nicotine_no_entries),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(vertical = 16.dp),
                 )
             } else {
@@ -335,7 +333,7 @@ private fun NicotineHistoryRow(
     ) {
         Text(
             timeFmt.format(entry.date),
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 13.sp,
         )
         Spacer(Modifier.width(10.dp))
@@ -359,7 +357,7 @@ private fun NicotineHistoryRow(
             Icon(
                 Icons.Filled.Delete,
                 contentDescription = stringResource(R.string.cd_delete_nicotine),
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

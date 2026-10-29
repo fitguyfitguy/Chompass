@@ -63,9 +63,6 @@ import app.chompass.services.speech.AudioRecorder
 import app.chompass.services.speech.NativeSpeechRecognizer
 import app.chompass.services.speech.SttEvent
 import app.chompass.ui.components.ChompassTextField
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
-import app.chompass.ui.theme.AppRadii
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -261,20 +258,20 @@ fun VoiceInputSheet(
             Row(
                 Modifier
                     .clip(CircleShape)
-                    .background(AppColors.Calorie.copy(alpha = 0.12f))
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
                     .padding(horizontal = 12.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     Icons.Filled.GraphicEq,
                     contentDescription = null,
-                    tint = AppColors.Calorie,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(13.dp)
                 )
                 Spacer(Modifier.size(6.dp))
                 Text(
                     stringResource(provider.displayNameRes),
-                    color = AppColors.Calorie,
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -296,7 +293,7 @@ fun VoiceInputSheet(
                     .fillMaxWidth()
                     .heightIn(min = 100.dp, max = 200.dp)
                     .verticalScroll(transcriptScroll)
-                    .clip(RoundedCornerShape(AppRadii.Tile))
+                    .clip(MaterialTheme.shapes.medium)
                     .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
                     .padding(horizontal = 14.dp, vertical = 12.dp)
             ) {
@@ -304,7 +301,7 @@ fun VoiceInputSheet(
                     phase == VoicePhase.TRANSCRIBING -> {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             androidx.compose.material3.CircularProgressIndicator(
-                                color = AppColors.Calorie,
+                                color = MaterialTheme.colorScheme.primary,
                                 strokeWidth = 2.dp,
                                 modifier = Modifier.size(16.dp)
                             )
@@ -312,7 +309,7 @@ fun VoiceInputSheet(
                             Text(
                                 stringResource(R.string.voice_transcribing_format, stringResource(provider.displayNameRes)),
                                 fontSize = 13.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -336,7 +333,7 @@ fun VoiceInputSheet(
                         Text(
                             if (phase == VoicePhase.RECORDING) stringResource(R.string.voice_listening) else stringResource(R.string.voice_tap_to_start),
                             fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled)
+                            color = MaterialTheme.colorScheme.outline
                         )
                     }
                 }
@@ -422,7 +419,7 @@ fun VoiceInputSheet(
                 recorder.cancel()
                 onDismiss()
             }, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(R.string.action_cancel), color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
+                Text(stringResource(R.string.action_cancel), color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }

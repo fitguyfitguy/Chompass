@@ -71,8 +71,6 @@ import app.chompass.models.ServingUnitOption
 import app.chompass.models.OptionalNutrientGoals
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
-import app.chompass.ui.theme.AppRadii
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -551,7 +549,7 @@ fun EditFavoriteSheet(
                                         fontSize = 16.sp,
                                         textAlign = androidx.compose.ui.text.style.TextAlign.End
                                     ),
-                                    cursorBrush = androidx.compose.ui.graphics.SolidColor(AppColors.Calorie),
+                                    cursorBrush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.primary),
                                     modifier = Modifier.weight(2f)
                                 )
                             }
@@ -561,7 +559,7 @@ fun EditFavoriteSheet(
                                 Text(
                                     stringResource(R.string.favorite_edit_name_taken),
                                     fontSize = 13.sp,
-                                    color = AppColors.Calorie,
+                                    color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.padding(horizontal = 4.dp)
                                 )
                             }
@@ -577,21 +575,21 @@ fun EditFavoriteSheet(
                                         Icon(
                                             sheetMealIcon(mealType),
                                             contentDescription = null,
-                                            tint = AppColors.Calorie,
+                                            tint = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.size(20.dp)
                                         )
                                         Spacer(Modifier.width(6.dp))
                                         Text(
                                             mealLabel(mealType),
                                             fontSize = 16.sp,
-                                            color = AppColors.Calorie,
+                                            color = MaterialTheme.colorScheme.primary,
                                             fontWeight = FontWeight.Medium
                                         )
                                         Spacer(Modifier.width(6.dp))
                                         Icon(
                                             Icons.Filled.UnfoldMore,
                                             contentDescription = null,
-                                            tint = AppColors.Calorie
+                                            tint = MaterialTheme.colorScheme.primary
                                         )
                                     }
                                     SheetGlassDropdownMenu(
@@ -657,7 +655,7 @@ fun EditFavoriteSheet(
                                 Text(
                                     stringResource(R.string.sheet_serving_unlocked_hint),
                                     fontSize = 13.sp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     lineHeight = 18.sp,
                                     modifier = Modifier.padding(horizontal = 18.dp),
                                 )
@@ -705,7 +703,7 @@ fun EditFavoriteSheet(
                                     editValue = "${math.scaledInt(EnergyFormat.quantity(editableCalories, unit))}",
                                     unit = energyUnitLabel(),
                                     unlocked = nutritionUnlocked,
-                                    accentColor = AppColors.Calorie,
+                                    accentColor = MaterialTheme.colorScheme.primary,
                                     onEdit = { editableCalories = EnergyFormat.toKcal(math.baseDoubleFromText(it).roundToInt(), unit) }
                                 )
                                 SheetHairline()
@@ -778,7 +776,7 @@ fun EditFavoriteSheet(
                                         if (moreNutritionExpanded) Icons.Filled.KeyboardArrowDown
                                         else Icons.AutoMirrored.Filled.KeyboardArrowRight,
                                         contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
@@ -889,7 +887,7 @@ fun EditFavoriteSheet(
                                         Text(
                                             stringResource(R.string.edit_ai_missing_line, missingLabels),
                                             fontSize = 13.sp,
-                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                                             lineHeight = 18.sp,
                                             modifier = Modifier.padding(horizontal = 18.dp),
                                         )
@@ -908,7 +906,7 @@ fun EditFavoriteSheet(
                                             Text(
                                                 stringResource(R.string.edit_reprocess_explain),
                                                 fontSize = 13.sp,
-                                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                 lineHeight = 18.sp,
                                             )
                                         } else if (aiActionMode != AiActionMode.REANALYZE && !isReprocessing) {
@@ -941,7 +939,7 @@ fun EditFavoriteSheet(
                                                     androidx.compose.material3.CircularProgressIndicator(
                                                         modifier = Modifier.size(18.dp),
                                                         strokeWidth = 2.dp,
-                                                        color = AppColors.Calorie,
+                                                        color = MaterialTheme.colorScheme.primary,
                                                     )
                                                     Text(
                                                         when (phase) {
@@ -956,7 +954,7 @@ fun EditFavoriteSheet(
                                                             else -> stringResource(R.string.edit_reprocessing)
                                                         },
                                                         fontSize = 13.sp,
-                                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                     )
                                                 }
                                             }
@@ -974,7 +972,7 @@ fun EditFavoriteSheet(
                                                         stringResource(R.string.edit_reprocess_diff_title),
                                                         fontSize = 14.sp,
                                                         fontWeight = FontWeight.SemiBold,
-                                                        color = AppColors.Calorie,
+                                                        color = MaterialTheme.colorScheme.primary,
                                                     )
                                                     changedFields.forEach { row ->
                                                         Text(
@@ -985,13 +983,13 @@ fun EditFavoriteSheet(
                                                                 row.after,
                                                             ),
                                                             fontSize = 13.sp,
-                                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Emphasized),
+                                                            color = MaterialTheme.colorScheme.onSurface,
                                                         )
                                                     }
                                                     Text(
                                                         stringResource(R.string.edit_reprocess_review_hint),
                                                         fontSize = 12.sp,
-                                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                     )
                                                 }
                                             }
@@ -1013,10 +1011,10 @@ fun EditFavoriteSheet(
                                 placeholder = {
                                     Text(
                                         stringResource(R.string.edit_note_placeholder),
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled)
+                                        color = MaterialTheme.colorScheme.outline
                                     )
                                 },
-                                shape = RoundedCornerShape(AppRadii.Pill),
+                                shape = RoundedCornerShape(percent = 50),
                                 modifier = Modifier.fillMaxWidth().heightIn(min = 90.dp)
                             )
                         }

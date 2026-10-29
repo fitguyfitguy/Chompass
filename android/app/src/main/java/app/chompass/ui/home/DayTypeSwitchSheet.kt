@@ -38,8 +38,6 @@ import app.chompass.models.UserProfile
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalEnergyUnit
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 import java.time.LocalDate
 
 /**
@@ -80,7 +78,7 @@ fun DayTypeSwitchSheet(
         Text(
             stringResource(R.string.day_type_sheet_subtitle),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 18.dp),
         )
         Spacer(Modifier.height(12.dp))
@@ -94,7 +92,7 @@ fun DayTypeSwitchSheet(
                 Text(
                     stringResource(R.string.day_type_plan_off_hint),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             } else {
                 SheetPillCard {
@@ -136,7 +134,7 @@ fun DayTypeSwitchSheet(
                         Icon(
                             Icons.Filled.Event,
                             contentDescription = null,
-                            tint = AppColors.Calorie,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(15.dp),
                         )
                         Text(
@@ -148,7 +146,7 @@ fun DayTypeSwitchSheet(
                                 energyUnitLabel(),
                             ),
                             fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -175,7 +173,7 @@ fun DayTypeSwitchSheet(
                     Icon(
                         Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
+                        tint = MaterialTheme.colorScheme.outline,
                         modifier = Modifier.size(18.dp),
                     )
                 }
@@ -211,13 +209,13 @@ private fun DayTypeRow(
                     energyUnitLabel(),
                 ),
                 fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             if (typicalActive != null && typicalActive > 0) {
                 Text(
                     stringResource(R.string.day_type_active_typical, EnergyFormat.quantity(typicalActive, LocalEnergyUnit.current), energyUnitLabel()),
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -225,7 +223,7 @@ private fun DayTypeRow(
             Icon(
                 Icons.Filled.Check,
                 contentDescription = stringResource(R.string.sheet_selected_a11y),
-                tint = AppColors.Calorie,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(20.dp),
             )
         }
@@ -250,7 +248,7 @@ private fun DayTypeFallbackRow() {
         Icon(
             Icons.Filled.Check,
             contentDescription = stringResource(R.string.sheet_selected_a11y),
-            tint = AppColors.Calorie,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(20.dp),
         )
     }

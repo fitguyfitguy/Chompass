@@ -37,10 +37,7 @@ import app.chompass.models.Recipe
 import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.energyText
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Home with a static meal-review sheet showing editable constituents
@@ -86,7 +83,7 @@ internal fun HomeMealComponentsScreenshotContent(
                     energyText(mealCalories),
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.Calorie,
+                    color = MaterialTheme.colorScheme.primary,
                 )
                 ConstituentsSection(
                     rows = constituents,
@@ -109,8 +106,8 @@ internal fun HomeRecipesScreenshotContent(
     weekStartsOnMonday: Boolean = true,
 ) {
     val isDark = isDarkTheme()
-    val rowFill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
-    val rowBorder = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+    val rowFill = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
+    val rowBorder = MaterialTheme.colorScheme.outlineVariant
     Box(Modifier.fillMaxSize()) {
         HomeScreenPreviewContent(ui = ui, weekStartsOnMonday = weekStartsOnMonday)
         Box(
@@ -168,7 +165,7 @@ private fun ScreenshotRecipesTabStrip() {
     Row(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(AppRadii.Tile))
+            .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -178,9 +175,9 @@ private fun ScreenshotRecipesTabStrip() {
             Box(
                 Modifier
                     .weight(1f)
-                    .clip(RoundedCornerShape(AppRadii.Track))
+                    .clip(MaterialTheme.shapes.small)
                     .background(
-                        if (selected) AppColors.Calorie.copy(alpha = 0.22f)
+                        if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.22f)
                         else Color.Transparent
                     )
                     .padding(vertical = 8.dp),
@@ -190,8 +187,8 @@ private fun ScreenshotRecipesTabStrip() {
                     stringResource(labelRes),
                     fontSize = 11.sp,
                     fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
-                    color = if (selected) AppColors.Calorie
-                    else MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+                    color = if (selected) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                 )
             }
@@ -208,9 +205,9 @@ private fun ScreenshotRecipeRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(AppRadii.Container))
+            .clip(MaterialTheme.shapes.large)
             .background(rowFill)
-            .border(0.5.dp, rowBorder, RoundedCornerShape(AppRadii.Container))
+            .border(0.5.dp, rowBorder, MaterialTheme.shapes.large)
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -218,9 +215,9 @@ private fun ScreenshotRecipeRow(
         Box(
             Modifier
                 .size(56.dp)
-                .clip(RoundedCornerShape(AppRadii.Tile))
+                .clip(MaterialTheme.shapes.medium)
                 .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
-                .border(1.dp, AppColors.Calorie.copy(alpha = 0.15f), RoundedCornerShape(AppRadii.Tile)),
+                .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f), MaterialTheme.shapes.medium),
             contentAlignment = Alignment.Center,
         ) {
             Text(
@@ -241,13 +238,13 @@ private fun ScreenshotRecipeRow(
                     energyText(recipe.totalCalories),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = AppColors.Calorie,
+                    color = MaterialTheme.colorScheme.primary,
                 )
-                Text("·", color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled))
+                Text("·", color = MaterialTheme.colorScheme.outline)
                 Text(
                     stringResource(R.string.recipe_ingredient_count_format, recipe.ingredients.size),
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -259,7 +256,7 @@ private fun ScreenshotRecipeRow(
         Icon(
             Icons.Filled.AddCircle,
             contentDescription = stringResource(R.string.cd_log),
-            tint = AppColors.Calorie,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(22.dp),
         )
     }

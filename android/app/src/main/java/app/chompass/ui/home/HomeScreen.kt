@@ -121,8 +121,6 @@ import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.util.formatClockMillis
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.navigation.BottomOverlayPadding
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.dayTypeColor
 import app.chompass.ui.theme.nutrientAccentColor
 import kotlinx.coroutines.flow.first
@@ -559,7 +557,7 @@ fun HomeScreen(
                     Text(
                         text = stringResource(R.string.home_loading_sample_data),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     )
                 }
@@ -611,7 +609,7 @@ fun HomeScreen(
                         Text(
                             stringResource(R.string.home_today),
                             style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )
                     } else {
@@ -863,7 +861,7 @@ fun HomeScreen(
                                     else R.string.home_no_foods_logged,
                                 ),
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -1086,7 +1084,7 @@ fun HomeScreen(
                             .clickable {
                                 showFillGapsSheet = true
                             },
-                        cornerRadius = AppRadii.SectionCard,
+                        cornerRadius = 16.dp,
                         padding = 0.dp
                     ) {
                         Row(
@@ -1112,7 +1110,7 @@ fun HomeScreen(
                                 Icon(
                                     Icons.Filled.Close,
                                     contentDescription = stringResource(R.string.cd_dismiss_fill_gaps_banner),
-                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
@@ -1124,7 +1122,7 @@ fun HomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable(onClick = vm::restoreRecoveredReview),
-                        cornerRadius = AppRadii.SectionCard,
+                        cornerRadius = 16.dp,
                         padding = 0.dp
                     ) {
                         Row(
@@ -1153,7 +1151,7 @@ fun HomeScreen(
                                 Icon(
                                     Icons.Filled.Close,
                                     contentDescription = stringResource(R.string.cd_discard_recovered_review),
-                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
@@ -1166,7 +1164,7 @@ fun HomeScreen(
                             .fillMaxWidth()
                             .alpha(if (pasteBusy) 0.55f else 1f)
                             .clickable(enabled = !pasteBusy, onClick = paste),
-                        cornerRadius = AppRadii.SectionCard,
+                        cornerRadius = 16.dp,
                         padding = 0.dp
                     ) {
                         Row(
@@ -1195,7 +1193,7 @@ fun HomeScreen(
                                 Icon(
                                     Icons.Filled.Close,
                                     contentDescription = stringResource(R.string.cd_dismiss_paste),
-                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
@@ -2006,14 +2004,14 @@ fun HomeScreen(
         val uriHandler = LocalUriHandler.current
         ChompassDialog(onDismissRequest = { vm.clearError() }) {
             Text(stringResource(R.string.error_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Text(err, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
+            Text(err, color = MaterialTheme.colorScheme.onSurfaceVariant)
             ui.errorDetail?.let { detail ->
                 SelectionContainer {
                     Text(
                         detail,
                         fontFamily = FontFamily.Monospace,
                         fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -2059,7 +2057,7 @@ fun HomeScreen(
                 Text(
                     stringResource(R.string.analysis_queue_saved_note),
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 TextButton(
                     onClick = {
@@ -2339,7 +2337,7 @@ internal fun HomeScreenPreviewContent(
                         Text(
                             stringResource(R.string.home_today),
                             style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )
                         if (ui.homeDisplay.calorieHeroLayout != HomeCalorieHeroLayout.HIDDEN) {
@@ -2416,7 +2414,7 @@ internal fun HomeScreenPreviewContent(
                                 Text(
                                     stringResource(R.string.home_no_foods_logged),
                                     style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
                         }

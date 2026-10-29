@@ -45,7 +45,6 @@ import app.chompass.R
 import app.chompass.ui.components.ChompassPrimaryButton
 import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.isDarkTheme
-import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Bottom sheet for text-only food logging (Note hero tile). Opens with the
@@ -149,7 +148,7 @@ fun TextInputSheet(
                         .focusRequester(focusRequester),
                     textStyle = MaterialTheme.typography.bodyLarge.copy(
                         color = if (autofilled) {
-                            MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                            MaterialTheme.colorScheme.onSurfaceVariant
                         } else {
                             MaterialTheme.colorScheme.onSurface
                         },
@@ -167,13 +166,13 @@ fun TextInputSheet(
                         Icon(
                             Icons.Filled.History,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(16.dp),
                         )
                         Spacer(Modifier.width(6.dp))
                         Text(
                             stringResource(R.string.prompt_history_button),
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
