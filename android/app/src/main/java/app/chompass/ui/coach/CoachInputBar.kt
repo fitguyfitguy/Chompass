@@ -53,10 +53,7 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.services.decodeSampledBitmap
 import app.chompass.ui.navigation.BottomNavDockedControlPadding
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.components.isDarkTheme
-import app.chompass.ui.theme.AppRadii
 
 /**
  * Horizontal scrolling chips. Verbatim port of `promptChips`.
@@ -77,13 +74,13 @@ internal fun PromptChipRow(chips: List<String>, enabled: Boolean, onTap: (String
 
 @Composable
 private fun PromptChip(text: String, enabled: Boolean, onTap: (String) -> Unit) {
-    val shape = RoundedCornerShape(AppRadii.Pill)
+    val shape = RoundedCornerShape(percent = 50)
     val isDark = isDarkTheme()
-    val borderColor = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+    val borderColor = MaterialTheme.colorScheme.outlineVariant
     Box(
         Modifier
             .clip(shape)
-            .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
+            .background(MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f))
             .border(0.5.dp, borderColor, shape)
             .clickable(enabled = enabled) { onTap(text) }
             .padding(horizontal = 14.dp, vertical = 9.dp)
@@ -92,7 +89,7 @@ private fun PromptChip(text: String, enabled: Boolean, onTap: (String) -> Unit) 
             text,
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
-            color = AppColors.Calorie
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }
@@ -134,7 +131,7 @@ internal fun InputBar(
                     modifier = Modifier
                         .padding(start = 10.dp, end = 10.dp, top = 8.dp, bottom = 4.dp)
                         .size(width = 88.dp, height = 70.dp)
-                        .clip(RoundedCornerShape(AppRadii.Card))
+                        .clip(MaterialTheme.shapes.large)
                 ) {
                     Image(
                         bitmap = bitmap.asImageBitmap(),
@@ -177,7 +174,7 @@ internal fun InputBar(
                         Text(
                             stringResource(R.string.coach_input_placeholder),
                             fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint)
+                            color = MaterialTheme.colorScheme.outline
                         )
                     }
                     BasicTextField(
@@ -218,14 +215,14 @@ internal fun CoachMediaActions(
     onPickImage: () -> Unit,
     onCaptureImage: () -> Unit
 ) {
-    val shape = RoundedCornerShape(AppRadii.Pill)
+    val shape = RoundedCornerShape(percent = 50)
     Row(
         modifier = Modifier
             .clip(shape)
-            .background(AppColors.Calorie.copy(alpha = 0.075f))
+            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.075f))
             .border(
                 0.6.dp,
-                AppColors.Calorie.copy(alpha = 0.22f),
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.22f),
                 shape
             )
             .padding(2.dp),
@@ -259,7 +256,7 @@ private fun CoachMediaActionButton(
             .size(30.dp)
             .clip(CircleShape)
             .background(
-                if (enabled) AppColors.Calorie.copy(alpha = 0.11f)
+                if (enabled) MaterialTheme.colorScheme.primary.copy(alpha = 0.11f)
                 else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
             )
             .clickable(enabled = enabled, onClick = onClick),
@@ -268,7 +265,7 @@ private fun CoachMediaActionButton(
         Icon(
             icon,
             contentDescription = contentDescription,
-            tint = if (enabled) AppColors.Calorie else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.32f),
+            tint = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.32f),
             modifier = Modifier.size(17.dp)
         )
     }
@@ -314,7 +311,7 @@ internal fun CoachInputBarPreviewStub(value: String, sending: Boolean) {
             modifier = Modifier.weight(1f),
             fontSize = 16.sp,
             color = if (value.isEmpty()) {
-                MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint)
+                MaterialTheme.colorScheme.outline
             } else {
                 MaterialTheme.colorScheme.onSurface
             },

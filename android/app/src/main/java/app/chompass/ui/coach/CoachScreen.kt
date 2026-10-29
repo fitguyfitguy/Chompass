@@ -69,7 +69,6 @@ import app.chompass.ui.components.InAppCameraCaptureDialog
 import app.chompass.ui.components.gramsText
 import app.chompass.ui.components.energyText
 import app.chompass.ui.navigation.BottomNavDockedControlPadding
-import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Verbatim port of struct ChatView in
@@ -198,7 +197,7 @@ fun CoachScreen(container: AppContainer) {
                             contentDescription = stringResource(R.string.coach_reset_chat_a11y),
                             tint = if (canReset)
                                 MaterialTheme.colorScheme.onBackground
-                            else MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Disabled),
+                            else MaterialTheme.colorScheme.outline,
                             modifier = Modifier.size(18.dp)
                         )
                     }
