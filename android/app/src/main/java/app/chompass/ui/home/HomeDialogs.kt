@@ -71,13 +71,11 @@ import app.chompass.ui.components.ChompassPrimaryButton
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.MagnitudeDrafts
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.components.rememberDecodedBitmap
 import app.chompass.ui.components.ExpandableMacroPicker
 import app.chompass.ui.components.ExpandableDecimalMacroPicker
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalEnergyUnit
-import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.util.clockTimePattern
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -113,7 +111,7 @@ internal fun EntryAnalysisOverlay(
                     contentScale = androidx.compose.ui.layout.ContentScale.Fit,
                     modifier = Modifier
                         .size(220.dp)
-                        .clip(RoundedCornerShape(AppRadii.Card))
+                        .clip(MaterialTheme.shapes.large)
                 )
             } else {
                 Icon(
@@ -131,7 +129,7 @@ internal fun EntryAnalysisOverlay(
                 text = phaseLabel,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = AppColors.Calorie,
+                color = MaterialTheme.colorScheme.primary,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             )
 
@@ -148,7 +146,7 @@ internal fun EntryAnalysisOverlay(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         CircularProgressIndicator(
-                            color = AppColors.Calorie,
+                            color = MaterialTheme.colorScheme.primary,
                             strokeWidth = 4.dp,
                             modifier = Modifier.size(40.dp)
                         )
@@ -156,7 +154,7 @@ internal fun EntryAnalysisOverlay(
                             Text(
                                 stringResource(R.string.entry_analysis_waiting_response),
                                 fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                             )
                         }
@@ -184,8 +182,8 @@ internal fun EntryAnalysisStepRow(currentPhase: EntryAnalysisPhase) {
                     .clip(CircleShape)
                     .background(
                         when {
-                            done -> AppColors.Calorie.copy(alpha = AppTextOpacity.Strong)
-                            active -> AppColors.Calorie.copy(alpha = 0.2f)
+                            done -> MaterialTheme.colorScheme.primary
+                            active -> MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                             else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
                         }
                     ),
@@ -200,7 +198,7 @@ internal fun EntryAnalysisStepRow(currentPhase: EntryAnalysisPhase) {
                     )
                 } else if (active) {
                     CircularProgressIndicator(
-                        color = AppColors.Calorie,
+                        color = MaterialTheme.colorScheme.primary,
                         strokeWidth = 2.dp,
                         modifier = Modifier.size(16.dp),
                     )
@@ -211,7 +209,7 @@ internal fun EntryAnalysisStepRow(currentPhase: EntryAnalysisPhase) {
                     Modifier
                         .size(width = 12.dp, height = 2.dp)
                         .background(
-                            if (index < currentIndex) AppColors.Calorie.copy(alpha = 0.6f)
+                            if (index < currentIndex) MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
                             else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
                         )
                 )
@@ -284,7 +282,7 @@ internal fun ProgressiveAnalysisCard(
                 label = stringResource(R.string.nutrition_label_calories),
                 displayValue = partial.calories?.let { LocaleFormat.integer(EnergyFormat.quantity(it, LocalEnergyUnit.current)) },
                 unit = energyUnitLabel(),
-                accentColor = AppColors.Calorie,
+                accentColor = MaterialTheme.colorScheme.primary,
                 animate = animate,
             )
             ProgressiveNutritionRow(
@@ -321,21 +319,21 @@ internal fun ProgressiveAnalysisCard(
                 Text(
                     stringResource(R.string.entry_analysis_micros_found, partial.micronutrientCount),
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             if (partial.hasUnitOptions) {
                 Text(
                     stringResource(R.string.entry_analysis_units_found),
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             if (partial.streaming) {
                 Text(
                     stringResource(R.string.entry_analysis_streaming_hint),
                     fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
+                    color = MaterialTheme.colorScheme.outline,
                 )
             }
         }
@@ -363,7 +361,7 @@ private fun ProgressiveNutritionRow(
             .then(
                 if (!filled) {
                     Modifier
-                        .clip(RoundedCornerShape(AppRadii.Chip))
+                        .clip(MaterialTheme.shapes.small)
                         .background(pendingWash)
                         .padding(horizontal = 8.dp, vertical = 6.dp)
                 } else {
@@ -390,7 +388,7 @@ private fun ProgressiveNutritionRow(
         Text(
             text = unit,
             fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.width(36.dp),
         )
     }
@@ -428,7 +426,7 @@ internal fun AnalyzingOverlay(imageBytes: ByteArray? = null) {
                     contentScale = androidx.compose.ui.layout.ContentScale.Fit,
                     modifier = Modifier
                         .size(250.dp)
-                        .clip(RoundedCornerShape(AppRadii.Card))
+                        .clip(MaterialTheme.shapes.large)
                 )
             } else {
                 Icon(
@@ -439,7 +437,7 @@ internal fun AnalyzingOverlay(imageBytes: ByteArray? = null) {
                 )
             }
             CircularProgressIndicator(
-                color = AppColors.Calorie,
+                color = MaterialTheme.colorScheme.primary,
                 strokeWidth = 4.dp,
                 modifier = Modifier.size(40.dp)
             )
@@ -451,7 +449,7 @@ internal fun AnalyzingOverlay(imageBytes: ByteArray? = null) {
                 if (bitmap != null) stringResource(R.string.home_analyzing_food) else stringResource(R.string.home_looking_up_nutrition),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = AppColors.Calorie
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }
@@ -515,7 +513,7 @@ internal fun CameraPairTransitionOverlay() {
                     stringResource(R.string.home_take_second_shot),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -657,21 +655,21 @@ internal fun ManualEntryDialog(
                             Icon(
                                 sheetMealIcon(mealType),
                                 contentDescription = null,
-                                tint = AppColors.Calorie,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(Modifier.width(6.dp))
                             Text(
                                 mealLabel(mealType),
                                 fontSize = 16.sp,
-                                color = AppColors.Calorie,
+                                color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Medium
                             )
                             Spacer(Modifier.width(6.dp))
                             Icon(
                                 Icons.Filled.UnfoldMore,
                                 contentDescription = null,
-                                tint = AppColors.Calorie
+                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
                         SheetGlassDropdownMenu(
@@ -702,7 +700,7 @@ internal fun ManualEntryDialog(
                     Text(
                         logTime.format(timeFormatter),
                         fontSize = 16.sp,
-                        color = AppColors.Calorie,
+                        color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -722,7 +720,7 @@ internal fun ManualEntryDialog(
                         max = EnergyFormat.quantity(5000, unit),
                         step = EnergyFormat.wheelStep(2, unit),
                         unit = energyUnitLabel(),
-                        accentColor = AppColors.Calorie,
+                        accentColor = MaterialTheme.colorScheme.primary,
                         expanded = caloriesExpanded,
                         onExpandChange = { caloriesExpanded = it }
                     )
@@ -781,7 +779,7 @@ internal fun ManualEntryDialog(
                     Icon(
                         if (moreNutritionExpanded) Icons.Filled.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 if (moreNutritionExpanded) {
@@ -861,7 +859,7 @@ internal fun ManualEntryDialog(
                     modifier = Modifier.fillMaxWidth()
                 )
                 TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(R.string.action_cancel), color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary))
+                    Text(stringResource(R.string.action_cancel), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
     }
 
@@ -888,7 +886,7 @@ private fun NumberField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     decimal: Boolean = false,
-    accentColor: Color = AppColors.Calorie,
+    accentColor: Color = MaterialTheme.colorScheme.primary,
 ) {
     ChompassTextField(
         value = value,

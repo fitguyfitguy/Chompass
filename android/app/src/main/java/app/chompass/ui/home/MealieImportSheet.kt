@@ -43,7 +43,6 @@ import app.chompass.services.mealie.MealieRecipeSummary
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.ChompassSheetLazyColumn
 import app.chompass.ui.components.rememberChompassSheetState
-import app.chompass.ui.theme.AppRadii
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -104,7 +103,7 @@ fun MealieImportSheet(
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(AppRadii.Field),
+                shape = MaterialTheme.shapes.medium,
             )
             Spacer(Modifier.height(8.dp))
             OutlinedTextField(
@@ -115,7 +114,7 @@ fun MealieImportSheet(
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(AppRadii.Field),
+                shape = MaterialTheme.shapes.medium,
             )
             Row(
                 Modifier.fillMaxWidth(),

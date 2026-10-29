@@ -118,9 +118,6 @@ import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.energyText
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 import java.util.Locale
 import kotlin.math.roundToInt
 
@@ -171,7 +168,7 @@ internal fun AddFoodQueryRow(
                 Icon(
                     Icons.Filled.Search,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(18.dp),
                 )
             },
@@ -185,7 +182,7 @@ internal fun AddFoodQueryRow(
                             Icon(
                                 Icons.Filled.Mic,
                                 contentDescription = stringResource(R.string.home_menu_voice),
-                                tint = AppColors.Calorie,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(20.dp),
                             )
                         }
@@ -198,7 +195,7 @@ internal fun AddFoodQueryRow(
                             Icon(
                                 Icons.Filled.AutoAwesome,
                                 contentDescription = stringResource(R.string.action_analyze),
-                                tint = AppColors.Calorie,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(20.dp),
                             )
                         }
@@ -210,7 +207,7 @@ internal fun AddFoodQueryRow(
                             Icon(
                                 Icons.Filled.Close,
                                 contentDescription = stringResource(R.string.action_clear),
-                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(18.dp),
                             )
                         }
@@ -335,9 +332,9 @@ private fun AddFoodToolButton(
     modifier: Modifier = Modifier,
 ) {
     val isDark = isDarkTheme()
-    val shape = RoundedCornerShape(AppRadii.Field)
-    val fill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
-    val border = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+    val shape = MaterialTheme.shapes.medium
+    val fill = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
+    val border = MaterialTheme.colorScheme.outlineVariant
     Row(
         modifier
             .height(44.dp)
@@ -349,7 +346,7 @@ private fun AddFoodToolButton(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
-        Icon(icon, contentDescription = null, tint = AppColors.Calorie, modifier = Modifier.size(18.dp))
+        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(6.dp))
         Text(
             label,
@@ -376,15 +373,15 @@ private fun AddFoodToolButton(
  */
 @Composable
 private fun PackagedSearchOffChip(onOff: () -> Unit) {
-    val shape = RoundedCornerShape(AppRadii.Field)
+    val shape = MaterialTheme.shapes.medium
     Row(
         Modifier
             // 48dp touch target without a taller visual chip: the heading
             // grows into its own tap area, the chip stays a one-line accent.
             .heightIn(min = 48.dp)
             .clip(shape)
-            .background(AppColors.Calorie.copy(alpha = 0.10f))
-            .border(0.5.dp, AppColors.Calorie.copy(alpha = 0.45f), shape)
+            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.10f))
+            .border(0.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.45f), shape)
             .toggleable(
                 value = true,
                 role = Role.Switch,
@@ -398,7 +395,7 @@ private fun PackagedSearchOffChip(onOff: () -> Unit) {
             // as one seen twice.
             Icons.Outlined.Public,
             contentDescription = null,
-            tint = AppColors.Calorie,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(14.dp),
         )
         Spacer(Modifier.width(4.dp))
@@ -590,12 +587,12 @@ internal fun AddFoodSuggestionList(
                                     Text(
                                         stringResource(R.string.food_search_source_off),
                                         fontSize = 11.sp,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )
                                     Icon(
                                         Icons.Outlined.Settings,
                                         contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier.size(14.dp),
                                     )
                                 }
@@ -681,7 +678,7 @@ private fun AddFoodEmptyLine(@StringRes textRes: Int) {
     Text(
         stringResource(textRes),
         fontSize = 13.sp,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()
@@ -723,7 +720,7 @@ private fun AddFoodSectionLabel(
                 stringResource(group.labelRes),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
             )
         }
@@ -800,7 +797,7 @@ private fun Modifier.pendingOrbit(pending: Boolean): Modifier {
         ),
         label = "pendingOrbitLap",
     )
-    val color = AppColors.Calorie
+    val color = MaterialTheme.colorScheme.primary
     val track = remember { Path() }
     val arc = remember { Path() }
     val measure = remember { PathMeasure() }
@@ -888,9 +885,9 @@ private fun AddFoodSuggestionRow(
     onPlanSuggestion: ((FoodSuggestion) -> Unit)? = null,
 ) {
     val isDark = isDarkTheme()
-    val shape = RoundedCornerShape(AppRadii.Container)
-    val fill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
-    val border = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+    val shape = MaterialTheme.shapes.large
+    val fill = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
+    val border = MaterialTheme.colorScheme.outlineVariant
     val reviewLabel = stringResource(R.string.sheet_review_food)
     Row(
         Modifier
@@ -926,12 +923,12 @@ private fun AddFoodSuggestionRow(
                     energyText(suggestionCalories(suggestion)),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = AppColors.Calorie,
+                    color = MaterialTheme.colorScheme.primary,
                 )
                 Text(
                     suggestionSubtitle(suggestion),
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -940,7 +937,7 @@ private fun AddFoodSuggestionRow(
                 Text(
                     macros,
                     fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
+                    color = MaterialTheme.colorScheme.outline,
                     maxLines = 1,
                 )
             }
@@ -963,7 +960,7 @@ private fun AddFoodSuggestionRow(
             Icon(
                 Icons.Filled.Add,
                 contentDescription = null,
-                tint = AppColors.Calorie,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(18.dp),
             )
         }
@@ -977,13 +974,13 @@ private fun AddFoodSuggestionRow(
  */
 @Composable
 private fun SuggestionThumbnail(suggestion: FoodSuggestion) {
-    val shape = RoundedCornerShape(AppRadii.Field)
+    val shape = MaterialTheme.shapes.medium
     Box(
         Modifier
             .size(44.dp)
             .clip(shape)
             .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
-            .border(1.dp, AppColors.Calorie.copy(alpha = 0.15f), shape),
+            .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f), shape),
         contentAlignment = Alignment.Center,
     ) {
         val emoji = suggestionEmoji(suggestion)
@@ -993,7 +990,7 @@ private fun SuggestionThumbnail(suggestion: FoodSuggestion) {
             Icon(
                 Icons.Filled.Search,
                 contentDescription = null,
-                tint = AppColors.Calorie,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(18.dp),
             )
         }

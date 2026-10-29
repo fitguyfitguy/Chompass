@@ -61,10 +61,7 @@ import app.chompass.ui.components.energyText
 import app.chompass.ui.components.gramsText
 import app.chompass.ui.components.culinaryUnitLabels
 import app.chompass.ui.components.isDarkTheme
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Review sheet for an in-progress weigh-as-you-go meal: list of reviewed
@@ -208,7 +205,7 @@ private fun ProgressiveMealContentList(
                     singleLine = true,
                     enabled = !isSaving,
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(AppRadii.Field),
+                    shape = MaterialTheme.shapes.medium,
                 )
                 Text(
                     stringResource(
@@ -238,14 +235,14 @@ private fun ProgressiveMealContentList(
                             Icon(
                                 sheetMealIcon(draft.mealType),
                                 contentDescription = null,
-                                tint = AppColors.Calorie,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(20.dp),
                             )
                             Spacer(Modifier.width(6.dp))
                             Text(
                                 mealLabel(draft.mealType),
                                 fontSize = 16.sp,
-                                color = AppColors.Calorie,
+                                color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Medium,
                             )
                         }
@@ -276,7 +273,7 @@ private fun ProgressiveMealContentList(
                 Text(
                     stringResource(R.string.progressive_meal_empty),
                     fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 20.dp),
                 )
             }
@@ -299,13 +296,13 @@ private fun ProgressiveMealContentList(
                     Text(
                         stringResource(R.string.progressive_meal_totals),
                         fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
                         energyText(draft.totalCalories),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = AppColors.Calorie,
+                        color = MaterialTheme.colorScheme.primary,
                     )
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         MacroChip(MacroKind.PROTEIN, draft.totalProtein)
@@ -378,13 +375,13 @@ private fun ProgressiveIngredientRow(
     onRemove: () -> Unit,
 ) {
     val isDark = isDarkTheme()
-    val rowFill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
+    val rowFill = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
     val analysis = item.analysis
     Row(
         Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
-            .clip(RoundedCornerShape(AppRadii.Card))
+            .clip(MaterialTheme.shapes.large)
             .background(rowFill)
             .padding(horizontal = 14.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -403,7 +400,7 @@ private fun ProgressiveIngredientRow(
                 Icon(
                     Icons.Filled.Restaurant,
                     contentDescription = null,
-                    tint = AppColors.Calorie,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(18.dp),
                 )
             }
@@ -432,7 +429,7 @@ private fun ProgressiveIngredientRow(
             Text(
                 "${energyText(analysis.calories)} · $servingText",
                 fontSize = 13.sp,
-                color = AppColors.Calorie,
+                color = MaterialTheme.colorScheme.primary,
             )
         }
 

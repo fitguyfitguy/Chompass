@@ -33,7 +33,6 @@ import app.chompass.R
 import app.chompass.models.FastingPhase
 import app.chompass.models.FastingSession
 import app.chompass.ui.util.formatClockMillis
-import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Fasting cycle bar on Home (docs/local/PLAN_FASTING_TRACKER.md §5). Tells the
@@ -144,7 +143,7 @@ fun FastingProgressRow(
             Spacer(Modifier.weight(1f))
             Text(
                 statusLabel,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp,
             )
         }
@@ -161,7 +160,7 @@ fun FastingProgressRow(
             if (countdownHint != null) {
                 Text(
                     countdownHint,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 11.sp,
                 )
             }
@@ -280,7 +279,7 @@ fun FastingHubControl(
                 )
                 Text(
                     status,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                 )
             }

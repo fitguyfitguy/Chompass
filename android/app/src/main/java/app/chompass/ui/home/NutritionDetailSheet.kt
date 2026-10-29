@@ -60,8 +60,6 @@ import app.chompass.models.UserProfile
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
-import app.chompass.ui.theme.AppRadii
 import java.util.Locale
 import kotlin.math.roundToInt
 
@@ -175,7 +173,7 @@ fun NutritionDetailSheet(
                     val proteinGlyph = stringResource(R.string.macro_glyph_protein)
                     val carbsGlyph = stringResource(R.string.macro_glyph_carbs)
                     val fatGlyph = stringResource(R.string.macro_glyph_fat)
-                    DetailRow(Icons.Filled.LocalFireDepartment, stringResource(R.string.nutrition_label_calories), "${EnergyFormat.quantity(calories, LocalEnergyUnit.current)}", energyUnitLabel(), goal = "${EnergyFormat.quantity(calorieGoal, LocalEnergyUnit.current)}", percent = nutritionGoalPercent(calories.toDouble(), calorieGoal.toDouble()), accentColor = AppColors.Calorie)
+                    DetailRow(Icons.Filled.LocalFireDepartment, stringResource(R.string.nutrition_label_calories), "${EnergyFormat.quantity(calories, LocalEnergyUnit.current)}", energyUnitLabel(), goal = "${EnergyFormat.quantity(calorieGoal, LocalEnergyUnit.current)}", percent = nutritionGoalPercent(calories.toDouble(), calorieGoal.toDouble()), accentColor = MaterialTheme.colorScheme.primary)
                     Hairline()
                     DetailRow(null, stringResource(R.string.nutrition_label_protein), MacroValueFormatter.string(protein), stringResource(R.string.unit_g), goal = "$proteinGoal", percent = nutritionGoalPercent(protein, proteinGoal.toDouble()), labelGlyph = proteinGlyph, accentColor = AppColors.Protein)
                     Hairline()
@@ -288,7 +286,7 @@ private fun NutritionSheetSectionHeader(title: String) {
         title.uppercase(Locale.getDefault()),
         fontSize = 12.sp,
         fontWeight = FontWeight.SemiBold,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         letterSpacing = 0.sp,
         modifier = Modifier.padding(start = 14.dp, top = 6.dp, bottom = 4.dp)
     )
@@ -307,19 +305,19 @@ private fun HomeCardsRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Icon(Icons.Filled.Spa, null, tint = AppColors.Calorie, modifier = Modifier.size(20.dp))
+        Icon(Icons.Filled.Spa, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
         Column(Modifier.weight(1f)) {
             Text(stringResource(R.string.home_nutrient_cards), fontSize = 16.sp)
             Text(
                 selected.map { stringResource(it.displayNameRes) }.joinToString(", "),
                 fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
+            tint = MaterialTheme.colorScheme.outline,
             modifier = Modifier.size(20.dp)
         )
     }
@@ -349,7 +347,7 @@ private fun DetailRow(
     goal: String? = null,
     percent: Int? = null,
     labelGlyph: String? = null,
-    accentColor: Color = AppColors.Calorie,
+    accentColor: Color = MaterialTheme.colorScheme.primary,
     ) {
     Row(
         Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 14.dp),
@@ -362,7 +360,7 @@ private fun DetailRow(
             Box(
                 Modifier
                     .size(20.dp)
-                    .clip(RoundedCornerShape(AppRadii.Track))
+                    .clip(MaterialTheme.shapes.small)
                     .background(accentColor),
                 contentAlignment = Alignment.Center
             ) {
@@ -388,14 +386,14 @@ private fun DetailRow(
         Text(label, fontSize = 16.sp, modifier = Modifier.weight(1f))
         Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
             Text(value, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = accentColor)
-            Text(unit, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted))
+            Text(unit, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         goal?.let {
             val suffix = if (percent != null) "/ $it ($percent%)" else "/ $it"
             Text(
                 suffix,
                 fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
+                color = MaterialTheme.colorScheme.outline,
                 modifier = Modifier.padding(start = 6.dp)
             )
         }

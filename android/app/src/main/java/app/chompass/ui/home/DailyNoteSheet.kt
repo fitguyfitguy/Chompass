@@ -6,8 +6,6 @@ import app.chompass.models.DailyNote
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.rememberChompassSheetState
-import app.chompass.ui.theme.AppTextOpacity
-import app.chompass.ui.theme.AppRadii
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -74,13 +72,13 @@ internal fun DailyNoteCard(
             Icon(
                 Icons.Filled.Edit,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.width(18.dp),
             )
             Text(
                 stringResource(R.string.home_note_empty),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     } else {
@@ -91,7 +89,7 @@ internal fun DailyNoteCard(
                 .clickable(onClick = onClick)
                 .background(
                     MaterialTheme.colorScheme.surfaceContainerLow,
-                    RoundedCornerShape(AppRadii.Card),
+                    MaterialTheme.shapes.large,
                 )
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -99,7 +97,7 @@ internal fun DailyNoteCard(
             Text(
                 note,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
@@ -107,7 +105,7 @@ internal fun DailyNoteCard(
             Icon(
                 Icons.Filled.Edit,
                 contentDescription = stringResource(R.string.note_edit_title),
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
                     .padding(start = 12.dp)
                     .width(18.dp),
@@ -181,7 +179,7 @@ internal fun DailyNoteSheet(
                 Text(
                     dayLabel,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 ChompassTextField(
@@ -200,7 +198,7 @@ internal fun DailyNoteSheet(
                 Text(
                     stringResource(R.string.note_char_count, text.length, DailyNote.MAX_TEXT_LENGTH),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.align(Alignment.End),
                 )
             }

@@ -84,11 +84,8 @@ import app.chompass.R
 import app.chompass.models.CurrentMealCatalog
 import app.chompass.models.MealType
 import app.chompass.models.ServingUnitOption
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.MagnitudeDrafts
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.models.MacroValueFormatter
 import app.chompass.ui.components.SplitDecimalWheelPicker
 import app.chompass.ui.components.UnitWheelPicker
@@ -185,7 +182,7 @@ internal fun StaleCompositionNote(
         Text(
             stringResource(R.string.nutrition_stale_composition),
             fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             lineHeight = 18.sp,
         )
         if (onReestimate != null) {
@@ -219,7 +216,7 @@ internal fun MissingValuesNote(
         Text(
             pluralStringResource(R.plurals.edit_ai_missing_values, missingCount, missingCount),
             fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             lineHeight = 18.sp,
         )
         if (onFill != null) {
@@ -248,7 +245,7 @@ internal fun SheetStickyPrimaryBar(
     textActionEnabled: Boolean = true,
 ) {
     val isDark = isDarkTheme()
-    val hairline = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+    val hairline = MaterialTheme.colorScheme.outlineVariant
     Column(
         Modifier
             .fillMaxWidth()
@@ -281,7 +278,7 @@ internal fun SheetStickyPrimaryBar(
                     Text(textActionLabel, fontWeight = FontWeight.Medium)
                 }
             }
-            val shape = RoundedCornerShape(AppRadii.Sheet)
+            val shape = MaterialTheme.shapes.extraLarge
             Box(
                 Modifier
                     .fillMaxWidth()
@@ -331,8 +328,8 @@ internal fun SheetToolbarPill(
     } else {
         Modifier
             .clip(shape)
-            .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
-            .border(0.5.dp, if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight, shape)
+            .background(MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f))
+            .border(0.5.dp, MaterialTheme.colorScheme.outlineVariant, shape)
     }).alpha(if (enabled) 1f else 0.45f)
     Box(
         modifier
@@ -342,7 +339,7 @@ internal fun SheetToolbarPill(
     ) {
         Text(
             label,
-            color = if (bold) MaterialTheme.colorScheme.onPrimary else AppColors.Calorie,
+            color = if (bold) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
             fontSize = if (compact) 14.sp else 16.sp,
             fontWeight = if (bold) FontWeight.SemiBold else FontWeight.Medium,
             maxLines = maxLines,
@@ -360,7 +357,7 @@ internal fun SheetSectionHeader(title: String) {
         title,
         fontSize = 14.sp,
         fontWeight = FontWeight.SemiBold,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.padding(start = 18.dp, top = 8.dp, bottom = 4.dp)
     )
 }
@@ -370,14 +367,9 @@ internal fun SheetPillRow(
     onClick: (() -> Unit)? = null,
     content: @Composable RowScope.() -> Unit
 ) {
-    val shape = RoundedCornerShape(AppRadii.PillCard)
-    val isDark = isDarkTheme()
-    val rowFill = if (isDark) {
-        AppColors.TranslucentSurfaceDark
-    } else {
-        AppColors.TranslucentSurfaceLight
-    }
-    val rowBorder = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+    val shape = RoundedCornerShape(percent = 50)
+    val rowFill = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
+    val rowBorder = MaterialTheme.colorScheme.outlineVariant
     val base = Modifier
         .fillMaxWidth()
         .clip(shape)
@@ -393,14 +385,9 @@ internal fun SheetPillRow(
 
 @Composable
 internal fun SheetPillCard(content: @Composable ColumnScope.() -> Unit) {
-    val shape = RoundedCornerShape(AppRadii.PillCard)
-    val isDark = isDarkTheme()
-    val cardFill = if (isDark) {
-        AppColors.TranslucentSurfaceDark
-    } else {
-        AppColors.TranslucentSurfaceLight
-    }
-    val cardBorder = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+    val shape = RoundedCornerShape(percent = 50)
+    val cardFill = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
+    val cardBorder = MaterialTheme.colorScheme.outlineVariant
     Column(
         Modifier
             .fillMaxWidth()
@@ -568,7 +555,7 @@ internal fun ServingQuantityCard(
             )
             if (isLoadingUnits && unitOptions.isEmpty()) {
                 CircularProgressIndicator(
-                    color = AppColors.Calorie,
+                    color = MaterialTheme.colorScheme.primary,
                     strokeWidth = 2.dp,
                     modifier = Modifier.size(18.dp),
                 )
@@ -578,7 +565,7 @@ internal fun ServingQuantityCard(
                     summaryValue,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = AppColors.Calorie,
+                    color = MaterialTheme.colorScheme.primary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -588,7 +575,7 @@ internal fun ServingQuantityCard(
                 Icon(
                     Icons.Filled.Edit,
                     contentDescription = stringResource(R.string.cd_edit_serving),
-                    tint = AppColors.Calorie,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .minimumInteractiveComponentSize()
                         .size(18.dp)
@@ -661,14 +648,14 @@ internal fun ServingQuantityCard(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
                         CircularProgressIndicator(
-                            color = AppColors.Calorie,
+                            color = MaterialTheme.colorScheme.primary,
                             strokeWidth = 2.dp,
                             modifier = Modifier.size(18.dp),
                         )
                         Text(
                             stringResource(R.string.entry_analysis_inferring_units),
                             fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -685,7 +672,7 @@ internal fun ServingQuantityCard(
                             Text(
                                 stringResource(R.string.sheet_serving_custom_name),
                                 fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.width(92.dp)
                             )
                             BasicTextField(
@@ -696,7 +683,7 @@ internal fun ServingQuantityCard(
                                     color = MaterialTheme.colorScheme.onSurface,
                                     fontSize = 16.sp,
                                 ),
-                                cursorBrush = SolidColor(AppColors.Calorie),
+                                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                                 modifier = Modifier.weight(1f)
                             )
                         }
@@ -704,7 +691,7 @@ internal fun ServingQuantityCard(
                             Text(
                                 stringResource(R.string.sheet_serving_custom_grams),
                                 fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.width(92.dp)
                             )
                             BasicTextField(
@@ -718,20 +705,20 @@ internal fun ServingQuantityCard(
                                     color = MaterialTheme.colorScheme.onSurface,
                                     fontSize = 16.sp,
                                 ),
-                                cursorBrush = SolidColor(AppColors.Calorie),
+                                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                                 modifier = Modifier.weight(1f)
                             )
                             Spacer(Modifier.width(6.dp))
                             Text(
                                 stringResource(R.string.unit_g),
                                 fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(Modifier.width(10.dp))
                             Icon(
                                 Icons.Filled.Check,
                                 contentDescription = stringResource(R.string.cd_apply_serving_edit),
-                                tint = AppColors.Calorie,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier
                                     .minimumInteractiveComponentSize()
                                     .size(20.dp)
@@ -746,7 +733,7 @@ internal fun ServingQuantityCard(
                                 Icon(
                                     Icons.Filled.Delete,
                                     contentDescription = stringResource(R.string.cd_remove_serving_unit),
-                                    tint = AppColors.Calorie,
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier
                                         .minimumInteractiveComponentSize()
                                         .size(20.dp)
@@ -776,7 +763,7 @@ internal fun ServingQuantityCard(
                         Text(
                             "~${MacroValueFormatter.string(servingSizeGrams)} $gramUnit",
                             fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -794,9 +781,9 @@ internal fun SheetNutritionRow(
     accentColor: Color? = null,
 ) {
     val labelColor = accentColor?.let {
-        if (dim) it.copy(alpha = AppTextOpacity.Secondary) else it
+        if (dim) it.copy(alpha = 0.7f) else it
     } ?: if (dim) {
-        MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+        MaterialTheme.colorScheme.onSurfaceVariant
     } else {
         MaterialTheme.colorScheme.onSurface
     }
@@ -821,7 +808,7 @@ internal fun SheetNutritionRow(
         Text(
             unit,
             fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.width(36.dp)
         )
     }
@@ -848,11 +835,11 @@ internal fun SheetGlassDropdownMenu(
     offset: DpOffset = DpOffset(0.dp, 0.dp),
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val shape = RoundedCornerShape(AppRadii.Container)
+    val shape = MaterialTheme.shapes.large
     val sizedModifier = if (menuWidth != null) modifier.width(menuWidth) else modifier
     val isDark = isDarkTheme()
-    val menuContainer = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
-    val borderColor = if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight
+    val menuContainer = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
+    val borderColor = MaterialTheme.colorScheme.outlineVariant
 
     DropdownMenu(
         expanded = expanded,
@@ -878,12 +865,12 @@ internal fun SheetGlassDropdownMenuItem(
     onClick: () -> Unit
 ) {
     val isDark = isDarkTheme()
-    val checkTint = if (isDark) Color.White else AppColors.Calorie
+    val checkTint = if (isDark) Color.White else MaterialTheme.colorScheme.primary
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 7.dp, vertical = 1.dp)
-            .clip(RoundedCornerShape(AppRadii.Field))
+            .clip(MaterialTheme.shapes.medium)
             .clickable(onClick = onClick)
             // ~48dp tap target per row (Material menu guidance), matching the
             // roomier iOS add-menu rows instead of the old cramped ~36dp.
@@ -895,7 +882,7 @@ internal fun SheetGlassDropdownMenuItem(
                 Icon(
                     leadingIcon,
                     contentDescription = null,
-                    tint = AppColors.Calorie,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(19.dp)
                 )
                 Spacer(Modifier.width(10.dp))
@@ -919,7 +906,7 @@ internal fun SheetGlassDropdownMenuItem(
             label,
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.NearFull),
+            color = MaterialTheme.colorScheme.onSurface,
             lineHeight = 19.sp,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,

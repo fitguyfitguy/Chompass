@@ -60,10 +60,7 @@ import app.chompass.services.ai.userMessage
 import app.chompass.ui.components.MacroChip
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.energyText
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.MacroKind
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 import kotlinx.coroutines.launch
 
 /**
@@ -172,13 +169,13 @@ fun RecipeBuilderSheet(
                         placeholder = { Text(stringResource(R.string.recipe_builder_name_placeholder)) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(AppRadii.Field)
+                        shape = MaterialTheme.shapes.medium
                     )
                     recipe.servingsPerRecipe?.takeIf { it > 0 }?.let { servings ->
                         Text(
                             stringResource(R.string.recipe_servings_format, formatServings(servings)),
                             fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -194,14 +191,14 @@ fun RecipeBuilderSheet(
                                 Icon(
                                     sheetMealIcon(mealType),
                                     contentDescription = null,
-                                    tint = AppColors.Calorie,
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(20.dp)
                                 )
                                 Spacer(Modifier.width(6.dp))
                                 Text(
                                     mealLabel(mealType),
                                     fontSize = 16.sp,
-                                    color = AppColors.Calorie,
+                                    color = MaterialTheme.colorScheme.primary,
                                     fontWeight = FontWeight.Medium
                                 )
                             }
@@ -249,7 +246,7 @@ fun RecipeBuilderSheet(
                     Text(
                         stringResource(R.string.recipe_builder_no_ingredients),
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(horizontal = 20.dp)
                     )
                 }
@@ -282,7 +279,7 @@ fun RecipeBuilderSheet(
                                 Text(
                                     stringResource(R.string.recipe_builder_filling, step + 1, fillTotal),
                                     fontSize = 13.sp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             } else {
                                 Text(
@@ -292,7 +289,7 @@ fun RecipeBuilderSheet(
                                         gappedIngredients.size,
                                     ),
                                     fontSize = 13.sp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                                 Text(
                                     stringResource(R.string.edit_ai_missing_action),
@@ -319,7 +316,7 @@ fun RecipeBuilderSheet(
                             energyText(total.totalCalories),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = AppColors.Calorie
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                             MacroChip(MacroKind.PROTEIN, total.totalProtein)
@@ -370,12 +367,12 @@ private fun IngredientRow(
     onRemove: () -> Unit
 ) {
     val isDark = isDarkTheme()
-    val rowFill = if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight
+    val rowFill = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
     Row(
         Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
-            .clip(RoundedCornerShape(AppRadii.Card))
+            .clip(MaterialTheme.shapes.large)
             .background(rowFill)
             .padding(horizontal = 14.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -391,7 +388,7 @@ private fun IngredientRow(
             if (ingredient.emoji != null) {
                 Text(ingredient.emoji, fontSize = 20.sp)
             } else {
-                Icon(Icons.Filled.Restaurant, contentDescription = null, tint = AppColors.Calorie, modifier = Modifier.size(18.dp))
+                Icon(Icons.Filled.Restaurant, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
             }
         }
 
@@ -403,7 +400,7 @@ private fun IngredientRow(
             Text(
                 listOfNotNull(amountUnit, energyText(ingredient.calories)).joinToString(" · "),
                 fontSize = 13.sp,
-                color = AppColors.Calorie
+                color = MaterialTheme.colorScheme.primary
             )
         }
 
@@ -465,7 +462,7 @@ private fun FavoritesIngredientPickerSheet(
             Text(
                 stringResource(R.string.saved_meals_no_favorites),
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 24.dp)
             )
         } else {
@@ -477,13 +474,13 @@ private fun FavoritesIngredientPickerSheet(
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(AppRadii.Field))
+                            .clip(MaterialTheme.shapes.medium)
                             .clickable { onPick(entry) }
                             .padding(horizontal = 12.dp, vertical = 10.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(entry.name, fontSize = 14.sp, modifier = Modifier.weight(1f))
-                        Text(energyText(entry.calories), fontSize = 14.sp, color = AppColors.Calorie)
+                        Text(energyText(entry.calories), fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
                     }
                 }
             }

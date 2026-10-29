@@ -80,8 +80,6 @@ import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.ChompassSheetCornerRadius
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.blockSheetDragAtScrollEdges
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.warning
 import app.chompass.ui.theme.water
 import app.chompass.ui.theme.caffeine
@@ -611,7 +609,7 @@ private fun AddFoodWaterQuickRow(
         Icon(
             Icons.Filled.WaterDrop,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.water.copy(alpha = AppTextOpacity.Strong),
+            tint = MaterialTheme.colorScheme.water,
             modifier = Modifier.size(18.dp),
         )
         if (presets.size > 1) {
@@ -624,9 +622,9 @@ private fun AddFoodWaterQuickRow(
                     .weight(1f)
                     .padding(horizontal = 4.dp),
                 colors = SliderDefaults.colors(
-                    thumbColor = AppColors.Calorie,
-                    activeTrackColor = AppColors.Calorie.copy(alpha = 0.75f),
-                    inactiveTrackColor = AppColors.Calorie.copy(alpha = 0.16f),
+                    thumbColor = MaterialTheme.colorScheme.primary,
+                    activeTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.75f),
+                    inactiveTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
                 ),
             )
         } else {
@@ -636,7 +634,7 @@ private fun AddFoodWaterQuickRow(
             waterAmountLabel(selectedMl, useMetric),
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             modifier = Modifier.widthIn(min = 52.dp),
         )
@@ -646,7 +644,7 @@ private fun AddFoodWaterQuickRow(
             Icon(
                 Icons.Filled.Add,
                 contentDescription = stringResource(R.string.cd_log_water),
-                tint = AppColors.Calorie,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(22.dp),
             )
         }
@@ -657,7 +655,7 @@ private fun AddFoodWaterQuickRow(
             Icon(
                 Icons.Filled.DriveFileRenameOutline,
                 contentDescription = stringResource(R.string.water_custom_short),
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(18.dp),
             )
         }
@@ -717,7 +715,7 @@ private fun AddFoodNicotineQuickRow(
             Icon(
                 Icons.Filled.DriveFileRenameOutline,
                 contentDescription = stringResource(R.string.nicotine_custom_short),
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(18.dp),
             )
         }
@@ -770,7 +768,7 @@ private fun AddFoodCaffeineQuickRow(
             Icon(
                 Icons.Filled.DriveFileRenameOutline,
                 contentDescription = stringResource(R.string.caffeine_custom_short),
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(18.dp),
             )
         }

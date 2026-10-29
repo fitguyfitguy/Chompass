@@ -40,6 +40,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
@@ -51,10 +52,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 import app.chompass.R
 import app.chompass.services.BarcodeCodeNormalizer
-import app.chompass.ui.theme.AppColors
 import zxingcpp.BarcodeReader
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 
 private const val FOCUS_SETTLE_DEADLINE_MS = 800L
 private val ANALYSIS_TARGET_SIZE = Size(1280, 720)
@@ -211,7 +209,7 @@ internal fun BarcodeScannerContent(
                     .minimumInteractiveComponentSize()
                     .padding(18.dp)
                     .size(44.dp)
-                    .clip(RoundedCornerShape(AppRadii.SectionCard))
+                    .clip(MaterialTheme.shapes.large)
                     .background(Color.Black.copy(alpha = 0.45f))
             ) {
                 Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.cd_close), tint = Color.White)
@@ -221,16 +219,16 @@ internal fun BarcodeScannerContent(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(horizontal = 24.dp, vertical = 36.dp)
-                    .clip(RoundedCornerShape(AppRadii.PillCard))
+                    .clip(RoundedCornerShape(percent = 50))
                     .background(Color.Black.copy(alpha = 0.58f))
-                    .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(AppRadii.PillCard))
+                    .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(percent = 50))
                     .padding(horizontal = 22.dp, vertical = 18.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Icon(
                     Icons.Filled.QrCodeScanner,
                     contentDescription = null,
-                    tint = AppColors.Calorie,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(34.dp)
                 )
                 Spacer(Modifier.height(10.dp))
@@ -242,7 +240,7 @@ internal fun BarcodeScannerContent(
                 )
                 Text(
                     stringResource(R.string.barcode_off_note),
-                    color = Color.White.copy(alpha = AppTextOpacity.Secondary),
+                    color = Color.White.copy(alpha = 0.7f),
                     fontSize = 13.sp,
                     lineHeight = 18.sp
                 )

@@ -22,8 +22,6 @@ import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.rememberChompassSheetState
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Prompt history (Codeberg #53): a compact sheet listing previously saved
@@ -64,7 +62,7 @@ fun PromptHistorySheet(
                     Text(
                         stringResource(R.string.prompt_history_empty),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(vertical = 24.dp),
                     )
                 } else {
@@ -85,7 +83,7 @@ fun PromptHistorySheet(
                             Text(
                                 stringResource(R.string.prompt_history_use),
                                 style = MaterialTheme.typography.labelSmall,
-                                color = AppColors.Calorie,
+                                color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.padding(top = 4.dp),
                             )
                         }

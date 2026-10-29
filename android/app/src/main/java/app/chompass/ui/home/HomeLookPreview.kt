@@ -27,8 +27,6 @@ import app.chompass.models.MealType
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.MacroCard
 import app.chompass.ui.components.StepsCard
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.nutrientAccentColor
 import java.time.Instant
 
@@ -68,21 +66,21 @@ internal fun HomeLookPreview(
 
     ChompassSurface(
         modifier = modifier.fillMaxWidth(),
-        cornerRadius = AppRadii.SectionCard,
+        cornerRadius = 16.dp,
         padding = 0.dp,
     ) {
         Column(Modifier.fillMaxWidth()) {
             Text(
                 stringResource(R.string.home_look_sample_caption),
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(start = 16.dp, top = 12.dp, end = 16.dp),
             )
             if (display.calorieHeroLayout != HomeCalorieHeroLayout.HIDDEN) {
                 Text(
                     stringResource(R.string.home_today),
                     style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(start = 16.dp, top = 10.dp),
                 )
                 CalorieHero(
