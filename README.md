@@ -49,49 +49,39 @@ Install from **F-Droid**, Obtainium, or Codeberg Releases.
 
 ## Screenshots
 
-Material 3 dark theme (light theme also available). Images are in [`docs/screenshots/`](docs/screenshots/).
+Material 3 dark theme (light theme also available). Full captures live in [`docs/screenshots/`](docs/screenshots/).
+
+<p align="center">
+  <img src="docs/screenshots/features/hero.png" width="620" alt="Chompass Home, Add Food and Progress on three phones" />
+</p>
 
 <table>
   <tr>
     <td align="center" width="33%">
-      <img src="docs/screenshots/home.png" width="180" alt="Home screen in dark theme" /><br />
-      <sub><b>Home</b>: calorie ring, macros, meals</sub>
+      <img src="docs/screenshots/features/ai-analysis.png" width="200" alt="AI analysis streaming nutrition fields" /><br />
+      <sub><b>AI food logging</b>: photo, voice, text or barcode; fields stream in, you review before saving</sub>
     </td>
     <td align="center" width="33%">
-      <img src="docs/screenshots/add-food.png" width="180" alt="Add food sheet in dark theme" /><br />
-      <sub><b>Add food</b>: photo, voice, barcode, AI</sub>
+      <img src="docs/screenshots/features/meal-components.png" width="200" alt="Meal components editing" /><br />
+      <sub><b>Every ingredient, editable</b>: grams, servings and per-item detail</sub>
     </td>
     <td align="center" width="33%">
-      <img src="docs/screenshots/meal-components.png" width="180" alt="Meal components sheet in dark theme" /><br />
-      <sub><b>Meal components</b>: edit ingredients and grams</sub>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="33%">
-      <img src="docs/screenshots/recipes.png" width="180" alt="Recipes tab in dark theme" /><br />
-      <sub><b>Recipes</b>: multi-ingredient saved meals</sub>
-    </td>
-    <td align="center" width="33%">
-      <img src="docs/screenshots/ai-analysis.png" width="180" alt="AI analysis progress overlay" /><br />
-      <sub><b>AI analysis</b>: progress steps and streaming fields</sub>
-    </td>
-    <td align="center" width="33%">
-      <img src="docs/screenshots/progress.png" width="180" alt="Progress screen in dark theme" /><br />
-      <sub><b>Progress</b>: weight, steps, goals</sub>
+      <img src="docs/screenshots/features/recipes.png" width="200" alt="Recipes and saved meals" /><br />
+      <sub><b>Recipes and saved meals</b>: log the whole plate in one tap</sub>
     </td>
   </tr>
   <tr>
     <td align="center" width="33%">
-      <img src="docs/screenshots/progress-plots.png" width="180" alt="Body measurement trend plots in dark theme" /><br />
-      <sub><b>Progress plots</b>: optional per-site body measurement trends</sub>
+      <img src="docs/screenshots/features/progress-plots.png" width="200" alt="Body measurement trend plots" /><br />
+      <sub><b>Trends for everything</b>: weight, body fat, measurements and scale metrics</sub>
     </td>
     <td align="center" width="33%">
-      <img src="docs/screenshots/coach.png" width="180" alt="AI Coach chat in dark theme" /><br />
-      <sub><b>Coach</b>: chat with your own key</sub>
+      <img src="docs/screenshots/features/coach.png" width="200" alt="AI Coach chat" /><br />
+      <sub><b>Coach</b>: chat that knows your day, on your own key</sub>
     </td>
     <td align="center" width="33%">
-      <img src="docs/screenshots/settings.png" width="180" alt="Settings hub in dark theme" /><br />
-      <sub><b>Settings</b>: providers, goals, data</sub>
+      <img src="docs/screenshots/features/settings.png" width="200" alt="Settings hub" /><br />
+      <sub><b>Your keys, your data</b>: bring any AI provider, stored on device only</sub>
     </td>
   </tr>
 </table>

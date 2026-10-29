@@ -168,12 +168,18 @@ devenv tasks run device:screenshots         # device capture only
    seeds `seed_full`, pins the brand teal + dark/light via the
    `screenshot_appearance` extra, forces the app locale to en-US for the capture,
    drives Home/Progress/Coach/Settings/deep links and sheets, and writes
-   `release-screenshots/*.png` (`01-home-light.png` … `15-progress-plots-dark.png`),
-   the dark README copies in [`screenshots/`](screenshots/), and the F-Droid
-   listing images in [`../metadata/en-US/images/phoneScreenshots/`](../metadata/en-US/images/phoneScreenshots/)
+   `release-screenshots/*.png` (`01-home-light.png` … `17-scale-metrics-dark.png`),
+   the dark README copies in [`screenshots/`](screenshots/) (site gallery + F-Droid
+   store source), and the F-Droid listing images in
+   [`../metadata/en-US/images/phoneScreenshots/`](../metadata/en-US/images/phoneScreenshots/)
    (`1.png` … `9.png`, same dark set in listing order).
 2. `./gradlew :app:updateDebugScreenshotTest` — refreshes
    `android/app/src/screenshotTestDebug/reference/`.
+3. `./scripts/build_feature_shots.py` — composes the README feature shots in
+   `docs/screenshots/features/` (three-phone hero collage + framed, cropped
+   panels with feature captions). Crop regions live in that script as fractions
+   of the capture, so a new panel is a config row; tune the fractions against
+   the latest captures before committing.
 
 Cadence and gate:
 

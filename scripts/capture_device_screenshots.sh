@@ -63,6 +63,7 @@ SCREEN_TABLE=(
   "settings|light|04-settings-light.png|"
   "add-food|light|07-add-food-light.png|"
   "progress-plots|light|14-progress-plots-light.png|"
+  "scale-metrics|light|16-scale-metrics-light.png|"
   "home|dark|05-home-dark.png|home.png"
   "progress|dark|06-progress-dark.png|progress.png"
   "coach|dark|08-coach-dark.png|coach.png"
@@ -72,6 +73,7 @@ SCREEN_TABLE=(
   "recipes|dark|12-recipes-dark.png|recipes.png"
   "ai-analysis|dark|13-ai-analysis-dark.png|ai-analysis.png"
   "progress-plots|dark|15-progress-plots-dark.png|progress-plots.png"
+  "scale-metrics|dark|17-scale-metrics-dark.png|scale-metrics.png"
 )
 
 usage() { sed -n '2,38p' "$0"; exit "${1:-0}"; }
@@ -569,6 +571,17 @@ capture_key() { # capture_key <key> <appearance> <file>
       done
       wait_text "Waist" 10
       swipe_up
+      ;;
+    scale-metrics)
+      # seed_full writes composition rows every third weigh-in, so the
+      # Scale metrics card exists below the body cards on Progress.
+      goto_route progress
+      wait_text "Net Change" 25 contains
+      tap_text "3M" || true
+      sleep 1.2
+      scroll_until_text "Scale metrics" 8 contains || true
+      swipe_up
+      sleep 0.6
       ;;
     *)
       echo "Unknown capture key: ${key}" >&2
