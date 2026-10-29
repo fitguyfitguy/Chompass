@@ -202,6 +202,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.haze)
     implementation(libs.coil.compose)
     // Gson is only used by the debug on-device LLM smoke test (src/debug).
     debugImplementation(libs.gson)
