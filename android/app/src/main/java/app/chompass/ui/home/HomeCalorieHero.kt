@@ -1,7 +1,14 @@
 package app.chompass.ui.home
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.HorizontalDivider
@@ -77,6 +84,7 @@ import app.chompass.ui.components.energyText
 import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalLaunchFillEpoch
 import app.chompass.ui.navigation.LocalEnergyUnit
+import app.chompass.ui.components.pressScale
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppMotion
 import app.chompass.ui.theme.AppTextOpacity
@@ -647,21 +655,36 @@ private fun DefaultCalorieHero(input: CalorieHeroInput, modifier: Modifier = Mod
                     .padding(top = 30.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(
-                    text = LocaleFormat.integer(EnergyFormat.quantity(current, unit)),
-                    modifier = Modifier
-                        .widthIn(max = 140.dp)
-                        .semantics { contentDescription = eatenA11y },
-                    style = MaterialTheme.typography.displayMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    autoSize = TextAutoSize.StepBased(
-                        minFontSize = 30.sp,
-                        maxFontSize = 45.sp,
-                        stepSize = 1.sp,
-                    ),
-                )
+                // Counter swap: slide+fade when today's value changes
+                // (AppMotion tokens; recipe from the design teardown,
+                // docs/local/MORPHE_DESIGN_ANALYSIS.md §1.2).
+                AnimatedContent(
+                    targetState = LocaleFormat.integer(EnergyFormat.quantity(current, unit)),
+                    transitionSpec = {
+                        (fadeIn(tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)) +
+                            slideInVertically(tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)) { it / 2 })
+                            .togetherWith(
+                                fadeOut(tween(AppMotion.TweenFastMs, easing = AppMotion.EasingStandard)) +
+                                    slideOutVertically(tween(AppMotion.TweenFastMs, easing = AppMotion.EasingStandard)) { -it / 2 }
+                            )
+                    },
+                    label = "eatenNumber",
+                    modifier = Modifier.widthIn(max = 140.dp),
+                ) { value ->
+                    Text(
+                        text = value,
+                        modifier = Modifier.semantics { contentDescription = eatenA11y },
+                        style = MaterialTheme.typography.displayMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        autoSize = TextAutoSize.StepBased(
+                            minFontSize = 30.sp,
+                            maxFontSize = 45.sp,
+                            stepSize = 1.sp,
+                        ),
+                    )
+                }
                 // Goal caption directly under the eaten number; the burn caption
                 // follows it (see CalorieBurnCaption below).
                 Box(
@@ -1331,12 +1354,15 @@ private fun UntrackedChip(untracked: Boolean, onClick: () -> Unit) {
     val a11y = stringResource(
         if (untracked) R.string.home_untracked_chip_a11y else R.string.home_mark_untracked_chip_a11y,
     )
+    val chipInteraction = remember { MutableInteractionSource() }
     Surface(
         onClick = onClick,
         shape = CircleShape,
         color = if (untracked) MaterialTheme.colorScheme.tertiaryContainer
             else MaterialTheme.colorScheme.surfaceVariant,
+        interactionSource = chipInteraction,
         modifier = Modifier
+            .pressScale(chipInteraction)
             .minimumInteractiveComponentSize()
             .widthIn(max = 140.dp)
             .semantics { contentDescription = a11y },
@@ -1371,11 +1397,14 @@ private fun DayTypeChip(label: String, color: Color? = null, onClick: () -> Unit
     } else {
         MaterialTheme.colorScheme.onSecondaryContainer
     }
+    val chipInteraction = remember { MutableInteractionSource() }
     Surface(
         onClick = onClick,
         shape = CircleShape,
         color = container,
+        interactionSource = chipInteraction,
         modifier = Modifier
+            .pressScale(chipInteraction)
             // The chip shares the remaining-caption line: cap it so a long
             // day-type name ellipsizes instead of pushing the caption around.
             .minimumInteractiveComponentSize()
