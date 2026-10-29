@@ -48,6 +48,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.draw.clip
@@ -365,17 +368,28 @@ internal fun SheetSectionHeader(title: String) {
 @Composable
 internal fun SheetPillRow(
     onClick: (() -> Unit)? = null,
+    /** TalkBack action label, e.g. "Change meal type". */
+    onClickLabel: String? = null,
+    /** Announced control state, e.g. Expanded/Collapsed for menu triggers. */
+    stateDescription: String? = null,
     content: @Composable RowScope.() -> Unit
 ) {
     val shape = RoundedCornerShape(percent = 50)
     val rowFill = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
     val rowBorder = MaterialTheme.colorScheme.outlineVariant
-    val base = Modifier
+    var base = Modifier
         .fillMaxWidth()
         .clip(shape)
         .background(rowFill)
         .border(0.5.dp, rowBorder, shape)
-    val withClick = if (onClick != null) base.clickable(onClick = onClick) else base
+    if (stateDescription != null) {
+        base = base.semantics { this.stateDescription = stateDescription }
+    }
+    val withClick = if (onClick != null) {
+        base.clickable(onClickLabel = onClickLabel, role = Role.Button, onClick = onClick)
+    } else {
+        base
+    }
     Row(
         withClick.padding(horizontal = 18.dp, vertical = 15.dp),
         verticalAlignment = Alignment.CenterVertically,

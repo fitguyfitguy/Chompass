@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
@@ -56,9 +57,8 @@ import app.chompass.ui.navigation.BottomNavDockedControlPadding
 import app.chompass.ui.components.isDarkTheme
 
 /**
- * Horizontal scrolling chips. Verbatim port of `promptChips`.
- *   ScrollView(.horizontal) HStack spacing 8
- *     Capsule (translucent surface + subtle accent tint + hairline stroke)
+ * Horizontal scrolling chips.
+ *   Capsule (translucent surface + subtle accent tint + hairline stroke)
  *     padding 14h × 9v, footnote rounded medium, calorie text
  */
 @Composable
@@ -95,10 +95,10 @@ private fun PromptChip(text: String, enabled: Boolean, onTap: (String) -> Unit) 
 }
 
 /**
- * Capsule input bar. Verbatim port of `inputBar`.
- *   capsule containing TextField + 34dp gradient send button
+ * Capsule input bar.
+ *   capsule containing TextField + send button
  *   translucent fill + hairline stroke + soft shadow
- *   send: arrow.up icon, 16sp bold, white-on-gradient when canSend, gray otherwise
+ *   send: arrow-up icon, white-on-accent when canSend, gray otherwise
  */
 @Composable
 internal fun InputBar(
@@ -144,11 +144,18 @@ internal fun InputBar(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(4.dp)
-                            .size(24.dp)
-                            .clip(CircleShape)
-                            .background(Color.Black.copy(alpha = 0.55f))
                     ) {
-                        Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.cd_remove_image), tint = Color.White, modifier = Modifier.size(14.dp))
+                        // Small visual scrim over the photo corner; the
+                        // IconButton keeps the 48dp touch target.
+                        Box(
+                            Modifier
+                                .size(24.dp)
+                                .clip(CircleShape)
+                                .background(Color.Black.copy(alpha = 0.55f)),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.cd_remove_image), tint = Color.White, modifier = Modifier.size(14.dp))
+                        }
                     }
                 }
             }
@@ -253,21 +260,28 @@ private fun CoachMediaActionButton(
 ) {
     Box(
         modifier = Modifier
-            .size(30.dp)
-            .clip(CircleShape)
-            .background(
-                if (enabled) MaterialTheme.colorScheme.primary.copy(alpha = 0.11f)
-                else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
-            )
+            .minimumInteractiveComponentSize()
             .clickable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
-        Icon(
-            icon,
-            contentDescription = contentDescription,
-            tint = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.32f),
-            modifier = Modifier.size(17.dp)
-        )
+        // 30dp visual circle inside the 48dp touch target.
+        Box(
+            modifier = Modifier
+                .size(30.dp)
+                .clip(CircleShape)
+                .background(
+                    if (enabled) MaterialTheme.colorScheme.primary.copy(alpha = 0.11f)
+                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                icon,
+                contentDescription = contentDescription,
+                tint = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.32f),
+                modifier = Modifier.size(17.dp)
+            )
+        }
     }
 }
 

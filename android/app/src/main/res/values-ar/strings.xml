@@ -2324,6 +2324,7 @@
     <string name="body_fat_method_dexa">DEXA</string>
     <string name="body_fat_method_tape">الشريط</string>
     <string name="cd_collapsed">مطوي</string>
+    <string name="cd_change_meal_type">تغيير نوع الوجبة</string>
     <string name="cd_decrease">إنقاص</string>
     <string name="cd_expanded">موسَّع</string>
     <string name="cd_import_mealie">استيراد من Mealie</string>

@@ -2279,6 +2279,7 @@ macro\'s opnieuw verdeeld over het nieuwe calorieëntotaal</string>
     <string name="body_fat_method_dexa">DEXA</string>
     <string name="body_fat_method_tape">Meetlint</string>
     <string name="cd_collapsed">Ingeklapt</string>
+    <string name="cd_change_meal_type">Maaltijdtype wijzigen</string>
     <string name="cd_decrease">Verlagen</string>
     <string name="cd_expanded">Uitgeklapt</string>
     <string name="cd_import_mealie">Importeren uit Mealie</string>

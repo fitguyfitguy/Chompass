@@ -417,7 +417,7 @@ private fun QueueEntryRow(
                 strokeWidth = 2.5.dp,
             )
         } else {
-            IconButton(onClick = onRun, modifier = Modifier.size(40.dp)) {
+            IconButton(onClick = onRun) {
                 Icon(
                     Icons.Filled.PlayArrow,
                     contentDescription = stringResource(R.string.analysis_queue_run_now),
@@ -425,7 +425,7 @@ private fun QueueEntryRow(
                 )
             }
         }
-        IconButton(onClick = onRunWith, modifier = Modifier.size(40.dp)) {
+        IconButton(onClick = onRunWith) {
             Icon(
                 Icons.Outlined.SwapHoriz,
                 contentDescription = stringResource(R.string.queue_run_with),
@@ -433,7 +433,7 @@ private fun QueueEntryRow(
                 modifier = Modifier.size(18.dp),
             )
         }
-        IconButton(onClick = onEdit, modifier = Modifier.size(40.dp)) {
+        IconButton(onClick = onEdit) {
             Icon(
                 Icons.Filled.Edit,
                 contentDescription = stringResource(R.string.analysis_queue_edit),
@@ -441,7 +441,7 @@ private fun QueueEntryRow(
                 modifier = Modifier.size(18.dp),
             )
         }
-        IconButton(onClick = onDelete, modifier = Modifier.size(40.dp)) {
+        IconButton(onClick = onDelete) {
             Icon(
                 Icons.Filled.Delete,
                 contentDescription = stringResource(R.string.action_delete),
@@ -508,7 +508,7 @@ private fun HistoryEntryRow(
         if (running) {
             CircularProgressIndicator(modifier = Modifier.size(22.dp), strokeWidth = 2.5.dp)
         } else {
-            IconButton(onClick = onRun, modifier = Modifier.size(40.dp)) {
+            IconButton(onClick = onRun) {
                 Icon(
                     Icons.Filled.PlayArrow,
                     contentDescription = stringResource(R.string.analysis_queue_re_run),
@@ -516,7 +516,7 @@ private fun HistoryEntryRow(
                 )
             }
         }
-        IconButton(onClick = onRunWith, modifier = Modifier.size(40.dp)) {
+        IconButton(onClick = onRunWith) {
             Icon(
                 Icons.Outlined.SwapHoriz,
                 contentDescription = stringResource(R.string.queue_run_with),
@@ -524,7 +524,7 @@ private fun HistoryEntryRow(
                 modifier = Modifier.size(18.dp),
             )
         }
-        IconButton(onClick = onDelete, modifier = Modifier.size(40.dp)) {
+        IconButton(onClick = onDelete) {
             Icon(
                 Icons.Filled.Delete,
                 contentDescription = stringResource(R.string.action_delete),
@@ -750,16 +750,23 @@ private fun EditQueuedSheet(
                                 onClick = { onRemovePhoto(filename) },
                                 modifier = Modifier
                                     .align(Alignment.TopEnd)
-                                    .padding(4.dp)
-                                    .size(28.dp)
-                                    .background(Color.Black.copy(alpha = 0.62f), CircleShape),
+                                    .padding(4.dp),
                             ) {
-                                Icon(
-                                    Icons.Filled.Close,
-                                    contentDescription = stringResource(R.string.action_remove),
-                                    tint = Color.White,
-                                    modifier = Modifier.size(14.dp),
-                                )
+                                // Small visual scrim over the photo corner; the
+                                // IconButton keeps the 48dp touch target.
+                                Box(
+                                    Modifier
+                                        .size(28.dp)
+                                        .background(Color.Black.copy(alpha = 0.62f), CircleShape),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    Icon(
+                                        Icons.Filled.Close,
+                                        contentDescription = stringResource(R.string.action_remove),
+                                        tint = Color.White,
+                                        modifier = Modifier.size(14.dp),
+                                    )
+                                }
                             }
                         }
                     }

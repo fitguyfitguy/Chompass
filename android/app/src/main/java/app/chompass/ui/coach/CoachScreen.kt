@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -65,6 +66,7 @@ import app.chompass.models.SpeechProvider
 import app.chompass.services.decodeSampledBitmap
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
+import app.chompass.ui.components.contentMaxWidth
 import app.chompass.ui.components.InAppCameraCaptureDialog
 import app.chompass.ui.components.gramsText
 import app.chompass.ui.components.energyText
@@ -186,20 +188,27 @@ fun CoachScreen(container: AppContainer) {
                     Box(
                         modifier = Modifier
                             .padding(end = 12.dp)
-                            .size(34.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.10f))
+                            .minimumInteractiveComponentSize()
                             .clickable(enabled = canReset) { showResetConfirm = true },
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            Icons.Filled.Replay,
-                            contentDescription = stringResource(R.string.coach_reset_chat_a11y),
-                            tint = if (canReset)
-                                MaterialTheme.colorScheme.onBackground
-                            else MaterialTheme.colorScheme.outline,
-                            modifier = Modifier.size(18.dp)
-                        )
+                        // 34dp visual circle inside the 48dp touch target.
+                        Box(
+                            modifier = Modifier
+                                .size(34.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.10f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Filled.Replay,
+                                contentDescription = stringResource(R.string.coach_reset_chat_a11y),
+                                tint = if (canReset)
+                                    MaterialTheme.colorScheme.onBackground
+                                else MaterialTheme.colorScheme.outline,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
                     }
                 }
             )
@@ -213,7 +222,7 @@ fun CoachScreen(container: AppContainer) {
         val restClearance = padding.calculateBottomPadding() + BottomNavDockedControlPadding
         Column(
             Modifier
-                .fillMaxSize()
+                .contentMaxWidth()
                 .padding(top = padding.calculateTopPadding())
                 // Track the keyboard rigidly: bottom inset = max(ime, rest clearance).
                 // windowInsetsPadding animates it in the layout phase, so the bar sits

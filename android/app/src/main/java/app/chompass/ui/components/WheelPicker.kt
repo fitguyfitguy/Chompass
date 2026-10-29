@@ -85,7 +85,7 @@ import androidx.compose.ui.semantics.SemanticsProperties
 
 import kotlin.math.roundToInt
 
-private val ITEM_HEIGHT = 44.dp
+private val ITEM_HEIGHT = 48.dp
 private const val VISIBLE_ITEMS = 5
 private val ROW_HEIGHT = ITEM_HEIGHT * VISIBLE_ITEMS
 /** Unit wheels and other tiny ranges: kill ballistic fling so a flick is one row. */
@@ -483,7 +483,7 @@ fun FeetInchesWheelPicker(
 }
 
 /**
- * iOS-style split decimal picker — integer wheel + tenths wheel + unit label.
+ * Split decimal picker — integer wheel + tenths wheel + unit label.
  * e.g. 72 . 4 kg. Much nicer than a single 2000-row DecimalWheelPicker for weight.
  */
 @Composable

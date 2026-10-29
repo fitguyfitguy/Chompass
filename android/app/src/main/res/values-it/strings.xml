@@ -2281,6 +2281,7 @@ macro riequilibrate al nuovo totale calorico</string>
     <string name="body_fat_method_dexa">DEXA</string>
     <string name="body_fat_method_tape">Metro</string>
     <string name="cd_collapsed">Compresso</string>
+    <string name="cd_change_meal_type">Cambia tipo di pasto</string>
     <string name="cd_decrease">Diminuisci</string>
     <string name="cd_expanded">Espanso</string>
     <string name="cd_import_mealie">Importa da Mealie</string>

@@ -84,7 +84,7 @@ internal suspend fun PreferencesStore.setEnergyUnitImpl(v: String) { dataStore.e
 internal val PreferencesStore.preferGramsByDefaultImpl: Flow<Boolean> get() = dataStore.data.map { it[Keys.PREFER_GRAMS_BY_DEFAULT] ?: false }
 internal suspend fun PreferencesStore.setPreferGramsByDefaultImpl(v: Boolean) { dataStore.edit { it[Keys.PREFER_GRAMS_BY_DEFAULT] = v } }
 
-    /** "system" | "light" | "dark". Mirrors iOS @AppStorage("appearanceMode"). */
+    /** "system" | "light" | "dark". */
 internal val PreferencesStore.appearanceModeImpl: Flow<String> get() = dataStore.data.map { it[Keys.APPEARANCE_MODE] ?: "system" }
 internal suspend fun PreferencesStore.setAppearanceModeImpl(v: String) { dataStore.edit { it[Keys.APPEARANCE_MODE] = v } }
 
@@ -224,7 +224,7 @@ internal suspend fun PreferencesStore.setProgressNutrientAveragesSelectionImpl(k
     }
 }
 
-    /** "RECENTS" | "FREQUENT" | "FAVORITES". Mirrors iOS @AppStorage("lastRecentsSegment"). */
+    /** "RECENTS" | "FREQUENT" | "FAVORITES". */
 internal val PreferencesStore.lastSavedMealsSegmentImpl: Flow<String> get() = dataStore.data.map { it[Keys.LAST_SAVED_MEALS_SEGMENT] ?: "RECENTS" }
 internal suspend fun PreferencesStore.setLastSavedMealsSegmentImpl(v: String) { dataStore.edit { it[Keys.LAST_SAVED_MEALS_SEGMENT] = v } }
 
@@ -232,7 +232,7 @@ internal suspend fun PreferencesStore.setLastSavedMealsSegmentImpl(v: String) { 
 internal val PreferencesStore.lastSavedMealsSortImpl: Flow<String> get() = dataStore.data.map { it[Keys.LAST_SAVED_MEALS_SORT] ?: "recent" }
 internal suspend fun PreferencesStore.setLastSavedMealsSortImpl(v: String) { dataStore.edit { it[Keys.LAST_SAVED_MEALS_SORT] = v } }
 
-    /** "standard" | "latestMealsFirst". Mirrors iOS @AppStorage("foodLogSortOrder"). */
+    /** "standard" | "latestMealsFirst". */
 internal val PreferencesStore.foodLogSortOrderImpl: Flow<String> get() = dataStore.data.map { it[Keys.FOOD_LOG_SORT_ORDER] ?: "standard" }
 internal suspend fun PreferencesStore.setFoodLogSortOrderImpl(v: String) { dataStore.edit { it[Keys.FOOD_LOG_SORT_ORDER] = v } }
 
