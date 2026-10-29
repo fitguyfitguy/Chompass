@@ -43,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.LocaleFormat
 import app.chompass.models.WeekStartDay
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppMotion
 import java.time.DayOfWeek
 import java.time.LocalDate
