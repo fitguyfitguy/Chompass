@@ -19,7 +19,9 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 ### Changed
 
 - **A calmer, more consistent look across every screen** (Android): cards, sheets, dialogs and lists now share one set of rounded corners and text shades. On tablets and wide displays, Progress and Settings keep their content at a readable width instead of stretching edge to edge.
-- **Numbers and touches respond with motion** (Android): the Home calorie number counts up when it changes, and rows, chips and buttons give a short press animation.
+- **Numbers and touches respond with motion** (Android): the Home calorie number counts up when it changes, live counters such as steps, water, fasting and the activity ring roll to their new value, and rows, chips, cards and buttons across Home, Progress, Coach and Settings give a short press animation.
+- **Screens and dialogs move with purpose** (Android): opening a settings page or detail screen scales the new page in while the old one fades; switching tabs crossfades; dialogs settle in with a short scale. The fasting Start/Stop button, the voice hint and segmented controls animate when their value changes.
+- **Glass under the bottom bar and sheet headers** (Android): content that scrolls beneath the bottom navigation bar or a pinned sheet toolbar now blurs behind the frosted glass, following the Frosted glass toggle. With the toggle off, both draw solid as before.
 - **Easier to touch, read and hear** (Android): touch targets keep a comfortable size, the smallest text no longer drops below a readable size, dialogs follow the standard Material 3 layout, and screen readers announce actions such as Change meal type on food rows.
 - **Chompass is now licensed under the GNU GPL, version 3 or later** (Android and PWA): derived from its MIT-licensed upstream Fud AI with upstream attribution preserved (see NOTICE), the project as a whole now carries a strong copyleft license — forks and rebuilds must ship their source under the same terms. The in-app About screen, README, website and F-Droid listing all show the new license.
 
