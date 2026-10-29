@@ -58,8 +58,8 @@ fun StepsCard(
             )
         }
         Spacer(Modifier.height(4.dp))
-        Text(
-            text = LocaleFormat.integer(steps),
+        AnimatedNumberText(
+            value = LocaleFormat.integer(steps),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = accentColor
@@ -91,7 +91,7 @@ fun ActiveCaloriesCard(
             tint = accentColor,
             modifier = Modifier.size(16.dp)
         )
-        Text(
+        AnimatedNumberText(
             LocaleFormat.integer(EnergyFormat.quantity(activeCalories, LocalEnergyUnit.current)),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,

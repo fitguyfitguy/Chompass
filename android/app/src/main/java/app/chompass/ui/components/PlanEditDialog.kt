@@ -1,8 +1,8 @@
 package app.chompass.ui.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -12,8 +12,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import app.chompass.R
 import app.chompass.models.CalorieSafety
 import app.chompass.models.EnergyFormat
@@ -61,21 +63,29 @@ internal fun PlanEditDialog(
         PlanField.CARBS -> AppColors.Carbs
         PlanField.FAT -> AppColors.Fat
     }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(field.titleRes), color = accent) },
-        text = {
-            NumericWheelPicker(
-                value = EnergyFormat.quantity(picked, unit),
-                onValueChange = { picked = EnergyFormat.toKcal(it, unit) },
-                min = EnergyFormat.quantity(min, unit),
-                max = EnergyFormat.quantity(max, unit),
-                unit = if (field == PlanField.CALORIES) energyUnitLabel() else stringResource(R.string.unit_g),
-                step = EnergyFormat.wheelStep(step, unit),
-                modifier = Modifier.fillMaxWidth()
-            )
-        },
-        confirmButton = {
+    ChompassDialog(onDismissRequest = onDismiss) {
+        Text(
+            stringResource(field.titleRes),
+            style = MaterialTheme.typography.headlineSmall,
+            color = accent,
+        )
+        NumericWheelPicker(
+            value = EnergyFormat.quantity(picked, unit),
+            onValueChange = { picked = EnergyFormat.toKcal(it, unit) },
+            min = EnergyFormat.quantity(min, unit),
+            max = EnergyFormat.quantity(max, unit),
+            unit = if (field == PlanField.CALORIES) energyUnitLabel() else stringResource(R.string.unit_g),
+            step = EnergyFormat.wheelStep(step, unit),
+            modifier = Modifier.fillMaxWidth()
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+        ) {
+            if (onReset != null) {
+                TextButton(onClick = onReset) { Text(stringResource(R.string.action_reset)) }
+            }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
             TextButton(onClick = {
                 // Typed mode keeps the wheel draft until Done / flip-to-wheel;
                 // Save must flush it before reading `picked` (#63 family).
@@ -84,14 +94,6 @@ internal fun PlanEditDialog(
             }) {
                 Text(stringResource(R.string.action_save), color = accent)
             }
-        },
-        dismissButton = {
-            Row {
-                if (onReset != null) {
-                    TextButton(onClick = onReset) { Text(stringResource(R.string.action_reset)) }
-                }
-                TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
-            }
         }
-    )
+    }
 }

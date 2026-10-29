@@ -1,7 +1,9 @@
 package app.chompass.ui.components
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -104,15 +106,17 @@ private fun OptionPickerRow(
     onClick: () -> Unit,
 ) {
     val shape = MaterialTheme.shapes.medium
+    val rowInteraction = remember { MutableInteractionSource() }
     Row(
         Modifier
             .fillMaxWidth()
             .clip(shape)
+            .pressScale(rowInteraction)
             .background(
                 if (isSelected) MaterialTheme.colorScheme.primaryContainer
                 else MaterialTheme.colorScheme.surfaceContainerHigh,
             )
-            .clickable(onClick = onClick)
+            .clickable(interactionSource = rowInteraction, indication = LocalIndication.current, onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

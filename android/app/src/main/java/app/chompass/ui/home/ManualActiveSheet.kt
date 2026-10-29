@@ -1,7 +1,10 @@
 package app.chompass.ui.home
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import app.chompass.ui.components.pressScale
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -146,12 +149,14 @@ private fun ManualActiveHistoryRow(
     onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
+    val rowInteraction = remember { MutableInteractionSource() }
     Row(
         Modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
+            .pressScale(rowInteraction)
             .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.55f))
-            .clickable(onClick = onEdit)
+            .clickable(interactionSource = rowInteraction, indication = LocalIndication.current, onClick = onEdit)
             .padding(start = 14.dp, end = 4.dp, top = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

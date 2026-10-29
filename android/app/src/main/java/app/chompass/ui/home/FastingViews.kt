@@ -1,5 +1,10 @@
 package app.chompass.ui.home
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,6 +37,8 @@ import androidx.compose.ui.unit.sp
 import app.chompass.R
 import app.chompass.models.FastingPhase
 import app.chompass.models.FastingSession
+import app.chompass.ui.components.AnimatedNumberText
+import app.chompass.ui.theme.AppMotion
 import app.chompass.ui.util.formatClockMillis
 
 /**
@@ -141,8 +148,8 @@ fun FastingProgressRow(
                 )
             }
             Spacer(Modifier.weight(1f))
-            Text(
-                statusLabel,
+            AnimatedNumberText(
+                value = statusLabel,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp,
             )
@@ -158,8 +165,8 @@ fun FastingProgressRow(
                 trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
             )
             if (countdownHint != null) {
-                Text(
-                    countdownHint,
+                AnimatedNumberText(
+                    value = countdownHint,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 11.sp,
                 )
@@ -168,27 +175,14 @@ fun FastingProgressRow(
         // Auto mode is self-driving: no Start while idle/eating, no Stop on an
         // auto-started fast. A fast the user started manually (launcher) still
         // shows Stop so it can be ended.
-        if (phase == FastingPhase.FASTING) {
-            if (!autoStarted) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(
-                        onClick = onStop,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                        ),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
-                        modifier = Modifier
-                            .minimumInteractiveComponentSize()
-                            .heightIn(min = 48.dp),
-                    ) {
-                        Text(stringResource(R.string.fasting_stop), fontSize = 13.sp)
-                    }
-                }
-            }
-        } else if (!autoMode) {
+        // One Start/Stop slot so the label crossfades when the fast state
+        // flips (Morphe label-swap) instead of two buttons hard-swapping.
+        val showStop = phase == FastingPhase.FASTING && !autoStarted
+        val showStart = phase != FastingPhase.FASTING && !autoMode
+        if (showStop || showStart) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(
-                    onClick = onStart,
+                    onClick = if (showStop) onStop else onStart,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                     ),
@@ -197,7 +191,16 @@ fun FastingProgressRow(
                         .minimumInteractiveComponentSize()
                         .heightIn(min = 48.dp),
                 ) {
-                    Text(stringResource(R.string.fasting_start), fontSize = 13.sp)
+                    AnimatedContent(
+                        targetState = stringResource(if (showStop) R.string.fasting_stop else R.string.fasting_start),
+                        transitionSpec = {
+                            (fadeIn(tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)))
+                                .togetherWith(fadeOut(tween(AppMotion.TweenFastMs, easing = AppMotion.EasingStandard)))
+                        },
+                        label = "fastingActionLabel",
+                    ) { label ->
+                        Text(label, fontSize = 13.sp)
+                    }
                 }
             }
         }
@@ -286,24 +289,12 @@ fun FastingHubControl(
             // Auto mode is self-driving: Start only in manual mode; Stop only
             // for a fast the user started manually (launcher), never an
             // auto-started one.
-            if (phase == FastingPhase.FASTING) {
-                if (!autoStarted) {
-                    Button(
-                        onClick = onStop,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                        ),
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
-                        modifier = Modifier
-                            .minimumInteractiveComponentSize()
-                            .heightIn(min = 48.dp),
-                    ) {
-                        Text(stringResource(R.string.fasting_stop), fontSize = 13.sp)
-                    }
-                }
-            } else if (!autoMode) {
+            // Same single-slot Start/Stop crossfade as the Home fasting card.
+            val showStop = phase == FastingPhase.FASTING && !autoStarted
+            val showStart = phase != FastingPhase.FASTING && !autoMode
+            if (showStop || showStart) {
                 Button(
-                    onClick = onStart,
+                    onClick = if (showStop) onStop else onStart,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                     ),
@@ -312,7 +303,16 @@ fun FastingHubControl(
                         .minimumInteractiveComponentSize()
                         .heightIn(min = 48.dp),
                 ) {
-                    Text(stringResource(R.string.fasting_start), fontSize = 13.sp)
+                    AnimatedContent(
+                        targetState = stringResource(if (showStop) R.string.fasting_stop else R.string.fasting_start),
+                        transitionSpec = {
+                            (fadeIn(tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)))
+                                .togetherWith(fadeOut(tween(AppMotion.TweenFastMs, easing = AppMotion.EasingStandard)))
+                        },
+                        label = "fastingActionLabel",
+                    ) { label ->
+                        Text(label, fontSize = 13.sp)
+                    }
                 }
             }
         }

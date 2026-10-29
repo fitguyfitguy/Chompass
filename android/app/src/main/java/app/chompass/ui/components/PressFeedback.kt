@@ -16,6 +16,13 @@ import app.chompass.ui.theme.AppMotion
  * The animated value is read inside the `graphicsLayer` block, so a held press
  * repaints the layer instead of recomposing the composition every frame.
  * Draw-only: layout and touch target stay at full size.
+ *
+ * Convention for clickable surfaces: hoist one source and share it —
+ * `val src = remember { MutableInteractionSource() }`, then pass the same
+ * instance to `clickable(interactionSource = src, indication = LocalIndication.current)`
+ * (default ripple stays) and to `.pressScale(src)`. Rows that set
+ * `indication = null` (iOS-look rows) keep the null indication and add only
+ * the scale.
  */
 @Composable
 fun Modifier.pressScale(

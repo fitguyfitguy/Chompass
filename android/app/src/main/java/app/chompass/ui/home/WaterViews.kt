@@ -1,10 +1,14 @@
 package app.chompass.ui.home
 
+import app.chompass.ui.components.AnimatedNumberText
 import app.chompass.ui.components.ChompassPrimaryButton
 import app.chompass.ui.components.rememberChompassSheetState
 import app.chompass.ui.components.ChompassBottomSheet
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import app.chompass.ui.components.pressScale
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -75,11 +79,13 @@ fun WaterProgressRow(
     modifier: Modifier = Modifier,
 ) {
     val progress = if (goal > 0) (current.toFloat() / goal).coerceIn(0f, 1f) else 0f
+    val headerInteraction = remember { MutableInteractionSource() }
     val rowModifier = if (onClick != null) {
         modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
-            .clickable(onClick = onClick)
+            .pressScale(headerInteraction)
+            .clickable(interactionSource = headerInteraction, indication = LocalIndication.current, onClick = onClick)
             .padding(vertical = 4.dp)
     } else {
         modifier
@@ -122,8 +128,8 @@ fun WaterProgressRow(
                 )
             }
             Spacer(Modifier.weight(1f))
-            Text(
-                waterProgressLabel(current, goal, useMetric),
+            AnimatedNumberText(
+                value = waterProgressLabel(current, goal, useMetric),
                 color = MaterialTheme.colorScheme.water,
                 fontSize = 12.sp,
             )
@@ -307,12 +313,14 @@ private fun WaterHistoryRow(
     onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
+    val rowInteraction = remember { MutableInteractionSource() }
     Row(
         Modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
+            .pressScale(rowInteraction)
             .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.55f))
-            .clickable(onClick = onEdit)
+            .clickable(interactionSource = rowInteraction, indication = LocalIndication.current, onClick = onEdit)
             .padding(start = 14.dp, end = 4.dp, top = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

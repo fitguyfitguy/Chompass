@@ -1,7 +1,9 @@
 package app.chompass.ui.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -72,6 +74,7 @@ import app.chompass.models.WeightGoal
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.ChompassTextField
 import app.chompass.ui.components.ChompassIconBubble
+import app.chompass.ui.components.pressScale
 import app.chompass.ui.theme.AppThemeColor
 import app.chompass.ui.theme.AppSpacing
 import java.time.ZoneId
@@ -155,10 +158,12 @@ internal fun SettingRow(
     inlineMenu: Boolean = false,
     onClick: () -> Unit
 ) {
+    val rowInteraction = remember { MutableInteractionSource() }
     Row(
         Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .pressScale(rowInteraction)
+            .clickable(interactionSource = rowInteraction, indication = LocalIndication.current, onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -213,10 +218,12 @@ internal fun ActivityLevelSettingRow(
     value: String,
     onClick: () -> Unit
 ) {
+    val rowInteraction = remember { MutableInteractionSource() }
     Row(
         Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .pressScale(rowInteraction)
+            .clickable(interactionSource = rowInteraction, indication = LocalIndication.current, onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -268,10 +275,12 @@ internal fun LockableGoalRow(
     onToggleLock: () -> Unit,
     iconTint: Color = MaterialTheme.colorScheme.primary,
 ) {
+    val rowInteraction = remember { MutableInteractionSource() }
     Row(
         Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .pressScale(rowInteraction)
+            .clickable(interactionSource = rowInteraction, indication = LocalIndication.current, onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -313,11 +322,13 @@ internal fun GoalStatusChip(locked: Boolean, onClick: () -> Unit) {
     } else {
         stringResource(R.string.settings_goal_chip_auto_cd)
     }
+    val chipInteraction = remember { MutableInteractionSource() }
     Box(
         Modifier
+            .pressScale(chipInteraction)
             .clip(MaterialTheme.shapes.small)
             .semantics { contentDescription = chipCd }
-            .clickable(onClick = onClick, role = Role.Button)
+            .clickable(interactionSource = chipInteraction, indication = LocalIndication.current, onClick = onClick, role = Role.Button)
             .background(chipColor.copy(alpha = 0.14f))
             .padding(horizontal = 8.dp, vertical = 3.dp),
         contentAlignment = Alignment.Center,

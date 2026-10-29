@@ -122,7 +122,7 @@ fun ActivityRing(
 @Composable
 fun RingCenterLabel(primary: String, secondary: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
+        AnimatedNumberText(
             primary,
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold

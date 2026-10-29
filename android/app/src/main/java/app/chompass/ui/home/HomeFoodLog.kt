@@ -2,8 +2,11 @@ package app.chompass.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import app.chompass.ui.components.pressScale
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
@@ -119,12 +122,14 @@ internal fun MealSectionHeader(
     val nutritionCd = stringResource(R.string.nutrition_details_title)
     val calories = totalCalories
     val summaryOnOwnLine = calories != null && macroChips.size >= 4
+    val headerInteraction = remember { MutableInteractionSource() }
     Column(
         Modifier
             .fillMaxWidth()
+            .pressScale(headerInteraction, enabled = onClick != null)
             .then(
                 if (onClick != null) {
-                    Modifier.clickable(role = Role.Button, onClickLabel = nutritionCd, onClick = onClick)
+                    Modifier.clickable(interactionSource = headerInteraction, indication = LocalIndication.current, role = Role.Button, onClickLabel = nutritionCd, onClick = onClick)
                 } else {
                     Modifier
                 },
@@ -470,6 +475,7 @@ internal fun SwipeableFoodRow(
         val deleteTriggerPx = rowWidthPx * 0.55f
         Box(Modifier.fillMaxWidth()) {
             SwipeBackground(offsetPx = offsetPx, isFavorite = isFavorite, rowShape = rowShape)
+            val swipeInteraction = remember { MutableInteractionSource() }
             Box(
                 modifier = Modifier
                     .offset { IntOffset(offsetPx.roundToInt(), 0) }
@@ -492,7 +498,10 @@ internal fun SwipeableFoodRow(
                             }
                         )
                     }
+                    .pressScale(swipeInteraction)
                     .combinedClickable(
+                        interactionSource = swipeInteraction,
+                        indication = LocalIndication.current,
                         onClick = onTap,
                         onLongClick = onLongPress
                     )

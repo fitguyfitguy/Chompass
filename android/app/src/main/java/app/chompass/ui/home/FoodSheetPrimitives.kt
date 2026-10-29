@@ -14,6 +14,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -88,6 +90,7 @@ import app.chompass.models.CurrentMealCatalog
 import app.chompass.models.MealType
 import app.chompass.models.ServingUnitOption
 import app.chompass.ui.components.isDarkTheme
+import app.chompass.ui.components.pressScale
 import app.chompass.ui.components.MagnitudeDrafts
 import app.chompass.models.MacroValueFormatter
 import app.chompass.ui.components.SplitDecimalWheelPicker
@@ -282,16 +285,23 @@ internal fun SheetStickyPrimaryBar(
                 }
             }
             val shape = MaterialTheme.shapes.extraLarge
+            val primaryInteraction = remember { MutableInteractionSource() }
             Box(
                 Modifier
                     .fillMaxWidth()
                     .clip(shape)
+                    .pressScale(primaryInteraction, enabled = primaryEnabled)
                     .background(MaterialTheme.colorScheme.primary)
                     .alpha(if (primaryEnabled) 1f else 0.45f)
-                    .clickable(enabled = primaryEnabled, onClick = {
-                        MagnitudeDrafts.commitAll()
-                        onPrimary()
-                    })
+                    .clickable(
+                        interactionSource = primaryInteraction,
+                        indication = LocalIndication.current,
+                        enabled = primaryEnabled,
+                        onClick = {
+                            MagnitudeDrafts.commitAll()
+                            onPrimary()
+                        },
+                    )
                     .padding(vertical = 14.dp),
                 contentAlignment = Alignment.Center,
             ) {
@@ -334,10 +344,12 @@ internal fun SheetToolbarPill(
             .background(MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f))
             .border(0.5.dp, MaterialTheme.colorScheme.outlineVariant, shape)
     }).alpha(if (enabled) 1f else 0.45f)
+    val pillInteraction = remember { MutableInteractionSource() }
     Box(
         modifier
+            .pressScale(pillInteraction, enabled = enabled)
             .then(pillContainer)
-            .clickable(enabled = enabled, onClick = onClick)
+            .clickable(interactionSource = pillInteraction, indication = LocalIndication.current, enabled = enabled, onClick = onClick)
             .padding(horizontal = horizontalPadding, vertical = 8.dp)
     ) {
         Text(
@@ -377,8 +389,10 @@ internal fun SheetPillRow(
     val shape = RoundedCornerShape(percent = 50)
     val rowFill = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f)
     val rowBorder = MaterialTheme.colorScheme.outlineVariant
+    val rowInteraction = remember { MutableInteractionSource() }
     var base = Modifier
         .fillMaxWidth()
+        .pressScale(rowInteraction, enabled = onClick != null)
         .clip(shape)
         .background(rowFill)
         .border(0.5.dp, rowBorder, shape)
@@ -386,7 +400,7 @@ internal fun SheetPillRow(
         base = base.semantics { this.stateDescription = stateDescription }
     }
     val withClick = if (onClick != null) {
-        base.clickable(onClickLabel = onClickLabel, role = Role.Button, onClick = onClick)
+        base.clickable(interactionSource = rowInteraction, indication = LocalIndication.current, onClickLabel = onClickLabel, role = Role.Button, onClick = onClick)
     } else {
         base
     }
@@ -880,12 +894,14 @@ internal fun SheetGlassDropdownMenuItem(
 ) {
     val isDark = isDarkTheme()
     val checkTint = if (isDark) Color.White else MaterialTheme.colorScheme.primary
+    val itemInteraction = remember { MutableInteractionSource() }
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 7.dp, vertical = 1.dp)
             .clip(MaterialTheme.shapes.medium)
-            .clickable(onClick = onClick)
+            .pressScale(itemInteraction)
+            .clickable(interactionSource = itemInteraction, indication = LocalIndication.current, onClick = onClick)
             // ~48dp tap target per row (Material menu guidance), matching the
             // roomier iOS add-menu rows instead of the old cramped ~36dp.
             .padding(horizontal = 10.dp, vertical = 12.dp),

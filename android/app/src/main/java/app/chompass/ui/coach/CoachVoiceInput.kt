@@ -8,7 +8,12 @@ import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import app.chompass.ui.theme.AppMotion
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -372,19 +377,40 @@ fun CoachRecordingIndicator(controller: CoachVoiceController, modifier: Modifier
 
         val armed = controller.cancelArmed
         val live = controller.liveText
-        Text(
-            when {
+        if (controller.phase == VoicePhase.Holding || live.isBlank()) {
+            // Fixed phase hints crossfade on change; the live transcript streams
+            // as plain text below (animating every recognition chunk strobes).
+            val hint = when {
                 controller.phase == VoicePhase.Holding && armed -> stringResource(R.string.voice_release_to_cancel)
                 controller.phase == VoicePhase.Holding -> stringResource(R.string.voice_slide_to_cancel)
-                live.isNotBlank() -> live
                 else -> stringResource(R.string.voice_listening)
-            },
-            fontSize = 14.sp,
-            color = if (armed) MaterialTheme.colorScheme.error
-                    else MaterialTheme.colorScheme.outline,
-            maxLines = 1,
-            modifier = Modifier.weight(1f, fill = false)
-        )
+            }
+            AnimatedContent(
+                targetState = hint,
+                transitionSpec = {
+                    (fadeIn(tween(AppMotion.TweenDefaultMs, easing = AppMotion.EasingStandard)))
+                        .togetherWith(fadeOut(tween(AppMotion.TweenFastMs, easing = AppMotion.EasingStandard)))
+                },
+                modifier = Modifier.weight(1f, fill = false),
+                label = "voicePhaseHint",
+            ) { text ->
+                Text(
+                    text,
+                    fontSize = 14.sp,
+                    color = if (armed) MaterialTheme.colorScheme.error
+                            else MaterialTheme.colorScheme.outline,
+                    maxLines = 1,
+                )
+            }
+        } else {
+            Text(
+                live,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.outline,
+                maxLines = 1,
+                modifier = Modifier.weight(1f, fill = false)
+            )
+        }
     }
 }
 

@@ -9,10 +9,16 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.compose.foundation.background
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import app.chompass.ui.components.pressScale
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -29,7 +35,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Replay
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.minimumInteractiveComponentSize
@@ -185,11 +190,13 @@ fun CoachScreen(container: AppContainer) {
                 ),
                 actions = {
                     val canReset = ui.messages.isNotEmpty()
+                    val resetInteraction = remember { MutableInteractionSource() }
                     Box(
                         modifier = Modifier
                             .padding(end = 12.dp)
                             .minimumInteractiveComponentSize()
-                            .clickable(enabled = canReset) { showResetConfirm = true },
+                            .pressScale(resetInteraction, enabled = canReset)
+                            .clickable(interactionSource = resetInteraction, indication = LocalIndication.current, enabled = canReset) { showResetConfirm = true },
                         contentAlignment = Alignment.Center
                     ) {
                         // 34dp visual circle inside the 48dp touch target.
@@ -354,20 +361,25 @@ fun CoachScreen(container: AppContainer) {
     }
 
     if (showResetConfirm) {
-        AlertDialog(
-            onDismissRequest = { showResetConfirm = false },
-            title = { Text(stringResource(R.string.coach_reset_dialog_title)) },
-            text = { Text(stringResource(R.string.coach_reset_dialog_message)) },
-            confirmButton = {
+        ChompassDialog(onDismissRequest = { showResetConfirm = false }) {
+            Text(
+                stringResource(R.string.coach_reset_dialog_title),
+                style = MaterialTheme.typography.headlineSmall,
+            )
+            Text(stringResource(R.string.coach_reset_dialog_message), style = MaterialTheme.typography.bodyMedium)
+            // Destructive primary keeps the error tint; ChompassDialogActions
+            // has no destructive slot.
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+            ) {
+                TextButton(onClick = { showResetConfirm = false }) { Text(stringResource(R.string.action_cancel)) }
                 TextButton(onClick = {
                     vm.resetConversation()
                     showResetConfirm = false
                 }) { Text(stringResource(R.string.coach_reset_confirm), color = MaterialTheme.colorScheme.error) }
-            },
-            dismissButton = {
-                TextButton(onClick = { showResetConfirm = false }) { Text(stringResource(R.string.action_cancel)) }
             }
-        )
+        }
     }
 
 }

@@ -3,7 +3,11 @@ package app.chompass.ui.coach
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.runtime.remember
+import app.chompass.ui.components.pressScale
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -77,12 +81,14 @@ private fun PromptChip(text: String, enabled: Boolean, onTap: (String) -> Unit) 
     val shape = RoundedCornerShape(percent = 50)
     val isDark = isDarkTheme()
     val borderColor = MaterialTheme.colorScheme.outlineVariant
+    val chipInteraction = remember { MutableInteractionSource() }
     Box(
         Modifier
             .clip(shape)
+            .pressScale(chipInteraction, enabled = enabled)
             .background(MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f))
             .border(0.5.dp, borderColor, shape)
-            .clickable(enabled = enabled) { onTap(text) }
+            .clickable(interactionSource = chipInteraction, indication = LocalIndication.current, enabled = enabled) { onTap(text) }
             .padding(horizontal = 14.dp, vertical = 9.dp)
     ) {
         Text(
@@ -287,10 +293,14 @@ private fun CoachMediaActionButton(
 
 @Composable
 private fun SendButton(canSend: Boolean, onClick: () -> Unit) {
+    val sendInteraction = remember { MutableInteractionSource() }
     androidx.compose.material3.FilledIconButton(
         onClick = onClick,
         enabled = canSend,
-        modifier = Modifier.size(40.dp),
+        modifier = Modifier
+            .size(40.dp)
+            .pressScale(sendInteraction, enabled = canSend),
+        interactionSource = sendInteraction,
         colors = androidx.compose.material3.IconButtonDefaults.filledIconButtonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,

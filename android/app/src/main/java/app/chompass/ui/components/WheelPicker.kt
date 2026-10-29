@@ -8,6 +8,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import app.chompass.ui.theme.AppMotion
 import androidx.compose.foundation.gestures.snapping.SnapLayoutInfoProvider
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.gestures.snapping.snapFlingBehavior
@@ -918,7 +919,7 @@ fun ExpandableMacroPicker(
             Spacer(Modifier.width(8.dp))
             val rotation by animateFloatAsState(
                 targetValue = if (expanded) 180f else 0f,
-                animationSpec = spring(dampingRatio = 0.75f)
+                animationSpec = AppMotion.spatialSpring()
             )
             Icon(
                 Icons.Filled.KeyboardArrowDown,
@@ -1004,7 +1005,7 @@ fun ExpandableDecimalMacroPicker(
             Spacer(Modifier.width(8.dp))
             val rotation by animateFloatAsState(
                 targetValue = if (expanded) 180f else 0f,
-                animationSpec = spring(dampingRatio = 0.75f)
+                animationSpec = AppMotion.spatialSpring()
             )
             Icon(
                 Icons.Filled.KeyboardArrowDown,

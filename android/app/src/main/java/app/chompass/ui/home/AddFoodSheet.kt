@@ -76,6 +76,7 @@ import app.chompass.models.HabitPreset
 import app.chompass.models.HabitPresetCatalog
 import app.chompass.models.HabitPresetDomain
 
+import app.chompass.ui.components.AnimatedNumberText
 import app.chompass.ui.components.ChompassBottomSheet
 import app.chompass.ui.components.ChompassSheetCornerRadius
 import app.chompass.ui.components.rememberChompassSheetState
@@ -630,12 +631,11 @@ private fun AddFoodWaterQuickRow(
         } else {
             Spacer(Modifier.weight(1f))
         }
-        Text(
-            waterAmountLabel(selectedMl, useMetric),
+        AnimatedNumberText(
+            value = waterAmountLabel(selectedMl, useMetric),
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
             modifier = Modifier.widthIn(min = 52.dp),
         )
         IconButton(
