@@ -15,8 +15,10 @@ import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
 import app.chompass.ui.theme.ChompassTraitsDefaults
 
-/** Alpha of the tint laid over the blur: thin enough to read what passes beneath. */
-const val GlassTintAlpha = 0.55f
+/** Alpha of the tint laid over the blur. 0.55 buried the blur entirely —
+ *  light-on-light content read as a flat strip (device pass 2026-10-29);
+ *  0.30 keeps the frost visible in both themes. */
+const val GlassTintAlpha = 0.30f
 
 /**
  * The style behind [Modifier.hazeGlassFill]: the blur picks up [backdrop]-colored
