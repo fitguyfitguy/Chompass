@@ -33,6 +33,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -111,8 +113,11 @@ import app.chompass.services.grounding.FoodSuggestion
 import app.chompass.services.grounding.SuggestionKind
 import app.chompass.ui.components.ChompassSheetLazyColumn
 import app.chompass.ui.components.ChompassTextField
+import app.chompass.ui.components.hazeGlassFill
 import app.chompass.ui.components.isDarkTheme
 import app.chompass.ui.components.energyText
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
 import app.chompass.ui.theme.AppColors
 import app.chompass.ui.theme.AppRadii
 import app.chompass.ui.theme.AppTextOpacity
@@ -510,6 +515,20 @@ internal fun AddFoodSuggestionList(
     }
 
     Column(modifier.fillMaxWidth()) {
+        // Glass band: results blur under it once they scroll past the pane's
+        // top edge (band recipe, docs/local/MORPHE_DESIGN_ANALYSIS.md §1.4;
+        // parameters reimplemented — the reference is GPL-3.0). Pure overlay:
+        // no layout, hit-testing or sheet-anchor change; taps pass through the
+        // non-clickable band to the row beneath. (Inner block kept at the
+        // wrapper-free indent for a minimal diff.)
+        val paneHaze = rememberHazeState()
+        val bandAlpha = remember {
+            derivedStateOf {
+                if (listState.firstVisibleItemIndex > 0) 1f
+                else (listState.firstVisibleItemScrollOffset / 180f).coerceIn(0f, 1f)
+            }
+        }
+        Box(modifier.fillMaxWidth()) {
         // Everything lives inside the one lazy list, the Analyze row included:
         // sitting it below the list clipped it under the sheet edge once the
         // results filled the viewport (caught rendering the preview).
@@ -519,7 +538,7 @@ internal fun AddFoodSuggestionList(
             // Nothing here ever changes size, so results streaming in cannot
             // move the search field, and switching between the saved list and
             // the search results cannot resize the sheet.
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().hazeSource(paneHaze),
             contentPadding = PaddingValues(bottom = bottomSpace),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
@@ -616,6 +635,20 @@ internal fun AddFoodSuggestionList(
                     item(key = "empty") { AddFoodEmptyLine(R.string.add_food_quick_relog_empty) }
                 }
             }
+        }
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(28.dp)
+                // Alpha read inside the layer block: the band tracks the
+                // scroll 1:1 without recomposing per frame.
+                .graphicsLayer { alpha = bandAlpha.value }
+                .hazeGlassFill(
+                    tint = MaterialTheme.colorScheme.surfaceContainerLow,
+                    shape = RectangleShape,
+                    haze = paneHaze,
+                ),
+        )
         }
     }
 }
