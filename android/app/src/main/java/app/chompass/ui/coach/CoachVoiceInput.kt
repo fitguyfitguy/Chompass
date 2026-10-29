@@ -50,8 +50,6 @@ import app.chompass.models.SpeechProvider
 import app.chompass.services.speech.AudioRecorder
 import app.chompass.services.speech.NativeSpeechRecognizer
 import app.chompass.services.speech.SttEvent
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -275,8 +273,8 @@ fun CoachMicButton(controller: CoachVoiceController) {
             .scale(if (holding) 1.18f else 1f)
             .clip(CircleShape)
             .background(
-                if (holding) AppColors.Calorie
-                else AppColors.Calorie.copy(alpha = 0.12f)
+                if (holding) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
             )
             .pointerInput(Unit) {
                 awaitEachGesture {
@@ -315,7 +313,7 @@ fun CoachMicButton(controller: CoachVoiceController) {
         Icon(
             Icons.Filled.Mic,
             contentDescription = stringResource(R.string.cd_hold_to_record),
-            tint = if (holding) Color.White else AppColors.Calorie,
+            tint = if (holding) Color.White else MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(18.dp)
         )
     }
@@ -339,13 +337,13 @@ fun CoachRecordingIndicator(controller: CoachVoiceController, modifier: Modifier
         if (controller.phase == VoicePhase.Transcribing) {
             CircularProgressIndicator(
                 modifier = Modifier.size(16.dp),
-                color = AppColors.Calorie,
+                color = MaterialTheme.colorScheme.primary,
                 strokeWidth = 2.dp
             )
             Text(
                 stringResource(R.string.voice_transcribing),
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             return@Row
         }
@@ -375,7 +373,7 @@ fun CoachRecordingIndicator(controller: CoachVoiceController, modifier: Modifier
             },
             fontSize = 14.sp,
             color = if (armed) MaterialTheme.colorScheme.error
-                    else MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Faint),
+                    else MaterialTheme.colorScheme.outline,
             maxLines = 1,
             modifier = Modifier.weight(1f, fill = false)
         )

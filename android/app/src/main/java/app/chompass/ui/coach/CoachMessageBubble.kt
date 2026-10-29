@@ -65,10 +65,7 @@ import kotlinx.coroutines.withContext
 import app.chompass.R
 import app.chompass.models.ChatMessage
 import app.chompass.services.decodeSampledBitmap
-import app.chompass.ui.theme.AppColors
 import app.chompass.ui.components.isDarkTheme
-import app.chompass.ui.theme.AppRadii
-import app.chompass.ui.theme.AppTextOpacity
 
 @Composable
 internal fun EmptyState(modifier: Modifier = Modifier) {
@@ -88,15 +85,15 @@ internal fun EmptyState(modifier: Modifier = Modifier) {
                     spotColor = Color.Black.copy(alpha = if (isDark) 0.18f else 0.08f)
                 )
                 .clip(CircleShape)
-                .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
-                .border(0.5.dp, if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight, CircleShape),
+                .background(MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f))
+                .border(0.5.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 Icons.Filled.Forum,
                 contentDescription = null,
                 modifier = Modifier.size(44.dp),
-                tint = AppColors.Calorie
+                tint = MaterialTheme.colorScheme.primary
             )
         }
         Spacer(Modifier.height(16.dp))
@@ -109,7 +106,7 @@ internal fun EmptyState(modifier: Modifier = Modifier) {
         Text(
             stringResource(R.string.coach_empty_subtitle),
             fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             lineHeight = 21.sp
         )
@@ -141,9 +138,9 @@ internal fun MessageList(
                 ) {
                     Box(
                         Modifier
-                            .clip(RoundedCornerShape(AppRadii.Container))
-                            .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
-                            .border(0.5.dp, if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight, RoundedCornerShape(AppRadii.Container))
+                            .clip(MaterialTheme.shapes.large)
+                            .background(MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f))
+                            .border(0.5.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.large)
                             .padding(horizontal = 14.dp, vertical = 10.dp)
                     ) { TypingIndicator() }
                     Spacer(Modifier.weight(1f))
@@ -157,9 +154,9 @@ internal fun MessageList(
                     Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .clip(RoundedCornerShape(AppRadii.Tile))
+                        .clip(MaterialTheme.shapes.medium)
                         .background(MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.6f))
-                        .border(0.5.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.25f), RoundedCornerShape(AppRadii.Tile))
+                        .border(0.5.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.25f), MaterialTheme.shapes.medium)
                         .padding(horizontal = 14.dp, vertical = 8.dp)
                 ) {
                     Text(error, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
@@ -240,15 +237,15 @@ private fun AssistantBadge() {
             .padding(top = 8.dp)
             .size(26.dp)
             .clip(CircleShape)
-            .background(if (isDark) AppColors.TranslucentSurfaceDark else AppColors.TranslucentSurfaceLight)
-            .border(0.5.dp, if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight, CircleShape),
+            .background(MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.92f))
+            .border(0.5.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
         contentAlignment = Alignment.Center
     ) {
         Icon(
             Icons.Filled.AutoAwesome,
             contentDescription = null,
             modifier = Modifier.size(11.dp),
-            tint = AppColors.Calorie
+            tint = MaterialTheme.colorScheme.primary
         )
     }
 }
@@ -300,7 +297,7 @@ private fun Bubble(content: String, isUser: Boolean, attachmentImageBase64: Stri
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(150.dp)
-                            .clip(RoundedCornerShape(AppRadii.Field))
+                            .clip(MaterialTheme.shapes.medium)
                     )
                     Spacer(Modifier.height(8.dp))
                 }
@@ -441,7 +438,7 @@ private fun inlineMarkdown(text: String, linkColor: Color, codeBg: Color): Annot
 
 @Composable
 internal fun MarkdownText(content: String, color: Color) {
-    val linkColor = AppColors.Calorie
+    val linkColor = MaterialTheme.colorScheme.primary
     val codeBg = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
     val blocks = remember(content) { parseMarkdownBlocks(content) }
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -465,7 +462,7 @@ internal fun MarkdownText(content: String, color: Color) {
                     Text(inlineMarkdown(block.text, linkColor, codeBg), color = color, fontSize = 16.sp, lineHeight = 22.sp, modifier = Modifier.weight(1f))
                 }
                 is MdBlock.Code -> Box(
-                    Modifier.fillMaxWidth().clip(RoundedCornerShape(AppRadii.Chip)).background(codeBg).padding(10.dp)
+                    Modifier.fillMaxWidth().clip(MaterialTheme.shapes.small).background(codeBg).padding(10.dp)
                 ) {
                     Text(block.text, color = color, fontFamily = FontFamily.Monospace, fontSize = 14.sp, lineHeight = 20.sp)
                 }
