@@ -1169,6 +1169,7 @@
     <string name="import_body_metrics_empty">لا يحتوي هذا الملف على سجلات وزن أو بيانات جسم للاستيراد.</string>
     <string name="import_body_metrics_malformed">تعذّرت قراءة الملف: %1$s</string>
     <string name="import_body_metrics_success">تم استيراد %1$d سجل وزن و%2$d دهون و%3$d قياسات.</string>
+    <string name="import_body_metrics_success_composition">تم أيضًا استيراد %1$d من سجلات مقاييس الميزان.</string>
     <string name="import_body_metrics_title">استيراد الوزن وبيانات الجسم</string>
     <string name="import_body_metrics_unsupported">ملف غير مدعوم. المدعوم: JSON/CSV من Chompass، أو CSV من openScale، أو CSV وزن عام.</string>
     <string name="import_diary_empty">لا يحتوي هذا الملف على سجلات يوميات للاستيراد.</string>
@@ -1443,7 +1444,7 @@
     <string name="settings_calc_intro">تحدد الذكاء الاصطناعي أهداف السعرات والمغذيات الكبرى اليومية. عند النقر على «إعادة حساب الأهداف»، أو تلقائيًا مرة أسبوعيًا تقريبًا إذا كانت الأهداف التكيفية مفعّلة، يرسل Chompass ملفك والمعادلات المرجعية أدناه وطعامك المسجل مؤخرًا واتجاه وزنك إلى مزوّد الذكاء الاصطناعي. يبدأ من هذه المعادلات المحكّمة، ثم يعدلها على بياناتك لتقدير الصيانة والأهداف.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21,6 × LBM(كغ)\nLBM = الوزن × (1 − %الدهون)</string>
     <string name="settings_calc_katch_name">معادلة Katch-McArdle</string>
-    <string name="settings_calc_katch_used">تُستخدم تلقائيًا عند إدخال نسبة دهون الجسم. أدق للنحفاء والرياضيين لأنها تشتق BMR من الكتلة الخالية من الدهون بدل الوزن الكلي. القياسات الأقدم من 90 يومًا تعود إلى Mifflin-St Jeor.</string>
+    <string name="settings_calc_katch_used">تُستخدم تلقائيًا عند إدخال نسبة دهون الجسم. أدق للنحفاء والرياضيين لأنها تشتق BMR من الكتلة الخالية من الدهون بدل الوزن الكلي. القياسات الأقدم من 90 يومًا تعود إلى Mifflin-St Jeor. وقراءة حديثة للكتلة الخالية من الدهون من ميزان تقود BMR بالطريقة نفسها وتُقدَّم على نسبة الدهون.</string>
     <string name="settings_calc_macro_split">تقسيم المغذيات الكبرى</string>
     <string name="settings_calc_maintenance">الصيانة وتعديل الهدف</string>
     <string name="settings_calc_methods">طرق الحساب</string>
@@ -2269,6 +2270,17 @@
     <string name="onboarding_goal_suggested_bmi">بناءً على مؤشر كتلة الجسم %1$.1f</string>
     <!-- Progress v2: طبقة الجسم، دمج السعرات، مراحل الهدف، الالتزام. -->
     <string name="progress_body_section">الجسم</string>
+    <string name="progress_scale_metrics">مقاييس الميزان</string>
+    <string name="progress_scale_metrics_bone_mass">كتلة العظام</string>
+    <string name="progress_scale_metrics_water">إجمالي ماء الجسم</string>
+    <string name="progress_scale_metrics_muscle">الكتلة العضلية</string>
+    <string name="progress_scale_metrics_lean">الكتلة الخالية من الدهون</string>
+    <string name="progress_scale_metrics_visceral">الدهون الحشوية</string>
+    <string name="progress_scale_metrics_note">تقدير من ميزان منزلي — الاتجاه أدق من الرقم المطلق</string>
+    <string name="progress_scale_metrics_tbw_percent">%1$.1f %% من وزن الجسم · النطاق المعتاد 45–65 %%</string>
+    <string name="progress_log_scale_metrics">مقاييس الميزان</string>
+    <string name="progress_estimated_smm">العضلات الهيكلية المقدَّرة (Lee)</string>
+    <string name="progress_estimated_smm_note">تقدير قياسي من الذراع والفخذ والسمانة · ± ~3 كغم</string>
     <string name="progress_overlay_off">إيقاف</string>
     <string name="progress_no_entries_in_range">لا توجد إدخالات في هذه الفترة</string>
     <string name="progress_no_series_selected">انقر على مقياس أعلاه لعرضه هنا</string>

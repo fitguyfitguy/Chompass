@@ -29,7 +29,7 @@ Deterministic formulas are the **reference layer**. AI recalculation and adaptiv
 | ID      | Name                     | Type          | Implementation                                 | Units    |
 | ------- | ------------------------ | ------------- | ---------------------------------------------- | -------- |
 | BMR-MSJ | Mifflin-St Jeor BMR      | Deterministic | `UserProfile.bmr` when no body fat %, or the reading is stale (older than 90 days / `BODY_FAT_RECENCY_DAYS`) | kcal/day |
-| BMR-KM  | Katch-McArdle BMR        | Deterministic | `UserProfile.bmr` when `bodyFatPercentage` set and the reading is fresh (undated legacy readings count as fresh) | kcal/day |
+| BMR-KM  | Katch-McArdle BMR        | Deterministic | `UserProfile.bmr` — priority: fresh **measured** lean mass (`BodyCompositionEntry.leanMassKg`, ≤90 days), then body-fat-derived lean mass (fresh reading) | kcal/day |
 | TDEE    | Activity multiplier TDEE | Deterministic | `UserProfile.tdee`                             | kcal/day |
 | ACT-EST | Estimated daily active   | Deterministic | `UserProfile.estimatedDailyActiveCalories`     | kcal/day |
 | CAL-ADJ | Goal calorie adjustment  | Deterministic | `UserProfile.calorieAdjustment`                | kcal/day |
@@ -44,6 +44,8 @@ Deterministic formulas are the **reference layer**. AI recalculation and adaptiv
 | RFM     | Relative fat mass %      | Deterministic | `BodyMeasurement.relativeFatMassPercent` / `formulas.relativeFatMassPercent` | %        |
 | WHR     | Waist-to-hip             | Deterministic | `BodyMeasurement.waistToHipRatio`              | ratio    |
 | WTH     | Waist-to-height          | Deterministic | `BodyMeasurement.waistToHeightRatio`           | ratio    |
+| SMM-LEE | Skeletal muscle mass est. | Deterministic | `BodyMeasurement.estimatedSkeletalMuscleMassKg` / `formulas.estimatedSkeletalMuscleMassKg` | kg (display only) |
+| TBW-PCT | Total body water %        | Display        | `ProgressCompositionSection` (TBW kg ÷ nearest weight ±12 h) | % |
 | WATER-DYN-A | Dynamic gross water goal | Heuristic     | `WaterGoalCalculator.grossGoalMl`              | ml/day   |
 | WATER-DYN-B | Food-water subtraction   | Heuristic     | `WaterGoalCalculator.foodWaterMl` / `netGoalMl` | ml/day  |
 | WATER-DYN-C | Adaptive reminder interval | Heuristic   | `WaterGoalCalculator.liveIntervalMin`          | min      |
@@ -78,6 +80,31 @@ BMR = 370 + 21.6 × LBM(kg)
 ```
 
 **Call sites:** Same as BMR-MSJ. `goalBodyFatPercentage` is display-only and **not** used here.
+
+**Measured lean mass wins (scale path).** A bioimpedance scale reports lean (fat-free) mass
+directly, which is the exact quantity Katch-McArdle wants — no body-fat inversion, and no
+body-fat measurement error. The newest composition row with a plausible lean mass (20–250 kg,
+`NutritionConstants.LEAN_MASS_MIN_KG/MAX_KG`) is stamped onto `UserProfile.measuredLeanMassKg`
+(+ `leanMassUpdatedAt`), and BMR becomes:
+
+```
+fresh measured lean mass (≤90 days, LEAN_MASS_RECENCY_DAYS, same useBodyFatInBMR toggle)
+    BMR = 370 + 21.6 × measuredLeanMassKg
+else fresh body-fat reading
+    BMR = 370 + 21.6 × weight × (1 − bodyFat%)
+else
+    Mifflin-St Jeor
+```
+
+Undated readings count as fresh (legacy convention). A stale or implausible reading falls
+straight through to the body-fat path — it never silently substitutes a zero. The lean-mass
+cap on protein (`MACRO-P`) and the `G_PER_KG_LBM` basis use the same priority
+(`UserProfile.leanMassForMacrosKg`), and `measuredLeanMassKg` / `leanMassUpdatedAt` join
+`goalInputSignature` so stored goals mark stale when the number moves.
+
+**Why not a fixed priority over body fat?** Both are approximations; the measured value is
+closer to the model's input and is refreshed by the scale the user already steps on. The
+90-day window keeps a spring scale reading from voting on a November BMR.
 
 ### BODY-FAT-TRUST: body-fat method trust knobs
 
@@ -191,7 +218,7 @@ base g/kg by activity: 0.8, 1.2, 1.6, 1.8, 2.0, 2.2
 Standard protein is g/kg of **total** weight (the lean-mass fraction algebra cancels). Keto floor `1.6 g/kg` uses lean mass when BF% is set.
 ```
 
-**Lean-mass cap:** with a valid body-fat reading (3–65%), the standard goal is capped at 2.2 g/kg of lean mass (2.4 while losing), so high-BF profiles do not chase total-weight rates (`UserProfile.standardProteinGoal`).
+**Lean-mass cap:** with a lean-mass basis the standard goal is capped at 2.2 g/kg of lean mass (2.4 while losing), so high-BF profiles do not chase total-weight rates (`UserProfile.standardProteinGoal`). The basis is `UserProfile.leanMassForMacrosKg`: a fresh measured lean mass (scale composition row) wins over `weight × (1 − BF%)`.
 
 **User pin modes** (`ProteinTargetMode`): grams/day (`customProtein`), or g/kg of total weight / lean mass (`proteinGramsPerKg`). Rate modes recompute g/day when weight or BF% changes.
 
@@ -460,6 +487,50 @@ Rejected if result not finite or ∉ [2, 65]% (same guard as Navy). Gender OTHER
 
 **Wrist frame:** height / wrist ratio with gender-specific cutoffs.
 
+### Scale composition metrics (bone / water / muscle / lean / visceral)
+
+Consumer bioimpedance scales (via Health Connect `BoneMassRecord` / `BodyWaterMassRecord` /
+`LeanBodyMassRecord`, an openScale CSV export, or manual entry) log metrics Chompass stores in
+its own `BodyCompositionEntry` store — never mixed into `WeightEntry`, whose sync/import merge
+dedupes on `(date, weight_kg)`.
+
+- **Health Connect is read-only** for these types: the scale app owns the records, and a
+  write-back would create a second source of truth. Muscle mass and the visceral-fat rating
+  have no Health Connect record type — they arrive through CSV import, sync, or manual entry.
+- **openScale CSV semantics:** `water` and `muscle` are **percent of body weight** and are
+  converted with the same row's weight (a row without a valid weight drops them rather than
+  inventing a mass); `bone` and `lbm` are kg as-is; `visceral` is a vendor rating.
+- **Plausibility guards** at the import boundary: bone 0.5–15 kg, lean ≤ row weight (300 kg when
+  the row has none), water ≤ 85 % of weight, muscle ≤ 70 % of weight, rating 1–59. Values
+  outside are dropped silently — a missing field, never corrupt data.
+
+#### SMM-LEE: skeletal muscle mass estimate (display only)
+
+Lee et al. 2000, *AJCN* 72:796–803 — the limb-circumference model (R² 0.91, SEE ≈ 2.9 kg):
+
+```
+sex = 1 male, 0 female/other
+SM(kg) = Ht(m) × (0.00744×arm(cm)² + 0.00088×thigh(cm)² + 0.00441×calf(cm)²)
+         + 2.4×sex − 0.048×age + 7.8
+```
+
+- Height in **metres** — the published coefficients need that scale (with cm the result is 100×
+  too large).
+- Skinfold correction is skipped: uncorrected girths bias the estimate by < 0.1 kg against the
+  ~2.9 kg standard error, so the extra tape site buys nothing.
+- The race term is 0 (the app has no race field); gender OTHER uses the female coefficient,
+  matching the Mifflin/RFM convention.
+- Needs upper arm, thigh **and** calf; rejects non-finite values and results outside 10–80 kg.
+- **Never logged, never fed into BMR, TDEE or macros** — it is a trend companion to the tape
+  measurements, labeled “± ~3 kg”.
+
+#### TBW-PCT: total body water percentage (display only)
+
+`totalBodyWaterKg ÷ nearest weigh-in within ±12 h × 100`, one decimal. Shown as a badge on the
+water card with a generic 45–65 % reference band. It is **not** part of the drinking-water goal:
+that goal is intake, this is a body-composition fraction. A composition row with no weigh-in
+within ±12 h simply shows no percentage.
+
 ---
 
 ## Scientific review: policy decisions
@@ -479,6 +550,9 @@ Rejected if result not finite or ∉ [2, 65]% (same guard as Navy). Gender OTHER
 | AI goal recalculation            | **Keep, segregated**            | Non-deterministic; empirical (hit-and-trial) maintenance gated by log density (AI-RECALC below); thin/under-floor data falls back deterministically to formula or measured maintenance; a formula/scale disagreement is surfaced with a note instead of withholding (AI-RECALC below) |
 | US Navy BF%                      | **Keep**                        | Standard field estimate; tape measurement error propagates                |
 | RFM BF%                          | **Keep (display)**              | Waist + height when neck is missing; optional confirm to log as BF%       |
+| Measured lean mass for BMR       | **Keep (priority)**             | Scale BIA lean mass feeds Katch-McArdle directly (no BF inversion); 90-day recency + 20–250 kg guard keeps a stale/typo reading out |
+| SMM-LEE estimate                 | **Keep (display only)**         | Validated limb-circumference model, but SEE ≈ 2.9 kg — a trend companion, never a target driver |
+| TBW % badge                      | **Keep (display only)**         | Derived from one composition row + one weigh-in; the water goal is intake, not body water |
 | Water base 35 ml/kg              | **Keep**                        | Midpoint of 30–40 ml/kg clinical range; between EFSA (2.0/2.5 L) and IOM (2.7/3.7 L) totals |
 | Temp factor +4 %/°C ≥ 25 °C, cap 1.6 | **Keep (heuristic)**         | AIs apply only to temperate climates; +0.5–1.0 L on hot days matches guidance |
 | Water activity table 1.0–1.5     | **Keep (heuristic)**            | AIs assume sedentary/PAL 1.6; ACSM exercise sweat 0.5–2.0 L/h            |
@@ -497,6 +571,8 @@ Rejected if result not finite or ∉ [2, 65]% (same guard as Navy). Gender OTHER
 5. Keto carb targets do not measure blood ketones.
 6. AI meal and micronutrient estimates vary by provider and input quality.
 7. Water math is a hydration **heuristic**, not a clinical prescription; it assumes healthy adults with normal kidney function. Temperature is entered manually (no location permission by design); food-water is a coarse 60 % estimate capped at 1 L.
+8. Scale composition metrics (bone mass, total body water, muscle/lean mass) are consumer-BIA estimates: absolute error of several kg versus DEXA, and it moves with hydration, time of day and skin temperature. Read the trend, not the number. The visceral-fat rating is vendor-specific (no cross-brand scale) and is display-only.
+9. The Lee skeletal-muscle estimate carries a ~2.9 kg standard error, uses uncorrected tape girths, and assumes an average race term; it is shown as “± ~3 kg” and never feeds a target.
 
 ---
 
@@ -550,6 +626,7 @@ When changing **diary / body-metrics / meal-share / sync** wire formats: bump `f
 | AI formula reference          | `android/.../GoalFormulaReference.kt`, `web/.../chompass-core/goal-formula-reference.js`, `testdata/parity/goal-formula-prompt-fragments.json` |
 | Keto carbs                    | `android/app/src/main/java/.../services/KetoCarbRecommendationService.kt`                                                                      |
 | Body metrics                  | `android/app/src/main/java/.../models/BodyMeasurement.kt`                                                                                      |
+| Scale composition             | `android/.../models/BodyCompositionEntry.kt`, `android/.../data/BodyCompositionRepository.kt`, `android/.../ui/progress/ProgressCompositionSection.kt`, `web/.../components/progress-view.js` |
 | Water goal + reminders        | `android/.../models/WaterGoalCalculator.kt`, `android/.../services/WaterReminderPlanner.kt`                                                    |
 | In-app docs                   | `SettingsScreen.kt` + `res/values/strings.xml`                                                                                                 |
 | Unit tests                    | `android/app/src/test/java/.../models/` and `.../services/`                                                                                    |

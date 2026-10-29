@@ -1161,6 +1161,7 @@
     <string name="import_body_metrics_empty">इस फ़ाइल में आयात करने के लिए कोई वज़न या शरीर डेटा प्रविष्टि नहीं है।</string>
     <string name="import_body_metrics_malformed">फ़ाइल पढ़ी नहीं जा सकी: %1$s</string>
     <string name="import_body_metrics_success">%1$d वज़न, %2$d वसा और %3$d माप प्रविष्टियां आयात हुईं।</string>
+    <string name="import_body_metrics_success_composition">%1$d स्केल-मेट्रिक प्रविष्टियां भी आयात हुईं।</string>
     <string name="import_body_metrics_title">वज़न और शरीर डेटा आयात करें</string>
     <string name="import_body_metrics_unsupported">असमर्थित फ़ाइल। समर्थित: Chompass JSON/CSV, openScale CSV, या सामान्य वज़न CSV।</string>
     <string name="import_diary_empty">इस फ़ाइल में आयात करने के लिए कोई डायरी प्रविष्टि नहीं है।</string>
@@ -1431,7 +1432,7 @@
     <string name="settings_calc_intro">आपके दैनिक कैलोरी और मैक्रो लक्ष्य AI द्वारा सेट किए जाते हैं। जब आप "लक्ष्य पुनर्गणना करें" टैप करते हैं, या अनुकूली लक्ष्य चालू होने पर सप्ताह में लगभग एक बार स्वचालित रूप से, Chompass आपका प्रोफ़ाइल, नीचे दिए संदर्भ समीकरण, हाल में लॉग किया खाना और वज़न प्रवृत्ति आपके AI प्रदाता को भेजता है। यह इन सहकर्मी-समीक्षित सूत्रों से शुरू होता है, फिर आपके डेटा के अनुसार उन्हें समायोजित कर आपका रखरखाव और लक्ष्य अनुमानित करता है।</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21.6 × LBM(किग्रा)\nLBM = वज़न × (1 − %वसा)</string>
     <string name="settings_calc_katch_name">Katch-McArdle समीकरण</string>
-    <string name="settings_calc_katch_used">जब आप शारीरिक वसा % दर्ज करते हैं तो स्वचालित रूप से उपयोग होता है। दुबले और एथलेटिक उपयोगकर्ताओं के लिए अधिक सटीक क्योंकि यह कुल वज़न के बजाय दुबले शरीर द्रव्यमान से BMR व्युत्पन्न करता है। 90 दिन से पुराने माप Mifflin-St Jeor पर लौट आते हैं।</string>
+    <string name="settings_calc_katch_used">जब आप शारीरिक वसा % दर्ज करते हैं तो स्वचालित रूप से उपयोग होता है। दुबले और एथलेटिक उपयोगकर्ताओं के लिए अधिक सटीक क्योंकि यह कुल वज़न के बजाय दुबले शरीर द्रव्यमान से BMR व्युत्पन्न करता है। 90 दिन से पुराने माप Mifflin-St Jeor पर लौट आते हैं। स्केल से हाल की दुबला-द्रव्यमान रीडिंग भी उसी तरह BMR निकालती है और शरीर वसा पर प्राथमिकता पाती है।</string>
     <string name="settings_calc_macro_split">मैक्रोन्यूट्रिएंट विभाजन</string>
     <string name="settings_calc_maintenance">रखरखाव और लक्ष्य समायोजन</string>
     <string name="settings_calc_methods">गणना विधियां</string>
@@ -2225,6 +2226,17 @@
     <string name="onboarding_goal_suggested_bmi">BMI %1$.1f के आधार पर</string>
     <!-- Progress v2: शरीर ओवरले, कैलोरी कॉम्बो, लक्ष्य चरण, अनुपालन। -->
     <string name="progress_body_section">शरीर</string>
+    <string name="progress_scale_metrics">स्केल मेट्रिक्स</string>
+    <string name="progress_scale_metrics_bone_mass">हड्डी द्रव्यमान</string>
+    <string name="progress_scale_metrics_water">कुल शरीर जल</string>
+    <string name="progress_scale_metrics_muscle">मांसपेशी द्रव्यमान</string>
+    <string name="progress_scale_metrics_lean">दुबला द्रव्यमान</string>
+    <string name="progress_scale_metrics_visceral">विसेरल फैट</string>
+    <string name="progress_scale_metrics_note">घरेलू स्केल अनुमान — रुझान पूर्ण मान से अधिक भरोसेमंद है</string>
+    <string name="progress_scale_metrics_tbw_percent">शरीर भार का %1$.1f %% · सामान्य सीमा 45–65 %%</string>
+    <string name="progress_log_scale_metrics">स्केल मेट्रिक्स</string>
+    <string name="progress_estimated_smm">अनुमानित कंकाल मांसपेशी (Lee)</string>
+    <string name="progress_estimated_smm_note">बांह, जांघ और पिंडली से एंथ्रोपोमेट्रिक अनुमान · ± ~3 किग्रा</string>
     <string name="progress_overlay_off">बंद</string>
     <string name="progress_no_entries_in_range">इस अवधि में कोई एंट्री नहीं</string>
     <string name="progress_no_series_selected">इसे यहाँ दिखाने के लिए ऊपर किसी मीट्रिक पर टैप करें</string>

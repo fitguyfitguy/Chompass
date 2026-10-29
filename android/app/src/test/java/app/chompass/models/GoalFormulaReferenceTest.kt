@@ -78,6 +78,10 @@ class GoalFormulaReferenceTest {
       fixture.getString("fatTargetLine"),
       GoalFormulaReference.fatTargetLine(),
     )
+    assertEquals(
+      fixture.getString("measuredLeanMassBasisLine"),
+      GoalFormulaReference.measuredLeanMassBasisLine(),
+    )
   }
 
   private fun format(value: Double): String =

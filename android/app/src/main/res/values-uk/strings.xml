@@ -1103,6 +1103,7 @@
     <string name="import_body_metrics_empty">У цьому файлі немає записів ваги чи даних тіла для імпорту.</string>
     <string name="import_body_metrics_malformed">Не вдалося прочитати файл: %1$s</string>
     <string name="import_body_metrics_success">Імпортовано: вага %1$d, жир %2$d, вимірювань %3$d.</string>
+    <string name="import_body_metrics_success_composition">Також імпортовано записів ваги: %1$d.</string>
     <string name="import_body_metrics_title">Імпорт ваги та даних тіла</string>
     <string name="import_body_metrics_unsupported">Непідтримуваний файл. Підтримуються: Chompass JSON/CSV, CSV openScale або звичайний CSV ваги.</string>
     <string name="import_diary_empty">У цьому файлі немає записів щоденника для імпорту.</string>
@@ -1392,7 +1393,7 @@
     <string name="settings_calc_katch_formula">BMR = 370 + 21,6 × LBM(кг)
 LBM = вага × (1 − %жиру)</string>
     <string name="settings_calc_katch_name">Рівняння Katch-McArdle</string>
-    <string name="settings_calc_katch_used">Використовується автоматично, якщо вказано відсоток жиру. Точніша для худих і спортивних користувачів, оскільки обчислює BMR із сухої маси замість загальної ваги. Заміри старше 90 днів перемикаються на Міффліна—Сан-Жеора.</string>
+    <string name="settings_calc_katch_used">Використовується автоматично, якщо вказано відсоток жиру. Точніша для худих і спортивних користувачів, оскільки обчислює BMR із сухої маси замість загальної ваги. Заміри старше 90 днів перемикаються на Міффліна—Сан-Жеора. Свіже значення сухої маси з ваги розраховує BMR так само і має пріоритет над відсотком жиру.</string>
     <string name="settings_calc_macro_split">Розподіл макронутрієнтів</string>
     <string name="settings_calc_maintenance">Підтримання та коригування цілі</string>
     <string name="settings_calc_methods">Методи розрахунку</string>
@@ -2172,6 +2173,17 @@ LBM = вага × (1 − %жиру)</string>
     <string name="onboarding_goal_suggested_bmi">При ІМТ %1$.1f</string>
     <!-- Progress v2: оверлей тіла, комбо калорій, фази цілей, дотримання. -->
     <string name="progress_body_section">Тіло</string>
+    <string name="progress_scale_metrics">Дані ваги</string>
+    <string name="progress_scale_metrics_bone_mass">Кісткова маса</string>
+    <string name="progress_scale_metrics_water">Загальна вода в організмі</string>
+    <string name="progress_scale_metrics_muscle">М\'язова маса</string>
+    <string name="progress_scale_metrics_lean">Суха маса</string>
+    <string name="progress_scale_metrics_visceral">Вісцеральний жир</string>
+    <string name="progress_scale_metrics_note">Оцінка побутової ваги — тенденція надійніша за абсолютне значення</string>
+    <string name="progress_scale_metrics_tbw_percent">%1$.1f %% від маси тіла · типовий діапазон 45–65 %%</string>
+    <string name="progress_log_scale_metrics">Дані ваги</string>
+    <string name="progress_estimated_smm">Оцінка скелетних м\'язів (Lee)</string>
+    <string name="progress_estimated_smm_note">Антропометрична оцінка за плечем, стегном і гомілкою · ± ~3 кг</string>
     <string name="progress_overlay_off">Вимк.</string>
     <string name="progress_no_entries_in_range">Немає записів за цей період</string>
     <string name="progress_no_series_selected">Торкніться показника вище, щоб відобразити його тут</string>

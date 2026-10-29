@@ -1162,6 +1162,7 @@
     <string name="import_body_metrics_empty">此文件没有可导入的体重或身体数据条目。</string>
     <string name="import_body_metrics_malformed">无法读取文件：%1$s</string>
     <string name="import_body_metrics_success">已导入 %1$d 条体重、%2$d 条体脂和 %3$d 条测量记录。</string>
+    <string name="import_body_metrics_success_composition">另导入了 %1$d 条体脂秤指标。</string>
     <string name="import_body_metrics_title">导入体重与身体数据</string>
     <string name="import_body_metrics_unsupported">不支持的文件。支持：Chompass JSON/CSV、openScale CSV 或通用体重 CSV。</string>
     <string name="import_diary_empty">此文件没有可导入的日记条目。</string>
@@ -1432,7 +1433,7 @@
     <string name="settings_calc_intro">你的每日热量和宏量目标由 AI 设定。当你点按“重新计算目标”，或在自适应目标开启时每周自动进行一次，Chompass 会把你的资料、下方参考公式、近期记录的食物和体重趋势发送给 AI 提供商。它从这些同行评审的公式出发，再根据你的数据调整，估算你的维持量和目标。</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21.6 × LBM(公斤)\nLBM = 体重 × (1 − %体脂)</string>
     <string name="settings_calc_katch_name">Katch-McArdle 公式</string>
-    <string name="settings_calc_katch_used">输入体脂百分比后自动使用。对偏瘦和运动型用户更准确，因为它从瘦体重而非总体重推导 BMR。 超过 90 天的测量值将改用 Mifflin-St Jeor。</string>
+    <string name="settings_calc_katch_used">输入体脂百分比后自动使用。对偏瘦和运动型用户更准确，因为它从瘦体重而非总体重推导 BMR。 超过 90 天的测量值将改用 Mifflin-St Jeor。 体脂秤的最新去脂体重同样用于计算 BMR，并优先于体脂率。</string>
     <string name="settings_calc_macro_split">宏量营养素分配</string>
     <string name="settings_calc_maintenance">维持量与目标调整</string>
     <string name="settings_calc_methods">计算方法</string>
@@ -2224,6 +2225,17 @@
     <string name="onboarding_goal_suggested_bmi">基于 BMI %1$.1f</string>
     <!-- Progress v2: 身体叠加图、卡路里组合、目标阶段、坚持度。 -->
     <string name="progress_body_section">身体</string>
+    <string name="progress_scale_metrics">体脂秤指标</string>
+    <string name="progress_scale_metrics_bone_mass">骨量</string>
+    <string name="progress_scale_metrics_water">体内总水分</string>
+    <string name="progress_scale_metrics_muscle">肌肉量</string>
+    <string name="progress_scale_metrics_lean">去脂体重</string>
+    <string name="progress_scale_metrics_visceral">内脏脂肪</string>
+    <string name="progress_scale_metrics_note">家用体脂秤估算 — 趋势比绝对值更可靠</string>
+    <string name="progress_scale_metrics_tbw_percent">体重的 %1$.1f %% · 常见范围 45–65 %%</string>
+    <string name="progress_log_scale_metrics">体脂秤指标</string>
+    <string name="progress_estimated_smm">估算骨骼肌量（Lee）</string>
+    <string name="progress_estimated_smm_note">由上臂、大腿和小腿的围度估算 · ± ~3 公斤</string>
     <string name="progress_overlay_off">关闭</string>
     <string name="progress_no_entries_in_range">该时间段内暂无记录</string>
     <string name="progress_no_series_selected">点按上方的指标以在此显示</string>

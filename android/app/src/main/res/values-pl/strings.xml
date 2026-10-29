@@ -1460,6 +1460,7 @@
     <string name="export_body_metrics_format">Format</string>
     <string name="import_body_metrics_title">Importuj wagę i dane ciała</string>
     <string name="import_body_metrics_success">Zaimportowano: %1$d wagi, %2$d tkanki tłuszczowej i %3$d pomiarów.</string>
+    <string name="import_body_metrics_success_composition">Zaimportowano też %1$d pomiarów wagi.</string>
     <string name="import_body_metrics_empty">Ten plik nie zawiera wpisów wagi ani danych ciała do importu.</string>
     <string name="import_body_metrics_unsupported">Nieobsługiwany plik. Obsługiwane: JSON/CSV Chompass, CSV openScale lub ogólny CSV wagi.</string>
     <string name="import_body_metrics_malformed">Nie można odczytać pliku: %1$s</string>
@@ -1846,7 +1847,7 @@
     <string name="settings_calc_mifflin_used">Domyślny wzór na metabolizm spoczynkowy. Używany, gdy nie podano tkanki tłuszczowej.</string>
     <string name="settings_calc_mifflin_formula">Mężczyźni: 10×waga(kg) + 6.25×wzrost(cm) − 5×wiek + 5\nKobiety: 10×waga(kg) + 6.25×wzrost(cm) − 5×wiek − 161</string>
     <string name="settings_calc_katch_name">Równanie Katch-McArdle</string>
-    <string name="settings_calc_katch_used">Używany automatycznie, gdy podano tkankę tłuszczową. Dokładniejszy dla szczupłych i wysportowanych użytkowników, ponieważ wyprowadza BMR z beztłuszczowej masy ciała zamiast całkowitej wagi. Pomiary starsze niż 90 dni przełączają się na Mifflin-St Jeor.</string>
+    <string name="settings_calc_katch_used">Używany automatycznie, gdy podano tkankę tłuszczową. Dokładniejszy dla szczupłych i wysportowanych użytkowników, ponieważ wyprowadza BMR z beztłuszczowej masy ciała zamiast całkowitej wagi. Pomiary starsze niż 90 dni przełączają się na Mifflin-St Jeor. Świeży pomiar masy beztłuszczowej z wagi liczy BMR tak samo i ma pierwszeństwo przed tkanką tłuszczową.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21.6 × LBM(kg)\nLBM = waga × (1 − bodyFat%)</string>
     <string name="settings_calc_tdee_name">Metoda mnożnika aktywności</string>
     <string name="settings_calc_tdee_used">TDEE = BMR × mnożnik aktywności. Mnożnik odpowiada wybranemu poziomowi aktywności. Umiarkowany używa 1.465 (między FAO/WHO lekkim 1.375 a umiarkowanym 1.55) dla aktywnych przy biurku użytkowników ćwiczących kilka razy w tygodniu. To linia bazowa utrzymania, od której zaczyna AI (chyba że Energy Burn dostarcza zmierzonej wartości).</string>
@@ -2267,6 +2268,17 @@ makro rebalansowane do nowej sumy kalorii</string>
     <string name="onboarding_goal_suggested_bmi">Przy BMI %1$.1f</string>
     <!-- Progress v2: nakładka ciała, combo kalorii, fazy celów, realizacja. -->
     <string name="progress_body_section">Ciało</string>
+    <string name="progress_scale_metrics">Pomiary wagi</string>
+    <string name="progress_scale_metrics_bone_mass">Masa kości</string>
+    <string name="progress_scale_metrics_water">Całkowita woda w organizmie</string>
+    <string name="progress_scale_metrics_muscle">Masa mięśniowa</string>
+    <string name="progress_scale_metrics_lean">Masa beztłuszczowa</string>
+    <string name="progress_scale_metrics_visceral">Tłuszcz trzewny</string>
+    <string name="progress_scale_metrics_note">Szacunek z wagi domowej — trend jest pewniejszy niż wartość bezwzględna</string>
+    <string name="progress_scale_metrics_tbw_percent">%1$.1f %% masy ciała · typowy zakres 45–65 %%</string>
+    <string name="progress_log_scale_metrics">Pomiary wagi</string>
+    <string name="progress_estimated_smm">Szacowana masa mięśni szkieletowych (Lee)</string>
+    <string name="progress_estimated_smm_note">Szacunek antropometryczny z ramienia, uda i łydki · ± ~3 kg</string>
     <string name="progress_overlay_off">Wył.</string>
     <string name="progress_no_entries_in_range">Brak wpisów w tym zakresie</string>
     <string name="progress_no_series_selected">Dotknij metryki powyżej, aby wyświetlić ją tutaj</string>

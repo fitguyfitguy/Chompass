@@ -1,6 +1,6 @@
 // @ts-check
 import { measurements, profile as profileStore, bodyFat } from "../lib/db.js";
-import { usNavyBodyFatPercent, relativeFatMassPercent, waistToHipRatio, waistToHeightRatio } from "../lib/chompass-core/formulas.js";
+import { usNavyBodyFatPercent, relativeFatMassPercent, waistToHipRatio, waistToHeightRatio, estimatedSkeletalMuscleMassKg } from "../lib/chompass-core/formulas.js";
 import { t } from "../lib/i18n/index.js";
 
 export class MeasurementsView extends HTMLElement {
@@ -16,6 +16,17 @@ export class MeasurementsView extends HTMLElement {
     let rfm = null;
     let whr = null;
     let wth = null;
+    // SMM-LEE (display only): needs the three limb girths + profile sex/age/height.
+    const smmKg = latest
+      ? estimatedSkeletalMuscleMassKg({
+          sex: prof?.sex,
+          age: prof?.age,
+          heightCm: prof?.heightCm,
+          upperArmCm: latest.upperArmCm,
+          thighCm: latest.thighCm,
+          calfCm: latest.calfCm,
+        })
+      : null;
     if (latest && prof) {
       if (latest.waistCm != null && latest.neckCm != null) {
         navy = usNavyBodyFatPercent({
@@ -60,7 +71,7 @@ export class MeasurementsView extends HTMLElement {
         <button type="submit" class="btn btn--primary">Save measurement</button>
       </form>
       ${
-        navy != null || rfm != null || whr != null || wth != null
+        navy != null || rfm != null || whr != null || wth != null || smmKg != null
           ? `<div class="card">
               <h2 class="chart-title">From latest</h2>
               <div class="stat-badges">
@@ -68,7 +79,9 @@ export class MeasurementsView extends HTMLElement {
                 ${rfm != null ? `<div class="stat-badge"><strong>${rfm.toFixed(0)}%</strong>${t("measurements.rfm_bf")}</div>` : ""}
                 ${whr != null ? `<div class="stat-badge"><strong>${whr.toFixed(2)}</strong>WHR</div>` : ""}
                 ${wth != null ? `<div class="stat-badge"><strong>${wth.toFixed(2)}</strong>WTH</div>` : ""}
+                ${smmKg != null ? `<div class="stat-badge"><strong>${smmKg.toFixed(1)} kg</strong>${t("progress.estimated_smm")}</div>` : ""}
               </div>
+              ${smmKg != null ? `<p style="color:var(--muted);font-size:0.85rem;margin:0.6rem 0 0;">${t("progress.estimated_smm_note")}</p>` : ""}
               ${navy != null || rfm != null
                 ? `<p style="color:var(--muted);font-size:0.85rem;margin:0.6rem 0 0;">${t("measurements.tape_caption")}</p>
                    ${navy != null && rfm != null

@@ -1154,6 +1154,7 @@ bilirsən?</string>
     <string name="import_body_metrics_empty">Bu faylda idxal üçün çəki və ya bədən məlumatı qeydi yoxdur.</string>
     <string name="import_body_metrics_malformed">Fayl oxuna bilmədi: %1$s</string>
     <string name="import_body_metrics_success">%1$d çəki, %2$d yağ və %3$d ölçü qeydi idxal edildi.</string>
+    <string name="import_body_metrics_success_composition">Həmçinin %1$d tərəzi göstəricisi idxal edildi.</string>
     <string name="import_body_metrics_title">Çəki və bədən məlumatlarını idxal et</string>
     <string name="import_body_metrics_unsupported">Dəstəklənməyən fayl. Dəstəklənənlər: Chompass JSON/CSV, openScale CSV və ya ümumi çəki CSV.</string>
     <string name="import_diary_empty">Bu faylda idxal üçün gündəlik qeydi yoxdur.</string>
@@ -1430,7 +1431,7 @@ bilirsən?</string>
     <string name="settings_calc_intro">Gündəlik kalori və makro məqsədlərin AI tərəfindən təyin edilir. «Məqsədləri yenidən hesabla» düyməsinə toxunduqda və ya adaptiv məqsədlər aktivdirsə həftədə təxminən bir dəfə avtomatik olaraq, Chompass profilini, aşağıdakı istinad tənliklərini, son qeyd olunmuş yeməklərini və çəki trendini AI provayderinə göndərir. Bu rəy keçirmiş düsturlardan başlayır, sonra onları məlumatlarına uyğunlaşdıraraq saxlanma və məqsədlərini təxmin edir.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21,6 × LBM(kq)\nLBM = çəki × (1 − %yağ)</string>
     <string name="settings_calc_katch_name">Katch-McArdle tənliyi</string>
-    <string name="settings_calc_katch_used">Bədən yağı % daxil etdikdə avtomatik istifadə olunur. BMR-ni ümumi çəki əvəzinə arıq kütlədən törətdiyi üçün arıq və idmançı istifadəçilər üçün daha dəqiqdir. 90 gündən köhnə ölçmələr Mifflin-St Jeor\'a qayıdır.</string>
+    <string name="settings_calc_katch_used">Bədən yağı % daxil etdikdə avtomatik istifadə olunur. BMR-ni ümumi çəki əvəzinə arıq kütlədən törətdiyi üçün arıq və idmançı istifadəçilər üçün daha dəqiqdir. 90 gündən köhnə ölçmələr Mifflin-St Jeor\'a qayıdır. Tərəzidən yeni yağsız kütlə göstəricisi BMR-i eyni şəkildə hesablayır və bədən yağından üstün tutulur.</string>
     <string name="settings_calc_macro_split">Makronutrient bölgüsü</string>
     <string name="settings_calc_maintenance">Saxlanma və məqsəd tənzimləməsi</string>
     <string name="settings_calc_methods">Hesablama metodları</string>
@@ -2226,6 +2227,17 @@ makrolar yeni kalori cəminə uyğun yenidən tarazlaşdırılır</string>
     <string name="onboarding_goal_suggested_bmi">BMI %1$.1f əsasında</string>
     <!-- Progress v2: bədən örtüyü, kaloriya kombinasiyası, məqsəd fazaları, uyğunluq. -->
     <string name="progress_body_section">Bədən</string>
+    <string name="progress_scale_metrics">Tərəzi göstəriciləri</string>
+    <string name="progress_scale_metrics_bone_mass">Sümük kütləsi</string>
+    <string name="progress_scale_metrics_water">Bədəndəki ümumi su</string>
+    <string name="progress_scale_metrics_muscle">Əzələ kütləsi</string>
+    <string name="progress_scale_metrics_lean">Yağsız kütlə</string>
+    <string name="progress_scale_metrics_visceral">Daxili piy</string>
+    <string name="progress_scale_metrics_note">Ev tərəzisinin təxmini — tendensiya mütləq rəqəmdən daha etibarlıdır</string>
+    <string name="progress_scale_metrics_tbw_percent">bədən çəkisinin %1$.1f %%-i · adi aralıq 45–65 %%</string>
+    <string name="progress_log_scale_metrics">Tərəzi göstəriciləri</string>
+    <string name="progress_estimated_smm">Təxmini skelet əzələsi (Lee)</string>
+    <string name="progress_estimated_smm_note">Qol, bud və baldırdan antropometrik təxmin · ± ~3 kq</string>
     <string name="progress_overlay_off">Bağlı</string>
     <string name="progress_no_entries_in_range">Bu aralıqda qeyd yoxdur</string>
     <string name="progress_no_series_selected">Burada göstərmək üçün yuxarıda bir ölçüyə toxunun</string>

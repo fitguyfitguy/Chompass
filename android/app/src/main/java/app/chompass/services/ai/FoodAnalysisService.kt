@@ -503,7 +503,12 @@ class FoodAnalysisService(
                 WeightGoal.GAIN -> "not set (default 0.5 kg/week gain)"
                 WeightGoal.MAINTAIN -> "not set (maintain)"
             }
-        val bmrMethod = if (profile.usesBodyFatForBMR) "Katch-McArdle (body fat known and enabled)" else "Mifflin-St Jeor"
+        val bmrMethod = when {
+            profile.usesMeasuredLeanMassForBMR ->
+                "Katch-McArdle on measured lean mass (fresh scale reading, enabled)"
+            profile.usesBodyFatForBMR -> "Katch-McArdle (body fat known and enabled)"
+            else -> "Mifflin-St Jeor"
+        }
         val signals = empiricalSignals(forecast, profile)
 
         // Energy Burn toggle: when on (and Health Connect has enough data) this measured
@@ -693,6 +698,11 @@ class FoodAnalysisService(
         val goalWeight = profile.goalWeightKg?.let { kg ->
             if (weightMetric) String.format(Locale.US, "%.1f kg", kg) else String.format(Locale.US, "%.1f lb", UnitFormat.kgToLbs(kg))
         } ?: "not set"
+        val leanMassLine = profile.validMeasuredLeanMassKg?.let { lean ->
+            val text = if (weightMetric) String.format(Locale.US, "%.1f kg", lean)
+                else String.format(Locale.US, "%.1f lb", UnitFormat.kgToLbs(lean))
+            "\n            - Measured lean mass: $text (scale reading, drives BMR + the protein cap)"
+        }.orEmpty()
         // #60 phase 4: with day types on, the response also carries a per-profile
         // array; the allowed-key list and the JSON shape must say so.
         val hasDayTypes = dayTypesSection.isNotEmpty()
@@ -711,9 +721,10 @@ class FoodAnalysisService(
             FORMULAS
             - BMR (Mifflin-St Jeor): base = 10*weightKg + 6.25*heightCm - 5*age - 161; if male add 166; female/other use base.
             - BMR (Katch-McArdle, used when body fat is known and enabled): 370 + 21.6 * (1 - bodyFatFraction) * weightKg. The Katch-McArdle path applies (only when body fat was logged within its freshness window — 90 days, or 365 for a DEXA scan); older readings fall back to Mifflin-St Jeor.
+            - BMR priority: ${GoalFormulaReference.measuredLeanMassBasisLine()}.
             - TDEE = BMR * activity multiplier. Multipliers: ${GoalFormulaReference.activityMultipliersLine()}.
             - Calorie target = TDEE + adjustment. adjustment = 0 for maintain; ${GoalFormulaReference.calorieAdjustmentLine()}.
-            - Protein: aim NEAR the formula protein value shown below. That value is the activity multiplier (${GoalFormulaReference.proteinPerKgLine()} g/kg; +0.2 if losing) applied to the user's full bodyweight, then ${GoalFormulaReference.proteinLbmCapLine()} when a valid body-fat reading exists. You may choose a value within about ±15% of it based on the weight goal and the observed history (lean toward the higher end during a calorie deficit to preserve muscle). Do NOT scale protein down just to fit a lower calorie target, except at the safety floor where protein may yield so 4*protein + 4*carbs + 9*fat stays near calories.
+            - Protein: aim NEAR the formula protein value shown below. That value is the activity multiplier (${GoalFormulaReference.proteinPerKgLine()} g/kg; +0.2 if losing) applied to the user's full bodyweight, then ${GoalFormulaReference.proteinLbmCapLine()} when a lean-mass basis exists (a fresh measured lean-mass reading wins over a body-fat reading). You may choose a value within about ±15% of it based on the weight goal and the observed history (lean toward the higher end during a calorie deficit to preserve muscle). Do NOT scale protein down just to fit a lower calorie target, except at the safety floor where protein may yield so 4*protein + 4*carbs + 9*fat stays near calories.
             - Fat: ${GoalFormulaReference.fatTargetLine()}.
             - Carbs: the calories remaining after protein (4 kcal/g) and fat (9 kcal/g), divided by 4. Keep 4*protein + 4*carbs + 9*fat approximately equal to calories.
             BMR method in effect for this user: $bmrMethod.
@@ -725,7 +736,7 @@ class FoodAnalysisService(
             - Age: ${profile.age}
             - Height: $height
             - Weight: $weight
-            - Body fat: $bodyFat$bodyFatTrustNote
+            - Body fat: $bodyFat$bodyFatTrustNote$leanMassLine
             - Activity level: ${profile.activityLevel.name.lowercase()}
             - Weight goal: ${profile.goal.name.lowercase()}
             - Weekly change preference: $weekly

@@ -1201,6 +1201,7 @@
     <string name="import_body_metrics_empty">Ce fichier ne contient aucune entrée de poids ou de données corporelles à importer.</string>
     <string name="import_body_metrics_malformed">Impossible de lire le fichier : %1$s</string>
     <string name="import_body_metrics_success">%1$d entrées de poids, %2$d de masse grasse et %3$d de mesures importées.</string>
+    <string name="import_body_metrics_success_composition">%1$d mesures de balance également importées.</string>
     <string name="import_body_metrics_title">Importer le poids et les données corporelles</string>
     <string name="import_body_metrics_unsupported">Fichier non pris en charge. Pris en charge : JSON/CSV Chompass, CSV openScale ou CSV de poids générique.</string>
     <string name="import_diary_empty">Ce fichier ne contient aucune entrée de journal à importer.</string>
@@ -1492,7 +1493,7 @@
     <string name="settings_calc_intro">Vos objectifs quotidiens de calories et de macros sont définis par l\'IA. Quand vous touchez Recalculer les objectifs, ou automatiquement environ une fois par semaine si les Objectifs adaptatifs sont activés, Chompass envoie votre profil, les équations de référence ci-dessous, vos aliments récemment enregistrés et votre tendance de poids à votre fournisseur d\'IA. Il part de ces formules évaluées par les pairs, puis les ajuste à vos données pour estimer votre maintien et vos objectifs.</string>
     <string name="settings_calc_katch_formula" formatted="false">BMR = 370 + 21,6 × MM (kg)\nMM = poids × (1 − % de masse grasse)</string>
     <string name="settings_calc_katch_name">Équation de Katch-McArdle</string>
-    <string name="settings_calc_katch_used" formatted="false">Utilisée automatiquement quand vous avez saisi un % de masse grasse. Plus précise pour les utilisateurs minces et sportifs car elle dérive le BMR de la masse maigre au lieu du poids total. Les mesures de plus de 90 jours repassent à Mifflin-St Jeor.</string>
+    <string name="settings_calc_katch_used" formatted="false">Utilisée automatiquement quand vous avez saisi un % de masse grasse. Plus précise pour les utilisateurs minces et sportifs car elle dérive le BMR de la masse maigre au lieu du poids total. Les mesures de plus de 90 jours repassent à Mifflin-St Jeor. Une mesure récente de masse maigre par une balance sert au même calcul et prime sur la masse grasse.</string>
     <string name="settings_calc_macro_split">Répartition des macronutriments</string>
     <string name="settings_calc_maintenance">Maintien et ajustement de la cible</string>
     <string name="settings_calc_methods">Méthodes de calcul</string>
@@ -2253,6 +2254,17 @@ macros rééquilibrées au nouveau total calorique</string>
     <string name="onboarding_goal_suggested_bmi">D’après un IMC de %1$.1f</string>
     <!-- Progress v2 : overlay corporel, combo calories, phases d\'objectif, assiduité. -->
     <string name="progress_body_section">Corps</string>
+    <string name="progress_scale_metrics">Mesures de balance</string>
+    <string name="progress_scale_metrics_bone_mass">Masse osseuse</string>
+    <string name="progress_scale_metrics_water">Eau corporelle totale</string>
+    <string name="progress_scale_metrics_muscle">Masse musculaire</string>
+    <string name="progress_scale_metrics_lean">Masse maigre</string>
+    <string name="progress_scale_metrics_visceral">Graisse viscérale</string>
+    <string name="progress_scale_metrics_note">Estimation d\'une balance grand public — la tendance est plus fiable que la valeur absolue</string>
+    <string name="progress_scale_metrics_tbw_percent">%1$.1f %% du poids corporel · plage habituelle 45–65 %%</string>
+    <string name="progress_log_scale_metrics">Mesures de balance</string>
+    <string name="progress_estimated_smm">Muscle squelettique estimé (Lee)</string>
+    <string name="progress_estimated_smm_note">Estimation anthropométrique (bras, cuisse, mollet) · ± ~3 kg</string>
     <string name="progress_overlay_off">Désactivé</string>
     <string name="progress_no_entries_in_range">Aucune entrée sur cette période</string>
     <string name="progress_no_series_selected">Touchez une métrique ci-dessus pour l\'afficher ici</string>

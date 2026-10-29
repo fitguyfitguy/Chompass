@@ -1135,6 +1135,7 @@
     <string name="import_body_metrics_empty">Este arquivo não tem registros de peso ou dados corporais para importar.</string>
     <string name="import_body_metrics_malformed">Não foi possível ler o arquivo: %1$s</string>
     <string name="import_body_metrics_success">Importados %1$d registros de peso, %2$d de gordura e %3$d medidas.</string>
+    <string name="import_body_metrics_success_composition">Também foram importados %1$d registros de métricas da balança.</string>
     <string name="import_body_metrics_title">Importar peso e dados corporais</string>
     <string name="import_body_metrics_unsupported">Arquivo não suportado. Suportados: JSON/CSV do Chompass, CSV do openScale ou CSV genérico de peso.</string>
     <string name="import_diary_empty">Este arquivo não tem registros de diário para importar.</string>
@@ -1410,7 +1411,7 @@
     <string name="settings_calc_intro">Suas metas diárias de calorias e macros são definidas pela IA. Quando você toca em «Recalcular metas», ou automaticamente cerca de uma vez por semana se as metas adaptativas estiverem ativas, o Chompass envia seu perfil, as fórmulas de referência abaixo, sua comida registrada recentemente e sua tendência de peso ao provedor de IA. Ele parte dessas fórmulas revisadas por pares e as ajusta aos seus dados para estimar manutenção e metas.</string>
     <string name="settings_calc_katch_formula">BMR = 370 + 21,6 × LBM(kg)\nLBM = peso × (1 − %gordura)</string>
     <string name="settings_calc_katch_name">Equação de Katch-McArdle</string>
-    <string name="settings_calc_katch_used">Usada automaticamente quando você informou um % de gordura corporal. Mais precisa para usuários magros e atléticos, pois deriva o BMR da massa magra em vez do peso total. Medições com mais de 90 dias voltam para Mifflin-St Jeor.</string>
+    <string name="settings_calc_katch_used">Usada automaticamente quando você informou um % de gordura corporal. Mais precisa para usuários magros e atléticos, pois deriva o BMR da massa magra em vez do peso total. Medições com mais de 90 dias voltam para Mifflin-St Jeor. Uma leitura recente de massa magra da balança calcula o BMR do mesmo jeito e tem prioridade sobre a gordura corporal.</string>
     <string name="settings_calc_macro_split">Divisão de macronutrientes</string>
     <string name="settings_calc_maintenance">Manutenção e ajuste de metas</string>
     <string name="settings_calc_methods">Métodos de cálculo</string>
@@ -2228,6 +2229,17 @@ macros reequilibradas ao novo total calórico</string>
     <string name="onboarding_goal_suggested_bmi">Com base em um IMC de %1$.1f</string>
     <!-- Progress v2: overlay corporal, combo de calorias, fases de meta, aderência. -->
     <string name="progress_body_section">Corpo</string>
+    <string name="progress_scale_metrics">Métricas da balança</string>
+    <string name="progress_scale_metrics_bone_mass">Massa óssea</string>
+    <string name="progress_scale_metrics_water">Água corporal total</string>
+    <string name="progress_scale_metrics_muscle">Massa muscular</string>
+    <string name="progress_scale_metrics_lean">Massa magra</string>
+    <string name="progress_scale_metrics_visceral">Gordura visceral</string>
+    <string name="progress_scale_metrics_note">Estimativa de balança doméstica — a tendência é mais confiável que o valor absoluto</string>
+    <string name="progress_scale_metrics_tbw_percent">%1$.1f %% do peso corporal · faixa típica 45–65 %%</string>
+    <string name="progress_log_scale_metrics">Métricas da balança</string>
+    <string name="progress_estimated_smm">Músculo esquelético estimado (Lee)</string>
+    <string name="progress_estimated_smm_note">Estimativa antropométrica de braço, coxa e panturrilha · ± ~3 kg</string>
     <string name="progress_overlay_off">Desligado</string>
     <string name="progress_no_entries_in_range">Nenhum registro neste período</string>
     <string name="progress_no_series_selected">Toque em uma métrica acima para exibi-la aqui</string>

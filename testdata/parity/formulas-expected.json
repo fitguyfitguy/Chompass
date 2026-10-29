@@ -100,12 +100,12 @@
         "weeklyChangeKg": 0.25,
         "ketoMode": false
       },
-     "expect": {
-      "calorieAdjustment": 275,
-      "proteinGoal": 165,
-      "fatGoal": 82
-    }
-  },
+      "expect": {
+        "calorieAdjustment": 275,
+        "proteinGoal": 165,
+        "fatGoal": 82
+      }
+    },
     {
       "id": "golden_highBf_lbmProteinCap",
       "profile": {
@@ -218,38 +218,211 @@
     {
       "id": "golden_rfm_male_180_80",
       "kind": "rfm",
-      "input": { "sex": "male", "heightCm": 180, "waistCm": 80 },
-      "expect": { "percent": 19 }
+      "input": {
+        "sex": "male",
+        "heightCm": 180,
+        "waistCm": 80
+      },
+      "expect": {
+        "percent": 19
+      }
     },
     {
       "id": "golden_rfm_female_180_80",
       "kind": "rfm",
-      "input": { "sex": "female", "heightCm": 180, "waistCm": 80 },
-      "expect": { "percent": 31 }
+      "input": {
+        "sex": "female",
+        "heightCm": 180,
+        "waistCm": 80
+      },
+      "expect": {
+        "percent": 31
+      }
     },
     {
       "id": "golden_rfm_other_uses_male",
       "kind": "rfm",
-      "input": { "sex": "other", "heightCm": 180, "waistCm": 80 },
-      "expect": { "percent": 19 }
+      "input": {
+        "sex": "other",
+        "heightCm": 180,
+        "waistCm": 80
+      },
+      "expect": {
+        "percent": 19
+      }
     },
     {
       "id": "golden_rfm_reject_zero_waist",
       "kind": "rfm",
-      "input": { "sex": "male", "heightCm": 180, "waistCm": 0 },
-      "expect": { "percent": null }
+      "input": {
+        "sex": "male",
+        "heightCm": 180,
+        "waistCm": 0
+      },
+      "expect": {
+        "percent": null
+      }
     },
     {
       "id": "golden_rfm_reject_zero_height",
       "kind": "rfm",
-      "input": { "sex": "male", "heightCm": 0, "waistCm": 80 },
-      "expect": { "percent": null }
+      "input": {
+        "sex": "male",
+        "heightCm": 0,
+        "waistCm": 80
+      },
+      "expect": {
+        "percent": null
+      }
     },
     {
       "id": "golden_rfm_reject_out_of_range",
       "kind": "rfm",
-      "input": { "sex": "female", "heightCm": 165, "waistCm": 400 },
-      "expect": { "percent": null }
+      "input": {
+        "sex": "female",
+        "heightCm": 165,
+        "waistCm": 400
+      },
+      "expect": {
+        "percent": null
+      }
+    },
+    {
+      "id": "golden_leanMassFresh_measuredKatch",
+      "profile": {
+        "sex": "male",
+        "age": 30,
+        "heightCm": 178,
+        "weightKg": 82,
+        "bodyFatPercentage": null,
+        "activityLevel": "moderate",
+        "goal": "maintain",
+        "weeklyChangeKg": null,
+        "ketoMode": false,
+        "measuredLeanMassKg": 62.0,
+        "leanMassUpdatedAt": null
+      },
+      "expect": {
+        "bmr": 1709.2,
+        "bmrTol": 0.05,
+        "tdee": 2503.978,
+        "tdeeTol": 0.5,
+        "dailyCalories": 2503,
+        "proteinGoal": 131,
+        "fatGoal": 56,
+        "estimatedDailyActiveCalories": 795
+      }
+    },
+    {
+      "id": "golden_leanMassStale_mifflinFallback",
+      "profile": {
+        "sex": "male",
+        "age": 30,
+        "heightCm": 178,
+        "weightKg": 82,
+        "bodyFatPercentage": null,
+        "activityLevel": "moderate",
+        "goal": "maintain",
+        "weeklyChangeKg": null,
+        "ketoMode": false,
+        "measuredLeanMassKg": 62.0,
+        "leanMassUpdatedAt": "2026-01-01T00:00:00Z"
+      },
+      "expect": {
+        "bmr": 1787.5,
+        "bmrTol": 0.05,
+        "proteinGoal": 131
+      }
+    },
+    {
+      "id": "golden_leanMassWithBf_measuredWins",
+      "profile": {
+        "sex": "male",
+        "age": 40,
+        "heightCm": 180,
+        "weightKg": 120,
+        "bodyFatPercentage": 0.4,
+        "bodyFatUpdatedAt": null,
+        "activityLevel": "moderate",
+        "goal": "lose",
+        "weeklyChangeKg": 0.5,
+        "ketoMode": false,
+        "measuredLeanMassKg": 61.0,
+        "leanMassUpdatedAt": null
+      },
+      "expect": {
+        "bmr": 1687.6,
+        "bmrTol": 0.05,
+        "tdee": 2472.334,
+        "tdeeTol": 0.5,
+        "calorieAdjustment": -550,
+        "dailyCalories": 1922,
+        "proteinGoal": 146,
+        "fatGoal": 72
+      }
+    },
+    {
+      "id": "lee_smm_male",
+      "kind": "leeSmm",
+      "input": {
+        "sex": "male",
+        "age": 30,
+        "heightCm": 175,
+        "upperArmCm": 32,
+        "thighCm": 55,
+        "calfCm": 37
+      },
+      "expect": {
+        "kg": 37.32,
+        "tol": 0.005
+      }
+    },
+    {
+      "id": "lee_smm_female",
+      "kind": "leeSmm",
+      "input": {
+        "sex": "female",
+        "age": 35,
+        "heightCm": 165,
+        "upperArmCm": 27,
+        "thighCm": 50,
+        "calfCm": 33
+      },
+      "expect": {
+        "kg": 26.62,
+        "tol": 0.005
+      }
+    },
+    {
+      "id": "lee_smm_otherUsesFemaleCoefficient",
+      "kind": "leeSmm",
+      "input": {
+        "sex": "other",
+        "age": 35,
+        "heightCm": 165,
+        "upperArmCm": 27,
+        "thighCm": 50,
+        "calfCm": 33
+      },
+      "expect": {
+        "kg": 26.62,
+        "tol": 0.005
+      }
+    },
+    {
+      "id": "lee_smm_missingLimbSite",
+      "kind": "leeSmm",
+      "input": {
+        "sex": "male",
+        "age": 30,
+        "heightCm": 175,
+        "upperArmCm": 32,
+        "thighCm": null,
+        "calfCm": 37
+      },
+      "expect": {
+        "kg": null
+      }
     }
   ]
 }
