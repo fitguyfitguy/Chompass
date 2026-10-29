@@ -2182,6 +2182,7 @@ LBM = вага × (1 − %жиру)</string>
     <string name="progress_scale_metrics_note">Оцінка побутової ваги — тенденція надійніша за абсолютне значення</string>
     <string name="progress_scale_metrics_tbw_percent">%1$.1f %% від маси тіла · типовий діапазон 45–65 %%</string>
     <string name="progress_log_scale_metrics">Дані ваги</string>
+    <string name="progress_log_scale_metrics_title">Записати дані ваги</string>
     <string name="progress_estimated_smm">Оцінка скелетних м\'язів (Lee)</string>
     <string name="progress_estimated_smm_note">Антропометрична оцінка за плечем, стегном і гомілкою · ± ~3 кг</string>
     <string name="progress_overlay_off">Вимк.</string>

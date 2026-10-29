@@ -2235,6 +2235,7 @@
     <string name="progress_scale_metrics_note">घरेलू स्केल अनुमान — रुझान पूर्ण मान से अधिक भरोसेमंद है</string>
     <string name="progress_scale_metrics_tbw_percent">शरीर भार का %1$.1f %% · सामान्य सीमा 45–65 %%</string>
     <string name="progress_log_scale_metrics">स्केल मेट्रिक्स</string>
+    <string name="progress_log_scale_metrics_title">स्केल मेट्रिक्स लॉग करें</string>
     <string name="progress_estimated_smm">अनुमानित कंकाल मांसपेशी (Lee)</string>
     <string name="progress_estimated_smm_note">बांह, जांघ और पिंडली से एंथ्रोपोमेट्रिक अनुमान · ± ~3 किग्रा</string>
     <string name="progress_overlay_off">बंद</string>

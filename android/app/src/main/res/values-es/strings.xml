@@ -2261,6 +2261,7 @@ macros reequilibradas al nuevo total calórico</string>
     <string name="progress_scale_metrics_note">Estimación de báscula doméstica: la tendencia es más fiable que el valor absoluto</string>
     <string name="progress_scale_metrics_tbw_percent">%1$.1f %% del peso corporal · rango habitual 45–65 %%</string>
     <string name="progress_log_scale_metrics">Métricas de báscula</string>
+    <string name="progress_log_scale_metrics_title">Registrar métricas de báscula</string>
     <string name="progress_estimated_smm">Músculo esquelético estimado (Lee)</string>
     <string name="progress_estimated_smm_note">Estimación antropométrica con brazo, muslo y pantorrilla · ± ~3 kg</string>
     <string name="progress_overlay_off">Apagado</string>

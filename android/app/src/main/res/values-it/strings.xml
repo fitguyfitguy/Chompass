@@ -2236,6 +2236,7 @@ macro riequilibrate al nuovo totale calorico</string>
     <string name="progress_scale_metrics_note">Stima da bilancia domestica: la tendenza è più affidabile del valore assoluto</string>
     <string name="progress_scale_metrics_tbw_percent">%1$.1f %% del peso corporeo · intervallo tipico 45–65 %%</string>
     <string name="progress_log_scale_metrics">Misure della bilancia</string>
+    <string name="progress_log_scale_metrics_title">Registra misure della bilancia</string>
     <string name="progress_estimated_smm">Muscolo scheletrico stimato (Lee)</string>
     <string name="progress_estimated_smm_note">Stima antropometrica da braccio, coscia e polpaccio · ± ~3 kg</string>
     <string name="progress_overlay_off">Off</string>

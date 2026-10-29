@@ -2330,6 +2330,7 @@
     <string name="progress_scale_metrics_note">Оценка бытовых весов — тенденция надёжнее абсолютного значения</string>
     <string name="progress_scale_metrics_tbw_percent">%1$.1f %% от массы тела · обычный диапазон 45–65 %%</string>
     <string name="progress_log_scale_metrics">Данные весов</string>
+    <string name="progress_log_scale_metrics_title">Записать данные весов</string>
     <string name="progress_estimated_smm">Оценка скелетных мышц (Lee)</string>
     <string name="progress_estimated_smm_note">Антропометрическая оценка по плечу, бедру и голени · ± ~3 кг</string>
     <string name="progress_overlay_off">Выкл.</string>

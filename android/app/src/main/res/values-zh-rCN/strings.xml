@@ -2234,6 +2234,7 @@
     <string name="progress_scale_metrics_note">家用体脂秤估算 — 趋势比绝对值更可靠</string>
     <string name="progress_scale_metrics_tbw_percent">体重的 %1$.1f %% · 常见范围 45–65 %%</string>
     <string name="progress_log_scale_metrics">体脂秤指标</string>
+    <string name="progress_log_scale_metrics_title">记录体脂秤指标</string>
     <string name="progress_estimated_smm">估算骨骼肌量（Lee）</string>
     <string name="progress_estimated_smm_note">由上臂、大腿和小腿的围度估算 · ± ~3 公斤</string>
     <string name="progress_overlay_off">关闭</string>
