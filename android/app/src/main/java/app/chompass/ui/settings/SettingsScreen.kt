@@ -60,6 +60,8 @@ import app.chompass.AppContainer
 import app.chompass.R
 import app.chompass.ui.components.ChompassSurface
 import app.chompass.ui.components.ChompassIconBubble
+import app.chompass.ui.components.LocalBottomBarHaze
+import app.chompass.ui.components.bottomBarHazeSource
 import app.chompass.ui.navigation.BottomNavScrollPadding
 import app.chompass.ui.navigation.ChompassRoutes
 @Composable
@@ -74,6 +76,7 @@ fun SettingsScreen(container: AppContainer, nav: NavHostController) {
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
+                .bottomBarHazeSource(LocalBottomBarHaze.current)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {

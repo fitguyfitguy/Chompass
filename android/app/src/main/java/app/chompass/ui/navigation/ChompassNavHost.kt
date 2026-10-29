@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.flow.first
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -30,6 +31,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import app.chompass.AppContainer
 import app.chompass.models.EnergyUnit
+import app.chompass.ui.components.LocalBottomBarHaze
 import app.chompass.services.update.AndroidUpdateChecker
 import app.chompass.services.update.AndroidUpdateState
 import app.chompass.ui.about.AboutSettingsScreen
@@ -67,6 +69,7 @@ import app.chompass.ui.settings.CaffeineSettingsScreen
 import app.chompass.ui.settings.NicotineSettingsScreen
 import app.chompass.ui.settings.NotesSettingsScreen
 import app.chompass.ui.settings.FastingSettingsScreen
+import app.chompass.ui.theme.ChompassNavTransitions
 
 /**
  * Increments each time the app is opened: 1 on cold launch, then +1 on every
@@ -185,9 +188,11 @@ fun ChompassNavHost(
     }
 
     val energyUnitRaw by container.prefs.energyUnit.collectAsState(initial = "kcal")
+    val bottomBarHaze = rememberHazeState()
     CompositionLocalProvider(
         LocalLaunchFillEpoch provides launchFillEpoch,
         LocalEnergyUnit provides EnergyUnit.fromStorage(energyUnitRaw),
+        LocalBottomBarHaze provides bottomBarHaze,
     ) {
     // Codeberg #20: phase 1 hides the coach tab (View-only); phase 2's master
     // AI-off switch hides it too — with AI off the coach has nothing to say.
@@ -201,6 +206,7 @@ fun ChompassNavHost(
                     currentRoute = currentRoute,
                     showAboutBadge = updateAvailable,
                     showCoachTab = showCoachTab,
+                    haze = bottomBarHaze,
                     onTap = { target ->
                         if (target == currentRoute) return@ChompassBottomNavBar
                         // Tapping HOME (the start destination) needs popBackStack
@@ -225,7 +231,11 @@ fun ChompassNavHost(
         Box(Modifier.fillMaxSize()) {
             NavHost(
                 navController = nav,
-                startDestination = if (startOnboarding) ChompassRoutes.ONBOARDING else ChompassRoutes.HOME
+                startDestination = if (startOnboarding) ChompassRoutes.ONBOARDING else ChompassRoutes.HOME,
+                enterTransition = { ChompassNavTransitions.pushEnter() },
+                exitTransition = { ChompassNavTransitions.pushExit() },
+                popEnterTransition = { ChompassNavTransitions.pushPopEnter() },
+                popExitTransition = { ChompassNavTransitions.pushPopExit() },
             ) {
                 composable(ChompassRoutes.ONBOARDING) {
                     OnboardingScreen(container = container, onComplete = {
@@ -235,7 +245,13 @@ fun ChompassNavHost(
                         }
                     })
                 }
-                composable(ChompassRoutes.HOME) {
+                composable(
+                    ChompassRoutes.HOME,
+                    enterTransition = { ChompassNavTransitions.tabEnter() },
+                    exitTransition = { ChompassNavTransitions.tabExit() },
+                    popEnterTransition = { ChompassNavTransitions.tabEnter() },
+                    popExitTransition = { ChompassNavTransitions.tabExit() },
+                ) {
                     HomeScreen(
                         container = container,
                         onOpenSettings = {
@@ -271,7 +287,13 @@ fun ChompassNavHost(
                 composable(ChompassRoutes.PLAN_WEEK) {
                     PlanWeekScreen(container = container, nav = nav)
                 }
-                composable(ChompassRoutes.PROGRESS) {
+                composable(
+                    ChompassRoutes.PROGRESS,
+                    enterTransition = { ChompassNavTransitions.tabEnter() },
+                    exitTransition = { ChompassNavTransitions.tabExit() },
+                    popEnterTransition = { ChompassNavTransitions.tabEnter() },
+                    popExitTransition = { ChompassNavTransitions.tabExit() },
+                ) {
                     ProgressScreen(
                         container = container,
                         onOpenCustomize = {
@@ -279,7 +301,13 @@ fun ChompassNavHost(
                         },
                     )
                 }
-                composable(ChompassRoutes.COACH) {
+                composable(
+                    ChompassRoutes.COACH,
+                    enterTransition = { ChompassNavTransitions.tabEnter() },
+                    exitTransition = { ChompassNavTransitions.tabExit() },
+                    popEnterTransition = { ChompassNavTransitions.tabEnter() },
+                    popExitTransition = { ChompassNavTransitions.tabExit() },
+                ) {
                     if (showCoachTab) {
                         CoachScreen(container = container)
                     } else {
@@ -291,7 +319,13 @@ fun ChompassNavHost(
                         }
                     }
                 }
-                composable(ChompassRoutes.SETTINGS) { SettingsScreen(container = container, nav = nav) }
+                composable(
+                    ChompassRoutes.SETTINGS,
+                    enterTransition = { ChompassNavTransitions.tabEnter() },
+                    exitTransition = { ChompassNavTransitions.tabExit() },
+                    popEnterTransition = { ChompassNavTransitions.tabEnter() },
+                    popExitTransition = { ChompassNavTransitions.tabExit() },
+                ) { SettingsScreen(container = container, nav = nav) }
                 composable(ChompassRoutes.SETTINGS_PERSONAL) {
                     PersonalSettingsScreen(
                         container = container,
