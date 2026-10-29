@@ -45,6 +45,12 @@ object AppMotion {
     /** Default UI transition duration (ms) for color/fade/slide changes. */
     const val TweenDefaultMs = 220
 
+    /** Shared-Z page transition duration (ms). */
+    const val TweenNavMs = 300
+
+    /** Short fade split inside nav transitions (ms): outgoing window / incoming delay. */
+    const val NavFadeShortMs = 90
+
     /** Standard accelerate-decelerate curve for container/position transitions. */
     val EasingStandard = FastOutSlowInEasing
 

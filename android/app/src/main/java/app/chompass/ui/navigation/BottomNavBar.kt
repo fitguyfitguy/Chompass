@@ -1,5 +1,6 @@
 package app.chompass.ui.navigation
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
@@ -21,11 +22,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.annotation.StringRes
 import androidx.compose.ui.unit.dp
 import app.chompass.R
+import app.chompass.ui.components.hazeGlassFill
+import dev.chrisbanes.haze.HazeState
 
 data class BottomTab(val route: String, val icon: ImageVector, @get:StringRes val labelRes: Int)
 
@@ -53,17 +58,26 @@ fun ChompassBottomNavBar(
     currentRoute: String?,
     showAboutBadge: Boolean = false,
     showCoachTab: Boolean = true,
+    haze: HazeState? = null,
     onTap: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val tabs = bottomTabs(showCoachTab)
-    NavigationBar(
+    // Glass fills the whole bar slot including the navigation-bar inset strip
+    // (the fill Box is the outermost node); trait OFF or no blur source
+    // degrades to the same solid surfaceContainer as before.
+    Box(
         modifier = modifier
             .fillMaxWidth()
-            .navigationBarsPadding(),
-        containerColor = MaterialTheme.colorScheme.surfaceContainer,
-        tonalElevation = 0.dp,
+            .hazeGlassFill(MaterialTheme.colorScheme.surfaceContainer, RectangleShape, haze),
     ) {
+        NavigationBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding(),
+            containerColor = Color.Transparent,
+            tonalElevation = 0.dp,
+        ) {
         tabs.forEach { tab ->
             val selected = tab.route == currentRoute
             val label = stringResource(tab.labelRes)
@@ -97,6 +111,7 @@ fun ChompassBottomNavBar(
                     unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 ),
             )
+        }
         }
     }
 }

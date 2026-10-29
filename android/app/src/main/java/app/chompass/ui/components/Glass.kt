@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -13,7 +14,16 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
 import app.chompass.ui.theme.ChompassTraitsDefaults
+
+/** The [HazeState] whose sources scroll behind the bottom nav bar; null where
+ *  no bar is showing (onboarding) or the host hasn't created one. */
+val LocalBottomBarHaze = staticCompositionLocalOf<HazeState?> { null }
+
+/** Marks this node as a blur source for the bottom bar when one exists. */
+fun Modifier.bottomBarHazeSource(state: HazeState?): Modifier =
+    if (state != null) hazeSource(state) else this
 
 /** Alpha of the tint laid over the blur. 0.55 buried the blur entirely —
  *  light-on-light content read as a flat strip (device pass 2026-10-29);
@@ -51,8 +61,10 @@ fun Modifier.hazeGlassFill(
     haze: HazeState?,
 ): Modifier {
     val backdrop = MaterialTheme.colorScheme.surfaceContainerLow
-    // Traits off (Appearance toggle) or no blur source: same solid fallback.
-    if (haze == null || !ChompassTraitsDefaults.glassBlur()) {
+    // Traits off (Appearance toggle), no blur source registered yet (empty
+    // tab, pre-first-layout), or no blur engine: same solid fallback — the
+    // chrome stays opaque, never transparent-into-nothing.
+    if (haze == null || haze.areas.isEmpty() || !ChompassTraitsDefaults.glassBlur()) {
         return background(tint.compositeOver(backdrop), shape)
     }
     val style = remember(tint, backdrop) { hazeGlassStyle(tint, backdrop) }

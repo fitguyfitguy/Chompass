@@ -111,6 +111,8 @@ import app.chompass.services.grounding.GroundedEntryFeature
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.components.ChompassSnackbarHost
+import app.chompass.ui.components.LocalBottomBarHaze
+import app.chompass.ui.components.bottomBarHazeSource
 import app.chompass.ui.components.contentMaxWidth
 import app.chompass.ui.settings.RecalcResultSheet
 import app.chompass.ui.components.ChompassSurface
@@ -528,7 +530,8 @@ fun HomeScreen(
         Box(Modifier.fillMaxSize().padding(padding)) {
         LazyColumn(
             modifier = Modifier
-                .contentMaxWidth(),
+                .contentMaxWidth()
+                .bottomBarHazeSource(LocalBottomBarHaze.current),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(
                 top = if (inSelectionMode) 72.dp else 8.dp,
                 bottom = BottomNavScrollPadding
