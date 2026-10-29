@@ -479,7 +479,7 @@ open class MainActivity : ComponentActivity() {
             // Codeberg #28: log the resolved theme inputs on every composition so
             // a device pass can tell a stale appearance value from a ROM that
             // delivers uiMode without recreating the activity.
-            Log.d("ChompassTheme", "appearance=$appearance systemDark=$systemDark darkTheme=$darkTheme oledTheme=$oledTheme themeColor=$themeColorKey")
+            Log.d("ChompassTheme", "appearance=$appearance systemDark=$systemDark darkTheme=$darkTheme oledTheme=$oledTheme themeColor=$themeColorKey glassBlur=$glassBlur")
             // Edge-to-edge draws behind the system bars, so their icon color must
             // follow the resolved app theme (not the launch-time system theme):
             // dark icons on the light palette, light icons on dark/oled.
