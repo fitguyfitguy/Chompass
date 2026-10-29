@@ -574,7 +574,7 @@
     <!-- About -->
     <string name="about_rate">Beoordeel de app</string>
     <string name="about_share">App delen</string>
-    <string name="about_open_source">Open source (MIT)</string>
+    <string name="about_open_source">Open source (GPL v3)</string>
     <string name="about_report_issue">Probleem melden</string>
     <string name="about_request_feature">Functie aanvragen</string>
     <string name="about_privacy">Privacybeleid</string>

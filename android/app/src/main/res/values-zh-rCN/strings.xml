@@ -608,7 +608,7 @@
     <!-- About -->
     <string name="about_rate">评价应用</string>
     <string name="about_share">分享应用</string>
-    <string name="about_open_source">开源 (MIT)</string>
+    <string name="about_open_source">开源 (GPL v3)</string>
     <string name="about_report_issue">报告问题</string>
     <string name="about_request_feature">请求功能</string>
     <string name="about_privacy">隐私政策</string>

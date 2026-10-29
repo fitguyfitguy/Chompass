@@ -606,7 +606,7 @@
     <!-- About -->
     <string name="about_rate">앱 평가하기</string>
     <string name="about_share">앱 공유하기</string>
-    <string name="about_open_source">오픈 소스 (MIT)</string>
+    <string name="about_open_source">오픈 소스 (GPL v3)</string>
     <string name="about_report_issue">문제 신고</string>
     <string name="about_request_feature">기능 요청</string>
     <string name="about_privacy">개인정보 처리방침</string>

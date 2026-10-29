@@ -597,7 +597,7 @@ bilirsən?</string>
     <!-- About -->
     <string name="about_rate">Tətbiqi qiymətləndir</string>
     <string name="about_share">Tətbiqi Paylaş</string>
-    <string name="about_open_source">Açıq Mənbə (MIT)</string>
+    <string name="about_open_source">Açıq Mənbə (GPL v3)</string>
     <string name="about_report_issue">Problemi Bildir</string>
     <string name="about_request_feature">Funksiya Tələb Et</string>
     <string name="about_privacy">Məxfilik Siyasəti</string>

@@ -60,7 +60,7 @@ Connect data, say so: those live in Kotlin **and** the PWA
 
 Open a pull request on Codeberg (draft is fine); rebase onto `main` before
 asking for review. Opening a PR licenses your contribution under the
-project's [MIT license](LICENSE). Review depth scales with the diff: small
+project's [GPL-3.0-or-later license](LICENSE). Review depth scales with the diff: small
 changes are reviewed inline on the PR, large ones get a written findings
 round. Review checks:
 

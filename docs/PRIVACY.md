@@ -81,7 +81,7 @@ Shared meals use a `chompass://` deep link with base64-encoded nutrition JSON. L
 
 ## Upstream
 
-Chompass is based on open-source software by Apoorv Darshan under the MIT License. See [NOTICE](NOTICE.md) and [LICENSE](../LICENSE).
+Chompass is based on open-source software by Apoorv Darshan (upstream portions previously MIT — see [NOTICE](NOTICE.md)). Chompass is licensed under the GNU GPL v3 or later ([LICENSE](../LICENSE)).
 
 ## Contact
 

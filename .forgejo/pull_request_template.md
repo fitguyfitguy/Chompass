@@ -2,7 +2,7 @@
 
 <!-- One short paragraph: what changes and why. Link the issue with "Closes #N" if one exists. -->
 
-Opening this pull request licenses your contribution under the project's [MIT license](LICENSE).
+Opening this pull request licenses your contribution under the project's [GPL-3.0-or-later license](LICENSE).
 
 ## Checklist
 

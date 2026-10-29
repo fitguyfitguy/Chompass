@@ -1346,7 +1346,7 @@
     <string name="about_version_format">Wersja %1$s</string>
     <string name="about_rate">Oceń aplikację</string>
     <string name="about_share">Udostępnij aplikację</string>
-    <string name="about_open_source">Kod źródłowy (MIT)</string>
+    <string name="about_open_source">Kod źródłowy (GPL v3)</string>
     <string name="about_asset_credits">Open Source i zasoby</string>
     <string name="about_upstream">Na bazie Fud AI (upstream)</string>
     <string name="about_report_issue">Zgłoś problem</string>

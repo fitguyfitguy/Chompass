@@ -682,7 +682,7 @@
     <string name="sheet_macro_pinned">закріплено</string>
     <string name="about_rate">Оцінити застосунок</string>
     <string name="about_share">Поділитися застосунком</string>
-    <string name="about_open_source">Вихідний код (MIT)</string>
+    <string name="about_open_source">Вихідний код (GPL v3)</string>
     <string name="about_report_issue">Повідомити про проблему</string>
     <string name="about_request_feature">Запропонувати функцію</string>
     <string name="about_privacy">Політика конфіденційності</string>

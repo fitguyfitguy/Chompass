@@ -14,6 +14,8 @@ Style: entries follow the release-text style guide (maintainer-local, not publis
 
 ### Changed
 
+- **Chompass is now licensed under the GNU GPL, version 3 or later** (Android and PWA): derived from its MIT-licensed upstream Fud AI with upstream attribution preserved (see NOTICE), the project as a whole now carries a strong copyleft license — forks and rebuilds must ship their source under the same terms. The in-app About screen, README, website and F-Droid listing all show the new license.
+
 - **Calorie targets use a measured lean mass when your scale reports one** (Android and PWA): a lean-mass reading from the last 90 days now drives Katch-McArdle BMR and the protein cap ahead of the body-fat estimate, because it is the value the formula works from. Older readings fall back to your body-fat reading, then to Mifflin-St Jeor. Turning off Use Body Fat for BMR turns this path off too. Stored goals mark as out of date when the number changes.
 
 ## [5.12.1] - 2026-10-28

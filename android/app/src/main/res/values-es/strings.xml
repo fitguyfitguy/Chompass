@@ -609,7 +609,7 @@
     <!-- About -->
     <string name="about_rate">Valorar la app</string>
     <string name="about_share">Compartir la app</string>
-    <string name="about_open_source">Código abierto (MIT)</string>
+    <string name="about_open_source">Código abierto (GPL v3)</string>
     <string name="about_report_issue">Informar de un problema</string>
     <string name="about_request_feature">Solicitar una función</string>
     <string name="about_privacy">Política de privacidad</string>

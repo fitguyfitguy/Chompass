@@ -1342,7 +1342,7 @@
     <string name="about_version_format">Sürüm %1$s</string>
     <string name="about_rate">Uygulamayı Değerlendir</string>
     <string name="about_share">Uygulamayı Paylaş</string>
-    <string name="about_open_source">Kaynak Kodu (MIT)</string>
+    <string name="about_open_source">Kaynak Kodu (GPL v3)</string>
     <string name="about_asset_credits">Açık Kaynak ve Varlıklar</string>
     <string name="about_upstream">Fud AI (upstream) tabanlı</string>
     <string name="about_report_issue">Sorun Bildir</string>

@@ -14,7 +14,7 @@ Bring your own AI key. On Android you can also run Gemma 4 on-device. No ads, no
 [![F-Droid](https://img.shields.io/f-droid/v/app.chompass?style=flat-square&label=F-Droid&logo=F-Droid&logoColor=white&color=127059)](https://f-droid.org/packages/app.chompass/)
 [![PWA](https://img.shields.io/badge/Platform-PWA-127059?style=flat-square&logo=pwa&logoColor=white)](https://chompass.app/app/)
 [![Android](https://img.shields.io/badge/Platform-Android-3DDC84?style=flat-square&logo=android&logoColor=white)](https://codeberg.org/fitguy/chompass)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue?style=flat-square)](LICENSE)
 [![Privacy](https://img.shields.io/badge/Tracking-None-blue?style=flat-square)](docs/PRIVACY.md)
 
 </div>
@@ -220,7 +220,7 @@ Chompass is free, ad-free, and open source. If you'd like to say thanks, you can
 
 Chompass is based on [Fud AI](https://github.com/apoorvdarshan/fud-ai).
 
-- Copyright (c) 2026 Apoorv Darshan - [MIT License](LICENSE)
-- Modifications Copyright (c) 2026 fitguy - MIT License
+- Copyright (c) 2026 Apoorv Darshan — upstream portions, previously MIT (see [NOTICE](docs/NOTICE.md))
+- Modifications Copyright (c) 2026 fitguy — [GPL-3.0-or-later](LICENSE)
 
 See also [NOTICE](docs/NOTICE.md) and [ASSET_CREDITS.md](docs/ASSET_CREDITS.md).
