@@ -34,7 +34,6 @@ import app.chompass.models.LocaleFormat
 import app.chompass.models.MacroValueFormatter
 import app.chompass.ui.components.macroGramsText
 import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.nutrientAccentColor
 import kotlin.math.roundToInt
 
@@ -135,7 +134,7 @@ internal fun MacroProgressRow(
             Text(
                 "$currentLabel / $goalLabel",
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         BoxWithConstraints(Modifier.fillMaxWidth().height(8.dp)) {

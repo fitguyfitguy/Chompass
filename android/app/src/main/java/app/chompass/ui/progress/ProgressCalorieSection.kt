@@ -45,7 +45,6 @@ import app.chompass.ui.components.energyUnitLabel
 import app.chompass.ui.navigation.LocalEnergyUnit
 import java.time.LocalDate
 import java.time.ZoneId
-import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * Overlay payload for the calorie card: smoothed trend + raw daily dots in
@@ -154,7 +153,7 @@ internal fun CalorieSection(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         maxLines = 1,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
                 Spacer(Modifier.width(8.dp))
@@ -165,7 +164,7 @@ internal fun CalorieSection(
                     pluralStringResource(R.plurals.untracked_days_excluded, untrackedCount, untrackedCount),
                     fontSize = 13.sp,
                     maxLines = 1,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -180,7 +179,7 @@ internal fun CalorieSection(
                         Text(
                             stringResource(R.string.progress_no_food),
                             fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 } else {

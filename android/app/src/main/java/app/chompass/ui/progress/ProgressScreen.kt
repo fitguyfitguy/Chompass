@@ -44,8 +44,6 @@ import app.chompass.services.health.DailyActivity
 import app.chompass.ui.components.ChompassDialog
 import app.chompass.ui.components.ChompassDialogActions
 import app.chompass.ui.navigation.BottomNavScrollPadding
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 import app.chompass.ui.theme.dayTypeColor
 import androidx.compose.ui.graphics.Color
 
@@ -175,7 +173,7 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
                         Icon(
                             Icons.Outlined.Tune,
                             contentDescription = stringResource(R.string.settings_customize_progress),
-                            tint = AppColors.Calorie,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(22.dp),
                         )
                     }
@@ -405,7 +403,7 @@ fun ProgressScreen(container: AppContainer, onOpenCustomize: (() -> Unit)? = nul
             Text(stringResource(R.string.progress_goal_reached_title), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(
                 stringResource(R.string.progress_goal_reached_message),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             ChompassDialogActions(
                 primaryText = stringResource(R.string.action_keep_going),

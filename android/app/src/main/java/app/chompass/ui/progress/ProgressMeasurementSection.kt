@@ -27,7 +27,6 @@ import app.chompass.R
 import app.chompass.models.BodyMeasurement
 import app.chompass.models.UnitFormat
 import java.util.Locale
-import app.chompass.ui.theme.AppTextOpacity
 
 private fun formatMeasurementLength(context: android.content.Context, cm: Double, useMetric: Boolean): String =
     if (useMetric) String.format(Locale.getDefault(), "%.1f %s", cm, context.getString(R.string.unit_cm))
@@ -82,7 +81,7 @@ internal fun MeasurementPlotCard(
                 Text(
                     formatMeasurementLength(context, latest, useMetric),
                     fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(Modifier.width(4.dp))
                 MeasurementAddButton(

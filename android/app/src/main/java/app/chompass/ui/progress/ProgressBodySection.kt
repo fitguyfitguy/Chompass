@@ -42,7 +42,6 @@ import app.chompass.models.BodyMeasurement
 import app.chompass.models.WeightEntry
 import app.chompass.models.UnitFormat
 import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 
 internal fun formatPercent(fraction: Double): String =
     UnitFormat.percent(fraction * 100)
@@ -235,7 +234,7 @@ internal fun BodySection(
                                 }
                             ),
                             fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 } else {
@@ -266,13 +265,13 @@ internal fun BodySection(
                                 Text(
                                     "${series.label} ${series.currentValue?.let { formatTick(it) + series.unitLabel } ?: "–"}",
                                     fontSize = 12.sp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                                 series.deltaOverRange?.let { delta ->
                                     Text(
                                         UnitFormat.signedDelta(delta) + series.unitLabel,
                                         fontSize = 12.sp,
-                                        color = if (delta < 0) AppColors.Calorie
+                                        color = if (delta < 0) MaterialTheme.colorScheme.primary
                                         else MaterialTheme.colorScheme.onSurface,
                                     )
                                 }
@@ -301,13 +300,13 @@ private fun LogPill(label: String, onClick: () -> Unit) {
         modifier = Modifier.clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.Filled.AddCircle, null, tint = AppColors.Calorie, modifier = Modifier.size(16.dp))
+        Icon(Icons.Filled.AddCircle, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
         Spacer(Modifier.width(4.dp))
         Text(
             label,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
-            color = AppColors.Calorie,
+            color = MaterialTheme.colorScheme.primary,
             maxLines = 1,
         )
     }

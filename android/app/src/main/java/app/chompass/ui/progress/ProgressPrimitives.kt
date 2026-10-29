@@ -35,8 +35,6 @@ import androidx.compose.ui.unit.sp
 import app.chompass.BuildConfig
 import app.chompass.R
 import app.chompass.ui.components.ChompassSurface
-import app.chompass.ui.theme.AppColors
-import app.chompass.ui.theme.AppTextOpacity
 
 /**
  * uiautomator reports every Compose FilterChip as selected="false". Debug
@@ -71,7 +69,7 @@ internal fun MeasurementAddButton(siteLabel: String, onClick: () -> Unit) {
         Icon(
             Icons.Filled.AddCircle,
             contentDescription = null,
-            tint = AppColors.Calorie,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(17.dp),
         )
     }
@@ -157,7 +155,7 @@ internal fun StatBadge(label: String, value: String, modifier: Modifier = Modifi
             label,
             modifier = Modifier.fillMaxWidth(),
             fontSize = 11.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
@@ -188,7 +186,7 @@ internal fun CollapseChevron(expanded: Boolean) {
         if (expanded) Icons.Filled.KeyboardArrowDown
         else Icons.AutoMirrored.Filled.KeyboardArrowRight,
         contentDescription = null,
-        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.size(18.dp),
     )
 }
